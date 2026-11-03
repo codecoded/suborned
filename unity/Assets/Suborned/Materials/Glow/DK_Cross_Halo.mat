@@ -25,12 +25,14 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _Alpha: 0.4
+    - _Absorb: 0.45
+    - _Alpha: 0.7
+    - _Fall: 2
     - _Floor: 0.35
-    - _Inner: 0.15
-    - _Mode: 1
-    - _Radius: 0.47
-    - _Strength: 6
+    - _Inner: 0.535
+    - _Mode: 5
+    - _Radius: 0.5
+    - _Strength: 1
     m_Colors:
     - _BaseColor: {r: 0.44705883, g: 0.70980394, b: 0.654902, a: 1}
   m_BuildTextureStacks: []

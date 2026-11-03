@@ -34,17 +34,26 @@ namespace Suborned.Play
             foreach (var (n, x) in views.All())
             {
                 if (!x || !x.gameObject.activeInHierarchy) continue;
-                if (n.StartsWith("crowd/") || n.StartsWith("act/")) continue;
+                if (n.StartsWith("act/") || n.StartsWith("crowd/") && !CrowdSecurityView(n)) continue; // Pulse 067 W2: the crowd's shift guards are pickables ("Guard"); passers-by never
                 var t = TargetOf(x); if (t == null) continue;
-                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
+                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" || t.Security ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
                 pickables.Add(new Pickable { T = t, Anchor = x.position + Vector3.up * up, Name = OneWord(t) });
             }
             return pickables;
         }
 
+        /// <summary>Pulse 067 W2: a crowd view whose walker is security (Person.Civilian false), from its key alone (no target built).</summary>
+        bool CrowdSecurityView(string n)
+        {
+            if (Game == null || n.Length <= 6) return false; int ci = 0;
+            for (int i = 6; i < n.Length; i++) { char c = n[i]; if (c < '0' || c > '9') return false; ci = ci * 10 + (c - '0'); } // "crowd/<n>", parsed without a string a view
+            return ci < Game.Walkers.Count && !Game.Walkers[ci].P.Civilian;
+        }
+
         /// <summary>A target's one-word name for the hover chip.</summary>
         public string OneWord(Target t) => t.Kind switch
         {
+            "crowd" when t.Security => FirstWord(t.Label.StartsWith("an ") ? t.Label[3..] : t.Label.StartsWith("a ") ? t.Label[2..] : t.Label), // Pulse 067 W2: "Guard"
             "op" => char.ToUpperInvariant(t.Key[0]) + t.Key[1..],
             "person" => FirstWord(Name(t.Key)),
             "camera" => "Camera", "cabinet" => "Cabinet", "door" => "Door", "car" => "Car", "patrol" => "Patrol", "rivals" => "Rivals",
@@ -78,10 +87,34 @@ namespace Suborned.Play
             return nearActs != null && da <= dn + tie ? nearActs.T : near?.T;
         }
 
+        /// <summary>Brief 085: the door, the cabinet and a stash are generous boxes, and the door guard stands in the door's. A ray into the box found the box, so the 28 px circle every other
+        /// person has (NearestPick, only when the ray finds nothing) never ran for him: his exact body was the target, and a pixel beside it was the door, which for most agents has no way and so no
+        /// pill. Here a being within the same circle counts as under the ray, and the rows then decide between them as they do on his body. A click on the box away from him stays the door's.</summary>
+        void PickBesideMarker(Vector2 screen, List<(Target t, float score)> found, bool agents)
+        {
+            besideNow = null; if (agents || !cam || !found.Exists(x => x.t.Kind is "door" or "cabinet" or "stash") || !found.TrueForAll(x => x.t.Kind is "door" or "cabinet" or "stash" || Passer(x.t))) return;
+            float best = PickPx * cam.pixelHeight / 1080f; Pickable near = null;
+            foreach (var p in Pickables())
+            {
+                if (!(p.T.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "unit" || p.T.Security)) continue;
+                var sp = cam.WorldToScreenPoint(p.Anchor); if (sp.z <= 0f) continue; float d = ((Vector2)sp - screen).magnitude; if (d <= best) { best = d; near = p; }
+            }
+            if (near != null) { besideNow = near.T; found.Add((near.T, PickRank(near.T, false) * 10000f)); BesidePicks++; }
+        }
+        Target besideNow;
+        /// <summary>The rows' rank where things overlap under the pointer. A person whose body the ray hit, standing in a marker's box, is him for anyone with a row on him, even only a harsh one: the Enforcer's pointer on the guard is the guard (his takedown is in the ring), and the box round him stays the door's. Beside his body the rows decide.</summary>
+        int RankOver(Target t, List<(Target t, float score)> found)
+        {
+            int r = RowRank(t);
+            return r == 1 && t.Kind == "person" && !ReferenceEquals(t, besideNow) && found.Exists(x => x.t.Kind is "door" or "cabinet" or "stash") ? 0 : r;
+        }
+        /// <summary>The proof reads it: picks a marker's box would have taken from the person standing in it.</summary>
+        public int BesidePicks { get; private set; }
+
         /// <summary>Set by PointerHover: the hovered thing's anchor and name for the HUD.</summary>
         void HoverFeedback(Target t)
         {
-            if (t == null || t.Kind is "crowd") { HoverAnchor = null; HoverName = ""; return; }
+            if (t == null || Passer(t)) { HoverAnchor = null; HoverName = ""; return; } // Pulse 067 W2: a shift guard is named on hover ("Guard"); a passer-by never
             foreach (var p in Pickables()) if (p.T.Kind == t.Kind && p.T.Key == t.Key) { HoverAnchor = p.Anchor; HoverName = p.Name; return; }
             var w = TargetWorld(t); HoverAnchor = w; HoverName = w.HasValue ? OneWord(t) : "";
         }
@@ -91,6 +124,36 @@ namespace Suborned.Play
         Vector2 stackAt = new(-1e6f, -1e6f); int stackIndex; readonly List<Target> stack = new();
         /// <summary>How many things overlap under the cursor now, and which one a right click hits (0 = the best).</summary>
         public int HoverStackCount => stack.Count; public int HoverStackIndex => stack.Count == 0 ? 0 : stackIndex % stack.Count;
+        /// <summary>Brief 067 F9: the overlap stack under the cursor (best first), for the stack tab and the others' rings.</summary>
+        public IReadOnlyList<Target> HoverStack => stack;
+
+        /// <summary>Brief 067 F8 (Glyph): a candidate under the cursor ranked for hover and the right button: first whether the selection has an
+        /// open calm way on it (0), else any row (1), else none (2), then its kind (a being 0, a body or a downed agent 1, a camera 2, the car or a
+        /// stand 3, the door marker, the cabinet or a stash 4, a passer-by 9). The rows are the selection's own (ContextFor), asked once a tick
+        /// for each candidate (a crowded spot has two to four). Pulse 067 W2: a shift guard in the crowd is a being (0), ranked by its rows.</summary>
+        float PickRank(Target t, bool rows = true)
+        {
+            int kind = t.Kind switch
+            {
+                "person" or "hostile" or "patrol" or "rivals" or "security" or "unit" or "bystander" => 0, "body" => 1, "op" => 1, "camera" => 2, "car" or "stand" => 3,
+                "door" or "cabinet" or "stash" => 4, "crowd" => t.Security ? 0 : 9, _ => 5,
+            };
+            if (Passer(t)) return 3 * 10 + kind; // a passer-by: never before anything with a row
+            return (rows ? RowRank(t) * 10 : 0) + kind;
+        }
+        /// <summary>0: the selection has an open calm way on t; 1: a row (locked, or only violent); 2: none. Cached a tick, a selection and an order count.</summary>
+        int RowRank(Target t)
+        {
+            if (Game == null) return 2; int mask = 0; for (int k = 0; k < 4; k++) if (Selected[k]) mask |= 1 << k;
+            var key = $"{t.Kind}/{t.Key}/{t.Id}"; var stamp = (Game.Tick / Game.Hz, mask, Game.Orders.Count); // once a second
+            if (rowRanks.TryGetValue(key, out var c) && c.stamp.Equals(stamp)) return c.rank;
+            int rank = 2; ContextPlan plan = null;
+            if (Guard("pick rank", () => plan = ContextFor(t, lastHover)) && plan?.Pn != null && plan.Pn.Rows.Count > 0)
+                rank = plan.Choice.Order.Exists(w => plan.Row(w)?.I?.Order is Order o && !ContextRank.Violent(new ContextRank.Way { Do = o.Do })) ? 0 : 1;
+            if (rowRanks.Count > 64) rowRanks.Clear();
+            rowRanks[key] = (stamp, rank); return rank;
+        }
+        readonly Dictionary<string, ((int, int, int) stamp, int rank)> rowRanks = new();
 
         /// <summary>How much the selected agent wants this target in a tie: Vale at his car for the Enforcer's Take most, then anything the
         /// agent's verbs act on.</summary>
@@ -110,16 +173,18 @@ namespace Suborned.Play
             return stack.Count == 0 ? null : stack[stackIndex % stack.Count];
         }
 
+        /// <summary>Steps through an overlap stack this run (the wheel, Z, Tab): H22's gone-when (Fable 067).</summary>
+        public int StackSteps { get; private set; }
         /// <summary>Tab or the wheel over overlapping things: the next one is what a right click hits (its name on the chip).</summary>
         void StepStack(bool back = false)
         {
-            if (stack.Count < 2) return; stackIndex = (stackIndex + (back ? stack.Count - 1 : 1)) % stack.Count; intentKey = ""; PointerHover(stackAt);
+            if (stack.Count < 2) return; stackIndex = (stackIndex + (back ? stack.Count - 1 : 1)) % stack.Count; intentKey = ""; StackSteps++; PointerHover(stackAt);
             Status = $"{OneWord(stack[stackIndex])} ({stackIndex + 1} of {stack.Count})";
         }
 
         // ---------------------------------------------------------------- target mode
 
-        static readonly HashSet<string> TargetVerbs = new() { "watch", "listen", "mislead", "ask", "pay", "help", "pressure", "loop", "reroute", "takedown" };
+        static readonly HashSet<string> TargetVerbs = new() { "watch", "listen", "mislead", "ask", "pay", "help", "pressure", "loop", "disable", "reroute", "takedown" };
         readonly List<Pickable> targets = new(); string targetsKey = ""; float targetsAt = -10f; int focusIndex = -1;
 
         /// <summary>A verb that needs a target is picked.</summary>

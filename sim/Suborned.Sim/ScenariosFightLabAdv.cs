@@ -67,7 +67,7 @@ namespace Suborned.Sim
                 case "P-B": SPrepared(r, routes["route-b-board"], 4470); break;
                 default: throw new ArgumentException($"no smart run {id}");
             }
-            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.S.Over)) + T(1));
+            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.ClockOver)) + T(1));
             g.Finish();
             pol = null;
             return r;
@@ -121,9 +121,9 @@ namespace Suborned.Sim
                     string near = ""; Pt np = default; long bd = long.MaxValue;
                     foreach (var id in ts) { var at = G0.PosOf(id)!.Value; long d = G.D2(e.Pos, at); if (d < bd) { bd = d; near = id; np = at; } }
                     if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = G0.S.Stand(G0.S.GetawayCar) }); continue; }
-                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.GoS > 0) { if (G0.Tick < Game.T(p.GoS)) { if (e.Walk != null) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } var stg = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G.Within(e.Pos, G0.S.At(G0.S.GetawayCar), G0.R.AtReachCm)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = stg }); continue; } // N3: at<s>, hold Vale, then go
-                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.Hold) { if (holdFrom < 0) holdFrom = G0.Tick; bool police = p.HoldCarCm > 0 ? G0.Hostiles.Any(h => h.Present && !h.Down && (h.Id.StartsWith("officer-") || h.Id.StartsWith("security-")) && G.Within(h.Pos(G0.Tick), G0.S.At(G0.S.GetawayCar), p.HoldCarCm)) : G0.Hostiles.Any(h => h.Present && !h.Down && !h.Blocker && (h.Id.StartsWith("officer-") || h.Id.StartsWith("security-"))); if (police && G0.Tick < holdFrom + Game.T(p.HoldS)) { string thr = ""; Pt tp = default; long td = long.MaxValue; foreach (var id in ts) { var at = G0.PosOf(id)!.Value; var fw = G0.GunOf(id)!.W; if (fw == null) continue; long d = G.D2(e.Pos, at); long rr = fw.EffCm + KM; if (d <= rr * rr && d < td) { td = d; thr = id; tp = at; } } if (thr.Length > 0) { long dx = e.Pos.X - tp.X, dy = e.Pos.Y - tp.Y; double n = Math.Sqrt((double)dx * dx + (double)dy * dy); if (n < 1) n = 1; var away = G0.S.Grid.NearestFree(new Pt(e.Pos.X + (int)(dx / n * 400), e.Pos.Y + (int)(dy / n * 400))); if (away.HasValue && (e.Walk == null || !G.Within(e.Walk.End, away.Value, 150))) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = away.Value }); } else if (e.Walk != null) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } var st0 = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G.Within(e.Pos, G0.S.At(G0.S.GetawayCar), G0.R.AtReachCm)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = st0 }); continue; } // N3: hold, holdcar
-                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.EnfGo) { var st = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G.Within(e.Pos, G0.S.At(G0.S.GetawayCar), G0.R.AtReachCm)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = st }); continue; }
+                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.GoS > 0) { if (G0.Tick < Game.T(p.GoS)) { if (e.Walk != null) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } var stg = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G0.AtGetaway(e.Pos)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = stg }); continue; } // N3: at<s>, hold Vale, then go
+                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.Hold) { if (holdFrom < 0) holdFrom = G0.Tick; bool police = p.HoldCarCm > 0 ? G0.Hostiles.Any(h => h.Present && !h.Down && (h.Id.StartsWith("officer-") || h.Id.StartsWith("security-")) && G.Within(h.Pos(G0.Tick), G0.S.At(G0.S.GetawayCar), p.HoldCarCm)) : G0.Hostiles.Any(h => h.Present && !h.Down && !h.Blocker && (h.Id.StartsWith("officer-") || h.Id.StartsWith("security-"))); if (police && G0.Tick < holdFrom + Game.T(p.HoldS)) { string thr = ""; Pt tp = default; long td = long.MaxValue; foreach (var id in ts) { var at = G0.PosOf(id)!.Value; var fw = G0.GunOf(id)!.W; if (fw == null) continue; long d = G.D2(e.Pos, at); long rr = fw.EffCm + KM; if (d <= rr * rr && d < td) { td = d; thr = id; tp = at; } } if (thr.Length > 0) { long dx = e.Pos.X - tp.X, dy = e.Pos.Y - tp.Y; double n = Math.Sqrt((double)dx * dx + (double)dy * dy); if (n < 1) n = 1; var away = G0.S.Grid.NearestFree(new Pt(e.Pos.X + (int)(dx / n * 400), e.Pos.Y + (int)(dy / n * 400))); if (away.HasValue && (e.Walk == null || !G.Within(e.Walk.End, away.Value, 150))) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = away.Value }); } else if (e.Walk != null) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } var st0 = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G0.AtGetaway(e.Pos)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = st0 }); continue; } // N3: hold, holdcar
+                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.EnfGo) { var st = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G0.AtGetaway(e.Pos)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = st }); continue; }
                     if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.EnfKite)
                     {
                         string thr = ""; Pt tp = default; long td = long.MaxValue;
@@ -184,12 +184,13 @@ namespace Suborned.Sim
             {
                 SEngage(r, () => { var l = new List<string>(); foreach (var h in G0.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(r.CityGunmen()); AddUnits(r, l); return l; }, free, Math.Max(1, (end - G0.Tick) / Game.Hz), ops.ToArray(), true);
                 if (G0.Over || G0.Tick >= end) return;
-                if (!G.Within(r.Op("enforcer").Pos, car, G0.R.AtReachCm))
+                if (!G0.AtGetaway(r.Op("enforcer").Pos))
                 {
                     int at = r.SendTo("enforcer", G0.S.Stand(G0.S.GetawayCar));
                     while (!G0.Over && G0.Tick < at && free()) G0.Step();
+                    if (at <= G0.Tick && !G0.Over) G0.Step(); // no walk (already as near as the walk goes): time still runs, so the loop ends
                 }
-                if (free() && G.Within(r.Op("enforcer").Pos, car, G0.R.AtReachCm)) return;
+                if (free() && G0.AtGetaway(r.Op("enforcer").Pos)) return;
             }
         }
 
@@ -225,7 +226,7 @@ namespace Suborned.Sim
         }
         static void SLoudGuardShot(Run r, string routeG)
         {
-            var g = r.G; Replay(r, routeG, 1236);
+            var g = r.G; Replay(r, routeG, GuardTakedownTick(routeG)); // brief 059: tied to the route's takedown order (LoudGuardShot)
             if (g.Over) return;
             g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = GuardR });
             DrawAll(r);
@@ -257,7 +258,7 @@ namespace Suborned.Sim
         public static string PanicSpam(Engine.Inputs i, int cycles, int holdTicks, int gapTicks)
         {
             var r = new Run(Engine.New(i, LabStart(s => s.Security = 1))); var g = r.G;
-            r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             var post = g.PosOf(GuardR)!.Value; Pt? spot = null;
             for (int dx = -800; dx <= 800 && spot == null; dx += 100) for (int dy = -800; dy <= 800 && spot == null; dy += 100)
             { var q = new Pt(post.X + dx, post.Y + dy); if (g.S.Grid.Free(q) && G.D2(q, post) >= 300L * 300 && g.GuardWatching(q) && !g.PatrolWatching(q) && !g.CameraWatching("pickup", q)) spot = q; }

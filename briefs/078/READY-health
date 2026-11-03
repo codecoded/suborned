@@ -1,0 +1,38 @@
+078 Handover health · Suture (playtest-qa-lead) · 2026-10-30 · HEAD 1c8bf221, c045, engine 0.35.2
+Status: done, read-only. Report: briefs/078/handover-health.html. Logs: out/scratch/suture/078/.
+
+Verdict: in the sim the Handover is healthy. It SHIPS (893 plays, MC-0..15 ok). Quiet routes A, B and G win and so does loud, at the intended prices. Every fail is reachable and every run replays exactly.
+It is not yet proven in a person's hands: nobody has played it since Sky's 0.2.122 (26 Oct).
+
+Blockers
+- B1 · The mast camera's id changed under the mission: mast-314 -> mast-z0 (075 remap, c47b5a96).
+  - It breaks sim check (N67, N110) and 18 sim unit tests.
+  - `bun run batch` stops at step 1, so no build can pass.
+  - The mission's camera-mast-314 text keys miss in the game, and GameBoot.cs:457 skips a proof.
+  - Owners: Keel, Fable, Latch, Splice.
+- B2 · Nobody has played the current Handover. The next build (0.2.143) carries 513 changed inputs. Owners: Aster -> Latch -> Suture -> Sky.
+
+Should-fix
+- S1 · Route B can slip only 4 s from 5:00; route A 7 s. Owners: Motive -> Waymark.
+- S2 · The two-car getaway (§07 route B, Sky's option A) is not built. Owners: Aster/Sky -> Keel -> Waymark -> Latch.
+- S3 · The quiet final fights last 8-21 s. Owners: Motive, Sky.
+- S4 · Adopt fight-lab.json at 0.35.2 as the reference. The prepared runs now win; P-B's 26 % health lost is the one FAIL against the 25 % bar. Owners: Motive, Keel, Aster.
+- S5 · The pinned-script batch is always red: the cp-* closing checkpoint, stale sessions and non-scripts in script folders. Owners: Keel, Aster, Splice.
+- S6 · ProofFire.cs:117 has code swallowed into a comment. Owner: Latch.
+- S7 · No T1-T15 player tests have been run. Owners: Suture, Aster.
+
+Evidence
+- `bun run missions:check handover`: SHIPS.
+- `bun run sim check`: 358/360.
+- `dotnet test`: 18 fail, all mast-314.
+- `bun run test`: 19 fail, none Handover, 7:40.
+- `bun run typecheck`: clean.
+- Plan with the Handover overlay: exit 0.
+- `sim batch`: 59 played, 10 not ok, every c045 route ok.
+- `game:check`: dry run only (it would build 0.2.143).
+
+Update, build 0.2.146 (commit 2f4749eb) · Suture · 2026-10-30
+GO: Sky can play it. 7 bot rows through `bun run guard`: 0 crashes, 0 stuck, 0 console errors, end cards clean, 6 refusals in 355 orders. No row won; both human-pace rows failed on timing (S1).
+The car explosion ran in the player (rival car, 4:20.7, 0 errors, worst frame 21 ms).
+New: S8 saved runs stop 1.2-1.6 s before the fail (Latch) · S9 possible 95 ms hitch on re-order, to measure (Redline) · S10 Q-GIVER false alarm on Drive from the car (Latch, Suture).
+Report section and the proof-section table: briefs/078/handover-health.html. Rows: out/scratch/suture/078/bot-0146/.

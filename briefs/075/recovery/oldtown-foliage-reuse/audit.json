@@ -1,0 +1,886 @@
+{
+  "ShrubMound": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx",
+      "sha256": "857103fb43ccaf9710bf590f5bde28187e2b0239ef3f8bfb0fd887051b32aec1",
+      "metaSha256": "e82c8d059e467130f352ab46c4de0908b0725b4dc618728c16bacbfc5f167adb",
+      "meshes": [
+        {
+          "name": "DK_ShrubMound",
+          "vertices": 4721,
+          "triangles": 2526,
+          "bounds": [
+            [
+              -0.4586237668991089,
+              -0.4908176362514496,
+              -0.06092739850282669
+            ],
+            [
+              0.49376213550567627,
+              0.49654120206832886,
+              0.728054940700531
+            ]
+          ],
+          "slots": [
+            "DK_Leaf_CoreShrub",
+            "DK_Leaf_Shrub"
+          ],
+          "bySlot": [
+            222,
+            2304
+          ],
+          "geometryHash": "1ae1d672485cc3e14e2684ebd20fb249c4f228476e2b06dce1108780c5b6243d"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_ShrubMound.fbx",
+      "sha256": "f956fdd82a7e077e2411660d685254498c88d72e47bdb911ceb0882089acccb7",
+      "metaSha256": "684f61d70b716f70a341dbbd1349e1eaf896800b4434972a3aef7a578d0b2b8a",
+      "meshes": [
+        {
+          "name": "DK_ShrubMound",
+          "vertices": 4721,
+          "triangles": 2526,
+          "bounds": [
+            [
+              -0.4586237668991089,
+              -0.4908176362514496,
+              -2.5946492954176392e-08
+            ],
+            [
+              0.49376213550567627,
+              0.49654120206832886,
+              0.728054940700531
+            ]
+          ],
+          "slots": [
+            "DK_Leaf_CoreShrub",
+            "DK_Leaf_Shrub"
+          ],
+          "bySlot": [
+            222,
+            2304
+          ],
+          "geometryHash": "9a3b167352b5d97d40b42e8fb6d4fc2c4507e52f47a913785f41420888d052b1"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": false,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 40,
+      "onlyBelowGroundZClamping": true,
+      "vertexMaxDeltaMetres": 0.06092737994084807
+    }
+  },
+  "FlowerBed": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx",
+      "sha256": "77dfd48e9ef1a857ffb008e509a7235e8d7ba2949b661f655f05968e059617c4",
+      "metaSha256": "5c86ce317def239e1d2023ba2f73ff93109f56ad12f508cfd087d4c2c27687f0",
+      "meshes": [
+        {
+          "name": "DK_FlowerBed",
+          "vertices": 5201,
+          "triangles": 2718,
+          "bounds": [
+            [
+              -0.9933189749717712,
+              -0.30758389830589294,
+              -0.08697806298732758
+            ],
+            [
+              0.9872969388961792,
+              0.3098266124725342,
+              0.3743285834789276
+            ]
+          ],
+          "slots": [
+            "DK_Leaf_CoreShrub",
+            "DK_Leaf_Shrub",
+            "DK_Flower_Coral"
+          ],
+          "bySlot": [
+            158,
+            1440,
+            1120
+          ],
+          "geometryHash": "a39b34fad57d5d6a6d838b919e7db8285fbe3f76c08847dfdf79168ffc62524c"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_FlowerBed.fbx",
+      "sha256": "d604de5b82e2155d4611a7b31b42a1b37335f8b92a20fb8c8bd5faa34d1df199",
+      "metaSha256": "a989b334ab570cdaa5856b45ce40e911368dc0c8a113734e2b0bba0ff02ecc64",
+      "meshes": [
+        {
+          "name": "DK_FlowerBed",
+          "vertices": 5201,
+          "triangles": 2718,
+          "bounds": [
+            [
+              -0.9933189749717712,
+              -0.30758389830589294,
+              -1.9174326126858432e-08
+            ],
+            [
+              0.9872969388961792,
+              0.3098266124725342,
+              0.3743285834789276
+            ]
+          ],
+          "slots": [
+            "DK_Leaf_CoreShrub",
+            "DK_Leaf_Shrub",
+            "DK_Flower_Coral"
+          ],
+          "bySlot": [
+            158,
+            1440,
+            1120
+          ],
+          "geometryHash": "1fd5ab44c59704f0c1a6a4cb7daa7654a2ea372ec487a1256757c5f0a46abc67"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": false,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 200,
+      "onlyBelowGroundZClamping": true,
+      "vertexMaxDeltaMetres": 0.08697806320567683
+    }
+  },
+  "PottedFern": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedFern.fbx",
+      "sha256": "fbb057706ad1272ca1c1250c9d8dbcd144cecd2cdc81150128593456dc498b67",
+      "metaSha256": "9a32fde1544701567b415f7452dd8cf1f6def74aa6d3121fd8b74f104b6db83f",
+      "meshes": [
+        {
+          "name": "DK_PottedFern",
+          "vertices": 2709,
+          "triangles": 2020,
+          "bounds": [
+            [
+              -0.6595614552497864,
+              -0.6401508450508118,
+              -1.5099580252808664e-08
+            ],
+            [
+              0.6382822394371033,
+              0.5956316590309143,
+              1.0701780319213867
+            ]
+          ],
+          "slots": [
+            "DK_Enamel_Ivory",
+            "DK_Enamel_Seafoam",
+            "DK_Chrome",
+            "DK_Gold",
+            "DK_Soil",
+            "DK_Leaf_CoreShrub",
+            "DK_Leaf_PalmFeather"
+          ],
+          "bySlot": [
+            336,
+            192,
+            240,
+            144,
+            22,
+            30,
+            1056
+          ],
+          "geometryHash": "5b4cad6db55bc8caee8adc6fee77896bde90ee0a5c6086981d7c9b437ba317e7"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedFern.fbx",
+      "sha256": "7a288c391130a05b18fcfd5d2e184ace6e1354d6c1281867fe6120f198740f33",
+      "metaSha256": "464ada9ec7de603918091bf89c9e1bfbc3e3ebda0bad7979d4e6abb7e9307751",
+      "meshes": [
+        {
+          "name": "DK_PottedFern",
+          "vertices": 2709,
+          "triangles": 2020,
+          "bounds": [
+            [
+              -0.6595614552497864,
+              -0.6401508450508118,
+              -1.5099580252808664e-08
+            ],
+            [
+              0.6382822394371033,
+              0.5956316590309143,
+              1.0701780319213867
+            ]
+          ],
+          "slots": [
+            "DK_Enamel_Ivory",
+            "DK_Enamel_Seafoam",
+            "DK_Chrome",
+            "DK_Gold",
+            "DK_Soil",
+            "DK_Leaf_CoreShrub",
+            "DK_Leaf_PalmFeather"
+          ],
+          "bySlot": [
+            336,
+            192,
+            240,
+            144,
+            22,
+            30,
+            1056
+          ],
+          "geometryHash": "5b4cad6db55bc8caee8adc6fee77896bde90ee0a5c6086981d7c9b437ba317e7"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "PottedPalm_Small": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx",
+      "sha256": "31c5c6c4432a6566d332515b891a92f43fdccefac0509cf9f2436ebb29b850a3",
+      "metaSha256": "5e444f6c57c5607fb02572e87843cb3a5073326fa0a1a2712389f80b19e8ca46",
+      "meshes": [
+        {
+          "name": "DK_PottedPalm_Small",
+          "vertices": 2116,
+          "triangles": 2396,
+          "bounds": [
+            [
+              -0.7414331436157227,
+              -0.8149818181991577,
+              -1.094719515037923e-08
+            ],
+            [
+              0.7747354507446289,
+              0.8362222909927368,
+              1.7205605506896973
+            ]
+          ],
+          "slots": [
+            "DK_Chrome",
+            "DK_Gold",
+            "DK_Enamel_Mustard",
+            "DK_Enamel_Coral",
+            "DK_Enamel_Ivory",
+            "DK_Soil",
+            "DK_Bark_Fibre",
+            "DK_Petiole",
+            "DK_Leaf_PalmFan"
+          ],
+          "bySlot": [
+            120,
+            180,
+            216,
+            144,
+            240,
+            22,
+            386,
+            576,
+            512
+          ],
+          "geometryHash": "945e29e99a4b1e6901a9f67e99897baac594b4eb6b035c3a3415f84e86dc7a5e"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small.fbx",
+      "sha256": "68e9780a172f6bf2016f5b28b685dbcb0c9c3ffed032f5c9252308dfb1b83b62",
+      "metaSha256": "b1a019df5f76d8641cfb3ab6a98a8bbe55b74f098d32dc4c37134ac7cf889c53",
+      "meshes": [
+        {
+          "name": "DK_PottedPalm_Small",
+          "vertices": 2116,
+          "triangles": 2396,
+          "bounds": [
+            [
+              -0.7414331436157227,
+              -0.8149818181991577,
+              -1.094719515037923e-08
+            ],
+            [
+              0.7747354507446289,
+              0.8362222909927368,
+              1.7205605506896973
+            ]
+          ],
+          "slots": [
+            "DK_Chrome",
+            "DK_Gold",
+            "DK_Enamel_Mustard",
+            "DK_Enamel_Coral",
+            "DK_Enamel_Ivory",
+            "DK_Soil",
+            "DK_Bark_Fibre",
+            "DK_Petiole",
+            "DK_Leaf_PalmFan"
+          ],
+          "bySlot": [
+            120,
+            180,
+            216,
+            144,
+            240,
+            22,
+            386,
+            576,
+            512
+          ],
+          "geometryHash": "945e29e99a4b1e6901a9f67e99897baac594b4eb6b035c3a3415f84e86dc7a5e"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": false,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "PottedTopiary": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_PottedTopiary.fbx",
+      "sha256": "9a5cd8d31eeec665bfb7dfb025601e2829c3888a6287e890194ef3c5824fe6fc",
+      "metaSha256": "13c94513269be6cf20a7f149a324adcaa4ff5becc6d09dcd894e601085ab7b5c",
+      "meshes": [
+        {
+          "name": "DK_PottedTopiary",
+          "vertices": 5668,
+          "triangles": 4720,
+          "bounds": [
+            [
+              -0.44162556529045105,
+              -0.4197878837585449,
+              -2.1139411998660762e-08
+            ],
+            [
+              0.4453875422477722,
+              0.48003852367401123,
+              2.0006637573242188
+            ]
+          ],
+          "slots": [
+            "DK_Chrome",
+            "DK_Enamel_Ivory",
+            "DK_Enamel_Teal",
+            "DK_Soil",
+            "DK_Bark_Fibre",
+            "DK_Leaf_CoreConifer",
+            "DK_Leaf_CypressOlive",
+            "DK_Leaf_Cypress"
+          ],
+          "bySlot": [
+            768,
+            1056,
+            384,
+            156,
+            30,
+            222,
+            1784,
+            320
+          ],
+          "geometryHash": "d59a40c2a4bf98a4f47f0c385c5eae35c7add65c870a46e1c9cfa9d359874c47"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_PottedTopiary.fbx",
+      "sha256": "9a5cd8d31eeec665bfb7dfb025601e2829c3888a6287e890194ef3c5824fe6fc",
+      "metaSha256": "39353a3a6dc1c9bcdb3b3a3fd9d873af27b99c3e784739c43ff56a7b28380b87",
+      "meshes": [
+        {
+          "name": "DK_PottedTopiary",
+          "vertices": 5668,
+          "triangles": 4720,
+          "bounds": [
+            [
+              -0.44162556529045105,
+              -0.4197878837585449,
+              -2.1139411998660762e-08
+            ],
+            [
+              0.4453875422477722,
+              0.48003852367401123,
+              2.0006637573242188
+            ]
+          ],
+          "slots": [
+            "DK_Chrome",
+            "DK_Enamel_Ivory",
+            "DK_Enamel_Teal",
+            "DK_Soil",
+            "DK_Bark_Fibre",
+            "DK_Leaf_CoreConifer",
+            "DK_Leaf_CypressOlive",
+            "DK_Leaf_Cypress"
+          ],
+          "bySlot": [
+            768,
+            1056,
+            384,
+            156,
+            30,
+            222,
+            1784,
+            320
+          ],
+          "geometryHash": "d59a40c2a4bf98a4f47f0c385c5eae35c7add65c870a46e1c9cfa9d359874c47"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "TopiaryCone": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_TopiaryCone.fbx",
+      "sha256": "39ecc392ab23152d40438033268aacc0bb643894b736fb30bb22e02d574ff96b",
+      "metaSha256": "849d98d220af2034dfb12fdb86c6fc9187d009dcd2fd5b67b6eafa8ba96068f2",
+      "meshes": [
+        {
+          "name": "DK_TopiaryCone",
+          "vertices": 4594,
+          "triangles": 2484,
+          "bounds": [
+            [
+              -0.4720980226993561,
+              -0.4342414140701294,
+              -3.3974056901087124e-09
+            ],
+            [
+              0.4845179617404938,
+              0.4999302625656128,
+              1.7030442953109741
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Fibre",
+            "DK_Leaf_CoreConifer",
+            "DK_Leaf_CypressOlive",
+            "DK_Leaf_Cypress"
+          ],
+          "bySlot": [
+            30,
+            222,
+            1800,
+            432
+          ],
+          "geometryHash": "4d847c6a7dae9f3ab40576438337688e6e8e6366d6616a811cc3a37061eb41a4"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_TopiaryCone.fbx",
+      "sha256": "39ecc392ab23152d40438033268aacc0bb643894b736fb30bb22e02d574ff96b",
+      "metaSha256": "a167d0730316770c5a09cacdd3b07ec19eeac5ea2fe9f50f3eb55c97dfdd6963",
+      "meshes": [
+        {
+          "name": "DK_TopiaryCone",
+          "vertices": 4594,
+          "triangles": 2484,
+          "bounds": [
+            [
+              -0.4720980226993561,
+              -0.4342414140701294,
+              -3.3974056901087124e-09
+            ],
+            [
+              0.4845179617404938,
+              0.4999302625656128,
+              1.7030442953109741
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Fibre",
+            "DK_Leaf_CoreConifer",
+            "DK_Leaf_CypressOlive",
+            "DK_Leaf_Cypress"
+          ],
+          "bySlot": [
+            30,
+            222,
+            1800,
+            432
+          ],
+          "geometryHash": "4d847c6a7dae9f3ab40576438337688e6e8e6366d6616a811cc3a37061eb41a4"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "Cypress": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_Cypress.fbx",
+      "sha256": "5563b1a3f4956bf8c760e84266995ebcfd4342aaf02a1cdb4e7299abc8569e1d",
+      "metaSha256": "4035532038442ed9aad15bf5cb181b60a07718c66c1551900bd5a05a9c76147b",
+      "meshes": [
+        {
+          "name": "DK_Cypress",
+          "vertices": 9538,
+          "triangles": 5004,
+          "bounds": [
+            [
+              -0.7418251037597656,
+              -0.7467552423477173,
+              -5.2848529996651905e-09
+            ],
+            [
+              0.7772886157035828,
+              0.7611015439033508,
+              6.323747158050537
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Fibre",
+            "DK_Leaf_CoreConifer",
+            "DK_Leaf_CypressOlive",
+            "DK_Leaf_Cypress"
+          ],
+          "bySlot": [
+            30,
+            286,
+            4320,
+            368
+          ],
+          "geometryHash": "f10cc0a8a30e54ab454484dba2dd9c2b2d1704af66e46209b9b29bb2c1593f92"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_Cypress.fbx",
+      "sha256": "5563b1a3f4956bf8c760e84266995ebcfd4342aaf02a1cdb4e7299abc8569e1d",
+      "metaSha256": "bfa90d74c531cb8a90b0a6511f4863ab5a23c783af86a09bfe778365d7297271",
+      "meshes": [
+        {
+          "name": "DK_Cypress",
+          "vertices": 9538,
+          "triangles": 5004,
+          "bounds": [
+            [
+              -0.7418251037597656,
+              -0.7467552423477173,
+              -5.2848529996651905e-09
+            ],
+            [
+              0.7772886157035828,
+              0.7611015439033508,
+              6.323747158050537
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Fibre",
+            "DK_Leaf_CoreConifer",
+            "DK_Leaf_CypressOlive",
+            "DK_Leaf_Cypress"
+          ],
+          "bySlot": [
+            30,
+            286,
+            4320,
+            368
+          ],
+          "geometryHash": "f10cc0a8a30e54ab454484dba2dd9c2b2d1704af66e46209b9b29bb2c1593f92"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "FanPalm": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FanPalm.fbx",
+      "sha256": "7b81e5b97781cc14c09a48f89356918e770895f4bbfe9e3b737a878d3b0333a3",
+      "metaSha256": "a9dd5e2ce1ef66b4b3a3aba840676e0c6904a13b455248e6a0416c32023fbdb7",
+      "meshes": [
+        {
+          "name": "DK_FanPalm",
+          "vertices": 3961,
+          "triangles": 4194,
+          "bounds": [
+            [
+              -1.3164088726043701,
+              -1.3373323678970337,
+              -0.0001259999698959291
+            ],
+            [
+              1.523558259010315,
+              1.3362807035446167,
+              2.4832746982574463
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Fibre",
+            "DK_Petiole",
+            "DK_Leaf_PalmFan"
+          ],
+          "bySlot": [
+            1746,
+            1296,
+            1152
+          ],
+          "geometryHash": "f83a15cbec1a185100971d6328131b2ece1af6a055f5c7ce5e979dfab2eb78da"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_FanPalm.fbx",
+      "sha256": "7b81e5b97781cc14c09a48f89356918e770895f4bbfe9e3b737a878d3b0333a3",
+      "metaSha256": "d86393e69986d8fc527bbe24212feca69994126f5c72f6e72292d3c3395ddae2",
+      "meshes": [
+        {
+          "name": "DK_FanPalm",
+          "vertices": 3961,
+          "triangles": 4194,
+          "bounds": [
+            [
+              -1.3164088726043701,
+              -1.3373323678970337,
+              -0.0001259999698959291
+            ],
+            [
+              1.523558259010315,
+              1.3362807035446167,
+              2.4832746982574463
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Fibre",
+            "DK_Petiole",
+            "DK_Leaf_PalmFan"
+          ],
+          "bySlot": [
+            1746,
+            1296,
+            1152
+          ],
+          "geometryHash": "f83a15cbec1a185100971d6328131b2ece1af6a055f5c7ce5e979dfab2eb78da"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "CoconutPalm": {
+    "old": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_CoconutPalm.fbx",
+      "sha256": "176c68fb316683a4241813afb6941f131972eb1969809bc15587c536b6461ef0",
+      "metaSha256": "5473a48026599bb0388ed9635309ee53d6b5bc82155f98ee26a0fee7a33abc8d",
+      "meshes": [
+        {
+          "name": "DK_CoconutPalm",
+          "vertices": 4757,
+          "triangles": 6310,
+          "bounds": [
+            [
+              -2.3369832038879395,
+              -2.7311244010925293,
+              -0.011323274113237858
+            ],
+            [
+              3.6486546993255615,
+              3.275789737701416,
+              7.924042224884033
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Palm",
+            "DK_Bark_Fibre",
+            "DK_Coconut",
+            "DK_Leaf_PalmFeather"
+          ],
+          "bySlot": [
+            4436,
+            118,
+            700,
+            1056
+          ],
+          "geometryHash": "0d18c17871cc92e863a37806d4106f9b06862b516f1ccb67ba40e9cad860f3a3"
+        }
+      ]
+    },
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plants/DK_CoconutPalm.fbx",
+      "sha256": "176c68fb316683a4241813afb6941f131972eb1969809bc15587c536b6461ef0",
+      "metaSha256": "408627ddcb09255281facdfe62f15b056cf9e96b273cf2e7836d0c8dd518270a",
+      "meshes": [
+        {
+          "name": "DK_CoconutPalm",
+          "vertices": 4757,
+          "triangles": 6310,
+          "bounds": [
+            [
+              -2.3369832038879395,
+              -2.7311244010925293,
+              -0.011323274113237858
+            ],
+            [
+              3.6486546993255615,
+              3.275789737701416,
+              7.924042224884033
+            ]
+          ],
+          "slots": [
+            "DK_Bark_Palm",
+            "DK_Bark_Fibre",
+            "DK_Coconut",
+            "DK_Leaf_PalmFeather"
+          ],
+          "bySlot": [
+            4436,
+            118,
+            700,
+            1056
+          ],
+          "geometryHash": "0d18c17871cc92e863a37806d4106f9b06862b516f1ccb67ba40e9cad860f3a3"
+        }
+      ]
+    },
+    "comparison": {
+      "fbxBytesIdentical": true,
+      "polygonsMaterialsSmoothingExact": true,
+      "uvExact": true,
+      "cornerNormalsExact": true,
+      "sameVertexCount": true,
+      "changedVerticesAbove1Micrometre": 0,
+      "onlyBelowGroundZClamping": false,
+      "vertexMaxDeltaMetres": 0
+    }
+  },
+  "BedTuft_A": {
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plaza/DK_BedTuft_A.fbx",
+      "sha256": "a59a82ea5e6e369f8f910cf08af1d5678fcb06b8603eb21cf8106b8f9320c10d",
+      "metaSha256": "5da9b75f760bf02f488f8820f6d8a09341dbda3aa391d9cc1063ca199d1ef46a",
+      "meshes": [
+        {
+          "name": "DK_BedTuft_A",
+          "vertices": 64,
+          "triangles": 95,
+          "bounds": [
+            [
+              -0.3100000023841858,
+              -0.29482752084732056,
+              -2.2258859644352924e-08
+            ],
+            [
+              0.3100000023841858,
+              0.29482752084732056,
+              0.44661745429039
+            ]
+          ],
+          "slots": [
+            "DK_Leaf_Civic",
+            "DK_Bloom_Coral",
+            "DK_Bloom_Cream"
+          ],
+          "bySlot": [
+            50,
+            30,
+            15
+          ],
+          "geometryHash": "11b45cb86ea81cc6f13e11933aedbcca2251e5e2bd9f16e50636a89941515799"
+        }
+      ]
+    }
+  },
+  "PlanterRun_4_B": {
+    "current": {
+      "path": "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_B.fbx",
+      "sha256": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069",
+      "metaSha256": "6d4f431fd6394ab7907d4a1e6b5407f7f0f7c82c92fa2bfde6c3188e9c72134d",
+      "meshes": [
+        {
+          "name": "DK_PlanterRun_4_B",
+          "vertices": 434,
+          "triangles": 672,
+          "bounds": [
+            [
+              -2.1376352310180664,
+              -0.3399999439716339,
+              -2.3781838720537962e-08
+            ],
+            [
+              2.1635351181030273,
+              0.34000006318092346,
+              1.0615774393081665
+            ]
+          ],
+          "slots": [
+            "DK_Limestone",
+            "DK_Leaf_Civic",
+            "DK_Bloom_Peach",
+            "DK_Bloom_Flamingo",
+            "DK_Leaf_CivicDark"
+          ],
+          "bySlot": [
+            60,
+            232,
+            90,
+            90,
+            200
+          ],
+          "geometryHash": "bfe227a29bb2273e8d9d4efe7a33ba9048b1f5bfc64ac1c9ad5dff709a18bad5"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "Inez finds the stamped card under the Fixer's saucer while clearing tables; the price comes after the proof.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Why's a Bureau card under your saucer? That's my name on it."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Read the stamp, Inez. The rest of your loan is paid."
+        },
+        {
+          "speaker": "Inez",
+          "line": "All of it? Put it away, people look. What's it cost me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "A small thing. I telephone, you call Okafor over. About a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Why would he come? You've seen us. What happens to him?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing, if this goes right. He never sees us, and nobody hears."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Table six wants its bill. Trouble on the square, I'll warn you."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You're with us now. When I telephone, call him off that door."
+        }
+      ],
+      "learned": [
+        "Loan paid. Inez is with us."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "Inez already knows something's changed because the Bureau's collector passed her, and she tries to pay the Fixer back.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "The Bureau's collector walked past me. It never walks past me."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "It won't stop for you again. The rest of your loan's paid."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Take my tips, then. I don't like owing. What's it for?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Keep them. When I telephone, call Okafor over. About a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "He'd leave that door for... You know. What happens to him?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "If this goes right, nothing. He never sees us, Inez."
+        },
+        {
+          "speaker": "Inez",
+          "line": "If. All right. If trouble comes across the square, I'll warn you."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "So you're with us. I telephone, you call him off the door."
+        }
+      ],
+      "learned": [
+        "Inez calls Okafor when we say."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "The Fixer opens and the paid card arrives by tube; Inez says yes too fast, the Fixer makes her hear it, and she closes the deal.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "Leave the cups, Inez. Your Bureau card's come down the tube."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Stamped paid. The whole loan? Yes. Whatever it is, yes. Not here."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Hear it first. When I telephone, call Okafor over from his door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Why would I call... Oh. Who told you? Who else knows?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Only us, and it stops with us. He'd stay about a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "What happens to him, then? He's never missed a shift."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing, if this goes right. He never sees us. You're with us?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "Yes. I call him off. Trouble on the square, I'll warn you."
+        }
+      ],
+      "learned": [
+        "Inez is with us, and watching."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

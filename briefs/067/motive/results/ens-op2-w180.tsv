@@ -1,0 +1,18 @@
+# ens op2-w180 · RB=op-run-speed-cm-s=360 run-alert=0 carry-untrained-cm-s=90 · PROBE_RUNCLOCK=2 PROBE_OPWALK=180
+plan	k	outcome	fail	end	T	A	St	vale-in	spring	composed
+rgk-h3	0	none		8:30.0	2	1	2	-	5:12.2	no: step 19 (enforcer move): not taken between 2820 and 5100
+rgk-h3	1	none		8:30.0	2	1	2	-	5:12.2	no: step 19 (enforcer move): not taken between 2820 and 5100
+rgk-h3	4	none		8:30.0	2	1	2	-	5:14.2	no: step 19 (enforcer move): not taken between 2840 and 5100
+rgk-h3	3	none		8:30.0	2	1	2	-	5:13.7	no: step 19 (enforcer move): not taken between 2835 and 5100
+rgk-h3	2	none		8:30.0	2	1	2	-	5:13.4	no: step 19 (enforcer move): not taken between 2832 and 5100
+rgk-h3	5	none		8:30.0	2	1	2	-	5:13.6	no: step 19 (enforcer move): not taken between 2834 and 5100
+rad-h3	1	success		4:57.2	6	1	3	4:57.2	4:01.5	yes
+rad-h3	0	success		4:56.8	6	1	3	4:56.8	4:01.1	yes
+rad-h3	2	success		5:11.3	6	1	3	5:11.3	4:02.3	yes
+rad-h3	3	success		4:57.0	6	1	3	4:57.0	4:01.3	yes
+rgk-h3	7	none		8:30.0	2	1	2	-	5:13.1	no: step 19 (enforcer move): not taken between 2829 and 5100
+rgk-h3	6	none		8:30.0	2	1	2	-	5:13.3	no: step 19 (enforcer move): not taken between 2831 and 5100
+rad-h3	4	success		4:57.1	6	1	3	4:57.1	4:01.4	yes
+rad-h3	5	success		5:11.3	6	1	3	5:11.3	4:02.3	yes
+rad-h3	6	success		4:57.0	6	1	3	4:57.0	4:01.3	yes
+rad-h3	7	success		5:11.8	6	1	3	5:11.8	4:02.8	yes

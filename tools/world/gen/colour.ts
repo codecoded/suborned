@@ -13,12 +13,17 @@ import { type Ctx, r3, r4, rng } from './common';
 import { edgeN, pointInRing } from './geo';
 import { isStreetClass } from './grammar';
 import { type Bld, floorTop } from './masses';
+import { SHOP_PIECE } from './faces';
 import type { BaseSkin } from './skins';
 
-/** §2 accent roles and weights (look.json surfaces); gold is the trim on every building, never its accent. */
-export const ACCENT_ROLES: [string, number][] = [['accent_teal', 35], ['accent_coral', 20], ['accent_turquoise', 15], ['accent_mint', 10], ['accent_flamingo', 10], ['accent_peach', 10]];
+/** §2 accent roles and weights (look.json surfaces); gold is the trim on every building, never its accent. Brief 072-G (Sky, 2026-10-27: "more reds / blues allowed as well"):
+ *  enamel red, royal and cobalt join (reds coral + red + flamingo 36, blues royal + cobalt + turquoise 30, teal 24, mint and peach 10); was teal 35, coral 20, turquoise 15, mint 10, flamingo 10, peach 10.
+ *  Brief 072, second push (Sky, 2026-10-28: "yeah, I more colors needed"): tangerine, plum, cerulean, jade (teal-green) and lime join, so 14 roles share the district and
+ *  neighbours (skins.ts `fresh`) draw from a wider set: reds 27 + tangerine 9, blues 22 + cerulean 7, teal 13, plum 6, greens (mint, jade, lime) 13, peach 3. */
+export const ACCENT_ROLES: [string, number][] = [['accent_teal', 13], ['accent_coral', 12], ['accent_red', 9], ['accent_royal', 9], ['accent_tangerine', 9], ['accent_turquoise', 7], ['accent_cerulean', 7],
+  ['accent_cobalt', 6], ['accent_flamingo', 6], ['accent_plum', 6], ['accent_mint', 5], ['accent_jade', 5], ['accent_peach', 3], ['accent_lime', 3]];
 export const GOLD = 'accent_gold', CANVAS = 'canvas';
-/** Fabric never takes the cone red; these are the only fabric colours (accent roles + canvas). */
+/** The only fabric colours (accent roles + canvas). Red is free for the world since 2026-10-16 (signals draw unlit with their own cue), so the accent red is fabric too. */
 export const FABRIC_SURFACES = new Set([...ACCENT_ROLES.map(r => r[0]), GOLD, CANVAS]);
 
 export const COLOUR = {
@@ -33,10 +38,10 @@ export const COLOUR = {
   /** §2a item 3a (Vela, round 3 wrap-up): a w x h accent panel behind every porthole, centred on it, its chrome ring proud of it; the porthole centre is the
    *  storey's sill-to-head midpoint (row + 1.75), under an eave at most `d/2 + ring + 0.1` below the top (ProcSkin.Overlay). */
   portholePanel: { w: 1.5, h: 1.5 },
-  fin: { w: 1.2, d: 0.6, bead: 0.08, roles: ['accent_coral', 'accent_teal'] as const, minH: 3 },
+  fin: { w: 1.2, d: 0.6, bead: 0.08, roles: ['accent_coral', 'accent_teal', 'accent_red', 'accent_royal', 'accent_tangerine', 'accent_plum', 'accent_cerulean', 'accent_jade'] as const, minH: 3 },
   awning: { w: 2.4, d: 0.9, fall: 0.45, valance: 0.3, stripe: 0.4, share: 1 / 3, every: 2, at: 3.25 }, // `at`: back edge above the storey floor (head 2.6)
   banner: { w: 1.2, h: 6, border: 0.12, arm: 0.6, cornerShare: 1 / 3, over: 0.4 }, // `over`: bottom this far above the deck line
-  flag: { h: 8, pennant: [1.2, 1.8] as [number, number], pitch: 9, roles: ['accent_coral', 'accent_teal', 'accent_gold', 'accent_flamingo'], r: 0.25 },
+  flag: { h: 8, pennant: [1.2, 1.8] as [number, number], pitch: 9, roles: ['accent_coral', 'accent_teal', 'accent_gold', 'accent_flamingo', 'accent_red', 'accent_royal', 'accent_tangerine', 'accent_cerulean', 'accent_lime', 'accent_plum'], r: 0.25 },
 };
 
 type Span = [number, number];
@@ -81,6 +86,7 @@ const PP = COLOUR.portholePanel;
 export type ColourOut = { skins: Skin[]; awnings: Awning[]; banners: Banner[] };
 
 export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSkin[], facades: Facade[], frontages: Frontage[]): ColourOut {
+  const shopIds = new Set(facades.filter(f => SHOP_PIECE.test(f.kit.id)).map(f => f.id));
   const B = ctx.B, pav = ctx.pav, C = COLOUR, zone1 = pav + floorTop(B, C.zoneStoreys), deck = pav + floorTop(B, 2);
   const byB = new Map<string, Mass[]>(), facB = new Map<string, Facade[]>(), frB = new Map<string, Frontage[]>(), bld = new Map(blds.map(b => [b.id, b]));
   for (const m of masses) { const id = m.id.slice(0, m.id.lastIndexOf('/')); (byB.get(id) ?? byB.set(id, []).get(id)!).push(m); }
@@ -92,16 +98,20 @@ export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSki
     const massOf = new Map(ms.map(m => [m.id, m])), fac = facB.get(b.id) ?? [], r = rng(`colour/${b.id}`);
     const accent2 = r.weighted(ACCENT_ROLES.filter(x => x[0] !== sk.accent), x => x[1])[0];
     let piers = r.chance(C.faience.piersShare), spandrel = r.chance(C.spandrel.share);
-    const resi = b.use === 'residential' && r.chance(C.awning.share), finRole = C.fin.roles[r.int(0, 1)]!;
+    const resi = b.use === 'residential' && r.chance(C.awning.share), finRole = C.fin.roles[r.int(0, C.fin.roles.length - 1)]!;
     const street = sk.faces.filter(f => /[RPB]/.test(f.bays));
     // per face: its kit spans, the procedural length, the zone height it carries (lower storeys) and its whole height
     const fx = street.map(f => { const m = massOf.get(f.mass)!, L = dist(f.a, f.b), sp = kitSpans(f.a, f.b, fac), Lp = Math.max(0, L - coverLen(sp)), top = m.base + m.height;
       return { f, m, L, sp, Lp, hz: overlapZ(m.base, top, pav, zone1), hw: overlapZ(m.base, top, pav, top), ground: m.base < 1 }; });
-    // shopfront metres per face (street frontages of this building not under a kit facade, on the face's line)
+    // shopfront metres per face: the street frontages of this building not under a kit facade, on the face's line, counted only over the face's procedural spans
+    // (Vela, brief 066: a shop that runs on behind a kit bay has its bulkhead hidden there with the wall; counting its whole width put the short procedural
+    // remnant of boulevard-west/0, 3 storeys under the cap, at 0.38 of accent)
     const shopW = (f: SkinFace, sp: Span[]) => {
-      const u = norm(sub(f.b, f.a)); let w = 0;
+      const u = norm(sub(f.b, f.a)), L = dist(f.a, f.b); let w = 0;
       for (const t of frB.get(b.id) ?? []) { if (t.facade || t.lobby) continue; const mid: V = [(t.a[0] + t.b[0]) / 2, (t.a[1] + t.b[1]) / 2], s = dot(sub(mid, f.a), u);
-        if (Math.abs(cross(u, sub(mid, f.a))) < 1.2 && s > 0 && s < dist(f.a, f.b) && !covered(sp, s)) w += t.w; }
+        if (!(Math.abs(cross(u, sub(mid, f.a))) < 1.2 && s > 0 && s < L && !covered(sp, s))) continue;
+        const s0 = Math.max(0, Math.min(dot(sub(t.a, f.a), u), dot(sub(t.b, f.a), u))), s1 = Math.min(L, Math.max(dot(sub(t.a, f.a), u), dot(sub(t.b, f.a), u)));
+        w += Math.max(0, s1 - s0 - sp.reduce((n, [a, c]) => n + overlapZ(a, c, s0, s1), 0)); }
       return w;
     };
     // fins: corners of the building line (convex, both edges street, not a kit corner) and lobby entrances
@@ -116,7 +126,7 @@ export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSki
       corners.push({ at: w, n, i });
       fins.push({ id: `${b.id}/fin/corner-${i}`, kind: 'corner', at: [r3(w[0]), r3(w[1])], normal: [r4(n[0]), r4(n[1])], w: C.fin.w, d: C.fin.d, z0: r3(pav + C.faience.plinth), z1: r3(z1), surface: finRole, bead: { surface: GOLD, w: C.fin.bead } });
     }
-    const lobbies = (frB.get(b.id) ?? []).filter(t => t.lobby && !t.facade);
+    const lobbies = (frB.get(b.id) ?? []).filter(t => t.lobby && (!t.facade || shopIds.has(t.facade))); // brief 072 pass 2: a lobby on a shop filler keeps its fin and banner (the filler is a wall module, not a street bay's front)
     for (const t of lobbies) {
       const mid: V = [(t.a[0] + t.b[0]) / 2, (t.a[1] + t.b[1]) / 2], n = t.normal, w = wallAt(mid, n, ground.ring), z1 = topAt([w[0] - n[0] * 0.5, w[1] - n[1] * 0.5], ms), z0 = t.canopy.base + t.canopy.size[2] + 0.3;
       if (z1 - z0 < C.fin.minH) continue;

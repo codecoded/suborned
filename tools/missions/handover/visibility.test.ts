@@ -30,9 +30,9 @@ describe('V-1 from each point\'s own heading', () => {
     expect(Mission.safeParse(m).success).toBe(false);
   });
 
-  test('points with no heading read at yaw 30: 48 rows (service-bay added 2026-10-19), and the Office front (door option b, west face) is seen without a turn', () => {
+  test('points with no heading read at yaw 30: 65 rows (service-bay added 2026-10-19; brief 059\'s 13 points, then Pulse\'s 4 rival points, 2026-10-25), and the Office front (door option b, west face) is seen without a turn', () => {
     const r = rows(bare()), bad = r.filter(x => x.seen < 0.5).map(x => x.what);
-    expect(r.length).toBe(48);
+    expect(r.length).toBe(65);
     expect(r.every(x => x.yaw === 30)).toBe(true);
     expect(bad).toContain('Behind café'); // the one hiding place: unwatched on purpose
     for (const n of FRONT.names) expect(r.find(x => x.what === n)?.seen, `${n} at yaw 30`).toBeGreaterThanOrEqual(0.5); // a regression here means the door's front is hidden again
@@ -41,10 +41,10 @@ describe('V-1 from each point\'s own heading', () => {
 
   test('the file as declared: V-1 passes with the one hiding place, Behind café, declared on purpose', () => {
     const r = rows(structuredClone(file)), c = v1(r), cone = r.find(x => x.what === 'camera entrance cone')!;
-    expect(r.length).toBe(48);
+    expect(r.length).toBe(65);
     expect(r.filter(x => x.seen < 0.5).map(x => x.what)).toEqual(['Behind café']);
     expect(c.ok).toBe(true);
-    expect(c.value).toContain('47/48 (+1 hidden by design)');
+    expect(c.value).toContain('64/65 (+1 hidden by design)'); // brief 059 (2026-10-25): the yard stand and its nine posts read at 210, the rival drop, lookout and entry at 30; the rival routine's tail stop and Vale's-door place at 210 (the yard), the front stop at 210 (the Office front), the lookout's exit at 30
     expect(cone.seen).toBeGreaterThanOrEqual(0.85);
     expect(file.destinations.filter((x: any) => x.hidden).map((x: any) => x.name)).toEqual(['Behind café']);
     expect(file.points.filter((x: any) => x.hidden)).toEqual([]);

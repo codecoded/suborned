@@ -1,0 +1,95 @@
+077 adoption, Unity side · Latch (Opus 5.5) · 2026-10-30
+Status: DONE (parts 1-3). HarbourDistrict.unity and OldTown.unity are rebuilt from the adopted export (world b4c86267...), shot by day and night and checked. Evidence: briefs/077/build/index.html, numbers-day.json, numbers-night.json.
+
+1. KitLods (done)
+- KitPlacer reads three catalogue fields per adopted row:
+  lodSize (number), objects[] ({name, shadows: on|off}; anything else is rejected) and a declared lodAtPlay (bool).
+  Accessors: LodSizeOf(id), ObjectsOf(id), AtPlay(id), AtPlayPrefab(builtPath).
+- KitLods.Build passes each row's lodSize and objects to Lod():
+  - objects[].shadows off sets that LOD0 part's renderers to ShadowCastingMode.Off. Each LOD level copies its LOD0 part's mode, so the soil is off at every level. An object name with no LOD0 part is rejected.
+  - lodSize replaces the bounds size for the small-piece test and the cull. It's set as LODGroup.size after SetLODs and RecalculateBounds, because both reset it.
+  - Three levels beyond L0 already worked (Lod loops every row LOD); a test now holds it.
+- PlayZoomGuard(root, atPlay): groups whose row declares lodAtPlay are counted (KitLods.AtPlayExempt) and never fail. Every other group is checked as before.
+  HarbourWorldBuilder keys it on the catalogue field through the instance's built prefab: placer.AtPlayPrefab(GetPrefabAssetPathOfNearestInstanceRoot(g)). Never by id. The build log prints the exempt and shadows-off counts.
+- No change for today's kit: none of the 383 adopted rows carries lodSize, objects or lodAtPlay.
+- Tests: unity/Assets/Suborned/Tests/Editor/KitLods077Tests.cs (5 EditMode tests), run by Run077Tests.Run (synchronous TestRunnerApi, because unityrun.ts passes -quit).
+  Before (seam in place, today's behaviour): 4 failed, 1 passed (the three levels).
+    LodSizeIsTheGroupsSize: size was 10, not 4.
+    SoilCastsNoShadowAtAnyLevel: level 0 soil was On.
+    TheCatalogueFieldsAreRead: lodSize was 0.
+    TheGuardExemptsDeclaredRowsOnly: the guard threw at 14.4 m.
+  After: 5 passed.
+  Results: out/scratch/latch/077build/tests-before.jsonl and tests-after.jsonl.
+
+Handoff to Splice (agree the field)
+- The exemption field is `lodAtPlay: true` on the catalogue row: "this row's own LODs switch at play zoom by design".
+- Emit it on the 27 out/decokit-077 rows: every planting row, the _TB rebuilds and the companions. GlobeLamp_TB has no LODs, so it doesn't need it.
+  Vela's manifest rows carry lodRule; extra.ts can pass lodAtPlay through from the manifest, or Vela can add it there.
+- It also needs a line in kit.schema.ts (KitAsset.lodAtPlay?: boolean).
+- Until it's there, adopting the rows fails the play-zoom guard (civic-layer groups with L1 nearer than 36 m), which is correct.
+- objects[] and lodSize are already emitted and read.
+
+2. The real build (done)
+Chain (each through unityrun.ts, exit 0):
+- bun run guard bun run geometry: the walk file out/world/harbour-district.walk.json for world b4c86267 (PlayInstall refuses a walk file from another world). Only out/ is written.
+- HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -> HarbourDistrict.unity in 27 s.
+  - kit check 0 problems; 390 prefabs;
+  - play-zoom guard exempts 27 lodAtPlay groups, the building layers' nearest L1 is 45 m;
+  - 22 soil LOD0 renderers shadows off;
+  - night: lamps 284 incl. globe 4, glow DK_Opal_TB on 4 renderers.
+- OldTownSwap.Build -swapHeights rule -swapHq ours -swapOurs Assets/Scenes/HarbourDistrict.unity -swapWorld out/world/harbour-district.world.json -swapScene OldTown -> OldTown.unity in 187 s.
+- PlantingBuild077.Day (OldTown.unity), PlantingBuild077.Night (HarbourDistrict.unity); nothing saved.
+
+Fixes needed on the way (mine, Unity side):
+- FacadeKit.Civic: a row that declares lodAtPlay is placed as an instance, not baked.
+  Baked civic pieces join the batches at LOD0, which would have drawn every rebuild at its inspection level, against Sky's "LoDs at game play".
+  Now all 24 planting groups draw their gameplay level at play zoom (PlanterArc L2, the rest L3).
+- KitLods.ObjectShadows: a single-object FBX imports as one renderer named after the file (DK_CafeTerrace_TB, not the row's DK_CafeTerrace), so a one-object row binds it; an unmatched shadows-on object is skipped; an unmatched shadows-off object still rejects. New test ASingleObjectPieceIsItsOnlyRenderer; 7 of 7 pass.
+- CivicRestyle.Prepare(world, look, placer.ReplacesOf): a rebuild takes the restyle bindings of the piece it replaces (kit.json replaces: RecordsTower_TB -> RecordsTower...), whose stone slots it keeps by name. KitPlacer.ReplacesOf.
+- Kit (git-ignored): Prefabs/Generated/DK_PottedTopiary_Play.prefab was stale. It pointed at an old Models/Plaza FBX whose slots were the pruned dome materials, and KitImport never rebuilds an existing generated prefab. Moved to out/scratch/latch/077build/stale/ and regenerated from the catalogued Models/Plants FBX. It was the only stale one of 209.
+- PlantingSwap077.Capture is retired (it needs the pruned dome prefabs); -plantProbe on keeps it runnable for the record. PlantingBuild077 replaces it.
+
+The domes are gone by construction:
+- no rejected dome id (20) is placed in the export, and no Built prefab is left for one;
+- our civic block (every renderer under the swap's "Ours .../HarbourDistrict/civic") holds 0 triangles in the pruned dome materials (DK_Leaf_Civic, DK_Leaf_CivicDark, DK_Bloom_*, DK_GroundCover), and 0 missing materials.
+- DK_Leaf_Shrub / DK_Leaf_CoreShrub / DK_Flower_Coral (the old fountain beds' slots) remain only on the café's two HangingBasket overlays from Vela's civic restyle, 622 triangles each, which share them. They aren't dome pieces.
+
+Counts at the play stops (After072's estimate; before = the 075 swap with domes, probe = probe-planting077, build = the rebuilt swap):
+  cafe-square y030  SetPass 54 / 58 / 54   draws 698 / 753 / 699   shadow draws 1125 / 1206 / 1117   tris 714,814 / 726,415 / 753,746
+  cafe-square y210  SetPass 54 / 58 / 57   draws 601 / 659 / 605   shadow draws 842 / 928 / 815      tris 717,522 / 738,079 / 765,380
+  office-front y030 SetPass 47 / 51 / 47   draws 378 / 402 / 371   shadow draws 434 / 453 / 414      tris 566,562 / 612,077 / 637,479
+  office-front y210 SetPass 48 / 52 / 48   draws 295 / 319 / 291   shadow draws 311 / 332 / 285      tris 562,070 / 607,585 / 643,666
+  The build carries the world's other changes since the 075 swap (world f469704e -> b4c86267: the civic paving and 075 recovery work), so build minus before isn't the planting alone.
+  Draws and SetPass are back at today's: the domes' own materials and batches left with them.
+  Redline measures on the Air.
+
+Look: the 10 day views match the probe's planting (troughs, islands, beds, crown and café roof). The paving is the new civic paving.
+
+3. Night (done)
+- NightPhase spawns light.json's new "globe" kind: one point light per world.Civic GlobeLamp_TB, named globe/<mass id>.
+  It sits at (Kit.At, Kit.Base + 2.31 m), #fff1d8 (night.lampGlobe), intensity 7, range 5.8, no shadows. It's off by day and lit at night under LightPhase's live cap, like the other lamps.
+- Opal glow: an absolute-level path, not roadlight.json, whose 0..10 multiplier cap the 0.06 -> 2.5 jump (x41.7) would break.
+  - LightPhase.Glow {material, colour, day, evening, night} and ApplyGlows(phase), called from Set and SetEvening: _EmissionColor = colour x level, alpha = level.
+  - NightPhase reads night.emissive.pieces[] that name a `material` (GlobeLamp_TB -> DK_Opal_TB, key globeOpal: night 2.5, dayResidual 0.06, evening falls back to the day level).
+  - Every renderer in the scene drawing DK_Opal_TB (the kit instances and the batches a baked piece joins) gets one scene-owned copy, <scene>-glow-DK_Opal_TB.mat, written at the day level. The Kit .mat is never driven.
+- Today's builds are unchanged: there's no GlobeLamp_TB placement and no DK_Opal_TB renderer until adoption (NightPhase logs "nothing in the scene draws it").
+- Captured in HarbourDistrict only (the swap has no night of its own; Glint). The 10 views, day and night.
+  - The 4 globe lamps stand at 2.96 m (base 0.65 + 2.31).
+  - The live cap lights 28 lamps at the café square and the troughs, with all 4 globes lit; 14 at the Office front, with 2 globes lit.
+  - The opal reads as a lit globe over each lamp's pool.
+- Test: LightPhaseGlow077Tests.GlobeOpalAtItsAbsoluteLevels (night 2.5, evening 0.06, day 0.06, the hue kept). It passes.
+
+4. Gloss and the probe opal (done)
+- PlantingSwap077.Mats: the botanical mask k is 0.80 / 0.80 (leaves and petals; was 0.49 / 0.64), per Glint.
+  Re-run: out/decokit-077/Textures/botanical-mask-v2.png sha256 599ee46f... -> 60e8924e... (kit GUID unchanged: 606f648142a5e80fe625cfc78afe822c).
+- DK_Opal_TB is now written with realtime-emissive GI flags (m_LightmapFlags 1) and _EMISSION; .mat sha256 0d510dd1... -> 1676a5be....
+- The probe's opal copy lost _EMISSION on re-import; PlantingSwap077.Capture now asserts the keyword and the flags before it uses it.
+- Splice: re-run `bun run kit --catalogue --extra out/decokit-077` to pick up the new mask and opal .mat shas.
+
+Tests: 6 of 6 pass (out/scratch/latch/077build/tests-glow.jsonl).
+
+Commands (run, exit 0 except the planned before run)
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.OldTown.Editor.Swap.PlantingSwap077.Mats   (gloss 0.80, opal flags)
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.Play.Tests.Run077Tests.Run -testOut out/scratch/latch/077build/tests-glow.jsonl  (6 pass)
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.Play.Tests.Run077Tests.Run -testOut out/scratch/latch/077build/tests-before.jsonl   (4 fail / 1 pass, by design)
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.Play.Tests.Run077Tests.Run -testOut out/scratch/latch/077build/tests-after.jsonl    (5 pass)

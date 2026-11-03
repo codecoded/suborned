@@ -1,0 +1,13 @@
+{
+ "strictBedMisses":0,
+ "strictRailMisses":0,
+ "strictMisses":[],
+ "strictPredicate":"Adaptive double / exact BigInteger orientation on actual float triangles; zero geometric expansion",
+ "bedQueries":11088,
+ "bedOnlyMisses":0,
+ "bedMisses":[],
+ "railQueries":22176,
+ "railProfileFailures":0,
+ "maximumSourceProfileDelta":1.6947859635065184E-06,
+ "railFailures":[]
+}

@@ -308,7 +308,23 @@ ModelImporter:
 """
 
 
-def model_meta(rel, materials=None, avatar_source_guid=None):
+def _avatar(text, avatar):
+    """Write a Humanoid avatar into the importer (brief 069, Latch's foot and bow-leg fix; tools/figures/avatar.py makes it).
+    avatar: {'human': text, 'skeleton': text, 'source': None | guid of the FBX whose avatar is copied}.
+    Own avatar (source None): the human map and the neutral-leg rest, with auto-mapping off so Unity keeps them (Latch's tpose-probe).
+    Copied (source set): Copy From Other Avatar (avatarSetup 2) from that file's avatar (fileID 9000000), with its description copied in, as Unity writes it."""
+    if not avatar: return text
+    out = text.replace("    human: []\n    skeleton: []\n", "    human:\n" + avatar['human'] + "    skeleton:\n" + avatar['skeleton'], 1)
+    if avatar.get('source'):
+        out = out.replace("  lastHumanDescriptionAvatarSource: {instanceID: 0}\n", f"  lastHumanDescriptionAvatarSource: {{fileID: 9000000, guid: {avatar['source']}, type: 3}}\n", 1)
+        out = out.replace("  avatarSetup: 1\n", "  avatarSetup: 2\n", 1)
+    else:
+        out = out.replace("  autoGenerateAvatarMappingIfUnspecified: 1\n", "  autoGenerateAvatarMappingIfUnspecified: 0\n", 1)
+    assert out != text and out.count("avatarSetup:") == 1
+    return out
+
+
+def model_meta(rel, materials=None, avatar_source_guid=None, avatar=None):
     """A figure FBX: Humanoid, avatar made from this model, no animation, materials bound by name to the given {name: mat-rel}."""
     ext = ""
     for n, r in sorted((materials or {}).items()):
@@ -317,12 +333,29 @@ def model_meta(rel, materials=None, avatar_source_guid=None):
     externals = ext if ext else ""
     text = _MODEL_HEAD.format(guid=guid(rel), externals=externals, clips=" []", import_anim=0, avatar_setup=1)
     if not externals: text = text.replace("  externalObjects:\n  materials:", "  externalObjects: {}\n  materials:")
-    return text
+    return _avatar(text, avatar)
 
 
-def clip_meta(rel, name, take, first, last, loop, feet=False):
-    """A clip-only FBX (Mixamo library file): Humanoid, its own avatar, one clip `name` from take `take`, looping or not."""
+def bakes_xz(c):
+    """Root Transform Position (XZ) Bake Into Pose for a clips.json entry: every clip that stays in place. Not locomotion (`loco`: the sim moves the object and
+    the treadmill legs are timed to it) and not a one-shot whose body ends somewhere else (`travelsM`, measured: the falls and staggers; baked, the body would
+    end that far from the object and jump back on the next clip). Held by tools/figures/sway.test.ts."""
+    return not c.get('loco', False) and not c.get('travelsM')
+
+
+def clip_meta(rel, name, take, first, last, loop, feet=False, bake_xz=True, additive_ref=None, avatar=None, preserve_hierarchy=False):
+    """A clip-only FBX (Mixamo library file): Humanoid, its own avatar, one clip `name` from take `take`, looping or not.
+    bake_xz: Root Transform Position (XZ) Bake Into Pose, based on Original. The figures play with applyRootMotion off, so an unbaked clip has its root's
+    sideways travel stripped: the body's centre is held still and the planted feet slide (Sky on 0.2.122, idles sliding left and right; Breathing_Idle
+    shifts the hips 18.8 cm). Every clip that stays in place bakes it (the hips sway, the feet stay put); locomotion (clips.json `loco`) and the one-shots
+    that travel (`travelsM`) do not: bakes_xz above (brief 067, briefs/067/forma-sway.md).
+    additive_ref: for a clip played on an additive layer (clips.json `additive`), the take's frame used as its Additive Reference Pose (brief 039: the authored
+    flinch_add, kick_add, pin_peek_add hold their reference at frame 0, so they add only their turns); None = the clip's own first frame, as before.
+    avatar: see _avatar (brief 069: every clip copies the one neutral-leg reference avatar, clips.json `avatar`).
+    preserve_hierarchy: Preserve Hierarchy on. Unity folds a file's lone root node into the prefab root; for a clip authored in Blender that root is
+    `Armature` above mixamorig:Hips, and a written avatar that names it then fails ("Parent for 'mixamorig:Hips' differs", Latch, brief 069 A)."""
     lp = 1 if loop else 0
+    xz = 1 if bake_xz else 0
     body = f"""
     - serializedVersion: 19
       name: {name}
@@ -335,12 +368,12 @@ def clip_meta(rel, name, take, first, last, loop, feet=False):
       level: 0
       cycleOffset: 0
       loop: 0
-      hasAdditiveReferencePose: 0
+      hasAdditiveReferencePose: {{has_ref}}
       loopTime: {lp}
       loopBlend: {lp}
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: {xz}
       keepOriginalOrientation: 1
       keepOriginalPositionY: {{orig_y}}
       keepOriginalPositionXZ: 1
@@ -352,9 +385,13 @@ def clip_meta(rel, name, take, first, last, loop, feet=False):
       transformMask: []
       maskType: 3
       maskSource: {{instanceID: 0}}
-      additiveReferencePoseFrame: 0"""
+      additiveReferencePoseFrame: {{ref_frame}}"""
     body = body.replace('{orig_y}', '0' if feet else '1').replace('{from_feet}', '1' if feet else '0')
-    return _MODEL_HEAD.format(guid=guid(rel), externals="", clips=body, import_anim=1, avatar_setup=1).replace("  externalObjects:\n  materials:", "  externalObjects: {}\n  materials:")
+    body = body.replace('{has_ref}', '0' if additive_ref is None else '1').replace('{ref_frame}', '0' if additive_ref is None else _f(additive_ref))
+    text = _avatar(_MODEL_HEAD.format(guid=guid(rel), externals="", clips=body, import_anim=1, avatar_setup=1).replace("  externalObjects:\n  materials:", "  externalObjects: {}\n  materials:"), avatar)
+    if preserve_hierarchy:
+        assert text.count("    preserveHierarchy: 0\n") == 1; text = text.replace("    preserveHierarchy: 0\n", "    preserveHierarchy: 1\n")
+    return text
 
 
 def prop_meta(rel, materials=None):

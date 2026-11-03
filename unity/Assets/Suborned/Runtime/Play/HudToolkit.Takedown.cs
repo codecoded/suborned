@@ -16,7 +16,7 @@ namespace Suborned.Play
         VisualElement wayRow, wayKnock, wayKill, before, marks, respPill, respList; Label respLine; readonly List<(VisualElement row, VisualElement icon, Label text)> beforeRows = new();
         readonly List<(VisualElement row, VisualElement icon, Label label, Label text)> respRows = new();
 
-        sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
+        sealed class Mark { public VisualElement Root, Plate, Glyph, Second, Tape, Leader; public Label Text; public bool Tight; public readonly List<VisualElement> Ring = new(), Outer = new(), Dots = new(), Pips = new(); }
         readonly List<Mark> bodyMarks = new(), stashMarks = new(), doorMarks = new(), reportMarks = new(), unitMarks = new(), edgeMarks = new(), headMarks = new();
 
         // ---------------------------------------------------------------- build
@@ -113,14 +113,17 @@ namespace Suborned.Play
             foreach (var b in m.Bodies)
             {
                 if (!Proj(b.World, out var p)) continue;
-                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "s-disc_dark_24", 44, 44); k.Plate.style.left = 10; k.Plate.style.top = 10; k.Plate.style.width = 24; k.Plate.style.height = 24; k.Glyph.style.left = 4; k.Glyph.style.top = 4; Ring(k, 16, 22, 22, 15, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "s-disc_dark_24", 30, 0, 16, 16); Icon(E(k.Second, null, 3, 3, 10, 10), "restrain", Cream); }
+                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "s-disc_dark_24", 44, 44); k.Plate.style.left = 10; k.Plate.style.top = 10; k.Plate.style.width = 24; k.Plate.style.height = 24; k.Glyph.style.left = 4; k.Glyph.style.top = 4; Ring(k, 16, 22, 22, 15, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "s-disc_dark_24", 30, 0, 16, 16); Icon(E(k.Second, null, 3, 3, 10, 10), "restrain", Cream); manifest.Add((k.Root, "image", () => k.Tight ? null : "body")); manifest.Add((k.Plate, "image", () => k.Tight ? "body" : null)); } // Glyph N5 (0.2.137): a bare kill is its 30 x 30 plate; a knockout (its wake ring), a found or tied body the whole 44 px root
                 var u = bodyMarks[bi++]; Show(u.Root, true); Place(u.Root, p, 44, 44);
                 Class(u.Plate, "s-disc_dark_24", !b.Dead); Class(u.Plate, "s-plate_dark", b.Dead); Round(u.Plate, b.Dead ? 4 : 12);
+                // Glyph G4 (0.2.135): a kill's square plate is 30 px at slice 0.3 with its glyph 14 px centred (a 24 px plate_dark at 0.5 left no 16 px glyph 4 px clear of its rim)
+                float pd = b.Dead ? 30f : 24f, gd = b.Dead ? 14f : 16f; u.Plate.style.left = u.Plate.style.top = (44f - pd) / 2f; u.Plate.style.width = u.Plate.style.height = pd;
+                u.Plate.style.unitySliceScale = b.Dead ? new StyleFloat(0.3f) : new StyleFloat(StyleKeyword.Null); u.Glyph.style.left = u.Glyph.style.top = (pd - gd) / 2f; u.Glyph.style.width = u.Glyph.style.height = gd;
                 Icon(u.Glyph, b.Dead ? "body_dead" : "body_out", Cream);
                 Fill(u, b.Wake, !b.Dead);
                 if (!b.Dead && b.Pulse) foreach (var d in u.Ring) d.style.opacity = 0.5f + 0.5f * pulse; else foreach (var d in u.Ring) d.style.opacity = 1f;
                 foreach (var d in u.Outer) Show(d, b.Found);
-                Show(u.Second, b.Tied);
+                Show(u.Second, b.Tied); u.Tight = b.Dead && !b.Found && !b.Tied;
                 u.Root.style.opacity = b.Hidden ? 0.75f : 1f;
             }
             for (int i = bi; i < bodyMarks.Count; i++) Show(bodyMarks[i].Root, false);
@@ -215,7 +218,7 @@ namespace Suborned.Play
                 if (!Proj(a.World, out var p)) continue;
                 if (edgeMarks.Count <= ei) { var k = new Mark { Root = E(marks, "s-plate_dark", 0, 0, float.NaN, 26) }; k.Root.style.flexDirection = FlexDirection.Row; k.Root.style.alignItems = Align.Center; k.Root.style.paddingLeft = 8; k.Root.style.paddingRight = 10; k.Glyph = E(k.Root, null, w: 15, h: 15); Icon(k.Glyph, "units", Cream); k.Text = L(k.Root, "verb-name"); k.Text.style.marginLeft = 6; edgeMarks.Add(k); }
                 var u = edgeMarks[ei++]; Show(u.Root, true); Text(u.Text, a.Text);
-                u.Root.style.left = Mathf.Clamp(p.x - 50, 130, W - 160); // clear of the roster column u.Root.style.top = Mathf.Clamp(p.y - 13, 70, H - 120);
+                u.Root.style.left = Mathf.Clamp(p.x - 50, 130, W - 160); /* clear of the roster column */ u.Root.style.top = Mathf.Clamp(p.y - 13, 70, H - 120);
             }
             for (int i = ei; i < edgeMarks.Count; i++) Show(edgeMarks[i].Root, false);
             // the mast heads' number plates

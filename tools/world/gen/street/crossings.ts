@@ -6,7 +6,8 @@
 // hold) and is dropped, with its bollards and beacons, where it cannot. A pair whose strip would cross a tram track or a bay
 // the plan does not allow is dropped. Tram stop and station bank patches are strip-only crossings: the way to the platform.
 // Brief 009: a crossing lays no slab. The patches the pairing works with (a landing's footprint, SF-2's keep-clear) leave the street layer and become the crossing's `landings`; what is drawn is its parts
-// (parts.ts: light bars or dots, signal orbs, kerb studs, inlay arcs), placed from the plan's standard.
+// (parts.ts: light bars or dots, signal heads; brief 061: no kerb studs, inlay arcs, edge lines or lit strip), placed from the plan's standard; a signal crossing also exports its cycle (look only).
+// Brief 061 (coverage.rules.edges false): a plot edge's end landing is a candidate; pairCrossings keeps the pairs the coverage rules call for and drops the rest (coverage.ts).
 import type { Connector, Crossing, Landing as Foot, StreetItem, World } from '../../../../contracts/world/world.schema';
 import { type V, add, dist, dot, inPoly, mul, norm, polyline, segDist, segHit, sub } from '../../../plan/geom';
 import { boxRing, quayBlock, ringGap, roadAt, samples9 } from '../../../plan/street-zones';
@@ -14,10 +15,11 @@ import { type Ctx, r3, r4, rv } from '../common';
 import { idOf, kindOf, plotRing } from '../edges';
 import { bbox, edgeN } from '../geo';
 import type { Landing, Layer } from './kit';
-import { ROAD_Z, lawn, levelAt, onRoad } from './ground';
-import { type CoverageLog, type Pair, acrossRoad, armSeeds, dedupe, islandSeeds, mallSeeds, midBlockGaps, midOffsets, place, rulesOf, variants } from './coverage';
-import { type End, type Site, bandGap, lookOf, partsOf } from './parts';
+import { ROAD_Z, lawn, levelAt } from './ground';
+import { type CoverageLog, FOOT_SERVED, type Pair, type Seed, crossroadsSeeds, dedupe, footSeeds, islandSeeds, junctionSeeds, place, rulesOf, variants } from './coverage';
+import { type End, type Site, cycleOf, lookOf, partsOf } from './parts';
 import { landing } from './roads';
+import { stopEnds } from './siting';
 import { toPlanFn } from '../../../plan/civic';
 import type { Dressing } from '../../civic/dress';
 
@@ -191,18 +193,20 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     if (why) { for (const l of [p.a, p.b]) drop.set(l.id, why); } else ok.push(p);
   }
 
-  // 3b. the coverage rules (streetscape.crossings.coverage.rules; coverage.ts): twins go, then the crossings the plot edges do not give are placed after the furniture, so no existing id moves
-  const rules = rulesOf(ctx), cov: CoverageLog = { dedupe: [], sites: {}, skipped: [], moved: [] }, lateIds = new Set<string>(civicIds);
+  // 3b. the coverage rules (streetscape.crossings.coverage.rules; coverage.ts). A plot edge's end landing is a candidate, not a crossing: it stands only where a rule keeps it (crossroads, junction, foot: the landing pair a rule's site coincides with, within `reach`
+  //     m, or 10 m of a footway's axis), or is the civic block's own; the others go, with their bollards and beacons, so the furniture round them stays as it was. A site no landing pair serves is placed after the furniture (claiming ground, moving only movable
+  //     furniture); the circus island's sites are always placed. Sites number after the district's crossings.
+  const rules = rulesOf(ctx), cov: CoverageLog = { dedupe: [], sites: {}, skipped: [], served: [], moved: [] }, lateIds = new Set<string>(civicIds);
   const twinPairs: Pair[] = []; // the twins the dedupe rule drops: they keep their crossing numbers, so no other crossing's id moves
   if (rules) {
     const edgeLen = (p: Pair) => Math.max(...[p.a, p.b].map(l => edges.get(items.get(l.id)?.edge ?? '')?.len ?? 0));
     const twins = dedupe(ctx, ok.filter(p => !civicIds.includes(p.a.id) && !civicIds.includes(p.b.id)), edgeLen, rules);
     for (const [p, why] of twins) { twinPairs.push(p); for (const l of [p.a, p.b]) drop.set(l.id, why); cov.dedupe.push(`${p.a.road} at ${p.ka.map(v => v.toFixed(0)).join(',')}: ${why}`); }
     for (let i = ok.length - 1; i >= 0; i--) if (twins.has(ok[i]!)) ok.splice(i, 1);
-    const sites: Pair[] = [], reach = rules.reach ?? 4;
+    const sites: Pair[] = [], reach = rules.reach ?? 4, tried = new Map<string, string[]>(), kept = new Set<Pair>(), pmid = (p: Pair): V => [(p.ka[0] + p.kb[0]) / 2, (p.ka[1] + p.kb[1]) / 2];
     let blockedWhy = '';
-    /** Place a seed at the nearest of its variants where its strip may stand and both landings are free; failing that, at the nearest where the furniture can be moved out of the way. */
-    const put = (seed: import('./coverage').Seed): boolean => {
+    /** Place a seed at the nearest of its variants where its strip may stand and both landings are free; failing that, at the nearest where the furniture can be moved out of the way. A site with alternatives (a mall's axis and walk bands) names why none stood, once. */
+    const put = (seed: Seed): boolean => {
       let why = '';
       for (const claim of [false, true]) for (const v of variants(ctx, seed, reach)) {
         if ((blockedWhy = blocked(v.ka, v.kb))) { why ||= blockedWhy; continue; }
@@ -211,29 +215,28 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
         sites.push(r.pair); lateIds.add(r.pair.a.id); lateIds.add(r.pair.b.id); cov.sites[seed.rule] = (cov.sites[seed.rule] ?? 0) + 1; cov.moved.push(...r.moved);
         return true;
       }
-      cov.skipped.push(`${seed.id}: ${why} (nor within ${reach} m either way)`);
+      if (!seed.group) cov.skipped.push(`${seed.id}: ${why} (nor within ${reach} m either way)`);
+      else tried.set(seed.group, [...(tried.get(seed.group) ?? []), `${seed.id.slice(seed.group.length + 1)}: ${why}`]);
       return false;
     };
-    for (const seed of [...armSeeds(ctx, rules), ...islandSeeds(ctx, rules), ...mallSeeds(ctx, rules)]) put(seed);
-    // mid-block: the gaps between what stands now (kerb pairs, sites, and the stop and bank patches the platforms give), one site at the middle of each wide gap
-    const landedIds = new Set(L.landings.map(l => l.id)), mids = (ps: Pair[]) => ps.map(p => ({ road: p.a.road, mid: [(p.ka[0] + p.kb[0]) / 2, (p.ka[1] + p.kb[1]) / 2] as V }));
-    const patches = L.items.filter(x => x.kind === 'crossing' && !landedIds.has(x.id)).map(x => ({ road: roadAt(ctx, x.at, x.edge)?.road ?? '', mid: x.at }));
-    for (const g of midBlockGaps(ctx, rules, [...mids(ok), ...mids(sites), ...patches])) {
-      const mb = rules.midBlock!;
-      let done = false;
-      for (const claim of [false, true]) {
-        for (const o of midOffsets(mb.reach)) {
-          if (g.s + o <= g.from + 6 || g.s + o >= g.to - 6) continue; // never nearer a neighbour than 6 m
-          const seed = acrossRoad(ctx, 'mid', `mid/${g.road}/${Math.round(g.s)}`, g.road, g.s + o, `${ctx.d.roads.find(r => r.id === g.road)!.name}, the middle of a ${Math.round(g.to - g.from)} m gap`);
-          if (!seed || blocked(seed.ka, seed.kb)) continue;
-          const r = place(ctx, L, seed, W, claim);
-          if ('why' in r) continue;
-          sites.push(r.pair); lateIds.add(r.pair.a.id); lateIds.add(r.pair.b.id); cov.sites.mid = (cov.sites.mid ?? 0) + 1; cov.moved.push(...r.moved); done = true; break;
-        }
-        if (done) break;
+    const stopsNow = L.items.filter(x => x.kind === 'crossing' && x.edge.startsWith('stop/')).map(x => ({ road: roadAt(ctx, x.at, x.edge)?.road ?? '', mid: x.at })), won = new Set<string>();
+    for (const seed of [...islandSeeds(ctx, rules), ...footSeeds(ctx, rules), ...crossroadsSeeds(ctx, rules), ...junctionSeeds(ctx, rules, stopsNow)]) {
+      if (seed.group && won.has(seed.group)) continue; // an alternative of a site already served
+      if (seed.rule !== 'island') { // a landing pair that stands where the site is: the plot edge's own end landing (or the civic block's crossing) is the site
+        const m: V = [(seed.ka[0] + seed.kb[0]) / 2, (seed.ka[1] + seed.kb[1]) / 2], near = seed.rule === 'foot' ? FOOT_SERVED : reach + 0.5;
+        const has = [...ok, ...sites].filter(p => p.a.road === seed.road && dist(pmid(p), m) <= near && !kept.has(p)).sort((p, q) => (Math.abs(dist(pmid(p), m) - dist(pmid(q), m)) > 0.05 ? dist(pmid(p), m) - dist(pmid(q), m) : pmid(q)[0] + pmid(q)[1] - pmid(p)[0] - pmid(p)[1]))[0]; // the nearest; of two the same distance off the axis, the one further east or north
+        if (has) { kept.add(has); if (seed.group) won.add(seed.group); cov.sites[seed.rule] = (cov.sites[seed.rule] ?? 0) + 1; if (seed.group || seed.rule === 'foot') cov.served.push(`${seed.id}: ${has.a.id}`); continue; }
       }
-      if (!done) cov.skipped.push(`mid/${g.road}/${Math.round(g.s)}: no spot within ${mb.reach} m of the middle of the gap where both landings stand free`);
+      if (put(seed) && seed.group) won.add(seed.group);
     }
+    for (const [g, why] of tried) if (!won.has(g)) cov.skipped.push(`${g}: ${why.join('; ')} (nor within ${reach} m either way)`);
+    if (rules.edges === false) for (let i = ok.length - 1; i >= 0; i--) { // a plot edge gives no crossing: the landing pairs no rule keeps (and the civic block does not own) go
+      const p = ok[i]!; if (kept.has(p) || civicIds.includes(p.a.id) || civicIds.includes(p.b.id)) continue;
+      for (const l of [p.a, p.b]) drop.set(l.id, 'a plot edge gives no crossing (coverage.rules.edges false) and no rule keeps it');
+      ok.splice(i, 1);
+    }
+    const owned = ok.filter(p => civicIds.includes(p.a.id) || civicIds.includes(p.b.id)).filter(p => !kept.has(p)).length; // the civic block's own crossings no footway site is served by
+    if (owned) cov.sites.civic = owned;
     ok.push(...sites);
   }
 
@@ -242,14 +245,11 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
   const nextId = (road: string) => { const k = n.get(road) ?? 0; n.set(road, k + 1); return `crossing/${road}/${k}`; };
   const order = new Map(L.landings.map((l, i) => [l.id, i])), placed = new Map(L.items.map(x => [x.id, x])); // placed: with the partners step 2 added
   const isCivic = (p: Pair) => lateIds.has(p.a.id) || lateIds.has(p.b.id); // civic pairs and the coverage sites number after the district's, so no district crossing id moves
-  const bands: V[][] = [], site: Site = { // the arcs placed so far claim their ground: a later crossing's arc whose band would overlap one is left out (its corner is already rounded)
-    clear: (ring, at) => L.clearGround(ring, at, 0.001), pave: p => !lawn(ctx, p) && !onRoad(ctx, p),
-    take: (pts, w) => { if (bands.some(b => bandGap(b, pts) < w - 0.011)) return false; bands.push(pts); return true; },
-  };
+  const site: Site = { clear: (ring, at) => L.clearGround(ring, at, 0.001) }; // a signal head's halo ground must be free of furniture
   const eyed = new Set<string>(); // landings with a signal eye over them: the eye is the signal, so their beacons go (brief 009, Aster); the bollards stay
   const dress = (x: Omit<Crossing, 'walk'>, ends: End[], level: number, refugeEdges: string[] = []) => {
     const ps = partsOf(x, look, level, ends, refugeEdges, ctx.pav, site, skipped), walk = r4(Math.atan2(x.line[1][1] - x.line[0][1], x.line[1][0] - x.line[0][0]));
-    out.push({ ...x, items: ps.map(q => q.id), walk }); parts.push(...ps);
+    out.push({ ...x, items: ps.map(q => q.id), walk, ...(x.control === 'signal' ? { cycle: cycleOf(look.signal.cycle, x.id, dist(x.line[0], x.line[1])) } : {}) }); parts.push(...ps); // brief 061: a signal crossing exports its cycle (look only)
     ends.forEach((e, i) => { if (ps.some(q => q.id === `${x.id}/signal/${'ab'[i]}`)) eyed.add(e.landing.id); }); // a signal eye stands at this kerb end
   };
   for (const p of [...ok, ...twinPairs].sort((x, y) => +isCivic(x) - +isCivic(y) || order.get(x.a.id)! - order.get(y.a.id)!)) {
@@ -260,11 +260,18 @@ export function pairCrossings(ctx: Ctx, L: Layer, civicIds: string[] = []): { cr
     dress({ id: nextId(p.a.road), kind: 'kerb', road: p.a.road, items: [], landings: ends.map(e => e.landing), line: [rv(p.ka), rv(p.kb)], strip, width: W, ...(control ? { control } : {}), refuges: refuged.map(r => r.ring.map(rv)) }, ends, ROAD_Z, refuged.map(r => `median/${zones.indexOf(r.z)}`));
   }
   const landed = new Set(L.landings.map(l => l.id));
-  for (const it of L.items.filter(x => x.kind === 'crossing' && !landed.has(x.id))) {
+  // brief 061 (coverage.rules.stops, banks): a tram stop keeps `stops.ends` of its platform's ends, the one(s) nearest a junction or footway end; a station bank keeps none. The patches the rules do not keep were placed with the furniture all the same
+  // (nothing else moves), take their crossing numbers (so no other id moves) and go here, never built.
+  const patches = L.items.filter(x => x.kind === 'crossing' && !landed.has(x.id)), keepEnd = new Set<string>();
+  for (const edge of new Set(patches.filter(x => x.edge.startsWith('stop/')).map(x => x.edge))) { const ends = patches.filter(x => x.edge === edge); stopEnds(ctx, ends.map(x => x.at)).forEach(i => keepEnd.add(ends[i]!.id)); }
+  for (const it of patches) {
     const u: V = [Math.cos(it.yaw), Math.sin(it.yaw)], h = it.size[0] / 2, road = roadAt(ctx, it.at, it.edge)?.road ?? '';
-    const kind = it.edge.startsWith('stop/') ? 'stop' : 'bank';
-    dress({ id: nextId(it.edge), kind, road, items: [], landings: [landingOf(it)], line: [rv(sub(it.at, mul(u, h))), rv(add(it.at, mul(u, h)))], strip: boxRing(it.at, it.size[0], it.size[1], it.yaw).map(rv), width: r3(it.size[1]), refuges: [] }, [], it.z);
+    const kind = it.edge.startsWith('stop/') ? 'stop' : 'bank', id = nextId(it.edge);
+    if (rules && (kind === 'bank' ? rules.banks === false : !keepEnd.has(it.id))) continue;
+    dress({ id, kind, road, items: [], landings: [landingOf(it)], line: [rv(sub(it.at, mul(u, h))), rv(add(it.at, mul(u, h)))], strip: boxRing(it.at, it.size[0], it.size[1], it.yaw).map(rv), width: r3(it.size[1]), refuges: [] }, [], it.z);
   }
+
+  if (rules) cov.sites.stops = out.filter(x => x.kind === 'stop').length; // the tram stops' crossings (transit.ts places the patches: one end each, coverage.rules.stops)
 
   // 5. what could not be paired goes, with the bollards and beacons that flanked it
   const gone = new Set<string>();

@@ -10,7 +10,7 @@ roles = json.load(open(f'{here}/roles.json'))
 rows = {}
 for p in sorted(glob.glob(f'{out}/.rows.*.json'), key=os.path.getmtime):   # the newest build of a figure wins
     for r in json.load(open(p)): rows[r['id']] = r
-clips = json.load(open(f'{out}/Clips/clips.rows.json'))
+clips = [c for c in json.load(open(f'{out}/Clips/clips.rows.json')) if c.get('game', True)]   # the game's clips only (clips.json `game: false` stay out)
 cspec = {c['name']: c for c in json.load(open(f'{here}/clips.json'))['clips']}
 speeds = json.load(open(f'{here}/speeds.json'))['speeds']
 for c in clips:
@@ -42,6 +42,7 @@ for fid in specs:
     r = dict(r); r['files'] = sorted(files, key=lambda x: x['path']); r['sources'] = src_files(spec)
     if fid in roles['variantOf']: r['variantOf'] = roles['variantOf'][fid]
     if spec.get('tint'): r['tint'] = spec['tint']
+    if spec.get('label'): r['label'] = spec['label']   # the words come from the spec, so a wording fix needs no rebuild (rival_d's hood, brief 067)
     n = len(r['lods']); r['lodScreenHeights'] = roles['lodScreen'][str(n)]
     r['sha256'] = sha(f"{out}/{r['fbx']}")
     figs.append(r)
@@ -51,11 +52,11 @@ manifest = {
     'built': {'by': 'tools/figures (build.py, clips.py, assemble.py)', 'blender': blender, 'specs': ['tools/figures/figures.json', 'tools/figures/clips.json', 'tools/figures/roles.json', 'tools/figures/seat.json']},
     'conventions': {
         'unit': 'metres, FBX unit scale 1 (file units cm, Unity useFileScale on)', 'axes': 'Y up, figure faces +Z', 'origin': 'feet on y = 0, centred on x and z', 'standingHeightM': 1.75,
-        'rig': 'Humanoid, Mixamo bone names without prefix (Hips, Spine, Spine1, Spine2, Neck, Head, Left/RightShoulder, Arm, ForeArm, Hand, UpLeg, Leg, Foot, ToeBase). 22 mapped bones for the Meshy-style rigs (no fingers), 52 for the Enforcer (fingers). Avatar: Create From This Model, set in each .fbx.meta; Unity maps it unaided (checked: valid, human).',
+        'rig': 'Humanoid, Mixamo bone names without prefix (Hips, Spine, Spine1, Spine2, Neck, Head, Left/RightShoulder, Arm, ForeArm, Hand, UpLeg, Leg, Foot, ToeBase). 22 mapped bones for the Meshy-style rigs (no fingers), 52 for the Enforcer (fingers). Avatar: Create From This Model, its human map and rest written into each .fbx.meta with auto-mapping off: Unity\'s own T-pose with the legs neutral (brief 069, tools/figures/avatar.py). Clips: Copy From Other Avatar from the one neutral-leg reference (clips.json avatar).',
         'lods': 'one FBX per figure holds the skeleton and every LOD as a skinned mesh named <id>_LOD0.. ; Unity builds the LODGroup from the names. Skin weights: 4 per vertex.',
         'materials': 'URP Lit .mat per texture set, bound by name in the .fbx.meta. Matte, as the world is (Glint, briefs/020/figures-render.md): the maps are albedo (sRGB) and normal for the 1024 and 2048 sets, plus on the cell and cast a metallic map (R metallic 0..0.6 only on real trim, G occlusion, A smoothness 0.15..0.28 on cloth, skin and hair and up to 0.55 on trim; the map is 1024 px even under a 2048 material). The guard family (guard, security, cafe_w5) keeps metal only on strips narrower than 15 px at 1024 (shoulder edges, belt, eyelets, boot caps): panels are R 0 and A <= 0.16, so the white and navy cloth is matte in the follow view. The 512 LOD (what play zoom draws) and every crowd material have no metallic map: _Metallic 0, _Smoothness 0.15. The Tech visor is _Smoothness 0.75 with an emission map; his albedo blacks are lifted (a black outfit keeps its shape in shade).',
-        'clips': 'People/Clips/<name>.fbx: Mixamo library files copied as they are (clip only, 30 fps, in place), each with a Humanoid .meta and one clip named <name>. Any Humanoid figure plays any clip. loop flags are set in the meta; root motion is not baked into the pose, so leave Apply Root Motion off and move the object from the sim.',
-        'tintedVariants': 'security, driver, councillor, rival and fixer are recolours of another model: only the albedo changed (hue window, skin and hair outside it).'},
+        'clips': 'People/Clips/<name>.fbx: Mixamo library files copied as they are (clip only, 30 fps, in place), each with a Humanoid .meta and one clip named <name>. Any Humanoid figure plays any clip. loop flags are set in the meta. Leave Apply Root Motion off and move the object from the sim: the clips that stay in place bake Root Transform Position (XZ) into the pose (the hips sway over planted feet), locomotion and the one-shots that travel (clips.json travelsM) do not (brief 067).',
+        'tintedVariants': 'security, driver, d4b and the three rival colourways (rival, rival_b, rival_c) are recolours of another model: only the albedo changed (hue windows; the rivals also by UV region, tools/figures/masks: jacket, trousers, boots, hair). The councillor and the fixer have models of their own.'},
     'playRoles': roles['playViews'], 'families': roles['families'], 'jobBlocks': roles['jobBlocks'],
     'missing': roles['missing'], 'forLatch': roles['forLatch'], 'pulledFromPools': roles.get('pulledFromPools', {}),
     'seat': json.load(open(f'{here}/seat.json')),

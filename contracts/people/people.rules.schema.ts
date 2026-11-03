@@ -84,7 +84,32 @@ const Employer = ground({ kind: z.enum(['civic', 'trade']), plot: id.optional(),
 const Pinned = z.strictObject({
   part: z.enum(['given', 'family']), name: text, src: text, employer: id,
   position: id.optional(), role: id.optional(),
+  // brief 089: the country whose lists bear the name (contracts/people/names/sources.json `pins`): a pinned person's kin draw their given names there.
+  country: id.optional(),
+  // brief 089: a pin that lands on one person by id, not by a mission role (Milena, the listen partner, whom the mission names but does not cast)
+  person: z.string().regex(/^p-[a-z0-9-]+-\d{2,3}$/).optional(),
 }).refine((p) => (p.position === undefined) !== (p.role === undefined), { message: 'a pinned name is cast by a position or a role, not both' });
+
+const band = z.tuple([z.number().int().min(16).max(95), z.number().int().min(16).max(95)]).refine(([a, b]) => a <= b, { message: 'an age band runs low to high' });
+/** brief 089 (Sky: "normal names", drawn from real frequency lists by origin, sex and age, never by a model). Absent in rules pinned before it: the names come from the cast's pool. */
+const Lists = z.strictObject({
+  dir: text.describe('the folder of the country lists (<country>.json) and sources.json'),
+  countries: z.record(id, z.strictObject({ weight: z.number().positive() })).describe('the countries a person or a family is drawn from, by weight'),
+  skipTop: z.number().int().min(0).max(10).describe('the most common names of each list that are never drawn'),
+  banList: text.describe('the names language models favour (Fable, brief 089): never drawn'),
+  exclusions: text.describe('the read-through of the drawn names: famous names, words and clashes, never drawn'),
+  ageReference: z.number().int().min(1990).max(2100).describe('the year a person\'s age is counted back from to their decade of birth'),
+  ages: z.strictObject({ default: band, byPosition: z.record(id, band), byFigure: z.record(z.string(), band) }).describe('the age band a person is drawn in: by the figure the host dresses them in, else by position, else the default'),
+  sex: z.literal('figure').describe('a person\'s sex is the body of the figure the host dresses them in (tools/people/looks.ts)'),
+  families: z.literal('share').describe('people tied by a family tie share one family name and one country'),
+  heritage: z.strictObject({
+    figures: z.record(z.string(), id).describe('the heritage a figure shows, read from its renders; a figure not listed shows none, and its people are drawn from every country'),
+    groups: z.record(id, z.strictObject({ countries: z.array(id).min(1), usFamily: id.optional().describe('the US surname list (by the census\'s shares) an American of this heritage draws from') })),
+    mixed: z.strictObject({ countries: z.array(id).min(1), family: id }).describe('a family whose members\' figures show different heritages: drawn among these countries (`family`: the US surname list it draws from)'),
+    ...grounded,
+  }).refine(needsReason, reasonMsg).optional().describe('brief 089 follow-up: a person\'s country is drawn among those of the heritage their figure shows'),
+  ...grounded,
+}).refine(needsReason, reasonMsg);
 
 export const PeopleRules = z.strictObject({
   schema: z.literal('suborned.people.rules/1'),
@@ -167,6 +192,7 @@ export const PeopleRules = z.strictObject({
     uniqueFullName: z.literal(true),
     background: z.literal('unnamed'),
     pinned: z.array(Pinned),
+    lists: Lists.optional(),
   }),
 }).superRefine((r, ctx) => {
   const bad = (path: (string | number)[], message: string) => ctx.addIssue({ code: 'custom', path, message });

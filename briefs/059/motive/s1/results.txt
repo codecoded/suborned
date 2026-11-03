@@ -1,0 +1,57 @@
+# Motive 059 S1 probe results, 2026-10-25. Scratch engine = suborned.sim/0.31.0 (sim/) + engine-probe.patch (PROBE_APPEAR, PROBE_GATE; off = 0.31.0 byte for byte).
+# Inputs = c037's (rulebook 1bdcbdc3, people.rules 04a08f0d, handover.site a897dbdf), the probe roots change only the site's getaway/fight keys and fight-safe-hostiles (mkprobe.py).
+# Reproduce: python3 -I briefs/059/motive/s1/mkprobe.py && bun run guard zsh briefs/059/motive/s1/mkengine.sh && bun run guard python3 -I briefs/059/motive/s1/run.py
+
+## 1. switches off: the scratch engine replays c037
+route-g-fast-board probe=[9f3cffb0a380ea36 1910 success] c037=[9f3cffb0a380ea36 1910 success]
+route-a-pressure-board probe=[a9ac545cb1f50c13 2005 success] c037=[a9ac545cb1f50c13 2005 success]
+route-g-board probe=[859fc310b6205484 2515 success] c037=[859fc310b6205484 2515 success]
+route-b-board probe=[c61f457970dbbb3a 4645 success] c037=[c61f457970dbbb3a 4645 success]
+loud probe=[a5e7bbe00981283a 3100 success] c037=[a5e7bbe00981283a 3100 success]
+
+## 2. the gate on (PROBE_GATE=1), every c037 base script on c037's inputs
+gate on, c037 base scripts: 41 same, 0 differ
+
+## 3. the yard (getaway car at the service-drive stand), run.py
+# vale-in = Vale aboard; arrive1 = first PROBE_APPEAR step-out; b.out = blocker down; f.over = the crew broken or down; St = Standing at the end (start +2)
+case                     outcome      end   T  A  St  vale-in  arrive1  blocker  b.out    f.over   downs(cell)  go-refused
+apress-leak              success   2:32.1   7  1   1  2:32.0   -        -        -        -        -            1
+gfast-leak               success   2:22.6   2  0   2  2:22.5   -        -        -        -        -            1
+apress-gate-board        success   2:59.7   7  1   1  2:32.0   2:52.1   2:52.1   2:54.7   3:03.5   -            0
+apress-gate-fightout     success   3:08.5   7  1   2  2:32.0   2:52.1   2:52.1   2:54.7   3:03.5   fixer,scout  0
+    apress-gate-fightout.json: Success at 3:08.5  cash 100000  trail 7  alert 1  shots 0 | The scout is left behind and captured (downed).; The fixer is left behind and captured (downed).
+gfast-gate-board         success   2:59.7   6  1   2  2:22.5   2:52.1   2:52.1   2:54.7   3:03.5   -            0
+gfast-gate-fightout      success   3:08.5   6  1   3  2:22.5   2:52.1   2:52.1   2:54.7   3:03.5   fixer,scout  0
+    gfast-gate-fightout.json: Success at 3:08.5  cash 100000  trail 6  alert 1  shots 0 | The scout is left behind and captured (downed).; The fixer is left behind and captured (downed).
+g-posted-board           failure   3:19.0   2  1   2  -        -        3:15.0   -        -        -            0
+    pass 1: no blocker.out (g-fight.json: Failure (rivals-reach-vale) at 3:19.0  cash 100000  trail 2  alert 1  shots 0) | 
+g-posted-fightout        failure   3:19.0   2  1   2  -        -        3:15.0   -        -        -            0
+    pass 1: no fight.over (g-fight.json: Failure (rivals-reach-vale) at 3:19.0  cash 100000  trail 2  alert 1  shots 0) | 
+g-posted3-board          success   3:25.1   2  1   2  -        -        3:15.0   3:20.1   -        -            0
+g-posted3-fightout       failure   3:22.0   2  1   2  -        -        3:15.0   3:20.1   -        -            0
+    pass 1: no fight.over (g-fight.json: Failure (rivals-reach-vale) at 3:22.0  cash 100000  trail 2  alert 1  shots 0) | 
+g-thin1-board            success   3:25.1   2  1   2  3:23.0   -        3:15.0   3:20.1   3:38.9   -            0
+g-thin1-fightout         success   3:43.9   6  1   3  3:23.0   3:34.8   3:15.0   3:20.1   3:38.9   enforcer     0
+g-thin3-board            success   3:42.4   6  1   2  3:23.0   3:34.8   3:34.8   3:37.4   3:41.9   -            0
+g-thin3-fightout         success   3:46.9   6  1   3  3:23.0   3:34.8   3:34.8   3:37.4   3:41.9   -            0
+g-thin0-leak             success   3:23.1   2  0   2  3:23.0   -        -        -        -        -            0
+gff-posted-board         failure   3:21.0   2  1   2  -        -        3:15.0   -        -        -            0
+    pass 1: no blocker.out (gff-fight.json: Failure (rivals-reach-vale) at 3:21.0  cash 100000  trail 2  alert 1  shots 0) | 
+gff-posted-fightout      failure   3:21.0   2  1   2  -        -        3:15.0   -        -        -            0
+    pass 1: no fight.over (gff-fight.json: Failure (rivals-reach-vale) at 3:21.0  cash 100000  trail 2  alert 1  shots 0) | 
+gff-posted3-board        success   3:25.6   2  1   2  3:23.0   -        3:15.0   3:20.6   3:23.7   -            0
+gff-posted3-fightout     success   3:28.7   2  1   3  3:23.0   -        3:15.0   3:20.6   3:23.7   -            0
+gff-thin1-board          success   3:24.0   2  1   2  3:23.0   -        3:15.0   3:19.0   3:21.7   -            0
+gff-thin1-fightout       success   3:26.7   2  1   3  3:23.0   -        3:15.0   3:19.0   3:21.7   -            0
+gff-yard5-board          success   3:25.6   2  1   2  3:23.0   -        3:15.0   3:20.6   3:25.2   -            0
+gff-yard5-fightout       success   3:30.2   2  1   3  3:23.0   -        3:15.0   3:20.6   3:25.2   -            0
+
+## 4. the square with F6 arrivals at rival-drop (five standing at the step-out, appear 1684..1764), c037's scripts unchanged, gate off/on
+route-g-fast-board gate=0: failure rivals-reach-vale 182.2 T 2 A 1 St 2
+route-g-fast-board gate=1: failure rivals-reach-vale 182.2 T 2 A 1 St 2
+route-a-pressure-board gate=0: failure rivals-reach-vale 191.2 T 7 A 1 St 1
+route-a-pressure-board gate=1: failure rivals-reach-vale 191.2 T 7 A 1 St 1
+route-g-fast gate=0: failure rivals-reach-vale 187.9 T 6 A 1 St 2
+route-g-fast gate=1: failure rivals-reach-vale 187.9 T 6 A 1 St 2
+route-a-pressure gate=0: failure rivals-reach-vale 196.7 T 7 A 1 St 1
+route-a-pressure gate=1: failure rivals-reach-vale 196.7 T 7 A 1 St 1

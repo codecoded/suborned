@@ -1,0 +1,5 @@
+SpaceHQ ours (Datum, brief 075, 2026-10-29)
+plan 0.5.6, form ours, sha256 fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2 (= harbour-district.oldtown.plan.json; transcribe.ts reproduces it byte for byte)
+world export out/world/harbour-district.world.json sha256 1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5
+plan exit 0 (160 PASS); overlay exit 0 (165 PASS; M-1 447/1124/126/593, W-1, C-0, ZK-1 unchanged); sim:site: sim/data byte-identical; zone-kit unchanged; cover: plan hash only; typecheck clean
+For Latch: S1 from the plan (north on x -95.5, east on y 244 through the drum, Crown Circus station at (0, 244) inside, banks in the ground hall); the Sphere at plan (-172, 124) = old Put (-172, 0, 330); drop the station beside the HQ. Notes: briefs/075/notes.md "SpaceHQ ours".

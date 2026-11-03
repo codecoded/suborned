@@ -37,8 +37,12 @@ namespace Suborned.Play
         static Rect panelScreen; static int panelFrame = -9;
         /// <summary>Named controls on screen (GUI space) as last drawn: the proof clicks them (RangeShots, the click-through check).</summary>
         public static readonly Dictionary<string, Rect> Controls = new();
-        public static bool Blocks(Vector2 mouse) => Time.frameCount - panelFrame <= 2 && panelScreen.Contains(new Vector2(mouse.x, Screen.height - mouse.y));
-        void OnDisable() { panelFrame = -9; Controls.Clear(); }
+        public static bool Blocks(Vector2 mouse) { if (Time.frameCount - panelFrame > 2) return false; var p = new Vector2(mouse.x, Screen.height - mouse.y); return panelScreen.Contains(p) || cueScreen.Contains(p); }
+        /// <summary>Brief 084: the cue box under the panel, and the panels folded out of the way to judge a fight.</summary>
+        static Rect cueScreen; public static bool Folded;
+        /// <summary>The panels' rects on screen now (GUI space, pixels): the edge icons keep off them.</summary>
+        public static IEnumerable<Rect> Rects() { if (Time.frameCount - panelFrame > 2) yield break; yield return panelScreen; if (cueScreen.width > 0f) yield return cueScreen; }
+        void OnDisable() { panelFrame = -9; Controls.Clear(); cueScreen = default; }
 
         void Update()
         {
@@ -99,10 +103,12 @@ namespace Suborned.Play
         void OnGUI()
         {
             if (h == null || !h.rangeMode || h.Game == null) return;
+            if (!(FrontEnd.DebugOptions || GameBoot.Arg("-gameProof") || GameBoot.Arg("-shots"))) return; // Glyph's 0.2.104 review #6: the lab's panel, in a development player, `-debug` or a proof only
             Styles(); var g = h.Game; var cam = UnityEngine.Camera.main;
             float k = Screen.height / 1080f; GUI.matrix = Matrix4x4.Scale(new Vector3(k, k, 1f)); float W = Screen.width / k;
             var r = new Rect(W - 470, 120, 456, h.controls.HoldActs ? 495 : 420); // the panel, top right under the clock (the hold preset: one more setting row and the fire readout)
             panelScreen = new Rect(r.x * k, r.y * k, r.width * k, r.height * k); panelFrame = Time.frameCount;
+            if (FightCues.LabRun && Folded) { var fb = new Rect(W - 96, 120, 82, 26); panelScreen = new Rect(fb.x * k, fb.y * k, fb.width * k, fb.height * k); cueScreen = default; if (GUI.Button(fb, "Panels")) Folded = false; Controls["fold"] = panelScreen; GUI.matrix = Matrix4x4.identity; return; }
             // labels: each cover piece by kind, and each line of fire in the engine's plain words; placed clear of each other and of the panel
             // (Sky on 0.2.33/0.2.34: labels stacked where lines share a path): a label that would overlap steps up or down a row, with a hairline
             // back to its line; one with no room within three rows each way is left off (its line still shows)
@@ -128,7 +134,8 @@ namespace Suborned.Play
             GUI.Box(r, GUIContent.none, box);
             var area = new Rect(r.x + 12, r.y + 10, r.width - 24, r.height - 20);
             GUILayout.BeginArea(area);
-            GUILayout.Label("FIGHT RANGE", label);
+            if (FightCues.LabRun) { GUILayout.BeginHorizontal(); GUILayout.Label("FIGHT RANGE", label); GUILayout.FlexibleSpace(); if (GUILayout.Button("Hide", GUILayout.Width(60))) Folded = true; Mark("fold", area, k); GUILayout.EndHorizontal(); }
+            else GUILayout.Label("FIGHT RANGE", label);
             kind = GUILayout.Toolbar(kind, KindWords);
             if (car)
             {
@@ -189,6 +196,12 @@ namespace Suborned.Play
             GUILayout.Label(Tally(g) + (Time.unscaledTime - lastAt < 4f ? " · " + last : ""), small); Mark("tally", area, k);
             if (h.controls.HoldActs) { int sel = System.Array.IndexOf(h.Selected, true); var fw = h.FireWords(h.Driving ? h.DriveAgent : sel); GUILayout.Label(fw.Length > 0 ? "Fire: " + fw : "Fire: right hold on a target", small); FireReadout = fw; } // brief 041: the pill's own words
             GUILayout.EndArea();
+            if (FightCues.LabRun)
+            {   // brief 084: the cue switches and values, one box under the panel
+                var cr = new Rect(r.x, r.yMax + 6f, r.width, FightCuesPanel.BoxH); cueScreen = new Rect(cr.x * k, cr.y * k, cr.width * k, cr.height * k);
+                GUI.Box(cr, GUIContent.none, box); var ca = new Rect(cr.x + 12, cr.y + 8, cr.width - 24, cr.height - 14);
+                GUILayout.BeginArea(ca); FightCuesPanel.Body(true, new Vector2(ca.x, ca.y), k); GUILayout.EndArea();
+            }
             GUI.matrix = Matrix4x4.identity;
             if (Event.current.type == EventType.Repaint) { LabelsPlaced = lp; LabelsMoved = lm; LabelsDropped = ld; }
         }

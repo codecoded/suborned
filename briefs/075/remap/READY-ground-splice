@@ -1,0 +1,7 @@
+brief 075 remap, ground and props (Splice), 2026-10-29
+export 07deff91bbda85bbd3dd1d3017c49e7531d50f37bcdc0a7cae61635f9651724d (bun run world twice, same hash)
+ground: tools/world/gen/oldtown/ground.ts (lawns 5, Orbit Gardens basin + canal + paths, harbour terrace/steps/promenade/coping, circus pavement ring): 16 flats, 13 solids, 2 water
+props: tools/world/gen/oldtown/props.ts: 341 old props by rule (street/old/*), 20 of ours gave way, 127 spots refused and logged
+rules: OT-1..OT-3 (tools/world/rules/oldtown.ts + oldtown.test.ts); plan 147 pass / overlay 152 pass, 0 fail
+Handover: sim/data/handover.site.json and handover.takedown.json unchanged by this round; missions:check handover SHIPS
+notes: briefs/075/notes.md "Remap: ground and props"

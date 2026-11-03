@@ -24,7 +24,7 @@ namespace Suborned.Play
 
         /// <summary>One close-up callout (board §9): the watcher, its view key, the agent it has, the stage it stepped up to, when it opened and
         /// until when it stays (real time: it does not stop for pause), and its order of claim (newest last).</summary>
-        public sealed class Callout { public string Watcher = "", View = "", Op = ""; public int Stage, Seq; public float Born, Until; public bool Queued; }
+        public sealed class Callout { public string Watcher = "", View = "", Op = ""; public int Stage, Seq; public float Born, Until; public bool Queued; public Bubble Speech; /* brief 085: a line said off screen (HostConvo.Street) */ }
         /// <summary>The callouts up now (at most one per agent and one per watcher), and the ones queued behind them.</summary>
         public readonly List<Callout> Callouts = new(), CalloutQueue = new();
         int calloutSeq;
@@ -63,6 +63,7 @@ namespace Suborned.Play
         void AttentionFrame()
         {
             var g = Game; if (g == null || g.Range) return;
+            Guard("street", StreetFrame); Guard("capture clip", ClipFrame); // brief 085: a pressed call's lines, the capture clip
             if (g.Tick != attnTick)
             {
                 attnTick = g.Tick; int fall = Mathf.RoundToInt(AttnFallS * Game.Hz);

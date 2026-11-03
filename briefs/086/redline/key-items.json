@@ -1,0 +1,5880 @@
+{
+"rule": "see header",
+"total": 204,
+"key": [
+{
+"piece": "Tile_TramRail",
+"oldN": 1584,
+"oldTris": 3140,
+"oursN": 0,
+"oursTris": 3140,
+"placedTris": 4973760,
+"kitLods": [
+784,
+120
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 305,
+"tpStreet": 271,
+"prefabLod": false
+},
+{
+"piece": "CoconutPalm",
+"oldN": 225,
+"oldTris": 6310,
+"oursN": 77,
+"oursTris": 6310,
+"placedTris": 1905620,
+"kitLods": [
+1330,
+514
+],
+"oursLevels": 3,
+"oursHeights": [
+0.1271,
+0.0545,
+0.01
+],
+"size": 7.943894,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 62,
+"tpStreet": 72,
+"prefabLod": false
+},
+{
+"piece": "StreamCorner_3",
+"oldN": 76,
+"oldTris": 12170,
+"oursN": 6,
+"oursTris": 12302,
+"placedTris": 998732,
+"kitLods": [
+2995,
+715
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 24.638647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Cypress",
+"oldN": 163,
+"oldTris": 5004,
+"oursN": 0,
+"oursTris": 5004,
+"placedTris": 815652,
+"kitLods": [
+1251,
+300
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 20,
+"prefabLod": false
+},
+{
+"piece": "StreamBay_3",
+"oldN": 484,
+"oldTris": 1444,
+"oursN": 27,
+"oursTris": 1444,
+"placedTris": 737884,
+"kitLods": [
+310
+],
+"oursLevels": 2,
+"oursHeights": [
+0.2,
+0.004
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 10,
+"tpStreet": 80,
+"prefabLod": false
+},
+{
+"piece": "Streetlamp",
+"oldN": 103,
+"oldTris": 5782,
+"oursN": 20,
+"oursTris": 5782,
+"placedTris": 711186,
+"kitLods": [
+1445,
+345
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.93,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 46,
+"tpStreet": 15,
+"prefabLod": false
+},
+{
+"piece": "FanPalm",
+"oldN": 158,
+"oldTris": 4194,
+"oursN": 0,
+"oursTris": 4194,
+"placedTris": 662652,
+"kitLods": [
+1048,
+251
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 16,
+"tpStreet": 21,
+"prefabLod": false
+},
+{
+"piece": "PhoneBooth",
+"oldN": 7,
+"oldTris": 34744,
+"oursN": 22,
+"oursTris": 17776,
+"placedTris": 634280,
+"kitLods": [
+4443,
+1049
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.5837946,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PortholeBay_3",
+"oldN": 136,
+"oldTris": 4354,
+"oursN": 0,
+"oursTris": 4354,
+"placedTris": 592144,
+"kitLods": [
+1062,
+253
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 26,
+"prefabLod": false
+},
+{
+"piece": "Kerb_Granite_0",
+"oldN": 1130,
+"oldTris": 494,
+"oursN": 0,
+"oursTris": 494,
+"placedTris": 558220,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 71,
+"tpStreet": 370,
+"prefabLod": false
+},
+{
+"piece": "Kerb_Granite_1",
+"oldN": 1127,
+"oldTris": 494,
+"oursN": 0,
+"oursTris": 494,
+"placedTris": 556738,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyWall_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 116,
+"oursTris": 4418,
+"placedTris": 512488,
+"kitLods": [
+190,
+206
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "AlleyWall_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 111,
+"oursTris": 3776,
+"placedTris": 419136,
+"kitLods": [
+168,
+168
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamCorner_4",
+"oldN": 16,
+"oldTris": 14002,
+"oursN": 10,
+"oursTris": 14170,
+"placedTris": 365732,
+"kitLods": [
+3439,
+823
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 28.038647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeSet_Tulip",
+"oldN": 85,
+"oldTris": 3984,
+"oursN": 6,
+"oursTris": 3984,
+"placedTris": 362544,
+"kitLods": [
+996,
+239
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.87886,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 33,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PlazaSphereLamp",
+"oldN": 18,
+"oldTris": 7932,
+"oursN": 27,
+"oursTris": 7932,
+"placedTris": 356940,
+"kitLods": [
+1982,
+475
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 4.632,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 14,
+"prefabLod": false
+},
+{
+"piece": "Bollard",
+"oldN": 41,
+"oldTris": 5116,
+"oursN": 25,
+"oursTris": 5116,
+"placedTris": 337656,
+"kitLods": [
+1278,
+306
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.82,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 28,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Bench",
+"oldN": 41,
+"oldTris": 3412,
+"oursN": 40,
+"oursTris": 3412,
+"placedTris": 276372,
+"kitLods": [
+852,
+378
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.88,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 16,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PottedTopiary",
+"oldN": 39,
+"oldTris": 4720,
+"oursN": 14,
+"oursTris": 4720,
+"placedTris": 250160,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.0006638,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Deckchair",
+"oldN": 66,
+"oldTris": 1888,
+"oursN": 66,
+"oursTris": 1888,
+"placedTris": 249216,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.9952567,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 39,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Planter_Trough",
+"oldN": 27,
+"oldTris": 2710,
+"oursN": 62,
+"oursTris": 2710,
+"placedTris": 241190,
+"kitLods": [
+675,
+160
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.04,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 15,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BalconyBay_3",
+"oldN": 62,
+"oldTris": 3340,
+"oursN": 3,
+"oursTris": 3340,
+"placedTris": 217100,
+"kitLods": [
+774,
+202
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378643,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RobotWaiter",
+"oldN": 5,
+"oldTris": 15324,
+"oursN": 8,
+"oursTris": 15324,
+"placedTris": 199212,
+"kitLods": [
+3827,
+912
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.516,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "Newsstand",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 11,
+"oursTris": 17964,
+"placedTris": 197604,
+"kitLods": [
+5748,
+5748
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.99,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Hydrant",
+"oldN": 10,
+"oldTris": 6840,
+"oursN": 18,
+"oursTris": 6840,
+"placedTris": 191520,
+"kitLods": [
+1710,
+409
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.79,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyWall_4D",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 5254,
+"placedTris": 183890,
+"kitLods": [
+200,
+218
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Tram",
+"oldN": 5,
+"oldTris": 36644,
+"oursN": 0,
+"oursTris": 36644,
+"placedTris": 183220,
+"kitLods": [
+9145,
+2156
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BikeRack",
+"oldN": 14,
+"oldTris": 7572,
+"oursN": 10,
+"oursTris": 7572,
+"placedTris": 181728,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.38,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "HangingBasket",
+"oldN": 15,
+"oldTris": 2140,
+"oursN": 65,
+"oursTris": 2140,
+"placedTris": 171200,
+"kitLods": [
+533,
+128
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.78608304,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 18,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PottedPalm_Small",
+"oldN": 45,
+"oldTris": 2396,
+"oursN": 26,
+"oursTris": 2396,
+"placedTris": 170116,
+"kitLods": [
+598,
+143
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7205606,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 20,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyWall_3D",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 4614,
+"placedTris": 161490,
+"kitLods": [
+178,
+180
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "RecyclingBins",
+"oldN": 19,
+"oldTris": 3708,
+"oursN": 54,
+"oursTris": 1676,
+"placedTris": 160956,
+"kitLods": [
+418,
+126
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.06,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 10,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DomeCamera",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 20,
+"oursTris": 7550,
+"placedTris": 151000,
+"kitLods": [
+1887,
+452
+],
+"oursLevels": 1,
+"oursHeights": [
+0.0081
+],
+"size": 0.60249996,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "TramCanopy",
+"oldN": 10,
+"oldTris": 15028,
+"oursN": 0,
+"oursTris": 15028,
+"placedTris": 150280,
+"kitLods": [
+3757,
+901
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DrainGrate",
+"oldN": 35,
+"oldTris": 4068,
+"oursN": 0,
+"oursTris": 4068,
+"placedTris": 142380,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 13,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CurvedKiosk",
+"oldN": 7,
+"oldTris": 17260,
+"oursN": 1,
+"oursTris": 17260,
+"placedTris": 138080,
+"kitLods": [
+4314,
+1020
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 6.5,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CCTVPole",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 20,
+"oursTris": 6882,
+"placedTris": 137640,
+"kitLods": [
+1720,
+407
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.182216,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Planter_Urn",
+"oldN": 36,
+"oldTris": 3642,
+"oursN": 0,
+"oursTris": 3642,
+"placedTris": 131112,
+"kitLods": [
+905,
+214
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 10,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TicketKiosk",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 6,
+"oursTris": 21342,
+"placedTris": 128052,
+"kitLods": [
+5335,
+1266
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "FanPalm_Play",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 30,
+"oursTris": 4194,
+"placedTris": 125820,
+"kitLods": [
+1048,
+251
+],
+"oursLevels": 3,
+"oursHeights": [
+0.08,
+0.025,
+0.01
+],
+"size": 2.8399673,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 18,
+"prefabLod": null
+},
+{
+"piece": "TerraceScreen",
+"oldN": 40,
+"oldTris": 3048,
+"oursN": 0,
+"oursTris": 3048,
+"placedTris": 121920,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 26,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ShrubMound",
+"oldN": 34,
+"oldTris": 2526,
+"oursN": 13,
+"oursTris": 2526,
+"placedTris": 118722,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.9873588,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 16,
+"prefabLod": false
+},
+{
+"piece": "RobotNanny",
+"oldN": 4,
+"oldTris": 19688,
+"oursN": 2,
+"oursTris": 19688,
+"placedTris": 118128,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.5797458,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "WindowBox",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 48,
+"oursTris": 2298,
+"placedTris": 110304,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.5389874,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamBay_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 60,
+"oursTris": 1706,
+"placedTris": 102360,
+"kitLods": [
+364,
+132
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "RobotButler",
+"oldN": 4,
+"oldTris": 16216,
+"oursN": 2,
+"oursTris": 16216,
+"placedTris": 97296,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.8559742,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "StreamEnd_3",
+"oldN": 7,
+"oldTris": 10700,
+"oursN": 2,
+"oursTris": 10820,
+"placedTris": 96540,
+"kitLods": [
+2650,
+628
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "HallCornerWing",
+"oldN": 3,
+"oldTris": 31230,
+"oursN": 0,
+"oursTris": 31230,
+"placedTris": 93690,
+"kitLods": [
+7806,
+5464
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TicketMachine",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 10,
+"oursTris": 9198,
+"placedTris": 91980,
+"kitLods": [
+2297,
+538
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7739999,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "ManholeCover",
+"oldN": 16,
+"oldTris": 5388,
+"oursN": 0,
+"oursTris": 5388,
+"placedTris": 86208,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ShopFill_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 82,
+"oursTris": 1024,
+"placedTris": 83968,
+"kitLods": [
+206,
+188
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "LightDotRow_2",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 244,
+"oursTris": 336,
+"placedTris": 81984,
+"kitLods": [
+160
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.18,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "HoverScooter",
+"oldN": 7,
+"oldTris": 11554,
+"oursN": 0,
+"oursTris": 11554,
+"placedTris": 80878,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RoundBench",
+"oldN": 27,
+"oldTris": 2512,
+"oursN": 5,
+"oursTris": 2512,
+"placedTris": 80384,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.234,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 14,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DecoEnd_10",
+"oldN": 10,
+"oldTris": 8032,
+"oursN": 0,
+"oursTris": 8032,
+"placedTris": 80320,
+"kitLods": [
+1964,
+998
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CoffeeCart",
+"oldN": 3,
+"oldTris": 24932,
+"oursN": 0,
+"oursTris": 24932,
+"placedTris": 74796,
+"kitLods": [
+6233,
+1478
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "FlowerBed",
+"oldN": 22,
+"oldTris": 2718,
+"oursN": 5,
+"oursTris": 2718,
+"placedTris": 73386,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.9806159,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RobotShopkeeper",
+"oldN": 3,
+"oldTris": 14642,
+"oursN": 2,
+"oursTris": 14642,
+"placedTris": 73210,
+"kitLods": [
+3603,
+844
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7050002,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "SkyRailStation_Twin",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 3,
+"oursTris": 23048,
+"placedTris": 69144,
+"kitLods": [
+5477,
+1608
+],
+"oursLevels": 3,
+"oursHeights": [
+0.15,
+0.05,
+0.004
+],
+"size": 54.25,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamBay_3W",
+"oldN": 39,
+"oldTris": 1444,
+"oursN": 8,
+"oursTris": 1444,
+"placedTris": 67868,
+"kitLods": [
+310
+],
+"oursLevels": 2,
+"oursHeights": [
+0.2,
+0.004
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BladeSign_Cafe",
+"oldN": 3,
+"oldTris": 3764,
+"oursN": 16,
+"oursTris": 3508,
+"placedTris": 67420,
+"kitLods": [
+872,
+204
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 6.599229,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RecordsTower_Planting",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 65692,
+"placedTris": 65692,
+"kitLods": [
+50194,
+33462,
+19430
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamEnd_6",
+"oldN": 4,
+"oldTris": 15764,
+"oursN": 0,
+"oursTris": 15980,
+"placedTris": 63056,
+"kitLods": [
+3884,
+926
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ShopFill_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 53,
+"oursTris": 1174,
+"placedTris": 62222,
+"kitLods": [
+234,
+212
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "InfoLightbox",
+"oldN": 9,
+"oldTris": 5370,
+"oursN": 2,
+"oursTris": 5370,
+"placedTris": 59070,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.0,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CoconutPalm_Street",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 7,
+"oursTris": 8230,
+"placedTris": 57610,
+"kitLods": [
+1330,
+514
+],
+"oursLevels": 3,
+"oursHeights": [
+0.1705,
+0.0731,
+0.004
+],
+"size": 10.652003,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "RobotPorter",
+"oldN": 3,
+"oldTris": 18810,
+"oursN": 0,
+"oursTris": 18810,
+"placedTris": 56430,
+"kitLods": [
+4639,
+1122
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "PortholeBay_3L",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 13,
+"oursTris": 4322,
+"placedTris": 56186,
+"kitLods": [
+1054,
+251
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378643,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CivicBedPlanting_office-west",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 52252,
+"placedTris": 52252,
+"kitLods": [
+44962,
+29058,
+17138
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CornerTower_12",
+"oldN": 2,
+"oldTris": 25870,
+"oursN": 0,
+"oursTris": 26142,
+"placedTris": 51740,
+"kitLods": [
+6397,
+1864
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeSet",
+"oldN": 5,
+"oldTris": 10264,
+"oursN": 0,
+"oursTris": 10264,
+"placedTris": 51320,
+"kitLods": [
+2566,
+609
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SignalLens",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 822,
+"placedTris": 28770,
+"kitLods": [
+234
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.085,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 40,
+"prefabLod": null
+},
+{
+"piece": "CornerPier_Out_Top",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 63,
+"oursTris": 456,
+"placedTris": 28728,
+"kitLods": [
+160,
+64
+],
+"oursLevels": 3,
+"oursHeights": [
+0.0843,
+0.0316,
+0.0115
+],
+"size": 3.9500005,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 22,
+"prefabLod": null
+},
+{
+"piece": "StreamBayStack_Top",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 69,
+"oursTris": 414,
+"placedTris": 28566,
+"kitLods": [
+158,
+86
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3084,
+0.1157,
+0.0421
+],
+"size": 14.45,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 32,
+"prefabLod": null
+},
+{
+"piece": "SkyRail_Pylon_Tall",
+"oldN": 75,
+"oldTris": 308,
+"oursN": 0,
+"oursTris": 308,
+"placedTris": 23100,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 22,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SkyRail_Pylon_Shaft",
+"oldN": 81,
+"oldTris": 40,
+"oursN": 0,
+"oursTris": 40,
+"placedTris": 3240,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 21,
+"tpStreet": 0,
+"prefabLod": false
+}
+],
+"all": [
+{
+"piece": "Tile_TramRail",
+"oldN": 1584,
+"oldTris": 3140,
+"oursN": 0,
+"oursTris": 3140,
+"placedTris": 4973760,
+"kitLods": [
+784,
+120
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 305,
+"tpStreet": 271,
+"prefabLod": false
+},
+{
+"piece": "CoconutPalm",
+"oldN": 225,
+"oldTris": 6310,
+"oursN": 77,
+"oursTris": 6310,
+"placedTris": 1905620,
+"kitLods": [
+1330,
+514
+],
+"oursLevels": 3,
+"oursHeights": [
+0.1271,
+0.0545,
+0.01
+],
+"size": 7.943894,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 62,
+"tpStreet": 72,
+"prefabLod": false
+},
+{
+"piece": "StreamCorner_3",
+"oldN": 76,
+"oldTris": 12170,
+"oursN": 6,
+"oursTris": 12302,
+"placedTris": 998732,
+"kitLods": [
+2995,
+715
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 24.638647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Cypress",
+"oldN": 163,
+"oldTris": 5004,
+"oursN": 0,
+"oursTris": 5004,
+"placedTris": 815652,
+"kitLods": [
+1251,
+300
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 20,
+"prefabLod": false
+},
+{
+"piece": "StreamBay_3",
+"oldN": 484,
+"oldTris": 1444,
+"oursN": 27,
+"oursTris": 1444,
+"placedTris": 737884,
+"kitLods": [
+310
+],
+"oursLevels": 2,
+"oursHeights": [
+0.2,
+0.004
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 10,
+"tpStreet": 80,
+"prefabLod": false
+},
+{
+"piece": "Streetlamp",
+"oldN": 103,
+"oldTris": 5782,
+"oursN": 20,
+"oursTris": 5782,
+"placedTris": 711186,
+"kitLods": [
+1445,
+345
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.93,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 46,
+"tpStreet": 15,
+"prefabLod": false
+},
+{
+"piece": "FanPalm",
+"oldN": 158,
+"oldTris": 4194,
+"oursN": 0,
+"oursTris": 4194,
+"placedTris": 662652,
+"kitLods": [
+1048,
+251
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 16,
+"tpStreet": 21,
+"prefabLod": false
+},
+{
+"piece": "PhoneBooth",
+"oldN": 7,
+"oldTris": 34744,
+"oursN": 22,
+"oursTris": 17776,
+"placedTris": 634280,
+"kitLods": [
+4443,
+1049
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.5837946,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PortholeBay_3",
+"oldN": 136,
+"oldTris": 4354,
+"oursN": 0,
+"oursTris": 4354,
+"placedTris": 592144,
+"kitLods": [
+1062,
+253
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 26,
+"prefabLod": false
+},
+{
+"piece": "Kerb_Granite_0",
+"oldN": 1130,
+"oldTris": 494,
+"oursN": 0,
+"oursTris": 494,
+"placedTris": 558220,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 71,
+"tpStreet": 370,
+"prefabLod": false
+},
+{
+"piece": "Kerb_Granite_1",
+"oldN": 1127,
+"oldTris": 494,
+"oursN": 0,
+"oursTris": 494,
+"placedTris": 556738,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyWall_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 116,
+"oursTris": 4418,
+"placedTris": 512488,
+"kitLods": [
+190,
+206
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "AlleyWall_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 111,
+"oursTris": 3776,
+"placedTris": 419136,
+"kitLods": [
+168,
+168
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamCorner_4",
+"oldN": 16,
+"oldTris": 14002,
+"oursN": 10,
+"oursTris": 14170,
+"placedTris": 365732,
+"kitLods": [
+3439,
+823
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 28.038647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeSet_Tulip",
+"oldN": 85,
+"oldTris": 3984,
+"oursN": 6,
+"oursTris": 3984,
+"placedTris": 362544,
+"kitLods": [
+996,
+239
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.87886,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 33,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PlazaSphereLamp",
+"oldN": 18,
+"oldTris": 7932,
+"oursN": 27,
+"oursTris": 7932,
+"placedTris": 356940,
+"kitLods": [
+1982,
+475
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 4.632,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 14,
+"prefabLod": false
+},
+{
+"piece": "Bollard",
+"oldN": 41,
+"oldTris": 5116,
+"oursN": 25,
+"oursTris": 5116,
+"placedTris": 337656,
+"kitLods": [
+1278,
+306
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.82,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 28,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Bench",
+"oldN": 41,
+"oldTris": 3412,
+"oursN": 40,
+"oursTris": 3412,
+"placedTris": 276372,
+"kitLods": [
+852,
+378
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.88,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 16,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PottedTopiary",
+"oldN": 39,
+"oldTris": 4720,
+"oursN": 14,
+"oursTris": 4720,
+"placedTris": 250160,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.0006638,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Deckchair",
+"oldN": 66,
+"oldTris": 1888,
+"oursN": 66,
+"oursTris": 1888,
+"placedTris": 249216,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.9952567,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 39,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Planter_Trough",
+"oldN": 27,
+"oldTris": 2710,
+"oursN": 62,
+"oursTris": 2710,
+"placedTris": 241190,
+"kitLods": [
+675,
+160
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.04,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 15,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BalconyBay_3",
+"oldN": 62,
+"oldTris": 3340,
+"oursN": 3,
+"oursTris": 3340,
+"placedTris": 217100,
+"kitLods": [
+774,
+202
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378643,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RobotWaiter",
+"oldN": 5,
+"oldTris": 15324,
+"oursN": 8,
+"oursTris": 15324,
+"placedTris": 199212,
+"kitLods": [
+3827,
+912
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.516,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "Newsstand",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 11,
+"oursTris": 17964,
+"placedTris": 197604,
+"kitLods": [
+5748,
+5748
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.99,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Hydrant",
+"oldN": 10,
+"oldTris": 6840,
+"oursN": 18,
+"oursTris": 6840,
+"placedTris": 191520,
+"kitLods": [
+1710,
+409
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.79,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyWall_4D",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 5254,
+"placedTris": 183890,
+"kitLods": [
+200,
+218
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Tram",
+"oldN": 5,
+"oldTris": 36644,
+"oursN": 0,
+"oursTris": 36644,
+"placedTris": 183220,
+"kitLods": [
+9145,
+2156
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BikeRack",
+"oldN": 14,
+"oldTris": 7572,
+"oursN": 10,
+"oursTris": 7572,
+"placedTris": 181728,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.38,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "HangingBasket",
+"oldN": 15,
+"oldTris": 2140,
+"oursN": 65,
+"oursTris": 2140,
+"placedTris": 171200,
+"kitLods": [
+533,
+128
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.78608304,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 18,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PottedPalm_Small",
+"oldN": 45,
+"oldTris": 2396,
+"oursN": 26,
+"oursTris": 2396,
+"placedTris": 170116,
+"kitLods": [
+598,
+143
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7205606,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 20,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyWall_3D",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 4614,
+"placedTris": 161490,
+"kitLods": [
+178,
+180
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "RecyclingBins",
+"oldN": 19,
+"oldTris": 3708,
+"oursN": 54,
+"oursTris": 1676,
+"placedTris": 160956,
+"kitLods": [
+418,
+126
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.06,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 10,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DomeCamera",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 20,
+"oursTris": 7550,
+"placedTris": 151000,
+"kitLods": [
+1887,
+452
+],
+"oursLevels": 1,
+"oursHeights": [
+0.0081
+],
+"size": 0.60249996,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "TramCanopy",
+"oldN": 10,
+"oldTris": 15028,
+"oursN": 0,
+"oursTris": 15028,
+"placedTris": 150280,
+"kitLods": [
+3757,
+901
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DrainGrate",
+"oldN": 35,
+"oldTris": 4068,
+"oursN": 0,
+"oursTris": 4068,
+"placedTris": 142380,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 13,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CurvedKiosk",
+"oldN": 7,
+"oldTris": 17260,
+"oursN": 1,
+"oursTris": 17260,
+"placedTris": 138080,
+"kitLods": [
+4314,
+1020
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 6.5,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CCTVPole",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 20,
+"oursTris": 6882,
+"placedTris": 137640,
+"kitLods": [
+1720,
+407
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.182216,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Planter_Urn",
+"oldN": 36,
+"oldTris": 3642,
+"oursN": 0,
+"oursTris": 3642,
+"placedTris": 131112,
+"kitLods": [
+905,
+214
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 10,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TicketKiosk",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 6,
+"oursTris": 21342,
+"placedTris": 128052,
+"kitLods": [
+5335,
+1266
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "FanPalm_Play",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 30,
+"oursTris": 4194,
+"placedTris": 125820,
+"kitLods": [
+1048,
+251
+],
+"oursLevels": 3,
+"oursHeights": [
+0.08,
+0.025,
+0.01
+],
+"size": 2.8399673,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 18,
+"prefabLod": null
+},
+{
+"piece": "TerraceScreen",
+"oldN": 40,
+"oldTris": 3048,
+"oursN": 0,
+"oursTris": 3048,
+"placedTris": 121920,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 26,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ShrubMound",
+"oldN": 34,
+"oldTris": 2526,
+"oursN": 13,
+"oursTris": 2526,
+"placedTris": 118722,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.9873588,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 16,
+"prefabLod": false
+},
+{
+"piece": "RobotNanny",
+"oldN": 4,
+"oldTris": 19688,
+"oursN": 2,
+"oursTris": 19688,
+"placedTris": 118128,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.5797458,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "WindowBox",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 48,
+"oursTris": 2298,
+"placedTris": 110304,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.5389874,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamBay_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 60,
+"oursTris": 1706,
+"placedTris": 102360,
+"kitLods": [
+364,
+132
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "RobotButler",
+"oldN": 4,
+"oldTris": 16216,
+"oursN": 2,
+"oursTris": 16216,
+"placedTris": 97296,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.8559742,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "StreamEnd_3",
+"oldN": 7,
+"oldTris": 10700,
+"oursN": 2,
+"oursTris": 10820,
+"placedTris": 96540,
+"kitLods": [
+2650,
+628
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "HallCornerWing",
+"oldN": 3,
+"oldTris": 31230,
+"oursN": 0,
+"oursTris": 31230,
+"placedTris": 93690,
+"kitLods": [
+7806,
+5464
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TicketMachine",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 10,
+"oursTris": 9198,
+"placedTris": 91980,
+"kitLods": [
+2297,
+538
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7739999,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "ManholeCover",
+"oldN": 16,
+"oldTris": 5388,
+"oursN": 0,
+"oursTris": 5388,
+"placedTris": 86208,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ShopFill_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 82,
+"oursTris": 1024,
+"placedTris": 83968,
+"kitLods": [
+206,
+188
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "LightDotRow_2",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 244,
+"oursTris": 336,
+"placedTris": 81984,
+"kitLods": [
+160
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.18,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "HoverScooter",
+"oldN": 7,
+"oldTris": 11554,
+"oursN": 0,
+"oursTris": 11554,
+"placedTris": 80878,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RoundBench",
+"oldN": 27,
+"oldTris": 2512,
+"oursN": 5,
+"oursTris": 2512,
+"placedTris": 80384,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.234,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 14,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DecoEnd_10",
+"oldN": 10,
+"oldTris": 8032,
+"oursN": 0,
+"oursTris": 8032,
+"placedTris": 80320,
+"kitLods": [
+1964,
+998
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CoffeeCart",
+"oldN": 3,
+"oldTris": 24932,
+"oursN": 0,
+"oursTris": 24932,
+"placedTris": 74796,
+"kitLods": [
+6233,
+1478
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "FlowerBed",
+"oldN": 22,
+"oldTris": 2718,
+"oursN": 5,
+"oursTris": 2718,
+"placedTris": 73386,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.9806159,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RobotShopkeeper",
+"oldN": 3,
+"oldTris": 14642,
+"oursN": 2,
+"oursTris": 14642,
+"placedTris": 73210,
+"kitLods": [
+3603,
+844
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7050002,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "SkyRailStation_Twin",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 3,
+"oursTris": 23048,
+"placedTris": 69144,
+"kitLods": [
+5477,
+1608
+],
+"oursLevels": 3,
+"oursHeights": [
+0.15,
+0.05,
+0.004
+],
+"size": 54.25,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamBay_3W",
+"oldN": 39,
+"oldTris": 1444,
+"oursN": 8,
+"oursTris": 1444,
+"placedTris": 67868,
+"kitLods": [
+310
+],
+"oursLevels": 2,
+"oursHeights": [
+0.2,
+0.004
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BladeSign_Cafe",
+"oldN": 3,
+"oldTris": 3764,
+"oursN": 16,
+"oursTris": 3508,
+"placedTris": 67420,
+"kitLods": [
+872,
+204
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 6.599229,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RecordsTower_Planting",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 65692,
+"placedTris": 65692,
+"kitLods": [
+50194,
+33462,
+19430
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "StreamEnd_6",
+"oldN": 4,
+"oldTris": 15764,
+"oursN": 0,
+"oursTris": 15980,
+"placedTris": 63056,
+"kitLods": [
+3884,
+926
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ShopFill_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 53,
+"oursTris": 1174,
+"placedTris": 62222,
+"kitLods": [
+234,
+212
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "InfoLightbox",
+"oldN": 9,
+"oldTris": 5370,
+"oursN": 2,
+"oursTris": 5370,
+"placedTris": 59070,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.0,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CoconutPalm_Street",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 7,
+"oursTris": 8230,
+"placedTris": 57610,
+"kitLods": [
+1330,
+514
+],
+"oursLevels": 3,
+"oursHeights": [
+0.1705,
+0.0731,
+0.004
+],
+"size": 10.652003,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "RobotPorter",
+"oldN": 3,
+"oldTris": 18810,
+"oursN": 0,
+"oursTris": 18810,
+"placedTris": 56430,
+"kitLods": [
+4639,
+1122
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": true
+},
+{
+"piece": "PortholeBay_3L",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 13,
+"oursTris": 4322,
+"placedTris": 56186,
+"kitLods": [
+1054,
+251
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378643,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CivicBedPlanting_office-west",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 52252,
+"placedTris": 52252,
+"kitLods": [
+44962,
+29058,
+17138
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CornerTower_12",
+"oldN": 2,
+"oldTris": 25870,
+"oursN": 0,
+"oursTris": 26142,
+"placedTris": 51740,
+"kitLods": [
+6397,
+1864
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeSet",
+"oldN": 5,
+"oldTris": 10264,
+"oursN": 0,
+"oursTris": 10264,
+"placedTris": 51320,
+"kitLods": [
+2566,
+609
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PlanterArc_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 4,
+"oursTris": 12284,
+"placedTris": 49136,
+"kitLods": [
+6236,
+4016
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3442,
+0.1878,
+0.01
+],
+"size": 4.647109,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CoinTelescope",
+"oldN": 15,
+"oldTris": 3234,
+"oursN": 0,
+"oursTris": 3234,
+"placedTris": 48510,
+"kitLods": [
+808,
+189
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 9,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PhoneBooth_Single",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 5,
+"oursTris": 9298,
+"placedTris": 46490,
+"kitLods": [
+2323,
+555
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.3627095,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CafeTerrace_Planting",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 44694,
+"placedTris": 44694,
+"kitLods": [
+31194,
+21282,
+12182
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "VendingMachine_Cola",
+"oldN": 3,
+"oldTris": 3958,
+"oursN": 8,
+"oursTris": 3958,
+"placedTris": 43538,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.978,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AdColumn",
+"oldN": 7,
+"oldTris": 4790,
+"oursN": 2,
+"oursTris": 4790,
+"placedTris": 43110,
+"kitLods": [
+1197,
+287
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.34,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "StreamEnd_3W",
+"oldN": 2,
+"oldTris": 10700,
+"oursN": 2,
+"oursTris": 10820,
+"placedTris": 43040,
+"kitLods": [
+2650,
+628
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 16.378647,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BistroSet",
+"oldN": 10,
+"oldTris": 3878,
+"oursN": 0,
+"oursTris": 3878,
+"placedTris": 38780,
+"kitLods": [
+968,
+232
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DecoPavilion",
+"oldN": 1,
+"oldTris": 38364,
+"oursN": 0,
+"oursTris": 38240,
+"placedTris": 38364,
+"kitLods": [
+9544,
+2248
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SideBay_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 15,
+"oursTris": 2496,
+"placedTris": 37440,
+"kitLods": [
+316,
+332
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "TopiaryCone",
+"oldN": 4,
+"oldTris": 2484,
+"oursN": 11,
+"oursTris": 2484,
+"placedTris": 37260,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.7030443,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SideBayStack_Top",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 75,
+"oursTris": 494,
+"placedTris": 37050,
+"kitLods": [
+50,
+68
+],
+"oursLevels": 3,
+"oursHeights": [
+0.1281,
+0.048,
+0.0175
+],
+"size": 6.0,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 18,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "SandwichBoard",
+"oldN": 7,
+"oldTris": 2116,
+"oursN": 10,
+"oursTris": 2116,
+"placedTris": 35972,
+"kitLods": [
+529,
+114
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.1694149,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RecordsTower_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 34895,
+"placedTris": 34895,
+"kitLods": [
+6831,
+3380
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2433,
+0.0912,
+0.004
+],
+"size": 38.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "PlazaFountain",
+"oldN": 3,
+"oldTris": 11106,
+"oursN": 0,
+"oursTris": 11106,
+"placedTris": 33318,
+"kitLods": [
+2775,
+666
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DiscTower",
+"oldN": 4,
+"oldTris": 8276,
+"oursN": 0,
+"oursTris": 6768,
+"placedTris": 33104,
+"kitLods": [
+1652,
+406
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Skyport_Tower",
+"oldN": 1,
+"oldTris": 33029,
+"oursN": 0,
+"oursTris": 33029,
+"placedTris": 33029,
+"kitLods": [
+8219,
+2355
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TimetableColumn",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 10,
+"oursTris": 3302,
+"placedTris": 33020,
+"kitLods": [
+825,
+197
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.6,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CafeUpper_3_Planting",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 32835,
+"placedTris": 32835,
+"kitLods": [
+22665,
+15493,
+8911
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "VendingMachine_Snack",
+"oldN": 2,
+"oldTris": 3246,
+"oursN": 8,
+"oursTris": 3246,
+"placedTris": 32460,
+"kitLods": [
+811,
+194
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.86,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "HallBay",
+"oldN": 8,
+"oldTris": 3950,
+"oursN": 0,
+"oursTris": 3950,
+"placedTris": 31600,
+"kitLods": [
+986,
+224
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Cypress_Play",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 6,
+"oursTris": 5004,
+"placedTris": 30024,
+"kitLods": [
+1251,
+300
+],
+"oursLevels": 3,
+"oursHeights": [
+0.08,
+0.025,
+0.01
+],
+"size": 6.419554,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Roof_Tank",
+"oldN": 4,
+"oldTris": 2136,
+"oursN": 10,
+"oursTris": 2136,
+"placedTris": 29904,
+"kitLods": [
+534,
+128
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 10.42564,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "NeonStar_Wall",
+"oldN": 2,
+"oldTris": 2928,
+"oursN": 8,
+"oursTris": 2928,
+"placedTris": 29280,
+"kitLods": [
+730,
+171
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.6100001,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Tower_Terrace",
+"oldN": 1,
+"oldTris": 28884,
+"oursN": 0,
+"oursTris": 28884,
+"placedTris": 28884,
+"kitLods": [
+6702,
+1926
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SignalLens",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 822,
+"placedTris": 28770,
+"kitLods": [
+234
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.085,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 40,
+"prefabLod": null
+},
+{
+"piece": "CornerPier_Out_Top",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 63,
+"oursTris": 456,
+"placedTris": 28728,
+"kitLods": [
+160,
+64
+],
+"oursLevels": 3,
+"oursHeights": [
+0.0843,
+0.0316,
+0.0115
+],
+"size": 3.9500005,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 22,
+"prefabLod": null
+},
+{
+"piece": "StreamBayStack_Top",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 69,
+"oursTris": 414,
+"placedTris": 28566,
+"kitLods": [
+158,
+86
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3084,
+0.1157,
+0.0421
+],
+"size": 14.45,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 32,
+"prefabLod": null
+},
+{
+"piece": "CivicBedPlanting_facade-southwest",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 28285,
+"placedTris": 28285,
+"kitLods": [
+19033,
+13125,
+7483
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "PlanterRun_4_A_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 5,
+"oursTris": 5655,
+"placedTris": 28275,
+"kitLods": [
+3837,
+2657,
+1547
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "SidePilaster_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 43,
+"oursTris": 652,
+"placedTris": 28036,
+"kitLods": [
+276,
+180
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.7,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CivicBedPlanting_facade-southeast",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 26521,
+"placedTris": 26521,
+"kitLods": [
+19339,
+13023,
+7521
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "SidePilaster_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 45,
+"oursTris": 572,
+"placedTris": 25740,
+"kitLods": [
+228,
+156
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "LifebuoyStand",
+"oldN": 13,
+"oldTris": 1940,
+"oursN": 0,
+"oursTris": 1940,
+"placedTris": 25220,
+"kitLods": [
+485,
+111
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "StreamBay_6",
+"oldN": 11,
+"oldTris": 2230,
+"oursN": 0,
+"oursTris": 2230,
+"placedTris": 24530,
+"kitLods": [
+472,
+176
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SideBay_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 12,
+"oursTris": 2026,
+"placedTris": 24312,
+"kitLods": [
+254,
+272
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.3,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "PottedFern",
+"oldN": 12,
+"oldTris": 2020,
+"oursN": 0,
+"oursTris": 2020,
+"placedTris": 24240,
+"kitLods": [
+505,
+121
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Pylon_A",
+"oldN": 2,
+"oldTris": 7836,
+"oursN": 1,
+"oursTris": 7836,
+"placedTris": 23508,
+"kitLods": [
+1944,
+463
+],
+"oursLevels": 2,
+"oursHeights": [
+0.008,
+0.004
+],
+"size": 14.033,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "StreetClock",
+"oldN": 2,
+"oldTris": 3350,
+"oursN": 5,
+"oursTris": 3350,
+"placedTris": 23450,
+"kitLods": [
+836,
+199
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 4.45,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CivicBedPlanting_dropoff-west",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 23303,
+"placedTris": 23303,
+"kitLods": [
+15617,
+10777,
+6151
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "SkyRail_Pylon_Tall",
+"oldN": 75,
+"oldTris": 308,
+"oursN": 0,
+"oursTris": 308,
+"placedTris": 23100,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 22,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "ArcadeBay_3",
+"oldN": 4,
+"oldTris": 5380,
+"oursN": 0,
+"oursTris": 5380,
+"placedTris": 21520,
+"kitLods": [
+1272,
+392
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CivicBedPlanting_office-north",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 21426,
+"placedTris": 21426,
+"kitLods": [
+18294,
+11886,
+6946
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Lockers",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 2,
+"oursTris": 10712,
+"placedTris": 21424,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.49,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Parasol_Testbed",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 7,
+"oursTris": 3008,
+"placedTris": 21056,
+"kitLods": [
+752,
+180
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.804,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "PipeBundle_6",
+"oldN": 6,
+"oldTris": 3390,
+"oursN": 0,
+"oursTris": 3390,
+"placedTris": 20340,
+"kitLods": [
+827,
+214
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Automat",
+"oldN": 1,
+"oldTris": 3967,
+"oursN": 4,
+"oursTris": 3967,
+"placedTris": 19835,
+"kitLods": [
+985,
+226
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 2.44,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PlanterRun_4_B_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 4,
+"oursTris": 4909,
+"placedTris": 19636,
+"kitLods": [
+3541,
+2417,
+1415
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CircusMonument",
+"oldN": 1,
+"oldTris": 18876,
+"oursN": 0,
+"oursTris": 18876,
+"placedTris": 18876,
+"kitLods": [
+4683,
+1101
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeInterior_Testbed",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 18690,
+"placedTris": 18690,
+"kitLods": [
+4638,
+1087
+],
+"oursLevels": 2,
+"oursHeights": [
+0.008,
+0.004
+],
+"size": 22.52,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Tower_Starburst",
+"oldN": 1,
+"oldTris": 18520,
+"oursN": 0,
+"oursTris": 18520,
+"placedTris": 18520,
+"kitLods": [
+4448,
+1867
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SphereStation",
+"oldN": 1,
+"oldTris": 18420,
+"oursN": 0,
+"oursTris": 18420,
+"placedTris": 18420,
+"kitLods": [
+4604,
+1105
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PlanterRun_4_C_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 3,
+"oursTris": 5976,
+"placedTris": 17928,
+"kitLods": [
+3906,
+2726,
+1578
+],
+"oursLevels": 4,
+"oursHeights": [
+0.6667,
+0.2963,
+0.1667,
+0.01
+],
+"size": 4.0,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Billboard_Rooftop_B",
+"oldN": 3,
+"oldTris": 5808,
+"oursN": 0,
+"oursTris": 5808,
+"placedTris": 17424,
+"kitLods": [
+1426,
+348
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PortholeBay_4L",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 3,
+"oursTris": 5478,
+"placedTris": 16434,
+"kitLods": [
+1338,
+319
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Tower_Atom",
+"oldN": 1,
+"oldTris": 16358,
+"oursN": 0,
+"oursTris": 16358,
+"placedTris": 16358,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SkyPad_Roof",
+"oldN": 4,
+"oldTris": 3732,
+"oursN": 0,
+"oursTris": 3732,
+"placedTris": 14928,
+"kitLods": [
+915,
+337
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CableSpan_6",
+"oldN": 6,
+"oldTris": 2476,
+"oursN": 0,
+"oursTris": 2476,
+"placedTris": 14856,
+"kitLods": [
+618,
+148
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Tower_Lantern",
+"oldN": 1,
+"oldTris": 14788,
+"oursN": 0,
+"oursTris": 14788,
+"placedTris": 14788,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "LinerDock",
+"oldN": 1,
+"oldTris": 14626,
+"oursN": 0,
+"oursTris": 14626,
+"placedTris": 14626,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CornerPier_In_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 6,
+"oursTris": 2392,
+"placedTris": 14352,
+"kitLods": [
+752,
+448
+],
+"oursLevels": 3,
+"oursHeights": [
+0.4205,
+0.1577,
+0.0573
+],
+"size": 19.700003,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Kerb_GraniteCorner_0",
+"oldN": 11,
+"oldTris": 1236,
+"oursN": 0,
+"oursTris": 1236,
+"placedTris": 13596,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeUpper_3_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 13543,
+"placedTris": 13543,
+"kitLods": [
+3325,
+1226
+],
+"oursLevels": 2,
+"oursHeights": [
+0.008,
+0.004
+],
+"size": 23.169893,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Roof_Conservatory",
+"oldN": 6,
+"oldTris": 2214,
+"oursN": 0,
+"oursTris": 2214,
+"placedTris": 13284,
+"kitLods": [
+483,
+108
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Tower_Saucer",
+"oldN": 2,
+"oldTris": 6562,
+"oursN": 0,
+"oursTris": 6562,
+"placedTris": 13124,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_Pool",
+"oldN": 5,
+"oldTris": 2136,
+"oursN": 1,
+"oursTris": 2136,
+"placedTris": 12816,
+"kitLods": [
+502,
+126
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 14.8,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BusShelter",
+"oldN": 1,
+"oldTris": 12592,
+"oursN": 0,
+"oursTris": 12592,
+"placedTris": 12592,
+"kitLods": [
+3147,
+737
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "StreamEnd_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 12540,
+"placedTris": 12540,
+"kitLods": [
+3062,
+728
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778648,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "TreePit_Flags_0",
+"oldN": 26,
+"oldTris": 478,
+"oursN": 0,
+"oursTris": 478,
+"placedTris": 12428,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DecoCorner_10",
+"oldN": 1,
+"oldTris": 11748,
+"oursN": 0,
+"oursTris": 11748,
+"placedTris": 11748,
+"kitLods": [
+2816,
+1055
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TreePit_Flags_1",
+"oldN": 24,
+"oldTris": 478,
+"oursN": 0,
+"oursTris": 478,
+"placedTris": 11472,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_Planter",
+"oldN": 14,
+"oldTris": 816,
+"oursN": 0,
+"oursTris": 816,
+"placedTris": 11424,
+"kitLods": [
+202
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TreePit_Flags_2",
+"oldN": 23,
+"oldTris": 478,
+"oursN": 0,
+"oursTris": 478,
+"placedTris": 10994,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "OceanLiner",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 10708,
+"placedTris": 10708,
+"kitLods": [
+2595,
+1078
+],
+"oursLevels": 3,
+"oursHeights": [
+0.15,
+0.05,
+0.004
+],
+"size": 95.52562,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "TreePit_Flags_3",
+"oldN": 22,
+"oldTris": 478,
+"oursN": 0,
+"oursTris": 478,
+"placedTris": 10516,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Tower_Setback",
+"oldN": 2,
+"oldTris": 5142,
+"oursN": 0,
+"oursTris": 5142,
+"placedTris": 10284,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_LapPool",
+"oldN": 5,
+"oldTris": 2022,
+"oursN": 0,
+"oursTris": 2022,
+"placedTris": 10110,
+"kitLods": [
+481,
+119
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SidePilaster_Top",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 63,
+"oursTris": 152,
+"placedTris": 9576,
+"kitLods": [
+60,
+48
+],
+"oursLevels": 3,
+"oursHeights": [
+0.0843,
+0.0316,
+0.0115
+],
+"size": 3.95,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 10,
+"tpStreet": 18,
+"prefabLod": null
+},
+{
+"piece": "DrinkingFountain",
+"oldN": 2,
+"oldTris": 3122,
+"oursN": 1,
+"oursTris": 3122,
+"placedTris": 9366,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.972997,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BalconyBay_4",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 2,
+"oursTris": 4550,
+"placedTris": 9100,
+"kitLods": [
+1054,
+273
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 19.778645,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Roof_Mast",
+"oldN": 1,
+"oldTris": 1792,
+"oursN": 4,
+"oursTris": 1792,
+"placedTris": 8960,
+"kitLods": [
+448,
+106
+],
+"oursLevels": 3,
+"oursHeights": [
+0.2,
+0.07,
+0.004
+],
+"size": 20.600641,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SkyRail_Pylon_Head",
+"oldN": 24,
+"oldTris": 368,
+"oursN": 0,
+"oursTris": 368,
+"placedTris": 8832,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Kerb_GraniteCorner_2",
+"oldN": 7,
+"oldTris": 1236,
+"oursN": 0,
+"oursTris": 1236,
+"placedTris": 8652,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Tower_Stepped",
+"oldN": 3,
+"oldTris": 2772,
+"oursN": 0,
+"oursTris": 2772,
+"placedTris": 8316,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SkyRailStation_Decks",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 2,
+"oursTris": 4140,
+"placedTris": 8280,
+"kitLods": [
+963,
+239
+],
+"oursLevels": 3,
+"oursHeights": [
+0.15,
+0.05,
+0.004
+],
+"size": 50.0,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "BladeSign_Hotel",
+"oldN": 2,
+"oldTris": 3884,
+"oursN": 0,
+"oursTris": 3884,
+"placedTris": 7768,
+"kitLods": [
+964,
+218
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "PneumaticPost",
+"oldN": 2,
+"oldTris": 3824,
+"oursN": 0,
+"oursTris": 3824,
+"placedTris": 7648,
+"kitLods": [
+956,
+229
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Pylon_B",
+"oldN": 1,
+"oldTris": 7644,
+"oursN": 0,
+"oursTris": 7644,
+"placedTris": 7644,
+"kitLods": [
+1898,
+445
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RecordsEntrance",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 7348,
+"placedTris": 7348,
+"kitLods": [
+1815,
+430
+],
+"oursLevels": 2,
+"oursHeights": [
+0.008,
+0.004
+],
+"size": 13.6,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Planter_Urn_Play",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 2,
+"oursTris": 3642,
+"placedTris": 7284,
+"kitLods": [
+905,
+214
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.2511594,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "ParabolicArch",
+"oldN": 1,
+"oldTris": 7124,
+"oursN": 0,
+"oursTris": 7124,
+"placedTris": 7124,
+"kitLods": [
+1780,
+426
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AirCar_Teal",
+"oldN": 3,
+"oldTris": 2010,
+"oursN": 0,
+"oursTris": 2010,
+"placedTris": 6030,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Rooftop_A",
+"oldN": 1,
+"oldTris": 5808,
+"oursN": 0,
+"oursTris": 5808,
+"placedTris": 5808,
+"kitLods": [
+1426,
+348
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Rooftop_C",
+"oldN": 1,
+"oldTris": 5808,
+"oursN": 0,
+"oursTris": 5808,
+"placedTris": 5808,
+"kitLods": [
+1426,
+348
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "TrashCans",
+"oldN": 2,
+"oldTris": 2820,
+"oursN": 0,
+"oursTris": 2820,
+"placedTris": 5640,
+"kitLods": [
+704,
+168
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AlleyBridge",
+"oldN": 1,
+"oldTris": 5398,
+"oursN": 0,
+"oursTris": 5398,
+"placedTris": 5398,
+"kitLods": [
+1348,
+343
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Wall_C",
+"oldN": 2,
+"oldTris": 2694,
+"oursN": 0,
+"oursTris": 2694,
+"placedTris": 5388,
+"kitLods": [
+672,
+158
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "LightDotRow_1",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 30,
+"oursTris": 168,
+"placedTris": 5040,
+"kitLods": [
+80
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.18,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "CafeBay_v2",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 5032,
+"placedTris": 5032,
+"kitLods": [
+1258,
+314
+],
+"oursLevels": 2,
+"oursHeights": [
+0.008,
+0.004
+],
+"size": 25.403122,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Kerb_GraniteCorner_1",
+"oldN": 4,
+"oldTris": 1236,
+"oursN": 0,
+"oursTris": 1236,
+"placedTris": 4944,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Dumpster",
+"oldN": 2,
+"oldTris": 2414,
+"oursN": 0,
+"oursTris": 2414,
+"placedTris": 4828,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Marquee_Cinema",
+"oldN": 1,
+"oldTris": 4818,
+"oursN": 0,
+"oursTris": 4818,
+"placedTris": 4818,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Skylon",
+"oldN": 1,
+"oldTris": 4592,
+"oursN": 0,
+"oursTris": 4592,
+"placedTris": 4592,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "HaloRing",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 35,
+"oursTris": 130,
+"placedTris": 4550,
+"kitLods": [
+66
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 1.24,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "BladeSign_Cinema",
+"oldN": 1,
+"oldTris": 4400,
+"oursN": 0,
+"oursTris": 4400,
+"placedTris": 4400,
+"kitLods": [
+1100,
+256
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "MilkCrates",
+"oldN": 2,
+"oldTris": 2184,
+"oursN": 0,
+"oursTris": 2184,
+"placedTris": 4368,
+"kitLods": [
+485,
+162
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_Cabana",
+"oldN": 33,
+"oldTris": 122,
+"oursN": 2,
+"oursTris": 122,
+"placedTris": 4270,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 3.3,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 13,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CornerPier_In_3",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 2,
+"oursTris": 2068,
+"placedTris": 4136,
+"kitLods": [
+632,
+384
+],
+"oursLevels": 3,
+"oursHeights": [
+0.3479,
+0.1305,
+0.0474
+],
+"size": 16.300001,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "AirCar_Coral",
+"oldN": 2,
+"oldTris": 2010,
+"oursN": 0,
+"oursTris": 2010,
+"placedTris": 4020,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_LatticeMast",
+"oldN": 2,
+"oldTris": 1924,
+"oursN": 0,
+"oursTris": 1924,
+"placedTris": 3848,
+"kitLods": [
+480,
+114
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "DecoBay_10",
+"oldN": 4,
+"oldTris": 894,
+"oursN": 0,
+"oursTris": 894,
+"placedTris": 3576,
+"kitLods": [
+160
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "AirCar_Saucer",
+"oldN": 2,
+"oldTris": 1728,
+"oursN": 0,
+"oursTris": 1728,
+"placedTris": 3456,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SkyRail_Pylon_Shaft",
+"oldN": 81,
+"oldTris": 40,
+"oursN": 0,
+"oursTris": 40,
+"placedTris": 3240,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 21,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_Bandstand",
+"oldN": 3,
+"oldTris": 946,
+"oursN": 0,
+"oursTris": 946,
+"placedTris": 2838,
+"kitLods": [
+236
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Wall_A",
+"oldN": 1,
+"oldTris": 2694,
+"oursN": 0,
+"oursTris": 2694,
+"placedTris": 2694,
+"kitLods": [
+672,
+158
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Billboard_Wall_B",
+"oldN": 1,
+"oldTris": 2694,
+"oursN": 0,
+"oursTris": 2694,
+"placedTris": 2694,
+"kitLods": [
+672,
+158
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Roof_Drum",
+"oldN": 3,
+"oldTris": 864,
+"oursN": 0,
+"oursTris": 864,
+"placedTris": 2592,
+"kitLods": [
+216
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CrateStack",
+"oldN": 1,
+"oldTris": 2558,
+"oursN": 0,
+"oursTris": 2558,
+"placedTris": 2558,
+"kitLods": [
+536,
+196
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Kerb_GraniteCorner_3",
+"oldN": 2,
+"oldTris": 1236,
+"oursN": 0,
+"oursTris": 1236,
+"placedTris": 2472,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Pallet",
+"oldN": 1,
+"oldTris": 2160,
+"oursN": 0,
+"oursTris": 2160,
+"placedTris": 2160,
+"kitLods": [
+540,
+104
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "BikeLean",
+"oldN": 1,
+"oldTris": 2056,
+"oursN": 0,
+"oursTris": 2056,
+"placedTris": 2056,
+"kitLods": [
+508,
+123
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RecordsEntrance_Official",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 1988,
+"placedTris": 1988,
+"kitLods": [
+486,
+118
+],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 5.999819,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Roof_Radome",
+"oldN": 2,
+"oldTris": 952,
+"oursN": 0,
+"oursTris": 952,
+"placedTris": 1904,
+"kitLods": [
+238
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "RocketShip",
+"oldN": 1,
+"oldTris": 1470,
+"oursN": 0,
+"oursTris": 1470,
+"placedTris": 1470,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SkyBridge",
+"oldN": 1,
+"oldTris": 1380,
+"oursN": 0,
+"oursTris": 1380,
+"placedTris": 1380,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": true,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Pave_Flags_0",
+"oldN": 673,
+"oldTris": 2,
+"oursN": 0,
+"oursTris": 2,
+"placedTris": 1346,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Pave_Flags_1",
+"oldN": 664,
+"oldTris": 2,
+"oursN": 0,
+"oursTris": 2,
+"placedTris": 1328,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Pave_Flags_2",
+"oldN": 662,
+"oldTris": 2,
+"oursN": 0,
+"oursTris": 2,
+"placedTris": 1324,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "Pave_Flags_3",
+"oldN": 650,
+"oldTris": 2,
+"oursN": 0,
+"oursTris": 2,
+"placedTris": 1300,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "SteamVent",
+"oldN": 1,
+"oldTris": 1244,
+"oursN": 0,
+"oursTris": 1244,
+"placedTris": 1244,
+"kitLods": [
+301
+],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "CafeTerrace_TB",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 1,
+"oursTris": 312,
+"placedTris": 312,
+"kitLods": [
+216,
+64
+],
+"oursLevels": 2,
+"oursHeights": [
+0.008,
+0.004
+],
+"size": 34.612427,
+"lodAtPlay": true,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+},
+{
+"piece": "Roof_Fin",
+"oldN": 1,
+"oldTris": 248,
+"oursN": 0,
+"oursTris": 248,
+"placedTris": 248,
+"kitLods": [],
+"oursLevels": 0,
+"oursHeights": [],
+"size": null,
+"lodAtPlay": false,
+"sameL0": false,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": false
+},
+{
+"piece": "civic-restyle/basket-cafe",
+"oldN": 0,
+"oldTris": 0,
+"oursN": 2,
+"oursTris": 0,
+"placedTris": 0,
+"kitLods": [],
+"oursLevels": 1,
+"oursHeights": [
+0.01
+],
+"size": 0.78608304,
+"lodAtPlay": false,
+"sameL0": null,
+"tpWorst": 0,
+"tpStreet": 0,
+"prefabLod": null
+}
+]
+}

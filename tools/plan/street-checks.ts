@@ -5,6 +5,8 @@ import { ctxOf as genCtx } from '../world/gen/common';
 import { SIGHT_CLEAR, junctionCorners, kindOf, plotRing } from '../world/gen/edges';
 import { landingsOf } from '../world/gen/street/crossings';
 import { PART_KINDS } from '../world/gen/street/parts';
+import { OLD_STREET } from '../world/gen/oldstreet';
+import { oldPalmEdge } from '../world/gen/street/palms';
 import type { Check } from './checks';
 import { type V, inPoly } from './geom';
 import { speciesOf } from './trees';
@@ -90,7 +92,7 @@ export function streetChecks(c: WCtx): Check[] {
 
   // SF-7 counts and spacing: per street edge, the catalogue's spacing between like items (trees 12, lamps by type, benches, hydrants, mailboxes, columns, kiosks)
   const bad7: string[] = [], bySpacing: [string, (s: Spot) => boolean, (s: Spot) => number][] = [
-    ['tree', s => s.s.kind === 'tree', () => S.trees.spacing],
+    ['tree', s => s.s.kind === 'tree', s => { const r = /\/e\d+$/.test(s.s.edge) ? roadAt(gc, s.s.at, s.s.edge) : undefined; return r && oldPalmEdge(gc, s.s.edge.split('/e')[0]!, r.road, r.sec.cls) ? OLD_STREET.palms.spacing : S.trees.spacing; }], // brief 075: a pavement palm on an old-street road or an old-palm class (tools/world/gen/oldstreet.ts OLD_STREET.palms) keeps the old town's 10 m; medians, the circus and the rest 12
     ['lamp', s => s.s.kind === 'lamp', s => (S.lamps.types[s.s.variant ?? '']?.spacing ?? 12) * (s.s.variant === 'atom-ring' && s.s.size[2] <= 6.5 ? 18 / 24 : 1)],
     ['bench', s => s.s.kind === 'bench' && !s.kit && !s.s.edge.startsWith('bank/'), () => 36], ['hydrant', s => s.s.kind === 'hydrant', () => 90], ['mailbox', s => s.s.kind === 'mailbox', () => 250],
     ['advertising-column', s => s.s.kind === 'advertising-column', () => 60], ['kiosk-food', s => s.s.kind === 'kiosk-food', () => 30], ['kiosk-flowers', s => s.s.kind === 'kiosk-flowers', () => 120],
@@ -119,7 +121,7 @@ export function streetChecks(c: WCtx): Check[] {
     perPlot.set(pl.id, (perPlot.get(pl.id) ?? 0) + 1);
   }
   for (const [id, n] of perPlot) if (n > 1) bad7.push(`${id}: ${n} kiosk pavilions (≤ 1 per plot)`);
-  out.push(rule('SF-7', G, 'Counts and spacing per edge: trees 12 m, lamps by type, benches 36, hydrants 90, mailboxes 250, columns 60, food kiosks 30, flower kiosks and district newsstands 120 apart; kiosk pavilions ≤ 1 per square, open plot or park', n7 + dn.length, bad7, 'all', 'streetscape.trees.spacing · lamps.types · catalogue[].count'));
+  out.push(rule('SF-7', G, 'Counts and spacing per edge: trees 12 m (pavement palms on district and access edges and the old-street roads 10 m, oldstreet.ts), lamps by type, benches 36, hydrants 90, mailboxes 250, columns 60, food kiosks 30, flower kiosks and district newsstands 120 apart; kiosk pavilions ≤ 1 per square, open plot or park', n7 + dn.length, bad7, 'all', 'streetscape.trees.spacing · tools/world/gen/oldstreet.ts OLD_STREET.palms · lamps.types · catalogue[].count'));
 
   // SF-8 corner visibility: nothing that blocks sight within 6 m of a junction corner's kerb tangent point
   const bad8: string[] = [], corners = junctionCorners(gc);

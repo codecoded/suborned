@@ -24,12 +24,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
 import mats  # noqa: E402
 import regen  # noqa: E402
+import tables  # noqa: E402
 import unity_mats  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DST = Path(os.environ.get("DECOKIT_OUT") or REPO / "out/decokit")  # generated binaries are never committed
 SRC = mats.SOURCE_ART
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+MATS_ONLY = "--mats-only" in ARGS  # brief 072-F: no piece is built; the textures, the materials table (merged, never shrunk) and the Unity .mat set are rewritten
 LODS_ONLY, NO_LODS = "--lods-only" in ARGS, "--no-lods" in ARGS  # lods-only: adopted pieces keep their binaries, only LOD files are written
 # LOD1 ~25% and LOD2 ~6% of the triangles; a level is skipped when the piece is too light to be worth it. screen = Unity LOD transition height [S].
 LOD_SPEC = [("L1", 0.25, 0.35, 400), ("L2", 0.06, 0.12, 1500)]
@@ -60,7 +62,7 @@ def make_lods(n, cat, src, srcs, tris):
     out = []
     for tag, ratio, screen, floor in LOD_SPEC:
         hand = kit.REGISTRY[n].get({"L1": "near", "L2": "far"}[tag])  # a hand-built level (kit.asset near= / far=) replaces the collapse
-        if tris < floor and not (tag == "L1" and hand):  # a hand-built L1 is made whatever the piece's weight (brief 009)
+        if tris < floor and not hand:  # a hand-built level is made whatever the piece's weight (L1: brief 009; L2: brief 072, the per-storey stack modules; every other far= piece is over the floor)
             continue
         if hand:
             fobj = kit.build_lod(n, tag)
@@ -191,7 +193,7 @@ def copy_ground():
         raise SystemExit(f"[DK-EXPORT] no ground set in {src}: run python3 tools/decokit/ground_tex.py")
     out = DST / "Textures"
     out.mkdir(parents=True, exist_ok=True)
-    for f in sorted(p for g in ("ground_*", "robot_*", "cabinet_*", "pavilion_*", "fountain_*") for p in src.glob(g) if p.suffix != ".json"):
+    for f in sorted(p for g in ("ground_*", "robot_*", "car_*", "cabinet_*", "pavilion_*", "fountain_*", "signal_*", "horizon_*", "surface_*", "wall_*") for p in src.glob(g) if p.suffix != ".json"):
         shutil.copy2(f, out / f.name)
     shutil.copy2(src / "ground.json", DST / "ground.json")
 
@@ -206,7 +208,7 @@ def main():
     cats = [c for c in (ARGS[ARGS.index("--cats") + 1].split(",") if "--cats" in ARGS else []) if c]
     if cats:
         only = only + [n for n, spec in reg.items() if spec["cat"] in cats]
-    names = only or list(reg)
+    names = [] if MATS_ONLY else (only or list(reg))
     manifest = []
     for n in names:
         src = kit.build(n)
@@ -222,8 +224,17 @@ def main():
                    bounds=[round(-max(v.x for v in box), 3), round(-min(v.x for v in box), 3),  # footprint about the pivot in kit axes
                            round(-max(v.y for v in box), 3), round(-min(v.y for v in box), 3)],  # [x0, x1, z0, z1]; the FBX import mirrors X (kit x = -Blender x) and kit z = -Blender y
                    materials=list(dict.fromkeys(m.name for o in objs for m in o.data.materials)))
+        if kit.REGISTRY[n].get("footprint"):  # brief 079: light spilling past the thing is no part of its size (kit.asset footprint=)
+            fx, fz = kit.REGISTRY[n]["footprint"]
+            row["size"][0], row["size"][2] = round(fx, 4), round(fz, 4)
+            row["bounds"] = [round(-fx / 2, 3), round(fx / 2, 3), round(-fz / 2, 3), round(fz / 2, 3)]
+        if src.get("dk_volumes"):  # volumes the builder declared (geo.Shape.solid), builder frame -> kit frame
+            row["collide"] = [dict(shape="box", min=[round(-v["max"][0], 4), round(v["min"][2], 4), round(-v["max"][1], 4)], max=[round(-v["min"][0], 4), round(v["max"][2], 4), round(-v["min"][1], 4)],
+                                   **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]
         if n in regen.ORDERS:  # a regen order's piece: which order, and what was built (fit table)
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
+        if kit.REGISTRY[n].get("retired"):  # brief 061: marked for retirement (kit.asset retired=); the builder stays until Splice has re-cut the export
+            row["retired"] = kit.REGISTRY[n]["retired"]
         if len(objs) > 1:
             row["parts"] = [nm for nm, _ in full[1:]]
         if (tris >= LOD_SPEC[0][3] or kit.REGISTRY[n].get("near")) and not NO_LODS and not kit.REGISTRY[n].get("nolod"):
@@ -245,17 +256,19 @@ def main():
             bpy.data.meshes.remove(b.data)
     tex = copy_textures()
     copy_ground()
-    mats.export_json(DST / "decokit_materials.json")
-    table = json.loads((DST / "decokit_materials.json").read_text())
-    for row in table["materials"]:
+    if "SignalLens" in names:  # brief 061: the head's look data (state colours, cues, blink, the cycle, the atlas and ring tables) rides beside the manifest for Latch's SignalHead and Glint
+        import crossing_lens
+        crossing_lens.write_data(DST / "Data" / "signal-lens.json")
+    rows = mats.material_rows()
+    for row in rows:
         _, row["normal"], row["mask"] = tex.get(row["name"], ("", "", ""))
-    (DST / "decokit_materials.json").write_text(json.dumps(table, indent=1))
+    partial = bool(only) or MATS_ONLY  # brief 072-C: a partial run merges into the shared tables on disk, never shrinks them (tables.py)
+    rows, kept = tables.write_merged(DST / "decokit_materials.json", "materials", rows, partial)
+    if kept:
+        print(f"[DK-EXPORT] materials table: {kept} rows kept from the table on disk (not registered by this partial run)")
     written = unity_mats.write(DST / "decokit_materials.json", DST, mats.WORLD_RETUNE)  # Unity .mat for the new and retuned colours
     print(f"[DK-EXPORT] materials written ({len(written)}): {', '.join(written)}")
-    old = {m["name"]: m for m in json.loads((DST / "decokit_manifest.json").read_text())["assets"]} \
-        if only and (DST / "decokit_manifest.json").exists() else {}
-    old.update({m["name"]: m for m in manifest})
-    (DST / "decokit_manifest.json").write_text(json.dumps(dict(assets=list(old.values())), indent=1))
+    tables.write_merged(DST / "decokit_manifest.json", "assets", manifest, partial)
     print(f"[DK-EXPORT] {len(manifest)} assets -> {DST}")
 
 

@@ -1,0 +1,54 @@
+{
+  "id": "pressure-inez",
+  "title": "Pressure Inez",
+  "kind": "turn",
+  "picked": 3,
+  "why": "Take 3 has the most life: she says yes before she hears the price, and her last line hates him for being kind. Only she could say it. The threat, her debt and the deal all hold to the sheet [e1dd761142af169bfd1cc0d3, c407d23e4f6647fe2f4315a1]. Read alone, the scene is clear: a stranger threatens to tell the Office, she agrees, and she'll call Okafor off the door when telephoned.",
+  "changes": [
+    "Opening: cut the tube errand, which was only stage business. Lifted 'Keep smiling' from take 2, so the Fixer's care about being seen comes through in a want.",
+    "Her first look now goes to who can see her, using take 1's idea without its invented 'table six'. Her money line now uses her tips and the Bureau instead of a general complaint.",
+    "Made the threat plain: 'I can tell them' replaces 'I can change that', and the line was cut to two sentences. 'Off the door?' only repeated the Fixer, so it came out.",
+    "Closing line now says 'Yes, I'll call', so the agreement is explicit after she has heard the price. Cut to 7 beats; 'learned' now states the call and the Fixer's face."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "Keep smiling, Inez. It's about you and Okafor."
+    },
+    {
+      "speaker": "Inez",
+      "line": "My tables can see us. Whatever you want, yes."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Hear it first. The Office doesn't know, and I can tell them."
+    },
+    {
+      "speaker": "Inez",
+      "line": "You can have my tips. The Bureau gets the rest."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Keep your tips. I telephone, you call Okafor off that door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "What happens while Okafor's gone? No, don't tell me."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "I won't. A minute at your side, and the Office hears nothing."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Yes, I'll call. You didn't have to say it nicely."
+    }
+  ],
+  "learned": [
+    "She'll call. Knows the Fixer's face."
+  ],
+  "opens": [
+    "Call Inez"
+  ],
+  "faults": []
+}

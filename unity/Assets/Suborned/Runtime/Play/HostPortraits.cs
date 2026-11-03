@@ -99,7 +99,7 @@ namespace Suborned.Play
         static int SuccessAgent(Suborned.Sim.Game g, LogLine l)
         {
             var land = LandingOf(g, l); // brief 043: one landing detector for the face, the tick, the plate, the chip and the row
-            if (land.Agent < 0 || land.Outcome is "not-yet" or "refused" or "suspicious" || land.Do is "carry" or "stash" or "restrain" or "drop" or "board" || land.Code == "enter.out") return -1;
+            if (land.Agent < 0 || land.Outcome is "not-yet" or "refused" or "suspicious" || land.Do is "carry" or "stash" or "restrain" or "drop" or "board" or "camera-shot" || land.Code == "enter.out") return -1; /* a camera shot out is loud: its chip, not a quiet win face */
             if (land.Do == "takedown") { foreach (var x in g.Log) if (x.Tick == l.Tick && x.Code == "takedown.seen") return -1; } // seen: not a quiet win
             return land.Agent;
         }

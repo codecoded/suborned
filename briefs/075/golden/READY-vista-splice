@@ -1,0 +1,4 @@
+075 golden vista (Splice, 2026-10-28)
+export out/world/harbour-district.world.json sha256 25429f9940472be19f330a717ce040a35d78d549dfb684edb106b77a01a6128a (bun run world x3, same hash)
+new in the export: landmarks[landmark/crown-vista].gateway = { id ParabolicArch@crown-avenue, scale [1,1,1], yaw 0, at [0,160] } (pivot on the pavement between the feet, kit +X = plan +x); liveries.placed crown-vista DK_Crown_Gold -> DK_Crown_Gold__gold
+Latch: WorldReader reads megastructures[].gateway only; read landmarks[].gateway the same way (MegaKit's placer, ground = pavement top 0.18)

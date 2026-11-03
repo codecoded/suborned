@@ -1,0 +1,48 @@
+{
+  "id": "call-inez",
+  "title": "The call, after Help",
+  "kind": "call",
+  "picked": 2,
+  "why": "Take 2 has the strongest spine: he refuses, she asks without saying why, and he leaves the door for her. The last version keeps that spine and closes on take 3's \"Walk, love\", where she cares for him while using him.",
+  "changes": [
+    "Cut \"The Bureau's paid.\" from the Fixer's first line. Pay and Pressure also lead to this call and don't clear the loan, so the line was false on those routes [96030c4c4a1a18523a3fdbbb]. Nothing else changed.",
+    "Open issue for Aster: the scene's facts say \"after Help\", while the review says Pay and Pressure share this call. The line now holds on all three."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Miss Nikolaou. Call Okafor across now."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Now? With the terrace looking? Yes. All right."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Are you alone, love? Come across. I've something to tell you."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Just me. I've this door till shift's end. Say it here."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Not down a telephone. It can't wait. Please."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Then the door can wait. I'm leaving it now."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Walk, love. Don't run. Let me keep you a while."
+    }
+  ],
+  "learned": [
+    "Door empty a few minutes"
+  ],
+  "opens": [
+    "Enter the Office"
+  ],
+  "faults": []
+}

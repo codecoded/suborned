@@ -1,0 +1,6 @@
+075 task (d), the vista (Datum, 2026-10-28)
+plan: contracts/world/harbour-district.plan.json landmarks[crown-vista] (+ standards.skyline.tiers text, notes.history)
+tower: DiscTower x1.1 at (0, 350), r 24.5, top/tip 172.4, crownType disc; placed by the generator today (landmark/crown-vista, vermilion lattice livery: not gold yet)
+arch: landmarks[crown-vista].gateway, ParabolicArch@crown-avenue at (0, 160), feet x +-(14-17) y 157-163, 34 m foot to foot, crest 68, top 75.2; proposed, not emitted (Splice generator, Vela piece)
+tram: T1 Boulevard Line, centre track on the Boulevard x 0 (y -780 to -56) in the 10 m reservation, loop round Crown Circus; stops circus (0,-72), records (0,-380), comet (0,-690); none on Crown Avenue
+checks: bun tools/plan/cli.ts exit 0; --overlay tools/missions/handover/overlay.ts exit 0

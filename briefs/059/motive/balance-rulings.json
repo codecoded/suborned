@@ -1,0 +1,270 @@
+{
+ "brief": "059 Motive's single balance pass on engine 0.32.0, with Sky's S1 = no folded in (Aster, 2026-10-26: loud against the carry; the early quiet routes; route B at the yard and svc-ambush-1; MC-5)",
+ "author": "Motive",
+ "date": "2026-10-26",
+ "gdd": "v0.25.0 §06 hostiles ('rivals break when more than half are down'), modifiers, getaway (the hold, the blocker 'keeps its lane and answers only from it', 'the fight always comes'); §07 final fight ('always'; '3-5 hostiles, fewer only when the cell has killed or bound crew members before it'), rivals, reference results ('quiet beats loud on Trail, Alert, Standing and the seal; the fastest informed quiet win is faster than the fastest loud one')",
+ "sky": "S1 = no (a safe win never leaves unfought), S2 = nearest entry, S3 = run (brief 059 'Sky's calls on S1-S3', 2026-10-25). s1-rulings.json stands; this file adds to it.",
+ "engine": "suborned.sim/0.32.0 at commit 100b5e3a (Keel's 059 round, worktree-agent-ad654047fa24cd1cb, read only) plus briefs/059/motive/balance/engine-probe.patch: environment switches only. With every switch off the probe reproduces Keel's briefs/059/keel/missions-check-0.32.txt failures (briefs/059/motive/balance/results/off-check-2026-10-26.txt). R, the base every verdict uses, is the GDD as written: PROBE_FIXPOS (M059-B1) + PROBE_GATE + PROBE_LATE + PROBE_FLOOR=3 (s1-rulings M059-S1.2-S1.4) + PROBE_LANE (M059-B2). Scratch build: out/scratch/motive/059c/.",
+ "evidence": {
+  "rebuild": "bun run guard zsh briefs/059/motive/balance/mkengine.sh",
+  "verdicts": "bun run guard zsh briefs/059/motive/balance/verdicts.sh > briefs/059/motive/balance/results/verdicts-2026-10-26.txt",
+  "missionCheck": [
+   "bun run guard zsh briefs/059/motive/balance/cand.sh r  -> briefs/059/motive/balance/results/cand-r-2026-10-26.txt (today's svc-ambush-1)",
+   "bun run guard zsh briefs/059/motive/balance/cand.sh c5 PROBE_PLACES=svc-ambush-1:7735:-800  -> briefs/059/motive/balance/results/cand-c5-2026-10-26.txt (the moved point)"
+  ],
+  "sweeps": [
+   "briefs/059/motive/balance/results/sweep-svc1-2026-10-26.txt (six placements, at will and focus fire)",
+   "briefs/059/motive/balance/results/sweep-svc1-shift-2026-10-26.txt and sweep-svc1-north-2026-10-26.txt (the cell's locks 0.5-3.0 s late)",
+   "briefs/059/motive/balance/results/sweep-blkhold-2026-10-26.txt (a walking blocker holding fire, open item 1)"
+  ],
+  "matrix": "briefs/059/motive/balance/results/matrix-2026-10-26a.txt (the c037-shape plans on R and on R + SHIELD)",
+  "plans": "briefs/059/motive/balance/probe-plans/ (the focus-fire re-compositions, loud-x4, loud-yard, gfy-1, gfy-leak; ff.py makes the focus-fire twins), briefs/059/motive/balance/plans/ (the 2026-10-25 run's re-composed route-b family, kept)",
+  "c037": "bun run guard bun tools/missions/check/cli.ts handover --engine HEAD -> balance/results/c037-check-0.31-2026-10-26.txt (engine 0.31.0, c037: SHIPS; the slack baseline)"
+ },
+ "reuse": {
+  "kept": "the probe machinery (mkengine.sh, probe.ts, engine-probe.patch's switches), the 2026-10-25 run's re-composed route-b, route-b-board and careless plans (plans/), and its yard probes apy-1, apy-leak, gy-1, loud-x3. FIXPOS, GATE, LATE, FLOOR and LANE are kept as the base R.",
+  "redone": "the verdicts. The 2026-10-25 run's 'SHIPS' (results/final-check.txt, ablation.txt, matrix2.txt, s1demo.txt) rests on two switches that are not the GDD: PROBE_SHIELD (Vale counts as cover for his carrier) and PROBE_DRAWNBREAK=1 (a drawn crew breaks at its first man down). Both are rejected here (M059-B5, M059-B6) and every number below is measured without them. DRAWNBREAK was split (2 = only 'a broken crew never presses', M059-B3); probe.ts plays the steps that compose when a plan doesn't, and logs why; PROBE_BLKHOLD was added for open item 1.",
+  "notReused": "final.sh, matrix.sh and s1demo.sh run the rejected set: kept as the record of the 2026-10-25 run, superseded."
+ },
+ "howToRead": "As s1-rulings.json: kind value | rule | fix | data | keep | rejected | reference; key is a proposal and Keel names the final path; every entry is proposed: true until Sky plays it. Times m:ss.s on the mission clock; T is the run's mission Trail (the check adds campaign and cases); St is Standing at the end (start +2). 'board' = down the blocker, board, Go; 'fight out' = break the crew, then Go.",
+ "verdicts": [
+  {
+   "q": 1,
+   "what": "Loud against the carry, at the square and at the yard",
+   "verdict": "holds: loud is dearer than the quiet carry on T, Alert, Standing and the seal at both stands",
+   "numbers": {
+    "square": "loud (re-composed as loud-x4: the Scout and Fixer drop 3 of the 4 drawn rivals before the carry, as §06's more-than-half break asks) wins at 5:20.1, T 27 (+3 case = 30 in the check), A 2, Standing -1, seal clock running, nobody captured. The quiet carries at the square: route-a 4:35.6 T 5 A 1 St +3; route-a-pressure 3:20.5 T 7 A 1 St +2; route-g (focus fire) 4:11.5 T 6 A 1 St +3. MC-2 and MC-10 ok: quiet 3-11 T, A <= 1, Standing >= 2; loud 30 T, A 2, Standing -1 (cand-r).",
+    "yard": "loud at the yard (loud-yard: route B with the pickup camera shot as Vale's car parks, M059-5.4's shape) is held and lost: the 2 officers from the official entrance (S2) and the response unit down the Fixer at 7:24.0 and the Enforcer at 7:42.5, with T 11 spent before the fight (enforcer-down, A 2). Route B's quiet carry: 7:32.6 T 3 A 0 St +3. No loud leak at the yard: MC-13's loud-wait twin is held.",
+    "why loud moved": "0.31's loud broke a single crew gun; on 0.32 gunfire at 2:31 brings the whole rival car to the Office front (2:53.2) with four on foot, who press the Enforcer when they see Vale taken. Three must go down (+4 T each, traced before the fight): loud costs 27 T against 14-15 before 059. It stays a last resort, not a route."
+   },
+   "src": "briefs/059/motive/balance/results/verdicts-2026-10-26.txt Q1; cand-r-2026-10-26.txt MC-2, MC-6, MC-10"
+  },
+  {
+   "q": 2,
+   "what": "The early quiet routes (A-pressure, G-fast) with fight-always and rivals-floor; 'quiet beats loud' and 'the fastest informed quiet win is faster than the fastest loud one'",
+   "verdict": "both still win, and both §07 lines hold",
+   "numbers": {
+    "square": "route-a-pressure (fight out) 3:20.5 T 7 A 1 St +2; route-g-fast with focus fire: board 3:11.0 T 6 A 1 St +2, fight out 3:11.0 T 6 A 1 St +3 (crew broken 3:03.5). The same times as c037.",
+    "yard": "apy-1 (A-pressure, getaway car Driven to the service drive before the Enter): Vale in at 2:32.0, before the rival car enters (2:35.6); the gate holds Go until the late car's first man out (the blocker, picked at 2:51.3) is down at 3:03.5; Go 3:07.4, T 7 A 1 St +1. gfy-1 (G-fast, same pattern): Vale in 2:22.5, Go 3:07.4, T 2 A 1 St +2.",
+    "leak (a) on 0.32": "gate off: apy-leak leaves unfought at 2:32.0 and gfy-leak at 2:22.5 (Scout and Fixer left behind). Gate on: apy-leak is held to 3:03.5; gfy-leak, whose cell never fires, is held to the 8:30 close. The gate is what makes 'always' true.",
+    "fastest": "fastest informed quiet win 3:07.4 (yard probes) / 3:11.0 (check set) against the fastest loud 5:20.1: 129.1 s faster (MC-6 ok). Quiet beats loud on every count (MC-10 ok)."
+   },
+   "src": "briefs/059/motive/balance/results/verdicts-2026-10-26.txt Q2; cand-r-2026-10-26.txt MC-6, MC-10"
+  },
+  {
+   "q": 3,
+   "what": "Route B at the yard and svc-ambush-1",
+   "verdict": "the yard carry is lost at will at every placement tried and won with focus fire at every one; svc-ambush-1 moves to (77.35, -8.0), which takes route B's slack from 0 s to 3 s",
+   "numbers": {
+    "at will": "route-b and route-b-board (panic only): rivals-reach-vale at 7:30.0, 7.0 s after the Take, at all six placements swept. The three posted take the carrying Enforcer as target from the first tick at 562 per mille (each first shot hits: the accumulator starts at 500) and he takes 6 hits across the 3.5 m carry and the 4 s Board.",
+    "focus fire, today's point": "rb-ff 7:32.6, rbb-ff 7:34.7, rbb-ff3 (the Tech steps out after the Drive) 7:31.7; all T 3 A 0 St +3, 2 health left at Vale-in. Locks 1.0 s late still hold (1 health); 1.5-2.0 s late lose. Mission check: route-b-board 'every planned step can slip 0 s' (7:23 1 s late -> rivals-reach-vale).",
+    "focus fire, (77.35, -8.0)": "rb-ff 7:32.2, rbb-ff 7:36.0, rbb-ff3 7:31.9; T 3 A 0 St +3, 3 health left at Vale-in; locks up to 3.0 s late hold in all three plans. Mission check: route-b-board can slip 3 s (c037 on 0.31: 66 s, before the yard ambush existed). MC-1..MC-12 ok.",
+    "why this point": "it is 15.6 m from Vale's rear door (rival-vale-door), at the pistol's long band (300 per mille untrained), and 17.3 m from the service door, off its line. It also becomes the stand's blocker (the shortest walk to the lane post on the engine's grid: 9.16 m, 5.7 s at 1.6 m/s, against svc-ambush-5's 11.46 m and svc-ambush-4's 14.46 m; corrected 2026-10-26, see corrections), so one of the three walks away from the carry instead of shooting into it. Four other placements (north band, 8-14 m from the doors) gave 1.0-1.5 s."
+   },
+   "src": "briefs/059/motive/balance/results/sweep-svc1-*.txt; cand-r-2026-10-26.txt and cand-c5-2026-10-26.txt (slack lines)"
+  },
+  {
+   "q": 4,
+   "what": "MC-5 under the new rules",
+   "verdict": "holds (it failed on raw 0.32: only route A won)",
+   "numbers": "route A (route-a-board): Vale secured 2:53.4, 2:56 before 5:50, slip 7 s. Route B (route-b-board): secured 7:23, 1:07 before the 8:30 close, slip 0 s at today's svc-ambush-1, 3 s at (77.35, -8.0). Route G (route-g-fast-board): secured 1:36.5, 4:13 before 5:50, slip 1 s (c037 on 0.31: route-b-board 66 s, route-g-fast-board 19 s).",
+   "src": "briefs/059/motive/balance/results/cand-r-2026-10-26.txt, cand-c5-2026-10-26.txt MC-5"
+  }
+ ],
+ "entries": [
+  {
+   "id": "M059-B1",
+   "kind": "fix",
+   "key": "fight.safe.crew: the fight body's start (Game.JoinFight, GameCrew.cs)",
+   "value": "A crew member who becomes a safe-fight body starts where he stands: read MemberPos(m, Tick) and SpotFor(m, st) before m.H and m.Fight are set. 0.32.0 sets them first, so MemberPos returns the new body's position (0,0) for every posted or walking member (GameCrew.cs: `m.H = h; m.Fight = true;` then `h.At = MemberPos(m, Tick)`; MemberPos answers m.H.Pos when m.Fight).",
+   "tag": "S",
+   "reason": "An engine fault, not a rule change: M059-4.1 already says they fight from where they are. It voids the safe fight in Keel's missions-check-0.32 and route-diff-0.32: route-g-board 'wins' at 4:11.5 with the blocker out 2.0 s after the spring because the posted three open from (0,0); with the fix three of them shoot the carrying Enforcer and the at-will carry is lost at both stands. Every number in this file has the fix.",
+   "src": "engine 0.32.0 GameCrew.cs JoinFight; probe PROBE_FIXPOS; results/matrix-2026-10-26a.txt"
+  },
+  {
+   "id": "M059-B2",
+   "kind": "rule",
+   "key": "fight.blocker.lane (rival blockers)",
+   "value": "A rival blocker never takes the rivals' step out of a shooter's line (the kite step); it keeps its lane and answers only from it, as police blockers already do (GameKite §7.10 rule 4).",
+   "tag": "S",
+   "reason": "GDD §06 the blocker as written. Measured: no reference route moves with it on or off; it closes a gap in the rival branch of the kite.",
+   "src": "GDD v0.25 §06 answering fire ('The blocker keeps its lane and answers only from it'); probe PROBE_LANE; 2026-10-25 ablation"
+  },
+  {
+   "id": "M059-B3",
+   "kind": "rule",
+   "key": "rivals.press after a break (GameIntent RivalsPress)",
+   "value": "A crew broken before the final fight (M059-3.5) never presses for the Enforcer: its members make for their car. The press test returns false once CrewBrokenPre.",
+   "tag": "S",
+   "reason": "§06: a broken crew flees and is no target. 0.32 lets a member press 0.1 s after the break (loud-x3: rival-4 at 4:28.5). Measured: no change on loud-x4 or the candidate set; it keeps the break readable.",
+   "src": "GDD v0.25 §06 hostiles and orders ('a broken crew is no target'); probe PROBE_DRAWNBREAK=2"
+  },
+  {
+   "id": "M059-B4",
+   "kind": "data",
+   "key": "mission.json svc-ambush-1 (Vantage places; Splice exports; Keel re-sites)",
+   "value": [
+    77.35,
+    -8.0
+   ],
+   "unit": "m",
+   "tag": "S",
+   "reason": "Route B's carry from Vale's rear door has 3 s of slack for the cell's locks there, against 0-1 s at (57.25, -17.75). Constraints, if Vantage needs a nearby cell for sight or cover: >= 15.5 m from rival-vale-door (64.55, -16.9); >= 15 m from the service door; 10-13 m from the service-drive stand (69.35, -15.0), so outside fight-hold 8 m and inside the cell's effective reach; outside the exit lane; a line to the car; and the shortest walk to the yard's lane post of the yard's spots, so it is the blocker. (77.35, -8.0): 10.6 m from the car, 15.6 m from the rear door, 17.3 m from the service door, line to car and door, outside the lane, a free walk cell (the engine accepts it), 9.16 m walk to the post (86, -5) on the exported lane, 5.7 s at 1.6 m/s; 7.49 m (4.7 s) to (79.35, -15.0) on the lane from the car (M059-B10). Corrected 2026-10-26: the probe divided Path.Length (mm) by 100.",
+   "src": "results/sweep-svc1-*.txt; cand-c5-2026-10-26.txt; probe motive-yard; lane/results/yard-geometry.txt (the walks, corrected)"
+  },
+  {
+   "id": "M059-B5",
+   "kind": "keep",
+   "key": "rivals.break before the final fight (M059-3.5)",
+   "value": "Unchanged: more than half of its members on the map down. In loud the four drawn on foot break at their third down.",
+   "tag": "S",
+   "reason": "Considered and rejected: the first-down break (the 2026-10-25 run's PROBE_DRAWNBREAK=1, which made 0.32's loud compose with one rival down at 15 T). It contradicts GDD §06 ('rivals break when more than half are down') and isn't needed: loud-x4 wins under §06 at 5:20.1, 27 T.",
+   "src": "GDD v0.25 §06 hostiles; results/verdicts-2026-10-26.txt Q1 and the rejected rows"
+  },
+  {
+   "id": "M059-B6",
+   "kind": "rejected",
+   "key": "Vale as cover for his carrier (the 2026-10-25 run's PROBE_SHIELD)",
+   "value": "not a rule",
+   "tag": "S",
+   "reason": "Shots at the Enforcer carrying Vale at x500, as beside cover. It makes the at-will carry survivable everywhere, but it's a new modifier, not one of §06's, so it would be a GDD change. It isn't needed: focus fire composes every reference win (M059-B7). Not proposed.",
+   "src": "GDD v0.25 §06 modifiers; results/verdicts-2026-10-26.txt rejected rows"
+  },
+  {
+   "id": "M059-B7",
+   "kind": "reference",
+   "key": "the final fight's reference fire (Waymark's compositions; no engine change)",
+   "value": "From the spring (safe) or fight.loud (loud), the cell's free guns lock first the blocker or the Enforcer's nearest shooter, then the next; panic covers the rest. Fight out needs more than half down (3 of 5 at the square, 2 of 3 at the yard). Loud locks 3 of the 4 drawn rivals before the carry.",
+   "tag": "S",
+   "reason": "On the fixed engine the at-will carry is lost at both stands: 3 of 5 (square) or all 3 (yard) take the carrying Enforcer as target, and §06's accumulator lands every first shot at 562 per mille. GDD §06: 'the Enforcer can't run, so the others support him'. The locks are that support and restore c037's times (route-g-board 4:11.5, route-g-fast-board 3:11.0, route-b 7:32.6). Pause is a tool: the posted three are in view before the spring.",
+   "src": "results/verdicts-2026-10-26.txt; cand-r-2026-10-26.txt"
+  },
+  {
+   "id": "M059-B8",
+   "kind": "keep",
+   "key": "s1-rulings.json M059-S1.1-S1.8 on 0.32",
+   "value": "stand as written",
+   "tag": "S",
+   "reason": "Re-measured on 0.32: leak (a) is open with the gate off (apy-leak 2:32.0, gfy-leak 2:22.5, unfought) and closed with it (held to the blocker's down at 3:03.5). The late spring picks the blocker at the first step-out (2:51.3 at the yard). Leak (b), the floor, was not re-run on 0.32: Keel's S1-FLOOR-* scenarios measure it on his build.",
+   "src": "results/verdicts-2026-10-26.txt Q2"
+  },
+  {
+   "id": "M059-B9",
+   "kind": "data",
+   "key": "M059-4.4(c) restated (rulings.json; MC-11's yard reading, Vantage's spot check)",
+   "value": "At the service-drive stand, the ambush spot with the shortest grid walk to the blocker's post (the stand's blocker) reaches it within the carry and Board from Vale's rear door: 6.5 s (the 3.5 m carry, 2.5 s, plus Board carrying, 4 s), so at the blocker's walk of 1.6 m/s at most 10.4 m. Supersedes (c)'s 'at most 8 m by walk (5 s)'. The limit is read from the rules (carry pace, fight board-carrying, the hostile walk), never a fixed metre count.",
+   "tag": "S",
+   "reason": "(c)'s reason was always the time: the blocker is in the lane by the time the cell could board and go. With the gate (M059-S1.2) nothing leaks if he is late, so (c) is now about readability: by the time the Enforcer is in, the man holding the car stands where the cell can see and answer him. Measured: 9.16 m / 5.7 s on the exported lane, 7.49 m / 4.7 s on the lane from the car (M059-B10); both hold. 8 m could not hold with route B on the exported lane: every spot tried inside 8.4 m loses it (Vantage).",
+   "src": "rulings.json M059-4.4(c); Vantage 2026-10-26 (brief 059); lane/results/yard-geometry.txt"
+  },
+  {
+   "id": "M059-B10",
+   "kind": "rule",
+   "key": "getaway exit lane at a stand whose car stands on a drive (the service-drive stand); the blocker's post follows",
+   "value": "PROPOSED, needs Sky's yes on the GDD wording (brief 059 'Motive: the units slip, (c) and the yard's lane post (2026-10-26)'); not in the rules until then. The exit lane starts at the car and follows the getaway route: along the drive at the drive's width (3 m) to where the route meets its first road's centreline, then that carriageway at the road's width, 30 m in all; each part has square ends. The blocker's open post (lane centreline 10 m along) is then 10 m from the car on every stand: at the yard (79.35, -15.0), the drive's mouth. A stand at a kerbside bay (the square) is unchanged: its lane already starts at the car's foot.",
+   "tag": "S",
+   "reason": "§06 states the post's reason: 10-13 m from the car, 'beyond the hold and point blank, inside the cell's effective reach'; the engine checks the same (fight.blockNear > hold, blockFar < the pistol's effective reach) and LanePointAt is written as 'from the car's foot'. The exported lane starts on Apron Road 16.65 m out, so the post is 19.42 m from the car, out of the cell's reach. Measured (svc-ambush-1 at (77.35, -8.0), R): on the exported lane no plan that goes for the blocker wins (ylA, ylB: rivals-reach-vale 7:33.0), so every yard win breaks the crew (Standing +3) and §06's choice at the car (board and go, the fight moves Standing 0, or fight it out) is gone at the yard; a rival standing in the drive 8-16.65 m ahead of the car, its only way out, doesn't hold it. On the lane from the car: board and go composes (ylA: blocker down 7:28.0, Go 7:31.9, St +2, no break); fight it out unchanged (rb-ff 7:32.2, St +3); the early yard routes Go 7.1 s sooner (apy-1, gfy-1 3:00.3 against 3:07.4: the late car's blocker posts in reach and is down at 2:56.4); loud-yard unchanged (held and lost 7:42.5). The cost is route-b-board's slack: 3 s -> 0 s with today's locks (rbb-ff), 2 s re-composed (ylB: the Scout locks the blocker so he answers her, the Fixer locks rival-1 then rival-2; or ylF: the Tech steps out), against 3-4 s on the exported lane; the spot doesn't move it (2 s at three other spots). Rival-tail (90.5, -17) stays outside the lane only with the drive at its own width: at the road's 12 m it falls inside (M059-4.4(d)). MC-0..12 otherwise identical to cand-c5 (only route-b-board's line moves).",
+   "src": "GDD v0.25 §06 getaway (the hold, the blocker), Drive ('5 m/s on a carriageway, 2 m/s on a drive'); tools/sim/getaway.ts exitLane (projects the car onto the route's first road); engine Site.LanePointAt; probe PROBE_YARDLANE=2; lane/results/ (cand-yl2-c5-*.txt, cand-yl0-c5-ylF.txt, cand-yl-*.txt, outcomes.txt, yard-geometry.txt)"
+  }
+ ],
+ "effects": {
+  "note": "Before = Keel's raw 0.32 check (briefs/059/keel/missions-check-0.32.txt, on the (0,0) fault). After = the candidate set on R (cand-r), and with svc-ambush-1 moved (cand-c5).",
+  "rows": [
+   {
+    "check": "MC-0",
+    "before": "22/41",
+    "after": "33/39 (cand-r and cand-c5); the 6 left are Waymark's re-compose items below"
+   },
+   {
+    "check": "MC-1",
+    "before": "2 routes (A, G)",
+    "after": "3 (A, B, G)"
+   },
+   {
+    "check": "MC-2",
+    "before": "FAIL (no loud win)",
+    "after": "ok: loud 27+3 T against quiet 3-11"
+   },
+   {
+    "check": "MC-5",
+    "before": "FAIL (route A only)",
+    "after": "ok: A 2:56, B 1:07, G 4:13 early; route-b-board slip 0 s -> 3 s with M059-B4"
+   },
+   {
+    "check": "MC-6",
+    "before": "FAIL (no loud win)",
+    "after": "ok: route-g-fast 3:11 against loud 5:20.1 (129.1 s)"
+   },
+   {
+    "check": "MC-7..MC-12",
+    "before": "ok (on the fault)",
+    "after": "ok"
+   },
+   {
+    "check": "MC-10",
+    "before": "FAIL",
+    "after": "ok: quiet 3-11 T, A <= 1, Standing >= 2; loud 30 T, A 2, Standing -1, seal clock"
+   }
+  ]
+ },
+ "vantage": [
+  {
+   "point": "svc-ambush-1",
+   "to": [
+    77.35,
+    -8.0
+   ],
+   "reason": "M059-B4: route B's carry gets 3 s of slack for the cell's locks (0 s today); off the service door's line; the stand's blocker"
+  },
+  {
+   "point": "the yard's lane post",
+   "to": "no move asked",
+   "reason": "Corrected 2026-10-26 (Vantage found it): the 92-340 m was a units slip in the probe's Row() (Path.Length is mm; it divided by 100). The true walks to the post (86, -5) are 9.16 m from (77.35, -8.0), 11.46 m from svc-ambush-5, 14.46 m from svc-ambush-4 and 31.5 m from today's svc-ambush-1 (57.25, -17.75): the yard reaches Apron Road on foot. The real fault is where the post is: 19.42 m from the car, beyond fight-block-far 13 m and the pistol's 16 m. Ruled in M059-B10."
+  }
+ ],
+ "waymark": [
+  "Re-compose with focus fire (M059-B7): route-g, route-g-board, route-g-fast, route-g-fast-board, route-b, route-b-board, careless-reporter-not-stopped, careless-scout-idles-pickup, careless-g-disable. Probe twins: probe-plans/rg-ff, rgb-ff, rgf-ff, rgfb-ff, rb-ff, rbb-ff (rbb-ff3 has the Tech step out after the Drive), crns-ff, csip-ff, cgd-ff.",
+  "careless-reporter-not-stopped: the manifest expects A 2; the re-composed run wins at A 1 with 12 T (route-b: A 0, 3 T). MC-7 holds; update the expectation or put the report back.",
+  "Loud family (M059-B5): loud as probe-plans/loud-x4 (lock rival-1..3, walk back to the waits on rivals.retreat, the Enforcer out on rivals.retreat: 5:20.1, 27 T); loud-fight, loud-fast, loud-left-downed and loud-left-standing on the same pattern (their step 28 waits for a retreat that a 4-man crew never makes at one down).",
+  "route-a-pressure-board: the Fixer is downed at his wait (3:08.7) before the board; a single lock on the blocker then at will breaks the crew at 3:10.3 (probe-plans/rapb-ff4). Move his wait.",
+  "New yard variants: route-a-pressure-yard from probe-plans/apy-1 (3:07.4), route-g-fast-yard from gfy-1 (3:07.4), and route-g-yard. gy-1 Drives too late: the car parks at 3:33.7 while the Enforcer waits outside with Vale from 3:15.0 and is sprung on. Drive before the Enter, as apy-1 does.",
+  "careless-loud-b-yard: probe-plans/loud-yard is its shape. Held and lost: the Enforcer is down at 7:42.5, 11 T.",
+  "Carried from s1-rulings.json: route-b-thin, careless-thin-all, MC-14 (every win Goes at or after blocker.out) and MC-15 (no reference route reaches crew-wiped). Retire route-b-block and route-b-block-board.",
+  "Re-record after Vantage's move and Keel's round; the slack line for route-b-board should read 3 s."
+ ],
+ "checks": {
+  "keel": [
+   "BAL-JOIN-POS (M059-B1): at the safe fight's start every posted or walking crew member's fight body is at the position he had the tick before (0 cm), never (0,0).",
+   "BAL-YARD-AT-WILL (M059-B7): route B at the yard, panic only after the Take: rivals-reach-vale (probe 7:30.0). The at-will carry is lost; this is the price of not supporting the Enforcer.",
+   "BAL-YARD-FOCUS (M059-B4, B7): route B at the yard with svc-ambush-1 at (77.35, -8.0), the Scout and Fixer locking rival-1 then rival-2 from the Take: wins (probe fight out 7:32.2, T 3, A 0, Standing +3), and still wins with both locks 3.0 s late.",
+   "BAL-LOUD-BREAK (M059-B5): loud with the four drawn on foot: no break at 1 or 2 down; break at the third.",
+   "BAL-NOPRESS (M059-B3): after a pre-fight break no member presses (no ai.kite 'presses' line after rivals.retreat).",
+   "BAL-LANE (M059-B2): a rival blocker fired on from outside its reach stays on its lane.",
+   "BAL-YARD-POST (M059-B9; on the build as it stands): at the service-drive stand the blocker (svc-ambush-1's man at (77.35, -8.0)) walks 9.16 m to (86, -5), arriving within 6.5 s of the spring; the check reads the limit from the rules (carry 3.5 m at the carry pace + fight board-carrying), not a metre count."
+  ],
+  "keel_after_sky_B10": [
+   "BAL-YARD-LANE: the service-drive stand's exit lane starts at the car (69.35, -15.0); the drive part is 3 m wide and ends at Apron Road's centreline (86, -15); the road part runs north to 30 m in all (86, -1.65), 12 m wide; the open post is (79.35, -15.0), 10.0 m from the car; rival-tail, every svc-ambush-n and svc-police-n lie outside the lane; the square's lane is byte-identical.",
+   "BAL-YARD-BOARD: route B at the yard, the Scout and Fixer lock the blocker from the spring, then rival-1: blocker down (probe 7:28.0), board and Go (probe 7:31.9), no break, Standing +2 (the fight moves it 0).",
+   "BAL-YARD-FOCUS re-measured: route-b-board with the Scout on the blocker and the Fixer on rival-1 then rival-2 wins (probe 7:34.9, St +3); slack 2 s.",
+   "BAL-YARD-EARLY: apy-1's shape (A-pressure, the car Driven to the yard before the Enter): the late car's blocker posts at (79.35, -15.0) and Go comes after blocker.out (probe 2:56.4 / 3:00.3)."
+  ]
+ },
+ "open": [
+  "For Aster (a GDD/rulebook mismatch, not resolved here): GDD §06 says hostiles advance 'firing nothing while they move', and the blocker 'walks there without stopping or firing'. The rulebook and engine since 0.15.0 have hostiles firing as they walk, at walking pips (my brief 027 tuning.md §8.3; Sky 2026-10-21). Measured at the yard (PROBE_BLKHOLD, a walking blocker holding fire): at today's svc-ambush-1 it gives the same 3 s as M059-B4; with the point moved it adds nothing, so B4 doesn't depend on the answer. The GDD wins on conflict, so the GDD text or the engine needs a call.",
+  "Keel's missions-check-0.32 and route-diff-0.32 safe-fight numbers are on the (0,0) fault (M059-B1). Read them after the fix.",
+  "Robustness dropped with 059's fight: the late-step slack is 3 s for route-b-board (with M059-B4) and 1 s for route-g-fast-board, against c037's 66 s and 19 s on 0.31. The c037 fights had the crew lying in wait at fixed spots, and the pickup had no yard ambush. Part of it is the probe's locks, named by rival id, which a shifted run can misfit. Waymark's re-record measures it properly; if it stays under 3 s on the square's G-fast, Suture's playtest decides whether fight-ambush-m (20 m) or the posts need a value change. That would be my next ruling, not a GDD change.",
+  "Corrected 2026-10-26: the yard's lane post is in foot reach (9.16 m from svc-ambush-1); its distance from the car is ruled in M059-B10.",
+  "The 2026-10-25 run's results/final-check.txt ('SHIPS') is not evidence for any rule here: it ran with PROBE_SHIELD and PROBE_DRAWNBREAK=1 (M059-B5, B6)."
+ ],
+ "corrections": [
+  {
+   "date": "2026-10-26",
+   "what": "the yard's walks to the blocker's post",
+   "was": "92-340 m (vantage[1]); 91.6 m and 144.6 m (M059-B4, verdicts q3)",
+   "is": "9.16 m (svc-ambush-1 at (77.35, -8.0)), 11.46 m (svc-ambush-5), 14.46 m (svc-ambush-4), 22.76-33.96 m for the yard's west spots",
+   "cause": "the probe's Row() (balance/engine-probe.patch, sim/cli/Probe.cs) divided Path.Length, which is in mm, by 100. Fixed to / 1000 in the patch and the scratch tree; no verdict, slack or outcome moves (they come from play, not from Row()).",
+   "found": "Vantage, brief 059 'Vantage: svc-ambush-1 and the yard's lane post (2026-10-26)'",
+   "src": "lane/results/yard-geometry.txt"
+  }
+ ]
+}

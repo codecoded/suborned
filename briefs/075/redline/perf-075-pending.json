@@ -1,0 +1,68 @@
+{
+  "schema": "suborned.redline-pending/1",
+  "note": "Redline 075 (2026-10-28): the brief 075 switches for the Air sitting. NOT READ BY THE HARNESS and NOT RUN: none of these fields exists in PerfVariant (Runtime/Perf/PerfPlan.cs) or TpLongRun.RowVariant today, and JsonUtility drops unknown keys silently, so writing them into perf-072.json would run every 075 A/B as the build against itself. When Latch lands a field (both classes, Describe(), PerfSwitches.Apply/Restore, the player echoing it in its result), merge its variants and rows into briefs/072/redline/perf-072.json and tplong-072.json; run-air-072.sh already refuses a run whose resolved plan names a 075 field the player's result does not echo. Every switch is development-build only, applied once before warm-up, and off (= as built) by default, so ordinary runs replay byte-identical. See briefs/075/redline.md section 5.",
+  "fields": [
+    {
+      "field": "sky",
+      "values": "old (as built: DecoKit/Space Age Sky from light.json spaceSky) | gradient (Suborned/SkyGradient from light.json skyGradient, the sky before 075-A)",
+      "status": "pending (Latch)",
+      "how": "the builder keeps the gradient sky material on the world root in development builds; the switch sets RenderSettings.skybox and calls DynamicGI.UpdateEnvironment only if the ambient source is the skybox (it is Trilight: no GI update needed). Before AtmosphereLens reads the scene sky (SceneSky caches once): switch first, then let the lens install.",
+      "expected": "play zoom 0 (the orthographic play frame shows no sky pixels); street level +0.05 to +0.15 ms GPU (estimate)",
+      "priority": "medium: tp rows only"
+    },
+    {
+      "field": "ocean",
+      "values": "dk (as built: Suborned/DK Ocean, light.json ocean) | flat (Suborned/Water, look.json water, the sea before 075-A)",
+      "status": "pending (Latch)",
+      "how": "the builder keeps the Suborned/Water `water` material in development builds; the switch swaps sharedMaterial on every renderer drawing `water` (the sea quad, its sectors and the 2 builder basins) and re-applies SeaFade's centre, from, to and haze to it",
+      "expected": "opening 0 (no visible water; the 16 km sea quad under the land is removed by the GPU's hidden-surface removal on both sides); harbour-quay-30 +0.02 to +0.1 ms (estimate)",
+      "priority": "medium: harbour-quay-30 only"
+    },
+    {
+      "field": "colourways",
+      "values": "family (as built) | base (every kit renderer back on its base materials)",
+      "status": "pending (Latch; first proposed in briefs/074/redline.md section 4, never added)",
+      "how": "the builder stores the 36 tinted -> base pairs (3 slots x 12 families) on the world root; the switch rewrites sharedMaterials once, BEFORE FadeReach is constructed (074 F2: FadeReach snapshots sharedMaterials and writes them back), about 16.7 k renderer assignments",
+      "expected": "opening +0 (cell-open-30: +2 kit draws); wide-lamplight-30 +34 draws (<= +0.1 ms render thread); tp-street +168, tp-worst +180 draws (+0.25 to +0.55 ms render thread, GPU <= +0.1)",
+      "priority": "high: the only 075-round switch with a street-level render-thread price"
+    },
+    {
+      "field": "playBloom",
+      "values": "lens (as built: lens.json bloomPlay 1.05 / 0.45 / 0.75) | off (bloom intensity 0 on the play camera: prices the whole bloom pass at play, which 064 A3 look item 6 wants)",
+      "status": "pending (Latch); optional",
+      "how": "AtmosphereLens's play volume Bloom override intensity 0 and the scene grade's bloom overridden off for the play tier only",
+      "expected": "lens against the scene grade's bloom: 0 by construction (URP's bloom cost follows resolution, downscale and max iterations, never threshold, intensity or scatter), so a lens|scene A/B is not worth a field. lens against off: the bloom pass, about 0.2 to 0.5 ms at 1080 (estimate)",
+      "priority": "low"
+    },
+    {
+      "field": "liveries",
+      "values": "on | off",
+      "status": "not recommended",
+      "why": "0 by construction: all 14 placed livery pieces are tinted (no piece has a base and a tinted instance, so no draw splits), the 3 materials share their base's shader and keywords (KitLiveries.Load enforces it), no textures. Verify with counts (materials, SetPass), not with a sitting."
+    }
+  ],
+  "variants": [
+    { "name": "every", "why": "as shipped (072-D's), 075 included" },
+    { "name": "every-sky-gradient", "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "sky": "gradient", "pending": ["sky"] },
+    { "name": "every-ocean-flat", "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "ocean": "flat", "pending": ["ocean"] },
+    { "name": "every-cw-base", "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "colourways": "base", "pending": ["colourways"] },
+    { "name": "every-bloom-off", "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "playBloom": "off", "pending": ["playBloom"], "optional": true }
+  ],
+  "passes": [
+    {
+      "name": "ab075",
+      "why": "warm, uncapped, interleaved and rotated per stop, after ab072 in the same sitting; the first segment again at the end (noise gate 3 %). ~12 min with the optional bloom variant, ~9 without",
+      "vSync": 0, "window": "Windowed", "settleSeconds": 2, "recordSeconds": 10, "missMs": 17.5, "repeats": 3, "repeatFirst": true, "shots": true,
+      "stops": ["cell-open-30", "wide-lamplight-30", "harbour-quay-30"],
+      "variants": ["every", "every-cw-base", "every-ocean-flat", "every-bloom-off"],
+      "rules": "SetPass delta 0 for cw-base and ocean-flat; colourways at wide-lamplight-30: batches <= +40 and warm mean <= +0.1 ms; ocean at harbour-quay-30: <= +0.15 ms; bloom: report only"
+    }
+  ],
+  "tplongRows": [
+    { "name": "tp-street-cw-base", "view": "follow", "agent": "scout", "walk": [0, -20], "faceHeading": 180, "variant": { "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "colourways": "base" }, "pending": ["colourways"] },
+    { "name": "tp-worst-cw-base", "view": "follow", "agent": "scout", "walk": [-10, -25], "faceHeading": 90, "variant": { "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "colourways": "base" }, "pending": ["colourways"] },
+    { "name": "tp-street-sky-gradient", "view": "follow", "agent": "scout", "walk": [0, -20], "faceHeading": 180, "variant": { "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "sky": "gradient" }, "pending": ["sky"] },
+    { "name": "tp-worst-sky-gradient", "view": "follow", "agent": "scout", "walk": [-10, -25], "faceHeading": 90, "variant": { "everyFace": "on", "moduleShadows": "proxy", "surfaceDetail": "on", "sky": "gradient" }, "pending": ["sky"] }
+  ],
+  "tplongRules": "interleave with tp-street-every and tp-worst-every; colourways: module draws delta <= +260 and render thread delta <= +1.0 ms; render thread past 5 ms at tp-worst = the 32 m cell HLOD trigger (072 plan 4.3), whatever the share; sky: report only"
+}

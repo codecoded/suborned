@@ -1,0 +1,144 @@
+{
+  "schema": "suborned.geometry.ratchet/1",
+  "note": "The most each geometry rule (tools/geometry/rules.ts) may count. Written by `bun run geometry --ratchet` from the current audit; fixes lower it, nothing raises it without a reason in `changes` (a correct consequence of a world change, stated and sourced). The target of every rule is 0.",
+  "counts": {
+    "G-1a": 1,
+    "G-1b": 6,
+    "G-1d": 0,
+    "G-1c": 729,
+    "G-2a": 0,
+    "G-2b": 118,
+    "G-2c": 2,
+    "G-3a": 58,
+    "G-3b": 1,
+    "K-1": 0
+  },
+  "changes": [
+    {
+      "date": "2026-10-24",
+      "rule": "G-1c",
+      "from": 1101,
+      "to": 1126,
+      "reason": "Raised: Latch/Vela made every bay sunk, a drive or not (Layers.IsBay; PlayInstall.Heights cuts every bay; ported to tools/geometry/sim.ts and visible.ts at 22:23, after the 22:20 ratchet). The kerb stones round the newly sunk bays add 28 cells of the quantised-edge kind (1 m host grid against 0.25 m drawn, 18 cm) and officeBay 1 cell. Measured: with only the bay rule reverted in both ports the count is 1097, the reading Vela took at 22:03 on the same world sha (6a8243a8). Not the floors: removing civic-block floors changes nothing. The walk file removes these cells (ifHostReadsWalkFile G-1c)."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-2a",
+      "from": 666,
+      "to": 645,
+      "reason": "Lowered: the four ground cypresses (cyp-sq-nw 6, cyp-sq-ne 5, cyp-office-e 5, cyp-office-w 5 cells) are walk solids now (Vantage, plan civic.groundPieces.sizes.Cypress_Play), through the sim grid regenerated 00:12."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-2b",
+      "from": 121,
+      "to": 122,
+      "reason": "Raised by one, not a regression of today's work: the count is 122 on world 6a8243a8 from Vela's 22:03 reading through now, and unchanged when the Office floors, the fountain height, the cypress solids or the bay rule are taken out; the 121 written at 22:20 does not reproduce (a transient reading). 89 atom-fountain, 24 Records Entrance cheeks, 4 foreground-civic-robot, 5 pavilion supports."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-2c",
+      "from": 158,
+      "to": 148,
+      "reason": "Lowered: the same four cypresses, whose foliage reaches down to 0.75 m, now block their cells (9 cells; 1 more from the 22:03 reading of 157)."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-3a",
+      "from": 109,
+      "to": 110,
+      "reason": "Raised: Vantage lowered the atom fountain to its 0.5 m basin rim (civic-block.adjust.json edit atom-fountain, brief 055 step 5), so the sim no longer has a 4.2 m occluder there. The drawn column (3.0 m high, 0.5 m across, rings from 1.8 m) spans eye height and is now a drawn eye-height solid that is no occluder: one object. Deliberate: the column is too thin to hide a body (cover minWidth 0.6 m). The rule has no minimum width; if Keel adds one, this falls to 109."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-3b",
+      "from": 3,
+      "to": 2,
+      "reason": "Lowered: the fountain's occluder (0 % walled) went with its height."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "K-1",
+      "from": 0,
+      "to": 0,
+      "reason": "Unchanged at 0."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-1d",
+      "from": null,
+      "to": 24,
+      "reason": "New rule, one rule for every leg that is walked (Sky 2026-10-24, playing 0.2.99: \"Inez seems to be walking on an invisible ledge sometimes\"; \"the robot patrol is able to go through the camera pole\"; Pulse's legs: tools/missions/handover/legs.ts). A leg stands on the drawn floor (no walkable floor more than 25 cm over the pavement but the declared stairs and landing, no drawn solid, 1.8 m of head room) and keeps the body (standards.walking.body.r 0.65 m) clear of every drawn solid and every mission camera pole. Measured on the rounds' waypoint legs, the mission's fixed legs (the patrol sweep and where the rerouted patrol waits), the door guard's stops and the cast routes (the grid's A* between the places). 24 stretches today: 10 on Inez's leg to cafe-table-5 (2 m through the café's curved ground floor and the plinth cells 0.45 to 0.55 m high on both sides of it: the ledge Sky saw; plus 0.62 m from the tables 1 and 2 sets), 8 on the waitress's grid routes through the same curve, 1 patrol sweep brush (0.63 m from the Records Entrance's west flank), 5 on camera poles the world does not place (the guard's route 0.24 m from the entrance pole; each crew member's route to the driver 0.55 m from the pickup pole). Cause of the café ones: kit.collide.json's CafeBay_v2 holds the straight plinth and wall boxes but nothing along the curved front, so the site grid is free across a 4.05 m solid the raster draws (G-2a's cells there): Vela's volumes (a chain of boxes along the arc), then Keel's grid, then Pulse re-runs `bun run rounds`; the poles: Keel's grid (the poles are the host's), Pulse's route."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-1d",
+      "from": 24,
+      "to": 2,
+      "reason": "Lowered: Pulse's re-bake of the rounds (the legs now keep the body clear of the café's curved front and its tables) takes Inez's leg to table 5, her brushes of tables 1 and 2, the waitress's grid routes through the curve and the patrol and crew brushes to 0. Two stretches are left, both the waitress's legs from the Café door to tables 4 and 5: 3.5 m from the route point (-10.25, -33.25), which is not the door (the door is elsewhere on the front: the point is the first waypoint of both legs) into civic/cafe/ground (the point stands in the front's solid in the raster, 4.05 m; the engine's collide volumes for CafeBay_v2 leave it free). The audit's stand now follows the engine's Site.Stand (the place's `stand`, else the point itself), not a cell centre."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-3b",
+      "from": 2,
+      "to": 10,
+      "reason": "Raised, not a regression of the world: the ratchet of 2 was written on 2026-10-24 22:20 while the site held no drawn occluders (grid.drawn.sight false: 9 occluders, the buildings and four cover blockers). Keel adopted them (engine 0.28.0, `sim:site --drawn-occluders`): the site now holds every drawn volume that spans eye height, and 10 of them have nothing drawn at eye height along 90 % of their outline: 7 parasol stems (civic/cafe-table-N/parasol, 0.2 m boxes from kit.collide.json 0 to 2.8 m: the Parasol_Testbed mesh the raster reads has its canopy at 2.5 to 3.0 m and no stem at 1.6 m, so the engine blocks sight at a pole that is not drawn: Vela's stem, or Keel's rule that a 0.2 m box is no occluder; the cover rule already ignores anything under 0.6 m wide), the civic robot twice (87 % and 81 % walled: the occluder is wider than the drawn body: Keel/Forma), and plot-04 (84 %: a 6.25 m gap in the outline at block (-45.4, -34): Vantage/Vela). The world did not change. Target 0."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-3b",
+      "from": 10,
+      "to": 2,
+      "reason": "Lowered (Keel, engine 0.30.0; Sky 2026-10-24: \"can take some liberties for performance e.g looking through glass isn't needed\"): tools/sim/solids.ts no longer makes a sight occluder of an element narrower than 0.6 m both ways at eye height (the cover rule's width: the seven café parasol stems, the eight civic lamps, service-robot-12), nor of a volume whose top clears the eye line by under 0.1 m (a rounded shoulder the line grazes: the civic steward monument's robot, service-robot-9). sightOccluders 245 -> 227; site regenerated with --drawn-walk --drawn-occluders. Left: plot-04 (84 %: a 6.25 m stretch of bld/lamplight-south-w/13's face at block (-45.4..-51.4, -34) with nothing drawn at 1.6 m, owner Splice) and cover:civic/foreground-civic-robot (81 %: Pulse's cover blocker, tools/cover/gen.ts)."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-1d",
+      "from": 2,
+      "to": 0,
+      "reason": "Lowered: the last two stretches were the audit's, not the layout (Vantage's probes, out/scratch/vantage/): the route point (-10.25, -33.25) lies exactly on a raster cell edge and the raster read it into the cafe wall's cell; read 1 mm out it is open pavement, and the engine's collide boxes leave it free. tools/geometry/audit.ts auditLegs now reads the cell under a leg's sample 1 mm south-east (LEG_NUDGE), so a point on an edge takes one cell by a fixed rule, not by rounding. No world or site change."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-1b,G-1c,G-2a,G-2c,G-3a",
+      "from": null,
+      "to": null,
+      "reason": "Lowered to the audit as run at 20:22 on world c8c3475b9b and the site written at 20:19 (G-1b 10 to 6, G-1c 1126 to 709, G-2a 645 to 0, G-2c 148 to 2, G-3a 110 to 61): not this round's work (the rounded corners, lawn ends and edge returns lie on the carriageway and change no walk cell's floor or solid); the cause is the site regenerated by the engine owner (Keel: drawn solids, the cell face margin). Written by `bun run geometry --ratchet` so the caps follow the fix."
+    },
+    {
+      "date": "2026-10-25",
+      "rule": "G-3a",
+      "from": 61,
+      "to": 58,
+      "reason": "Lowered (Splice, brief 061 round): the site regenerated against the world of 2026-10-25 (bun run sim:site with the committed --drawn-walk --drawn-occluders): 58 drawn solids that span eye height are not occluders, was 61. The world re-sited the civic call boxes (call-box-0, -3, -4, -6), police posts (1, 2, 5, 6, 7) and a service robot when the crossings fell from 124 to 26 and the lane mouths became footways; the committed site still held their old places until it was rebuilt."
+    },
+    {
+      "date": "2026-10-25",
+      "rule": "G-1c",
+      "from": 709,
+      "to": 729,
+      "reason": "Raised, a correct consequence of a world change (Splice, brief 061 round; bisected): 709 on the world generated from the committed civic-block.json, 729 from the working one, every other input the same (a plan with the old coverage rules, a plan without the footways and the old Kerb_Pearl pieces each leave it at 729). The change is the six civic crossings Vantage dropped from civic-block.json and civic-block.adjust.json (x-starline-w, x-rocket-n, x-garden-n, x-garden-s, x-pylon-n, x-pylon-s; Datum's coverage, Sky 2026-10-25 'way too many crossings'): the kerb they cut is laid now, +20 cells of the kerb-stone and quantised-edge kind (a drawn piece raises the floor 580 to 599, a ground layer above the host height 85 to 88, less 2 from the rebuilt site). ifHostReadsWalkFile G-1c is 0: the host reading the walk file removes them (the walk file is cell-for-cell the one before the round)."
+    },
+    {
+      "date": "2026-10-25",
+      "rule": "G-1d,G-2a,G-2c,G-3b",
+      "from": null,
+      "to": null,
+      "reason": "Held, not raised (Splice): `bun run geometry --check` sat above the ratchet on G-1d (1), G-2a (42), G-2c (22) and G-3b (7) because the committed sim site (grid, occluders) was built before the 2026-10-25 world, which re-sited the civic call boxes, police posts and a service robot (the phone-booth, police-post and service-robot cells the audit named); the site grid held their old places. Rebuilt with bun run world, bun run cover, bun run sim:site: back to 0, 0, 2 and 2. Order that keeps them there: world, cover, sim:site, geometry."
+    },
+    {
+      "date": "2026-10-26",
+      "rule": "G-2b",
+      "from": 122,
+      "to": 118,
+      "reason": "Lowered (Splice, briefs/067 J; Sky on build 0.2.122: \"There's a butler robot fixed to the north of the Records building: it needs to go\"): civic-block.adjust.json removes the steward monument (nav solid foreground-civic-robot) from the block, so the block, the world, the walk grid, the cover file and the site lose it: the 4 cells G-2b counted at the monument (a blocked cell whose solid was drawn narrower than the sim's 1.5 m footprint) are gone."
+    },
+    {
+      "date": "2026-10-26",
+      "rule": "G-3b",
+      "from": 2,
+      "to": 1,
+      "reason": "Lowered (Splice, briefs/067 J): the cover blocker civic/foreground-civic-robot (81 % of its outline drawn at eye height; Pulse's blocker, tools/cover/gen.ts) is gone with the monument. Left: plot-04 (84 %, a 6.25 m stretch of bld/lamplight-south-w/13's face with nothing drawn at 1.6 m, owner Splice)."
+    }
+  ]
+}

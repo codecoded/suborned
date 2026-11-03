@@ -1,0 +1,9 @@
+brief 079, Latch, 2026-10-30. Code and a targeted Play-mode check only, nothing built, no scene saved, no commit. One build with Keel's fix and Vela's crossing lights.
+1 play zoom: built-in preset 10, wheel 8 to 18.5, host range no longer serialized, shots with no zoom take the play zoom.
+2 car: view-only way out behind the end card (HostViews.Leaving.cs); hash 43b2b7a2fce65008 same as the 078 reel, replay hash same.
+3 café cut: three causes fixed: fallen hostiles held the capsule and silhouette, DK_GlassDark film (Suborned/DecoKit/GlassSky) had no cut variant, the soft edge was noise; now one clean line.
+evidence: briefs/079/latch/report.txt and stills there; tool Assets/Suborned/Editor/World/Review/Latch079.cs.
+
+holdActs doubleRuns (0.2.151), 2026-10-30: proof bug, not a game bug. Cause: at play zoom 10 the proof's ground spot (Scout + 4,3 m, with the view left on Inez) projected to 177,157 px, under the minimap. The first press was on the HUD (no click) and the minimap's press panned the view 41 m, so only the second press reached the street: one walk, no double. A player can't click the ground under the minimap. Double-click-to-run itself is unchanged.
+Fix: ProofHold.cs looks at the spot before clicking (h.LookAt(gw)). The temporary click trace is removed.
+Evidence: -proofOnly holdActs on build 0.2.154 passes: doubleRuns ok, orders scout:cancel,scout:move,fixer:move,tech:move,enforcer:move,scout:move:run,fixer:move:run,tech:move:run,enforcer:move:run. Trace from before the fix: first press p 177,157 hud true, focus -159.3,-220.3 to -200.6,-236.9 between the presses. Not run: the other proof sections on this build (Aster's bun run batch --from game-check).

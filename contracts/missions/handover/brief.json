@@ -3,7 +3,7 @@
   "mission": "handover",
   "title": "The Handover",
   "place": "Civic Records Office, the civic block",
-  "time": "Evening, 5:30: shift handover",
+  "time": "Evening: shift handover",
   "pick": "A",
   "order": [
     "hook",
@@ -13,28 +13,77 @@
     "signoff"
   ],
   "note": "Fable, 2026-10-23, third pass: the file is the motive (Sky); Vale carries it out of the Office at shift change and delivers it to Security tonight, so the take lands before the hand-off. variants.A/B/C each complete; the screen reads variants[pick]. 'short' is the one-line summary. Empty arrays/strings are omitted by the layout. The file is story only: no file objective, the game does not model it yet.",
+  "target": {
+    "role": "councillor",
+    "at": "d:Official entrance"
+  },
+  "ways": [
+    {
+      "id": "front-door",
+      "contact": "waitress",
+      "steps": [
+        "badges/signal_guard",
+        "enter"
+      ]
+    },
+    {
+      "id": "pickup",
+      "contact": "driver",
+      "steps": [
+        "car",
+        "take"
+      ]
+    }
+  ],
+  "clock": [
+    {
+      "id": "start",
+      "at": "0:00",
+      "icon": "p_time"
+    },
+    {
+      "id": "chime",
+      "at": "4:30",
+      "icon": "enter",
+      "lit": true
+    },
+    {
+      "id": "over",
+      "at": "7:30",
+      "icon": "car"
+    }
+  ],
+  "camera": {
+    "place": "d:Meet driver",
+    "offsetCm": [
+      500,
+      -500
+    ],
+    "yaw": 0
+  },
+  "dataSrc": "Waymark, 2026-10-25 (brief 062 'Portraits and ids', Glyph, Fable and Waymark): the briefing's mission data, read by Latch's Briefing.cs (HostBriefing.cs BriefScreen.Load: brief.json first, then mission.json brief). target: role is the roles[] id of the man to take (his photograph is portraits/card_<role>); at is where the briefing's Target leader lands, a mission.json destination as a place id (d:<name>, as camera.place): d:Official entrance, the door Vale comes out of at 4:50 under the canopy (timeline), not the guard's public door (Glyph N1 on 0.2.122, briefs/041/port-progress.md); tools/missions/handover/brief.ts rejects an unknown one. ways: one per way in; id is the text.json less.briefing.ways key and, for front-door, mission.json windows[0].id (route A); contact a roles[] id (its face portraits/face_<contact>); steps up to three kit icons after the face (front door: Inez, the guard's badge, the door; pickup: the driver, the car, the take). pickup has no window yet. clock: the marks from mission.json timeline (0:00 the start, 4:30 the handover chime, 7:30 the close: rivals take Vale or the car leaves). camera: the briefing frame (062 §5: overhead-pickup, the Office door right of centre at play zoom), 5 m on from d:Meet driver, opening yaw; the same frame the host derived before this data existed, so the screen does not move.",
   "variants": {
     "A": {
-      "hook": "Vale has a file on you. Tonight he carries it to Security.",
+      "hook": "Popovic has a file on you.",
       "handler": [
-        "The cameras caught your cell. Councillor Vale put it on paper.",
+        "The cameras caught your cell. Councillor Popovic put it on paper.",
         "No networks here. The file lives in a folder and in his head.",
         "Reach him first. Then we learn who else has read it."
       ],
       "dossier": {
-        "target": "Councillor Vale. Holds the file on you.",
+        "target": "Councillor Popovic. Holds the file on you.",
         "location": "Civic Records Office, the civic block.",
-        "window": "Shift change, 5:30 pm. He leaves soon after.",
-        "objective": "Take him alive. Deliver him to the getaway car."
+        "window": "Shift change, 4:30. He leaves soon after.",
+        "objective": "Take him alive before it reaches Security."
       },
       "intel": [
         "Inez, café waitress. She knows the door guard.",
-        "Vale's driver needs cash.",
+        "Popovic's driver needs cash.",
         "A rival crew wants him too.",
         "Cameras are watched by people. People can be turned."
       ],
       "signoff": "Quiet hands. Go.",
-      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "short": "Take Councillor Popovic alive before he delivers the file. Deliver him to the getaway car.",
       "sources": [
         {
           "field": "target.role",
@@ -46,11 +95,11 @@
         },
         {
           "field": "window",
-          "src": "contracts/missions/handover/mission.json clock (startsAt 17:24:30: the 5:30 chime is the shift change; Vale exits at 5:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
+          "src": "contracts/missions/handover/mission.json clock (startsAt 17:25:30: the 4:30 chime is the shift change; Vale exits at 4:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
         },
         {
           "field": "objective",
-          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23)"
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23). Fable 2026-10-25 (brief 062, Sky: pick B): the briefing on the street shows only the hook and this line; \"it\" is the file, and the deadline is its delivery (Vale's car leaving, or 7:30 with a turned driver). Where he is taken is the goal line in play (text.json less.briefing.goal)"
         },
         {
           "field": "intel.waitress",
@@ -74,7 +123,7 @@
         },
         {
           "field": "hook",
-          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+          "src": "Sky 2026-10-23: the file (replaces the clearance order). Fable 2026-10-25 (brief 062): cut to its first sentence; the second (Tonight he carries it to Security) moved into the objective as the deadline; the old screens read the same words"
         },
         {
           "field": "handler.1",
@@ -91,22 +140,22 @@
       ]
     },
     "B": {
-      "hook": "Vale leaves work with a file on you. Security gets it tonight.",
+      "hook": "Popovic leaves work with a file on you. Security gets it tonight.",
       "handler": [],
       "dossier": {
-        "target": "Councillor Vale. He built the file on your cell.",
+        "target": "Councillor Popovic. He built the file on your cell.",
         "location": "Civic Records Office, the civic block.",
-        "window": "Shift change, 5:30 pm. He leaves soon after.",
+        "window": "Shift change, 4:30. He leaves soon after.",
         "objective": "Take him alive. Deliver him to the getaway car."
       },
       "intel": [
         "Inez, café waitress. She knows the door guard.",
-        "Vale's driver needs cash.",
+        "Popovic's driver needs cash.",
         "A rival crew wants him too.",
         "Cameras are watched by people. People can be turned."
       ],
       "signoff": "Quiet hands. Go.",
-      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "short": "Take Councillor Popovic alive before he delivers the file. Deliver him to the getaway car.",
       "sources": [
         {
           "field": "target.role",
@@ -118,7 +167,7 @@
         },
         {
           "field": "window",
-          "src": "contracts/missions/handover/mission.json clock (startsAt 17:24:30: the 5:30 chime is the shift change; Vale exits at 5:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
+          "src": "contracts/missions/handover/mission.json clock (startsAt 17:25:30: the 4:30 chime is the shift change; Vale exits at 4:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
         },
         {
           "field": "objective",
@@ -151,21 +200,21 @@
       ]
     },
     "C": {
-      "hook": "Vale has a file on you. Reach him before Security does.",
+      "hook": "Popovic has a file on you. Reach him before Security does.",
       "handler": [
-        "Take Councillor Vale alive.",
+        "Take Councillor Popovic alive.",
         "Outside the Records Office, before he delivers it.",
         "Deliver him to the getaway car."
       ],
       "dossier": {
-        "target": "Councillor Vale",
+        "target": "Councillor Popovic",
         "location": "Civic Records Office",
-        "window": "5:30 pm shift change",
-        "objective": "Vale alive, in the getaway car."
+        "window": "4:30 shift change",
+        "objective": "Popovic alive, in the getaway car."
       },
       "intel": [],
       "signoff": "",
-      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "short": "Take Councillor Popovic alive before he delivers the file. Deliver him to the getaway car.",
       "sources": [
         {
           "field": "hook",

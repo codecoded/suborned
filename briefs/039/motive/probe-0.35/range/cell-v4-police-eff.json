@@ -1,0 +1,35 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "range",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "do": "spawn",
+   "target": "police",
+   "to": "eff",
+   "count": 4
+  },
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "draw"
+  },
+  {
+   "tick": 0,
+   "op": "fixer",
+   "do": "draw"
+  },
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "draw"
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "draw"
+  }
+ ],
+ "until": 600
+}

@@ -1,0 +1,376 @@
+suborned-sim batch --list (every scenario id, 356) on engine suborned.sim/0.34.1 inputs 5b230996fba6b7f9 (hex), with the replay check:
+$ bun tools/game/playing.ts dotnet out/scratch/keel/bin341/suborned-sim.dll batch --list out/scratch/keel/scenario-ids-0.34.1.txt --out out/scratch/keel/batch-0.34.1.jsonl
+batch: 356 played in 18.1 s on 18 threads; 0 not ok
+exit 0
+356 lines, 0 errors (a runaway is an error line), 0 replays not identical, 0 with a failed check
+
+against 0.34.0's batch (briefs/067/keel/batch-0.34.0.txt): every start and final hash moves (the rulebook's ai.noStall text is in the inputs hash);
+outcome, fail, end, Trail, Alert or Standing moved in 1: K3-CELL-DOWN 5:44.4 -> 5:43.8 (failure cell-down)
+event log moved in 9 (all still pass):
+  N36: first line apart 46: 0.34.0 3:36.8 ai.advance | 0.34.1 3:36.8 ai.advance rival-3 has had nobody in reach for 1 s: he advances on the enforcer.
+  N165: first line apart 101: 0.34.0 5:25.6 shot.miss | 0.34.1 5:25.1 shot.miss rival-4 fires on guard at 13 m (250 ‰): miss.
+  N143: first line apart 106: 0.34.0 5:25.3 ai.advance | 0.34.1 5:24.7 shot.miss rival-4 fires on guard at 13 m (250 ‰): miss.
+  N185: first line apart 76: 0.34.0 5:21.0 ai.advance | 0.34.1 5:22.1 ai.why rival-2 takes the enforcer as its target: vale.
+  BAL-LANE: first line apart 107: 0.34.0 5:26.3 ai.advance | 0.34.1 5:26.4 shot.hit rival-1 fires on fixer at 10 m (562 ‰): hit.
+  K3-CELL-DOWN: first line apart 113: 0.34.0 5:28.6 ai.kite | 0.34.1 5:28.6 ai.kite rival-5 answers tech: first shot at 5:28.1, moves at 5:28.6 (5 ticks), out of the line.
+  K3-BACK: first line apart 64: 0.34.0 5:53.7 ai.advance | 0.34.1 5:53.7 ai.advance rival-3 has had nobody in reach for 1 s: he advances on the enforcer.
+  SQ1-STEP: first line apart 79: 0.34.0 4:13.9 ai.advance | 0.34.1 4:13.9 ai.advance rival-3 has had nobody in reach for 1 s: he advances on the tech.
+  SQ2-NO-STALL: first line apart 79: 0.34.0 4:13.9 ai.advance | 0.34.1 4:13.9 ai.advance rival-3 has had nobody in reach for 1 s: he advances on the tech.
+new: SQ2-CLOSES
+
+S01	none		461	90527f8f545d986f
+S02	none		3700	e3fb294b18221735
+S03	none		425	81c3af4f0b6bb301
+S04	none		750	8cccd3ef378e229f
+S05	failure	enforcer-down	3678	a7b16f7fc442cc3b
+S06	none		1453	69a0198fda9460f9
+S07	none		142	0541b270bf93ba29
+S08	none		479	4e4c32f89983f3e6
+S09	failure	vale-dead	3720	4e4f5352eba61a3a
+S10	success		3267	f15d004a977ee9d2
+S11	success		2398	60d460188dca87d1
+S12	none		396	d903e73b7b271b8c
+S13	none		2570	b19f5422b157ca1c
+S14	none		1500	410c5fe13895eb27
+S15	none		1500	07185f8872b44126
+S16	none		386	d0917b9c3d03d37c
+S17	none		1156	7dbdcf3d1433e90e
+S18	none		1133	c69c79a140df9aa4
+S19	none		1171	07e2f4da2370659e
+S20	success		4375	14b45fc8877dda06
+S21	success		4838	7bfd274d5d118e65
+S22	none		2222	53890a1dd078a84c
+S23	none		2350	bfca36273c9eb8b0
+S24	none		711	9b25f02fd5165a34
+S25	none		1450	c8e7105df41bde58
+S26	none		1661	1899f45c679cb6d6
+S27	none		481	51cb7fbfb1b33693
+S28	none		80	6396d08f420ab8bb
+N08	withdrawn		300	be85e9242dbe2bd3
+N10	failure	enforcer-down	2006	aeca7c1328554aaf
+N11	success		3373	ffc25982a9ec3281
+N11b	failure	rivals-reach-vale	4365	0f231d1a7c77c3c4
+N12	none		3600	dce344c927fc16d2
+N12b	none		1600	c47034cbfb3b013c
+N12c	none		1450	6b8c5de432486e7a
+N16	none		2000	0319ce5f8da0a3bd
+N17	none		1450	6b8c5de432486e7a
+N17b	none		2100	061db36fbe5dcf11
+N17c	none		1138	ada8a10dd7d0ad26
+N18	success		3373	ffc25982a9ec3281
+N19	none		112	3d9688350bb0f2e7
+N19b	none		4239	3fdcf235f2bb5c71
+N09	none		1635	602da358b66d3759
+N09b	none		1135	466eb354183d7a98
+N14	none		526	9e26bdec174877e9
+N15	none		612	9e7045a48d4f59af
+N20	none		183	6c7e4066572f3d2d
+N20b	none		1056	86f682a8885ddaa8
+N20c	none		1856	e372c6adfac904f5
+N20d	none		181	eb8b88815e96a100
+N20e	none		80	b1df1373a25aa22c
+N20f	none		2046	4a315c90cc9b7e67
+N20g	none		50	a9762052f6407f51
+N21	none		850	bd3cb7b173bea240
+N22	none		882	5ae8ce43668e9b53
+N23	none		699	780f87688effaa97
+N24	none		376	cb385b4165a051ed
+N25	none		874	98bc93a3e8e63335
+N36	failure	rivals-reach-vale	2213	3b6c33111f66e866
+N37	none		830	a3c77c625ea46dc7
+N38	none		377	884c75c488163018
+N38b	none		134	43b3b4daaad83e2b
+N39	none		1744	8a85fe8453776dba
+N39b	none		50	35063f8dffa8c0a7
+N39c	none		1745	e43930246d04f0ae
+N39d	none		585	d1aac7db89e28ef8
+N40	none		2454	f972aec7f474c3fe
+N26	none		1565	3344b05d3c5d782b
+N27	none		80	4c9d652d1b5a0dab
+N28	none		1358	bd9be83f1e5a2c75
+N29	none		1312	2d260f29db5a9e35
+N30	none		961	83d3ca2b00a1f6f1
+N31	none		2400	ab948d69ad36361b
+N32	none		2381	c52faa795e606b39
+N33	none		4339	ca612c5365c71e80
+N34	none		1329	8993ac42216ba409
+N35	none		1103	d7c6d6635ec40531
+N41	none		353	8f6346d9900a5d18
+N42	none		3711	52c816b659e0b015
+N43	none		567	7e189268bc656901
+N44	none		1127	1239e6ca8968dc0a
+N45	none		1033	7e61d25e802af0cb
+N46	none		2400	9e89a5141c308cbb
+N47	none		3700	ed06b0f8fb8612ae
+N48	none		2813	1d8fba2196ec80e4
+N49	none		3982	9fda352b0eeeafbf
+N50	none		3110	6d39e13d3ecd6883
+N51	none		359	3c82066d574f0cc3
+N52	none		3403	4d96fb7dd5e99cc8
+N53	none		3291	08f324970da49f24
+N54	none		2837	23a85529118a15a1
+N55	none		3814	954e560690932844
+N56	none		3780	44cec4d5370f1d4e
+N65	none		4495	b8a8f5a079805cd4
+N66	none		1906	3f80c75846b34800
+N67	none		834	da703a445556eccd
+N57	none		3968	96e86f62c096f13f
+N57b	none		3950	f4a4fd0200947c78
+N58	failure	vale-dead	4212	937d5897da1d1666
+N59	none		3300	2c2d4e25a86fd7fc
+N60	none		2271	38941506ad543e85
+N61	none		2271	8cf77731d4a08080
+N62	none		2771	bd912ef9f0f86a26
+N63	none		2651	be170c2d07219aaa
+N64	none		2531	3ceedca77ee25b0a
+N68	failure	sealed	3792	ed236d0e29beaed0
+N69	none		1783	2add651c04c014e9
+N69b	failure	entry-seen-camera	1607	8c8d824f008d5d27
+N70	none		3980	c226f75dca6263f9
+N71	none		2700	39260a8c132d85f5
+N72	none		1009	fbd6db283e2a950c
+N73	none		3750	8f12dbee1870b9cf
+N74	none		3494	e93a87dbbd74831e
+N74b	none		2401	1d3912533bc67dba
+N75	none		3930	19f14436cc28d979
+N76	none		2591	c9d8487290243f0c
+N77	failure	rivals-reach-vale	4328	7b41775e0297339e
+N78	none		4289	44109d7ec75d8cf6
+N79	none		1800	a8cfa990f638f2f7
+N80	none		1631	522ba4b2042b1102
+N81	none		3550	87d5894647fbbd4d
+N82	none		4000	92221459ebbf1730
+N83	none		3929	37e327457f063a8b
+N84	none		3138	935c5dce9b7b0da4
+N85	none		3400	a3f689f519f997a8
+N86	none		2200	1aedfc95849226f6
+N87	failure	enforcer-down	3436	59c92619c2852b31
+N88	none		2100	061db36fbe5dcf11
+N89	none		1450	6b8c5de432486e7a
+N90	failure	vale-leaves	3730	f33fb8df68a6b66a
+N91	none		4453	69444d05e70ae276
+N92	none		1200	674257bc5b47a4f6
+N92b	none		1200	78fc38ca82a2d4b9
+N93	none		962	de0f1c05f17a018a
+N94	none		1200	50250a087d8ee70e
+N95	success		3373	ffc25982a9ec3281
+N137	success		3619	754df1cf2610e854
+N96	withdrawn		1863	14d074e875aef50f
+N97	withdrawn		1863	a17937c852a71af5
+N98	none		3130	3c9e0007c7f7bf4d
+N99	none		3370	c1b5c2de26ff912f
+N100	none		3080	0556fb0f32f317d6
+N101	failure	vale-leaves	3730	8dd2b78210e68581
+N102	none		727	f808fb89236ea7c8
+N103	none		495	dafd3992d631a5fa
+N104	none		2924	2b65835a449d9e7e
+N105	none		567	0a5e626971a31493
+N105b	none		1884	e562b301ae8359ad
+N106	none		126	5e4c61a23fe9c55d
+N107	none		370	0dd104770a0a4c2a
+N108	none		1998	2631f9ce2e2ea48f
+N109	none		551	e372c503300c8d5f
+N110	none		947	3ebe7df6ea1cf873
+N166	none		908	141d4490bb32fe18
+N167	none		539	ca50f97d5483eeb6
+N168	none		1016	006a85b830925b28
+N169	none		1369	40972dd4384f6214
+N170	none		576	839a8a6b413a1f86
+N171	none		1104	93b829dcd8310f4b
+N172	none		981	32a39069a1b49a65
+N173	none		568	fbf3244a5d77faaf
+N174	none		1923	8bd8cb557a087954
+N175	none		327	e47baac59f96e6b2
+N176	none		740	7edfee668eff210a
+N177	none		313	276d2c5250c2bf92
+N130	none		942	21b370d3b48e020d
+N131	none		1290	3c96a4068978a7af
+N132	none		1553	918621b5c224f888
+N133	none		1431	8253c3fb4df7c494
+N134	none		773	745c40c61e317b37
+N135	none		762	d0153d22843079e9
+N136	none		700	f9d487fc77cd27aa
+N178	none		1100	bc4772808c3c5984
+N179	none		550	0a68db5693584040
+N180	none		341	b3d5cff404624570
+N111	failure	rivals-reach-vale	3221	10cd3ca702084757
+N112	withdrawn		894	abb891c1d9d594c4
+N113	success		3268	e302cdf6759b7b02
+N114	success		3373	ffc25982a9ec3281
+N115	withdrawn		2375	634e33faa71f93b5
+N116	withdrawn		1691	47fe6e575c8a3aa8
+N118	withdrawn		883	0b339de73bb83111
+F8-O9	none		1681	2e215554d5729871
+F8-O9-VALE	none		3111	a06b1ca5703fbed5
+S9-VALE	failure	vale-dead	3192	09d804acdd505feb
+S9-CROWD	none		2835	888426085dc43943
+S9-INEZ	none		167	bef69eda122e8a98
+S9-CAM	none		259	5121ef0410d64425
+S9-AFTER	none		3332	82b592d159cd1293
+S9-KO	none		1624	faad64ea84c15797
+S9-SELF	none		10	850d8174b0314b23
+S9-UNIT	none		826	1b98571b7da4748c
+LF-ACT	none		356	6a1809f8eea4eb00
+CAR-SHOT	none		457	bdb072077c8095c3
+CAR-BLAST	none		640	a1ec63c9c66c58a5
+CAR-BLAST-LAB	none		727	ce9d96597d6151a2
+CAR-PREVIEW	none		688	80676cbcf49ddf94
+CAR-PREVIEW-HOLSTERED	none		686	de6cc4d54c67cbb6
+CAR-PREVIEW-LAB	none		1207	90d0ad8efda334d4
+CAR-VALE	failure	vale-dead	3882	9b85dc3663b12afb
+CAR-GETAWAY	failure	getaway-lost	150	4a10052dfd46ad48
+CAR-RIVALS	none		1901	8174c812cdef292f
+N119	failure	entry-seen-guard	365	04655306da483320
+N120	none		2871	956aa74570d43d62
+N121	failure	abduction-seen-camera	3700	14b64d6eef34ee1b
+N122	failure	rivals-reach-vale	3995	56e5b90cce82c016
+N123	failure	vale-leaves	3730	97cab672af9d3ab4
+N124	failure	vale-leaves	5100	307db27179a01caa
+N125	failure	enforcer-down	905	729d465a2e7ec61f
+N126	failure	driver-shot	3530	c873564fe2ea5b79
+N127	failure	sealed	3050	1eb774a29ddf169b
+N128	failure	sealed	2796	f1a779e93868721f
+N129	withdrawn		300	be85e9242dbe2bd3
+D01	none		50	c43abc2aa002f61e
+D02	none		50	6d3def5ec63de9a5
+D03	none		1	6834cc308d8c39d7
+D04	none		181	8c65f3c519a806dc
+D05	none		120	8766703f9f59acd1
+D06	none		429	26f226bb92f1e167
+D07	none		382	7a18f5bbf792985b
+D08	none		2891	b10b04054055355b
+D09	none		114	1916e285bc56e48f
+D09b	none		308	fbbd683a31c42308
+D10	none		45	291039095ffb83b1
+D10b	none		99	34988dfeb7f839e0
+D11	none		397	d6862947c959bb97
+D11b	none		397	7c189f24e8ee453c
+D12	none		20	6140add19232d584
+DP1	none		300	958caf7446e87e6e
+N149	none		329	118f5ff0dc684732
+N150	none		97	4bb5d62212208aa9
+N151	none		397	fa816790d149f10b
+N152	none		1260	be7ec714fd9e5fb5
+N153	none		1282	79f74dbc79356062
+N154	none		1296	340c788bd533ef73
+N155	none		2455	cb243904a3ef1e5f
+N156	none		2485	a3b8d4359c236ce6
+N157	none		2521	b4345df594050911
+N158	none		2476	3b16dba99ffad8ef
+N159	none		2702	616c697bff1fc6e6
+N160	none		1787	0ef0d7b556452d9c
+N161	none		2245	064e60bdac4745e9
+N162	none		2527	e5c081ba5dd8f7c0
+N163	none		2648	e679e68da604912c
+N164	none		2691	7bbe048a07ec6dfd
+N165	failure	rivals-reach-vale	3336	0485856ab2223c3d
+N140	none		1	415bdc2847c9e4be
+N141	none		383	9efc4ee70265e0f4
+N142	none		50	43dd1da52a2d40b2
+N143	failure	rivals-reach-vale	3336	8394947df1c6dda4
+N144	none		308	6616b5b91547e780
+N145	none		1177	e3aa6a4c29790182
+N146	none		1321	e8c701fabeb81d20
+N147	none		40	3bd491d8d3e47347
+N148	none		1	b4c8901f84b5391d
+F14-OPEN	none		538	af415d8841a60e19
+HI-SCOUT	failure	enforcer-down	1042	04d6a0292e4a6261
+HI-SCOUT-ACT	none		824	631169d1e483eb80
+HI-FACE	none		863	3dd66d9aa25cb98d
+HI-A3	none		3298	007445cbf4dcb18b
+HI-ROBOT	none		2823	1c796dd2e1733f3e
+HI-RIVALS	none		2062	8f5ab66c64b24f58
+FL-KERB	none		687	2170cbfd57b89d4d
+F15-CLEAN	none		2235	ba98a245bb7d6bda
+F15-DRAWN	none		1976	7a0a698e6ebd109e
+F15-FACE	none		1862	40cb8e2d6a977434
+N183	failure	sealed	2796	f1a779e93868721f
+N184	failure	enforcer-down	2690	2242b2f2eca6d4fb
+N185	failure	sealed	4850	d4ba3a4364d14d44
+N186	none		2992	f01a08423cf9df5a
+N187	none		1	8d824c39411c4ef2
+NQ-1	none		2401	d137875f0602f3a4
+NQ-2	none		652	cb6ee284b11602c4
+N181	none		3188	00d7173769f097fa
+N182	none		3000	ce07a880b6a51c72
+FW-DRAWN	none		507	1c9b25de885a8d41
+FW-FIRED	none		901	b722cd34b06e3b41
+FW-VALE	none		2072	94fabcce934d5b45
+FW-VIOLENCE	none		360	a74f65b96ba69074
+FW-FACE	none		2803	7e27b0409571811e
+FW-SEEN	none		2510	64da3f93b5626067
+MS-1	none		1	8d824c39411c4ef2
+MS-2	none		1	8d824c39411c4ef2
+NC-1	none		300	be85e9242dbe2bd3
+NC-2	none		300	be85e9242dbe2bd3
+NC-3	none		443	6d785ca3e8fe0795
+NC-4	none		150	3d81041b59592d82
+ND-1	none		3301	0e3976e73da1f0fc
+ND-2	none		1	8d824c39411c4ef2
+WM-1	none		1	26a18480f0828b28
+WM-2	none		299	b799b7c1076d1192
+WM-3	none		484	019fc7fd7e048800
+WM-4	none		1	8d824c39411c4ef2
+LOOP-RUN	none		1531	928e4fd22881d8c0
+LOOP-RE	none		2631	8676156e5bb04310
+LOOP-ONE	none		1731	2b5ac6c91f99e640
+DIS-REPORT	none		2271	aa3ea2a5d271ca13
+DIS-SECOND	none		2271	2eee43df8483a43e
+DIS-TWO	none		382	d259f3a0a110425e
+CAM-SHOT-PRICE	none		259	5121ef0410d64425
+CAM-ANY	none		259	5121ef0410d64425
+NC-5	none		633	0d1d3205762a8341
+QF-BUSY	none		106	8f27869e7db816f3
+P59-DAY	none		2508	5053eb0fafe3bd36
+P59-B	failure	rivals-reach-vale	4365	37049fea24f53b54
+P59-NOBODY	failure	vale-leaves	5100	73a609d6a7609cee
+P59-UNTURNED	failure	vale-leaves	3730	97cab672af9d3ab4
+P59-FIRST	none		4257	a398496ec48a5984
+P59-TAIL	failure	rivals-reach-vale	3995	e5f21477537d7dab
+P59-TIP	none		4660	12222e7129647fde
+P59-EARLY	none		1765	93e21098d42d194f
+P59-GUN	none		872	7ba8216d54ce43fa
+P59-S2-NEAR	none		1805	17af78d5c117f3e8
+P59-S2-NORTH	none		1	8d824c39411c4ef2
+P59-S3-RUN	none		2515	87722d64f30e1003
+P59-S3-WALK	none		1	8d824c39411c4ef2
+P59-REFUSE	none		412	5a0132a2ca2b3b1b
+P59-LOUD-YARD	none		4395	1951b0e2f3d9ae97
+P59-FRONT	none		3700	3e8d443fdfee7d70
+P59-BEAT	failure	rivals-reach-vale	3700	5dda415bdfd49344
+S1-GATE-EARLY-YARD	success		1788	0a708d52fcbabd04
+S1-GATE-SWITCH-OFF	none		1	a9e564800da7eb8a
+S1-GATE-LOUD-YARD	none		4496	0b055e3912dae69a
+S1-SPRING-LATE	none		1764	6a5f8a2d59adbba2
+S1-FLOOR-TIP	none		4295	3149801848d42733
+S1-FLOOR-LOOKOUT	none		2871	445aa25510c34d6e
+S1-FLOOR-NO-SPAWN	none		4482	aff23e3a5768555f
+S1-FLOOR-ZERO	none		1	fbe34e2d776cfc8a
+S1-CREW-WIPED	success		1341	5000216e420a5650
+S1-SEE-TAKEDOWN	none		1948	f5e322af36ae4ad7
+S1-FLOOR-WAKE	none		1	15c8690fc3641d49
+CREW-BODY	failure	vale-leaves	3730	9dd9e5b96d444ce4
+CREW-FREE	none		3410	3645023cc85d51df
+BAL-JOIN-POS	none		2871	956aa74570d43d62
+BAL-YARD-AT-WILL	failure	rivals-reach-vale	4660	c53d42b7a87beee6
+BAL-YARD-FOCUS	success		4522	218c7dd1e2702a38
+BAL-YARD-FOCUS-LATE	success		4545	bbb4c6b462aa351b
+BAL-YARD-POST	success		4522	218c7dd1e2702a38
+BAL-LOUD-BREAK	success		3017	bfbb9dbc29e0b945
+BAL-NOPRESS	success		3017	bfbb9dbc29e0b945
+BAL-LANE	none		3324	8edd38d8c8585846
+PACE-SPLIT	none		2280	7c161316f0d21ad6
+PACE-RUN-NOTICED	none		687	05c9e25423b6b9bc
+PACE-RUN-NOT-ALERT	none		300	8a29dbebdb54ce23
+PACE-RUN-FREE	none		692	e5201e3c47a4146a
+K3-PRESS	failure	rivals-reach-vale	3402	ab2a0fd0d447ad17
+K3-CELL-DOWN	failure	cell-down	3438	c0f21c6edabe1980
+K3-BACK	none		3621	af7fb1ac37743e7c
+K3-DRIVER	withdrawn		1197	fa7a1bf55e31b03f
+POST-BESIDE	none		1	8d824c39411c4ef2
+DOOR-KERB	none		600	11d0fceb0dd4f791
+SQ1-WALK	success		2555	9705e38271fe4619
+SQ1-STEP	success		2773	31d56fae547b2d0d
+SQ2-NO-STALL	success		2773	31d56fae547b2d0d
+SQ2-CLOSES	success		2773	31d56fae547b2d0d
+FACT-PATROL	none		1	8d824c39411c4ef2

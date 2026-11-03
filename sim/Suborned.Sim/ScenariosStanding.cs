@@ -73,8 +73,8 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
-                r.Is(g.Preview("pressure", Inez).Witnesses > 0, "customers are in sight");
+                r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
+                r.Is(g.Preview("pressure", Inez).Witnesses > 0, "someone who minds a threat is in sight (security, at Alert 0)");
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
                 r.Eq(g.Standing, g.R.StandingStart - g.R.StandingStep, "the threat seen: one step toward Menace at once");
                 r.Is(g.StandingMoves.Count == 1 && g.StandingMoves[0].cause == "seen-threat" && g.StandingMoves[0].who == Inez, "its cause: a threat seen, done to Inez");
@@ -115,7 +115,7 @@ namespace Suborned.Sim
                 r.Eq((l.WordUncapped, l.Word), (3, g.R.WordStandingCap), "the word nets +3 and moves the district +2 (the cap)");
                 r.Eq((l.From, l.To, l.Drift), (2, 4, 0), "+2 → +4");
                 r.Eq((l.Band, l.Cause, l.Who), ("hero", "word-helped", Inez), "Hero, because helped people told their ties (the line names the first teller by person id: Inez, p-cafe-14)");
-            }, Knowing(Driver, Inez, GuardR));
+            }, KeepVale(Knowing(Driver, Inez, GuardR))); // brief 059: the helped driver would drive Vale round at 6:13 and the tail end the run before the guard's Help
 
             Add("N92", "—", "Drift down (briefs/014/motive-standing.md rule 5): a district that starts at +5 (a campaign's Hero) and where nothing moves Standing this mission steps 1 back toward +2: +4, still Hero. Unkept Hero fades.", r =>
             {

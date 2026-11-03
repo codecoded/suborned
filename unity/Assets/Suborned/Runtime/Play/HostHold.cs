@@ -25,8 +25,10 @@ namespace Suborned.Play
         /// <summary>A hold under way: what it is on, which button, since when, how long it needs; Done once it acted.</summary>
         public sealed class HoldCharge
         {
-            public Target T; public int Button; public float Start; public float Need => ChargeS * ChargeScale; public bool Done, Fire, Force, Run, Bystander;
+            public Target T; public int Button; public float Start; public float NeedS = ChargeS; public float Need => NeedS * ChargeScale; public bool Done, Fire, Force, Run, Bystander;
             public string FireId = "", Verb = "", Extra = ""; public ContextPlan Plan; public int Way = -1;
+            /// <summary>Brief 067 C2: the pill's own intent for this hold when it differs from the row (a group Board's slowest time), else null.</summary>
+            public Intent PillI;
             /// <summary>Who does it, chosen at the press and kept (the best placed then: the playground's charge.only).</summary>
             public List<int> Doers;
             /// <summary>Full and waiting for the button to come up: the pill says "Let go · …" (commit on release, Sky 2026-10-22).</summary>
@@ -62,6 +64,7 @@ namespace Suborned.Play
         int MainWay(ContextPlan plan)
         {
             if (plan == null) return -1;
+            if (IsGetaway(plan.T)) return CarMainWay(plan); // brief 067 C: Board (the whole selection), then Go with Vale aboard, else Drive
             // brief 043 §3.3: an act that just opened (fresh, 90 s) leads, in ContextRank's order among the fresh ones
             for (int pass = 0; pass < 2; pass++)
             {
@@ -90,7 +93,7 @@ namespace Suborned.Play
 
         (ContextPlan plan, int way) MainOf(Target t, Vector2 screen)
         {
-            if (t == null || t.Kind == "op" || Game == null) return (null, -1);
+            if (t == null || t.Kind == "op" && !DownedOp(t) || Game == null) return (null, -1); // item 31: a downed agent's main way is Carry (a hold)
             if (HoverPlan != null && SameTarget(HoverPlan.T, t) && Time.unscaledTime - hoverPlanAt < 0.5f) return (HoverPlan, HoverWay);
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, screen)) || plan == null) return (null, -1);
             return (plan, MainWay(plan));
@@ -103,6 +106,8 @@ namespace Suborned.Play
             var who = new List<int>(); if (plan == null || way < 0 || way >= plan.Givers.Count) return who;
             foreach (var g in plan.Givers[way]) if (Selected[(int)g]) who.Add((int)g);
             if (who.Count == 0) foreach (var g in plan.Givers[way]) who.Add((int)g);
+            if (plan.Row(way)?.I?.Order?.Do == "board") return who; // brief 067 C (Sky: "I wanted the whole squad to just get in the car"): Board goes to every selected agent who can, one order each in the same tick
+            if (Driving && who.Contains(dAgent)) return new List<int> { dAgent }; // brief 085: in third person the agent in hand does what he can; the squad does the rest
             var idle = who.FindAll(k => !BusyAgent(k)); if (idle.Count > 0) who = idle; // Sky 2026-10-22: best placed never takes a busy agent while an idle one can
             if (who.Count < 2) return who;
             int best = who[0], bs = int.MaxValue;
@@ -111,6 +116,30 @@ namespace Suborned.Play
         }
 
         /// <summary>On an act (walking to it, doing it) or holding a queued one; a walk alone is not busy (orders.js busy).</summary>
+        /// <summary>Item 31: a downed agent of the cell (a thing with ways: Carry), not one standing.</summary>
+        bool DownedOp(Target t) => t != null && t.Kind == "op" && IsOpName(t.Key) && Game != null && Game.Ops[(int)Op.Parse(t.Key)].Down;
+        /// <summary>Item 33: the ring at a clicked thing, sticky, nothing taken (ContextRank's quick take is never used for a click). False when
+        /// the thing has no ways (the click then walks as before).</summary>
+        public int ClickRings { get; private set; }
+        /// <summary>Brief 067 E: rings a click opened with every way shut (the proof reads it).</summary>
+        public int ShutRings { get; private set; }
+        public int RightTaps { get; private set; }
+        /// <summary>Proofs: a left click as the hold preset reads one (HoldClick) at a screen point.</summary>
+        public void LeftClickScripted(Vector2 p) => HoldClick(p, false);
+        bool ClickRing(Target t, Vector2 p) => ClickRing(t, p, out _);
+        bool ClickRing(Target t, Vector2 p, out ContextPlan plan)
+        {
+            plan = null; if (t == null || Game == null) return false;
+            ContextPlan pl = null; if (!Guard("panel", () => pl = ContextFor(t, p)) || pl == null) return false; plan = pl;
+            // a held Go still rings (shut, with its holders: brief 057 §4.2); brief 067 E (Suture's 0.2.122 findings §2): so does any thing whose
+            // ways are all locked for the selection, its ways shut with their short locks (Sky's ten clicks on Inez at 7:47 to 8:01 all walked)
+            if (plan.Choice.Order.Count == 0 && !plan.Pn.Rows.Exists(r => !r.Available && r.I?.Order != null)) return false;
+            OpenRing(plan, p, false); if (Ring == null) return false;
+            Ring.Sticky = true; Ring.Always = false; Ring.FromHold = false; Ring.ByClick = true; ClickRings++; RightClickUsed = true; // brief 057 (Aster): the first-act hint retires on the first ring a left click opens (item 33: the right tap does nothing now)
+            if (plan.Choice.Order.Count == 0) ShutRings++;
+            SideLog("ring", plan.Choice.Order.Count == 0 ? "open-shut" : "open", t); return true;
+        }
+
         bool BusyAgent(int k) => Game != null && (Game.Ops[k].Busy != null || Game.Ops[k].Act != null || pending[k] != null || Plan.Exists(x => x.K == k));
 
         /// <summary>Agent k's own row for a way (the same order), else null.</summary>
@@ -130,7 +159,7 @@ namespace Suborned.Play
         void HoldGive(ContextPlan plan, int way, Target t, Vector2 at, bool run, string source, bool fromSel = true, List<int> only = null)
         {
             var rep = plan?.Row(way); if (rep == null) return;
-            if (rep.I.Order?.Do == "fire") { DoRow(rep, t, at, plan.Pn.World, source); return; } // a Fire wedge: the fire path
+            if (rep.I.Order?.Do == "fire") { DoWay(rep, t, at, plan.Pn.World, source); return; } // a Fire wedge: every selected agent who can, one card (HostSquad)
             var doers = only?.FindAll(k => RowFor(plan, way, k) != null); if (doers == null || doers.Count == 0) doers = DoersOf(plan, way);
             var given = new List<int>();
             foreach (var k in doers)
@@ -142,11 +171,15 @@ namespace Suborned.Play
                 bool ok = pending[k] != null || Game.Ops[k].Busy != null; for (int i = n0; i < Game.Orders.Count && !ok; i++) ok = Game.Orders[i].ok && Game.Orders[i].order.Op == Op.Name((OpId)k) && Game.Orders[i].order.Do != "cancel";
                 if (ok) given.Add(k);
             }
+            bool board = rep.I.Order?.Do == "board";
+            if (board && given.Count > 0) { if (given.Count > 1) SquadBoards++; BoardRefusals(plan, given); } // brief 067 C4: the rest say why (their why chips)
             if (!fromSel || given.Count == 0) return;
-            var sel = SelectedList(); if (sel.Count < 2 || !sel.Exists(k => !given.Contains(k))) return; // alone, or the whole squad goes: nobody leaves
-            var left = new List<string>(); foreach (var k in given) if (Selected[k]) { Selected[k] = false; left.Add(Op.Name((OpId)k)); }
+            // brief 067 C1.2 (Glyph): whoever boards leaves the selection, even the whole squad (a boarded agent is stepped out by any move order, and
+            // a ground click walks the selection); the selection may be empty: the car answers with none (BuildPanel), 1–4 and Squad bring them back
+            var sel = SelectedList(); if (!board && (sel.Count < 2 || !sel.Exists(k => !given.Contains(k)))) return; // alone, or the whole squad goes: nobody leaves
+            var left = new List<string>(); foreach (var k in given) if (Selected[k] && !(Driving && k == dAgent)) { Selected[k] = false; left.Add(Op.Name((OpId)k)); } // brief 085: never the agent in hand: the view never moves by itself
             if (left.Count == 0) return;
-            Agent = (OpId)Array.IndexOf(Selected, true); Picked = -1; intentKey = ""; SquadLeaves++;
+            int firstLeft = Array.IndexOf(Selected, true); Agent = Driving ? (OpId)dAgent : firstLeft >= 0 ? (OpId)firstLeft : (OpId)given[0]; Picked = -1; intentKey = ""; SquadLeaves++; // the pill keeps a face: the first aboard
             Status = $"{string.Join(", ", left)} {(left.Count > 1 ? "leave" : "leaves")} the squad";
         }
 
@@ -154,6 +187,7 @@ namespace Suborned.Play
         {
             if (Game == null || Game.Over) return;
             var op = Game.Ops[k];
+            if (SameActRunning(k, r.I.Order, run)) return; // brief 083: the act already under way is never restarted (Sky's 0.2.159 run: a hold on Inez while Watching her: "Watch cancelled · 3 s lost", then the same Watch again)
             if (op.Busy != null || op.Act != null || pending[k] != null) CancelAgent(k, null); // a new order replaces the old one (engine 0.23: a walk in too; brief 043: the cancel pops) (CancelAgent's card says what was lost)
             EndLasting(k); // and a lasting fire order (brief 041: a fire order lasts until down, X or a new order)
             Unfresh(t, r.I.Order); // brief 043: the pip goes once the opened act is given
@@ -179,6 +213,7 @@ namespace Suborned.Play
         public void GroupWalk(Pt centre, bool run, Vector2? screen, List<int> agents = null)
         {
             agents ??= SelectedList(); agents = agents.FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down && !(Driving && k == dAgent));
+            lastGroupWalk.Clear();
             if (agents.Count == 0) return;
             int n = agents.Count; long cx = 0, cy = 0; foreach (var k in agents) { cx += Game.Ops[k].Pos.X; cy += Game.Ops[k].Pos.Y; }
             var mid = new Pt((int)(cx / n), (int)(cy / n)); var offs = new List<Pt>();
@@ -191,7 +226,7 @@ namespace Suborned.Play
             {
                 int k = agents[i]; var off = n == 1 ? new Pt(0, 0) : spaced ? offs[i] : new Pt((int)(Math.Cos(i * 6.2832 / n + 0.8) * 120), (int)(Math.Sin(i * 6.2832 / n + 0.8) * 120));
                 var want = new Pt(centre.X + off.X, centre.Y + off.Y);
-                Pt? to = Game.S.Grid.Free(want) ? want : Game.S.Grid.NearestFree(want);
+                var wg = CarWalk; Pt? to = wg.Free(want) ? want : wg.NearestFree(want); // engine 0.33.1: never a spot on a standing car's ground (Game.Walk)
                 if (!to.HasValue || G.Dist(to.Value, want) > 300) { if (!said) PopKey("no-way", screen, null, Feedback.Refused, "Can't walk there."); said = true; continue; }
                 lastGroupWalk.Add((k, to.Value));
                 var dest = to.Value; int kk = k;
@@ -218,8 +253,8 @@ namespace Suborned.Play
         }
 
         List<int> SelectedList() { var l = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k]) l.Add(k); return l; }
-        int WalkSeconds(int k, Pt to, bool run) { var r = Game.S.Grid.Route(Game.Ops[k].Pos, to); if (r == null) return 0; int sp = Math.Max(1, run ? Game.R.RunSpeed : Game.R.CellSpeed); return (int)((new Sim.Path(r).Length + sp * Game.Hz - 1) / (sp * Game.Hz)); }
-        List<Vector3> RouteWorld(int k, Pt to) { var pts = new List<Vector3>(); var r = Game.S.Grid.Route(Game.Ops[k].Pos, to); if (r != null) foreach (var p in r) pts.Add(frame.World(p) + Vector3.up * 0.1f); return pts; }
+        int WalkSeconds(int k, Pt to, bool run) { var r = MoveRoute(Game.Ops[k].Pos, to); if (r == null) return 0; int sp = Math.Max(1, run ? Game.R.RunSpeed : Game.R.CellSpeed); return (int)((new Sim.Path(r).Length + sp * Game.Hz - 1) / (sp * Game.Hz)); }
+        List<Vector3> RouteWorld(int k, Pt to) { var pts = new List<Vector3>(); var r = MoveRoute(Game.Ops[k].Pos, to); if (r != null) foreach (var p in r) pts.Add(frame.World(p) + Vector3.up * 0.1f); return pts; }
         List<Vector3> PlanRoute(int k, Order o, Target t) { ActWalk aw = null; Guard("walk", () => aw = ActPlace((OpId)k, o, t)); return aw == null ? new List<Vector3> { frame.World(Game.Ops[k].Pos) + Vector3.up * 0.1f } : RouteWorld(k, aw.To); }
 
         // ---------------------------------------------------------------- the commander's pointer
@@ -228,6 +263,12 @@ namespace Suborned.Play
         /// and the charge follow it as it moves), fills over 0.4 s, then says "Let go · …"; letting go then commits on it wherever the cursor is.
         /// Cursor travel of more than CancelPx from the press, an early release, a right click or Esc cancels; the pill dims from DimFrom of it.</summary>
         public const float CancelPx = 80f, DimFrom = 0.55f;
+        /// <summary>Brief 083 (Sky on 0.2.159: "change the drag LMB to select squads, to move map"): a left press that travels this far (kit px) before the hold's pill
+        /// shows (ChargeShowS, 0.2 s) is a pan, on any thing or on the ground: the charge is dropped unseen and the release is no click. Under it, a click or a hold (a shaky
+        /// hand on a click stays a click); once the pill shows the hold has the pointer and only CancelPx of travel ends it. RingMovePx (6) was tight for a mouse click.</summary>
+        public const float DragPanPx = 8f;
+        /// <summary>The proof reads it: left drags that panned the map, and the agents a click skipped or asked about because they are busy.</summary>
+        public int PanDrags { get; private set; }
         /// <summary>How far the pointer has gone from the held press (kit px), for the pill's dim; 0 with no hold.</summary>
         public float HoldTravel { get; private set; }
         public int HoldTravelCancels { get; private set; }
@@ -252,8 +293,9 @@ namespace Suborned.Play
             if (mouse.leftButton.wasPressedThisFrame && !onHud && !rp.On && !TrackpadOrbitHeld(kb)) // brief 051: Alt + left drag turns the view when Trackpad drag orbit is on
             {
                 var own = AgentNear(p); // your own agent under the cursor always wins (Sky: "couldn't click the enforcer")
+                if (own != null && Game.Ops[(int)Op.Parse(own.Key)].Down) own = null; // item 31: a downed agent is a thing: a hold carries it (priced, on the pill), a click walks
                 lp = new Press { On = true, At = p, T0 = now, T = own ?? PressTarget(p) }; if (Panel != null) ClosePanel();
-                if (own == null) { var (plan, way) = MainOf(lp.T, p); if (way >= 0) Charge = new HoldCharge { T = lp.T, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = DoersOf(plan, way) }; } // best placed is chosen at the press and stays
+                if (own == null) { var (plan, way) = MainOf(lp.T, p); if (way >= 0) Charge = new HoldCharge { T = lp.T, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = DoersOf(plan, way), PillI = way == HoverWay && ReferenceEquals(plan, HoverPlan) && HoverIntent != null && !ReferenceEquals(HoverIntent, plan.Row(way).I) && HoverIntent.Actionable ? HoverIntent : null }; } // best placed is chosen at the press and stays (brief 067 C: a group Board, everyone who can)
                 return true;
             }
             if (lp.On)
@@ -264,7 +306,7 @@ namespace Suborned.Play
                 {
                     var was = lp; lp = default;
                     if (was.Cancelled) return true;
-                    if (was.Drag) { if (c != null) Charge = null; if (BoxScreen.HasValue) BoxSelect(BoxScreen.Value, shift || ctrl); BoxScreen = null; return true; }
+                    if (was.Drag) { if (c != null) Charge = null; BoxScreen = null; PanDrags++; return true; } // brief 083: a drag pans; its release is nothing else
                     if (was.Used || c != null && c.Done) { if (c != null) Charge = null; return true; }
                     if (c != null)
                     {
@@ -275,14 +317,14 @@ namespace Suborned.Play
                     HoldClick(p, shift);
                     return true;
                 }
-                if (c == null && !lp.Drag && (p - lp.At).magnitude > RingMovePx * KitScale) lp.Drag = true; // no hold under way: a drag is the box
-                if (lp.Drag) BoxScreen = GuiRect(lp.At, p);
+                // brief 083: a drag is the map's (Controls goes on grabbing while lp.Drag). Never after a right click cancelled this hold (Glyph's 0.2.94 review #12), nor once the hold's pill shows
+                if (!lp.Drag && !lp.Cancelled && !lp.Used && (c == null || !c.Done && !c.Shown) && (p - lp.At).magnitude > DragPanPx * KitScale) { lp.Drag = true; Charge = c != null ? null : Charge; ClearHover(); Grab(lp.At, true, true); }
                 return true;
             }
             // ---- the right button
             if (mouse.rightButton.wasPressedThisFrame && !onHud)
             {
-                RightClickUsed = true; var own = AgentNear(p); rp = new Press { On = true, At = p, T0 = now, T = own ?? PressTarget(p) }; if (Panel != null) ClosePanel();
+                var own = AgentNear(p); rp = new Press { On = true, At = p, T0 = now, T = own ?? FirePressTarget(p) }; if (Panel != null) ClosePanel(); // brief 067 D: a moving target just off the cursor is still the press's
                 if (own == null && FocusTarget(rp.T, out var fid, out var fforce)) { rp.Used = true; FocusFire(rp.T, fid, fforce, p, null); } // Syndicate: once a fight is on a right click on a hostile focuses fire, no hold
                 return true; // under 0.2 s it is a tap: no charge, no pill, no draw (the charge begins below at 0.2 s)
             }
@@ -297,12 +339,11 @@ namespace Suborned.Play
                     if (c != null) { Charge = null; if (c.Ready) { BeginFireLock(c, was.At); return true; } HoldCancels++; Status = "Fire cancelled"; return true; } // full: a lasting fire order; early: nothing
                     if (held < RightTapS && (p - was.At).magnitude < RingMovePx * KitScale && Ring == null)
                     {
-                        if (was.T != null && was.T.Kind == "op") { CarryDowned(was.T, was.At); return true; } // your own agent: nothing (a downed one is carried), never a ring on someone behind it
-                        if (was.T == null) ActContext(null, was.At); else TapRing(was.T, was.At);
+                        RightTaps++; // item 33 (Sky 2026-10-24: "Right click then doesn't do anything"): a right tap does nothing, on a target or the ground (the walk stop it gave on the ground is S, Esc or a new click); the right button fires (its hold)
                     }
                     return true;
                 }
-                if (!rp.Used && rp.T is { Kind: "person", Key: "councillor" } && now - rp.T0 >= RightTapS) { rp.Used = true; PopKey("never-vale", rp.At, TargetWorld(rp.T), Feedback.Refused, "never fire on Vale: the mission fails"); }
+                if (!rp.Used && rp.T is { Kind: "person", Key: "councillor" } && now - rp.T0 >= RightTapS) { rp.Used = true; PopKey("never-vale", rp.At, TargetWorld(rp.T), Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); }
                 return true;
             }
             return !onHud && (mouse.leftButton.isPressed || mouse.rightButton.isPressed); // a press that began on the HUD: the street hears none of it
@@ -313,9 +354,37 @@ namespace Suborned.Play
         {
             var c = Charge; HoldTravel = 0f; if (c == null || c.Done) return;
             var press = c.Button == 0 ? lp : rp; if (!press.On) return;
+            if (c.Button == 0 && !c.Shown && !Driving) return; // brief 083: before the pill shows, travel is a pan (HoldFrame), not a hold pulled away
             HoldTravel = (p - press.At).magnitude / KitScale;
+            // brief 067 D (Sky on 0.2.122: "when the rivals move I kept losing the target on them"): a fire hold is latched to its target, so the
+            // cursor following a moving target is not travel away: the travel is from the press or from the target's drawn point, whichever is nearer
+            if (c.Fire && cam && c.T != null && TargetWorld(c.T) is Vector3 tw) { var sp = cam.WorldToScreenPoint(tw + Vector3.up * 1f); if (sp.z > 0f) HoldTravel = Mathf.Min(HoldTravel, ((Vector2)sp - p).magnitude / KitScale); }
             if (HoldTravel > CancelPx) { CancelHold(true); HoldTravel = 0f; }
         }
+
+        /// <summary>Brief 067 D: what a right press is on. As PressTarget; but when the pointer is on the ground or a passer-by, a fire target
+        /// (a hostile, a combatant, a rival, security: what the hover offers fire on) within FireAcquirePx of the pointer, nearest first, or the
+        /// one the hover was on within the last 0.4 s (a rival walking out from under a still cursor), is the press's target.</summary>
+        Target FirePressTarget(Vector2 p)
+        {
+            var t = PressTarget(p); if (t != null && t.Kind != "crowd") return t;
+            if (!cam || Game == null) return t;
+            if (rawHover != null && FireOffered(rawHover) && Time.unscaledTime - rawHoverAt < 0.4f && TargetWorld(rawHover) is Vector3 hw && cam.WorldToScreenPoint(hw + Vector3.up) is var hs && hs.z > 0f && ((Vector2)hs - p).magnitude < FireAcquirePx * 2f * KitScale) { FireAcquires++; return rawHover; }
+            Target best = null; float bd = FireAcquirePx * KitScale;
+            foreach (var pk in Pickables())
+            {
+                if (pk.T.Kind is "op" or "crowd" || !FireOffered(pk.T)) continue;
+                var sp = cam.WorldToScreenPoint(pk.Anchor); if (sp.z <= 0f) continue; float d = ((Vector2)sp - p).magnitude; if (d < bd) { bd = d; best = pk.T; }
+            }
+            if (best != null) FireAcquires++;
+            return best ?? t;
+        }
+        /// <summary>Brief 067 D: the last thing under the pointer that was not the ground, a passer-by or an agent, and when (PointerHover sets it).</summary>
+        Target rawHover; float rawHoverAt = -9f;
+        /// <summary>Brief 067 D: how near (kit px at 1080p) a fire target must be for a right press beside it to take it.</summary>
+        public const float FireAcquirePx = 34f;
+        /// <summary>The proof reads it: right presses that took a fire target beside the pointer.</summary>
+        public int FireAcquires { get; private set; }
 
         /// <summary>The pill's opacity for a hold the cursor is pulling away from (1 near the press, 0.35 at the cancel edge).</summary>
         public float HoldDim => HoldTravel <= CancelPx * DimFrom ? 1f : 1f - 0.65f * Mathf.Clamp01((HoldTravel - CancelPx * DimFrom) / (CancelPx * (1f - DimFrom)));
@@ -330,7 +399,7 @@ namespace Suborned.Play
                 var op = Game.Ops[k]; if (op.Inside || op.InCar || Driving && k == dAgent && Following) continue;
                 var tr = views.Find("op/" + Op.Name((OpId)k)); if (!tr || !tr.gameObject.activeInHierarchy) continue;
                 var f = cam.WorldToScreenPoint(tr.position); var hd = cam.WorldToScreenPoint(tr.position + Vector3.up * 1.9f); if (f.z <= 0f || hd.z <= 0f) continue;
-                Vector2 a = f, v = (Vector2)hd - a; float t = Mathf.Clamp01(Vector2.Dot(screen - a, v) / Mathf.Max(1e-3f, v.sqrMagnitude)); float d = (screen - (a + v * t)).magnitude;
+                Vector2 a = f, v = (Vector2)hd - a; float t = Mathf.Clamp01(Vector2.Dot(screen - a, v) / Mathf.Max(1e-3f, v.sqrMagnitude)); float d = (screen - (a + v * t)).magnitude; if (op.Down) d = ((Vector2)f - screen).magnitude * 1.25f; // item 31: a downed agent lies down: near its body only, never the column of air above it
                 if (d < best) { best = d; bk = k; }
             }
             if (bk < 0) return null; var n = Op.Name((OpId)bk);
@@ -347,21 +416,30 @@ namespace Suborned.Play
             float now = Time.unscaledTime; var t = AgentNear(p) ?? TargetAt(p); // your own agent first: a click on it always selects it (even out of the squad, even busy)
             bool dbl = now - lastClickAt < controls.doubleSeconds && (t != null ? SameTarget(t, lastClickT) : lastClickT == null && (p - lastClickP).magnitude < 24f * KitScale);
             if (dbl) { lastClickAt = -9f; lastClickT = null; } else { lastClickAt = now; lastClickP = p; lastClickT = t; }
-            if (t != null && t.Kind == "op") { if (CarryDowned(t, p)) return; Select(Op.Parse(t.Key), shift); return; }
+            if (t != null && t.Kind == "op" && DownedOp(t)) { ClickRing(t, p); SideLog("click", "ring", t); return; } // items 31 + 33: a click on a downed agent opens its ring (Carry is a way you take, never the click); beside it the ground walks
+            if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); SideLog("click", "select", t); return; }
+            ContextPlan cp = null;
+            if (t != null && !dbl && ClickRing(t, p, out cp)) { SideLog("click", "ring", t); return; } // a passer-by too when the selection has a way on them (the Enforcer's takedown); none: the click walks // item 33 (Sky 2026-10-24: "left click brings up the action ring"): a left click on a thing opens its ring, nothing taken
+            if (t != null && dbl && Ring == null && ClickRing(t, p, out cp)) { SideLog("click", "ring", t); return; }
+            // brief 067 E1/E4 (Glyph): a person or thing the selection has no row on, that someone else in the cell has: the "who can" pop, no walk;
+            // only scenery nobody has a row on, a passer-by or the ground walks
+            if (t != null && t.Kind is not ("crowd" or "op") && cp != null && cp.Pn.Rows.Count == 0 && WhoCanPop(t, p)) { SideLog("click", "who-can", t); return; }
             if (t != null && t.Kind != "crowd")
             {
                 var (plan, way) = MainOf(t, p);
                 if (way >= 0)
                 {
-                    if (dbl && UpgradeRun()) return;
+                    if (dbl && UpgradeRun()) { SideLog("click", "run", t); return; }
                     var spot = StandSpot(plan, way);
                     if (!spot.HasValue) { Status = $"already in reach of {t.Label}"; return; }
-                    ThingWalks++; GroupWalk(spot.Value, dbl || shift, p); return;
+                    if (BusyClick(p, out var whoT)) { SideLog("click", "busy", t); return; } // brief 083
+                    ThingWalks++; GroupWalk(spot.Value, dbl || shift, p, whoT); SideLog("click", "walk-thing", t); return;
                 }
             }
             if (!cam || !frame.Ground(cam.ScreenPointToRay(p), out var w)) return;
-            if (dbl && UpgradeRun()) return;
-            GroupWalk(frame.Engine(w), dbl || shift, p);
+            if (dbl && UpgradeRun()) { SideLog("click", "run", t); return; }
+            if (BusyClick(p, out var whoG)) { SideLog("click", "busy", t); return; } // brief 083: a click never stops an act by itself
+            GroupWalk(frame.Engine(w), dbl || shift, p, whoG); SideLog("click", t != null ? "walk-ground-from-thing" : "walk-ground", t); // brief 067 E: a click on a thing that walks is recorded as such (Suture: "click:walk-from-thing")
         }
 
         // ---------------------------------------------------------------- the right hold: fire
@@ -377,11 +455,13 @@ namespace Suborned.Play
             return any ? (id, force) : ("", false);
         }
 
+        /// <summary>Brief 080: the preview FireExtra read last: the offer's odds, and the sum under Alt (HostOdds).</summary>
+        public FirePreview OfferPreview { get; private set; }
         string FireExtra(string id, bool force)
         {
             int k = -1; for (int i = 0; i < 4; i++) if (Selected[i] && Armed(i)) { k = i; break; }
             if (Driving) k = dAgent; if (k < 0) return "";
-            FirePreview fp = null; Guard("aim", () => fp = Game.PreviewFire((OpId)k, id, force)); int s = PreviewDownS(fp, k, id);
+            FirePreview fp = null; Guard("aim", () => fp = Game.PreviewFire((OpId)k, id, force)); int s = PreviewDownS(fp, k, id); OfferPreview = fp;
             return s >= 0 ? $"{(fp?.DownIs == "disabled" ? "disabled" : "down")} in {s} s" : "";
         }
 
@@ -401,6 +481,7 @@ namespace Suborned.Play
         void EndLasting(int k)
         {
             if (Game == null || !Armed(k) || Game.Ops[k].Gun.Order.Length == 0) return;
+            if (OneInput) { LocksDrop(new[] { k }); return; } // engine 0.35 (sticky focus): the engine ends the focus on an act itself; no cease
             Send(new List<Order> { new Order { Op = Op.Name((OpId)k), Do = "cease" } }, null, null); LocksDrop(new[] { k });
         }
 
@@ -409,15 +490,15 @@ namespace Suborned.Play
 
         /// <summary>Who fires on a right hold or a focus click (briefs/041/next-batch.md item 13, engine 0.26.0): every selected agent the engine
         /// would take the order from (Game.FireQuery: a holstered agent draws, one out of reach or line walks in; a focus never walks); never an
-        /// agent a portrait locked when `unpinned` (a focus click leaves portrait locks alone); in third person the driven agent. With `mark`, each
+        /// agent a portrait locked when `unpinned` (a focus click leaves portrait locks alone); in third person the driven agent and the squad. With `mark`, each
         /// selected agent it refuses gets its two words on the plate (Fable's less.done.fire.&lt;code&gt;) for FireRefusalS. With no target id
         /// (nothing to ask about) the armed selection, as before but without the drawn-first filter that left holstered agents out.</summary>
         List<int> Shooters(bool unpinned, string id = "", bool force = false, bool focus = false, bool mark = false)
         {
             var able = new List<int>();
-            if (Driving && dAgent >= 0) { if (Armed(dAgent)) able.Add(dAgent); return able; } // third person: the driven agent
             for (int k = 0; k < 4; k++)
             {
+                if (Driving && k == dAgent) { if (Armed(k)) able.Add(k); continue; } // brief 085 (Sky: "only one agent would start to shoot ... unless I pressed F"): the agent in hand fires as he always did (a busy one is cancelled: Playable) and the squad with him; it was the driven agent alone
                 if (!Selected[k] || unpinned && FireLocks.Exists(s => s.Pin && s.Agents.Contains(k))) continue;
                 if (id.Length == 0) { if (Armed(k) && !(k == (int)OpId.Enforcer && Game.Vale == ValeAt.WithEnforcer)) able.Add(k); continue; }
                 Answer a = default; bool walk = false;
@@ -429,17 +510,6 @@ namespace Suborned.Play
             }
             return able;
         }
-
-        readonly string[] fireRefused = { "", "", "", "" }; readonly float[] fireRefusedAt = { -99f, -99f, -99f, -99f };
-        public const float FireRefusalS = 3f;
-        /// <summary>The plate's two words for agent k's refused squad fire order, for FireRefusalS after the order ("" none).</summary>
-        public string FireRefusalWord(int k)
-        {
-            if (k < 0 || k > 3 || fireRefused[k].Length == 0 || Time.unscaledTime - fireRefusedAt[k] > FireRefusalS) return "";
-            var c = fireRefused[k]; return Text?.DoneWord("fire." + c, null) ?? c.Replace('-', ' ');
-        }
-        /// <summary>The proof reads it: agent k's last refusal code ("" none) and how long ago.</summary>
-        public (string code, float ago) FireRefusalOf(int k) => (fireRefused[k], Time.unscaledTime - fireRefusedAt[k]);
 
         /// <summary>The faces for the fire pill: who a right hold on `t` would fire with now (FireQuery per selected agent; asked once per target,
         /// selection and second, never every frame: the walk check is a grid search).</summary>
@@ -464,6 +534,17 @@ namespace Suborned.Play
 
         /// <summary>A fight is on (the engine's: contact, settling 3 s after the last; Sky's §14 note "ends on contact"): the focus click works.</summary>
         public bool FightOnNow => Game != null && Game.FreeFightOn;
+
+        /// <summary>Glyph N2 (0.2.137): the focus (GDD §10: "one ring under the focus … pips over the focus only"), one rule for the ring, the lock
+        /// disc and the pips: a target is a focus while an agent on foot (not down, inside or in a car) holds a lasting fire order on it (Gun.Order).
+        /// A target he fires at on his own (return fire, FireNow) is not a focus: before, the ring read FireNow and the disc Gun.Order, so a ring
+        /// stood with no disc over the rival he answered.</summary>
+        public bool IsFocus(string id)
+        {
+            var g = Game; if (g == null || string.IsNullOrEmpty(id)) return false;
+            for (int k = 0; k < 4; k++) { var op = g.Ops[k]; if (op.Gun.Order == id && !op.Down && !op.Inside && !op.InCar) return true; }
+            return false;
+        }
 
         /// <summary>A right click on a hostile while a fight is on: a focus target (its fire id). Not the cell, not Vale, not a calm person.</summary>
         bool FocusTarget(Target t, out string id, out bool force)
@@ -496,81 +577,6 @@ namespace Suborned.Play
         }
 
         // ---------------------------------------------------------------- third person (the hold preset)
-
-        /// <summary>Third person in the hold preset: a right tap opens the ring; a right hold (the setting "Right hold fires", the default) fills
-        /// and, let go when full, gives the driven agent a lasting fire order (as the map's); in a fight a right click on a hostile focuses at once;
-        /// a left hold acts on the thing under the cursor (or the focus), committing on release; a left drag orbits. True when it took the pointer.</summary>
-        bool TpHold(UnityEngine.InputSystem.Mouse mouse, Vector2 p, bool onHud)
-        {
-            if (!HoldOn || Ring != null) return false;
-            var kb = Keyboard.current; bool shift = controls.Held(kb, PlayAction.AddToGroup); float now = Time.unscaledTime;
-            HoldLatchFrame(p);
-            if (controls.tpRightFires)
-            {
-                if (mouse.rightButton.wasPressedThisFrame && !onHud && !Aiming)
-                {
-                    RightClickUsed = true; rp = new Press { On = true, At = p, T0 = now, T = TargetAt(p) };
-                    if (lp.On && Charge is { Button: 0, Done: false }) { CancelHold(); rp.Used = true; return true; } // a right click cancels a left hold
-                    var ft = rp.T != null && rp.T.Kind != "op" ? rp.T : TpFireFocus() ?? TpHostileAhead(); // item 7: the cursor off a target, the focus the pill names
-                    if (FocusTarget(ft, out var fid, out var fforce) && Driving && dAgent >= 0) { rp.Used = true; FocusFire(ft, fid, fforce, p, new List<int> { dAgent }); }
-                    return true; // under 0.2 s it is a tap (the ring); the charge begins at 0.2 s
-                }
-                if (rp.On && mouse.rightButton.isPressed && Charge?.Button != 1 && !Aiming && !rp.Used && !rp.Cancelled && now - rp.T0 >= RightTapS)
-                {
-                    var (id, force) = HoldFireId(rp.T);
-                    if (id.Length == 0 && (rp.T == null || rp.T.Kind == "op") && TpFireFocus() is Target df) { rp.T = df; (id, force) = HoldFireId(df); } // item 7 (Keel 2026-10-22): the focus the pill offers fire on, as the left hold falls back to it
-                    if (id.Length == 0 && TpHostileAhead() is Target ha) { rp.T = ha; (id, force) = HoldFireId(ha); }
-                    if (id.Length > 0) Charge = new HoldCharge { T = rp.T, Button = 1, Start = rp.T0, Fire = true, FireId = id, Force = force, Bystander = force, Verb = "Fire", Extra = FireExtra(id, force) };
-                    else rp.Used = true;
-                }
-                if (rp.On)
-                {
-                    if (!mouse.rightButton.isPressed)
-                    {
-                        var was = rp; rp = default; var c = Charge?.Button == 1 ? Charge : null;
-                        if (was.Used || was.Cancelled) { if (c != null) Charge = null; return true; }
-                        if (c != null) { Charge = null; if (c.Ready) TpFireLock(c, p); else { HoldCancels++; Status = "Fire cancelled"; } return true; }
-                        if (now - was.T0 < RightTapS && (p - was.At).magnitude < RingMovePx * KitScale) { var t = was.T; if ((t == null || t.Kind == "op") && DriveFocus != null) t = DriveFocus; if (t == null || t.Kind == "op") ActContext(t, was.At); else TapRing(t, was.At); } // the tap's ring: the focus too
-                        return true;
-                    }
-                    return true;
-                }
-            }
-            if (mouse.leftButton.wasPressedThisFrame && !onHud && !Aiming)
-            {
-                var t = TargetAt(p); if (t == null || t.Kind == "op") t = DriveFocus;
-                var (plan, way) = MainOf(t, p);
-                lp = new Press { On = true, At = p, T0 = now, T = t };
-                if (way >= 0) Charge = new HoldCharge { T = t, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = new List<int> { dAgent } };
-                return true;
-            }
-            if (lp.On)
-            {
-                var c = Charge?.Button == 0 ? Charge : null;
-                if (lp.Cancelled) { if (!mouse.leftButton.isPressed) lp = default; return true; }
-                if (c == null && (p - lp.At).magnitude >= RingMovePx * KitScale && !lp.Used) { var from = lp.At; lp = default; dragFrom = from; dragging = true; orbiting = false; return false; } // a drag with no hold: the orbit takes it
-                if (!mouse.leftButton.isPressed)
-                {
-                    var was = lp; lp = default;
-                    if (c != null) { Charge = null; if (c.Ready) HoldGive(c.Plan, c.Way, c.T, was.At, c.Run || shift, "left", false, c.Doers); else if (now - c.Start >= ChargeShowS) { HoldCancels++; Status = $"{c.Verb} cancelled"; } }
-                    return true;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>Third person, a right hold let go when full: the driven agent's lasting fire order (the engine never walks a driven agent in:
-        /// out of reach, its order holds until it is in range).</summary>
-        void TpFireLock(HoldCharge c, Vector2 p)
-        {
-            if (!Driving || dAgent < 0) return;
-            if (!Armed(dAgent)) { PopKey("unarmed", null, views.DrivePos, Feedback.Info, "Unarmed."); return; }
-            var o = new Order { Op = Op.Name((OpId)dAgent), Do = "fire", Target = c.FireId, Force = c.Force };
-            holdCommits = true; try { Fight(new List<Order> { o }, "right", p, TargetWorld(c.T), $"fire at {Name(c.FireId)}"); } finally { holdCommits = false; }
-            LocksDrop(new[] { dAgent }); FireLocks.Add(new FireSession { Agents = new List<int> { dAgent }, Id = c.FireId, Name = FireName(c.FireId), Force = c.Force, Start = Time.unscaledTime });
-            FireHoldsBegun++; FireLogAdd($"tp-fire\t{dAgent}\t{c.FireId}");
-        }
 
         /// <summary>Third person: the focus when the pill offers fire on it (security, a hostile, a combatant; never a passer-by the pill did not
         /// name), so the right hold and the pill agree (next-batch item 7).</summary>

@@ -10,10 +10,11 @@
 import { basename } from 'node:path';
 import { DAY, human, type Node } from './scan';
 import { touching, type Ref } from './refs';
+import { stale as staleQa } from '../qa/rotate';
 
 export type Kind =
   | 'agent-scratch' | 'brief-scratch' | 'model-run' | 'decokit' | 'concept' | 'reference-copy' | 'setup' | 'build' | 'missions' | 'sim' | 'batch' | 'shots'
-  | 'pipeline' | 'log' | 'loose' | 'other';
+  | 'pipeline' | 'qa' | 'log' | 'loose' | 'other';
 
 const AGENTS = 'aster|datum|fable|forma|glint|glyph|keel|latch|motive|pulse|redline|splice|suture|vantage|vela|waymark|chime|wm';
 const AGENT_RE = new RegExp(`^(${AGENTS})(\\d+[a-z]?)?([-_.].*)?$`);
@@ -23,6 +24,7 @@ export function classify(name: string): { kind: Kind; maker: string } {
   const t = (kind: Kind, maker: string) => ({ kind, maker });
   if (name === 'batch') return t('batch', 'bun run batch (tools/game/batch.ts): step logs, resolved shot lists, late-fight runs; shots are rewritten each batch');
   if (/^batch-.*\.log$/.test(name) || /^batch-run/.test(name)) return t('log', 'an agent teeing one batch to a file (batch-<brief><letter>.log)');
+  if (name === 'qa') return t('qa', 'bun run qa (tools/qa/cli.ts): one folder per QA pass (report.html, rows, the exemplars\' scripts); the last 5 stay, `bun run qa --rotate` and `bun run storage --prune` thin it');
   if (name === 'build') return t('build', 'bun run game:build / batch game-build: the player, its zips and proof shots; perf = SubornedPerf builds');
   if (name === 'missions') return t('missions', 'tools/missions/check: engine builds per commit (git archive), play temp files, composed routes');
   if (/^sim(-|$)/.test(name) || name === 'bench-sim') return t('sim', 'tools/sim/unity.ts and the batch match step: the engine inside Unity, scenario results');
@@ -57,8 +59,10 @@ export type Policy = {
   unityLogMb: number;
   briefImageDays: number;
   hotHours: number;
+  /** QA passes kept in out/qa (tools/qa/rotate.ts), and `--dev` ones */
+  qaKeep: number; qaDevKeep: number;
 };
-export const DEFAULT: Policy = { playsDays: 1, zipsKeep: 2, zipsDays: 3, buildDays: 7, playerCopyDays: 1, libraryDays: 1, repoCopyDays: 1, engineKeep: 6, engineDays: 14, scratchDays: 14, unityLogMb: 50, briefImageDays: 14, hotHours: 24 };
+export const DEFAULT: Policy = { playsDays: 1, zipsKeep: 2, zipsDays: 3, buildDays: 7, playerCopyDays: 1, libraryDays: 1, repoCopyDays: 1, engineKeep: 6, engineDays: 14, scratchDays: 14, unityLogMb: 50, briefImageDays: 14, hotHours: 24, qaKeep: 5, qaDevKeep: 2 };
 
 export type Unit = { rule: string; rel: string; paths: string[]; bytes: number; files: number; newest: number; oldest: number; why: string };
 export type Held = Unit & { reason: 'pinned' | 'KEEP' | 'tracked' | 'hot' | 'named in a brief' | 'no git commit to rebuild from'; detail: string };
@@ -157,6 +161,13 @@ export const RULES: Rule[] = [
         return true;
       });
       return out;
+    },
+  },
+  {
+    id: 'qa-runs', title: 'old QA passes (out/qa/<run>)',
+    run(t, p) {
+      const n = t.at('out/qa'); if (!n) return [];
+      return staleQa([...n.kids.keys()], p.qaKeep, p.qaDevKeep).map(k => unitOf('qa-runs', 'out/qa/' + k, n.kids.get(k)!, `not one of the newest ${k.startsWith('dev-') ? p.qaDevKeep + ' dev' : p.qaKeep} passes; the summary in briefs/060/qa keeps the record`));
     },
   },
   {

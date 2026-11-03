@@ -52,6 +52,13 @@ export function cataloguedFor(use: string): KitAsset | undefined {
   return everything.get(file)!.find(a => a.tags.use.includes(use));
 }
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
+const posterSets = new Map<string, unknown>();
+/** Brief 075-F: the kit's poster variants (kit.json `posters`, Vela 075-F1) of the catalogue `withKit` names; undefined where it has none (a pinned digest from before). */
+export function kitPosters<T = any>(): T | undefined {
+  const file = pinned ?? KIT;
+  if (!posterSets.has(file)) posterSets.set(file, (JSON.parse(readFileSync(file, 'utf8')) as { posters?: unknown }).posters);
+  return posterSets.get(file) as T | undefined;
+}
 
 /** Metres within which two items of one kind must not use the same piece. */
 const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:planted': 12, planter: 24, 'tram-shelter': 60, newsstand: 60, 'kiosk-food': 60, lamp: 50, bench: 40, bin: 40, bollard: 6, hydrant: 100, 'phone-booth': 100, 'ticket-machine': 40, 'pole-camera': 40, 'canopy-camera': 20, 'advertising-column': 100 };
@@ -59,8 +66,9 @@ const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:plant
 export const kerbZone = (ctx: Ctx): number => Math.min(...Object.values<any>(ctx.S.sections).map(s => s?.kerb).filter((k): k is number => typeof k === 'number'));
 
 /** The slot an item offers a kit piece, or null where the kit has nothing for the kind. */
-export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'>): Slot | null {
+export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'> & { id?: string }): Slot | null {
   const [w, d, h] = s.size, kerb = kerbZone(ctx);
+  if (s.id?.startsWith('street/old/')) return { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 }; // brief 075 remap (oldtown/props.ts): the old prop at its own size, as the old builder put it: the slot is the item
   switch (s.kind) {
     case 'lamp': return { h, along: 2.5, depth: kerb };
     case 'bollard': return { h, hTol: 0.25, along: 0.8, depth: 0.8 };
@@ -83,6 +91,9 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'kiosk-food': { const r = ctx.S.catalogue['kiosk-food'].roof as [number, number, number]; return { h, hTol: 0.2, along: r[0], depth: r[1] }; }
     case 'tub-palm': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.5, along: sp.spread, depth: sp.spread } : null; } // brief 020: a tub palm may stand to half its plan height (FanPalm's crown is 2.8 m wide: 4.5 m at that crown is a 5 m crown in a 3 m room)
     case 'tree': { const sp = speciesOf(ctx.S, s.variant ?? '') as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.35, along: sp.spread, depth: sp.spread } : null; }
+    case 'kiosk-tickets': return { h, hTol: 0.05, along: w * 1.05, depth: d * 1.05 }; // brief 075 golden (Vela's TicketKiosk, 2.0 x 1.5 x 2.7 = the plan's item exactly)
+    case 'timetable-column': return { h, hTol: 0.05, along: 0.85, depth: 0.45 }; // brief 075 golden (Vela's TimetableColumn): the 0.8 m dial is wider than the plan's 0.4 x 0.4 post
+    case 'billboard-pylon': case 'billboard-wall': return { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 }; // brief 075-F (billboards.ts BB-2, BB-3): placed at the piece's own size, so the slot is the item, as the capstone pieces
     default: return CAPSTONE_KINDS.has(s.kind) ? { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 } : null; // the capstone programme's pieces are placed at the size their item states: the slot is the item
   }
 }
@@ -104,25 +115,69 @@ export function choose(id: string, options: Fit[], taken: string[], adjacent: st
   return r.pick(fresh.length ? fresh : second.length ? second : nearest.length ? nearest : options);
 }
 
-export function streetKit(ctx: Ctx, items: StreetItem[]): StreetItem[] {
+/** Brief 075 (stable zone): the Handover zone's kit pins, contracts/world/<district>.zone-kit.json, written by `bun run world:pin-zone` from a world the zone was signed off in.
+ *  Each zone street item that takes a kit piece by choice is pinned by place (kind, edge, position to the cm) to the piece it took, so the zone draws the pieces it
+ *  was recorded with whatever the rest of the district does. A pin whose piece no longer fits its slot (or is no longer adopted) is not used: the item chooses again,
+ *  and world rule ZK-1 names it. */
+export type ZonePins = { schema: 'suborned.zone-kit/1'; district: string; zone: [number, number, number, number]; why: string; source: Record<string, string>; pins: ZonePin[] };
+export type ZonePin = { kind: string; edge: string; at: V; kit: string };
+export const zonePinFile = (district: string) => resolve(import.meta.dir, `../../../contracts/world/${district}.zone-kit.json`);
+/** The place key a pin and a street item meet on. */
+export const placeKey = (it: { kind: string; edge: string; at: readonly number[] }) => `${it.kind}@${it.edge}@${it.at[0]!.toFixed(2)},${it.at[1]!.toFixed(2)}`;
+const pinSets = new Map<string, ZonePins | null>();
+let pinOverride: { file: string | null } | undefined;
+/** Runs `fn` with `file` as the zone pins (null: none), for a test or a pin pass that must not read the committed pins. */
+export function withZonePins<T>(file: string | null, fn: () => T): T {
+  const before = pinOverride; pinOverride = { file };
+  try { return fn(); } finally { pinOverride = before; }
+}
+/** Drop the read pins (a pin pass that has just written them reads them again). */
+export const forgetZonePins = () => pinSets.clear();
+export function zonePins(district: string): ZonePins | null {
+  const file = pinOverride ? pinOverride.file : zonePinFile(district);
+  if (!file) return null;
+  if (!pinSets.has(file)) { let v: ZonePins | null = null; try { v = JSON.parse(readFileSync(file, 'utf8')); } catch { v = null; } pinSets.set(file, v); }
+  return pinSets.get(file)!;
+}
+/** What the last streetKit pass did with the zone's pins (world rule ZK-1 reads it): pins used, pins that found no item, items in the zone that chose with no pin, pins whose piece no longer fits. */
+export type PinLog = { zone?: [number, number, number, number]; file?: string; used: number; unmatched: string[]; unpinned: string[]; refit: string[]; /** the place keys of the zone's items that took a piece by choice (what a pin pass pins) */ chosen?: string[] };
+
+export function streetKit(ctx: Ctx, items: StreetItem[], log?: PinLog): StreetItem[] {
   const grids = new Map<string, Grid<{ at: V; id: string }>>();
   const planted = new Set(items.filter(i => i.kind === 'planter').map(i => `${i.at[0].toFixed(1)},${i.at[1].toFixed(1)}`)); // a palm standing in a planter's bed (a deck's planting bed carries one): it takes a bare palm, never a potted piece
   const palmAt = new Set(items.filter(i => i.kind === 'tub-palm').map(i => `${i.at[0].toFixed(1)},${i.at[1].toFixed(1)}`)); // a planter with a palm planted in it is a bed (the trough), never an urn: the trunk would stand through the urn wall (brief 026, Vela round 2)
-  return items.map(it => {
+  // brief 075 (stable zone): the Handover zone's items choose first, against each other only, so nothing outside the zone (a lamp beyond its edge, a new line's
+  // stations laid first) can change a piece inside it; the rest of the district then chooses against them. The zone's pins (above) name what its items took.
+  const zone = (ctx.plan.standards as any)?.blocks?.zone as [number, number, number, number] | undefined;
+  const inZ = (p: readonly number[]) => !!zone && p[0]! >= zone[0] && p[0]! <= zone[1] && p[1]! >= zone[2] && p[1]! <= zone[3];
+  const pinsFile = zonePins(String(ctx.plan.id ?? '')), pins = new Map<string, string>();
+  if (pinsFile && zone && pinsFile.zone.every((v, i) => v === zone[i])) for (const q of pinsFile.pins) pins.set(placeKey(q), q.kit);
+  const usedPins = new Set<string>();
+  if (log) Object.assign(log, { zone, file: pinsFile && pins.size ? zonePinFile(String(ctx.plan.id)) : undefined, used: 0, unmatched: [], unpinned: [], refit: [], chosen: [] });
+  const one = (it: StreetItem): StreetItem => {
     if (it.kit) return { ...it, source: 'kit' as const }; // already named by its programme (street/capstone.ts)
     const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' && planted.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'tub-palm:planted' : it.kind === 'planter' && palmAt.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'planter:planted' : it.kind === 'phone-booth' && it.variant === 'twin' ? 'phone-booth:twin' : it.kind === 'tree' && it.variant && it.variant !== 'phoenix' ? `tree:${it.variant}` : it.kind; // an avenue palm names its species slot (tree:coconut, tree:coconut-median); the phoenix slots take any `tree` piece
     const g = grids.get(use) ?? grids.set(use, new Grid(8, o => o.at)).get(use)!, near = g.near(it.at, NEAR[use] ?? 20).filter(o => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]) < (NEAR[use] ?? 20));
     const gap = (o: { at: V }) => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]);
     near.sort((a, b) => gap(a) - gap(b));
     const close = (near[0] ? gap(near[0]) : Infinity) * 1.25; // adjacent = within 25% of the nearest, nearest first
-    const pick = slot ? choose(it.id, fitting(use, slot), near.map(o => o.id), near.filter(o => gap(o) <= close).map(o => o.id)) : null;
+    // a piece and a palm's turn are seeded by where the item stands (its kind, edge and position), never by its id: brief 075 roll-out (palms) and stable zone (all)
+    const seed = placeKey(it), options = slot ? fitting(use, slot) : [];
+    const key = placeKey(it), pinned = inZ(it.at) ? pins.get(key) : undefined, held = pinned ? options.find(o => o.a.id === pinned) : undefined;
+    if (log && inZ(it.at) && options.length) { log.chosen!.push(key); if (held) { log.used++; usedPins.add(key); } else if (pinned) { log.refit.push(`${it.id} (${pinned})`); usedPins.add(key); } else if (pins.size) log.unpinned.push(it.id); }
+    const pick = held ?? (slot ? choose(seed, options, near.map(o => o.id), near.filter(o => gap(o) <= close).map(o => o.id)) : null);
     if (!pick) return { ...it, source: 'procedural' as const };
     g.add({ at: it.at, id: pick.a.id });
     const reach = pick.a.tags.reach;
-    const yaw = it.kind === 'tree' || it.kind === 'tub-palm' ? r4(rng(`kit/${it.id}/yaw`).f() * Math.PI * 2) : reach ? reachYaw(it.yaw, reach.axis) : undefined;
+    const yaw = it.kind === 'tree' || it.kind === 'tub-palm' ? r4(rng(`kit/${seed}/yaw`).f() * Math.PI * 2) : reach ? reachYaw(it.yaw, reach.axis) : undefined;
     const kit: KitRef = { id: pick.a.id, scale: pick.k, ...(yaw === undefined ? {} : { yaw }) };
     return { ...it, source: 'kit' as const, kit };
-  });
+  };
+  const out = new Array<StreetItem>(items.length);
+  items.forEach((it, i) => { if (inZ(it.at)) out[i] = one(it); });
+  items.forEach((it, i) => { if (!inZ(it.at)) out[i] = one(it); });
+  if (log) for (const [k] of pins) if (!usedPins.has(k)) log.unmatched.push(k);
+  return out;
 }
 
 /** Metres a blade sign's lowest point stands above the top of its tenancy's canopy slab. */
@@ -162,6 +217,14 @@ export function signKit(
 
 /** An adopted piece by id, or undefined (a plan that names a piece the kit has not adopted gets the procedural stand-in). */
 export const adoptedBy = (id: string | undefined): KitAsset | undefined => (id ? adopted().find(a => a.id === id) : undefined);
+
+/** A plan gateway (megastructures[].gateway, landmarks[].gateway): its adopted arch at the pivot `c`, turned by the plan's numeric `yaw` (radians, kit +X = plan +x at 0),
+ *  else by `fallbackYaw` (the pier's yaw is text, so π/2). Unscaled. Undefined if there is no gateway or its piece is not adopted. */
+export function gatewayRef(gw: { kit?: string; c?: V; yaw?: unknown } | undefined, fallbackYaw: number): (KitRef & { at: V }) | undefined {
+  const a = gw?.c && adoptedBy(gw.kit);
+  if (!gw?.c || !a) return undefined;
+  return { id: a.id, scale: [1, 1, 1], yaw: r4(typeof gw.yaw === 'number' ? gw.yaw : fallbackYaw), at: [r3(gw.c[0]), r3(gw.c[1])] };
+}
 
 /** Landmarks: the kit piece scaled to stand inside the plan's disc and under its height; if it cannot, procedural and why.
  *  The skyport carries `pads`: SkyPad_Roof × 1.0 at each (c, yaw°) on the procedural caisson. */

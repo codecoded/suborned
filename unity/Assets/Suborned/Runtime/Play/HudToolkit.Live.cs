@@ -25,7 +25,7 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         bool PlateOn => host.controls.actionPlate;
-        static readonly Color Pale = new(1f, 0.914f, 0.659f), Alarm = new(1f, 0.353f, 0.235f), DownRing = new(0.231f, 0.29f, 0.278f), DiscTeal = new(0.086f, 0.4f, 0.369f);
+        static readonly Color Pale = new(0.969f, 0.957f, 0.925f), /* cream #f7f4ec: the old #ffe9a8 had no kit source (Glyph 0.2.94 #5b) */ Alarm = new(1f, 0.353f, 0.235f), DownRing = new(0.231f, 0.29f, 0.278f), DiscTeal = new(0.086f, 0.4f, 0.369f);
         const float CueS = 39f / 32f; // the cue board's 64 px portrait (ring r 31-32) to the roster's photo (r 39)
         const float FadeS = 0.15f;
 
@@ -53,13 +53,13 @@ namespace Suborned.Play
             // the cue layer: redrawn while its state moves
             if (w.CueFace != face) { w.CueFace = face; w.CueSince = host.FaceSince(i); }
             Show(w.Cue, !m.Ended || face == Face.Downed); w.Cue.MarkDirtyRepaint();
-            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended && !w.Under; Show(w.Eye, eye); // the tall column: the status slot's cone if (eye) w.Eye.MarkDirtyRepaint();
+            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended && !w.Under; Show(w.Eye, eye); /* the tall column: the status slot's cone */ if (eye) w.Eye.MarkDirtyRepaint();
             // brief 030 (no plate): the armed verb's glyph on the selected portrait
             int pk = host.Picked; bool armed = !PlateOn && pk >= 0 && pk < 5 && i == m.Agent && s.Selected && m.VerbHas[pk] && !m.Ended && !w.Under; // the tall column: the status slot
             Show(w.Glyph, armed);
             if (armed) { Icon(w.Glyph.Q("g"), ArmedIcon(), Cream); w.Glyph.style.opacity = host.PlateKeysDim ? 0.4f : 1f; }
             // the stance inside the drawn mark when it is not the default (return)
-            bool showStance = s.Armed && s.Drawn && host.Game.Ops[i].Gun.Stance != "return";
+            bool showStance = s.Armed && s.Drawn && host.Game.Ops[i].Gun.Stance != "return" && !host.OneInput; // engine 0.35: one input has no stance
             if (w.GunIcon != null) Show(w.GunIcon, !showStance); Show(w.StanceIn, showStance); if (showStance) w.StanceIn.MarkDirtyRepaint();
             return true;
         }
@@ -72,6 +72,7 @@ namespace Suborned.Play
         {
             if (host.Game == null) return; float now = Time.unscaledTime; var face = host.FaceOf(i);
             float ht = now - host.HitAt(i); int lost = host.LostPip(i); bool flash = ht >= 0f && ht < HandoverHost.HitFlashS && Mathf.Repeat(ht, 0.2f) < 0.12f;
+            if (i == (int)OpId.Enforcer && host.EnforcerWarnFlash && Mathf.Repeat(now, 0.4f) < 0.24f) { foreach (var d0 in w.PipDots) d0.style.unityBackgroundImageTintColor = Alarm; w.Portrait.style.unityBackgroundImageTintColor = Alarm; w.Next.style.unityBackgroundImageTintColor = Alarm; return; } // brief 080: the Enforcer's warning: his portrait and pips flash, as a lost pip does
             float pulse = face == Face.BadlyHurt ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Cos(now * Mathf.PI * 2f)) : 1f;
             for (int k = 0; k < w.PipDots.Count; k++)
             {
@@ -122,9 +123,10 @@ namespace Suborned.Play
                         break;
                     }
                 case Face.Firing:
-                    {   // three rays at the sidearm corner, flickering at 2 Hz
+                    {   // three rays out of the ring's left side, flickering at 2 Hz: cream (Glyph's 0.2.94 review #5b: the pale yellow had no kit
+                        // source, and at the sidearm corner a ray crossed the weapon disc under the portrait)
                         if (Mathf.Repeat(now * 2f, 1f) > 0.7f) break;
-                        Stroke2(p, () => { p.MoveTo(At(2, 54)); p.LineTo(At(-6, 58)); p.MoveTo(At(4, 60)); p.LineTo(At(-2, 68)); p.MoveTo(At(12, 64)); p.LineTo(At(10, 73)); }, Pale, 2.6f * s);
+                        Stroke2(p, () => { foreach (var deg in new[] { 160f, 180f, 200f }) { var d = new Vector2(Mathf.Cos(deg * Mathf.Deg2Rad), Mathf.Sin(deg * Mathf.Deg2Rad)); p.MoveTo(c + d * 37f * s); p.LineTo(c + d * (deg == 180f ? 45f : 43f) * s); } }, Cream, 2.6f * s);
                         break;
                     }
                 case Face.Hurt:
@@ -269,7 +271,7 @@ namespace Suborned.Play
             }
             // the cursor: the armed verb rides it (Fire's crosshair mark wins where a press fires); target mode: a crosshair
             var mp = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse);
-            bool live = host.Game != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && host.Ring == null && !host.ConvoOn && host.Panel == null;
+            bool live = host.Game != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && host.Ring == null && !host.ConvoOn && host.Panel == null && !host.PointerHeld; // Glyph's N4
             bool cross = !PlateOn && live && host.Frozen && host.TargetFreeze;
             bool badge = !PlateOn && live && !cross && host.Picked >= 0 && host.Picked < 5 && m.VerbHas[host.Picked] && host.CursorKind != "aim";
             Show(cursorArmed, badge); Show(cursorCross, cross);
@@ -298,66 +300,5 @@ namespace Suborned.Play
 
         /// <summary>The busy chip of the selected agent stands after the strip while the strip shows (brief 030), else beside its portrait.</summary>
         float SelectedChipX(float plateX, bool folded) => PlateOn ? plateX + (folded ? StubW + 4 : PlateW + 16 + 6) : plateX + (StripOn ? StripW + 6 : 0f);
-
-        // ---------------------------------------------------------------- brief 032: the conversation scene
-
-        VisualElement convoBubble, convoTail, convoSkip, convoBarTop, convoBarBottom, convoVeil; Label convoText; Paint convoDots; bool convoHid;
-        /// <summary>Elements that are not HUD for the budget (the letterbox bars, the dip): the HUD layer of a shot is drawn without them.</summary>
-        readonly List<VisualElement> notHud = new();
-
-        bool ConvoHud()
-        {
-            var c = host.ConvoNow; bool on = c != null;
-            if (!on && !convoHid) return false;
-            if (convoBubble == null)
-            {
-                convoBarTop = E(root); convoBarBottom = E(root); convoVeil = E(root);
-                foreach (var b in new[] { convoBarTop, convoBarBottom, convoVeil }) { b.style.position = Position.Absolute; b.style.left = 0; b.style.right = 0; b.style.backgroundColor = Color.black; b.pickingMode = PickingMode.Ignore; notHud.Add(b); }
-                convoBarTop.style.top = 0; convoBarTop.style.height = Length.Percent(6); convoBarBottom.style.bottom = 0; convoBarBottom.style.height = Length.Percent(6); convoVeil.style.top = 0; convoVeil.style.bottom = 0;
-                convoBubble = E(root, "s-plate_light"); convoBubble.style.position = Position.Absolute; convoBubble.style.paddingLeft = 14; convoBubble.style.paddingRight = 14; convoBubble.style.paddingTop = 6; convoBubble.style.paddingBottom = 7;
-                convoText = L(convoBubble, "card-body"); convoText.style.color = Ink; convoText.style.fontSize = 20;
-                convoTail = E(convoBubble, null, 0, 0, 12, 12); convoTail.style.rotate = new Rotate(45); convoTail.style.backgroundColor = new Color(0.98f, 0.95f, 0.89f); convoTail.style.top = Length.Percent(100); convoTail.style.marginTop = -8; convoTail.style.left = Length.Percent(50); convoTail.style.marginLeft = -6;
-                manifest.Add((convoBubble, "speech", () => convoText.text));
-                convoDots = P(root, 0, 0, 60, 14, (p, r) => { var cc = host.ConvoNow; if (cc == null) return; int n = cc.Lines.Count; for (int i = 0; i < n; i++) { var q = new Vector2(r.width / 2 + (i - (n - 1) / 2f) * 14f, 7); p.BeginPath(); p.Arc(q, 4f, Deg(0), Deg(360)); if (i <= cc.Beat) { p.fillColor = Cream; p.Fill(); } p.strokeColor = Cream; p.lineWidth = 1.4f; p.Stroke(); } });
-                manifest.Add((convoDots, "image", () => "scene beats"));
-                convoSkip = E(root, "s-plate_light", pick: true); convoSkip.style.position = Position.Absolute; convoSkip.style.height = 28; convoSkip.style.flexDirection = FlexDirection.Row; convoSkip.style.alignItems = Align.Center; convoSkip.style.paddingLeft = 12; convoSkip.style.paddingRight = 10;
-                var sk = L(convoSkip, "keycap"); sk.text = "Skip"; sk.style.fontSize = 14; var chev = E(convoSkip, null, w: 12, h: 12); chev.style.marginLeft = 6; Icon(chev, "chev_down", Ink); chev.style.rotate = new Rotate(new Angle(-90, AngleUnit.Degree));
-                convoSkip.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ConvoSkip(); e.StopPropagation(); } });
-                manifest.Add((convoSkip, "image", () => "skip keycap"));
-            }
-            var mine = new HashSet<VisualElement> { convoBarTop, convoBarBottom, convoVeil, convoBubble, convoDots, convoSkip, pill };
-            if (on != convoHid)
-            {
-                convoHid = on;
-                foreach (var ch in root.Children()) if (!mine.Contains(ch)) { ch.style.visibility = on ? Visibility.Hidden : StyleKeyword.Null; ch.style.opacity = on ? 0f : StyleKeyword.Null; } // opacity too: a descendant set visible (the pips, a chip's bar) shows through a hidden parent
-                foreach (var e in mine) if (e != pill) Show(e, on);
-                if (!on) { Show(pauseIcon, host.Paused); pauseIcon.style.opacity = 1f; return false; }
-            }
-            var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) ? 1920 : size.x, H = float.IsNaN(size.y) ? 1080 : size.y;
-            // the clock with its paused mark, pulsing (the freeze is explained); the bars and the dip
-            Text(clock, m.Clock); Show(pauseIcon, true); pauseIcon.style.opacity = 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f));
-            convoVeil.style.opacity = host.ConvoDip; Show(convoVeil, host.ConvoDip > 0.001f); convoVeil.BringToFront();
-            bool shot = c.OutAt < 0f || host.ConvoDip > 0f && Time.unscaledTime - c.OutAt < HandoverHost.ConvoDipS * 0.5f;
-            Show(convoBarTop, shot); Show(convoBarBottom, shot);
-            // one bubble at its speaker (the tail says who; no names), whole, held up to bubbleSeconds; off the street, low on the near side
-            bool speak = shot && c.Beat < c.Lines.Count && Time.unscaledTime >= c.BeatAt; Show(convoBubble, speak);
-            if (speak)
-            {
-                var (who, line) = c.Lines[c.Beat]; Text(convoText, line);
-                float bw = convoBubble.resolvedStyle.width, bh = convoBubble.resolvedStyle.height; if (float.IsNaN(bw) || bw < 1) bw = 280; if (float.IsNaN(bh) || bh < 1) bh = 36;
-                Vector2 at = default; bool tail = host.ConvoHead(who) is Vector3 hw && Proj(hw, out at) && InView(at);
-                if (!tail) at = new Vector2(W * 0.3f, H * 0.62f);
-                float x = Mathf.Clamp(at.x - bw / 2, 24, W - bw - 24), y = Mathf.Clamp(at.y - bh - 10, H * 0.06f + 56, H * 0.94f - bh - 60);
-                convoBubble.style.left = x; convoBubble.style.top = y; Show(convoTail, tail); if (tail) { convoTail.style.left = Mathf.Clamp(at.x - x, 16, bw - 16); convoTail.style.marginLeft = -6; }
-                convoBubble.style.opacity = Mathf.Clamp01((Time.unscaledTime - c.BeatAt) / 0.12f);
-            }
-            // the row of dots under the pair (the played ones filled)
-            Show(convoDots, shot && c.Lines.Count > 1);
-            if (shot && host.ConvoFeet(c) is Vector3 fw && Proj(fw, out var fq)) { convoDots.style.left = Mathf.Clamp(fq.x - 30, 24, W - 84); convoDots.style.top = Mathf.Min(fq.y + 18, H * 0.94f - 30); convoDots.style.width = 60; convoDots.MarkDirtyRepaint(); }
-            // Skip, bottom right over the bar's edge
-            Show(convoSkip, shot); convoSkip.style.right = 40; convoSkip.style.bottom = H * 0.06f + 14;
-            pill.BringToFront(); convoBubble.BringToFront(); convoSkip.BringToFront(); convoVeil.BringToFront(); // the clock over the top bar
-            return true;
-        }
     }
 }

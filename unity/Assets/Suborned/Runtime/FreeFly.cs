@@ -8,12 +8,14 @@ namespace Suborned
     /// <summary>Review tool, not a game system: in Play mode on the generated HarbourDistrict scene, a free-fly camera is ready at
     /// the play camera, OFF (opt-in, Redline 007 C4: it used to draw a second full-city view over the play camera by default).
     /// Tab turns it on, which turns the play camera off, so only one camera renders; Tab again hands back. Hold right mouse to
-    /// look; WASD move, Q/E down/up, Shift x5, scroll changes the base speed. Nothing is added to the scene file. Editor only,
+    /// look; WASD move, Q/E down/up, Shift x5, scroll changes the base speed. Nothing is added to the scene file.
+    /// Brief 075: while it is on, Pulse's presentation life (traffic, trams, people; PresentationLife) is drawn, sampled at Time.time; Tab back hides it. Editor only,
     /// or a player built with the SUBORNED_FREEFLY define (never in profiling builds by default).</summary>
     public sealed class FreeFly : MonoBehaviour
     {
         float yaw, pitch, speed = 20f;
         Camera cam, main;
+        PresentationLife life; bool lifeTried; // brief 075: Pulse's presentation life, only while this camera is on
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Spawn()
@@ -36,6 +38,8 @@ namespace Suborned
             go.AddComponent<FreeFly>().main = main;
         }
 
+        void OnDestroy() { if (life) Destroy(life.gameObject); }
+
         void Awake()
         {
             cam = GetComponent<Camera>();
@@ -50,8 +54,11 @@ namespace Suborned
             {
                 cam.enabled = !cam.enabled;
                 if (main) main.enabled = !cam.enabled;
+                if (cam.enabled && !life && !lifeTried) { lifeTried = true; life = PresentationLife.Installer?.Invoke(); if (life) life.View = cam; }
+                if (life) life.gameObject.SetActive(cam.enabled); // off with the camera: the play view never draws it
             }
             if (!cam.enabled) return;
+            if (life) life.Step(Time.time);
             if (mouse != null)
             {
                 if (mouse.rightButton.isPressed)

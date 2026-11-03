@@ -41,6 +41,7 @@ namespace Suborned.Sim
                 a.OnDone = OnDone(op, o);
                 a.CanCancel = true; (a.CancelCost, a.CancelText) = CancelLine(op, o.Do);
                 if (o.Do == "enter" && o.How == "out") { a.CanCancel = false; a.CancelCost = "nothing"; a.CancelText = "both doors are held: he waits inside until one is free"; } // a cancelled Enter, waiting
+                if (o.Do == "drive-car" || o.Do == "ride") { a.CanCancel = false; a.CancelCost = "drives-on"; a.CancelText = $"the car drives on to {o.Target}: it stops only at a stand"; } // engine 0.33.1 (rulebook cancel.driveCar; Fable's question): 0.33.0 cleared the order and left the car driving for ever
                 return a;
             }
             if (op.InCar) // brief 018: boarded; a move steps out (an order, not a cancel)
@@ -52,7 +53,7 @@ namespace Suborned.Sim
             if (op.Act != null) // engine 0.23.0 (rulebook cell.approach): walking in to a person act; the act's verb, the walk's phase
             {
                 var o = op.Act; a.Verb = o.Do; a.Target = o.Target; a.Phase = "walking"; string act = o.Do == "turn" ? o.Approach : o.Do;
-                if (op.Walk != null) { long left = op.Walk.Length - op.WalkMm; int speed = op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length); }
+                if (op.Walk != null) { long left = op.Walk.Length - op.WalkMm; int speed = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length); }
                 else a.TicksLeft = -1;
                 a.OnDone = $"in reach, the {act} starts";
                 a.CanCancel = true; a.CancelCost = "stop"; a.CancelText = $"stops where they stand; the {act} is not given";
@@ -61,7 +62,7 @@ namespace Suborned.Sim
             if (op.Walk != null)
             {
                 a.Verb = "move"; a.Phase = op.Running ? "running" : "walking"; a.Target = $"{op.Walk.End.X},{op.Walk.End.Y}";
-                int speed = op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; long left = op.Walk.Length - op.WalkMm;
+                int speed = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; long left = op.Walk.Length - op.WalkMm;
                 a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length);
                 a.OnDone = "arrives";
                 a.CanCancel = true; a.CancelCost = "stop"; a.CancelText = "stops where they stand";
@@ -83,7 +84,7 @@ namespace Suborned.Sim
                 return a;
             }
             if (g.HolsterAt >= 0) { a.Verb = "holster"; a.Phase = "acting"; a.TicksLeft = Math.Max(0, g.HolsterAt - Tick); a.OnDone = "weapon away"; a.CancelCost = "none"; a.CancelText = "holstering finishes in a moment"; return a; }
-            if (id == OpId.Tech && LoopOn)
+            if (id == OpId.Tech && Tethered) // the tether only (before engine 0.31.0): a Loop v2 runs on its own, no activity of the Tech's
             {
                 a.Verb = "loop"; a.Target = LoopCam; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "holds while the Tech stays at the cabinet";
                 a.CanCancel = true; a.CancelCost = "ends"; a.CancelText = "the loop ends and the camera comes back";
@@ -109,8 +110,8 @@ namespace Suborned.Sim
             }
             if (id == OpId.Enforcer && Vale == ValeAt.WithEnforcer)
             {
-                a.Verb = "take"; a.Target = "councillor"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "Vale boards the getaway car with him; the win is the car leaving with Vale (Go)";
-                a.CanCancel = false; a.CancelCost = "keeps-vale"; a.CancelText = "putting Vale down is no cancel";
+                a.Verb = "take"; a.Target = "councillor"; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = $"{Cap(ValeName)} boards the getaway car with him; the win is the car leaving with {ValeName} (Go)";
+                a.CanCancel = false; a.CancelCost = "keeps-vale"; a.CancelText = $"putting {ValeName} down is no cancel";
                 return a;
             }
             a.CancelCost = "nothing"; a.CancelText = "nothing to cancel";
@@ -133,16 +134,17 @@ namespace Suborned.Sim
                 case "listen": return "learns the need and temperament";
                 case "turn": return op.BusyQuote?.Outcome ?? "?";
                 case "loop": return o.Target == "entrance" ? "the entrance camera loops" : $"the {o.Target} camera loops";
+                case "disable": return $"the {o.Target} camera is cut";
                 case "reroute": return "the patrol leaves its sweep";
                 case "mislead": return "the rivals follow a false tip";
-                case "enter": return o.How == "out" ? "out by a door no unit holds, without Vale" : "out at the service lane with Vale";
-                case "take": return "Vale is with the Enforcer";
+                case "enter": return o.How == "out" ? $"out by a door no unit holds, without {ValeName}" : $"out at the service lane with {ValeName}";
+                case "take": return $"{Cap(ValeName)} is with the Enforcer";
                 case "carry": return IsOpId(o.Target) ? $"lifts the {o.Target}" : $"lifts {o.Target}";
                 case "takedown": return o.How == "kill" ? "dead" : "out";
                 case "drop": return "laid down";
                 case "stash": return "hidden";
                 case "restrain": return "tied";
-                case "board": return op.Carrying.HasValue ? $"in the car with the {Sim.Op.Name(op.Carrying.Value)}" : op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer ? "in the car with Vale" : "in the car";
+                case "board": return op.Carrying.HasValue ? $"in the car with the {Sim.Op.Name(op.Carrying.Value)}" : op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer ? $"in the car with {ValeName}" : "in the car";
                 case "move": return "steps out of the car"; // only a boarded operative's move is an action
                 default: return "";
             }
@@ -154,10 +156,10 @@ namespace Suborned.Sim
             {
                 case "watch": case "listen": return ("lost", "the time is spent; nothing is learned");
                 case "turn": return R.CancelTurn == "aborted" ? ("aborted", $"the money held comes back; the {op.Busy!.Target} remembers an aborted approach and the Fixer's face") : ("lost", "the money held comes back; nothing is remembered");
-                case "loop": case "reroute": case "mislead": case "carry": case "drop": case "stash": case "restrain": return ("lost", "the time is spent; nothing lands");
+                case "loop": case "disable": case "reroute": case "mislead": case "carry": case "drop": case "stash": case "restrain": return ("lost", "the time is spent; nothing lands");
                 case "takedown": return ("released", "the victim is let go: he saw it, and reports it as a woken victim would");
-                case "enter": return R.CancelEnter == "staff-report" ? ("staff-report", $"back out {CancelledEnterOut()} without Vale; the staff report the intruder (a reported incident)") : ("quiet", $"back out {CancelledEnterOut()} without Vale");
-                case "take": return R.CancelTake == "vale-reports" ? ("vale-reports", "Vale is let go at his car and reports the attempt (a reported incident)") : ("quiet", "Vale is let go at his car");
+                case "enter": return R.CancelEnter == "staff-report" ? ("staff-report", $"back out {CancelledEnterOut()} without {ValeName}; the staff report the intruder (a reported incident)") : ("quiet", $"back out {CancelledEnterOut()} without {ValeName}");
+                case "take": return R.CancelTake == "vale-reports" ? ("vale-reports", $"{Cap(ValeName)} is let go at his car and reports the attempt (a reported incident)") : ("quiet", $"{Cap(ValeName)} is let go at his car");
                 default: return ("lost", "nothing lands");
             }
         }
@@ -166,7 +168,7 @@ namespace Suborned.Sim
         string Cancel(Op op)
         {
             var a = ActivityOf(op.Id); string name = Sim.Op.Name(op.Id);
-            if (!a.CanCancel) return No(a.CancelCost == "down" ? "agent-down" : a.CancelCost == "keeps-vale" ? "keeps-vale" : a.CancelCost == "none" ? "holstering" : "nothing-to-cancel", a.CancelText);
+            if (!a.CanCancel) return No(a.CancelCost == "down" ? "agent-down" : a.CancelCost == "keeps-vale" ? "keeps-vale" : a.CancelCost == "none" ? "holstering" : a.CancelCost == "drives-on" ? "car-driving" : "nothing-to-cancel", a.CancelText);
             switch (a.Phase)
             {
                 case "acting":
@@ -188,7 +190,7 @@ namespace Suborned.Sim
                                 if (BodyById(o.Target) is Body tb && tb.Seizing) { var ta = ActOf(tb); ta.Aware = true; tb.Seizing = false; Remember(tb.P, "attacked-aware", "enforcer", false); Wake(tb, false); }
                                 break;
                             case "take":
-                                Vale = ValeAt.Pickup;
+                                Vale = PickupService ? ValeAt.InCar : ValeAt.Pickup; // brief 059: let go in his car round the back, he stays in it
                                 if (R.CancelTake == "vale-reports")
                                 {
                                     // a Take already seen is an incident: Vale's own report is one more report of it (one incident counts once
@@ -233,11 +235,11 @@ namespace Suborned.Sim
             if (frontHeld && serviceHeld)
             {
                 op.Inside = true; op.Busy = new Order { Tick = Tick, Op = Sim.Op.Name(op.Id), Do = "enter", How = "out" }; op.BusyEnd = Tick + 1;
-                if (first) { op.BusyStart = Tick; Note("cancel.enter-waits", "Both doors are held: the Enforcer waits inside, without Vale."); }
+                if (first) { op.BusyStart = Tick; Note("cancel.enter-waits", $"Both doors are held: the Enforcer waits inside, without {ValeName}."); }
                 return;
             }
             op.Inside = false; op.Pos = frontHeld ? S.Stand(S.ValeService) : S.Stand(S.GuardPost);
-            if (frontHeld || !first) Note("cancel.enter-out", frontHeld ? "The public door is held: the Enforcer comes out at the service lane without Vale." : "A door is free: the Enforcer comes out at the public door without Vale.");
+            if (frontHeld || !first) Note("cancel.enter-out", frontHeld ? $"The public door is held: the Enforcer comes out at the service lane without {ValeName}." : $"A door is free: the Enforcer comes out at the public door without {ValeName}.");
         }
         /// <summary>Where a cancelled Enter would come out now, in the engine's words (the cancel line).</summary>
         string CancelledEnterOut() => !DoorHeld(EnterDoor) ? "at the public door" : !DoorHeld(ExitDoor) ? "at the service lane (the public door is held)" : "when a door is free (both are held: he waits inside)";

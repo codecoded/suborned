@@ -6,6 +6,7 @@
       p.image(model, prompt, 2560, 1440, name='V6S1_t1.png', subdir='keyframes', inputs=..., refs_log=[...], est=0.12)
       p.video(task_fields, name='V6S1_hailuo_t1.mp4', subdir='shots', est=0.49, prompt=..., ...)
       p.audio(task_fields, name='score_t2.mp3', subdir='audio', est=0.2, prompt=...)
+      p.mesh(task_fields, name='vale_t1.glb', subdir='meshes', est=0.7, prompt=...)         # image to 3D (brief 063, Forma): GLB out, same budget stop and ledger as the others
   CLI:
       python3 -I tools/paid/paid.py open <job> <pass> --budget USD [--raise] [--note text]
       python3 -I tools/paid/paid.py status [job]        spend, budget and what is left, per pass
@@ -30,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PAID_DIR = Path(os.environ.get('SUBORNED_PAID', ROOT / 'paid'))
 SPEND_PATH = Path(os.environ.get('SUBORNED_PAID_SPEND', ROOT / 'tools/paid/spend.json'))
 OLD = Path(os.environ.get('SUBORNED_OLD', '~/Projects/the-suborned')).expanduser() / 'workbench/Tools/Concept'
-CALL_TASKS = ('image', 'video', 'audio')           # rows that are provider calls; other tasks (edit, derived, note) are bookkeeping
+CALL_TASKS = ('image', 'video', 'audio', '3d')           # rows that are provider calls; other tasks (edit, derived, note) are bookkeeping
 STATUSES = ('ok', 'blocked', 'failed')
 SCHEMA = 'suborned.paid-spend/1'
 
@@ -144,7 +145,16 @@ KIND = {  # task type, result url key, uuid key, output format, poll every s, gi
     'image': ('imageInference', 'imageURL', 'imageUUID', 'PNG', 4.0, 900.0),
     'video': ('videoInference', 'videoURL', 'videoUUID', 'MP4', 8.0, 1500.0),
     'audio': ('audioInference', 'audioURL', 'audioUUID', 'MP3', 8.0, 900.0),
+    '3d': ('3dInference', 'outputs', 'taskUUID', 'GLB', 6.0, 1200.0),     # image to 3D (brief 063, Forma): the file url is outputs.files[0].url
 }
+
+
+def _result_url(kind, d):
+    """The downloadable url of one finished task result (3d results nest it under outputs.files)."""
+    if kind == '3d':
+        f = (d.get('outputs') or {}).get('files') or []
+        return f[0].get('url') if f else None
+    return d.get(KIND[kind][1])
 
 
 def sha256(b):
@@ -233,8 +243,8 @@ class Pass:
                 for d in self.client.call([{'taskType': 'getResponse', 'taskUUID': task['taskUUID']}]):
                     if d.get('status') == 'error':
                         raise RuntimeError(json.dumps(d)[:600])
-                    if d.get('status') == 'success' and d.get(urlkey):
-                        got[d.get(uuidkey) or d[urlkey]] = d
+                    if d.get('status') == 'success' and _result_url(kind, d):
+                        got[d.get(uuidkey) or _result_url(kind, d)] = d
                 if len(got) >= (n if kind == 'image' else 1):
                     break
             if not got:
@@ -242,10 +252,10 @@ class Pass:
             rows = []
             for i, d in enumerate(got.values()):
                 try:
-                    data = self.client.fetch(d[urlkey])
+                    data = self.client.fetch(_result_url(kind, d))
                 except Exception as e:          # the provider has already charged: keep the cost and the url so the output can be fetched again
                     self._log({**base, 'status': 'failed', 'cost_usd': d.get('cost'), 'cost_est': None if d.get('cost') is not None else est, 'file': None, 'seed': d.get('seed'),
-                               'note': (note + ' ' if note else '') + f'fetch failed ({str(e)[:120]}); result url {d[urlkey]}'})
+                               'note': (note + ' ' if note else '') + f'fetch failed ({str(e)[:120]}); result url {_result_url(kind, d)}'})
                     raise SystemExit(f'paid: {kind} generated but fetch failed: {e}')
                 nm = name if len(got) == 1 else re.sub(r'(\.\w+)$', rf'_{i}\1', name)
                 rel = self._save(subdir, nm, data, link)
@@ -289,6 +299,11 @@ class Pass:
     def video(self, task, *, name, est, subdir='shots', prompt='', refs_log=None, link=None, note='', used_in=None, params=None, duration_s=None):
         return self.generate('video', task, name=name, est=est, subdir=subdir, prompt=prompt or task.get('positivePrompt', ''), refs=refs_log, link=link, note=note,
                              used_in=used_in, params=params, duration_s=duration_s or task.get('duration'))
+
+    def mesh(self, task, *, name, est, subdir='meshes', prompt='', refs_log=None, link=None, note='', used_in=None, params=None):
+        """Image to 3D (a `3dInference` task; GLB out)."""
+        return self.generate('3d', {'outputType': 'URL', **task}, name=name, est=est, subdir=subdir, prompt=prompt, refs=refs_log, link=link, note=note,
+                             used_in=used_in, params=params or task.get('settings'))
 
     def audio(self, task, *, name, est, subdir='audio', prompt='', refs_log=None, link=None, note='', used_in=None, params=None):
         return self.generate('audio', task, name=name, est=est, subdir=subdir, prompt=prompt or task.get('positivePrompt', ''), refs=refs_log, link=link, note=note,
@@ -406,7 +421,7 @@ def refresh(paid_dir=None, spend_path=None):
 
 
 # ---------------------------------------------------------------- viewer (paid/index.html)
-MEDIA = {'.png': 'image', '.jpg': 'image', '.jpeg': 'image', '.webp': 'image', '.mp4': 'video', '.mov': 'video', '.mp3': 'audio', '.wav': 'audio'}
+MEDIA = {'.png': 'image', '.jpg': 'image', '.jpeg': 'image', '.webp': 'image', '.mp4': 'video', '.mov': 'video', '.mp3': 'audio', '.wav': 'audio', '.glb': 'model'}   # a 3D model (brief 063): listed with its size, no thumbnail
 
 
 def asset_path(row, job, paid_dir=None):

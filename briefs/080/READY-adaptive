@@ -1,0 +1,8 @@
+080 adaptive routes, round 2 · Waymark · 2026-10-30
+State: in out/scratch/keel/wt080 on Keel's 0.37.0 (round 3). No rule value, Suborned.Sim, GDD or Unity edit. No commit.
+Patches on Keel's patch: briefs/080/waymark/adaptive.patch (driver with clear: and close.warning, seven plans, bands, fromBands, MC reading band rows, tests) · briefs/080/waymark/retime-routes.patch (route plans, scripts, manifest). Regenerate with waymark/mkpatch.py after any later Keel refresh.
+Command: bun run missions:check handover --engine tree --inputs tree (after merge: bun run missions:check handover). 43 s. Evidence: waymark/check-200.txt, check.html.
+Verdict: HOLDS on 7 lines, each with an owner: MC-11, R-7 quiet-b take, B-7 quiet-b, B-8 quiet-b and quiet-g, B-11 quiet-b and thin-quiet (Motive; MC-11 Motive with Vantage). KNOWN_RED in check.test.ts lists them and fails when one is fixed.
+Green: 15 of 16 MC, 6 of 7 rigid, all win bands. dotnet test 2710/2710. bun run test tools/missions tools/sim contracts: 410 pass, 2 fail (mission timeline against GDD §07: Aster's GDD version; simview's hash: Keel, next record).
+Not re-measured: Keel's -2 Standing near people (not in this tree yet): rerun the check once it lands.
+Next owner: Aster (merge order in Waymark's report), Motive (the red lines).

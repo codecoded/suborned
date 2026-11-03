@@ -36,9 +36,15 @@ namespace Suborned
         public float perspectiveSplit = 22f;
         [Tooltip("Share of the shadow distance the last cascade fades over (about 30 %).")]
         public float perspectiveFade = 0.3f;
+        [Header("SSAO (brief 064 A3 item 1)")]
+        [Tooltip("SSAO while this camera renders orthographic (the play view). Off: the camera stands about 160 m back and the street lies 142 to " +
+            "178 m along its view, past the SSAO falloff (100 m), so URP's ShouldSkipAO gives no occlusion there and the pass only costs. The " +
+            "perspective views (ground, follow) keep the renderer's SSAO. The perf harness turns it back on for its `ssao` A/B (PerfSwitches).")]
+        public bool orthoSsao = false;
 
         Camera cam;
         State saved;
+        SsaoScope ssaoOff;
 
         /// <summary>Shadow distance this camera renders with.</summary>
         public float Distance => focusDepth + farBand;
@@ -56,6 +62,7 @@ namespace Suborned
             RenderPipelineManager.endCameraRendering -= End;
             saved?.Restore();
             saved = null;
+            ssaoOff?.Dispose(); ssaoOff = null;
         }
 
         void Begin(ScriptableRenderContext _, Camera c)
@@ -63,6 +70,7 @@ namespace Suborned
             if (c != cam || UniversalRenderPipeline.asset is not { } urp) return;
             saved = new State(urp);
             Apply(urp);
+            ssaoOff?.Dispose(); ssaoOff = SsaoScope.For(cam, orthoSsao);
         }
 
         void End(ScriptableRenderContext _, Camera c)
@@ -70,6 +78,7 @@ namespace Suborned
             if (c != cam) return;
             saved?.Restore();
             saved = null;
+            ssaoOff?.Dispose(); ssaoOff = null;
         }
 
         /// <summary>Applies this camera's shadow fit to the asset until the returned scope is disposed (for renders that do not
@@ -77,9 +86,35 @@ namespace Suborned
         public IDisposable Use()
         {
             if (UniversalRenderPipeline.asset is not { } urp) return null;
-            var s = new State(urp);
+            var s = new State(urp) { ssao = SsaoScope.For(cam ? cam : GetComponent<Camera>(), orthoSsao) };
             Apply(urp);
             return s;
+        }
+
+        /// <summary>The renderer's SSAO feature (PC_Renderer), or null.</summary>
+        public static ScriptableRendererFeature SsaoFeature
+        {
+            get
+            {
+                if (UniversalRenderPipeline.asset is not { } urp) return null;
+                if (ssaoCache.asset == urp && ssaoCache.feature) return ssaoCache.feature;
+                ScriptableRendererFeature found = null;
+                var list = urp.rendererDataList;
+                if (list.Length > 0 && list[0]) foreach (var f in list[0].rendererFeatures) if (f is ScreenSpaceAmbientOcclusion) { found = f; break; }
+                ssaoCache = (urp, found);
+                return found;
+            }
+        }
+        static (UniversalRenderPipelineAsset asset, ScriptableRendererFeature feature) ssaoCache;
+
+        /// <summary>Brief 064 A3 item 1: SSAO off while an orthographic camera renders, unless asked for; Dispose puts the feature back as it
+        /// was (a launch's -nossao, the perf switch's own setting).</summary>
+        sealed class SsaoScope : IDisposable
+        {
+            ScriptableRendererFeature f; readonly bool was;
+            SsaoScope(ScriptableRendererFeature f) { this.f = f; was = f.isActive; f.SetActive(false); }
+            public static SsaoScope For(Camera c, bool keep) => c && c.orthographic && !keep && SsaoFeature is { isActive: true } f ? new SsaoScope(f) : null;
+            public void Dispose() { if (f) f.SetActive(was); f = null; }
         }
 
         void Apply(UniversalRenderPipelineAsset urp)
@@ -124,6 +159,7 @@ namespace Suborned
             readonly int count;
             readonly Vector2 split3;
             readonly Vector3 split4;
+            public IDisposable ssao;
 
             public State(UniversalRenderPipelineAsset a)
             {
@@ -138,7 +174,7 @@ namespace Suborned
                 urp.cascade2Split = split2; urp.cascade3Split = split3; urp.cascade4Split = split4; urp.cascadeBorder = border;
             }
 
-            public void Dispose() => Restore();
+            public void Dispose() { Restore(); ssao?.Dispose(); ssao = null; }
         }
     }
 }

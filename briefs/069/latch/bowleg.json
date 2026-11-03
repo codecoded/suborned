@@ -1,0 +1,614 @@
+{
+  "schema": "suborned.proof069/bowleg-1",
+  "note": "each metric: [median, min, max] over 36 frames; knee/ankle/stepWidth ÷ leg length; abduction degrees, + outward",
+  "source_generic": {
+    "abdL": [-0.844, -6.128, 5.168],
+    "abdR": [3.075, -1.115, 7.112],
+    "kneeL": [-0.006, -0.05, 0.045],
+    "kneeR": [0.026, -0.01, 0.051],
+    "ankleL": [-0.019, -0.097, 0.07],
+    "ankleR": [0.01, -0.064, 0.097],
+    "stepWidth": 0.058
+  },
+  "source_humanoidSelf_clipFix": {
+    "abdL": [-0.811, -5.877, 4.886],
+    "abdR": [2.748, -1.385, 6.739],
+    "kneeL": [-0.006, -0.048, 0.042],
+    "kneeR": [0.023, -0.012, 0.048],
+    "ankleL": [-0.018, -0.092, 0.07],
+    "ankleR": [0.009, -0.067, 0.091],
+    "stepWidth": 0.055
+  },
+  "cp_commuter_01": {
+    "rest": {
+      "bind": {
+        "abdL": 5.842,
+        "abdR": 5.842,
+        "ankleL": 0.106,
+        "ankleR": 0.106,
+        "feetApart": 0.47
+      },
+      "avatarRest": {
+        "abdL": 5.842,
+        "abdR": 5.842,
+        "ankleL": 0.106,
+        "ankleR": 0.106,
+        "feetApart": 0.47
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent": {
+      "abdL": [4.479, -0.874, 7.712],
+      "abdR": [7.974, 4.176, 11.427],
+      "kneeL": [0.035, -0.007, 0.065],
+      "kneeR": [0.065, 0.035, 0.082],
+      "ankleL": [-0.02, -0.101, 0.082],
+      "ankleR": [0.088, 0.015, 0.131],
+      "stepWidth": 0.248
+    },
+    "clipFix": {
+      "abdL": [7.363, 1.983, 11.182],
+      "abdR": [7.069, 3.384, 11.083],
+      "kneeL": [0.054, 0.016, 0.089],
+      "kneeR": [0.057, 0.028, 0.073],
+      "ankleL": [0.07, -0.015, 0.099],
+      "ankleR": [0.071, -0.022, 0.122],
+      "stepWidth": 0.262
+    },
+    "clipFix+neutralLegs": {
+      "abdL": [1.148, -3.813, 5.275],
+      "abdR": [1.149, -1.936, 4.617],
+      "kneeL": [0.009, -0.031, 0.044],
+      "kneeR": [0.009, -0.015, 0.037],
+      "ankleL": [-0.009, -0.077, 0.053],
+      "ankleR": [0.003, -0.067, 0.059],
+      "stepWidth": 0.153
+    },
+    "restAfterNeutral": {
+      "bind": {
+        "abdL": 5.842,
+        "abdR": 5.842,
+        "ankleL": 0.106,
+        "ankleR": 0.106,
+        "feetApart": 0.47
+      },
+      "avatarRest": {
+        "abdL": 0,
+        "abdR": 0,
+        "ankleL": 0,
+        "ankleR": 0,
+        "feetApart": 0.257
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent+neutralLegs": {
+      "abdL": [-1.481, -5.982, 3.344],
+      "abdR": [2.372, -0.584, 5.944],
+      "kneeL": [-0.012, -0.05, 0.026],
+      "kneeR": [0.02, -0.005, 0.046],
+      "ankleL": [-0.037, -0.15, 0.055],
+      "ankleR": [0.046, -0.018, 0.087],
+      "stepWidth": 0.211
+    },
+    "feet_clipFix+neutralLegs": {
+      "Left": {
+        "planted": 17,
+        "yawMedian": -0.655,
+        "yawRange": [-5.174, 7.665],
+        "pitchMedianPlanted": -27.831,
+        "yawAllFrames": [-165.486, 163.186],
+        "minHeight": 0.068
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": -12.507,
+        "yawRange": [-18.302, -10.096],
+        "pitchMedianPlanted": -26.053,
+        "yawAllFrames": [-154.494, -8.06],
+        "minHeight": 0.059
+      }
+    },
+    "feet_clipFix": {
+      "Left": {
+        "planted": 17,
+        "yawMedian": -6.215,
+        "yawRange": [-10.109, 1.21],
+        "pitchMedianPlanted": -27.197,
+        "yawAllFrames": [-169.616, 9.866],
+        "minHeight": 0.073
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -8.229,
+        "yawRange": [-12.447, -6.567],
+        "pitchMedianPlanted": -24.955,
+        "yawAllFrames": [-175.247, 94.329],
+        "minHeight": 0.069
+      }
+    },
+    "clipFix+feetSpacingNeg": {
+      "abdL": [7.363, 1.983, 11.182],
+      "abdR": [7.069, 3.384, 11.083],
+      "kneeL": [0.054, 0.016, 0.089],
+      "kneeR": [0.057, 0.028, 0.073],
+      "ankleL": [0.07, -0.015, 0.099],
+      "ankleR": [0.071, -0.022, 0.122],
+      "stepWidth": 0.262
+    },
+    "clipFix+feetSpacingPos": {
+      "abdL": [7.363, 1.983, 11.182],
+      "abdR": [7.069, 3.384, 11.083],
+      "kneeL": [0.054, 0.016, 0.089],
+      "kneeR": [0.057, 0.028, 0.073],
+      "ankleL": [0.07, -0.015, 0.099],
+      "ankleR": [0.071, -0.022, 0.122],
+      "stepWidth": 0.262
+    },
+    "clipFix+twist0": {
+      "abdL": [7.363, 1.983, 11.182],
+      "abdR": [7.069, 3.384, 11.083],
+      "kneeL": [0.054, 0.016, 0.089],
+      "kneeR": [0.057, 0.028, 0.073],
+      "ankleL": [0.07, -0.015, 0.099],
+      "ankleR": [0.071, -0.022, 0.122],
+      "stepWidth": 0.262
+    },
+    "clipFix+twist1": {
+      "abdL": [7.363, 1.983, 11.182],
+      "abdR": [7.069, 3.384, 11.083],
+      "kneeL": [0.054, 0.016, 0.089],
+      "kneeR": [0.057, 0.028, 0.073],
+      "ankleL": [0.07, -0.015, 0.099],
+      "ankleR": [0.071, -0.022, 0.122],
+      "stepWidth": 0.262
+    }
+  },
+  "cp_commuter_02": {
+    "rest": {
+      "bind": {
+        "abdL": 5.649,
+        "abdR": 5.649,
+        "ankleL": 0.116,
+        "ankleR": 0.116,
+        "feetApart": 0.493
+      },
+      "avatarRest": {
+        "abdL": 5.649,
+        "abdR": 5.649,
+        "ankleL": 0.116,
+        "ankleR": 0.116,
+        "feetApart": 0.493
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent": {
+      "abdL": [3.813, -1.005, 8.285],
+      "abdR": [7.894, 4.4, 10.586],
+      "kneeL": [0.029, -0.008, 0.07],
+      "kneeR": [0.064, 0.037, 0.084],
+      "ankleL": [-0.014, -0.119, 0.1],
+      "ankleR": [0.091, 0.019, 0.136],
+      "stepWidth": 0.258
+    },
+    "clipFix": {
+      "abdL": [6.539, 1.81, 11.492],
+      "abdR": [7.139, 3.54, 10.21],
+      "kneeL": [0.052, 0.014, 0.094],
+      "kneeR": [0.055, 0.027, 0.08],
+      "ankleL": [0.071, -0.007, 0.121],
+      "ankleR": [0.07, -0.013, 0.116],
+      "stepWidth": 0.281
+    },
+    "clipFix+neutralLegs": {
+      "abdL": [0.847, -4.049, 6.085],
+      "abdR": [1.191, -2.618, 5.647],
+      "kneeL": [0.006, -0.032, 0.051],
+      "kneeR": [0.009, -0.02, 0.046],
+      "ankleL": [-0.011, -0.076, 0.07],
+      "ankleR": [0.001, -0.072, 0.076],
+      "stepWidth": 0.159
+    },
+    "restAfterNeutral": {
+      "bind": {
+        "abdL": 5.649,
+        "abdR": 5.649,
+        "ankleL": 0.116,
+        "ankleR": 0.116,
+        "feetApart": 0.493
+      },
+      "avatarRest": {
+        "abdL": 0,
+        "abdR": 0,
+        "ankleL": 0,
+        "ankleR": 0,
+        "feetApart": 0.26
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent+neutralLegs": {
+      "abdL": [-1.845, -6.147, 4.421],
+      "abdR": [2.267, -1.081, 6.964],
+      "kneeL": [-0.015, -0.052, 0.035],
+      "kneeR": [0.017, -0.009, 0.054],
+      "ankleL": [-0.044, -0.166, 0.072],
+      "ankleR": [0.045, -0.027, 0.105],
+      "stepWidth": 0.212
+    },
+    "feet_clipFix+neutralLegs": {
+      "Left": {
+        "planted": 18,
+        "yawMedian": 0.701,
+        "yawRange": [-3.911, 12.642],
+        "pitchMedianPlanted": -30.644,
+        "yawAllFrames": [-171.815, 169.172],
+        "minHeight": 0.068
+      },
+      "Right": {
+        "planted": 19,
+        "yawMedian": -12.576,
+        "yawRange": [-17.855, -10.531],
+        "pitchMedianPlanted": -29.81,
+        "yawAllFrames": [-157.44, -9.966],
+        "minHeight": 0.059
+      }
+    },
+    "feet_clipFix": {
+      "Left": {
+        "planted": 17,
+        "yawMedian": -9.431,
+        "yawRange": [-12.284, -2.842],
+        "pitchMedianPlanted": -30.774,
+        "yawAllFrames": [-154.528, 6.123],
+        "minHeight": 0.075
+      },
+      "Right": {
+        "planted": 19,
+        "yawMedian": -4.508,
+        "yawRange": [-9.989, -2.377],
+        "pitchMedianPlanted": -28.388,
+        "yawAllFrames": [-172.157, 173.558],
+        "minHeight": 0.07
+      }
+    },
+    "clipFix+feetSpacingNeg": {
+      "abdL": [6.539, 1.81, 11.492],
+      "abdR": [7.139, 3.54, 10.21],
+      "kneeL": [0.052, 0.014, 0.094],
+      "kneeR": [0.055, 0.027, 0.08],
+      "ankleL": [0.071, -0.007, 0.121],
+      "ankleR": [0.07, -0.013, 0.116],
+      "stepWidth": 0.281
+    },
+    "clipFix+feetSpacingPos": {
+      "abdL": [6.539, 1.81, 11.492],
+      "abdR": [7.139, 3.54, 10.21],
+      "kneeL": [0.052, 0.014, 0.094],
+      "kneeR": [0.055, 0.027, 0.08],
+      "ankleL": [0.071, -0.007, 0.121],
+      "ankleR": [0.07, -0.013, 0.116],
+      "stepWidth": 0.281
+    },
+    "clipFix+twist0": {
+      "abdL": [6.539, 1.81, 11.492],
+      "abdR": [7.139, 3.54, 10.21],
+      "kneeL": [0.052, 0.014, 0.094],
+      "kneeR": [0.055, 0.027, 0.08],
+      "ankleL": [0.071, -0.007, 0.121],
+      "ankleR": [0.07, -0.013, 0.116],
+      "stepWidth": 0.281
+    },
+    "clipFix+twist1": {
+      "abdL": [6.539, 1.81, 11.492],
+      "abdR": [7.139, 3.54, 10.21],
+      "kneeL": [0.052, 0.014, 0.094],
+      "kneeR": [0.055, 0.027, 0.08],
+      "ankleL": [0.071, -0.007, 0.121],
+      "ankleR": [0.07, -0.013, 0.116],
+      "stepWidth": 0.281
+    }
+  },
+  "c6": {
+    "rest": {
+      "bind": {
+        "abdL": 5.216,
+        "abdR": 4.816,
+        "ankleL": 0.074,
+        "ankleR": 0.075,
+        "feetApart": 0.36
+      },
+      "avatarRest": {
+        "abdL": 5.216,
+        "abdR": 4.816,
+        "ankleL": 0.074,
+        "ankleR": 0.075,
+        "feetApart": 0.36
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent": {
+      "abdL": [3.243, -2.356, 6.963],
+      "abdR": [7.879, 3.857, 11.06],
+      "kneeL": [0.025, -0.02, 0.058],
+      "kneeR": [0.066, 0.033, 0.084],
+      "ankleL": [-0.043, -0.109, 0.063],
+      "ankleR": [0.097, 0.016, 0.133],
+      "stepWidth": 0.182
+    },
+    "clipFix": {
+      "abdL": [5.731, 0.475, 9.909],
+      "abdR": [6.933, 2.914, 10.403],
+      "kneeL": [0.046, 0.004, 0.082],
+      "kneeR": [0.057, 0.025, 0.074],
+      "ankleL": [0.044, -0.049, 0.082],
+      "ankleR": [0.072, -0.027, 0.126],
+      "stepWidth": 0.198
+    },
+    "clipFix+neutralLegs": {
+      "abdL": [0.271, -4.81, 4.97],
+      "abdR": [2.085, -1.594, 5.254],
+      "kneeL": [0.002, -0.038, 0.042],
+      "kneeR": [0.017, -0.013, 0.043],
+      "ankleL": [-0.016, -0.093, 0.037],
+      "ankleR": [0.017, -0.062, 0.076],
+      "stepWidth": 0.09
+    },
+    "restAfterNeutral": {
+      "bind": {
+        "abdL": 5.216,
+        "abdR": 4.816,
+        "ankleL": 0.074,
+        "ankleR": 0.075,
+        "feetApart": 0.36
+      },
+      "avatarRest": {
+        "abdL": 0,
+        "abdR": 0,
+        "ankleL": 0,
+        "ankleR": 0,
+        "feetApart": 0.211
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent+neutralLegs": {
+      "abdL": [-2.143, -6.919, 2.798],
+      "abdR": [3.309, -0.211, 6.648],
+      "kneeL": [-0.016, -0.058, 0.023],
+      "kneeR": [0.028, -0.002, 0.051],
+      "ankleL": [-0.06, -0.163, 0.045],
+      "ankleR": [0.066, -0.012, 0.103],
+      "stepWidth": 0.151
+    },
+    "feet_clipFix+neutralLegs": {
+      "Left": {
+        "planted": 18,
+        "yawMedian": 1.371,
+        "yawRange": [-5.783, 9.551],
+        "pitchMedianPlanted": -44.154,
+        "yawAllFrames": [-176.795, 15.355],
+        "minHeight": 0.109
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": -13.663,
+        "yawRange": [-19.248, -12.413],
+        "pitchMedianPlanted": -42.593,
+        "yawAllFrames": [-168.871, -11.412],
+        "minHeight": 0.109
+      }
+    },
+    "feet_clipFix": {
+      "Left": {
+        "planted": 14,
+        "yawMedian": 0.529,
+        "yawRange": [-5.655, 5.535],
+        "pitchMedianPlanted": -41.835,
+        "yawAllFrames": [-170.886, 11.979],
+        "minHeight": 0.101
+      },
+      "Right": {
+        "planted": 14,
+        "yawMedian": -11.179,
+        "yawRange": [-15.981, -7.423],
+        "pitchMedianPlanted": -41.983,
+        "yawAllFrames": [-179.696, 161.664],
+        "minHeight": 0.104
+      }
+    },
+    "clipFix+feetSpacingNeg": {
+      "abdL": [5.731, 0.475, 9.909],
+      "abdR": [6.933, 2.914, 10.403],
+      "kneeL": [0.046, 0.004, 0.082],
+      "kneeR": [0.057, 0.025, 0.074],
+      "ankleL": [0.044, -0.049, 0.082],
+      "ankleR": [0.072, -0.027, 0.126],
+      "stepWidth": 0.198
+    },
+    "clipFix+feetSpacingPos": {
+      "abdL": [5.731, 0.475, 9.909],
+      "abdR": [6.933, 2.914, 10.403],
+      "kneeL": [0.046, 0.004, 0.082],
+      "kneeR": [0.057, 0.025, 0.074],
+      "ankleL": [0.044, -0.049, 0.082],
+      "ankleR": [0.072, -0.027, 0.126],
+      "stepWidth": 0.198
+    },
+    "clipFix+twist0": {
+      "abdL": [5.731, 0.475, 9.909],
+      "abdR": [6.933, 2.914, 10.403],
+      "kneeL": [0.046, 0.004, 0.082],
+      "kneeR": [0.057, 0.025, 0.074],
+      "ankleL": [0.044, -0.049, 0.082],
+      "ankleR": [0.072, -0.027, 0.126],
+      "stepWidth": 0.198
+    },
+    "clipFix+twist1": {
+      "abdL": [5.731, 0.475, 9.909],
+      "abdR": [6.933, 2.914, 10.403],
+      "kneeL": [0.046, 0.004, 0.082],
+      "kneeR": [0.057, 0.025, 0.074],
+      "ankleL": [0.044, -0.049, 0.082],
+      "ankleR": [0.072, -0.027, 0.126],
+      "stepWidth": 0.198
+    }
+  },
+  "guard": {
+    "rest": {
+      "bind": {
+        "abdL": 6.354,
+        "abdR": 6.414,
+        "ankleL": 0.1,
+        "ankleR": 0.095,
+        "feetApart": 0.442
+      },
+      "avatarRest": {
+        "abdL": 6.354,
+        "abdR": 6.413,
+        "ankleL": 0.1,
+        "ankleR": 0.095,
+        "feetApart": 0.442
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent": {
+      "abdL": [3.952, -1.392, 8.201],
+      "abdR": [9.609, 5.193, 14.077],
+      "kneeL": [0.031, -0.012, 0.072],
+      "kneeR": [0.081, 0.045, 0.1],
+      "ankleL": [-0.033, -0.085, 0.071],
+      "ankleR": [0.084, -0.004, 0.141],
+      "stepWidth": 0.201
+    },
+    "clipFix": {
+      "abdL": [7.045, 1.526, 11.873],
+      "abdR": [8.975, 4.448, 13.998],
+      "kneeL": [0.052, 0.012, 0.097],
+      "kneeR": [0.072, 0.038, 0.09],
+      "ankleL": [0.05, -0.04, 0.103],
+      "ankleR": [0.08, -0.038, 0.142],
+      "stepWidth": 0.207
+    },
+    "clipFix+neutralLegs": {
+      "abdL": [0.443, -4.913, 5.386],
+      "abdR": [2.11, -2.002, 5.786],
+      "kneeL": [0.004, -0.04, 0.047],
+      "kneeR": [0.018, -0.016, 0.048],
+      "ankleL": [-0.012, -0.092, 0.048],
+      "ankleR": [0.016, -0.064, 0.084],
+      "stepWidth": 0.126
+    },
+    "restAfterNeutral": {
+      "bind": {
+        "abdL": 6.354,
+        "abdR": 6.414,
+        "ankleL": 0.1,
+        "ankleR": 0.095,
+        "feetApart": 0.442
+      },
+      "avatarRest": {
+        "abdL": 0,
+        "abdR": 0,
+        "ankleL": 0,
+        "ankleR": 0,
+        "feetApart": 0.247
+      },
+      "feetSpacing": 0,
+      "upperLegTwist": 0.5,
+      "lowerLegTwist": 0.5
+    },
+    "clipCurrent+neutralLegs": {
+      "abdL": [-2.188, -7.01, 3.318],
+      "abdR": [3.332, -0.47, 7.185],
+      "kneeL": [-0.018, -0.061, 0.028],
+      "kneeR": [0.028, -0.004, 0.056],
+      "ankleL": [-0.057, -0.167, 0.055],
+      "ankleR": [0.063, -0.017, 0.111],
+      "stepWidth": 0.191
+    },
+    "feet_clipFix+neutralLegs": {
+      "Left": {
+        "planted": 18,
+        "yawMedian": 2.331,
+        "yawRange": [-3.638, 9.944],
+        "pitchMedianPlanted": -48.649,
+        "yawAllFrames": [-177.473, 15.141],
+        "minHeight": 0.125
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": -15.026,
+        "yawRange": [-19.11, -12.889],
+        "pitchMedianPlanted": -47.108,
+        "yawAllFrames": [-170.476, -10.583],
+        "minHeight": 0.122
+      }
+    },
+    "feet_clipFix": {
+      "Left": {
+        "planted": 18,
+        "yawMedian": -6.032,
+        "yawRange": [-13.308, 3.679],
+        "pitchMedianPlanted": -46.903,
+        "yawAllFrames": [-165.971, 9.93],
+        "minHeight": 0.146
+      },
+      "Right": {
+        "planted": 19,
+        "yawMedian": -7.39,
+        "yawRange": [-15.209, -3.997],
+        "pitchMedianPlanted": -46.273,
+        "yawAllFrames": [-176.164, 178.241],
+        "minHeight": 0.15
+      }
+    },
+    "clipFix+feetSpacingNeg": {
+      "abdL": [7.045, 1.526, 11.873],
+      "abdR": [8.975, 4.448, 13.998],
+      "kneeL": [0.052, 0.012, 0.097],
+      "kneeR": [0.072, 0.038, 0.09],
+      "ankleL": [0.05, -0.04, 0.103],
+      "ankleR": [0.08, -0.038, 0.142],
+      "stepWidth": 0.207
+    },
+    "clipFix+feetSpacingPos": {
+      "abdL": [7.045, 1.526, 11.873],
+      "abdR": [8.975, 4.448, 13.998],
+      "kneeL": [0.052, 0.012, 0.097],
+      "kneeR": [0.072, 0.038, 0.09],
+      "ankleL": [0.05, -0.04, 0.103],
+      "ankleR": [0.08, -0.038, 0.142],
+      "stepWidth": 0.207
+    },
+    "clipFix+twist0": {
+      "abdL": [7.045, 1.526, 11.873],
+      "abdR": [8.975, 4.448, 13.998],
+      "kneeL": [0.052, 0.012, 0.097],
+      "kneeR": [0.072, 0.038, 0.09],
+      "ankleL": [0.05, -0.04, 0.103],
+      "ankleR": [0.08, -0.038, 0.142],
+      "stepWidth": 0.207
+    },
+    "clipFix+twist1": {
+      "abdL": [7.045, 1.526, 11.873],
+      "abdR": [8.975, 4.448, 13.998],
+      "kneeL": [0.052, 0.012, 0.097],
+      "kneeR": [0.072, 0.038, 0.09],
+      "ankleL": [0.05, -0.04, 0.103],
+      "ankleR": [0.08, -0.038, 0.142],
+      "stepWidth": 0.207
+    }
+  }
+}

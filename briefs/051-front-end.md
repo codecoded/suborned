@@ -28,3 +28,12 @@ The brief's words live in the mission folder (`contracts/missions/handover/brief
 
 ## GDD
 The front end is new to the GDD. It is queued for v0.25 (§10, presentation) with Sky's words; this brief is the source until then.
+
+## Restyle: direction A, "light line" (Sky, 2026-10-23)
+Sky on the built menu: "not into the highlighted design - let's make the menu button / options really nice" (the cream chrome-capped pill buttons and the cyan focus ring). Four concept directions were made, free with Codex (`paid/051-frontend/codex/{menu,options}_{a-lightline,b-enamel,c-console,d-editorial}.png`), and Sky picked A: "A seems ok".
+- **A:** no button plates. Items are text on the existing dark scrim; the focused item is brighter, with a thin turquoise-light line beneath and a small marker that slides between items; the others are dimmer cream. Options is a dark smoked-glass sheet with hairline rows, plain tabs underlined in turquoise-light, and the focused row marked by a side tick plus underline.
+- **One language** for the main menu, Options, Controls, the mission brief's Continue and the pause menu.
+- **Owners:** Glyph writes the spec and mockups, then Latch builds once, code first. **Done-check:** the capture set from the first build, redone, matches the spec, and `game:check` passes.
+
+### Direction A spec and mockups (Glyph, 2026-10-23)
+Spec, numbers, every state, timing, contrast and port notes: `briefs/051/lightline/SPEC.md`; pictures in `briefs/051/lightline/` (menu, Options x4, Controls x3, brief, pause at 1920x1080 and 2880x1864; state and timing boards; 2x crops; `contrast-report.txt`); numbers `briefs/051/lightline/frontend.a.json`; the live page `testbed/hud-style/frontend.html` (`bun run hud-style`). Measured at the Air: left menu scrim 66 %, brief scrim hold 656 ref (the old hold left the dossier heads at 1.7:1 at 16:10). **Next owner: Latch** (build once, code first).

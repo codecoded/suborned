@@ -1,0 +1,60 @@
+{
+ "note": "Per-speaker speech rules, built from the moves in the excerpts (ids in movesFrom) and the voices in contracts/missions/handover/text.json. Take the moves, never the period style or the lines. Output stays spoken, plain, with contractions and 1950s manners: no period slang, no Victorian pastiche. Word counts describe a person's habit, not a target: a line runs as long as this person's want needs, 12 words at most.",
+ "speakers": [
+  {
+   "speaker": "Fixer",
+   "noticesFirst": "What the other person has in their hands and who is waiting on them. He sees the job they have to get back to and what they stand to lose, and starts from there.",
+   "refusesToSay": "Who \"we\" are. How he feels about any of it: never that he's sorry, never that he dislikes this, never that he keeps his word. He never uses the word threat or tells anyone what he could do; he says what is going to happen and when.",
+   "talksAbout": "The next few minutes: a telephone, a time, how small the thing is. The other person's convenience, their feet, their table. He says \"we\" and makes it sound like company.",
+   "dodges": "Treats a question about himself as a question about arrangements, and answers that one. Agrees with the complaint so there is nothing to push against. Lets the other person say the hard part, and doesn't correct them.",
+   "length": "Whole unhurried sentences with their subjects and articles, 7 to 12 words: hurry would frighten people, and he knows it. Goes very short only when he has been caught, or has given ground. He rarely gets the last word.",
+   "pays": "He pays or loses something in every scene, and it shows on the page. People remember his face. He is made to say a thing aloud that he'd have left unsaid. He is refused thanks, kept waiting, or made to promise something he'd rather not. Warmth is his tool, and it stops working by the end.",
+   "movesFrom": ["krogstad-so-good", "milverton-terms", "tulkinghorn-whose-secret", "porfiry-not-to-my-interest", "jaggers-informed"]
+  },
+  {
+   "speaker": "Inez",
+   "noticesFirst": "Who can see her. Then which table has been waiting. She'll look at the terrace before she looks at you.",
+   "refusesToSay": "Okafor's name where anyone can hear, or any word for what they are to each other. That she's frightened. How much she owes, until she is cornered, and then as a number and nothing else.",
+   "talksAbout": "Orders, bills, tips, the soup, her feet, who's waving at her. Her Bureau card and what's stamped on it, as if it were one more customer. When a subject gets close she takes an order.",
+   "dodges": "Answers a question about her with a remark about the room. Hands your word back with a question mark. Agrees too quickly with a safe, wrong explanation. Runs on and breaks off when something frightens her, then says something very small.",
+   "length": "Patter: quick and run together with commas and \"and\", up to 12 words, often unfinished. When she is truly scared it drops to one to three words. Her length moves with her fear, and that's the tell.",
+   "movesFrom": ["lunch-counter-dinner", "nora-here-no", "jig-i-feel-fine", "krogstad-paying-regularly", "gaev-anchovies"]
+  },
+  {
+   "speaker": "Scout",
+   "noticesFirst": "Positions and counts: who stands where, who looked at whom, how many times. What was said, not why.",
+   "refusesToSay": "Advice, a verdict, a count of options or ways in, or anything warm. Never says which way is better, or how many ways there are. Facts only; what can be done is for the game's cards to say.",
+   "talksAbout": "Only what was just seen or heard, addressed low to the cell. Never a line that sounds finished or clever.",
+   "dodges": "Doesn't. If it wasn't heard, it isn't said.",
+   "length": "Fragments of two to five words, two or three of them to a bubble. Plain enough that a player who missed the talk knows the facts from this line alone.",
+   "movesFrom": ["lunch-counter-dinner", "dinah-how-much"]
+  },
+  {
+   "speaker": "Milena",
+   "noticesFirst": "What things cost and who owes whom: whose tables are better, who was tipped, how often someone looks across the square, and what that might be worth to her.",
+   "refusesToSay": "That she's in the same debt. Anything kind, unless it has a price after it. She never says she'll keep a secret; she says what she'd like instead.",
+   "talksAbout": "Shifts, late tables, shares of tips, the work she'd rather not do. She always wants something small from whoever's in front of her, right now.",
+   "dodges": "Prices the question. Asked about her own troubles, she says what the answer would cost, or goes back to whatever she wanted in the first place.",
+   "length": "Brisk, 3 to 9 words, sure of herself. Her questions are offers. She has no patter and doesn't fill silence.",
+   "movesFrom": ["dinah-my-language", "doolittle-ask-fifty", "crofts-forty-thousand", "wemmick-invest-friend"]
+  },
+  {
+   "speaker": "Zhou",
+   "noticesFirst": "Exposure and the price: who can see the envelope, how long the car's been standing, what the job is worth against what it could cost.",
+   "refusesToSay": "Anything about the Councillor beyond \"the Councillor\". Who \"we\" are, or that it matters. Why the money's needed, beyond that it was a lean month. Never asks a question whose answer would cost more to know.",
+   "talksAbout": "The car, the bay, the schedule, wages. Terms, in the order they'd go on an invoice.",
+   "dodges": "Names a figure or a time instead of answering. Makes the other side spell it out, and takes the fuzzy words out of their sentence.",
+   "length": "Gruff: 2 to 8 words as a rule. Goes long and exact only when stating terms, because there the plain statement is the fight.",
+   "movesFrom": ["gutman-fifteen", "dinah-how-much", "spade-my-business", "milverton-terms"]
+  },
+  {
+   "speaker": "Okafor",
+   "noticesFirst": "Anything out of routine. A call that shouldn't come, a step off the usual, a person at the wrong post. He'll ask about the routine before he asks about you.",
+   "refusesToSay": "Anything soft in the hearing of the Office. He doesn't say why he's leaving his post, even to himself. He never names what's between them on an open line.",
+   "talksAbout": "The post, the rota, relief, the clock, the rules of the door. With her, the same words, gone slack and fond.",
+   "dodges": "Cites procedure: what the post requires, what the sheet says. Being asked to bend, he asks for it in the right form, then bends.",
+   "length": "Clipped officialese, 2 to 7 words to the world. To her, longer and a little clumsy, as if he hadn't the practice.",
+   "movesFrom": ["lunch-counter-dinner", "jaggers-informed", "nora-here-no"]
+  }
+ ]
+}

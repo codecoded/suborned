@@ -1,7 +1,9 @@
 // CD-1..CD-4: the civic block's dressing (civic-block.json `dressing`, brief 008 B3). Each reads the export's civic masses, so what Unity draws is what is checked.
-// CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted; a crossing's signal orb is a canopy, its halo and studs are ground);
+// CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted; a crossing's signal head is a canopy, its halo is ground);
 // CD-2 every piece the block names is adopted in the kit, and a material a mass draws in place of its piece's own replaces a slot the piece has; CD-3 the pieces brief 008 added (the bed tufts and the terrace among them)
 // stay within their LOD0 triangle budget; CD-4 every material they draw (pieces, bed kerb and hedge, replaced slots) has its unlit colour in the look palette. (CD-4 was also a dE2000 >= 20 gate from the signal colours; Sky freed them on 2026-10-16.)
+// CD-5 (brief 077): every bed civic-look.json `beds.level` names is a bed of the block whose ring fits its piece's outline within `tol`; one planted by its bed-level piece
+// has that piece and no hedge or tufts; one whose piece is not adopted yet keeps the hedge and tufts and is named in the detail (a gap for Aster and Sky, not a failure).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Mass, World } from '../../../contracts/world/world.schema';
@@ -10,9 +12,10 @@ import { toPlanFn } from '../../plan/civic';
 import { type V, dist, inPoly, segDist } from '../../plan/geom';
 import { type WCtx, itemRing, rule, stat } from '../../plan/world-ctx';
 import { type Dressing, dressingOf, placementKinds } from '../civic/dress';
-import { look } from '../civic/look';
+import { drawnPiece, look, withSwaps } from '../civic/look';
 import { discRing } from '../gen/box';
 import { adoptedBy } from '../gen/kitrefs';
+import { type BedLevel, bedLevelOf } from '../civic/beds';
 import { landingsOf, overlaps } from '../gen/street/crossings';
 
 const SOURCE = 'civic-block.json dressing.rules (keepClear, Handover 1.2 m, landings) · lead\'s ruling 2026-10-14 (a canopy overhead may cover a point) · brief 008 B3';
@@ -44,10 +47,10 @@ function zonesOf(c: WCtx, dr: Dressing, toPlan: (p: V) => V): Zone[] {
   return zones;
 }
 
-/** What the crossings put on the ground (brief 009): each kerb stud and each signal orb's halo disc, on the ground within reach of a Handover point like any piece of the dressing. The orb itself hovers overhead (canopy class, exempt), and the light bars, dots and
- *  inlay arcs are flush with the paving (flat inlay, exempt); the halo is a glowing disc and the studs are domes, so they count. */
+/** What the crossings put on the ground (brief 009): each signal head's halo disc (brief 061: no kerb studs any more), on the ground within reach of a Handover point like any piece of the dressing. The orb itself hovers overhead (canopy class, exempt), and the light bars and dots
+ *  are flush with the paving (flat inlay, exempt); the halo is a glowing disc, so it counts. */
 export function crossingGround(w: Pick<World, 'street'>): Ground[] {
-  return w.street.flatMap(s => s.kind === 'crossing-stud' ? [{ id: s.id, what: 'crossing stud', ring: itemRing(s) }] : s.signal ? [{ id: s.id, what: 'signal halo', ring: discRing(s.signal.halo.at, s.signal.halo.r) }] : []);
+  return w.street.flatMap(s => s.signal ? [{ id: s.id, what: 'signal halo', ring: discRing(s.signal.halo.at, s.signal.halo.r) }] : []);
 }
 type Ground = { id: string; what: string; ring: V[] };
 
@@ -61,14 +64,18 @@ export function clearRule(masses: Mass[], kinds: Map<string, string>, zones: Zon
     for (const z of zones) if (z.bars.includes(kind) && z.hits(m.ring)) bad.push(`${m.id} (${kind}) stands in ${z.id}`);
     if (kind !== 'parasol' && kind !== 'band') for (const h of points) if (toRing(h.p, m.ring) < HANDOVER_CLEAR - 0.011) bad.push(`${m.id} (${kind}) is ${toRing(h.p, m.ring).toFixed(2)} m from '${h.name}'`);
   }
-  return rule('CD-1', 'Civic dressing', `Nothing the block's dressing places stands in a keep-clear zone that bars its kind, or on the ground within ${HANDOVER_CLEAR} m of a Handover point (a parasol's canopy and flat inlay may); a crossing's studs and signal halos are on the ground, its orb is a canopy`, placed.length + ground.length, bad, 'none', SOURCE);
+  return rule('CD-1', 'Civic dressing', `Nothing the block's dressing places stands in a keep-clear zone that bars its kind, or on the ground within ${HANDOVER_CLEAR} m of a Handover point (a parasol's canopy and flat inlay may); a crossing's signal halos are on the ground, its head is a canopy`, placed.length + ground.length, bad, 'none', SOURCE);
 }
 
 /** Every piece id the block's dressing and civic-look.json name. */
 export function namedPieces(dr: Dressing): string[] {
   const named = [...dr.pieces.map(p => p.piece), dr.parasols.piece, dr.lamps.piece, dr.bollards.piece, dr.cypress.piece, dr.topiary.piece, ...dr.planterRuns.runs.flatMap(r => r.modules.map(m => m.piece)),
-    ...look.bands.pieces.map(b => b.piece), ...look.pieces, ...Object.values(look.swaps), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces];
-  return [...new Set(named)].sort();
+    ...look.bands.pieces.map(b => b.piece), ...look.pieces, ...Object.values(look.swaps), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces,
+    ...Object.values(look.attach ?? {}).flat().map(x => x.piece)];
+  // brief 077: a name the look swaps and the kit no longer adopts is checked as its swap. The bed tufts are named only while some bed is not at bed level
+  // (beds.level names them all once their pieces are adopted; an unplanted bed whose tufts are not adopted fails CD-5).
+  const levelled = !!look.beds.level && Object.values(look.beds.level.beds).every(b => !!adoptedBy(b.piece));
+  return [...new Set(named.filter(id => !(levelled && look.beds.tufts.pieces.includes(id))).map(id => (adoptedBy(id) ? id : drawnPiece(id, x => !!adoptedBy(x)))))].sort(); // a rejected name is checked as the swap drawn for it
 }
 /** A mass that draws a material in place of its piece's own: the slot is one the piece has (judged only where the catalogue lists the piece's materials: a run's pinned kit digest does not), and the material is one the look palette holds. */
 export function overrideProblems(masses: Mass[], slotsOf: (id: string) => string[] | undefined = id => adoptedBy(id)?.materials, palette = look.palette): string[] {
@@ -82,7 +89,7 @@ export function adoptedRule(named: string[], isAdopted: (id: string) => boolean 
 }
 
 /** LOD0 triangles of the pieces brief 008 added, as placed in the export's civic masses. */
-export const civicTris = (masses: Mass[]): number => masses.reduce((n, m) => n + (m.kit && look.pieces.includes(m.kit.id) ? (adoptedBy(m.kit.id)?.tris ?? 0) : 0), 0);
+export const civicTris = (masses: Mass[]): number => masses.reduce((n, m) => n + (m.kit && withSwaps(look.pieces).includes(m.kit.id) ? (adoptedBy(m.kit.id)?.tris ?? 0) : 0), 0);
 export function budgetRule(masses: Mass[], limit = look.budget.lod0Tris): Check {
   const n = civicTris(masses);
   return stat('CD-3', 'Civic dressing', 'The pieces brief 008 added cost at most the LOD0 triangle budget in the civic block', n.toLocaleString('en-GB'), `≤ ${limit.toLocaleString('en-GB')}`, n <= limit, 'brief 008 B3 (Vela counts 68,324 with everything placed) · GDD §11 60 fps at 1080p');
@@ -104,9 +111,25 @@ export function paletteRule(pieces: string[], p = look.palette, materialsOf = (i
   return rule('CD-4', 'Civic dressing', 'Every material the civic block draws (pieces, bed kerb and hedge, replaced slots) has its unlit colour in the look palette', seen.size, bad, 'none', 'civic-look.json palette.materials · out/decokit-008/civic-colour-roles.json');
 }
 
+/** CD-5: the bed-level planting (brief 077). `levels` from bedLevelOf on the export's civic masses. */
+export function bedLevelRule(masses: Mass[], levels: BedLevel[] = bedLevelOf(masses)): Check {
+  const bad: string[] = [], waiting: string[] = [];
+  for (const l of levels) {
+    const own = masses.filter(m => m.id.startsWith(`${l.bed}/`)), plant = own.filter(m => m.id === `${l.bed}/planting`);
+    if (!l.planted && !/is not adopted$/.test(l.why ?? '')) { bad.push(`${l.bed}: ${l.why}`); continue; }
+    if (!l.planted && !look.beds.tufts.pieces.some(t => !!adoptedBy(t))) { bad.push(`${l.bed}: ${l.why}, and no tuft is adopted either: an empty bed`); continue; }
+    if (!l.planted) { waiting.push(`${l.bed} (${l.why}: hedge and tufts meanwhile)`); continue; }
+    if (plant.length !== 1 || plant[0]!.kit?.id !== l.piece) bad.push(`${l.bed} is planted by ${plant.map(m => m.kit?.id).join(', ') || 'nothing'}, not ${l.piece}`);
+    if (own.some(m => m.id === `${l.bed}/hedge` || /\/tuft-\d+$/.test(m.id))) bad.push(`${l.bed} keeps its hedge or tufts under ${l.piece}`);
+  }
+  const c = rule('CD-5', 'Civic dressing', 'Every bed civic-look.json beds.level names fits its piece\'s outline (largest vertex error within beds.level.tol); planted, it has that one piece and no hedge or tufts',
+    levels.length, bad, 'none', 'brief 077, Sky 2026-10-30: bed-level civic beds (Vela, briefs/077/domes/metrics.json bedtuft.proposal_for_splice)');
+  return waiting.length ? { ...c, detail: [c.detail, `${levels.length - waiting.length}/${levels.length} at bed level; waiting: ${waiting.join('; ')}`].filter(Boolean).join(' · ') } : { ...c, detail: c.detail ?? `${levels.length}/${levels.length} at bed level` };
+}
+
 export function civicDressRules(c: WCtx): Check[] {
   const dr = dressingOf(c.civ);
   if (!dr) return []; // a block without dressing (every recorded run's) has nothing to check
   const toPlan = toPlanFn(c.plan.civic);
-  return [clearRule(c.w.civic, placementKinds(dr), zonesOf(c, dr, toPlan), handoverPoints(toPlan), crossingGround(c.w)), adoptedRule(namedPieces(dr), undefined, overrideProblems(c.w.civic)), budgetRule(c.w.civic), paletteRule(look.pieces, undefined, undefined, drawnApart(c.w.civic))];
+  return [clearRule(c.w.civic, placementKinds(dr), zonesOf(c, dr, toPlan), handoverPoints(toPlan), crossingGround(c.w)), adoptedRule(namedPieces(dr), undefined, overrideProblems(c.w.civic)), budgetRule(c.w.civic), paletteRule(withSwaps(look.pieces), undefined, undefined, drawnApart(c.w.civic)), ...(look.beds.level ? [bedLevelRule(c.w.civic)] : [])];
 }

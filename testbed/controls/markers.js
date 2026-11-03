@@ -58,7 +58,7 @@ export class Marker {
     }
     const p = project(ent.g.position.x, ent.h + 0.35, ent.g.position.z); if (!p) return this.hide();
     const g = style === 'built' ? project(ent.g.position.x, 0, ent.g.position.z) : p;
-    const gx = Math.max(style === 'pill' ? 190 : 60, Math.min(g.x, innerWidth - (style === 'pill' ? 190 : 340)));
+    const half = Math.min(190, innerWidth / 2), gx = Math.max(style === 'pill' ? half : 60, Math.min(g.x, innerWidth - (style === 'pill' ? half : 340))); // a narrow screen keeps the pill whole (it wraps, CSS)
     this.el.style.display = 'block'; this.el.style.transform = `translate(${Math.round(gx)}px,${Math.round(g.y)}px)`;
   }
   html(style, kind, act, ent, parts, dwelled, fc) {

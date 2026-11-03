@@ -1,0 +1,147 @@
+{
+  "schema": "suborned.geometry.summary/1",
+  "brief": "055",
+  "world": {
+    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "stale": false
+  },
+  "window": {
+    "block": {
+      "x0": -52,
+      "x1": 112,
+      "y0": -66,
+      "y1": 16
+    },
+    "cell": 0.25
+  },
+  "ground": {
+    "walkCells": 43060,
+    "walkableCells": 43060,
+    "sunk": 685,
+    "floating": 44,
+    "bands": {
+      "sunk 5-15 cm": 0,
+      "sunk 15-50 cm": 661,
+      "sunk 0.5 m or more": 24,
+      "floats 5-15 cm": 0,
+      "floats 15 cm or more": 44
+    },
+    "byCause": {
+      "a drawn piece (stair, platform, kerb stone) raises the floor": 595,
+      "ground layer drawn above the host height (kerb strip, quantised edge)": 90,
+      "ground layer drawn below the host height (quantised edge)": 44
+    }
+  },
+  "walk": {
+    "freeCells": 43060,
+    "throughSolid": 0,
+    "lowCeiling": 2,
+    "brush": 0,
+    "invisibleWall": 118
+  },
+  "sight": {
+    "drawnAtEye": 460,
+    "drawnAtChest": 621,
+    "occludersWithGaps": [
+      {
+        "id": "plot-04",
+        "share": 0.84
+      }
+    ]
+  },
+  "routes": {
+    "total": 56,
+    "off5cm": 37,
+    "off30cm": 6,
+    "off50cm": 6,
+    "inSolid": 0
+  },
+  "guard": {
+    "id": "d:Office entrance",
+    "at": [
+      64,
+      -41.25
+    ],
+    "src": "site",
+    "people": 0,
+    "host": 0.18000000715255737,
+    "top": 0.93,
+    "delta": 0.75,
+    "owner": "civic/office-public-entrance",
+    "rise": 0.75,
+    "walkable": true,
+    "blockedBy": ""
+  },
+  "kit": {
+    "measured": 293,
+    "offPivotOrSize": 12,
+    "placedHere": []
+  },
+  "rules": [
+    {
+      "id": "G-1a",
+      "count": 1,
+      "unit": "people",
+      "example": "cast:guard at 64.0,-41.3: host 0.18 m, drawn 0.93 m"
+    },
+    {
+      "id": "G-1b",
+      "count": 6,
+      "unit": "routes",
+      "example": "guard: d:Office entrance to d:Café door: 7 cells, worst 0.75 m"
+    },
+    {
+      "id": "G-1d",
+      "count": 0,
+      "unit": "stretches",
+      "example": "none"
+    },
+    {
+      "id": "G-1c",
+      "count": 729,
+      "unit": "cells",
+      "example": "civic/office-public-entrance: 36 cells, worst 0.75 m"
+    },
+    {
+      "id": "G-2a",
+      "count": 0,
+      "unit": "cells",
+      "example": "none"
+    },
+    {
+      "id": "G-2b",
+      "count": 118,
+      "unit": "cells",
+      "example": "atom-fountain: 89 cells blocked, nothing drawn"
+    },
+    {
+      "id": "G-2c",
+      "count": 2,
+      "unit": "cells",
+      "example": "civic/cafe-palm-1: 2 cells"
+    },
+    {
+      "id": "G-3a",
+      "count": 58,
+      "unit": "objects",
+      "example": "street:phone-booth: 9 objects, 61.75 m²"
+    },
+    {
+      "id": "G-3b",
+      "count": 1,
+      "unit": "occluders",
+      "example": "plot-04: 84 % walled"
+    },
+    {
+      "id": "K-1",
+      "count": 0,
+      "unit": "pieces",
+      "example": "none"
+    }
+  ],
+  "ifHostReadsWalkFile": {
+    "G-1a": 0,
+    "G-1b": 0,
+    "G-1c": 0
+  }
+}

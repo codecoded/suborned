@@ -1,0 +1,27 @@
+{
+  "command": [
+    "bun",
+    "tools/game/playing.ts",
+    "unity",
+    "run",
+    "/Users/sky/Projects/suborned/unity",
+    "--timeout",
+    "590",
+    "--log-file",
+    "/Users/sky/Projects/suborned/out/scratch/latch/tram-corrected/final.log",
+    "--no-tail",
+    "--format",
+    "json",
+    "--",
+    "-executeMethod",
+    "Suborned.OldTown.Editor.Swap.SwapTramCorrected.FinalizeCandidate",
+    "-tramCheck",
+    "final"
+  ],
+  "exit": 6,
+  "seconds": 314.8926811218262,
+  "restoredExactBytes": [
+    "unity/Assets/Scenes/probe-recovery075-swap/probe-recovery075-swap Baking Set.asset",
+    "unity/ProjectSettings/QualitySettings.asset"
+  ]
+}

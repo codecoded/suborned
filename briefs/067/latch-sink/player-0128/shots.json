@@ -1,0 +1,14 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "brief 067 sink probe (Latch): runtime frames of standing figures at ground level",
+  "defaults": { "hud": false },
+  "shots": [
+    { "name": "rt-follow-enforcer", "tick": 30, "view": "follow", "agent": "enforcer", "face": "op/fixer" },
+    { "name": "rt-feet-tech", "tick": 30, "pose": { "view": "op/tech", "offset": [1.6, 0.25, 0.4], "lookOffset": [0, 0.2, 0], "fov": 30 } },
+    { "name": "rt-feet-scout", "tick": 30, "pose": { "view": "op/scout", "offset": [1.6, 0.25, 0.4], "lookOffset": [0, 0.2, 0], "fov": 30 } },
+    { "name": "rt-feet-fixer", "tick": 30, "pose": { "view": "op/fixer", "offset": [1.6, 0.25, 0.4], "lookOffset": [0, 0.2, 0], "fov": 30 } },
+    { "name": "rt-feet-enforcer", "tick": 30, "pose": { "view": "op/enforcer", "offset": [1.6, 0.25, 0.4], "lookOffset": [0, 0.2, 0], "fov": 30 } },
+    { "name": "rt-feet-waitress", "tick": 30, "pose": { "view": "waitress", "offset": [1.6, 0.25, 0.4], "lookOffset": [0, 0.2, 0], "fov": 30 } },
+    { "name": "rt-feet-guard", "tick": 30, "pose": { "view": "guard", "offset": [1.6, 0.25, 0.4], "lookOffset": [0, 0.2, 0], "fov": 30 } }
+  ]
+}

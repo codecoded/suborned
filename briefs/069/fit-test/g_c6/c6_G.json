@@ -1,0 +1,296 @@
+{
+ "id": "c6",
+ "approach": "G",
+ "pieces": {
+  "coat": {
+   "srcFaces": 14297,
+   "tris": 2590,
+   "seconds": 3.47,
+   "srcVerts": 9182,
+   "tucked": 27
+  },
+  "hat": {
+   "srcFaces": 2395,
+   "tris": 1200,
+   "seconds": 0.66,
+   "srcVerts": 1520
+  },
+  "hair": {
+   "srcFaces": 2324,
+   "tris": 899,
+   "seconds": 0.72,
+   "srcVerts": 1724
+  },
+  "suit": {
+   "wrapped": 2545,
+   "verts": 6378,
+   "pctWrapped": 39.9,
+   "tris": 7311,
+   "seconds": 51.22
+  }
+ },
+ "variants": {
+  "fit": {
+   "macros": {
+    "weight": 0.3656,
+    "muscle": 0.5234,
+    "proportions": 0.5906,
+    "height": 0.5
+   },
+   "hatScale": {
+    "kx": 1.0,
+    "ky": 1.0,
+    "kz": 1.0
+   },
+   "hairScale": {
+    "kx": 1.0,
+    "ky": 1.0,
+    "kz": 1.0
+   },
+   "hairUnderHatMoved": 1,
+   "restLegs": {
+    "Left": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.83
+    },
+    "Right": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.83
+    }
+   },
+   "heightM": 1.599,
+   "tris": 12000,
+   "trisProps": 296,
+   "pieces": {
+    "coat": 2590,
+    "suit": 7311,
+    "hat": 1200,
+    "hair": 899
+   },
+   "materials": 6,
+   "bones": 52,
+   "attach": [
+    "Attach_Back",
+    "Attach_HipRight",
+    "Attach_LeftHand",
+    "Attach_RightHand",
+    "Attach_ShoulderLeft"
+   ],
+   "seconds": 0.75
+  },
+  "heaviest": {
+   "macros": {
+    "weight": 1.0,
+    "muscle": 0.0,
+    "proportions": 0.0,
+    "height": 0.5
+   },
+   "hatScale": {
+    "kx": 1.0,
+    "ky": 1.0,
+    "kz": 1.0
+   },
+   "hairScale": {
+    "kx": 1.0,
+    "ky": 1.0,
+    "kz": 1.0
+   },
+   "hairUnderHatMoved": 1,
+   "restLegs": {
+    "Left": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.82
+    },
+    "Right": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": -0.0,
+     "footPitchDeg": 27.82
+    }
+   },
+   "heightM": 1.591,
+   "tris": 12000,
+   "trisProps": 296,
+   "pieces": {
+    "coat": 2590,
+    "suit": 7311,
+    "hat": 1200,
+    "hair": 899
+   },
+   "materials": 6,
+   "bones": 52,
+   "attach": [
+    "Attach_Back",
+    "Attach_HipRight",
+    "Attach_LeftHand",
+    "Attach_RightHand",
+    "Attach_ShoulderLeft"
+   ],
+   "seconds": 0.59
+  },
+  "slightest": {
+   "macros": {
+    "weight": 0.0,
+    "muscle": 0.5,
+    "proportions": 0.5,
+    "height": 0.5
+   },
+   "hatScale": {
+    "kx": 1.0,
+    "ky": 1.0,
+    "kz": 1.0
+   },
+   "hairScale": {
+    "kx": 1.0,
+    "ky": 1.0,
+    "kz": 1.0
+   },
+   "hairUnderHatMoved": 1,
+   "restLegs": {
+    "Left": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.82
+    },
+    "Right": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.82
+    }
+   },
+   "heightM": 1.597,
+   "tris": 12000,
+   "trisProps": 296,
+   "pieces": {
+    "coat": 2590,
+    "suit": 7311,
+    "hat": 1200,
+    "hair": 899
+   },
+   "materials": 6,
+   "bones": 52,
+   "attach": [
+    "Attach_Back",
+    "Attach_HipRight",
+    "Attach_LeftHand",
+    "Attach_RightHand",
+    "Attach_ShoulderLeft"
+   ],
+   "seconds": 0.53
+  },
+  "tallest": {
+   "macros": {
+    "weight": 0.3656,
+    "muscle": 0.5234,
+    "proportions": 0.5906,
+    "height": 0.75
+   },
+   "hatScale": {
+    "kx": 1.143,
+    "ky": 1.144,
+    "kz": 1.143
+   },
+   "hairScale": {
+    "kx": 1.143,
+    "ky": 1.144,
+    "kz": 1.143
+   },
+   "hairUnderHatMoved": 0,
+   "restLegs": {
+    "Left": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": -0.0,
+     "footPitchDeg": 27.68
+    },
+    "Right": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.68
+    }
+   },
+   "heightM": 1.938,
+   "tris": 12000,
+   "trisProps": 296,
+   "pieces": {
+    "coat": 2590,
+    "suit": 7311,
+    "hat": 1200,
+    "hair": 899
+   },
+   "materials": 6,
+   "bones": 52,
+   "attach": [
+    "Attach_Back",
+    "Attach_HipRight",
+    "Attach_LeftHand",
+    "Attach_RightHand",
+    "Attach_ShoulderLeft"
+   ],
+   "seconds": 0.7
+  },
+  "shortest": {
+   "macros": {
+    "weight": 0.3656,
+    "muscle": 0.5234,
+    "proportions": 0.5906,
+    "height": 0.15
+   },
+   "hatScale": {
+    "kx": 0.915,
+    "ky": 0.914,
+    "kz": 0.915
+   },
+   "hairScale": {
+    "kx": 0.915,
+    "ky": 0.914,
+    "kz": 0.915
+   },
+   "hairUnderHatMoved": 1,
+   "restLegs": {
+    "Left": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": -0.0,
+     "footPitchDeg": 27.84
+    },
+    "Right": {
+     "abductionDeg": 0.0,
+     "ankleOutM": 0.0,
+     "footYawDeg": 0.0,
+     "footPitchDeg": 27.84
+    }
+   },
+   "heightM": 1.355,
+   "tris": 12000,
+   "trisProps": 296,
+   "pieces": {
+    "coat": 2590,
+    "suit": 7311,
+    "hat": 1200,
+    "hair": 899
+   },
+   "materials": 6,
+   "bones": 52,
+   "attach": [
+    "Attach_Back",
+    "Attach_HipRight",
+    "Attach_LeftHand",
+    "Attach_RightHand",
+    "Attach_ShoulderLeft"
+   ],
+   "seconds": 0.63
+  }
+ },
+ "seconds": {},
+ "sex": "f"
+}

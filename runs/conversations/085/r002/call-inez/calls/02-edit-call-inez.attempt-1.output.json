@@ -1,0 +1,46 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: she checks who can see before she asks, and \"Walk, love. Don't run\" protects the secret while lengthening the empty door. It needed a refusal to overcome and a clear reason. The call and his walk to her side stay true to the sheet and sources [96030c4c4a1a18523a3fdbbb, 46eefe8aeccc89bdf0676b8f]. One conflict: the writer's guard note says a mercenary talks bonuses, but the scene sheet says he says nothing about money. I followed the scene sheet.",
+  "changes": [
+    "Added the missing Fixer-to-Inez exchange: she gives way too fast, and 'The Bureau's paid' explains why she obeys.",
+    "Cut 'You sound wrong', 'What have you heard?' and his protect-her reason, because he must not suspect and she must sound ordinary. He now refuses, from take 2, and comes because she asked.",
+    "Linked the reason to his choice: 'It can't wait. Please.' makes 'Then the door can wait' necessary and plainly says he is leaving.",
+    "Changed the last line to 'Let me keep you a while': tender to him, and to the player, her using his love to hold him off the door."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Miss Nikolaou. The Bureau's paid. Call Okafor across now."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Now? With the terrace looking? Yes. All right."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Are you alone, love? Come across. I've something to tell you."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Just me. I've this door till shift's end. Say it here."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Not down a telephone. It can't wait. Please."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Then the door can wait. I'm leaving it now."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Walk, love. Don't run. Let me keep you a while."
+    }
+  ],
+  "learned": [
+    "Door empty a few minutes"
+  ],
+  "opens": [
+    "Enter the Office"
+  ]
+}

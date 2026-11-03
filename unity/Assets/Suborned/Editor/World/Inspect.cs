@@ -85,9 +85,9 @@ namespace Suborned.World
             {
                 ("street", w.Street.Count(x => x.Kit != null), w.Street.Count(x => x.Kit == null), 0),
                 ("frontages", w.Frontages.Count(f => f.SignKit != null), w.Frontages.Count, 0),
-                ("landmarks", w.Landmarks.Sum(l => (l.Kit != null ? 1 : 0) + l.Kits.Count), w.Landmarks.Count(l => l.Kit == null), 0),
+                ("landmarks", w.Landmarks.Sum(l => (l.Kit != null ? 1 : 0) + l.Kits.Count + (l.Gateway != null ? 1 : 0)), w.Landmarks.Count(l => l.Kit == null), 0),
                 ("buildings", 0, w.Buildings.Count - coveredMasses, coveredMasses),
-                ("roofs", w.Roofs.Count(r => !s.Covers(r)) == 0 ? 0 : w.Roofs.Where(r => !s.Covers(r)).Sum(r => (r.Kit != null ? 1 : 0) + (r.Crown != null ? 1 : 0)), w.Roofs.Count(r => r.Parts.Count > 0 && !s.Covers(r)), coveredRoofs),
+                ("roofs", w.Roofs.Count(r => !s.Covers(r)) == 0 ? 0 : w.Roofs.Where(r => !s.Covers(r)).Sum(r => (r.Kit != null ? 1 : 0) + (r.Crown != null ? 1 : 0) + r.Kits.Count), w.Roofs.Count(r => r.Parts.Count > 0 && !s.Covers(r)), coveredRoofs),
                 ("facades", w.Facades.Count, 0, 0),
                 ("signatures", w.Signatures.Count(x => x.Kit != null), w.Signatures.Count(x => x.Kit == null), 0),
                 ("horizon", w.Horizon?.Pieces.Count ?? 0, 0, 0),
@@ -98,7 +98,7 @@ namespace Suborned.World
             foreach (var (layer, kit, proc, cov) in want)
             {
                 var t = root.Find(layer);
-                int k = placer.Placed(layer), p = Combine.Procedural(t), c = Combine.Covered(t);
+                int k = placer.Placed(layer) + (layer == "street" ? placer.Placed(CityLayers.CrossingParts) : 0), p = Combine.Procedural(t), c = Combine.Covered(t); // brief 048: the street's flush crossing parts are baked into crossing-parts
                 sb.Append($" {layer} {k}/{kit} {p}/{proc} {c}/{cov}");
                 if (k != kit || p != proc || c != cov) { bad++; Debug.LogError($"World: layer {layer}: kit {k}/{kit}, procedural {p}/{proc}, covered {c}/{cov}"); }
             }

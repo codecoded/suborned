@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -120,7 +121,13 @@ namespace Suborned.World
                 finally { Object.DestroyImmediate(go); }
                 built++;
             }
-            Debug.Log($"World: kit generated {kit.Generated.Count} pieces, {built} prefabs built");
+            // a rejected piece's generated prefab goes (brief 061 retired CrossEdgeLine_1/2, KerbStud, CrossInlayArc_R24_W08, LightField_1/2 and
+            // SignalEye), as KitLods drops a Built/ prefab no adopted piece writes; a candidate's stays for review. The FBX it pointed at is
+            // `bun run kit`'s copy (that tool prunes LOD files and textures only: Splice's)
+            var gone = new List<string>();
+            foreach (var p in kit.RejectedGenerated.OrderBy(x => x, System.StringComparer.Ordinal))
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(p) && AssetDatabase.DeleteAsset(p)) gone.Add(Path.GetFileNameWithoutExtension(p));
+            Debug.Log($"World: kit generated {kit.Generated.Count} pieces, {built} prefabs built, {gone.Count} stale prefabs removed{(gone.Count > 0 ? " (" + string.Join(", ", gone) + ")" : "")}");
         }
 
         static bool Configured(ModelImporter mi) =>

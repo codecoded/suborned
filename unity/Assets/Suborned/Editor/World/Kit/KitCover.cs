@@ -9,7 +9,9 @@ namespace Suborned.World
     /// (scaled and turned as KitPlacer places it), shrunk 0.1 m at the sides so a party wall on the boundary stays. Static, reset per build.</summary>
     public static class KitCover
     {
-        sealed class Cover { public Vector2[] Quad; public float Lo, Hi; }
+        sealed class Cover { public Vector2[] Quad; public float Lo, Hi; public bool Module; }
+        /// <summary>Which covers Spans counts: all, only the wave-2 street pieces (what the walls were before brief 072), or only the every-face modules.</summary>
+        public enum Which { All, Street, Modules }
 
         static readonly Dictionary<string, List<Cover>> byHost = new(System.StringComparer.Ordinal);
         static readonly List<Rect> grounds = new();
@@ -27,25 +29,32 @@ namespace Suborned.World
                 var loc = new[] { new Vector3(x0, 0, z0), new Vector3(x1, 0, z0), new Vector3(x1, 0, z1), new Vector3(x0, 0, z1) };
                 for (int i = 0; i < 4; i++) { var p = rot * loc[i]; quad[i] = pivot + new Vector2(p.x, p.z); }
                 if (!byHost.TryGetValue(f.Building, out var list)) byHost[f.Building] = list = new List<Cover>();
-                list.Add(new Cover { Quad = quad, Lo = f.Base + b.min.y * s.y, Hi = placer.Top(f.Kit, f.Base) });
+                list.Add(new Cover { Quad = quad, Lo = f.Base + b.min.y * s.y, Hi = placer.Top(f.Kit, f.Base), Module = f.Module });
             }
             foreach (var sg in w.Signatures)
                 if (sg.Ground is { Length: 4 } g) grounds.Add(Rect.MinMaxRect(g[0], g[2], g[1], g[3]));
         }
 
         public static bool HasCovers(string host) => byHost.ContainsKey(host);
+        /// <summary>Whether `host` has a cover of this kind (Street: a wave-2 street piece, the pre-072 test for its crown and corner tower).</summary>
+        public static bool HasCovers(string host, Which which) => byHost.TryGetValue(host, out var l) && l.Exists(c => Counts(c, which));
+        static bool Counts(Cover c, Which which) => which == Which.All || (which == Which.Modules) == c.Module;
 
-        /// <summary>Spans of wall w (s from 0 to w.Len) inside a kit piece of `host` whose bottom is at or below `lo` + 0.5 m: (s0, s1, top of the piece).</summary>
-        public static List<(float s0, float s1, float top)> Spans(string host, in WallFrame w, float lo)
+        /// <summary>Spans of wall w (s from 0 to w.Len) inside a kit piece of `host` that reaches above `lo`: (s0, s1, top of the piece).
+        /// Brief 072-C: a piece that starts above the wall's foot counts too (a stack module of the every-face pass, one per storey band; the band
+        /// modules of one column together reach the top, Split takes the highest), so the wall is left to the column. Below such a piece stands
+        /// another module of its column or a lower neighbour's wall (a party wall dressed above the neighbour), never open wall.</summary>
+        public static List<(float s0, float s1, float top)> Spans(string host, in WallFrame w, float lo, Which which = Which.All)
         {
             var r = new List<(float, float, float)>();
             if (!byHost.TryGetValue(host, out var list)) return r;
             foreach (var c in list)
             {
-                if (c.Lo > lo + 0.5f || c.Hi <= lo) continue;
+                if (c.Hi <= lo || !Counts(c, which)) continue;
+                if (which == Which.Street && c.Lo > lo + 0.5f) continue; // the pre-072 rule for the wave-2 pieces: bottom at or below the wall's foot + 0.5 m
                 if (Clip(c.Quad, w.A, w.U * w.Len, out float t0, out float t1) && (t1 - t0) * w.Len > 0.05f) r.Add((t0 * w.Len, t1 * w.Len, c.Hi));
             }
-            if (r.Count > 0) Hidden++;
+            if (r.Count > 0 && which == Which.All) Hidden++;
             return r;
         }
 

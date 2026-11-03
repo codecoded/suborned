@@ -1,0 +1,160 @@
+{
+  "query": "Help clear debt gratitude bravery Fearful needs Help twice ‖ Inez capstone call pulls guard off his door",
+  "queries": [
+    "Help clear debt gratitude bravery Fearful needs Help twice",
+    "Inez capstone call pulls guard off his door"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "bm25": 4.731729030609131,
+      "key": "96030c4c4a1a18523a3fdbbb",
+      "kind": "gdd-agent",
+      "lineEnd": 225,
+      "lineStart": 225,
+      "section": "§07 HANDOVER › the capstone",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§07 HANDOVER › the capstone\nthe capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).",
+      "version": "v0.33.0",
+      "score": 0.045944779982743746,
+      "signals": [
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.388326489229588,
+      "key": "c407d23e4f6647fe2f4315a1",
+      "kind": "gdd-agent",
+      "lineEnd": 71,
+      "lineStart": 66,
+      "section": "§04 PEOPLE › approaches",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§04 PEOPLE › approaches\napproaches (Inez, training) [B]:\n| approach | requires | $ | time | T | leaves |\n| Ask cold | — | 0 | 20 s | +1 | remembered refusal: later offers +$10,000, +1 T |\n| Pay | a Watch first, where one is offered (20 s [S], any agent) | 70,000 | 35 s | +2 | traceable payment; neutral |\n| Help (clear debt) | need known (Listen 30 s) | 40,000 | 35 s | +1 | gratitude; bravery can grow |\n| Pressure | need known | 0 | 25 s | +3 | fear; resentment grows; can identify Fixer |",
+      "version": "v0.33.0",
+      "score": 0.045799361928394185,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.43362430133674634,
+      "key": "5a29be8544e336060f678471",
+      "kind": "gdd-human",
+      "lineEnd": 296,
+      "lineStart": 283,
+      "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone\nApproach (Inez, training) | Requires | Cash | Time | Trail | What it leaves |\nAsk cold | Nothing | $0 | 20 s | +1 | A refusal that is remembered. Later offers cost +$10,000 and +1 Trail. |\nPay | A Watch first, where one is offered (20 s, any agent) | $70,000 | 35 s | +2 | A traceable payment. The relationship stays neutral. |\nHelp (clear her debt) | Need known (Listen, 30 s) | $40,000 | 35 s | +1 | Gratitude. Her bravery can grow. |\nPressure (threaten) | Need known | $0 | 25 s | +3 | Fear. Her resentment grows, and she can identify the Fixer. |\nBuilt The approach prices are proven in play; the Watch time is a starting value. Paying Inez plus turning the driver costs $110,000 against a $100,000 purse. Helping her plus turning the driver costs $80,000. So finding things out is what pays for a second route.\nTurning is private. A conversation is private: asking, paying, helping and listening have no witnesses, so onlookers learn nothing, there is no witness Trail, no change in Standing, no incident and nothing passed along. The approach keeps its own price: a payment is still traceable money, and a Loyal person still reports an approach. Pressure is different: security see a threat at any Alert, and ordinary people from Alert 2 (§05); it is remembered and passed on. A conversation never counts as loitering (§05). Spec",
+      "version": "v0.33.0",
+      "score": 0.042231462231462236,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3209066390991211,
+      "key": "facd9e661234e1024febb326",
+      "kind": "gdd-agent",
+      "lineEnd": 342,
+      "lineStart": 341,
+      "section": "§10 PRESENTATION › payoff cut",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§10 PRESENTATION › payoff cut\npayoff cut: plan lands → brief street-level cut → same state. Capstone has one (Inez's call lands, the guard walks off to her). More cuts + decisive shot [L].\naudio = clock: bell, café door, 4:30 handover chime · surveillance click at sweep edge · patrol sound changes when it breaks route · Alert adds music layers; fight = full score · contacts confirm calls aloud · one voice per weapon · a cue when a watcher notices an agent.",
+      "version": "v0.33.0",
+      "score": 0.031746031746031744,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.39756109699970954,
+      "key": "cc8efe5bafb0dd2cfff35114",
+      "kind": "gdd-human",
+      "lineEnd": 308,
+      "lineStart": 296,
+      "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec\nTemperament | Responds to | If you are Heroes | If you are a Menace |\nIdealist | Help. Refuses bribes. | Volunteers with no offer needed; gains bravery fast | Refuses, and may report you |\nMercenary | Pay | Overcharges you: \"heroes can afford it\" | Gives a discount, and sells you out to the highest bidder |\nFearful | Pressure | Hesitates and needs Help twice | Folds immediately, for free |\nLoyal (to an institution) | Only trust built over time | Can turn after repeated Help | Reports any approach |\nA Hero campaign and a Menace campaign turn different halves of the city , so a second playthrough has a different cast. That's the replay value.",
+      "version": "v0.33.0",
+      "score": 0.031544957774465976,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.3687788248062134,
+      "key": "e1dd761142af169bfd1cc0d3",
+      "kind": "gdd-human",
+      "lineEnd": 581,
+      "lineStart": 570,
+      "section": "Handover (2/2)",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Handover\nThe heart of it: Inez and the guard are lovers. His café stop before his shift is to see her. Inez works the café's terrace tables on her rounds (§04). The call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need, which Help clears; the affair is her secret, which Pressure threatens to expose.\nThe places. The café and its terrace face Records Square. The Office's public door, its landing, steps and forecourt are on the west face of its wing, over Rocket Lane, in view from the opening camera, with the entrance camera's pole at the forecourt's north end and the Tech's control cabinet behind it. The service door is round the back on the east face, onto the service yard: the back way, out of sight of the public door, the camera and the guard's cone. The patrol robot sweeps a line across the yard beside the door, and the Tech's Reroute takes it away. The official entrance and Vale's car are on the south face, on Apron Road. A turned driver brings Vale round in his car to the east yard's service bay, by the service drive. The getaway car stands at the square's boarding pavilion; its second stand is on the service drive, nose out, behind Vale's car, where a car boxes Vale's car in.",
+      "version": "v0.33.0",
+      "score": 0.0315136476426799,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.3730427622795105,
+      "key": "45693d30fd1b1f7849a897e8",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › temperament fearful",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › temperament fearful\nFearful: responds to pressure; refuses nothing; reports an approach: false; start {\"bravery\":0,\"resentment\":0,\"fear\":1,\"loyalty\":0}\nHero: hesitates; needs Help ×2. Menace: folds free.",
+      "version": "suborned.people.rules/1",
+      "score": 0.03149801587301587,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.37294042110443115,
+      "key": "4c8fad65dcc365c5f3afdb7e",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › approaches",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › approaches\nask: requires nothing, $0, 20 s, Trail +1; remembered refusal: later offers +$10,000, +1 T\npay: requires routine, $70000, 35 s, Trail +2; traceable payment; neutral\nhelp: requires need, $40000, 35 s, Trail +1; gratitude; bravery can grow\npressure: requires need, $0, 25 s, Trail +3; fear; resentment grows; can identify Fixer",
+      "version": "suborned.people.rules/1",
+      "score": 0.031024531024531024,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    }
+  ]
+}

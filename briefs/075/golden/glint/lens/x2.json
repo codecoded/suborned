@@ -1,0 +1,230 @@
+{
+ "schema": "suborned.lens/1",
+ "note": "Glint, brief 048 'Old city atmosphere' (2026-10-22; Sky: 'try the atmosphere'). The lens, the grade and the sky, by camera tier, read by AtmosphereLens (Runtime/AtmosphereLens.cs). LOOK ONLY: no rule, sight or replay reads it. Tiers (DistanceHaze.TierOf): play = the orthographic play camera and every overlay camera; follow = a perspective camera with far <= 900 m (third person, cutaways); long = a perspective camera with a longer far plane (flyby, free fly). Play gets the grade only (gradePlay): no haze, blur or flare, and the signals draw on their overlay camera outside the grade as built. Follow: bloom, the sky's horizon haze band and sun aureole, the flare at flare.follow. Long: the old look whole (bloomLong, dofLong, flare.long, the exponential haze in haze.json). Values marked old are the old DecoKit city's (DecoKitLens, DK_SpaceSky, scene DecoKitStreet, 2026-09-27 to 10-13). Night (LightPhase) and AtmosphereSettings.Enabled false: none of it applies. Colours are #rrggbb; the haze colour itself is haze.json colour (one haze for fog and sky). Unknown schema or out-of-range values are rejected with an error and nothing changes.",
+ "sky": {
+  "hazeHeight": 0.12,
+  "hazeHeightLong": 0.075,
+  "aureole": 0.8,
+  "aureolePower": 180,
+  "hazeLift": 0.6,
+  "peach": 1.0,
+  "broad": 0.15,
+  "broadPower": 8,
+  "note": "Shader inputs of Suborned/SkyGradient. hazeHeightLong (Glint 2026-10-23): the long tier's own band for the cobalt sky, 0.075 (haze weight 50 percent at 3 degrees of elevation, 20 at 7, 6 at 12; 0.12 gave 65, 36 and 18), so the sky stays blue overhead and only the distance warms; 0 = sky.hazeHeight; the teal sky keeps its own. hazeHeight: haze weight exp(-sin(elevation) / hazeHeight), a wide band that lasts about 7 degrees (old 0.10; today a smoothstep over 0.16). aureole / aureolePower: the sun's glare lobe added in the sun glow colour (old 0.8 at power 180). hazeLift: the horizon haze brightens toward the sun, haze x (1 + hazeLift x cos^6) (old 0.6, so above 1 and bloom catches it). broad / broadPower: a wide soft lobe (old 0.15 at power 8). Cobalt (the scene's own zenith and mid) is the default; teal is the old city's sea-green."
+ },
+ "teal": {
+  "zenith": "#2f93a8",
+  "mid": "#7fcfc6",
+  "hazeHeight": 0.18,
+  "note": "hazeHeight (Glint 2026-10-23): the teal sky's own haze band, wider than sky.hazeHeight 0.12 so teal eases into the cream haze; cobalt keeps sky.hazeHeight; 0 = use sky.hazeHeight. Sky's 1970s reference as the old DecoKitSky.Apply set it: zenith 88,168,170 and mid 127,218,208, both x 1.5 sky gain, shown here after the gain. Switch: Shift+F9 or -sky teal (AtmosphereSettings)."
+ },
+ "sun": {
+  "shadowStrength": 1.0,
+  "r075": "Glint 075-A (2026-10-28): 1.0, the old reel's (its sun's shadow strength 1, the shade lit by its Trilight ambient only, now ported in light.json); was 0.68.",
+  "r072": "Glint 072-G (2026-10-27, the grade toward DecoKit): 0.62 -> 0.68, firmer form (DecoKit's sun was 6x its ambient, ours about 2.6x); the sun fills 32 percent of the shade, not 38. Shaded road at office-front yaw 30: (127,145,150) -> (124,141,147), still powder blue (H 196); shaded cream stays cream.",
+  "note": "Glint 2026-10-24 (Glyph, 0.2.99: shaded cream reads flat grey, the shaded enamel road falls to deep navy). Light.shadowStrength at runtime by day: a shadow takes 62 percent of the sun out and the sun fills the rest of the shade in its own warm colour. The sunlit side does not move (the sun term is unchanged); shade irradiance on up-facing surfaces x1.9 R, x1.7 G, x1.5 B, so a neutral cream roof shades peach, not grey, and a powder-blue enamel shades to powder blue-grey, not navy. Modelled on the 0.2.99 frame ring-loop-names: road shade #455668 (V 0.41, S 0.33) to about #717b89 (V 0.54, S 0.18), roof slab shade #8c8b8c to about #b5aeaa, paving shade #7e726b to about #a9988c; lit pixels unchanged. 1.0 = the scene as built; night and atmosphere off restore the scene's own value. Allowed 0.2 to 1; 0 or absent = the scene's own."
+ },
+ "gradeLong": {
+  "exposureDelta": 0.45,
+  "saturationDelta": 38,
+  "contrastDelta": 5,
+  "r075golden": "Glint, brief 075 golden view (2026-10-28). The long tier's own grade step on top of the scene grade (ACES, exposure -0.063, contrast 10, saturation 25): exposure +0.15 EV (pays back the light the de-veiled bloom no longer adds; median 108 -> 113), saturation +25 (50 on the long tier) and contrast +5 (15). Golden frame, variant b2: saturation mean 103.7 (old 111.6, -7 percent), median luma 113 (target 110-120), p5 38.5 (target < 45), p95 222; the sun side 175 against the shade side 72. saturationDelta and contrastDelta are new keys (AtmosphereLens, long tier only; 0 = none); the play view (gradePlay) and the follow tier do not move. Variants and stats: briefs/075/golden/glint/.",
+  "r075": "Glint 075-A (2026-10-28): 0, the old reel's grade has one exposure for every view (-0.8 at sun 3, light.json); was -0.2.",
+  "note": "Glint 2026-10-24 (Glyph, 0.2.99 tp-street-long: the plaza is blown out). The long tier only (a small step: the ACES shoulder is flat above about 200, so exposure alone moves the plaza paving only 2 to 3 percent; the white plaza is Vela's albedo to lower, see brief 048): post exposure = the scene grade's own value (0.15) plus this delta, so -0.05; contrast, saturation and filter stay the scene grade's. Play and follow untouched."
+ },
+ "bloomFollow": {
+  "threshold": 0.48,
+  "intensity": 0.6,
+  "scatter": 0.85,
+  "tint": "#fff5e6",
+  "r075": "Glint 075-A (2026-10-28): the old reel's bloom whole (DK_StreetGrade 0.8 / 0.6 / 0.85, tint (1, 0.96, 0.9)); its threshold 0.8 at the old sun 3 is 0.48 at ours (light.json sun.exposureMatch); was 0.86 / 0.35 / 0.7 #fff0d6.",
+  "note": "old 0.8 / 0.6 / 0.85; half the intensity and a higher threshold, the old values bloomed lit cream stone. Scatter costs nothing (URP's bloom iteration count follows resolution only)."
+ },
+ "bloomLong": {
+  "threshold": 1.0,
+  "intensity": 0.45,
+  "scatter": 0.75,
+  "tint": "#fff5e6",
+  "r075golden": "Glint, brief 075 golden view (2026-10-28; Sky: 'old was so rich, had depth'). Was the old reel's bloom whole (0.48 at our sun / 0.6 / 0.85). Measured on the golden boulevard frame (briefs/075/golden, Flyby074 t 6): that bloom alone was the wash. Our street is far paler than the old one (pale powder-blue road, cream walls, pale glass against the old dark asphalt and dark windows), so most of the frame crossed the old threshold and the glow veiled it: median luma 132 -> 108, p5 48 -> 38, saturation 73 -> 86 with only the threshold raised to 1.0 (variant a1). The play view's values (bloomPlay) for the same reason: the glow stays on sunlit edges, chrome, glints and the sky's HDR haze, not on every lit wall. r075 below is the 075-A record.",
+  "r075": "Glint 075-A (2026-10-28): the old reel's bloom whole (it is the old reel's own tier; threshold 0.8 at the old sun 3 = 0.48 at ours, light.json sun.exposureMatch); was 1.2 / 0.35 / 0.8 #fff4e2. The 2026-10-23 wash came from the cobalt sky under the old bloom; the ported teal sky and grade are the old reel's together.",
+  "note": "Glint 2026-10-23: was the old values whole, 0.8 / 0.6 / 0.85 tint #fff0d6. On 0.2.94 the long frame's sky top rendered #aec4d7 (S 0.19) against the follow tier's #90b4d4 (S 0.32): the wide veil from the white roofs and plaza washed the sky. Threshold 1.0 keeps the sky body (max channel about 0.95 after exposure) out of it and lets the HDR haze (haze.json long.gain) and sunlit stone bloom; intensity 0.35 and scatter 0.8 keep a glow at the horizon without the wash."
+ },
+ "bloomPlay": {
+  "threshold": 1.05,
+  "intensity": 0.45,
+  "scatter": 0.75,
+  "tint": "#fff5e6",
+  "note": "Glint 075-A (2026-10-28): the play view's own bloom (new key; absent = the scene grade's). The old reel's whole bloom (threshold 0.48 at our sun, 0.6, 0.85) is right for its own views, where shade, sky and canyon fill most of the frame; at play zoom lit cream stone fills 60 to 80 percent of the frame and all of it crosses the threshold: the frame veils (shot at the old sun: median luminance 0.66 -> 0.74, saturation -0.03, 6 percent of the office front y210 clipped; variants A-D in out/scratch/glint/075). Threshold 1.05 keeps the glow to sunlit edges, chrome, glints and emissives and stays above the silhouette rim (signals.json silhouette: its linear value stays at or under 1.0 so it never feeds the bloom); intensity 0.45 (was the scene's 0.22), scatter 0.75, the old tint."
+ },
+ "dofLong": {
+  "enabled": true,
+  "start": 900,
+  "end": 2500,
+  "maxRadius": 1.2,
+  "highQuality": true,
+  "note": "old Gaussian far blur ('the distance goes soft'). Long views only; follow has none (nothing past its 350 m clip). Cost: +0.40 ms GPU measured on 0.2.87 (tp-long long view, 2880 x 1864, Studio; 4.83 -> 5.24 ms), so highQuality stays on; the Air is not measured."
+ },
+ "flare": {
+  "follow": 0.6,
+  "long": 1.0,
+  "occlusionRadius": 0.02,
+  "samples": 32,
+  "starburst": "Atmosphere/flare_starburst",
+  "elements": [
+   {
+    "type": "image",
+    "position": 0.0,
+    "scale": 16.0,
+    "intensity": 2.5,
+    "tint": "#fff5e0",
+    "rotation": 8.0,
+    "note": "16-ray starburst"
+   },
+   {
+    "type": "circle",
+    "position": 0.0,
+    "scale": 7.0,
+    "intensity": 0.25,
+    "tint": "#ffe6bf",
+    "fallOff": 0.08,
+    "note": "haze glow. In a scratch render it reads as a faint disc with a defined edge, and fallOff 0.08 and 0.5 looked the same; if it reads as a coin in the game, set its intensity to 0"
+   },
+   {
+    "type": "polygon",
+    "position": 0.16,
+    "scale": 1.4,
+    "intensity": 0.2,
+    "tint": "#d9f2ff",
+    "sides": 6,
+    "fallOff": 0.6,
+    "roundness": 0.35,
+    "count": 6,
+    "spread": 0.75,
+    "note": "hexagon ghost chain to the centre"
+   },
+   {
+    "type": "circle",
+    "position": 0.9,
+    "scale": 3.2,
+    "intensity": 0.05,
+    "tint": "#ffd9b3",
+    "fallOff": 0.4,
+    "note": "far ghost"
+   }
+  ],
+  "note": "The old DK_SunFlare on a LensFlareComponentSRP added to the scene's sun at runtime (occlusion on: towers cut it as they pass the sun). Intensity per tier: follow, long; play none (the 38 degree down view never sees the sun). One extra pass only while the sun is in frame."
+ },
+ "gradePlay": {
+  "saturationPercent": 8,
+  "r072": "Glint 072-G (2026-10-27): 14 -> 8 with light.json post.colour.saturation 18 -> 25 (DecoKit's street grade): the play camera's saturation = (1.25 x 1.08 - 1) = 35.0 (was 1.18 x 1.14 = 36.9). The play view already sat above DecoKit's 25, so the scene grade moves to DecoKit's for the follow and long tiers and the play tier holds; contrast 10 adds its own colour (frame mean S 0.245 -> 0.273). Ships with the light.json change and the scene rebuild: alone (scene grade still 18) the play tier would fall to 27.4.",
+  "exposureDelta": 0.083,
+  "r075": "Glint 075-A (2026-10-28): exposureDelta (new key, play tier only, on top of the scene grade's): +0.083, so the play view's post exposure stays 0.02 as before (the old grade's -0.8 at its sun 3 is -0.063 at ours; the 0.08 EV keeps every unlit colour calibrated at the play camera, the crossing heads and the silhouette ink and rim, where 072-G fitted them). Saturation, lift and greens are unchanged: with the old grade's saturation 25 the play view lands at 35 as before (072-G).",
+  "liftOffset": 0.04,
+  "liftWarmth": 0.25,
+  "liftTint": "#f2cfc2",
+  "fallbackSaturation": 18,
+  "greens": {
+   "hueDeg": 10,
+   "fromDeg": 55,
+   "fullFromDeg": 72,
+   "fullToDeg": 135,
+   "toDeg": 170,
+   "note": "Glint 2026-10-23: greens protection, a hue-vs-hue ColorCurves on the play volume: hues 95 to 140 degrees (palm and lawn greens; palm green read hue 106) shift +8 degrees toward blue-green, eased to none at 70 (yellow) and 170 (cyan); hueDeg 0 turns it off."
+  },
+  "retune2": "2026-10-24 (Glint, Glyph review of 0.2.99): lift 0.03 to 0.04 and warmth 0.15 to 0.25 (small: the shade fill now comes from sun.shadowStrength); greens protection widened to start at 55 deg (full from 72, to 135, shift 10): the lawn read olive (H 73, S 0.46) in the long view and now lands near H 83, sand (H 40 to 45), cream and the yellow roof boxes (H 50 to 52) stay out of it; sky.peach 1.0 puts a peach cast on the blue-to-haze blend so the band does not pass through grey (S 0.00 at 20 percent down in 0.2.99). Proof: briefs/048/glint/shade/.",
+  "retune": "2026-10-23 (Glint, verdict on build 0.2.79): the old warm lift (liftWarmth 0.6, #e9d9b8) drove the blue channel to 0 in the darkest tones (chart cube, play camera: black rendered 59,46,0) and turned greens toward olive (palm green hue 115 to 97, shaded paving S 0.37 to 0.50). Now sat 14, liftWarmth 0.15, tint #f2cfc2 (peach, not sand): black 56,46,42, palm green hue 106, shaded paving S 0.38, lit cream S 0.14 (was 0.17), cobalt S 0.81. Proof: briefs/048/glint/fix/.",
+  "note": "The play camera's only change (briefs/048 board-playzoom.png mock). saturationPercent: the scene grade's own saturation x 1.16 (its multiplier 1.18 becomes 1.37, ColorAdjustments saturation 36.9), read from the day grade volume, fallbackSaturation if none is found. liftOffset / liftTint / liftWarmth: a LiftGammaGain lift in linear before the tonemap, c x (1 - liftOffset) + liftOffset (white stays white, the highlights do not move): liftOffset 0.03 raises the shadows, and the warm hue of liftTint at liftWarmth warms them (the old iso frame's p5 was 0.46 against today's 0.19). START VALUES, tune in game by the Shift+F10 A/B: saturation 36.9 is strong against the 'too bright' calls of the 026 rounds and may turn lit cream toward mustard; 8 to 10 percent is the fallback. Both live in the grading LUT: no per-pixel cost."
+ },
+ "evening": {
+  "easeSeconds": 1.5,
+  "note": "Glint 2026-10-24 (evening looked like day: only RoadLight's strip lifted). The evening phase, LightPhase.SetEvening / -evening / TpLongRun.RoadTest: a state between day and night, eased in by LightPhase.Dusk (0 day .. 1 this) over easeSeconds (95 percent), look only (nothing a rule, sight or replay reads). sun: a low warm sun, pitch 19 (day 38) so shadows run 2.9 times the height, from the west-south-west (yaw 62; day 330) so the sunlit faces are the ones the opening heading (yaw 30) looks at; the colour is a deeper peach, the intensity pays back the lower angle (ground irradiance I x sin pitch: 1.8 x 0.62 = 1.11 by day, 2.1 x 0.33 = 0.68 now, the walls facing it get 1.99 against 1.42), shadowStrength the low sun's own (the shade stays filled). ambient: HSV value-scaled hexes as light.json builds them, a lilac-blue skylight, a peach equator, a warm ground, about 0.85 of day. reflection: the baked cubes and probes stay the day's, so they are turned down (intensity 0.66 of 0.8, probes x 0.8). sky (perspective tiers): zenith and mid blend in linear toward a deeper cobalt and a coral-lilac, the glow colour and the haze band follow the real sun (low and orange); haze colour, gain and density are haze.json evening. grade: deltas on each tier's own grade by Dusk (exposure EV, contrast, saturation), a warm colour filter and white balance, a cool tint in the shadows and a warm one in the highlights, and a stronger vignette; no new pass and no per-pixel cost (the grade is the LUT). Signals draw on their own camera outside all of it. Lit windows and signs are roadlight.json glow.",
+  "sun": {
+   "colour": "#ffdac0",
+   "intensity": 3.0,
+   "pitch": 17,
+   "yaw": 120,
+   "shadowStrength": 0.75
+  },
+  "ambient": {
+   "sky": {
+    "hex": "#d6d0ee",
+    "value": 0.78
+   },
+   "equator": {
+    "hex": "#f8dcc8",
+    "value": 0.76
+   },
+   "ground": {
+    "hex": "#e0b898",
+    "value": 0.5
+   }
+  },
+  "reflection": {
+   "intensity": 0.7,
+   "probeScale": 0.85
+  },
+  "sky": {
+   "zenith": "#4a78d2",
+   "mid": "#e6a79a",
+   "sunGlow": "#ff9a58",
+   "hazeHeight": 0.16,
+   "aureole": 1.1,
+   "aureolePower": 90,
+   "hazeLift": 0.9,
+   "peach": 1.2
+  },
+  "r075": "Glint 075-A (2026-10-28): the day grade's exposure went 0.02 -> -0.063 (the old reel's -0.8 at its sun 3, matched to our sun 1.8: light.json sun.exposureMatch); the evening sun, ambient and reflections are absolute values, so the evening exposure delta is re-based to keep its absolute exposure 0.30: 0.28 -> 0.363. Contrast and saturation bases are unchanged (10, 25).",
+  "r072": "Glint 072-G (2026-10-27): the day grade moved (light.json post.colour: exposure 0.15 -> 0.02, contrast 6 -> 10, saturation 18 -> 25; gradePlay 14 -> 8 percent, play 36.9 -> 35.0), so these deltas are re-based to keep the evening grade where it was on the play camera: exposure 0.15 -> 0.28 (0.30 absolute), contrast 4 -> 0 (10), saturation 2 -> 3.9 (38.9). The follow and long tiers take the day's new saturation plus 3.9 (28.9, was 20). The shadows multiplier rides on the day's milder #d0d8ec. The crossing heads' evening fit (signals.json) stays valid.",
+  "grade": {
+   "exposure": 0.363,
+   "contrast": 0,
+   "saturation": 3.9,
+   "temperature": 3,
+   "tint": 1,
+   "filter": "#fffaf4",
+   "shadows": "#e4e4f6",
+   "highlights": "#fff8f0",
+   "vignette": 0.16
+  }
+ },
+ "night": {
+  "note": "Glint 2026-10-24 (Glyph, 0.2.113: night walls crush to #020100 in road-enamel-office-210-night). The night floor, applied at runtime on the night State the scene is saved with (no rebuild), look only, no lights. Two things made it black: the moon's shadow kept the scene's own strength 1.0 (a shadow took the whole moon out), and the night ambient (light.json night.ambient: sky #8fb3d6 x 0.20, equator #7fa6bf x 0.18, ground #3d5b66 x 0.12) reaches a cream wall at about 0.04 before the tonemap. shadowStrength: the moon fills the shade. ambient: HSV value-scaled hexes as light.json builds them, a deep indigo skylight over a teal equator and a teal-blue ground, about x1.9 of the old values. lift: LiftGammaGain on a lens volume while it is night, offset in linear before the tonemap (c x (1 - L) + L, white stays white), tinted deep indigo, so the darkest wall is a deep teal-indigo, not black; strip light, windows, lamps and bloom are unchanged (they are well above it). Shift+F10 (atmosphere off) shows night as built.",
+  "shadowStrength": 0.6,
+  "ambient": {
+   "sky": {
+    "hex": "#7f9bd0",
+    "value": 0.25
+   },
+   "equator": {
+    "hex": "#68a8b8",
+    "value": 0.24
+   },
+   "ground": {
+    "hex": "#3d7080",
+    "value": 0.16
+   }
+  },
+  "moonIntensity": 0.42,
+  "moonColour": "#b4d2e6",
+  "lampScales": [
+   {
+    "prefix": "interior",
+    "scale": 0.3
+   }
+  ],
+  "violetFromDeg": 235,
+  "violetToDeg": 320,
+  "violetToHueDeg": 345,
+  "liftOffset": 0.002,
+  "liftTintShare": 0.25,
+  "liftTint": "#3f8a9a"
+ },
+ "farBand": {
+  "resource": "Atmosphere/farband",
+  "minDeg": -1,
+  "maxDeg": 9,
+  "gain": 1.0,
+  "opacity": 1.0,
+  "note": "NEXT, not built: the strip the builder renders from the existing horizon cards and ring (1.4 to 8 km) once at build time, equirect 8192 x 512 covering -1 to +9 degrees of elevation, RGB = the cards' colour as a ratio to the horizon haze, A = cover (the old sky_sheet.py convention). The sky shader already samples it (tinted by the horizon haze of its own azimuth) when this resource exists; until then nothing is drawn. Import as Texture2D, linear (sRGB off), clamp, bilinear, mips on."
+ }
+}

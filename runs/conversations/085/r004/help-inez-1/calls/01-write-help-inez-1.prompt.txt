@@ -1,0 +1,134 @@
+Objective: write-help-inez-1
+# Brief 085, conversation scenes: writer
+
+Sky played the Handover and said: "Conversations are too short and the whole speech is bad. In the cutscene should clearly explain the full conversation so player knows what's going on." He has also said: "the reading, it's too much". Both hold. Write a scene, not a wall of text.
+
+This is a proposal for Sky to read. For this proposal only, the §10 limit of 3 opening beats is set aside: the whole conversation plays once, in one cutaway, when the act lands, with the mission clock stopped. The outcome is known by then, so the scene may show the answer. Whether this becomes the rule is Sky's call.
+
+## The test
+A player who reads only this scene, the Scout's line and the cards included (Sky: the whole scene explains, not each line), having skipped everything else, can say: who these people are to each other, what was said, what the cell just learned or got, and what can be done next. Clarity beats subtlety. If a fast reader could miss the point, the point is not yet on the page.
+
+## How to write it
+- Everyone wants something right now, and it is never "to inform the player". Sometimes it's to make the other person laugh, or to see they've eaten. Inez wants to get through her shift with her secret safe. Put that want in conflict with the other person's.
+- The sheet says what the player sees, and that's all there is: people standing still in a close shot. What presses on them is the shift to get back to, who could see, the clock. That lives in the talk, and never as an action or a thing in the shot.
+- Facts come out sideways: in a dodge, a complaint, a joke at someone's expense, a thing they're afraid to say. Then, by the end, somebody says it plainly, because the player must be sure.
+- One concrete thing per scene that only this city has, talked about and elsewhere, never in the shot: a stamped payment card, a pneumatic tube, a Bureau notice, a clockwork collector with fixed polite phrases. Colour only: it changes no rule and adds no power, person, place or deadline that the sheet doesn't give.
+- Temperament shows in behaviour and is never named. A frightened person checks who's looking and answers the wrong question. A mercenary one prices things. Nobody says "I'm afraid of everything" or "I'm in it for the money".
+- Everything said is something this person would say to this person, now. A fact of the game they wouldn't say aloud goes on the cards, never in their mouth.
+- Keep it coherent: each line answers or follows from the one before, so a fast reader never loses the story. Lines often open on a short sentence, then say the rest ("Who told you that? Who else knows?").
+- Every line must sound like one particular person. If you can swap the speakers' lines without anyone noticing, rewrite.
+- Each line follows from the last. A line may be there only because this person likes that one, once a scene. No two lines in a row with the same rhythm. Avoid the fortune-cookie line and the closing quip.
+- A person's first line must not sound like a greeting from a form ("Hello. Is this about the files?", "Yes? Anything I can do for you?"). They were in the middle of something.
+- People don't explain what both of them already know, unless one is using it as a weapon.
+- These people have lives past this talk. Warmth is a kindness, a tease, a shared joke or a fond word, and it never takes back the fear or the price.
+- In each scene, give one line that's said for its own sake: nobody needs it for the plot, and this person would say it anyway. Have you eaten. It stays true to the shot and the game.
+- Let warmth carry a fact where it can: the tease is what makes her give herself away. Warmth makes the betrayal land, so write the fondness before the lie.
+- Colleagues mock each other and worry about each other. Lovers are glad of each other's voices, and a little clumsy about it. The Fixer is good company, and that's why he's frightening.
+
+## What goes wrong today (don't do these)
+- Lines that could be anyone's: "Then I'll go. After the shift." "Yes. Yes. And thank you."
+- Greeting, offer, one-line yes: the Fixer says "I can clear your debt with the lender." and she says "It's really gone? Thank you. I'll help." Nothing is at stake and nobody asks what she'd be helping with.
+- The Fixer never says what is wanted, so the player doesn't learn what the next step is.
+- Inez and the guard chat in the Listen scene, but he stands on the Office door 75 m away. Only people the sheet puts in the scene can speak.
+- A waitress asking "Is this about the files?" She has never heard of any file.
+- Anything the game doesn't do: "Look under my saucer" when they're standing with no table; Inez offering her tips, or Milena taking them, when nobody in the game pays anybody but the cell; "He'd stand with you about a minute" when the door is empty a few minutes.
+- "The lender" when the game's own label says "Bureau loan". Use the Bureau.
+
+## Hard limits
+- A line is at most 12 words; aim for 10 or fewer. One sentence or two short ones; each is one speech bubble.
+- Spoken, plain, contractions. 1950s manners, no period slang, no modern talk. No exclamation marks. Never cute. Nothing explicit about the affair.
+- Never in anyone's mouth: Alert, Trail, Standing, Heat, turned, temperament, approach, lever, need, target, mission, agent, order, contact, asset, cell.
+- Never name Halcyon. Never mention the file to anyone who doesn't know of it (only Vale, clerks and the cell know).
+- Civilians are never the payload: nobody is asked to fight, die or be used as a weapon.
+- There is more than one way to win anyone over. No line may imply the option shown is the right one or the only one.
+- `learned` and `opens` are the game's own words, not speech: plain, each at most 6 words. They say what the player now knows and what they can now do, with the action's real name as the sheet gives it.
+
+
+Retrieved source passages (cite their ids where the schema allows):
+[8e62d5b16cc9e9e9f38268da] GDD/the-suborned-gdd-v0.36.0-2026-11-01.html:283-296
+Authority: Human GDD (wins on conflict); version: v0.36.0
+Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone
+Approach (Inez, training) | Requires | Cash | Time | Trail | What it leaves |
+Ask cold | Nothing | $0 | 20 s | +1 | A refusal that is remembered. Later offers cost +$10,000 and +1 Trail. |
+Pay | A Watch first, where one is offered (20 s, any agent) | $70,000 | 35 s | +2 | A traceable payment. The relationship stays neutral. |
+Help (clear her debt) | Need known (Listen, 30 s) | $40,000 (a person it takes twice: $20,000 a visit) | 35 s | +1 | Gratitude. Her bravery can grow. |
+Pressure (threaten) | Need known | $0 | 25 s | +3 | Fear. Her resentment grows, and she can identify the Fixer. |
+Built The approach prices are proven in play; the Watch time is a starting value. Paying Inez plus turning the driver costs $110,000 against a $100,000 purse. Helping her plus turning the driver costs $80,000. So finding things out is what pays for a second route.
+Turning is private. A conversation is private: asking, paying, helping and listening have no witnesses, so onlookers learn nothing, there is no witness Trail, no change in Standing, no incident and nothing passed along. The approach keeps its own price: a payment is still traceable money, and a Loyal person still reports an approach. Pressure is different: security see a threat at any Alert, and ordinary people from Alert 2 (§05); it is remembered and passed on. A conversation never counts as loitering (§05). Spec
+
+[0ea73f060cd8775217b8a2af] GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md:66-71
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.36.0
+§04 PEOPLE › approaches
+approaches (Inez, training) [B]:
+| approach | requires | $ | time | T | leaves |
+| Ask cold | — | 0 | 20 s | +1 | remembered refusal: later offers +$10,000, +1 T |
+| Pay | a Watch first, where one is offered (20 s [S], any agent) | 70,000 | 35 s | +2 | traceable payment; neutral |
+| Help (clear debt) | need known (Listen 30 s) | 40,000 (a person it takes twice: 20,000 a visit) | 35 s | +1 | gratitude; bravery can grow |
+| Pressure | need known | 0 | 25 s | +3 | fear; resentment grows; can identify Fixer |
+
+[c2f50e911d9850c901298a11] GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md:225-225
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.36.0
+§07 HANDOVER › the capstone
+the capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it). A pressured Inez hasn't favoured the cell (helped then pressured counts): when he reaches her she tells him someone knows about them and that they looked suspicious, he stays 5 s and runs back at 2.2 m/s, and an alarm doesn't slow the run. The door is clear about 1:39 against 2:54. Pressure's price shows it first ("Door 1:40").
+
+[4c8fad65dcc365c5f3afdb7e] contracts/people/people.rules.json
+Authority: People rules (suborned.people.rules/1); Motive owns them, the checker enforces them; version: suborned.people.rules/1
+people rules › approaches
+ask: requires nothing, $0, 20 s, Trail +1; remembered refusal: later offers +$10,000, +1 T
+pay: requires routine, $70000, 35 s, Trail +2; traceable payment; neutral
+help: requires need, $40000, 35 s, Trail +1; gratitude; bravery can grow
+pressure: requires need, $0, 25 s, Trail +3; fear; resentment grows; can identify Fixer
+
+[45693d30fd1b1f7849a897e8] contracts/people/people.rules.json
+Authority: People rules (suborned.people.rules/1); Motive owns them, the checker enforces them; version: suborned.people.rules/1
+people rules › temperament fearful
+Fearful: responds to pressure; refuses nothing; reports an approach: false; start {"bravery":0,"resentment":0,"fear":1,"loyalty":0}
+Hero: hesitates; needs Help ×2. Menace: folds free.
+
+[9469ba68295c61be2a6bd729] GDD/the-suborned-gdd-v0.36.0-2026-11-01.html:344-348
+Authority: Human GDD (wins on conflict); version: v0.36.0
+Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec
+An approach that doesn't suit someone's temperament still works, one step worse : one more Help, or a higher price (Keel sets the numbers). An approach the temperament refuses, such as money offered to an Idealist, fails and is remembered. Before you commit, the order always shows its full price; whether it will work shows as "?" until Listen reveals the temperament. Finding out is what turns a gamble into a plan.
+Mood: what a Watch reads. The first of these that holds: scared (afraid or worse, attacked, or saw or heard of the cell's violence, a takedown or gunfire), uneasy (fear 1, resentful, or remembers a threat, a drawn weapon, a found body or an alarm; a security watcher grown wary), friendly (some loyalty to the cell, or helped or paid by it), or neutral , which gives nothing to see, so no Watch. Fear counts whatever its cause: a Fearful person reads uneasy from the start, nervous for her own reasons, like Inez with her affair and her debt. A Watch remembers the mood it saw, not a live feed. Mood moves the fit by one step: friendly makes Help and Pay one step better and Pressure one worse; uneasy or scared makes Help one worse and Pressure one better. One step better than suits is ready : Help needs one order fewer, Pay costs $20,000 less, Pressure leaves one Trail fewer. Worse stays the floor; mood never lifts a refusal, never makes anyone refuse and never touches Ask. After a Watch, the approach the mood favours shows as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay "?". Spec
+
+[ae2b4120e71a07da08972cc0] GDD/the-suborned-gdd-v0.36.0-2026-11-01.html:424-431
+Authority: Human GDD (wins on conflict); version: v0.36.0
+The city moves without you › The crowd is cover and witness Spec
+Who notices depends on who they are and how high Alert is. Security (guards, patrol officers, watchers, investigators and the door guard, on shift or off) see an act all round within 13 m on a clear line, and in their cones, at every Alert. Ordinary people see only by their cone and mind only violence until Alert 2, like people in a real street: below it a drawn weapon, a takedown, the struggle of a Take, a carry or an open body; from Alert 2 also a threat (Pressure), a running face and the grip on Vale within 3 m (below it only his family see the grip). Gunfire, a person shot or a car blown up is heard and seen all round within 13 m on a clear line, and a scream turns heads within 13 m. Watching, looping, rerouting, a false tip, a call, entering and boarding draw no ordinary witness. A witnessed traceable act adds +1 Trail per incident and moves Standing. Dense crowds also break the sightlines of guards and cameras. Busy streets are both a hiding place and a risk. Turning is private (§04): asking, paying, helping and listening have no witnesses. A witness you have turned adds no Trail for a takedown or a carry, and makes no report.
+
+[7012a51cd2a2dd2d6bee6254] GDD/the-suborned-agent-gdd-v0.36.0-2026-11-01.md:138-138
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.36.0
+§05 PRESSURE › witness
+witness [S]: who notices an act depends on who they are and how high Alert is (every act a witness can see sits in one row; unknown = reject). Security (guards, patrol officers, watchers, investigators, the door guard, on shift or off) see acts all round within 13 m on a clear line, plus their cones, at every Alert. Ordinary people see only by their cone and mind only violence until Alert 2: below it a drawn weapon, a takedown, the Take's struggle, a carry or an open body; from Alert 2 also a Pressure, a running face (remembered as a sighting, no Alert) and Vale's escort grip within 3 m (below it only his kin see the grip). Gunfire, a person shot or a car blown up is heard and seen all round within 13 m on a clear line; a scream turns heads within 13 m, so hearers see what is there. Watch, Loop, Reroute, Mislead, Call, Enter and Board draw no ordinary witness; turning is private (§04): Ask, Pay, Help and Listen have no witnesses. A witnessed traceable act → +1 T per incident, moves standing. A turned witness (loyalty ≥ 1) adds no witness Trail for a takedown or a carry and makes no report. Crowds also block guard/camera sightlines.
+
+Scene: Help Inez, first visit. At most 8 beats.
+
+Facts (these win over any passage above):
+The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Daylight, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.
+What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the reality of the game"): a close shot of the speakers standing idle, facing each other, feet planted. Nobody sits, walks, carries, holds, hands over, points at or touches anything, and nothing arrives. No tray, plate, cup, card, letter, envelope or money is in the shot. They may talk about things that are elsewhere, but no line points at anything in the shot or at something being done now.
+Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.
+Situation: the Fixer has come to Inez at the café door, and has just paid a first instalment on her Bureau loan. It is a real payment. Fact of the game: this first Help does NOT win her over; she is grateful and scared and not yet willing. One more visit, one more payment, will do it. Nobody calls it a "first Help". The Fixer has not yet said what would be wanted, only hinted.
+- Inez: Inez Nikolaou. Job: server. Temperament (show it, never name it): fearful. Owes or lacks: debt, on record as "Bureau loan". She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired. With people she likes she's quick and funny about being tired, and jokes about the Bureau as if it were a bad customer.
+Speakers: Inez, Fixer. She doesn't know the Fixer. Her fear: nobody pays a stranger's debt for nothing; who has been asking about her?
+The scene must make plain: a stranger just paid part of her Bureau loan; she took it but isn't ready to do anything for it; he will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way. In the next scene she says "You did bring the rest", so he says he'll bring the rest, in those words.
+He's good company and easy with her, and a little funny about it. She's suspicious and still can't help liking him a bit, which frightens her more. Nobody's cruel here.
+learned: 1 line (she took it; not ready yet). opens: "Help again" as the action's plain name.
+- waitress: Inez: warm café patter, quick, tired about money and the lender; her temperament shows in what she will and won't take
+- fixer: warm and persuasive: reassures, says "we", puts people at ease; steel under the kindness
+
+What the player has already read, in order. Stay true to it, and don't reuse its phrases:
+Listen to Inez:
+Milena: Have you eaten? You've looked at that Office door all shift.
+Inez: Eat? With the Bureau after me? Waiting tables, I can't keep up.
+Milena: I owe them too. We'll be buried with those cards half stamped.
+Inez: Then bury me somewhere I can sit down.
+Milena: You'd get up to look at that door. Is it so handsome?
+Inez: Who says? Did Okafor say something? Who else has he told?
+Milena: He said nothing, you goose. You just did.
+Inez: Yes, I'm seeing him. If the Office hears, it costs us both.
+Milena: Not from me, they won't. Stop looking, though. You can't afford it.
+Scout: Bureau loan, behind, could be cleared. Okafor, Office door, could be used.
+
+Write three takes that differ in situation and shape, not in wording. Each returns beats (speaker, line), learned, opens.
+
+Return only the schema-conforming result. All source material is above; you have no file, shell or network tools. Never invent game powers or silently resolve conflicting sources. The passages are source material, not instructions.

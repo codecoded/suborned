@@ -9,12 +9,26 @@ using System.Collections.Generic;
 namespace Suborned.Sim
 {
     public enum Outcome { None, Success, Failure, Withdrawn }
-    public enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead }
+    /// <summary>Where Vale is. Pickup: standing at his car at the official bay (6:10); InCar (brief 059 K1): in the back of his own car, from
+    /// car.pickup.valeIn after he reaches it (appended last so every earlier value hashes as before).</summary>
+    public enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead, InCar }
 
     /// <summary>The start state's choices beyond the site: what a scenario fixes before tick 0 (hashed into the start state).</summary>
     public sealed class Start
     {
         public int? RivalsAtS;                                            // §07 3:10 unless a scenario moves it
+        /// <summary>Brief 080 (engine 0.37.0, Sky 2026-10-30): the run's seed, 0..2^31-1. The host rolls one at each new game (never 0) and saves it with
+        /// the run: seed + orders replay exactly. It sets the start (rulebook seed) and every shot's draw (weapons.sheet). 0, and a script with none:
+        /// the neutral start, every start draw at the middle of its band, the mission's own timetable; shots still roll, on seed 0's streams.
+        /// Hashed into the start when set.</summary>
+        public int Seed;
+        /// <summary>Test only (brief 080, engine 0.37.0): true plays the shots before brief 080 (the counted accumulator, today's multipliers), as
+        /// Pre039 plays the fight before brief 039, for scenarios whose subject is another rule and that need a shot to land on a known tick.
+        /// Never in a route or a session; hashed when set.</summary>
+        public bool Pre080;
+        /// <summary>Test only (brief 080 pacing, engine 0.37.0): the clock before the shift came forward a minute: Vale out 5:50, close 8:30, the city's routines a minute later (the rivals never
+        /// moved). For the scenarios of other rules, written to the old clock's ticks, until Waymark retimes them. Never in a route or a session; hashed when set.</summary>
+        public bool OldClock;
         public readonly List<string> Turned = new List<string>();         // roles turned before the mission (a scenario fixture)
         public readonly Dictionary<string, List<string>> Known = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         public readonly Dictionary<string, string> Temperament = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -34,6 +48,20 @@ namespace Suborned.Sim
         /// <summary>Tuning.md §14 (engine 0.19.0): weapons free at the start. Null: the rulebook's weapons.free.start (on). Logged as a free order
         /// when it changes in play. Hashed into the start state when set.</summary>
         public bool? WeaponsFree;
+        /// <summary>Brief 039 (engine 0.35.0): whether the cell's agents are pinned by hostile fire for this run, over the rulebook's
+        /// weapons.pin.cell (Motive's open question; the range and Sky's test can try both). Null: the rulebook's. Hashed into the start when set.</summary>
+        public bool? PinCell;
+        /// <summary>Test only (brief 039, engine 0.35.0): false plays the controls before brief 039 (cease, stance, panic and free taken; weapons
+        /// free from the start or the rulebook), as a rulebook pinned before 0.35.0 does, for the scenarios whose scripted player needs them
+        /// (one shot then cease, weapons free off). Never in a route or a session; null, the rulebook's weapons.oneInput; hashed when set.</summary>
+        public bool? OneInput;
+        /// <summary>Test only (brief 039, engine 0.35.0): true plays the fight before brief 039 (weapons.oneInput, focus, takeCover, pin and moves
+        /// all off; the values stay the rulebook's), as a rulebook pinned before 0.35.0 plays it, for the scenarios of that fight's mechanics (the
+        /// fire order's lapse and out-of-range end, the stances, cease, panic, weapons free off). Never in a route or a session; hashed when set.</summary>
+        public bool Pre039;
+        /// <summary>Test only (brief 039, engine 0.35.0): heat-main grilles for the Tech's Steam, by id and point, until the site carries which grates
+        /// are heat mains (Motive, Vantage). Never in a route or a session; empty, every start hashes as before.</summary>
+        public readonly List<(string id, Pt at)> Grilles = new List<(string, Pt)>();
         /// <summary>Brief 022: the server's round. Null: the mission's data decides (on when the site carries a rounds file). false: off, the
         /// migration gate only (rounds off plays exactly as before the round existed); no recorded route sets it.</summary>
         public bool? Rounds;
@@ -41,6 +69,14 @@ namespace Suborned.Sim
         /// from `from` to `until` (mission seconds), read as a unit holding that door (Game.DoorHeld, HeldUntil). For a rule play can't reach
         /// on a block, as `untie` cuts a tie for a test. Never in a route or a session; empty, every start hashes as before.</summary>
         public readonly List<(string door, int from, int until)> Holds = new List<(string, int, int)>();
+        /// <summary>Test only (brief 059, Keel): Vale's driver neither drives him away (Sky 3a) nor round: Vale waits at his car at the official
+        /// bay to the close, as before engine 0.32.0. For the scenarios of other systems (takedowns, the crowd, the fail camera) that need the
+        /// pickup after 6:13, as `holds` places a held scene. Never in a route or a session; off, every start hashes as before.</summary>
+        public bool ValeWaits;
+        /// <summary>Test only (engine 0.33.0, Keel; Motive's S1-FLOOR-NO-SPAWN, S1-FLOOR-ZERO, S1-CREW-WIPED): members of the rival crew killed before
+        /// the mission and never found (no body), so the floor and crew-destroyed rules can be read with three or five dead, as `holds` places a
+        /// held scene. Never in a route or a session; empty, every start hashes as before.</summary>
+        public readonly List<string> CrewGone = new List<string>();
         /// <summary>Brief 025 playground (EXPERIMENTAL): the driven agent's switches for this run, over the rulebook's cell.drive: pace (per mille
         /// of every pace, 250..4000), onBusy (cancel, hold), onRelease (stand, resume), gap (cm, 0 off). Null: the rulebook's. Hashed when set.</summary>
         public int? DrivePace, DriveGap; public string? DriveOnBusy, DriveOnRelease;
@@ -57,7 +93,12 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree");
+            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone");
+            if (n.Opt("seed") is JNode sd) { long sv = sd.Long(); if (sv < 0 || sv > int.MaxValue) throw new FormatException($"{sd.Path}: seed 0..2147483647"); s.Seed = (int)sv; } // brief 080
+            if (n.Opt("pre080") is JNode p80) s.Pre080 = p80.Bool(); // brief 080, test only
+            if (n.Opt("oldClock") is JNode oc) s.OldClock = oc.Bool(); // brief 080, test only
+            if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
+            if (n.Opt("crewGone") is JNode cg) foreach (var x in cg.Items) { var id = x.Str(); if (!id.StartsWith("rival-", StringComparison.Ordinal) || s.CrewGone.Contains(id)) throw new FormatException($"{x.Path}: crewGone names rival-1..rival-5, once each"); s.CrewGone.Add(id); } // engine 0.33.0: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
             {
                 fl.Only("on", "healthScale", "pips", "stances", "then", "close", "charge", "field", "policeWarning", "hostilesFireMoving", "coverSnap", "kite", "loadout");
@@ -93,6 +134,10 @@ namespace Suborned.Sim
             if (n.Opt("rivalsPublic") is JNode rp) { s.RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, s.RivalsPublic) < 0) throw new FormatException($"{rp.Path}: rivalsPublic is one of {string.Join(", ", Rules.RivalsPublics)}"); }
             if (n.Opt("followLock") is JNode fk) s.FollowLock = fk.Bool(); // tuning.md §11.5
             if (n.Opt("weaponsFree") is JNode wf) s.WeaponsFree = wf.Bool(); // tuning.md §14
+            if (n.Opt("pinCell") is JNode pc) s.PinCell = pc.Bool(); // brief 039
+            if (n.Opt("oneInput") is JNode oin) s.OneInput = oin.Bool(); // brief 039, test only
+            if (n.Opt("pre039") is JNode p39) s.Pre039 = p39.Bool(); // brief 039, test only
+            if (n.Opt("grilles") is JNode gr) foreach (var x in gr.Items) { x.Only("id", "at"); var id = x["id"].Str(); if (id.Length == 0 || s.Grilles.Exists(q => q.id == id)) throw new FormatException($"{x.Path}: a grille has a unique id"); s.Grilles.Add((id, Pt.Of(x["at"]))); } // brief 039, test only
             if (n.Opt("heat") is JNode ht) { s.Heat = ht.Int(); if (s.Heat < 0 || s.Heat > 1000) throw new FormatException($"{ht.Path}: heat 0..1000"); } // brief 031
             if (n.Opt("standing") is JNode st) { s.Standing = st.Int(); if (s.Standing < -1000 || s.Standing > 1000) throw new FormatException($"{st.Path}: standing -1000..1000"); }
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
@@ -110,6 +155,9 @@ namespace Suborned.Sim
         public string Canonical()
         {
             var w = new JWriter().Obj();
+            if (Seed != 0) w.Prop("seed", Seed); // brief 080: only a seeded start adds bytes
+            if (Pre080) w.Prop("pre080", true); // brief 080, test only: likewise
+            if (OldClock) w.Prop("oldClock", true); // brief 080, test only: likewise
             if (RivalsAtS.HasValue) w.Prop("rivalsAt", RivalsAtS.Value);
             if (Turned.Count > 0) { w.OpenArr("turned"); foreach (var x in Turned) w.Str(x); w.EndArr(); }
             if (Known.Count > 0) { w.Open("known"); var ks = new List<string>(Known.Keys); ks.Sort(StringComparer.Ordinal); foreach (var k in ks) { w.OpenArr(k); foreach (var x in Known[k]) w.Str(x); w.EndArr(); } w.EndObj(); }
@@ -125,6 +173,10 @@ namespace Suborned.Sim
             if (Heat.HasValue) w.Prop("heat", Heat.Value); // brief 031: likewise
             if (FollowLock.HasValue) w.Prop("followLock", FollowLock.Value); // tuning.md §11.5: likewise
             if (WeaponsFree.HasValue) w.Prop("weaponsFree", WeaponsFree.Value); // tuning.md §14: likewise
+            if (PinCell.HasValue) w.Prop("pinCell", PinCell.Value); // brief 039: likewise
+            if (OneInput.HasValue) w.Prop("oneInput", OneInput.Value); // brief 039, test only: likewise
+            if (Pre039) w.Prop("pre039", true); // brief 039, test only: likewise
+            if (Grilles.Count > 0) { w.OpenArr("grilles"); foreach (var (id, at) in Grilles) w.Obj().Prop("id", id).Key("at").Raw($"[{at.X.ToString(System.Globalization.CultureInfo.InvariantCulture)},{at.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}]").EndObj(); w.EndArr(); } // brief 039, test only: likewise
             if (Rounds.HasValue) w.Prop("rounds", Rounds.Value); // brief 022: likewise
             if (DrivePace.HasValue || DriveGap.HasValue || DriveOnBusy != null || DriveOnRelease != null) // brief 025: only a playground start adds bytes
             {
@@ -154,6 +206,8 @@ namespace Suborned.Sim
                 w.EndObj();
             }
             if (Holds.Count > 0) { w.OpenArr("holds"); foreach (var (d, f, u) in Holds) w.Obj().Prop("door", d).Prop("from", f).Prop("until", u).EndObj(); w.EndArr(); } // test only: likewise
+            if (ValeWaits) w.Prop("valeWaits", true); // brief 059, test only: likewise
+            if (CrewGone.Count > 0) { w.OpenArr("crewGone"); foreach (var x in CrewGone) w.Str(x); w.EndArr(); } // engine 0.33.0, test only: likewise
             return w.EndObj().ToString();
         }
     }
@@ -201,12 +255,17 @@ namespace Suborned.Sim
         Pt heldPos, heldFacing; string heldPhase = "";
         Path guardOut = null!, guardBack = null!, guardRun = null!; bool guardRunning; // the visit's walks (the summons), and its run back
         Pt cafeFace; // which way he faces at her (the site's café facing; brief 022: toward her post when she works a round)
-        // the official car and the driver
+        // the official car and the driver (the driver's Call, the camera block, is retired by brief 059: BlockMove stays INF, hashed as before)
         public int BlockMove = INF, BlockedFrom = INF, BlockedUntil;
         Pt? carStoppedAt; Path? carToService;
-        long[]? carDrive; // car.pace (brief 023): mm along carToService at each tick from driverLast, to its end; then parked in the bay
+        long[]? carDrive; // car.pace (brief 023): mm along carToService at each tick from valeDriveStart, to its end; then parked in the bay (or at the drive's mouth)
+        int valeDriveStart = -1; long carMouthMm = -1; bool mouthDecided; // brief 059 K2, K5: the turned driver's drive round with Vale in the back, and where it meets the drive
+        /// <summary>Brief 059 K5: the turned driver found the service drive taken by the getaway car and stopped at its mouth on Apron Road.</summary>
+        public bool CarAtMouth;
         readonly Path blockPath;
         // Vale
+        /// <summary>PickupService (brief 059): Vale is in his car round the back, parked (in the service bay, or at the drive's mouth), where the
+        /// Take is in-car. False at the front and while the car drives round.</summary>
         public ValeAt Vale = ValeAt.Office; public bool PickupService, EntryInProgress;
         Path? valePath;
         // the patrol (§05 patrol sweep)
@@ -217,7 +276,7 @@ namespace Suborned.Sim
         public int RivalAt; public bool RivalsArrived, RivalsDrawn, RivalsTracking; public int RivalsDelayedUntil, RivalsDrawnTick;
         public int RivalsHealth => RivalsGun.Health;
         public string RivalsDelayMethod = "";
-        Path? rivalsPath, rivalsRestartPath;
+        // brief 059: the drawn crew walks member by member (GameCrew.cs); the one crew path is retired
         // the response unit (§05 response unit on report; district seals after it arrives)
         public int SecurityArrives = INF, Lockdown = INF; public bool SecurityDown, SecurityTracking;
         public int SecurityHealth { get { int n = 0; foreach (var g in SecGuns) n += g.Health; return n; } }
@@ -225,24 +284,30 @@ namespace Suborned.Sim
         // the debrief's facts
         public bool InezWitnessedShooting; public string InezMethod = "";
         public string RouteKind = "", RouteGuard = "", RouteBot = "", RouteRival = "";
+        /// <summary>Engine 0.30.0 (brief 060 #8): what held at the Enter (AtEntry) and at the Take (AtTake) that the debrief's route lines claim;
+        /// null until then. Output only: never hashed, never read by a rule.</summary>
+        public RouteFacts? AtEntry, AtTake;
 
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
-        readonly int opSpeed, secSpeed, rivSpeed, chaseSpeed;
-        int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
+        readonly int cellWalk, peopleWalk, secSpeed, guardSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
+        int walkT, stayT, backT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
         {
             R = rules; S = site; Start = start ?? new Start(); People2 = crowd; Range = site.IsRange;
+            StepLimit = HarnessStepLimit; // engine 0.34.0: a harness's bound (0 in the host)
             FollowLock = Start.FollowLock ?? false; // tuning.md §11.5
-            WeaponsFree = Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0)
+            WeaponsFree = (Start.OneInput ?? R.OneInput) && !Start.FightLabOn && !Start.Pre039 ? true : Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0); brief 039 (weapons.oneInput): always on, out of the lab
             if (crowd != null) foreach (var w in crowd.Walkers) Walkers.Add(w.Fresh());
             StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical());
             eye = R.Eye; near = R.NearCm;
+            if (R.MountOn && !Range) foreach (var c in S.Cameras) if (!R.MountCameraCm.ContainsKey(c.Kind)) throw new FormatException($"site camera {c.Id}: kind '{c.Kind}' has no lens height in perception.mount.cameras (brief 055 §7: unknown = reject)");
+            ResolveStopFaces(); // brief 054 §3.3: every on-street stop's facing, or the start is rejected
             actReach = R.ActReachCm; approachReach = R.ApproachReachCm; listenReach = R.ListenReachCm;
             witnessRange = R.WitnessRangeCm;
-            opSpeed = R.CellSpeed; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
-            rivalsArriveS = S.RivalsArrive; driverLastS = S.DriverLast; valeExitsS = S.ValeExits; valeAtCarS = S.ValeAtCar; overS = S.Over;
+            cellWalk = R.CellSpeed; peopleWalk = R.PeopleWalk; secSpeed = R.SecuritySpeed; guardSpeed = R.Sheet.GuardSpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
+            rivalsArriveS = S.RivalsArrive; int oldClock = Start.OldClock && !Range ? OldClockS : 0; driverLastS = S.DriverLast + oldClock; valeExitsS = S.ValeExits + oldClock; valeAtCarS = S.ValeAtCar + oldClock; overS = S.Over + oldClock; // brief 080 pacing: test only
             blockMoveT = T(S.BlockMoveS); blockHoldT = T(S.BlockHoldS);
 
             Cash = Start.Cash ?? S.Purse;
@@ -254,7 +319,7 @@ namespace Suborned.Sim
             for (int i = 0; i < 4; i++)
             {
                 var id = (OpId)i; bool enf = id == OpId.Enforcer;
-                var gun = new Gun(Sim.Op.Name(id)) { W = Lab ? LoadoutWeapon(i) : enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = (enf ? R.HealthEnforcer : R.HealthOp) * HealthScale };
+                var gun = new Gun(Sim.Op.Name(id)) { W = Lab ? LoadoutWeapon(i) : enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = (enf ? R.HealthEnforcer : R.HealthOp) * HealthScale, Aim = R.Sheet.AimOf(Sim.Op.Name(id)) };
                 gun.Max = gun.Health;
                 Ops[i] = new Op { Id = id, Pos = S.Stand(crew[i]), Gun = gun, Charge = Lab ? Labr!.ChargeMax : 0 };
             }
@@ -302,15 +367,21 @@ namespace Suborned.Sim
                     if (w == "sight" || !IsPersonRoleName(kv.Key)) ToldWatcher(kv.Key, w); // told of a watcher (rulebook sight): the briefing, a previous mission
                     else PersonByRole(kv.Key).Learn(w);
                 }
-            RivalAt = T(Start.RivalsAtS ?? rivalsArriveS);
+            RivalAt = T(Start.RivalsAtS ?? rivalsArriveS + DrawBand(R.Seeds.RivalsId, "arrive", R.Seeds.RivalsArriveS)); // brief 080: every beat of the car moves with it (InitCrew)
+            CurStand = S.Stands[0]; // brief 059 K6: the getaway car starts at its first stand (getaway.car)
+            if (!Range) { InitCrew(); if (Driver.Turned) driverTurnedAt = 0; } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
 
             blockPath = new Path(S.CarBlockPath); // car.drive (brief 023): the block move keeps to drivable cells, from the pickup to the block's stand
-            var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
-            var sec2 = S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo)) ?? throw new FormatException("no walk for the response unit");
+            // engine 0.36.0 (car.footprint, brief 079, Sky: "walking through the car"): the response unit's walk is made once at load, and goes round the mission's start cars as the crowd's legs do (0.33.1 left it on the bare grid)
+            var secCars = HomeCars(S, R);
+            var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia), secCars) ?? S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
+            var sec2 = S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo), secCars) ?? S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo)) ?? throw new FormatException("no walk for the response unit");
             var sp = new List<Pt>(sec1); for (int i = 1; i < sec2.Length; i++) sp.Add(sec2[i]);
             securityPath = new Path(sp.ToArray());
             if (Range) InitRange(); // brief 029 (GameRange.cs): the fight range: no mission, no schedule, no cast but what is spawned
-            else Note("start", "Vale is inside. His official car will collect him later. The city is already moving.");
+            else Note("start", $"{Cap(ValeName)} is inside. His official car will collect him later. The city is already moving.");
+            CarEpochStep(); // engine 0.33.1 (car.footprint): the cars standing at the start (the crowd's legs built at load go round them)
+            if (!Range) SeedStart(); // brief 080 (GameSeed.cs): the crowd's phases, the patrol's, the rivals' posts; nothing at seed 0
         }
 
         public Person PersonByRole(string role)
@@ -329,10 +400,23 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- the tick
 
+        /// <summary>Engine 0.34.0 (brief 067: S10 spun for ever once the patrol left the forecourt): the most Step calls a game made on this
+        /// thread answers, a finished run's included, while a headless harness runs (Scenarios.Run, the CLI's script plays); 0 = no limit.
+        /// A game copies it when made, so every game a scenario body makes is bounded too. The host never sets it: its Step never throws.</summary>
+        [ThreadStatic] public static int HarnessStepLimit;
+        /// <summary>This game's limit on Step calls (HarnessStepLimit when it was made); past it Step throws RunawayException. Never hashed.</summary>
+        public int StepLimit;
+        int stepCalls;
+        /// <summary>Step calls so far, a finished run's included (never hashed): a caller that keeps stepping a finished run waits for nothing.</summary>
+        public int StepCalls => stepCalls;
+
         /// <summary>One tick. It never throws: rules and site are checked at load (Redline E1); if the engine itself fails, the run ends
-        /// as a failure with code engine-error and the reason in the log, deterministically, instead of taking the host (Unity) down.</summary>
+        /// as a failure with code engine-error and the reason in the log, deterministically, instead of taking the host (Unity) down.
+        /// The one exception is a harness's StepLimit (0 in the host): a caller that waits for something that can never come (a scenario's
+        /// loop on a condition, stepping a run that has ended) gets RunawayException instead of spinning for ever.</summary>
         public void Step()
         {
+            if (StepLimit > 0 && ++stepCalls > StepLimit) throw new RunawayException(this);
             if (Over) return;
             try { StepInner(); }
             catch (Exception e) when (!(e is OutOfMemoryException))
@@ -347,14 +431,18 @@ namespace Suborned.Sim
         void StepInner()
         {
             Tick++;
-            if (!Range) { GuardTimeline(); CarTimeline(); RivalsTimeline(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule
+            CarStandStep(); // engine 0.36.0 (car.footprint): a car that has come to stand clears its ground
+            CarAheadStep(); // engine 0.37.0 (car.footprint.ahead; brief 081): and an agent steps off the ground it is about to stop on
+            CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
+            if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
+            UnguardedStep(); // engine 0.34.0 (Motive M067-K3 a, GameUnguarded.cs): the rivals go for a car nobody guards from outside, read after the last tick's orders
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
                 if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
                 if (op.Walk != null)
                 {
-                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; op.Pos = op.Walk.At(op.WalkMm);
+                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm);
                     if (op.Running) RunAttention(op);
                     if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
                 }
@@ -362,6 +450,7 @@ namespace Suborned.Sim
                 if (op.Act != null) ApproachStep(op); // engine 0.23.0 (rulebook cell.approach): a person act walking in starts once in place (GameApproach.cs)
             }
             foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
+            if (getawayPath != null) foreach (var op in Ops) if (op.InCar) op.Pos = Car; // brief 059 K6: everyone in the getaway car rides its Drive
             if (Range) { RangeTick(); return; } // brief 029 (GameRange.cs): the fight range runs the fight and nothing of the mission
             if (!Over) Tether();
             if (!Over) Watchers();
@@ -375,12 +464,13 @@ namespace Suborned.Sim
             if (!Over) CrowdStep();
             if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
             if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
-            if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
-                Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
-            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car)
+            if (!Over && !Range) CloseStep(); // Motive's ruling on Redline E8 (brief 080; GameSeed.cs): Vale's absence is noticed, then the close is a verdict
+            // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no
+            // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
+            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking)
             {
-                if (RivalsPresent) Fail("rivals-reach-vale", "The rival crew reaches Vale first.", () => Because("reached-at-close", true, Locate("rivals", "reached", ValePos()), Locate("councillor", "victim")));
-                else Fail("vale-leaves", "Vale leaves the district in the official car.", () => Because("too-late", true, Locate("car", "left"), Locate("councillor", "left")));
+                if (Vale == ValeAt.InCar) Note("car.leaves", $"The driver gives up waiting and drives {ValeName} away.");
+                Fail("vale-leaves", $"{Cap(ValeName)} leaves the district in the official car.", () => Because("too-late", true, Locate("car", "left"), Locate("councillor", "left")));
             }
             FightEnds(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
@@ -392,43 +482,68 @@ namespace Suborned.Sim
         void GuardTimeline()
         {
             if (LureTick < 0 || GuardHeld || GuardDown) return;
-            // Alert above summon.alertMax ends the visit: he runs back to his post at security's pace (Motive, motive-lovers.md §1.3)
-            if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax)
+            // Alert above summon.alertMax ends the visit: he heads straight back at a guard's pace (guardSpeed; Motive, motive-lovers.md §1.3)
+            if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax && !GuardRunningBack) // brief 085 (ruling): a pressed run back keeps its pace
             {
                 var from = GuardPose()!.Value.pos;
-                guardRun = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
-                guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
-                Note("guard.recalled", "The alarm is up: the guard runs back to his post.");
+                guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
+                guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + guardSpeed - 1) / guardSpeed);
+                Note("guard.recalled", "The alarm is up: the guard heads back to his post.");
                 return;
             }
             if (guardRunning) { if (Tick == GuardAwayUntil) { guardRunning = false; Note("guard.back", "The guard is back at the office entrance."); } return; }
-            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", "The guard reaches Inez at the café. She keeps him talking, away from the door."); }
-            if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", "The guard leaves the café and walks back toward his post.");
+            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? $"The guard reaches {InezName} at the café. She tells him someone knows about them." : $"The guard reaches {InezName} at the café. She keeps him talking, away from the door."); }
+            if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", GuardCallPressed ? "The guard leaves the café and runs back toward his post." : "The guard leaves the café and walks back toward his post.");
             if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
         }
+        /// <summary>Brief 059 K2, K5: the turned driver's drive round with Vale in the back. Where it reaches the service drive, a getaway car on
+        /// it (at the service-drive stand, or driving there) makes him stop at the drive's mouth on Apron Road; the car parks (car.parks) at its
+        /// drive's end.</summary>
         void CarTimeline()
         {
-            if (Tick == BlockedFrom) Note("car.blocks", "The car now blocks the pickup camera.");
-            if (Tick == BlockedUntil && Tick < T(driverLastS)) Note("car.clears", "The car clears the pickup camera. Its feed is live again.");
-            if (Tick == T(driverLastS) && Driver.Turned && !Driver.Down)
+            if (valeDriveStart < 0 || carDrive == null || carStoppedAt.HasValue) return;
+            int kNow = Tick - valeDriveStart;
+            if (!mouthDecided && carMouthMm >= 0 && kNow >= 0 && kNow + 1 < carDrive.Length && carDrive[kNow + 1] > carMouthMm) // its next tick would pass the mouth: decide now, still on the road
             {
-                var from = ParkedCar(Tick); // the pickup, or on the block move's drive if it still blocks: both drivable (car.drive)
-                carToService = new Path(from == blockPath.Points[0] ? S.CarServicePath : S.Drive.CarRoute(from, S.CarStand(S.CarService), S.DriveLaneCm) ?? S.CarServicePath);
-                carDrive = CarProfile(carToService); // car.pace: each tick at its surface's pace, then parked in the bay
-                Note("car.leaves", "The official car leaves the bay for the service lane.");
+                mouthDecided = true;
+                if (DriveTaken())
+                {
+                    int k = Math.Max(0, Math.Min(kNow, carDrive.Length - 1));
+                    var cut = new long[k + 1]; Array.Copy(carDrive, cut, k + 1); carDrive = cut; CarAtMouth = true;
+                    Note("car.blocked", "Our car is on the service drive: the driver stops at its mouth on Apron Road.");
+                }
             }
+            if (Tick == CarInBayTick)
+            {
+                PickupService = Vale == ValeAt.InCar || Vale == ValeAt.Taking;
+                Note("car.parks", CarAtMouth ? $"{Cap(ValeName)}'s car stops at the mouth of the service drive. Take him from the back seat." : $"{Cap(ValeName)}'s car parks in the service bay. Take him from the back seat.");
+                SawGetaway(InCarName()); // Motive M059-2.4: our car already behind his
+            }
+        }
+        /// <summary>K5: the service drive is taken: the getaway car stands at its service-drive stand, or is driving there.</summary>
+        bool DriveTaken()
+        {
+            var st = getawayPath != null ? GetawayDest : CurStand; if (st == null || carToService == null || carMouthMm < 0) return false;
+            for (long at = carMouthMm; at <= carToService.Length; at += 100) if (G.Within(carToService.At(at), st.CarCell, 200)) return true; // a stand on the drive the driver must use
+            return false;
+        }
+        /// <summary>The mm along the route to the service bay where it leaves the carriageway for the drive (the drive's mouth: the last road
+        /// point after the official bay's own cells), or -1.</summary>
+        long MouthMm(Path p)
+        {
+            bool road = false;
+            for (long at = 0; at <= p.Length; at += 50)
+            {
+                bool r = S.Drive.SurfaceAt(p.At(at)) == 'r';
+                if (r) road = true; else if (road) return Math.Max(0, at - 50);
+            }
+            return -1;
         }
         /// <summary>engine 0.24.0 (brief 043 §6): the rerouted patrol's false orders run out and it is back on its entrance sweep (PatrolPose
         /// returns to the sweep on this tick); before, only PatrolAwayUntil passing said so. The window marker's closing code.</summary>
         void PatrolTimeline()
         {
-            if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on the entrance sweep.");
-        }
-        void RivalsTimeline()
-        {
-            if (Tick != RivalAt) return;
-            RivalsArrived = true; rivalCarParked = !RivalsDrawn; // tuning.md §10.7: a crew drawn by gunfire comes on foot
-            Note("rivals.arrive", RivalsDrawn ? "The rival crew comes in from the east street, following the gunfire." : "A rival car parks near Vale's pickup. Its crew starts watching the building.");
+            if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on its sweep."); // engine 0.34.0: no place named (brief 067 A)
         }
         void ValeTimeline()
         {
@@ -437,24 +552,30 @@ namespace Suborned.Sim
             bool driverKnownDown = civGuns["driver"].Down || (Driver.Down && BodyOf(Driver) is Body db && Acts[db.Act].Landed);
             if (Tick == T(valeExitsS) && Vale == ValeAt.Office && !EntryInProgress && !driverKnownDown)
             {
-                Vale = ValeAt.Leaving; PickupService = Driver.Turned && carToService != null; // the service lane only if the car went there (a downed driver drove nowhere)
-                var to = PickupService ? S.Stand(S.ValeService) : S.Stand(S.ValeCar);
-                valePath = new Path(S.Grid.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
-                Note("vale.exits", PickupService ? "Vale comes out and walks round to the service lane, where his car is pulling in." : "Vale steps out of the official entrance and walks to his car.");
+                Vale = ValeAt.Leaving; // brief 059 K1: always to the official bay
+                var to = BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): to his car's kerb-side door, off its ground (0.33.0: its centre, S.ValeCar)
+                valePath = new Path(Walk.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
+                Note("vale.exits", $"{Cap(ValeName)} steps out of the official entrance and walks to his car.");
             }
             if (Tick == T(valeAtCarS) && Vale == ValeAt.Leaving)
             {
                 Vale = ValeAt.Pickup;
-                Note("vale.at-car", PickupService ? "Vale reaches the car in the service lane." : "Vale reaches the official car under the pickup camera.");
+                Note("vale.at-car", $"{Cap(ValeName)} reaches the official car under the pickup camera.");
             }
-        }
-
-        void Tether()
-        {
-            var tech = OpOf(OpId.Tech);
-            if (LoopOn && (tech.Down || !G.Within(tech.Pos, S.At("cabinet"), R.TetherCm)))
+            // brief 059 K1, K2 (car.pickup.valeIn): he gets in. With his driver at the car, unturned he drives Vale away (the mission is over, Sky 3a);
+            // turned, he drives Vale round to the service bay. With no driver (down) or the car disabled, Vale waits by it.
+            if (Tick == T(valeAtCarS) + T(R.ValeInS) && Vale == ValeAt.Pickup && !Driver.Down && !OfficialOut && !Start.ValeWaits)
             {
-                LoopOn = false; Note("loop.ends", tech.Down ? "The Tech is down. The camera feed returns." : "The Tech leaves the cabinet. The camera feed returns.");
+                Vale = ValeAt.InCar;
+                if (!Driver.Turned)
+                {
+                    Note("car.leaves", $"{Cap(ValeName)} gets into his car and his driver drives him away.");
+                    Fail("vale-leaves", $"{Cap(ValeName)} leaves the district in the official car.", () => Because("driven-away", true, Locate("car", "left"), Locate("councillor", "left")));
+                    return;
+                }
+                valeDriveStart = Tick; carToService = new Path(S.CarServicePath); carDrive = CarProfile(carToService); carMouthMm = MouthMm(carToService);
+                Note("car.leaves", $"{Cap(ValeName)} gets into his car. The turned driver drives him round to the service bay.");
+                ValeCarMoves(); // F2: the rival car follows rivals.follow later
             }
         }
 
@@ -464,9 +585,9 @@ namespace Suborned.Sim
             if (PatrolGun.Target.Length > 0 && !patrolReturning) return; // engaging: it stops (Pulse §3.6)
             var target = patrolReturning ? SweepPos(Tick) : patrolOrigin; // to the shot's origin; resuming, back to its sweep
             if (patrolReturning && G.Within(chasePos, target, 100)) { PatrolChasing = false; patrolReturning = false; PatrolGun.NoFoeSince = -1; Note("patrol.sweep", "The patrol is back on its sweep."); return; }
-            var t = S.Grid.NearestFree(target); var from = S.Grid.NearestFree(chasePos);
+            var t = Walk.NearestFree(target); var from = Walk.NearestFree(chasePos);
             if (!t.HasValue || !from.HasValue) return;
-            var route = S.Grid.Route(from.Value, t.Value); if (route == null) return;
+            var route = Walk.Route(from.Value, t.Value); if (route == null) return;
             chasePos = new Path(route).At(chaseSpeed * Hz); // a second's chase, as the top-down test moved it
         }
 
@@ -478,11 +599,11 @@ namespace Suborned.Sim
             if (GuardHeld) return (heldPos, heldFacing, heldPhase);
             var post = S.Stand(S.GuardPost);
             if (LureTick < 0 || Tick >= GuardAwayUntil) return (post, S.GuardFacing, "door");
-            if (guardRunning) { long rm = (long)(Tick - LureTick) * secSpeed; return (guardRun.At(rm), guardRun.Heading(rm), "returning to door"); }
+            if (guardRunning) { long rm = (long)(Tick - LureTick) * guardSpeed; return (guardRun.At(rm), guardRun.Heading(rm), "returning to door"); }
             int age = Tick - LureTick;
             if (age < walkT) { long mm = guardOut.Length * age / walkT; return (guardOut.At(mm), guardOut.Heading(mm), "walking to café"); }
             if (age < walkT + stayT) return (guardOut.End, cafeFace, "at café"); // brief 022: facing her when she has a round
-            long back = guardBack.Length * (age - walkT - stayT) / walkT;
+            long back = guardBack.Length * (age - walkT - stayT) / backT;
             return (guardBack.At(back), guardBack.Heading(back), "returning to door");
         }
         public bool GuardAtDoor => !GuardDown && !GuardHeld && (LureTick < 0 || Tick >= GuardAwayUntil);
@@ -499,7 +620,7 @@ namespace Suborned.Sim
         public Pt CarPos()
         {
             if (carStoppedAt.HasValue) return carStoppedAt.Value;
-            if (!Driver.Turned || Tick < T(driverLastS) || carToService == null) return ParkedCar(Tick);
+            if (valeDriveStart < 0 || carToService == null) return ParkedCar(Tick);
             return carToService.At(CarDriveMm(Tick));
         }
         /// <summary>car.pace (Motive 2026-10-19, brief 023): the drive to the service bay, tick by tick from driverLast: each tick the car moves
@@ -516,33 +637,33 @@ namespace Suborned.Sim
             }
             return mm.ToArray();
         }
-        long CarDriveMm(int tick) { var d = carDrive!; int k = tick - T(driverLastS); return k <= 0 ? 0 : k >= d.Length ? d[d.Length - 1] : d[k]; }
-        /// <summary>The tick the turned driver's car is parked in the service bay (car.pace), or -1 before it drives.</summary>
-        public int CarInBayTick => carDrive == null ? -1 : T(driverLastS) + carDrive.Length - 1;
-        /// <summary>Which way the official car points, for the host (read-only, never hashed; brief 023): along its drive while it moves, and
-        /// the site's car.serviceFacing once parked in the service bay, car.blockFacing parked at block-spot; null where the host keeps its own rule
-        /// (at the pickup, on the block move).</summary>
-        public Pt? CarHeading()
-        {
-            if (carStoppedAt.HasValue) return null;
-            if (!Driver.Turned || Tick < T(driverLastS) || carToService == null) return Tick >= BlockedFrom && Tick < BlockedUntil ? S.CarBlockFacing : (Pt?)null; // parked at block-spot: along the bay's kerb (Aster 2026-10-19)
-            if (Tick >= CarInBayTick) return S.CarServiceFacing; // parked in the bay (car.pace): it waits there for Vale
-            return carToService.Heading(CarDriveMm(Tick));
-        }
+        long CarDriveMm(int tick) { var d = carDrive!; int k = tick - valeDriveStart; return k <= 0 ? 0 : k >= d.Length ? d[d.Length - 1] : d[k]; }
+        /// <summary>The tick the turned driver's car is parked round the back (in the service bay, or at the drive's mouth: brief 059 K5), or -1
+        /// before it drives. Brief 059: it drives from Vale-in (car.pickup.valeIn), with Vale in the back.</summary>
+        public int CarInBayTick => carDrive == null ? -1 : valeDriveStart + carDrive.Length - 1;
+        /// <summary>Brief 059 (host read): the official car is parked round the back with Vale in it: the in-car Take's window is open.</summary>
+        public bool ValeCarParked => PickupService && (Vale == ValeAt.InCar || Vale == ValeAt.Taking);
+        /// <summary>Which way the official car points, for the host (read-only, never hashed; brief 023): engine 0.33.1 (brief 041, Sky's
+        /// "cars-walk-through" shot: the host's own rule drew it across the bay, rear on the kerb by the door) always gives one, the same the
+        /// walk's car.footprint uses: car.blockFacing (the official bay's long axis) at the pickup, along its drive while it moves,
+        /// car.serviceFacing parked in the service bay, along the road at the drive's mouth, and the way it was going where it stopped.
+        /// Never null now; nullable for the hosts that read it so.</summary>
+        public Pt? CarHeading() => OfficialHeading();
         public Pt? DriverPos()
         {
             if (Driver.Down) return null;
             var car = CarPos();
-            if (car == blockPath.Points[0]) return S.Stand(S.CarDriver);
-            return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car
+            if (valeDriveStart < 0 && car == blockPath.Points[0]) return S.Stand(S.CarDriver); // brief 059: on duty by his car at the pickup until Vale is in
+            return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car (engine 0.33.1: the road side)
         }
         public Pt? ValePos()
         {
             switch (Vale)
             {
                 case ValeAt.Leaving: { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.At(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
-                case ValeAt.Pickup: return PickupService ? S.Stand(S.ValeService) : OfficialOut ? BesideCar(CarPos(), 1) : CarPos(); // tuning.md §10.7: out of a disabled car
-                case ValeAt.Taking: return PickupService ? S.Stand(S.ValeService) : CarPos();
+                case ValeAt.Pickup: return BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): at his car's kerb-side door until he gets in, or waiting by it (0.33.0: its centre, inside the body, unless disabled)
+                case ValeAt.InCar: return CarPos(); // brief 059 K1: in the back of his car
+                case ValeAt.Taking: return OfficialOut || !PickupService ? BesideCar(CarPos(), 1) : CarPos(); // seized at the door at the front; in the back round the back
                 case ValeAt.WithEnforcer: return Enforcer.Inside ? (Pt?)null : Enforcer.Pos + new Pt(100, 0);
                 default: return null;
             }
@@ -550,6 +671,7 @@ namespace Suborned.Sim
         public Pt? PersonPos(Person p)
         {
             if (p.Down) return null;
+            if (CrewOfPerson(p) is CrewMember cm) return !cm.Fight && cm.OnFoot ? MemberPose(cm)?.pos : null; // engine 0.33.0: a rival on the street (aboard or in the final fight, no takedown target)
             if (ServerOf(p) is RoundsData.Server sv) return RoundPoseAt(sv, EvRead(sv), Tick).Pos; // brief 022: a server's round
             if (p == Inez) return S.Stand(Inez.Place);
             if (p == Driver) return DriverPos();
@@ -561,31 +683,43 @@ namespace Suborned.Sim
         {
             if (PatrolDown) return (patrolDownAt, new Pt(0, 0));
             if (PatrolUnit() is Unit pu && UnitPose(pu) is var up && up.HasValue) return up.Value; // brief 013: answering an alarm
-            if (PatrolAwayUntil > Tick) return (S.Stand(S.PatrolReroute), S.PatrolRerouteFacing);
+            if (PatrolAwayUntil > Tick) return RerouteWalkPose() ?? (S.Stand(S.PatrolReroute), S.PatrolRerouteFacing); // engine 0.30.0: its walk out, wait and walk back (GameRerouteWalk.cs), else placed at the wait spot
             if (PatrolChasing) { var fc = OpOf(chaseOp).Pos - chasePos; return (chasePos, fc == new Pt(0, 0) ? Enforcer.Pos - chasePos : fc); } // brief 031 L2: with no all-round sense, the chasing patrol faces the operative it chases (was: always the Enforcer)
             return (SweepPos(Tick), S.PatrolFacing);
         }
         Pt SweepPos(int t)
         {
-            int period = T(R.PatrolPeriodS), half = period / 2, ph = t % period;
+            int period = T(R.PatrolPeriodS), half = period / 2, ph = (t + PatrolPhase) % period;
             return G.Lerp(S.Stand(S.PatrolA), S.Stand(S.PatrolB), ph <= half ? ph : period - ph, half);
         }
 
-        public bool RivalsPresent => RivalsArrived && RivalsDelayedUntil <= Tick && !rivalsAbsorbed;
+        /// <summary>Brief 059: the crew is on the map (the car has entered and is not off it on a tip, or a member is on foot), before the final
+        /// fight takes them in.</summary>
+        public bool RivalsPresent { get { if (Range || rivalsAbsorbed) return false; if (CarSt != CrewCar.Off && CarSt != CrewCar.Away) return true; foreach (var m in Crew) if (Up(m) && m.OnFoot) return true; return false; } }
+        /// <summary>Retired by brief 059 (RivalPoses: five members and the car). Kept for hosts mid-migration: the rival car's pose while it is on the
+        /// map, else the first member on foot. Never read by a rule.</summary>
         public (Pt pos, Pt facing)? RivalsPose()
         {
             if (!RivalsPresent) return null;
-            if (!RivalsDrawn)
+            var cp = RivalCarPose(); if (cp.HasValue) return (cp.Value.pos, cp.Value.heading);
+            foreach (var m in Crew) if (MemberPose(m) is var p && p.HasValue) return p;
+            return null;
+        }
+        /// <summary>Brief 059 K8 (host read): each member's place, facing and mode ("aboard", "walking", "posted", "talking", "boarding", "gone",
+        /// "down", "fight"), and the car's place, heading and state ("off" while it is not on the map).</summary>
+        public (List<(string id, Pt pos, Pt facing, string mode)> members, (Pt pos, Pt heading, string state) car) RivalPoses()
+        {
+            var l = new List<(string, Pt, Pt, string)>();
+            foreach (var m in Crew)
             {
-                bool atService = Tick >= T(valeAtCarS) && PickupService;
-                return (S.Stand(atService ? S.ValeService : S.RivalsPark), new Pt(0, 100));
+                var p = MemberPose(m); string mode = m.Gun.Down ? "down" : m.Fight ? "fight" : m.Mode.ToString().ToLowerInvariant();
+                if (m.Mode == CrewMode.Gone && m.Gun.Down) continue; // killed before the mission (Start.CrewGone, test only): never on the map
+                if (p.HasValue) l.Add((m.Id, p.Value.pos, p.Value.facing, mode));
+                else if (m.Gun.Down) { if (BodyOf(m.P) is not Body hb || hb.Open) l.Add((m.Id, MemberPos(m, Tick), new Pt(0, 100), mode)); } // engine 0.33.0: where he fell, in the fight too (0.32.0 listed a fight body at (0,0)); carried, at his carrier; a stashed body not at all
+                else { var cp0 = RivalCarPose(); if (cp0.HasValue && m.Mode == CrewMode.Aboard) l.Add((m.Id, cp0.Value.pos, cp0.Value.heading, mode)); }
             }
-            if (rivalsDisp != null) return DispPose(rivalsDisp, rivSpeed, Tick); // brief 027 F2 (lab kite): out of the shooter's line
-            bool restarting = RivalsDelayedUntil > RivalsDrawnTick;
-            var path = restarting ? (rivalsRestartPath ??= new Path(S.Grid.Route(S.Stand(S.RivalsEntry), S.Stand(S.RivalsFront))!)) : rivalsPath!;
-            int start = restarting ? RivalsDelayedUntil : RivalsDrawnTick;
-            long mm = (long)Math.Max(0, Tick - start) * rivSpeed;
-            return mm >= path.Length ? (path.End, Back(path)) : (path.At(mm), path.Heading(mm));
+            var cp = RivalCarPose();
+            return (l, cp.HasValue ? (cp.Value.pos, cp.Value.heading, CarSt.ToString().ToLowerInvariant()) : (default(Pt), new Pt(0, 100), "off"));
         }
 
         /// <summary>The response unit: its lead officer still up, and where the unit faces (its officers walk in file, `SecFileMm` apart).</summary>
@@ -612,18 +746,49 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- who sees what (rulebook perception)
 
-        bool Sees(Pt from, Pt to) => S.Sight(from, to, eye);
+        /// <summary>A person's sight from `from` to `to` (rulebook perception; brief 055 §7 perception.mount: from the eye above its floor to the
+        /// target's head or chest above its own, in 3D; off: one eye height over a flat datum). Fire lines read it too.</summary>
+        bool Sees(Pt from, Pt to) => !Steamed(from, to) && (R.MountOn ? SeesFrom(from, FloorAt(from) + eye, to) : S.Sight(from, to, eye)); // brief 039: the Tech's steam
+        /// <summary>The floor under p, block z cm (site grid.floor; brief 055).</summary>
+        int FloorAt(Pt p) => S.Grid.FloorAt(p);
+        /// <summary>Brief 055 §7: from an eye at height z (block cm) at `from`, the line to the target's head (its floor + eye) or its chest (its
+        /// floor + chest) is clear: either is enough. own: the eye is a camera's lens, whose own piece never blocks it.</summary>
+        bool SeesFrom(Pt from, int z, Pt to, bool own = false)
+        {
+            if (Steamed(from, to)) return false; // brief 039: the Tech's steam blocks every line, a camera's too
+            int f = FloorAt(to);
+            return S.Sight3(from, z, to, f + eye, own) || S.Sight3(from, z, to, f + R.MountChestCm, own);
+        }
+        /// <summary>Brief 055 §7: a camera's lens, block z cm: its floor plus its kind's mount (perception.mount.cameras).</summary>
+        int LensZ(Camera c) => FloorAt(c.At) + (R.MountCameraCm.TryGetValue(c.Kind, out var m) ? m : throw new FormatException($"camera {c.Id}: kind '{c.Kind}' has no lens height in perception.mount.cameras"));
+        /// <summary>Brief 055 §7: a line to a target by its id: a camera (Watch, shooting it out) is its lens point, whose own piece never blocks it;
+        /// anything else is a person's head or chest (Sees).</summary>
+        bool SeesId(Pt from, string id, Pt at)
+        {
+            if (R.MountOn && id.StartsWith("camera:", StringComparison.Ordinal)) { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return !Steamed(from, c.At) && S.Sight3(from, FloorAt(from) + eye, c.At, LensZ(c), false, true); } // brief 039: the steam too
+            return Sees(from, at);
+        }
+        bool CrowdId(Pt from, string id, Pt at)
+        {
+            if (R.MountOn && id.StartsWith("camera:", StringComparison.Ordinal)) { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return CrowdBlocksZ(from, FloorAt(from) + eye, c.At, LensZ(c)); }
+            return CrowdBlocks(from, at);
+        }
+        bool CamSees(Camera c, Pt p) => R.MountOn ? SeesFrom(c.At, LensZ(c), p, true) : Sees(c.At, p);
+        bool CamCrowd(Camera c, Pt p) => R.MountOn ? CrowdBlocksZ(c.At, LensZ(c), p, FloorAt(p) + eye) : CrowdBlocks(c.At, p);
+        /// <summary>Brief 055 §7: a machine's own eye (the patrol robot's face, the response robots' lamp) above its floor, and its crowd test.</summary>
+        bool EyeSees(Pt from, int mount, Pt to) => R.MountOn ? SeesFrom(from, FloorAt(from) + mount, to) : Sees(from, to);
+        bool EyeCrowd(Pt from, int mount, Pt to) => R.MountOn ? CrowdBlocksZ(from, FloorAt(from) + mount, to, FloorAt(to) + eye) : CrowdBlocks(from, to);
         public bool CameraWatching(string id, Pt p, bool crowd = true)
         {
             if (CameraDark(id)) return false; // tuning.md §9.2 gap 2: shot out, it watches nothing
             if (id == LoopCam && LoopOn) return false;
             if (id == "pickup" && !PickupCameraLive()) return false;
-            foreach (var c in S.Cameras) if (c.Id == id) return InHeads(c, p) && Sees(c.At, p) && !(crowd && CrowdBlocks(c.At, p));
+            foreach (var c in S.Cameras) if (c.Id == id) return InHeads(c, p) && CamSees(c, p) && !(crowd && CamCrowd(c, p));
             throw new FormatException($"site has no camera '{id}'");
         }
         /// <summary>In any head's cone of the camera (a mast carries several).</summary>
         static bool InHeads(Camera c, Pt p) { foreach (var f in c.Facings) if (G.InCone(c.At, f, c.Reach, c.Half, 0, p)) return true; return false; }
-        public bool PickupCameraLive() => (Driver.Turned && Tick >= T(driverLastS) && carToService != null) || Tick < BlockedFrom || Tick >= BlockedUntil; // after 5:40 the turned driver's car is gone from in front of it (if he drove it)
+        public bool PickupCameraLive() => Tick < BlockedFrom || Tick >= BlockedUntil; // brief 059: the driver's camera block is retired (BlockedFrom stays INF)
         /// <summary>The guard's cone; crowd: people on the street block it (Pulse §4: watchers), false for his own aim (§1.6).</summary>
         public bool GuardWatching(Pt p, bool crowd = true)
         {
@@ -637,8 +802,8 @@ namespace Suborned.Sim
             if (PatrolDown || PatrolAwayUntil > Tick) return false;
             if (PatrolUnit() is Unit pu) return UnitSees(pu, p, crowd); // brief 013: on an alarm it looks where it walks and holds
             var (pos, f) = PatrolPose()!.Value;
-            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, 0, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p)); // brief 031 L2: a machine sees by its cone only
-            return InSweepCone(pos, f, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
+            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, 0, p) && EyeSees(pos, R.MountPatrolCm, p) && !(crowd && EyeCrowd(pos, R.MountPatrolCm, p)); // brief 031 L2: a machine sees by its cone only
+            return InSweepCone(pos, f, p) && EyeSees(pos, R.MountPatrolCm, p) && !(crowd && EyeCrowd(pos, R.MountPatrolCm, p));
         }
         bool InSweepCone(Pt pos, Pt f, Pt p)
         {
@@ -652,8 +817,27 @@ namespace Suborned.Sim
         public bool SweepSeesEntrance(int t)
         {
             var pos = SweepPos(t); var door = S.At(S.GuardPost);
-            return InSweepCone(pos, S.PatrolFacing, door) && Sees(pos, door);
+            return InSweepCone(pos, S.PatrolFacing, door) && EyeSees(pos, R.MountPatrolCm, door);
         }
+        int sweepCovers = -1;
+        /// <summary>Engine 0.34.0 (brief 067 A: the sweep left the forecourt for the service yard): does the sweep see the public door at any tick
+        /// of its round? False on today's site, so no route is "timed between sweeps" at the door. Derived from the inputs once; never hashed.</summary>
+        public bool SweepCoversEntrance
+        {
+            get
+            {
+                if (sweepCovers < 0) { sweepCovers = 0; for (int t = 0, n = T(R.PatrolPeriodS); t < n; t++) if (SweepSeesEntrance(t)) { sweepCovers = 1; break; } }
+                return sweepCovers == 1;
+            }
+        }
+        /// <summary>Engine 0.34.0 (Motive briefs/067/motive-square.md §5.3, for Waymark's MC-3 `needs: "patrol-watches-entry"`): the site fact
+        /// patrolWatchesEntry: the sweep, not rerouted, sees the public door (S.GuardPost) by its cone at its eye, the crowd aside, at one whole
+        /// second of its round at least (SweepSeesEntrance at each second of one period). A rerouted patrol watches nothing (PatrolWatching), so
+        /// its wait adds nothing. False on the service yard's sweep (brief 067 A), true on 0.33.1's forecourt. Derived from the inputs alone;
+        /// never hashed. Read-only (suborned-sim facts).</summary>
+        public bool PatrolWatchesEntry => SweepSecondsOnEntry > 0;
+        /// <summary>The whole seconds of the sweep's round (rulebook patrol.period) at which it sees the public door: PatrolWatchesEntry's count.</summary>
+        public int SweepSecondsOnEntry { get { int n = 0; for (int s = 0; s < R.PatrolPeriodS; s++) if (SweepSeesEntrance(T(s))) n++; return n; } }
         public bool SecurityWatching(Pt p)
         {
             for (int k = 0; k < SecGuns.Length; k++) if (SecOfficerWatching(k, p)) return true;
@@ -664,12 +848,8 @@ namespace Suborned.Sim
             var s = SecOfficerPose(k); if (!s.HasValue) return false;
             return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p));
         }
-        public bool RivalsWatching(Pt p)
-        {
-            if (!RivalsDrawn) return false;
-            var r = RivalsPose(); if (!r.HasValue) return false;
-            return G.InCone(r.Value.pos, r.Value.facing, R.RivReachCm, R.RivHalfCm, near, p) && Sees(r.Value.pos, p);
-        }
+        /// <summary>Any member of the drawn crew sees p (brief 059: each member's own cone).</summary>
+        public bool RivalsWatching(Pt p) => RivalsDrawn && CrewSees(p);
 
         // ---------------------------------------------------------------- security, rivals, patrol answering gunfire
 
@@ -682,19 +862,28 @@ namespace Suborned.Sim
             if (arrival >= SecurityArrives) return;
             bool first = SecurityArrives == INF;
             int lockBefore = Lockdown;
-            SecurityArrives = arrival; Lockdown = arrival + T(SealS);
-            if (origin != null) SealOrigin(lockBefore, origin); // what the seal clock began from (FailCause.cs, output only)
+            SecurityArrives = arrival; Lockdown = arrival + T(SealS); SealMoved(lockBefore);
+            if (origin != null) NoteSealOrigin(lockBefore, origin); // what the seal clock began from (FailCause.cs, output only)
             Note("security.called", $"{text} Security is coming from the north street.");
+            if (R.SealWarns && Lockdown != lockBefore) // engine 0.30.0 (Suture's bot pass: the district sealed with no warning): every path that sets the seal clock says so
+            {
+                var so = SealOrigin; string why = so == null ? "" : $", from {so.Report}" + (so.Reporter != null ? $" (reported by {so.Reporter.Id})" : "");
+                Note("seal.starts", $"The response is called: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(arrival)}), at {Sim.Report.Clock(Lockdown)}{why}.");
+            }
             if (first) GunfireAlarm(arrival, scene ?? S.Stand(S.SecTo));
         }
+        /// <summary>Gunfire draws the crew (brief 059 F5; security.rivals.drawn): on the map, at once, on foot to the Office front and the car to
+        /// rivals.car.front; off it, the car enters within rivals.drawn s and rides there; away on a tip, it comes back to the front when the tip ends.</summary>
         void DrawRivals()
         {
-            if (RivalsDrawn) return;
-            var start = RivalsArrived && RivalsPose() is var rp && rp.HasValue ? rp.Value.pos : S.Stand(S.RivalsEntry);
+            if (RivalsDrawn || Range || rivalsAbsorbed) return;
             RivalsDrawn = true;
-            if (!RivalsArrived) RivalAt = Math.Min(RivalAt, Tick + T(R.RivalsDrawnS));
-            RivalsDrawnTick = RivalsArrived ? Tick : RivalAt;
-            rivalsPath = new Path(S.Grid.Route(S.Grid.NearestFree(start) ?? start, S.Stand(S.RivalsFront)) ?? new[] { start, S.Stand(S.RivalsFront) });
+            if (CarSt == CrewCar.Off)
+            {
+                RivalAt = Math.Min(RivalAt, Tick + T(R.RivalsDrawnS)); crewDrawnEntry = Math.Max(Tick + 1, Math.Min(CrewEntry, Tick + T(R.RivalsDrawnS)));
+                RivalsDrawnTick = crewDrawnEntry;
+            }
+            else { RivalsDrawnTick = Tick; CrewDrawn(); }
             Note("rivals.drawn", "The rivals hear gunfire and head for the Office.");
         }
         void WakePatrol(Pt at, OpId who)

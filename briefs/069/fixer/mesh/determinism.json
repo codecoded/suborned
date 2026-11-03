@@ -1,0 +1,54 @@
+{
+ "run1": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fixer/det_run1",
+ "run2": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fixer/det1",
+ "files": 9,
+ "same": 9,
+ "different": 0,
+ "rows": [
+  {
+   "file": "a/fixer_v7_H.fbx",
+   "result": "identical",
+   "sha256": "564f48db0cde2630bebae82884cbce257eb7cae68accb5738fc9988625e0ae11"
+  },
+  {
+   "file": "a/fixer_v7_H.json",
+   "result": "identical",
+   "sha256": "d7f1c0aceda3bf63aae4ff57515c58d9b13ebc35d84365a6b1ddf85a00b3f394"
+  },
+  {
+   "file": "a/fixer_v7_H_albedo.jpg",
+   "result": "identical",
+   "sha256": "669a124c40ec591a7a50f4eb996527edfbd5268f3a7437310d4f5a0c55221f76"
+  },
+  {
+   "file": "a/fixer_v7_H_avatarT.fbx",
+   "result": "identical",
+   "sha256": "a5d46d32ee935d2afd79c59a5e8b01f1297023508a7ba8544cd9a2260092cf93"
+  },
+  {
+   "file": "a/fixer_v7_H_labels.npy",
+   "result": "identical",
+   "sha256": "e624d4b0b04b36988950ba4c2c788bd36c2cfc4e9ac38b1c52e8b2da1e274ad2"
+  },
+  {
+   "file": "a/textures.json",
+   "result": "identical",
+   "sha256": "41263533450f26d3417f94407d4653b8af40f6ebaab3195e8b6c4daaa715bea6"
+  },
+  {
+   "file": "basis/basis_f.npz",
+   "result": "identical",
+   "sha256": "108fb8f4218177366b221b0b5113a687366f4b21a04b1dc872ce2fc207039539"
+  },
+  {
+   "file": "basis/basis_m.npz",
+   "result": "identical",
+   "sha256": "5433438b5228f131593368aaa10fe17404f0017870a7acb65a6067c561b4263a"
+  },
+  {
+   "file": "fit/fixer_v7.fit.json",
+   "result": "identical",
+   "sha256": "f7e9449d7e93621a5369ca3fda10509a3187573484d0716ad3569b601ed63c99"
+  }
+ ]
+}

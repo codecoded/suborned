@@ -1,7 +1,8 @@
 // Cars are targets (Sky 2026-10-21, tuning.md §9.7: "shootable, as in Syndicate"; Motive tuning.md §10.7, engine 0.16.0; both presets).
 // Every car the Handover simulates is a target by its own id: "car:getaway" (the cell's, at its bay), "car:official" (Vale's, where CarPos
-// puts it) and "car:rivals" (the rival crew's, parked at rivals.park once it has parked; a crew drawn by gunfire comes on foot and parks
-// none). The range has no cars. The street's parked and passing cars are the host's dressing, not simulated objects, so they are no target.
+// puts it) and "car:rivals" (the rival crew's, from its entry wherever it drives: to rivals.park, or, drawn by gunfire, to its stop on Rocket
+// Lane by the Office front; brief 059 K7); the range's cars are its own spawns (spawn:car:<n>, GameRangeKinds.cs). These are all the cars
+// there are: the street has no dressing cars, parked or passing, so every car a player sees is one of them, a target and solid (car.footprint).
 //  · A car has car.target.health (×healthScale in the lab). At or below car.target.disabledAt (×healthScale) it is disabled: it stops where
 //    it is and never drives again; its occupants get out. At 0 it burns (its blast ring shows) and car.target.burn seconds later explodes.
 //  · The blast: everyone within car.target.blast.m of the car with a line to it takes car.target.blast.damage (×healthScale), the cell
@@ -29,10 +30,26 @@ namespace Suborned.Sim
             public string Id = ""; public Gun Gun = null!; public int DisabledAt = -1, BurningAt = -1, BlastAt = -1; public bool Blown; public string By = ""; public Pt At;
         }
         readonly SortedDictionary<string, CarTarget> cars = new SortedDictionary<string, CarTarget>(StringComparer.Ordinal); // hashed in HashCars, only once a car is named
-        bool rivalCarParked; // the rival car parked at rivals.park (RivalsTimeline): hashed with the cars only
+        /// <summary>The rival car parked at rivals.park (brief 059: CarSt Parked there): hashed with the cars only.</summary>
+        bool rivalCarParked => CarSt == CrewCar.Parked && ccStop == S.RivalsPark;
         List<CoverPoint>? liveCover; // the site's cover less a blown car's points; null while no car has blown
-        /// <summary>The cover points standing now: the site's, less those of a car that has blown (tuning.md §10.7: "cars stay cover").</summary>
-        List<CoverPoint> LiveCover => liveCover ?? S.Cover;
+        List<CoverPoint>? liveCoverAt; int liveCoverKey = -1; // brief 059: the cover of the cars where they stand now, cached by which stand
+        /// <summary>The cover points standing now: the site's, less those of a car that has blown (tuning.md §10.7: "cars stay cover"), and less
+        /// those of a car that is not where its points are (brief 059: a car that drives off takes its cover with it): the getaway car's while it
+        /// is away from its first stand or driving, the rival car's while it is not parked at rivals.park.</summary>
+        List<CoverPoint> LiveCover
+        {
+            get
+            {
+                var basis = liveCover ?? S.Cover;
+                if (Range) return basis;
+                bool gHome = getawayPath == null && CurStand == S.Stands[0], rHome = rivalCarParked;
+                int key = (gHome ? 1 : 0) | (rHome ? 2 : 0) | ((liveCover?.Count ?? -1) + 1) << 2;
+                if (gHome && rHome) return basis;
+                if (key != liveCoverKey || liveCoverAt == null) { liveCoverAt = basis.FindAll(p => (gHome || p.Of != "car/getaway") && (rHome || p.Of != "car/rivals")); liveCoverKey = key; }
+                return liveCoverAt;
+            }
+        }
         /// <summary>Whether any cover point of `of` (a cover point's `of`, e.g. car/official) still stands (host read; never hashed).</summary>
         public bool CoverStanding(string of) => LiveCover.Exists(p => p.Of == of);
 
@@ -50,7 +67,7 @@ namespace Suborned.Sim
             {
                 case "car:getaway": return Car;
                 case "car:official": return CarPos();
-                case "car:rivals": return rivalCarParked ? S.Stand(S.RivalsPark) : (Pt?)null;
+                case "car:rivals": return RivalCarPose()?.pos; // brief 059 K7: a target from its entry, wherever it drives
                 default: return null;
             }
         }
@@ -94,20 +111,32 @@ namespace Suborned.Sim
                 case "car:getaway":
                     Fail("getaway-lost", "The getaway car is wrecked.", () => With(Because("wrecked", true, Locate("getaway-car", "wrecked")), OpIn(c.By)));
                     return;
+                case "car:rivals": // brief 059: it stops where it is and never drives again; whoever is in it gets out (the wheelman stands by it)
+                    { var cp = RivalCarPose(); if (cp.HasValue) CarHalt(CrewCar.Stopped, "", cp.Value.pos, cp.Value.heading); crewNextAt = INF; tailAt = INF;
+                      foreach (var m in Crew) if (m.Mode == CrewMode.Aboard && Up(m) && m.OutAt >= INF) m.OutAt = Tick + T(R.Crew.StepS) * m.N; }
+                    return;
                 default:
                     if (Range) RangeCarOut(c); // the range's car: its occupant gets out (GameRange.cs)
                     return;
                 case "car:official":
-                    carStoppedAt = c.At; // it stops where it is (the driver-shot rule's own stop)
-                    bool driverIn = !Driver.Down && c.At != blockPath.Points[0], valeIn = Vale == ValeAt.Pickup && !PickupService; // at the pickup the driver stands beside it already
-                    if (driverIn || valeIn) Note("car.out", driverIn && valeIn ? "The driver and Vale get out of the official car." : driverIn ? "The driver gets out of the official car." : "Vale gets out of the official car.");
+                    StopOfficial(c.At); // it stops where it is (the driver-shot rule's own stop)
+                    bool driverIn = !Driver.Down && valeDriveStart >= 0, valeIn = Vale == ValeAt.InCar; // at the pickup the driver stands beside it already (brief 059: until Vale is in)
+                    if (valeIn) { Vale = ValeAt.Pickup; PickupService = false; } // brief 059: he gets out and stands by it
+                    if (driverIn || valeIn) Note("car.out", driverIn && valeIn ? $"The driver and {ValeName} get out of the official car." : driverIn ? "The driver gets out of the official car." : $"{Cap(ValeName)} gets out of the official car.");
                     return;
             }
         }
 
-        /// <summary>The disabled official car's people stand beside it, the driver on the road side, Vale on the kerb side: the nearest free
-        /// ground 1.5 m either side of the car (the walk grid's NearestFree, deterministic).</summary>
-        Pt BesideCar(Pt car, int side) => S.Grid.NearestFree(car + new Pt(0, 150 * side)) ?? car;
+        /// <summary>The disabled official car's people stand beside it, the driver on the road side (side -1), Vale on the kerb side (+1): the
+        /// nearest free ground 1.5 m either side of the car, across its heading (engine 0.33.1, car.footprint: 0.33.0 put them 1.5 m along +y,
+        /// which is along the car in the official bay). The kerb side is the car's right (the block frame turns x to y anticlockwise, and the
+        /// city drives on the right), the walk grid's NearestFree round the standing cars, deterministic.</summary>
+        Pt BesideCar(Pt car, int side)
+        {
+            var h = OfficialHeading(); long n = G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y); if (n == 0) { h = new Pt(0, 100); n = 100; }
+            var right = new Pt((int)(h.Y * 150L / n), (int)(-h.X * 150L / n)); // the heading turned clockwise, 150 cm
+            return Walk.NearestFree(car + new Pt(right.X * side, right.Y * side)) ?? car;
+        }
 
         /// <summary>One tick of burning cars: each blows car.target.burn after it caught fire.</summary>
         void CarsStep()
@@ -125,9 +154,9 @@ namespace Suborned.Sim
             c.Blown = true; var at = c.At;
             Chain.Add(c.Id.Substring(4) + "-car-exploded");
             Note("car.exploded", $"The {CarName(c.Id)} explodes.");
-            var of = Range ? RangeCarCover(c.Id) : CarCover(c.Id); liveCover = new List<CoverPoint>(LiveCover.FindAll(p => p.Of != of)); // its cover points are gone
+            var of = Range ? RangeCarCover(c.Id) : CarCover(c.Id); liveCover = new List<CoverPoint>((liveCover ?? S.Cover).FindAll(p => p.Of != of)); liveCoverKey = -1; // its cover points are gone (brief 059: from the site's, not the cars-where-they-stand filter)
             // violence seen by a civilian (§05; rulebook car.target): Alert to alert.violenceSeen and a Menace step, once a car
-            bool civSees = false; foreach (var p in WitnessesOf(at, null)) if (p.Civilian) { civSees = true; break; }
+            bool civSees = false; foreach (var p in WitnessesOf(at, null, "gunfire")) if (p.Civilian) { civSees = true; break; }
             if (civSees)
             {
                 RaiseAlert(R.ViolenceSeen, "violence-seen:blast:" + c.Id);
@@ -150,7 +179,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>Held inside the car at its blast: Vale while the Enforcer is seizing him at the official car.</summary>
-        bool Inside(CarTarget c, string id) => c.Id == "car:official" && id == "councillor" && Vale == ValeAt.Taking && !PickupService;
+        bool Inside(CarTarget c, string id) => c.Id == "car:official" && id == "councillor" && (Vale == ValeAt.Taking || Vale == ValeAt.InCar); // brief 059: in the back of his car too
 
         /// <summary>Everyone a blast can reach, in a fixed order: the cell, the city's people by role, the guard and the patrol, the response's
         /// officers, units and robots, the fight's hostiles, then the crowd by id.</summary>

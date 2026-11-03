@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "She takes the Fixer for the Bureau and jokes, and the joke dies on the threat. For Aster: written to the sheet (a few minutes, she never tells him), but §07 [c2f50e911d9850c901298a11] has a pressured Inez tell him, door 1:40; please resolve.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Bureau again? Tell them I died. They can stamp that."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not the Bureau. That terrace must be cruel on your feet."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Then sit or go. Milena thinks I'm idling as it is."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Quietly. The Office hears about you and Okafor unless you oblige me."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's seen? Has it gone down a tube already? Oblige how?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "When I telephone, call Okafor over, a few minutes off his door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll tell him I've news, not for the line. He'll believe me."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I know he will. Sit down somewhere, when your shift lets you."
+        }
+      ],
+      "learned": [
+        "Inez knows the Fixer's face now."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She says yes before she knows to what, and the Fixer slows her down and makes her hear what she agreed to.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Selling? The Bureau stamps my card before I'm paid. Try next door."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not selling. I'd hate the Office to hear about you and Okafor."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Yes. Whatever it is, yes. Did anyone see you come over?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Softly. Yes to what? And when do they let you rest?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "They don't. Tell me, quick. Nobody's on my tables."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I'll telephone. You bring Okafor over. His door's empty a few minutes."
+        },
+        {
+          "speaker": "Inez",
+          "line": "So I lie to him. I'll say it can't go by telephone."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Then the Office hears nothing. If you don't call, it hears everything."
+        }
+      ],
+      "learned": [
+        "She'll remember the Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "The Fixer opens on Okafor as friendly gossip; her fondness gives her away, and the same fondness is what the lie will spend.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "Okafor stops here every day before his shift. It isn't the coffee."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's terrible coffee. He drinks it and makes that face, every day."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You've earned it, those shifts. The Office could hear about you two."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who said two? Was it Milena? Who's watching my terrace?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Keep it low. One stamped form tells them, unless you oblige us."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Anything. If it's money, ask the Bureau, they've got mine."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I'll telephone. You call Okafor over, a few minutes off his door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll say it can't wait, not on the line. He'll be pleased."
+        }
+      ],
+      "learned": [
+        "She could describe the Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

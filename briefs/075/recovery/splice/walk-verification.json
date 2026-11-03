@@ -1,0 +1,27 @@
+{
+  "worldSource": "harbour-district v0.5.6 (2026-10-29)",
+  "planVersion": "0.5.6",
+  "worldSha256": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+  "walkSha256": "f3eafbccaac6309e35af89c447445573a03af72af3aa26d84fd52da27cf44cea",
+  "rebuiltWalkSha256": "f3eafbccaac6309e35af89c447445573a03af72af3aa26d84fd52da27cf44cea",
+  "byteIdenticalToGenerator": true,
+  "freshness": {
+    "fresh": true,
+    "why": "made from world 1c38f7e61dd6"
+  },
+  "floorBytes": 430336,
+  "expectedFloorBytes": 430336,
+  "kindBytes": 215168,
+  "expectedKindBytes": 215168,
+  "nx": 656,
+  "ny": 328,
+  "counts": {
+    "open": 186739,
+    "raised": 3971,
+    "solid": 23099,
+    "lowCeiling": 1359
+  },
+  "countsMatchCellTotal": true,
+  "frameMatchesPlan": true,
+  "unmeasuredKitIds": []
+}

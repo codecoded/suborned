@@ -1,0 +1,3 @@
+# F15 agent vs every on the loud-wait twins (probe: out/scratch/keel/f15)
+== fight-loud-wait-yard: agent Withdrawn/ T9 A3 @7:29.5 branch loud | every Withdrawn/ T9 A3 @7:29.5 branch loud
+   first checkpoint differing: (4495, 7954005051546008275)

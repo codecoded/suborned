@@ -1,0 +1,7 @@
+{
+  "path": "unity/Assets/Scenes/probe-recovery075-swap/probe-recovery075-swap Baking Set.asset",
+  "before": "9227ec02610a50ff2316d957acbef985909867a60199fcf7e270c660a1bb5ebb",
+  "after": "2ed360dd3ecf540dbe7e03434bbd3b96fca119aff2f2b58bce2127ac1cb4eb8a",
+  "status": "historical drift detection; subsequently restored byte-identically; see baking-set-repair.json",
+  "resolved": true
+}

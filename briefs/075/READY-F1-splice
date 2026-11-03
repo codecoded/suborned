@@ -1,0 +1,6 @@
+075-F category 1 (billboards, posters, signage: rules BB-1..BB-4), Splice, 2026-10-28
+export out/world/harbour-district.world.json sha256 9adb1389d83047fd28c3c615f43d6e73911d313efdf31fe4dadfca9fc26b126a
+old -> new: billboards 14 (7 rooftop / 4 wall / 3 pylon) -> 37 (19 / 9 / 9); ad columns 8 -> 19; blade signs 6 -> 112, neon 2 -> 55 (signKit, already there); marquee 1 -> 0
+play-street cap: 1 rooftop board left out, bld/boulevard-west/3/roof (records, roof 20.58 m, board to 29.75 m, cap 20.4): Sky's question
+posters: world.posters, 67 picks (Vela's kit.json posters), 15 distinct ads; Latch swaps per instance (as liveries)
+checks: world x2 same hash, world:faces, plan 144/0 fail, plan + handover overlay 149/0 fail, cover + cover --check, sim:site (site byte-identical, == HEAD), missions:check handover SHIPS (893 plays), typecheck, tools/world + tools/plan tests 549 pass 0 fail

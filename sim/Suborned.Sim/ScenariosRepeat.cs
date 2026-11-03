@@ -83,16 +83,23 @@ namespace Suborned.Sim
                 RefusedFree(r, "watch", GuardR, "already-watched", g.GuardP);
             }, Told(GuardR, "routine", "need", "temperament", "secret"));
 
-            Add("N105b", "—", "A Watch that may still show an affair is not refused (Sky 2026-10-18; Motive, motive-lovers.md §1.2: a Watch that ends with two lovers together reveals it): Inez watched once, her routine known, never heard, her lover the guard: the second Watch on her is taken, and Listen is open.", r =>
+            Add("N105b", "—", "Engine 0.28.0 (brief 054 §2.1; 0.29.0 §9.2: a Watch never teaches a secret, only Listen does): a second Watch is offered only while it can show something the cell reads; once watched, Inez gives none: already-watched, with the lovers apart and with them together. Inez watched once, her routine known, never heard (her need told), her lover the guard: the second Watch on her is refused already-watched and Listen is open; turned and calling him to her, the lovers together, the Watch is still already-watched and the affair stays unknown.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Scout, "d:Courtyard"));
+                r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Fixer, "d:Courtyard")));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Is(g.Inez.KRoutine && !g.Inez.KSecret && g.Inez.Lover == g.GuardP, "her routine known, the affair not, the guard her lover");
-                r.Is(g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "" && g.ScoutQuery("watch", Inez).ok, "a second Watch is open: card and query");
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.Is(g.Quote(g.R.Ev("scout.listen"), g.Inez).Refused == "", "Listen is still open: her need and temperament unknown");
-            });
+                // a Watch is offered only when it shows something: her mood is the one the cell saw, so a second Watch is not offered (already watched)
+                r.Is(g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "already-watched" && g.ScoutQuery("watch", Inez).code == "already-watched", "a second Watch, with the lovers apart, is already-watched: card and query");
+                r.Is(g.Quote(g.R.Ev("scout.listen"), g.Inez).Refused == "", "Listen is still open: her temperament and secret unknown");
+                // brief 054 §9.2: the same answer with the lovers together (0.28.0 offered it then, for the affair)
+                HelpUntilTurned(r, Inez);
+                r.Do(Fixer, "call", Inez);
+                r.To(g.LureTick + g.VisitWalkTicks);
+                r.Is(G.Within(g.PersonPos(g.Inez)!.Value, g.GuardPose()!.Value.pos, 400), "the lovers stand together");
+                r.Is(g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "already-watched" && g.ScoutQuery("watch", Inez).code == "already-watched" && !g.WatchOffered(Inez), "with the lovers together, the same: already-watched, card and query");
+                r.Is(!g.Inez.KSecret && !g.GuardP.KSecret, "the affair is still unknown: only Listen teaches it");
+            }, Told(Inez, "need"));
             Add("N106", "—", "The query asks needs before reach (Latch 2026-10-18): at 0:02 the Scout stands far from Inez and her routine is unknown. ScoutQuery says needs-routine (walking closer won't cure it); the order itself, given there, says the same since engine 0.23.0 (rulebook cell.approach: out of reach it would walk in, so the needs are checked first; before it, Issue answered too-far). Within reach, both say needs-routine.", r =>
             {
                 var g = r.G;

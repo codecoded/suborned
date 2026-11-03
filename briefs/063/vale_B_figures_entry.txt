@@ -1,0 +1,36 @@
+   },
+   "smoothness": 0.2
+  },
+  {
+   "id": "councillor",
+   "role": "councillor",
+   "kind": "transfer",
+   "label": "Councillor Vale B (white beard, ivory jacket with black yoke and cuffs, chain of office): a real model, not the D4 stand-in (brief 063, 2026-10-25)",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/vale_B__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro from the front cut-out of the Codex model sheet of the picked Vale B plate; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/vale_B__hunyuan_pro.glb",
+    "model_sheets/vale_B__front.png",
+    "model_sheets/vale_B__sheet3view.png"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/vale_B__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "matSmoothness": 0.05,
+   "noNormal": true,

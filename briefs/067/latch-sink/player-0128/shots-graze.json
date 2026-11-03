@@ -1,0 +1,279 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "sink probe grazing views",
+ "defaults": {
+  "hud": false
+ },
+ "shots": [
+  {
+   "name": "graze-tech-0",
+   "tick": 30,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     7,
+     1.6,
+     0
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-tech-1",
+   "tick": 30,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     0,
+     1.6,
+     7
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-tech-2",
+   "tick": 30,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     -7,
+     1.6,
+     0
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-tech-3",
+   "tick": 30,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     0,
+     1.6,
+     -7
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-tech-4",
+   "tick": 30,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     12,
+     1.2,
+     4
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-fixer-0",
+   "tick": 30,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     7,
+     1.6,
+     0
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-fixer-1",
+   "tick": 30,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     0,
+     1.6,
+     7
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-fixer-2",
+   "tick": 30,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     -7,
+     1.6,
+     0
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-fixer-3",
+   "tick": 30,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     0,
+     1.6,
+     -7
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-fixer-4",
+   "tick": 30,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     12,
+     1.2,
+     4
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-scout-0",
+   "tick": 30,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     7,
+     1.6,
+     0
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-scout-1",
+   "tick": 30,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     0,
+     1.6,
+     7
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-scout-2",
+   "tick": 30,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     -7,
+     1.6,
+     0
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-scout-3",
+   "tick": 30,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     0,
+     1.6,
+     -7
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  },
+  {
+   "name": "graze-scout-4",
+   "tick": 30,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     12,
+     1.2,
+     4
+    ],
+    "lookOffset": [
+     0,
+     0.4,
+     0
+    ],
+    "fov": 45
+   }
+  }
+ ]
+}

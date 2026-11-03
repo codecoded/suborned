@@ -1,0 +1,1507 @@
+{
+ "schema": "suborned.style-proposal/1",
+ "brief": "072-B",
+ "author": "Vela",
+ "date": "2026-10-27",
+ "status": "applied 2026-10-27 (072-G): Sky approved choices 1-3 ('yep, more, more reds / blues allowed as well'; Office deep teal band 'yep'; 'keep powdblue'); choice 4 (grade) is Glint's. `applied` below is the final set, beyond the rendered proposal; Aster versions the GDD from it.",
+ "sources": {
+  "contracts/style/suborned.style.json": "b1170db72b07ef0f31047f7fe85c22fd2c2b81faec12d4806a21738da6b054a2",
+  "unity/Assets/Suborned/Editor/World/facade.json": "babb75db2f17a52b455b1ef168536ad79d7359066d0f81935249a2498287282f",
+  "unity/Assets/Suborned/Editor/World/look.json": "db094df52810703bba68b2c840e3d7e327d1f60f57d4dc6b261e14ae58d599cb",
+  "unity/Assets/Suborned/Editor/World/looks/harbour.json": "2317230a2a3307376c8335766a8da756b8bbe9c6425f943f2b17b2ac826e0494",
+  "contracts/world/civic-look.json": "d7245fe6c854cc2968654e2daf37b15aecbc3eb20933eea632b43d7a424264e4",
+  "tools/decokit/mats.py": "7a42e1c00c7e999b829fa2e405b823df607b9d98439e1557a1278388902612c5",
+  "unity/Assets/Suborned/Editor/World/light.json": "99773a39e3b4e12c4548d2c90a35e1b02a051efc1263a02a05266dc220c95455",
+  "decokit_materials.json (old)": "24faa748f989e49f40508b11f79eefc9d15dc20be2b7ec7146dac58b38a24b05"
+ },
+ "decokit": "DecoKit (~/Projects/the-suborned workbench/Tools/Blender/decokit/mats.py LIB, game/Assets/TheSuborned/Art/DecoKit/decokit_materials.json)",
+ "render_overrides": "briefs/072/style/src/overrides.json (copy of out/scratch/vela-style/overrides.json; the 'after' renders apply exactly the rendered=true rows)",
+ "choices": {
+  "1": "palette loosening (brass-gold, glass, walls, DecoKit accents, finishes, gate-era rules dropped)",
+  "2": "civic block: DecoKit deep teal band (C1-C2) or keep the paintings' pale seafoam",
+  "3": "road: keep powder-blue enamel or DecoKit asphalt",
+  "4": "grade: keep today's (saturation 18, contrast 6, exposure +0.15) or move toward DecoKit's street grade (25, 10, rig-matched exposure); Glint sets it in Unity"
+ },
+ "rows": [
+  {
+   "id": "B1",
+   "group": "brass",
+   "file": "tools/decokit/mats.py",
+   "key": "BRASS (DK_Accent_Gold, DK_Brass_Civic)",
+   "today": "#99784D",
+   "decokit": "#D6AE62 (DK_Gold, metal)",
+   "proposed": "#C29A55",
+   "basis": "between",
+   "effect": "street-level trim reads as warm brass-gold instead of dark bronze-brown; frames and beads catch the sun",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B2",
+   "group": "brass",
+   "file": "tools/decokit/mats.py",
+   "key": "LIB DK_Gold",
+   "today": "('brass', #99784D)",
+   "decokit": "('metal', #D6AE62)",
+   "proposed": "('brass', #CFA65A)",
+   "basis": "between, near DecoKit",
+   "effect": "kit frames, door posts, porthole rings and fins (StreamBay, PortholeBay, CafeBay) go gold-brass",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B3",
+   "group": "brass",
+   "file": "tools/decokit/mats.py",
+   "key": "BRASS_LIGHT (DK_Gold17)",
+   "today": "#AD866F (rose-leaning: the darkest a gate let through)",
+   "decokit": "n/a (DecoKit had one gold)",
+   "proposed": "#D6B676",
+   "basis": "beyond today; reason (signal gate) gone since 2026-10-16",
+   "effect": "highlight brass stops looking pink",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B4",
+   "group": "brass",
+   "file": "tools/decokit/mats.py",
+   "key": "KIND['brass'] (roughness, metallic)",
+   "today": "(0.5, 0.3)",
+   "decokit": "metal (0.3, 1.0)",
+   "proposed": "(0.4, 0.6)",
+   "basis": "between (full metal mirrored the dark zenith: black studs in Unity)",
+   "effect": "brass reads as metal, keeps its colour in shade",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B5",
+   "group": "brass",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.gold, sand_p, civic_trim; paletteOverride.gold_trim",
+   "today": "#99784d",
+   "decokit": "#D6AE62 (DK_Gold)",
+   "proposed": "#C29A55",
+   "basis": "between",
+   "effect": "procedural trim, sand-family plinth and sign boards in brass-gold",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B6",
+   "group": "brass",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.t_hotel",
+   "today": "#ad866f",
+   "decokit": "n/a",
+   "proposed": "#C9A46A",
+   "basis": "beyond today",
+   "effect": "hotel lobby trade colour stops reading pink-brown",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B7",
+   "group": "brass",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.trim, roles.accent_gold, surface_overrides.gold_trim (+ look.json/looks/harbour.json harbour.trim, harbour.accent_gold)",
+   "today": "#99784d",
+   "decokit": "#D6AE62",
+   "proposed": "#C29A55",
+   "basis": "between",
+   "effect": "the role every generator reads for trim and gold accents",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B8",
+   "group": "brass",
+   "file": "contracts/world/civic-look.json",
+   "key": "roles.hairline.hex (DK_Brass_Civic); palette entries DK_Brass_Civic, DK_Accent_Gold, DK_Gold, DK_Gold17",
+   "today": "#99784D",
+   "decokit": "#D6AE62",
+   "proposed": "#C29A55 (DK_Gold #CFA65A, DK_Gold17 #D6B676)",
+   "basis": "between",
+   "effect": "civic block door frames, glazing grid, marquee lines",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "B9",
+   "group": "brass",
+   "file": "contracts/world/civic-look.json",
+   "key": "roles.hairline.rule",
+   "today": "bead, frame, mullion or line of 3-7 cm; at most 6% of an elevation; 'any lighter than L 52 falls inside the gate'",
+   "decokit": "gold frames, fins and bands, no cap",
+   "proposed": "bead, frame, mullion, line or band up to 15 cm; at most 12% of an elevation; no large panels",
+   "basis": "between",
+   "effect": "allows DecoKit-width gold bands and frames; the gate reason is history",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "B10",
+   "group": "brass",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.rule (brass sentence)",
+   "today": "Brass, not gold, at street level and on facades; skyline crowns keep gold; gold or brass only as hairline, frame, bead and small metal, never a large surface.",
+   "decokit": "no written rule; gold metal on frames, fins, bands",
+   "proposed": "Warm brass-gold at street level and on facades: frames, beads, bands, fins and small metal up to about 15 cm; skyline crowns keep gold; never a large gold or brass panel.",
+   "basis": "between",
+   "effect": "the written rule the crew checks against",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "B11",
+   "group": "brass",
+   "file": "GDD/the-suborned-agent-gdd-v0.30.2-2026-10-27.md (+ the human html; Aster versions)",
+   "key": "§15 palette: 'brass, not gold, at street level and on facades' block",
+   "today": "brass #99784d ... light brass #ad866f (DK_Gold17) ... gold or brass = hairline, frame, bead and small metal only; a large part never takes brass or gold ...; lantern and records take sunshine",
+   "decokit": "gold #D6AE62 on frames and bands",
+   "proposed": "brass-gold #C29A55 (DK_Gold #CFA65A, light DK_Gold17 #D6B676); frames, beads, bands and fins up to ~15 cm; a large part still never takes brass or gold; lantern and records keep sunshine",
+   "basis": "between",
+   "effect": "GDD text matches the contract",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Aster",
+   "kind": "rule"
+  },
+  {
+   "id": "B12",
+   "group": "brass",
+   "file": "contracts/style/suborned.style.json",
+   "key": "concept_prompt.city",
+   "today": "'thin brushed-brass hairline trim'",
+   "decokit": "n/a",
+   "proposed": "'brushed brass-gold trim lines and bands'",
+   "basis": "between",
+   "effect": "concept art stops asking for hairlines only",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "B13",
+   "group": "brass",
+   "file": "contracts/style/suborned.style.json",
+   "key": "concept_prompt.avoid",
+   "today": "'gold surfaces'",
+   "decokit": "n/a",
+   "proposed": "'large gold panels'",
+   "basis": "between",
+   "effect": "gold trim allowed in concept art; big gold surfaces still out",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "G1",
+   "group": "glass",
+   "file": "tools/decokit/mats.py",
+   "key": "GLASS_FILM['DK_GlassDark'].glaze, alpha",
+   "today": "#4A8588, 0.72",
+   "decokit": "#35585A, alpha 0.3 (a mirror)",
+   "proposed": "#3F7A8E, 0.65",
+   "basis": "between",
+   "effect": "windows go a touch bluer and pick up more sky",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "G2",
+   "group": "glass",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.glass_clear / glass_t / glass_dark",
+   "today": "#2e6d70 / #a9cfc8 / #24484a",
+   "decokit": "DK_Window_Teal #2E6D70, DK_Window_Tower #34434B, DK_GlassDark #35585A",
+   "proposed": "#2C6478 / #A7CAD8 / #233F50",
+   "basis": "between (toward DecoKit's blue-grey tower glass)",
+   "effect": "procedural windows and shop doors read as blue-teal glass, not green",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "G3",
+   "group": "glass",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "note: 'Glass is clear (grammar §3: no blue curtain-wall tint)'",
+   "today": "no blue tint",
+   "decokit": "blue-grey tower glass, teal channels",
+   "proposed": "Glass is dark teal to blue-teal with sky reflections; still no curtain-wall towers in the play streets",
+   "basis": "between",
+   "effect": "lifts the no-blue rule, keeps the no-curtain-wall rule",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "G4",
+   "group": "glass",
+   "file": "contracts/world/civic-look.json",
+   "key": "roles.glass.rule",
+   "today": "clear dark teal, no blue curtain wall",
+   "decokit": "as G3",
+   "proposed": "dark teal to blue-teal; no curtain wall",
+   "basis": "between",
+   "effect": "same for the civic block",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "W-cream_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.cream_w",
+   "today": "#efe3c8",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#EBDABA",
+   "basis": "between",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-peach_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.peach_w",
+   "today": "#f3d2b8",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#F2C4A4",
+   "basis": "beyond DecoKit chroma, Sky's 'loosened a little' (peach)",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-mint_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.mint_w",
+   "today": "#cdeadc",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#C0E3D0",
+   "basis": "between",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-sky_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.sky_w",
+   "today": "#cde3f1",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#BCD9EE",
+   "basis": "between",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-sand_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.sand_w",
+   "today": "#e5d2b0",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#E3CA9E",
+   "basis": "between",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-ivory_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.ivory_w",
+   "today": "#f0efea",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#EFE8D6",
+   "basis": "at DecoKit (Enamel_Ivory)",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-civic_w",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches.civic_w",
+   "today": "#eee9da",
+   "decokit": "DK_Limestone #E7DECA / DK_Limestone_Tex mean #E6D6C1 / DK_Render_White #F6F2EA / DK_Enamel_Ivory #EFE8D6",
+   "proposed": "#EDE5D2",
+   "basis": "between",
+   "effect": "procedural walls warmer and a little deeper, so stone, enamel and trim separate",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-limestone",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.limestone (+ look.json and looks/harbour.json harbour.limestone; refresh palette_world.source.sha256)",
+   "today": "#f8eed9",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F0E3CA",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-residential",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.residential (+ look.json and looks/harbour.json harbour.residential; refresh palette_world.source.sha256)",
+   "today": "#f8eedb",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F3E3C6",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-mixed",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.mixed (+ look.json and looks/harbour.json harbour.mixed; refresh palette_world.source.sha256)",
+   "today": "#fdf5e4",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F7EAD2",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-commercial",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.commercial (+ look.json and looks/harbour.json harbour.commercial; refresh palette_world.source.sha256)",
+   "today": "#f9e2cc",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F5D3B5",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-frontage",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.frontage (+ look.json and looks/harbour.json harbour.frontage; refresh palette_world.source.sha256)",
+   "today": "#f6ecd8",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F0E0C3",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-civic",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.civic (+ look.json and looks/harbour.json harbour.civic; refresh palette_world.source.sha256)",
+   "today": "#fbe8b8",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F7DFA8",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "R-roof",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.roof (+ look.json and looks/harbour.json harbour.roof; refresh palette_world.source.sha256)",
+   "today": "#fff6e6",
+   "decokit": "DK_Limestone #E7DECA (no role table)",
+   "proposed": "#F6EBD6",
+   "basis": "between",
+   "effect": "masses, roofs and stand-ins come off near-white (L* 95+) toward warm limestone",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-mat",
+   "group": "walls",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "materials.matte / materials.glossy (smoothness)",
+   "today": "0.12 / 0.6",
+   "decokit": "stone 0.25 / enamel 0.68 + clear coat 0.97",
+   "proposed": "0.22 / 0.72",
+   "basis": "between (matte), at DecoKit (glossy)",
+   "effect": "walls and enamel pick up a soft sheen and sky; less chalky",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "W-rule",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.rule (base sentence)",
+   "today": "Pastel cream and peach base for ground, stone and bodies; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs, roofs and trim, never whole buildings",
+   "decokit": "kit walls in textured limestone, render white, coral and cream; mustard, gold, teal, coral and royal accents",
+   "proposed": "Pastel cream, peach and warm limestone base for ground, stone and bodies; saturated enamel accents (cobalt, royal, flamingo, coral, mustard, sunshine, mint, turquoise, teal) on panels, spandrels, awnings, signs, roofs and trim, never a whole building's body",
+   "basis": "between",
+   "effect": "widens the accent set to DecoKit's",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "W-gdd",
+   "group": "walls",
+   "file": "GDD/the-suborned-agent-gdd-v0.30.2-2026-10-27.md (+ the human html; Aster versions)",
+   "key": "§15 city line and palette accents / facade accent roles",
+   "today": "accents cobalt, flamingo, sunshine, mint, turquoise; facade roles teal, coral, brass #99784d, mint, peach, turquoise, flamingo",
+   "decokit": "DecoKit enamels incl. mustard #EEA82D, coral #E07560, royal #2C56A6, deep teal #1F6C67",
+   "proposed": "add mustard #EEA82D, deep coral #E07560, royal #2C56A6; brass #C29A55; walls as W-*",
+   "basis": "at DecoKit",
+   "effect": "GDD text matches the contract",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Aster",
+   "kind": "rule"
+  },
+  {
+   "id": "ST-mat",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "materials[] (and GDD §15 materials)",
+   "today": "'saturated vitreous enamel panels (cobalt, flamingo, sunshine, mint, turquoise)', 'warm brass trim at street level and on facades, gold on skyline crowns', 'clear acrylic'",
+   "decokit": "n/a",
+   "proposed": "add mustard, coral and royal to the enamel list; 'warm brass-gold trim, frames and bands at street level and on facades, gold on skyline crowns'; add 'blue-teal glass with sky reflections'",
+   "basis": "between",
+   "effect": "material vocabulary for concept art",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "ST-city",
+   "group": "walls",
+   "file": "contracts/style/suborned.style.json",
+   "key": "concept_prompt.city",
+   "today": "'coral and peach accents'",
+   "decokit": "n/a",
+   "proposed": "'coral, peach and mustard accents'",
+   "basis": "at DecoKit",
+   "effect": "concept art may use DecoKit's mustard",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "A1",
+   "group": "accents",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "swatches (new)",
+   "today": "none",
+   "decokit": "DK_Enamel_Mustard #EEA82D, DK_Enamel_Coral #E07560, DK_Enamel_Royal #2C56A6, DK_Enamel_Teal #1F6C67",
+   "proposed": "e_mustard #EEA82D, e_coral_deep #E07560, e_royal #2C56A6, e_teal_deep #1F6C67",
+   "basis": "at DecoKit",
+   "effect": "the DecoKit enamels become pickable by procedural facades",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "A2",
+   "group": "accents",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "areas.<area>.enamel (added)",
+   "today": "lantern [e_coral,e_teal,e_sun,e_rose,e_apricot] · docks [e_teal,e_sun,e_cobalt,e_coral] · crescent [e_mint,e_teal,e_rose,e_sun,e_lilac] · records [e_sun,e_teal,navy,e_coral] · harbour [e_teal,e_coral,e_sun,e_mint,e_cobalt] · lamplight [e_coral,e_teal,e_sun,e_rose,e_apricot] · gardens [e_mint,e_teal,e_green,e_coral,e_sun]",
+   "decokit": "mustard and gold spandrels, coral bands, royal blue",
+   "proposed": "lantern +e_mustard,+e_coral_deep · docks +e_mustard,+e_royal · crescent +e_royal · records +e_mustard · harbour +e_mustard,+e_coral_deep · lamplight +e_mustard,+e_coral_deep · gardens +e_mustard",
+   "basis": "at DecoKit",
+   "effect": "about one host in four to six takes a DecoKit mustard, coral or royal band; neighbours still differ",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "A3",
+   "group": "accents",
+   "file": "contracts/style/suborned.style.json",
+   "key": "palette_world.roles.accent_coral / accent_peach (+ look.json, looks/harbour.json)",
+   "today": "#fc9c84 / #fcc4ac",
+   "decokit": "DK_Enamel_Coral #E07560",
+   "proposed": "#F28A70 / #F8B898",
+   "basis": "between",
+   "effect": "skin accents and porthole panels a little richer",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "A4",
+   "group": "accents",
+   "file": "tools/decokit/mats.py",
+   "key": "LIB DK_Enamel_Red (WORLD_RETUNE)",
+   "today": "#820606 (oxblood, for the signal gate)",
+   "decokit": "#C42A1F",
+   "proposed": "#C42A1F",
+   "basis": "at DecoKit; gate reason gone",
+   "effect": "kit red enamel (pillar boxes, trims) back to bright enamel red",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "A5",
+   "group": "accents",
+   "file": "tools/decokit/mats.py",
+   "key": "LIB DK_Signal_Red",
+   "today": "#E8609A (flamingo, for the signal gate)",
+   "decokit": "#FF3B26",
+   "proposed": "#FF3B26",
+   "basis": "at DecoKit; ALIAS keeps generated pieces on DK_Beacon_Rose",
+   "effect": "legacy FBXs that bind Signal_Red show a red lamp again",
+   "choice": "1",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "C1",
+   "group": "civic",
+   "file": "unity/Assets/Suborned/Editor/World/facade.json",
+   "key": "areas.civic.enamel",
+   "today": "[e_seafoam, e_seafoam_pale]",
+   "decokit": "teal roof, dark teal band, gold trim (old civic office)",
+   "proposed": "[e_seafoam, e_teal_deep]",
+   "basis": "at DecoKit",
+   "effect": "the Records Office gets a deep teal storey band like the old DecoKit office",
+   "choice": "2",
+   "rendered": true,
+   "owner": "Vela",
+   "kind": "value"
+  },
+  {
+   "id": "C2",
+   "group": "civic",
+   "file": "contracts/world/civic-look.json",
+   "key": "roles.deep.rule",
+   "today": "an accent of 0.3 m or less; never a field, fin, fascia, cap or band",
+   "decokit": "deep teal bands and fascia",
+   "proposed": "bands, fascia lines and reveals up to 0.6 m; never a whole field",
+   "basis": "between",
+   "effect": "allows C1 on the kit side (CafeBay, RecordsEntrance)",
+   "choice": "2",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "C3",
+   "group": "civic",
+   "file": "contracts/world/civic-look.json",
+   "key": "materials swaps cafe-palm-* (Mustard->Seafoam, Coral->Ivory), civic-service-cabinet-* (Mustard->Seafoam)",
+   "today": "swapped to seafoam/ivory",
+   "decokit": "mustard and coral",
+   "proposed": "keep the swaps (the civic block follows the paintings)",
+   "basis": "unchanged",
+   "effect": "none; listed so the choice is explicit",
+   "choice": "2",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "C4",
+   "group": "civic",
+   "file": "contracts/world/civic-look.json",
+   "key": "roles.banner.rule",
+   "today": "'Never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) ... stay off this block'",
+   "decokit": "coral fabric",
+   "proposed": "drop the gate clause; contract coral, flamingo, peach and red-orange allowed on banners",
+   "basis": "at DecoKit",
+   "effect": "rule cleanup (signal gate dropped 2026-10-16)",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "C5",
+   "group": "civic",
+   "file": "contracts/world/civic-look.json",
+   "key": "roles.lamp.rule",
+   "today": "'DK_Lamp #FFE2A6 is dE 19.3 from the guard colour: the civic pieces use Lamp_Deco'",
+   "decokit": "DK_Lamp #FFE2A6",
+   "proposed": "keep DK_Lamp_Deco #FFF1C4 as a choice of colour; drop the gate reason",
+   "basis": "unchanged colour",
+   "effect": "rule cleanup only",
+   "choice": "1",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "rule"
+  },
+  {
+   "id": "RD1",
+   "group": "road",
+   "file": "GDD/the-suborned-agent-gdd-v0.30.2-2026-10-27.md (+ the human html; Aster versions); unity/Assets/Suborned/Editor/World/look.json",
+   "key": "§15 'the road is enamel: powder-blue ...'; harbour.road-enamel, DK_Ground_RoadEnamel",
+   "today": "powder-blue enamel #8fafc1 (texture mean #8EAEC0)",
+   "decokit": "asphalt_road_v1 (mean #807B74)",
+   "proposed": "option: DK_Ground_RoadAsphalt (exists; mean #4C5057) or keep powder-blue",
+   "basis": "at DecoKit (option)",
+   "effect": "the biggest single change in every play frame: dark road, the pale stone and enamel pop",
+   "choice": "3",
+   "rendered": false,
+   "owner": "Sky decides; Splice/Latch apply",
+   "kind": "choice"
+  },
+  {
+   "id": "L1",
+   "group": "grade (Glint)",
+   "file": "unity/Assets/Suborned/Editor/World/light.json",
+   "key": "post.colour.saturation",
+   "today": "18",
+   "decokit": "25 (DK_StreetGrade) / 16 (old HarbourGrade)",
+   "proposed": "25 (DecoKit), Glint tunes in Unity",
+   "basis": "between",
+   "effect": "accents a little richer; shown only as an approximate post pass in the 'DecoKit grade' rows (src/grade.py), not in the Loosened renders",
+   "choice": "4",
+   "rendered": false,
+   "owner": "Glint (Sky picks choice 4)",
+   "kind": "choice"
+  },
+  {
+   "id": "L2",
+   "group": "grade (Glint)",
+   "file": "unity/Assets/Suborned/Editor/World/light.json",
+   "key": "post.colour.postExposure / contrast",
+   "today": "+0.15 / 6 (ACES)",
+   "decokit": "-0.8 / 10 (DK_StreetGrade), -0.65 / 18 (old HarbourGrade), different light rig",
+   "proposed": "contrast 10; exposure matched to the rig: DecoKit -0.8 with sun 3 = about -0.06 with today's sun 1.8 (net -0.21 EV from today)",
+   "basis": "n/a",
+   "effect": "slightly darker and firmer; the old frames' darker 10th percentile (0.19-0.53 vs 0.34-0.56) comes mostly from asphalt and textured walls, not the grade",
+   "choice": "4",
+   "rendered": false,
+   "owner": "Glint (Sky picks choice 4)",
+   "kind": "choice"
+  },
+  {
+   "id": "P1",
+   "group": "planets",
+   "file": "tools/decokit/horizon.py, sky_sheet.py (Horizon_PlanetRinged, Horizon_Moon)",
+   "key": "planet and moon colours",
+   "today": "old DecoKit maps (restored 2026-10-27, commit 96176fed)",
+   "decokit": "same",
+   "proposed": "no change",
+   "basis": "at DecoKit",
+   "effect": "kept as Sky asked",
+   "choice": "-",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "done"
+  },
+  {
+   "id": "K0",
+   "group": "kit",
+   "file": "tools/decokit/mats.py",
+   "key": "every other LIB material (enamels, stone, chrome, tiles)",
+   "today": "109 of 113 DecoKit materials identical",
+   "decokit": "same",
+   "proposed": "no change",
+   "basis": "at DecoKit",
+   "effect": "the kit's own colours are already DecoKit's: the restriction is in the rules and the procedural layer",
+   "choice": "-",
+   "rendered": false,
+   "owner": "Vela",
+   "kind": "info"
+  }
+ ],
+ "grade_pass": "briefs/072/style/src/grade.py (approximation of the URP grade as a post step over the Blender renders; numbers in out/scratch/vela-style/grade/grade.report.json)",
+ "applied": {
+  "date": "2026-10-27",
+  "by": "Vela (072-G item 1)",
+  "sky": {
+   "Q1a": "yep, more, more reds / blues allowed as well",
+   "Q1b": "yep",
+   "Q1c": "keep powdblue - feels more modern",
+   "Q1d": "yeo (Glint)"
+  },
+  "files_sha256": {
+   "contracts/style/suborned.style.json": "5e93ac97f174bf78272b54bc3207f2d1062ba40fdbaaa53e22c205e29d002528",
+   "unity/Assets/Suborned/Editor/World/facade.json": "9ab41af9695e39121467eaec4d416fd74eaf3d65a2462132fbc61f604c8e74cd",
+   "unity/Assets/Suborned/Editor/World/look.json": "a1a02f021c37d314d6f8164db17df2372ad5a91b1cf3c6489e6ff40cf3d19fe0",
+   "unity/Assets/Suborned/Editor/World/looks/harbour.json": "747cc5cdf2c938ab08cda8cf4a4fe6dfb0cb27d7f56e9d57b6fba0c906d4b98b",
+   "contracts/world/civic-look.json": "e899be732341bfda5806f0c18874417d845a275680feb0ca4fb95da351658cc4",
+   "tools/decokit/mats.py": "fd607a4adf39de253dd2df48977b14f54bfe5b815ccd511f78b0aadf40ddb550",
+   "tools/decokit/records_tower.py": "2bd30e49332af5f35b1f7888ec7462fae940588fa766a545d51ce23370906287",
+   "tools/world/gen/colour.ts": "6c6f72ad82cdeb1f5bfc80172bc61a36d85da929cbf9c107410d29aea5f62576"
+  },
+  "kit_mats_py": {
+   "DK_Accent_Gold": {
+    "kind": "brass",
+    "hex": "#C29A55",
+    "was": "#99784D"
+   },
+   "DK_Brass_Civic": {
+    "kind": "brass",
+    "hex": "#C29A55",
+    "was": "#99784D",
+    "where": "civic_common.py, crossing_common.py register mats.BRASS"
+   },
+   "DK_Gold": {
+    "kind": "brass",
+    "hex": "#D6AE62",
+    "was": "#99784D",
+    "note": "DecoKit's own colour; kind brass, not DecoKit's metal (black studs in Unity)"
+   },
+   "DK_Gold17": {
+    "kind": "brass",
+    "hex": "#D6B676",
+    "was": "#AD866F"
+   },
+   "KIND.brass": {
+    "roughness": 0.4,
+    "metallic": 0.6,
+    "was": [
+     0.5,
+     0.3
+    ]
+   },
+   "DK_Enamel_Mustard": {
+    "hex": "#EEA82D",
+    "was": "#EEA82D (back since 20 Oct)"
+   },
+   "DK_Enamel_Red": {
+    "hex": "#C42A1F",
+    "was": "#820606"
+   },
+   "DK_Signal_Red": {
+    "hex": "#FF3B26",
+    "was": "#E8609A",
+    "note": "legacy FBXs only; ALIAS keeps generated pieces on DK_Beacon_Rose"
+   },
+   "GLASS_FILM.DK_GlassDark": {
+    "glaze": "#3F7A8E",
+    "alpha": 0.65,
+    "was": "#4A8588 a0.72"
+   },
+   "crowns": "unchanged: DK_Crown_Gold #E3D681, DK_Crown_Gold17 #C9C08E",
+   "RecordsTower": "storey band 5.0..5.9 m on the wing and both towers: DK_Enamel_Teal #1F6C67 (was DK_Enamel_Seafoam); flutes, fins, parapet band, crown ring stay seafoam"
+  },
+  "facade_json": {
+   "swatches": {
+    "cream_w": "#EBDABA",
+    "peach_w": "#F2C4A4",
+    "mint_w": "#C0E3D0",
+    "sky_w": "#BCD9EE",
+    "sand_w": "#E3CA9E",
+    "ivory_w": "#EFE8D6",
+    "civic_w": "#EDE5D2",
+    "peach_p": "#E8735A",
+    "sky_p": "#2C56A6",
+    "sand_p": "#8E2F25",
+    "blush_w": "#F3CBBE",
+    "blush_p": "#C42A1F",
+    "blush_r": "#FBE5DC",
+    "powder_w": "#CCDCF0",
+    "powder_p": "#2C56A6",
+    "powder_r": "#E8EFF8",
+    "gold": "#C29A55",
+    "civic_trim": "#C29A55",
+    "t_hotel": "#C9A46A",
+    "glass_clear": "#2C6478",
+    "glass_t": "#A7CAD8",
+    "glass_dark": "#233F50",
+    "e_mustard": "#EEA82D",
+    "e_coral_deep": "#E07560",
+    "e_royal": "#2C56A6",
+    "e_teal_deep": "#1F6C67",
+    "e_red": "#C42A1F",
+    "e_redorange": "#E8553A",
+    "e_oxblood": "#8E2F25",
+    "e_powder": "#86ADD3",
+    "t_diner": "#E8553A",
+    "t_record": "#C42A1F",
+    "t_cinema": "#A8322B",
+    "t_travel": "#2C56A6",
+    "t_garage": "#3D72C8"
+   },
+   "families_added": {
+    "blush": [
+     "blush_w",
+     "blush_p",
+     "blush_r"
+    ],
+    "powder": [
+     "powder_w",
+     "powder_p",
+     "powder_r"
+    ]
+   },
+   "areas_added": {
+    "lantern": {
+     "families": {
+      "blush": 2
+     },
+     "enamel": [
+      "e_mustard",
+      "e_coral_deep",
+      "e_red",
+      "e_royal"
+     ]
+    },
+    "docks": {
+     "families": {
+      "powder": 2
+     },
+     "enamel": [
+      "e_mustard",
+      "e_royal",
+      "e_red",
+      "e_powder"
+     ]
+    },
+    "crescent": {
+     "families": {
+      "blush": 1,
+      "powder": 1
+     },
+     "enamel": [
+      "e_royal",
+      "e_coral_deep",
+      "e_sky"
+     ]
+    },
+    "records": {
+     "families": {
+      "powder": 1
+     },
+     "enamel": [
+      "e_mustard",
+      "e_royal",
+      "e_oxblood"
+     ]
+    },
+    "harbour": {
+     "families": {
+      "blush": 1,
+      "powder": 2
+     },
+     "enamel": [
+      "e_mustard",
+      "e_coral_deep",
+      "e_red",
+      "e_royal"
+     ]
+    },
+    "lamplight": {
+     "families": {
+      "blush": 2
+     },
+     "enamel": [
+      "e_mustard",
+      "e_coral_deep",
+      "e_redorange",
+      "e_cobalt"
+     ]
+    },
+    "gardens": {
+     "families": {
+      "powder": 1
+     },
+     "enamel": [
+      "e_mustard",
+      "e_royal",
+      "e_coral_deep"
+     ]
+    }
+   },
+   "civic_enamel": [
+    "e_seafoam",
+    "e_teal_deep"
+   ],
+   "materials": {
+    "matte": 0.22,
+    "glossy": 0.72
+   },
+   "paletteOverride.gold_trim": "#C29A55",
+   "deviation_from_proposal": "sand_p is oxblood #8E2F25, not brass-gold (B5): a 0.5 m plinth band is a large brass surface, and Sky asked for more reds"
+  },
+  "look_harbour_and_contract_roles": {
+   "limestone": "#F0E3CA",
+   "residential": "#F3E3C6",
+   "mixed": "#F7EAD2",
+   "commercial": "#F5D3B5",
+   "frontage": "#F0E0C3",
+   "civic": "#F7DFA8",
+   "roof": "#F6EBD6",
+   "trim": "#C29A55",
+   "accent_gold": "#C29A55",
+   "accent_coral": "#F28A70",
+   "accent_peach": "#F8B898",
+   "accent_red": "#C42A1F",
+   "accent_royal": "#2C56A6",
+   "accent_cobalt": "#2F84E8"
+  },
+  "world_accent_weights_colour_ts": {
+   "accent_teal": 24,
+   "accent_coral": 18,
+   "accent_red": 12,
+   "accent_royal": 12,
+   "accent_turquoise": 10,
+   "accent_cobalt": 8,
+   "accent_mint": 6,
+   "accent_flamingo": 6,
+   "accent_peach": 4,
+   "was": {
+    "accent_teal": 35,
+    "accent_coral": 20,
+    "accent_turquoise": 15,
+    "accent_mint": 10,
+    "accent_flamingo": 10,
+    "accent_peach": 10
+   },
+   "fin_roles": [
+    "accent_coral",
+    "accent_teal",
+    "accent_red",
+    "accent_royal"
+   ],
+   "flag_roles": [
+    "accent_coral",
+    "accent_teal",
+    "accent_gold",
+    "accent_flamingo",
+    "accent_red",
+    "accent_royal"
+   ]
+  },
+  "contract": {
+   "version": "0.22.0",
+   "palette_world.rule": "Pastel cream, peach and warm limestone base for ground, stone and bodies (pale blush and powder-blue renders too); saturated enamel accents (cobalt, royal, sky blue, enamel red, coral, red-orange, oxblood, flamingo, mustard, sunshine, mint, turquoise, teal) on panels, spandrels, bands, awnings, signs, roofs and trim, never a whole building's body; reds and blues are welcome world accents (signals don't own red, amber or violet); blue-teal glass with sky reflections, no curtain walls in the play streets; lagoon water; coral transit; a powder-blue enamel road. Warm brass-gold at street level and on facades: frames, beads, bands, fins and small metal up to about 15 cm; skyline crowns keep gold; never a large gold or brass panel.",
+   "materials": [
+    "honed cream, peach and warm limestone",
+    "flamed grey granite kerb",
+    "saturated vitreous enamel panels (cobalt, royal blue, enamel red, coral, mustard, flamingo, sunshine, mint, turquoise)",
+    "teal, deep teal and mint vitreous enamel",
+    "chrome and brushed silver",
+    "white vinyl and lame",
+    "clear acrylic",
+    "blue-teal glass with sky reflections",
+    "warm brass-gold trim, frames and bands at street level and on facades, gold on skyline crowns",
+    "powder-blue enamel road"
+   ],
+   "concept_prompt.city": "Streamline Moderne, Art Deco and Googie. Cream limestone and ivory enamel buildings with seafoam-teal faience bands, chrome sphere finials, banners on lamp posts, planted terraces, cypress and palms, parasol café terraces, pale cream stone paving with seafoam inlay bands, soft lilac-grey asphalt, brushed brass-gold trim lines and bands, coral, peach and mustard accents, enamel red and royal blue accents. Warm afternoon sun, soft shadows, soft blue sky. Clean, prosperous, graceful; people in the city's space-age couture. Cinematic painted concept art with photographic material realism.",
+   "concept_prompt.avoid": [
+    "large gold panels",
+    "glass curtain walls",
+    "grime",
+    "text, signage lettering or words",
+    "present-day street furniture",
+    "1950s period dress: fedoras, trilbies, tea dresses, Americana"
+   ],
+   "palette_world.source.sha256": "747cc5cdf2c938ab08cda8cf4a4fe6dfb0cb27d7f56e9d57b6fba0c906d4b98b"
+  },
+  "civic_look_roles": {
+   "hairline": "bead, frame, mullion, line or band up to 15 cm; at most 12% of an elevation; never a large panel. Brass-gold #C29A55 (072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'); DK_Gold is DecoKit's #D6AE62, DK_Gold17 #D6B676). Was dark brass #99784D, held there only by the signal-colour gate dropped on 2026-10-16",
+   "deep": "storey bands, fascia lines and reveals up to 0.9 m; never a whole field. The Records Office's storey band (5.0 to 5.9 m, RecordsTower) is DecoKit's deep teal, as the old DecoKit civic office (072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'), Q1b 'yep'); the sign body, lamp sleeve, cushions and the 8 cm window reveal stay",
+   "glass": "dark teal to blue-teal with sky reflections (facade.json glass_clear #2C6478; the kit film DK_GlassDark glaze #3F7A8E); no curtain wall",
+   "banner": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Coral, flamingo, peach and red-orange are all allowed (the signal-colour gate that kept DK_Fabric_Coral off this block was dropped on 2026-10-16); the block keeps seafoam to follow the paintings",
+   "lamp": "DK_Lamp_Deco #FFF1C4, the paler lamp, chosen for the civic pieces' colour (the old reason, a distance from the guard colour, is gone since 2026-10-16)"
+  },
+  "road": "unchanged: powder-blue enamel #8fafc1 (Sky: keep powdblue)",
+  "gdd_s15_for_aster": {
+   "palette line": "Pastel cream, peach and warm limestone base (pale blush and powder-blue renders too); saturated enamel accents: cobalt, royal #2C56A6, sky blue, enamel red #C42A1F, coral, red-orange, oxblood, flamingo, mustard #EEA82D, sunshine, mint, turquoise, teal, deep teal #1F6C67; on panels, spandrels, bands, awnings, signs, roofs and trim, never a whole building's body. Reds and blues are welcome world accents (signals don't own red, amber or violet).",
+   "brass line": "Warm brass-gold #C29A55 at street level and on facades (DK_Gold #D6AE62, light DK_Gold17 #D6B676): frames, beads, bands, fins and small metal up to about 15 cm, at most 12 % of an elevation; skyline crowns keep gold; never a large gold or brass panel; none on the road edge (the hold, unchanged).",
+   "glass line": "Dark teal to blue-teal glass with sky reflections; no curtain walls in the play streets.",
+   "civic line": "Civic block: cream stone, seafoam bands, the Records Office's deep teal storey band (DecoKit's), chrome spheres, brass-gold hairlines.",
+   "materials": [
+    "honed cream, peach and warm limestone",
+    "flamed grey granite kerb",
+    "saturated vitreous enamel panels (cobalt, royal blue, enamel red, coral, mustard, flamingo, sunshine, mint, turquoise)",
+    "teal, deep teal and mint vitreous enamel",
+    "chrome and brushed silver",
+    "white vinyl and lame",
+    "clear acrylic",
+    "blue-teal glass with sky reflections",
+    "warm brass-gold trim, frames and bands at street level and on facades, gold on skyline crowns",
+    "powder-blue enamel road"
+   ],
+   "road": "powder-blue enamel road (kept)"
+  }
+ },
+ "applied2": {
+  "date": "2026-10-28",
+  "by": "Vela (072 second push)",
+  "sky": "yeah, I more colors needed",
+  "files_sha256": {
+   "contracts/style/suborned.style.json": "6717653c692d05554569dc0fece2b003e0a0469b2e83f54b27acd3972719d657",
+   "unity/Assets/Suborned/Editor/World/facade.json": "07b28afe420e857c34704a417c61e550fc7195b20e47c88e9e031d1dc916afe0",
+   "unity/Assets/Suborned/Editor/World/look.json": "63b9fbf52a8bffe286a26489c432a8455669bcb8f6b5949e452578a6f4f43be8",
+   "unity/Assets/Suborned/Editor/World/looks/harbour.json": "989c743e85562b3da62a6858f3069739ef7c8a2e4c9315c06f65267363c5cc95",
+   "contracts/world/civic-look.json": "e899be732341bfda5806f0c18874417d845a275680feb0ca4fb95da351658cc4",
+   "tools/world/gen/colour.ts": "86756aeb38471686025984fd3cf9c4f71b56b0132a4a4aabb6eb302a79b5dd75"
+  },
+  "facade_json": {
+   "swatches_changed": {
+    "sand_w": "#DDBE8A",
+    "blush_w": "#F4C3C8",
+    "sky_w": "#9CCDEE",
+    "mint_w": "#C8E8C6",
+    "mint_p": "#D9548A",
+    "cream_r": "#F7ECD6",
+    "peach_r": "#FBDFCB",
+    "mint_r": "#DEF1DC",
+    "sky_r": "#D6EAF8",
+    "sand_r": "#EFDFC0",
+    "blush_r": "#FADCDF",
+    "powder_r": "#E2E9F8",
+    "t_launder": "#3FA7D6",
+    "t_radio": "#F07A28",
+    "t_chandler": "#1E8C6E"
+   },
+   "swatches_added": {
+    "butter_w": "#F7E38C",
+    "butter_p": "#1F8FC4",
+    "butter_r": "#FBF0C6",
+    "lilac_w": "#D8C8EC",
+    "lilac_p": "#7A3B78",
+    "lilac_r": "#EEE6F7",
+    "apricot_w": "#F9B977",
+    "apricot_p": "#1E8C6E",
+    "apricot_r": "#FCE0C0",
+    "seagreen_w": "#9AD2C6",
+    "seagreen_p": "#E2661F",
+    "seagreen_r": "#D5EEE8",
+    "e_tangerine": "#F07A28",
+    "e_plum": "#7A3B78",
+    "e_cerulean": "#1F8FC4",
+    "e_jade": "#1E9C78",
+    "e_lime": "#B5D334"
+   },
+   "families_added": {
+    "butter": [
+     "butter_w",
+     "butter_p",
+     "butter_r"
+    ],
+    "lilac": [
+     "lilac_w",
+     "lilac_p",
+     "lilac_r"
+    ],
+    "apricot": [
+     "apricot_w",
+     "apricot_p",
+     "apricot_r"
+    ],
+    "seagreen": [
+     "seagreen_w",
+     "seagreen_p",
+     "seagreen_r"
+    ]
+   },
+   "areas": {
+    "lantern": {
+     "families": {
+      "peach": 3,
+      "cream": 2,
+      "sand": 2,
+      "blush": 2,
+      "apricot": 3,
+      "butter": 2,
+      "lilac": 2,
+      "seagreen": 1,
+      "mint": 1
+     },
+     "enamel_added": [
+      "e_tangerine",
+      "e_plum",
+      "e_cerulean",
+      "flamingo"
+     ]
+    },
+    "docks": {
+     "families": {
+      "sky": 2,
+      "cream": 2,
+      "mint": 2,
+      "sand": 2,
+      "powder": 2,
+      "seagreen": 3,
+      "butter": 2,
+      "apricot": 1
+     },
+     "enamel_added": [
+      "e_cerulean",
+      "e_tangerine",
+      "e_jade"
+     ]
+    },
+    "crescent": {
+     "families": {
+      "mint": 2,
+      "sky": 2,
+      "peach": 2,
+      "cream": 2,
+      "blush": 2,
+      "powder": 1,
+      "lilac": 3,
+      "butter": 2,
+      "seagreen": 1
+     },
+     "enamel_added": [
+      "e_plum",
+      "e_jade",
+      "e_lime",
+      "e_tangerine"
+     ]
+    },
+    "records": {
+     "families": {
+      "ivory": 6,
+      "cream": 2,
+      "powder": 1,
+      "butter": 1,
+      "seagreen": 1
+     },
+     "enamel_added": [
+      "e_cerulean",
+      "e_plum"
+     ]
+    },
+    "harbour": {
+     "families": {
+      "cream": 2,
+      "sky": 2,
+      "mint": 2,
+      "peach": 2,
+      "sand": 1,
+      "blush": 1,
+      "powder": 2,
+      "seagreen": 2,
+      "butter": 2,
+      "apricot": 2,
+      "lilac": 1
+     },
+     "enamel_added": [
+      "e_tangerine",
+      "e_cerulean",
+      "e_jade",
+      "e_plum"
+     ]
+    },
+    "lamplight": {
+     "families": {
+      "cream": 2,
+      "peach": 2,
+      "sand": 2,
+      "mint": 1,
+      "blush": 2,
+      "apricot": 3,
+      "lilac": 2,
+      "butter": 2
+     },
+     "enamel_added": [
+      "e_plum",
+      "e_tangerine",
+      "e_lime",
+      "e_jade"
+     ]
+    },
+    "gardens": {
+     "families": {
+      "mint": 3,
+      "cream": 2,
+      "sky": 2,
+      "powder": 1,
+      "seagreen": 2,
+      "butter": 2,
+      "lilac": 2,
+      "apricot": 1
+     },
+     "enamel_added": [
+      "e_lime",
+      "e_jade",
+      "e_tangerine",
+      "e_plum"
+     ]
+    }
+   },
+   "civic": "unchanged: seafoam + deep teal"
+  },
+  "look_harbour_and_contract_roles": {
+   "accent_tangerine": "#F07A28",
+   "accent_plum": "#7A3B78",
+   "accent_cerulean": "#1F8FC4",
+   "accent_jade": "#1E9C78",
+   "accent_lime": "#B5D334"
+  },
+  "world_accent_weights_colour_ts": {
+   "accent_teal": 13,
+   "accent_coral": 12,
+   "accent_red": 9,
+   "accent_royal": 9,
+   "accent_tangerine": 9,
+   "accent_turquoise": 7,
+   "accent_cerulean": 7,
+   "accent_cobalt": 6,
+   "accent_flamingo": 6,
+   "accent_plum": 6,
+   "accent_mint": 5,
+   "accent_jade": 5,
+   "accent_peach": 3,
+   "accent_lime": 3
+  },
+  "fin_roles_add": [
+   "accent_tangerine",
+   "accent_plum",
+   "accent_cerulean",
+   "accent_jade"
+  ],
+  "flag_roles_add": [
+   "accent_tangerine",
+   "accent_cerulean",
+   "accent_lime",
+   "accent_plum"
+  ],
+  "contract": {
+   "version": "0.23.0",
+   "palette_world.source.sha256": "989c743e85562b3da62a6858f3069739ef7c8a2e4c9315c06f65267363c5cc95"
+  },
+  "kit_mats_py": "unchanged (no kit colour moved; decokit --mats-only reproduced decokit_materials.json byte-equal in content)",
+  "civic_look": "unchanged (lookcolours072.py --check: up to date)",
+  "road": "unchanged: powder-blue enamel",
+  "spread": {
+   "before": {
+    "buildings": 320,
+    "neighbour_pairs": 189,
+    "wall_family": {
+     "cream": 92,
+     "peach": 52,
+     "sand": 43,
+     "blush": 39,
+     "powder": 32,
+     "sky": 29,
+     "mint": 24,
+     "ivory": 9
+    },
+    "distinct": {
+     "wall": 8,
+     "plinth": 7,
+     "roof": 12,
+     "A": 16,
+     "B": 17
+    },
+    "distinct_dE8": {
+     "wall": 4,
+     "plinth": 6,
+     "roof": 5
+    },
+    "distinct_enamel_dE8": 15,
+    "neighbours_same": {
+     "family": 0,
+     "wall": 0,
+     "plinth": 1,
+     "roof": 32,
+     "A": 0
+    },
+    "neighbour_wall_dE_summary": {
+     "min": 4.5,
+     "median": 14.2,
+     "under5": 1
+    },
+    "export_accent": {
+     "accent_teal": 67,
+     "accent_coral": 52,
+     "accent_royal": 39,
+     "accent_red": 36,
+     "accent_cobalt": 30,
+     "accent_turquoise": 29,
+     "accent_mint": 28,
+     "accent_flamingo": 15,
+     "accent_peach": 14
+    },
+    "export_accent2": {
+     "accent_teal": 61,
+     "accent_red": 49,
+     "accent_royal": 45,
+     "accent_coral": 43,
+     "accent_cobalt": 26,
+     "accent_turquoise": 25,
+     "accent_mint": 22,
+     "accent_flamingo": 20,
+     "accent_peach": 19
+    },
+    "export_accent_neighbours_same": 4,
+    "export_accent_pairs": 189,
+    "spec": {
+     "families": 9,
+     "swatches": 110,
+     "wall_swatches": 8,
+     "plinth_swatches": 7,
+     "area_enamel": 18
+    }
+   },
+   "after": {
+    "buildings": 320,
+    "neighbour_pairs": 189,
+    "wall_family": {
+     "cream": 42,
+     "lilac": 37,
+     "peach": 34,
+     "apricot": 33,
+     "butter": 32,
+     "seagreen": 32,
+     "mint": 31,
+     "blush": 25,
+     "sky": 20,
+     "sand": 19,
+     "powder": 9,
+     "ivory": 6
+    },
+    "distinct": {
+     "wall": 12,
+     "plinth": 11,
+     "roof": 17,
+     "A": 23,
+     "B": 23
+    },
+    "distinct_dE8": {
+     "wall": 11,
+     "plinth": 11,
+     "roof": 7
+    },
+    "distinct_enamel_dE8": 20,
+    "neighbours_same": {
+     "family": 0,
+     "wall": 0,
+     "plinth": 1,
+     "roof": 16,
+     "A": 0
+    },
+    "neighbour_wall_dE_summary": {
+     "min": 6.1,
+     "median": 22.1,
+     "under5": 0
+    },
+    "export_accent": {
+     "accent_teal": 44,
+     "accent_red": 34,
+     "accent_coral": 31,
+     "accent_tangerine": 28,
+     "accent_flamingo": 24,
+     "accent_turquoise": 23,
+     "accent_cerulean": 22,
+     "accent_mint": 20,
+     "accent_plum": 19,
+     "accent_royal": 18,
+     "accent_cobalt": 15,
+     "accent_jade": 14,
+     "accent_lime": 9,
+     "accent_peach": 9
+    },
+    "export_accent2": {
+     "accent_coral": 39,
+     "accent_tangerine": 33,
+     "accent_teal": 30,
+     "accent_turquoise": 28,
+     "accent_royal": 27,
+     "accent_cerulean": 25,
+     "accent_red": 24,
+     "accent_plum": 21,
+     "accent_mint": 20,
+     "accent_flamingo": 15,
+     "accent_jade": 15,
+     "accent_lime": 13,
+     "accent_peach": 12,
+     "accent_cobalt": 8
+    },
+    "export_accent_neighbours_same": 3,
+    "export_accent_pairs": 189,
+    "spec": {
+     "families": 13,
+     "swatches": 127,
+     "wall_swatches": 12,
+     "plinth_swatches": 11,
+     "area_enamel": 24
+    }
+   },
+   "how": "briefs/072/style/applied2/src/spread.py: the builder's FacadeKit.Fill + ProcGrammar.Assign replayed (same dice, same neighbour scoring); export accents read as they are"
+  },
+  "finding": "The every-face kit modules (17,827 in the export, all `colourway: base`) draw every building's walls in the same DK_Limestone_Tex, teal fascia and seafoam bands; Unity never remaps a module's colourway. So the wall families reach the screen only on roofs, the leftover procedural walls and shopfront stretches; the walls Sky sees stay cream until module colourways are wired (export colourway per building, kit material variants, KitColumns remap). The colourway renders (applied2/*__colourway.png) are that proposal, not the game."
+ }
+}

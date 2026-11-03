@@ -1,0 +1,60 @@
+{
+  "picked": 1,
+  "why": "Take 1 has the most life: the count of looks and the clock exchange. It also has the only price that bites, because the tips are what pay her card.",
+  "changes": [
+    "Replaced the opening apology with Milena asking to split tips, adapting take 2's opening haggle. Inez's refusal now causes the noticing to be played, and the debt comes out as her reason.",
+    "Inez breaks off at 'nine wants', then finishes it as 'Nine wants bread.' when the clock lie fails. Going back to the list shows her fear without her saying it.",
+    "Replaced Milena's flat threat with 'You and Okafor', so the lovers and the cost to both are on the page, cut to her length.",
+    "Inez now overpays: Milena asks for half and Inez gives it all, so her nature shows in what she gives, and the loss needs no restating. Cut her closing speech about the card and kept the Scout's facts, with her name, under 12 words."
+  ],
+  "beats": [
+    {
+      "speaker": "Milena",
+      "line": "Inside's had no tips tonight. Split yours?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "Can't, they go on my Bureau card, it's behind, and nine wants—"
+    },
+    {
+      "speaker": "Milena",
+      "line": "Four looks across at Okafor's door since the soup."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Looks? It's the clock, I watch it for the shift."
+    },
+    {
+      "speaker": "Milena",
+      "line": "The clock's behind you."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Nine wants bread."
+    },
+    {
+      "speaker": "Milena",
+      "line": "You and Okafor. The Office hears, you're both out."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Take it all."
+    },
+    {
+      "speaker": "Milena",
+      "line": "I said half. All, then. Nine's still waving."
+    },
+    {
+      "speaker": "Scout",
+      "line": "Inez behind with the Bureau. Seeing Okafor, door guard. Jumps at everything."
+    }
+  ],
+  "learned": [
+    "Inez is behind with the Bureau.",
+    "Inez's lover: Okafor, the door guard."
+  ],
+  "opens": [
+    "Help: clear her Bureau debt.",
+    "Pressure: threaten to expose the affair."
+  ]
+}

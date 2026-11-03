@@ -1,0 +1,1811 @@
+{
+ "a": "suborned-sim.dll 6c793288 on /Users/sky/Projects/suborned/out/scratch/keel/b065/base",
+ "b": "suborned-sim.dll 7b556507 on the working tree's inputs",
+ "routes": [
+  {
+   "id": "careless-body-found",
+   "status": "moved",
+   "a": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2498,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "3214a009e6a53350",
+    "scriptSha": "1793ca1faa3b0e996b9a3e8cdc87bbd680102edef5dae987503f8c783198b4fe"
+   },
+   "b": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2498,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "0a23a67a174b013c",
+    "scriptSha": "1793ca1faa3b0e996b9a3e8cdc87bbd680102edef5dae987503f8c783198b4fe"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "366\tloop.on\tOne feed repeats until 2:36.6. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-enforcer-watches-guard",
+   "status": "moved",
+   "a": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2151,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "8765d1b6fd969fd3",
+    "scriptSha": "6ee02da42e3f19480019a5c40142ceda410d6d46423cb4808cd5c72e74330cb1"
+   },
+   "b": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2151,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "f63f11d1e46ad4f7",
+    "scriptSha": "6ee02da42e3f19480019a5c40142ceda410d6d46423cb4808cd5c72e74330cb1"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "status": "moved",
+   "a": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "d56e0f6a2ff642a1",
+    "scriptSha": "665b0647b750a7636d5ca1d08433e67a0155bef8f9f8a557559a9256401d9827"
+   },
+   "b": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1686,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "d91f1bc3c3800d35",
+    "scriptSha": "665b0647b750a7636d5ca1d08433e67a0155bef8f9f8a557559a9256401d9827"
+   },
+   "cols": [
+    "fail",
+    "end",
+    "trail"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "366\tloop.on\tOne feed repeats until 2:36.6. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "status": "same",
+   "a": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "333c9b9124b7c182",
+    "scriptSha": "e6688f9820f47595dc0894141f67b8956bd2c5c66d858143ae3ee2bb64df671b"
+   },
+   "b": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "be32f1f24253f6a5",
+    "scriptSha": "e6688f9820f47595dc0894141f67b8956bd2c5c66d858143ae3ee2bb64df671b"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-scout-idles-pickup",
+   "status": "same",
+   "a": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "53c03f8786d30e0c",
+    "scriptSha": "ec210bbadbc5ff740ef9f0540af15c01d10aa46e0fa147f487db2c0d7165d38b"
+   },
+   "b": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "ec4d80e7e4cf0163",
+    "scriptSha": "ec210bbadbc5ff740ef9f0540af15c01d10aa46e0fa147f487db2c0d7165d38b"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "b7650be3c1d01157",
+    "scriptSha": "0a4b6e19f480c81f843ada194ae3a566aede59624546a23054a057b1393f5f68"
+   },
+   "b": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "7127d070e3441c04",
+    "scriptSha": "0a4b6e19f480c81f843ada194ae3a566aede59624546a23054a057b1393f5f68"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "status": "moved",
+   "a": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3926,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "54dfc9069289874e",
+    "scriptSha": "ded634f553e403b6746a854c1c21835639c597a0a2d5e74a759de35b2e7e42c4"
+   },
+   "b": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3926,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "157eae5399f47daa",
+    "scriptSha": "ded634f553e403b6746a854c1c21835639c597a0a2d5e74a759de35b2e7e42c4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "366\tloop.on\tOne feed repeats until 2:36.6. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-district-seals",
+   "status": "moved",
+   "a": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "183099bf6598a20b",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "b": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "43555433aa4c765a",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 5,
+    "a": "688\tattention.wary\tthe camera entrance is wary of the enforcer for the rest of the mission.",
+    "b": "580\tloop.on\tOne feed repeats until 2:58.0. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-enforcer-down",
+   "status": "same",
+   "a": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1066,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "0fee524c21eff84e",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "b": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1066,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "8a58673df097a317",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "ea7c758b77433293",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "b": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "c250b962eb6d3118",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "45bfabe432f62020",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "b": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "e178278454498527",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 6,
+    "a": "803\torder.move\tscout heads for beside-inez.",
+    "b": "545\tloop.on\tOne feed repeats until 2:54.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-patrol",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "b84c432fc0c72f71",
+    "scriptSha": "5cb1a69b58e63ea2dbfc1c309678c0a42732e56eeccb53772690a20a7a218459"
+   },
+   "b": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "49eece3010bad619",
+    "scriptSha": "5cb1a69b58e63ea2dbfc1c309678c0a42732e56eeccb53772690a20a7a218459"
+   },
+   "cols": [
+    "fail",
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 6,
+    "a": "803\torder.move\tscout heads for beside-inez.",
+    "b": "545\tloop.on\tOne feed repeats until 2:54.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "04af0d6a8cc643a3",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "b": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "abb96af9b3cb2ee2",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "83eaebbd1298f5f2",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "b": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "4775ab391176b31b",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-dead",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "ab4eb153986931ef",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "b": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "2596312aafd501ac",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-leaves",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "87aaca106676fb1d",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "b": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "eda1fef4fecce1d2",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2485,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "38d77d50fe5252ff",
+    "scriptSha": "a68b23ce47b77915a2036387e6e8caf93195a4cb9f1c409da918148c6d5eb9af"
+   },
+   "b": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2485,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "bef394cb60f34dba",
+    "scriptSha": "a68b23ce47b77915a2036387e6e8caf93195a4cb9f1c409da918148c6d5eb9af"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "9b34737dbdcfdc48",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "b": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "970ef18557083c31",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "loud",
+   "status": "moved",
+   "a": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "9f3577fa56cdc1ad",
+    "scriptSha": "3c0c810758a53c28c7f557ef1a3e32cd56a4e4b9bf4fcb7f202fc5404591fed5"
+   },
+   "b": {
+    "id": "loud",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1577,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "91428fd67fdd1483",
+    "scriptSha": "3c0c810758a53c28c7f557ef1a3e32cd56a4e4b9bf4fcb7f202fc5404591fed5"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fast",
+   "status": "moved",
+   "a": {
+    "id": "loud-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "9f3577fa56cdc1ad",
+    "scriptSha": "6c6c868785cffdf3592b2251f7104f7c42004d7c7ca4ce0f196d9b1dc67e5ddf"
+   },
+   "b": {
+    "id": "loud-fast",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1577,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "91428fd67fdd1483",
+    "scriptSha": "6c6c868785cffdf3592b2251f7104f7c42004d7c7ca4ce0f196d9b1dc67e5ddf"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fight",
+   "status": "moved",
+   "a": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3128,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "b39ba64574d4e197",
+    "scriptSha": "d72317111d895aa1e28f2bf450ccdcdea92bbd73f7c43d32e777bb5ca361dd3c"
+   },
+   "b": {
+    "id": "loud-fight",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1577,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "91428fd67fdd1483",
+    "scriptSha": "d72317111d895aa1e28f2bf450ccdcdea92bbd73f7c43d32e777bb5ca361dd3c"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-downed",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "9adbb5393de7b82e",
+    "scriptSha": "c9b7bab69360ef90bd009ccf56cec3f05be674f53dee3734ee4a0352d9b6c356"
+   },
+   "b": {
+    "id": "loud-left-downed",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1577,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "91428fd67fdd1483",
+    "scriptSha": "c9b7bab69360ef90bd009ccf56cec3f05be674f53dee3734ee4a0352d9b6c356"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-standing",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "d2b3f15bdb14d599",
+    "scriptSha": "5577c5e0ef9ebe16a174fd760e5f065b7d123b58de5f136c1aaeab3cb6eb5ca8"
+   },
+   "b": {
+    "id": "loud-left-standing",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1577,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "91428fd67fdd1483",
+    "scriptSha": "5577c5e0ef9ebe16a174fd760e5f065b7d123b58de5f136c1aaeab3cb6eb5ca8"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "785\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a",
+   "status": "moved",
+   "a": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "ffd7e806a8c72cf4",
+    "scriptSha": "952f82c792ba215a17665da3759c1356af1ffad2144b226baf6e2a5132a081bc"
+   },
+   "b": {
+    "id": "route-a",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1734,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "ba013055423524ab",
+    "scriptSha": "952f82c792ba215a17665da3759c1356af1ffad2144b226baf6e2a5132a081bc"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 11,
+    "a": "710\tscout.listen.heard\tInez Nikolaou (waitress): scout.listen → heard.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2679,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "194cc9ec46115e8c",
+    "scriptSha": "2863574f16b8ba46b84cf033551ba3b10e48cada758e0375b33a1dcf965151f0"
+   },
+   "b": {
+    "id": "route-a-board",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1734,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "28c890dbf36872ee",
+    "scriptSha": "2863574f16b8ba46b84cf033551ba3b10e48cada758e0375b33a1dcf965151f0"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 11,
+    "a": "710\tscout.listen.heard\tInez Nikolaou (waitress): scout.listen → heard.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2513,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "71c7bd7aeff14fa9",
+    "scriptSha": "594c770dafb2bff87eb95b76ed4424c8c37be4ca0f088a2fdbaea46bdae5a26e"
+   },
+   "b": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2513,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "baded90a7506a47d",
+    "scriptSha": "594c770dafb2bff87eb95b76ed4424c8c37be4ca0f088a2fdbaea46bdae5a26e"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 11,
+    "a": "710\tscout.listen.heard\tInez Nikolaou (waitress): scout.listen → heard.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2181,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "37bf1309967765cc",
+    "scriptSha": "77ffb864469eedd72431c26593e079b3f2d21ad4e4a7a6b7e00fad8a583d2080"
+   },
+   "b": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2181,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "f982c037394e4db4",
+    "scriptSha": "77ffb864469eedd72431c26593e079b3f2d21ad4e4a7a6b7e00fad8a583d2080"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 11,
+    "a": "710\tscout.listen.heard\tInez Nikolaou (waitress): scout.listen → heard.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b",
+   "status": "same",
+   "a": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "0e5d29039d043aa9",
+    "scriptSha": "a16908b9074ddf849f6341c06c89696af1bbdd4f9c349d8a99e4b73c86a50838"
+   },
+   "b": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "3426d155d81abfe4",
+    "scriptSha": "a16908b9074ddf849f6341c06c89696af1bbdd4f9c349d8a99e4b73c86a50838"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-b-block",
+   "status": "same",
+   "a": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "afab18642fd7a988",
+    "scriptSha": "01e79672ab6091b5299e8a5c72195a1a1a7650ccb54f298677cec570abdca6c9"
+   },
+   "b": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "6a5c2ff83c4992bd",
+    "scriptSha": "01e79672ab6091b5299e8a5c72195a1a1a7650ccb54f298677cec570abdca6c9"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-b-block-board",
+   "status": "same",
+   "a": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "ab9ae6090100b5cb",
+    "scriptSha": "14f4e16115410d27f06519d32d281f0c7579b69056e2ce2f81cc27f8c6eb6f03"
+   },
+   "b": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "cc1bc9ca6a097b62",
+    "scriptSha": "14f4e16115410d27f06519d32d281f0c7579b69056e2ce2f81cc27f8c6eb6f03"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-b-board",
+   "status": "same",
+   "a": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "63dc8e26901212c6",
+    "scriptSha": "a1a97bea0a6994e61b25e016443ab3faed67c324f2d11ac5f5b338d6b1df9cce"
+   },
+   "b": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "5f57d867f0e6872b",
+    "scriptSha": "a1a97bea0a6994e61b25e016443ab3faed67c324f2d11ac5f5b338d6b1df9cce"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-g",
+   "status": "moved",
+   "a": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "85b67225cf018eeb",
+    "scriptSha": "a3f07f0aa80eb1f9f32f6bb1f1b41027d501fdcf98036632d75036d557fd7909"
+   },
+   "b": {
+    "id": "route-g",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 2,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "40374604e4ee7ab5",
+    "scriptSha": "a3f07f0aa80eb1f9f32f6bb1f1b41027d501fdcf98036632d75036d557fd7909"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2515,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "9313b12029a40453",
+    "scriptSha": "34054bf9abad1938f834fbab4a5a1a653f3c77054c94a7af09bf777b052d8cc7"
+   },
+   "b": {
+    "id": "route-g-board",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 2,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "34f9117620bf8dc6",
+    "scriptSha": "34054bf9abad1938f834fbab4a5a1a653f3c77054c94a7af09bf777b052d8cc7"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2662,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "c4625304d04f8b2a",
+    "scriptSha": "3a977c48a5095db4bfeca16be61e7c985d2666115b55c9f3f2bb2e7ae06714f6"
+   },
+   "b": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2662,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "983af774720cff6d",
+    "scriptSha": "3a977c48a5095db4bfeca16be61e7c985d2666115b55c9f3f2bb2e7ae06714f6"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2330,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "b41101132833f226",
+    "scriptSha": "bab40361bb72ab303e55fe4ac5c23a95529d699f7585b334a779bdd6e3c29a12"
+   },
+   "b": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2330,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "5898c1259bcd0af9",
+    "scriptSha": "bab40361bb72ab303e55fe4ac5c23a95529d699f7585b334a779bdd6e3c29a12"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3717,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "a7a967e9082ee792",
+    "scriptSha": "7fa6d3e04bd6c9d6b6d6104662bd46308dfbdb7566e17df4f0b265d1708b2066"
+   },
+   "b": {
+    "id": "route-g-kill",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2440,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "761b9cbd2a6c1c6b",
+    "scriptSha": "7fa6d3e04bd6c9d6b6d6104662bd46308dfbdb7566e17df4f0b265d1708b2066"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3385,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "e8b2f27e1c75e5ea",
+    "scriptSha": "57c8aa65e0f8d5e759636700858a1a9e494b8f43869b4bee33a7d1c32521a48a"
+   },
+   "b": {
+    "id": "route-g-kill-board",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2440,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "7b08c4c08a3e7ee0",
+    "scriptSha": "57c8aa65e0f8d5e759636700858a1a9e494b8f43869b4bee33a7d1c32521a48a"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "510\tscout.watch.watched\tFolake Okafor (guard): cell.watch → watched.",
+    "b": "365\tloop.on\tOne feed repeats until 2:36.5. The Tech is free to go.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "withdraw",
+   "status": "same",
+   "a": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "b831867a7e10fe3a",
+    "finalHash": "ed252a1fa0474bc5",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "b": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "7ff9a6577fe9fc01",
+    "finalHash": "b8d6b8b540d60024",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  }
+ ]
+}

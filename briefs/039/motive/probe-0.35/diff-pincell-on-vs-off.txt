@@ -1,0 +1,48 @@
+· engines ready (0.0 s); playing 42 routes on A and 42 on B
+A = suborned-sim.dll f668eca5 on /Users/sky/Projects/suborned/out/scratch/motive/039-035/base    B = suborned-sim.dll f668eca5 on /Users/sky/Projects/suborned/out/scratch/motive/039-035/nocell    (= means the value did not move)
+route                            outcome            fail                   end              Trail    Alert  health lost
+careless-body-found              failure            enforcer-down          3:32.3           8        2      34 %
+careless-enforcer-watches-guard  failure            enforcer-down          2:55.1           1        2      34 %
+careless-g-disable               =                  =                      =                =        =      17 % → 21 %
+careless-guard-left-door-held    failure            vale-leaves            6:13.0           6        1      0 %
+careless-loop-runs-out           failure            entry-seen-camera      2:52.9           4        0      0 %
+careless-reporter-not-stopped    none → success     =                      8:30.0 → 7:32.2  10 → 4   2 → 1  34 % → 26 %
+careless-scout-idles-pickup      none → success     =                      8:30.0 → 7:32.2  =        =      34 % → 26 %
+careless-takedown-seen-camera    failure            entry-seen-camera      2:37.0           1        1      0 %
+careless-takedown-seen-crowd     failure            vale-leaves            6:13.0           7        3      0 %
+careless-thin-all                =                  =                      =                =        =      =
+fail-district-seals              failure            sealed                 5:05.0           8        2      0 %
+fail-enforcer-down               failure            enforcer-down          2:13.6           6        2      34 %
+fail-entry-seen-camera           failure            entry-seen-camera      4:42.9           3        1      0 %
+fail-entry-seen-guard            failure            entry-seen-guard       3:52.9           2        1      0 %
+fail-rivals-reach-vale           failure            rivals-reach-vale      6:39.5           2        1      0 %
+fail-take-seen-camera            failure            abduction-seen-camera  6:10.0           1        1      0 %
+fail-vale-dead                   failure            vale-dead              6:12.0           7        3      0 %
+fail-vale-leaves                 failure            vale-leaves            6:13.0           1        0      0 %
+fight-loud-enforcer-down         failure            enforcer-down          3:15.5           9        2      34 %
+fight-loud-wait-square           failure            enforcer-down          4:00.7           8        2      34 %
+fight-loud-wait-yard             =                  =                      =                =        =      =
+fight-safe-cell-down             =                  =                      =                =        =      26 % → 8 %
+fight-safe-rivals-reach-vale     failure            rivals-reach-vale      6:39.5           2        1      0 %
+loud                             failure → success  enforcer-down → -      4:28.9 → 5:01.7  20 → 27  =      60 % → 8 %
+loud-fight                       failure → success  enforcer-down → -      4:28.9 → 5:06.8  20 → 26  =      60 % → 21 %
+loud-left-downed                 failure → success  enforcer-down → -      4:28.9 → 5:04.7  20 → 27  =      60 % → 30 %
+loud-left-standing               failure → success  enforcer-down → -      4:28.9 → 5:04.7  20 → 27  =      60 % → 8 %
+route-a                          =                  =                      =                =        =      13 % → 8 %
+route-a-board                    success            -                      4:15.5           4        0      0 %
+route-a-disable                  =                  =                      =                =        =      13 % → 8 %
+route-a-pressure                 =                  =                      =                =        =      21 % → 13 %
+route-a-pressure-board           =                  =                      =                =        =      43 % → 21 %
+route-b                          none → success     =                      8:30.0 → 7:32.2  =        =      34 % → 26 %
+route-b-board                    failure → success  rivals-reach-vale → -  7:41.8 → 7:35.4  =        =      39 % → 26 %
+route-b-thin                     success            -                      7:32.2           4        0      17 %
+route-g                          =                  =                      =                =        =      17 % → 21 %
+route-g-board                    failure            rivals-reach-vale      4:08.5           5        1      26 %
+route-g-fast                     =                  =                      =                =        =      8 % → 4 %
+route-g-fast-board               success            -                      3:02.0           5        1      4 %
+route-g-kill                     =                  =                      =                =        =      17 % → 13 %
+route-g-kill-board               =                  =                      =                =        =      39 % → 26 %
+withdraw                         withdrawn          -                      0:30.0           0        0      0 %
+
+42 routes: 20 moved, 22 unchanged (3 of them with reworded log lines; --all lists them)
+(0.0 s)

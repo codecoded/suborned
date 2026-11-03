@@ -1,0 +1,68 @@
+{
+  "checks": {
+    "plan_056": true,
+    "world_056": true,
+    "world_exact_pair": true,
+    "walk_exact_pair": true,
+    "walk_world_hash": true,
+    "sphere_centre": true,
+    "two_crown_platforms_inside_drum": true,
+    "no_crown_platform_at_old_beside_site": true,
+    "all_baselined_files_preserved": true
+  },
+  "changedBaselineFiles": [],
+  "stationRings": [
+    {
+      "id": "station/S1/crown-circus/l",
+      "surface": "platform",
+      "ring": [
+        [
+          -25,
+          247.75
+        ],
+        [
+          25,
+          247.75
+        ],
+        [
+          25,
+          251.75
+        ],
+        [
+          -25,
+          251.75
+        ]
+      ],
+      "base": 22.8,
+      "height": 1.2
+    },
+    {
+      "id": "station/S1/crown-circus/r",
+      "surface": "platform",
+      "ring": [
+        [
+          -25,
+          240.25
+        ],
+        [
+          25,
+          240.25
+        ],
+        [
+          25,
+          236.25
+        ],
+        [
+          -25,
+          236.25
+        ]
+      ],
+      "base": 22.8,
+      "height": 1.2
+    }
+  ],
+  "world": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+  "walk": "f3eafbccaac6309e35af89c447445573a03af72af3aa26d84fd52da27cf44cea",
+  "plan": "fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2",
+  "scope": "input/source inspection only; no scene behaviour claimed"
+}

@@ -44,6 +44,7 @@ namespace Suborned.Play
             foreach (var r in h.TargetRings)
             {
                 var c = r.At; bool threat = r.Fire || r.Aim;
+                if (r.Focus) { if (!FightCues.Target) GroundRingM(c, RingR, RingThreat, 0.10f, 0, EdgeAlpha); continue; } // engine 0.35 (Glyph b-final): the focus ring, one red line, no ticks
                 var side = r.Side == HandoverHost.RingSide.Rival ? RingViolet : r.Side == HandoverHost.RingSide.Guard ? RingAmber : Cream;
                 float rad = !threat && r.Hover ? RingHoverR : RingR, line; int dashes = 0; float alpha = 1f, edge = EdgeAlpha;
                 if (threat) line = 0.12f;
@@ -61,8 +62,8 @@ namespace Suborned.Play
                 // ease-in, then held), kicked in 0.07 m at a shot and eased back over 30 % of the loop (fire)
                 float off = 0f, ta = 1f;
                 if (r.Fire) { float k = since >= 0f && since < 0.3f ? 1f - since / 0.3f : 0f; off = -0.07f * k * k; }
-                else if (r.Aim) { float p = Mathf.Repeat(now, 1f) / 0.78f; if (p < 1f) { float e = 1f - p * p; off = 0.30f * e; ta = Mathf.Lerp(1f, 0.5f, e); } }
-                var tick = new Color(Cream.r, Cream.g, Cream.b, ta); var tEdge = new Color(InkDeep.r, InkDeep.g, InkDeep.b, TickEdgeAlpha * ta);
+                else if (r.Aim) { float p = Mathf.Repeat(now, 1f) / 0.78f; if (p < 1f) { float e = 1f - p * p; off = 0.30f * e; } } // Glyph's 0.2.94 review #6: the closing ticks stay at full alpha (at 0.5 they read as faint grey on grey)
+                var tick = new Color(Cream.r, Cream.g, Cream.b, ta); var tEdge = new Color(InkDeep.r, InkDeep.g, InkDeep.b, threat ? 1f : TickEdgeAlpha * ta); // threat: the ink edge solid under the cream, as the hover ring's
                 var gE = GroundOf(tEdge, true); var gT = GroundOf(tick, false);
                 foreach (var d in new[] { up, right, -up, -right })
                 {

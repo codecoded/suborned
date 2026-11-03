@@ -23,7 +23,7 @@ export type Script = { schema: 'suborned.sim.script/1'; mission: 'handover'; not
 export type Play = {
   id: string; outcome: 'success' | 'failure' | 'withdrawn' | 'none'; fail: string; tick: number; cash: number; trail: number; alert: number; gunfire: number; standing: number;
   startHash: string; finalHash: string; replayIdentical: boolean; /* null (typed away) when played with replay: false */ checkpoints: { tick: number; hash: string }[];
-  orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number; lines?: { line: string; who: string; detail: string }[] } };
+  orders: { order: Order; ok: boolean; code?: string; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number; lines?: { line: string; who: string; detail: string }[] } };
 };
 
 /** sha256 of the engine's source (library and CLI, .cs and .csproj, by path) under `dir` (the repo root or a pinned copy). */
@@ -34,6 +34,7 @@ export function engineHash(dir = ROOT): string {
   }
   return h.digest('hex');
 }
+const HUMAN_PROFILE = 'tools/qa/human-profile.json';
 const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }); if (r.exitCode !== 0) { if (a[0] === 'show') return ''; throw new Error(`git ${a.join(' ')}: ${r.stderr}`); } return r.stdout.toString().trim(); };
 /** The files the engine reads, relative to its root (sim/Suborned.Sim/Debrief.cs Engine.Load): the rules and every sim/data file. */
 export function engineInputs(dir: string): string[] {
@@ -51,6 +52,8 @@ export function engineAt(rev = 'HEAD', inputs: 'commit' | 'tree' = 'commit'): En
     const tar = Bun.spawnSync(['sh', '-c', `git archive ${commit} sim/Suborned.Sim sim/cli sim/data contracts/rules contracts/people/people.rules.json | tar -x -C '${dir}'`], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
     if (tar.exitCode !== 0) throw new Error(`git archive ${commit}: ${tar.stderr}`);
   }
+  // the adaptive plans' person (sim/cli/Adaptive.cs reads it from the engine's root): a commit from before brief 080 has none and plays no plan. A folder pinned before this line gets it here.
+  if (!existsSync(join(dir, HUMAN_PROFILE)) && git('show', `${commit}:${HUMAN_PROFILE}`)) { mkdirSync(join(dir, 'tools/qa'), { recursive: true }); writeFileSync(join(dir, HUMAN_PROFILE), git('show', `${commit}:${HUMAN_PROFILE}`)); }
   // the mission's own data from the tree (the site and its people, made from mission.json); the rules stay the commit's
   // (a key the commit's own site lacks is a newer engine's, e.g. `cover`: it is left out, since the commit's engine rejects unknown keys)
   if (inputs === 'tree') for (const f of engineInputs(ROOT).filter(f => f.startsWith('sim/data/'))) {
@@ -137,7 +140,33 @@ function batchDll(e: EngineAt, dll: string): string | undefined {
   } catch { /* played a process each */ }
   hosts.set(e.dir, host);
   return host;
-}/** SUBORNED_SIM_STATS=1: at exit, how many plays this process asked of the engine and how it played them. */
+}
+
+/** The site's facts a mission check reads (`suborned-sim facts`, engine 0.34.0+; brief 067, Motive briefs/067/motive-square.md §5.3): today
+ *  `patrolWatchesEntry` (the patrol's sweep, or its reroute wait, sees the public door), read by MC-3's `needs`. An engine without the
+ *  command (a pinned commit before 0.34.0) gives {}: a fail line that needs a fact is then counted, as before facts existed. */
+export type Facts = { patrolWatchesEntry?: boolean; [k: string]: unknown };
+export function facts(e: EngineAt = engineAt()): Facts {
+  const r = Bun.spawnSync(['dotnet', build(e), 'facts'], { cwd: e.dir, env, stdout: 'pipe', stderr: 'pipe' }), out = r.stdout.toString().trim();
+  if (r.exitCode !== 0 || !out.startsWith('{')) return {};
+  const f = JSON.parse(out) as Facts & { engine?: unknown; inputs?: unknown };
+  return Object.fromEntries(Object.entries(f).filter(([k]) => k !== 'engine' && k !== 'inputs')) as Facts;
+}
+
+/** The engine's own scenarios a mission's fail lines name (`scenario`, brief 039, Keel's spec): `suborned-sim check <id>…`, which plays each
+ *  scenario with its checks and its replay; each id maps to its line as printed ("K3-CELL-DOWN: ok", "…: FAIL …", "…: THREW …"), or
+ *  "<id>: not in this engine" when the engine prints no line for it (an unknown id, or a pinned commit before the scenario). MC-3 counts a
+ *  line reached only on exactly "<id>: ok". */
+export type Scenarios = Record<string, string>;
+export function scenarios(e: EngineAt, ids: string[]): Scenarios {
+  if (!ids.length) return {};
+  const r = Bun.spawnSync(['dotnet', build(e), 'check', ...ids], { cwd: e.dir, env, stdout: 'pipe', stderr: 'pipe' });
+  const lines = r.stdout.toString().split('\n').map(l => l.trim());
+  return Object.fromEntries(ids.map(id => [id, lines.find(l => l.startsWith(`${id}: `)) ?? `${id}: not in this engine`]));
+}
+export const scenarioOk = (s: Scenarios | undefined, id: string) => s?.[id] === `${id}: ok`;
+
+/** SUBORNED_SIM_STATS=1: at exit, how many plays this process asked of the engine and how it played them. */
 let asked = 0;
 if (process.env.SUBORNED_SIM_STATS) process.on('exit', () => console.error(`engine: ${asked} plays (${process.env.SUBORNED_SIM_BATCH === '0' ? 'a process each' : 'batch server'})`));
 

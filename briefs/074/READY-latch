@@ -1,0 +1,7 @@
+074-C Latch: ready (2026-10-28)
+scene: unity/Assets/Scenes/HarbourDistrict.unity built in batchmode from out/scratch/latch/074/pin/074.world.json sha256 67a3a07b6ffcc1b4ae9bcc8a822e6a3a8b61b56bbc38595deba19a009960d6c4 (fingerprint 041359d9f4a4ac80...), compile clean, 0 console errors (log out/scratch/latch/074/build.log)
+colourways: contracts/world/kit.json `colourways` (Vela), 12 families, 60 tinted materials; 5,578 placed instances swapped (4,654 module roots + 924 street pieces), 55,253 slots
+columns: 165 layouts / 495 meshes before and after (no colourway in the key); shadow proxies keep the base set (29 materials before and after)
+counts: briefs/074/latch/counts.{md,json} (offscreen estimates: SetPass estimate +0 in every view); shots briefs/074/shots/{before,after,compare}/
+camera for the wide view: briefs/074/latch/after/census.json `views` (focus -215,-120, yaw 30, ortho 18.5, pitch 38, standOff 160)
+next: Redline 074-D (UnityStats at play zoom, tp-street, tp-worst)

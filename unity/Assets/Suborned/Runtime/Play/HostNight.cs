@@ -12,9 +12,9 @@ namespace Suborned.Play
 
         public void SetNight(bool night)
         {
-            NightLook = night; PlayerPrefs.SetInt(NightPref, night ? 1 : 0);
+            NightLook = night; if (!GameBoot.Automation) PlayerPrefs.SetInt(NightPref, night ? 1 : 0); // 0.2.115: a proof, shot or bot run never stores Sky's choice (the night shots left his game at night, and every later run with it)
             var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
-            if (!lp) return;
+            if (!lp) { NightLook = false; return; } // the old town has no night phase yet: it stays day
             lp.Focus = () => cam ? focus : (Vector3?)null;
             lp.Set(night);
         }
@@ -23,8 +23,14 @@ namespace Suborned.Play
         /// `-night` on the command line (the app's proof at night): night for this launch, the stored choice untouched.</summary>
         void NightAtStart()
         {
+            if (GameBoot.Arg("-evening")) // brief 048 (Glint, item 21): the day look with the dusk lights on (RoadLight's evening level), for the proof's shots; the stored choice untouched
+            {
+                NightLook = false; var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
+                if (lp) { lp.Focus = () => cam ? focus : (Vector3?)null; lp.SetEvening(); } else Debug.LogWarning("HostNight: -evening with no LightPhase in the scene");
+                return;
+            }
             if (GameBoot.Arg("-night")) { int keep = PlayerPrefs.GetInt(NightPref, 0); SetNight(true); PlayerPrefs.SetInt(NightPref, keep); return; }
-            if (PlayerPrefs.GetInt(NightPref, 0) == 1) SetNight(true); else NightLook = false;
+            if (!GameBoot.Automation && PlayerPrefs.GetInt(NightPref, 0) == 1) SetNight(true); else NightLook = false; // an automated run starts by day unless it says -night
         }
     }
 }

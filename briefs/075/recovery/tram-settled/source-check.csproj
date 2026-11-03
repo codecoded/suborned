@@ -1,0 +1,10 @@
+<Project>
+<PropertyGroup><BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)../../../../out/scratch/latch/tram-settled/source-obj/</BaseIntermediateOutputPath></PropertyGroup>
+<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
+<PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><DefineConstants>UNITY_EDITOR</DefineConstants><LangVersion>9.0</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputPath>../../../../out/scratch/latch/tram-settled/source-bin/</OutputPath></PropertyGroup>
+<ItemGroup>
+<Compile Include="SourceCheck.cs"/><Compile Include="../../../../unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramJoin.cs"/><Compile Include="../../../../unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSource.cs"/><Compile Include="../../../../unity/Assets/Suborned/Editor/World/Kit/Json.cs"/>
+<Reference Include="/Applications/Unity/Hub/Editor/6000.6.2f1/Unity.app/Contents/Resources/Scripting/Managed/UnityEngine/*.dll"/>
+</ItemGroup>
+<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/>
+</Project>

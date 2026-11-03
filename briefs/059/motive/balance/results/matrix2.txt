@@ -1,0 +1,80 @@
+fix        apy-1: success at 3:07.6 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.7 over - break - vale-in 2:32.0
+cap        apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+all        apy-1: success at 3:00.3 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 2:56.4 over - break - vale-in 2:32.0
+fix        gy-1: NOT COMPOSED gy-1 step 17 (enforcer move): not taken between 1853 and 5100
+cap        gy-1: NOT COMPOSED gy-1 step 17 (enforcer move): not taken between 1853 and 5100
+all        gy-1: NOT COMPOSED gy-1 step 22 (fixer move): not taken between 2177 and 5100
+fix        loud: NOT COMPOSED loud step 28 (enforcer move): not taken between 1577 and 5100
+cap        loud: NOT COMPOSED loud step 28 (enforcer move): not taken between 1577 and 5100
+all        loud: success at 5:10.0 T 15 A 2 St -1 gun 9 | spring - blocker.out 3:49.2 over - break - vale-in 5:07.7
+fix        rbb-y2: NOT COMPOSED rbb-y2 step 19 (scout move): not taken between 4360 and 5100
+cap        rbb-y2: NOT COMPOSED rbb-y2 step 19 (scout move): not taken between 4360 and 5100
+all        rbb-y2: success at 7:23.4 T 4 A 2 St 1 gun 0 | spring 7:12.0 blocker.out 7:19.5 over - break - vale-in 7:20.0
+fix        route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+cap        route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+all        route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+fix        route-a-pressure-board: NOT COMPOSED route-a-pressure-board step 19 (enforcer board car): not taken between 1832 and 5100
+cap        route-a-pressure-board: NOT COMPOSED route-a-pressure-board step 19 (enforcer board car): not taken between 1832 and 5100
+all        route-a-pressure-board: success at 3:20.5 T 7 A 1 St 2 gun 0 | spring 3:03.2 blocker.out 3:11.3 over 3:15.3 break 3:15.2 vale-in 3:20.5
+fix        route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+cap        route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+all        route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+fix        route-g-board: NOT COMPOSED route-g-board step 16 (enforcer board car): not taken between 2342 and 5100
+cap        route-g-board: NOT COMPOSED route-g-board step 16 (enforcer board car): not taken between 2342 and 5100
+all        route-g-board: success at 4:11.5 T 6 A 1 St 3 gun 0 | spring 3:54.2 blocker.out 4:02.3 over 4:07.6 break 4:07.5 vale-in 4:11.5
+fix        route-g-fast-board: NOT COMPOSED route-g-fast-board step 16 (enforcer board car): not taken between 1737 and 5100
+cap        route-g-fast-board: NOT COMPOSED route-g-fast-board step 16 (enforcer board car): not taken between 1737 and 5100
+all        route-g-fast-board: success at 3:11.0 T 6 A 1 St 2 gun 0 | spring 2:53.7 blocker.out 3:04.8 over - break - vale-in 3:11.0
+fix        route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+cap        route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+all        route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+lane       apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+lane       gy-1: NOT COMPOSED gy-1 step 17 (enforcer move): not taken between 1853 and 5100
+lane       loud: NOT COMPOSED loud step 28 (enforcer move): not taken between 1577 and 5100
+lane       rbb-y2: NOT COMPOSED rbb-y2 step 19 (scout move): not taken between 4360 and 5100
+lane       route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+lane       route-a-pressure-board: NOT COMPOSED route-a-pressure-board step 19 (enforcer board car): not taken between 1832 and 5100
+lane       route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+lane       route-g-board: NOT COMPOSED route-g-board step 16 (enforcer board car): not taken between 2342 and 5100
+lane       route-g-fast-board: NOT COMPOSED route-g-fast-board step 16 (enforcer board car): not taken between 1737 and 5100
+lane       route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+drawn      apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+nocap      apy-1: success at 3:00.3 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 2:56.4 over - break - vale-in 2:32.0
+drawn      gy-1: NOT COMPOSED gy-1 step 17 (enforcer move): not taken between 1853 and 5100
+nocap      gy-1: NOT COMPOSED gy-1 step 20 (scout move): not taken between 2177 and 5100
+drawn      loud: success at 5:10.0 T 15 A 2 St -1 gun 9 | spring - blocker.out 3:49.2 over - break - vale-in 5:07.7
+nocap      loud: success at 5:10.0 T 15 A 2 St -1 gun 9 | spring - blocker.out 3:49.2 over - break - vale-in 5:07.7
+drawn      rbb-y2: NOT COMPOSED rbb-y2 step 19 (scout move): not taken between 4360 and 5100
+nocap      rbb-y2: success at 7:23.4 T 4 A 2 St 1 gun 0 | spring 7:12.0 blocker.out 7:19.5 over - break - vale-in 7:20.0
+drawn      route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+nocap      route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+drawn      route-a-pressure-board: NOT COMPOSED route-a-pressure-board step 19 (enforcer board car): not taken between 1832 and 5100
+nocap      route-a-pressure-board: success at 3:20.5 T 7 A 1 St 2 gun 0 | spring 3:03.2 blocker.out 3:11.3 over 3:15.3 break 3:15.2 vale-in 3:20.5
+drawn      route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+nocap      route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+drawn      route-g-board: NOT COMPOSED route-g-board step 16 (enforcer board car): not taken between 2342 and 5100
+nocap      route-g-board: success at 4:11.5 T 6 A 1 St 3 gun 0 | spring 3:54.2 blocker.out 4:02.3 over 4:07.6 break 4:07.5 vale-in 4:11.5
+drawn      route-g-fast-board: NOT COMPOSED route-g-fast-board step 16 (enforcer board car): not taken between 1737 and 5100
+nocap      route-g-fast-board: success at 3:11.0 T 6 A 1 St 2 gun 0 | spring 2:53.7 blocker.out 3:04.8 over - break - vale-in 3:11.0
+drawn      route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+nocap      route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+shield     apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+shield     gy-1: NOT COMPOSED gy-1 step 20 (scout move): not taken between 2177 and 5100
+shield     loud: NOT COMPOSED loud step 28 (enforcer move): not taken between 1577 and 5100
+shield     rbb-y2: success at 7:24.9 T 4 A 2 St 1 gun 0 | spring 7:12.0 blocker.out 7:21.0 over - break - vale-in 7:20.0
+shield     route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+shield     route-a-pressure-board: success at 3:20.5 T 7 A 1 St 2 gun 0 | spring 3:03.2 blocker.out 3:11.3 over 3:15.3 break 3:15.2 vale-in 3:20.5
+shield     route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+shield     route-g-board: success at 4:11.5 T 6 A 1 St 3 gun 0 | spring 3:54.2 blocker.out 4:02.3 over 4:07.6 break 4:07.5 vale-in 4:11.5
+shield     route-g-fast-board: success at 3:11.0 T 6 A 1 St 2 gun 0 | spring 2:53.7 blocker.out 3:04.8 over - break - vale-in 3:11.0
+shield     route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100
+noshield   apy-1: success at 3:00.3 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 2:56.4 over - break - vale-in 2:32.0
+noshield   gy-1: NOT COMPOSED gy-1 step 17 (enforcer move): not taken between 1853 and 5100
+noshield   loud: success at 5:10.0 T 15 A 2 St -1 gun 9 | spring - blocker.out 3:49.2 over - break - vale-in 5:07.7
+noshield   rbb-y2: NOT COMPOSED rbb-y2 step 19 (scout move): not taken between 4360 and 5100
+noshield   route-a-board: success at 4:27.9 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:17.1 over 4:20.2 break 4:20.1 vale-in 4:27.9
+noshield   route-a-pressure-board: NOT COMPOSED route-a-pressure-board step 19 (enforcer board car): not taken between 1832 and 5100
+noshield   route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+noshield   route-g-board: NOT COMPOSED route-g-board step 16 (enforcer board car): not taken between 2342 and 5100
+noshield   route-g-fast-board: NOT COMPOSED route-g-fast-board step 16 (enforcer board car): not taken between 1737 and 5100
+noshield   route-g: NOT COMPOSED route-g step 15 (enforcer move): not taken between 1950 and 5100

@@ -1,0 +1,13 @@
+s to down                                                today       A       B       C
+an op in the open, two trained officers at 15 m           2.5s    5.5s    5.5s    5.5s
+the Enforcer in the open, the same                        5.5s    8.5s    7.0s    7.0s
+the Enforcer walking Vale, four rivals at 10 m            4.0s    7.0s    4.0s    4.0s
+  the same, under his covering fire (pinned 4 s)          5.5s    8.5s    5.5s    5.5s
+  the same, covering fire and the three firing on them (B: pinned throughout)    5.5s    8.5s    8.5s    5.5s
+  the same, behind the Tech's steam (no line 8 s)        11.5s   14.5s   11.5s   11.5s
+a rival in the open, three of the cell at 11 m            1.0s    4.0s    1.0s    1.0s
+a rival in full cover, three of the cell at 11 m          2.5s    8.5s    5.5s    2.5s
+  the same, marked by the Scout (his cover off)           1.0s    4.0s    1.0s    1.0s
+  the same, one flanker alone (outside the arc)           7.0s   13.0s    7.0s    7.0s
+an op in full cover, two trained officers at 15 m         5.5s   10.0s   20.5s   10.0s
+  the same, the officers pinned (under fire)              5.5s   10.0s   40.0s   10.0s

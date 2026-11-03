@@ -1,10 +1,10 @@
 // suborned.tplong/1 (brief 048, Splice; Redline's proposed row): the draw-distance check of `bun run batch`. The third-person (follow) view draws the district out to its far
 // clip, so its cost is counted in what it draws (triangles, SetPass calls, shadow casters, renderers, those far away) as well as in milliseconds. This times the two
-// third-person views Redline measured (Sky's street, and the worst heading) and the play view at the opening for comparison, at the Air's panel size, ~40 s of player time.
+// third-person views Redline measured (Sky's street, and the worst heading) and the play view at the opening for comparison, at 1920 x 1080, ~40 s of player time.
 //
 //   row   name (kebab-case) · view: follow | overhead · for follow: agent (default scout), walk [dx, dz] metres from the start the cell walks first (engine move orders), faceHeading
-//         degrees clockwise from +z (dir = (sin h, cos h) in x, z; as briefs/048/probe/Probe.cs FollowAt) · for overhead: yaw (default 30), zoom (default 14, the play zoom)
-//         · settle seconds before the window (1.5) · seconds the window lasts (6) · size [w, h] (default 2880 x 1864, the Air's panel; render scale 1)
+//         degrees clockwise from +z (dir = (sin h, cos h) in x, z; as briefs/048/probe/Probe.cs FollowAt) · for overhead: yaw (default 30), zoom (default 10, the play zoom since 2026-10-30; player 0.2.191 does not read it: an overhead row draws the camera's own zoom, brief 086)
+//         · settle seconds before the window (1.5) · seconds the window lasts (6) · size [w, h] (default 1920 x 1080, the bar; render scale 1)
 //   run   clock running, HUD on, -novsync. Never paused: the sim ticks as in play.
 //
 // The player's side is `-tplong <resolved.json> <outDir>` (the contract is in briefs/048-draw-distance.md, "The player's hook"); it writes <outDir>/tplong.json
@@ -13,7 +13,7 @@
 import { z } from 'zod';
 import { noisy, type LoadSample } from './late';
 
-export const DEFAULT_SIZE: [number, number] = [2880, 1864];
+export const DEFAULT_SIZE: [number, number] = [1920, 1080]; // the bar (Sky 2026-10-26, GDD §11); was the Air's panel, 2880 x 1864, until brief 086
 export const MARKER = 'suborned.tplong.report/1';
 
 /** The gates (Redline, briefs/048-draw-distance.md "Gates on the Studio"). Third person: counts and a frame time with headroom; play view: its triangles and mean.
@@ -65,7 +65,7 @@ export function resolveTpLong(raw: unknown, outDir: string): TpLongResolvedFile 
     if (!follow && (r.faceHeading !== undefined || r.walk !== undefined || r.agent !== undefined)) bad('agent, walk and faceHeading go with the follow view');
     if (follow && (r.yaw !== undefined || r.zoom !== undefined)) bad('yaw and zoom go with the overhead (play) view');
     rows.push({
-      name: r.name, view: r.view, kind: follow ? 'third' : 'play', agent: r.agent ?? 'scout', walk: r.walk ?? [0, 0], faceHeading: r.faceHeading ?? -1, yaw: r.yaw ?? 30, zoom: r.zoom ?? 14,
+      name: r.name, view: r.view, kind: follow ? 'third' : 'play', agent: r.agent ?? 'scout', walk: r.walk ?? [0, 0], faceHeading: r.faceHeading ?? -1, yaw: r.yaw ?? 30, zoom: r.zoom ?? 10,
       settleSeconds: r.settle ?? 1.5, seconds: r.seconds ?? 6, w: r.size?.[0] ?? DEFAULT_SIZE[0], h: r.size?.[1] ?? DEFAULT_SIZE[1], clockRunning: true, hud: true, vsync: false,
     });
   }
@@ -103,7 +103,7 @@ export function judgeTpLong(resolved: TpLongResolvedFile, rep: TpLongReport | un
     if (x.status !== 'ok') { problems.push(`${r.name}: ${x.error ?? 'failed'}`); continue; }
     const p = (m: string) => problems.push(`${r.name}: ${m}`), c = x.counters, t = x.frames;
     // the drive was what the row said
-    if (x.screen[0] !== r.w || x.screen[1] !== r.h) p(`rendered at ${x.screen[0]} x ${x.screen[1]}, the row says ${r.w} x ${r.h}: the numbers are not the Air's size`);
+    if (x.screen[0] !== r.w || x.screen[1] !== r.h) p(`rendered at ${x.screen[0]} x ${x.screen[1]}, the row says ${r.w} x ${r.h}: the numbers are not at the size it names`);
     if (r.kind === 'third') {
       const d = x.faceHeading === undefined ? NaN : Math.abs(((x.faceHeading - r.faceHeading + 540) % 360) - 180);
       if (!(d <= 2)) p(`faced ${x.faceHeading === undefined ? 'no heading reported' : f1(x.faceHeading) + ' degrees'}, the row says ${r.faceHeading}: the view is not the one named`);

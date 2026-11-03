@@ -1,0 +1,38 @@
+078 Delta only · Splice (tools-engineer) · 2026-10-31 · HEAD 50cfe9fa + uncommitted, c046, engine 0.37.0
+Status: done and measured. One real line in HostHold.cs: 168 s from `bun run batch` to BATCH OK (target about 300 s). Same line undone: 155 s. Player 0.2.170 is the current build, on the reverted tree. Not committed. tp-long is STILL OPEN: not this work, needs a decision (below).
+
+Measured (real batches on this machine)
+- One line in HostHold.cs: 168 s. time line: compile 1 · hostlogic 5 · game-build 153 (Unity build 16, proof 107, the rest stills check and signing) · shots 8 · budget 0; sim, words, kit, world, unity-world, unity-match, late-fight, tp-long skipped. Without the hostlogic step, before: 163 s and 151 s.
+- Proof by section on it: start 4 · boot 8 · dblClick 6 · holdActs 30 · r083 23 · holdRange 36 · exit 1. The app's 23 s exit is gone (-fastExit).
+- Host logic with no Unity: `bun run hostlogic`: 5.4 s. 54 cases (21 new, plus the 33 Editor tests in ContextRank, ModalGate and TpInputMap, compiled in as they are).
+- Full proof: 567 s; full batch with everything else skipped: 622 s.
+
+Not every host file is that cheap. Proof minutes by the map, from the 0.2.168 section seconds, NOT measured end to end (HostHold's reads 2.3 against 1.8 measured, so about a quarter high there); add about a minute for the rest of the batch:
+- Inside 5 minutes: text.json 1.3 · HostActivity 1.8 · HostClicks 1.9 · HostHold 2.3 · HudToolkit.Scope and the other unread HUD parts 2.7.
+- Near it: HudToolkit.Hold 4.5 · HudToolkit.Done 4.9.
+- MISS: HudToolkit.Reroute 6 · HostViews 6 · HostFollow 6.2 · HostContext 6.3 · HandoverHost 8.3 · HudModel 8.9 · HudToolkit.cs 9.5. HandoverHost.cs was touched by 4 of the last 40 commits.
+
+The map
+- Host*.cs, HudToolkit.*, Proof*.cs, the words and Editor/World/Review have rows. A test fails a section that reads a Host member with no row.
+- Newly none: tools/figures, tools/life, tools/dialogue, tools/missions/check, tools/missions/idle (no batch step imports or spawns them; their output is hashed where it lands). tools/game/pins runs late-fight only.
+- Still full by design: engine and its inputs (contracts/rules, contracts/missions/handover/mission.json and routes, sim/), world, kit, scene builders, GameBoot and proofgates, shaders, materials, settings, contracts/style/suborned.style.json (the scene builders read it; a GDD bump that touches only its version still runs full and tp-long). Also still unplaced, so full: Runtime/OldTown, Runtime/Robots, Runtime/People, Runtime/Perf, SimBundle, SiteFrame.
+- A map edit to a none or full row re-proves every section once (mapHash, on purpose): one 10-minute batch.
+
+tp-long (the stop on 0.2.165)
+- tp-worst 6.9 M triangles against the 6 M gate. Real rise, from the scene change, not a stale reading and not this work: 3.8 M on 0.2.161 (HarbourDistrict) -> 6.9 M on 0.2.163 and 0.2.164 (OldTown.unity, Sky's call), before any of these edits. tp-street 3.2 -> 5.0 M. Every other count is inside its gate; the frame did not move: mean 4.0 -> 4.2 ms, p99 5.3 -> 5.4 ms on the Studio (gates 8.3 and 16.7).
+- Threshold not touched. Its row stays open on the ledger: deltas skip it and print a WARNING; it runs again when something it reads changes, and then it stops that batch.
+- No Air number for the old town at these views: briefs/075/redline/perf-075ab.json is "SPEC, NOT RUN". Next: Redline, with Sky's OK for the Air run; then rebase the gate on the Air's number or take a compression decision to Sky. Never slimmed without him (§12).
+
+Tests
+- bun run test: 2445 pass, 25 fail, 3 skip (437 s), before two small later edits (seconds in the map, one bound in proofdelta.test.ts); those three tool test files then pass: 105 of 105.
+- 18 are on the list in the last READY. Seven more, none reading anything in this diff: simview final hash (also fails on a clean export of HEAD), rounds.test x2, people day.test (r013) and trust.test, drift-auto "a harmless edit", closing-hash (Keel's). Only simview was confirmed on clean HEAD; the others would not load in that export, so theirs is by reading the imports, not by a run.
+- Typecheck clean.
+
+Limits of the host logic check: the views and audio are silent, native calls answer defaults, no input devices (it calls BusyClick and the Give methods, not the Update path), no UI Toolkit (the HudToolkit words are not read), no pictures. Three real lines broken on purpose were each caught, 5 s each, and restored.
+Next owner: Aster (commit) -> Sky for the short list.
+
+Follow-up, 2026-10-31: "DK_SpaceHQ.fbx.meta changed" (0.2.180, 0.2.181, about 1465 s). Player 0.2.183 is the current build, on the unprobed tree.
+- Cause: lens.json and OldTownPlayLook.cs had no row, so every gated step ran. `bun run kit` then put back 75 files Unity had rewritten; three carry a guid the old town's art copy already owns (DK_SpaceHQ fbx and prefab, facade_panel_v1), so unity-world re-rolled them at random ("conflicts with ... Assigning a new guid"). The plan named the Kit file because it sorts before the real edit.
+- Fix: tools/kit/copy.ts leaves a .meta or .mat alone until the catalogue's own hash moves (out/kit/copied.json); models, textures and prefabs stay byte-checked. Rows for lens.json and OldTownPlayLook.cs: r118 and every shot. A full plan names the edit before Kit files. Tool tests under tools/kit, decokit and world no longer run full.
+- Measured: this tree 34 s (no rebuild). A 0.2.181-shaped change (lens.json and OldTownPlayLook.cs touched by a blank line and a comment): 96 s; undone 92 s. compile 2 · hostlogic 7 · game-build 62 (proof 22) · shots 22 · budget 2. Against 1465 s.
+- Not exercised: a real kit + unity-world cycle after the fix. The guids stood through kit reruns and three batches; only the unit test covers a moved catalogue hash.

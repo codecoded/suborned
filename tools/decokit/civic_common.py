@@ -1,8 +1,8 @@
 """Civic block (brief 008, B1) shared parts: the materials these pieces add, the café's front outline, hairline and
 planting helpers. Colour roles (Sky, 14 Oct): seafoam and deep teal are the kit enamels; coral, flamingo and peach
 (contract accents) are for banners and flowers; gold is hairline, frame and bead only (DK_Brass_Civic, never a fat panel). 14 Oct (Sky, first Unity build): the civic hairline is the painted
-brass #99784D (dE2000 21.3 from the guard colour; the world gold #D0C848 read yellow-green), banners are seafoam, deep teal is an
-accent of 0.3 m or less (a sign body, a reveal, a lamp sleeve), never a field, fascia or cap.
+brass (mats.BRASS: #99784D then, brass-gold #C29A55 since brief 072-G), banners are seafoam, deep teal is an
+accent (072-G, Sky "yep": also storey bands, fascia lines and reveals up to about 0.9 m, never a whole field).
 
 Frames: pieces face -Y with the facade / front line at y = 0 and the building on +Y; pivot = footprint centre at z = 0
 (runs and furniture) or the front-centre of the wall they dress (café bay, entrance), as each docstring says."""
@@ -13,7 +13,7 @@ import random
 import mats
 import spacehq  # noqa: F401  (registers DK_Lamp_Deco, dE2000 24.6 from the guard colour; DK_Lamp is 19.3, so civic lamps use Deco)
 from geo import arc, dome
-from mats import look_hex, register
+from mats import BRASS, look_hex, register
 from plaza_parts import lift
 from structures import along, sec, tube
 
@@ -27,7 +27,7 @@ register("DK_Leaf_Civic", "stone", "#6A9B5C")        # planting greens: far from
 register("DK_Leaf_CivicDark", "stone", "#46794C")
 register("DK_Inlay_Seafoam", "ceramic", mats.LIB["DK_Enamel_Seafoam"][1])  # paving inlay: the kit seafoam, as glazed tile
 register("DK_Inlay_Teal", "ceramic", mats.LIB["DK_Enamel_Teal"][1])
-register("DK_Brass_Civic", "brass", "#99784D")      # hairline gold: the brass of gp-entrance's door posts (shaded brass), 21.3 dE2000 from the guard colour; DK_Accent_Gold #D0C848 stays for the other families
+register("DK_Brass_Civic", "brass", BRASS)      # hairline gold: the brass of gp-entrance's door posts (shaded brass), 21.3 dE2000 from the guard colour; DK_Accent_Gold #D0C848 stays for the other families
 register("DK_Banner_Comet_Seafoam", "fabric", "#FFFFFF")  # banner_comet_seafoam_v1.png: derive008.py recolours the kit comet banner to the seafoam field
 mats.TEXTURES.setdefault("DK_Banner_Comet_Seafoam", ("banner_comet_seafoam_v1.png", 1.0))
 register("DK_Pool_Civic", "enamel", "#3A9AA6")      # fountain pool water, opaque: AtomFountain's DK_Water (alpha 0.3 glass, #6FB7C4) reads white under the sky

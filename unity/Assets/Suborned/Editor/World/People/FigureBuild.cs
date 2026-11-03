@@ -19,7 +19,7 @@ namespace Suborned.World.People
         public const string LibraryPath = Gen + "/FigureLibrary.asset", ControllerPath = Gen + "/Figures.controller";
         /// <summary>Who walks with walk_f (the manifest carries no gender): the women among the cell, the cast and the crowd, read from the
         /// contact sheets (briefs/020/people/cast.png, crowd.png).</summary>
-        static readonly HashSet<string> Women = new() { "scout", "fixer", "waitress", "cafe_w2", "cafe_w3", "cafe_w5", "el1", "d6", "sh2" };
+        static readonly HashSet<string> Women = new() { "scout", "fixer", "waitress", "cafe_w2", "cafe_w3", "cafe_w5", "el1", "d6", "sh2", "rival_d" }; // rival_d: Forma 067 (the crew's woman, on Commuter C6's body)
 
         [MenuItem("Suborned/People/Build Figure Library")]
         static void Menu()
@@ -30,8 +30,37 @@ namespace Suborned.World.People
             Debug.Log($"People: figure library {(lib ? lib.figures.Length : 0)} figures; host {(host ? "baked" : "none open")}");
         }
 
-        /// <summary>The library, built from the installed manifest (null when the figures are not installed: the capsules stay).</summary>
-        public static FigureLibrary Library() => File.Exists(Path.Combine(Root, "manifest.json")) ? AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath) ?? Build() : null;
+        /// <summary>Batchmode (Editor closed): rebuild the library and the controller from the installed manifest, in place (the same asset paths,
+        /// so the scene's host keeps its reference), and log the figures and the pools. Unity -batchmode -quit -projectPath unity -executeMethod
+        /// Suborned.World.People.FigureBuild.Cli (brief 067: Forma's Velvet Set, 26 figures and the pool role/rival).</summary>
+        public static void Cli()
+        {
+            int code = 1;
+            try
+            {
+                var lib = Build();
+                if (lib)
+                {
+                    code = 0;
+                    var pools = new List<string>(); for (int i = 0; i < lib.poolKeys.Length; i++) if (lib.poolKeys[i].StartsWith("role/")) pools.Add($"{lib.poolKeys[i]}={lib.poolIds[i]}");
+                    Debug.Log($"People: figure library rebuilt: {lib.figures.Length} figures [{string.Join(" ", lib.figures.Select(f => f.id + (f.female ? "(f)" : "")))}]; {lib.speedStates.Length} clip speeds; pools {string.Join("; ", pools)}");
+                }
+            }
+            catch (System.Exception e) { Debug.LogException(e); }
+            EditorApplication.Exit(code);
+        }
+
+        /// <summary>The library, built from the installed manifest (null when the figures are not installed: the capsules stay).
+        /// Brief 039 B: rebuilt whenever the installed manifest is newer than the controller (new clips, Forma's additive layers), so a player
+        /// build never bakes a controller that lacks the installed clips.</summary>
+        public static FigureLibrary Library()
+        {
+            var mpath = Path.Combine(Root, "manifest.json"); if (!File.Exists(mpath)) return null;
+            var lib = AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath);
+            bool stale = lib == null || !File.Exists(ControllerPath) || File.GetLastWriteTimeUtc(mpath) > File.GetLastWriteTimeUtc(ControllerPath);
+            if (stale) Debug.Log($"People: the figure library is {(lib == null ? "missing" : "older than the installed manifest")}: rebuilt");
+            return stale ? Build() : lib;
+        }
 
         /// <summary>Forma's testbed cell (briefs/020/people/cell-generic/manifest-cell.json): Generic figures on their own skeletons. Each gets an
         /// AnimatorOverrideController over the shared controller, every state's clip replaced by the same-named clip of its own FBX (the shared
@@ -61,24 +90,85 @@ namespace Suborned.World.People
             if (log.Count > 0) Debug.Log("People: testbed cell overrides: " + string.Join(", ", log));
         }
 
+        /// <summary>Brief 039 B (Forma's install note, briefs/039/forma/pin-poses.md §D "Host"): two additive layers, no mask. "react" (weight 1):
+        /// an empty default state plus flinch_add and kick_add, each back to empty at its end with no blend; the host restarts one per event
+        /// (Play(state, react, 0)). "peek" (its weight driven by the host every frame): pin_peek_add looping. States on these layers don't write
+        /// defaults (an additive layer adds only its clip). A clip missing from the manifest leaves its state out; the layers stay.</summary>
+        static void AdditiveLayers(AnimatorController ctl, Dictionary<string, AnimationClip> clips)
+        {
+            ctl.AddLayer("react"); ctl.AddLayer("peek");
+            var layers = ctl.layers;
+            for (int i = 1; i < layers.Length; i++) { layers[i].blendingMode = AnimatorLayerBlendingMode.Additive; layers[i].defaultWeight = layers[i].name == "react" ? 1f : 0f; }
+            ctl.layers = layers;
+            var react = ctl.layers[1].stateMachine; var empty = react.AddState("empty"); empty.writeDefaultValues = false; react.defaultState = empty;
+            foreach (var n in new[] { "flinch_add", "kick_add" })
+            {
+                if (!clips.TryGetValue(n, out var clip)) continue;
+                var st = react.AddState(n); st.motion = clip; st.writeDefaultValues = false;
+                var tr = st.AddTransition(empty); tr.hasExitTime = true; tr.exitTime = 1f; tr.duration = 0f; tr.hasFixedDuration = true;
+            }
+            var peek = ctl.layers[2].stateMachine;
+            if (clips.TryGetValue("pin_peek_add", out var pc)) { var st = peek.AddState("pin_peek_add"); st.motion = pc; st.writeDefaultValues = false; peek.defaultState = st; }
+            else { var e2 = peek.AddState("empty"); e2.writeDefaultValues = false; peek.defaultState = e2; }
+        }
+
+        /// <summary>Brief 069 A (Redline: about 15 % of a person's frame cost on today's figures): every installed figure imports with Optimize Game
+        /// Objects on, so its skeleton lives inside the Animator and only the bones the play scene reads stay as transforms. The rule, from the code
+        /// that reads bones (HostViews.Bone): Head and Hips on everyone (the attention cue and look-at read Head; a carried body, which can be anyone,
+        /// is seated by its Hips); RightShoulder on the cell (playRoles op/*: only an agent carries, HostViews.cs carriers); the tray's bone on the
+        /// figures that serve (manifest props[tray].attach.bone and perFigure). The paths are read from the model's own hierarchy (unoptimised first
+        /// when they change), so nothing is written per figure. Skipped when the meta already exposes exactly these names.</summary>
+        static void Optimise(object m)
+        {
+            var always = new[] { "Head", "Hips" };
+            var carriers = new HashSet<string>();
+            if (J.Get(m, "playRoles") is Dictionary<string, object> pr)
+                foreach (var kv in pr) if (kv.Key.StartsWith("op/") && kv.Value is List<object> ids) foreach (var x in ids) carriers.Add((string)x);
+            var hands = new Dictionary<string, string>();
+            if (J.Get(m, "props") != null)
+                foreach (var p in J.A(m, "props"))
+                    if (J.Get(p, "attach") is { } at && J.S(at, "bone") is string bone && J.Get(at, "perFigure") is Dictionary<string, object> pf)
+                        foreach (var id in pf.Keys) hands[id] = bone;
+            var log = new List<string>();
+            foreach (var f in J.A(m, "figures"))
+            {
+                string id = J.S(f, "id"), path = Path.Combine(Root, J.S(f, "fbx"));
+                if (AssetImporter.GetAtPath(path) is not ModelImporter imp) continue;
+                var want = always.Concat(carriers.Contains(id) ? new[] { "RightShoulder" } : new string[0]).Concat(hands.TryGetValue(id, out var hb) ? new[] { hb } : new string[0]).Distinct().OrderBy(x => x).ToArray();
+                var have = imp.extraExposedTransformPaths.Select(x => x.Split('/').Last()).OrderBy(x => x).ToArray();
+                if (imp.optimizeGameObjects && have.SequenceEqual(want)) continue;
+                if (imp.optimizeGameObjects) { imp.optimizeGameObjects = false; imp.extraExposedTransformPaths = new string[0]; imp.SaveAndReimport(); }
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                var paths = model.GetComponentsInChildren<Transform>(true).Where(t => t != model.transform && want.Contains(t.name)).GroupBy(t => t.name).Select(g => PathOf(g.First(), model.transform)).ToArray();
+                imp.optimizeGameObjects = true; imp.extraExposedTransformPaths = paths; imp.SaveAndReimport();
+                log.Add($"{id} [{string.Join(",", paths.Select(x => x.Split('/').Last()))}]");
+            }
+            if (log.Count > 0) Debug.Log($"People: Optimize Game Objects on {log.Count} figures: " + string.Join("; ", log));
+        }
+        static string PathOf(Transform t, Transform root) { var s = t.name; while (t.parent && t.parent != root) { t = t.parent; s = t.name + "/" + s; } return s; }
+
         public static FigureLibrary Build()
         {
             var mpath = Path.Combine(Root, "manifest.json"); if (!File.Exists(mpath)) { Debug.LogWarning("People: no installed figures (bun tools/figures/run.ts --install)"); return null; }
             var m = Json.Parse(File.ReadAllText(mpath));
             if (!AssetDatabase.IsValidFolder(Gen)) AssetDatabase.CreateFolder(Root, "Generated");
+            Optimise(m);
             // one controller: a state per clip, named as the clip; idle first (the default)
             AssetDatabase.DeleteAsset(ControllerPath);
             var ctl = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
             var sm = ctl.layers[0].stateMachine; var speedStates = new List<string>(); var speeds = new List<float>();
+            var additive = new Dictionary<string, AnimationClip>();
             foreach (var c in J.A(m, "clips").OrderBy(c => J.S(c, "name") == "idle" ? 0 : 1))
             {
                 string name = J.S(c, "name"), file = Path.Combine(Root, J.S(c, "file"));
                 var clip = AssetDatabase.LoadAllAssetsAtPath(file).OfType<AnimationClip>().FirstOrDefault(a => !a.name.StartsWith("__preview__"));
                 if (clip == null) throw new InvalidDataException($"People: no clip in {file}");
+                if (J.Get(c, "additive") is bool ad && ad) { additive[name] = clip; continue; } // brief 039 B (Forma): additive rows stay off the base layer
                 var st = sm.AddState(name); st.motion = clip; st.writeDefaultValues = true;
                 if (J.Get(c, "naturalSpeedMs") is double ns) { speedStates.Add(name); speeds.Add((float)ns); }
             }
             sm.defaultState = sm.states.First(s => s.state.name == "idle").state;
+            AdditiveLayers(ctl, additive);
             // the figures, their LOD heights and the pools
             var lib = AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath);
             if (lib == null) { lib = ScriptableObject.CreateInstance<FigureLibrary>(); AssetDatabase.CreateAsset(lib, LibraryPath); }

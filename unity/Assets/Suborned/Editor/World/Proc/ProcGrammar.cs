@@ -150,7 +150,7 @@ namespace Suborned.World
                             if (!Hosts.TryGetValue(o, out var og)) continue;
                             if (og.Coarse == g.Coarse) score -= 100;
                             if (og.Fam == g.Fam) score -= 6;
-                            if (og.WallFam == g.WallFam) score -= 4;
+                            if (og.WallFam == g.WallFam && FacadeKit.ExportFamily(h) == null) score -= 4; // brief 074: an export colourway is fixed, not scored
                             if (og.A == g.A) score -= 2;
                             if (og.Corner == g.Corner && og.Crown == g.Crown) score -= 3;
                             if (og.Rhythm == g.Rhythm) score -= 1;
@@ -192,6 +192,7 @@ namespace Suborned.World
             // colourway: wall family by area weights, enamel pair
             var (names, w) = spec.AreaFamilies[h.Area ?? "harbour"];
             g.WallFam = Pick(d, names, w);
+            if (FacadeKit.ExportFamily(h) is { } cw) g.WallFam = cw; // brief 074: the export's colourway (the draw above is still spent)
             var en = spec.AreaEnamel[h.Area ?? "harbour"]; int ia = d.Int(en.Length);
             g.A = en[ia]; g.B = en[(ia + 1 + d.Int(en.Length - 1)) % en.Length];
             return g;

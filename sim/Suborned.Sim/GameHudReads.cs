@@ -75,7 +75,7 @@ namespace Suborned.Sim
         public (int tick, bool known) NextRound(string stashId)
         {
             var s = StashById(stashId); if (s == null || s.Kind != "container") return (-1, false);
-            int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);
+            int period = T(R.ServicePeriodS), phase = ScanPhase(s.Id, period);
             int next = Tick + ((phase - Tick % period) % period + period) % period;
             return (next, KnowsRound(s.Id));
         }
@@ -90,7 +90,7 @@ namespace Suborned.Sim
             if (op.Down) { c.Refused = "agent-down"; return c; }
             if (op.Inside) { c.Refused = "enforcer-inside"; return c; }
             var path = RouteOf(op.Pos, to);
-            int pace = carrier == OpId.Enforcer ? opSpeed : R.CarryUntrainedSpeed; // mm a tick (= cm/s)
+            int pace = carrier == OpId.Enforcer ? cellWalk : R.CarryUntrainedSpeed; // mm a tick (= cm/s)
             c.PaceCmS = pace;
             int ticks = (int)((path.Length + pace - 1) / pace); c.S = (ticks + Hz - 1) / Hz;
             CarryStretch? cur = null;
@@ -133,7 +133,16 @@ namespace Suborned.Sim
         ///  · reroute, patrol: the patrol away on false orders until PatrolAwayUntil (patrol.returns).
         ///  · mislead, rivals: the False tip, the rival crew away until RivalsDelayedUntil (no log code at its end; a retreat under fire is
         ///    not a window).
-        ///  · loop, the camera id (LoopCam): held while the Tech stays at the cabinet, Until -1 (loop.ends).</summary>
+        ///  · loop, the camera id (LoopCam): Loop v2 (engine 0.31.0) runs until LoopUntil (loop.ends); under the tether (a rulebook pinned
+        ///    before 0.31.0) held while the Tech stays at the cabinet, Until -1.
+        ///  · disable, the camera id (engine 0.31.0, brief 058 §2): a cut camera's missed check-in on its way, From the cut to Until, the tick
+        ///    the desk's report lands (camera.cut-reported); gone once it lands.
+        ///  · seal, district (brief 057 §4, engine 0.30.0): the seal clock, from the tick Lockdown was last set or pulled earlier (From) to
+        ///    Lockdown (Until), the district sealing then unless the car leaves first (seal.starts, security.called, fight.loud set it; a later
+        ///    report may pull it earlier: From and Until move, Origin is that report). Origin: the report whose time is running (FailCause's
+        ///    LastMove, else its Origin): Because loud-fight (the shooting), response (a report called the response: Report says which,
+        ///    gunfire:*, drawn-seen:*, post-empty:* = a missed check-in, report:*), confirmed (a unit confirmed a reported act; Confirmer);
+        ///    null when the engine kept none. Not listed once the run is over.</summary>
         public List<OpenWindow> Windows()
         {
             var l = new List<OpenWindow>();
@@ -146,7 +155,9 @@ namespace Suborned.Sim
             }
             if (!PatrolDown && PatrolAwayUntil > Tick) l.Add(new OpenWindow("reroute", "patrol", PatrolAwayUntil));
             if (RivalsDelayMethod == "mislead" && RivalsDelayedUntil > Tick && !RivalsAbsorbed) l.Add(new OpenWindow("mislead", "rivals", RivalsDelayedUntil));
-            if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, -1));
+            if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, R.LoopRuns ? LoopUntil : -1)); // engine 0.31.0 (Loop v2): a real end
+            if (!Over) foreach (var c in CutReps) if (!c.Done) l.Add(new OpenWindow("disable", c.Cam, c.LandAt, c.From)); // engine 0.31.0 (brief 058 §2): the desk's clock
+            if (!Range && !Over && Lockdown < INF) l.Add(new OpenWindow("seal", "district", Lockdown, sealMovedAt, SealRunning)); // brief 057 §4 (engine 0.30.0)
             return l;
         }
     }
@@ -155,7 +166,11 @@ namespace Suborned.Sim
     public sealed class OpenWindow
     {
         public readonly string Kind, Thing; public readonly int Until;
-        public OpenWindow(string kind, string thing, int until) { Kind = kind; Thing = thing; Until = until; }
+        /// <summary>The tick the window opened or last moved, where the engine keeps it (seal only, engine 0.30.0); -1 otherwise.</summary>
+        public readonly int From;
+        /// <summary>The seal only (engine 0.30.0): the report whose time is running (FailCause.cs CauseOrigin); null otherwise.</summary>
+        public readonly CauseOrigin? Origin;
+        public OpenWindow(string kind, string thing, int until, int from = -1, CauseOrigin? origin = null) { Kind = kind; Thing = thing; Until = until; From = from; Origin = origin; }
         public override string ToString() => Kind + ":" + Thing + "@" + Until.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 }

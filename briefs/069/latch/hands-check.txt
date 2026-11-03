@@ -1,0 +1,17 @@
+Brief 069 hands, the kept import (Latch, scratch Unity)
+
+source walk (walk.fbx on its own avatar): finger bend (index..little, mean) 84.6°, spread 16.4°
+
+walk, per figure (palm = the palm's normal in the root's frame against the source's, per frame; bend = index..little):
+  fixer_v7_H: palm off the source L 0.2..2.2° (median 0.7), R 2.2..4.6° (median 3.2); bend against the source -3.6..-3.3°; spread 16.8°; ankles apart front on 12.2..15.4 cm (mean 14.1); boot gap front on min 3.4 cm, mean 6.5 cm, frames overlapping 0/35
+  enforcer_v1_H: palm off the source L 0.1..2.6° (median 0.7), R 2.7..4.4° (median 3.3); bend against the source -3.6..-3.3°; spread 16.8°; ankles apart front on 17.9..22.2 cm (mean 20.8); boot gap front on min 7.7 cm, mean 10.3 cm, frames overlapping 0/35
+  e2e_guard_H: 22-bone hands (no fingers): the curl is in the mesh; ankles apart front on 11.8..14.8 cm (mean 13.6); boot gap front on min 3.2 cm, mean 5.7 cm, frames overlapping 0/35
+  e2e_coat_H: 22-bone hands (no fingers): the curl is in the mesh; ankles apart front on 14.3..17.5 cm (mean 16.4); boot gap front on min 5.3 cm, mean 8.3 cm, frames overlapping 0/35
+  e2e_dress_H: 22-bone hands (no fingers): the curl is in the mesh; ankles apart front on 11.8..14.6 cm (mean 13.4); boot gap front on min 3.3 cm, mean 6.3 cm, frames overlapping 0/35
+  e2e_flamingo_H: 22-bone hands (no fingers): the curl is in the mesh; ankles apart front on 12.0..15.0 cm (mean 13.7); boot gap front on min 3.8 cm, mean 6.8 cm, frames overlapping 0/35
+
+hand_relaxed (fingers-only override, both hands) over the flagged clips: finger bend index..little mean, without → with (the walk's own: 84.6°); spread with:
+  fixer_v7_H: idle_alt 35.0 → 82.3° (spread 16.1°, straightest finger 65.6°); walk_f 20.8 → 82.3° (spread 16.1°, straightest finger 65.6°); walk_old 26.6 → 82.3° (spread 16.1°, straightest finger 65.6°); kill_victim 6.6 → 82.3° (spread 16.1°, straightest finger 65.6°); carried_drape 6.0 → 82.3° (spread 16.1°, straightest finger 65.6°); serve_walk 20.8 → 82.3° (spread 16.1°, straightest finger 65.6°)
+  enforcer_v1_H: idle_alt 35.0 → 82.3° (spread 16.1°, straightest finger 65.6°); walk_f 20.8 → 82.3° (spread 16.1°, straightest finger 65.6°); walk_old 26.6 → 82.3° (spread 16.1°, straightest finger 65.6°); kill_victim 6.6 → 82.3° (spread 16.1°, straightest finger 65.6°); carried_drape 6.0 → 82.3° (spread 16.1°, straightest finger 65.6°); serve_walk 20.8 → 82.3° (spread 16.1°, straightest finger 65.6°)
+
+errors and exceptions logged: 0

@@ -19,3 +19,20 @@ export function dijkstra(E: Edge[], from: string) {
   const trace = (to: string) => { const out: Edge[] = []; let n = to; while (prev.has(n)) { const e = prev.get(n)!; out.unshift(e); n = e.a === n ? e.b : e.a; } return out; };
   return { D, trace };
 }
+
+/** A mission route over the graph (contracts/missions/mission.schema.ts routes): from a node, through the `via` nodes in order, to the nearest of `to`. Each leg is the shortest road path; with no `via` it is the plain shortest path to the nearest end. */
+export type RouteSpec = { from: string; via?: string[]; to: string[] };
+export type RoutePath = { nodes: string[]; edges: Edge[]; length: number; to: string };
+export function routeVia(E: Edge[], r: RouteSpec): RoutePath {
+  const nodes = [r.from], edgesOut: Edge[] = [];
+  let at = r.from, length = 0;
+  const leg = (targets: string[], what: string) => {
+    const { D, trace } = dijkstra(E, at), to = targets.reduce((b, t) => ((D.get(t) ?? Infinity) < (D.get(b) ?? Infinity) ? t : b));
+    if (!Number.isFinite(D.get(to) ?? Infinity)) throw new Error(`the route from ${at} reaches none of ${targets.join(', ')}${what}`);
+    for (const e of trace(to)) { nodes.push(e.a === nodes.at(-1) ? e.b : e.a); edgesOut.push(e); }
+    length += D.get(to)!; at = to;
+  };
+  for (const v of r.via ?? []) leg([v], ` (a via node)`);
+  leg(r.to, '');
+  return { nodes, edges: edgesOut, length, to: at };
+}

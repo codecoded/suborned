@@ -25,9 +25,18 @@ namespace Suborned.World
         public int Vert(Vector3 p) { v.Add(p); return v.Count - 1; }
 
         public Vector3 At(int i) => v[i];
+        /// <summary>The normal set on vertex i (zero where Build computes it).</summary>
+        public Vector3 NormalAt(int i) => nrm != null && i < nrm.Count ? nrm[i] : default;
+        /// <summary>Low-level: moves vertex i (RoadPoolJoints mitres a pool band's far corner before it is baked).</summary>
+        public void SetAt(int i, Vector3 p) => v[i] = p;
+        /// <summary>The UV of vertex i (zero where none).</summary>
+        public Vector2 UvAt(int i) => uv != null && i < uv.Count ? uv[i] : default;
 
         /// <summary>A vertex with its own UV (brief 026: the kerb stone and gutter strip, UV in metres along and across the kerb).</summary>
         public int Vert(Vector3 p, Vector2 uv0) { PadUv(); v.Add(p); uv.Add(uv0); return v.Count - 1; }
+
+        /// <summary>A vertex with its own UV and normal (brief 075 roll-out: the sky track's swept beam, smooth round its fillets).</summary>
+        public int Vert(Vector3 p, Vector2 uv0, Vector3 n) { PadUv(); PadNormals(); v.Add(p); uv.Add(uv0); nrm.Add(n.normalized); return v.Count - 1; }
 
         void PadUv() { uv ??= new List<Vector2>(); while (uv.Count < v.Count) uv.Add(default); }
         void PadNormals() { nrm ??= new List<Vector3>(); while (nrm.Count < v.Count) nrm.Add(default); }
@@ -46,6 +55,28 @@ namespace Suborned.World
                 if (n.sqrMagnitude < 1e-12f || Mathf.Abs(n.y) > 0.5f * n.magnitude) continue; // a top or bottom face
                 var into = -new Vector2(n.x, n.z).normalized * inset;
                 for (int k = 0; k < 3; k++) { var p = v[t[i + k]]; uv[t[i + k]] = (new Vector2(p.x, p.z) + into) / tile; }
+            }
+            return this;
+        }
+
+        /// <summary>Brief 075 civic restyle: UVs in world metres per `tile`, box-wise: a top or bottom face on plan, a wall along its own face
+        /// (the horizontal of its normal turned a quarter) and up, as a kit mesh's world-metre UVs (a panel sheet stands upright on a kerb's face).
+        /// Each wall quad has its own vertices (Walls), so a vertex never sits on two faces.</summary>
+        public MeshKit BoxUv(float tile)
+        {
+            PadUv();
+            for (int i = 0; i < t.Count; i += 3)
+            {
+                Vector3 a = v[t[i]], b = v[t[i + 1]], c = v[t[i + 2]];
+                var n = Vector3.Cross(b - a, c - a);
+                if (n.sqrMagnitude < 1e-12f) continue;
+                bool top = Mathf.Abs(n.y) > 0.5f * n.magnitude;
+                var along = new Vector2(-n.z, n.x).normalized;
+                for (int k = 0; k < 3; k++)
+                {
+                    var p = v[t[i + k]];
+                    uv[t[i + k]] = (top ? new Vector2(p.x, p.z) : new Vector2(along.x * p.x + along.y * p.z, p.y)) / tile;
+                }
             }
             return this;
         }
@@ -202,8 +233,7 @@ namespace Suborned.World
         {
             var p = Clean(raw);
             Cap(p, hi); Soffit(p, lo);
-            for (int i = 0; i < p.Length; i++) Wall(p[i], p[(i + 1) % p.Length], lo, hi);
-            return this;
+            return Walls(p, lo, hi);
         }
 
         /// <summary>Flat annulus: outer ring minus a hole inside it (any winding).</summary>
@@ -214,18 +244,51 @@ namespace Suborned.World
         {
             var p = Clean(raw);
             Cap(p, hi);
-            for (int i = 0; i < p.Length; i++) Wall(p[i], p[(i + 1) % p.Length], lo, hi);
+            return Walls(p, lo, hi);
+        }
+
+        /// <summary>Brief 075 (Sky: nothing reads as stepped facets): a ring's walls with their normals smoothed across every vertex where the two walls
+        /// turn by less than Crease (a circle's or an arc's segments: a caisson drum, a basin's coping, a rounded kerb return or building corner), and
+        /// hard where they turn more (a square corner stays crisp). The geometry is the same quads Wall lays, facing outward for a counter-clockwise ring.</summary>
+        public MeshKit Walls(Vector2[] p, float lo, float hi)
+        {
+            if (hi - lo < 1e-4f || p.Length < 2) return this;
+            var e = new List<(Vector2 a, Vector2 b, Vector3 n)>(p.Length);
+            for (int i = 0; i < p.Length; i++)
+            {
+                Vector2 a = p[i], b = p[(i + 1) % p.Length];
+                if ((b - a).sqrMagnitude < 1e-8f) continue;
+                var d = (b - a).normalized; e.Add((a, b, new Vector3(d.y, 0f, -d.x))); // the face of Wall's winding (outward on a counter-clockwise ring)
+            }
+            int m = e.Count; float cos = Mathf.Cos(Crease * Mathf.Deg2Rad);
+            PadUv0();
+            for (int k = 0; k < m; k++)
+            {
+                var n = e[k].n; var np = e[(k - 1 + m) % m].n; var nn = e[(k + 1) % m].n;
+                var na = m > 2 && Vector3.Dot(np, n) > cos ? (np + n).normalized : n;
+                var nb = m > 2 && Vector3.Dot(nn, n) > cos ? (nn + n).normalized : n;
+                PadNormals(); int i = v.Count;
+                v.Add(W(e[k].a, lo)); v.Add(W(e[k].a, hi)); v.Add(W(e[k].b, hi)); v.Add(W(e[k].b, lo));
+                nrm.Add(na); nrm.Add(na); nrm.Add(nb); nrm.Add(nb);
+                t.Add(i); t.Add(i + 1); t.Add(i + 2);
+                t.Add(i); t.Add(i + 2); t.Add(i + 3);
+            }
             return this;
         }
+
+        /// <summary>Walls turning by less than this many degrees at a vertex share its normal (Walls).</summary>
+        public const float Crease = 31f;
+
+        void PadUv0() { if (uv != null) PadUv(); }
 
         /// <summary>Solid extrusion of an outer ring minus a hole, from lo to hi; the hole's walls face into the hole.</summary>
         public MeshKit Prism(Vector2[] raw, Vector2[] rawHole, float lo, float hi)
         {
             var p = Clean(raw); var q = Clean(rawHole);
             Cap(Poly.Bridge(p, q), hi);
-            for (int i = 0; i < p.Length; i++) Wall(p[i], p[(i + 1) % p.Length], lo, hi);
-            for (int i = 0; i < q.Length; i++) Wall(q[(i + 1) % q.Length], q[i], lo, hi);
-            return this;
+            Walls(p, lo, hi);
+            var rq = (Vector2[])q.Clone(); System.Array.Reverse(rq); // the hole's walls face into the hole: the same edges walked the other way
+            return Walls(rq, lo, hi);
         }
 
         /// <summary>Annulus between two counter-clockwise loops of equal count whose starts are aligned.</summary>

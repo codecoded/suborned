@@ -1,0 +1,86 @@
+{
+  "schema": "suborned.proofset/1",
+  "note": "The pictures the built player's proof (-gameProof) takes that the HUD budget judges in the batch and that Glyph reviews at 2x (the 2160 set: the same proof at -capture-size 3840x2160). A set names its section of proof.json `frames`, the C# file that takes the pictures and each picture (<name>.png with <name>.hud.png, <name>.manifest.json and <name>.parts.json beside it). tools/game/proofset.test.ts holds every name to the C# source, so a renamed picture is a failing test, not a picture quietly dropped from the budget. `optional`: a picture only some runs take. `crop`: HUD parts that stand on every frame (the roster, its portraits, the scope, the keys, the history) and so are left out of the 2x crops, but that this picture is of: they are cropped here. Add a section's pictures here when its proof lands; `bun tools/game/proofset.ts` says what it does with them. r123 (batch 0.2.123 host round 4, Latch; Proof123.cs) is in the budget and the 2x crops from 2026-10-26 but NOT gated: its section is not in tools/game/proofgates.ts GATED until Glyph agrees its density (briefs/067/splice.md item 5, Aster's note).",
+  "sets": {
+    "r059": {
+      "section": "r059",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof059.cs",
+      "frames": [
+        { "name": "r059-235-turns-in", "what": "2:35, the rival car at its entry, framed at the first quarter yaw where the cell's car does not cover it; nobody of the crew on foot yet" },
+        { "name": "r059-235-square", "what": "2:35, the opening view of the square: the edge chip for the car that is off screen" },
+        { "name": "r059-246-drop", "what": "2:46, the three step out at the drop and walk (each first drawn within 5 m of the car, never at a post)" },
+        { "name": "r059-310-park", "what": "3:10, the car parked across from Vale's car, at the Records Office yaw (210)" },
+        { "name": "r059-320-lookout", "what": "3:20, the lookout posted" },
+        { "name": "r059-watch-alt", "what": "the Scout's Watch on the rival car with Alt held: the next-move marker and the spring ring round the cell's stand" },
+        { "name": "r059-yard-after-vale", "what": "5:40, the Tech selected aboard the getaway car: the yard drawn 'after Vale's car'" },
+        { "name": "r059-613-round", "what": "6:13, Vale driven round: the route and its times" },
+        { "name": "r059-625-parked", "what": "6:26, Vale's car parked: the wait marker and the hand-off ring" },
+        { "name": "r059-drive-hover", "what": "the Drive hovered at the stand: the route preview and the pill" },
+        { "name": "r059-drive-parked", "what": "the getaway car has arrived at the stand: the 'Parked' chip" },
+        { "name": "r059-drive-here", "what": "a Drive to the stand the car is at: the drive-here pop at the stand" },
+        { "name": "r059-take-back-seat", "what": "the Enforcer takes Vale from the back seat: Vale is not drawn on the street" },
+        { "name": "r059-fight-start", "what": "the fight's first frame, when it starts in the pickup run: the rivals drawn the tick before are drawn after, not appeared", "optional": true }
+      ]
+    },
+    "r067": {
+      "section": "r067",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof067.cs",
+      "frames": [
+        { "name": "r067-patrol-post", "what": "0:30 at the Records Office yaw (210): the patrol on its new line in the service yard, mission.json patrol-a to patrol-b, beside the service door, with its cone" },
+        { "name": "r067-square-cleared", "what": "the square by the getaway car at play zoom (yaw 30, zoom 14): the odd planters and the butler robot gone, the walk and drive space clear" },
+        { "name": "r067-official-car", "what": "6:10, the official car with Vale at its kerb-side door: nobody drawn inside a standing car's body" },
+        { "name": "r067-cones-before", "what": "6:00 at the Office front with Alt held: every learned cone drawn (the guard, the entrance camera, the patrol)" },
+        { "name": "r067-cones-after", "what": "6:00 at the Office front with Alt let go: only the cones that matter now are drawn" },
+        { "name": "r067-portrait-pulse", "what": "a portrait click on the Fixer: the pulse on his portrait as the camera starts to move to him", "crop": ["roster"] },
+        { "name": "r067-portrait-framed", "what": "the camera framed on the Fixer, selected, after the portrait click", "crop": ["roster"] },
+        { "name": "r067-tp-entry-1", "what": "third person entered: the camera behind the Fixer, facing his heading" },
+        { "name": "r067-tp-entry-2", "what": "third person entered at a second heading, after the Fixer has walked 5 m across his first" },
+        { "name": "r067-back-to-plan", "what": "T back to the plan view: centred on the Fixer at play zoom, at the quarter-step yaw it was left at" },
+        { "name": "r067-lock-pill-guard", "what": "the pointer on the door guard the Scout has heard: the locked pill, no Fire offered" },
+        { "name": "r067-shut-ring-guard", "what": "a click on the guard where every way is locked: the ring open with its wedges shut, the shut one first" },
+        { "name": "r067-shut-pop", "what": "a press on the shut wedge: its pop gives the reason and the ring closes" },
+        { "name": "r067-who-can", "what": "the Tech's click on the guard, where he has no row: the who-can pop naming the agents who can, and no walk" },
+        { "name": "r067-stack-tab", "what": "two or more people under the pointer at the door: the stack tab to choose between them", "optional": true },
+        { "name": "r067-squad-board-pill", "what": "three agents selected (the Tech running), the pointer on the getaway car: the squad Board pill with the givers' faces" },
+        { "name": "r067-car-ring-board", "what": "the ring on the car with its one Board wedge for the whole squad" },
+        { "name": "r067-board-pending", "what": "the Board taken, one order each in the same tick: the boarded agents out of the selection, the pending pips and the running Tech's why chip", "crop": ["roster"] },
+        { "name": "r067-board-landed", "what": "the Scout and the Fixer aboard: the seat pips filled", "crop": ["roster"] },
+        { "name": "r067-drive-pill-car", "what": "nobody selected, the pointer on the car: the Drive pill with its stand live" },
+        { "name": "r067-car-ring-go-alt", "what": "the car's ring with Alt held: Go last with its struck Vale cameo and the line under it (Fable's less.go.noVale)" },
+        { "name": "r067-car-ring-drive", "what": "the car's ring with nobody selected: Drive, and Go last with its struck Vale cameo and the 0.5 s hold (no dashes)" },
+        { "name": "r067-car-ring-drive-hover", "what": "the Drive wedge hovered: the stand the car will go to" },
+        { "name": "r067-drive-parked", "what": "the getaway car has driven to its new stand and parked" },
+        { "name": "r067-convo-inez-1", "what": "the Fixer's Help on Inez from the ground view: both idle and facing, both heads in the frame" },
+        { "name": "r067-convo-inez-2", "what": "the same from her other side, after the Fixer has walked round her" },
+        { "name": "r067-convo-driver-1", "what": "the Fixer's Pay to the driver from the ground view: both idle and facing, both heads in the frame" },
+        { "name": "r067-convo-driver-2", "what": "the Scout's Listen to the driver from the ground view, from the other side" },
+        { "name": "r067-reticle-set", "what": "a lasting fire order on a rival walking to his post: the reticle set on him" },
+        { "name": "r067-reticle-moving", "what": "the same rival 1.5 s later: the reticle has followed him" },
+        { "name": "r067-reticle-edge", "what": "the rival off screen: the reticle's edge chip" },
+        { "name": "r067-reticle-handoff", "what": "a re-target to the second rival: the reticle handed on to him", "optional": true },
+        { "name": "r067-crowd-guard-hover", "what": "5:45, a shift guard in the crowd hovered once the guard's sight is learned: 'a guard' in the pill, his ring, and he is pickable as Guard" }
+      ]
+    },
+    "r123": {
+      "section": "r123",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof123.cs",
+      "frames": [
+        { "name": "r123-looks-310", "what": "3:11 at zoom 14: the three rivals at the cell's car in their own looks (rival, rival_b, rival_d walking to her post)" },
+        { "name": "r123-looks-320", "what": "3:18: the lookout (rival-4, in rival_c) posted at the rival car; the crew over 40 m apart, framed as wide as they need" },
+        { "name": "r123-fight-safe", "what": "4:15 at the square (sq-ra-h3), zoom 14, yaw 30: the fight with no tracer or shot lines, every shooter facing its target, the flash at the gun, the five rivals in their four looks" },
+        { "name": "r123-fight-loud", "what": "3:46 (bal-loud-x4), zoom 14: the loud fight, the seal clock under the clock bar, the reticle, no cones drawn, a refusal pop over the Enforcer" },
+        { "name": "r123-fight-ground", "what": "the Scout's third person 1.2 s into the safe fight: the fight from the ground, shooters facing their targets" },
+        { "name": "r123-body-safe", "what": "the safe fight read on the body (Glyph G7): the clock run until a fighter is pinned behind cover (else cowering, else kneeling), zoom 14, yaw 30, on his cover point" },
+        { "name": "r123-body-cover", "what": "the cover read (Keel's cover tick, briefs/039/keel/sq-ra-h3-pin.script.json at 4:06, tick 2461): rival-3 pinned behind the café's west wall, the Tech kneeling at his pier, zoom 14, yaw 30; taken only when the script is in the tree", "optional": true }
+      ]
+    },
+    "r083": {
+      "section": "r083",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof085Beats.cs",
+      "frames": [
+        { "name": "r085-listen-frame", "what": "look C: the line low with its live face, the overheard pair in the shot, the Scout at its edge, turned away" },
+        { "name": "r085-conv-cards", "what": "after the cut from a whole conversation (Listen on Inez): its card on her in play, as written, New beside what it opens" }
+      ]
+    }
+  }
+}

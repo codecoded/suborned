@@ -5,6 +5,9 @@ import { type V, add, dist, lineDist, mul, segDist } from '../../plan/geom';
 import type { Plot } from '../../plan/plan';
 import type { Ctx } from './common';
 import { type Ring, areaOf, ccw, clipHalf, edgeN, pointInRing } from './geo';
+import { returnAt } from './kerbreturn';
+import { sectionOf } from '../../plan/sections';
+import { footwayTangentPoints } from './street/footway';
 
 export const kindOf = (c: string) => c.split(':')[0]!;
 export const idOf = (c: string) => c.split(':')[1] ?? '';
@@ -58,7 +61,7 @@ export function junctionCorners(ctx: Ctx): V[] {
   for (const pl of ctx.d.plots) {
     if (pl.civic) continue;
     const r = plotRing(ctx, pl), n = r.p.length;
-    for (let i = 0; i < n; i++) if (CORNER_ROADS.includes(kindOf(r.c[(i + n - 1) % n]!)) && CORNER_ROADS.includes(kindOf(r.c[i]!))) { const q = r.p[i]!, k = `${Math.round(q[0] * 2)},${Math.round(q[1] * 2)}`; if (!seen.has(k)) { seen.add(k); out.push(q); } }
+    for (let i = 0; i < n; i++) if (CORNER_ROADS.includes(kindOf(r.c[(i + n - 1) % n]!)) && CORNER_ROADS.includes(kindOf(r.c[i]!))) { const q = r.p[i]!, k = `${Math.round(q[0] * 2)},${Math.round(q[1] * 2)}`; if (!seen.has(k)) { seen.add(k); const rt = returnAt(ctx, pl.id, q), fw = rt ? [] : footwayTangentPoints(ctx, [idOf(r.c[(i + n - 1) % n]!), idOf(r.c[i]!)], q); if (rt?.convex) out.push(rt.a, rt.b); else if (fw.length) out.push(...fw); else out.push(q); } }  // brief 028: a rounded corner's kerb tangent points (kerbReturn.dressing), the vertex where it is square
   }
   cornersOf.set(ctx, out);
   return out;
@@ -84,10 +87,11 @@ function plotRingOf(ctx: Ctx, plot: Plot & { polyV: V[] }): Ring {
   return { p, c };
 }
 
-/** Pavement width at an edge: the section's pavement for roads; the circus is carved already, malls, walks and quays carry their own bands. */
+/** Pavement width at an edge: the road's section's pavement (its own roads[].pavement, else its class's; tools/plan/sections.ts); the circus is carved
+ *  already, malls, walks and quays carry their own bands. */
 export function pavementOf(ctx: Ctx, cls: string): number {
-  const k = kindOf(cls), s = ctx.S.sections;
-  return k === 'primary' || k === 'district' || k === 'access' ? s[k].pavement : 0;
+  const k = kindOf(cls);
+  return k === 'primary' || k === 'district' || k === 'access' ? sectionOf(ctx.S.sections, ctx.plan, k, idOf(cls) || undefined).pavement : 0;
 }
 
 /** The building line: the plot cut back along each street edge by that edge's pavement (half-plane clips, so arcs and

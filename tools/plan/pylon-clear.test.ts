@@ -4,11 +4,13 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { dist } from './geom';
-import { derive, spanMax, type Plan } from './plan';
+import { derive, pylonWalkBlock, spanMax, type Plan } from './plan';
 
 const root = resolve(import.meta.dir, '../..');
 const read = (p: string): Plan => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
-const live = read('contracts/world/harbour-district.plan.json');
+// brief 075 remap: the old town's S1 turns north at x -95 and crosses neither the monument nor a portal, so the standard's examples run on the pinned plan from
+// before the remap (briefs/075/remap/base.plan.json, committed), whose S1/trunk crosses the circus on y 0 into the Skyport portal
+const live = read('briefs/075/remap/base.plan.json');
 /** A04 run r008, round 3 (read-only): a plan without the standard. */
 const recorded = read('runs/levels/harbour-district/r008/round-3/plan.json');
 const tuple = (d: ReturnType<typeof derive>) => d.pylons.map(p => [p.line, p.path, +p.p[0].toFixed(3), +p.p[1].toFixed(3), +p.s.toFixed(2), +p.span.toFixed(2)]);
@@ -121,7 +123,9 @@ describe('standards.skyrail.pylonClear', () => {
 
   test('remnant: the last pylon before a portal stands where the greedy left it when the stand-off pylon would leave a stub', () => {
     const had = withClear({ landmark: pc.landmark, span: pc.span }), now = derive(live);
-    for (const x of [53, 261, 520]) { // each 3 m outside a portal's jamb: stubs of 5, 2 and 12 m beside 48, 259 and 508
+    // re-pinned 2026-10-28 (brief 075, the tram street section: Harbour Road's median is gone, so S1 takes no pylon in it and restarts at the quay, x 312): the greedy now reaches 520 from 492 on a 28 m span, so the third example (a 12 m stub at 520 beside 508) no longer arises; 520 stands with the rule as without it
+    expect(trunk(now).find(p => p.p[0] === 520)?.span).toBe(28); expect(trunk(had).find(p => p.p[0] === 520)?.span).toBe(28);
+    for (const x of [53, 261]) { // each 3 m outside a portal's jamb: stubs of 5 and 2 m beside 48 and 259
       expect(trunk(had).some(p => p.p[0] === x)).toBe(true);
       expect(trunk(now).some(p => p.p[0] === x)).toBe(false);
     }
@@ -133,5 +137,18 @@ describe('standards.skyrail.pylonClear', () => {
   test('S1/loop\'s pylons are the standard-free plan\'s', () => {
     const had = withClear(undefined), now = derive(live);
     expect(now.pylons.filter(p => p.path === 'loop').map(p => p.p)).toEqual(had.pylons.filter(p => p.path === 'loop').map(p => p.p));
+  });
+
+  test('walk (brief 075): S2\'s pylons step out of the Skyport and Market piers\' clear walks; without it two stand in them; nothing else moves', () => {
+    const cur: Plan = read('contracts/world/harbour-district.plan.json'), on: Plan = structuredClone(cur);
+    (on.standards.skyrail as any).pylonClear = { ...(on.standards.skyrail as any).pylonClear, walk: { post: 1.6 } };
+    const inWalk = (pl: Plan) => { const f = pylonWalkBlock({ ...pl, standards: { ...pl.standards, skyrail: { ...pl.standards.skyrail, pylonClear: { walk: { post: 1.6 } } } } } as Plan)!; return derive(pl).pylons.filter(p => f(p.p)).map(p => `${p.line}/${p.path} ${p.p.map(v => +v.toFixed(2)).join(',')}`); };
+    expect(pylonWalkBlock(cur)).toBeUndefined();
+    expect(inWalk(cur)).toEqual(['S2/trunk 117,-140', 'S2/loop 114,1.5']); // failing example: the committed plan's pier pylons (SK-T2's two bare-shaft gaps)
+    expect(inWalk(on)).toEqual([]);
+    const a = derive(cur).pylons, b = derive(on).pylons;
+    expect(b.filter(p => p.line !== 'S2').map(p => p.p)).toEqual(a.filter(p => p.line !== 'S2').map(p => p.p));
+    expect(derive(on).pylonGaps).toEqual([]);
+    expect(b.some(p => p.line === 'S2' && Math.abs(p.p[0] - 114) < 1e-6 && Math.abs(p.p[1] - 5.5) < 1e-6)).toBe(true); // the Skyport pier's north edge band (walk |y| < 4, post half-diagonal 1.13)
   });
 });

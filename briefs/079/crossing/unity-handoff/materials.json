@@ -1,0 +1,61 @@
+{
+ "schema": "suborned.handoff079/1",
+ "note": "Candidate values for Latch. _BaseColor and _EmissionColor stay SignalHead's and Glint's.",
+ "Assets/Suborned/Materials/Glow/DK_Cross_Beam.mat": {
+  "shader": "Suborned/Cross Glow",
+  "_Mode": 4,
+  "_Strength": 2.0,
+  "_Alpha": 0.3,
+  "_Floor": 0.06,
+  "_Fall": 1.5,
+  "_Soft": 2.2,
+  "_Absorb": 0,
+  "was": {
+   "_Mode": 0,
+   "_Strength": 2,
+   "_Alpha": 0.28,
+   "_Floor": 0.25
+  }
+ },
+ "Assets/Suborned/Materials/Glow/DK_Cross_Halo.mat": {
+  "shader": "Suborned/Cross Glow",
+  "_Mode": 5,
+  "_Strength": 1.0,
+  "_Alpha": 0.7,
+  "_Inner": 0.535,
+  "_Radius": 0.5,
+  "_Fall": 2.0,
+  "_Absorb": 0.45,
+  "was": {
+   "_Mode": 1,
+   "_Strength": 6,
+   "_Alpha": 0.4,
+   "_Floor": 0.35,
+   "_Inner": 0.15,
+   "_Radius": 0.47
+  }
+ },
+ "Assets/Suborned/Materials/Glow/DK_Signal_RimLens.mat (new)": {
+  "shader": "Suborned/Signal Dots",
+  "_Edge": 0.45,
+  "_Core": 0.5,
+  "_CoreWhite": 0.2,
+  "_CorePow": 3.0,
+  "_Glow": 0,
+  "_Fall": 1,
+  "_Absorb": 0,
+  "_LitFrom": -10000,
+  "_LitTo": 10000
+ },
+ "CrossingKit.DotsMaterial() (live rows)": {
+  "shader": "Suborned/Signal Dots",
+  "note": "the shader's defaults: _Edge 0.72, _Core 0.35, _CoreWhite 0.08, _CorePow 6, _Glow 0.22, _Fall 2.4, _Absorb 0.12, _Seat (0.055, 0.065, 0.07)"
+ },
+ "CrossingKit.LightMaterial() (baked rows, crossings with no signal)": {
+  "shader": "Suborned/Signal Dots",
+  "note": "must move off URP Lit: the mesh's lens and spill share one slot, and Lit would draw the spill as an opaque ring. Same defaults, _EmissionColor = the seafoam it already computes, wide gate"
+ },
+ "DK_Cross_Housing (kit .mat, nothing for Latch)": {
+  "note": "URP Lit, metallic 0.6, smoothness 0.6, _SPECULARHIGHLIGHTS_OFF (unity_mats.SUN_OFF), _BaseMap cross_bezel_v1.png; receives shadows, not a caster"
+ }
+}

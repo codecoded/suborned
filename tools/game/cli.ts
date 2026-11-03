@@ -3,26 +3,35 @@
 //
 // How it builds (Unity holds a lock on the project while the Editor has it open, so a batch build cannot run beside it):
 //   Editor closed: Unity in batch mode, -executeMethod Suborned.World.Play.GameBuild.Cli (log: out/build/play/build.log).
-//   Editor open:   through the Editor (`unity cmd menu "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
+//   Editor open:   through the Editor (`unity cmd editor invoke_menu --path "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
 //                  refuses and says so (a build would end the session). Either way the result is out/build/play/build.json.
 // Staleness is by content (Splice, 2026-10-21): the app is rebuilt only when an input (unity/Assets, ProjectSettings, Packages, the icon, the engine
-// DLL) differs from what the last build read (out/build/play/inputs.json, a fingerprint of blob ids); a commit that only records built files
-// changes nothing. After a rebuild for play only the short draw check runs (`-drawCheck`: one frame, windowed, a few seconds); `--check` is the
-// full proof. A running game is never built under: it says to close it. `--dry-run` says whether it would build and stops.
+// DLL, and what the sim step stages in StreamingAssets/sim: the engine's inputs, the words, the seats, the audio cues; fingerprint.ts) differs from what the
+// last build read (out/build/play/inputs.json, a fingerprint of blob ids and hashes); a commit that only records built files changes nothing. After a rebuild for play only the short draw check runs (`-drawCheck`: one frame, windowed, a few seconds); `--check` is the
+// full proof. A running game is never built under: it says to close it.
+// `--dry-run` (Splice, 2026-10-26; a `--send --dry-run` once started a real Unity build): with any other flag it prints what would be built, checked, packed, sent or opened and exits 0.
+// It builds nothing, starts no Unity, signs, zips and sends nothing and writes nothing under out/build or runs/builds; the spawn wrapper below refuses (exit 3) to start
+// anything but read-only git, pgrep, sysctl and `security find-identity` while it is on. Tests: cli.test.ts (SUBORNED_GAME_OUT, SUBORNED_GAME_SPAWN_LOG, SUBORNED_GAME_SPAWN_STUB).
 // `bun run game:pack` zips the app for another Mac (TheSuborned-0.2.<build>.zip); `bun run game:send [device]` packs and sends it by
 // Taildrop (default the MacBook Air, skys-macbook-air-1; --dry-run prints the command) and logs it in runs/builds/builds.json.
 // Build numbers: tools/game/version.json (committed) counts them; every successful build takes the next (GameBuild.Version), so the app's
 // Finder Version, the pause menu, the briefing's corner and the zip all say 0.2.<build>.
 // `bun run game:signing-check` says whether the Developer ID identity and the notary profile exist, and how to make each.
+// A delta proof (brief 078, tools/game/proofdelta.ts): `--proof-plan <file>` (the batch's) runs only the plan's sections through the player's -proofOnly, takes a skip only from what the ledger proves, and records each section's answer on the ledger; `--pack` and `--send` say when the app's last proof was a delta.
 // Flags: --build (force), --check (pictures 1920x1080, frame times at the Air's 2880x1864, one proof run: the window switches to 1080p around each picture (CaptureSize -frames-size); --native: everything at the display's own size; --capture-size WxH: everything at that size; --no-air: frame times at 1920x1080; --reuse-proof: use the proof the build just took, if it is complete and newer than the build), --pack, --send [device], --dry-run, --signing-check, --no-open, --windowed (open in a window).
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
-import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { appendFileSync, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { basename, join, relative, resolve } from 'node:path';
+import { spawnSync as realSpawnSync, type SpawnSyncOptions, type SpawnSyncReturns } from 'node:child_process';
+import { usageGate } from '../gen/flags';
+import { INPUTS, fingerprint, ignoredFiles } from './fingerprint';
+import { GATED, judgeGates } from './proofgates';
+import { stillsKeyOf, aloneLine, gateFile, ledgerFile, loadMap, planLines, planProof, ranIn, readLedger, readPlan, recordProof, writeLedger, type Plan, type Replays, type Snapshot } from './proofdelta';
+import { appShips } from './ships';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
-const DIR = join(ROOT, 'out', 'build', 'play');
+/** SUBORNED_GAME_OUT: the tests point the build folder at a scratch folder; nothing else sets it. */
+const DIR = process.env.SUBORNED_GAME_OUT ? resolve(process.env.SUBORNED_GAME_OUT) : join(ROOT, 'out', 'build', 'play');
 const APP = join(DIR, 'The Suborned.app');
 const STAMP = join(DIR, 'build.json');
 const PROFILE = 'suborned-notary';
@@ -34,6 +43,8 @@ function notaryAuth(): string[] {
   return ['--keychain-profile', PROFILE];
 }
 const ENTITLEMENTS = join(ROOT, 'tools', 'game', 'entitlements.plist');
+/** The batch's plan for this proof (--proof-plan), if any. Without it every proof is the full one, and nothing goes on the ledger. */
+function proofPlan(): { plan: Plan; snap: Snapshot } | null { const i = process.argv.indexOf('--proof-plan'); return i >= 0 ? readPlan(process.argv[i + 1]!) : null; }
 const SIGNING = join(DIR, 'signing.json');
 const FIX = {
   identity: 'Xcode → Settings → Accounts → (your team) → Manage Certificates → + → Developer ID Application (needs the Account Holder role), or create it at developer.apple.com → Certificates and install it; then `bun run game:signing-check`',
@@ -41,19 +52,39 @@ const FIX = {
 };
 const args = process.argv.slice(2);
 const has = (f: string) => args.includes(f);
+const USAGE = `usage: bun tools/game/cli.ts [flags]   (or bun run game, game:build, game:check, game:pack, game:send, game:signing-check)
+  (no flag)          open the built app, building it first when an input changed
+  --build            force a build            --check          build if stale, then the full proof
+  --pack             zip the app for another Mac   --send [device]  pack and send by Taildrop (default skys-macbook-air-1)
+  --dry-run          with any of the above: print what would be built, checked, packed, sent or opened, and stop (exit 0); builds, starts and writes nothing
+  --signing-check    say whether the signing identity and notary profile exist
+  --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof  --proof-plan FILE  --no-scenarios  --spots   (modifiers of the above)
+  --help, -h         print this and exit; any unknown option does the same and does nothing (no build, no Unity)`;
+usageGate(args, {
+  flags: ['--build', '--check', '--pack', '--dry-run', '--signing-check', '--no-open', '--windowed', '--native', '--no-air', '--reuse-proof', '--no-scenarios', '--spots'],
+  valued: [{ flag: '--send' }, { flag: '--capture-size', required: true }, { flag: '--proof-plan', required: true }],
+}, USAGE, 'game');
 
+/** Every process this CLI starts goes through here. SUBORNED_GAME_SPAWN_LOG: each command is appended to that file as a JSON line. SUBORNED_GAME_SPAWN_STUB=1: nothing but the
+ *  read-only commands really starts (the tests' guard against a regression launching Unity). With --dry-run only read-only commands are allowed: anything else is refused, exit 3. */
+const DRY = args.includes('--dry-run');
+function readOnly(cmd: string, a: string[]): boolean { const c = basename(cmd); return c === 'git' || c === 'pgrep' || c === 'sysctl' || (c === 'security' && a[0] === 'find-identity'); }
+function spawnSync(cmd: string, a: string[], opts: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
+  if (process.env.SUBORNED_GAME_SPAWN_LOG) appendFileSync(process.env.SUBORNED_GAME_SPAWN_LOG, JSON.stringify([cmd, ...a]) + '\n');
+  const ro = readOnly(cmd, a);
+  if (DRY && !ro) { console.error(`game: --dry-run refused to start ${[cmd, ...a].join(' ')}; nothing was done`); process.exit(3); }
+  if (process.env.SUBORNED_GAME_SPAWN_STUB === '1' && !ro) return { pid: 0, output: [], stdout: '', stderr: '', status: 0, signal: null } as any;
+  return realSpawnSync(cmd, a, opts) as any;
+}
 const run = (cmd: string, a: string[], opts: { quiet?: boolean } = {}) => spawnSync(cmd, a, { cwd: ROOT, encoding: 'utf8', stdio: opts.quiet ? 'pipe' : 'inherit' });
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-/** What a build reads (Splice, 2026-10-21): the Unity project's Assets, ProjectSettings and Packages, and the icon. tools/game/version.json is an
- *  output of a build (its counter), so it is not here. */
-const INPUTS = ['unity/Assets', 'unity/ProjectSettings', 'unity/Packages', 'tools/game/app-icon.png'];
-/** The engine DLL and its inputs are git-ignored but part of the app, so they are read by content too. */
-const IGNORED_INPUTS = [join(UNITY, 'Assets', 'Suborned', 'Sim')];
+/** What a build reads, and what the app carries that git does not hold (the engine DLL and what the sim step stages in StreamingAssets/sim, the audio cues among it),
+ *  read by content: tools/game/fingerprint.ts (Splice, 2026-10-21; the staged files from 2026-10-26, briefs/067/splice.md item 2). */
 const INPUTS_JSON = join(DIR, 'inputs.json');
 
 /** A fingerprint of the inputs by content, not by time (a commit that only records files already built changes nothing): every git file under
- *  INPUTS by its blob id (the index's, or the working file's when it differs or is untracked), plus the ignored engine files by sha256. */
+ *  INPUTS by its blob id (the index's, or the working file's when it differs or is untracked), plus the ignored files the app carries (the engine DLL, the staged StreamingAssets/sim copies; fingerprint.ts) by sha256. */
 function inputFiles(): Map<string, string> {
   const git = (a: string[], input?: string) => spawnSync('git', a, { cwd: ROOT, encoding: 'utf8', input, maxBuffer: 1 << 28 }).stdout ?? '';
   const files = new Map<string, string>();
@@ -62,18 +93,8 @@ function inputFiles(): Map<string, string> {
   const live = dirty.filter(f => existsSync(join(ROOT, f)));
   for (const f of dirty) if (!live.includes(f)) files.set(f, 'deleted');
   if (live.length) { const ids = git(['hash-object', '--stdin-paths'], live.join('\n') + '\n').trim().split('\n'); live.forEach((f, i) => files.set(f, ids[i])); }
-  const walk = (d: string) => {
-    if (!existsSync(d)) return;
-    for (const e of readdirSync(d, { withFileTypes: true })) {
-      const p = join(d, e.name);
-      if (e.isDirectory()) walk(p); else files.set(relative(ROOT, p), 'sha256:' + createHash('sha256').update(readFileSync(p)).digest('hex'));
-    }
-  };
-  for (const d of IGNORED_INPUTS) walk(d);
+  for (const [f, h] of ignoredFiles(ROOT)) files.set(f, h);
   return files;
-}
-function fingerprint(files: Map<string, string>): string {
-  return createHash('sha256').update([...files].sort(([a], [b]) => (a < b ? -1 : 1)).map(([f, h]) => `${f}\t${h}`).join('\n')).digest('hex');
 }
 /** Written after every successful build: the fingerprint of the inputs the app was built from (and the files, to say what changed later). */
 function recordInputs(): void {
@@ -98,7 +119,7 @@ function inputsChanged(): string {
   const at = statSync(STAMP).mtimeMs;
   const newer = moved.find(f => !existsSync(join(ROOT, f)) || statSync(join(ROOT, f)).mtimeMs > at);
   if (newer) return `${newer} changed since the build`;
-  recordInputs(); // current: keep the record from here on
+  if (!DRY) recordInputs(); // current: keep the record from here on (a dry run writes nothing)
   return '';
 }
 
@@ -116,7 +137,7 @@ function editorOpen(): boolean {
   return ps.split('\n').some(l => l.toLowerCase().includes(UNITY.toLowerCase()) && !l.includes('-batchmode'));
 }
 function editorStatus(): { playMode?: string; compiling?: boolean } | null {
-  const r = run('unity', ['cmd', 'editor_status'], { quiet: true });
+  const r = run('unity', ['cmd', 'editor', 'status', '--project-path', join(ROOT, 'unity')], { quiet: true });
   const line = (r.stdout ?? '').split('\n').find(l => l.includes('"playMode"'));
   if (!line) return null;
   try { return JSON.parse(line.slice(line.indexOf('{'))); } catch { return null; }
@@ -130,7 +151,7 @@ async function build(): Promise<boolean> {
     if (st.playMode && st.playMode !== 'stopped') { console.error(`game: Unity is in Play (${st.playMode}). Stop Play, or close Unity, and run again; a build would end the session.`); return false; }
     for (let i = 0; i < 120 && editorStatus()?.compiling; i++) await sleep(2000);
     console.log('game: building through the open Editor (Suborned/Build Game)…');
-    run('unity', ['cmd', 'menu', '--path', 'Suborned/Build Game'], { quiet: true });
+    run('unity', ['cmd', 'editor', 'invoke_menu', '--path', 'Suborned/Build Game', '--project-path', join(ROOT, 'unity')], { quiet: true });
     for (let i = 0; i < 600; i++) { // up to 20 min
       await sleep(2000);
       if (existsSync(STAMP) && statSync(STAMP).mtimeMs > before) break;
@@ -147,7 +168,22 @@ async function build(): Promise<boolean> {
   recordInputs();
   const j = JSON.parse(readFileSync(STAMP, 'utf8'));
   console.log(`game: built ${j.version ? `Build ${j.version} (${j.recording}, sim ${j.sim}, ${j.sha}${j.dirty ? '+' : ''}) ` : ''}in ${j.seconds} s, engine ${j.engine}; ${j.post}`);
+  briefStills();
   return true;
+}
+
+/** A delta's stills stand when nothing they are drawn from changed (tools/game/proofdelta.ts stillsKey); a full proof takes them again. */
+function stillsKey(): string[] { const g = proofPlan(); return g?.plan.mode === 'delta' ? ['--key', stillsKeyOf(g.snap)] : []; }
+
+/** Brief 070: the briefing page's stills, captured by the new player from a replay of the mission's reference routes (tools/game/briefstills.ts), put
+ *  into the app's StreamingAssets/missions/<mission>/stills before any proof runs; the app is signed ad hoc again. A failure is reported, not fatal:
+ *  the page then shows its pins on blank prints, and the proof's briefing state says how many stills it read. */
+function briefStills(): boolean {
+  console.log('game: the briefing\'s stills (tools/game/briefstills.ts; log out/build/play/stills/handover/player.log)…');
+  const r = spawnSync(process.execPath, [join(ROOT, 'tools/game/briefstills.ts'), '--app', APP, '--out', join(DIR, 'stills', 'handover'), ...stillsKey()], { cwd: ROOT, encoding: 'utf8', timeout: 900000 });
+  for (const l of (r.stdout ?? '').trim().split('\n').filter(Boolean)) console.log(`game: ${l}`);
+  if (r.status !== 0) console.error(`game: the briefing's stills FAILED (exit ${r.status}): ${(r.stderr ?? '').trim().split('\n').slice(-4).join(' | ')}`);
+  return r.status === 0;
 }
 
 /** The proof: -runScenarios (headless, the Editor's SimCheck), then -gameProof (the briefing, play, the menu; frame times; Quit). */
@@ -157,30 +193,49 @@ function check(): boolean {
   const out = join(DIR, 'proof');
   const scen = join(out, 'scenarios.json');
   run('mkdir', ['-p', out]);
-  const s = spawnSync(bin, ['-batchmode', '-nographics', '-runScenarios', scen, '-logFile', join(out, 'scenarios.log')], { encoding: 'utf8', timeout: 600000 });
-  const sj = existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
-  console.log(`game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
+  const noScen = has('--no-scenarios') && !!proofPlan(); // the batch's delta: the engine is unchanged since they last passed (proofdelta.ts stepGate)
+  const s = noScen ? { status: 0 } : spawnSync(bin, ['-batchmode', '-nographics', '-runScenarios', scen, '-logFile', join(out, 'scenarios.log')], { encoding: 'utf8', timeout: 600000 });
+  const sj = !noScen && existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
+  console.log(noScen ? 'game: scenarios: not run, the engine is unchanged since they passed' : `game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
   const reuse = has('--reuse-proof') ? reusableProof() : null; // `bun run batch`: the build just took this proof (buildDrawn); it is not taken a second time
   if (reuse) console.log(`game: proof reused, taken right after the build (${reuse.screen} ${reuse.mode}, ${reuse.frames?.fps} fps mean, p99 ${reuse.frames?.p99Ms} ms)`);
   const first = reuse ? { pj: reuse, status: 0 } : proof();
   const pj = airFrames(first.pj), status = first.status; // the pictures are 1920x1080; the frame times are the Air's size
-  const drive = driveReplay(pj) && driveReplay(pj, 'fireSession', 'fire-session.script.json'); // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
-  const inputs = inputChecks(pj);
-  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs;
+  // a skip comes from the ledger, re-derived here from the snapshot the player was built from: the plan file's own word is not taken
+  const given = proofPlan(), map = given ? loadMap() : null, ledger = given ? readLedger(ledgerFile(DIR)) : null;
+  const judged = given ? planProof(map!, given.snap, ledger!, { force: given.plan.force }) : null, skips = judged?.skips ?? {};
+  const replays: Replays = { driveSession: sessionReplay(pj, 'driveSession', 'drive-session.script.json', 'drive', skips), fireSession: sessionReplay(pj, 'fireSession', 'fire-session.script.json', 'fire', skips) }; // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
+  const drive = replays.driveSession !== false && replays.fireSession !== false;
+  const inputs = inputChecks(pj, skips);
+  if (given) settleProof(given, judged!, map!, ledger!, pj, replays);
+  // the app carries the audio cue file the sim step staged (briefs/067/splice.md item 2): only a build that has the cues code (the r059 proof section) is asked for it
+  const ships = pj?.frames?.r059 === undefined ? { ok: true, lines: ['game: audio cues: not asked of this build (no r059 section: an older build)'] } : appShips(APP, ROOT);
+  for (const l of ships.lines) console.log(l);
+  return (noScen || !!sj?.passed) && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs && ships.ok;
 }
 
 /** Latch 2026-10-21 (ProofInput.cs): the input checks the proof ran through the Input System's devices. ok false fails the check; ok null
  *  (the fight gave no hostile in range) is reported, not failed. */
-function inputChecks(pj: any): boolean {
-  let pass = true;
-  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings']) {
-    const r = pj?.frames?.[k];
-    if (r === undefined) { console.log(`game: ${k}: not in this proof (an older build)`); continue; }
-    const { ok, ...rest } = r ?? {};
-    console.log(`game: ${k} ${ok === true ? 'ok' : ok === false ? 'FAILED' : 'not reached'}: ${JSON.stringify(rest).slice(0, 600)}`);
-    if (ok === false || r === null) pass = false;
-  }
-  return pass;
+function inputChecks(pj: any, skips: Record<string, string> = {}): boolean {
+  const g = judgeGates(pj?.frames, GATED, skips); // tools/game/proofgates.ts: the sections that gate, r059 (brief 059) and r067 (brief 067) among them since 2026-10-26
+  for (const l of g.lines) console.log(l);
+  return g.ok;
+}
+
+/** A session the delta proof did not take: said, when its section's skip stands; undefined. Otherwise it replays (driveReplay). */
+function sessionReplay(pj: any, key: string, name: string, section: string, skips: Record<string, string>): boolean | undefined {
+  if (!pj?.frames?.[key] && skips[section]) { console.log(`game: ${key}: ${skips[section]}`); return undefined; }
+  return driveReplay(pj, key, name);
+}
+
+/** The proof's answer on the ledger, against the snapshot the player was built from, and what the batch reads back (proofgate.json). */
+function settleProof(given: { plan: Plan; snap: Snapshot }, judged: Plan, map: ReturnType<typeof loadMap>, ledger: ReturnType<typeof readLedger>, pj: any, replays: Replays): void {
+  for (const l of planLines(judged)) console.log(`game: ${l}`);
+  const st = stamp(), next = recordProof(map, ledger, given.snap, judged, pj?.frames, replays, { version: st.version ?? '?', commit: `${st.sha ?? '?'}${st.dirty ? '+' : ''}`, at: new Date().toISOString() });
+  writeLedger(ledgerFile(DIR), next);
+  const g = judgeGates(pj?.frames, GATED, judged.skips);
+  for (const [s, p] of Object.entries(next.sections)) if (p.alone && p.build === st.version && ranIn(pj?.frames, s)) console.log(aloneLine(s, p));
+  Bun.write(gateFile(DIR), JSON.stringify({ schema: 'suborned.proofgate/1', mode: judged.mode, why: judged.why, build: st.version, ran: map.sections.map(s => s.id).filter(s => ranIn(pj?.frames, s)), skips: Object.fromEntries(Object.entries(judged.skips).filter(([s]) => !ranIn(pj?.frames, s))), failed: g.failed, notReached: g.notReached, at: new Date().toISOString() }, null, 1) + '\n');
 }
 
 /** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on
@@ -199,6 +254,11 @@ function driveReplay(pj: any, key = 'driveSession', name = 'drive-session.script
   return ok;
 }
 
+/** The plan's sections as the player's -proofOnly; nothing for a full proof. A delta with no section still runs the base (`base` names no section). */
+/** The batch's delta proof: no frame-time measure (one 1 s sample), so the window stays at the picture size (no resize round each picture, about 1 s each) and no second pass at the Air's size. */
+function isDelta(): boolean { return proofPlan()?.plan.mode === 'delta'; }
+function onlyArgs(): string[] { const p = proofPlan()?.plan; return p?.mode === 'delta' ? ['-proofOnly', p.only.length ? p.only.join(',') : 'base'] : []; }
+
 /** -gameProof: the briefing, play, the menu, frame times; `blank` when the frame was one flat colour (the build's URP failed to start). */
 function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number | null } {
   const exe = join(APP, 'Contents', 'MacOS', 'The Suborned');
@@ -206,10 +266,19 @@ function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number |
   const out = join(DIR, sub);
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const proofT0 = Date.now();
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--spots') ? ['-proofSpots'] : []), ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') && !isDelta() ? ['-frames-size', AIR] : []), ...onlyArgs(), ...(isDelta() ? ['-fastExit'] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 900000 }); // brief 024's act, fire and car checks add about 3 min; uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
+  console.log(`game: proof took ${Math.round((Date.now() - proofT0) / 1000)} s`);
+  if (pj?.frames?.sectionAt) console.log(`game: seconds by section: ${sectionSeconds(pj.frames.sectionAt, (Date.now() - proofT0) / 1000)}`);
   console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };
+}
+
+/** proof.json's frames.sectionAt (each section's start, seconds since the player began) as what each took; the last figure is the exit, from the wall clock. */
+export function sectionSeconds(at: Record<string, number>, total: number): string {
+  const e = Object.entries(at), parts = e.map(([k, t], i) => (i + 1 < e.length ? `${k} ${(e[i + 1]![1] - t).toFixed(0)}` : null)).filter(Boolean), last = e[e.length - 1]?.[1] ?? 0;
+  return `${e.length ? `start ${e[0]![1].toFixed(0)} · ` : ''}${parts.join(' · ')} · exit ${(total - last).toFixed(0)}`;
 }
 
 /** The 15-inch MacBook Air M4's screen (Mac16,13), the machine the 60 fps limit is set on (GDD §01, §11). */
@@ -220,7 +289,7 @@ const AIR = '2880x1864';
  *  --capture-size (one run at that size), --no-air, or when proof.json already carries Air-sized frames. */
 function airFrames(pj: any): any {
   if (pj?.status === 'ok' && pj.frames && pj.framesAt && !pj.framesNote) return noteFrames(pj); // one pass: the proof took them at the Air's size itself
-  if (!pj || pj.status !== 'ok' || !pj.frames || pj.framesAt || has('--native') || has('--capture-size') || has('--no-air')) return pj;
+  if (isDelta() || !pj || pj.status !== 'ok' || !pj.frames || pj.framesAt || has('--native') || has('--capture-size') || has('--no-air')) return pj;
   console.log(`game: frame times again at ${AIR} (the Air's screen); the pictures stay ${pj.screen}`);
   const a = proof('proof-air', ['-capture-size', AIR]);
   if (a.pj?.status !== 'ok' || !a.pj.frames) { console.error(`game: the ${AIR} run gave no frame times (${a.pj?.status ?? 'no proof.json'}); the proof's frames stay at ${pj.screen}`); return pj; }
@@ -313,10 +382,10 @@ async function buildDrawn(why: string, quick: boolean): Promise<boolean> {
   return true;
 }
 
-if (has('--signing-check')) process.exit(signingCheck() ? 0 : 1);
+if (has('--signing-check')) { const ok = signingCheck(DRY); process.exit(ok || DRY ? 0 : 1); }
 const b = built();
 const stale = !b.ok ? b.why : inputsChanged();
-if (has('--dry-run') && !has('--send') && (stale || has('--build'))) { console.log(`game: would build (${has('--build') ? 'forced' : stale})`); process.exit(0); }
+if (DRY) process.exit(dryRun(stale)); // nothing below this line runs on a dry run
 if (has('--build') || stale) {
   if (!(await buildDrawn(has('--build') ? 'forced' : stale, !has('--build') && !has('--check') && !has('--pack') && !has('--send')))) process.exit(1);
 } else console.log('game: the app is current');
@@ -337,6 +406,35 @@ if (has('--pack') || has('--send')) {
   process.exit(0);
 }
 if (!has('--no-open') && !has('--build')) run('open', has('--windowed') ? ['-n', APP, '--args', '-windowed'] : ['-n', APP]);
+
+// ---------------------------------------------------------------- --dry-run
+
+/** `--dry-run`: what this invocation would do, said and nothing done (Splice, 2026-10-26). Reads only: git, pgrep, security find-identity. Returns the exit code (0). */
+function dryRun(stale: string): number {
+  const say = (m: string) => console.log(`game: ${m}`);
+  const forced = has('--build'), building = forced || !!stale;
+  const v = JSON.parse(existsSync(join(ROOT, 'tools', 'game', 'version.json')) ? readFileSync(join(ROOT, 'tools', 'game', 'version.json'), 'utf8') : '{}');
+  const next = `0.2.${(v.build ?? 0) + 1}`;
+  say('dry run: nothing is built, checked, packed, signed, sent or opened; Unity is not started; nothing is written under out/build or runs/builds');
+  if (building) {
+    say(`would build ${next} (${forced ? 'forced' : stale})`);
+    say(`  how: ${editorOpen() ? 'through the open Editor (unity cmd editor invoke_menu "Suborned/Build Game"), when it is stopped and not compiling' : 'Unity in batch mode (-executeMethod Suborned.World.Play.GameBuild.Cli; log out/build/play/build.log)'}`);
+    if (appRunning()) say('  the game is open: a real run would stop here and ask you to close it');
+  } else say(`the app is current (${stamp().version ?? 'built before the counter'}); would not build`);
+  const full = has('--build') || has('--check') || has('--pack') || has('--send');
+  if (building) say(`  then ${full ? 'the full proof (-gameProof; a blank frame gets one more build under the same number)' : 'the short draw check (-drawCheck, a few seconds)'}`);
+  if (has('--check')) say(`would run the full proof on the app: scenarios against headless, -gameProof${onePass() ? ' (one pass, frame times at 2880x1864)' : ''}, the driven sessions replayed headless`);
+  if (has('--pack') || has('--send')) {
+    const zip = building ? join(DIR, `TheSuborned-${next}.zip`) : zipOf(), id = identity();
+    say(id ? `would sign ${relative(ROOT, APP)} with ${id} (hardened runtime, timestamp), zip it with ditto to ${relative(ROOT, zip)}, notarise and staple it if the notary profile "${PROFILE}" exists, then verify it with codesign and spctl` : `would zip ${relative(ROOT, APP)} with ditto to ${relative(ROOT, zip)} as the ad hoc build (no Developer ID identity found)`);
+    if (has('--send')) {
+      const device = sendDevice(), cmd = sendCommand(zip, device);
+      say(`would run: ${cmd.map(c => (c.includes(' ') ? `"${c}"` : c)).join(' ')}; would log build ${building ? next : stamp().version ?? '(no version: built before the counter)'} in runs/builds/builds.json`);
+    }
+  }
+  if (!has('--check') && !has('--pack') && !has('--send') && !has('--build')) say(has('--no-open') ? 'would not open the app (--no-open)' : `would open ${relative(ROOT, APP)}${has('--windowed') ? ' in a window' : ''}`);
+  return 0;
+}
 
 // ---------------------------------------------------------------- signing and notarisation (Gatekeeper on other Macs)
 
@@ -363,12 +461,13 @@ function profileOk(): boolean {
   return r.status === 0;
 }
 
-function signingCheck(): boolean {
-  const id = identity(), prof = profileOk();
+function signingCheck(dry = false): boolean {
+  const id = identity(), prof = dry ? false : profileOk(); // asking Apple is a network call: a dry run does not
   console.log(`game: signing identity ${id ? `found: ${id}` : 'missing (no "Developer ID Application" in the keychain)'}`);
   if (!id) console.log(`  fix: ${FIX.identity}`);
-  console.log(`game: notary profile "${PROFILE}" ${prof ? 'found' : 'missing'}`);
-  if (!prof) console.log(`  fix: ${FIX.profile}`);
+  console.log(`game: notary profile "${PROFILE}" ${dry ? 'not checked (dry run: that asks Apple)' : prof ? 'found' : 'missing'}`);
+  if (!prof && !dry) console.log(`  fix: ${FIX.profile}`);
+  if (dry) return !!id;
   console.log(id && prof ? 'game: ready; `bun run game:pack` signs, notarises and staples' : 'game: until both exist, `bun run game:pack` makes the ad hoc build (right-click → Open on other Macs)');
   return !!(id && prof);
 }
@@ -416,6 +515,7 @@ function zipApp(zip: string): boolean {
  *  notary profile exist, else the ad hoc build as it is (and what is missing, with its fix); then zipped with ditto (it keeps the bundle's
  *  links, modes and signature) to out/build/play/TheSuborned-<sha>[-dirty].zip, -dirty when the tree has changes the commit does not. */
 function pack(): string | null {
+  if (existsSync(gateFile(DIR))) { const g = JSON.parse(readFileSync(gateFile(DIR), 'utf8')); if (g.mode === 'delta' && g.build === stamp().version) console.log(`game: this build's proof was a delta (${Object.keys(g.skips ?? {}).length} sections not run: ${Object.values(g.skips ?? {})[0] ?? ''}); a submission build runs bun run batch --submission`); }
   const zip = zipOf(), id = identity(), prof = id ? profileOk() : false;
   let state = 'ad hoc';
   if (id) {
@@ -446,18 +546,17 @@ function pack(): string | null {
 }
 
 /** Taildrop to another Mac on the tailnet (no SSH needed): the file lands in its Downloads through the Tailscale app. */
-function send(zip: string): boolean {
-  const i = args.indexOf('--send'); const next = args[i + 1];
-  const device = next && !next.startsWith('--') ? next : 'skys-macbook-air-1';
+function sendDevice(): string { const i = args.indexOf('--send'); const next = args[i + 1]; return next && !next.startsWith('--') ? next : 'skys-macbook-air-1'; }
+function sendCommand(zip: string, device: string): string[] {
   const ts = existsSync('/Applications/Tailscale.app/Contents/MacOS/Tailscale') ? '/Applications/Tailscale.app/Contents/MacOS/Tailscale' : 'tailscale';
-  const cmd = [ts, 'file', 'cp', zip, `${device}:`];
-  if (has('--dry-run')) console.log(`game: would run: ${cmd.map(c => (c.includes(' ') ? `"${c}"` : c)).join(' ')}; would log build ${stamp().version ?? '(no version: built before the counter)'} in runs/builds/builds.json`);
-  else {
-    console.log(`game: sending to ${device} by Taildrop…`);
-    const r = run(cmd[0], cmd.slice(1));
-    if (r.status !== 0) { console.error(`game: tailscale file cp exited ${r.status}`); return false; }
-    console.log(`game: sent ${relative(ROOT, zip)} to ${device}; logged in ${logSent(zip, device)}`);
-  }
+  return [ts, 'file', 'cp', zip, `${device}:`];
+}
+function send(zip: string): boolean {
+  const device = sendDevice(), cmd = sendCommand(zip, device);
+  console.log(`game: sending to ${device} by Taildrop…`);
+  const r = run(cmd[0], cmd.slice(1));
+  if (r.status !== 0) { console.error(`game: tailscale file cp exited ${r.status}`); return false; }
+  console.log(`game: sent ${relative(ROOT, zip)} to ${device}; logged in ${logSent(zip, device)}`);
   const name = zip.split('/').pop();
   const notarised = existsSync(SIGNING) && JSON.parse(readFileSync(SIGNING, 'utf8')).notarised === true;
   console.log(`On ${device}: accept the file in the Tailscale menu if asked (it lands in Downloads), then

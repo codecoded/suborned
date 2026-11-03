@@ -1,0 +1,9 @@
+075 no overhead, Splice (Sky 2026-10-28: "no overhead wires though!"), 2026-10-28
+export out/world/harbour-district.world.json sha256 71317443911262e65d0c4cc432e9c18507ab1a177640baa3184eece82f400016 (same twice)
+plan contracts/world/harbour-district.plan.json sha256 10d7920dbefe3a59315b91185f822723df03377197fd1770235d9f54d675e552 (52286c42: vista 2, overhead clause deleted by Datum)
+kit contracts/world/kit.json sha256 90fdbf2c0917bc3937cea0fec28502039789231f74f2c25a1115b6b7f4c3d53b (TramWire_* rejected, no use tag; Tile_TramRail_Flush / _12m adopted)
+removed: span wires, contact wires, hangers, rosettes, span poles (tramstreet.ts wire rule, span-pole slot, transit.wires in the schema and example); street 3264 -> 3052 (212 poles)
+rails: 552 x Tile_TramRail_Flush_12m + 237 x Tile_TramRail_Flush (7093 m), same placements as the track-bed tiles; Tile_TramRail / _12m placed nowhere (still adopted)
+rule: TS-W0 (tools/world/rules/overhead.ts) 83678/83678, failing examples in overhead.test.ts
+checks: world x2, world:faces (every face kit), plan exit 0, plan + Handover overlay exit 0, cover + --check exit 0 (cover.json kit hash restamped), sim:site no diff (Handover c041 stands, no missions:check needed), typecheck 0, tools/world + tools/plan + tools/kit tests 587 pass 0 fail
+2026-10-28 19:39 re-touched by Splice after SK-1 vista + setts: export sha256 8297649696698b39764c168a1dfd0d9b299b6f654f40bb95b82194c32064af11 (same twice; plan + overlay exit 0)

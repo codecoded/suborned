@@ -1,0 +1,108 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Careless timing (brief 058 §6; Loop v2: a loop runs 2:00 from its landing), the twin of route-a: the loop planted first, as soon as the Tech reaches the cabinet (live 0:33 to 2:33), and the Call left until 2:36 though Help is done at about 2:10: it has run out about 5 s before the Enter at about 2:38, and the entrance camera sees it (entry seen by a live camera). A first-planted loop still covers a prompt call, so the carelessness here is both steps together.",
+ "start": {},
+ "until": 4500,
+ "steps": [
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "beside-inez",
+   "run": true,
+   "why": "to Inez on the café terrace, at a run"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true,
+   "why": "to the control cabinet"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Courtyard",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)"
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "waitress",
+   "gap": 9,
+   "why": "brief 031: once beside her (the run is about 7 s; 2 s to spare): the Scout's Watch reaches 30 m, so given at once it would start from the car and leave the walk to her after it; nobody who keeps a clock sees the terrace"
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "waitress"
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop",
+   "why": "careless timing (brief 058 §6): the loop planted first, as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7): a loop runs 2:00 from its landing, so it has run out by the Enter at about 2:53"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ],
+   "after": [
+    "loop"
+   ],
+   "when": "loop.on",
+   "why": "once the loop has landed, from the forecourt to wait by the service end of the west face, 5.4 m south of the public door (brief 055: the free cell beside cyp-office-w's body clearance; street level), out of the guard's cone and more than 3 m from him: nobody who keeps a clock sees him there (the entrance camera is looped by then; brief 067 A: the patrol sweeps the service yard)"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "help",
+   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "help",
+   "label": "turned",
+   "why": "the second Help: she turns"
+  },
+  {
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress",
+   "label": "call",
+   "at": "2:36",
+   "why": "brief 080: talk is shorter now, so the call waits till the tape has run out at about 2:33"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "after": [
+    "call"
+   ],
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "label": "enter",
+   "why": "the Enter as route-a gives it, with the guard away: but the camera is live again, and sees it"
+  }
+ ]
+}

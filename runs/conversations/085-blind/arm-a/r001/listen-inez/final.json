@@ -1,0 +1,64 @@
+{
+  "id": "listen-inez",
+  "title": "Listen to Inez",
+  "kind": "learn",
+  "picked": 3,
+  "why": "Take 3 has the most life: a routine Bureau notice makes Inez fear the Office, so her nerves and her secret show in action. The trap from take 2 is its best beat, so I lifted it. Facts checked against [e1dd761142af169bfd1cc0d3], [96030c4c4a1a18523a3fdbbb] and [0da7863d1208451a4ca04a92].",
+  "changes": [
+    "Cut the Scout's opening beat, so the scene starts on Inez's alarm and the Scout speaks only at the end, as the sheet asks.",
+    "Lifted 'Borrow from Okafor' and the 'Who told you?' trap from take 2, and sharpened the answer to 'You did, just now.' Milena's money-minded advice now draws the secret out.",
+    "Made each line force the next: nobody's lending leads to borrow from Okafor, which leads to panic, the catch and the plea. Her confession moved to Milena's mouth, so Inez only has to beg.",
+    "Stated waitress, jumpiness and the cost plainly, removed the unsourced table number, and limited every line to two sentences and 12 words."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "Is that tube for me? Is it from the Office?"
+    },
+    {
+      "speaker": "Milena",
+      "line": "The Bureau, your loan. Why would the Office write to a waitress?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "Just coming, thank you. No reason, give that here."
+    },
+    {
+      "speaker": "Milena",
+      "line": "You jump at everything. You're only behind, and I owe them too."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I can't keep up on tips, and nobody's lending."
+    },
+    {
+      "speaker": "Milena",
+      "line": "Borrow from Okafor, on the Office door. You look often enough."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who told you? Has anyone been asking at the Office?"
+    },
+    {
+      "speaker": "Milena",
+      "line": "You did, just now. So you're seeing Okafor."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Please. If the Office hears, it costs us both."
+    },
+    {
+      "speaker": "Scout",
+      "line": "Loan behind, Okafor in secret. Two ways: clear it, or use Okafor."
+    }
+  ],
+  "learned": [
+    "Inez owes a Bureau loan",
+    "Her lover is the door guard"
+  ],
+  "opens": [
+    "Help: clear her Bureau loan",
+    "Pressure: threaten to tell her secret"
+  ],
+  "faults": []
+}

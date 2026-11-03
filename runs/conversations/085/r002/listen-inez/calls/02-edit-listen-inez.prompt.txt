@@ -1,0 +1,274 @@
+Objective: edit-listen-inez
+# Brief 085, conversation scenes: script editor
+
+You receive up to three takes of one conversation scene from the Handover, with the facts it has to hold to. Sky has called the game's whole speech bad, so be hard to please. Better one strong line than three fair ones.
+
+Choose the take with the most life and improve it line by line. You may lift a line from another take and may cut hard. Read each line aloud in your head:
+- Would a real person with this want say this, now, standing here, with this person in front of them?
+- Is it true to the game? It points at nothing in the shot, and nobody does, pays, gets or times anything the facts don't give. This comes before any line's life: a good line that isn't true to the game goes.
+- Could the line be given to the other speaker without anyone noticing? Then it isn't written yet.
+- Does each line make the next one necessary? Cut any line that only repeats, decorates or winds up to a quip.
+- Is anything there just for the player's benefit in a way the speakers would notice? Hide it in a want, or give it to someone with a reason to say it plainly.
+- The test: read only this scene, the Scout's line and the cards included. Can you say who these two are to each other, what was said, what was just gained or learned, and what can be done next? If any of the four is fuzzy, fix that first. Clarity beats subtlety; Sky said "clearly explain".
+- Don't pack facts into one line to save room. If the cards say it, nobody needs to; a line that's there to hold a fact, and that this person wouldn't say, comes out.
+- Cut for length last, but do cut: every line must earn its reading time.
+
+Check each fact against the sheet. Remove any power, person, place, number or deadline it doesn't give. All the writer's hard limits still bind: 12 words a line at most, aim for 10; no exclamation marks; never the listed design words; never cute; no one right way implied.
+
+
+Retrieved source passages (cite their ids where the schema allows):
+[971d2573fec5d5f32ab61610] GDD/the-suborned-gdd-v0.33.0-2026-10-30.html:344-348
+Authority: Human GDD (wins on conflict); version: v0.33.0
+Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec
+An approach that doesn't suit someone's temperament still works, one step worse : one more Help, or a higher price (Keel sets the numbers). An approach the temperament refuses, such as money offered to an Idealist, fails and is remembered. Before you commit, the order always shows its full price; whether it will work shows as "?" until Listen reveals the temperament. Finding out is what turns a gamble into a plan.
+Mood: what a Watch reads. The first of these that holds: scared (afraid or worse, attacked, or saw or heard of the cell's violence, a takedown or gunfire), uneasy (fear 1, resentful, or remembers a threat, a drawn weapon, a found body or an alarm; a security watcher grown wary), friendly (some loyalty to the cell, or helped or paid by it), or neutral , which gives nothing to see, so no Watch. Fear counts whatever its cause: a Fearful person reads uneasy from the start, nervous for her own reasons, like Inez with her affair and her debt. A Watch remembers the mood it saw, not a live feed. Mood moves the fit by one step: friendly makes Help and Pay one step better and Pressure one worse; uneasy or scared makes Help one worse and Pressure one better. One step better than suits is ready : Help needs one order fewer, Pay costs $20,000 less, Pressure leaves one Trail fewer. Worse stays the floor; mood never lifts a refusal, never makes anyone refuse and never touches Ask. After a Watch, the approach the mood favours shows as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay "?". Spec
+
+[96030c4c4a1a18523a3fdbbb] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:225-225
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§07 HANDOVER › the capstone
+the capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).
+
+[b751d6ccbbc84f9d117eb45c] contracts/people/people.rules.json
+Authority: People rules (suborned.people.rules/1); Motive owns them, the checker enforces them; version: suborned.people.rules/1
+people rules › readBy
+every field a simulated person carries names the rule that reads it:
+name: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale
+temperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price
+need: §04 Help and Pressure require the need known (Listen); needs.list.metBy
+ties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie
+scales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)
+memory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief
+routine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it
+secret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)
+GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md
+Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.
+
+[c407d23e4f6647fe2f4315a1] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:66-71
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§04 PEOPLE › approaches
+approaches (Inez, training) [B]:
+| approach | requires | $ | time | T | leaves |
+| Ask cold | — | 0 | 20 s | +1 | remembered refusal: later offers +$10,000, +1 T |
+| Pay | a Watch first, where one is offered (20 s [S], any agent) | 70,000 | 35 s | +2 | traceable payment; neutral |
+| Help (clear debt) | need known (Listen 30 s) | 40,000 | 35 s | +1 | gratitude; bravery can grow |
+| Pressure | need known | 0 | 25 s | +3 | fear; resentment grows; can identify Fixer |
+
+[45693d30fd1b1f7849a897e8] contracts/people/people.rules.json
+Authority: People rules (suborned.people.rules/1); Motive owns them, the checker enforces them; version: suborned.people.rules/1
+people rules › temperament fearful
+Fearful: responds to pressure; refuses nothing; reports an approach: false; start {"bravery":0,"resentment":0,"fear":1,"loyalty":0}
+Hero: hesitates; needs Help ×2. Menace: folds free.
+
+[e1dd761142af169bfd1cc0d3] GDD/the-suborned-gdd-v0.33.0-2026-10-30.html:570-581
+Authority: Human GDD (wins on conflict); version: v0.33.0
+Handover
+The heart of it: Inez and the guard are lovers. His café stop before his shift is to see her. Inez works the café's terrace tables on her rounds (§04). The call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need, which Help clears; the affair is her secret, which Pressure threatens to expose.
+The places. The café and its terrace face Records Square. The Office's public door, its landing, steps and forecourt are on the west face of its wing, over Rocket Lane, in view from the opening camera, with the entrance camera's pole at the forecourt's north end and the Tech's control cabinet behind it. The service door is round the back on the east face, onto the service yard: the back way, out of sight of the public door, the camera and the guard's cone. The patrol robot sweeps a line across the yard beside the door, and the Tech's Reroute takes it away. The official entrance and Vale's car are on the south face, on Apron Road. A turned driver brings Vale round in his car to the east yard's service bay, by the service drive. The getaway car stands at the square's boarding pavilion; its second stand is on the service drive, nose out, behind Vale's car, where a car boxes Vale's car in.
+
+[c353f76d058dde5e260596c9] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:86-86
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§04 PEOPLE › preview
+preview: an order always shows its price; whether it will work shows as "?" until Listen reveals the temperament. After a Watch the mood marks the approach it favours as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay "?".
+
+[0da7863d1208451a4ca04a92] GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md:74-80
+Authority: Agent GDD (the human GDD wins on conflict); version: v0.33.0
+§04 PEOPLE › temperament
+temperament [S]:
+| type | responds to | Hero | Menace |
+| Idealist | Help; refuses bribes | volunteers free; bravery fast | refuses; may report |
+| Mercenary | Pay | overcharges | discount; sells you to highest bidder |
+| Fearful | Pressure | hesitates; needs Help ×2 | folds free |
+| Loyal (institution) | trust over time | turns after repeated Help | reports any approach |
+Hero and Menace campaigns turn different halves of the city = replay value.
+
+Scene: Listen to Inez. At most 10 beats.
+
+Facts:
+The place: the café and its terrace face Records Square; the Civic Records Office is across the square. Daylight, shift change coming. A polite, orderly city that writes everything down. Records are paper: stamped cards, forms, pneumatic tubes. Calls are voice, by telephone. Robots follow fixed routines. Everyone in the scene is a person of this city except the cell.
+What the player sees (the game's scene, §10, brief 085: Sky, "unattached to the reality of the game"): a close shot of the speakers standing idle, facing each other, feet planted. Nobody sits, walks, carries, holds, hands over, points at or touches anything, and nothing arrives. No tray, plate, cup, card, letter, envelope or money is in the shot. They may talk about things that are elsewhere, but no line points at anything in the shot or at something being done now.
+Only what the game does happens: the cell's money moves as the action's price, away from the shot. Nobody else pays, bribes, trades or bargains for anything, and nobody gains anything the facts here don't give. Don't say evening or tonight.
+Situation: the Scout has stood two metres away, between the palms, for half a minute. The player hears what the Scout hears. Inez is standing at the café door between tables. Milena is a voice through the open door, from just inside. Neither knows the Scout is listening.
+- Inez: Inez Nikolaou. Job: server. Temperament (show it, never name it): fearful. Owes or lacks: debt, on record as "Bureau loan". She looks at who can see her before she looks at you. She talks about the shift, the terrace and how she can't keep up. She has no money to offer anyone and never offers any. She never says she's frightened and never threatens anyone: her fear shows in her questions, and in giving way too fast. She's kind, and tired.
+- Milena: Milena Rask. Job: server. Temperament (show it, never name it): mercenary. Owes or lacks: debt, on record as "Bureau loan". Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up.
+Inez and the door guard are lovers, in secret. He stands the Office's public door, 75 m across the square from her. The two are never together unless she calls him. In speech call him Okafor (never his given name, and no gendered word beyond "he"). Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
+The scene must make plain, by its end: Inez is a waitress at this café; she owes the Bureau and can't keep up; she is seeing the guard on the Office door; if the Office hears of it, it costs them both; she is nervous by nature.
+Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and what each thing could get you with her: the loan could be cleared, Okafor could be used. Never counts the ways, and gives no verdict on which is better.
+Speakers: Inez, Milena, Scout.
+learned: 2 lines (the debt; the lover). opens: "Help" and "Pressure" (both are now open on Inez; they cost what the ring says).
+- waitress: Inez: warm café patter, quick, tired about money and the lender; her temperament shows in what she will and won't take
+- scout: terse and observant: fragments, what is where, counts and positions; never warm, never wrong
+
+The writer's hard limits: - A line is at most 12 words; aim for 10 or fewer. One sentence or two short ones; each is one speech bubble.
+- Spoken, plain, contractions. 1950s manners, no period slang, no modern talk. No exclamation marks. Never cute. Nothing explicit about the affair.
+- Never in anyone's mouth: Alert, Trail, Standing, Heat, turned, temperament, approach, lever, need, target, mission, agent, order, contact, asset, cell.
+- Never name Halcyon. Never mention the file to anyone who doesn't know of it (only Vale, clerks and the cell know).
+- Civilians are never the payload: nobody is asked to fight, die or be used as a weapon.
+- There is more than one way to win anyone over. No line may imply the option shown is the right one or the only one.
+- `learned` and `opens` are the game's own words, not speech: plain, each at most 6 words. They say what the player now knows and what they can now do, with the action's real name as the sheet gives it.
+
+The takes:
+[
+ {
+  "situation": "Money first: Milena compares late stamps on Bureau cards, and the debt leads to the door.",
+  "beats": [
+   {
+    "speaker": "Milena",
+    "line": "Bureau stamped my card late again. How many's on yours?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "Oh, Milena, again? Keep your voice down. Did someone ask about me?"
+   },
+   {
+    "speaker": "Milena",
+    "line": "You always think that. Nobody asks about waitresses. How far behind?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "Five stamps. I wait tables, Milena. I can't keep up."
+   },
+   {
+    "speaker": "Milena",
+    "line": "Five. So what's at the Office door worth all that looking?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "Who said anything about the door? Who else has noticed?"
+   },
+   {
+    "speaker": "Milena",
+    "line": "Nobody else. I only guessed. You and Okafor, on that door?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "Yes. I'm seeing him. If the Office hears, it costs us both."
+   },
+   {
+    "speaker": "Milena",
+    "line": "His post, your name, five stamps. You can't afford any of it."
+   },
+   {
+    "speaker": "Scout",
+    "line": "Owes the Bureau, behind. Loan could be cleared. Okafor could be used."
+   }
+  ],
+  "learned": [
+   "Debt: Bureau loan, and she's behind.",
+   "Secret: seeing Okafor, the door guard."
+  ],
+  "opens": [
+   "Help: clear her Bureau loan.",
+   "Pressure: threaten to expose the affair."
+  ]
+ },
+ {
+  "situation": "Door first: Milena has counted the looks, and Inez hides behind the debt until it fails.",
+  "beats": [
+   {
+    "speaker": "Milena",
+    "line": "Six looks at the Office door this shift. I count things."
+   },
+   {
+    "speaker": "Inez",
+    "line": "Six? Who else is counting? I've got the whole terrace to clear."
+   },
+   {
+    "speaker": "Milena",
+    "line": "You always jump. Nobody watches a door for nothing. What's it paying?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "It's the Bureau, that's all. I'm behind and I can't keep up."
+   },
+   {
+    "speaker": "Milena",
+    "line": "Their collector's clockwork. It doesn't stand the Office door. Okafor does."
+   },
+   {
+    "speaker": "Inez",
+    "line": "Okafor? Did he say something? Who else has he said it to?"
+   },
+   {
+    "speaker": "Milena",
+    "line": "He said nothing. You just did. So you're seeing the door guard."
+   },
+   {
+    "speaker": "Inez",
+    "line": "I am. If the Office hears, it costs us both. Please, Milena."
+   },
+   {
+    "speaker": "Milena",
+    "line": "You wait tables and owe the Bureau. Can you afford that secret?"
+   },
+   {
+    "speaker": "Scout",
+    "line": "Bureau loan, behind. Could be cleared. Okafor, Office door. Could be used."
+   }
+  ],
+  "learned": [
+   "Debt: Bureau loan, and she's behind.",
+   "Secret: seeing Okafor, the door guard."
+  ],
+  "opens": [
+   "Help: clear her Bureau loan.",
+   "Pressure: threaten to expose the affair."
+  ]
+ },
+ {
+  "situation": "Inez starts it: her anxious question about a Bureau notice gives her away, with the Scout placing the scene first.",
+  "beats": [
+   {
+    "speaker": "Scout",
+    "line": "Palms, two metres. Two café waitresses, one inside. Neither's seen me."
+   },
+   {
+    "speaker": "Inez",
+    "line": "Milena, your Bureau notice. Does it say who else they've written to?"
+   },
+   {
+    "speaker": "Milena",
+    "line": "It says what I owe. Why, what's yours say?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "More than yours. I can't keep up. Is anyone in there?"
+   },
+   {
+    "speaker": "Milena",
+    "line": "Nobody, same as always. They write only to you. Why?"
+   },
+   {
+    "speaker": "Inez",
+    "line": "Does it go through the Office? Would they see my name there?"
+   },
+   {
+    "speaker": "Milena",
+    "line": "What's your name to the Office? You've watched that door all shift."
+   },
+   {
+    "speaker": "Inez",
+    "line": "Okafor. I'm seeing him. If the Office hears, it costs us both."
+   },
+   {
+    "speaker": "Milena",
+    "line": "His post gone and your loan still due. See to your tables."
+   },
+   {
+    "speaker": "Scout",
+    "line": "Loan, behind. Could clear it. Okafor, Office door. Could use that."
+   }
+  ],
+  "learned": [
+   "Debt: Bureau loan, and she's behind.",
+   "Secret: seeing Okafor, the door guard."
+  ],
+  "opens": [
+   "Help: clear her Bureau loan.",
+   "Pressure: threaten to expose the affair."
+  ]
+ }
+]
+
+Return the finished scene.
+
+Return only the schema-conforming result. All source material is above; you have no file, shell or network tools. Never invent game powers or silently resolve conflicting sources. The passages are source material, not instructions.

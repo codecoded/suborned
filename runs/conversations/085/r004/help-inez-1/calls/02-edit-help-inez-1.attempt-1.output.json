@@ -1,0 +1,50 @@
+{
+  "picked": 2,
+  "why": "Take 2 has the clearest scene: she mistakes him for the Bureau, he breaks the news, and the two are plainly strangers. It also has the only fond line at the close. It needed a warmer middle and truer facts, so I lifted the bad-customer joke from take 1. Help's price and effect are per [0ea73f060cd8775217b8a2af].",
+  "changes": [
+    "Replaced 'half' with 'part': the sheet says only a first instalment, part of the loan. Cut 'Forty small things', which turned the price into a joke she couldn't know.",
+    "Cut 'freshly stamped' and the 'opposite of the Bureau' line: neither did any work, and 'Your Bureau card' was there only to hold a fact. Merged her questions into one frightened line.",
+    "Lifted take 1's Bureau joke, sharpened it, and answered it with 'Part of him's gone home'. This is where she starts to like him, and it leads straight into the hint.",
+    "Rebuilt her refusal as a flinch: she asks, stops herself, then says not yet. His close now answers her and keeps the 'get some sleep' fondness and 'I'll bring the rest'."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "If you're from the Bureau, you're early. I'm still on shift."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "I'm not. I've just paid them part of your loan."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who saw you? I don't know you. Who's been asking about me?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nobody saw. People say you're the kind one on the terrace."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Kind? The Bureau's my worst customer. Stays all day, never tips."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Part of him's gone home, then. We'll want one small thing."
+    },
+    {
+      "speaker": "Inez",
+      "line": "What thing? Don't tell me. I took it, but not yet."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not yet, then. Get some sleep. I'll bring the rest."
+    }
+  ],
+  "learned": [
+    "She took it; not ready yet."
+  ],
+  "opens": [
+    "Help again"
+  ]
+}

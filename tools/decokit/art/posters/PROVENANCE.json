@@ -1,0 +1,252 @@
+{
+ "note": "Brief 075-F1, Vela. Sheet B of the billboard art (billboard_ads_v2.png): new fictional 1950s space-age ads and posters in the style of the old billboard_ads_v1 sheet, for products and places in our world (no real brands). Made with the Codex image tool (ChatGPT plan, $0), with the old sheet's cells as style refs; originals and ledger in paid/075-posters (git-ignored; viewer: bun run paid). No paid API.",
+ "styleRefs": "crops of the old Art/DecoKit/Textures/billboard_ads_v1.png cells (sha256 7bda772ffcec34121ff23efceddb0e7d27ae6768c9dc0f4bfa6744a95be42c9a)",
+ "files": [
+  {
+   "file": "luna.png",
+   "words": "FLY TO LUNA",
+   "kind": "ad",
+   "sha256": "95af841183730aade9635d55ccb6e6fe80459a4e3c0714da44d73f230e0a91d3",
+   "bytes": 680055,
+   "original": "paid/075-posters/codex/ad_luna__r2.png",
+   "originalSha256": "992fe6bd6a09078ad213f99ba2981714ce4ebdfc793fc79938b7c0498f8ce976",
+   "ledgerId": 4,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_mars.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_cruise.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: Holidays on the Moon: a chrome-and-coral rocket liner landed beside a glass-domed lunar resort with a swimming pool and palm trees under the dome, the blue Earth rising large in a deep teal sky, a smiling couple in white space-age resort wear waving from a curved terrace. The only lettering is the words \"FLY TO LUNA\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "suds.png",
+   "words": "NOVA SUDS",
+   "kind": "ad",
+   "sha256": "c06aa5dc3e0fcdfc672fdf3d19fde6e94e96b8942a6fa94747f12da9d797a2fd",
+   "bytes": 629699,
+   "original": "paid/075-posters/codex/ad_suds.png",
+   "originalSha256": "f7836ca21b0b57281cc26133e5294646ab7e266406d87d6a6896a6b853bb964b",
+   "ledgerId": 2,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_fizz.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_robot.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: Washing day of tomorrow: a gleaming round cream-and-turquoise atomic washing machine with a big porthole full of rainbow suds, a friendly clockwork robot with a dot-matrix display face folding bright towels beside it, soap bubbles and starbursts on a seafoam background. The only lettering is the words \"NOVA SUDS\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "range.png",
+   "words": "ATOM RANGE",
+   "kind": "ad",
+   "sha256": "43aa391bf154664960049f00b59c058c306b72acee6efe658ddf026595cf571b",
+   "bytes": 668579,
+   "original": "paid/075-posters/codex/ad_range.png",
+   "originalSha256": "48766e90d1677e102bb7feaf9c3bf5b99fcc48efbc3f8ab0cff2d2d478938afe",
+   "ledgerId": 5,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_robot.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_fizz.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: The atomic kitchen: a streamline cream-and-coral atomic cooking range with chrome dials and a little glowing atom emblem, a roast and a towering cake coming out of the oven, a smiling woman in a fitted space-age dress presenting it, a picture window onto a sunny city of towers. The only lettering is the words \"ATOM RANGE\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "venus.png",
+   "words": "VENUS BEACH",
+   "kind": "ad",
+   "sha256": "359b8bd16e3d56c5976c19c8f4c9ce8f9f3e1919e78bce3cdd48f62de3a60040",
+   "bytes": 639875,
+   "original": "paid/075-posters/codex/ad_venus.png",
+   "originalSha256": "a1aac873c22bf00677f3dcccc44609e2a44f695dc85caaf72554767fd03ca521",
+   "ledgerId": 3,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_mars.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_cruise.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: Holidays on Venus: a pastel pink-and-cream cloud beach under a huge pale golden sky, floating streamline resort pavilions on slender stalks, swimmers in a turquoise lagoon, a sleek coral sky-yacht gliding overhead. The only lettering is the words \"VENUS BEACH\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "tidy.png",
+   "words": "KEEP VESPER TIDY",
+   "kind": "ad",
+   "sha256": "788b1d9c058f7d6dfd3093540521fcb4a690bec2a46b3d2b039074eb33696f59",
+   "bytes": 649334,
+   "original": "paid/075-posters/codex/ad_tidy.png",
+   "originalSha256": "1f3eb1b8e945300f0a06defd7894c21622929fa4c218f04b0c24f404f0c09a62",
+   "ledgerId": 6,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_skyrail.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_aircar.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: A civic public-information billboard: a spotless cream city boulevard with palms and streamline towers, a smiling municipal clockwork sweeper robot in teal enamel with a dot-matrix display face and a brush, a family in neat space-age clothes dropping a wrapper into a chrome bin, everything perfectly in order, a big sunburst. The only lettering is the words \"KEEP VESPER TIDY\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "pearls.png",
+   "words": "LAGOON PEARLS",
+   "kind": "ad",
+   "sha256": "7032f5f275f489314059ef5e80b9d36cb4e752c951ae839403f1f56d035de7d1",
+   "bytes": 615664,
+   "original": "paid/075-posters/codex/ad_pearls.png",
+   "originalSha256": "c547475afcf319ab1412d0da148bb9f1cfa9a6eed6e4897112a798cf6948ad53",
+   "ledgerId": 7,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_cruise.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_fizz.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: A luxury jewellery billboard: a lustrous string of lagoon pearls arranged in an orbit around a glowing pearl like a planet with rings, a turquoise lagoon and a cream harbour city at dusk behind, sparkles, an elegant woman in a chrome-trimmed evening gown admiring them. The only lettering is the words \"LAGOON PEARLS\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "mints.png",
+   "words": "STARDUST MINTS",
+   "kind": "ad",
+   "sha256": "caefb2104a54416b035c464b953f061336dea7b936ae8864d1887d84b00c1bc0",
+   "bytes": 667941,
+   "original": "paid/075-posters/codex/ad_mints.png",
+   "originalSha256": "ead412a7f196367d90120735a59b6c6b22c2473fa2662dc0b97b4083f9fb67cf",
+   "ledgerId": 8,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_planetarium.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_fizz.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: A sweets billboard: a giant streamline chrome tin of star-shaped mints with its lid popping open, mints spilling out like a meteor shower across a deep teal starry sky, a ringed planet, two delighted children in space-age playsuits catching them. The only lettering is the words \"STARDUST MINTS\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "coral.png",
+   "words": "CORAL LINE",
+   "kind": "ad",
+   "sha256": "42018684e170f1def11975f87a37473e0aedc8f41d029e3ea5dddf074d9452b9",
+   "bytes": 662803,
+   "original": "paid/075-posters/codex/ad_coral.png",
+   "originalSha256": "be4685694f993bc7ad53fc99f13c26425edf526cadb25e1c21935aea99679e7a",
+   "ledgerId": 9,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_skyrail.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/ad_aircar.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a very wide 3:1 panoramic billboard, full bleed, the main subject large and balanced left to right, the lettering large and clear of the edges. Subject: A transit billboard: a sleek coral-and-cream streamline tram gliding along a palm-lined avenue beside a turquoise lagoon, cream streamline towers, a sky rail beam overhead, happy riders at the big windows. The only lettering is the words \"CORAL LINE\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "jupiter.png",
+   "words": "SEE JUPITER",
+   "kind": "poster",
+   "sha256": "e6287154edf35b9a2dbbc0a6745047ffb941f4dc81b09ff0e9d65f8958937a93",
+   "bytes": 576558,
+   "original": "paid/075-posters/codex/poster_jupiter.png",
+   "originalSha256": "2d83dc7bfe3bfcaf2bcbe861ef228770f4adeb6d1eedab20aac0206cf8545640",
+   "ledgerId": 10,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_saturn.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_expo.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a tall 2:3 portrait poster, full bleed, the main subject large, the lettering large and clear of the edges. Subject: A travel poster: a silver finned rocket liner with a coral stripe climbing past a small moon toward a huge banded planet Jupiter with its great red spot filling the sky, deep teal space with stars. The only lettering is the words \"SEE JUPITER\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "aqua.png",
+   "words": "AQUA DOME",
+   "kind": "poster",
+   "sha256": "9498f531d62df2d38dc9d347e7dffe243626a9e56a4de9638512539c725afb78",
+   "bytes": 655060,
+   "original": "paid/075-posters/codex/poster_aqua.png",
+   "originalSha256": "8a0457730e2127a7d7ad07c4b4933ca9c4793b1842be4e2794c8448502cce37c",
+   "ledgerId": 12,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_vesper.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_expo.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a tall 2:3 portrait poster, full bleed, the main subject large, the lettering large and clear of the edges. Subject: A travel poster: an undersea pleasure garden in a turquoise lagoon, a great glass dome on the sea floor with a streamline cream pavilion inside, colourful fish and coral, a little bubble-canopy submarine, divers in sleek white suits. The only lettering is the words \"AQUA DOME\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "revue.png",
+   "words": "ROBOT REVUE",
+   "kind": "poster",
+   "sha256": "ff90f836622d5e1e1fb77397187dc1071fa3557f3a9623d802eca80758ff5ec1",
+   "bytes": 583238,
+   "original": "paid/075-posters/codex/poster_revue.png",
+   "originalSha256": "02bbc9ab7dd98c367ddef3f764f83151ba568024a4e87d354d56b2ad65d0e474",
+   "ledgerId": 11,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_rocketrace.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_saturn.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a tall 2:3 portrait poster, full bleed, the main subject large, the lettering large and clear of the edges. Subject: A show poster: a grand chorus line of shiny chrome dancing robots with dot-matrix display faces high-kicking on a streamline stage under coral spotlights and a starburst arch, an audience silhouetted in front. The only lettering is the words \"ROBOT REVUE\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "skyport.png",
+   "words": "SKYPORT VESPER",
+   "kind": "poster",
+   "sha256": "c8839ea5f6bb029c3782f156d8338f8b1a2ca27ebc17f31131be1647b22e9a4f",
+   "bytes": 592363,
+   "original": "paid/075-posters/codex/poster_skyport.png",
+   "originalSha256": "27233c307d3c0d3ea998618a5c5eec2e5b32e844212d990f2350707ccba763bc",
+   "ledgerId": 13,
+   "service": "Codex (ChatGPT plan)",
+   "model": "codex:image_gen",
+   "cost": 0.0,
+   "pass": "ads2",
+   "refs": [
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_expo.png",
+    "/Users/sky/Projects/suborned/out/scratch/vela/075-posters/refs/poster_vesper.png"
+   ],
+   "prompt": "Paint a new artwork in exactly the same style as the reference images: 1950s airbrushed space-age advertising illustration, gouache and airbrush on board, bold flat streamline lettering, crisp confident painted shapes, optimistic retro-future, sunny palette of ivory, cream, teal, seafoam, coral, mustard and signal red with chrome highlights. Any people wear sleek space-age couture (fitted, clean lines, chrome accents), never 1950s period dress. Format: a tall 2:3 portrait poster, full bleed, the main subject large, the lettering large and clear of the edges. Subject: A travel poster: a soaring cream skyport tower with a saucer-shaped deck, two sleek rocket liners departing on white contrails, a coral sky-rail train on a curving beam below, palms and a turquoise harbour. The only lettering is the words \"SKYPORT VESPER\" in huge bold streamline capitals, spelled exactly; no other text anywhere. The flat artwork itself, straight-on, filling the whole canvas edge to edge: no margins, no billboard structure, no frame, no border, no mockup, not a photograph. No real brands, no logos, no trademarks, no watermark, no signature, no small print.",
+   "postprocess": "signage_art.py cells_b: centre-crop to the cell aspect, Lanczos to the cell size (ad 1024x341, poster 456x684)"
+  },
+  {
+   "file": "billboard_ads_v2.png",
+   "sha256": "dfac1450a487558366b097db05834bce49facb975048ffcfca7a2a41a5637f80",
+   "bytes": 7721060,
+   "postprocess": "signage_art.py pack_b: the 12 cells above in sheet A's layout (8 ads 1024x341 in 2 cols x 4 rows, 4 posters 456x684 along the bottom) + 2 procedural stroke-font letter boards (glyphs.py: ATOM PRINCESS / + COMET KID, LATE / SHOW) rotated 90 CCW; ground #F3DDB0"
+  }
+ ]
+}

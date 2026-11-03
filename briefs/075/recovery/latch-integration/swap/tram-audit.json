@@ -1,0 +1,32 @@
+{
+ "schema":"latch.tram-bed-audit/1",
+ "scene":"Assets/Scenes/probe-recovery075-swap.unity",
+ "export":"1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+ "rule":"every 1 m along each tram track of ours (both lines of a double track), at the centre and 0.6 m either side; on our bed = a tile of ours covers the sample; level = another face within 0.8 mm of the tile top; over = another face 0.8 mm to 25 cm over it; level, no bed = off our bed, two renderers' faces within 0.8 mm at the top",
+ "ourTiles":1584,
+ "samples":9462,
+ "onBed":9456,
+ "offBed":6,
+ "level":38,
+ "over":597,
+ "levelNoBed":0,
+ "renderersRead":356,
+ "unreadable":105,
+ "unreadableNames":["Deco Street / CoconutPalm","Network (our routes, old pieces) / Kerb_Granite","Network (our routes, old pieces) / Tram","Ours (Handover zone + network, our pipeline) / DK_LightDotRow"],
+ "byTrack":{"tram/T1/loop":{"samples":606,"onBed":606,"level":13,"over":0,"levelNoBed":0},"tram/T1/trunk":{"samples":8856,"onBed":8850,"level":25,"over":597,"levelNoBed":0}},
+ "levelBySource":[
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_LightDotRow [bounds]","samples":33,"at":[[-342.4,-127.7],[-341.8,-127.7],[-341.2,-127.7],[-338.8,-127.7],[-338.2,-127.7],[-337.6,-127.7]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-1,-7 [probe-oldtown-ours-crosslight]","samples":3,"at":[[-3,-390.3],[-1.9,-386.7],[-2.5,-386.7]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-6,1 [probe-oldtown-ours-crosslight]","samples":1,"at":[[-337.6,109.3]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-6,-3 [probe-oldtown-ours-crosslight]","samples":1,"at":[[-337.6,-187.7]]}],
+ "overBySource":[
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Granite_Rail@-6,-7 [DK_Granite_Kerb]","samples":137,"at":[[-342.4,-385.8],[-341.2,-385.8],[-338.8,-385.7],[-337.6,-385.6],[-342.3,-386.8],[-341.1,-386.8]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-4,-7 (west ground, old materials) [DK_Gutter_Setts]","samples":120,"at":[[-254.5,-411.8],[-254.5,-408.2],[-253.5,-411.8],[-253.5,-408.2],[-252.5,-411.8],[-252.5,-408.2]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-5,-7 (west ground, old materials) [DK_Gutter_Setts]","samples":120,"at":[[-314.5,-411.8],[-314.5,-408.2],[-313.5,-411.8],[-313.5,-408.2],[-312.5,-411.8],[-312.5,-408.2]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-3,-7 (west ground, old materials) [DK_Gutter_Setts]","samples":74,"at":[[-194.5,-411.8],[-194.5,-408.2],[-193.5,-411.8],[-193.5,-408.2],[-192.5,-411.8],[-192.5,-408.2]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-6,-7 [DK_Gutter_Setts]","samples":67,"at":[[-341.8,-385.8],[-338.2,-385.7],[-341.7,-386.8],[-338.1,-386.7],[-341.6,-387.9],[-338,-387.5]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Granite_Rail@-8,4 [DK_Granite_Kerb]","samples":44,"at":[[-459,277.6],[-459,278.8],[-459,281.2],[-459,282.4],[-458,277.6],[-458,278.8]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-8,4 [DK_Gutter_Setts]","samples":22,"at":[[-459,278.2],[-459,281.8],[-458,278.2],[-458,281.8],[-457,278.2],[-457,281.8]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_Ground_Setts@-6,-6 (west ground, old materials) [DK_Gutter_Setts]","samples":16,"at":[[-338.2,-369.7],[-338.2,-370.7],[-338.2,-371.7],[-338.2,-372.7],[-338.2,-373.7],[-338.2,-374.7]]}],
+ "levelNoBedBySource":[]
+}

@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "Mid-shift at the door, she takes the Fixer for the Bureau and tries to buy her way out with her tips.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Terrace is full. If it's the Bureau, my card's stamped."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not the Bureau. You and Okafor, over on that door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Table six can see us. Who told you? Does the Office know?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not yet. It stays that way if you call Okafor over."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Call Okafor off the door? Take my tips instead, the whole tin."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Keep your tips. I telephone, you call. One minute at your side."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Okafor would come. Okafor always comes. Yes. Now leave my step."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I know what this is. You call, the Office hears nothing."
+        }
+      ],
+      "learned": [
+        "Threatened, she agreed. Knows Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "With customers in view, they play diner and server; she denies knowing Okafor until the Fixer proves otherwise.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "A table, if you have one. Keep smiling. It's about Okafor."
+        },
+        {
+          "speaker": "Inez",
+          "line": "The terrace is full. I don't know any Okafor."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "The one on the Office door. The one you watch between tables."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's looking? Who've you told? Have you told the Office?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nobody, yet. One word across that square and it's on paper."
+        },
+        {
+          "speaker": "Inez",
+          "line": "You want money? I'm behind with the Bureau. Look at my card."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "No money. I telephone, you call Okafor off that door. One minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "So the Office hears nothing. Yes. I'll call Okafor, and smile."
+        }
+      ],
+      "learned": [
+        "She'll call. She knows Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She says yes before she hears the price, so the Fixer must make her listen while she works the tube.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "Send that down the tube, then listen. It's about you and Okafor."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Not here. Whatever you want, yes. Just not where they can see."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Hear it first. The Office doesn't know yet. I can change that."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I can't pay you. I owe the Bureau more than I earn."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not money. I telephone the café, you call Okafor off that door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Off the door? What happens while Okafor's gone? No. Don't tell me."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I won't. A minute at your side, and the Office hears nothing."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I told you yes already. You didn't have to say it nicely."
+        }
+      ],
+      "learned": [
+        "She gave in. Knows Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

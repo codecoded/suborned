@@ -1,0 +1,37 @@
+# Motive 2026-10-26: the yard's lane and the blocker's post on engine 0.32.0 + briefs/059/motive/balance/engine-probe.patch (cd out/scratch/motive/059c/tree; dotnet out/missions/engine/tree/bin/suborned-sim.dll motive-yard), svc-ambush-1 at (77.35, -8.0). toPost = the engine grid walk (Path.Length mm / 1000).
+## PROBE_YARDLANE=0
+stand service-drive car (6935,-1500) lane post (8600,-500) (free (8600,-500)); lane from (8600,-1500), 16.65 m from the car; post 19.42 m from the car; lane (8600,-1500) (8600,1500) half 600 cm; rival stop rival-tail (9050,-1700) lane 0 car 21.2 m; rear door lane 0
+svc-ambush-1     7735   -800  car  10.6 m  door  17.3 m  valeDoor  15.6 m  lineCar 1 lineDoor 1 lane 0  toPost  9.16 m
+svc-ambush-2     6025   -675  car  12.3 m  door  10.3 m  valeDoor  11.0 m  lineCar 1 lineDoor 1 lane 0  toPost 25.81 m
+svc-ambush-3     6325   -425  car  12.4 m  door  12.6 m  valeDoor  12.7 m  lineCar 1 lineDoor 1 lane 0  toPost 22.76 m
+svc-ambush-4     7175   -275  car  12.5 m  door  16.8 m  valeDoor  15.9 m  lineCar 1 lineDoor 1 lane 0  toPost 14.46 m
+svc-ambush-5     7675    125  car  17.9 m  door  23.0 m  valeDoor  21.9 m  lineCar 1 lineDoor 1 lane 0  toPost 11.46 m
+## PROBE_YARDLANE=1
+stand service-drive car (6935,-1500) lane post (7935,-1500) (free (7935,-1500)); lane from (6935,-1500), 0.00 m from the car; post 10.00 m from the car; lane (6935,-1500) (8600,-1500) (8600,-165) half 600 cm; rival stop rival-tail (9050,-1700) lane 1 car 21.2 m; rear door lane 0
+svc-ambush-1     7735   -800  car  10.6 m  door  17.3 m  valeDoor  15.6 m  lineCar 1 lineDoor 1 lane 0  toPost  7.49 m
+svc-ambush-2     6025   -675  car  12.3 m  door  10.3 m  valeDoor  11.0 m  lineCar 1 lineDoor 1 lane 0  toPost 21.14 m
+svc-ambush-3     6325   -425  car  12.4 m  door  12.6 m  valeDoor  12.7 m  lineCar 1 lineDoor 1 lane 0  toPost 19.36 m
+svc-ambush-4     7175   -275  car  12.5 m  door  16.8 m  valeDoor  15.9 m  lineCar 1 lineDoor 1 lane 0  toPost 14.42 m
+svc-ambush-5     7675    125  car  17.9 m  door  23.0 m  valeDoor  21.9 m  lineCar 1 lineDoor 1 lane 0  toPost 16.74 m
+## PROBE_YARDLANE=2
+stand service-drive car (6935,-1500) lane post (7935,-1500) (free (7935,-1500)); lane from (6935,-1500), 0.00 m from the car; post 10.00 m from the car; lane (6935,-1500) (8600,-1500) (8600,-165) half 600 cm; rival stop rival-tail (9050,-1700) lane 0 car 21.2 m; rear door lane 0
+svc-ambush-1     7735   -800  car  10.6 m  door  17.3 m  valeDoor  15.6 m  lineCar 1 lineDoor 1 lane 0  toPost  7.49 m
+svc-ambush-2     6025   -675  car  12.3 m  door  10.3 m  valeDoor  11.0 m  lineCar 1 lineDoor 1 lane 0  toPost 21.14 m
+svc-ambush-3     6325   -425  car  12.4 m  door  12.6 m  valeDoor  12.7 m  lineCar 1 lineDoor 1 lane 0  toPost 19.36 m
+svc-ambush-4     7175   -275  car  12.5 m  door  16.8 m  valeDoor  15.9 m  lineCar 1 lineDoor 1 lane 0  toPost 14.42 m
+svc-ambush-5     7675    125  car  17.9 m  door  23.0 m  valeDoor  21.9 m  lineCar 1 lineDoor 1 lane 0  toPost 16.74 m
+
+## the yard's points against both lanes (python, the GDD's square-ended lane: A = exported (86,-15)->(86,15) 12 m wide; B = drive (69.35,-15)->(86,-15) 3 m wide, then (86,-15)->(86,-1.65) 12 m wide; points from contracts/missions/handover/mission.json)
+rival-lookout      [94, -27]  car  27.4 m  laneA 0 laneB 0
+rival-park         [90.5, -31.0]  car  26.5 m  laneA 0 laneB 0
+rival-tail         [90.5, -17]  car  21.2 m  laneA 0 laneB 0
+rival-vale-door    [64.55, -16.9]  car   5.2 m  laneA 0 laneB 0
+svc-ambush-1       [77.35, -8.0]  car  10.6 m  laneA 0 laneB 0
+svc-ambush-2       [60.25, -6.75]  car  12.3 m  laneA 0 laneB 0
+svc-ambush-3       [63.25, -4.25]  car  12.4 m  laneA 0 laneB 0
+svc-ambush-4       [71.75, -2.75]  car  12.5 m  laneA 0 laneB 0
+svc-ambush-5       [76.75, 1.25]  car  17.9 m  laneA 0 laneB 0
+svc-police-1       [54.25, -19.25]  car  15.7 m  laneA 0 laneB 0
+svc-police-2       [55.75, -14.25]  car  13.6 m  laneA 0 laneB 0
+svc-police-3       [52.25, -15.25]  car  17.1 m  laneA 0 laneB 0
+svc-police-4       [53.25, -11.25]  car  16.5 m  laneA 0 laneB 0

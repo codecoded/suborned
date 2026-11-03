@@ -1,0 +1,244 @@
+{
+ "PlanterRun_2_A": {
+  "footprint": [
+   -1.0,
+   1.0,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_2_B": {
+  "footprint": [
+   -1.0,
+   1.0,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_2_C": {
+  "footprint": [
+   -1.0,
+   1.0,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_4_A": {
+  "footprint": [
+   -2.0,
+   2.0,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_4_B": {
+  "footprint": [
+   -2.0,
+   2.0,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_4_C": {
+  "footprint": [
+   -2.0,
+   2.0,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_Corner_A": {
+  "footprint": [
+   -1.0,
+   1.34,
+   -1.34,
+   1.0
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_Corner_B": {
+  "footprint": [
+   -1.0,
+   1.34,
+   -1.34,
+   1.0
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_Corner_C": {
+  "footprint": [
+   -1.0,
+   1.34,
+   -1.34,
+   1.0
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_End_A": {
+  "footprint": [
+   -0.65,
+   0.99,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_End_B": {
+  "footprint": [
+   -0.65,
+   0.99,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 4,
+  "passed": true
+ },
+ "PlanterRun_End_C": {
+  "footprint": [
+   -0.65,
+   0.99,
+   -0.34,
+   0.34
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CafeTerrace_Planting": {
+  "footprint": [
+   -17.306,
+   17.306,
+   -6.73,
+   2.398
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "RecordsTower_Planting": {
+  "footprint": [
+   -11.85,
+   11.85,
+   -10.885,
+   11.395
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CafeUpper_3_Planting": {
+  "footprint": [
+   -11.585,
+   11.585,
+   -0.585,
+   12.27
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CafeUpper_4_Planting": {
+  "footprint": [
+   -11.585,
+   11.585,
+   -0.585,
+   12.27
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CivicBedPlanting_facade-southwest": {
+  "footprint": [
+   -1.889,
+   1.888,
+   -1.451,
+   1.452
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CivicBedPlanting_facade-southeast": {
+  "footprint": [
+   -1.864,
+   1.864,
+   -1.563,
+   1.563
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CivicBedPlanting_office-west": {
+  "footprint": [
+   -0.95,
+   0.915,
+   -4.522,
+   5.586
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CivicBedPlanting_office-north": {
+  "footprint": [
+   -2.482,
+   2.482,
+   -0.954,
+   0.954
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "CivicBedPlanting_dropoff-west": {
+  "footprint": [
+   -1.814,
+   1.812,
+   -0.93,
+   1.326
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 3,
+  "passed": true
+ },
+ "PlanterArc": {
+  "footprint": [
+   -2.316,
+   2.316,
+   -0.94,
+   0.928
+  ],
+  "tol": 0.05,
+  "submeshes_checked": 7,
+  "passed": true
+ }
+}

@@ -56,6 +56,29 @@ namespace Suborned.Play
             }
         }
 
+        /// <summary>Engine 0.35 (Glyph b-final, "when cover marks show"; never at rest, never over a rival's cover, never just because a fight is on):
+        /// while a move is being ordered for a drawn agent in a fight and its end snaps to a kneel point, the move ring (which stands on the point)
+        /// carries a shield inside it; if that end flanks the focus's cover, that cover wears one struck shield disc (the kit's disc_dark_24, a cream
+        /// shield struck through). At most two marks; both go when the cursor leaves the ground or the move is given. The fight lab keeps its own
+        /// marks (FlCoverMarks).</summary>
+        public static string CoverSnapShown { get; private set; } = "";
+        VisualElement flankDisc;
+        void CoverSnapMarks(bool on)
+        {
+            var h = host; var mv = h.MoveNow; bool snap = on && h.Game != null && !h.Game.Lab && !m.Ended && mv != null && mv.SnapId.Length > 0;
+            Vector2 at = default; bool shown = snap && Proj(mv.At + Vector3.up * 0.05f, out at);
+            if (shown) { var c = at; paints.Add(pp => HalfShield(pp, c, 7f, Cream, true, 1f)); }
+            Vector2 fq = default; bool flank = shown && mv.FlankAt.HasValue && Proj(mv.FlankAt.Value + Vector3.up * 0.9f, out fq);
+            if (flankDisc == null && flank)
+            {
+                flankDisc = E(marks, "s-disc_dark_24", 0, 0, 24, 24); flankDisc.pickingMode = PickingMode.Ignore;
+                var sh = P(flankDisc, 0, 0, 24, 24, (pp, r) => { var c = new Vector2(12, 12); HalfShield(pp, c, 5.5f, Cream, true, 1f); pp.strokeColor = Cream; pp.lineWidth = 2f; pp.lineCap = LineCap.Round; pp.BeginPath(); pp.MoveTo(c + new Vector2(-7, 7)); pp.LineTo(c + new Vector2(7, -7)); pp.Stroke(); });
+                manifest.Add((flankDisc, "image", () => "struck shield"));
+            }
+            if (flankDisc != null) { Show(flankDisc, flank); if (flank) { flankDisc.style.left = fq.x - 12f; flankDisc.style.top = fq.y - 12f; flankDisc.BringToFront(); } }
+            CoverSnapShown = shown ? $"snap:{mv.SnapId}{(flank ? ":flank" : "")}" : "";
+        }
+
         /// <summary>The half-shield: an ink-rimmed shield 14 px tall; full = filled, partial = its left half filled; the outline in the mark's colour.</summary>
         static void HalfShield(Painter2D p, Vector2 c, float r, Color col, bool full, float pulse)
         {

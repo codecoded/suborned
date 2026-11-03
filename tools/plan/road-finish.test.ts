@@ -51,17 +51,18 @@ describe('RF-1 fails', () => {
   test('a zebra crossing control', () => f(p => { p.standards.streetscape.crossings.strip.control.access = 'zebra'; }, /crossing control on access is zebra/));
 });
 
-describe('RF-1 fails: the shoulder, the pinstripe and the kerb faces (brief 028 Road)', () => {
+describe('RF-1 fails: the shoulder, the retired pinstripe and the kerb faces (brief 028 Road; 072-G)', () => {
   const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
-  test('the committed plan carries all three', () => { const s = R(plan); expect(s.shoulder.piece).toBe('RoadShoulder_Straight_6m'); expect(s.pinstripe.piece).toBe('PaveEdge_Pinstripe_6m'); expect(s.kerbs.circusMouths.faces.length + s.kerbs.footMouths.faces.length).toBe(11); });
+  test('the committed plan carries the shoulder and the kerb faces, and no pinstripe (retired, 072-G)', () => { const s = R(plan); expect(s.shoulder.piece).toBe('RoadShoulder_Straight_6m'); expect(s.pinstripe).toBeUndefined(); expect(s.kerbs.circusMouths.faces.length + s.kerbs.footMouths.faces.length).toBe(8); }); // re-pinned 2026-10-28 (brief 075 remap): the old town's plan lists 8 mouth faces (was 11)
   test('a finish key with no look surface', () => f(p => { delete R(p).finish.keys.enamel.surface; }, /finish enamel has no `surface`/));
   test('a kerb cap with no look surface', () => f(p => { delete R(p).finish.kerb.surface; }, /finish.kerb has no `surface`/));
   test('a shoulder piece without its use tag', () => f(p => { R(p).shoulder.piece = 'RoadMark_Seam'; }, /RoadMark_Seam has no use tag ground:road-shoulder/));
   test('a shoulder arc the kit does not have', () => f(p => { R(p).shoulder.arcs['4'] = 'RoadShoulder_Arc90_R5'; }, /shoulder arc R4: "RoadShoulder_Arc90_R5" is not in the kit/));
   test('a shoulder that starts under the ribbon', () => f(p => { R(p).shoulder.from = 0.1; }, /starts under the ribbon/));
   test('a shoulder that reaches the middle line', () => f(p => { R(p).shoulder.to = 4.5; }, /reaches the narrowest middle line/));
-  test('a pinstripe on the kerb crown', () => f(p => { R(p).pinstripe.offset = 0.03; }, /must exceed the kerb crown's brass/));
-  test('a mouth face off its road\'s carriageway edge', () => f(p => { R(p).kerbs.circusMouths.faces[0].a = [9.5, 42.048]; }, /circus-mouth\/crown-avenue\/e a: 0\.5\d m off crown-avenue's carriageway edge/));
+  test('a pinstripe key back in the plan (retired, 072-G)', () => f(p => { R(p).pinstripe = { piece: 'PaveEdge_Pinstripe_6m', offset: 0.5, width: 0.04 }; }, /roads\.pinstripe: the pavement pinstripe is retired/));
+  test('a set that drops the retired pinstripe', () => f(p => { R(p).finish.sets.enamel.drop.push('pinstripe'); }, /finish set enamel: drop "pinstripe": the pinstripe is retired/));
+  test('a mouth face off its road\'s carriageway edge', () => f(p => { R(p).kerbs.circusMouths.faces[0].a = [7.5, 42.048]; } /* 0.5 m inside Crown Avenue's kerb at x 8 (16 m since the brief 075 plan-match; was [9.5, …] at 20 m) */, /circus-mouth\/crown-avenue\/e a: 0\.5\d m off crown-avenue's carriageway edge/));
   test('a mouth face ending neither on the ring nor at a plot corner', () => f(p => { R(p).kerbs.circusMouths.faces[0].b = [9, 47]; }, /b: ends neither on the circus ring/));
   test('a mouth face that points out of the carriageway', () => f(p => { R(p).kerbs.circusMouths.faces[0].toward = [1, 0]; }, /toward points out of the carriageway/));
   test('a face whose toward is not its normal', () => f(p => { R(p).kerbs.circusMouths.faces[0].toward = [0.6, 0.8]; }, /toward is not the unit normal/));
@@ -76,4 +77,24 @@ describe('RF-2 fails', () => {
   test('a centrepiece too big for the ring\'s slab', () => f(p => { I(p).ring.centrepiece.maxR = 4; }, /centrepiece maxR 4 < minSlab/));
   test('spokes starting inside the ring', () => f(p => { I(p).bands.spokes.from = 4.5; }, /start inside the ring/));
   test('a band scaled to another length', () => f(p => { I(p).bands.length = 4; }, /band length 4 ≠ the piece's 6/));
+});
+
+describe('RF-1 and the asphalt finish set (brief 055 road test)', () => {
+  const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
+  test('the committed plan lists the asphalt set, on since plan 0.5.2 (brief 075: the old asphalt road back), and its marks pass', () => {
+    const s = R(plan); expect(s.finish.set).toBe('asphalt'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder']); // brief 048: strip light, not the pearl band; the pinstripe is retired outright (072-G), not dropped
+    expect(Object.keys(s.marks.lanes).sort()).toEqual([]); // re-pinned 2026-10-28 (brief 075 remap): the old town has no Crown Road and its one divided road (Circus Road, median 6) takes the default 2 lanes, so RF-1's lane count names none; was crown-road (before that boulevard, comet-row, crown-road, harbour-road, sunset-way)
+    expect(run()['RF-1']!.ok).toBe(true);
+  });
+  test('a set the plan does not list', () => f(p => { R(p).finish.set = 'gravel'; }, /finish\.set is "gravel"/));
+  test('a set that leaves a class without a finish', () => f(p => { delete R(p).finish.sets.asphalt.byClass.access; }, /finish set asphalt: class access has no finish/));
+  test('a set naming a key with no surface', () => f(p => { R(p).finish.sets.asphalt.byClass.access = 'nothing'; }, /finish set asphalt: class access: nothing is not a key/));
+  test('a mark piece that is not in the kit', () => f(p => { R(p).marks.pieces.dash = 'RoadMark_Dash_9m'; }, /marks dash: "RoadMark_Dash_9m" is not in the kit/));
+  test('an edge line that touches the shoulder', () => f(p => { R(p).marks.edge = { offset: 1.05, width: 0.2 }; }, /does not clear the shoulder/));
+  test('white marks that stop nearer a crossing than the road\'s light', () => f(p => { R(p).marks.stopShort = 0.1; }, /marks\.stopShort 0\.1 is shorter/));
+  test('a lane count on a road with no median (centre line only)', () => f(p => { R(p).marks.lanes['rocket-lane'] = 2; }, /undivided road takes its centre line/));
+  test('lanes narrower than 3 m between the edge lines', () => f(p => { R(p).marks.lanes['circus-road'] = 3; }, /marks\.lanes circus-road: 3 lanes leave 2\.00 m/)); // brief 075 remap: Circus Road (18 m, median 6) is the divided road
+  test('a drop that names no family', () => f(p => { R(p).finish.sets.asphalt.drop.push('seam'); }, /drop "seam" is not ribbon/));
+  test('a lane count on no road', () => f(p => { R(p).marks.lanes['nowhere'] = 2; }, /marks\.lanes names nowhere/));
+  test('no marks block while a set lays lanes', () => f(p => { delete R(p).marks; }, /roads\.marks is missing/));
 });

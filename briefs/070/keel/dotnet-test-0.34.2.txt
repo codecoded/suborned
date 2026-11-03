@@ -1,0 +1,9 @@
+  Determining projects to restore...
+  Restored /Users/sky/Projects/suborned/out/scratch/keel/b0342/sim/Suborned.Sim.Tests/Suborned.Sim.Tests.csproj (in 407 ms).
+  1 of 2 projects are up-to-date for restore.
+  Suborned.Sim -> /Users/sky/Projects/suborned/out/scratch/keel/b0342/sim/Suborned.Sim/bin/Release/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /Users/sky/Projects/suborned/out/scratch/keel/b0342/sim/Suborned.Sim.Tests/bin/Release/net10.0/Suborned.Sim.Tests.dll
+Test run for /Users/sky/Projects/suborned/out/scratch/keel/b0342/sim/Suborned.Sim.Tests/bin/Release/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:  2519, Skipped:     0, Total:  2519, Duration: 3 m 30 s - Suborned.Sim.Tests.dll (net10.0)

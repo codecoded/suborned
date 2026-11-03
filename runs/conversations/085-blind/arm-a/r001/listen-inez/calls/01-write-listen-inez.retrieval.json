@@ -1,0 +1,168 @@
+{
+  "query": "Inez door guard lovers debt affair Help Pressure secret ‖ Fearful temperament hesitates Listen reveals need secret ‖ world records paper calls voice orderly city fears disorder ‖ conversation scene overheard Listen",
+  "queries": [
+    "Inez door guard lovers debt affair Help Pressure secret",
+    "Fearful temperament hesitates Listen reveals need secret",
+    "world records paper calls voice orderly city fears disorder",
+    "conversation scene overheard Listen"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3405775617864607,
+      "key": "c353f76d058dde5e260596c9",
+      "kind": "gdd-agent",
+      "lineEnd": 86,
+      "lineStart": 86,
+      "section": "§04 PEOPLE › preview",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§04 PEOPLE › preview\npreview: an order always shows its price; whether it will work shows as \"?\" until Listen reveals the temperament. After a Watch the mood marks the approach it favours as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay \"?\".",
+      "version": "v0.33.0",
+      "score": 0.059035409035409034,
+      "signals": [
+        "semantic:2",
+        "keyword:2",
+        "semantic:4",
+        "keyword:4"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "bm25": 2.8163397312164307,
+      "key": "971d2573fec5d5f32ab61610",
+      "kind": "gdd-human",
+      "lineEnd": 348,
+      "lineStart": 344,
+      "section": "Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec\nAn approach that doesn't suit someone's temperament still works, one step worse : one more Help, or a higher price (Keel sets the numbers). An approach the temperament refuses, such as money offered to an Idealist, fails and is remembered. Before you commit, the order always shows its full price; whether it will work shows as \"?\" until Listen reveals the temperament. Finding out is what turns a gamble into a plan.\nMood: what a Watch reads. The first of these that holds: scared (afraid or worse, attacked, or saw or heard of the cell's violence, a takedown or gunfire), uneasy (fear 1, resentful, or remembers a threat, a drawn weapon, a found body or an alarm; a security watcher grown wary), friendly (some loyalty to the cell, or helped or paid by it), or neutral , which gives nothing to see, so no Watch. Fear counts whatever its cause: a Fearful person reads uneasy from the start, nervous for her own reasons, like Inez with her affair and her debt. A Watch remembers the mood it saw, not a live feed. Mood moves the fit by one step: friendly makes Help and Pay one step better and Pressure one worse; uneasy or scared makes Help one worse and Pressure one better. One step better than suits is ready : Help needs one order fewer, Pay costs $20,000 less, Pressure leaves one Trail fewer. Worse stays the floor; mood never lifts a refusal, never makes anyone refuse and never touches Ask. After a Watch, the approach the mood favours shows as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay \"?\". Spec",
+      "version": "v0.33.0",
+      "score": 0.04643206256109482,
+      "signals": [
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.293546241906508,
+      "key": "96030c4c4a1a18523a3fdbbb",
+      "kind": "gdd-agent",
+      "lineEnd": 225,
+      "lineStart": 225,
+      "section": "§07 HANDOVER › the capstone",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§07 HANDOVER › the capstone\nthe capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).",
+      "version": "v0.33.0",
+      "score": 0.04622110501800164,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.4106805148923548,
+      "key": "7f89ccc5ec83f6e40f1fef0f",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › talker",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › talker\n{\"left\":[\"fear\",\"resentment\"],\"op\":\">\",\"right\":[\"bravery\",\"loyalty\"]}; facts given: fixer-face, enforcer-face, cell-car, place-time, cell-face, contact",
+      "version": "suborned.people.rules/1",
+      "score": 0.04570067826806669,
+      "signals": [
+        "semantic:2",
+        "semantic:3",
+        "semantic:4"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.3517546057701111,
+      "key": "b751d6ccbbc84f9d117eb45c",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › readBy",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+      "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nsecret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+      "version": "suborned.people.rules/1",
+      "score": 0.04551728464771943,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.337981899856441,
+      "key": "725585804cfa5ce38ad68436",
+      "kind": "gdd-agent",
+      "lineEnd": 84,
+      "lineStart": 84,
+      "section": "§04 PEOPLE › scales",
+      "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+      "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+      "text": "§04 PEOPLE › scales\nscales [S]: every number reads as a word: bravery informant·helper·accomplice·fighter (0–3) · resentment compliant·resentful·informer (0–2) · fear calm·uneasy·afraid·terrified (0–3) · loyalty none·obliged·trusting·sworn (0–3). Loyalty in the talker test = loyalty to the cell, 0 at start; loyalty to an employer or the civic order is the Loyal temperament. Start: everyone 0, except Idealist bravery 1 (helper), Fearful fear 1 (talks when questioned until helped) and the founding cell (§03).",
+      "version": "v0.33.0",
+      "score": 0.04525954525954526,
+      "signals": [
+        "semantic:2",
+        "keyword:2",
+        "semantic:3"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.2863117285781056,
+      "key": "5a29be8544e336060f678471",
+      "kind": "gdd-human",
+      "lineEnd": 296,
+      "lineStart": 283,
+      "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone\nApproach (Inez, training) | Requires | Cash | Time | Trail | What it leaves |\nAsk cold | Nothing | $0 | 20 s | +1 | A refusal that is remembered. Later offers cost +$10,000 and +1 Trail. |\nPay | A Watch first, where one is offered (20 s, any agent) | $70,000 | 35 s | +2 | A traceable payment. The relationship stays neutral. |\nHelp (clear her debt) | Need known (Listen, 30 s) | $40,000 | 35 s | +1 | Gratitude. Her bravery can grow. |\nPressure (threaten) | Need known | $0 | 25 s | +3 | Fear. Her resentment grows, and she can identify the Fixer. |\nBuilt The approach prices are proven in play; the Watch time is a starting value. Paying Inez plus turning the driver costs $110,000 against a $100,000 purse. Helping her plus turning the driver costs $80,000. So finding things out is what pays for a second route.\nTurning is private. A conversation is private: asking, paying, helping and listening have no witnesses, so onlookers learn nothing, there is no witness Trail, no change in Standing, no incident and nothing passed along. The approach keeps its own price: a payment is still traceable money, and a Loyal person still reports an approach. Pressure is different: security see a threat at any Alert, and ordinary people from Alert 2 (§05); it is remembered and passed on. A conversation never counts as loitering (§05). Spec",
+      "version": "v0.33.0",
+      "score": 0.04524358791145228,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "keyword:4"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.435685396194458,
+      "key": "c6464f74f3570d36178e9264",
+      "kind": "gdd-human",
+      "lineEnd": 789,
+      "lineStart": 781,
+      "section": "Read the street at a glance › Audio is part of the clock",
+      "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+      "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+      "text": "Read the street at a glance › Audio is part of the clock\nRoutines you can hear: a bell, the café door, the handover chime at 4:30.\nSecurity warns before it acts: a surveillance click at the edge of each sweep, a change in the patrol's sound when it breaks route, and a cue when a watcher notices an agent.\nAlert adds layers to the music. A fight brings in the whole score. Contacts confirm calls aloud.\nEach weapon has its own voice, so you can hear who is firing, and police dispatch sounds from where the police come in, so you hear where they come from.",
+      "version": "v0.33.0",
+      "score": 0.043916969772983816,
+      "signals": [
+        "semantic:3",
+        "keyword:3",
+        "semantic:4"
+      ]
+    }
+  ]
+}

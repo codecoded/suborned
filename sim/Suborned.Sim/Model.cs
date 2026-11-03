@@ -20,11 +20,15 @@ namespace Suborned.Sim
         /// its holder ("beyond": nobody on the sheet; phase 2 binds a person). "" when the host loaded no people file. Phase 1: read, never acted on.</summary>
         public string Record = "", Size = "", Holder = "";
         /// <summary>The city's own security (§05: guards, patrol officers, investigators, watchers) are no civilians: violence they see is not §05's "seen by a civilian".</summary>
-        public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard";
+        public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard" && Job != RivalJob;
+        /// <summary>Engine 0.33.0: the job of a rival crew member's person (CrewMember.P; Motive M059-3.1): no civilian, no staff.</summary>
+        public const string RivalJob = "rival";
         public readonly int[] Sc = new int[4];
         public readonly List<Mem> Memory = new List<Mem>();
         public bool Turned, NeedMet, Down;
         public bool KRoutine, KNeed, KTemperament, KSecret; // the cell's knowledge of this person
+        /// <summary>Brief 054 §2.3: the mood the cell saw at its last Watch of this person ("" never watched; hashed only when set).</summary>
+        public string KMood = "";
         public string Secret = "";                 // people.rules secrets: affair, record, or none (Motive, motive-lovers.md)
         public Person? Lover;                       // the other end of a lover tie, when both are cast
         public int Summoned;                        // times this person came to a lover's call this shift
@@ -52,6 +56,11 @@ namespace Suborned.Sim
     {
         public readonly string Id;                     // an operative, "guard", "patrol", "security-1", "rivals", a role, a hostile's id
         public Weapon? W; public bool Trained;         // null: unarmed (an operative without Arms, a civilian)
+        /// <summary>Brief 080: the shooter's aim % (rulebook weapons.sheet.aim by class + the character's offset) and how many shots it has fired, the
+        /// index into its own stream (GameSeed.cs: a read never moves it). Hashed only once a shot is fired; Acc and Mem hold the pair's streak.</summary>
+        public int Aim, ShotN;
+        /// <summary>Brief 080 (weapons.sheet.intake): until this tick a hostile's shot on this agent misses, whoever fires it. Hashed only while it runs.</summary>
+        public int IntakeUntil;
         public int Health, Max; public bool Down;
         public bool Drawn; public int DrawReady, HolsterAt = -1, DrawTick = -1; // drawing until DrawReady; holstering until HolsterAt
         public string Stance = "return";              // hold, return, free (an operative's)
@@ -115,7 +124,7 @@ namespace Suborned.Sim
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
         /// <summary>Engine 0.23.0 (rulebook cell.approach): a person act taken out of reach, walking in (the act starts in reach); and the tick its walk is
         /// next re-aimed. Hashed only when set.</summary>
-        public Order? Act; public int ActNext;
+        public Order? Act; public int ActNext; public ListenSpot? Spot; // engine 0.39.0: GameListenSpot.cs
         public int BusyStart;                            // when it began (the HUD's progress; derived, so not hashed)
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
@@ -248,8 +257,8 @@ namespace Suborned.Sim
             "mission-over", "engine-error", "unknown-verb", "agent-down", "enforcer-inside", "agent-busy", "guard-down", "guard-not-at-door", "person-down",
             "person-away", "no-place", "unwalkable", "no-walk", "run-carrying-vale", "run-carrying-downed", "run-tethered", "only-scout", "only-fixer",
             "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
-            "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", "car-gone", "car-busy",
-            "call-too-late", "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "patrol-down", "patrol-away", "no-rivals",
+            "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", /* brief 059: car-gone, car-busy and call-too-late retired with the driver's Call */
+            "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", "no-rivals",
             "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
             "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "not-driven", "follow-not-cell", "fire-running",
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
@@ -261,14 +270,23 @@ namespace Suborned.Sim
             "takedown-how", "takedown-vale", "no-body", "body-stashed", "not-carrying", "stand-at-stash", "stash-full", "body-dead", "already-restrained", "stand-beside-body", "doors-locked", "door-held",
             // Sky 2026-10-18: a Watch or Listen that can teach nothing more is refused, free (GameOrders.ScoutTeaches, GameSight.WatchWatcher)
             "already-heard", "already-watched",
+            // brief 054 §2.1 (engine 0.28.0): a Watch on a person that would show nothing the cell can act on, free; the host draws no row
+            "nothing-to-see",
             // brief 018 (Sky 2026-10-18): Board and Go
-            "board-running", "board-tethered", "in-car", "car-empty", "fire-carrying-vale",
+            "board-running", "board-tethered", "in-car", "car-empty", "car-no-driver", "fire-carrying-vale",
             // brief 023 (Motive 2026-10-19, rulebook fight.over): no fire order on a final-fight hostile once the final fight is over
             "fight-over",
             // brief 027 (EXPERIMENTAL, fight.lab): a volley or the field the agent's charge can't pay (with charge off: no volleys left this fight)
             "no-charge",
             // tuning.md §14 (engine 0.19.0): weapons free is the cell's setting
             "free-not-cell",
+            // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
+            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked",
+            // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
+            "car-driving",
+            // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the
+            // crew is down, not on a rival still unhurt; Steam with no heat-main grille in reach
+            "move-cooling", "talk-police", "talk-none-down", "talk-not-hurt", "steam-no-grille",
         };
     }
 
@@ -284,10 +302,15 @@ namespace Suborned.Sim
         public string Event = "";            // the rulebook event the card prices
         public string Reports = "no";        // risk: "yes", "no" or "?" — would this person report the approach (+A)? (Motive's review, other findings 2)
         public int AlertIfReported;          // the Alert a report would raise it to
+        /// <summary>Brief 054 §3.5: the ids of the people counted in Witnesses (the hover's cones and Alt read them), in OnTheStreet order.</summary>
+        public readonly List<string> WitnessIds = new List<string>();
         public int Witnesses;                // risk: people within witness range of the target now, who would see a traceable act (+1 T); 0 for a private event (rulebook privacy)
         public int WalkS;                    // seconds the acting operative walks to stand within reach, 0 if already there
         public bool Leverage;                // Pressure on a known secret: "exposure: their secret" (Motive, motive-lovers.md §2.2)
         public SeenQuote? Seen;              // the card's "seen by" where the act is done (Preview only; rulebook sight.unknown): "?" for an unknown watcher
+        /// <summary>Brief 054 §4.3: the mood the card reads (known: a Watch's, or the true one once the temperament is known; "" none), and whether
+        /// it favours this approach (likely, a dashed tick) or hurts it (a dashed half).</summary>
+        public string Mood = ""; public bool Likely, Hurt;
         public string Refused = "";          // a Watch or Listen that can teach nothing more: already-watched or already-heard (Sky 2026-10-18), the row greyed; "" otherwise
     }
 }

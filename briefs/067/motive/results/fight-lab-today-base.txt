@@ -1,0 +1,49 @@
+$ bun tools/game/playing.ts dotnet "/Users/sky/Projects/suborned/out/scratch/motive/067/tree2/out/missions/engine/tree/bin/suborned-sim.dll" fight-lab --presets today --rulebook "/Users/sky/Projects/suborned/out/scratch/motive/067/tree2/contracts/rules/rulebook.orig.json"
+brief 027 fight-lab matrix · suborned.sim/0.33.1 · inputs 581428475036d991
+preset          run  result            end      T(m/tot) A  St(s→e) pub     inv     cases down capt hp-lost hits foes shots free/side  contact verdict
+today           L1   failure entry-seen-camera 0:55.6   12/12    2  2→1   raised  active      1    0    0     5 %    1    3    11    1/1    c0/0 s0   pass (fail)
+today           L1c  failure enforcer-down 3:01.0   41/41    3  2→-1  high    active      1    4    0   100 %   18    5    33    1/0    c2/9 s4   pass (fail)
+today           L2   failure sealed    3:24.2   31/31    3  2→-2  high    active      1    3    0    72 %   14    5    20    1/0    c0/0 s0   pass (fail)
+today           L3   failure enforcer-down 2:58.7   32/32    2  2→-1  raised  active      1    1    0    50 %    9    4    18    1/1    c0/7 s13  pass (fail)
+today           L4   failure entry-seen-camera 4:48.5   44/44    2  2→0   raised  active      1    1    0    38 %    7    4    34    3/1    c0/0 s0   pass (fail)
+today           P-A  success           4:46.9    5/5     1  2→3   calm    active      0    0    0     0 %    0    3    20    2/2    c0/0 s2   pass
+today           P-G  failure rivals-reach-vale 3:05.2    2/6     1  2→2   calm    early       0    1    0    38 %    7    1     1    0/0    c0/0 s17  FAIL — failure rivals-reach-vale; 1 op down; health lost 38 % > 33
+today           P-B  failure rivals-reach-vale 8:10.5    3/3     0  2→2   calm    active      0    0    0     0 %    0    0     0    0/0    c0/0 s0   FAIL — failure rivals-reach-vale
+today           L3:kite failure sealed    4:40.5   10/10    2  2→0   raised  active      1    1    0    22 %    4    1     3    1/1    c0/10 s4   pass (fail)
+today           L3:reset-kite failure sealed    4:40.5   10/10    2  2→0   raised  active      1    1    0    22 %    4    1     3    1/1    c0/10 s4   pass (fail)
+today           L3:focus-reset-kite failure sealed    4:40.5   10/10    2  2→0   raised  active      1    1    0    22 %    4    1     3    1/1    c0/10 s4   pass (fail)
+today           L3:cycle-kite failure sealed    4:40.5   10/10    2  2→0   raised  active      1    1    0    22 %    4    1     3    1/1    c0/10 s4   pass (fail)
+today           L3:carbine-kite failure enforcer-down 2:25.7   26/26    2  2→0   raised  active      1    1    0    33 %    6    2    13    1/1    c0/0 s0   pass (fail)
+today           P-G:reset failure rivals-reach-vale 3:05.2    2/6     1  2→2   calm    early       0    1    0    38 %    7    1     1    0/0    c0/0 s17  FAIL — failure rivals-reach-vale; 1 op down; health lost 38 % > 33
+today           L3:enfgo-carfree-runkite failure enforcer-down 2:58.0    8/8     2  2→0   raised  active      1    1    0    33 %    6    1     2    1/1    c0/8 s10  pass (fail)
+today           L3:focus-enfgo-carfree-runkite failure enforcer-down 2:58.0    8/8     2  2→0   raised  active      1    1    0    33 %    6    1     2    1/1    c0/8 s10  pass (fail)
+today           L3:enfgo-carfree-kite failure enforcer-down 2:58.0   10/10    2  2→0   raised  active      1    1    0    33 %    6    1     3    1/1    c0/8 s10  pass (fail)
+today           L3:at208-runkite failure enforcer-down 3:36.1    8/8     2  2→0   raised  active      1    4    0   100 %   18    1     2    1/1    c0/9 s22  pass (fail)
+today           L3:focus-at208-runkite failure enforcer-down 3:36.1    8/8     2  2→0   raised  active      1    3    0    77 %   14    1     2    1/1    c0/9 s18  pass (fail)
+today           L3:at208-kite failure enforcer-down 3:36.1   10/10    2  2→0   raised  active      1    2    0    55 %   10    1     3    1/1    c0/9 s14  pass (fail)
+today           L3:at196-runkite failure enforcer-down 3:24.1    8/8     2  2→0   raised  active      1    4    0   100 %   18    1     2    1/1    c0/8 s22  pass (fail)
+today           L3:at236-runkite failure enforcer-down 4:04.1    8/8     2  2→0   raised  active      1    4    0   100 %   18    1     2    1/1    c0/10 s22  pass (fail)
+today           L3:hold-runkite failure enforcer-down 3:24.1    8/8     2  2→0   raised  active      1    2    0    55 %   10    1     2    1/1    c0/8 s25  pass (fail)
+today           L3:tight-kite failure enforcer-down 3:16.9   22/22    2  2→-1  raised  active      1    2    0    72 %   13    3    38    1/1    c0/8 s20  pass (fail)
+today           L3:tight-reset-kite failure enforcer-down 3:16.9   18/18    2  2→-1  raised  active      1    1    0    50 %    9    3    38    1/1    c0/8 s17  pass (fail)
+today           L3:tight-focus-reset-kite failure sealed    4:40.5   32/32    2  2→-1  raised  active      1    1    0    38 %    9    4    58    1/1    c0/10 s12  pass (fail)
+today           L3:tight-cycle-kite failure enforcer-down 3:16.9   18/18    2  2→-1  raised  active      1    1    0    50 %    9    3    38    1/1    c0/8 s17  pass (fail)
+today           L3:tight-carbine-kite failure enforcer-down 2:25.7   26/26    2  2→0   raised  active      1    1    0    33 %    6    2    13    1/1    c0/0 s0   pass (fail)
+today           L3:tight-enfgo-carfree-runkite failure enforcer-down 3:20.3   20/20    2  2→-1  raised  active      1    1    0    38 %    7    3    28    1/1    c1/8 s11  pass (fail)
+today           L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 3:18.8   16/16    2  2→-1  raised  active      1    2    0    55 %   10    3    29    1/1    c3/8 s17  pass (fail)
+today           L3:tight-enfgo-carfree-kite failure enforcer-down 2:58.9   16/16    2  2→-1  raised  active      1    1    0    38 %    7    3    28    1/1    c0/8 s12  pass (fail)
+today           L3:tight-at196-runkite failure enforcer-down 3:09.4   14/14    2  2→0   raised  active      1    3    0    77 %   14    1    15    1/1    c0/8 s18  pass (fail)
+today           L3:tight-at208-runkite failure enforcer-down 3:09.4   14/14    2  2→0   raised  active      1    3    0    77 %   14    1    15    1/1    c0/8 s18  pass (fail)
+today           L3:tight-focus-at208-runkite failure enforcer-down 3:07.3   16/16    2  2→-1  raised  active      1    1    0    50 %    9    3    22    1/1    c0/8 s17  pass (fail)
+today           L3:tight-hold-runkite failure enforcer-down 3:05.4   12/12    2  2→0   raised  active      1    2    0    55 %   10    1    10    1/1    c0/8 s14  pass (fail)
+today           L3:km10-fm5-step200-norivals-at208-runkite failure sealed    4:40.5   32/32    2  2→-1  raised  active      1    0    0    44 %    8    7   102    1/1    c2/10 s20  pass (fail)
+today           L3:km15-fm5-step300-norivals-enfgo-carfree-runkite failure enforcer-down 3:00.6   20/20    2  2→0   raised  active      1    1    0    33 %    6    1    25    1/1    c0/8 s11  pass (fail)
+today           L3:tight-step200-focus-norivals-at236-runkite failure sealed    4:40.5   34/34    2  2→-1  raised  active      1    3    0    66 %   12    3    47    1/1    c0/10 s19  pass (fail)
+today           L3:runfire-kite failure sealed    4:40.5    8/8     2  2→0   raised  active      1    0    0     0 %    0    1     2    1/1    c0/10 s0   pass (fail)
+today           L3:circle-kite failure enforcer-down 3:15.9   30/30    2  2→-1  raised  active      1    1    0    38 %    7    1    46    1/1    c0/8 s12  pass (fail)
+today           L3:charge failure enforcer-down 3:57.4   49/49    3  2→-2  high    active      1    4    0   100 %   21    4    34    1/1    c1/9 s20  pass (fail)
+today           P-G:runfire failure rivals-reach-vale 3:05.2    2/6     1  2→2   calm    early       0    1    0    38 %    7    1     1    0/0    c0/0 s17  FAIL — failure rivals-reach-vale; 1 op down; health lost 38 % > 33
+today           6.4 triggers: 6.4.5 P-G fails rivals-reach-vale | 6.4.5 P-B fails rivals-reach-vale | 6.4.5 P-G:reset fails rivals-reach-vale | 6.4.5 P-G:runfire fails rivals-reach-vale
+today           6.4.7 lethality (two trained shooters at the sidearm's effective ring, open ground): an op down in 2.5 s, the Enforcer in 5.5 s
+today           6.4.7b cell → hostile (three trained sidearms at their effective ring on an uncovered rival): down 0.0 s after the first shot  (today: no line)
+every run replays identically from its order log

@@ -1,0 +1,188 @@
+{
+  "note": "Redline 072-D (2026-10-27, phase 3 2026-10-28): the one Air sitting for brief 072 (perf harness, -perf, development players only). SPEC, NOT RUN. PRECONDITION (Sky 2026-10-27, 'yeah wiat'): ask for it only once ONE development player holds 064 A3's no-look items 1 (SSAO off for the play camera), 5 (depth texture by request + the sun flare off at play) and 7 (signals overlay camera as a pass), every face with the holed L2 shadow copies (F1, a5234fdb), 072-F with its surfaceDetail switch, and 072-G; and after the Studio CPU check (phase2 F5) passes. Fields used: PerfStop.yaw, PerfVariant.everyFace on|off, moduleShadows proxy|lod0 (db30a0af), surfaceDetail on|off (79283d9f: a global float, same materials and variants on both sides, so it measures the detail fetches and their ALU, not the extra variants' SetPass or interpolators), ssao. JsonUtility drops unknown keys silently: run-air-072.sh refuses a resolved plan or a player result whose variants lack surfaceDetail. PerfBuild resolves foci and stand-offs with each stop's own yaw. 1920x1080 windowed (GDD §11's bar). Verdict rules: plan.md 4.3, phase2.md 4.3 and 5, phase3.md 4. BRIEF 075 (Redline, 2026-10-28; briefs/075/redline.md): the player must also hold 074-H (colourways on walls and plinths only) and 075-A/B/C1-2 (DK_SpaceSky, DK Ocean, play bloom 1.05/0.45, road detail, T-K1, liveries). No 075 switch exists in PerfVariant yet: sky, ocean, playBloom, colourways (and liveries, not recommended) are PENDING (Latch), specified in briefs/075/redline/perf-075-pending.json and NOT written here, because JsonUtility would drop them and run each 075 A/B as a build against itself. surfaceDetail now also switches the road's detail pair (075-B), so every - every-flat includes it. Two stops added for 075 with existing fields only: wide-lamplight-30 (the worst colourway play view) and harbour-quay-30 (the water view for DK Ocean).",
+  "content": "world + every-face modules (holed L2 shadow copies) + 072-F detail + 072-G look + 074-H colourways + 075-A/B/C1-2 (old sky, sea, play bloom, road sheet with detail, T-K1, liveries), built with 064 A3 items 1, 5, 7; no vehicles or sim (as perf-stops.json)",
+  "width": 1920,
+  "height": 1080,
+  "warmup": {
+    "minSeconds": 600,
+    "maxSeconds": 900,
+    "dwellSeconds": 10,
+    "plateau": 0.02
+  },
+  "variants": [
+    {
+      "name": "today",
+      "why": "the procedural walls and skin as before 072 (modules hidden) and no surface detail: the nearest this player gets to T0 (072-G's colours and A3 stay in)",
+      "everyFace": "off",
+      "surfaceDetail": "off"
+    },
+    {
+      "name": "every-flat",
+      "why": "every face dressed (modules at L0, cast from their holed L2 proxy, ShadowsOnly shell), surface detail off: every - today = every face's price",
+      "everyFace": "on",
+      "moduleShadows": "proxy",
+      "surfaceDetail": "off"
+    },
+    {
+      "name": "every",
+      "why": "as shipped: every face + 072-F detail on. every - every-flat = 072-F's fetch price; its absolute warm mean at cell-open-30 is the number held against 13.0 ms",
+      "everyFace": "on",
+      "moduleShadows": "proxy",
+      "surfaceDetail": "on"
+    },
+    {
+      "name": "every-ssao",
+      "why": "as shipped with SSAO back on the play camera (depth source, as before A3 item 1): every-ssao - every = item 1's saving, measured. Valid only if Latch's item 1 lets the perf switch win over the play camera's per-camera toggle; otherwise drop this variant before the run",
+      "everyFace": "on",
+      "moduleShadows": "proxy",
+      "surfaceDetail": "on",
+      "ssao": "depth"
+    },
+    {
+      "name": "every-l0cast",
+      "why": "not in a pass this sitting (time): the shadow policy's price, modules cast from their own LODs; kept for a Studio check",
+      "everyFace": "on",
+      "moduleShadows": "lod0",
+      "surfaceDetail": "on"
+    }
+  ],
+  "passes": [
+    {
+      "name": "ab072",
+      "why": "today / every-flat / every / every-ssao, warm, uncapped, interleaved and rotated per stop; the first segment again at the end (noise gate: within 3 %); brief 075 adds wide-lamplight-30 and harbour-quay-30 (8 stops, ~+5 min)",
+      "vSync": 0,
+      "window": "Windowed",
+      "settleSeconds": 2,
+      "recordSeconds": 10,
+      "missMs": 17.5,
+      "repeats": 3,
+      "stops": [
+        "cell-open-30",
+        "cell-open-120",
+        "office-front-30",
+        "office-front-210",
+        "parade-210",
+        "crown-circus-120",
+        "wide-lamplight-30",
+        "harbour-quay-30"
+      ],
+      "variants": [
+        "today",
+        "every-flat",
+        "every",
+        "every-ssao"
+      ],
+      "repeatFirst": true,
+      "shots": true
+    },
+    {
+      "name": "capped072",
+      "why": "as shipped (vSync on): missed vblanks past 25 ms at the opening, today against every",
+      "vSync": 1,
+      "window": "Windowed",
+      "settleSeconds": 2,
+      "recordSeconds": 30,
+      "missMs": 25,
+      "repeats": 1,
+      "stops": [
+        "cell-open-30"
+      ],
+      "variants": [
+        "today",
+        "every"
+      ],
+      "repeatFirst": false,
+      "shots": false
+    }
+  ],
+  "stops": [
+    {
+      "name": "cell-open-30",
+      "why": "the cell's opening view (HandoverHost OpeningFocus; Latch's 072 baseline)",
+      "focus": [
+        -170.5,
+        0,
+        -227.5
+      ],
+      "zoom": 0,
+      "yaw": 30
+    },
+    {
+      "name": "cell-open-120",
+      "why": "the opening focus turned once: the most modules of the opening (29 roots, measured and computed on export v4)",
+      "focus": [
+        -170.5,
+        0,
+        -227.5
+      ],
+      "zoom": 0,
+      "yaw": 120
+    },
+    {
+      "name": "office-front-30",
+      "why": "the Records Office front with the RecordsTower (Latch's 072 baseline)",
+      "focus": [
+        -160,
+        0,
+        -281
+      ],
+      "zoom": 0,
+      "yaw": 30
+    },
+    {
+      "name": "office-front-210",
+      "why": "the service side, played at yaw 210 (GDD §10)",
+      "focus": [
+        -160,
+        0,
+        -281
+      ],
+      "zoom": 0,
+      "yaw": 210
+    },
+    {
+      "name": "parade-210",
+      "why": "the most module shadow casters computed at zoom 14 (upper-bound model; export v4); the holed L2 copies weigh most here",
+      "focus": [
+        212,
+        0,
+        0
+      ],
+      "zoom": 0,
+      "yaw": 210
+    },
+    {
+      "name": "crown-circus-120",
+      "why": "the most new view triangles computed at zoom 14 (303 modules in 21 roots, +128 k L0 tris; export v4)",
+      "focus": [
+        0,
+        0,
+        0
+      ],
+      "zoom": 0,
+      "yaw": 120
+    },
+    {
+      "name": "wide-lamplight-30",
+      "why": "brief 074/075: the worst colourway play view (62 kit roots at zoom 14; +34 kit draws under 074-H, computed); and ~30 % road, so the road detail weighs here",
+      "focus": [
+        -215,
+        0,
+        -120
+      ],
+      "zoom": 0,
+      "yaw": 30
+    },
+    {
+      "name": "harbour-quay-30",
+      "why": "brief 075-A: the water view (about 28-29 % of the frame is the DK Ocean sea at the quay, ground footprint computed; 0 kit roots); prices the ported sea absolutely until the ocean switch exists",
+      "focus": [
+        321,
+        9.43,
+        -506.5
+      ],
+      "zoom": 0,
+      "yaw": 30
+    }
+  ]
+}

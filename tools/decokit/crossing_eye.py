@@ -80,7 +80,7 @@ def eye(s, lod):
         flat(h, circle(0.47, n), 0.005, pal.Cross_Halo)
 
 
-@asset("SignalEye", "Signals", bevel=0.0, near=lambda s: eye(s, 1))
+@asset("SignalEye", "Signals", bevel=0.0, near=lambda s: eye(s, 1), retired="brief 061 (Sky 2026-10-25): replaced by SignalLens (crossing_lens.py): the floating lens, oriented, with state and clock")
 def signal_eye(s):
     eye(s, 0)
 
@@ -90,7 +90,7 @@ def stud(s, lod):
     s.lathe([(0.20, 0.0), (0.20, 0.008), (0.16, 0.014)] + dome(0.16, 0.014, 0.07, n)[1:], pal.Brass_Civic, seg=seg, cap_bottom=False)
 
 
-@asset("KerbStud", "Street", bevel=0.0, near=lambda s: stud(s, 1))
+@asset("KerbStud", "Street", bevel=0.0, near=lambda s: stud(s, 1), retired="brief 061 (Sky 2026-10-25): the brass studs go (they render as dark brown blobs)")
 def kerb_stud(s):
     """Brass dome stud, 0.40 m across its flange and 84 mm high, open underneath: set along the kerb edge (and, as in the play concept, at a beam's foot)."""
     stud(s, 0)

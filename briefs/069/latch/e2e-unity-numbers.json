@@ -1,0 +1,681 @@
+{
+  "schema": "suborned.proof069/e2e-numbers-1",
+  "tag": "take2",
+  "source_walk_feet": {
+    "Left": {
+      "planted": 14,
+      "yawMedian": 6.785,
+      "yawRange": [-0.694, 8.339],
+      "pitchMedianPlanted": -38.849,
+      "yawAllFrames": [-0.694, 174.101],
+      "minHeight": 0.086
+    },
+    "Right": {
+      "planted": 16,
+      "yawMedian": 0.971,
+      "yawRange": [-3.574, 7.895],
+      "pitchMedianPlanted": -39.179,
+      "yawAllFrames": [-173.844, 179.277],
+      "minHeight": 0.086
+    }
+  },
+  "source_walk_legs": {
+    "abdL": [0.021, -3.524, 4.246],
+    "abdR": [0.321, -2.554, 4.773],
+    "kneeL": [0, -0.028, 0.036],
+    "kneeR": [0.002, -0.019, 0.041],
+    "ankleL": [-0.013, -0.08, 0.015],
+    "ankleR": [-0.008, -0.062, 0.044],
+    "stepWidth": 0.085
+  },
+  "source_selfHumanScale": 1.033,
+  "source_speedPerHumanScale": {
+    "walk": 1.568,
+    "run": 3.191,
+    "crouch_walk": 1.1
+  },
+  "figures": {
+    "e2e_coat_H": {
+      "humanScale": 0.976,
+      "walk": {
+        "plantedMs": 1.568,
+        "predictedMs": 1.53,
+        "slidePctAtPredicted": 2.464,
+        "manifestMs": 1.565,
+        "slidePctAtManifest": 0.195
+      },
+      "run": {
+        "plantedMs": 3.127,
+        "predictedMs": 3.113,
+        "slidePctAtPredicted": 0.457,
+        "manifestMs": 3.2,
+        "slidePctAtManifest": -2.331
+      },
+      "crouch_walk": {
+        "plantedMs": 0.932,
+        "predictedMs": 1.073,
+        "slidePctAtPredicted": -15.153,
+        "manifestMs": 1.17,
+        "slidePctAtManifest": -25.472
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 5.958,
+          "yawRange": [-2.903, 7.998],
+          "pitchMedianPlanted": -25.946,
+          "yawAllFrames": [-178.839, 19.242],
+          "minHeight": 0.066
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.866,
+          "yawRange": [-3.108, 8.597],
+          "pitchMedianPlanted": -25.526,
+          "yawAllFrames": [-172.393, 175.596],
+          "minHeight": 0.064
+        }
+      },
+      "walk_legs": {
+        "abdL": [1.943, -1.653, 3.598],
+        "abdR": [-1.694, -3.262, 1.998],
+        "kneeL": [0.015, -0.014, 0.03],
+        "kneeR": [-0.012, -0.024, 0.017],
+        "ankleL": [-0.018, -0.07, 0.032],
+        "ankleR": [-0.018, -0.056, 0.031],
+        "stepWidth": 0.183
+      }
+    },
+    "c6": {
+      "humanScale": 1.002,
+      "walk": {
+        "plantedMs": 1.391,
+        "predictedMs": 1.571,
+        "slidePctAtPredicted": -12.908
+      },
+      "run": {
+        "plantedMs": 2.809,
+        "predictedMs": 3.196,
+        "slidePctAtPredicted": -13.783
+      },
+      "crouch_walk": {
+        "plantedMs": 0.845,
+        "predictedMs": 1.102,
+        "slidePctAtPredicted": -30.472
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 13,
+          "yawMedian": 4.714,
+          "yawRange": [-2.098, 5.499],
+          "pitchMedianPlanted": -42.008,
+          "yawAllFrames": [-175.508, 177.004],
+          "minHeight": 0.098
+        },
+        "Right": {
+          "planted": 13,
+          "yawMedian": 1.004,
+          "yawRange": [-0.773, 7.045],
+          "pitchMedianPlanted": -42.832,
+          "yawAllFrames": [-176.271, 178.595],
+          "minHeight": 0.099
+        }
+      },
+      "walk_legs": {
+        "abdL": [6.577, 2.169, 10.166],
+        "abdR": [4.285, 0.852, 9.57],
+        "kneeL": [0.051, 0.018, 0.084],
+        "kneeR": [0.032, 0.006, 0.081],
+        "ankleL": [0.034, -0.046, 0.09],
+        "ankleR": [0.041, -0.005, 0.129],
+        "stepWidth": 0.213
+      }
+    },
+    "e2e_dress_H": {
+      "humanScale": 0.883,
+      "walk": {
+        "plantedMs": 1.386,
+        "predictedMs": 1.384,
+        "slidePctAtPredicted": 0.107,
+        "manifestMs": 1.384,
+        "slidePctAtManifest": 0.104
+      },
+      "run": {
+        "plantedMs": 2.76,
+        "predictedMs": 2.817,
+        "slidePctAtPredicted": -2.069,
+        "manifestMs": 2.824,
+        "slidePctAtManifest": -2.344
+      },
+      "crouch_walk": {
+        "plantedMs": 0.824,
+        "predictedMs": 0.971,
+        "slidePctAtPredicted": -17.812,
+        "manifestMs": 1.025,
+        "slidePctAtManifest": -24.258
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.761, 8.193],
+          "pitchMedianPlanted": -26.785,
+          "yawAllFrames": [-171.759, 179.513],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.838,
+          "yawRange": [-3.229, 8.705],
+          "pitchMedianPlanted": -26.369,
+          "yawAllFrames": [-172.687, 176.119],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.177, -1.5, 3.75],
+        "abdR": [-1.6, -3.432, 1.876],
+        "kneeL": [0.016, -0.013, 0.032],
+        "kneeR": [-0.011, -0.025, 0.016],
+        "ankleL": [-0.017, -0.067, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.174
+      }
+    },
+    "cafe_w5": {
+      "humanScale": 1.028,
+      "walk": {
+        "plantedMs": 1.352,
+        "predictedMs": 1.612,
+        "slidePctAtPredicted": -19.237
+      },
+      "run": {
+        "plantedMs": 2.725,
+        "predictedMs": 3.279,
+        "slidePctAtPredicted": -20.344
+      },
+      "crouch_walk": {
+        "plantedMs": 0.828,
+        "predictedMs": 1.131,
+        "slidePctAtPredicted": -36.627
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 10,
+          "yawMedian": 12.969,
+          "yawRange": [10.548, 13.558],
+          "pitchMedianPlanted": -55.538,
+          "yawAllFrames": [-177.501, 177.286],
+          "minHeight": 0.144
+        },
+        "Right": {
+          "planted": 11,
+          "yawMedian": -4.846,
+          "yawRange": [-6.902, -0.738],
+          "pitchMedianPlanted": -57.949,
+          "yawAllFrames": [-174.65, 6.059],
+          "minHeight": 0.149
+        }
+      },
+      "walk_legs": {
+        "abdL": [5.95, 1.529, 9.606],
+        "abdR": [3.136, -0.423, 8.65],
+        "kneeL": [0.045, 0.012, 0.077],
+        "kneeR": [0.023, -0.003, 0.073],
+        "ankleL": [-0.009, -0.084, 0.065],
+        "ankleR": [0.018, -0.035, 0.092],
+        "stepWidth": 0.125
+      }
+    },
+    "e2e_guard_H": {
+      "humanScale": 0.884,
+      "walk": {
+        "plantedMs": 1.389,
+        "predictedMs": 1.386,
+        "slidePctAtPredicted": 0.227,
+        "manifestMs": 1.387,
+        "slidePctAtManifest": 0.178
+      },
+      "run": {
+        "plantedMs": 2.761,
+        "predictedMs": 2.82,
+        "slidePctAtPredicted": -2.135,
+        "manifestMs": 2.829,
+        "slidePctAtManifest": -2.46
+      },
+      "crouch_walk": {
+        "plantedMs": 0.831,
+        "predictedMs": 0.973,
+        "slidePctAtPredicted": -17.078,
+        "manifestMs": 1.031,
+        "slidePctAtManifest": -24.072
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.762, 8.195],
+          "pitchMedianPlanted": -26.782,
+          "yawAllFrames": [-171.753, 179.519],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.839,
+          "yawRange": [-3.23, 8.708],
+          "pitchMedianPlanted": -26.367,
+          "yawAllFrames": [-172.698, 176.108],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.182, -1.501, 3.749],
+        "abdR": [-1.597, -3.431, 1.871],
+        "kneeL": [0.016, -0.013, 0.031],
+        "kneeR": [-0.011, -0.025, 0.016],
+        "ankleL": [-0.017, -0.068, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.172
+      }
+    },
+    "guard": {
+      "humanScale": 1.003,
+      "walk": {
+        "plantedMs": 1.326,
+        "predictedMs": 1.573,
+        "slidePctAtPredicted": -18.614
+      },
+      "run": {
+        "plantedMs": 2.645,
+        "predictedMs": 3.201,
+        "slidePctAtPredicted": -21.026
+      },
+      "crouch_walk": {
+        "plantedMs": 0.806,
+        "predictedMs": 1.104,
+        "slidePctAtPredicted": -36.937
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 17,
+          "yawMedian": 0.371,
+          "yawRange": [-7.633, 4.716],
+          "pitchMedianPlanted": -45.826,
+          "yawAllFrames": [-177.819, 166.506],
+          "minHeight": 0.153
+        },
+        "Right": {
+          "planted": 18,
+          "yawMedian": 6.683,
+          "yawRange": [-0.249, 12.778],
+          "pitchMedianPlanted": -46.553,
+          "yawAllFrames": [-178.952, 175.904],
+          "minHeight": 0.152
+        }
+      },
+      "walk_legs": {
+        "abdL": [8.411, 3.186, 12.934],
+        "abdR": [7.325, 2.281, 11.817],
+        "kneeL": [0.06, 0.026, 0.098],
+        "kneeR": [0.046, 0.015, 0.098],
+        "ankleL": [0.039, -0.038, 0.098],
+        "ankleR": [0.061, 0.012, 0.136],
+        "stepWidth": 0.269
+      }
+    },
+    "e2e_flamingo_H": {
+      "humanScale": 0.883,
+      "walk": {
+        "plantedMs": 1.384,
+        "predictedMs": 1.384,
+        "slidePctAtPredicted": -0.006,
+        "manifestMs": 1.384,
+        "slidePctAtManifest": -0.003
+      },
+      "run": {
+        "plantedMs": 2.757,
+        "predictedMs": 2.816,
+        "slidePctAtPredicted": -2.153,
+        "manifestMs": 2.823,
+        "slidePctAtManifest": -2.418
+      },
+      "crouch_walk": {
+        "plantedMs": 0.824,
+        "predictedMs": 0.971,
+        "slidePctAtPredicted": -17.86,
+        "manifestMs": 1.023,
+        "slidePctAtManifest": -24.203
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.76, 8.193],
+          "pitchMedianPlanted": -26.785,
+          "yawAllFrames": [-171.76, 179.512],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.837,
+          "yawRange": [-3.229, 8.705],
+          "pitchMedianPlanted": -26.369,
+          "yawAllFrames": [-172.685, 176.12],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.176, -1.5, 3.751],
+        "abdR": [-1.601, -3.433, 1.877],
+        "kneeL": [0.016, -0.013, 0.032],
+        "kneeR": [-0.011, -0.026, 0.016],
+        "ankleL": [-0.017, -0.067, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.174
+      }
+    },
+    "d6": {
+      "humanScale": 1.002,
+      "walk": {
+        "plantedMs": 1.391,
+        "predictedMs": 1.571,
+        "slidePctAtPredicted": -12.908
+      },
+      "run": {
+        "plantedMs": 2.809,
+        "predictedMs": 3.196,
+        "slidePctAtPredicted": -13.783
+      },
+      "crouch_walk": {
+        "plantedMs": 0.845,
+        "predictedMs": 1.102,
+        "slidePctAtPredicted": -30.472
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 13,
+          "yawMedian": 4.697,
+          "yawRange": [-2.103, 5.485],
+          "pitchMedianPlanted": -41.886,
+          "yawAllFrames": [-175.488, 177.004],
+          "minHeight": 0.098
+        },
+        "Right": {
+          "planted": 13,
+          "yawMedian": 1.005,
+          "yawRange": [-0.77, 7.044],
+          "pitchMedianPlanted": -42.81,
+          "yawAllFrames": [-176.275, 178.585],
+          "minHeight": 0.099
+        }
+      },
+      "walk_legs": {
+        "abdL": [6.577, 2.169, 10.166],
+        "abdR": [4.285, 0.852, 9.57],
+        "kneeL": [0.051, 0.018, 0.084],
+        "kneeR": [0.032, 0.006, 0.081],
+        "ankleL": [0.034, -0.046, 0.09],
+        "ankleR": [0.041, -0.005, 0.129],
+        "stepWidth": 0.213
+      }
+    },
+    "fixer_v7_H": {
+      "humanScale": 0.884,
+      "walk": {
+        "plantedMs": 1.391,
+        "predictedMs": 1.387,
+        "slidePctAtPredicted": 0.298,
+        "manifestMs": 1.387,
+        "slidePctAtManifest": 0.237
+      },
+      "run": {
+        "plantedMs": 2.766,
+        "predictedMs": 2.821,
+        "slidePctAtPredicted": -1.987,
+        "manifestMs": 2.831,
+        "slidePctAtManifest": -2.327
+      },
+      "crouch_walk": {
+        "plantedMs": 0.832,
+        "predictedMs": 0.973,
+        "slidePctAtPredicted": -16.96,
+        "manifestMs": 1.033,
+        "slidePctAtManifest": -24.116
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.762, 8.195],
+          "pitchMedianPlanted": -26.781,
+          "yawAllFrames": [-171.751, 179.521],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.839,
+          "yawRange": [-3.23, 8.709],
+          "pitchMedianPlanted": -26.367,
+          "yawAllFrames": [-172.702, 176.104],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.184, -1.502, 3.749],
+        "abdR": [-1.596, -3.431, 1.87],
+        "kneeL": [0.016, -0.013, 0.031],
+        "kneeR": [-0.011, -0.025, 0.016],
+        "ankleL": [-0.017, -0.068, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.171
+      }
+    },
+    "fixer": {
+      "humanScale": 1.002,
+      "walk": {
+        "plantedMs": 1.391,
+        "predictedMs": 1.571,
+        "slidePctAtPredicted": -12.908
+      },
+      "run": {
+        "plantedMs": 2.809,
+        "predictedMs": 3.196,
+        "slidePctAtPredicted": -13.784
+      },
+      "crouch_walk": {
+        "plantedMs": 0.845,
+        "predictedMs": 1.102,
+        "slidePctAtPredicted": -30.471
+      },
+      "walk_feet": {
+        "Left": {
+          "planted": 13,
+          "yawMedian": 4.762,
+          "yawRange": [-2.081, 5.539],
+          "pitchMedianPlanted": -42.348,
+          "yawAllFrames": [-175.56, 177.004],
+          "minHeight": 0.098
+        },
+        "Right": {
+          "planted": 13,
+          "yawMedian": 1.008,
+          "yawRange": [-0.764, 7.043],
+          "pitchMedianPlanted": -42.758,
+          "yawAllFrames": [-176.285, 178.559],
+          "minHeight": 0.099
+        }
+      },
+      "walk_legs": {
+        "abdL": [6.577, 2.169, 10.166],
+        "abdR": [4.285, 0.852, 9.57],
+        "kneeL": [0.051, 0.018, 0.084],
+        "kneeR": [0.032, 0.006, 0.081],
+        "ankleL": [0.034, -0.046, 0.09],
+        "ankleR": [0.041, -0.005, 0.129],
+        "stepWidth": 0.213
+      }
+    }
+  },
+  "copyFromOtherRoute": {
+    "e2e_coat_H": {
+      "prefabHasAnimator": false,
+      "avatarValid": true,
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 5.958,
+          "yawRange": [-2.903, 7.998],
+          "pitchMedianPlanted": -25.946,
+          "yawAllFrames": [-178.839, 19.242],
+          "minHeight": 0.066
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.866,
+          "yawRange": [-3.108, 8.597],
+          "pitchMedianPlanted": -25.526,
+          "yawAllFrames": [-172.393, 175.596],
+          "minHeight": 0.064
+        }
+      },
+      "walk_legs": {
+        "abdL": [1.943, -1.653, 3.598],
+        "abdR": [-1.694, -3.262, 1.998],
+        "kneeL": [0.015, -0.014, 0.03],
+        "kneeR": [-0.012, -0.024, 0.017],
+        "ankleL": [-0.018, -0.07, 0.032],
+        "ankleR": [-0.018, -0.056, 0.031],
+        "stepWidth": 0.183
+      },
+      "walkPlantedMs": 1.568
+    },
+    "e2e_dress_H": {
+      "prefabHasAnimator": false,
+      "avatarValid": true,
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.761, 8.193],
+          "pitchMedianPlanted": -26.785,
+          "yawAllFrames": [-171.759, 179.513],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.838,
+          "yawRange": [-3.229, 8.705],
+          "pitchMedianPlanted": -26.369,
+          "yawAllFrames": [-172.687, 176.119],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.177, -1.5, 3.75],
+        "abdR": [-1.6, -3.432, 1.876],
+        "kneeL": [0.016, -0.013, 0.032],
+        "kneeR": [-0.011, -0.025, 0.016],
+        "ankleL": [-0.017, -0.067, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.174
+      },
+      "walkPlantedMs": 1.386
+    },
+    "e2e_guard_H": {
+      "prefabHasAnimator": false,
+      "avatarValid": true,
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.762, 8.195],
+          "pitchMedianPlanted": -26.782,
+          "yawAllFrames": [-171.753, 179.519],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.839,
+          "yawRange": [-3.23, 8.708],
+          "pitchMedianPlanted": -26.367,
+          "yawAllFrames": [-172.698, 176.108],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.182, -1.501, 3.749],
+        "abdR": [-1.597, -3.431, 1.871],
+        "kneeL": [0.016, -0.013, 0.031],
+        "kneeR": [-0.011, -0.025, 0.016],
+        "ankleL": [-0.017, -0.068, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.172
+      },
+      "walkPlantedMs": 1.389
+    },
+    "e2e_flamingo_H": {
+      "prefabHasAnimator": false,
+      "avatarValid": true,
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.76, 8.193],
+          "pitchMedianPlanted": -26.785,
+          "yawAllFrames": [-171.76, 179.512],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.837,
+          "yawRange": [-3.229, 8.705],
+          "pitchMedianPlanted": -26.369,
+          "yawAllFrames": [-172.685, 176.12],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.176, -1.5, 3.751],
+        "abdR": [-1.601, -3.433, 1.877],
+        "kneeL": [0.016, -0.013, 0.032],
+        "kneeR": [-0.011, -0.026, 0.016],
+        "ankleL": [-0.017, -0.067, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.174
+      },
+      "walkPlantedMs": 1.384
+    },
+    "fixer_v7_H": {
+      "prefabHasAnimator": false,
+      "avatarValid": true,
+      "walk_feet": {
+        "Left": {
+          "planted": 15,
+          "yawMedian": 6.206,
+          "yawRange": [-2.762, 8.195],
+          "pitchMedianPlanted": -26.781,
+          "yawAllFrames": [-171.751, 179.521],
+          "minHeight": 0.061
+        },
+        "Right": {
+          "planted": 17,
+          "yawMedian": 1.839,
+          "yawRange": [-3.23, 8.709],
+          "pitchMedianPlanted": -26.367,
+          "yawAllFrames": [-172.702, 176.104],
+          "minHeight": 0.058
+        }
+      },
+      "walk_legs": {
+        "abdL": [2.184, -1.502, 3.749],
+        "abdR": [-1.596, -3.431, 1.87],
+        "kneeL": [0.016, -0.013, 0.031],
+        "kneeR": [-0.011, -0.025, 0.016],
+        "ankleL": [-0.017, -0.068, 0.037],
+        "ankleR": [-0.02, -0.057, 0.029],
+        "stepWidth": 0.171
+      },
+      "walkPlantedMs": 1.391
+    }
+  }
+}

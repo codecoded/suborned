@@ -151,8 +151,7 @@ namespace Suborned.Sim
             {
                 var g = r.G; const string cam = "camera:pickup";
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Meet driver")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout);
-                r.Is(g.Driver.KRoutine, "the driver's routine is known (Pay needs it)");
+                r.Is(!g.WatchOffered(Driver), "no Watch to give on the driver (brief 054 §2.1): Pay needs none");
                 var a = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" });
                 if (!r.Is(a.ok, $"the Fixer pays the driver ({a.code})")) return;
                 var fx = r.Op(Fixer); int c = g.AttentionTicks(cam, Fixer), seen = 0, rose = 0;

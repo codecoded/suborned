@@ -3,19 +3,24 @@
 The short version of GDD §15 ART, given to every agent who makes or builds anything seen: Glyph, Vela, Forma, Glint, Latch. Sources, which win on conflict: GDD §15 and `contracts/style/suborned.style.json`. Judge work against pictures (the concept board, the 26 Sep paintings in `briefs/008/concepts/`, the game as built), not against this prose.
 
 ## The look in one breath
-Bright retro-future: a 1950s world that discovered atomic power centuries ago. 1950s style, technology centuries ahead, no thinking machines or networks. Optimistic surface, coercive underneath. Design test for every object: does it read as 1950s style built with centuries-ahead tech? Streamline, Googie, space age; no old-city stone or brick, no zebra crossings, no present-day street items.
+Bright retro-future: a 1950s world that discovered atomic power centuries ago. 1950s style, technology centuries ahead, no thinking machines or networks. Optimistic surface, coercive underneath. Design test for every object: does it read as 1950s style built with centuries-ahead tech? Streamline, Googie, space age; no old-city stone or brick, no zebra crossings, no present-day street items. A plausible 1950s city in layout and architecture; the future attaches to everyday things. The old town is the base: its buildings, props, colour and atmosphere stand round the Handover zone, and the testbed sets the civic block's finish.
 
 ## World
-- **City:** cream and peach limestone under a warm hazy sun; saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs and trim, never whole buildings; chrome fixtures; palms and cypress; long soft shadows.
+- **City:** cream and peach limestone under a warm hazy sun; the old town's palette (Sky, 2026-10-29: "our red is too red"): mostly cream stone, colour by ensemble along the horizontal lines, landmarks in their livery (vermilion lattices, the brick sphere, SpaceHQ gold); saturated enamel accents (cobalt, flamingo, sunshine, mint, turquoise) on panels, awnings, signs and trim, never whole buildings; chrome fixtures; the old coconut palms and cypress; long soft shadows.
+- **Streets:** the old town's dark grey asphalt with a few clean white lines; rails flush in the road, no grass medians on tram streets, no overhead wires, no zebras. Crossings are floating eyes, with road lights embedded flush, each in its own metal ring. The sky rail is the old swept beam, ivory hull with a teal stripe.
+- **Planting:** the testbed's, with its own LODs, and see-through for sight. The cushion and dome designs are retired from the kit.
+- **Figures:** the cell 30k triangles, 2K, 52 bones; the crowd about 12k, 4.5k and 1.5k, 1K, 22 bones, worn props merged.
 - **Civic block:** cream stone, seafoam and deep teal enamel bands, chrome spheres, banners, planted terraces, pale paving with teal bands.
-- **Brass is a thin line only** (frames, beads, hairlines, SF-21), never a large surface. Gold only on skyline crowns.
-- **Materials:** honed limestone, granite kerbs, vitreous enamel panels, chrome and brushed silver, white vinyl, clear acrylic, pale asphalt.
+- **Brass is a thin line** at street level and on ordinary facades (frames, beads, hairlines, SF-21), never a large surface there. Gold may be a large surface on landmarks (Sky, 2026-10-30: "gold works"; the old gold HQ tower), and skyline crowns keep gold.
+- **Materials:** honed limestone, granite kerbs, vitreous enamel panels, chrome and brushed silver, white vinyl, clear acrylic. **Less shine:** chrome, steel and the fountain's gold and silver take no sun specular and keep their mirror reflections; leaf and petal gloss is halved.
+- **Two looks:** the play camera has its own crisp grade and light, no fog, depth of field or flare, bloom clamped at 4. Presentation cameras (flyby, golden view) keep the old stage and the vintage sky and haze.
+- **Curvy and smooth, never harsh** (Sky, 2026-10-24: "modern retro future world is curvy and smooth, not harsh lines and strong angles"): pavement and kerb corners are rounded returns, building corners arc, props have radiused edges; no sharp mitres or boxy corners where a curve can go.
 - **Character over triangles:** keep silhouette and chrome on props; never slim a prop until it loses its character.
 
 ## People and robots
 - **The city's people** wear space-age couture as street clothing, never 1950s period dress. They're a mixed cast, with job readable at a distance by silhouette plus one colour block. No long coats or flowing hems (they're hard to animate).
 - **Security and institutions:** sleeker; ivory, ink black, gold trim, chrome couture, armour accents.
-- **The cell** are visitors from a nearby timeline: sharper and cleaner, matte technical fabrics, fitted layers. No deco, gold trim or 1950s tailoring. They pass in the street and stand out at 50 px.
+- **The cell** are visitors from a nearby timeline: sharper and cleaner, matte technical fabrics, fitted layers. No deco, gold trim or 1950s tailoring. They pass in the street and stand out at play zoom.
 - **Robots** are 1950s style and clockwork-smart, with dot-matrix display faces, one personality prop each, and no cartoon eyes.
 
 ## Signals

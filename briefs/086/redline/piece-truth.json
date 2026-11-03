@@ -1,0 +1,2733 @@
+[
+{
+"piece": "Tile_TramRail",
+"placed": 1584,
+"by": {
+"network": 1584
+},
+"tris": 3140,
+"placedTris": 4973760,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+784,
+120
+],
+"kitFiles": [
+"Models/Ground/DK_Tile_TramRail_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CoconutPalm",
+"placed": 225,
+"by": {
+"oldtown": 225
+},
+"tris": 6310,
+"placedTris": 1419750,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1330,
+514
+],
+"kitFiles": [
+"Models/Plants/DK_CoconutPalm_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamCorner_3",
+"placed": 76,
+"by": {
+"oldtown": 76
+},
+"tris": 12302,
+"placedTris": 934952,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+2995,
+715
+],
+"kitFiles": [
+"Models/Facades/DK_StreamCorner_3_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Cypress",
+"placed": 163,
+"by": {
+"oldtown": 163
+},
+"tris": 5004,
+"placedTris": 815652,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1251,
+300
+],
+"kitFiles": [
+"Models/Plants/DK_Cypress_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamBay_3",
+"placed": 484,
+"by": {
+"oldtown": 484
+},
+"tris": 1444,
+"placedTris": 698896,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+310
+],
+"kitFiles": [
+"Models/Facades/DK_StreamBay_3_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "FanPalm",
+"placed": 158,
+"by": {
+"oldtown": 158
+},
+"tris": 4194,
+"placedTris": 662652,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1048,
+251
+],
+"kitFiles": [
+"Models/Plants/DK_FanPalm_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Streetlamp",
+"placed": 103,
+"by": {
+"oldtown": 103
+},
+"tris": 5782,
+"placedTris": 595546,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1445,
+345
+],
+"kitFiles": [
+"Models/Street/DK_Streetlamp_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PortholeBay_3",
+"placed": 136,
+"by": {
+"oldtown": 136
+},
+"tris": 4354,
+"placedTris": 592144,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1062,
+253
+],
+"kitFiles": [
+"Models/Facades/DK_PortholeBay_3_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Kerb_Granite_0",
+"placed": 1130,
+"by": {
+"oldtown": 465,
+"network": 665
+},
+"tris": 494,
+"placedTris": 558220,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Kerb_Granite_1",
+"placed": 1127,
+"by": {
+"oldtown": 469,
+"network": 658
+},
+"tris": 494,
+"placedTris": 556738,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "CafeSet_Tulip",
+"placed": 85,
+"by": {
+"oldtown": 85
+},
+"tris": 3984,
+"placedTris": 338640,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+996,
+239
+],
+"kitFiles": [
+"Models/Furnish/DK_CafeSet_Tulip_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamCorner_4",
+"placed": 16,
+"by": {
+"oldtown": 16
+},
+"tris": 14170,
+"placedTris": 226720,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+3439,
+823
+],
+"kitFiles": [
+"Models/Facades/DK_StreamCorner_4_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Bollard",
+"placed": 41,
+"by": {
+"oldtown": 41
+},
+"tris": 5116,
+"placedTris": 209756,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1278,
+306
+],
+"kitFiles": [
+"Models/Street/DK_Bollard_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "BalconyBay_3",
+"placed": 62,
+"by": {
+"oldtown": 62
+},
+"tris": 3340,
+"placedTris": 207080,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+774,
+202
+],
+"kitFiles": [
+"Models/Facades/DK_BalconyBay_3_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PottedTopiary",
+"placed": 39,
+"by": {
+"oldtown": 39
+},
+"tris": 4720,
+"placedTris": 184080,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tram",
+"placed": 5,
+"by": {
+"network": 5
+},
+"tris": 36644,
+"placedTris": 183220,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+9145,
+2156
+],
+"kitFiles": [
+"Models/Vehicles/DK_Tram_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TramCanopy",
+"placed": 10,
+"by": {
+"network": 10
+},
+"tris": 15028,
+"placedTris": 150280,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+3757,
+901
+],
+"kitFiles": [
+"Models/Structures/DK_TramCanopy_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PlazaSphereLamp",
+"placed": 18,
+"by": {
+"oldtown": 18
+},
+"tris": 7932,
+"placedTris": 142776,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1982,
+475
+],
+"kitFiles": [
+"Models/Signals/DK_PlazaSphereLamp_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "DrainGrate",
+"placed": 35,
+"by": {
+"oldtown": 35
+},
+"tris": 4068,
+"placedTris": 142380,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Bench",
+"placed": 41,
+"by": {
+"oldtown": 41
+},
+"tris": 3412,
+"placedTris": 139892,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+852,
+378
+],
+"kitFiles": [
+"Models/Street/DK_Bench_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Planter_Urn",
+"placed": 36,
+"by": {
+"oldtown": 36
+},
+"tris": 3642,
+"placedTris": 131112,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+905,
+214
+],
+"kitFiles": [
+"Models/Furnish/DK_Planter_Urn_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Deckchair",
+"placed": 66,
+"by": {
+"oldtown": 66
+},
+"tris": 1888,
+"placedTris": 124608,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "PhoneBooth",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 17776,
+"placedTris": 124432,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+4443,
+1049
+],
+"kitFiles": [
+"Models/Booths/DK_PhoneBooth_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TerraceScreen",
+"placed": 40,
+"by": {
+"oldtown": 40
+},
+"tris": 3048,
+"placedTris": 121920,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "CurvedKiosk",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 17260,
+"placedTris": 120820,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+4314,
+1020
+],
+"kitFiles": [
+"Models/Structures/DK_CurvedKiosk_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PottedPalm_Small",
+"placed": 45,
+"by": {
+"oldtown": 45
+},
+"tris": 2396,
+"placedTris": 107820,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+598,
+143
+],
+"kitFiles": [
+"Models/Furnish/DK_PottedPalm_Small_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "BikeRack",
+"placed": 14,
+"by": {
+"oldtown": 14
+},
+"tris": 7572,
+"placedTris": 106008,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "HallCornerWing",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 31230,
+"placedTris": 93690,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+7806,
+5464
+],
+"kitFiles": [
+"Models/Plaza/DK_HallCornerWing_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "ManholeCover",
+"placed": 16,
+"by": {
+"oldtown": 16
+},
+"tris": 5388,
+"placedTris": 86208,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "ShrubMound",
+"placed": 34,
+"by": {
+"oldtown": 34
+},
+"tris": 2526,
+"placedTris": 85884,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "HoverScooter",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 11554,
+"placedTris": 80878,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "DecoEnd_10",
+"placed": 10,
+"by": {
+"oldtown": 10
+},
+"tris": 8032,
+"placedTris": 80320,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1964,
+998
+],
+"kitFiles": [
+"Models/Facades/DK_DecoEnd_10_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "RobotNanny",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 19688,
+"placedTris": 78752,
+"prefabLODGroup": true,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "RobotWaiter",
+"placed": 5,
+"by": {
+"oldtown": 5
+},
+"tris": 15324,
+"placedTris": 76620,
+"prefabLODGroup": true,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+3827,
+912
+],
+"kitFiles": [
+"Models/Robots/DK_RobotWaiter_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamEnd_3",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 10820,
+"placedTris": 75740,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+2650,
+628
+],
+"kitFiles": [
+"Models/Facades/DK_StreamEnd_3_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CoffeeCart",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 24932,
+"placedTris": 74796,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+6233,
+1478
+],
+"kitFiles": [
+"Models/Booths/DK_CoffeeCart_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Planter_Trough",
+"placed": 27,
+"by": {
+"oldtown": 27
+},
+"tris": 2710,
+"placedTris": 73170,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+675,
+160
+],
+"kitFiles": [
+"Models/Furnish/DK_Planter_Trough_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Hydrant",
+"placed": 10,
+"by": {
+"oldtown": 10
+},
+"tris": 6840,
+"placedTris": 68400,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1710,
+409
+],
+"kitFiles": [
+"Models/Street/DK_Hydrant_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "RoundBench",
+"placed": 27,
+"by": {
+"oldtown": 27
+},
+"tris": 2512,
+"placedTris": 67824,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "RobotButler",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 16216,
+"placedTris": 64864,
+"prefabLODGroup": true,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamEnd_6",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 15980,
+"placedTris": 63920,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+3884,
+926
+],
+"kitFiles": [
+"Models/Skyline/DK_StreamEnd_6_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "FlowerBed",
+"placed": 22,
+"by": {
+"oldtown": 22
+},
+"tris": 2718,
+"placedTris": 59796,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "RobotPorter",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 18810,
+"placedTris": 56430,
+"prefabLODGroup": true,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+4639,
+1122
+],
+"kitFiles": [
+"Models/Robots/DK_RobotPorter_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamBay_3W",
+"placed": 39,
+"by": {
+"oldtown": 39
+},
+"tris": 1444,
+"placedTris": 56316,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+310
+],
+"kitFiles": [
+"Models/Facades/DK_StreamBay_3W_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CornerTower_12",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 26142,
+"placedTris": 52284,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+6397,
+1864
+],
+"kitFiles": [
+"Models/Facades/DK_CornerTower_12_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CafeSet",
+"placed": 5,
+"by": {
+"oldtown": 5
+},
+"tris": 10264,
+"placedTris": 51320,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+2566,
+609
+],
+"kitFiles": [
+"Models/Plaza/DK_CafeSet_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CoinTelescope",
+"placed": 15,
+"by": {
+"oldtown": 15
+},
+"tris": 3234,
+"placedTris": 48510,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+808,
+189
+],
+"kitFiles": [
+"Models/Furnish/DK_CoinTelescope_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "InfoLightbox",
+"placed": 9,
+"by": {
+"oldtown": 9
+},
+"tris": 5370,
+"placedTris": 48330,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "RobotShopkeeper",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 14642,
+"placedTris": 43926,
+"prefabLODGroup": true,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+3603,
+844
+],
+"kitFiles": [
+"Models/Robots/DK_RobotShopkeeper_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "BistroSet",
+"placed": 10,
+"by": {
+"oldtown": 10
+},
+"tris": 3878,
+"placedTris": 38780,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+968,
+232
+],
+"kitFiles": [
+"Models/Furnish/DK_BistroSet_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "DecoPavilion",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 38240,
+"placedTris": 38240,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+9544,
+2248
+],
+"kitFiles": [
+"Models/Structures/DK_DecoPavilion_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "AdColumn",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 4790,
+"placedTris": 33530,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1197,
+287
+],
+"kitFiles": [
+"Models/Signage/DK_AdColumn_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PlazaFountain",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 11106,
+"placedTris": 33318,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+2775,
+666
+],
+"kitFiles": [
+"Models/Plaza/DK_PlazaFountain_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Skyport_Tower",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 33029,
+"placedTris": 33029,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+8219,
+2355
+],
+"kitFiles": [
+"Models/Skyport/DK_Skyport_Tower_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "HangingBasket",
+"placed": 15,
+"by": {
+"oldtown": 15
+},
+"tris": 2140,
+"placedTris": 32100,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+533,
+128
+],
+"kitFiles": [
+"Models/Furnish/DK_HangingBasket_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "RecyclingBins",
+"placed": 19,
+"by": {
+"oldtown": 19
+},
+"tris": 1676,
+"placedTris": 31844,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+418,
+126
+],
+"kitFiles": [
+"Models/Street/DK_RecyclingBins_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "HallBay",
+"placed": 8,
+"by": {
+"oldtown": 8
+},
+"tris": 3950,
+"placedTris": 31600,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+986,
+224
+],
+"kitFiles": [
+"Models/Plaza/DK_HallBay_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Terrace",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 28884,
+"placedTris": 28884,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+6702,
+1926
+],
+"kitFiles": [
+"Models/Highrise/DK_Tower_Terrace_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "DiscTower",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 6768,
+"placedTris": 27072,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1652,
+406
+],
+"kitFiles": [
+"Models/Landmarks/DK_DiscTower_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "LifebuoyStand",
+"placed": 13,
+"by": {
+"oldtown": 13
+},
+"tris": 1940,
+"placedTris": 25220,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+485,
+111
+],
+"kitFiles": [
+"Models/Furnish/DK_LifebuoyStand_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamBay_6",
+"placed": 11,
+"by": {
+"oldtown": 11
+},
+"tris": 2230,
+"placedTris": 24530,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+472,
+176
+],
+"kitFiles": [
+"Models/Skyline/DK_StreamBay_6_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PottedFern",
+"placed": 12,
+"by": {
+"oldtown": 12
+},
+"tris": 2020,
+"placedTris": 24240,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+505,
+121
+],
+"kitFiles": [
+"Models/Furnish/DK_PottedFern_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "SkyRail_Pylon_Tall",
+"placed": 75,
+"by": {
+"network": 75
+},
+"tris": 308,
+"placedTris": 23100,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreamEnd_3W",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 10820,
+"placedTris": 21640,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+2650,
+628
+],
+"kitFiles": [
+"Models/Facades/DK_StreamEnd_3W_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "ArcadeBay_3",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 5380,
+"placedTris": 21520,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1272,
+392
+],
+"kitFiles": [
+"Models/Facades/DK_ArcadeBay_3_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PipeBundle_6",
+"placed": 6,
+"by": {
+"oldtown": 6
+},
+"tris": 3390,
+"placedTris": 20340,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+827,
+214
+],
+"kitFiles": [
+"Models/Alleys/DK_PipeBundle_6_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CircusMonument",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 18876,
+"placedTris": 18876,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+4683,
+1101
+],
+"kitFiles": [
+"Models/Skyport/DK_CircusMonument_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Starburst",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 18520,
+"placedTris": 18520,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+4448,
+1867
+],
+"kitFiles": [
+"Models/Highrise/DK_Tower_Starburst_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "SphereStation",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 18420,
+"placedTris": 18420,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+4604,
+1105
+],
+"kitFiles": [
+"Models/Landmarks/DK_SphereStation_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Rooftop_B",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 5808,
+"placedTris": 17424,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1426,
+348
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Rooftop_B_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Atom",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 16358,
+"placedTris": 16358,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Pylon_A",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 7836,
+"placedTris": 15672,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1944,
+463
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Pylon_A_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "SkyPad_Roof",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 3732,
+"placedTris": 14928,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+915,
+337
+],
+"kitFiles": [
+"Models/Skyport/DK_SkyPad_Roof_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CableSpan_6",
+"placed": 6,
+"by": {
+"oldtown": 6
+},
+"tris": 2476,
+"placedTris": 14856,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+618,
+148
+],
+"kitFiles": [
+"Models/Alleys/DK_CableSpan_6_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "SandwichBoard",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 2116,
+"placedTris": 14812,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+529,
+114
+],
+"kitFiles": [
+"Models/Signage/DK_SandwichBoard_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Lantern",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 14788,
+"placedTris": 14788,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "LinerDock",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 14626,
+"placedTris": 14626,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Kerb_GraniteCorner_0",
+"placed": 11,
+"by": {
+"oldtown": 11
+},
+"tris": 1236,
+"placedTris": 13596,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Conservatory",
+"placed": 6,
+"by": {
+"oldtown": 6
+},
+"tris": 2214,
+"placedTris": 13284,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+483,
+108
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Conservatory_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Saucer",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 6562,
+"placedTris": 13124,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "BusShelter",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 12592,
+"placedTris": 12592,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+3147,
+737
+],
+"kitFiles": [
+"Models/Structures/DK_BusShelter_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TreePit_Flags_0",
+"placed": 26,
+"by": {
+"oldtown": 26
+},
+"tris": 478,
+"placedTris": 12428,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "VendingMachine_Cola",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 3958,
+"placedTris": 11874,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "DecoCorner_10",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 11748,
+"placedTris": 11748,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+2816,
+1055
+],
+"kitFiles": [
+"Models/Facades/DK_DecoCorner_10_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TreePit_Flags_1",
+"placed": 24,
+"by": {
+"oldtown": 24
+},
+"tris": 478,
+"placedTris": 11472,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Planter",
+"placed": 14,
+"by": {
+"oldtown": 14
+},
+"tris": 816,
+"placedTris": 11424,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+202
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Planter_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TreePit_Flags_2",
+"placed": 23,
+"by": {
+"oldtown": 23
+},
+"tris": 478,
+"placedTris": 10994,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Pool",
+"placed": 5,
+"by": {
+"oldtown": 5
+},
+"tris": 2136,
+"placedTris": 10680,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+502,
+126
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Pool_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "BladeSign_Cafe",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 3508,
+"placedTris": 10524,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+872,
+204
+],
+"kitFiles": [
+"Models/Signage/DK_BladeSign_Cafe_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TreePit_Flags_3",
+"placed": 22,
+"by": {
+"oldtown": 22
+},
+"tris": 478,
+"placedTris": 10516,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Setback",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 5142,
+"placedTris": 10284,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_LapPool",
+"placed": 5,
+"by": {
+"oldtown": 5
+},
+"tris": 2022,
+"placedTris": 10110,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+481,
+119
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_LapPool_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TopiaryCone",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 2484,
+"placedTris": 9936,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "SkyRail_Pylon_Head",
+"placed": 24,
+"by": {
+"network": 24
+},
+"tris": 368,
+"placedTris": 8832,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Kerb_GraniteCorner_2",
+"placed": 7,
+"by": {
+"oldtown": 7
+},
+"tris": 1236,
+"placedTris": 8652,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Tank",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 2136,
+"placedTris": 8544,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+534,
+128
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Tank_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Tower_Stepped",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 2772,
+"placedTris": 8316,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "BladeSign_Hotel",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 3884,
+"placedTris": 7768,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+964,
+218
+],
+"kitFiles": [
+"Models/Signage/DK_BladeSign_Hotel_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "PneumaticPost",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 3824,
+"placedTris": 7648,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+956,
+229
+],
+"kitFiles": [
+"Models/Furnish/DK_PneumaticPost_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Pylon_B",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 7644,
+"placedTris": 7644,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1898,
+445
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Pylon_B_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "ParabolicArch",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 7124,
+"placedTris": 7124,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1780,
+426
+],
+"kitFiles": [
+"Models/Landmarks/DK_ParabolicArch_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "StreetClock",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 3350,
+"placedTris": 6700,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+836,
+199
+],
+"kitFiles": [
+"Models/Furnish/DK_StreetClock_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "VendingMachine_Snack",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 3246,
+"placedTris": 6492,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+811,
+194
+],
+"kitFiles": [
+"Models/Furnish/DK_VendingMachine_Snack_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "DrinkingFountain",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 3122,
+"placedTris": 6244,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "AirCar_Teal",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 2010,
+"placedTris": 6030,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "NeonStar_Wall",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 2928,
+"placedTris": 5856,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+730,
+171
+],
+"kitFiles": [
+"Models/Signage/DK_NeonStar_Wall_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Rooftop_C",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 5808,
+"placedTris": 5808,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1426,
+348
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Rooftop_C_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Rooftop_A",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 5808,
+"placedTris": 5808,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1426,
+348
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Rooftop_A_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "TrashCans",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 2820,
+"placedTris": 5640,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+704,
+168
+],
+"kitFiles": [
+"Models/Alleys/DK_TrashCans_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "AlleyBridge",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 5398,
+"placedTris": 5398,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+1348,
+343
+],
+"kitFiles": [
+"Models/Alleys/DK_AlleyBridge_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Wall_C",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 2694,
+"placedTris": 5388,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+672,
+158
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Wall_C_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Kerb_GraniteCorner_1",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 1236,
+"placedTris": 4944,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Dumpster",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 2414,
+"placedTris": 4828,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Marquee_Cinema",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 4818,
+"placedTris": 4818,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Skylon",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 4592,
+"placedTris": 4592,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "BladeSign_Cinema",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 4400,
+"placedTris": 4400,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [
+1100,
+256
+],
+"kitFiles": [
+"Models/Signage/DK_BladeSign_Cinema_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "MilkCrates",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 2184,
+"placedTris": 4368,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+485,
+162
+],
+"kitFiles": [
+"Models/Alleys/DK_MilkCrates_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Cabana",
+"placed": 33,
+"by": {
+"oldtown": 33
+},
+"tris": 122,
+"placedTris": 4026,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "AirCar_Coral",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 2010,
+"placedTris": 4020,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Automat",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 3967,
+"placedTris": 3967,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+985,
+226
+],
+"kitFiles": [
+"Models/Furnish/DK_Automat_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_LatticeMast",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 1924,
+"placedTris": 3848,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+480,
+114
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_LatticeMast_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "DecoBay_10",
+"placed": 4,
+"by": {
+"oldtown": 4
+},
+"tris": 894,
+"placedTris": 3576,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+160
+],
+"kitFiles": [
+"Models/Skyline/DK_DecoBay_10_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "AirCar_Saucer",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 1728,
+"placedTris": 3456,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "SkyRail_Pylon_Shaft",
+"placed": 81,
+"by": {
+"network": 81
+},
+"tris": 40,
+"placedTris": 3240,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Bandstand",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 946,
+"placedTris": 2838,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+236
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Bandstand_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Wall_A",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 2694,
+"placedTris": 2694,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+672,
+158
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Wall_A_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Billboard_Wall_B",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 2694,
+"placedTris": 2694,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+672,
+158
+],
+"kitFiles": [
+"Models/Signage/DK_Billboard_Wall_B_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Drum",
+"placed": 3,
+"by": {
+"oldtown": 3
+},
+"tris": 864,
+"placedTris": 2592,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+216
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Drum_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "CrateStack",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 2558,
+"placedTris": 2558,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+536,
+196
+],
+"kitFiles": [
+"Models/Alleys/DK_CrateStack_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Kerb_GraniteCorner_3",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 1236,
+"placedTris": 2472,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Pallet",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 2160,
+"placedTris": 2160,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+540,
+104
+],
+"kitFiles": [
+"Models/Alleys/DK_Pallet_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "BikeLean",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 2056,
+"placedTris": 2056,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+508,
+123
+],
+"kitFiles": [
+"Models/Alleys/DK_BikeLean_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Radome",
+"placed": 2,
+"by": {
+"oldtown": 2
+},
+"tris": 952,
+"placedTris": 1904,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+238
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Radome_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Mast",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 1792,
+"placedTris": 1792,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+448,
+106
+],
+"kitFiles": [
+"Models/Rooftop/DK_Roof_Mast_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "RocketShip",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 1470,
+"placedTris": 1470,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "candidate",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "SkyBridge",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 1380,
+"placedTris": 1380,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": true,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Pave_Flags_0",
+"placed": 673,
+"by": {
+"oldtown": 673
+},
+"tris": 2,
+"placedTris": 1346,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Pave_Flags_1",
+"placed": 664,
+"by": {
+"oldtown": 664
+},
+"tris": 2,
+"placedTris": 1328,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Pave_Flags_2",
+"placed": 662,
+"by": {
+"oldtown": 662
+},
+"tris": 2,
+"placedTris": 1324,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "Pave_Flags_3",
+"placed": 650,
+"by": {
+"oldtown": 650
+},
+"tris": 2,
+"placedTris": 1300,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+},
+{
+"piece": "SteamVent",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 1244,
+"placedTris": 1244,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [
+301
+],
+"kitFiles": [
+"Models/Alleys/DK_SteamVent_L1.fbx"
+],
+"fbxHasLodNames": null
+},
+{
+"piece": "Roof_Fin",
+"placed": 1,
+"by": {
+"oldtown": 1
+},
+"tris": 248,
+"placedTris": 248,
+"prefabLODGroup": false,
+"oldFbxLevels": [],
+"sameAsKitL0": false,
+"kitStatus": "adopted",
+"kitLods": [],
+"kitFiles": [],
+"fbxHasLodNames": null
+}
+]

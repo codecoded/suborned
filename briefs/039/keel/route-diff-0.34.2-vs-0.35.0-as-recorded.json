@@ -1,0 +1,2061 @@
+{
+ "a": "out/scratch/keel/base-0342 (built here)",
+ "b": "the working tree",
+ "routes": [
+  {
+   "id": "careless-body-found",
+   "status": "moved",
+   "a": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2094,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "707bfa3f032125fe",
+    "scriptSha": "1793ca1faa3b0e996b9a3e8cdc87bbd680102edef5dae987503f8c783198b4fe"
+   },
+   "b": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2123,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "ab9624b88140ed47",
+    "scriptSha": "1793ca1faa3b0e996b9a3e8cdc87bbd680102edef5dae987503f8c783198b4fe"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 43,
+    "a": "1920\torder.stance\tscout: free.",
+    "b": "1920\torder.rejected\tscout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-enforcer-watches-guard",
+   "status": "moved",
+   "a": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1736,
+    "trail": 1,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "aaab26a1eb09e089",
+    "scriptSha": "269bd2b5e30d222b4f6a8a14410cc7dae788083402fd2b7487068b94ad39ddde"
+   },
+   "b": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1751,
+    "trail": 1,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "5893792a229b9a5e",
+    "scriptSha": "269bd2b5e30d222b4f6a8a14410cc7dae788083402fd2b7487068b94ad39ddde"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 44,
+    "a": "1736\tfail.enforcer-down\tThe Enforcer is down.",
+    "b": "1736\tshot.hit\tpolice-2 fires on enforcer at 0 m (1000 ‰): hit.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-g-disable",
+   "status": "moved",
+   "a": {
+    "id": "careless-g-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "15f58cac86b954b2",
+    "scriptSha": "74e9966896cb64df5e7b99f65777a5ab1c39767798b2c45618d6e5ca6006c136"
+   },
+   "b": {
+    "id": "careless-g-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "2a8cd1da0d63c78b",
+    "scriptSha": "74e9966896cb64df5e7b99f65777a5ab1c39767798b2c45618d6e5ca6006c136"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 37,
+    "a": "2255\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2255\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "status": "same",
+   "a": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "559f88a712518435",
+    "scriptSha": "11f165ee275a541e859eb0054b43827b0945475b6d54116e555b35330513723c"
+   },
+   "b": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "7f36b9fc12549961",
+    "scriptSha": "11f165ee275a541e859eb0054b43827b0945475b6d54116e555b35330513723c"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-loop-runs-out",
+   "status": "same",
+   "a": {
+    "id": "careless-loop-runs-out",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1729,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "064c973e658bd9b0",
+    "scriptSha": "d97041f1d4c2e1b7780568066dc8ed500a0195688b04488223d6e348243b108e"
+   },
+   "b": {
+    "id": "careless-loop-runs-out",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1729,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "428142a184b91884",
+    "scriptSha": "d97041f1d4c2e1b7780568066dc8ed500a0195688b04488223d6e348243b108e"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "status": "moved",
+   "a": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "e4de69f3e245f454",
+    "scriptSha": "28b6911968a2a64131196a20337767a9fcec4323ecc4a22427b4c6592430f0ac"
+   },
+   "b": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "none",
+    "fail": "",
+    "tick": 5100,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "9b35e0b76646b5ea",
+    "scriptSha": "28b6911968a2a64131196a20337767a9fcec4323ecc4a22427b4c6592430f0ac"
+   },
+   "cols": [
+    "outcome",
+    "end",
+    "trail",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 75,
+    "a": "4450\tshot.hit\tfixer fires on rival-1 at 13 m (562 ‰): hit.",
+    "b": "4450\tshot.miss\tfixer fires on rival-1 at 13 m (281 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-scout-idles-pickup",
+   "status": "moved",
+   "a": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "12e9bfb9557ebba5",
+    "scriptSha": "6a672eb5b9843fc87dbd2a7aba2e78e52e0f18470890296e3ef59801330cfba0"
+   },
+   "b": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "none",
+    "fail": "",
+    "tick": 5100,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "05b330c9fded8c3f",
+    "scriptSha": "6a672eb5b9843fc87dbd2a7aba2e78e52e0f18470890296e3ef59801330cfba0"
+   },
+   "cols": [
+    "outcome",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 75,
+    "a": "4450\tshot.hit\tfixer fires on rival-1 at 13 m (562 ‰): hit.",
+    "b": "4450\tshot.miss\tfixer fires on rival-1 at 13 m (281 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "6b1847af4541e23f",
+    "scriptSha": "0a4b6e19f480c81f843ada194ae3a566aede59624546a23054a057b1393f5f68"
+   },
+   "b": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "0415f43c834107b3",
+    "scriptSha": "0a4b6e19f480c81f843ada194ae3a566aede59624546a23054a057b1393f5f68"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "status": "same",
+   "a": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "5c33197f9ac24ab4",
+    "scriptSha": "38bac22cebe7a53e2475f95a661fae67c49ee011d0351960626d0d3513b05c68"
+   },
+   "b": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "f96c52eb2d12c000",
+    "scriptSha": "38bac22cebe7a53e2475f95a661fae67c49ee011d0351960626d0d3513b05c68"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-thin-all",
+   "status": "moved",
+   "a": {
+    "id": "careless-thin-all",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4493,
+    "trail": 19,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "4add6ee394cb15a2",
+    "scriptSha": "5996f17033e3b73b9af317ecc3e96129c7e8a6c3dbdd373e479ec567ce2358d7"
+   },
+   "b": {
+    "id": "careless-thin-all",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4493,
+    "trail": 19,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "355d5a08dd89afe5",
+    "scriptSha": "5996f17033e3b73b9af317ecc3e96129c7e8a6c3dbdd373e479ec567ce2358d7"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 102,
+    "a": "4450\tshot.hit\tscout fires on officer-1 at 7 m (562 ‰): hit.",
+    "b": "4450\tshot.miss\tscout fires on officer-1 at 7 m (281 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-district-seals",
+   "status": "same",
+   "a": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "3dae7832266b2e5b",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "b": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "279b9a0e345e17ef",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1006,
+    "trail": 6,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "3e42f0d710ffaa17",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "b": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1336,
+    "trail": 6,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "4f5d2599c71d9f2e",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 16,
+    "a": "390\tshot.hit\tguard fires on enforcer at 3 m (1000 ‰): hit.",
+    "b": "390\tshot.miss\tguard fires on enforcer at 3 m (500 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "9d7f98ed76bfa39f",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "b": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "dccdf8d81d232423",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "82bc4fa168117c08",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "b": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "b0ff3ae681412f34",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "9822bbdfae36432a",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "b": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "ec475c3b6489e5fe",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "cf535a077b85cef8",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "b": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "6d6c4ae33ae89fe4",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-dead",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "84473fdea702e5cf",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "b": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "7cb0dada2c628e43",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-leaves",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "b2518228ccf490c4",
+    "scriptSha": "40370c6ad1bd58aee7e707c121ae201481cb7ac087867da4457fde525f5b21e7"
+   },
+   "b": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "9bb8aacaf7c0b8d0",
+    "scriptSha": "40370c6ad1bd58aee7e707c121ae201481cb7ac087867da4457fde525f5b21e7"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1942,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "c6b178fa980fc758",
+    "scriptSha": "644913bceb41c319321ab9242770f43f28058ed3f526beba7c76d8cb2316f4a5"
+   },
+   "b": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1955,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "78aed829d1fd5ff4",
+    "scriptSha": "644913bceb41c319321ab9242770f43f28058ed3f526beba7c76d8cb2316f4a5"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 98,
+    "a": "1942\tfail.enforcer-down\tThe Enforcer is down.",
+    "b": "1949\tcrowd.sheltered\t1 reach shelter.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-loud-wait-square",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-wait-square",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2384,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "3e57802e5aaba828",
+    "scriptSha": "ca85b4a0cf2d73058a803e90a31f03f78d92d4555da4613f66aa787b6fa72a7b"
+   },
+   "b": {
+    "id": "fight-loud-wait-square",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2407,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "62f76e9cc7117c3a",
+    "scriptSha": "ca85b4a0cf2d73058a803e90a31f03f78d92d4555da4613f66aa787b6fa72a7b"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 91,
+    "a": "2384\tfail.enforcer-down\tThe Enforcer is down.",
+    "b": "2389\tshot.hit\trival-1 fires on enforcer at 13 m (562 ‰): hit.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-loud-wait-yard",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-wait-yard",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 4495,
+    "trail": 9,
+    "alert": 3,
+    "gunfire": 4,
+    "standing": 2,
+    "health": {
+     "lost": 9,
+     "total": 18,
+     "pct": 50
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "85f06c72f03cb0b4",
+    "scriptSha": "f17a4abc5a492a2e8338701b784d8efbae2b9bfebc025e6fcb088bc407f44c3f"
+   },
+   "b": {
+    "id": "fight-loud-wait-yard",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 4495,
+    "trail": 9,
+    "alert": 3,
+    "gunfire": 4,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "5d807ba4563ab562",
+    "scriptSha": "f17a4abc5a492a2e8338701b784d8efbae2b9bfebc025e6fcb088bc407f44c3f"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 40,
+    "a": "3879\trivals.follow-car\tThe rivals posted round our car go after it.",
+    "b": "3869\tfire.focus-waits\tfixer: camera:pickup is out of reach. The focus waits; fixer fights on.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-cell-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-safe-cell-down",
+    "outcome": "failure",
+    "fail": "cell-down",
+    "tick": 2009,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "7d96248a8b36b7a1",
+    "scriptSha": "36195efe0506629e4cccb44aa1b1c3fffedd821a98dedd1922f02e34206c5114"
+   },
+   "b": {
+    "id": "fight-safe-cell-down",
+    "outcome": "none",
+    "fail": "",
+    "tick": 5100,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "4fae5da9e6099d65",
+    "scriptSha": "36195efe0506629e4cccb44aa1b1c3fffedd821a98dedd1922f02e34206c5114"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 32,
+    "a": "1605\torder.stance\tscout: hold.",
+    "b": "1605\torder.rejected\tscout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "622cfddf976b4c98",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "b": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "3131272befb8bdac",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "loud",
+   "status": "moved",
+   "a": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3017,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "a42485a3c1bfe842",
+    "scriptSha": "ef6088c506e8bef337be062de868460ca879735f501b3a02f166da0b46c72260"
+   },
+   "b": {
+    "id": "loud",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2689,
+    "trail": 20,
+    "alert": 2,
+    "gunfire": 13,
+    "standing": -1,
+    "health": {
+     "lost": 14,
+     "total": 23,
+     "pct": 60
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "db89933a64a5b86e",
+    "scriptSha": "ef6088c506e8bef337be062de868460ca879735f501b3a02f166da0b46c72260"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 60,
+    "a": "2251\torder.stance\tscout: free.",
+    "b": "2251\torder.rejected\tscout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fight",
+   "status": "moved",
+   "a": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3068,
+    "trail": 26,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "fd9a5af2d8da4a67",
+    "scriptSha": "e0d3434f7e08b8389e5c5c32e43c2621927446a0ba7ff9a87a5efbe0abe85e94"
+   },
+   "b": {
+    "id": "loud-fight",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2689,
+    "trail": 20,
+    "alert": 2,
+    "gunfire": 13,
+    "standing": -1,
+    "health": {
+     "lost": 14,
+     "total": 23,
+     "pct": 60
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "db89933a64a5b86e",
+    "scriptSha": "e0d3434f7e08b8389e5c5c32e43c2621927446a0ba7ff9a87a5efbe0abe85e94"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 60,
+    "a": "2251\torder.stance\tscout: free.",
+    "b": "2251\torder.rejected\tscout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-downed",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3047,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "0718583a8381cf37",
+    "scriptSha": "345da5cd5affd40a63c8dbf306444bcd13dd0b84429feb5907c80dca25c3d3a0"
+   },
+   "b": {
+    "id": "loud-left-downed",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2689,
+    "trail": 20,
+    "alert": 2,
+    "gunfire": 13,
+    "standing": -1,
+    "health": {
+     "lost": 14,
+     "total": 23,
+     "pct": 60
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "6bcd9fac85720d04",
+    "scriptSha": "345da5cd5affd40a63c8dbf306444bcd13dd0b84429feb5907c80dca25c3d3a0"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 60,
+    "a": "2251\torder.stance\tscout: free.",
+    "b": "2251\torder.rejected\tscout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-standing",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3047,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "d8b5e12418521342",
+    "scriptSha": "2ba4935e4ada1fc6a80556b31a67fc33d4da4a363d45fa4f2767532128e774b5"
+   },
+   "b": {
+    "id": "loud-left-standing",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2689,
+    "trail": 20,
+    "alert": 2,
+    "gunfire": 13,
+    "standing": -1,
+    "health": {
+     "lost": 14,
+     "total": 23,
+     "pct": 60
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "db89933a64a5b86e",
+    "scriptSha": "2ba4935e4ada1fc6a80556b31a67fc33d4da4a363d45fa4f2767532128e774b5"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 60,
+    "a": "2251\torder.stance\tscout: free.",
+    "b": "2251\torder.rejected\tscout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a",
+   "status": "moved",
+   "a": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2773,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "a8a91f0af8ccc645",
+    "scriptSha": "e5ef95e71309358c2356f0a8cb90c237d1cf9a5b4c5be1963d39ff18d0c7b66f"
+   },
+   "b": {
+    "id": "route-a",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2656,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "bb5ae7a0b3c7c69d",
+    "scriptSha": "e5ef95e71309358c2356f0a8cb90c237d1cf9a5b4c5be1963d39ff18d0c7b66f"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2411\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2411\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2555,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "b563fd4408383dfd",
+    "scriptSha": "162ec4b8c3902ada6ca215bfd2f2e76f4895a9ce94e9bfcaba559c855bebaefa"
+   },
+   "b": {
+    "id": "route-a-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2603,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "af2ba7522f1fc54e",
+    "scriptSha": "162ec4b8c3902ada6ca215bfd2f2e76f4895a9ce94e9bfcaba559c855bebaefa"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2414\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2414\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-disable",
+   "status": "moved",
+   "a": {
+    "id": "route-a-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2773,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "cfe6692bbd6f792f",
+    "scriptSha": "3a4b8327160ac03b965f9f371903d152eeb7f4dc0ebca6825fdd03ca826c8d9e"
+   },
+   "b": {
+    "id": "route-a-disable",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2656,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "80e7e58a07ad209b",
+    "scriptSha": "3a4b8327160ac03b965f9f371903d152eeb7f4dc0ebca6825fdd03ca826c8d9e"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 51,
+    "a": "2411\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2411\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2626,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "b5739f6c0d5496f5",
+    "scriptSha": "ddeed72104f9ace6c97c87477ea3cfdac05bcdfbc98cd1590bb7dc5efb124156"
+   },
+   "b": {
+    "id": "route-a-pressure",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2491,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "35af698a49391779",
+    "scriptSha": "ddeed72104f9ace6c97c87477ea3cfdac05bcdfbc98cd1590bb7dc5efb124156"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2301\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2301\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2538,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 9,
+     "total": 18,
+     "pct": 50
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "002fd45d0923a102",
+    "scriptSha": "c7cfd9b448a01f7280a4ba985117b32895e1fb292101f7e44e5251bb29803db4"
+   },
+   "b": {
+    "id": "route-a-pressure-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2459,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "54af13a81ae06497",
+    "scriptSha": "c7cfd9b448a01f7280a4ba985117b32895e1fb292101f7e44e5251bb29803db4"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2304\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2304\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b",
+   "status": "moved",
+   "a": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "3b5527220c322f83",
+    "scriptSha": "35758d83b7add658e5919c168ca9482d8183ba7a6111b821aef03fefa77b5eb9"
+   },
+   "b": {
+    "id": "route-b",
+    "outcome": "none",
+    "fail": "",
+    "tick": 5100,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "29daa99fe1d06a2a",
+    "scriptSha": "35758d83b7add658e5919c168ca9482d8183ba7a6111b821aef03fefa77b5eb9"
+   },
+   "cols": [
+    "outcome",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 65,
+    "a": "4450\tshot.hit\tfixer fires on rival-1 at 13 m (562 ‰): hit.",
+    "b": "4450\tshot.miss\tfixer fires on rival-1 at 13 m (281 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4554,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "e2208c8500223382",
+    "scriptSha": "4648de2dd353e7b2907b233c9e63c31edd46a00e1a4d20056a9b40fad4d4c5ce"
+   },
+   "b": {
+    "id": "route-b-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4618,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 9,
+     "total": 23,
+     "pct": 39
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "24c6cec0e73b3e05",
+    "scriptSha": "4648de2dd353e7b2907b233c9e63c31edd46a00e1a4d20056a9b40fad4d4c5ce"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 65,
+    "a": "4450\tshot.hit\tfixer fires on rival-1 at 13 m (562 ‰): hit.",
+    "b": "4450\tshot.miss\tfixer fires on rival-1 at 13 m (281 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-thin",
+   "status": "moved",
+   "a": {
+    "id": "route-b-thin",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "03eb7cf966a13745",
+    "scriptSha": "f4a808a5efc41c4625756d08074f9dbef5ecb676ad0c8cce6f745d37791cb866"
+   },
+   "b": {
+    "id": "route-b-thin",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "093b19cdd41a39a2",
+    "scriptSha": "f4a808a5efc41c4625756d08074f9dbef5ecb676ad0c8cce6f745d37791cb866"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 71,
+    "a": "4453\torder.panic\tPanic: 3 armed operatives fire at will.",
+    "b": "4453\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g",
+   "status": "moved",
+   "a": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "657b1d005f059748",
+    "scriptSha": "d78d4aa190509a874565f7124921655645699741d3de5335e990dd687d4c31ea"
+   },
+   "b": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "59b2d80319dd2105",
+    "scriptSha": "d78d4aa190509a874565f7124921655645699741d3de5335e990dd687d4c31ea"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 38,
+    "a": "2255\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2255\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "302cb1c5470f06a0",
+    "scriptSha": "7ce2450a00b269db95a08bcbbe658ba2ea1b7688145ede7fe4625d2db70c6b42"
+   },
+   "b": {
+    "id": "route-g-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2485,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "64193c58eeb4e623",
+    "scriptSha": "7ce2450a00b269db95a08bcbbe658ba2ea1b7688145ede7fe4625d2db70c6b42"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 38,
+    "a": "2255\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "2255\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1786,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "37b3d36d8b99ab4f",
+    "scriptSha": "2e3a1adec0c5eb32e264f743e047b2f22bcc0014432df0df0cbd3f84a732cfa7"
+   },
+   "b": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1786,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "1c9a8e80d3217860",
+    "scriptSha": "2e3a1adec0c5eb32e264f743e047b2f22bcc0014432df0df0cbd3f84a732cfa7"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 31,
+    "a": "1605\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "1605\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1820,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "a41bad7c9273c8f8",
+    "scriptSha": "68fb00476017e9b14842c50e9b6b77857442ddc51b4012ad41377544f48a7fa8"
+   },
+   "b": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1820,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 1,
+     "total": 23,
+     "pct": 4
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "8033f10b0bba6a7d",
+    "scriptSha": "68fb00476017e9b14842c50e9b6b77857442ddc51b4012ad41377544f48a7fa8"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 31,
+    "a": "1605\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "1605\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3433,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "268be763d4405019",
+    "scriptSha": "dbda56b64c3721605d6217b65757dc3332509f19d4b312db49b21684895aa3e3"
+   },
+   "b": {
+    "id": "route-g-kill",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3319,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "42cac625c2f73d78",
+    "scriptSha": "dbda56b64c3721605d6217b65757dc3332509f19d4b312db49b21684895aa3e3"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 46,
+    "a": "3122\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "3122\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3361,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "4727d44162b75a60",
+    "scriptSha": "922fea9f5a9b0a59d13a07a3e4cdb1767575736d86e2458ebd19c77370a96bfd"
+   },
+   "b": {
+    "id": "route-g-kill-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3278,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "b053266efc6eaa36",
+    "scriptSha": "922fea9f5a9b0a59d13a07a3e4cdb1767575736d86e2458ebd19c77370a96bfd"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 46,
+    "a": "3122\torder.panic\tPanic: 4 armed operatives fire at will.",
+    "b": "3122\torder.rejected\tcell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "withdraw",
+   "status": "same",
+   "a": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "24a43dd58ea875b8",
+    "finalHash": "4c1b8300fae275e4",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "b": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "085ec6d5422a2268",
+    "finalHash": "ded5f88a7add2908",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  }
+ ]
+}

@@ -178,3 +178,170 @@ Gate before Aster shows Sky. Shots: `briefs/044/build/` (25). Boards: `briefs/04
 Chip frame (`panel_dark`, no kind bar, badge sprite, brass hairline, › and verb plates, cream type); window marker (plate, eye icon, count, turquoise-light underline; amber not shown in the shots); fire pill shape (`panel_strip`, stripes, light disc, ink icon); cancel pop and "Vale is out." pops; roster status plates; the move ring and paused route in cream, with no role colour; no kind bar and no coral anywhere; sentence under the pill removed (the old "Debt. The guard visits her quietly." is gone).
 
 Next owner: Latch (items 1 to 11); Glyph re-reviews the re-shot at 2160.
+
+## Review of 0.2.94 (Glyph, 2026-10-23)
+
+Gate before Aster shows Sky. Shots: `out/scratch/latch/proof2160-0294/` (3840 x 2160, so these are true 2x), `briefs/049/build/2160-0294/`, `briefs/046/build/2160-0294/`, `briefs/048/build/0294/`, `briefs/055/build/`. I read about 35 frames at full size and cropped every HUD piece at native pixels. Boards (all git-ignored pictures): `briefs/044/review-0.2.94-pills.png`, `review-0.2.94-roster.png`, `review-0.2.94-rings.png`, `review-0.2.94-world.png`. Crops: `out/scratch/glyph/`.
+
+**Verdict: close, not ready. The HUD kit is now right where it matters (act disc matches the cameo, no key legends, no kind colours, pill states, chips, roster dividers, ring occlusion). Three things would make Sky stop: a sentence-and-gap plate in the fight (`Firing at Vale's car`), the guard's amber ring hidden under the world marker (the one ring you cannot see in its own proof shot), and the building fade (a grey slab and a stipple smear over the Records Office door in four frames). The rest is polish.**
+
+### Verdict per area
+| Area | Verdict |
+|---|---|
+| 12 review fixes from 0.2.65 | **ok** for 1, 2, 3, 4, 8, 9: act disc 64 px vs cameo 62 px at 2x, ring and icon sit on the same circle; stripe blocks clear of the screws (act ready, act charge, fire ready); 8 px padding at both ends; head word "Hold" dim; the key legend strip is gone from every third-person frame; no "Return fire only" grey square. **fix** 7: "Guard back" pop is still see-through (`ring-loop-names`: the world shows through the body, grey text on ghost; may be mid-fade, but the fade is slow enough to catch in a proof frame). The 0.2.65 re-shoots exist now (charge, ready, cancel, listen), good. |
+| Loop camera names | **ok**: radial wedges with the chosen wedge in turquoise-light, one label per way (`plate_dark`, name, clock, fingerprint +1), Jost Regular. Labels sit 16 px off their wedge, readable at 2x. Low: the wheel has no chrome rim (flat dark wedges), reads a notch plainer than the pills. |
+| No key legends | **ok** in every frame (tp-options, hold-tp-fire, tp-street). **fix**: two bottom-centre sentences remain in play: "Loop the camera at the cabinet." (`done-window-soon`, `done-turn-chip`) and "Watch the café terrace." (all third-person frames, `tp-worst` overlaps the cell's ring). These are brief 049 row 15 hints; the noun-in-colour dot is a nice touch but it is a sentence. |
+| Squad-fire plates | **fix**: `Firing at Vale's car · down in 45 s` (`commander-firing`) has a 120 px blank where the gun disc should be (text is indented, icon missing) and is a sentence. Brief 049 row 4: gun disc + `45 s`. The plain `Drawing` and `Let go · Fire · +2/hit Trail · Alert ≥2` pills are fine. |
+| Roster | **ok**: icon row under each portrait (weapon disc, optional eye or "!" disc, pip counter), steel divider with no screws between slots, column B bare, one weapon icon, Jost Regular on plates and "Squad". Slot alignment: icon row is 24 to 27 px under every portrait, portrait centres identical (x = 114). **fix**: (a) in slot 4 the gun disc touches the corner screw of the rail (`roster-firing`, bottom: screw 8 px from the disc); move the last icon row up 6 px or drop the two bottom screws. (b) The under-fire burst in slot 1 and 2 is pale yellow (about #f6e3a0): no kit source (cream is #f7f4ec, amber #f0a020), and one ray overlaps the weapon disc ring. Make it cream (same as the white tick ring in slot 2). (c) The side plates still carry words ("aiming", "firing", "drawing", "refused", "not yet") on a 340 px plate with the icon far left and the word far right: brief 049 row 9 says icons, and an empty plate that wide reads as a bar. Shrink the plate to its content; words only where there is a number. |
+| Target rings | **ok with two fixes.** Red aim ring (0.12 m, solid) reads at once on grey; cream hover ring with ticks is clear and sits behind the legs (back half hidden, front over the ground); violet rival rings read, solid vs dashed is clear, legs cover the ring correctly. **fix**: (1) the amber guard ring is not visible in `ring-plain-amber` and `ring-plain-out`: the eye marker (a 70 px dark disc) sits exactly on the guard's feet and covers it, and no patrol is in frame (the green figure is the driver). Re-shoot with the patrol, or lift the marker so the ring shows; as it stands amber is unproven. (2) The tick marks on the red rings are faint, 1.5 px, 50 % alpha grey on grey (`rings` board, top left): they carry the "in an exchange" meaning; make them cream at full alpha with the ink edge the hover ring has. |
+| Latch's "rings range: hover FAILED" | **Checked: the frame is the cause, not the ring.** `ring-hover-passerby`: no weapon drawn (no drawn-gun pill, no ring on anyone), the two officers wear red "aim" rings, the bystander has none. Rule (049 round 1): a civilian wears a ring under the cursor only while a selected agent has a weapon drawn, so none is right here. In the next frame (`ring-ours-bystander`, drawing) the bystander gets the cream hover ring with ticks, so hover works. The probe hovers before it draws: reorder it (draw, then hover, then check). One oddity: the officers wear red aim rings at 0:00 in the range, before anyone has fired; fine for the range, make sure the Handover never shows it before a shot. |
+| Fonts | **ok** Jost Regular on pills, chips, plates, tooltips and goal line; Barlow Medium on speech only. Bold stays on the tabular counters and the feed card titles ("Help", "Watch"). **fix** (briefing): the stat row (8:30, $100,000, 0/3, Unknown) is Jost Semibold and "The Handover" Medium; make the row Regular. |
+| Colours with a source | **ok** except the yellow burst above. Reds: `mark_no` badge (kit sprite), cone red on aim rings and under-fire wedge. Amber: guard marker, "reported" underline. Violet: rivals. Turquoise-light: hold sweep, ready word and ring. The orange route line in `commander-firing` is the patrol's amber; fine. |
+| Chips and plates (2x crops) | **ok**: `done-refused-chip` (face, red `mark_no` badge, brass hairline, struck "Ask" plate), `done-turn-chip` (half badge), feed card (screws, no clipping), window marker, watched-spot plate (stripes, eye). No clipping, centring good. Low: chip "Not yet" has 90 px of empty body right of the word; the window marker's underline floats 220 px beyond its plate as a bare cream line (`done-window-soon`), looks stray. |
+| Fire pill detail | **fix, low**: the `stripes_warn` tile shows a seam (a broken diagonal in the middle of each block, `pill-fire-left`); the ready glow bands in steps at the corners; the head word and "Right" on the sweep are about 3:1 (dim #b0cdc7 over 40 % turquoise-light), fine for the offer, soft in the hold. |
+| Third person | **ok**: roster plus pill, no legend, red wedge arrows, rings. **fix**: the `Let go` plate is detached at the top left (y 16), the text sits against its top rim (2 px above, 6 below), and it is smaller than every other plate: centre the label, anchor it to the pill's tail or the roster. |
+| Briefing | **fix**: the Day focus ring is a square 3 px turquoise box on a lozenge button; Night is grey on cream (about 2:1); the build string touches the Begin button and the screw. Cream Begin/Day/Night plates are off the dark kit (they match the lab's old button, not the pill kit). Low priority, one-time screen. |
+| Edge pointers and markers | **fix, low**: the clipped ghost disc at the top edge (`done-window-soon`, x 860 at 1080p) is a camera marker cut by the screen edge with a grey bar through it. The four face discs top left (`ring-plain-amber`) use a plain turquoise ring, not the chrome cameo ring. |
+
+### World look (not mine to fix; for Aster, Glint, Vela)
+Compared with `briefs/028/palm/ref-flyby-boulevard-old-city.png` and Sky's two stills.
+- **Reads right**: the old palms (dark tapering trunks, long drooping fronds, gold-green light) are now the closest thing to the reference and carry the street (`palms-east`, `ring-plain-rival`); pearl kerb and pale paving read as honed limestone; the third-person haze (`tp-street` against `tp-street-atmosphere-off`) adds real depth: distant blocks soften and warm, the sky keeps its blue at the top; play-zoom grade is a warm cream with cool blue shadows, the umbrellas and mint enamel pop.
+- **Does not**: (1) the road is a powder blue-grey flat with almost no marking and no traffic; the reference has dark asphalt, white lane lines, a median and cars, so ours reads as water or concrete and the street has no direction (`palms-east`, `tp-street`). (2) The flyby haze (`tp-street-long`) is an ochre dust: it reads as a sandstorm, not the reference's clear gold-and-blue light; skyline ghosts are good, the sky loses its blue. Pull the haze towards pale peach and keep the top 30 % of the sky blue. (3) Palms are in rows at close range but sparse and scattered at distance (`tp-street-long`: a flat green lawn with 20 small palms, an empty pale plaza); the reference has tight rows on both kerbs. (4) Close hedges (`tp-street`, `tp-worst`) are faceted green blobs with pink hexagon flowers; fine at play zoom, rough in third person. (5) The building fade: a flat grey slab across the top of `ring-plain-amber`, `done-watched-spot`, `done-window-soon` and a heavy stipple screen over the Records Office door (`amber-guard` crop); this is the single most visible flaw in the Handover frames.
+
+### Ranked fix list for Latch
+1. **Building fade**: grey flat slab and heavy dither over the door and top of frame (Handover, four frames). Fade the whole mass with a softer ordered pattern, never an opaque grey cap. (With Glint if it is the grade.)
+2. **Guard ring hidden** under the eye marker (`ring-plain-amber`, `ring-plain-out`): draw the ring above the marker's disc or offset the marker; re-shoot with the patrol in frame.
+3. **Status plate**: `Firing at Vale's car · down in 45 s`: put the gun disc back (blank 120 px) and replace the words with disc + `45 s` (049 row 4).
+4. **Bottom hint sentences** ("Loop the camera at the cabinet.", "Watch the café terrace.") out of play or under Alt (049 row 15; Fable).
+5. **Roster**: bottom gun disc vs screw (slot 4); under-fire burst colour to cream and off the weapon ring; side plates shrink to content, icons not words (049 row 9).
+6. **Ring ticks** on red rings: cream, full alpha, ink edge.
+7. **Probe order** for the hover check: draw first, then hover.
+8. **Third-person `Let go` plate**: centre text, anchor it, match the kit size.
+9. **`Guard back` pop** opaque; `plate_dark` body.
+10. **Fire pill**: stripe tile seam, glow banding.
+11. **Briefing**: Day focus ring, Night contrast, stat row Regular, build string padding.
+12. Low: window-marker leader line, clipped camera marker at the top edge, cameo ring on the top-left face discs, wheel chrome rim.
+World, for their owners: road finish (dark asphalt or a clear lane language), flyby haze hue, palm density at distance.
+
+### Best shots for Aster to show Sky
+1. `briefs/048/build/0294/play-opening.jpg` (play zoom, roster, clock, minimap, warm grade; the strongest overall frame)
+2. `out/scratch/latch/proof2160-0294/hold-act-ready.png` (Let go pill with act disc and cameo, ground ring "2", thin reach arcs)
+3. `out/scratch/latch/proof2160-0294/ring-loop-names.png` (radial with named ways, feed card, `Vale is out.` pop; the fade slab upper right is the flaw: crop it or wait for fix 1)
+4. `out/scratch/latch/proof2160-0294/done-refused-chip.png` (the chip with the red badge and the struck "Ask")
+5. `briefs/048/build/0294/tp-street.jpg` (third person, haze and old palms; no legend)
+6. `out/scratch/latch/proof2160-0294/ring-plain-rival.png` (palms, violet rings, pill; do not use the range frames: the Fight Range panel is lab furniture)
+
+Not to show: `ring-plain-amber`, `ring-plain-out` (grey slab, hidden ring), `commander-firing` (plate gap), any `FightRange` frame (lab panel).
+
+Next owner: Latch (items 1 to 12); Glint and Vela for the world notes; Glyph re-reviews the re-shot at 2160.
+
+## Review of 0.2.97 (Glyph, 2026-10-24)
+
+Gate before Aster shows Sky. Shots: `briefs/051/build/0297/` (1920x1080 and 2880x1864), `briefs/049/build/2160-0297/` (3840x2160, true 2x), `briefs/055/build/0297/`, `briefs/048/build/0297/`. I read about 30 frames at full size and cropped every HUD piece at native pixels. Boards (git-ignored pictures): `briefs/044/review-0.2.97-frontend.png`, `review-0.2.97-pills.png`, `review-0.2.97-open.png`, `review-0.2.97-world.png`. Crops: `out/scratch/glyph/r97/`.
+
+**Verdict: the front end is ready to show; the HUD fixes landed for 9 of the 12 items; the building fade is the one thing that would still make Sky stop (a flat grey slab in `ring-loop-names`, a dither screen over the Records Office door and paving in six more frames). The long-tier flyby is now right.**
+
+### Verdict per area
+| Area | Verdict |
+|---|---|
+| Front end vs spec and mockups | **ok.** Menu: Jost Regular caps at 22 px, no plates, one marker (turquoise-light diamond) and a 232 px line under the focused word, default focus Continue, order New game / Continue / Options / Controls / Quit. Options: no sprite, no close X, 1 px chrome border, tabs with the 2 px line, group heads in dim, the tick plus full-width line on the focused row, chevrons, slider with the cream diamond knob, switch box with the turquoise diamond and a word. Controls: primary and alias keycaps, the listening key ("Press a key", turquoise edge), the clash strip (`mark_half`, "N already: Next event", SWAP, a marker and line on CANCEL). Brief: Continue as a word with marker and line. Pause: smoked flat card, 7 words, 44 px pitch, marker and line on Resume. At 2880x1864 nothing clips and the text keeps its padding (2x crops in the frontend board). The 18 proof checks in `frontend.json` are all ok (hover = focus, disabled skipped, rebind round trip, clash, pause focus). |
+| Front end, small differences from the mockups | **low.** (1) The menu picture is darker than the mockup: the sky top and the whole right side lose the warm light (mock 1920 vs build 1920). The left scrim is right; the extra darkening is a top and overall veil. Contrast is fine, but it is the one place the build looks plainer than the mock; ask Latch to check the veil alpha (spec: only the left scrim and the bottom scrim). (2) The sheet is the flat ink fallback, with no blurred silhouettes of the picture (the spec allows it; Sky's open question "bake or flat" is still open). (3) The mission brief's column is larger than the mock: the first line wraps ("...to Security.") and "paper." is a one-word orphan; narrow the type by about 8 %, or widen the column, to keep the mock's one-line heads. (4) Brief bullets are small turquoise dots, the mock has the diamond (use the marker). (5) The disabled "Frame cap" row keeps its chevrons at about 50 %, the spec says 25 %. (6) Gameplay page shows a "PLAYGROUND" group ("Third person: aim", "Third person: right button"): lab terms in the player's options; hide it or rename. |
+| Long-tier flyby (`tp-street-long`) | **ok.** Blue sky overhead (the top third stays a clean pale blue), warm only at the horizon band, distant towers are soft peach ghosts, no ochre dust over the whole frame. This fixes the 0.2.94 "sandstorm". Left: the lowest haze band is still a sand colour (a touch desert); pull it a step towards peach. The foreground plaza is overexposed white. World notes below. |
+| Third person street (`tp-street`, `road-enamel-boulevard-third`) | **ok.** Palms in rows on both kerbs, haze softening the far blocks, roster and clock bar clean, no legend. The road is still a powder blue-grey with faint markings (see world). |
+| Records Office front at yaw 210 (`office-front-yaw210`, `levels-guard-landing`) | **ok.** The tower fades with a fine dither and the door, the guard, steps and the eye marker are readable. Best fade frame. |
+
+### The 12 items of "Review of 0.2.94"
+| # | Item | State |
+|---|---|---|
+| 1 | Building fade (grey slab, dither over the door) | **not fixed.** The slab is back, flat grey with a hard edge, in `ring-loop-names` (upper right, 480 x 380 px at 2x). In `done-window-soon`, `done-watched-spot`, `done-cancel-warn`, `ring-plain-amber`, `done-refused-chip` a vertical column of dither and a dither screen cover the door and about 400 px of paving; the guards in `done-watched-spot` are seen through it. Yaw 210 is good, yaw 30 is not. |
+| 2 | Guard amber ring hidden | **fixed.** `ring-plain-amber`: the amber dashed ring shows at the guard's feet and the eye marker sits below it. `ring-plain-out` is the same. |
+| 3 | `Firing at Vale's car` plate | **fixed.** Gun disc, bullet icon, `19 s`: no sentence, no gap. |
+| 4 | Bottom hint sentences | **fixed.** Gone from `done-window-soon`, `done-turn-chip` and the third-person frames. The goal line `Take Vale alive.` stays (allowed). |
+| 5 | Roster | **fixed.** Under-fire burst is cream with ink ticks; side plates are one gun icon, no words; no screw collision (bottom screws gone). Only the `Squad` plate and the 1 s / 19 s window bars carry text, as they should. |
+| 6 | Ring ticks on red rings | **not shown.** `ring-ours-bystander` and the range frames show the red aim rings with small ticks, cream now, but they are 1 px at 2x on the grey floor; I could not prove full alpha and ink edge. Low. |
+| 7 | Hover probe order | **not fixed, behaviour fine.** The 2160 pass still logs `rings range: hover FAILED [drawn; officers aim]; ours seen [..., bystander-1:Civilian:In:ours:hover]`. The same line in the game check says `ringHover ok: ...bystander-1:Civilian:In:hover`, so the hover ring works; the 2160 probe reads the rings before the drawing 1 s finishes (the frame shows the `Drawing` bar). It is the frame timing, not the ring. Make the probe wait for the drawn pill, then hover. |
+| 8 | Third-person `Let go` plate | **fixed.** Anchored under the roster at its size and centred (`hold-tp-fire`). |
+| 9 | `Guard back` pop opaque | **fixed.** `plate_dark` body, eye icon, no show-through (`ring-loop-names`, `done-guard-back`). |
+| 10 | Fire pill seam and glow | **fixed enough.** Stripe blocks sit clear of the screws, no visible seam at 2x; the ready glow is smooth (`hold-fire-ready`). The sweep ends mid-word at a hard edge, expected. |
+| 11 | Briefing card | **partly.** Stat row is Regular now and the build string no longer touches Begin. The in-game card is still the old kit: cream Begin / Day / Night plates (off the dark kit) and a chamfered turquoise box on Day. Same word-with-marker-and-line treatment as the new front end would fix it in one step (it is the last place with cream plates). |
+| 12 | Low items | **mixed.** Wheel has a rim line now (ok). Window-marker leader line gone (ok). The top-left face discs still use a plain bright turquoise ring and a stray white corner square (`ring-plain-amber`, 4 discs). The docked camera callout at the top edge is still a ghost disc (see below). |
+
+### Latch's three open notes
+- **Docked entrance-camera callout (`done-window-soon`, x 1700, y 0): not fixed.** A milky translucent disc with a red dashed ring, three red dots and a small face badge, with the building's edge showing through it, cut by the top of the screen and a "^" tip. It is not a kit piece. Make it the opaque `disc_dark_24` with the camera icon, the same disc as the eye marker, and keep the face badge as the chrome cameo.
+- **"Not yet" chip: fixed.** The chip now ends right after the word (`done-turn-chip`: face with half badge, target icon, "Not yet"); no empty body.
+- **"rings range: hover FAILED":** checked above (item 7): the probe, not the game.
+
+### Also seen (not mine; for Aster, Vela, Glint)
+- **Roof boxes**: big flat orange and yellow boxes on the rooftops (every play frame, left side, and the `tp-street-long` roofs) read as untextured placeholders. They are the loudest colour in the frame, louder than any HUD piece.
+- **Road finish** still powder blue-grey, no traffic.
+- **Long tier**: the park lawn is a flat green rectangle with 25 scattered palms; the plaza is blown out white.
+- **`game:check` exits 1** with `rulebook.values.mood-scared-fear.unit 'scale' is unknown` on stderr (`out/scratch/latch/game-check-0297.log`): a rulebook key the checker rejects. Keel's.
+
+### Ranked fix list for Latch
+1. **Building fade at yaw 30**: the flat grey slab (`ring-loop-names`) and the dither column and screen over the door and paving. Use the yaw 210 pattern (it reads); never fade the paving or the figures; no opaque cap.
+2. **Docked camera callout**: opaque `disc_dark_24` and icon.
+3. **Menu picture veil**: match the mockup's brightness (left and bottom scrims only).
+4. **Brief page**: fit the lead line on one line, no orphan, marker diamond for bullets.
+5. **Briefing card in game**: replace the cream plates with word + marker + line, and the Day/Night ring with the tab line.
+6. **Options**: hide the PLAYGROUND group; disabled chevrons at 25 %.
+7. **Top-left face discs**: chrome cameo ring, no white corner.
+8. **2160 hover probe**: wait for the drawn pill, then hover.
+9. World, for others: roof boxes, road finish, long-tier lawn and plaza exposure, haze band a step towards peach.
+
+### Best shots for Aster to show Sky
+1. `briefs/051/build/0297/2880x1864/menu.png` (the light-line menu at the Air's size; marker, line, no plates)
+2. `briefs/051/build/0297/1920x1080/options-gameplay.png` (tabs, tick and line row, group heads, chevrons) and `briefs/051/build/0297/1920x1080/controls-clash.png` (keycaps, the clash strip)
+3. `briefs/049/build/2160-0297/hold-fire-ready.png` (Let go pill) or `hold-act-ready.png`, whichever has the cleaner background; crop to the pill
+4. `briefs/049/build/2160-0297/commander-firing.png` (gun disc plate, roster burst, bubbles; the building column near the top is the flaw, crop it out)
+5. `briefs/048/build/0297/tp-street-long.jpg` (blue overhead, warm at distance: the answer to the 0.2.94 haze note)
+6. `briefs/055/build/0297/office-front-yaw210.png` (the fade done right, guard and door readable)
+
+Not to show: `ring-loop-names` (grey slab), `done-window-soon` (ghost disc, dither column), `done-watched-spot`, any `FightRange` frame (lab panel), `briefing` (cream plates).
+
+Next owner: Latch (items 1 to 8); Glint and Vela for the world notes; Keel for the `game:check` rulebook key; Glyph re-reviews the next re-shot at 2160 and the 2880 front end.
+
+## Review of 0.2.99 (Glyph, 2026-10-24)
+
+Re-review of the 8 items from "Review of 0.2.97". Shots: `briefs/051/build/0299/` (1920x1080, 2880x1864), `briefs/049/build/2160-0299/` (true 2x), `briefs/055/build/0299/`, `briefs/048/build/0299/`, `briefs/028/road/game-0299/`. Boards (git-ignored): `briefs/044/review-0.2.99-fade.png` (0.2.97 against 0.2.99), `-frontend.png`, `-hud.png` (native 2160 crops), `-road.png` (testbed board against the game). Crops: `out/scratch/glyph/r99/`.
+
+**Verdict: 7 of 8 fixed; the camera callout waits for the next build (Latch knows). The front end is ready to show. The fade is much better (paving is clean) but one grey roof slab and a hard vertical column remain. The road is now close to the testbed in the top-down views; the third-person boulevard still has painted-road bars.**
+
+### The 8 items
+| # | Item | State |
+|---|---|---|
+| 1 | Fade at yaw 30 | **mostly fixed.** The dots take the street's colour: the blue-tinted dither screen over paving and door is gone in `done-watched-spot`, `done-window-soon`, `ring-loop-names`, `levels-crew-steps` (compare the left and right columns of the fade board). Still seen: (a) the grey slab at the top right of `ring-loop-names`, `done-watched-spot` and `done-window-soon` (about 480 x 380 px at 2x): flat, one grey, no shading, with a ragged dither edge. Latch says it is the office wing's bare 15.68 m roof in shadow, not the fade; I accept that, but it is still the most wrong-looking patch in those frames (a roof needs its cream and a shade step, or a cap detail). Vela / Datum / Glint. (b) The fade is still a straight vertical column with hard edges: the café wall in `hold-act-ready` and the office in `levels-guard-landing` end in a vertical cut with the ghost wall beside it. Feather the column's two edges over about 100 px at 2x. Low-medium. |
+| 2 | Camera callout | **not yet (known).** `done-window-soon` and `done-guard-back` show the opaque disc is not drawn yet: the disc is milky and the building edge shows through (they were shot mid fade-in). The red eye pictogram and the face badge are right. Re-check on the next build; the test is one frame after the fade-in finishes, edge not visible through the disc. |
+| 3 | Menu veil | **fixed.** Sky band brightness 66 (0.2.97) to 92 (0.2.99), the right side warm again; only the left and bottom scrims remain. The top-left corner is still the darkest part of the picture; fine. |
+| 4 | Brief layout | **fixed.** Lead line on one line ("...carries it to Security."), no orphan, bullets are the marker diamond, Continue as word with marker and line. |
+| 5 | Briefing card | **fixed.** Day / Night are words with the tab line under Day; Begin is word, diamond, line. No cream plates left in the game. The card is the dark kit plate with screws and the dim build string. |
+| 6 | Options | **fixed.** No PLAYGROUND group in Gameplay (Orders / Fights only); Frame cap's chevrons and value are about 25 %. |
+| 7 | Top-edge face discs | **fixed.** Chrome ring, ink face, no white corner (`done-window-soon`). The roster cameos' selected ring (all four lit when Squad is on) is a saturated turquoise (about #22c8d8) rather than `--turquoise-light` #60e0ea. Low: check it against the token. |
+| 8 | Hover probe | **fixed.** `ringHover ok: drawn; waited 0.00 s; ... bystander-1:Civilian:In:hover` in `proof.json`; no FAILED line. |
+
+### The road against the testbed board (`briefs/028/road/boards/play-210-day.png`)
+- **Top-down (yaw 210 and 30): close.** Powder blue-grey enamel with a fine grain, cream lozenges, brass beads on the crossing (no brass on the lozenges), a pearl kerb line, mint pearls on the crossing strip. This is the testbed's road, no longer asphalt.
+- **Still different:** (1) the paving is pinker and mottled than the testbed's buff-gold pavement, and the testbed's gold kerb trim line is missing (the brass hairline is much thinner); (2) in shadow (`ring-loop-names`, `done-turn-chip`) the road falls to a deep navy slab, much darker than the testbed's shadowed road (Glint); (3) the grain is a little visible at 2x; the testbed's seam lines are cleaner.
+- **Third person boulevard (`road-enamel-boulevard-third`): not the testbed.** Wide solid white bars for lane and edge lines, a pale pink median band and a dark slab beside it read as a present-day road. The brief says markings need not be paint: use the cream lozenge row and fine seams (as in the top-down), and take the white bars out. The light enamel is right.
+
+### Also seen (not Latch's)
+- Roof boxes: orange and yellow flat boxes on rooftops, left in every play frame and the long view (placeholders; the loudest colour in the frame).
+- `tp-street-long`: the horizon band is a sand yellow again (more desert than peach; Glint's reflection cut is inert this build); the park lawn is a flat green rectangle; the plaza is blown out white.
+- FightRange frames show the lab panel (`hold-fire-ready`): do not use them in a show.
+
+### Ranked list
+1. Latch: camera callout opaque (item 2); feather the fade column edges.
+2. Vela / Datum / Glint: the grey roof slab; the shadowed road colour; the roof boxes; the horizon band.
+3. Vela: boulevard markings (lozenges and seams, no white bars); pavement tint and the gold kerb trim line.
+4. Latch: roster ring colour against `--turquoise-light`.
+
+### Best shots for Aster to show Sky
+1. `briefs/051/build/0299/2880x1864/menu.png` (light-line menu at the Air's size; marker, line, brighter sky)
+2. `briefs/051/build/0299/1920x1080/brief.png` (the brief page now fits: one-line lead, diamond bullets)
+3. `briefs/051/build/0299/1920x1080/options-gameplay.png` (clean tabs, tick and line row, no lab group) with `controls-clash.png`
+4. `briefs/049/build/2160-0299/hold-act-ready.png` (the Let go pill over the café; the fade column is visible, crop the pill and the left of the frame if Sky dislikes it)
+5. `briefs/049/build/2160-0299/commander-firing.png` (gun plate, roster burst, bubbles, a clean road; the building column near the top is the flaw, crop it)
+6. `briefs/055/build/0299/office-front-yaw210.png` (the fade done right at yaw 210, the road with lozenges and brass-beaded crossing)
+
+Not to show: `ring-loop-names`, `done-watched-spot`, `done-window-soon`, `done-guard-back` (grey slab, see-through callout), any FightRange frame, `road-enamel-boulevard-third` (painted-road bars).
+
+Next owner: Latch (callout and fade feathering on the next build); Vela, Datum, Glint for the world items; Glyph re-checks the callout frame after the next shot.

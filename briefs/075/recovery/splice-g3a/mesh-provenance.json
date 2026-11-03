@@ -1,0 +1,667 @@
+[
+  {
+    "id": "CafeUpper_3",
+    "meshSha256": "4b62ef0a2c35b2e39ec2c6104c256a5d5d6cb0784bf7d9fced95e3f63846c3d9",
+    "cacheSha256": "cb32252282dd34f2f16bc4875a45250e1f608ace0b3e9bbc8c1d2033e133d1e5",
+    "cacheSignature": "4b62ef0a2c35b2e39ec2c6104c256a5d5d6cb0784bf7d9fced95e3f63846c3d9:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeUpper_3.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "CafeBay_v2",
+    "meshSha256": "ea63f7e6dab2d19129ffbe41de15bd2f17773b66cee58e490118f4eed82533e1",
+    "cacheSha256": "56f9aeb1ceab08b9154f9b895bf5ed9eba3c94c53d185d6a744ed1f7fe4aa142",
+    "cacheSignature": "ea63f7e6dab2d19129ffbe41de15bd2f17773b66cee58e490118f4eed82533e1:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeBay_v2.fbx",
+    "historicalCatalogueSha256": "ea63f7e6dab2d19129ffbe41de15bd2f17773b66cee58e490118f4eed82533e1",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RecordsTower",
+    "meshSha256": "609a163aeb9a93626e2f97f01a97e8a2ad60839520966b0f596f51585237cfca",
+    "cacheSha256": "81cd8d6a7adb5fbc5679aa72a55636d7cec16c6c1cda0d02ab116f640dd1c150",
+    "cacheSignature": "609a163aeb9a93626e2f97f01a97e8a2ad60839520966b0f596f51585237cfca:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Landmarks/DK_RecordsTower.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "CivicCabinet",
+    "meshSha256": "df05f41b29a0cfc4f623ee8eee6137d95aaa463f71007536066cf81ba578dddb",
+    "cacheSha256": "807a08bc9e42340109e3a61b313ee497b46c4680a4daf41700102e01ff4e3c92",
+    "cacheSignature": "df05f41b29a0cfc4f623ee8eee6137d95aaa463f71007536066cf81ba578dddb:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Booths/DK_CivicCabinet.fbx",
+    "historicalCatalogueSha256": "df05f41b29a0cfc4f623ee8eee6137d95aaa463f71007536066cf81ba578dddb",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "UtilityCabinet",
+    "meshSha256": "0a25c9882d0de740089f8895f39759f2be880b2c43a868039c3796289087ff74",
+    "cacheSha256": "d7d48fba2ead23ec17d07efc90003b7599a6490088cce008f910b3cb83446297",
+    "cacheSignature": "0a25c9882d0de740089f8895f39759f2be880b2c43a868039c3796289087ff74:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Booths/DK_UtilityCabinet.fbx",
+    "historicalCatalogueSha256": "0a25c9882d0de740089f8895f39759f2be880b2c43a868039c3796289087ff74",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RecordsEntrance_Official",
+    "meshSha256": "569ca818367c689635e08d184bbb4a145c046ba987d2582a88f17dbaee8e49be",
+    "cacheSha256": "8559fab015b60185ce092429a058d0eb2b9f9c22627f07dc6966517e6ad59e34",
+    "cacheSignature": "569ca818367c689635e08d184bbb4a145c046ba987d2582a88f17dbaee8e49be:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_RecordsEntrance_Official.fbx",
+    "historicalCatalogueSha256": "569ca818367c689635e08d184bbb4a145c046ba987d2582a88f17dbaee8e49be",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BoardingPavilion_TB_Square",
+    "meshSha256": "5f6f1bf2d25cdcd7c8fa8f03744ec71759c212546a53265bf23c4ffcfa1b43bf",
+    "cacheSha256": "7372568074317ba178de06129650ade453e7cfb68db0e40372d11d61f4295b02",
+    "cacheSignature": "5f6f1bf2d25cdcd7c8fa8f03744ec71759c212546a53265bf23c4ffcfa1b43bf:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_BoardingPavilion_TB_Square.fbx",
+    "historicalCatalogueSha256": "5f6f1bf2d25cdcd7c8fa8f03744ec71759c212546a53265bf23c4ffcfa1b43bf",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RecordsEntrance",
+    "meshSha256": "c0bac4f96a01c7da6d65fe1a6a25d5ba9ff8b1eef53af2c3727954653dc0a9a4",
+    "cacheSha256": "8223f92e63c890f86e2f6cbc17b58191a7b728cc3519c411ce2f4f52887928a9",
+    "cacheSignature": "c0bac4f96a01c7da6d65fe1a6a25d5ba9ff8b1eef53af2c3727954653dc0a9a4:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_RecordsEntrance.fbx",
+    "historicalCatalogueSha256": "c0bac4f96a01c7da6d65fe1a6a25d5ba9ff8b1eef53af2c3727954653dc0a9a4",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "AtomFountain_Testbed",
+    "meshSha256": "9f6cd629fcdfd5709d6eb4b7d07e9091a78b2b258e8581d51cf6d37fd135e0dc",
+    "cacheSha256": "5d5b62815a5d0622f42ea76f7ac24b46a55dfb134b8e178435b8237cd6cd30f2",
+    "cacheSignature": "9f6cd629fcdfd5709d6eb4b7d07e9091a78b2b258e8581d51cf6d37fd135e0dc:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_AtomFountain_Testbed.fbx",
+    "historicalCatalogueSha256": "9f6cd629fcdfd5709d6eb4b7d07e9091a78b2b258e8581d51cf6d37fd135e0dc",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PlanterArc",
+    "meshSha256": "c0f13ba5b316b3138de358a7c62f28f6d7d2170d74b8306d6f05c47e56d19235",
+    "cacheSha256": "80cdfb47c7ce2a22f42617eb5d7dfe3964f1008667866b87a52ed6d986840afb",
+    "cacheSignature": "c0f13ba5b316b3138de358a7c62f28f6d7d2170d74b8306d6f05c47e56d19235:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterArc.fbx",
+    "historicalCatalogueSha256": "c0f13ba5b316b3138de358a7c62f28f6d7d2170d74b8306d6f05c47e56d19235",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "OvalPlanter",
+    "meshSha256": "4e61ee7763c272f3334aecd40369137344994f7cfa97299d439abe000434b27a",
+    "cacheSha256": "d179d17cb9758d2c3b7c032d00967ce1bc81586857654c130adcd92f605e6c0a",
+    "cacheSignature": "4e61ee7763c272f3334aecd40369137344994f7cfa97299d439abe000434b27a:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_OvalPlanter.fbx",
+    "historicalCatalogueSha256": "4e61ee7763c272f3334aecd40369137344994f7cfa97299d439abe000434b27a",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeSet_Tulip_Play",
+    "meshSha256": "43a45b26dee6fc1c3e78f35d9c7d2b33ec26d33fd1616aadaf88a7230574e202",
+    "cacheSha256": "cbfd8beb4947caf28a789157ed9e3fe8688b80e769973ba97b22777cc789b577",
+    "cacheSignature": "43a45b26dee6fc1c3e78f35d9c7d2b33ec26d33fd1616aadaf88a7230574e202:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_CafeSet_Tulip_Play.fbx",
+    "historicalCatalogueSha256": "43a45b26dee6fc1c3e78f35d9c7d2b33ec26d33fd1616aadaf88a7230574e202",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PottedPalm_Small",
+    "meshSha256": "68e9780a172f6bf2016f5b28b685dbcb0c9c3ffed032f5c9252308dfb1b83b62",
+    "cacheSha256": "7534dbd583d65dcb307033ac34a23e9395e877e258a1eb80168be294d66699f1",
+    "cacheSignature": "68e9780a172f6bf2016f5b28b685dbcb0c9c3ffed032f5c9252308dfb1b83b62:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small.fbx",
+    "historicalCatalogueSha256": "68e9780a172f6bf2016f5b28b685dbcb0c9c3ffed032f5c9252308dfb1b83b62",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeLamp_Testbed_Coral",
+    "meshSha256": "cd4afd4a918f5499e638d042c9fe8e1da2a7bba0a7a4cf5f31cb653c2eeeaccf",
+    "cacheSha256": "5dd971f9a3e790e1b1ac259ffb34d3beb392952e1a087eb81b1991479df0b699",
+    "cacheSignature": "cd4afd4a918f5499e638d042c9fe8e1da2a7bba0a7a4cf5f31cb653c2eeeaccf:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeLamp_Testbed_Coral.fbx",
+    "historicalCatalogueSha256": "cd4afd4a918f5499e638d042c9fe8e1da2a7bba0a7a4cf5f31cb653c2eeeaccf",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeLamp_Testbed_Amber",
+    "meshSha256": "698df5cb837c70a418f598c1d98d2f681abfb6a2072e24bb644c32cd18d7b5e1",
+    "cacheSha256": "5e1cbc5d83e192979da5e141aed76b81b47f90f99845a42ead31682a30d4354d",
+    "cacheSignature": "698df5cb837c70a418f598c1d98d2f681abfb6a2072e24bb644c32cd18d7b5e1:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeLamp_Testbed_Amber.fbx",
+    "historicalCatalogueSha256": "698df5cb837c70a418f598c1d98d2f681abfb6a2072e24bb644c32cd18d7b5e1",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeLamp_Testbed_Peach",
+    "meshSha256": "da31f644d8de4fd3e84f8d1d4cf8417d275bf40781f6b5e754f9995aa582f44c",
+    "cacheSha256": "dbe3ed46db8edd85b1feac8d90b3ce06bc2901aa164dc87eec95781774b8ae93",
+    "cacheSignature": "da31f644d8de4fd3e84f8d1d4cf8417d275bf40781f6b5e754f9995aa582f44c:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeLamp_Testbed_Peach.fbx",
+    "historicalCatalogueSha256": "da31f644d8de4fd3e84f8d1d4cf8417d275bf40781f6b5e754f9995aa582f44c",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeLamp_Testbed_Teal",
+    "meshSha256": "f6618df056bd44521cba9a1ed361124c09bff727ddd6cfc7600e2f6fdc6edc29",
+    "cacheSha256": "4840598374127758b9457cf7e89c35184ad6bbd737c99c1be37f3138afaceb33",
+    "cacheSignature": "f6618df056bd44521cba9a1ed361124c09bff727ddd6cfc7600e2f6fdc6edc29:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeLamp_Testbed_Teal.fbx",
+    "historicalCatalogueSha256": "f6618df056bd44521cba9a1ed361124c09bff727ddd6cfc7600e2f6fdc6edc29",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeLamp_Testbed_Lilac",
+    "meshSha256": "d9722128ed500cbe6446cb25c32461b7762a6cc4b7fc103ac962eed034f81324",
+    "cacheSha256": "9b806c9a5831ab62a7e4b4c2f706bb6cf18a3caa0894b7a2789335f13d09acaa",
+    "cacheSignature": "d9722128ed500cbe6446cb25c32461b7762a6cc4b7fc103ac962eed034f81324:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeLamp_Testbed_Lilac.fbx",
+    "historicalCatalogueSha256": "d9722128ed500cbe6446cb25c32461b7762a6cc4b7fc103ac962eed034f81324",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeInterior_Testbed",
+    "meshSha256": "af9ff944beacb9211366c6bd3de987c9f71404356dba7582fd43e30894b1cc04",
+    "cacheSha256": "983d248d0436c660c9b2428fabbefad8f83d073f738643a869810fb0d8f6a6be",
+    "cacheSignature": "af9ff944beacb9211366c6bd3de987c9f71404356dba7582fd43e30894b1cc04:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeInterior_Testbed.fbx",
+    "historicalCatalogueSha256": "af9ff944beacb9211366c6bd3de987c9f71404356dba7582fd43e30894b1cc04",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CafeTerrace",
+    "meshSha256": "ca928e188ae729a32562a19791997bbd7cd8a09780f0c6338b8cbece7ceae3af",
+    "cacheSha256": "7de7d23fc6ace9813a17a62477b3c003b38af51aa1c6cc8acb4058f0763983ba",
+    "cacheSignature": "ca928e188ae729a32562a19791997bbd7cd8a09780f0c6338b8cbece7ceae3af:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_CafeTerrace.fbx",
+    "historicalCatalogueSha256": "ca928e188ae729a32562a19791997bbd7cd8a09780f0c6338b8cbece7ceae3af",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Parasol_Testbed",
+    "meshSha256": "efe842c2a8833d7ad8edffb7ae4d42e31c7101820c0e0b5bb93d599fac26a717",
+    "cacheSha256": "586e9a1fb97494036c75fa4f1346a8dc881ebc1d0abefc476c3e3659b170c6b5",
+    "cacheSignature": "efe842c2a8833d7ad8edffb7ae4d42e31c7101820c0e0b5bb93d599fac26a717:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_Parasol_Testbed.fbx",
+    "historicalCatalogueSha256": "efe842c2a8833d7ad8edffb7ae4d42e31c7101820c0e0b5bb93d599fac26a717",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PlazaSphereLamp_Play",
+    "meshSha256": "6cec8e5f1469eaf5d0aee413d98e6ffda1ce65e07370ec3e8f17b61660333df8",
+    "cacheSha256": "11db9e4c37eb990d7d2c1041466e89aaf3ab0224297353c5fcd276bb62dbf4ee",
+    "cacheSignature": "6cec8e5f1469eaf5d0aee413d98e6ffda1ce65e07370ec3e8f17b61660333df8:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Signals/DK_PlazaSphereLamp_Play.fbx",
+    "historicalCatalogueSha256": "6cec8e5f1469eaf5d0aee413d98e6ffda1ce65e07370ec3e8f17b61660333df8",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BollardSphere",
+    "meshSha256": "de2e50ff7a37a3deeb5887ed8f03665c62516638f6d260ccbdcd80fe871118a4",
+    "cacheSha256": "1190001e05d9932fcadc8935ad2be7d28909c41333ba1a7e0a625f41252f7d51",
+    "cacheSignature": "de2e50ff7a37a3deeb5887ed8f03665c62516638f6d260ccbdcd80fe871118a4:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_BollardSphere.fbx",
+    "historicalCatalogueSha256": "de2e50ff7a37a3deeb5887ed8f03665c62516638f6d260ccbdcd80fe871118a4",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PlanterRun_4_A",
+    "meshSha256": "7ea6912a80d347adf511fc8ba42265b8fa7866d8aaabc65b3128dbc1af0fb4ee",
+    "cacheSha256": "cc3b436ed5bfaa72dbd08a2e76f1da351aae487553c241921cf174dbce1d8a7a",
+    "cacheSignature": "7ea6912a80d347adf511fc8ba42265b8fa7866d8aaabc65b3128dbc1af0fb4ee:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_A.fbx",
+    "historicalCatalogueSha256": "7ea6912a80d347adf511fc8ba42265b8fa7866d8aaabc65b3128dbc1af0fb4ee",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PlanterRun_4_B",
+    "meshSha256": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069",
+    "cacheSha256": "2c89342d73b71cdd4e610ec38b70a11f856d4717caccb5303e7df35f7609b9c3",
+    "cacheSignature": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_B.fbx",
+    "historicalCatalogueSha256": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PlanterRun_4_C",
+    "meshSha256": "466bb11446a429b85ca2bdf4c4f0492bc9ea38a037ad8ac6b0a0fd22da9b9df1",
+    "cacheSha256": "a486a50d093f784b4942c4f991f9dd640e46dcc7ec42e0d50aa9c2ac843238d7",
+    "cacheSignature": "466bb11446a429b85ca2bdf4c4f0492bc9ea38a037ad8ac6b0a0fd22da9b9df1:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_C.fbx",
+    "historicalCatalogueSha256": "466bb11446a429b85ca2bdf4c4f0492bc9ea38a037ad8ac6b0a0fd22da9b9df1",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Cypress_Play",
+    "meshSha256": "1b46557c58fec23db02670f7013eecc53a7a3ec88a5748f0b2316a95af1b96d1",
+    "cacheSha256": "0ac4df79c759ed72e4869cc15c0bee629eeb60b91e292c2ee5df7dc6b4485a61",
+    "cacheSignature": "1b46557c58fec23db02670f7013eecc53a7a3ec88a5748f0b2316a95af1b96d1:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_Cypress_Play.fbx",
+    "historicalCatalogueSha256": "1b46557c58fec23db02670f7013eecc53a7a3ec88a5748f0b2316a95af1b96d1",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PottedTopiary_Play",
+    "meshSha256": "595f5c6f005db74c604f2dc7fac116865b901d70f281f6c241395a04fa8692c0",
+    "cacheSha256": "ef3fa61a8469b0db888c1b26b61aebd8082861b68454308e6dd372cb7c2bf9ba",
+    "cacheSignature": "595f5c6f005db74c604f2dc7fac116865b901d70f281f6c241395a04fa8692c0:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_PottedTopiary_Play.fbx",
+    "historicalCatalogueSha256": "595f5c6f005db74c604f2dc7fac116865b901d70f281f6c241395a04fa8692c0",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BedTuft_A",
+    "meshSha256": "a59a82ea5e6e369f8f910cf08af1d5678fcb06b8603eb21cf8106b8f9320c10d",
+    "cacheSha256": "b924860ed6bf299881701e62749a3ff11babfa589309124f44a1e87991f139a6",
+    "cacheSignature": "a59a82ea5e6e369f8f910cf08af1d5678fcb06b8603eb21cf8106b8f9320c10d:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_BedTuft_A.fbx",
+    "historicalCatalogueSha256": "a59a82ea5e6e369f8f910cf08af1d5678fcb06b8603eb21cf8106b8f9320c10d",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BedTuft_B",
+    "meshSha256": "683c0959a0c603eae047f9b49d89cc919995b226565489815a00974c63867543",
+    "cacheSha256": "72ff671ccaca4ea34eee20e1fb92b7bebd03f82049333d0c0e9325a09737fbbb",
+    "cacheSignature": "683c0959a0c603eae047f9b49d89cc919995b226565489815a00974c63867543:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_BedTuft_B.fbx",
+    "historicalCatalogueSha256": "683c0959a0c603eae047f9b49d89cc919995b226565489815a00974c63867543",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BedTuft_C",
+    "meshSha256": "fafafc8fb329b4c1c6c8085393f10b1f6d31f21eccd824b9568925d4b01cfe60",
+    "cacheSha256": "6e66bae0c7347d086b2c3aefc80e977c48a4afad54f93b993104c4018ac93e08",
+    "cacheSignature": "fafafc8fb329b4c1c6c8085393f10b1f6d31f21eccd824b9568925d4b01cfe60:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plaza/DK_BedTuft_C.fbx",
+    "historicalCatalogueSha256": "fafafc8fb329b4c1c6c8085393f10b1f6d31f21eccd824b9568925d4b01cfe60",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "StreamCorner_4",
+    "meshSha256": "0c3c9146bb3113bc16b7019e4e71126dfa6b3a0bcb6db84bdc1c70d4f78cfa3a",
+    "cacheSha256": "d600e14744349a7558bcb2a3385713870a2599d9ec0f0022863e43af3a340ad9",
+    "cacheSignature": "0c3c9146bb3113bc16b7019e4e71126dfa6b3a0bcb6db84bdc1c70d4f78cfa3a:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Facades/DK_StreamCorner_4.fbx",
+    "historicalCatalogueSha256": "0c3c9146bb3113bc16b7019e4e71126dfa6b3a0bcb6db84bdc1c70d4f78cfa3a",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "StreamBay_4",
+    "meshSha256": "37df2e55faa0e67b1eacdd70930a2591d646181d9144183b3b5aa8732eb1473b",
+    "cacheSha256": "4a51fa007b513beff9d9ec302864dc81e2f5dedf33a73a6b5213c345fc28af38",
+    "cacheSignature": "37df2e55faa0e67b1eacdd70930a2591d646181d9144183b3b5aa8732eb1473b:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Facades/DK_StreamBay_4.fbx",
+    "historicalCatalogueSha256": "37df2e55faa0e67b1eacdd70930a2591d646181d9144183b3b5aa8732eb1473b",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "StreamBay_3W",
+    "meshSha256": "98576fa7d5cc51e314943517476ac359cc7e1e543eb349faf237306a3cc6d956",
+    "cacheSha256": "eda7eef5d2d547e24f54df96187b2378e35b558c36038b178c386eab4e6f91a7",
+    "cacheSignature": "98576fa7d5cc51e314943517476ac359cc7e1e543eb349faf237306a3cc6d956:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Facades/DK_StreamBay_3W.fbx",
+    "historicalCatalogueSha256": "98576fa7d5cc51e314943517476ac359cc7e1e543eb349faf237306a3cc6d956",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "ShopFill_4",
+    "meshSha256": "d1dca760381f9ebbe9934d5e11c453319771b8fcd30033639e3d647dfc4ee111",
+    "cacheSha256": "6f06bce4a71d427f88c6ad2884026dd4fb57349df04cccdbf25875d989e2f886",
+    "cacheSignature": "d1dca760381f9ebbe9934d5e11c453319771b8fcd30033639e3d647dfc4ee111:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_ShopFill_4.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "SidePilaster_4",
+    "meshSha256": "a44349834cdb4efd0e0dd20b42f9f6fc2f3cac87b1963058babd3cc7974b5f8d",
+    "cacheSha256": "cfc224050542338d6c8579bce15c2cbcc75423ccda6e523c01d1b1fbd81b26b4",
+    "cacheSignature": "a44349834cdb4efd0e0dd20b42f9f6fc2f3cac87b1963058babd3cc7974b5f8d:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_SidePilaster_4.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "SideBayStack_Top",
+    "meshSha256": "a1c106a5adff7196df54244c47348c8ed3bfc4c193c3f7505f82e2fe30167f52",
+    "cacheSha256": "70f77f7be63db470183a9ead25aeaba1bad6d317efefcd7af51ac6d24184129a",
+    "cacheSignature": "a1c106a5adff7196df54244c47348c8ed3bfc4c193c3f7505f82e2fe30167f52:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_SideBayStack_Top.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "SidePilaster_3",
+    "meshSha256": "27952f900df9841d2792e54cf6614cc5c9b7fc52c6ed6035d54dd093820c9792",
+    "cacheSha256": "b80706ea28fa9bcbce18916b154b7d973c9def653c325be9ece8214925c2b7fc",
+    "cacheSignature": "27952f900df9841d2792e54cf6614cc5c9b7fc52c6ed6035d54dd093820c9792:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_SidePilaster_3.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "ShopFill_3",
+    "meshSha256": "a3333c5b6ecb4b99bc17e655f202817f04aae1c0e105bca3eddafb67b3b8facd",
+    "cacheSha256": "6306f51e384672da287f13af6ca41d274f3aa70cb2601a166ec604e5be02390e",
+    "cacheSignature": "a3333c5b6ecb4b99bc17e655f202817f04aae1c0e105bca3eddafb67b3b8facd:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_ShopFill_3.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "CornerPier_Out_Top",
+    "meshSha256": "afed9436253892d4ea53d35d22c52fc4c362313f6967bcbdaf09ea20473294ea",
+    "cacheSha256": "48709ab23f09c69d45c3328d156622894832cc5ac66f35035cdd185656ae6a59",
+    "cacheSignature": "afed9436253892d4ea53d35d22c52fc4c362313f6967bcbdaf09ea20473294ea:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_CornerPier_Out_Top.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "SidePilaster_Top",
+    "meshSha256": "d84761e5877a24ffd7d0c7257969d794146a557550ad14a11705240778c58a85",
+    "cacheSha256": "d0c45fc1a9617afd2c3066032b666f72670d56da943e28885a56c85bb4fa21c6",
+    "cacheSignature": "d84761e5877a24ffd7d0c7257969d794146a557550ad14a11705240778c58a85:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_SidePilaster_Top.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "SideBay_4",
+    "meshSha256": "634e3cee2ea385bf12bf8e76de694ba11177c99745b597ba940f528c6a5c7a71",
+    "cacheSha256": "051ddfdcf97d563f9287f1f0947cb858141dbb7ba81cebff4864bd5e83a22376",
+    "cacheSignature": "634e3cee2ea385bf12bf8e76de694ba11177c99745b597ba940f528c6a5c7a71:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Sides/DK_SideBay_4.fbx",
+    "historicalMeshMatches": false
+  },
+  {
+    "id": "CoconutPalm",
+    "meshSha256": "176c68fb316683a4241813afb6941f131972eb1969809bc15587c536b6461ef0",
+    "cacheSha256": "3cdf739df3321deeca93d44dfa371852e536cfd08a8009e061fdbf8cc4123cd5",
+    "cacheSignature": "176c68fb316683a4241813afb6941f131972eb1969809bc15587c536b6461ef0:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_CoconutPalm.fbx",
+    "historicalCatalogueSha256": "176c68fb316683a4241813afb6941f131972eb1969809bc15587c536b6461ef0",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PlazaSphereLamp",
+    "meshSha256": "38be277ee964baea5156c294f2e9bd6effc4745457adad5d5a8d8398059ead7d",
+    "cacheSha256": "59c095a9ae15e05381bd671cc09c69711639dfc53babf657cfd00380f43bf373",
+    "cacheSignature": "38be277ee964baea5156c294f2e9bd6effc4745457adad5d5a8d8398059ead7d:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Signals/DK_PlazaSphereLamp.fbx",
+    "historicalCatalogueSha256": "38be277ee964baea5156c294f2e9bd6effc4745457adad5d5a8d8398059ead7d",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Bench",
+    "meshSha256": "11433de7c420a5a0b6b9498a64bd59c65e27929f784ef0a6f33720f1c69c9822",
+    "cacheSha256": "60b4464624183bc3f11b56a072976d028985ea00c321995534daf4484cbe82f2",
+    "cacheSignature": "11433de7c420a5a0b6b9498a64bd59c65e27929f784ef0a6f33720f1c69c9822:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_Bench.fbx",
+    "historicalCatalogueSha256": "11433de7c420a5a0b6b9498a64bd59c65e27929f784ef0a6f33720f1c69c9822",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RecyclingBins",
+    "meshSha256": "081f19352ee56b925cbc7cfd07d4435c8ad3c53d5a53d688f29031ec0742ad49",
+    "cacheSha256": "c533ddd3ef9b43ccb3492dead328b4166f25caccf0f87585432ab7e7be6449a2",
+    "cacheSignature": "081f19352ee56b925cbc7cfd07d4435c8ad3c53d5a53d688f29031ec0742ad49:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_RecyclingBins.fbx",
+    "historicalCatalogueSha256": "081f19352ee56b925cbc7cfd07d4435c8ad3c53d5a53d688f29031ec0742ad49",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Streetlamp",
+    "meshSha256": "73bbb66befc3615d3d5345f65b9ce5609e9bd3090b133b945a6451232811e1b6",
+    "cacheSha256": "b5fab8f101e5b869123cf67a60527bfb96b0a11681624c01b3b1d0085a3839e2",
+    "cacheSignature": "73bbb66befc3615d3d5345f65b9ce5609e9bd3090b133b945a6451232811e1b6:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_Streetlamp.fbx",
+    "historicalCatalogueSha256": "73bbb66befc3615d3d5345f65b9ce5609e9bd3090b133b945a6451232811e1b6",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Hydrant",
+    "meshSha256": "11acfc119e04ab703a36ea16258a0a83e6dc0d37266e0ffb0f30b807cc684141",
+    "cacheSha256": "c5785ec713f9f4f912a800f376d141d27dba4dfbcf81fe7beaeed40b7e01d744",
+    "cacheSignature": "11acfc119e04ab703a36ea16258a0a83e6dc0d37266e0ffb0f30b807cc684141:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_Hydrant.fbx",
+    "historicalCatalogueSha256": "11acfc119e04ab703a36ea16258a0a83e6dc0d37266e0ffb0f30b807cc684141",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Bollard",
+    "meshSha256": "ffb5cddf8db1388e6f5b5008d7c4f66ecc5be44e97b302d710a97ae487ae20e1",
+    "cacheSha256": "345d2eda4af3ef275038a921da0134695b6b6f74c6af3f5e7988c4bb74607ea5",
+    "cacheSignature": "ffb5cddf8db1388e6f5b5008d7c4f66ecc5be44e97b302d710a97ae487ae20e1:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_Bollard.fbx",
+    "historicalCatalogueSha256": "ffb5cddf8db1388e6f5b5008d7c4f66ecc5be44e97b302d710a97ae487ae20e1",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "CoconutPalm_Street",
+    "meshSha256": "e6d054ab65db274d6c665acd997689b31e0413505fbe9368c75059ef950f7e0a",
+    "cacheSha256": "45f6160c49f13c8c4c1ee2b8aa5b9afa59556344cf39bfe8d114eda90e1b0eeb",
+    "cacheSignature": "e6d054ab65db274d6c665acd997689b31e0413505fbe9368c75059ef950f7e0a:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_CoconutPalm_Street.fbx",
+    "historicalCatalogueSha256": "e6d054ab65db274d6c665acd997689b31e0413505fbe9368c75059ef950f7e0a",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RobotWaiter",
+    "meshSha256": "7864b106cc42e5a2b2188c487c72fb60a6abf3b195dc02981ee01ae613a976d0",
+    "cacheSha256": "69e7abf7c016a1af2e5228f7b0feba4def50bca1335faae080d57df1bdca75bc",
+    "cacheSignature": "7864b106cc42e5a2b2188c487c72fb60a6abf3b195dc02981ee01ae613a976d0:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Robots/DK_RobotWaiter.fbx",
+    "historicalCatalogueSha256": "7864b106cc42e5a2b2188c487c72fb60a6abf3b195dc02981ee01ae613a976d0",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RobotShopkeeper",
+    "meshSha256": "f211c26f28a16148560ceb1a4ee7927be07c4c76aa93df249d7eb6e49ec0b0a1",
+    "cacheSha256": "f84538e556be39bc2ecbf8902e63e5ede3d81b0a54f8a1e48f9fd00f0f605425",
+    "cacheSignature": "f211c26f28a16148560ceb1a4ee7927be07c4c76aa93df249d7eb6e49ec0b0a1:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Robots/DK_RobotShopkeeper.fbx",
+    "historicalCatalogueSha256": "f211c26f28a16148560ceb1a4ee7927be07c4c76aa93df249d7eb6e49ec0b0a1",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RobotButler",
+    "meshSha256": "47b36e6c57eaf2eecfdb2718ebe0e2c920cd37931767859ae927c5e755f105fb",
+    "cacheSha256": "0c4e980842d427da44d56276c9f07a6df1159223a312a2ed5d4db2567f84857d",
+    "cacheSignature": "47b36e6c57eaf2eecfdb2718ebe0e2c920cd37931767859ae927c5e755f105fb:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Robots/DK_RobotButler.fbx",
+    "historicalCatalogueSha256": "47b36e6c57eaf2eecfdb2718ebe0e2c920cd37931767859ae927c5e755f105fb",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "VendingMachine_Cola",
+    "meshSha256": "1ffba1216415a18094171e312160cf3374a6a7944c30976594d3c181c5f83de9",
+    "cacheSha256": "a47ada828cf32c4b021ce0d41b3f0c8f09c97199c3cd61e6fdae47cbd85bad79",
+    "cacheSignature": "1ffba1216415a18094171e312160cf3374a6a7944c30976594d3c181c5f83de9:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_VendingMachine_Cola.fbx",
+    "historicalCatalogueSha256": "1ffba1216415a18094171e312160cf3374a6a7944c30976594d3c181c5f83de9",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "VendingMachine_Snack",
+    "meshSha256": "06c8af7db65d7ac8cde22773713288c52785f321330bb0fd86b107dfd6337531",
+    "cacheSha256": "b6d242ce528dd035746c99e78ed23b1a1e369d5fa4fbd3a0a50b23a0282494c1",
+    "cacheSignature": "06c8af7db65d7ac8cde22773713288c52785f321330bb0fd86b107dfd6337531:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_VendingMachine_Snack.fbx",
+    "historicalCatalogueSha256": "06c8af7db65d7ac8cde22773713288c52785f321330bb0fd86b107dfd6337531",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Automat",
+    "meshSha256": "93ae1fe0dc30418037326b759b77f8b51e4d8baa4737584c23c90aa28d3726b9",
+    "cacheSha256": "537065086be28d2eb916065c1ba79d02c8779e9a3830bac7f9d6b5e6a6ba07b5",
+    "cacheSignature": "93ae1fe0dc30418037326b759b77f8b51e4d8baa4737584c23c90aa28d3726b9:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_Automat.fbx",
+    "historicalCatalogueSha256": "93ae1fe0dc30418037326b759b77f8b51e4d8baa4737584c23c90aa28d3726b9",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "SandwichBoard",
+    "meshSha256": "08a50d5b547966db830cf6f69752fdb287056010e72929cbfd967d04c8ff647f",
+    "cacheSha256": "08976c25471e1a13aa3b63aebc9beaccb98b6216ce9b1e7b7cd6d8258330daa6",
+    "cacheSignature": "08a50d5b547966db830cf6f69752fdb287056010e72929cbfd967d04c8ff647f:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Signage/DK_SandwichBoard.fbx",
+    "historicalCatalogueSha256": "08a50d5b547966db830cf6f69752fdb287056010e72929cbfd967d04c8ff647f",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "HangingBasket",
+    "meshSha256": "4078456aa71e99be428b62022f53a0a579ba3e0829586a2d0973cc3ae5c69ad4",
+    "cacheSha256": "af3aefb33dbc28ddfb8d1d6e0e82c3be95212e75ca0fb7f46c25965b3b2be248",
+    "cacheSignature": "4078456aa71e99be428b62022f53a0a579ba3e0829586a2d0973cc3ae5c69ad4:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx",
+    "historicalCatalogueSha256": "4078456aa71e99be428b62022f53a0a579ba3e0829586a2d0973cc3ae5c69ad4",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Lockers",
+    "meshSha256": "273afb7f823f84ff37497985eb66309b992f52ed654fed16642491ec8e134ed9",
+    "cacheSha256": "c9012e15f0067076dd95f276c8215e7dbcdcafcd4e39e20661b70da68dafefa3",
+    "cacheSignature": "273afb7f823f84ff37497985eb66309b992f52ed654fed16642491ec8e134ed9:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Booths/DK_Lockers.fbx",
+    "historicalCatalogueSha256": "273afb7f823f84ff37497985eb66309b992f52ed654fed16642491ec8e134ed9",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PottedTopiary",
+    "meshSha256": "9a5cd8d31eeec665bfb7dfb025601e2829c3888a6287e890194ef3c5824fe6fc",
+    "cacheSha256": "d009e40ccfc38569b4e36f37a04aee2d4af7f20d16e701ac79f2493174ef7dc2",
+    "cacheSignature": "9a5cd8d31eeec665bfb7dfb025601e2829c3888a6287e890194ef3c5824fe6fc:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_PottedTopiary.fbx",
+    "historicalCatalogueSha256": "9a5cd8d31eeec665bfb7dfb025601e2829c3888a6287e890194ef3c5824fe6fc",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "TopiaryCone",
+    "meshSha256": "39ecc392ab23152d40438033268aacc0bb643894b736fb30bb22e02d574ff96b",
+    "cacheSha256": "2051944acc955d210ec325a43b5c6d16825ac3652540589e4db77550a46ca5c7",
+    "cacheSignature": "39ecc392ab23152d40438033268aacc0bb643894b736fb30bb22e02d574ff96b:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_TopiaryCone.fbx",
+    "historicalCatalogueSha256": "39ecc392ab23152d40438033268aacc0bb643894b736fb30bb22e02d574ff96b",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "FlowerBed",
+    "meshSha256": "d604de5b82e2155d4611a7b31b42a1b37335f8b92a20fb8c8bd5faa34d1df199",
+    "cacheSha256": "9971cca5ab7db146b31cc7cfcb2f82db84c93d1d0a823db8aab49ffa640fd95d",
+    "cacheSignature": "d604de5b82e2155d4611a7b31b42a1b37335f8b92a20fb8c8bd5faa34d1df199:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_FlowerBed.fbx",
+    "historicalCatalogueSha256": "d604de5b82e2155d4611a7b31b42a1b37335f8b92a20fb8c8bd5faa34d1df199",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "Planter_Urn_Play",
+    "meshSha256": "ad417ea790fb928625ce9f1fa3f068ed5949718bb3039b039aecf3a3e7ac0b0a",
+    "cacheSha256": "04280dc937006d9357dad5707b4568e49bd6ab1c73663d2741c48d1f7cfb9fb4",
+    "cacheSignature": "ad417ea790fb928625ce9f1fa3f068ed5949718bb3039b039aecf3a3e7ac0b0a:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_Planter_Urn_Play.fbx",
+    "historicalCatalogueSha256": "ad417ea790fb928625ce9f1fa3f068ed5949718bb3039b039aecf3a3e7ac0b0a",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "WindowBox",
+    "meshSha256": "0c63d6ee0fabe9104a88e7d780dc3291f8d2621dcd147c29e87677ab27620dc9",
+    "cacheSha256": "bd211b004fe9f192b7e5a4c379162c38ea49626b992d40629ca97b7091b0541e",
+    "cacheSignature": "0c63d6ee0fabe9104a88e7d780dc3291f8d2621dcd147c29e87677ab27620dc9:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_WindowBox.fbx",
+    "historicalCatalogueSha256": "0c63d6ee0fabe9104a88e7d780dc3291f8d2621dcd147c29e87677ab27620dc9",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "ShrubMound",
+    "meshSha256": "f956fdd82a7e077e2411660d685254498c88d72e47bdb911ceb0882089acccb7",
+    "cacheSha256": "d40cf5474386e80712d98130c2631edd6f7388aa5c0843740113464d4f3b8b96",
+    "cacheSignature": "f956fdd82a7e077e2411660d685254498c88d72e47bdb911ceb0882089acccb7:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Plants/DK_ShrubMound.fbx",
+    "historicalCatalogueSha256": "f956fdd82a7e077e2411660d685254498c88d72e47bdb911ceb0882089acccb7",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BikeRack",
+    "meshSha256": "49aa96461fe55c343aba0919994559605ca35a0a3e51855a48406df6d7d25329",
+    "cacheSha256": "a471f2e2b93b010a37be5b89229913eca855cf22565b352f1b2707fcb55e2751",
+    "cacheSignature": "49aa96461fe55c343aba0919994559605ca35a0a3e51855a48406df6d7d25329:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Street/DK_BikeRack.fbx",
+    "historicalCatalogueSha256": "49aa96461fe55c343aba0919994559605ca35a0a3e51855a48406df6d7d25329",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "InfoLightbox",
+    "meshSha256": "3b3f36cd2f90566ab1a00fb5560b16b07ed7b5af861f15e7da63aadf025da836",
+    "cacheSha256": "51b86e506350a17c578f369cac3bb3fef21e4e6f0d924a4a0d4607b6e5ec387a",
+    "cacheSignature": "3b3f36cd2f90566ab1a00fb5560b16b07ed7b5af861f15e7da63aadf025da836:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Signals/DK_InfoLightbox.fbx",
+    "historicalCatalogueSha256": "3b3f36cd2f90566ab1a00fb5560b16b07ed7b5af861f15e7da63aadf025da836",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RobotNanny",
+    "meshSha256": "9fdeb28a02385244aed4c98d7031b1d24c9729dd678cbce498674ead31de33dd",
+    "cacheSha256": "572dc938acdfe7a349f5687ba3bf953f2ae37c7cd841867a617f4d931e4ccdca",
+    "cacheSignature": "9fdeb28a02385244aed4c98d7031b1d24c9729dd678cbce498674ead31de33dd:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Robots/DK_RobotNanny.fbx",
+    "historicalCatalogueSha256": "9fdeb28a02385244aed4c98d7031b1d24c9729dd678cbce498674ead31de33dd",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "RoundBench",
+    "meshSha256": "71fb9788d8feffcf4a507a62dbcface4552d620e81b0c01c3c9f6461dd9fe998",
+    "cacheSha256": "96b9532ed015aca744981b3d3cc10a2be21be5cbe73255c687f9ac24341a8527",
+    "cacheSignature": "71fb9788d8feffcf4a507a62dbcface4552d620e81b0c01c3c9f6461dd9fe998:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Furnish/DK_RoundBench.fbx",
+    "historicalCatalogueSha256": "71fb9788d8feffcf4a507a62dbcface4552d620e81b0c01c3c9f6461dd9fe998",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PhoneBooth",
+    "meshSha256": "0eb942fafdbbd7466b8a71aa0eee6884ff43f1f970df2775fdf055f854488736",
+    "cacheSha256": "19bcf8173d42105969030b43b1639a80b89cb52f30e5b26b7f21dc034c168558",
+    "cacheSignature": "0eb942fafdbbd7466b8a71aa0eee6884ff43f1f970df2775fdf055f854488736:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Booths/DK_PhoneBooth.fbx",
+    "historicalCatalogueSha256": "0eb942fafdbbd7466b8a71aa0eee6884ff43f1f970df2775fdf055f854488736",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "PhoneBooth_Single",
+    "meshSha256": "dbd17908b2dc4584e2ad3a4c5544182f16743737b6a405f35efe74478763b657",
+    "cacheSha256": "0c9a289cefead578ad064fb71a18e987dd5a5031b49c0a3c23e64d1bca5985e6",
+    "cacheSignature": "dbd17908b2dc4584e2ad3a4c5544182f16743737b6a405f35efe74478763b657:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Booths/DK_PhoneBooth_Single.fbx",
+    "historicalCatalogueSha256": "dbd17908b2dc4584e2ad3a4c5544182f16743737b6a405f35efe74478763b657",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "BalconyBay_8",
+    "meshSha256": "56e002cf6918bdf72df441b0edf68b1f900065d78d3f15ecefd557781b00f4d3",
+    "cacheSha256": "0192394d90c9db12b77d3c4434acdd1597ae40deb5d96474d1672ad02866734e",
+    "cacheSignature": "56e002cf6918bdf72df441b0edf68b1f900065d78d3f15ecefd557781b00f4d3:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Facades/DK_BalconyBay_8.fbx",
+    "historicalCatalogueSha256": "56e002cf6918bdf72df441b0edf68b1f900065d78d3f15ecefd557781b00f4d3",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "StreamCorner_9",
+    "meshSha256": "35bb6b3b2bca9a5bed379f6f294c44e6b054d120855dfba5c8e304bbbc41f19b",
+    "cacheSha256": "d2e445c36798cb29c9662580caf727d57d210dcaf26136f8ba3fcf07cfe3485c",
+    "cacheSignature": "35bb6b3b2bca9a5bed379f6f294c44e6b054d120855dfba5c8e304bbbc41f19b:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Skyline/DK_StreamCorner_9.fbx",
+    "historicalCatalogueSha256": "35bb6b3b2bca9a5bed379f6f294c44e6b054d120855dfba5c8e304bbbc41f19b",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "ArcadeBay_3",
+    "meshSha256": "1dd98e4f7aa7bd4a7b930aaab49b76600848256eb078f26de319aba2a61feb84",
+    "cacheSha256": "a2ad240961b6d232cb0f373a4b731723738a351f0321771a042a658bf98281cb",
+    "cacheSignature": "1dd98e4f7aa7bd4a7b930aaab49b76600848256eb078f26de319aba2a61feb84:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Facades/DK_ArcadeBay_3.fbx",
+    "historicalCatalogueSha256": "1dd98e4f7aa7bd4a7b930aaab49b76600848256eb078f26de319aba2a61feb84",
+    "historicalMeshMatches": true
+  },
+  {
+    "id": "StreamBay_9W",
+    "meshSha256": "208b90e30d40efaa07c1158ffc4f7ff247c63dd826ce23230ea69eb889fe30f2",
+    "cacheSha256": "923277d6f5d0078a5671216aec717c8a364120ff6b80b8dd33bf6c0c402de6ed",
+    "cacheSignature": "208b90e30d40efaa07c1158ffc4f7ff247c63dd826ce23230ea69eb889fe30f2:4:0.25",
+    "fbx": "/Users/sky/Projects/suborned/unity/Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_9W.fbx",
+    "historicalCatalogueSha256": "208b90e30d40efaa07c1158ffc4f7ff247c63dd826ce23230ea69eb889fe30f2",
+    "historicalMeshMatches": true
+  }
+]

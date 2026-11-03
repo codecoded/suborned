@@ -9,20 +9,22 @@ Placement rules live in contracts/world/harbour-district.grammar.md section 9 (r
   Horizon_Massif   stepped podium 120 x 80 x 60 m with three 90-130 m towers (fills the mid ring)
   Horizon_RocketPad  gantry (4 legs, braces) 120 m with a 90 m rocket on a 40 m pad
   Horizon_RocketAscent  120 m rocket (pivot = tail), emissive flame, 440 m glowing exhaust column; placed at 300-900 m altitude
-  Horizon_PlanetRinged  R 100 sphere in 9 pastel bands, ring 1.3-2.2 R, axis tilted 18 deg; scale to taste
-  Horizon_Moon     R 100 sphere, two bands; scale to taste (faded daytime moon, Glint adds the phase)"""
+  Horizon_PlanetRinged  R 100 smooth UV sphere (64 x 32) wearing the old DecoKit gas-giant map, ring 1.3-2.2 R cut into the old ring's four bands, axis tilted 18 deg; scale to taste
+  Horizon_Moon     R 100 smooth UV sphere (48 x 24) wearing the old DecoKit moon map; scale to taste (faded daytime moon, Glint adds the phase)
+Planet and moon (Vela, 2026-10-27; Sky: "I really miss the brilliance of DecoKit"): the 40-segment spheres of hard flat colour bands are replaced by smooth spheres with
+latitude-longitude UVs carrying the old DecoKit sky bodies' own maps (horizon_tex.py runs sky_sheet.py unchanged: pixel-identical to the old DK_Planet_Bands / DK_Planet_Ring /
+DK_Moon). Matte textured Lit (mats.GROUND rows), one material per body; hand-built L1 / L2 at half and quarter segments so the UVs survive (a collapse would tear the seam)."""
 
 import math
 
 from geo import rrect
 from kit import asset
-from mats import accent, pal, register
+import mats
+from mats import GROUND, TEXTURES, accent, pal, register
 from skyport_parts import band, ball
 from structures import soft_extrude
 
-for n, h in (("Planet_1", "#E9D9B4"), ("Planet_2", "#E6D3B0"), ("Planet_3", "#EBD0B8"), ("Planet_4", "#F3E6C8"),
-             ("Planet_Ring", "#F4E7C8"), ("Moon_1", "#EFE6D2"), ("Moon_2", "#DCD3C3"),
-             # round 3 (Sky: ring A read as "stacked grey boxes"): cream a step warmer than the haze #f3eee4, fins in a
+for n, h in (  # round 3 (Sky: ring A read as "stacked grey boxes"): cream a step warmer than the haze #f3eee4, fins in a
              # deeper stone so the vertical rhythm survives the fog, teal faience bands, coral fins, gold crowns.
              # dE2000 to the nearest signal: Stone 23.6, Band 42.1, Shade 22.0, Coral 22.7, Gold 20.9 (the skyline crowns keep their gold, Sky 14 Oct: decided later from a far shot).
              ("Far_Stone", "#F2E3C6"), ("Far_Band", "#5CC0B5"), ("Far_Shade", "#E2CDAA"),
@@ -195,24 +197,96 @@ def rocket_ascent(s):
                     pal.Plume_Shade if shade else pal.Plume_Glow, seg=10)
 
 
-@asset("Horizon_PlanetRinged", "Horizon", bevel=0.0)
-def planet_ringed(s):
-    mats = (pal.Planet_1, pal.Planet_3, pal.Planet_2, pal.Planet_4, pal.Planet_3, pal.Planet_1, pal.Planet_2,
-            pal.Planet_4, pal.Planet_1)
-    R, n = 100.0, 9
+# The sky bodies' maps (horizon_tex.py, beside the ground set): matte textured Lit, UV 0..1 over the whole body (tile 1).
+for _n, _f, _sm in (("DK_Horizon_Planet", "horizon_planet_bands_v1.png", 0.15), ("DK_Horizon_Ring", "horizon_planet_ring_v1.png", 0.15), ("DK_Horizon_Moon", "horizon_moon_v1.png", 0.05)):
+    register(_n, "ground", "#FFFFFF")
+    TEXTURES.setdefault(_n, (_f, 1.0))
+    GROUND.setdefault(_n, dict(albedo=_f, tile=(1.0, 1.0), smoothness=_sm))
+
+RING_R0, RING_R1, RING_CUT = 130.0, 220.0, 0.3  # the old ring profile spans R0..R1 (inner -> outer); density at or under CUT is a gap
+
+
+def ring_runs():
+    """The ring's bands as (r0, r1) from the old ring alpha (horizon_tex.py writes the profile): the old kit drew the gaps as transparency, here they are geometry."""
+    import json
+    p = mats.GROUND_DIR / "horizon_ring_profile.json"
+    if not p.exists():
+        raise SystemExit(f"[horizon] no ring profile at {p}: run python3 tools/decokit/horizon_tex.py (bun run decokit does)")
+    d = json.loads(p.read_text())["density"]
+    n, runs, s = len(d), [], None
+    for i, x in enumerate(list(d) + [0.0]):
+        if x > RING_CUT and s is None:
+            s = i
+        elif x <= RING_CUT and s is not None:
+            runs.append((RING_R0 + (RING_R1 - RING_R0) * s / n, RING_R0 + (RING_R1 - RING_R0) * i / n))
+            s = None
+    return runs
+
+
+def uv_sphere(s, R, nu, nv, mat):
+    """Smooth UV sphere about the local origin: one vertex per pole and nu per ring (no seam split, so the normals are continuous), lat-long UVs per loop
+    (u = longitude 0..1, wrapping to 1 on the last column; v = latitude, south pole 0). Pole loops take their face's mid-u, kept half a texel off the edge rows."""
+    verts = [(0.0, 0.0, -R)]
+    for j in range(1, nv):
+        th = math.pi * j / nv
+        z, r = -R * math.cos(th), R * math.sin(th)
+        verts += [(r * math.cos(2 * math.pi * k / nu), r * math.sin(2 * math.pi * k / nu), z) for k in range(nu)]
+    verts.append((0.0, 0.0, R))
+    top = len(verts) - 1
+    ring = lambda j, k: 1 + (j - 1) * nu + k % nu  # noqa: E731
+    faces, cells = [], []
+    edge = 0.5 / 1024
+    for k in range(nu):
+        u0, u1, um = k / nu, (k + 1) / nu, (k + 0.5) / nu
+        faces.append([0, ring(1, k + 1), ring(1, k)])
+        cells.append([(um, edge), (u1, 1 / nv), (u0, 1 / nv)])
+        for j in range(1, nv - 1):
+            faces.append([ring(j, k), ring(j, k + 1), ring(j + 1, k + 1), ring(j + 1, k)])
+            cells.append([(u0, j / nv), (u1, j / nv), (u1, (j + 1) / nv), (u0, (j + 1) / nv)])
+        faces.append([ring(nv - 1, k), ring(nv - 1, k + 1), top])
+        cells.append([(u0, (nv - 1) / nv), (u1, (nv - 1) / nv), (um, 1 - edge)])
+    _uv_mesh(s, verts, faces, cells, mat, smooth=True)
+
+
+def annulus(s, r0, r1, z, nu, mat, up):
+    """A flat ring face (top if up, else bottom) with radial UVs: u = where it sits on the old ring profile (R0 inner -> R1 outer), v mid-strip."""
+    u = lambda r: (r - RING_R0) / (RING_R1 - RING_R0)  # noqa: E731
+    verts = [(r * math.cos(2 * math.pi * k / nu), r * math.sin(2 * math.pi * k / nu), z) for r in (r0, r1) for k in range(nu)]
+    faces, cells = [], []
+    for k in range(nu):
+        k1 = (k + 1) % nu
+        f = [k, k1, nu + k1, nu + k]
+        c = [(u(r0), 0.5), (u(r0), 0.5), (u(r1), 0.5), (u(r1), 0.5)]
+        faces.append(f if up else f[::-1])
+        cells.append(c if up else c[::-1])
+    _uv_mesh(s, verts, faces, cells, mat, smooth=False)
+
+
+def _uv_mesh(s, verts, faces, cells, mat, smooth):
+    """Faces with their own UVs (per loop, in face order), kept through Shape.build's box projection."""
+    bv = s._add(verts, faces, mat, smooth)
+    for f, c in zip(faces, cells):
+        bf = s.bm.faces.get([bv[i] for i in f]) or s.bm.faces.get([bv[i] for i in reversed(f)])
+        if bf is None:
+            continue
+        uv = {bv[i]: cc for i, cc in zip(f, c)}
+        bf[s._uvkeep] = 1
+        s._pending_uv.append((bf, [uv[lp.vert] for lp in bf.loops]))
+
+
+def _planet(s, nu, nv, ring_nu):
     with s.at((0, 0, 0), (18, 0, 0)):
-        for i in range(n):
-            t0, t1 = math.pi * i / n, math.pi * (i + 1) / n
-            prof = [(R * math.sin(t0 + (t1 - t0) * k / 3), -R * math.cos(t0 + (t1 - t0) * k / 3)) for k in range(4)]
-            s.lathe(prof, mats[i], seg=40, cap_bottom=False, cap_top=False)
-        for r0, r1, m in ((130, 158, pal.Planet_Ring), (162, 190, pal.Planet_4), (194, 220, pal.Planet_Ring)):
-            s.lathe([(r0, -0.8), (r1, -0.8), (r1, 0.8), (r0, 0.8)], m, seg=64, cap_bottom=False, cap_top=False)
+        uv_sphere(s, 100.0, nu, nv, pal.Horizon_Planet)
+        for r0, r1 in ring_runs():
+            annulus(s, r0, r1, 0.8, ring_nu, pal.Horizon_Ring, True)
+            annulus(s, r0, r1, -0.8, ring_nu, pal.Horizon_Ring, False)
 
 
-@asset("Horizon_Moon", "Horizon", bevel=0.0)
+@asset("Horizon_PlanetRinged", "Horizon", bevel=0.0, near=lambda s: _planet(s, 32, 16, 64), far=lambda s: _planet(s, 16, 8, 32))
+def planet_ringed(s):
+    _planet(s, 64, 32, 128)
+
+
+@asset("Horizon_Moon", "Horizon", bevel=0.0, near=lambda s: uv_sphere(s, 100.0, 24, 12, pal.Horizon_Moon), far=lambda s: uv_sphere(s, 100.0, 12, 6, pal.Horizon_Moon))
 def moon(s):
-    R = 100.0
-    for i, m in enumerate((pal.Moon_1, pal.Moon_2, pal.Moon_1, pal.Moon_2)):
-        t0, t1 = math.pi * i / 4, math.pi * (i + 1) / 4
-        prof = [(R * math.sin(t0 + (t1 - t0) * k / 3), -R * math.cos(t0 + (t1 - t0) * k / 3)) for k in range(4)]
-        s.lathe(prof, m, seg=32, cap_bottom=False, cap_top=False)
+    uv_sphere(s, 100.0, 48, 24, pal.Horizon_Moon)

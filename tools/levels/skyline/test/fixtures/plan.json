@@ -1808,7 +1808,7 @@
     "block": "contracts/world/civic-block.json",
     "blockToPlan": { "origin": [-130, -230], "x": [0, -1], "y": [1, 0] },
     "scale": {
-      "cafe": { "width": 22, "depth": 11.3, "height": 34.8 },
+      "cafe": { "width": 22, "depth": 11.3, "height": 16.8 },
       "civic-office": { "wings": 15.5, "crown": 38 },
       "source": "Oct 9 city-scale block: HandoverCafe.cs (X 11, Front -1.3, Back 10, Height 34.8), HandoverKit.cs (Hall set x0.75 plan, x1.4 height; towers x2). Rule C-0 holds the block to it."
     },

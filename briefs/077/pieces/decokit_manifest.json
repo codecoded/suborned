@@ -1,0 +1,5091 @@
+{
+ "assets": [
+  {
+   "name": "PlanterRun_2_A",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_2_A.bin",
+     "sha256": "466b8fc7fd850ba9295d9b75e5fc602ff8a04c2e8de95b1aa56fcbb2f1d80f9f"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_2_A.fbx",
+     "sha256": "71d8a44f55389fea9b992477c8ba596feba79fe8efc9fd5afeee7704c1ae3bfc"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_2_A_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_2_A.fbx",
+   "tris": 2522,
+   "size": [
+    2,
+    1.7854,
+    0.68
+   ],
+   "bounds": [
+    -1,
+    1,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_A.fbx",
+     "tris": 2522,
+     "sha256": "28e516d9b510eed284ce975578eab48963c15e4a1d0fe462f85247024221d07b",
+     "bytes": 217036,
+     "mesh_sha256": "ff4bd7b01f75865e33c3edbf7ac1b771a58ff1fbba36d3df34e3b3e38299b10b",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_2_A",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_2_A_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 18,
+    "sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+    "dome_faces_removed": 308,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_A_L1.fbx",
+     "tris": 1784,
+     "screen": 0.3333,
+     "level": "close",
+     "sha256": "f76f697be66fb60fa1fda6d6db8a6ecea8e70c258007675a59e868c80a4d1f44",
+     "mesh_sha256": "c9a7694684d5316ac02334fd0adadf7d61b2382d4be70ca257917529ba468bc2"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_A_L2.fbx",
+     "tris": 1232,
+     "screen": 0.1481,
+     "level": "near",
+     "sha256": "60f61493fbab2c3306f00cd4753fd6e3e240b936692843be10d8e9f9c0d17a78",
+     "mesh_sha256": "430bffde2480a5d8cbab625bb6227da7833f576a8c8aa103a851d097f3381a39"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_A_L3.fbx",
+     "tris": 716,
+     "screen": 0.0833,
+     "level": "gameplay",
+     "sha256": "be95b70962c93211e5cbdf69b09d6805e08fbfd1a2bea503c3985f23a2d1bafc",
+     "mesh_sha256": "819b2d8b815fd9aa0237b8dfad9d13db7bfaa4ba6d537376834b1e7be62964d4"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 2.0 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      1,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -1,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_2_A_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_2_A",
+    "fbx_sha256": "71d8a44f55389fea9b992477c8ba596feba79fe8efc9fd5afeee7704c1ae3bfc",
+    "tris": 531,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Coral",
+     "DK_Leaf_Civic"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_2_B",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_2_B.bin",
+     "sha256": "7f08f06e61b5c7c0e403d714ee971b50de3e77ae574f22c0f609e44565fbcc6e"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_2_B.fbx",
+     "sha256": "4f107e1b8ea1493f886e49135966cb12bd9019f5bb014b7c2792cc32379c8ea9"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_2_B_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_2_B.fbx",
+   "tris": 2725,
+   "size": [
+    2,
+    1.7586,
+    0.68
+   ],
+   "bounds": [
+    -1,
+    1,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_B.fbx",
+     "tris": 2725,
+     "sha256": "618b54cdbb89645d9e5052b5c5529cd803b83ad0a9857c7f6dc533a54a7a6a26",
+     "bytes": 232684,
+     "mesh_sha256": "1f760d448fc931224a50e99627c42a7bebcced2242fdf0abc1c1f89368cad0a4",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_2_B",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_2_B_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 18,
+    "sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+    "dome_faces_removed": 248,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_B_L1.fbx",
+     "tris": 1933,
+     "screen": 0.3333,
+     "level": "close",
+     "sha256": "8806f929b394bc0f6486f7f9862d022dde179bccfc25d1966177c634ee54a308",
+     "mesh_sha256": "a0eca6661b937c53f5411297394093743bb0471ac881206050381834d42c4034"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_B_L2.fbx",
+     "tris": 1325,
+     "screen": 0.1481,
+     "level": "near",
+     "sha256": "90231c4e2dee41c28af6b4bb1a6c6fa83209a7d57c53127811bb0e747363afd2",
+     "mesh_sha256": "a30295c7332ed5d926852c51029943144708b10929edcec61233d501adf8d46f"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_B_L3.fbx",
+     "tris": 775,
+     "screen": 0.0833,
+     "level": "gameplay",
+     "sha256": "f6192b5970df6f3dc289dc1b787e543111037c657dc2e07e6ebfcb66fcc79b4d",
+     "mesh_sha256": "5d300b4e22dac08073655390dcf7a3e7d9ab37eb578971b0488faea2edf054e0"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 2.0 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      1,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -1,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_2_B_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_2_B",
+    "fbx_sha256": "4f107e1b8ea1493f886e49135966cb12bd9019f5bb014b7c2792cc32379c8ea9",
+    "tris": 441,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Flamingo",
+     "DK_Bloom_Peach"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_2_C",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_2_C.bin",
+     "sha256": "24a4d329114efe45c575f12a063de736b292f4b107b0dc59c3d25bd5d136b883"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_2_C.fbx",
+     "sha256": "919bdf8427b07ef7d80dafa2863df6f5431a2b14834e58015d515184de233546"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_2_C_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_2_C.fbx",
+   "tris": 2564,
+   "size": [
+    2,
+    1.6494,
+    0.68
+   ],
+   "bounds": [
+    -1,
+    1,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_C.fbx",
+     "tris": 2564,
+     "sha256": "44e13049939369ddd674cd293e9461984531a773b416c5eefb7dd7f555ab99c8",
+     "bytes": 219836,
+     "mesh_sha256": "7a521720f5691ff5fc332b97e9952df19396a350d9e591c8f1c2eb457834cadb",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_2_C",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_2_C_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 18,
+    "sha": "7a1de3563f878452a35c13e261d3e2c320f409d745536c94c75e9d962dd5337f",
+    "dome_faces_removed": 218,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_C_L1.fbx",
+     "tris": 1790,
+     "screen": 0.3333,
+     "level": "close",
+     "sha256": "100de3f83f4cce0af35b112da611554bfa1afabb4d5d6a406c355d4770fff6e4",
+     "mesh_sha256": "030b1cc32de2a5b013c7c46aef48c34b0d4558b3c1d30f7d673e25eeeb720b13"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_C_L2.fbx",
+     "tris": 1238,
+     "screen": 0.1481,
+     "level": "near",
+     "sha256": "c8e61cb4621df01b57b0975dd6ea338bcbdad74051fac72c84944c4606872f1e",
+     "mesh_sha256": "a2cb4a52e0827758e1e33bb1ffc8ffcb3d42b6c013fed3d2321c398682b5a081"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_2_C_L3.fbx",
+     "tris": 718,
+     "screen": 0.0833,
+     "level": "gameplay",
+     "sha256": "c82e01acb2fc994a81cf4660412b5e60f49b064b5a8dbf7a9eb5366bd2ab9712",
+     "mesh_sha256": "1813d951ccca36101da16c3a87838e961690c9c4a7b659531c11b8ce030f449a"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 2.0 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      1,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -1,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_2_C_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_2_C",
+    "fbx_sha256": "919bdf8427b07ef7d80dafa2863df6f5431a2b14834e58015d515184de233546",
+    "tris": 396,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Bloom_Peach",
+     "DK_Bloom_Cream",
+     "DK_Leaf_CivicDark"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_4_A",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_4_A.bin",
+     "sha256": "42d04c3e095cbc86b54ef26f830cf4617ccfcad9a3504dff773fd9e29877de97"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_4_A.fbx",
+     "sha256": "7ea6912a80d347adf511fc8ba42265b8fa7866d8aaabc65b3128dbc1af0fb4ee"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_4_A_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_4_A.fbx",
+   "tris": 5655,
+   "size": [
+    4,
+    1.6718,
+    0.68
+   ],
+   "bounds": [
+    -2,
+    2,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_A.fbx",
+     "tris": 5655,
+     "sha256": "4d957d0f9c3c4d7745eb778536bbbeebe69138d05c2a7c5fa2269006a3c4f9c1",
+     "bytes": 451276,
+     "mesh_sha256": "68ef47c1e72a2ed7d226558b250fc6bd9a56c252757f56b929773127f335c2b4",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_4_A",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_4_A_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 30,
+    "sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+    "dome_faces_removed": 414,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_A_L1.fbx",
+     "tris": 3837,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "9c5a4c01617306a31d39a1e17b2e3217b61f899db225f224e79bac188dabe34a",
+     "mesh_sha256": "fd311801741b0e20ce89d69363a985c22fa7c2ceac74bb674b6a2efb1318ca55"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_A_L2.fbx",
+     "tris": 2657,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "75d16a26c188a43b9c38f9d6b5a45b32bf4139929316c6c63b29b53e60da6ebb",
+     "mesh_sha256": "d8f8b9442ffa9da0b23f5802c70e54dc6baaa0b5340fb71c40d20af2728c2090"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_A_L3.fbx",
+     "tris": 1547,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "244bd4c086c2baed81c3c50246b5cb2cf9684520ed68595392a862db6c304674",
+     "mesh_sha256": "2cad49fc3bf3611bd2a216c666673b2edc3433ce2ba081c9c696be749cadf9a2"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 4.0 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      2,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -2,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_4_A_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_4_A",
+    "fbx_sha256": "7ea6912a80d347adf511fc8ba42265b8fa7866d8aaabc65b3128dbc1af0fb4ee",
+    "tris": 732,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Coral",
+     "DK_Bloom_Cream",
+     "DK_Leaf_Civic"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_4_B",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_4_B.bin",
+     "sha256": "2545dc105bdf52e4bdc5d185303cacb016ce5b67cc18bf83512ac03216a4a1df"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_4_B.fbx",
+     "sha256": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_4_B_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_4_B.fbx",
+   "tris": 4909,
+   "size": [
+    4,
+    1.7658,
+    0.68
+   ],
+   "bounds": [
+    -2,
+    2,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_B.fbx",
+     "tris": 4909,
+     "sha256": "b238788d11bd8737f0fd6449a4662ac65dcf4b72a373b64df984c76440f809e0",
+     "bytes": 395564,
+     "mesh_sha256": "ed2aac25daac379593b2efe5a05f2c29fd4c7438c3eeb4f191bf6be1dd84ad37",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_4_B",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_4_B_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 30,
+    "sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+    "dome_faces_removed": 374,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_B_L1.fbx",
+     "tris": 3541,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "2c0bbd3b0eb81d36cafd232757134ac9d8e55df3f35f7e6e0c8340f744c97e31",
+     "mesh_sha256": "47a7a808183a40f12bf18040460c3e66b0881d92cb109313b002f36b2b310b14"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_B_L2.fbx",
+     "tris": 2417,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "86e52a5ba4e7744d3e91843d772aaa953736ef4a0b8e30b8df4e0fe0ce4a227f",
+     "mesh_sha256": "d6f4ba6f4ee2b2252e3bf43eb8a5b08ac6fe64d5611daef3138dc64ce3a206ad"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_B_L3.fbx",
+     "tris": 1415,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "a9168012f9444d5d9cf3e97399a243ba3752cd685ca99f2ca0f4827df93f3275",
+     "mesh_sha256": "1f52aebd0a524852b61e85e3b316d833d9806e4dd9077e75d0996e7d3e2148ce"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 4.0 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      2,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -2,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_4_B_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_4_B",
+    "fbx_sha256": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069",
+    "tris": 672,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Bloom_Peach",
+     "DK_Bloom_Flamingo",
+     "DK_Leaf_CivicDark"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_4_C",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_4_C.bin",
+     "sha256": "75a7ddebe972ea2ab6dc453cf1e8964c7647cbbb4775550fb50cc7d50792858b"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_4_C.fbx",
+     "sha256": "466bb11446a429b85ca2bdf4c4f0492bc9ea38a037ad8ac6b0a0fd22da9b9df1"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_4_C_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_4_C.fbx",
+   "tris": 5976,
+   "size": [
+    4,
+    1.6997,
+    0.68
+   ],
+   "bounds": [
+    -2,
+    2,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_C.fbx",
+     "tris": 5976,
+     "sha256": "8c01e3bc498c66fafc49b68b17bcb93124fc2dd21aba960d6612370d60ff9c67",
+     "bytes": 474396,
+     "mesh_sha256": "587d95d3a0d9d2a6dec8c90dc58085aac074f1f04e623b928c8f065a9cc0f448",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_4_C",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_4_C_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 30,
+    "sha": "abcf78dfb626e0bd3d3d0260ebd4a623a99f37304e60e8ae65919d4ea3de2924",
+    "dome_faces_removed": 354,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_C_L1.fbx",
+     "tris": 3906,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "1529be2a2481a4b2cfe91c1f3b44ef2074014dae6758692308480417a16d4bdb",
+     "mesh_sha256": "18a9e1d5f7e1b991e2f0bc7fe9d9bd2980ef54f571cd2c8dcae40e3c34f3ab23"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_C_L2.fbx",
+     "tris": 2726,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "6d3c13733e9d91f162f882e5eeac6ac8355dc139acd6fb863beb30ab2dd8f152",
+     "mesh_sha256": "cde25e29166dcbfe58098ac7a76dac6464824b2de2f06bad7124dd3e28af115f"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_4_C_L3.fbx",
+     "tris": 1578,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "6a7fab72ade580090f05b93b03810c8f6b0d2fbfb7467cda96ba57c0b522f30b",
+     "mesh_sha256": "fa82ca8fb74840609cecec812b1c762d2c699d7781d75736aa8bece93f3e5058"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 4.0 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      2,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -2,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_4_C_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_4_C",
+    "fbx_sha256": "466bb11446a429b85ca2bdf4c4f0492bc9ea38a037ad8ac6b0a0fd22da9b9df1",
+    "tris": 642,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Peach",
+     "DK_Leaf_CivicDark"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_Corner_A",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_Corner_A.bin",
+     "sha256": "24dec1e5898ea324e4ce1c492835eeef50c1c9c7b22dd4fe1654f54bcec41942"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_Corner_A.fbx",
+     "sha256": "908aa1b69514235c1f54ac561dd6d118f971610c30bfe30edbfa947db4ec7072"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_Corner_A_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_Corner_A.fbx",
+   "tris": 4463,
+   "size": [
+    2.34,
+    1.7699,
+    2.34
+   ],
+   "bounds": [
+    -1.34,
+    1,
+    -1,
+    1.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_A.fbx",
+     "tris": 4463,
+     "sha256": "6adc75e88b9ee36c7ab4689a02686d7a1dda8b02b26cbb106a922ed1823c636b",
+     "bytes": 354380,
+     "mesh_sha256": "b9af595e22f68ac1801df306a52721c69c939f6387fe16f813df84bff3fd7a2e",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_Corner_A",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_Corner_A_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 102,
+    "sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+    "dome_faces_removed": 350,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_A_L1.fbx",
+     "tris": 3257,
+     "screen": 0.39,
+     "level": "close",
+     "sha256": "ae07af4314908a11ef37652aa490887acee5e57122f0125a9ced46f1b528f700",
+     "mesh_sha256": "be55b862d11bc4de0b733ac330cfa0b4d17206b78b65ca4152a56ed14ee83732"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_A_L2.fbx",
+     "tris": 2281,
+     "screen": 0.1733,
+     "level": "near",
+     "sha256": "00042f6a33b1bc2d972044400fa5824328d835b68cc00ddf7d7cfb5283fc899e",
+     "mesh_sha256": "560366a972b582bb5dcc908207e25897f2df77abe2c24968f520f7e7c3c61cca"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_A_L3.fbx",
+     "tris": 1399,
+     "screen": 0.0975,
+     "level": "gameplay",
+     "sha256": "a705b0b0c3bc22b09d05ed8b08d17fff4151587c5613bceb210a18b2f0d6ce80",
+     "mesh_sha256": "6d709b58cc19e694abad848bbb95736679f8752dac88997176fa9f81b76914d2"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 2.34 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      -0.64,
+      0.65,
+      0.5
+     ],
+     "min": [
+      -1.34,
+      0,
+      -1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      0.9
+     ],
+     "min": [
+      -1.14,
+      0,
+      0.7
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1
+     ],
+     "min": [
+      -1.04,
+      0,
+      0.9
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -0.24,
+      0.65,
+      0.7
+     ],
+     "min": [
+      -1.24,
+      0,
+      0.5
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.1
+     ],
+     "min": [
+      -0.94,
+      0,
+      1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.2
+     ],
+     "min": [
+      -0.84,
+      0,
+      1.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.3
+     ],
+     "min": [
+      -0.64,
+      0,
+      1.2
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.34
+     ],
+     "min": [
+      -0.34,
+      0,
+      1.3
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      0.7
+     ],
+     "min": [
+      -0.24,
+      0,
+      0.6
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_Corner_A_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_Corner_A",
+    "fbx_sha256": "908aa1b69514235c1f54ac561dd6d118f971610c30bfe30edbfa947db4ec7072",
+    "tris": 788,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Coral",
+     "DK_Leaf_Civic"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_Corner_B",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_Corner_B.bin",
+     "sha256": "f07ff4352f7ed6efeda40d3ca9f85fa2408fb8c255f63641ebe92d5f0aebb84b"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_Corner_B.fbx",
+     "sha256": "df449120650681b7455661b6765748c0c25f0bcc65832df223fbcac573ec667f"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_Corner_B_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_Corner_B.fbx",
+   "tris": 5103,
+   "size": [
+    2.34,
+    1.6404,
+    2.34
+   ],
+   "bounds": [
+    -1.34,
+    1,
+    -1,
+    1.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_B.fbx",
+     "tris": 5103,
+     "sha256": "999f6430a9df983e5371ba1580dfd719cf7de1172c061a4a962c94489074c3d8",
+     "bytes": 399564,
+     "mesh_sha256": "5d2ea253475d41c90825f87fa92c0bc91efd13a3791df8640ec8e4da3c0507d9",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_Corner_B",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_Corner_B_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 102,
+    "sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+    "dome_faces_removed": 330,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_B_L1.fbx",
+     "tris": 3321,
+     "screen": 0.39,
+     "level": "close",
+     "sha256": "213c6d7bf14ac1f19478fb4e53760dd0b81d292b95b65cf8482dbd9225cc3c6a",
+     "mesh_sha256": "f0cc0e11d407fbb753cfdd27f842745b19c8f57e84dd1ee1ff29b64f08ed68c2"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_B_L2.fbx",
+     "tris": 2401,
+     "screen": 0.1733,
+     "level": "near",
+     "sha256": "9ecbf158253a69f907a069bae38258c6f796da4646d6c71e15015d969b6ebc94",
+     "mesh_sha256": "77a2673cbfa46ec9d17979a27330b3bd7d111d6238bdd05b12903a37a3d20e10"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_B_L3.fbx",
+     "tris": 1443,
+     "screen": 0.0975,
+     "level": "gameplay",
+     "sha256": "030f46c0ff92235fc2cac84a3290dab4533ec14e0d13b7584b5d18a70a7b860b",
+     "mesh_sha256": "8f85bd3570eb1e4c815630820919e094e0e23821df4caf9b3056c8907ed1a168"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 2.34 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      -0.64,
+      0.65,
+      0.5
+     ],
+     "min": [
+      -1.34,
+      0,
+      -1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      0.9
+     ],
+     "min": [
+      -1.14,
+      0,
+      0.7
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1
+     ],
+     "min": [
+      -1.04,
+      0,
+      0.9
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -0.24,
+      0.65,
+      0.7
+     ],
+     "min": [
+      -1.24,
+      0,
+      0.5
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.1
+     ],
+     "min": [
+      -0.94,
+      0,
+      1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.2
+     ],
+     "min": [
+      -0.84,
+      0,
+      1.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.3
+     ],
+     "min": [
+      -0.64,
+      0,
+      1.2
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.34
+     ],
+     "min": [
+      -0.34,
+      0,
+      1.3
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      0.7
+     ],
+     "min": [
+      -0.24,
+      0,
+      0.6
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_Corner_B_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_Corner_B",
+    "fbx_sha256": "df449120650681b7455661b6765748c0c25f0bcc65832df223fbcac573ec667f",
+    "tris": 758,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Flamingo",
+     "DK_Bloom_Peach"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_Corner_C",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_Corner_C.bin",
+     "sha256": "5d10ae6f113307eaeaea14980ec45988547e6fbdf9b77418bfb133f47eaf59ac"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_Corner_C.fbx",
+     "sha256": "d812319d132353a9b48f00a952612d8d9d28eb3cdccab41efa36ffcfe6d053b6"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_Corner_C_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_Corner_C.fbx",
+   "tris": 4692,
+   "size": [
+    2.34,
+    1.6632,
+    2.34
+   ],
+   "bounds": [
+    -1.34,
+    1,
+    -1,
+    1.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_C.fbx",
+     "tris": 4692,
+     "sha256": "95311ae2c1b3cab073bfd0c6074b068249f6bf20d7ed2741f748ac3adeb8e267",
+     "bytes": 370396,
+     "mesh_sha256": "01842c17ee9f989f75a90c38f27a58512682382a4ee0f465e0b35e4f97153fd4",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_Corner_C",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_Corner_C_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 102,
+    "sha": "8b25402f74ee984e0ca57e291e5e7b64010753b8f038a30d839195655a895624",
+    "dome_faces_removed": 230,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_C_L1.fbx",
+     "tris": 3216,
+     "screen": 0.39,
+     "level": "close",
+     "sha256": "228425ed53f086c7ca51d0d9056104aaab2526e307f79a1c658fee26add08405",
+     "mesh_sha256": "b20fba378e4b9fc7c0d2bfff44bf27b2439f1464a3af7da8151c7daa0da57da9"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_C_L2.fbx",
+     "tris": 2296,
+     "screen": 0.1733,
+     "level": "near",
+     "sha256": "22fc8b68d35c27d45c7e325707511d2feda18f9112c4258995beabe2893216dd",
+     "mesh_sha256": "60f8755ead14b75f2652bd1df5d2ac1037a8fb3f67edd0ac5b7fc3c8f12a0150"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_Corner_C_L3.fbx",
+     "tris": 1392,
+     "screen": 0.0975,
+     "level": "gameplay",
+     "sha256": "b803b91cf6636fc90638d9041c01c0be8ea6de2f89994c9fab661f105018d4aa",
+     "mesh_sha256": "69a5c9ed61044bfc86f06227c1bbc123a3512fb0f83279409b6fdf02d0312846"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 2.34 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      -0.64,
+      0.65,
+      0.5
+     ],
+     "min": [
+      -1.34,
+      0,
+      -1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      0.9
+     ],
+     "min": [
+      -1.14,
+      0,
+      0.7
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1
+     ],
+     "min": [
+      -1.04,
+      0,
+      0.9
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -0.24,
+      0.65,
+      0.7
+     ],
+     "min": [
+      -1.24,
+      0,
+      0.5
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.1
+     ],
+     "min": [
+      -0.94,
+      0,
+      1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.2
+     ],
+     "min": [
+      -0.84,
+      0,
+      1.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.3
+     ],
+     "min": [
+      -0.64,
+      0,
+      1.2
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      1.34
+     ],
+     "min": [
+      -0.34,
+      0,
+      1.3
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      1,
+      0.65,
+      0.7
+     ],
+     "min": [
+      -0.24,
+      0,
+      0.6
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_Corner_C_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_Corner_C",
+    "fbx_sha256": "d812319d132353a9b48f00a952612d8d9d28eb3cdccab41efa36ffcfe6d053b6",
+    "tris": 608,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Leaf_CivicDark"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_End_A",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_End_A.bin",
+     "sha256": "bde33cfb6c3ac36f4d65b5e5fead6cef40b845084f3f370cd8ac9e0ecab6ecfe"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_End_A.fbx",
+     "sha256": "13344c6267a8cd88ffc3bf3f4b1f9f90078ef15639308af9b17b52ebbaed705c"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_End_A_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_End_A.fbx",
+   "tris": 1737,
+   "size": [
+    1.64,
+    1.5665,
+    0.68
+   ],
+   "bounds": [
+    -0.99,
+    0.65,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_A.fbx",
+     "tris": 1737,
+     "sha256": "7d7011c4c0ba0b437043ff4469ab422dda4059976f1ec34f62273008ed50b195",
+     "bytes": 150364,
+     "mesh_sha256": "3038f4993aedf244acc5499b1aff56884cdba25dc4e80a34487a7d73991d92c1",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_End_A",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_End_A_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 100,
+    "sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+    "dome_faces_removed": 236,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_A_L1.fbx",
+     "tris": 1449,
+     "screen": 0.2733,
+     "level": "close",
+     "sha256": "717384dc4dae664c9629b917f627f7029f625421e48230732d193e1c655f4be9",
+     "mesh_sha256": "14262bf56ccf85f93115bb724af64d2d2572ff7b2745c1693ee626a7f98b71df"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_A_L2.fbx",
+     "tris": 1025,
+     "screen": 0.1215,
+     "level": "near",
+     "sha256": "7fc6e652729bdd151aba576f295ee852a856aaf26c4d20a7c80b544ee9f5cbb9",
+     "mesh_sha256": "7c238cd695631fe261549475d498fccd6e39bba532e70edd294d42f8bd1e8fc5"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_A_L3.fbx",
+     "tris": 689,
+     "screen": 0.0683,
+     "level": "gameplay",
+     "sha256": "e710b8505e9ea59d30e7f5ba7a7979f85476a4b8ed3234ea9da031e228c9c552",
+     "mesh_sha256": "a53919a5cb0b748c9ab1eeecfbdc17ec4a2e926305c09b5818d3c5f1b09acc28"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 1.64 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      0.65,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -0.99,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_End_A_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_End_A",
+    "fbx_sha256": "13344c6267a8cd88ffc3bf3f4b1f9f90078ef15639308af9b17b52ebbaed705c",
+    "tris": 585,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Coral",
+     "DK_Bloom_Cream",
+     "DK_Leaf_Civic"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_End_B",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_End_B.bin",
+     "sha256": "076871c0d186f39903ee00951e43729344917a8aa0f4190ab310a52dd0e851dd"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_End_B.fbx",
+     "sha256": "a2cc07805dbc4a9086b408166a21686d36273ba279e2f342c6f174efd05e7fbf"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_End_B_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_End_B.fbx",
+   "tris": 1877,
+   "size": [
+    1.64,
+    1.6565,
+    0.68
+   ],
+   "bounds": [
+    -0.99,
+    0.65,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_B.fbx",
+     "tris": 1877,
+     "sha256": "500c1f4e579f520f1ee6ce8ff35a5fea54fa482790fa3d8f24b1258d28b0c65e",
+     "bytes": 161708,
+     "mesh_sha256": "327c53c4ba8cc1889ec47f1fa44664feb531069920d7c52a03aadb4df067873e",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_End_B",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_End_B_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 100,
+    "sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+    "dome_faces_removed": 236,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_B_L1.fbx",
+     "tris": 1589,
+     "screen": 0.2761,
+     "level": "close",
+     "sha256": "1f4361d2abed411dc7bd957721440cd1b4c32be1dde87d56ab5f1990ad4e2f4b",
+     "mesh_sha256": "aa8ba5f612fa3ebc00724828cdc4db543217bc93c47eb2703ac2a2c8b93463bc"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_B_L2.fbx",
+     "tris": 1109,
+     "screen": 0.1227,
+     "level": "near",
+     "sha256": "2e02df48aeacfae2d3982bd9622759fa5ad28ae96ccae92a7d439ce39317d133",
+     "mesh_sha256": "fa39ded88b5bfd756f5337a783e07f8f704d8c0b995a29c07dae96e0d6ee60a1"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_B_L3.fbx",
+     "tris": 745,
+     "screen": 0.069,
+     "level": "gameplay",
+     "sha256": "c84af6c1e7e4533b8e02b9e86470f0c8bd0b97c1eee5dc708a1a6fb966d12ed2",
+     "mesh_sha256": "5d9481429dabb686373a463772d1e3ec0021db79d5f83994494db55561cdcfc0"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 1.656 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      0.65,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -0.99,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_End_B_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_End_B",
+    "fbx_sha256": "a2cc07805dbc4a9086b408166a21686d36273ba279e2f342c6f174efd05e7fbf",
+    "tris": 585,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Bloom_Peach",
+     "DK_Bloom_Flamingo",
+     "DK_Leaf_CivicDark"
+    ]
+   }
+  },
+  {
+   "name": "PlanterRun_End_C",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_PlanterRun_End_C.bin",
+     "sha256": "e7343f7b176df7c5715d07eb49ec44d24a81a9899fbca737d30f653350d9c95a"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterRun_End_C.fbx",
+     "sha256": "efde13dd32d4af4f62879d305ac8496dcfbe9fa018bba96b4e96b29ea1802a11"
+    }
+   },
+   "collide_from": "stone/DK_PlanterRun_End_C_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterRun_End_C.fbx",
+   "tris": 1207,
+   "size": [
+    1.64,
+    1.146,
+    0.68
+   ],
+   "bounds": [
+    -0.99,
+    0.65,
+    -0.34,
+    0.34
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Leaf_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_C.fbx",
+     "tris": 1207,
+     "sha256": "32dcf994e58dcfcfc713366f4a1d8dfd4ba9270c469f7199d03cbb748726d794",
+     "bytes": 108636,
+     "mesh_sha256": "9e4dfe7cb67a2b4c220f67a228fe5e0278f04f4fb176bb7c8752fbaf01c40e1c",
+     "objects": [
+      {
+       "name": "DK_PlanterRun_End_C",
+       "materials": [
+        "DK_Limestone",
+        "DK_Leaf_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterRun_End_C_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone"
+    ],
+    "faces": 100,
+    "sha": "ed969f137ca09063b0d76979f1d7ff6cdedca78576ea486c68a6122a80de458e",
+    "dome_faces_removed": 206,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_C_L1.fbx",
+     "tris": 1207,
+     "screen": 0.2733,
+     "level": "close",
+     "sha256": "596b4560d3218df6681ca41082f7c748945574bbb4c5f24c6056f6baa94f0a78",
+     "mesh_sha256": "ab9e125fec22e20cacd413410db5bcb216ce0c290e02cd39aefdca9fc6874199"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_C_L2.fbx",
+     "tris": 839,
+     "screen": 0.1215,
+     "level": "near",
+     "sha256": "eb88bcfd83c223dabe0891876bdb2009f7eb36176a01e3d15de328b65b4b3b96",
+     "mesh_sha256": "7647d78a47287dfe2923e2d7825b3b4c54fd7a04b78b530b1ebb669b851a3166"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterRun_End_C_L3.fbx",
+     "tris": 583,
+     "screen": 0.0683,
+     "level": "gameplay",
+     "sha256": "b52bf32f4745e9d8537def10b2e13c2d544169e19505271bd19cae616b7ee20c",
+     "mesh_sha256": "8b53954194b3317bb494ba09b05bf9f65cec3133391b038bebd27ef9d6d2c49c"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodRule": "testbed cafe rule at 1080 rows: switches at [180.0, 80.0, 45.0] px per m, screen = size 1.64 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      0.65,
+      0.65,
+      0.34
+     ],
+     "min": [
+      -0.99,
+      0,
+      -0.34
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterRun_End_C_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterRun_End_C",
+    "fbx_sha256": "efde13dd32d4af4f62879d305ac8496dcfbe9fa018bba96b4e96b29ea1802a11",
+    "tris": 540,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_Civic",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Peach",
+     "DK_Leaf_CivicDark"
+    ]
+   }
+  },
+  {
+   "name": "CafeTerrace",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "collide_from": "Models/Plaza/DK_CafeTerrace.fbx",
+   "fbx": "Models/Plaza/DK_CafeTerrace.fbx",
+   "tris": 312,
+   "size": [
+    34.6124,
+    0.675,
+    9.1281
+   ],
+   "bounds": [
+    -17.306,
+    17.306,
+    -2.398,
+    6.73
+   ],
+   "materials": [
+    "DK_Limestone"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CafeTerrace.fbx",
+     "tris": 312,
+     "sha256": "a5e5501a51e1c5ca2c336e531a43864631a124c0b8945a382406a47b30f9ec6a",
+     "bytes": 22860,
+     "mesh_sha256": "67673eabe5c819c019cab6a4b4f237262101ccdc319e65a7a9d3589ec1ceea24",
+     "objects": [
+      {
+       "name": "DK_CafeTerrace",
+       "materials": [
+        "DK_Limestone"
+       ],
+       "shadows": "on"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "identical": true,
+    "parts": [
+     {
+      "object": "DK_CafeTerrace",
+      "stone_sha": "2929c7f35c99123e93bfa251df78e7af726e01c00c89c83f78dd6c165ad94edf",
+      "stone_faces": 156,
+      "dome_faces_removed": 1856
+     }
+    ]
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CafeTerrace_L1.fbx",
+     "tris": 216,
+     "screen": 0.008,
+     "sha256": "cbe095f12729dca5e69ecce81ae59ab0687a9516961000678e9ae3e29fe82eb2",
+     "mesh_sha256": "fa54324bb7981c6b16f592657fdc37a9a23f0e1e5b7d2c24b95d0911695b9a35"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeTerrace_L2.fbx",
+     "tris": 64,
+     "screen": 0.003,
+     "sha256": "c39f3da117ab5b303451e0a7617666e431bd309e233b59f61a87aefe8520edf5",
+     "mesh_sha256": "c4145f9a2239e983b8672c023038456e45030c32bfcae890f2a18cfad585f1f5"
+    }
+   ],
+   "collide": [
+    {
+     "max": [
+      -2.56,
+      0.62,
+      6.35
+     ],
+     "min": [
+      -9.31,
+      0,
+      6.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -2.56,
+      0.62,
+      6.6
+     ],
+     "min": [
+      -8.31,
+      0,
+      6.35
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -5.81,
+      0.62,
+      6.1
+     ],
+     "min": [
+      -10.06,
+      0,
+      5.85
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -2.56,
+      0.62,
+      6.73
+     ],
+     "min": [
+      -6.56,
+      0,
+      6.6
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -7.81,
+      0.62,
+      5.85
+     ],
+     "min": [
+      -10.56,
+      0,
+      5.6
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -16.56,
+      0.62,
+      -1.65
+     ],
+     "min": [
+      -17.31,
+      0,
+      -2.4
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -16.31,
+      0.62,
+      -0.9
+     ],
+     "min": [
+      -17.06,
+      0,
+      -1.65
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -15.81,
+      0.62,
+      0.35
+     ],
+     "min": [
+      -16.56,
+      0,
+      -0.4
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -9.56,
+      0.62,
+      5.35
+     ],
+     "min": [
+      -11.81,
+      0,
+      5.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -8.81,
+      0.62,
+      5.6
+     ],
+     "min": [
+      -11.06,
+      0,
+      5.35
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -15.81,
+      0.62,
+      -0.4
+     ],
+     "min": [
+      -16.81,
+      0,
+      -0.9
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      -15.31,
+      0.62,
+      0.85
+     ],
+     "min": [
+      -16.31,
+      0,
+      0.35
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      6.69,
+      0.62,
+      6.73
+     ],
+     "min": [
+      2.44,
+      0,
+      6.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      9.94,
+      0.62,
+      6.1
+     ],
+     "min": [
+      5.94,
+      0,
+      5.85
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      8.44,
+      0.62,
+      6.6
+     ],
+     "min": [
+      6.69,
+      0,
+      6.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      10.44,
+      0.62,
+      5.85
+     ],
+     "min": [
+      7.69,
+      0,
+      5.6
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      11.19,
+      0.62,
+      5.6
+     ],
+     "min": [
+      8.94,
+      0,
+      5.35
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      11.69,
+      0.62,
+      5.35
+     ],
+     "min": [
+      9.44,
+      0,
+      5.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      12.19,
+      0.62,
+      5.1
+     ],
+     "min": [
+      9.94,
+      0,
+      4.85
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      16.44,
+      0.62,
+      0.1
+     ],
+     "min": [
+      15.69,
+      0,
+      -0.65
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      17.19,
+      0.62,
+      -1.65
+     ],
+     "min": [
+      16.44,
+      0,
+      -2.4
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      15.44,
+      0.62,
+      1.85
+     ],
+     "min": [
+      14.44,
+      0,
+      1.35
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      16.44,
+      0.62,
+      0.6
+     ],
+     "min": [
+      15.44,
+      0,
+      0.1
+     ],
+     "shape": "box",
+     "stand": true
+    },
+    {
+     "max": [
+      16.94,
+      0.62,
+      -0.65
+     ],
+     "min": [
+      15.94,
+      0,
+      -1.15
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (Models/Plaza/DK_CafeTerrace.fbx); the testbed planting is render-only",
+   "companion": "CafeTerrace_Planting",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_CafeTerrace.fbx",
+     "sha256": "ca928e188ae729a32562a19791997bbd7cd8a09780f0c6338b8cbece7ceae3af"
+    }
+   },
+   "replaces": {
+    "id": "CafeTerrace",
+    "fbx_sha256": "ca928e188ae729a32562a19791997bbd7cd8a09780f0c6338b8cbece7ceae3af",
+    "tris": 3372,
+    "materials": [
+     "DK_Limestone",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Coral",
+     "DK_Leaf_Civic",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Flamingo",
+     "DK_Bloom_Peach"
+    ]
+   }
+  },
+  {
+   "name": "CafeTerrace_Planting",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CafeTerrace_Planting.bin",
+     "sha256": "88c17667e32f59aeda95fcda39a49ab4c9cfb1902b815c7f7141476e325e00d9"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CafeTerrace_Planting.fbx",
+   "tris": 44694,
+   "size": [
+    34.5108,
+    1.0864,
+    9.1061
+   ],
+   "bounds": [
+    -17.255,
+    17.255,
+    -2.377,
+    6.729
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CafeTerrace_Planting.fbx",
+     "tris": 44694,
+     "sha256": "e3c18cda77eebcedb0df2a86412c8cbbf4eef0131d9ebe2c872c20601e6ea810",
+     "bytes": 3352316,
+     "mesh_sha256": "5ac250d41dd824d97aefee6b01a454bd5521a9d53bba55008c052844a228e794",
+     "objects": [
+      {
+       "name": "DK_CafeTerrace_Planting",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CafeTerrace_Planting_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CafeTerrace_Planting_L1.fbx",
+     "tris": 31194,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "4e1fc3a014ae551a2d2342904da73c1a23bca954fd11b6ab65fbdd92ad962f91",
+     "mesh_sha256": "fb38294bd14754626a6d0730de217af256e09846f14213bd94fa21a3561eb0e9"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeTerrace_Planting_L2.fbx",
+     "tris": 21282,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "f243d1172fabd9733836fd603151eded1291e998248cab5164463c45e43f36ac",
+     "mesh_sha256": "d5387f5470d97c630736b49f2b1c4d1c19bb21b5dce4a6bd21444391f6f65aa7"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeTerrace_Planting_L3.fbx",
+     "tris": 12182,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "3995967c040fa90e6314047c6a0fc013bb6d8036ef214dd6a74f19936c9b2d7b",
+     "mesh_sha256": "01d5e6fff71d07ee636caa80e97cf44cd949e6ed48285731a2a4c621aede7bc0"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": "at CafeTerrace's transform (same pivot and frame), as its companion"
+  },
+  {
+   "name": "RecordsTower",
+   "category": "Landmarks",
+   "source": "generated",
+   "status": "candidate",
+   "collide_from": "Models/Landmarks/DK_RecordsTower.fbx",
+   "fbx": "Models/Landmarks/DK_RecordsTower.fbx",
+   "tris": 34895,
+   "size": [
+    23.7,
+    38,
+    22.2798
+   ],
+   "bounds": [
+    -11.85,
+    11.85,
+    -11.395,
+    10.885
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Stone_Dark",
+    "DK_GlassDark",
+    "DK_Enamel_Charcoal",
+    "DK_Chrome",
+    "DK_Enamel_Teal",
+    "DK_Brass_Civic",
+    "DK_Enamel_Ivory",
+    "DK_Enamel_Seafoam"
+   ],
+   "files": [
+    {
+     "file": "Models/Landmarks/DK_RecordsTower.fbx",
+     "tris": 34895,
+     "sha256": "c82e668e5ae6fa746e7553be693231469c1ccb58db86d9979354e64470cd518b",
+     "bytes": 837292,
+     "mesh_sha256": "1689972ce0b68857d275cb26777b3a1c3eba05734250790bb4c422fc5b4e4c05",
+     "objects": [
+      {
+       "name": "DK_RecordsTower",
+       "materials": [
+        "DK_Limestone",
+        "DK_Stone_Dark",
+        "DK_GlassDark",
+        "DK_Enamel_Charcoal",
+        "DK_Chrome",
+        "DK_Enamel_Teal",
+        "DK_Brass_Civic",
+        "DK_Enamel_Ivory",
+        "DK_Enamel_Seafoam"
+       ],
+       "shadows": "on"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "identical": true,
+    "parts": [
+     {
+      "object": "DK_RecordsTower",
+      "stone_sha": "2845badec4b7cbb242c74c502c58253edd8e43c60ae0fb8fbf7f6977f767557f",
+      "stone_faces": 17208,
+      "dome_faces_removed": 3674
+     }
+    ]
+   },
+   "lods": [
+    {
+     "file": "Models/Landmarks/DK_RecordsTower_L1.fbx",
+     "tris": 6831,
+     "screen": 0.15,
+     "sha256": "6942496b2c911ff473050bc5189ffaf4b45593e6eccad1e75cb16cfde413605c",
+     "mesh_sha256": "09ac4c9cbbf15f76caaea7c6fb36818d3d73e61d961f724e893c7819e1416402"
+    },
+    {
+     "file": "Models/Landmarks/DK_RecordsTower_L2.fbx",
+     "tris": 3380,
+     "screen": 0.05,
+     "sha256": "35598ea2e992491c26f6563e12056a223841210a11d8ebb7236b624cf40fa55f",
+     "mesh_sha256": "c5a7d2ef3df71565ec309317d0c5a1b6eec43dc8cbea67007f650dffdd2856ef"
+    }
+   ],
+   "lodClass": "landmark",
+   "collide": [
+    {
+     "shape": "box",
+     "min": [
+      -7.1096,
+      0,
+      10
+     ],
+     "max": [
+      5.3126,
+      15.5,
+      10.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -7.65,
+      0,
+      9.5
+     ],
+     "max": [
+      5.8954,
+      15.5,
+      10
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.0107,
+      0,
+      9
+     ],
+     "max": [
+      6.368,
+      15.5,
+      9.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.257,
+      0,
+      8.5
+     ],
+     "max": [
+      6.7817,
+      15.5,
+      9
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.4104,
+      0,
+      8
+     ],
+     "max": [
+      7.1492,
+      15.5,
+      8.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.4877,
+      0,
+      7.5
+     ],
+     "max": [
+      7.4676,
+      15.5,
+      8
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      7
+     ],
+     "max": [
+      7.7406,
+      15.5,
+      7.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      6.5
+     ],
+     "max": [
+      7.9583,
+      15.5,
+      7
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      6
+     ],
+     "max": [
+      8.1369,
+      15.5,
+      6.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      5.5
+     ],
+     "max": [
+      8.2792,
+      15.5,
+      6
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      5
+     ],
+     "max": [
+      8.3877,
+      15.5,
+      5.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      4.5
+     ],
+     "max": [
+      8.4551,
+      15.5,
+      5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      4
+     ],
+     "max": [
+      8.4868,
+      15.5,
+      4.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      3.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      4
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      3
+     ],
+     "max": [
+      8.5,
+      15.5,
+      3.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      2.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      3
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      2
+     ],
+     "max": [
+      8.5,
+      15.5,
+      2.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      1.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      2
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      1
+     ],
+     "max": [
+      8.5,
+      15.5,
+      1.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      0.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      1
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      0
+     ],
+     "max": [
+      8.5,
+      15.5,
+      0.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -0.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      0
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -1
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -0.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -1.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -1
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -2
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -1.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -2.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -2
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -3
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -2.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -3.5
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -3
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -4
+     ],
+     "max": [
+      8.5,
+      15.5,
+      -3.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -4.5
+     ],
+     "max": [
+      8.474,
+      15.5,
+      -4
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -5
+     ],
+     "max": [
+      8.3991,
+      15.5,
+      -4.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -5.5
+     ],
+     "max": [
+      8.2794,
+      15.5,
+      -5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -6
+     ],
+     "max": [
+      8.1184,
+      15.5,
+      -5.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -6.5
+     ],
+     "max": [
+      7.9195,
+      15.5,
+      -6
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -7
+     ],
+     "max": [
+      7.6857,
+      15.5,
+      -6.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -7.5
+     ],
+     "max": [
+      7.4195,
+      15.5,
+      -7
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -8
+     ],
+     "max": [
+      7.1233,
+      15.5,
+      -7.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -8.5
+     ],
+     "max": [
+      6.8,
+      15.5,
+      -8
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.5,
+      0,
+      -9
+     ],
+     "max": [
+      6.429,
+      15.5,
+      -8.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.4615,
+      0,
+      -9.5
+     ],
+     "max": [
+      5.9933,
+      15.5,
+      -9
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.3182,
+      0,
+      -10
+     ],
+     "max": [
+      5.4561,
+      15.5,
+      -9.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8,
+      0,
+      -10.5
+     ],
+     "max": [
+      4.6905,
+      15.5,
+      -10
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      5.5,
+      0,
+      -3
+     ],
+     "max": [
+      11.5,
+      38,
+      3
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -11.5,
+      0,
+      -3
+     ],
+     "max": [
+      -5.5,
+      38,
+      3
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -5.2466,
+      0,
+      10.5
+     ],
+     "max": [
+      -4.4466,
+      12.45,
+      10.8
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.8,
+      0,
+      6.45
+     ],
+     "max": [
+      -8.5,
+      12.45,
+      7.25
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.8,
+      0,
+      3.689
+     ],
+     "max": [
+      -8.5,
+      12.45,
+      4.489
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.8,
+      0,
+      -4.535
+     ],
+     "max": [
+      -8.5,
+      12.45,
+      -3.735
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.8,
+      0,
+      -6.5425
+     ],
+     "max": [
+      -8.5,
+      12.45,
+      -5.7425
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -8.8,
+      0,
+      -8.55
+     ],
+     "max": [
+      -8.5,
+      12.45,
+      -7.75
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -6.55,
+      0,
+      -10.8
+     ],
+     "max": [
+      -5.75,
+      12.45,
+      -10.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -3.7579,
+      0,
+      -10.8
+     ],
+     "max": [
+      -2.9579,
+      12.45,
+      -10.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      -0.9658,
+      0,
+      -10.8
+     ],
+     "max": [
+      -0.1658,
+      12.45,
+      -10.5
+     ]
+    },
+    {
+     "shape": "box",
+     "min": [
+      0.65,
+      0,
+      -10.94
+     ],
+     "max": [
+      2.35,
+      0.15,
+      -10.5
+     ],
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: kit.collide.json's builder-declared volumes of RecordsTower (records_tower.py), unchanged; its roof planting is above every volume",
+   "companion": "RecordsTower_Planting",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "parent_fbx": {
+     "path": "out/decokit/Models/Landmarks/DK_RecordsTower.fbx",
+     "sha256": "609a163aeb9a93626e2f97f01a97e8a2ad60839520966b0f596f51585237cfca"
+    }
+   },
+   "replaces": {
+    "id": "RecordsTower",
+    "fbx_sha256": "609a163aeb9a93626e2f97f01a97e8a2ad60839520966b0f596f51585237cfca",
+    "tris": 40927,
+    "materials": [
+     "DK_Limestone",
+     "DK_Stone_Dark",
+     "DK_GlassDark",
+     "DK_Enamel_Charcoal",
+     "DK_Chrome",
+     "DK_Enamel_Teal",
+     "DK_Brass_Civic",
+     "DK_Enamel_Ivory",
+     "DK_Enamel_Seafoam",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Coral",
+     "DK_Bloom_Cream",
+     "DK_Leaf_Civic"
+    ]
+   }
+  },
+  {
+   "name": "RecordsTower_Planting",
+   "category": "Landmarks",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_RecordsTower_Planting.bin",
+     "sha256": "23cdefe3479108db02ddcdc567dedbdaff88491c1c26b13488e152f8293753ea"
+    }
+   },
+   "fbx": "Models/Landmarks/DK_RecordsTower_Planting.fbx",
+   "tris": 65692,
+   "size": [
+    15.6563,
+    1.1359,
+    19.6577
+   ],
+   "bounds": [
+    -7.828,
+    7.828,
+    -9.829,
+    9.829
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Landmarks/DK_RecordsTower_Planting.fbx",
+     "tris": 65692,
+     "sha256": "798e3c714de175b3d05ced9bff27082b4de50fff9d3696321b628b62773c5969",
+     "bytes": 4924716,
+     "mesh_sha256": "9a1de0c543d9cfb5c355d2bda1e8fb0e486856f49a031b1f12444e9bc4eea665",
+     "objects": [
+      {
+       "name": "DK_RecordsTower_Planting",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_RecordsTower_Planting_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Landmarks/DK_RecordsTower_Planting_L1.fbx",
+     "tris": 50194,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "e22ec7f5d8c4c232f94581be79bd72a1e1a9293bca10f4209e6cf1003d432b51",
+     "mesh_sha256": "1a8bec3438b5c1b1e06b90c6dadb651ac98fcc8f85d15c224961b7d4fd435067"
+    },
+    {
+     "file": "Models/Landmarks/DK_RecordsTower_Planting_L2.fbx",
+     "tris": 33462,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "0f8632aa796de729a7ec478e7b8bb0ca8aabf4ef49d7a247c6eb5296515951b6",
+     "mesh_sha256": "e9614584bb2bc89def83533126afaacee144c3426019a5ef6ce17515e557d1fd"
+    },
+    {
+     "file": "Models/Landmarks/DK_RecordsTower_Planting_L3.fbx",
+     "tris": 19430,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "707dd39895649b0680d12ddd3fccce7d3ac42aec09c36dcb6c60c22947d0802b",
+     "mesh_sha256": "408bad6498bac5f2d79cc25f105d7ef661514e8bada8d8a4c4847e0dc8d1160b"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": "at RecordsTower's transform (same pivot and frame), as its companion"
+  },
+  {
+   "name": "CafeUpper_3",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "collide_from": "Models/Plaza/DK_CafeUpper_3.fbx",
+   "fbx": "Models/Plaza/DK_CafeUpper_3.fbx",
+   "tris": 13543,
+   "size": [
+    23.1699,
+    12.1,
+    12.855
+   ],
+   "bounds": [
+    -11.585,
+    11.585,
+    -12.27,
+    0.585
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Enamel_Seafoam",
+    "DK_Brass_Civic",
+    "DK_GlassDark",
+    "DK_Chrome",
+    "DK_Glass_Sheen",
+    "DK_Enamel_Ivory",
+    "DK_Terrazzo_Ivory",
+    "DK_Enamel_Charcoal"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3.fbx",
+     "tris": 13543,
+     "sha256": "b57923990a2686bdc9e6b3e7f1cc7baa41d8089f43529014627a3e25e9f86587",
+     "bytes": 337212,
+     "mesh_sha256": "7bb87ec0d32e5c3d35ef1b64dd32f01e2855d7e7d7782d1c6e01b1edeab7cc22",
+     "objects": [
+      {
+       "name": "DK_CafeUpper_3",
+       "materials": [
+        "DK_Limestone",
+        "DK_Enamel_Seafoam",
+        "DK_Brass_Civic",
+        "DK_GlassDark",
+        "DK_Chrome",
+        "DK_Glass_Sheen",
+        "DK_Enamel_Ivory",
+        "DK_Terrazzo_Ivory",
+        "DK_Enamel_Charcoal"
+       ],
+       "shadows": "on"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "identical": true,
+    "parts": [
+     {
+      "object": "DK_CafeUpper_3",
+      "stone_sha": "2c4032968e1717bb527ae85af7e517cf32d0f7cfb96b358cfd4ba241051daa70",
+      "stone_faces": 6692,
+      "dome_faces_removed": 5798
+     }
+    ]
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3_L1.fbx",
+     "tris": 3325,
+     "screen": 0.008,
+     "sha256": "5e1d476750ac58d3ec0ae83d9f840fee6810e56293292a5dbb804ee5d8f0bc38",
+     "mesh_sha256": "cd536f8fca8d4e42a8f01f2d3edb20ec96340084f8fac931dd03b6a00108be55"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3_L2.fbx",
+     "tris": 1226,
+     "screen": 0.003,
+     "sha256": "264f3bfcd0ae8ab01fab12dd7fd49a2deeef71c48282897c67d831708c23cdb4",
+     "mesh_sha256": "717f9a74d6d934d14eac213aa99ab19e2ae7ba0eee965025e215432504b6804a"
+    }
+   ],
+   "collide": [
+    {
+     "max": [
+      11.17,
+      16.8,
+      0.23
+     ],
+     "min": [
+      -11.08,
+      4.7,
+      -12.27
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (Models/Plaza/DK_CafeUpper_3.fbx); the testbed planting is render-only",
+   "companion": "CafeUpper_3_Planting",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_CafeUpper_3.fbx",
+     "sha256": "4b62ef0a2c35b2e39ec2c6104c256a5d5d6cb0784bf7d9fced95e3f63846c3d9"
+    }
+   },
+   "replaces": {
+    "id": "CafeUpper_3",
+    "fbx_sha256": "4b62ef0a2c35b2e39ec2c6104c256a5d5d6cb0784bf7d9fced95e3f63846c3d9",
+    "tris": 22793,
+    "materials": [
+     "DK_Limestone",
+     "DK_Enamel_Seafoam",
+     "DK_Brass_Civic",
+     "DK_GlassDark",
+     "DK_Chrome",
+     "DK_Glass_Sheen",
+     "DK_Enamel_Ivory",
+     "DK_Terrazzo_Ivory",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Coral",
+     "DK_Leaf_Civic",
+     "DK_Enamel_Charcoal"
+    ]
+   }
+  },
+  {
+   "name": "CafeUpper_3_Planting",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CafeUpper_3_Planting.bin",
+     "sha256": "413bc7f4ac921d5f37b93b3eb365a3731e95a4e36ee77c95f538f73e639b2dfa"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CafeUpper_3_Planting.fbx",
+   "tris": 32835,
+   "size": [
+    20.9935,
+    1.0703,
+    4.9283
+   ],
+   "bounds": [
+    -10.489,
+    10.504,
+    -5.399,
+    -0.47
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3_Planting.fbx",
+     "tris": 32835,
+     "sha256": "0e85ca5e0ff8714cf862e610730ccb98fad601769aa7467d50a81296231a5fb3",
+     "bytes": 2463964,
+     "mesh_sha256": "50bf3d91d8f3977c664d0c2dc0fc0440b0c6c7ec2bb642556caec05335cad582",
+     "objects": [
+      {
+       "name": "DK_CafeUpper_3_Planting",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CafeUpper_3_Planting_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3_Planting_L1.fbx",
+     "tris": 22665,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "8efb79f4780d63f8811f98cf6659bfe6a790f11996180041dd70b05ec5e7d217",
+     "mesh_sha256": "117017c69764afff67f0bfb53379fdf27450c7e3280813a78cd7ae7fab2748b2"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3_Planting_L2.fbx",
+     "tris": 15493,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "4ea65eaacbb15bb94c4cc7b37e1a73e51d5cae2f68e0433ac4ef2557ff233d6e",
+     "mesh_sha256": "55379815fa3e42bc0a8092df82d68375b83de78e2b77b0ca1c1874d160910cb6"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeUpper_3_Planting_L3.fbx",
+     "tris": 8911,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "c4e1c3a3ab78ac7ffbb26a6df701dfc2c5c521de356345351d1421c7ba025237",
+     "mesh_sha256": "223ba1d25d46d2dedf2ebb4aa208c806e0ee45f7bd8349dc23616b459b7df5d8"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": "at CafeUpper_3's transform (same pivot and frame), as its companion"
+  },
+  {
+   "name": "CafeUpper_4",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "collide_from": "Models/Plaza/DK_CafeUpper_4.fbx",
+   "fbx": "Models/Plaza/DK_CafeUpper_4.fbx",
+   "tris": 17387,
+   "size": [
+    23.1699,
+    15.7,
+    12.855
+   ],
+   "bounds": [
+    -11.585,
+    11.585,
+    -12.27,
+    0.585
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Enamel_Seafoam",
+    "DK_Brass_Civic",
+    "DK_GlassDark",
+    "DK_Chrome",
+    "DK_Glass_Sheen",
+    "DK_Enamel_Ivory",
+    "DK_Terrazzo_Ivory",
+    "DK_Enamel_Charcoal"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4.fbx",
+     "tris": 17387,
+     "sha256": "6fa68f3d8cd9a4f30f9e96050ad17917c97881b96ff67ff14c748fe3905e9ad7",
+     "bytes": 421900,
+     "mesh_sha256": "3e1bf0f2ad414b113a6e8749f2806cc15b242a603a8a129758b2539bf459e6ab",
+     "objects": [
+      {
+       "name": "DK_CafeUpper_4",
+       "materials": [
+        "DK_Limestone",
+        "DK_Enamel_Seafoam",
+        "DK_Brass_Civic",
+        "DK_GlassDark",
+        "DK_Chrome",
+        "DK_Glass_Sheen",
+        "DK_Enamel_Ivory",
+        "DK_Terrazzo_Ivory",
+        "DK_Enamel_Charcoal"
+       ],
+       "shadows": "on"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "identical": true,
+    "parts": [
+     {
+      "object": "DK_CafeUpper_4",
+      "stone_sha": "97bc5f0761c360839c4ccc593dc9fa5510ae801e0a09de446d841140bc0a6d55",
+      "stone_faces": 8598,
+      "dome_faces_removed": 5798
+     }
+    ]
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4_L1.fbx",
+     "tris": 4224,
+     "screen": 0.008,
+     "sha256": "a475fe6536160e2b9a7bc22dd582c7a8e63eb927cccc343a28ab78e772fbc648",
+     "mesh_sha256": "956f4eb6ff1e1438347f39b78837693548a658e4b70dd6f47c455fd1fcc39f89"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4_L2.fbx",
+     "tris": 1409,
+     "screen": 0.003,
+     "sha256": "1625428376e4bd8434430c5c2fb5eebe4e84661f8492cd6ca42b1066822af9f5",
+     "mesh_sha256": "90402f257fe57eb753a711c657a4793c842133f0565a2983b6612811f79dbd35"
+    }
+   ],
+   "collide": [
+    {
+     "max": [
+      11.17,
+      20.4,
+      0.23
+     ],
+     "min": [
+      -11.08,
+      4.7,
+      -12.27
+     ],
+     "shape": "box",
+     "stand": true
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (Models/Plaza/DK_CafeUpper_4.fbx); the testbed planting is render-only",
+   "companion": "CafeUpper_4_Planting",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_CafeUpper_4.fbx",
+     "sha256": "4ad09013889336b1caf91850ad0e59e18d17710aa1a12d714873c3c54ab9b7e1"
+    }
+   },
+   "replaces": {
+    "id": "CafeUpper_4",
+    "fbx_sha256": "4ad09013889336b1caf91850ad0e59e18d17710aa1a12d714873c3c54ab9b7e1",
+    "tris": 26637,
+    "materials": [
+     "DK_Limestone",
+     "DK_Enamel_Seafoam",
+     "DK_Brass_Civic",
+     "DK_GlassDark",
+     "DK_Chrome",
+     "DK_Glass_Sheen",
+     "DK_Enamel_Ivory",
+     "DK_Terrazzo_Ivory",
+     "DK_Leaf_CivicDark",
+     "DK_Bloom_Cream",
+     "DK_Bloom_Coral",
+     "DK_Leaf_Civic",
+     "DK_Enamel_Charcoal"
+    ]
+   }
+  },
+  {
+   "name": "CafeUpper_4_Planting",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CafeUpper_4_Planting.bin",
+     "sha256": "6f55cc55a51660027224e5a8a75efc8d57cf09d4f1c1d0f7379cfccd427c6de1"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CafeUpper_4_Planting.fbx",
+   "tris": 29074,
+   "size": [
+    20.9609,
+    1.0916,
+    4.9267
+   ],
+   "bounds": [
+    -10.484,
+    10.477,
+    -5.399,
+    -0.472
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4_Planting.fbx",
+     "tris": 29074,
+     "sha256": "a43de3610396693690e5b3862476ceca35818ebff16407d62e8285b450bc8ecd",
+     "bytes": 2185996,
+     "mesh_sha256": "e70727cbb62187ba163834c3a3c88d41b1ea25b83bf8c9c09435058b73a474c9",
+     "objects": [
+      {
+       "name": "DK_CafeUpper_4_Planting",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CafeUpper_4_Planting_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4_Planting_L1.fbx",
+     "tris": 20650,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "02abdfe8356118dbfd6fe147fa8892cf47c489b02a412f79785f5fb9bf83dc67",
+     "mesh_sha256": "f2abde24c44f17eec45c4d5b5beeffe86386d942082572d75c9cfd9d645396a8"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4_Planting_L2.fbx",
+     "tris": 14038,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "bc254aa0bac6a4292fef5bb1f54039800db09a04d01d825d8dd2654a82bc766f",
+     "mesh_sha256": "77e433a9fe4a839080c171247f945b39ac7bbe740048ff18604d829c38d29e16"
+    },
+    {
+     "file": "Models/Plaza/DK_CafeUpper_4_Planting_L3.fbx",
+     "tris": 8050,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "1fd79c19b87d13e2c4ba79a9808f86531d76e31c2e8ec8d2e24e2f72c763ba87",
+     "mesh_sha256": "3e4201b3dcaf80a8780d22fee3ebc900166a3217b3123c8b414535631284e063"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": "at CafeUpper_4's transform (same pivot and frame), as its companion"
+  },
+  {
+   "name": "CivicBedPlanting_facade-southwest",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CivicBedPlanting_facade-southwest.bin",
+     "sha256": "33bbfab3bfb05b07558f88dab3c0b1fd02692d3c89639b9230a9bb19ba1cc462"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CivicBedPlanting_facade-southwest.fbx",
+   "tris": 28285,
+   "size": [
+    3.768,
+    1.3363,
+    2.8965
+   ],
+   "bounds": [
+    -1.886,
+    1.882,
+    -1.446,
+    1.45
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest.fbx",
+     "tris": 28285,
+     "sha256": "15c5b84abbdfe1b4405c9a823c0bd8a775e8bf36e714747a8158a35d7f0b3128",
+     "bytes": 2148300,
+     "mesh_sha256": "92ad52052f0f6112da74fcb113a7a79070d718fa22611bc6a664fffdf66fe0d5",
+     "objects": [
+      {
+       "name": "DK_CivicBedPlanting_facade-southwest",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CivicBedPlanting_facade-southwest_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest_L1.fbx",
+     "tris": 19033,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "65e79268c1424a5d738547db20701c8fdfc994cadec199664dcfce2c974c1ea1",
+     "mesh_sha256": "2a88b9b47c938a2a7ccc3e0f352d0c330236187ad501256cb9549b5a53ecc9b9"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest_L2.fbx",
+     "tris": 13125,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "8033b1c4520cd42b86a86fcfd5b120e7847f622bb8f1073e9dea6189d3ad68a8",
+     "mesh_sha256": "14531d92be65808e38a1a11b0f744b734d1d486e075bf58b6110c514744d0aa4"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southwest_L3.fbx",
+     "tris": 7483,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "4ac9214abd9422e8e01928f9ff4f8afa06199416428e8c4ce4cc05aa814ac994",
+     "mesh_sha256": "9c4da3279417f8b3e14cdbbed67d96f89122668f6751310441f76e06508f5a16"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": {
+    "at": [
+     -151.96465384615382,
+     -285.77246153846147
+    ],
+    "yaw": 0,
+    "base": 0.18,
+    "world": "civic/civic-facade-southwest",
+    "fit": 0.0006378073540521648
+   }
+  },
+  {
+   "name": "CivicBedPlanting_facade-southeast",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CivicBedPlanting_facade-southeast.bin",
+     "sha256": "423439bf18fa07196b8d1eef23013549266ccb78f28587c6e7b8247213089d70"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CivicBedPlanting_facade-southeast.fbx",
+   "tris": 26521,
+   "size": [
+    3.7262,
+    1.3648,
+    3.1214
+   ],
+   "bounds": [
+    -1.864,
+    1.863,
+    -1.559,
+    1.562
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast.fbx",
+     "tris": 26521,
+     "sha256": "56ac74cb8feadc9cd045842dc4ee605ee458cd18b1c73a02cdc9a63f2201499e",
+     "bytes": 2026316,
+     "mesh_sha256": "0f42e74f2749358300224850166aa81b49a38aa2117651cecca7b52e61910ec5",
+     "objects": [
+      {
+       "name": "DK_CivicBedPlanting_facade-southeast",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CivicBedPlanting_facade-southeast_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast_L1.fbx",
+     "tris": 19339,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "9a7d226475c987933430deb6cc06d2d72a099b338cfe5eddc2325001e7a22349",
+     "mesh_sha256": "f21c4b52a2ffb8aea33bc997b6a019d87bbb664e7178315fbe613706d3463a90"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast_L2.fbx",
+     "tris": 13023,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "a08de8b6e431acf28a6972e2f623520e315de8aec4c1205f493671eb2cac9a7e",
+     "mesh_sha256": "e7f3c3241b0c5c7447121cff91411046b487f579b678ab1d44190710e58f8a09"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_facade-southeast_L3.fbx",
+     "tris": 7521,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "05f4e7312860ac3f031d5ac744d115282a331b4dbba9f3882e5d55e1221ec828",
+     "mesh_sha256": "e1679b8aa098a6f490748180faf06f61fc6f8d979419ffbca024d234ed86fea0"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": {
+    "at": [
+     -167.143,
+     -285.09226923076915
+    ],
+    "yaw": 0,
+    "base": 0.18,
+    "world": "civic/civic-facade-southeast",
+    "fit": 0.0006775401759570622
+   }
+  },
+  {
+   "name": "CivicBedPlanting_office-west",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CivicBedPlanting_office-west.bin",
+     "sha256": "dcd6cb9a0e228323c987d472665640f8850f0c6d6706620b50cf735ab0a38edb"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CivicBedPlanting_office-west.fbx",
+   "tris": 52252,
+   "size": [
+    1.8472,
+    1.3422,
+    10.102
+   ],
+   "bounds": [
+    -0.898,
+    0.949,
+    -5.582,
+    4.52
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-west.fbx",
+     "tris": 52252,
+     "sha256": "177832c9b353809efacf268af84fc9537dbc6b74b85c55e44edec41cea7b70c1",
+     "bytes": 4015276,
+     "mesh_sha256": "8599659d912c8ec6bf913554da70b4764e1950420445d46386f65b588c2d690a",
+     "objects": [
+      {
+       "name": "DK_CivicBedPlanting_office-west",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CivicBedPlanting_office-west_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-west_L1.fbx",
+     "tris": 44962,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "11895c0b2e9015377a74bd549ed5270a4a1e6898bb5125c6a7202794c6e84707",
+     "mesh_sha256": "7d26e9dd4829013af1873d037a1a49636e731c0b44d2d1b60b8297ae08a4a66c"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-west_L2.fbx",
+     "tris": 29058,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "e32b7cfb8c2a39e2ab31b25423a159e369f1a92d817ec0a4cafa5e20a045f313",
+     "mesh_sha256": "519d3f5f4e8a4463fbdadb6016ca042665708ec31695fdf7bcecb452c7f9fb86"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-west_L3.fbx",
+     "tris": 17138,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "2783159abb16c0184d809a1fa8e84e46d4a75e7659f5018a05eb5336a4b53230",
+     "mesh_sha256": "e8c4b053b3897f4639f3e0f5b1baeba94e3d0f4bbda2606e6b11d791f3c3fc37"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": {
+    "at": [
+     -141.09984375000005,
+     -294.86365625
+    ],
+    "yaw": 0,
+    "base": 0.18,
+    "world": "civic/civic-office-west",
+    "fit": 0.0006451184787111002
+   }
+  },
+  {
+   "name": "CivicBedPlanting_office-north",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CivicBedPlanting_office-north.bin",
+     "sha256": "73abfbbec19a4e231301ab86bb6d473282e714f7e2b7b770b25ef5577a5a71b3"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CivicBedPlanting_office-north.fbx",
+   "tris": 21426,
+   "size": [
+    4.9453,
+    1.2395,
+    1.8871
+   ],
+   "bounds": [
+    -2.479,
+    2.466,
+    -0.952,
+    0.936
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-north.fbx",
+     "tris": 21426,
+     "sha256": "45b57e6f0f16f5be5c16b94f446000864cd3091f7416e70b7c27150a5b6619f9",
+     "bytes": 1659260,
+     "mesh_sha256": "c4f8ea5ad44a58771eda5e72cc6005de64d11b97c58106d6af5780c91448e68e",
+     "objects": [
+      {
+       "name": "DK_CivicBedPlanting_office-north",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CivicBedPlanting_office-north_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-north_L1.fbx",
+     "tris": 18294,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "be888e5f5bdc966add4ffe71952b4d2ebb8cb64a42cc53f52aad742b1a36f8ba",
+     "mesh_sha256": "6abb9a8dea45759907debe9ec1f3105ab3053250a86f188d692aa666b295f0dc"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-north_L2.fbx",
+     "tris": 11886,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "e75ff8ae5d85884a6febb083057bf63303d3bb223110106435f17f7afa2f6d25",
+     "mesh_sha256": "fda436dec4a55284d47398eaa4bfd35b468a608bdf16b2211fb5111f5158b1b9"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_office-north_L3.fbx",
+     "tris": 6946,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "d219439f801eae94fb5e8a8ff45d26e7031627b95025460351b960c773086b7d",
+     "mesh_sha256": "01ca9bd0de4939efbcd04525b6cc01eec9b388a853da1e273bb70cbee181ee91"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": {
+    "at": [
+     -153.3374230769231,
+     -304.7905
+    ],
+    "yaw": 0,
+    "base": 0.18,
+    "world": "civic/civic-office-north",
+    "fit": 0.0005618356274663186
+   }
+  },
+  {
+   "name": "CivicBedPlanting_dropoff-west",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/final_CivicBedPlanting_dropoff-west.bin",
+     "sha256": "abacc9eda0d55c5f6358ff26c228228fddebc0c5447292c8580c033e693c0c09"
+    }
+   },
+   "fbx": "Models/Plaza/DK_CivicBedPlanting_dropoff-west.fbx",
+   "tris": 23303,
+   "size": [
+    3.5365,
+    1.3372,
+    2.2309
+   ],
+   "bounds": [
+    -1.751,
+    1.786,
+    -1.324,
+    0.907
+   ],
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west.fbx",
+     "tris": 23303,
+     "sha256": "83967dc7b61aa1de21eea87a2b499471be598236a3edbf5decfa3dd520cb3a04",
+     "bytes": 1776284,
+     "mesh_sha256": "f9025c88c909191db6c9a345603f8f1577d2d17e9ff6b569231968c1b62d0014",
+     "objects": [
+      {
+       "name": "DK_CivicBedPlanting_dropoff-west",
+       "materials": [
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_CivicBedPlanting_dropoff-west_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west_L1.fbx",
+     "tris": 15617,
+     "screen": 0.6667,
+     "level": "close",
+     "sha256": "b7f3f3d41dce30ed1d17e50cb4c7c10a437033bd691401083fde32869f1e08c5",
+     "mesh_sha256": "c69d0908d99e6929c82d972b78518bde710c505fdcb815a2f08b174141b9cb48"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west_L2.fbx",
+     "tris": 10777,
+     "screen": 0.2963,
+     "level": "near",
+     "sha256": "f88804fb4eaa8708b9e8bf7ee2a35bb4a7cc16bb0fc235bfbb6ad4811237fea1",
+     "mesh_sha256": "1fe4d7ed9a24ce0c6da379c3ed23107bcfcbc95677592e463c47d8f9bf163486"
+    },
+    {
+     "file": "Models/Plaza/DK_CivicBedPlanting_dropoff-west_L3.fbx",
+     "tris": 6151,
+     "screen": 0.1667,
+     "level": "gameplay",
+     "sha256": "83803b6ae0c8c9470ba390b6112c7a35f6c8f29839476d44108d06ee6a944966",
+     "mesh_sha256": "cb44b338a59ddeca1091cff575dfe2dc5acdade908254f8690e0e580050e09a9"
+    }
+   ],
+   "lod0_level": "inspection",
+   "lodSize": 4,
+   "lodRule": "testbed cafe rule at 1080 rows with LODGroup.size = 4.0 m (the piece's own size would put the heights above 1): switches at orthographic half-height 3 / 6.75 / 12",
+   "collide": [],
+   "collide_note": "declared none: render-only planting; the trough, parent piece or bed kerb is what blocks",
+   "placement": {
+    "at": [
+     -171.93433333333337,
+     -308.1500833333334
+    ],
+    "yaw": 0,
+    "base": 0.18,
+    "world": "civic/civic-dropoff-west",
+    "fit": 0.0005397086095000177
+   }
+  },
+  {
+   "name": "PlanterArc",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/PlanterArc_TB.bin",
+     "sha256": "91dda792613f1bf624af01eb1789001402679d2f76fc1f5ff6e06b65ad4741d9"
+    },
+    "parent_fbx": {
+     "path": "out/decokit/Models/Plaza/DK_PlanterArc.fbx",
+     "sha256": "c0f13ba5b316b3138de358a7c62f28f6d7d2170d74b8306d6f05c47e56d19235"
+    }
+   },
+   "collide_from": "stone/DK_PlanterArc_stone.fbx",
+   "fbx": "Models/Plaza/DK_PlanterArc.fbx",
+   "tris": 12284,
+   "size": [
+    4.6471,
+    1.2086,
+    1.8875
+   ],
+   "bounds": [
+    -2.324,
+    2.324,
+    -0.948,
+    0.94
+   ],
+   "materials": [
+    "DK_Limestone",
+    "DK_Limestone_Tex",
+    "DK_Faience_Teal",
+    "DK_Accent_Gold",
+    "DK_Leaf_TB",
+    "DK_Petal_TB",
+    "DK_Soil_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_PlanterArc.fbx",
+     "tris": 12284,
+     "sha256": "e27f2879967cfe95876e99a3c4d3f4a5bab2ed3a379fc9fe5aef6378c7911da3",
+     "bytes": 884860,
+     "mesh_sha256": "d5d01155ebdbaa9592ddabc822912d7dbcecf3445b99be2f414ea017221a0302",
+     "objects": [
+      {
+       "name": "DK_PlanterArc",
+       "materials": [
+        "DK_Limestone",
+        "DK_Limestone_Tex",
+        "DK_Faience_Teal",
+        "DK_Accent_Gold",
+        "DK_Leaf_TB",
+        "DK_Petal_TB"
+       ],
+       "shadows": "on"
+      },
+      {
+       "name": "DK_PlanterArc_soil",
+       "materials": [
+        "DK_Soil_TB"
+       ],
+       "shadows": "off"
+      }
+     ]
+    }
+   ],
+   "stone": {
+    "slots": [
+     "DK_Limestone",
+     "DK_Limestone_Tex",
+     "DK_Faience_Teal",
+     "DK_Accent_Gold"
+    ],
+    "faces": 616,
+    "sha": "7b1f2d7f6af7138708b125fdc15ed3d4e3b3a1b73e5b7905895a18784e98a2bd",
+    "dome_faces_removed": 956,
+    "identical": true
+   },
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_PlanterArc_L1.fbx",
+     "tris": 6236,
+     "screen": 0.3442,
+     "level": "near",
+     "sha256": "e119aba79dea9d291eccd5deddaa32d65274be94c12df5e009093ac37082b603",
+     "mesh_sha256": "676984a4b1e8788f8b505143f7baf9cf0eba6d41a588509ef1539b1cf36e09cb"
+    },
+    {
+     "file": "Models/Plaza/DK_PlanterArc_L2.fbx",
+     "tris": 4016,
+     "screen": 0.1878,
+     "level": "gameplay",
+     "sha256": "b8fec2bfa6c197c54b99a8d88433a8eacdef50ccf1c1028a2c35fab9414d90d1",
+     "mesh_sha256": "533997ad1a394d6007521570b1d90237b7a45f4219e5df3d402e6ed226e1581e"
+    }
+   ],
+   "lod0_level": "close",
+   "lodRule": "testbed fountain rule at 1080 rows: switches at [80.0, 43.63636363636363] px per m, screen = size 4.647 m x px/m / 1080",
+   "collide": [
+    {
+     "max": [
+      2.32,
+      0.53,
+      0.94
+     ],
+     "min": [
+      -2.32,
+      0.42,
+      -0.93
+     ],
+     "shape": "box"
+    }
+   ],
+   "collide_note": "declared: measured by collide.py (v) on the new stonework alone (stone/DK_PlanterArc_stone.fbx); the testbed planting is render-only",
+   "replaces": {
+    "id": "PlanterArc",
+    "fbx_sha256": "c0f13ba5b316b3138de358a7c62f28f6d7d2170d74b8306d6f05c47e56d19235",
+    "tris": 3016,
+    "materials": [
+     "DK_Limestone",
+     "DK_Limestone_Tex",
+     "DK_Faience_Teal",
+     "DK_Accent_Gold",
+     "DK_GroundCover",
+     "DK_Leaf_CoreShrub",
+     "DK_Leaf_Shrub",
+     "DK_Flower_Coral"
+    ]
+   }
+  },
+  {
+   "name": "GlobeLamp_TB",
+   "category": "Plaza",
+   "source": "generated",
+   "status": "candidate",
+   "provenance": {
+    "generator": {
+     "tools/decokit/domes077.ts": "21fe165ce9b6833cf0323817334d80d8e3990f9234fd52c00b0b05ac0212f6be",
+     "tools/decokit/domes077_final.py": "02c75ce25e8042bc8c88be9e733e417d4a022696ee22805361cd495eea2438b1",
+     "tools/decokit/domes077_paths.py": "5482e80a7509435628f822ff27f08bc8581c7abadb321b1ec9118b5c3e86c1eb",
+     "tools/decokit/troughs077_lib.py": "3470e087a8ab6e2166bdb3f8fb4351b6512586ef41f1ec7ba09f7cedbb4f776b"
+    },
+    "testbed_sources": {
+     "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+     "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+     "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+     "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+     "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+     "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+     "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+     "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+     "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+     "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+     "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+     "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+     "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+     "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+     "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+     "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+    },
+    "brief": "077 (Sky 2026-10-30: go)",
+    "planting_bin": {
+     "file": "out/decokit/troughs077/GlobeLamp_TB.bin",
+     "sha256": "f77441ddd0111aa0b75dc38929d55224dbb4f6b7b9d9088c6e83d2860afaea76"
+    }
+   },
+   "fbx": "Models/Plaza/DK_GlobeLamp_TB.fbx",
+   "tris": 1016,
+   "size": [
+    0.7117,
+    2.6234,
+    0.73
+   ],
+   "bounds": [
+    -0.359,
+    0.353,
+    -0.365,
+    0.365
+   ],
+   "materials": [
+    "DK_Chrome",
+    "DK_Opal_TB"
+   ],
+   "files": [
+    {
+     "file": "Models/Plaza/DK_GlobeLamp_TB.fbx",
+     "tris": 1016,
+     "sha256": "fe9e8fd91a58fd628b9cdb3fd483fa8ab85297f6a9122b968ba1bc1a9306d583",
+     "bytes": 72492,
+     "mesh_sha256": "7df0f5a7ec03118cd1e5ce76334d159cefdc0304ed5af62c54c2ab4fd7da3119",
+     "objects": [
+      {
+       "name": "DK_GlobeLamp_TB",
+       "materials": [
+        "DK_Chrome",
+        "DK_Opal_TB"
+       ],
+       "shadows": "on"
+      }
+     ]
+    }
+   ],
+   "note": "no light baked; the testbed's light is #fff1d8, range 5.8 m, decay 2, no shadows, at 2.31 m above the lamp base, off by day (Glint). Collide: measured by bun run collide (a lamp post stands).",
+   "placements": {
+    "rule": "one per PlanterArc, in the arc's frame",
+    "at": {
+     "at": [
+      1.015097742665605,
+      0.5416063236955004
+     ],
+     "z": 0.4650000035762787,
+     "yawFromArc": 0
+    }
+   }
+  }
+ ],
+ "schema_note": "export_kit.py row format + status, lods[].level/sha256/mesh_sha256, lodSize, lodRule, stone, collide_note, replaces, provenance"
+}

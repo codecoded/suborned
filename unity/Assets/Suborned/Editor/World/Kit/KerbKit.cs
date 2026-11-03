@@ -22,7 +22,7 @@ namespace Suborned.World
             kitKerbs.Clear(); Stones = Gutters = Covered = 0;
             foreach (var p in pieces)
             {
-                if (p.Kind != "kerb") continue;
+                if (p.Kind is not ("kerb" or "kerb-return")) continue; // brief 028 (Splice): the kerb-return stones round the arcs (Kerb_Pearl) count as kit kerbs
                 var k = (Mathf.FloorToInt(p.At.x / 2f), Mathf.FloorToInt(p.At.y / 2f));
                 if (!kitKerbs.TryGetValue(k, out var l)) kitKerbs[k] = l = new();
                 l.Add(p.At);

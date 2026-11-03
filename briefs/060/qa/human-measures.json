@@ -1,0 +1,916 @@
+{
+ "schema": "suborned.bot.human-measures/1",
+ "by": "Suture 2026-10-24; build 0.2.117",
+ "rules": {
+  "realTimeRatio": 0.9,
+  "minTicks": 50,
+  "copyMin": 3,
+  "maxSamePerTick": 4,
+  "gestureTicks": 3,
+  "driveBoutGapTicks": 50,
+  "idleS": 15,
+  "walkCmS": 140,
+  "runCmS": 280,
+  "redirectM": 3,
+  "redirectDeg": 30,
+  "detourS": 6,
+  "lineTailS": 60,
+  "quickRestartS": 120
+ },
+ "sessions": [
+  {
+   "id": "20261015-182700",
+   "mode": "handover",
+   "engine": "suborned.sim/0.3.0",
+   "until": 1006,
+   "wallToMission": 2.15
+  },
+  {
+   "id": "20261015-193641",
+   "mode": "handover",
+   "engine": "suborned.sim/0.3.0",
+   "until": 4867,
+   "wallToMission": 2.62
+  },
+  {
+   "id": "20261015-195945",
+   "mode": "handover",
+   "engine": "suborned.sim/0.3.0",
+   "until": 640,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261015-201047",
+   "mode": "handover",
+   "engine": "suborned.sim/0.3.0",
+   "until": 1935,
+   "wallToMission": 4.52
+  },
+  {
+   "id": "20261015-202558",
+   "mode": "handover",
+   "engine": "suborned.sim/0.3.0",
+   "until": 288,
+   "wallToMission": 1.03
+  },
+  {
+   "id": "20261015-202717",
+   "mode": "handover",
+   "engine": "suborned.sim/0.3.0",
+   "until": 813,
+   "wallToMission": 1.58
+  },
+  {
+   "id": "20261015-211045",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 645,
+   "wallToMission": 1.06
+  },
+  {
+   "id": "20261015-221506",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 2579,
+   "wallToMission": 1.06
+  },
+  {
+   "id": "20261016-001732",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 500,
+   "wallToMission": 2.94
+  },
+  {
+   "id": "20261016-002441",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 1243,
+   "wallToMission": 13.36
+  },
+  {
+   "id": "20261016-013911",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 4604,
+   "wallToMission": 4.1
+  },
+  {
+   "id": "20261016-021039",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 981,
+   "wallToMission": 3.88
+  },
+  {
+   "id": "20261016-033137",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 100,
+   "wallToMission": 2.4
+  },
+  {
+   "id": "20261016-042527",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 440,
+   "wallToMission": 6.53
+  },
+  {
+   "id": "20261016-043202",
+   "mode": "handover",
+   "engine": "suborned.sim/0.4.0",
+   "until": 1056,
+   "wallToMission": 2.62
+  },
+  {
+   "id": "20261016-135927",
+   "mode": "handover",
+   "engine": "suborned.sim/0.5.0",
+   "until": 4388,
+   "wallToMission": 1.05
+  },
+  {
+   "id": "20261016-172804",
+   "mode": "handover",
+   "engine": "suborned.sim/0.5.0",
+   "until": 739,
+   "wallToMission": 1.58
+  },
+  {
+   "id": "20261016-175620",
+   "mode": "handover",
+   "engine": "suborned.sim/0.5.0",
+   "until": 1870,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261016-181024",
+   "mode": "handover",
+   "engine": "suborned.sim/0.5.0",
+   "until": 2480,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261016-211631",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.0",
+   "until": 5100,
+   "wallToMission": 146.94
+  },
+  {
+   "id": "20261017-210629",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 146,
+   "wallToMission": 1.4
+  },
+  {
+   "id": "20261017-210954",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 5100,
+   "wallToMission": 18.44
+  },
+  {
+   "id": "20261017-211020",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 152,
+   "wallToMission": 1.41
+  },
+  {
+   "id": "20261017-235726",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 570,
+   "wallToMission": 1.3
+  },
+  {
+   "id": "20261018-003824",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 2182,
+   "wallToMission": 1.07,
+   "copied": 15
+  },
+  {
+   "id": "20261018-005045",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 560,
+   "wallToMission": 0.91
+  },
+  {
+   "id": "20261018-012428",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 154,
+   "wallToMission": 4.41
+  },
+  {
+   "id": "20261018-012617",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 560,
+   "wallToMission": 1.42
+  },
+  {
+   "id": "20261018-014002",
+   "mode": "handover",
+   "engine": "suborned.sim/0.6.2",
+   "until": 560,
+   "wallToMission": 2.3
+  },
+  {
+   "id": "20261018-080504",
+   "mode": "handover",
+   "engine": "suborned.sim/0.7.0",
+   "until": 84,
+   "wallToMission": 6.24
+  },
+  {
+   "id": "20261018-163849",
+   "mode": "handover",
+   "engine": "suborned.sim/0.7.0",
+   "until": 3193,
+   "wallToMission": 1.23
+  },
+  {
+   "id": "20261018-164521",
+   "mode": "handover",
+   "engine": "suborned.sim/0.7.0",
+   "until": 3422,
+   "wallToMission": 2.28
+  },
+  {
+   "id": "20261018-165926",
+   "mode": "handover",
+   "engine": "suborned.sim/0.7.0",
+   "until": 601,
+   "wallToMission": 1.16
+  },
+  {
+   "id": "20261019-000649",
+   "mode": "handover",
+   "engine": "suborned.sim/0.8.1",
+   "until": 400,
+   "wallToMission": 2.19
+  },
+  {
+   "id": "20261019-221751",
+   "mode": "handover",
+   "engine": "suborned.sim/0.9.0",
+   "until": 2747,
+   "wallToMission": 1.06
+  },
+  {
+   "id": "20261020-135918",
+   "mode": "handover",
+   "engine": "suborned.sim/0.10.0",
+   "until": 2206,
+   "wallToMission": 1.05
+  },
+  {
+   "id": "20261020-163325",
+   "mode": "handover",
+   "engine": "suborned.sim/0.10.0",
+   "until": 152,
+   "wallToMission": 3.18
+  },
+  {
+   "id": "20261020-163421",
+   "mode": "handover",
+   "engine": "suborned.sim/0.10.0",
+   "until": 78,
+   "wallToMission": 0.9
+  },
+  {
+   "id": "20261020-192207",
+   "mode": "handover",
+   "engine": "suborned.sim/0.10.0",
+   "until": 509,
+   "wallToMission": 0.98
+  },
+  {
+   "id": "20261020-192257",
+   "mode": "handover",
+   "engine": "suborned.sim/0.10.0",
+   "until": 261,
+   "wallToMission": 1.32
+  },
+  {
+   "id": "20261020-195715",
+   "mode": "range",
+   "engine": "suborned.sim/0.10.0",
+   "until": 1169,
+   "wallToMission": 1
+  },
+  {
+   "id": "20261020-195956",
+   "mode": "range",
+   "engine": "suborned.sim/0.10.0",
+   "until": 3738,
+   "wallToMission": 1
+  },
+  {
+   "id": "20261020-203440",
+   "mode": "range",
+   "engine": "suborned.sim/0.10.0",
+   "until": 216,
+   "wallToMission": 2.41
+  },
+  {
+   "id": "20261020-203532",
+   "mode": "range",
+   "engine": "suborned.sim/0.10.0",
+   "until": 337,
+   "wallToMission": 1.62
+  },
+  {
+   "id": "20261021-041302",
+   "mode": "handover",
+   "engine": "suborned.sim/0.14.1",
+   "until": 3611,
+   "wallToMission": 1.03
+  },
+  {
+   "id": "20261021-041913",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 599,
+   "wallToMission": 0.99
+  },
+  {
+   "id": "20261021-042012",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 261,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261021-042038",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 524,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261021-042136",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 1194,
+   "wallToMission": 1.39
+  },
+  {
+   "id": "20261021-042421",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 136,
+   "wallToMission": 1.55
+  },
+  {
+   "id": "20261021-042442",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 181,
+   "wallToMission": 1
+  },
+  {
+   "id": "20261021-042500",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 226,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261021-042522",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 268,
+   "wallToMission": 51.67
+  },
+  {
+   "id": "20261021-044828",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 286,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261021-044857",
+   "mode": "range",
+   "engine": "suborned.sim/0.14.1",
+   "until": 553,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261021-145043",
+   "mode": "range",
+   "engine": "suborned.sim/0.18.0",
+   "until": 141,
+   "wallToMission": 1.07
+  },
+  {
+   "id": "20261021-151046",
+   "mode": "handover",
+   "engine": "suborned.sim/0.18.0",
+   "until": 4577,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261021-151951",
+   "mode": "handover",
+   "engine": "suborned.sim/0.18.0",
+   "until": 3997,
+   "wallToMission": 1.08
+  },
+  {
+   "id": "20261021-152704",
+   "mode": "handover",
+   "engine": "suborned.sim/0.18.0",
+   "until": 572,
+   "wallToMission": 1.12
+  },
+  {
+   "id": "20261021-152808",
+   "mode": "range",
+   "engine": "suborned.sim/0.18.0",
+   "until": 402,
+   "wallToMission": 1
+  },
+  {
+   "id": "20261021-152848",
+   "mode": "range",
+   "engine": "suborned.sim/0.18.0",
+   "until": 219,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261022-131755",
+   "mode": "handover",
+   "engine": "suborned.sim/0.20.0",
+   "until": 3704,
+   "wallToMission": 11.52
+  },
+  {
+   "id": "20261022-142900",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 381,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261022-142938",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 359,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261022-143014",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 346,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261022-143049",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 494,
+   "wallToMission": 1
+  },
+  {
+   "id": "20261022-143138",
+   "mode": "handover",
+   "engine": "suborned.sim/0.20.0",
+   "until": 214,
+   "wallToMission": 1.14
+  },
+  {
+   "id": "20261022-143202",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 373,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261022-143239",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 270,
+   "wallToMission": 1.03
+  },
+  {
+   "id": "20261022-143306",
+   "mode": "handover",
+   "engine": "suborned.sim/0.20.0",
+   "until": 77,
+   "wallToMission": 1.1
+  },
+  {
+   "id": "20261022-143314",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 320,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261022-143346",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 537,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261022-143440",
+   "mode": "handover",
+   "engine": "suborned.sim/0.20.0",
+   "until": 162,
+   "wallToMission": 1.03
+  },
+  {
+   "id": "20261022-143456",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 350,
+   "wallToMission": 1.02
+  },
+  {
+   "id": "20261022-143531",
+   "mode": "range",
+   "engine": "suborned.sim/0.20.0",
+   "until": 573,
+   "wallToMission": 1.4
+  },
+  {
+   "id": "20261022-175417",
+   "mode": "handover",
+   "engine": "suborned.sim/0.24.0",
+   "until": 4232,
+   "wallToMission": 1.08
+  },
+  {
+   "id": "20261022-180154",
+   "mode": "handover",
+   "engine": "suborned.sim/0.24.0",
+   "until": 2089,
+   "wallToMission": 1.05
+  },
+  {
+   "id": "20261022-181616",
+   "mode": "handover",
+   "engine": "suborned.sim/0.24.0",
+   "until": 468,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261022-183207",
+   "mode": "handover",
+   "engine": "suborned.sim/0.24.0",
+   "until": 90,
+   "wallToMission": 1.05
+  },
+  {
+   "id": "20261022-201505",
+   "mode": "handover",
+   "engine": "suborned.sim/0.25.0",
+   "until": 4280,
+   "wallToMission": 1.01
+  },
+  {
+   "id": "20261022-202219",
+   "mode": "handover",
+   "engine": "suborned.sim/0.25.0",
+   "until": 1820,
+   "wallToMission": 1.12
+  },
+  {
+   "id": "20261023-193300",
+   "mode": "handover",
+   "engine": "suborned.sim/0.26.0",
+   "until": 137,
+   "wallToMission": 159.14
+  },
+  {
+   "id": "20261023-200920",
+   "mode": "handover",
+   "engine": "suborned.sim/0.26.0",
+   "until": 3702,
+   "wallToMission": 6.32
+  }
+ ],
+ "measures": {
+  "sessions": {
+   "saved": 7150,
+   "sky": 83,
+   "handover": 56,
+   "fightLab": 27,
+   "dropped": {
+    "fast (automation)": 2287,
+    "repeated real-time sequence (proof)": 244,
+    "a copy of an earlier session": 23,
+    "too short or no orders": 4512,
+    "a burst no hand makes": 1
+   },
+   "faithfulReplays": 30,
+   "engines": "0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0",
+   "dates": "20261015..20261023",
+   "missionMinutes": 156.07,
+   "decisions": 1077,
+   "wallToMission": {
+    "n": 56,
+    "p10": 1.01,
+    "p25": 1.05,
+    "p50": 1.27,
+    "p75": 2.7,
+    "p90": 6.42,
+    "mean": 7.99
+   }
+  },
+  "gaps": {
+   "all": {
+    "n": 1129,
+    "p10": 0.7,
+    "p25": 1.3,
+    "p50": 3.1,
+    "p75": 7.1,
+    "p90": 16.54,
+    "mean": 6.87
+   },
+   "hesitation": {
+    "n": 1001,
+    "p10": 0.6,
+    "p25": 1.2,
+    "p50": 2.6,
+    "p75": 5.2,
+    "p90": 8.5,
+    "mean": 3.72
+   },
+   "idle": {
+    "k": 128,
+    "n": 1129,
+    "p": 0.113,
+    "s": {
+     "n": 128,
+     "p10": 16.35,
+     "p25": 17.8,
+     "p50": 22.8,
+     "p75": 35.3,
+     "p90": 50.45,
+     "mean": 31.47
+    }
+   },
+   "firstOrderS": {
+    "n": 55,
+    "p10": 0,
+    "p25": 0,
+    "p50": 1.1,
+    "p75": 3.5,
+    "p90": 10,
+    "mean": 3.97
+   },
+   "fightLab": {
+    "n": 289,
+    "p10": 0.7,
+    "p25": 1.2,
+    "p50": 1.9,
+    "p75": 3.1,
+    "p90": 5.52,
+    "mean": 2.85
+   }
+  },
+  "switching": {
+   "agentChanges": {
+    "k": 299,
+    "n": 1021,
+    "p": 0.293
+   },
+   "squadOrders": {
+    "k": 177,
+    "n": 1077,
+    "p": 0.164
+   },
+   "detours": {
+    "k": 3,
+    "n": 207,
+    "p": 0.014
+   },
+   "wrongAgent": {
+    "k": 4,
+    "n": 1077,
+    "p": 0.004
+   }
+  },
+  "cancel": {
+   "explicitCancels": {
+    "k": 33,
+    "n": 1077,
+    "p": 0.031
+   },
+   "cancelDelayS": {
+    "n": 33,
+    "p10": 0.22,
+    "p25": 0.5,
+    "p50": 1,
+    "p75": 4.9,
+    "p90": 9.86,
+    "mean": 4.27
+   },
+   "actsReplacedBeforeLanding": {
+    "k": 43,
+    "n": 158,
+    "p": 0.272
+   },
+   "actsCancelledBeforeLanding": {
+    "k": 11,
+    "n": 158,
+    "p": 0.07
+   },
+   "actReplaceDelayS": {
+    "n": 54,
+    "p10": 0.76,
+    "p25": 1.83,
+    "p50": 3.55,
+    "p75": 7.5,
+    "p90": 18.33,
+    "mean": 7.15
+   },
+   "movesRedirected": {
+    "k": 230,
+    "n": 1178,
+    "p": 0.195
+   },
+   "movesStopped": {
+    "k": 14,
+    "n": 1178,
+    "p": 0.012
+   },
+   "moveRedirectDelayS": {
+    "n": 244,
+    "p10": 0.6,
+    "p25": 0.9,
+    "p50": 1.7,
+    "p75": 3.7,
+    "p90": 6.14,
+    "mean": 3.09
+   },
+   "movesNudged": {
+    "k": 356,
+    "n": 1178,
+    "p": 0.302
+   },
+   "movesCutByAnAct": {
+    "k": 113,
+    "n": 1178,
+    "p": 0.096
+   },
+   "moves": 1338,
+   "runMoves": {
+    "k": 266,
+    "n": 1338,
+    "p": 0.199
+   }
+  },
+  "reorders": {
+   "sameAgainSameTarget": {
+    "k": 38,
+    "n": 172,
+    "p": 0.221
+   },
+   "otherApproachSameTarget": {
+    "k": 0,
+    "n": 172,
+    "p": 0
+   },
+   "wrongVerbPutRight": {
+    "k": 0,
+    "n": 172,
+    "p": 0
+   },
+   "retryAfterRefusal": {
+    "k": 17,
+    "n": 32,
+    "p": 0.531
+   },
+   "reclickAfterUnwalkable": {
+    "k": 71,
+    "n": 126,
+    "p": 0.563
+   }
+  },
+  "abandon": {
+   "lines": {
+    "k": 20,
+    "n": 44,
+    "p": 0.455
+   },
+   "on": {
+    "waitress": 8,
+    "camera": 7,
+    "guard": 2,
+    "patrol": 2,
+    "driver": 1
+   },
+   "perDecision": {
+    "k": 20,
+    "n": 1077,
+    "p": 0.019
+   }
+  },
+  "thirdPerson": {
+   "sessions": {
+    "k": 12,
+    "n": 56,
+    "p": 0.214
+   },
+   "bouts": 108,
+   "boutsPerDecision": {
+    "k": 108,
+    "n": 1077,
+    "p": 0.1
+   },
+   "boutS": {
+    "n": 108,
+    "p10": 0.1,
+    "p25": 0.1,
+    "p50": 2.3,
+    "p75": 8.07,
+    "p90": 20.05,
+    "mean": 6.89
+   },
+   "shareOfMission": 0.079
+  },
+  "mistakes": {
+   "judgedOrders": 1212,
+   "unwalkablePerMove": {
+    "k": 90,
+    "n": 1032,
+    "p": 0.087
+   },
+   "refused": {
+    "k": 166,
+    "n": 1212,
+    "p": 0.137
+   },
+   "byFamily": {
+    "ground that cannot be walked": 90,
+    "not ready (knowledge or reach)": 17,
+    "agent busy": 29,
+    "fight order not possible": 21,
+    "agent down, carried or away": 9
+   },
+   "perDecision": {
+    "k": 166,
+    "n": 684,
+    "p": 0.243
+   },
+   "ordersOnBusyAgent": {
+    "k": 83,
+    "n": 1370,
+    "p": 0.061
+   }
+  },
+  "ends": {
+   "by": {
+    "quit (no ending)": 42,
+    "failure (sealed)": 2,
+    "failure (rivals-reach-vale)": 3,
+    "success": 1,
+    "failure (entry-seen-camera)": 1,
+    "failure (entry-seen-patrol)": 1,
+    "failure": 1,
+    "failure (enforcer-down)": 5
+   },
+   "quit": {
+    "k": 42,
+    "n": 56,
+    "p": 0.75
+   },
+   "quitAtS": {
+    "n": 42,
+    "p10": 10.37,
+    "p25": 17.5,
+    "p50": 56.5,
+    "p75": 119.63,
+    "p90": 350.78,
+    "mean": 111.37
+   },
+   "endedAtS": {
+    "n": 14,
+    "p10": 190.07,
+    "p25": 232.33,
+    "p50": 356.2,
+    "p75": 426.8,
+    "p90": 495.12,
+    "mean": 334.77
+   },
+   "restartsWithin2Min": {
+    "k": 18,
+    "n": 56,
+    "p": 0.321
+   }
+  }
+ }
+}

@@ -1,0 +1,185 @@
+{
+ "note": "Fable by hand, in session, 2026-10-31, after Sky read the agreed scenes in play: \"Conversations still little cold\". A proposal: no model calls, not in text.json, not reviewed by Motive, not read by Sky. Same facts and cards as text.json.",
+ "scenes": [
+  {
+   "id": "listen-inez",
+   "changed": "Milena fusses and teases and they share one joke about the debt, and the tease is what makes Inez give herself away.",
+   "beats": [
+    [
+     "Milena",
+     "Have you eaten? You've looked at that Office door all shift."
+    ],
+    [
+     "Inez",
+     "Eat? With the Bureau after me? Waiting tables, I can't keep up."
+    ],
+    [
+     "Milena",
+     "I owe them too. We'll be buried with those cards half stamped."
+    ],
+    [
+     "Inez",
+     "Then bury me somewhere I can sit down."
+    ],
+    [
+     "Milena",
+     "You'd get up to look at that door. Is it so handsome?"
+    ],
+    [
+     "Inez",
+     "Who says? Did Okafor say something? Who else has he told?"
+    ],
+    [
+     "Milena",
+     "He said nothing, you goose. You just did."
+    ],
+    [
+     "Inez",
+     "Yes, I'm seeing him. If the Office hears, it costs us both."
+    ],
+    [
+     "Milena",
+     "Not from me, they won't. Stop looking, though. You can't afford it."
+    ],
+    [
+     "Scout",
+     "Bureau loan, behind, could be cleared. Okafor, Office door, could be used."
+    ]
+   ],
+   "learned": [
+    "Debt: Bureau loan, and she's behind.",
+    "Secret: seeing Okafor, the door guard."
+   ],
+   "opens": [
+    "Help: clear her Bureau loan.",
+    "Pressure: threaten to expose the affair."
+   ]
+  },
+  {
+   "id": "help-inez-2",
+   "changed": "He answers her joke about shoes with kindness, and she believes him because he did bring the rest; one beat longer, and \"Not a word that anyone knows\" is cut to make room.",
+   "beats": [
+    [
+     "Fixer",
+     "That's the rest paid. You owe the Bureau nothing, Miss Nikolaou."
+    ],
+    [
+     "Inez",
+     "Not so loud. I've owed them since my last good shoes."
+    ],
+    [
+     "Fixer",
+     "Then buy shoes first, Miss Nikolaou. We'll wait our turn."
+    ],
+    [
+     "Inez",
+     "Thank you, I mean that. Your turn. What do I owe?"
+    ],
+    [
+     "Fixer",
+     "A few minutes. When I telephone, call Okafor off the Office door."
+    ],
+    [
+     "Inez",
+     "Okafor. You know about us, then. What happens to him?"
+    ],
+    [
+     "Fixer",
+     "Easy, now. Nothing, if this goes right. And he never sees us."
+    ],
+    [
+     "Inez",
+     "You did bring the rest. I'll say it won't go by telephone."
+    ],
+    [
+     "Inez",
+     "I'm with you. I watch that square anyway. Trouble, I'll warn you."
+    ]
+   ],
+   "learned": [
+    "Loan paid. Inez is with us."
+   ],
+   "opens": [
+    "Call Inez"
+   ]
+  },
+  {
+   "id": "call-inez",
+   "changed": "Sky's \"How's your shift, love?\" gets its own beat and a fond answer, and he ends glad to be kept, so her lie hurts; one beat longer.",
+   "beats": [
+    [
+     "Fixer",
+     "It's time, Miss Nikolaou. Call Okafor across now. You'll do fine."
+    ],
+    [
+     "Inez",
+     "Now? With the terrace looking? Yes. All right."
+    ],
+    [
+     "Inez",
+     "How's your shift, love?"
+    ],
+    [
+     "Okafor",
+     "Long. This door's said nothing all day. It's good to hear you."
+    ],
+    [
+     "Inez",
+     "Come across. I've something to tell you, and not down a telephone."
+    ],
+    [
+     "Okafor",
+     "I've this door till shift's end. For you, it can wait."
+    ],
+    [
+     "Inez",
+     "Walk, love. Don't run. Let me keep you a while."
+    ],
+    [
+     "Okafor",
+     "Keep me as long as you like."
+    ]
+   ],
+   "learned": [
+    "Door empty a few minutes"
+   ],
+   "opens": [
+    "Camera off? Then enter the Office."
+   ]
+  }
+ ],
+ "briefLines": {
+  "writer.md, under How to write it": [
+   "These people have lives past this talk. Warmth is a kindness, a tease, a shared joke or a fond word, and it never takes back the fear or the price.",
+   "In each scene, give one line that's said for its own sake: nobody needs it for the plot, and this person would say it anyway. Have you eaten. It stays true to the shot and the game.",
+   "Let warmth carry a fact where it can: the tease is what makes her give herself away. Warmth makes the betrayal land, so write the fondness before the lie.",
+   "Colleagues mock each other and worry about each other. Lovers are glad of each other's voices, and a little clumsy about it. The Fixer is good company, and that's why he's frightening."
+  ],
+  "writer.md, replacing": {
+   "Each line does one job and leads to the next: an answer that opens a new question.": "Each line follows from the last. A line may be there only because this person likes that one, once a scene.",
+   "Everyone wants something right now, and it is never \"to inform the player\".": "Everyone wants something right now, and it is never \"to inform the player\". Sometimes it's to make the other person laugh, or to see they've eaten."
+  },
+  "editor.md, added to the read-aloud list": [
+   "Who in this scene likes whom, and which line shows it? If none does, it's cold, and it's yours to fix.",
+   "A joke stays only if this person would make it to this person now, and it's about their life and not about the plot. A closing quip still goes."
+  ],
+  "editor.md, replacing": {
+   "Does each line make the next one necessary? Cut any line that only repeats, decorates or winds up to a quip.": "Does each line follow from the one before? Cut any line that only repeats or winds up to a quip. Don't cut the one line said out of fondness."
+  },
+  "tools/dialogue/conversations.ts, the sheets": {
+   "MILENA (who)": "Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up. She's fond of Inez: she teases her, worries whether she's eaten, and won't tell.",
+   "INEZ_WHO, added": "With people she likes she's quick and funny about being tired, and jokes about the Bureau as if it were a bad customer.",
+   "help-inez-2, added": "He's good company and she starts to believe him, because he did come back with the rest. Let her say so in her own way.",
+   "call-inez, added": "They're glad of each other. He's fond, a little clumsy, and pleased to be asked. He ends the scene happy to come, knowing nothing.",
+   "specs maxBeats": "help-inez-2 goes from 8 to 9, or check() fails it. listen-inez and call-inez fit."
+  },
+  "tools/dialogue/exemplars/speech-rules.json": {
+   "Milena.refusesToSay": "That she's in the same debt, until Inez is. She has no secret of her own to give.",
+   "Milena.talksAbout, added": "Whether you've eaten. She teases the people she likes.",
+   "Fixer.pays, replacing \"Warmth is his tool, and it stops working by the end.\"": "Warmth is his tool, and he's good at it: people like him, and some of it's real.",
+   "Inez.talksAbout, added": "Jokes about her own feet and the Bureau, with people she likes.",
+   "Okafor.refusesToSay, replacing \"Anything soft in the hearing of the Office.\"": "Anything soft where the Office could hear. On her line he's glad to hear her, and says so badly."
+  }
+ },
+ "applied": "Applied 2026-11-01 with the two wording fixes; text.json and approved.json are the current copies."
+}

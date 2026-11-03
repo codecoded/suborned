@@ -38,7 +38,13 @@ namespace Suborned.Play
         readonly FeedCard[] actCard = new FeedCard[4];
         int feedIds;
 
-        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; }
+        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; crewCodeAt.Clear(); }
+
+        /// <summary>Engine 0.34.0: the crew's codes that each member logs for himself in the same beat (rivals.for-car, rivals.back-to-cover, the
+        /// floor's rivals.recalled): one card for the beat, not one a member. A code seen again within CrewBeatS of its last line makes no card.</summary>
+        static readonly HashSet<string> CrewBeatCodes = new() { "rivals.for-car", "rivals.back-to-cover", "rivals.recalled" };
+        const int CrewBeatS = 3;
+        readonly Dictionary<string, int> crewCodeAt = new();
 
         static readonly HashSet<string> FeedActs = new() { "watch", "listen", "turn", "loop", "reroute", "mislead", "enter", "take", "carry" };
         static bool IsRole(string s) => s is "waitress" or "driver" or "guard" or "councillor";
@@ -60,8 +66,17 @@ namespace Suborned.Play
         string PlaceWords(string target) => target switch
         {
             "waitress" => "café door", "driver" => "the pickup", "guard" => "Office door", "councillor" => "the Office", "entrance" or "cabinet" => "control cabinet",
-            "patrol" => "the patrol", "rivals" => "the pickup", _ => "",
+            "patrol" => "the patrol", "rivals" or "car:rivals" => "the pickup", _ when HostViews.IsCrewId(target) => RivalPlace(target), _ => "",
         };
+
+        /// <summary>Brief 059 (engine 0.32.0): where a member of the crew stands, in the player's words: the three posted round our car, the lookout
+        /// and the wheelman by the pickup (the car's state says where the car is).</summary>
+        string RivalPlace(string id)
+        {
+            var md = views != null && views.RivalModes.TryGetValue(id, out var m) ? m : "";
+            if (md == "aboard") return Game?.RivalCarPose() is { } cp && Game.S.HasPlace("rival-park") && G.Within(cp.pos, Game.S.At("rival-park"), 1500) ? "the pickup" : "the rival car";
+            return id is "rival-1" or "rival-2" or "rival-3" && Game?.CrewStandId is { Length: > 0 } ? "our car" : "the pickup";
+        }
 
         /// <summary>After each Track: an act starting opens its card (with its scene), its progress reveals beats, its end lands the card.</summary>
         void FeedTrack()
@@ -89,13 +104,12 @@ namespace Suborned.Play
                         }
                         if (c.Scene != null) { c.SceneN = Text.SceneUse(c.Scene); Fill(c, Text.PlayScene(c.Scene, c.SceneN)); }
                     }
-                    ConvoAct(k, verb, target, c); // brief 032: the act's first tick (its scene decides at the next frame)
                 }
                 if (c == null || !c.Live) continue;
                 if (d.Phase == "acting")
                 {
                     c.Progress = d.Progress; c.TicksLeft = d.TicksLeft;
-                    if (c.Scene != null) // beats by progress; an approach stops before the reply
+                    if (c.Scene != null && !ConvoVerb(c.Verb)) // a Watch's beats by progress; brief 085: a conversation's words wait for the landing, whole (HostConvo.Lines)
                     {
                         int lead = c.Lines.FindIndex(l => l.Reply); if (lead < 0) lead = Math.Max(0, c.Lines.Count - 1);
                         c.Revealed = Math.Max(c.Revealed, Math.Min(lead, 1 + (int)((long)Math.Max(0, d.Progress) * lead / 1000)));
@@ -122,7 +136,9 @@ namespace Suborned.Play
             }
             c.NextBeatAt = Game.Tick; // the remaining beats follow one by one
             c.Footer = c.Scene != null ? Result(c.Scene.Result, c) : FooterOf(c);
+            if (c.Verb == "watch" && IsRole(c.Target) && Game.WatcherKind(c.Target).Length == 0) c.Footer = MoodFooter(c.Target); // item 23 (brief 054 §7): a person's Watch reads their mood: "Inez · uneasy · pressure likely"; nothing new, no footer
             if (c.Verb is "watch" or "listen" && c.Footer.Length > 0) c.Tone = Feedback.Ok;
+            if (ConvoVerb(c.Verb)) { if (ActLanded(c)) ConvoLanded(c.Agent, c.Verb, c.Target, c); else ConvoCutShort(c); } // brief 085: when the act lands, its whole scene; interrupted, none
         }
 
         /// <summary>How the last approach on a person went, from the engine's log (turn.&lt;approach&gt;.&lt;outcome&gt;; reported = suspicious).</summary>
@@ -150,6 +166,19 @@ namespace Suborned.Play
                 .Replace("{usd}", c.Paid > 0 ? $"${c.Paid:N0}" : "$0").Replace("{alert}", Game.Alert.ToString());
         }
 
+        /// <summary>Item 23 (brief 054 §7, Fable's feed "Watch · Inez · uneasy · pressure likely"): what a Watch on a person taught, the mood the
+        /// cell now knows and the approach the card marks likely (the engine's Quote.Likely); "" when it taught nothing (neutral, or no mood on).</summary>
+        string MoodFooter(string role)
+        {
+            string mood = ""; Guard("mood", () => mood = Game.MoodOf(role));
+            if (mood.Length == 0 || mood == "neutral" || CastOf(role) is { KTemperament: true }) return ""; // Fable (less.mood): neutral says nothing; after Listen the card is exact, no footer
+            var t = Text; string W(Dictionary<string, string> d, string k) => d != null && d.TryGetValue(k, out var v) ? v : k;
+            string likely = "", hurt = "";
+            if (role != "councillor") foreach (var ap in new[] { "pressure", "help", "pay" }) { Quote q = null; Guard("mood", () => q = Game.Preview(ap, role, OpId.Fixer)); if (q == null) continue; if (q.Likely && likely.Length == 0) likely = ap; if (q.Hurt && hurt.Length == 0) hurt = ap; }
+            string form = likely.Length > 0 ? t?.MoodFooter ?? "{who} · {mood} · {lever} likely" : hurt.Length > 0 ? t?.MoodFooterHurt ?? "{who} · {mood} · {lever} harder" : t?.MoodFooterBare ?? "{who} · {mood}";
+            return form.Replace("{who}", Cap(Name(role))).Replace("{mood}", W(t?.MoodWord, mood)).Replace("{lever}", W(t?.MoodLever, likely.Length > 0 ? likely : hurt));
+        }
+
         /// <summary>What came of an act with no scene, from the engine's state when it ends.</summary>
         string FooterOf(FeedCard c)
         {
@@ -164,11 +193,11 @@ namespace Suborned.Play
                     }
                 case "watch": { var p = CastOf(c.Target); return p == null ? "Nothing learned." : p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
                 case "listen": { var p = CastOf(c.Target); return p == null || (!p.KNeed && !p.KTemperament) ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
-                case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is tied to the cabinet." : "The loop didn't hold.";
+                case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is free to go." : "The loop didn't hold."; // engine 0.31.0: no tether
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";
-                case "mislead": c.Tone = g.RivalsPresent ? Feedback.Info : Feedback.Ok; return g.RivalsPresent ? "The tip missed." : "The rivals follow the false tip. They may be back.";
-                case "enter": return g.Vale == ValeAt.WithEnforcer ? "Out at the service lane with Vale." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : "Back out without Vale.";
-                case "take": c.Tone = g.Vale == ValeAt.WithEnforcer ? Feedback.Ok : Feedback.Info; return g.Vale == ValeAt.WithEnforcer ? "Vale is with the Enforcer: get him to the car." : "Vale was not taken.";
+                case "mislead": { bool away = g.CarSt is CrewCar.TipOut or CrewCar.Away or CrewCar.TipBack; c.Tone = away ? Feedback.Ok : Feedback.Info; return away ? "The rivals follow the false tip. They may be back." : "The tip missed."; } // brief 059 F3: the car leaves on the tip (CarSt), the crew on foot stays
+                case "enter": return g.Vale == ValeAt.WithEnforcer ? $"Out at the service lane with {ValeWord}." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : $"Back out without {ValeWord}.";
+                case "take": c.Tone = g.Vale == ValeAt.WithEnforcer ? Feedback.Ok : Feedback.Info; return g.Vale == ValeAt.WithEnforcer ? $"{ValeWord} is with the Enforcer: get him to the car." : $"{ValeWord} was not taken.";
                 case "carry": return "Lifted: walk them to the car.";
             }
             return "Done.";
@@ -224,7 +253,7 @@ namespace Suborned.Play
             if (sc != null) { c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c); SceneBeat(sc, "call"); }
             else c.Footer = $"{Cap(Name(role))} acts on the call.";
             c.Revealed = 1; c.NextBeatAt = Game.Tick + 15; c.Tone = Feedback.Ok;
-            ConvoAct((int)OpId.Fixer, "call", role, c); // brief 032
+            ConvoLanded((int)OpId.Fixer, "call", role, c); // brief 085: a call lands at once
         }
 
         /// <summary>A call the contact's lover refuses (the engine's summon-* codes): a call card with Fable's summon-refused lines from both
@@ -244,14 +273,19 @@ namespace Suborned.Play
         // engine's sentence (its log keeps it).
         static readonly Dictionary<string, (string kind, string title, string place)> FeedEvents = new()
         {
-            ["rivals.arrive"] = ("city", "Rival car arrives", "rivals/0"), ["rivals.misled"] = ("city", "Rivals sent away", "rivals/0"), ["rivals.drawn"] = ("warning", "Rivals heading in", "rivals/0"),
+            ["rivals.arrive"] = ("city", "Rival car arrives", "car/rivals"), ["rivals.misled"] = ("city", "Rivals sent away", "car/rivals"), ["rivals.drawn"] = ("warning", "Rivals heading in", "car/rivals"),
             ["guard.at-cafe"] = ("city", "The guard is at the café", "guard"), ["guard.back"] = ("city", "Guard back on the door", "guard"),
-            ["vale.exits"] = ("city", "Vale comes out", "councillor"), ["vale.at-car"] = ("city", "Vale reaches his car", "councillor"),
-            ["car.blocks"] = ("city", "The car blocks the camera", "car/official"), ["car.leaves"] = ("city", "The official car leaves", "car/official"),
+            ["vale.exits"] = ("city", "{vale} comes out", "councillor"), ["vale.at-car"] = ("city", "{vale} reaches his car", "councillor"),
+            ["car.leaves"] = ("city", "The official car leaves", "car/official"), // engine 0.32.0: car.blocks is never logged (the driver's Call is retired)
             ["loop.ends"] = ("warning", "The loop ends", "camera/entrance"), ["security.called"] = ("warning", "Security is coming", "security/0"), ["patrol.breaks"] = ("warning", "The patrol turns on you", "patrol"),
             ["run.seen"] = ("warning", "Runner seen", ""), ["report"] = ("warning", "Reported", ""), ["fight.loud"] = ("fight", "Police coming in", "security/0"), ["fight.safe"] = ("fight", "The rivals wait at the car", "car/getaway"),
             ["fight.ambush"] = ("fight", "Ambush", "car/getaway"), ["fight.over"] = ("fight", "The fight is over", "car/getaway"), ["captured"] = ("fight", "Captured", ""),
             ["scout.down"] = ("fight", "Scout is down", "op/scout"), ["fixer.down"] = ("fight", "Fixer is down", "op/fixer"), ["tech.down"] = ("fight", "Tech is down", "op/tech"),
+            // engine 0.33.0 (brief 059): the crew's new codes, Fable's titles (cards.items), for a text without them
+            ["rivals.recalled"] = ("fight", "Rivals called back", "car/rivals"), ["rivals.wiped"] = ("fight", "The rival crew is finished", "car/getaway"), ["rivals.see-takedown"] = ("warning", "A crewmate saw it", ""),
+            ["rivals.wakes"] = ("warning", "A rival is awake", ""), ["rivals.frees"] = ("city", "A rival is untied", ""),
+            // engine 0.34.0 (Motive M067-K3 a): hiding in a held car loses; host titles until Fable's cards.items carry them
+            ["rivals.for-car"] = ("warning", "Rivals going for {vale}", "car/getaway"), ["rivals.back-to-cover"] = ("city", "Rivals back in cover", "car/getaway"),
         };
         /// <summary>City scenes' card titles by the text's event id (Fable's table D).</summary>
         static readonly Dictionary<string, string> SceneTitles = new() { ["rivals-arrive"] = "Rival car arrives", ["chime"] = "Handover chime", ["guard-at-cafe"] = "The guard is at the café" };
@@ -263,6 +297,9 @@ namespace Suborned.Play
         /// keeps the same sight rule: an event whose scenes are all in-sight only, or that happens at a place, makes no card when no agent sees it.</summary>
         void FeedEvent(LogLine l)
         {
+            if (PressedStreet(l)) { quiet = l; return; } /* brief 085: a pressed call's arrival (HostConvo.Street) */ if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
+            if (CrewBeatCodes.Contains(l.Code)) { bool again = crewCodeAt.TryGetValue(l.Code, out var was) && l.Tick - was < CrewBeatS * Game.Hz; crewCodeAt[l.Code] = l.Tick; if (again) return; } // one card a beat, not one a member
+            if (l.Code == "rivals.for-car") HolderPulseAt = Time.unscaledTime; // engine 0.34.0 (M067-K3 a): the held car's holder marks pulse once as the crew goes for Vale (an existing motion cue, no new mark; Glyph's cue to come)
             bool hidden = false;
             if (Text != null)
                 foreach (var e in Text.Events.Values)
@@ -277,11 +314,19 @@ namespace Suborned.Play
             // brief 013: Fable's cards (text.json cards.items) for the codes no scene covers, with their sight and needs rules
             if (TextCard(l, out var cardHidden)) { if (cardHidden) quiet = l; return; }
             if (!FeedEvents.TryGetValue(l.Code, out var ev)) return;
-            var c = NewCard(ev.kind, ev.title, ev.kind == "fight" ? "fire" : ev.kind == "warning" ? "!" : "·", "", null, ev.place);
+            var c = NewCard(ev.kind, ev.title.Replace("{vale}", ValeWord), ev.kind == "fight" ? "fire" : ev.kind == "warning" ? "!" : "·", "", null, ev.place);
             c.Event = l.Code; c.Footer = EventResult(l); c.Tone = ev.kind is "warning" or "fight" ? Feedback.Refused : Feedback.Info;
             lastEvent = c;
         }
         FeedCard lastEvent;
+        /// <summary>Engine 0.33.0: the crew is destroyed at the safe fight's start (`rivals.wiped` logged on that tick, before or after `fight.safe`;
+        /// Keel may stop logging fight.safe then, and either way the one card is the wiped one).</summary>
+        bool CrewWipedAt(int tick)
+        {
+            var log = Game.Log;
+            for (int i = log.Count - 1; i >= 0; i--) { var x = log[i]; if (x.Tick < tick) break; if (x.Tick == tick && x.Code == "rivals.wiped") return true; }
+            return false;
+        }
         /// <summary>The last log line whose card or scene the cell can't see: its spoken lines stay quiet too (Fable: a line follows its card's sight).</summary>
         LogLine? quiet;
 
@@ -293,24 +338,30 @@ namespace Suborned.Play
             string Between(string a, string b) { int i = t.IndexOf(a, StringComparison.Ordinal); if (i < 0) return null; i += a.Length; int j = t.IndexOf(b, i, StringComparison.Ordinal); return j > i ? t[i..j] : null; }
             switch (l.Code)
             {
-                case "rivals.arrive": return "Parked by the pickup. They want Vale too.";
+                case "rivals.arrive": return $"Parked by the pickup. They want {ValeWord} too.";
                 case "rivals.misled": return "They may be back.";
                 case "rivals.drawn": return "They heard the shots.";
                 case "guard.at-cafe": return "Away from the door.";
                 case "guard.back": return "Watching the door again.";
-                case "vale.exits": return g.PickupService ? "Walking to the service lane." : "Walking to the official car.";
-                case "vale.at-car": return g.PickupService ? "In the service lane." : "Under the pickup camera.";
-                case "car.blocks": return "The pickup camera is blind.";
-                case "car.leaves": return "Heading for the service lane.";
+                case "vale.exits": return "Walking to the official car."; // brief 059 K1: always the front (the service-lane walk is gone)
+                case "vale.at-car": return "Under the pickup camera.";
+                case "car.leaves": return g.Driver.Turned && !g.Driver.Down ? "Driving him on." : "Driving him away."; // brief 059 K1, K4: unturned at Vale's pickup, turned at the close
                 case "loop.ends": return "The camera sees again.";
                 case "security.called": return "From the north street.";
                 case "patrol.breaks": return t.Contains("gunfire") ? "Toward the gunfire." : "Toward the drawn weapon.";
-                case "run.seen": { var who = Between("The ", " sees"); var ag = Between("sees the ", " running"); return who != null && ag != null ? $"The {who} saw the {Cap(ag)} run. Alert {g.Alert}." : $"Someone saw a runner. Alert {g.Alert}."; }
+                case "run.seen": { var who = Between("The ", " sees"); var ag = Between("sees the ", " running"); return who != null && ag != null ? $"The {who} noticed the {Cap(ag)} running." : "Someone noticed a runner."; } // engine 0.34.0 (M067-B2): a run is noticed, never an Alert on its own
                 case "report": { var who = Between("The ", " reports"); return who != null ? $"The {who} reported the attempt. Alert {g.Alert}." : $"Reported. Alert {g.Alert}."; }
                 case "fight.loud": return $"{Num()} officers, from the north street." + (g.Lockdown < int.MaxValue / 8 ? $" The district seals at {MissionClock(g.Lockdown)}." : "");
                 case "fight.safe": return $"{Num()} of them. The car can't leave while they stand.";
                 case "fight.ambush": return t.Contains("warning") ? "Inez's warning came in time. You saw it first." : "The rivals open fire at the car.";
                 case "fight.over": return Text?.CardFor("fight.over")?.Result is { Length: > 0 } fo ? fo : "The last of them is down or gone. Fire orders end. The car can go."; // Fable's card (text.json cards.items["fight.over"].result)
+                case "rivals.recalled": return "Rivals who were away are coming back for the fight."; // engine 0.33.0: Fable's results (cards.items), for a text without them
+                case "rivals.wiped": return "None of them can fight. Nothing holds the car. Go when you are ready.";
+                case "rivals.see-takedown": return "A rival saw his crewmate go down and opened fire. It's loud now.";
+                case "rivals.wakes": return "He is up again and goes for the Enforcer on sight.";
+                case "rivals.frees": return "A crewmate found him tied and untied him.";
+                case "rivals.for-car": return Text?.CardFor("rivals.for-car")?.Result is { Length: > 0 } rf ? rf : $"No gun is drawn outside the car, so they come for {ValeWord}. Draw one there (F)."; // engine 0.35.2: only a drawn op guards a held car (Fable's card first)
+                case "rivals.back-to-cover": return t.Contains("no longer held") ? "The car is free: they go back to cover." : "A gun is drawn outside the car again: they go back to cover."; // engine 0.35.2: "sees the cell drawn outside the car again"
                 case "captured": return t;
             }
             return l.Code.EndsWith(".down") ? "Another agent can carry them." : "";
@@ -352,7 +403,7 @@ namespace Suborned.Play
         (Pt? at, string key, string where) EventPlace(string ev, LogLine? l = null) => ev switch
         {
             "witness-reacts" or "person-missed" when l.HasValue && WhoIn(l.Value) is Person wp => (Game.PosOfPerson(wp), wp.Role.Length > 0 ? wp.Role : CrowdKey(wp), ""),
-            "rivals-arrive" => (Game.RivalsPose()?.pos ?? (Game.S.HasPlace("rival-park") ? Game.S.At("rival-park") : (Pt?)null), "rivals/0", "the pickup"),
+            "rivals-arrive" => (Game.RivalCarPose()?.pos ?? (Game.S.HasPlace("rival-park") ? Game.S.At("rival-park") : (Pt?)null), "car/rivals", "the pickup"), // brief 059: the car parked across from Vale's
             "guard-at-cafe" => (Game.GuardPose()?.pos, "guard", "café"),
             "chime" => (Game.S.At(Game.S.GuardPost), "marker/door", "the Office"),
             _ => (null, "", ""),

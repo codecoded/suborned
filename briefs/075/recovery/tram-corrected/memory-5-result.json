@@ -1,0 +1,24 @@
+{
+  "command": [
+    "bun",
+    "tools/game/playing.ts",
+    "unity",
+    "run",
+    "/Users/sky/Projects/suborned/unity",
+    "--timeout",
+    "590",
+    "--log-file",
+    "/Users/sky/Projects/suborned/out/scratch/latch/tram-corrected/memory-5.log",
+    "--no-tail",
+    "--format",
+    "json",
+    "--",
+    "-executeMethod",
+    "Suborned.OldTown.Editor.Swap.SwapTramCorrected.CheckMemory",
+    "-tramCheck",
+    "memory-5"
+  ],
+  "exit": 0,
+  "seconds": 207.66393494606018,
+  "restoredExactBytes": []
+}

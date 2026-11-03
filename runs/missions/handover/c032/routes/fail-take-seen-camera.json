@@ -1,0 +1,13 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"seen by a live camera\", at the pickup (engine abduction-seen-camera): the driver unturned, the rivals sent away, the Enforcer takes Vale at the official car under the pickup camera.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Boarding pavilion"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "rival-park"},
+  {"tick": 3200, "op": "scout", "do": "mislead", "target": "rivals"},
+  {"tick": 3700, "op": "enforcer", "do": "take"}
+ ],
+ "until": 5100
+}

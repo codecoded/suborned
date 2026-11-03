@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "The dinner rush: Inez stalls the Fixer, then asks Okafor herself and he prices it before coming.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "You can't ring me here. I've got six tables."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Your Bureau card's stamped paid, thanks to us. Now call Okafor across."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's listening on this line? Nobody here knows about him and me."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nobody will, from us. He'll walk across if it's you asking."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's me, love. Come across and stand with me a minute?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Leave my door? They dock pay for that, if it's written down."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's been a long shift. I only want you next to me."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Door stands empty, then. I'm coming, a few minutes there and back."
+        }
+      ],
+      "learned": [
+        "The door is empty"
+      ],
+      "opens": [
+        "Enter the Office"
+      ]
+    },
+    {
+      "situation": "The love scene comes first; only her report to the Fixer shows what it cost.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Inez. Call Okafor across, and keep your voice ordinary."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Public door. Inez? You never ring this handset on shift."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Can you come across, love? Just to stand with me a minute."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "One clean shift at a time. That's how we pay the Bureau."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I know what we owe. Come anyway."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then the door's empty till I'm back. A few minutes, for you."
+        },
+        {
+          "speaker": "Inez",
+          "line": "He's coming. He thinks I'm still paying the Bureau with him."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Let him think it. Your card's stamped paid, and the door's ours."
+        }
+      ],
+      "learned": [
+        "The door is empty"
+      ],
+      "opens": [
+        "Enter the Office"
+      ]
+    },
+    {
+      "situation": "Both lines open at once: she half warns Okafor, the Fixer steadies her, and his concern gets him across.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Not now. The terrace wants its bills before the bell."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Your Bureau card's stamped clear. Now we want Okafor off that door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Love, can you come over? Only if it won't make trouble."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "You sound tired. They short your tips again?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "He's asking about my tips. What happens to him, at that door?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nobody touches him. Say yes, and he stands with you a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Yes, they shorted me. Come and stand by me a minute?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Coming, off the clock. Door's empty a few minutes, there and back."
+        }
+      ],
+      "learned": [
+        "The door is empty"
+      ],
+      "opens": [
+        "Enter the Office"
+      ]
+    }
+  ]
+}

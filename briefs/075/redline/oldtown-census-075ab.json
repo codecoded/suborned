@@ -1,0 +1,191 @@
+{
+ "note": "Redline 075 Perf A/B (2026-10-29): static census of the two scenes as built (YAML read, no Unity). MEASURED from the files; per-view crowd counts are a ground-footprint estimate (orthographic 14 at pitch 38: 49.8 m across, 45.5 m deep x 1.15, centred on the focus; old frame z = plan y + 206), not a frustum cull. Commands: python3 -I briefs/075/redline/glb_stat_075ab.py <glbs>; python3 -I briefs/075/redline/oldtown_crowd_075ab.py unity/Assets/Scenes/OldTown.unity <guid index>.",
+ "scenes": {
+  "OldTown.unity (cc903ae0 build, 201 MB)": {
+   "meshRenderersDirect": 3594,
+   "prefabInstances": 11294,
+   "lodGroups": 1066,
+   "embeddedMeshes": 986,
+   "embeddedMaterials": 130,
+   "reflectionProbes": {
+    "baked256BoxProjected": 26,
+    "custom128": 1
+   },
+   "lights": 1,
+   "skinnedRenderers": 0,
+   "staticFlaggedGameObjects": 12756,
+   "groundTileInstances": {
+    "DK_Tile_TramRail": 1469,
+    "DK_Pave_Flags_0-3": 3421,
+    "DK_Kerb_Granite_0-1": 1540
+   },
+   "gltfCrowd": {
+    "roots": [
+     "District crowd and traffic (1,355)",
+     "Southside crowd and traffic (1,235)"
+    ],
+    "people": 2420,
+    "cars": 170,
+    "triangles": 61302566,
+    "submeshRenderers": 71342,
+    "lods": "none",
+    "static": "no (prefab instances, no static flag override)",
+    "materialOverridesPerInstance": "3 (palette tints)"
+   },
+   "pipelineAsUsedByOldTownSwap": "Assets/Suborned/OldTownArt/Settings/PC_RPAsset.asset: MSAA 4, RequireDepthTexture 1, RequireOpaqueTexture 1, main shadows 2048 x 4 cascades at 50 m (TacticalShadows refits at play), GPU Resident Drawer OFF, light probe system APV (baking set, no cell data); renderer: Harbour fog full-screen pass (fetchColorBuffer), SSAO from depth-normals at 0.9/0.45; QualitySettings lodBias 2, realtime reflection probes on, mip streaming off"
+  },
+  "HarbourDistrict.unity (built 2026-10-29 01:10, 386 MB)": {
+   "meshRenderersDirect": 12374,
+   "prefabInstances": 5882,
+   "embeddedMeshes": 3410,
+   "embeddedMaterials": 63,
+   "reflectionProbes": {
+    "custom128": 2
+   },
+   "lights": {
+    "total": 280,
+    "enabled": 1,
+    "disabledNightLamps": 279
+   },
+   "skinnedRenderers": 0,
+   "staticFlaggedGameObjects": 14675,
+   "pipeline": "Assets/Settings/PC_RPAsset.asset: MSAA off, RequireDepthTexture 0, RequireOpaqueTexture 0, 4096 x 1 cascade at 260 m (TacticalShadows refits at play), GPU Resident Drawer ON; renderer: SSAO from depth after opaque 0.4/0.3 (off at play, 064 A3 item 1), SignalsFeature"
+  }
+ },
+ "gltfAssets": [
+  "RFM_CivilianBubbleMicroV1.glb: tris 21526 primitives 26 materials 12 meshNodes 14 images 0 skins 0",
+  "RFM_CivilianFamilyWagonV1.glb: tris 23484 primitives 26 materials 12 meshNodes 14 images 0 skins 0",
+  "RFM_CivilianNeighborhoodShuttleV1.glb: tris 23346 primitives 26 materials 12 meshNodes 14 images 0 skins 0",
+  "RFM_CivilianStreamlineTaxiV1.glb: tris 23016 primitives 26 materials 12 meshNodes 14 images 0 skins 0",
+  "RFM_ServiceDeliveryVanV1.glb: tris 22132 primitives 25 materials 12 meshNodes 13 images 0 skins 0",
+  "RFM_CityCommuterV1.glb: tris 11100 primitives 53 materials 12 meshNodes 53 images 4 skins 0",
+  "RFM_PeopleCommuterV2.glb: tris 32098 primitives 29 materials 11 meshNodes 29 images 5 skins 0",
+  "RFM_PeopleCourierV2.glb: tris 24704 primitives 24 materials 12 meshNodes 24 images 5 skins 0",
+  "RFM_PeopleDinerOwnerV2.glb: tris 23378 primitives 21 materials 11 meshNodes 21 images 6 skins 0",
+  "RFM_PeopleElderV2.glb: tris 24160 primitives 18 materials 10 meshNodes 18 images 5 skins 0",
+  "RFM_PeopleMechanicV2.glb: tris 25522 primitives 25 materials 10 meshNodes 25 images 5 skins 0",
+  "RFM_PeopleTransitOfficerV2.glb: tris 25974 primitives 23 materials 12 meshNodes 23 images 5 skins 0"
+ ],
+ "oldCrowdPerPlayView": {
+  "circus-y030": {
+   "people": 42,
+   "cars": 4,
+   "tris": 1068230,
+   "submeshes": 1342
+  },
+  "circus-y210": {
+   "people": 42,
+   "cars": 4,
+   "tris": 1068230,
+   "submeshes": 1342
+  },
+  "boulevard-east-y030": {
+   "people": 28,
+   "cars": 13,
+   "tris": 991322,
+   "submeshes": 1087
+  },
+  "boulevard-east-y210": {
+   "people": 28,
+   "cars": 13,
+   "tris": 991322,
+   "submeshes": 1087
+  },
+  "gardens-station-y030": {
+   "people": 0,
+   "cars": 0,
+   "tris": 0,
+   "submeshes": 0
+  },
+  "gardens-station-y210": {
+   "people": 0,
+   "cars": 0,
+   "tris": 0,
+   "submeshes": 0
+  },
+  "harbour-terrace-y030": {
+   "people": 51,
+   "cars": 1,
+   "tris": 1211250,
+   "submeshes": 1544
+  },
+  "harbour-terrace-y210": {
+   "people": 51,
+   "cars": 1,
+   "tris": 1211250,
+   "submeshes": 1544
+  },
+  "harbour-station-y030": {
+   "people": 3,
+   "cars": 0,
+   "tris": 82776,
+   "submeshes": 76
+  },
+  "harbour-station-y210": {
+   "people": 3,
+   "cars": 0,
+   "tris": 82776,
+   "submeshes": 76
+  },
+  "skyport-station-y030": {
+   "people": 5,
+   "cars": 0,
+   "tris": 133820,
+   "submeshes": 126
+  },
+  "skyport-station-y210": {
+   "people": 5,
+   "cars": 0,
+   "tris": 133820,
+   "submeshes": 126
+  },
+  "southside-y030": {
+   "people": 68,
+   "cars": 5,
+   "tris": 1748906,
+   "submeshes": 1901
+  },
+  "southside-y210": {
+   "people": 68,
+   "cars": 5,
+   "tris": 1748906,
+   "submeshes": 1901
+  },
+  "office-front-y030": {
+   "people": 0,
+   "cars": 0,
+   "tris": 0,
+   "submeshes": 0
+  },
+  "office-front-y210": {
+   "people": 0,
+   "cars": 0,
+   "tris": 0,
+   "submeshes": 0
+  },
+  "cafe-square-y030": {
+   "people": 0,
+   "cars": 0,
+   "tris": 0,
+   "submeshes": 0
+  },
+  "cafe-square-y210": {
+   "people": 0,
+   "cars": 0,
+   "tris": 0,
+   "submeshes": 0
+  },
+  "zone-seam-east-y030": {
+   "people": 9,
+   "cars": 0,
+   "tris": 228078,
+   "submeshes": 203
+  },
+  "zone-seam-east-y210": {
+   "people": 9,
+   "cars": 0,
+   "tris": 228078,
+   "submeshes": 203
+  }
+ }
+}

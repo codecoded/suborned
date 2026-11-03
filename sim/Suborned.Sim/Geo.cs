@@ -75,6 +75,32 @@ namespace Suborned.Sim
             return (d1 == 0 && OnSegment(a, c, d)) || (d2 == 0 && OnSegment(b, c, d)) || (d3 == 0 && OnSegment(c, a, b)) || (d4 == 0 && OnSegment(d, a, b));
         }
 
+        /// <summary>A point scaled by D, overflow-checked (Occluder.Blocks3's lifted frame).</summary>
+        public static Pt Scaled(Pt p, long D) => new Pt(checked((int)(p.X * D)), checked((int)(p.Y * D)));
+        /// <summary>SegHitsPoly(a, b, poly scaled by D) without building the scaled polygon (engine 0.30.0, Redline 064 #3: no allocation on the step's
+        /// sight tests). The same tests in the same order as InPoly and SegHitsPoly on the scaled points, so the same answer.</summary>
+        public static bool SegHitsPolyScaled(Pt a, Pt b, Pt[] poly, long D)
+        {
+            if (InPolyScaled(a, poly, D) || InPolyScaled(b, poly, D)) return true;
+            for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++) if (SegHit(a, b, Scaled(poly[j], D), Scaled(poly[i], D))) return true;
+            return false;
+        }
+        static bool InPolyScaled(Pt p, Pt[] poly, long D)
+        {
+            bool inside = false;
+            for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++)
+            {
+                Pt a = Scaled(poly[i], D), b = Scaled(poly[j], D);
+                if (OnSegment(p, a, b)) return true;
+                if ((a.Y > p.Y) != (b.Y > p.Y))
+                {
+                    long c = Cross(a, b, p);
+                    if ((b.Y > a.Y) ? c < 0 : c > 0) inside = !inside;
+                }
+            }
+            return inside;
+        }
+
         /// <summary>True if segment ab enters polygon poly (crosses or touches an edge, or starts inside).</summary>
         public static bool SegHitsPoly(Pt a, Pt b, Pt[] poly)
         {
@@ -119,6 +145,30 @@ namespace Suborned.Sim
             if (eye < Z || eye > Z + H) return false;
             if (Math.Max(a.X, b.X) < x0 || Math.Min(a.X, b.X) > x1 || Math.Max(a.Y, b.Y) < y0 || Math.Min(a.Y, b.Y) > y1) return false;
             return G.SegHitsPoly(a, b, Poly);
+        }
+        /// <summary>Brief 055 §7 (rulebook perception.mount, engine 0.28.0): the 3D line from a at height za to b at height zb (block z cm)
+        /// passes through the prism Z..Z+H over the footprint. The line's height is linear along it, so the stretch of the segment whose
+        /// height lies in Z..Z+H is one interval [tl, th] of its length; that stretch, clipped exactly, is tested in plan as the 2D test does
+        /// (crossing or touching an edge, or starting inside), so a corner graze at a height the solid spans is blocked. Integers only: the
+        /// stretch's ends are rationals over D = |zb − za|, and the plan test runs on every coordinate scaled by D (|coord| ≤ 10^5 cm,
+        /// D ≤ 2·10^4: products stay far inside a long).</summary>
+        public bool Blocks3(Pt a, int za, Pt b, int zb)
+        {
+            int top = Z + H;
+            if (Math.Max(za, zb) < Z || Math.Min(za, zb) > top) return false;
+            if (Math.Max(a.X, b.X) < x0 || Math.Min(a.X, b.X) > x1 || Math.Max(a.Y, b.Y) < y0 || Math.Min(a.Y, b.Y) > y1) return false;
+            if (za == zb) return G.SegHitsPoly(a, b, Poly);
+            long D = Math.Abs((long)zb - za);
+            // t·D where the height crosses Z and Z+H, in the line's own direction, clamped to [0, D]
+            long tl, th;
+            if (zb > za) { tl = (long)Z - za; th = (long)top - za; } else { tl = (long)za - top; th = (long)za - Z; }
+            if (tl < 0) tl = 0; if (th > D) th = D; if (tl > th) return false;
+            long dx = b.X - a.X, dy = b.Y - a.Y;
+            var A = new Pt(checked((int)(a.X * D + dx * tl)), checked((int)(a.Y * D + dy * tl)));
+            var B = new Pt(checked((int)(a.X * D + dx * th)), checked((int)(a.Y * D + dy * th)));
+            if (Math.Max(A.X, B.X) < x0 * D || Math.Min(A.X, B.X) > x1 * D || Math.Max(A.Y, B.Y) < y0 * D || Math.Min(A.Y, B.Y) > y1 * D) return false;
+            for (int i = 0; i < Poly.Length; i++) G.Scaled(Poly[i], D); // engine 0.30.0 (Redline 064 #3): the same overflow checks, up front, with no Pt[] per test
+            return G.SegHitsPolyScaled(A, B, Poly, D);
         }
         /// <summary>The footprint's box meets the box [minX, maxX] × [minY, maxY] (a cheap first test).</summary>
         public bool BoxMeets(int minX, int minY, int maxX, int maxY) => !(maxX < x0 || minX > x1 || maxY < y0 || minY > y1);

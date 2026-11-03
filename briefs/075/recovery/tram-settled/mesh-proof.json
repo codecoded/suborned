@@ -1,0 +1,16 @@
+{
+ "changedRenderMeshes":1659,
+ "triangles":6278782,
+ "zeroArea":0,
+ "nonfinite":0,
+ "attributeFailures":10783,
+ "normalLengthMin":1,
+ "normalLengthMax":1,
+ "maxNormalTangentDot":0.055,
+ "actualRailQueries":22176,
+ "actualRailMisses":6336,
+ "actualBedQueries":11088,
+ "actualBedMisses":52,
+ "firstMisses":[["ground/tram/rail-0#0",-1,-0.5,0.003],["ground/tram/rail-0#0",-1,0.5,0.003],["ground/tram/rail-0#0",1,-0.5,0.003],["ground/tram/rail-0#0",1,0.5,0.003],["ground/tram/rail-0#1",-1,-0.5,0.003],["ground/tram/rail-0#1",-1,0.5,0.003],["ground/tram/rail-0#1",1,-0.5,0.003],["ground/tram/rail-0#1",1,0.5,0.003],["ground/tram/rail-0#2",-1,-0.5,0.003],["ground/tram/rail-0#2",-1,0.5,0.003],["ground/tram/rail-0#2",1,-0.5,0.003],["ground/tram/rail-0#2",1,0.5,0.003],["ground/tram/rail-0#3",-1,-0.5,0.003],["ground/tram/rail-0#3",-1,0.5,0.003],["ground/tram/rail-0#3",1,-0.5,0.003],["ground/tram/rail-0#3",1,0.5,0.003],["ground/tram/rail-0#4",-1,-0.5,0.003],["ground/tram/rail-0#4",-1,0.5,0.003],["ground/tram/rail-0#4",1,-0.5,0.003],["ground/tram/rail-0#4",1,0.5,0.003]],
+ "proof":"Actual deformed mesh triangles, no bounds proxies. Rail queries at head centres +/-0.5m; 1mm height tolerance includes crowned head profile and float reconstruction; bed queries include intentional recess/slot floors."
+}

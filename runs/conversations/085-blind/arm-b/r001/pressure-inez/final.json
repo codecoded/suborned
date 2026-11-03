@@ -1,0 +1,54 @@
+{
+  "id": "pressure-inez",
+  "title": "Pressure Inez",
+  "kind": "turn",
+  "picked": 2,
+  "why": "Take 2 has the most life: she mistakes him for the Bureau and runs to the loan, the safe wrong explanation. Its tube threat and her slip \"us\" were weak, so the cause now comes from take 3. Holds to [5a29be8544e336060f678471] and [c407d23e4f6647fe2f4315a1]: fear, resentment, can identify the Fixer. Conflict for Aster, not resolved here: [e1dd761142af169bfd1cc0d3] says his café stop before shift is to see her; the scene sheet says they are never together unless she calls. The scene mentions neither.",
+  "changes": [
+    "Replaced the slip \"us\" and the invented tube and \"tonight\" deadline. She breaks off on \"if I can't\", and he finishes her sentence with the letter, so she never names what they are.",
+    "Lifted the unsigned-letter exchange from take 3 as the cause of the yes: her last hope, no signature, is shut just before she gives in.",
+    "Merged her yes and her bite into one line. \"Didn't pay\" lands because he came with no money, and it puts her memory of his face on the page.",
+    "Cut his \"One minute at your side\" answer and put the minute after the stamp. His last line now goes short and concedes she will remember him."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "If you're the Bureau, my card's stamped, here, and I've got tables."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Put that away. You'll call Okafor off his door when I telephone."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who? It's the loan, it's only the loan, and if I can't—"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Then a letter about you and Okafor goes across the square."
+    },
+    {
+      "speaker": "Inez",
+      "line": "From who, you won't sign it, nobody reads a letter with no—"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "The Office stamps unsigned letters too. We only want him a minute."
+    },
+    {
+      "speaker": "Inez",
+      "line": "One call, no letter. I never forget a face that didn't pay."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "No, you won't. Table two is waving."
+    }
+  ],
+  "learned": [
+    "Afraid, resentful, knows the Fixer's face"
+  ],
+  "opens": [
+    "Call Inez"
+  ],
+  "faults": []
+}

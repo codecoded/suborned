@@ -1,0 +1,11 @@
+{
+  "schema": "suborned.bot/1",
+  "note": "Brief 060 tier 2: the rows the nightly `bun run qa --nightly` plays in the built player (`-bot`, BotRun.cs), one player per row, at real time (~10 min each with boot). A row's seed is mixed with the night's date (tools/qa/bot.ts nightSeed), so each night plays new games; the report says each seed. Policies choose only from the ring the game builds: random (any agent, any thing on screen, any wedge, walks, runs, turns), greedy (the way that moves the mission on, cheapest first), cautious (no violence, no Trail; Watch and Listen first), human (Sky 2026-10-25, 'a bot that's indecisive': one recorded winning route as the plan, picked by the seed, played through the same input with a person's cancels, re-orders, switches, pauses, abandons, misclicks, shut rings, turns and wrong wedges on top, at the rates of tools/qa/human-profile.json; tools/qa/human.ts).",
+  "rows": [
+    { "name": "random-a", "policy": "random", "seed": 1 },
+    { "name": "greedy-a", "policy": "greedy", "seed": 2 },
+    { "name": "cautious-a", "policy": "cautious", "seed": 3 },
+    { "name": "human-a", "policy": "human", "seed": 4 },
+    { "name": "human-b", "policy": "human", "seed": 5 }
+  ]
+}

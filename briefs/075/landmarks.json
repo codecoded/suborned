@@ -1,0 +1,243 @@
+{
+ "schema": "suborned.landmark-livery/1",
+ "brief": "075-C step 2",
+ "by": "Splice",
+ "date": "2026-10-28",
+ "source": "tools/world/gen/livery.ts (LIVERY; written by the export as world.liveries; rule LV-1 tools/world/rules/livery.ts) from the old reel: ~/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit/DecoKitColourways.cs (LiveryCats, Lattice DK_Steel_Ivory -> Vermilion #B8432E, SphereStation DK_Hull_Ivory #9C2E2B, SpaceHQ gold #F2C14E/1/0.45)",
+ "rule": "Every placed piece of category Landmarks, Skyport or Sky paints DK_Steel_Ivory vermilion; SphereStation (and its regens) adds DK_Hull_Ivory brick; SpaceHQ_Portal paints DK_Crown_Gold gold. Material key = <slot>__<colour> (074 colourway form). No metallic/smoothness = keep the slot material's own finish, change base colour only.",
+ "forVela": "one tinted material per key under keys: a copy of the base kit material with the base colour set to hex (and metallic/smoothness where given)",
+ "forLatch": "world.liveries.placed: per instance, host = the export object, ref = its kit ref (kit, kits[i], gateway; use = the piece placed for that megastructure by its landmark:<name> tag); swap each slot to the key's material",
+ "colours": {
+  "brick": {
+   "hex": "#9C2E2B"
+  },
+  "vermilion": {
+   "hex": "#B8432E"
+  },
+  "gold": {
+   "hex": "#F2C14E",
+   "metallic": 1,
+   "smoothness": 0.45
+  }
+ },
+ "keys": {
+  "DK_Steel_Ivory__vermilion": {
+   "base": "DK_Steel_Ivory",
+   "colour": "vermilion",
+   "hex": "#B8432E"
+  },
+  "DK_Hull_Ivory__brick": {
+   "base": "DK_Hull_Ivory",
+   "colour": "brick",
+   "hex": "#9C2E2B"
+  },
+  "DK_Crown_Gold__gold": {
+   "base": "DK_Crown_Gold",
+   "colour": "gold",
+   "hex": "#F2C14E",
+   "metallic": 1,
+   "smoothness": 0.45
+  }
+ },
+ "pieces": {
+  "SkyPad_Roof": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  },
+  "SphereStation": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   },
+   "DK_Hull_Ivory": {
+    "key": "DK_Hull_Ivory__brick",
+    "colour": "brick",
+    "hex": "#9C2E2B"
+   }
+  },
+  "Skylon": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  },
+  "LinerDock@liner-berth": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  },
+  "SpaceHQ_Portal": {
+   "DK_Crown_Gold": {
+    "key": "DK_Crown_Gold__gold",
+    "colour": "gold",
+    "hex": "#F2C14E",
+    "metallic": 1,
+    "smoothness": 0.45
+   }
+  },
+  "DiscTower@avenue-gate-w": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  },
+  "DiscTower@avenue-gate-e": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  },
+  "SkyRailStation_Twin": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  },
+  "Skyport_Tower_Portal": {
+   "DK_Steel_Ivory": {
+    "key": "DK_Steel_Ivory__vermilion",
+    "colour": "vermilion",
+    "hex": "#B8432E"
+   }
+  }
+ },
+ "placed": [
+  {
+   "host": "bld/crescent-east/15/roof",
+   "ref": "kit",
+   "piece": "SkyPad_Roof",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "bld/harbour-boulevard/15/roof",
+   "ref": "kit",
+   "piece": "SkyPad_Roof",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "landmark/sphere",
+   "ref": "kit",
+   "piece": "SphereStation",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion",
+    "DK_Hull_Ivory": "DK_Hull_Ivory__brick"
+   },
+   "category": "Landmarks"
+  },
+  {
+   "host": "landmark/skyport",
+   "ref": "kits[0]",
+   "piece": "SkyPad_Roof",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "landmark/skyport",
+   "ref": "kits[1]",
+   "piece": "SkyPad_Roof",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "landmark/skyport",
+   "ref": "kits[2]",
+   "piece": "SkyPad_Roof",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "landmark/skylon",
+   "ref": "kit",
+   "piece": "Skylon",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Landmarks"
+  },
+  {
+   "host": "landmark/liner-berth",
+   "ref": "kit",
+   "piece": "LinerDock@liner-berth",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Landmarks"
+  },
+  {
+   "host": "signature/space-hq",
+   "ref": "kit",
+   "piece": "SpaceHQ_Portal",
+   "slots": {
+    "DK_Crown_Gold": "DK_Crown_Gold__gold"
+   },
+   "category": "Landmarks"
+  },
+  {
+   "host": "tower/avenue-gate-w",
+   "ref": "kit",
+   "piece": "DiscTower@avenue-gate-w",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Landmarks"
+  },
+  {
+   "host": "tower/avenue-gate-e",
+   "ref": "kit",
+   "piece": "DiscTower@avenue-gate-e",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Landmarks"
+  },
+  {
+   "host": "station/S1/gardens",
+   "ref": "kit",
+   "piece": "SkyRailStation_Twin",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "station/S1/harbour",
+   "ref": "kit",
+   "piece": "SkyRailStation_Twin",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  },
+  {
+   "host": "mega/skyport-tower",
+   "ref": "use",
+   "piece": "Skyport_Tower_Portal",
+   "slots": {
+    "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+   },
+   "category": "Skyport"
+  }
+ ]
+}

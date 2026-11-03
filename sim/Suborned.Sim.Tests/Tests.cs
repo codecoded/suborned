@@ -92,7 +92,7 @@ public class RulesTests
     {
         var g = New(Knowing("idealist"));
         var help = g.Preview("help", "waitress");
-        Assert.Equal((40000L, 50L, 1L, 1L, "turned"), (help.Usd, help.S, help.Trail, help.Orders, help.Outcome));
+        Assert.Equal((40000L, 35L, 1L, 1L, "turned"), (help.Usd, help.S, help.Trail, help.Orders, help.Outcome)); // brief 080 pacing: Help 50 to 35 s, and the card follows
         Assert.Equal("refused", g.Preview("pay", "waitress").Outcome); // Sky 2026-10-15: Inez is an Idealist, Pay is the lesson
         Assert.Equal(4L, g.Preview("pressure", "waitress").Trail);    // one step worse
         Assert.Equal("refused", g.Preview("ask", "waitress").Outcome);
@@ -100,7 +100,7 @@ public class RulesTests
 
     [Theory]
     [InlineData("mercenary", "pay", 70000, 1, "turned")]
-    [InlineData("mercenary", "help", 40000, 2, "not-yet")]
+    [InlineData("mercenary", "help", 20000, 2, "not-yet")]
     [InlineData("fearful", "pay", 90000, 1, "turned")]
     [InlineData("loyal", "help", 40000, 2, "not-yet")]
     [InlineData("loyal", "pay", 90000, 1, "turned")]
@@ -243,7 +243,7 @@ public class RulesTests
         Assert.False(g.Issue(new Order { Tick = 0, Op = "fixer", Do = "draw" }).ok);
         var all = New();                                                        // the Handover issues three (site arms)
         Assert.All(all.Ops, o => Assert.NotNull(o.Gun.W));
-        Assert.Equal(new[] { 4, 4, 4, 6 }, all.Ops.Select(o => o.Gun.Health).ToArray());
+        Assert.Equal(new[] { 5, 5, 5, 8 }, all.Ops.Select(o => o.Gun.Health).ToArray()); // brief 039: the floor (ops 5, Enforcer 8)
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class RulesTests
         Assert.Equal(750, r.Accuracy(r.Pistol, 1200, false, false, false, false));
         Assert.Equal(750, r.Accuracy(r.Pistol, 400, false, false, false, true));
         Assert.Equal(375, r.Accuracy(r.Pistol, 1200, true, false, false, false));
-        Assert.Equal(187, r.Accuracy(r.Pistol, 1200, true, true, false, false));
+        Assert.Equal(93, r.Accuracy(r.Pistol, 1200, true, true, false, false)); // brief 039 B: full cover ×250 (was ×500: 187)
         Assert.Equal(400, r.Accuracy(r.Pistol, 1550, false, false, false, false)); // the long band: 15–16 m since tuning.md §7.9 (was 15–25)
         Assert.Equal(0, r.Accuracy(r.Pistol, 1700, false, false, false, false));
         Assert.Equal(750, r.Accuracy(r.Carbine, 1800, false, false, false, false));

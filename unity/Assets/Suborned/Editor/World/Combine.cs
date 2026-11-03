@@ -143,7 +143,8 @@ namespace Suborned.World
                 var mesh = acc.Kit.Build($"{p[0]}/{go.name}");
                 // brief 026: a normal-mapped material (the textured ground, DK_Pave_Civic) needs tangents; the builder's meshes had none,
                 // so their normal maps lit from a zero tangent frame (the textured asphalt read near black)
-                if (acc.Mat && acc.Mat.IsKeywordEnabled("_NORMALMAP") && mesh.uv.Length == mesh.vertexCount) { mesh.RecalculateTangents(); TangentMeshes++; }
+                if (Look.NeedsBoxUv(acc.Mat)) { Look.BoxUv(mesh); TangentMeshes++; } // 072-F: a builder colour surface with a detail pair
+                else if (acc.Mat && (acc.Mat.IsKeywordEnabled("_NORMALMAP") || acc.Mat.IsKeywordEnabled("_DETAIL_MULX2")) && mesh.uv.Length == mesh.vertexCount) { mesh.RecalculateTangents(); TangentMeshes++; }
                 go.AddComponent<MeshFilter>().sharedMesh = mesh;
                 var mr = go.AddComponent<MeshRenderer>();
                 mr.sharedMaterial = acc.Mat;
@@ -151,8 +152,9 @@ namespace Suborned.World
                 // brief 028 road finish: the baked ground pieces (ribbons, shoulders, flags, capstone kerbs: millimetres to 0.185 m) likewise, and
                 // a glow volume (Shaders/CrossGlow: additive light, the road pool) never casts
                 bool glow = acc.Mat && acc.Mat.shader && acc.Mat.shader.name == "Suborned/Cross Glow";
-                if (p[0] == "ground" || p[0] == "ground-pieces" || glow) mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                if (glow) mr.receiveShadows = false;
+                if (p[0] == "ground" || p[0] == "ground-pieces" || p[0] == CityLayers.CrossingParts || p[0] == TramStreet.KerbsideLayer || p[0] == TramStreet.WiresLayer || glow) mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                if (p[0] == Layer072.Shell) { mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly; mr.receiveShadows = false; mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off; mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off; }
+                if (glow) { mr.receiveShadows = false; mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off; mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off; }
                 verts += acc.Kit.VertexCount;
             }
             return verts;

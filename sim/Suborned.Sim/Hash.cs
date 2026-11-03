@@ -26,6 +26,8 @@ namespace Suborned.Sim
             h.S(g.Id).S(g.W?.Id ?? "").Z(g.Trained).I(g.Health).I(g.Max).Z(g.Down).Z(g.Drawn).I(g.DrawReady).I(g.HolsterAt).I(g.DrawTick).S(g.Stance)
              .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit)
              .I(g.ShotByTick).S(g.St).I(g.Until).I(g.NoFoeSince).I(g.StepAt).I(g.UnprotSince).I(g.Class).I(g.LostTick).I(g.SightLostAt).S(g.Cover).S(g.LostTarget);
+            if (g.ShotN > 0) h.S("shots").I(g.ShotN); // brief 080: only a rolled shot adds bytes
+            if (g.IntakeUntil > HTick) h.S("intake").I(g.IntakeUntil); // brief 080: only while it runs
             if (g.Order.Length > 0) h.I(g.OrderTick); // engine 0.15.0: only a standing order adds bytes
             if (g.Order.Length > 0 && g.Reached) h.S("reached"); // engine 0.21.0: only a standing order that has had reach and line adds bytes
             if (g.DrawnBy.Length > 0) h.S(g.DrawnBy); // brief 030: how the weapon was drawn (only an operative's drawn weapon adds bytes)
@@ -52,6 +54,7 @@ namespace Suborned.Sim
         {
             var h = new H();
             h.S(p.Role).S(p.Id).S(p.Temperament).S(p.Need).Z(p.Turned).Z(p.NeedMet).Z(p.Down).Z(p.KRoutine).Z(p.KNeed).Z(p.KTemperament);
+            if (p.KMood.Length > 0) h.S("mood").S(p.KMood); // brief 054 §2.3: only a watched mood adds bytes
             foreach (var v in p.Sc) h.I(v);
             foreach (var x in p.KnownRefused) h.S(x);
             foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed).S(m.Told ?? "");
@@ -81,13 +84,14 @@ namespace Suborned.Sim
                 if (op.Driven) h.S("drive").Z(op.DriveTo.HasValue).P(op.DriveTo ?? default).Z(op.DriveRun).Z(op.DriveSpan).Z(op.Running).Z(op.DriveMoved).I(op.Face).I(op.DriveBudget).I(op.DrivePush).Z(op.DriveResume.HasValue).P(op.DriveResume ?? default).Z(op.DriveResumeRun); // brief 025: only a driven operative adds bytes
                 if (op.RanLast != Game.RunsNow(op)) h.S("ran").Z(op.RanLast); // tuning.md §10.2 settle: only a run ended since the last fight tick adds bytes
                 if (op.CloseSpent) h.S("spent"); // engine 0.15.0 (tuning.md §8.2 rule 4): only a spent walk-in adds bytes
-                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); // engine 0.23.0: only a person act walking in adds bytes
+                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); /* engine 0.23.0: only a person act walking in adds bytes */ if (op.Spot != null && (ReferenceEquals(op.Spot.For, op.Act) || ReferenceEquals(op.Spot.For, op.Busy))) h.S("spot").P(op.Spot.At).S(op.Spot.Chair).I(op.Spot.Chose); // engine 0.39.0
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
                 Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }
             foreach (var p in g.People)
             {
                 h.S(p.Role).S(p.Temperament).S(p.Need).Z(p.Turned).Z(p.NeedMet).Z(p.Down).Z(p.KRoutine).Z(p.KNeed).Z(p.KTemperament);
+                if (p.KMood.Length > 0) h.S("mood").S(p.KMood); // brief 054 §2.3: only a watched mood adds bytes
                 if (p.Secret.Length > 0) h.S(p.Secret).Z(p.KSecret).I(p.Summoned); // only a person with a secret adds bytes
                 foreach (var v in p.Sc) h.I(v);
                 foreach (var a in p.KnownRefused) h.S(a);
@@ -98,6 +102,7 @@ namespace Suborned.Sim
             if (g.FollowLock) h.S("followLock"); // tuning.md §11.5: the follow setting on adds bytes (off, every run hashes as before)
             g.HashFree(h); g.HashIntent(h); // engine 0.19.0: weapons free and hostile intent; no bytes until either has state
             if (g.LoopCam != "entrance") h.S(g.LoopCam); // only a loop on another camera adds bytes
+            g.HashCameraLines(h); // engine 0.31.0 (brief 058): Loop v2's end and the cut cameras; no bytes until either has state
             Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
             foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
             h.I(g.LureTick).I(g.GuardAwayUntil).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);
@@ -106,12 +111,12 @@ namespace Suborned.Sim
             h.I((int)g.Vale).Z(g.PickupService).Z(g.EntryInProgress); var vp = g.ValePos(); h.Z(vp.HasValue); if (vp.HasValue) h.P(vp.Value);
             h.Z(g.PatrolDown).Z(g.PatrolChasing).Z(g.PatrolTracking).I(g.PatrolAwayUntil); var pp = g.PatrolPose(); h.Z(pp.HasValue); if (pp.HasValue) h.P(pp.Value.pos);
             h.I(g.RivalAt).Z(g.RivalsArrived).Z(g.RivalsDrawn).Z(g.RivalsTracking).I(g.RivalsDelayedUntil).I(g.RivalsDrawnTick).S(g.RivalsDelayMethod);
-            var rp = g.RivalsPose(); h.Z(rp.HasValue); if (rp.HasValue) h.P(rp.Value.pos);
+            h.Z(false); g.HashCrew(h); g.HashDriveCar(h); // brief 059: RivalsPose is retired (its byte stays, false); the crew and the getaway's stand hash on their own, no bytes until the car enters or the car moves
             h.I(g.SecurityArrives).I(g.Lockdown).Z(g.SecurityDown).Z(g.SecurityTracking);
             var sp = g.SecurityPose(); h.Z(sp.HasValue); if (sp.HasValue) h.P(sp.Value.pos);
             h.Z(g.InezWitnessedShooting).S(g.InezMethod).S(g.RouteKind).S(g.RouteGuard).S(g.RouteBot).S(g.RouteRival);
             h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).I(g.FightHits).I(g.FightShots).I(g.DownedByEnforcer).I(g.DownedByGuard).I(g.DownedByCell);
-            foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); }
+            foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); if (x.Closing) h.S("closing"); } // engine 0.34.1: only an advance on an operative under way adds bytes
             foreach (var x in g.Captured) h.S(x);
             foreach (var x in g.Hostiles) h.P(x.Home);
             g.HashAi(h.I); h.I(g.LastShotTick);
@@ -147,6 +152,8 @@ namespace Suborned.Sim
             g.HashGetaway(h);
             if (g.AutoHolsterDue >= 0) h.S("auto-holster").I(g.AutoHolsterDue); // brief 030: only while one is due
             g.HashAttention(h); // brief 031: no bytes until a watcher's clock has moved
+            g.HashEntrySeen(h); // engine 0.34.2: no bytes until the patrol has reported an Enter
+            g.HashCoverPin(h); // engine 0.35.0 (brief 039): no bytes until a pin, a move, a mark, steam, covering fire or a talk-down is live
             g.HashStashWatch(h); // container rounds learned by Watch (§05): no bytes until one is learned
             if (g.Lab) g.HashLab(h);
             else { g.HashKiteToday(h); g.HashCloseToday(h); } // tuning.md §7.9 the kite in today; brief 030 the walk-in in today // brief 027: only a run with the fight lab on adds bytes

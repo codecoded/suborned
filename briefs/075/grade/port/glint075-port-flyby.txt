@@ -1,0 +1,8 @@
+port: state fields sunColour,sunIntensity,sunRotation,ambientSky,ambientEquator,ambientGround,fogColour,fogStart,fogEnd,fogDensity,skybox,reflection,reflectionIntensity,probeIntensity,grade; water renderers swapped 2
+variant port: sun #FFEDCC x1.800 euler (44.70, 330.00, 0.00); skybox DecoKit/Space Age Sky; ambient sky #8F9399 eq #989188 gr #A09582
+urp: hdr precision _32Bits, grading LowDynamicRange lut 32
+flyby t6: eye (1.93, 8.11, -214.57) tier Long fog Linear 0
+flyby t20: eye (16.14, 12.06, -34.75) tier Long fog Linear 0
+flyby t33: eye (125.00, 62.00, -64.00) tier Long fog Linear 0
+flyby t50: eye (600.00, 72.00, -70.00) tier Long fog Linear 0
+flyby t61.5: eye (759.13, 58.07, -119.37) tier Long fog Linear 0

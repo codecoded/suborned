@@ -1,0 +1,20 @@
+[
+{"spot": "door", "spotLabel": "Records Office door, yaw 210", "view": "today", "viewLabel": "Today: orthographic 10, 38°", "file": "door-today.png", "figurePx": 76.6, "triangles": 920178, "camY": 98.5, "tick": 800},
+{"spot": "door", "spotLabel": "Records Office door, yaw 210", "view": "ortho10-32", "viewLabel": "Orthographic 10, 32°", "file": "door-ortho10-32.png", "figurePx": 82.4, "triangles": 943174, "camY": 84.8, "tick": 800},
+{"spot": "door", "spotLabel": "Records Office door, yaw 210", "view": "ortho8-38", "viewLabel": "Orthographic 8, 38°", "file": "door-ortho8-38.png", "figurePx": 95.7, "triangles": 852039, "camY": 98.5, "tick": 800},
+{"spot": "door", "spotLabel": "Records Office door, yaw 210", "view": "persp30-38", "viewLabel": "Perspective FOV 30, 38°", "file": "door-persp30-38.png", "figurePx": 92.2, "triangles": 2931893, "camY": 20.4, "tick": 800},
+{"spot": "door", "spotLabel": "Records Office door, yaw 210", "view": "persp30-45", "viewLabel": "Perspective FOV 30, 45°", "file": "door-persp30-45.png", "figurePx": 83.6, "triangles": 2783087, "camY": 23.5, "tick": 800},
+{"spot": "door", "spotLabel": "Records Office door, yaw 210", "view": "persp40-38", "viewLabel": "Perspective FOV 40, 38°", "file": "door-persp40-38.png", "figurePx": 94.6, "triangles": 3288803, "camY": 15.1, "tick": 800},
+{"spot": "cafe", "spotLabel": "Café terrace, yaw 30", "view": "today", "viewLabel": "Today: orthographic 10, 38°", "file": "cafe-today.png", "figurePx": 76.6, "triangles": 1283184, "camY": 98.5, "tick": 800},
+{"spot": "cafe", "spotLabel": "Café terrace, yaw 30", "view": "ortho10-32", "viewLabel": "Orthographic 10, 32°", "file": "cafe-ortho10-32.png", "figurePx": 82.4, "triangles": 1442635, "camY": 84.8, "tick": 800},
+{"spot": "cafe", "spotLabel": "Café terrace, yaw 30", "view": "ortho8-38", "viewLabel": "Orthographic 8, 38°", "file": "cafe-ortho8-38.png", "figurePx": 95.7, "triangles": 1065384, "camY": 98.5, "tick": 800},
+{"spot": "cafe", "spotLabel": "Café terrace, yaw 30", "view": "persp30-38", "viewLabel": "Perspective FOV 30, 38°", "file": "cafe-persp30-38.png", "figurePx": 89.6, "triangles": 4678092, "camY": 20.4, "tick": 800},
+{"spot": "cafe", "spotLabel": "Café terrace, yaw 30", "view": "persp30-45", "viewLabel": "Perspective FOV 30, 45°", "file": "cafe-persp30-45.png", "figurePx": 80.9, "triangles": 4328909, "camY": 23.5, "tick": 800},
+{"spot": "cafe", "spotLabel": "Café terrace, yaw 30", "view": "persp40-38", "viewLabel": "Perspective FOV 40, 38°", "file": "cafe-persp40-38.png", "figurePx": 91.0, "triangles": 5698657, "camY": 15.1, "tick": 800},
+{"spot": "corner", "spotLabel": "Street corner by the cabinet, flat paving, yaw 210", "view": "today", "viewLabel": "Today: orthographic 10, 38°", "file": "corner-today.png", "figurePx": 76.6, "triangles": 924711, "camY": 98.5, "tick": 800},
+{"spot": "corner", "spotLabel": "Street corner by the cabinet, flat paving, yaw 210", "view": "ortho10-32", "viewLabel": "Orthographic 10, 32°", "file": "corner-ortho10-32.png", "figurePx": 82.4, "triangles": 987888, "camY": 84.8, "tick": 800},
+{"spot": "corner", "spotLabel": "Street corner by the cabinet, flat paving, yaw 210", "view": "ortho8-38", "viewLabel": "Orthographic 8, 38°", "file": "corner-ortho8-38.png", "figurePx": 95.7, "triangles": 757080, "camY": 98.5, "tick": 800},
+{"spot": "corner", "spotLabel": "Street corner by the cabinet, flat paving, yaw 210", "view": "persp30-38", "viewLabel": "Perspective FOV 30, 38°", "file": "corner-persp30-38.png", "figurePx": 89.6, "triangles": 2973776, "camY": 20.4, "tick": 800},
+{"spot": "corner", "spotLabel": "Street corner by the cabinet, flat paving, yaw 210", "view": "persp30-45", "viewLabel": "Perspective FOV 30, 45°", "file": "corner-persp30-45.png", "figurePx": 80.9, "triangles": 2841741, "camY": 23.5, "tick": 800},
+{"spot": "corner", "spotLabel": "Street corner by the cabinet, flat paving, yaw 210", "view": "persp40-38", "viewLabel": "Perspective FOV 40, 38°", "file": "corner-persp40-38.png", "figurePx": 91.0, "triangles": 3436686, "camY": 15.1, "tick": 800}
+]

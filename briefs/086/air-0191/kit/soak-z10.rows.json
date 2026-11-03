@@ -1,0 +1,300 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "set by the command line",
+ "rows": [
+  {
+   "name": "soak-01",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-02",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-03",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-04",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-05",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-06",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-07",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-08",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-09",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-10",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-11",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-12",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-13",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  },
+  {
+   "name": "soak-14",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 10,
+   "settleSeconds": 1.5,
+   "seconds": 30,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  }
+ ]
+}

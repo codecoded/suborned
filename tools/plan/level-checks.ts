@@ -1,9 +1,11 @@
 // Rules on levels (L-1…L-7) and megastructures (MS-1…MS-5): conditions in standards.levels and the plan's megastructures[]
 // (Datum's A1 hand-off); MS-3, MS-4, B-6 (world-checks) and L-5 are Datum's scratch check out/datum/mega-check.ts as rules.
+import { PROV } from '../world/build';
 import { deckGroups, isWayDown } from '../world/gen/connectors';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist, lineToPoly } from './geom';
 import { type R4, type WCtx, TOL, bb, f1, rectDist, ringGap, rule } from './world-ctx';
+import { sectionOf } from './sections';
 
 const zOf = (c: WCtx) => Object.fromEntries((c.L.list as { id: string; z: number }[]).map(l => [l.id, l.z])) as Record<string, number>;
 const skyLines = (c: WCtx) => c.d.sky.map(p => p.samples.map(s => s.p as V));
@@ -36,7 +38,7 @@ export function megaChecks(c: WCtx): Check[] {
     for (let x = f[0] + 2; x < f[1]; x += 4) for (let y = f[2] + 2; y < f[3]; y += 4) {
       tot++; const p: V = [x, y];
       const ok = m.spans.plots.some(id => inPoly(p, d.plots.find(q => q.id === id)!.polyV))
-        || (m.spans.roads ?? []).some(id => { const r = roadsBy.get(id)!; return lineDist(p, r.line) <= r.w / 2 + S.sections[r.class].pavement; })
+        || (m.spans.roads ?? []).some(id => { const r = roadsBy.get(id)!; return lineDist(p, r.line) <= r.w / 2 + sectionOf(S.sections, plan, r.class, r.id).pavement; })
         || (m.spans.foot ?? []).some(id => { const q = footBy.get(id)!; return lineDist(p, q.pts) <= q.w / 2; })
         || d.zones.some(zn => kinds(m).has(zn.kind) && (zn.poly ? inPoly(p, zn.poly) : false))
         || (kinds(m).has('quay') && plan.quay.some(q => inPoly(p, q)))
@@ -101,7 +103,7 @@ const pieceKind = (id: string, level: string, joinsStation: boolean) =>
   /\/bridge(-|$)/.test(id) ? (level === 'concourse' ? (joinsStation ? 'skybridge' : 'bridge') : 'bridge') : /gallery/.test(id) ? 'gallery' : /promenade/.test(id) ? 'concourse' : /mezzanine/.test(id) ? 'deck' : level === 'concourse' ? 'concourse' : /crane-walk|\/walk$/.test(id) ? 'deck' : 'deck';
 
 export function levelChecks(c: WCtx): Check[] {
-  const { plan, d, w, gen, L, S } = c, out: Check[] = [], G = 'Levels', z = zOf(c), pav = 0.18;
+  const { plan, d, w, gen, L, S } = c, out: Check[] = [], G = 'Levels', z = zOf(c), pav = (L.datum?.pavement as number | undefined) ?? 0.18; // the walking datum (L-9); a pinned plan without it walks on 0.18 as before
   const decks = w.levels.flatMap(l => l.decks.map(x => ({ id: x.id, level: l.name, z: l.height, ring: x.ring as V[], rect: bb(x.ring as V[]), group: x.group, thickness: x.thickness, columns: x.columns })));
   const plats = w.transit.stations.map(s => ({ id: s.id, level: 'concourse', rect: bb(s.ring as V[]) }));
   const groups = deckGroups([...decks.map(x => ({ id: x.id, level: x.level, rect: x.rect })), ...plats]);
@@ -232,8 +234,35 @@ export function levelChecks(c: WCtx): Check[] {
     }
     if (!isNaN(from)) bad7.push(`${k.id} stands alone from z ${f1(from)} to ${f1(to)} (${isFinite(far) ? `${f1(far)} m` : 'nothing'} from the nearest structure at that height)`);
   }
+  out.push(...datumCheck(c));
   out.push(rule('L-7', G, `Every lift is attached to a structure along its whole run: at every height of the shaft a solid stands within ${gap7} m`, shafts.length, bad7, `≤ ${gap7} m`, 'standards.levels.connectors.lift (attachGap [S]; the kit lift_tube stands 0.7 m off the Skyport stem on a spine) · brief 007 round 2 (Skyport lifts floated above the legs)'));
   return out;
+}
+
+/** L-9 (brief 055, Datum) one walking datum: standards.levels.datum states the carriageway and the pavement, each level states the floor it is walked on, and the world
+ *  stands its slabs, medians and island on the pavement and its bays and drives at carriageway level. Opt-in on `datum`: a pinned plan without it has nothing to check. */
+export function datumCheck(c: WCtx): Check[] {
+  const D = c.L.datum as { carriageway: number; pavement: number; bay: number; foot?: number; drawnOffset?: { bay?: number; foot?: number } } | undefined;
+  if (!D) return [];
+  const bad: string[] = [], list = c.L.list as { id: string; z: number; walk?: number }[], off = (D.drawnOffset?.bay ?? 0) + TOL, w = c.w;
+  for (const k of ['carriageway', 'pavement', 'bay'] as const) if (typeof D[k] !== 'number') bad.push(`datum.${k} is not stated`);
+  for (const l of list) {
+    if (typeof l.walk !== 'number') { bad.push(`level ${l.id} states no walk`); continue; }
+    if (l.id === 'street' && (Math.abs(l.z - D.carriageway) > TOL || Math.abs(l.walk - D.pavement) > TOL)) bad.push(`street z ${l.z} / walk ${l.walk} ≠ carriageway ${D.carriageway} / pavement ${D.pavement}`);
+    if (l.id !== 'street' && Math.abs(l.walk - l.z) > TOL) bad.push(`${l.id} walk ${l.walk} ≠ its z ${l.z} (a deck or concourse is walked on its own top)`);
+  }
+  if (Math.abs(PROV.pavement - D.pavement) > TOL) bad.push(`the world's pavement (tools/world/build.ts PROV.pavement) is ${PROV.pavement}, the datum ${D.pavement}`);
+  const slabs = w.ground.plots.filter(p => Math.abs(p.base + p.height - D.pavement) > TOL), meds = w.ground.medians.filter(m => Math.abs(m.base + m.height - D.pavement) > TOL);
+  if (slabs.length) bad.push(`${slabs.length} plot slabs off the pavement, e.g. ${slabs.slice(0, 3).map(p => `${p.id} top ${(p.base + p.height).toFixed(3)}`).join(', ')}`);
+  if (meds.length) bad.push(`${meds.length} medians off the pavement, e.g. ${meds.slice(0, 3).map(p => p.id).join(', ')}`);
+  for (const cc of w.ground.circuses) if (Math.abs(cc.level + cc.islandHeight - D.pavement) > TOL || Math.abs(cc.level - D.carriageway) > TOL) bad.push(`${cc.id}: carriageway ${cc.level}, island top ${cc.level + cc.islandHeight}`);
+  const roads = w.ground.roads.filter(r => Math.abs(r.level - D.carriageway) > TOL);
+  if (roads.length) bad.push(`${roads.length} roads off the carriageway, e.g. ${roads.slice(0, 3).map(r => `${r.id} ${r.level}`).join(', ')}`);
+  for (const b of [...w.ground.flats.filter(f => f.id.startsWith('civic/bay/')), ...(w.ground.drives ?? [])]) if (b.level < D.bay - TOL || b.level > D.bay + off) bad.push(`${b.id} at ${b.level}, not carriageway level ${D.bay} (drawn up to ${D.drawnOffset?.bay ?? 0} above)`);
+  const offF = (D.drawnOffset?.foot ?? 0) + TOL, foot = D.foot ?? D.carriageway;
+  for (const p of w.ground.foot) if (p.level < foot - TOL || p.level > foot + offF) bad.push(`${p.id} at ${p.level}, not foot level ${foot} (drawn up to ${D.drawnOffset?.foot ?? 0} above)`);
+  const total = list.length + 1 + w.ground.plots.length + w.ground.medians.length + w.ground.circuses.length + w.ground.roads.length + w.ground.foot.length;
+  return [rule('L-9', 'Levels', 'One walking datum: the carriageway and the pavement are stated, every level states the floor it is walked on, and the world lays its slabs, medians and islands on the pavement, its roads on the carriageway and its bays, drives and foot paths at carriageway level', total, bad, `± ${TOL} m (bays + ${D.drawnOffset?.bay ?? 0})`, 'standards.levels.datum · brief 055 step 6a')];
 }
 
 /** L-7's default attach gap (m) until standards.levels.connectors.lift.attachGap is in the plan (Datum): the kit's lift tube stands LIFT_R 9.2 - r 1.5 - stem 7 = 0.7 m off the Skyport stem, tied by a spine. */

@@ -8,7 +8,7 @@ import { blockersOf } from '../plan/walk';
 import { bodyOf } from '../plan/walk-solids';
 import type { Place } from '../../contracts/people/people.schema';
 import { employerOfBlock, type Rules } from './rules';
-import { cafeSets, seatId, seatPoints, standId, standingPoints, type Table } from './seats';
+import { cafeSets, postStandingPoints, seatId, seatPoints, standId, standingPoints, type Table } from './seats';
 
 export const SCOPES = ['civic-block'] as const;
 /** Residents who are simulated people per home plot; the rest of a plot is background (the density target tops the street up). [S] */
@@ -55,6 +55,11 @@ export type Scope = {
   stopTable?: Table;
   /** how the café's customers come and go (life.json: the food category's draw by band, its dwell): a resident's visits to the café are drawn from it (day.ts visitTimes) */
   food: { bands: { from: number; to: number; draw: number }[]; dwellMin: number };
+  /** the waiting points beside each staffed door of a civic employer (brief 067 L), by the door's place id: `standing` lists them nearest first. A post is one person's; whoever relieves it
+   *  waits at one of these until it falls free, and a post a cast person holds through the mission is never taken: its relief stands at one for her shift (day.ts, expand.ts) */
+  postStands: Record<string, Table>;
+  /** the longest a mission runs, minutes (life.json clock.mission.windowMin): a cast person holds his post that long from the mission's start */
+  missionMin: number;
 };
 
 /** A stop at the café unit's customers' side, for a regular tie: before the shift, at one of its chairs or standing points (§05 the guard's café stop; §08 the café keeper tips on the
@@ -190,6 +195,23 @@ export function buildScope(plan: Plan, block: any, life: any, rules: Rules, name
     standingPoints(civ, sp.at as V, [], free, clear, bodyOf(plan), STOP_QUEUE).forEach((c, k) => { const pl = plotAt(c), id = `${sp.id}-stand-${String(k).padStart(2, '0')}`; add({ id, kind: 'stand', name: `${sp.name} queue ${k}`, at: c, area: pl?.area ?? sp.area, ...(pl ? { plot: pl.id } : {}) }); ids.push(id); });
     if (ids.length) stopTable = { id: sp.id, at: sp.at as V, seats: [], standing: ids };
   }
+  // the waiting points of every staffed door of a civic employer (brief 067 L): along the building's face either side of the door, on the ground the door's own keep-clear zone keeps clear
+  // (the landing, the pavement at its foot: a post's staff stand there), never in a bay or in another zone. A post is one person's; its relief waits here (day.ts).
+  const postStands: Record<string, Table> = {};
+  for (const u of units) {
+    if (u.kind !== 'civic') continue;
+    for (const post of [u.door, u.official].filter((x): x is string => !!x)) {
+      const pl = places.find(p => p.id === post)!, own = zones.filter(z => z.test(pl.at as V)).map(z => z.id);
+      const ok = (p: V) => !bays.some(b => inPoly(p, b)) && zones.every(z => !z.test(p) || own.includes(z.id));
+      const ids = postStandingPoints(civ, pl.at as V, free, ok, bodyOf(plan)).map((c, k) => {
+        const q = plotAt(c), id = `${post}-stand-${String(k).padStart(2, '0')}`;
+        add({ id, kind: 'stand', name: `${pl.name} waiting point ${k}`, at: c, area: q?.area ?? pl.area, ...(q ? { plot: q.id } : {}), beside: post });
+        return id;
+      });
+      if (ids.length) postStands[post] = { id: post, at: pl.at as V, seats: [], standing: ids };
+    }
+  }
+  const missionMin = (life.clock?.mission?.windowMin as [number, number] | undefined)?.[1] ?? 12;
   places.sort((a, b) => (a.id < b.id ? -1 : 1)); units.sort((a, b) => (a.id < b.id ? -1 : 1));
-  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, tables, sets: setsOut, stands: standIds, cafeSide: [...setsOut.flatMap(o => o.seats.map(x => x.place)), ...standIds].sort(), speed: life.pedestrians.walkSpeed, cafe, cafeUnit, counter, ...(stopTable ? { stopTable } : {}), food }, civ, d };
+  return { scope: { id: name, areas, plots, stops, units, places, homes, bayPolys, zones, seats, tables, sets: setsOut, stands: standIds, cafeSide: [...setsOut.flatMap(o => o.seats.map(x => x.place)), ...standIds].sort(), speed: life.pedestrians.walkSpeed, cafe, cafeUnit, counter, ...(stopTable ? { stopTable } : {}), food, postStands, missionMin }, civ, d };
 }

@@ -257,7 +257,7 @@ namespace Suborned.Play
             Pops(cam);
 
             HintGui(cam);
-            if (m.BriefingOpen) Briefing();
+            if (m.BriefingOpen && host.ShowBriefing) Briefing(); /* brief 062: not through the start sequence */
             if (m.Ended) EndCard();
         }
 

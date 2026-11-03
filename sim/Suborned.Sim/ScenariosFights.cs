@@ -48,17 +48,19 @@ namespace Suborned.Sim
 
         static void FightCases()
         {
-            Add("N20", "—", "A running witness (motive-fights.md §1.1; engine 0.22.0, Sky 2026-10-22: only security notices a run): the Scout runs past the Office; the guard remembers where and when (no Trail) and nobody else on the street does; security that sees the run counts one found fault, Alert 1, once a run; the guard who saw it is no ally in a safe fight.", r =>
+            Add("N20", "—", "A running witness (motive-fights.md §1.1; engine 0.22.0, Sky 2026-10-22: only security notices a run): the Scout runs past the Office; the guard remembers where and when (no Trail) and nobody else on the street does; engine 0.34.0 (brief 067, Motive M067-B2): a run security sees is seen and suspicious, never an Alert by itself: the sighting is logged once a run (run.seen), the clock-keeping watchers notice him, Alert 0; the guard who saw it is no ally in a safe fight.", r =>
             {
                 var g = r.G;
                 int trail = g.Trail;
                 var q = g.QuoteMove(Scout, r.Stand("d:Office approach"));
-                r.Is(q.RunS * 2 <= q.WalkS + 1 && q.RunS > 0, $"the chip: run {q.RunS} s against walk {q.WalkS} s (2.8 m/s against 1.4)");
-                r.Is(q.RunSeenBy.Count > 0 && q.AlertIfRun == 1, $"the chip names who would see the run ({string.Join(", ", q.RunSeenBy)}) and Alert → 1");
+                r.Is(q.RunS * 2 <= q.WalkS + 1 && q.RunS > 0, $"the chip: run {q.RunS} s against walk {q.WalkS} s (3.6 m/s against 1.8, engine 0.34.0)");
+                r.Is(q.RunSeenBy.Count > 0 && q.AlertIfRun == g.Alert, $"the chip names who would see the run ({string.Join(", ", q.RunSeenBy)}) and the Alert stays {q.AlertIfRun} (engine 0.34.0: a run raises no Alert by itself)");
                 r.To(r.Send(Scout, "d:Office approach", run: true));
                 r.Eq(g.Trail, trail, "running is no traceable act: no Trail");
-                r.Eq(g.Alert, 1, "security saw a runner: a found fault, Alert 1");
-                r.Eq(g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)).Count, 1, "once a run, however many watchers saw it");
+                r.Eq(g.Alert, 0, "security saw a runner: seen and suspicious, no Alert (engine 0.34.0, M067-B2; 0.33.1: a found fault, Alert 1)");
+                r.Is(!g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault in the ledger");
+                r.Eq(g.Log.FindAll(l => l.Code == "run.seen").Count, 1, "the sighting logged once a run, however many watchers saw it (run.seen)");
+                r.Is(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.Contains("running")), "a watcher that keeps a clock noticed him running (attention.run: its cue shows noticed)");
                 r.Is(SawRunner(g) > 0, $"security staff remember the runner, place and time ({SawRunner(g)})");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody else remembers the run (engine 0.22.0)");
                 r.Is(g.GuardP.Has("saw-runner"), "the guard saw him: he holds a memory, so he won't fight at the cell's side (§07 never saw you)");
@@ -81,7 +83,15 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 string to = "";
-                foreach (var pl in RunPlaces) { var q = g.QuoteMove(Fixer, r.Stand(pl)); if (q.RunRefused.Length == 0 && q.RunSeenBy.Count == 0 && q.RunS > 5) { to = pl; break; } }
+                // engine 0.28.0 (brief 054 §3.3): the off-duty guards at the café tables see a run by their seat's facing cone now, not by the 3 m near
+                // sense alone; the Fixer waits to 3:00, when they have left the tables (from 2:30 the chip's run to the Courtyard meets a guard walking
+                // into his cone: the chip reads people where they stand now, "~"), then half a minute at a time, for a run no security watcher would see
+                r.To(T(180));
+                for (int k = 0; k < 6 && to.Length == 0; k++)
+                {
+                    if (k > 0) r.To(g.Tick + T(30));
+                    foreach (var pl in RunPlaces) { var q = g.QuoteMove(Fixer, r.Stand(pl)); if (q.RunRefused.Length == 0 && q.RunSeenBy.Count == 0 && q.RunS > 5) { to = pl; break; } }
+                }
                 if (!r.Is(to.Length > 0, $"a run no security watcher sees on the chip ({to})")) return;
                 var q0 = g.QuoteMove(Fixer, r.Stand(to));
                 r.Eq(q0.AlertIfRun, g.Alert, "the chip: no Alert from this run");
@@ -99,24 +109,28 @@ namespace Suborned.Sim
                 r.Is(!g.Ledger.GetRange(ledger, g.Ledger.Count - ledger).Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault");
             });
 
-            Add("N20d", "—", "The guard notices a run (engine 0.22.0: security still does): the Fixer runs up in front of the guard at his door. A found fault: Alert 1, once, by the guard; he remembers where and when and the Fixer's face; no Trail.", r =>
+            Add("N20d", "—", "The guard notices a run (engine 0.22.0: security still does): the Fixer runs up in front of the guard at his door. Engine 0.34.0 (brief 067, Motive M067-B2): seen and suspicious, no Alert: his clock jumps to the notice mark (attention.run), the sighting is logged once by him (run.seen); he remembers where and when and the Fixer's face; no Trail.", r =>
             {
                 var g = r.G;
                 int trail = g.Trail;
                 var q = g.QuoteMove(Fixer, FrontOfGuard(r));
-                r.Is(q.RunSeenBy.Contains("guard") && q.AlertIfRun >= 1, $"the chip: the guard would see the run ({string.Join(", ", q.RunSeenBy)}), Alert → {q.AlertIfRun}");
+                r.Is(q.RunSeenBy.Contains("guard") && q.AlertIfRun == g.Alert, $"the chip: the guard would see the run ({string.Join(", ", q.RunSeenBy)}), Alert stays {q.AlertIfRun}");
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", Point = FrontOfGuard(r), Run = true });
                 if (!r.Is(ok, $"the Fixer runs to the guard ({why})")) return;
+                int noticeT = T(g.AttentionMarks.notice);
+                r.Until(() => g.AttentionTicks("guard", Fixer) > 0, T(30));
+                r.Is(g.AttentionTicks("guard", Fixer) > noticeT, $"on the run's first tick in his sight his clock jumps past the notice mark ({g.AttentionTicks("guard", Fixer)} ticks against {noticeT}: attention.run)");
                 r.To(r.Arrival(Fixer));
-                r.Is(g.Alert >= 1, $"Alert {g.Alert} (≥ 1): a found fault");
-                var faults = g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal));
-                r.Is(faults.Count == 1 && faults[0].cause == "runner-seen:guard:fixer", $"once, by the guard ({string.Join(", ", faults.ConvertAll(l => l.cause))})");
+                r.Eq(g.Alert, 0, "no Alert: a run is no found fault (engine 0.34.0; 0.33.1: Alert 1)");
+                var seenBy = g.Log.FindAll(l => l.Code == "run.seen");
+                r.Is(seenBy.Count == 1 && !g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), $"the sighting once a run, by the first security watcher to see it, and no found fault ({string.Join(" | ", seenBy.ConvertAll(l => l.Text))}; at 3.6 m/s the entrance camera sees him 2 s before the guard does)");
+                r.Is(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.StartsWith("guard ", StringComparison.Ordinal) && l.Text.Contains("running")), "the guard notices him running (his clock)");
                 r.Is(g.GuardP.Memory.Exists(m => m.Act == "saw-runner" && m.By == "fixer") && g.HoldsFace(g.GuardP), "the guard remembers the run and the Fixer's face");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody else remembers it");
                 r.Eq(g.Trail, trail, "no Trail");
             });
 
-            Add("N20e", "—", "A live camera notices a run (engine 0.22.0: security still does): with the crowd off (so no crowd guard is on the street), an operative runs where a camera sees him and the guard and the patrol don't. A found fault: Alert 1, once, by the camera; nobody on the street remembers it; no Trail.", r =>
+            Add("N20e", "—", "A live camera notices a run (engine 0.22.0: security still does): with the crowd off (so no crowd guard is on the street), an operative runs where a camera sees him and the guard and the patrol don't. Engine 0.34.0 (brief 067, Motive M067-B2): the camera notices him on its clock and logs the sighting once (run.seen); no Alert; nobody on the street remembers it; no Trail.", r =>
             {
                 var g = r.G;
                 string op = "", to = "";
@@ -136,9 +150,10 @@ namespace Suborned.Sim
                 if (!r.Is(to.Length > 0, $"a run only a camera sees on the chip ({op} to {to})")) return;
                 int trail = g.Trail;
                 r.To(r.Send(op, to, run: true));
-                var faults = g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal));
-                r.Is(faults.Count == 1 && faults[0].cause.StartsWith("runner-seen:camera:", StringComparison.Ordinal), $"once, by a camera ({string.Join(", ", faults.ConvertAll(l => l.cause))})");
-                r.Eq(g.Alert, 1, "Alert 1: a found fault");
+                var seenBy = g.Log.FindAll(l => l.Code == "run.seen");
+                r.Is(seenBy.Count == 1 && seenBy[0].Text.Contains("camera"), $"the sighting once, by a camera ({string.Join(" | ", seenBy.ConvertAll(l => l.Text))})");
+                r.Is(g.Log.Exists(l => l.Code == "attention.noticed" && l.Text.StartsWith("the camera", StringComparison.Ordinal) && l.Text.Contains("running")), "the camera notices him running on its clock (attention.run)");
+                r.Eq(g.Alert, 0, "no Alert: a run is no found fault (engine 0.34.0; 0.33.1: Alert 1)");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody on the street remembers it");
                 r.Eq(g.Trail, trail, "no Trail");
             }, new Start { Crowd = false });
@@ -179,7 +194,7 @@ namespace Suborned.Sim
                 }
             });
 
-            Add("N20g", "—", "A crowd guard notices a run (engine 0.22.0; Sky via Aster 2026-10-22: \"a guard is a guard\"): an operative runs past an Office guard on the street, where no camera, the door guard or the patrol sees him. A found fault: Alert 1, once, by that guard; he remembers the run; nobody else on the street does; no Trail.", r =>
+            Add("N20g", "—", "A crowd guard notices a run (engine 0.22.0; Sky via Aster 2026-10-22: \"a guard is a guard\"): an operative runs past an Office guard on the street, where no camera, the door guard or the patrol sees him. Engine 0.34.0 (brief 067, Motive M067-B2): a crowd guard keeps no clock: he remembers the run and the sighting is logged once, by him (run.seen); no Alert; nobody else on the street remembers it; no Trail.", r =>
             {
                 var g = r.G;
                 string op = "", to = "", who = "";
@@ -199,24 +214,25 @@ namespace Suborned.Sim
                 if (!r.Is(to.Length > 0, $"a run on the chip that only a crowd guard would notice ({op} to {to} at {Report.Clock(g.Tick)}, {who})")) return;
                 int trail = g.Trail;
                 r.To(r.Send(op, to, run: true));
-                var faults = g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal));
-                var by = faults.Count == 1 ? faults[0].cause.Split(':')[1] : "";
-                var guard = g.PersonById(by);
-                r.Is(faults.Count == 1 && guard != null && guard != g.GuardP && g.R.StaffJobs.Contains(guard.Job), $"once, by a crowd guard ({string.Join(", ", faults.ConvertAll(l => l.cause))})");
-                r.Eq(g.Alert, 1, "Alert 1: a found fault");
+                var guard = g.PersonById(who);
+                var seenBy = g.Log.FindAll(l => l.Code == "run.seen");
+                r.Is(seenBy.Count == 1 && guard != null && guard != g.GuardP && g.R.StaffJobs.Contains(guard.Job) && seenBy[0].Text.Contains(guard.Name), $"the sighting once, by the crowd guard the chip named ({who}: {string.Join(" | ", seenBy.ConvertAll(l => l.Text))})");
+                r.Is(!g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault");
+                r.Eq(g.Alert, 0, "no Alert: a run is no found fault (engine 0.34.0; 0.33.1: Alert 1)");
                 r.Is(guard != null && guard.Memory.Exists(m => m.Act == "saw-runner" && m.By == op), "he remembers the run");
                 r.Is(g.Log.Exists(l => l.Code == "run.seen" && l.Text.StartsWith("The " + (guard?.Job ?? "?") + " ", StringComparison.Ordinal)), "the log names him");
                 r.Eq(SawRunnerOrdinary(g), 0, "nobody else on the street remembers it");
                 r.Eq(g.Trail, trail, "no Trail");
             });
 
-            Add("N21", "—", "Runs refused, each with its reason (motive-fights.md §1.1): the Tech tethered to a loop, an operative in the middle of an action; walking stays open.", r =>
+            Add("N21", "—", "Runs refused, each with its reason (motive-fights.md §1.1): an operative in the middle of an action; walking stays open. Loop v2 (brief 058 §2, engine 0.31.0): the Tech is no longer tethered to a loop: with it running she runs.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet")); r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                r.Eq(g.QuoteMove(Tech, r.Stand("d:Courtyard")).RunRefused, "", "the chip offers the run: no tether");
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "move", To = "d:Courtyard", Run = true });
-                r.Is(!ok && why.Contains("tethered"), $"the Tech can't run while the loop holds: {why}");
-                r.Eq(g.QuoteMove(Tech, r.Stand("d:Courtyard")).RunRefused, why, "the chip says so before the double-click");
+                r.Is(ok && r.Op(Tech).Running && g.LoopOn, $"the Tech runs off and the loop keeps running {why}");
+                r.Do(Tech, "cancel");
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez);
                 (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Office approach", Run = true });
                 r.Is(!ok && why.Contains("busy"), $"mid-action, no run: {why}");
@@ -224,10 +240,10 @@ namespace Suborned.Sim
                 r.Send(Scout, "d:Office approach", run: true);
                 r.Is(r.Op(Scout).Running, "the action done, the Scout runs");
                 r.Send(Tech, "d:Courtyard");
-                r.Is(r.Op(Tech).Walk != null && !r.Op(Tech).Running, "the Tech may still walk away (and the loop ends at the tether)");
+                r.Is(r.Op(Tech).Walk != null && !r.Op(Tech).Running && g.LoopOn, "the Tech walks away too, and the loop still runs");
             });
 
-            Add("N22", "—", "Hits are counted, not rolled (motive-fights.md §2.2): the untrained Scout's pistol at point blank is 750 ‰, so exactly three hits in four, the third shot the miss; the guard's 3 health falls on the fourth shot. +2 T for the hit, +2 for the down.", r =>
+            Add("N22", "—", "Fired on until down (brief 080: each shot rolls; the fight lab keeps the count): the Scout's pistol puts the guard's 3 health down in hits, not in a set number of shots; a pistol fires every 1.5 s. +2 T for the hit, +2 for the down, once each.", r =>
             {
                 var g = r.G;
                 r.Eq(g.R.Accuracy(g.R.Pistol, 300, false, false, false, true), 750, "point blank × untrained: 750 ‰");
@@ -239,12 +255,12 @@ namespace Suborned.Sim
                 r.Fire(Scout, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
                 var mine = r.Shots().FindAll(x => x.by == Scout && x.target == GuardR);
-                r.Eq(string.Join(",", mine.ConvertAll(x => x.hit ? "hit" : "miss")), "hit,hit,miss,hit", "exactly three in four, in this order, every run");
+                r.Eq(mine.FindAll(x => x.hit).Count, g.R.HealthGuard / g.R.Pistol.DamageAt(0), "three hits at 1 damage drop him; the misses are the roll's");
                 r.Eq(mine[1].tick - mine[0].tick, g.R.Pistol.Every, "a pistol fires every 1.5 s");
                 r.Eq(g.Trail - trail, g.R.GunfireTrail + g.R.HitTrail + g.R.DownTrail, "+2 T the shooting (once), +2 T hit, +2 T down: not per shot (Motive addendum Q1)");
-                r.Eq(g.Gunfire, 4, "four shots fired");
+                r.Eq(g.Gunfire, mine.Count, "every shot fired is counted");
                 r.Is(!r.Op(Scout).Down, $"the guard fired back but the Scout stands ({r.Op(Scout).Gun.Health}/{r.Op(Scout).Gun.Max})");
-            });
+            }, new Start { PinCell = false }); // brief 039: unpinned, the Scout's count stays 750 a shot (the guard fires back: pinned she fires at half, N-PIN's case)
 
             Add("N23", "—", "A drawn weapon is an act (motive-fights.md §2.3): drawn among people out of security's sight, one witnessed incident (+1 T, Alert 1), and they hold the Fixer's face; drawn in the guard's cone, Alert 2, he engages and calls it in.", r =>
             {
@@ -312,7 +328,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
                 r.Is(r.Shots().Exists(x => x.by == Scout && x.target == GuardR) && r.Shots().Exists(x => x.by == Enf && x.target == GuardR), "the Scout and the Enforcer fired on him without a fire order");
                 r.Is(!r.Shots().Exists(x => x.by != GuardR && x.target == "patrol"), "at will is at combatants only: nobody fired on the patrol, which never engaged");
-            });
+            }, new Start { OneInput = false }); // brief 039: panic, stance and their refusals are the controls before one input (weapons.oneInput)
 
             var pressure = new Start(); pressure.Known[Inez] = new List<string> { "routine", "need", "temperament" };
             Add("N36", "—", "The safe fight lost (Motive addendum Q7): unprepared (Inez pressured, so no warning; the guard saw the Enforcer, so no ally), the Enforcer alone at the car goes down, and the fail is the rivals' goal: they take Vale.", r =>
@@ -320,13 +336,14 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Office approach", run: true)); // running past the door: the guard holds a memory, so no ally (Motive §1.1)
                 r.Is(g.GuardP.Has("saw-runner"), "the guard saw the Scout run");
-                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet"), r.Send(Scout, "d:Courtyard"))); r.Do(Tech, "loop", "entrance");
-                r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer); r.Done(Tech);
+                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet"), r.Send(Scout, "d:Courtyard")));
+                r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
                 r.SendTo(Enf, new Pt(4900, -1700)); r.To(r.Arrival(Enf));
-                while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+                ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): bounded; the yard sweep never sees the door, so no wait
+                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from the start by the tether)
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+                ToEntryOpening(r); // engine 0.34.0: bounded by the run's end
                 r.Do(Enf, "enter"); r.Do(Tech, "reroute", "patrol"); r.Done(Enf);
                 r.Is(!g.FightWarned, "pressured, Inez warns nobody");
                 r.Is(!g.GuardAlly, "the guard saw the cell: no ally");
@@ -343,15 +360,18 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 var at = r.Op(Fixer).Pos;
-                var near = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && G.Within(p.Value, at, g.R.WitnessRangeCm) && g.S.Sight(at, p.Value, g.R.Eye); });
-                r.Is(near.Count > 0, $"people in sight of the Fixer ({near.Count})");
+                // engine 0.28.0 (brief 054 §3.2): those who would see the draw by the engine's own rule (a civilian in their cone, security all round)
+                var near = g.Walkers.FindAll(w => g.CrowdPos(w).HasValue && g.NoticesNow(w.P.Id, "weapon-drawn", at));
+                var away = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && !near.Contains(w) && G.Within(p.Value, at, g.R.WitnessRangeCm) && g.S.Sight(at, p.Value, g.R.Eye); });
+                r.Is(near.Count > 0, $"people who would see the Fixer's weapon ({near.Count}; {away.Count} more in range face away)");
                 r.Do(Fixer, "draw"); r.Wait(1);
                 r.Is(near.TrueForAll(w => w.St == "startled"), "each of them is startled");
+                r.Is(away.TrueForAll(w => w.St != "startled"), "those facing away are not (no shot: a draw is seen, not heard)");
                 var stood = new Dictionary<string, long>(); foreach (var w in near) stood[w.P.Id] = G.D2(w.At, at);
                 r.Wait(g.R.CrowdStartleTicks + 1);
                 r.Is(near.TrueForAll(w => w.St == "fleeing"), "after the startle they run");
-                bool away = true; foreach (var w in near) { var rf = g.S.Refuges.Find(x => x.id == w.Refuge); if (G.D2(rf.at, at) <= stood[w.P.Id] && g.S.Refuges.Exists(x => G.D2(x.at, at) > stood[w.P.Id] && G.Within(x.at, w.At, g.R.CrowdFleeMaxCm))) away = false; }
-                r.Is(away, "each to a refuge farther from the weapon than they stood");
+                bool farther = true; foreach (var w in near) { var rf = g.S.Refuges.Find(x => x.id == w.Refuge); if (G.D2(rf.at, at) <= stood[w.P.Id] && g.S.Refuges.Exists(x => G.D2(x.at, at) > stood[w.P.Id] && G.Within(x.at, w.At, g.R.CrowdFleeMaxCm))) farther = false; }
+                r.Is(farther, "each to a refuge farther from the weapon than they stood");
                 r.Is(r.Until(() => near.TrueForAll(w => w.St == "sheltered"), T(60)), "they reach shelter");
                 r.Is(near.TrueForAll(w => !g.CrowdPos(w).HasValue), "off the street");
                 r.Do(Fixer, "holster");
@@ -438,7 +458,7 @@ namespace Suborned.Sim
                 r.Is(!g.CanCall(Inez), "the card says the call can't be given");
             }, Turned(Inez));
 
-            Add("N39d", "—", "Alert reaching 2 ends the visit (rulebook summon): he runs back to his post at security's pace; and a call at Alert 2 is refused (summon-alert).", r =>
+            Add("N39d", "—", "Alert reaching 2 ends the visit (rulebook summon): he heads straight back at a guard's pace; and a call at Alert 2 is refused (summon-alert).", r =>
             {
                 var g = r.G;
                 r.To(r.SendTo(Enf, BesideDoor));
@@ -448,14 +468,14 @@ namespace Suborned.Sim
                 r.Fire(Enf, "patrol");
                 r.Is(r.Until(() => g.Alert >= 2, T(60)), "gunfire: Alert 2");
                 r.Wait(1);
-                r.Is(g.Log.Exists(l => l.Code == "guard.recalled"), "the visit ends: he runs back");
+                r.Is(g.Log.Exists(l => l.Code == "guard.recalled"), "the visit ends: he heads back");
                 r.Is(g.GuardAwayUntil < planned, $"back sooner than the planned window ({Report.Clock(g.GuardAwayUntil)} < {Report.Clock(planned)})");
             }, Turned(Inez));
 
             // the Loyal guard's exposure rule is under test (§2.2: a Loyal man pressed by exposure doesn't report it), so the start state makes the
             // guard Loyal whoever the cast is (§04 restricted: a guard is Loyal or Mercenary; the r016 cast's guard is a Mercenary)
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Temperament[GuardR] = "loyal";
-            Add("N40", "—", "Watching the lovers together teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
+            Add("N40", "—", "Engine 0.29.0 (brief 054 §9.2: a Watch never teaches a secret, only Listen does): with the lovers together during the summons visit, a Watch on Inez is refused already-watched and teaches nothing; Listen on her teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Scout, "d:Courtyard")));
@@ -464,8 +484,11 @@ namespace Suborned.Sim
                 r.Eq(g.Preview("pressure", GuardR).Outcome == "?" || !g.Preview("pressure", GuardR).Leverage, true, "no leverage on the guard yet");
                 r.Do(Fixer, "call", Inez);
                 r.To(g.LureTick + g.VisitWalkTicks);
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.Is(g.Inez.KSecret && g.GuardP.KSecret, "a Watch that ends with them together teaches the affair, on both");
+                r.Is(G.Within(g.PersonPos(g.Inez)!.Value, g.GuardPose()!.Value.pos, 400), "the lovers stand together");
+                RefusedFree(r, "watch", Inez, "already-watched", g.Inez); // brief 054 §9.2: offered only for her mood, and she is turned; no Watch shows the affair
+                r.Is(!g.WatchOffered(Inez) && !g.Inez.KSecret && !g.GuardP.KSecret, "with the lovers together no Watch is offered and the affair is still unknown");
+                r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.Is(g.Inez.KSecret && g.GuardP.KSecret, "Listen on her teaches the affair, on both");
                 { // c025 (brief 031): the Scout steps more than 3 m from the guard (a person senses anyone within 3 m), so his clock on her never runs
                     var gp0 = g.GuardPose()!.Value.pos; var me = r.Op(Scout).Pos; var dir = me - gp0;
                     var away = g.S.Grid.NearestFree(gp0 + Along(dir == new Pt(0, 0) ? new Pt(100, 0) : dir, 600));
@@ -507,12 +530,12 @@ namespace Suborned.Sim
                 // carried is not yet safe (Waymark asked): only in the car (brief 018: Board, the carried first, 1 s + carry 3 s)
                 r.Is(!G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), 2000) && g.LeftBehind().Contains((Scout, "captured", "downed")), "carried 20 m and more from the car, a Go now would leave him: captured, downed");
                 r.Until(() => r.Op(Fixer).Walk == null, T(120));
-                r.Is(G.Within(r.Op(Fixer).Pos, r.At("d:Getaway bay"), g.R.AtReachCm) && g.LeftBehind().Contains((Scout, "captured", "downed")), "carried to the car but not in it: still left behind");
+                r.Is(g.AtGetaway(r.Op(Fixer).Pos) && g.LeftBehind().Contains((Scout, "captured", "downed")), "carried to the car but not in it: still left behind");
                 r.Do(Fixer, "board", "car");
                 r.Eq(r.Op(Fixer).BusyEnd - g.Tick, T(g.R.BoardS + g.R.CarryS), "boarding carrying: 1 s + 3 s");
                 r.Done(Fixer);
                 r.Is(r.Op(Fixer).InCar && r.Op(Scout).InCar && !g.LeftBehind().Exists(x => x.op == Scout || x.op == Fixer), "both in the car: neither is left behind");
-            });
+            }, new Start { RivalsAtS = 480, OneInput = false }); // brief 039: the old controls (stance hold); engine 0.33.1: the carry is the case, not the rival crew; on 0.33.0 the Fixer boarded 1 s before the crew posted round the car downed him, and the walk round the car (car.footprint) puts him 0.7 s later: the crew comes at 8:00 here
         }
     }
 }

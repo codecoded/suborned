@@ -155,6 +155,7 @@
 .s-npc_councillor { background-image: url("badges/npc_councillor@2x.png"); }
 .s-npc_watcher { background-image: url("badges/npc_watcher@2x.png"); }
 .s-npc_passer { background-image: url("badges/npc_passer@2x.png"); }
+.s-npc_patrol { background-image: url("badges/npc_patrol@2x.png"); }
 .s-stance_hold { background-image: url("badges/stance_hold@2x.png"); }
 .s-stance_return { background-image: url("badges/stance_return@2x.png"); }
 .s-stance_free { background-image: url("badges/stance_free@2x.png"); }
@@ -217,6 +218,7 @@
 .i-lock { background-image: url("icons/singles/lock@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-loop { background-image: url("icons/singles/loop@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-loyal { background-image: url("icons/singles/loyal@2x.png"); -unity-background-image-tint-color: var(--cream); }
+.i-lovers { background-image: url("icons/singles/lovers@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-mercenary { background-image: url("icons/singles/mercenary@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-mislead { background-image: url("icons/singles/mislead@2x.png"); -unity-background-image-tint-color: var(--cream); }
 .i-nextevent { background-image: url("icons/singles/nextevent@2x.png"); -unity-background-image-tint-color: var(--cream); }

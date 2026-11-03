@@ -72,7 +72,7 @@ namespace Suborned.Sim
             foreach (var preset in new[] { "today", "lab" })
             {
                 string sfx = preset == "lab" ? "-LAB" : "";
-                AddRange("LF-WALK" + sfx, preset, "open", "Sky 2026-10-22: a lasting fire order keeps firing through a walk, at the walk's chance, while the target stays in range", r =>
+                AddRange("LF-WALK" + sfx, preset == "today" ? "pre039" : preset, "open", "Sky 2026-10-22: a lasting fire order keeps firing through a walk, at the walk's chance, while the target stays in range", r =>
                 {
                     var o = LfSetup(r);
                     r.Is(Move(r, "scout", LfPoint(r, o, -700, 0)).ok, "a 7 m walk taken toward the officer");
@@ -83,10 +83,12 @@ namespace Suborned.Sim
                     r.Eq(o.Gun.Order, "officer-1", "the order stands when the walk ends");
                     r.Is(!r.G.Log.Exists(l => l.Code == "fire.cancelled" || l.Code == "fire.out-of-range" || l.Code == "fire.lapses"), "nothing ended it");
                 });
-                AddRange("LF-RUN" + sfx, preset, "open", "Sky 2026-10-22 (\"same for running\"): a lasting fire order keeps firing through a run, at the run's chance, while the target stays in range", r =>
+                AddRange("LF-RUN" + sfx, preset == "today" ? "pre039" : preset, "open", "Sky 2026-10-22 (\"same for running\"): a lasting fire order keeps firing through a run, at the run's chance, while the target stays in range", r =>
                 {
                     var o = LfSetup(r);
-                    r.Is(Move(r, "scout", LfPoint(r, o, -800, 0), run: true).ok, "an 8 m run taken toward the officer (head first)");
+                    // engine 0.34.0 (M067-B1, op-run-speed-cm-s 360): 10.5 m, so the run lasts about as long as 0.33.1's 8 m at 2.8 m/s (2.9 s): an 8 m
+                    // run at 3.6 m/s ends after its first shot (0:04.6), before the weapon's next
+                    r.Is(Move(r, "scout", LfPoint(r, o, -1050, 0), run: true).ok, "a 10.5 m run taken toward the officer (head first)");
                     r.Is(o.Walk != null && o.Running, "it runs");
                     ShotAtGait(r, "scout", "officer-1", Gait.Run, () => o.Walk == null);
                     int shots = LfMoveKeeps(r, o, Game.T(10));
@@ -94,14 +96,14 @@ namespace Suborned.Sim
                     r.Eq(o.Gun.Order, "officer-1", "the order stands when the run ends");
                     r.Is(!r.G.Log.Exists(l => l.Code == "fire.cancelled" || l.Code == "fire.out-of-range" || l.Code == "fire.lapses"), "nothing ended it");
                 });
-                AddRange("LF-OUT" + sfx, preset, "open", "Sky 2026-10-22: a walk that takes the target out of the weapon's max ring ends the lasting order there (fire.out-of-range): no walk back in, no lapse", r =>
+                AddRange("LF-OUT" + sfx, preset == "today" ? "pre039" : preset, "open", "Sky 2026-10-22: a walk that takes the target out of the weapon's max ring ends the lasting order there (fire.out-of-range): no walk back in, no lapse", r =>
                 {
                     var o = LfSetup(r);
                     var dest = LfPoint(r, o, 1400, 1);
                     r.Is(Move(r, "scout", dest).ok, "a 14 m walk across the line of fire taken: it ends past the max ring");
                     LfLeaves(r, o, dest);
                 });
-                AddRange("LF-RUN-OUT" + sfx, preset, "open", "Sky 2026-10-22: a run that takes the target out of the weapon's max ring ends the lasting order there (fire.out-of-range)", r =>
+                AddRange("LF-RUN-OUT" + sfx, preset == "today" ? "pre039" : preset, "open", "Sky 2026-10-22: a run that takes the target out of the weapon's max ring ends the lasting order there (fire.out-of-range)", r =>
                 {
                     var o = LfSetup(r);
                     var dest = LfPoint(r, o, 1400, 1);

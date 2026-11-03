@@ -1,0 +1,143 @@
+# Motive brief 067 flips: probe results on the frozen engine 0.34.0 (out/scratch/motive/067f), 2026-10-26 (tools/README.txt, tools/results.sh)
+
+## facts (inputs hash = Keel's tree)
+{"engine":"suborned.sim/0.34.0","inputs":"12390659450729014507","patrolWatchesEntry":false,"sweepSecondsOnEntry":0,"sweepPeriodS":100}
+
+## 1. rbb-ff with every lock 3.0 s late (BAL-YARD-FOCUS-LATE's alt, no Go hook), then with the Scout stepping out at 7:34.0
+rbb-ff-late.script.json: Failure (rivals-reach-vale) at 7:42.2  cash 30000  trail 4  alert 0  shots 0
+  5:57.1  board.in                     The tech is in the car.
+  7:24.8  car.held.blocker             rival-3 holds the getaway car from the road: the blocker.
+  7:29.3  board.in                     The enforcer is in the car with Vale.
+  7:33.1  board.in                     The scout is in the car.
+  7:33.2  fixer.down                   The fixer is down. Carry them into the car, or they are captured.
+  7:33.3  rivals.for-car               rival-2 sees nobody of the cell left outside the car and goes for Vale.
+  7:35.4  order.rejected               cell go : the car is held: rival-3
+  7:36.6  car.held.press               rival-2 holds the getaway car: he came for it.
+  7:40.7  enforcer.down                The enforcer is down in the car.
+  7:42.2  fail.rivals-reach-vale       A rival reaches the car with nobody beside it and takes Vale out.
+
+rbb-ff-late-stepout.script.json: None at 8:30.0  cash 30000  trail 4  alert 0  shots 0
+  5:57.1  board.in                     The tech is in the car.
+  7:24.8  car.held.blocker             rival-3 holds the getaway car from the road: the blocker.
+  7:29.3  board.in                     The enforcer is in the car with Vale.
+  7:33.1  board.in                     The scout is in the car.
+  7:33.2  fixer.down                   The fixer is down. Carry them into the car, or they are captured.
+  7:33.3  rivals.for-car               rival-2 sees nobody of the cell left outside the car and goes for Vale.
+  7:35.0  board.out                    The scout steps out of the car.
+  7:35.1  rivals.back-to-cover         rival-2 sees the cell outside the car again and goes back to cover.
+  7:35.4  order.rejected               cell go : the car is held: rival-3
+  7:37.5  blocker.out                  rival-3, on the road, is gone: nobody blocks the lane now.
+  7:37.5  car.free                     Nothing holds the getaway car: it can go.
+  7:37.6  fight.over                   The last of them is down or gone. The car can go.
+
+## 2. route B fought out (bal-rb-ff): the Trail ledger
+success 4 T
+  {'tick': 1124, 'what': 'trail', 'delta': 2, 'now': 2, 'cause': 'turn.pay:driver'}
+  {'tick': 2340, 'what': 'trail', 'delta': 1, 'now': 3, 'cause': 'mislead'}
+  {'tick': 3450, 'what': 'trail', 'delta': 1, 'now': 4, 'cause': 'reroute'}
+
+## 3. the 41 route scripts, ai.intent.final agent (the rulebook) vs every (only rows that differ; Trail never does)
+route                              agent                                    every                                   
+careless-g-disable.json            failure rivals-reach-vale 3:57.5 3T A2   failure rivals-reach-vale 4:10.0 3T A2  
+fail-entry-seen-patrol.json        none  8:30.0 5T A1                       failure cell-down 6:15.9 5T A2            <== outcome
+route-a-pressure-board.json        failure rivals-reach-vale 3:07.9 7T A0   failure rivals-reach-vale 3:08.2 7T A0  
+route-a-pressure.json              success  3:53.7 7T A0                    failure rivals-reach-vale 3:20.9 7T A0    <== outcome
+route-g-board.json                 failure rivals-reach-vale 3:57.5 6T A1   failure rivals-reach-vale 3:59.4 6T A1  
+route-g-kill.json                  failure rivals-reach-vale 5:26.0 2T A1   failure rivals-reach-vale 5:38.3 2T A1  
+route-g.json                       failure rivals-reach-vale 3:57.5 6T A1   failure rivals-reach-vale 4:10.0 6T A1  
+
+route-a-pressure under agent: rival-5 from his kite step to the break (3:12.7), no shot
+  3:05.7  ai.kite                      rival-5 answers tech: first shot at 3:05.2, moves at 3:05.7 (5 ticks), out of the line.
+  3:08.3  ai.advance                   rival-5 has had nobody in reach for 1 s: he advances on the scout.
+  3:11.1  ai.advance                   rival-5 has had nobody in reach for 1 s: he advances on the scout.
+  3:11.9  ai.why                       rival-5 takes the fixer as its target: drawn.
+  3:12.0  fire.free                    fixer picks rival-5 (weapons free).
+  3:23.6  ai.gone                      rival-5 is gone.
+
+## 4. fight lab: the today kite win, traced each 5 s (officer-1, officer-2 at their stands; the Enforcer at the car from 3:18)
+3:03.0  officer-1:(-7.8,-41.3) car 17.7 enf 41.0 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 40.4 hold home(-7.3,-40.3) | enforcer:(32.9,-35.7) car 27.4
+3:08.0  officer-1:(-7.8,-41.3) car 17.7 enf 33.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 32.9 hold home(-7.3,-40.3) | enforcer:(25.7,-41.0) car 18.6
+3:13.0  officer-1:(-7.8,-41.3) car 17.7 enf 25.6 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 25.3 hold home(-7.3,-40.3) | enforcer:(17.7,-44.3) car 10.0
+3:18.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.8 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.6 hold home(-7.3,-40.3) | enforcer:(9.5,-45.9) car 2.5
+3:23.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+3:28.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+3:33.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+3:38.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+3:43.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+3:48.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+3:53.0  officer-1:(-7.8,-41.3) car 17.7 enf 17.4 hold home(-7.8,-41.3) | officer-2:(-7.3,-40.3) car 17.6 enf 17.3 hold home(-7.3,-40.3) | enforcer:(8.8,-46.8) car 1.5
+
+the square's police stands from d:Getaway bay (850,-4820): police-1 17.7 m, police-2 19.4 m, police-3 12.2 m, police-4 18.6 m (pistol eff 15 m, max 16 m)
+
+today, the three tight enfgo-carfree kite rows by run speed (fight-lab --rulebook)
+-- run280
+today L3:tight-enfgo-carfree-runkite failure enforcer-down 3:03.7 20/20 2 2→-1 raised active 1 1 0 44 % 8 1 25 1/1 c0/8 s19 pass (fail)
+today L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 2:58.0 20/20 2 2→0 raised active 1 1 0 33 % 6 1 18 1/1 c0/8 s10 pass (fail)
+today L3:tight-enfgo-carfree-kite failure enforcer-down 3:01.9 20/20 2 2→-1 raised active 1 1 0 33 % 6 3 35 1/1 c0/8 s13 pass (fail)
+-- run320
+today L3:tight-enfgo-carfree-runkite failure enforcer-down 3:05.7 20/20 2 2→-1 raised active 1 1 0 50 % 9 1 29 1/1 c1/8 s20 pass (fail)
+today L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 2:56.5 14/14 2 2→-1 raised active 1 1 0 38 % 7 1 13 1/1 c0/7 s12 pass (fail)
+today L3:tight-enfgo-carfree-kite failure enforcer-down 3:06.2 18/18 2 2→-1 raised active 1 1 0 38 % 7 3 37 1/1 c1/8 s14 pass (fail)
+-- 360 (the tree)
+today L3:tight-enfgo-carfree-runkite success 3:54.2 30/34 2 2→-1 raised active 1 1 1 61 % 12 3 32 1/1 c1/10 s27 FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4
+today L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 2:58.8 14/14 2 2→-1 raised active 1 1 0 33 % 6 3 15 1/1 c0/8 s13 pass (fail)
+today L3:tight-enfgo-carfree-kite failure enforcer-down 3:06.2 18/18 2 2→-1 raised active 1 1 0 38 % 7 3 37 1/1 c1/8 s14 pass (fail)
+
+lab-kite-off: the six rows that flip to wins, at the old pace (rb/pace140: walk 1.4, run 2.8)
+lab-kite-off L3:tight-kite failure sealed 4:39.3 38/38 2 2→-1 raised active 1 0 0 0 % 0 8 133 2/2 c0/10 s3 pass (fail)
+lab-kite-off L3:tight-reset-kite failure sealed 4:39.3 29/29 2 2→-2 raised active 1 0 0 0 % 0 7 109 3/2 c0/10 s0 pass (f
+lab-kite-off L3:tight-focus-reset-kite failure sealed 4:39.3 29/29 2 2→-2 raised active 1 0 0 0 % 0 7 108 3/2 c0/10 s0 p
+lab-kite-off L3:tight-cycle-kite failure sealed 4:39.3 29/29 2 2→-2 raised active 1 0 0 0 % 0 7 109 3/2 c0/10 s0 pass (f
+lab-kite-off L3:tight-hold-runkite failure sealed 4:39.3 28/28 2 2→-1 raised active 1 0 0 0 % 0 7 102 4/3 c0/10 s0 pass 
+lab-kite-off L3:tight-step200-focus-norivals-at236-runkite failure sealed 4:39.3 30/30 2 2→-1 raised active 1 0 0 11 % 2
+
+today and lab matrices (84 rows): police-1 and police-2 moved within reach (root-pp) vs the tree, rows that differ
+today    L3:tight-enfgo-carfree-runkite                 succ  3:54.2 T30/34 hp61% dn1 cap1 FAIL                      -> succ  3:54.2 T31/35 hp72% dn2 cap1 pass (heavy debrief)
+today    L3:tight-focus-at208-runkite                   fail sealed 4:40.5 T32/32 hp33% dn0 cap0 pass (fail)         -> succ  4:25.7 T26/26 hp44% dn0 cap0 pass (heavy debrief)
+lab      L3:tight-kite                                  fail sealed 4:39.3 T36/36 hp94% dn3 cap0 pass (fail)         -> fail sealed 4:39.3 T28/28 hp94% dn3 cap0 pass (fail)
+lab      L3:tight-enfgo-carfree-runkite                 fail enforcer-down 3:08.5 T20/20 hp44% dn1 cap0 pass (fail)  -> fail enforcer-down 3:08.7 T20/20 hp44% dn1 cap0 pass (fail)
+lab      L3:tight-step200-focus-norivals-at236-runkite  fail enforcer-down 4:07.7 T32/32 hp100% dn4 cap0 pass (fail) -> fail enforcer-down 4:07.5 T30/30 hp100% dn4 cap0 pass (fail)
+5 rows differ of 84
+the 41 routes, posts moved vs the tree:
+route                              tree                                     posts-moved                             
+fight-loud-enforcer-down.json      failure enforcer-down 3:18.8 9T A2       failure enforcer-down 2:53.3 8T A2      
+
+P-A with the re-composed route-a-board (root-pa; P-A hands over to the lab's player at tick 2490)
+today P-A success 4:38.3 5/5 0 2→3 calm active 0 0 0 5 % 1 3 16 2/2 c0/0 s2 pass
+lab P-A success 4:56.1 5/5 0 2→3 calm active 0 1 0 38 % 7 3 35 2/1 c0/0 s15 FAIL — 1 op down; health lost 38 % > 25
+lab-cover P-A success 4:56.2 5/5 0 2→3 calm active 0 0 0 27 % 5 3 35 2/1 c0/0 s14 FAIL — health lost 27 % > 25
+my 1.8 m/s re-compositions on the bare square (sim/Suborned.Sim/Fixtures):
+  sq-route-a-board.script.json success 4:15.5 5 T 0 % lost downs []
+  sq-ra-h3.script.json success 4:37.3 5 T 17 % lost downs []
+  bal-rb-ff.script.json success 7:32.2 4 T 33 % lost downs []
+  bal-rbb-ff.script.json success 7:35.4 4 T 33 % lost downs []
+
+## 6. N125
+  0:37.3  rivals.drawn                 The rivals hear gunfire and head for the Office.
+  0:45.4  patrol.alarm                 The patrol leaves its sweep for the alarm.
+  0:53.3  rivals.coming                A rival car turns in off Orbit Walk, racing for the gunfire.
+  1:10.9  rivals.drawn-stop            The rival car stops on Rocket Lane by the Office front.
+  1:20.9  patrol.breaks                The patrol breaks its route and turns toward the gunfire.
+  1:30.5  fail.enforcer-down           The Enforcer is down.
+
+## 8. N185: the blocker's shots on operatives in the car (750 x 750 untrained x 500 beside cover = 281)
+  5:26.2  guard.down                   The rivals drop the guard. His missed check-in will still be noticed.
+  5:26.6  board.in                     The enforcer is in the car with Vale.
+  5:31.1  board.in                     The fixer is in the car.
+  5:33.6  board.in                     The scout is in the car.
+  5:33.6  order.rejected               cell go : the car is held: rival-2
+  5:36.6  shot.hit                     rival-2 fires on fixer at 11 m (281 ‰): hit.
+  5:41.1  shot.hit                     rival-2 fires on fixer at 11 m (281 ‰): hit.
+  5:47.1  shot.hit                     rival-2 fires on fixer at 11 m (281 ‰): hit.
+  5:47.1  fixer.down                   The fixer is down in the car.
+  5:50.1  shot.hit                     rival-2 fires on scout at 11 m (281 ‰): hit.
+  5:56.1  shot.hit                     rival-2 fires on scout at 11 m (281 ‰): hit.
+  6:00.6  shot.hit                     rival-2 fires on scout at 11 m (281 ‰): hit.
+
+## MC-11: loud.json at the loud fight's start (3:45.7)
+  3:45.7  ai.join                      security-1 of the response unit joins the fight at police-3.
+  3:45.7  ai.join                      security-2 of the response unit joins the fight at cv-033.
+  3:45.7  car.held.blocker             security-1 holds the getaway car from the road: the blocker.
+  3:45.7  car.held.post                security-2 holds the getaway car: he stands at his post, or on his way to it, within 8 m of it.
+3:46.0  security-1:(15.6,-48.3) car 7.1 enf 56.5 engage mv home(19.3,-50.8) | security-2:(14.2,-47.5) car 5.7 enf 57.2 engage home(-4.8,-41.3) | scout:(9.8,-46.8) car 1.9 | fixer:(11.8,-48.3) car 3.3 | tech:(7.3,-46.3) car 2.3
+end Failure enforcer-down 4:25.7 car (8.5,-48.2)

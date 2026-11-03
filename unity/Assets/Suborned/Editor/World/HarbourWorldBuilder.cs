@@ -83,9 +83,11 @@ namespace Suborned.World
             var nodes = new Nodes(look);
             var layers = new Layers(nodes);
             var placer = new KitPlacer(KitCataloguePath);
+            KitPosters.Load(KitCataloguePath, world.Posters); // brief 075-F1: each board's ad, swapped as KitPlacer places it (before any piece is placed)
             KitImport.Generated(placer);
             KitImport.Check(placer);
             KitLods.Build(placer);
+            Debug.Log($"World: NP-1 kit refs checked against the imported kit: {placer.CheckRefs(world)} (brief 075: no placeholder)");
             KitCover.Init(world, placer);
             var city = new CityLayers(nodes, kit, placer);
             Poly.Fallbacks = 0; Poly.Repairs = 0; Coplanar.Reset(); Combine.Reset(kit.BatchTile, kit.FadeCell, FadeTags.Layer);
@@ -96,7 +98,10 @@ namespace Suborned.World
             var shops = new ShopKit(nodes, facade);
             var roofs = new RoofKit(nodes, facade);
             var megas = new MegaKit(nodes, facade, world);
-            var skyline = new SkylineKit(placer, look);
+            var skyline = new SkylineKit(placer, look) { SkyBodyHaze = kit.SkyBodyHaze };
+            ProcFacade.Today = kit.EveryFaceToday; ProcFacade.ShellWalls = 0; // brief 072-E
+            var restyle = CivicRestyle.Load(); // brief 075: Vela's civic restyle (visual only: kit slots, two plots' and the bed kerbs' material, collider-free overlays)
+            if (restyle != null) Debug.Log(restyle.Prepare(world, look, placer.ReplacesOf));
             var root = Nodes.Group(null, RootName);
             var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
             stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
@@ -106,7 +111,12 @@ namespace Suborned.World
             layers.Ground(groundLayer, world.Ground);
             RoadMarkings.Build(nodes, groundLayer, world); // brief 026 round 2: the dashed centre lines
             Debug.Log($"World: kerbs as stones {KerbKit.Stones} segments, gutter strips {KerbKit.Gutters} segments; {KerbKit.Covered} segments left to the export's kit kerb stones (brief 026 round 2)");
-            layers.Transit(Nodes.Group(root, "transit"), world.Transit);
+            KitColourways.Load(KitCataloguePath); // brief 074: Vela's colourway material sets, swapped per placed piece and column instance (loaded before the transit layer: brief 075 roll-out, the sky track's heads take the vermilion livery)
+            KitLiveries.Load(KitCataloguePath, world.Liveries); // brief 075-C: landmark livery, swapped per placed piece by host and ref
+            var railCovered = TramStreet.RailCovered(world.Transit, world.Ground.Pieces); // brief 075: the strips step aside for the flush rail tiles
+            layers.Transit(Nodes.Group(root, "transit"), world.Transit, railCovered, placer);
+            Debug.Log($"World: track strips {world.Transit.Tram.Count - railCovered.Count} drawn, {railCovered.Count} covered by the export's rail tiles ({string.Join(", ", railCovered)}; brief 075)");
+            TramStreet.Kerbside(nodes, root, world.Ground); // brief 075: kerbside bays and palm islands
             var buildings = Nodes.Group(root, "buildings");
             ProcSkin.Elements(Nodes.Group(root, "skins"), world.Skins);
             facade.Buildings(buildings, world.Buildings, standIns);
@@ -115,26 +125,46 @@ namespace Suborned.World
             new FabricKit(nodes, facade.Spec.Atlas).Build(Nodes.Group(root, "fabric"), world.Fabric);
             Debug.Log($"World: skins {world.Skins.Count}: {ProcSkin.Matched} walls matched to a face, {ProcSkin.Unmatched} by the grammar alone (facets, unskinned walls), {ProcSkin.Cells} bay cells; colour life: {ProcSkin.Panels} porthole panels, {ProcSkin.Spandrels} spandrels, {ProcSkin.BalconyFronts} balcony fronts, {ProcSkin.Fins} fins");
             skyline.Facades(Nodes.Group(root, "facades"), world.Facades);
+            Debug.Log(KitColourways.Summary());
             roofs.Roofs(Nodes.Group(root, "roofs"), world.Roofs, placer, standIns);
+            Debug.Log($"World: roof theme pieces {RoofKit.Pieces} (roofs[].kits[], brief 075 remap), {RoofKit.Floored} instances held at L0 to 45 m");
             var frontages = Nodes.Group(root, "frontages");
             shops.Frontages(frontages, world.Frontages);
             placer.Signs(frontages, world.Frontages);
             city.Connectors(Nodes.Group(root, "connectors"), world.Connectors);
             var street = Nodes.Group(root, "street");
+            CrossingKit.Signalled.Clear(); if (world.Crossings != null) foreach (var cx in world.Crossings) if (cx.Cycle != null) CrossingKit.Signalled.Add(cx.Id); // brief 061: before the street layer bakes the crossing parts
             city.Street(street, world.Street);
-            if (world.Ground.Pieces.Count > 0) { int gp = city.GroundPieces(Nodes.Group(root, "ground-pieces"), world.Ground.Pieces); Debug.Log($"World: ground pieces {gp} (export ground.pieces: tiles, drains, manholes)"); }
-            if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), street, world);
+            var roadAlt = RoadFinishTwin.Load(path, world); // brief 055 road test: the asphalt finish beside the enamel, switched at run time
+            if (world.Ground.Pieces.Count > 0) { int gp = city.GroundPieces(Nodes.Group(root, "ground-pieces"), world.Ground.Pieces, roadAlt == null ? null : (System.Func<StreetItemDto, string>)(gpc => roadAlt.EnamelOnly.Contains(RoadFinishTwin.Key(gpc)) ? RoadFinishTwin.EnamelLayer : null)); Debug.Log($"World: ground pieces {gp} (export ground.pieces: tiles, drains, manholes)"); }
+            if (roadAlt != null) { int ap = city.GroundPieces(Nodes.Group(root, RoadFinishTwin.AsphaltLayer), roadAlt.AsphaltOnly); Debug.Log($"World: road finish twin: {roadAlt.EnamelOnly.Count} enamel-only pieces baked apart, {ap} asphalt-only pieces built off ({roadAlt.Path})"); }
+            if (world.Crossings != null) new CrossingKit(nodes, kit, placer).Build(Nodes.Group(root, "crossings"), street, world);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             if (world.HiddenCivic > 0) Debug.Log($"World: {world.HiddenCivic} civic masses `hidden` in the export, not drawn (data only)");
-            facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
+            var civicLayer = Nodes.Group(root, "civic");
+            facade.Civic(civicLayer, Coplanar.Masses(world.Civic), placer);
+            if (restyle != null) Debug.Log(restyle.PlaceOverlays(civicLayer, placer));
             Debug.Log($"World: civic monument plinths {facade.Plinths}");
             if (world.Entrances.Count > 0) ServiceDoors.Build(nodes, Nodes.Group(root, "takedown"), world); // brief 013: the service doors (export takedown.entrances)
             megas.Gates(Nodes.Group(root, "gates"), world.Gates);
             layers.Landmarks(Nodes.Group(root, "landmarks"), world.Landmarks, placer);
+            TramStreet.Wires(root, world.Transit.Wires, placer); // brief 075: the overhead, baked
+            TramStreet.Dressing(root, world.Trams, placer); // brief 075: parked trams, presentation only
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
+            Debug.Log(KitLiveries.Finish()); // every listed livery placed exactly once
+            Debug.Log(KitPosters.Finish()); // every pick taken by a placed board exactly once; variants mapped to their base for the shadow proxies
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
+            // brief 072-E: the every-face A/B switch (EveryFace, Redline's plan 5): `today` built off, the rest as built
+            var everyFace = root.gameObject.AddComponent<EveryFace>();
+            everyFace.modules = KitColumns.ModuleRoots.ToArray();
+            everyFace.every = Layer072.Every.Append(Layer072.Shell).Select(n => batches.Find(n)).Where(t => t).Select(t => t.gameObject).ToArray();
+            everyFace.today = Layer072.Today.Select(n => batches.Find(n)).Where(t => t).Select(t => t.gameObject).ToArray();
+            foreach (var t in everyFace.today) t.SetActive(false);
+            Debug.Log($"World: every-face switch: {everyFace.modules.Length} module roots, every [{string.Join(", ", everyFace.every.Select(g => $"{g.name} {g.transform.childCount}"))}], " +
+                $"today (off; development builds only) [{string.Join(", ", everyFace.today.Select(g => $"{g.name} {g.transform.childCount}"))}]; shadows-only shell on {ProcFacade.ShellWalls} masses");
+            if (roadAlt != null) RoadFinishTwin.Install(root, batches);
             int renderers = batches.GetComponentsInChildren<MeshRenderer>().Length;
             Debug.Log($"World: tangents for {Combine.TangentMeshes} normal-mapped batches (brief 026: textured ground)");
             var cameras = Nodes.Group(null, "cameras");
@@ -146,13 +176,22 @@ namespace Suborned.World
             var (fadeKit, fadeBatches, fadeFlagged) = FadeTags.Apply(root, batches, facade.Spec.Atlas, flagged);
             Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer}); " +
                 $"of the kit renderers {fadeFlagged} are on {flagged.Count} civic pieces the export flags `fade`");
-            var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
-            Debug.Log($"World: shadow proxies {proxies} ({proxyTris} LOD1 triangles), {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
+            var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies, KitColumns.ModuleGroups, kit.ModuleShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
+            Debug.Log($"World: shadow proxies {proxies} ({proxyTris} triangles), of them {ShadowProxies.Modules} every-face module proxies from L2 ({ShadowProxies.ModuleTris} triangles), {(kit.ModuleShadowProxies ? "on: no module LOD casts" : "built off")}; " +
+                $"kit facades and trees from LOD1 {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}; " +
+                $"every module's L2 is one renderer (F4); {ShadowProxies.MultiLevel} kit facade or tree groups have more than one in their proxy level, cast from the first{(ShadowProxies.MultiLevel > 0 ? ": " + string.Join(", ", ShadowProxies.MultiLevelNames) : "")}");
+            var guard = KitLods.PlayZoomGuard(root, g => placer.AtPlayPrefab(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(g.gameObject))); // brief 077: rows declaring lodAtPlay are exempt
+            Debug.Log($"World: play-zoom guard exempts {KitLods.AtPlayExempt} groups whose row declares lodAtPlay (brief 077); kit soil and other objects[] shadows off: {KitLods.ShadowsOff} LOD0 renderers"); // brief 072 (Redline's plan 3.1): throws if a building-layer group switches to L1 nearer than 36 m
+            Debug.Log($"World: play-zoom guard: {guard.groups} LOD groups checked; nearest L1 switch on the building layers {guard.nearest:F1} m ({guard.nearestName}) >= {KitLods.GuardM} m; {guard.otherBelow} groups outside the facade layers switch nearer (warned above)");
             ProcKit.Report(world, facade);
             ContactShade.Build(look, world, root); // brief 026: contact shade at building feet, kerb feet and under street pieces (SSAO is blind at ortho play zoom)
-            Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
+            var sourceGroup = Nodes.Group(null, "source");
+            Nodes.Group(sourceGroup, world.Source ?? Path.GetFileName(path));
+            Nodes.Group(sourceGroup, restyle != null ? $"civic-restyle {Path.GetFileName(restyle.Path)} sha256 {restyle.Sha256}" : "civic-restyle off"); // what the civic block was dressed with
             Play.PlayInstall.Install(world); // the live Handover host (brief 011 D): its own root, `play`
             Debug.Log($"World: kit parts spinning {KitParts.Spin(root)} (kit.json `parts`; view only)");
+            RobotKit.EnsureStageAtlas(); // item 24: the patrol face atlas at its own 16 x 60 (no power-of-two scaling)
+            CrossingKit.EnsureSignalTextures(); /* batch 0.2.118: the signal atlas and ring keep their alpha (the figure, numerals and ring fill are alpha cuts); a guard since the kit's metas carry it (0.2.123) */
             Debug.Log($"World: robots alive: {RobotKit.Seeds(root)} placed robots rigged (face + head), seeded by their export path (brief 026; view only)");
 
             // Verify before saving: a scene that disagrees with the export is never written.

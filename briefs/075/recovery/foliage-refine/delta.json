@@ -1,0 +1,158 @@
+{
+  "status": "HOLD; proposal only; no integration or production enablement",
+  "placements": [
+    {
+      "id": "civic/run-west-cafe/1",
+      "piece": "PlanterRun_4_B",
+      "originalPlantTrianglesRemoved": 612,
+      "refinedPlantTriangles": 6968,
+      "netTrianglesVsUnityBaseline": 6356,
+      "refinedPlantMaterialSlots": [
+        "DK_Leaf_Civic",
+        "DK_Leaf_Refine075_Civic",
+        "DK_Bloom_Peach",
+        "DK_Bloom_Cream",
+        "DK_Bloom_Flamingo",
+        "DK_Leaf_CivicDark",
+        "DK_Leaf_Refine075_CivicDark"
+      ],
+      "fbx": "out/scratch/vela/foliage-refine/PlanterRun_4_B_Refine075.fbx",
+      "sha256": "288d721b1441a11df8cd4922329f37f5c2c8b17499ef5c107e54059414bce25d"
+    },
+    {
+      "id": "civic/civic-office-north/tuft-0",
+      "piece": "BedTuft_A",
+      "originalPlantTrianglesRemoved": 95,
+      "refinedPlantTriangles": 1044,
+      "netTrianglesVsUnityBaseline": 949,
+      "refinedPlantMaterialSlots": [
+        "DK_Leaf_Civic",
+        "DK_Leaf_Refine075_Civic",
+        "DK_Bloom_Coral",
+        "DK_Bloom_Cream"
+      ],
+      "fbx": "out/scratch/vela/foliage-refine/BedTuft_A_Refine075.fbx",
+      "sha256": "adf9ff8e157bd4e497708e7c827ad9311420bb5bde6d59d5cf0d50b9039dc051"
+    },
+    {
+      "id": "civic/cyp-office-e",
+      "piece": "Cypress_Play",
+      "beforeTrianglesUnity": 5004,
+      "afterTriangles": 5004,
+      "deltaTriangles": 0,
+      "action": "leave existing cypress unchanged"
+    }
+  ],
+  "proposedTotalNetTrianglesVsUnityBaseline": 7305,
+  "previousSelectiveTotalNetTriangles": 10791,
+  "newRenderersIfSameIntegrationStrategy": 2,
+  "newMaterialSlotsIfSameIntegrationStrategy": 11,
+  "materialRecipe": {
+    "namePrefix": "DK_Leaf_Refine075_",
+    "baseColorLinear": "0.75 * original DK_Leaf_Civic or DK_Leaf_CivicDark + 0.25 * shrub source RGB",
+    "alpha": "source alpha > 0.5",
+    "roughness": 0.85,
+    "specularIORLevelBlender": 0.1,
+    "core": "original seeded civic material instead of DK_Leaf_CoreShrub",
+    "normal": "lobe normal, z lift .35, jitter .025",
+    "unity": "requires explicit review-only material creation; do not map refined slots to unchanged DK_Leaf_Shrub"
+  },
+  "constraints": [
+    {
+      "id": "civic/run-west-cafe/1",
+      "kit": {
+        "id": "PlanterRun_4_B",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": -1.5708,
+        "at": [
+          -179.5,
+          -222.5
+        ],
+        "base": 0.18
+      },
+      "sourceWorldBounds": [
+        [
+          -179.84,
+          0.18000000000000005,
+          -224.63766999999999
+        ],
+        [
+          -179.16,
+          1.24158,
+          -220.33653
+        ]
+      ],
+      "candidatePlantWorldBounds": [
+        [
+          -179.77932950889743,
+          0.7800000238418578,
+          -224.62290456322233
+        ],
+        [
+          -179.2335213371812,
+          1.2213445234298705,
+          -220.35960446515537
+        ]
+      ],
+      "preflightContained1mm": true,
+      "proofLimit": "source-space axis/pose preflight, not actual Unity FBX import validation"
+    },
+    {
+      "id": "civic/civic-office-north/tuft-0",
+      "kit": {
+        "id": "BedTuft_A",
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "yaw": 3.1355,
+        "at": [
+          -151.573,
+          -304.751
+        ],
+        "base": 0.88
+      },
+      "sourceWorldBounds": [
+        [
+          -151.883,
+          0.88,
+          -305.04641
+        ],
+        [
+          -151.263,
+          1.3266200000000001,
+          -304.45559
+        ]
+      ],
+      "candidatePlantWorldBounds": [
+        [
+          -151.88217875668803,
+          0.8799999850988388,
+          -305.04610455704426
+        ],
+        [
+          -151.26276132800905,
+          1.2689037668704986,
+          -304.45578925755774
+        ]
+      ],
+      "preflightContained1mm": true,
+      "proofLimit": "source-space axis/pose preflight, not actual Unity FBX import validation"
+    },
+    {
+      "id": "civic/cyp-office-e",
+      "status": "unchanged; no new cypress supplied",
+      "baselineTriangles": 5004,
+      "deltaTriangles": 0
+    }
+  ],
+  "excludedTufts": "remain excluded; no blanket replacements",
+  "GPUAlphaShadowCost": "unmeasured; 80 versus48 sprays per cushion can increase overdraw",
+  "doneCheck": "Redline/Glyph appearance review first; Latch actual imported bounds/material/normals/attributes next, no clamp; moving alpha and measured cost only on settled content",
+  "nextOwner": "Aster -> Redline/Glyph, then Latch if approved"
+}

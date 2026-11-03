@@ -1,0 +1,15 @@
+{
+  "schema": "latch.golden075-frame/1",
+  "step": "s3-life",
+  "rendered": "2026-10-28T12:43:40Z",
+  "scene": "Assets/Scenes/HarbourDistrict.unity",
+  "export": "out/scratch/latch/golden075/pin/s3-life.world.json",
+  "export_sha256": "8297649696698b39764c168a1dfd0d9b299b6f654f40bb95b82194c32064af11",
+  "eye": [1.9297, 8.1094, -214.5703],
+  "look": [0.4271, 9.0026, -114.5856],
+  "fov_deg": 58,
+  "size": [1920, 1080],
+  "supersample": 2,
+  "lens": "runtime lens + haze (Flyby074 -lens on)",
+  "life_t": 77
+}

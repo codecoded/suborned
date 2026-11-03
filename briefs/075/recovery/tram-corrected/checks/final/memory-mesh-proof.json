@@ -1,0 +1,16 @@
+{
+ "changedRenderMeshes":1659,
+ "triangles":6298599,
+ "zeroArea":0,
+ "nonfinite":0,
+ "attributeFailures":0,
+ "normalLengthMin":1,
+ "normalLengthMax":1,
+ "maxNormalTangentDot":0,
+ "actualRailQueries":22176,
+ "legacyUniform5mmAssertionFailures":6336,
+ "actualBedQueries":11088,
+ "actualBedMisses":0,
+ "firstMisses":[["ground/tram/rail-0#0",-1,-0.5,0.003],["ground/tram/rail-0#0",-1,0.5,0.003],["ground/tram/rail-0#0",1,-0.5,0.003],["ground/tram/rail-0#0",1,0.5,0.003],["ground/tram/rail-0#1",-1,-0.5,0.003],["ground/tram/rail-0#1",-1,0.5,0.003],["ground/tram/rail-0#1",1,-0.5,0.003],["ground/tram/rail-0#1",1,0.5,0.003],["ground/tram/rail-0#2",-1,-0.5,0.003],["ground/tram/rail-0#2",-1,0.5,0.003],["ground/tram/rail-0#2",1,-0.5,0.003],["ground/tram/rail-0#2",1,0.5,0.003],["ground/tram/rail-0#3",-1,-0.5,0.003],["ground/tram/rail-0#3",-1,0.5,0.003],["ground/tram/rail-0#3",1,-0.5,0.003],["ground/tram/rail-0#3",1,0.5,0.003],["ground/tram/rail-0#4",-1,-0.5,0.003],["ground/tram/rail-0#4",-1,0.5,0.003],["ground/tram/rail-0#4",1,-0.5,0.003],["ground/tram/rail-0#4",1,0.5,0.003]],
+ "proof":"Actual deformed mesh triangles, no bounds proxies. Rail queries at head centres +/-0.5m; Legacy uniform 5mm assertions are preserved as evidence against that obsolete assumption; acceptance uses actual source-profile-relative coverage in memory-coverage.json."
+}

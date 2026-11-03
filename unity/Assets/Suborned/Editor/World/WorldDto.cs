@@ -25,6 +25,9 @@ namespace Suborned.World
         public List<MassDto> Gates = new();
         public List<FacadeDto> Facades = new();
         public List<SignatureDto> Signatures = new();
+        public List<ParkedTramDto> Trams = new(); // brief 075: dressing.trams (presentation only); empty when the export has none
+        public object Liveries; // brief 075-C: the export's `liveries` (raw; KitLiveries reads it), null when absent
+        public object Posters; // brief 075-F1: the export's `posters` (raw; KitPosters reads it), null when absent
         public List<SkinDto> Skins = new(); // the procedural facade of every plot building (window family, accent, per-face bays)
         public FabricDto Fabric = new(); // grammar §2a colour life: balcony awnings, banners, flag masts
         public HorizonDto Horizon; // null when the export has none (the sample)
@@ -57,6 +60,34 @@ namespace Suborned.World
         public List<MassDto> Plots = new();  // one 0.18 m pavement slab per plot
         public List<DriveDto> Drives = new(); // brief 023: a car's way from a road's carriageway over a plot's pavement to a bay that touches no road
         public List<StreetItemDto> Pieces = new(); // brief 026 (Splice): flat kit pieces on the ground (tactile, terrazzo, drain, manhole; kerb, flags, pits when adopted); not in counts.ground
+        public List<FootwayDto> Footways = new(); // brief 061: the continuous footway at each gate's lane mouth; its table is also a flat in Flats (id Table)
+        public List<KerbBayDto> Kerbside = new(); // brief 075: the tram streets' kerbside bays (marks on the carriageway); not in counts.ground
+        public List<MassDto> Islands = new(); // brief 075: the primaries' kerbed palm islands in the kerbside strip (0.18 masses); not in counts.ground
+    }
+
+    /// <summary>Brief 075 (world.schema.ts KerbBay): a kerbside bay on a tram street: parallel | angle | loading, its Ring at Level on the carriageway of Road
+    /// (a road id without the `road/` prefix); Yaw = the stall's axis (plan radians). Marks only: parked cars are life's.</summary>
+    public sealed class KerbBayDto { public string Id, Kind, Road; public Vector2[] Ring; public float Yaw, Level; }
+
+    /// <summary>Brief 075 (world.schema.ts TramWires.pieces): one of Vela's overhead pieces (contact | span | hanger | rosette), its kit ref at Kit.At, at height Z.
+    /// The strands' Kit.Scale.x stretches the 1 m piece to its run.</summary>
+    public sealed class WirePieceDto { public string Id, Kind; public KitRefDto Kit; public float Z; }
+
+    /// <summary>Brief 075 (world.schema.ts ParkedTram): a parked Tram, dressing only (never sim data): its kit ref (pivot Kit.At, Kit.Yaw) on the rail top Z.</summary>
+    public sealed class ParkedTramDto { public string Id, Line, Stop; public KitRefDto Kit; public float Z; }
+
+    /// <summary>Brief 061 (world.schema.ts Footway): a gate's lane mouth where the higher road's pavement runs on across the lane at kerb height.
+    /// Frame: Origin = the higher road's near kerb line on the lane's axis, Along = that kerb line's direction, Into = from the kerb into the lane;
+    /// a point is Origin + Along * a + Into * s, |a| &lt;= Half. The table (a flat at Level, in Flats as TableId) runs s 0..Depth; the lip falls
+    /// LipDrop from the table over s 0..LipD to the carriageway; the ramp falls RampRise from the table over s Depth..Depth + RampRun; the
+    /// bands are flush strips (ring, level, surface); the posts are street items of their own.</summary>
+    public sealed class FootwayDto
+    {
+        public string Id, Gate, Lane, Road, TableId, TableSurface, RampSurface, LipSurface;
+        public float Level, Half, Depth, RampRun, RampRise, LipD, LipDrop;
+        public Vector2 Origin, Along, Into;
+        public Vector2[] Table, Ramp, Lip, Posts;
+        public List<(Vector2[] ring, float level, string surface)> Bands = new();
     }
 
     /// <summary>A drive (brief 023, world.schema.ts Drive): Ring a flat at Level in Surface, from Road (a road id) to To (a bay flat id); the road's
@@ -75,17 +106,26 @@ namespace Suborned.World
     /// <summary>Kit (civic objects): the piece standing in for the extrusion at its At, on its Base. Fade (civic kit masses): the
     /// play camera's architecture fade may ghost the piece (a parasol over a table someone stands at). GroundBy: the id of the
     /// kit mass that is this building's ground storey (the café's bay), so the facade draws none.
-    /// Materials: this mass's piece draws the slot (a material name on the piece) in the named kit material.</summary>
+    /// Materials: this mass's piece draws the slot (a material name on the piece) in the named kit material.
+    /// Colourway (brief 074): the building's facade.json wall family (`buildings[].colourway`, `civic` on the civic block); null when the export has none.</summary>
     public sealed class MassDto
     {
-        [System.NonSerialized] public object Raw; public string Id, Surface, GroundBy; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; public Dictionary<string, string> Materials;
+        [System.NonSerialized] public object Raw; public string Id, Surface, GroundBy, Colourway; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; public Dictionary<string, string> Materials;
 
         /// <summary>This mass on another ring (its own ring is left alone).</summary>
         public MassDto With(Vector2[] ring) { var c = (MassDto)MemberwiseClone(); c.Ring = ring; return c; }
     }
 
     /// <summary>A kit facade piece (bay, end or corner) on a generated building's street face A→B; Kit.At = the piece's footprint centre, Base = pavement top.</summary>
-    public sealed class FacadeDto { public string Id, Building, Form; public int Storeys, Edge; public KitRefDto Kit; public float Base; public Vector2 A, B; }
+    /// <summary>Brief 072-C/E: an every-face module carries Family (side | alley | stack-* | corner-* | pilaster; null on the wave-2 street pieces),
+    /// Column (the bay position its storey modules share; Latch bakes one mesh per column layout), Casts (proxy-l2: an L2 proxy casts, the module
+    /// does not), Colourway (the material slot set) and LodClass (kit.json lodClasses).</summary>
+    public sealed class FacadeDto
+    {
+        public string Id, Building, Form; public int Storeys, Edge; public KitRefDto Kit; public float Base; public Vector2 A, B;
+        public string Family, Column, Casts, Colourway, LodClass; public int ColumnStoreys;
+        public bool Module => Family != null;
+    }
 
     /// <summary>A plan signature structure (SpaceHQ, a tower site's regenerated piece, the SkyBridge, a sky rail station, the Parade gate block).
     /// Ground (signature only) = [xmin, xmax, ymin, ymax], where no plot geometry stands. Kit null = procedural (Why says why).</summary>
@@ -149,7 +189,20 @@ namespace Suborned.World
         public List<TrackDto> Tram = new();
         public List<SkyRailDto> SkyRail = new();
         public List<MassDto> Stops = new(), Stations = new();
+        public List<WirePieceDto> Wires = new(); // brief 075: transit.wires.pieces (the overhead); empty when the export has none
+        public SkyTrackDto SkyTrack; // brief 075 roll-out: transit.skyTrack (the old beam sweep and pylon stacks); null = draw SkyRail's ribbons and posts
     }
+
+    /// <summary>Brief 075 roll-out (Splice's skytrack.ts, Vela's SkyRail_Beam_4m section): the beam section swept along each beam's centre line,
+    /// its top at Top; the old pylon stacks (Foot optional, Shaft stretched in height, Head or HeadTwin hanging from the beam's underside).</summary>
+    public sealed class SkyTrackDto
+    {
+        public string Piece; public float Width, Depth, Fillet, StripeLo, StripeHi, StripeProud, UPerMetre;
+        public List<SkyBeamDto> Beams = new();
+        public List<SkyPylonDto> Pylons = new();
+    }
+    public sealed class SkyBeamDto { public string Id; public Vector2[] Line; public float Top; }
+    public sealed class SkyPylonDto { public string Id; public Vector2 At; public float Yaw, Ground; public KitRefDto Foot, Shaft, Head; public float FootZ, ShaftZ, HeadZ; }
 
     public sealed class TrackDto { public string Id, Surface; public Vector2[] Line; public float Width, Level, Depth, Spacing; } // Spacing > 0: two ribbons that far apart
 
@@ -184,17 +237,17 @@ namespace Suborned.World
 
     /// <summary>Sphere (radius standing on Base) or cylinder (Radius, Base to Base + Height). Kit = the piece that is the landmark;
     /// Kits = pieces standing on its top (Base + Height) at their At, the landmark itself staying procedural (the skyport's pads).</summary>
-    public sealed class LandmarkDto { public string Id, Surface, Shape, Source; public Vector2 Centre; public float Radius, Base, Height; public KitRefDto Kit; public List<KitRefDto> Kits = new(); }
+    public sealed class LandmarkDto { public string Id, Surface, Shape, Source; public Vector2 Centre; public float Radius, Base, Height; public KitRefDto Kit; public List<KitRefDto> Kits = new(); public KitRefDto Gateway; } // Gateway (brief 075): a kit arch on the pavement at its At, its Yaw turning the piece's +X (the Crown Avenue arch); null = none
 
     /// <summary>Gateway: a kit arch standing on the quay under its At (its Yaw turns the piece's +X).</summary>
-    public sealed class MegaDto { public string Id; public List<MassDto> Parts = new(); public List<PrimDto> Prims = new(); public KitRefDto Gateway; }
+    public sealed class MegaDto { public string Id, Kind; public List<MassDto> Parts = new(); public List<PrimDto> Prims = new(); public KitRefDto Gateway; }
 
     /// <summary>Primitive solid. Shape: box | cyl | sphere | vault | saucer | wedge. Size = (a along Yaw, b across, h); Base = lowest z; Yaw radians from +x toward +y in plan.</summary>
     public sealed class PrimDto { public string Id, Shape, Surface; public Vector2 Centre; public float Base, Yaw; public Vector3 Size; }
 
     /// <summary>One programme on a roof at Z (top of the roof slab); Parts are in world frame.</summary>
     /// <summary>Kit = the programme's piece (hover-pad: SkyPad_Roof) standing on the slab at its At; its procedural stand-in is then not in Parts.</summary>
-    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit, Crown; } // Crown: the Crown_* piece at the roof centre
+    public sealed class RoofDto { public string Id, Building, Programme, Surface, Form; public float Z, Parapet, Yaw; public Vector2 Centre, Size; public List<PrimDto> Parts = new(); public KitRefDto Kit, Crown; public List<KitRefDto> Kits = new(); } // Crown: the Crown_* piece at the roof centre; Kits (brief 075 remap, roofline.ts RL-3): the old roof theme pieces, each at its At on its own Z and Yaw
 
     /// <summary>A tenancy a to b on a facade at Z facing Normal; Sign carries Motif, Icon and a palette key (no text).</summary>
     public sealed class FrontageDto
@@ -212,16 +265,21 @@ namespace Suborned.World
     /// <summary>Tree, lamp, furniture, kit item or watcher at At, standing on Z. Kind names the catalogue entry; Variant the species or lamp type.</summary>
     public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit;
         /// <summary>A crossing's part (brief 009): the crossing it belongs to; whether it casts (the signal orb's body only); a signal orb's state (walk | stop).</summary>
-        public string Crossing, Signal; public bool CastShadows; }
+        public string Crossing, Signal; public bool CastShadows;
+        /// <summary>`signal-orb` only (brief 061): the halo's centre, ground and radius (`signal.halo`); the clock ring (HaloRing) stands there.</summary>
+        public bool HasHalo; public Vector2 HaloAt; public float HaloZ, HaloR; }
 
     /// <summary>A crossing. Kind kerb = two landings (street items, one on each kerb of Road) and the way across the carriageway
     /// between them; stop | bank = one patch, its one street item (the way from a tram platform, or from a station bank). Line = the
     /// way's centre line, end to end; Width across it; Control signal (it carries signal orbs), null = none (a zebra no longer exists, brief 009); Refuges = the rings of the median the way
     /// crosses, where people wait.</summary>
-    public sealed class CrossingDto { public string Id, Kind, Road, Control; public string[] Items; public Vector2[] Line; public float Width; public List<Vector2[]> Refuges = new(); }
+    public sealed class CrossingDto { public string Id, Kind, Road, Control; public string[] Items; public Vector2[] Line; public float Width; public List<Vector2[]> Refuges = new(); public SignalCycleDto Cycle; }
+    /// <summary>Brief 061 (plan strip.signal.cycle; look only): a signal crossing's cycle in whole seconds, the phase offset hashed by the generator
+    /// from the crossing's id (Unity never hashes). Null on a crossing with no control, or an export before brief 061.</summary>
+    public sealed class SignalCycleDto { public int Walk, Clearing, Stop, Arrive, Offset; }
 
     /// <summary>A DecoKit piece (contracts/world/kit.json id) standing in for an element. Scale = (across, up, depth) on the piece's own
     /// size = Unity local (x, y, z). Yaw (plan radians from +x toward +y) turns the piece's +X; its front (+Z) faces Yaw + 90°; NaN = the
     /// element's own yaw. At, Base, Mount only on signs.</summary>
-    public sealed class KitRefDto { public string Id, Mount; public Vector3 Scale; public float Yaw = float.NaN, Base; public Vector2 At; }
+    public sealed class KitRefDto { public string Id, Mount; public Vector3 Scale; public float Yaw = float.NaN, Base, Z = float.NaN; public Vector2 At; } // Z (brief 075 remap): a ref's own pivot height (roofs[].kits[]); NaN = the element's
 }

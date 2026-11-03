@@ -110,36 +110,50 @@ describe('the Handover\'s cover file', () => {
   });
   const rules = () => checkCover(JSON.parse(read(COVER_FILE)), { free: freeCm, placeAt, inputs: today() });
   test('CV-1 holds', () => { expect(rules().find(c => c.id === 'CV-1')!.ok).toBe(true); });
-  test('the points are beside what the world draws: planter runs, the café wall, the fountain, the pavilion piers, the cabinets, the cars', () => {
+  test('the points are beside what the world draws: planter runs, the café wall, the pavilion piers, the cabinets, the cars', () => {
     const kinds = new Set(made.cover.points.map(p => p.kind));
-    expect([...kinds].sort()).toEqual(['cabinet', 'car', 'fountain', 'pier', 'planter-run', 'wall']);
+    expect([...kinds].sort()).toEqual(['cabinet', 'car', 'pier', 'planter-run', 'wall']);
+    expect(made.cover.points.some(p => p.of === 'civic/atom-fountain')).toBe(false); // the basin's rim is 0.5 m (Vantage, brief 055): under the 0.9 m a body crouches behind, so no point
     expect(made.cover.points.filter(p => p.kind === 'planter-run').every(p => p.of.startsWith('civic/run-'))).toBe(true);
     expect(made.cover.points.filter(p => p.of === 'car/getaway').every(p => p.present![0] === 0 && p.present![1] === site.schedule.over)).toBe(true);
     expect(made.cover.points.filter(p => p.of === 'car/rivals').every(p => p.present![0] === site.schedule.rivalsArrive)).toBe(true);
   });
-  // The finding (spec §6), as the world stands after Vantage's two planter runs and Waymark's move of the posts off the lane and onto the café wall's arc: every post has cover.
+  // The finding (spec §6), as the world stands after Vantage's planter runs and Waymark's move of the posts off the lane and onto the café wall's arc: every post had cover.
+  // 2026-10-26 (Vantage, brief 067 K; Sky on 0.2.122: "some odd planters in the fountain area near the car that make no sense to be there"): the square's two freestanding
+  // runs (run-sq-south, run-sq-west: three modules, six points) are gone, so ambush-1 and ambush-3, whose cover they were, lurk in the open (the report below names the planters
+  // that would shield them; Vantage did not take them, Motive re-measures the square's safe fight), and ambush-5 stands at the café wall's arc (cv-032). CV-2 holds at 3 of 5.
   // When the world or the posts change, this test changes with them.
-  test('every ambush and police post has cover that shields it from the car, the cell side is answered everywhere, and CV-2 passes', () => {
+  test('every ambush and police post has cover that shields it from the car but ambush-1 and ambush-3 (the square\'s planters went), the cell side is answered everywhere, and CV-2 passes', () => {
     const by = Object.fromEntries(made.cover.areas.map(a => [a.id, a]));
-    expect(by['getaway-safe']!.hostileCover.map(h => [h.post, h.points.length > 0])).toEqual([['ambush-1', true], ['ambush-2', true], ['ambush-3', true], ['ambush-4', true], ['ambush-5', true]]);
+    expect(by['getaway-safe']!.hostileCover.map(h => [h.post, h.points.length > 0])).toEqual([['ambush-1', false], ['ambush-2', true], ['ambush-3', false], ['ambush-4', true], ['ambush-5', true]]);
     expect(by['getaway-loud']!.hostileCover.map(h => [h.post, h.points.length > 0])).toEqual([['police-1', true], ['police-2', true], ['police-3', true], ['police-4', true]]);
     for (const a of made.cover.areas) expect(a.cellCover.every(h => h.points.length > 0)).toBe(true);
     const cv2 = rules().find(c => c.id === 'CV-2')!;
     expect(cv2.ok, cv2.detail).toBe(true);
-    expect(cv2.value).toBe('getaway-safe hostile 5/5, cell 5/5; getaway-loud hostile 4/4, cell 4/4');
-    expect(made.cover.points.filter(p => p.of.startsWith('civic/run-sq-')).map(p => p.of).sort()).toEqual(['civic/run-sq-south/0', 'civic/run-sq-south/0', 'civic/run-sq-south/1', 'civic/run-sq-south/1', 'civic/run-sq-west/0', 'civic/run-sq-west/0']);
+    expect(cv2.value).toBe('getaway-safe hostile 3/5, cell 5/5; getaway-loud hostile 4/4, cell 4/4'); // was 5/5: the half CV-2 allows is 2 of 5 uncovered
+    expect(made.cover.points.filter(p => p.of.startsWith('civic/run-sq-'))).toEqual([]); // the six points of the removed modules (83 points before, 77 now)
+    expect(made.cover.points.length).toBe(77);
   });
-  test('the report is empty when no post lacks cover; for a post that does it names the nearest shielding cover and a planter run that would shield it', () => {
-    expect(findings(made.cover, plan, block, site)).toEqual([]);
+  test('the report names, for a post that lacks cover, the nearest shielding cover and a planter run that would shield it: today ambush-1 and ambush-3, whose planters went on 2026-10-26 (Vantage, brief 067 K)', () => {
+    const now = findings(made.cover, plan, block, site);
+    expect(now.map(f => f.post)).toEqual(['ambush-1', 'ambush-3']);
+    for (const f of now) {
+      expect(f).toMatchObject({ area: 'getaway-safe', side: 'hostile', on: 'plot records-square (square)', nearest: { id: 'cv-040', of: 'civic/civic-control-cabinet' } }); // the control cabinet, 24 m away: no cover
+      expect(f.proposal).toMatchObject({ piece: 'PlanterRun_4_A', thenShielded: true }); // the report's own proposal, on the removed planters' ground; not taken
+    }
+    expect(now.map(f => [f.at, f.proposal!.at, f.proposal!.yawDeg])).toEqual([[[21.75, -44.25], [20.22, -44.71], -73], [[22, -42], [20.55, -42.67], -65]]);
     const bare = clone(made.cover), ambush2 = bare.areas[0]!.hostileCover.find(h => h.post === 'ambush-2')!; ambush2.points = []; // as if the wall were not there
     const fs = findings(bare, plan, block, site);
-    expect(fs.map(f => f.post)).toEqual(['ambush-2']);
-    expect(fs[0]!.on).toMatch(/^plot records-square/);
-    expect(fs[0]!.nearest).toBeDefined();
-    if (fs[0]!.proposal) expect(fs[0]!.proposal.thenShielded).toBe(true);
+    expect(fs.map(f => f.post)).toEqual(['ambush-1', 'ambush-2', 'ambush-3']);
+    const two = fs.find(f => f.post === 'ambush-2')!;
+    expect(two.on).toMatch(/^plot records-square/);
+    expect(two.nearest).toBeDefined();
+    if (two.proposal) expect(two.proposal.thenShielded).toBe(true);
+    const full = clone(made.cover); for (const h of full.areas[0]!.hostileCover) if (!h.points.length) h.points = ['cv-032']; // as if every post had cover
+    expect(findings(full, plan, block, site)).toEqual([]);
   });
-  test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the fountain, the robot, the pavilion piers', () => {
-    expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/atom-fountain', 'civic/foreground-civic-robot', 'civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
+  test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the pavilion piers (not the fountain: its basin is 0.5 m; the steward robot left the block on 2026-10-26, Sky, briefs/067 J)', () => {
+    expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
     expect(made.cover.blockers.every(b => b.h >= made.cover.rules.eyeCm && b.poly.length >= 3)).toBe(true);
     expect(made.cover.points.filter(p => p.against === 'fire+sight').every(p => made.cover.blockers.some(b => b.id === p.of) || /wall|car/.test(p.kind))).toBe(true);
   });
@@ -147,11 +161,18 @@ describe('the Handover\'s cover file', () => {
     const pts = made.cover.points, car = placeAt('d:Getaway bay')!, pick = (id: string, foe: boolean) => selectCover(pts, { at: placeAt(id)!, objective: car, ...(foe ? { foe: car } : {}) }, new Set())?.id ?? null;
     const got = Object.fromEntries(['ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally'].map(id => [id, [pick(id, true), pick(id, false)]]));
     expect(got).toEqual({
+      // 2026-10-23 (brief 055, fountain 4.2 -> 0.5 m): the same picks, every id eleven lower from cv-015: the fountain's 11 points were fake cover and went
       // 2026-10-19 (door option b): the same picks, numbered one lower from cv-078 up: the cover points are numbered in order and one earlier point went (civic-service-cabinet-1's: the block's cabinets changed with the doors, Vantage)
-      'ambush-1': ['cv-078', 'cv-078'], 'ambush-2': ['cv-046', 'cv-046'], 'ambush-3': ['cv-080', 'cv-080'], 'ambush-4': ['cv-043', 'cv-045'], 'ambush-5': ['cv-081', 'cv-081'],
-      'police-1': ['cv-043', 'cv-043'], 'police-2': ['cv-041', 'cv-041'], 'police-3': ['cv-046', 'cv-097'], 'police-4': ['cv-041', 'cv-042'], 'guard-ally': ['cv-078', 'cv-077'],
+      // 2026-10-24 (engine 0.28.0, the drawn walk adopted, Keel): 89 -> 83 points (six stood on cells the drawn solids now block); the same picks
+      // renumbered, but for the café wall arc: ambush-2 takes the arc's point 2 m east of its old one (cv-032), police-3 with the car as foe the arc's
+      // north end (cv-029, the old cv-032), police-4 advancing the arc's point by the south end (cv-026)
+      // 2026-10-26 (brief 067 K, Vantage: the square's three odd planter modules are gone, 83 -> 77 points; ambush-5 moved from (14, -36) to the café wall's arc, (-3.25, -34.75)): every id from the
+      // first removed point falls by six (police-3 advancing: cv-081 -> cv-075); ambush-1, ambush-3 and guard-ally had the removed modules' points and now have no cover that shields them from the car
+      // (null with the car as foe; advancing they take the nearest kerb-run point toward it: cv-069, cv-067); ambush-5 takes the wall arc's car-facing point (cv-032), advancing the front wall's (cv-038)
+      'ambush-1': [null, 'cv-069'], 'ambush-2': ['cv-032', 'cv-032'], 'ambush-3': [null, 'cv-069'], 'ambush-4': ['cv-029', 'cv-031'], 'ambush-5': ['cv-032', 'cv-038'],
+      'police-1': ['cv-029', 'cv-029'], 'police-2': ['cv-027', 'cv-027'], 'police-3': ['cv-029', 'cv-075'], 'police-4': ['cv-027', 'cv-026'], 'guard-ally': [null, 'cv-067'],
     });
-    expect(selectCover(pts, { at: placeAt('ambush-2')!, objective: car, foe: car }, new Set(['cv-046']))?.id).not.toBe('cv-046'); // two bodies never take one point
+    expect(selectCover(pts, { at: placeAt('ambush-2')!, objective: car, foe: car }, new Set(['cv-032']))?.id).not.toBe('cv-032'); // two bodies never take one point
     expect(pts.filter(p => p.of === 'car/getaway').map(p => p.id)).toEqual(['cv-001', 'cv-002', 'cv-003', 'cv-004', 'cv-005', 'cv-006']);
   });
   test('a hostile at ambush-4 runs to the café wall, and two of them take two points', () => {
@@ -198,7 +219,9 @@ describe('the proposed rulebook values (briefs/011/pulse-fight-ai.values.json)',
     expect(ids.length).toBe(28);
     for (const id of ids) {
       const e = doc.values[id]; expect(typeof e.v === 'number' && e.unit && e.tag === 'S' && e.src && e.reason, id).toBeTruthy();
-      if (rulebook[id]) expect(rulebook[id].v, `${id}: the rulebook has ${rulebook[id].v}, the proposal ${e.v}`).toBe(e.v);
+      const later: Record<string, string> = { 'mod-cover-partial': 'brief 039 B (GDD v0.28.0 §06): partial cover ×500' }; // a value a later design moved on from the proposal
+      if (rulebook[id] && !(id in later)) expect(rulebook[id].v, `${id}: the rulebook has ${rulebook[id].v}, the proposal ${e.v}`).toBe(e.v);
+      if (id in later) expect(rulebook[id].src, `${id}: the rulebook names the design that moved it`).toMatch(/brief 039/);
     }
     expect(ids.filter(id => rulebook[id]).length).toBeGreaterThanOrEqual(20); // not yet adopted: the guard's leash and the crowd's values
   });

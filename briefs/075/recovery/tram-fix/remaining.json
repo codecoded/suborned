@@ -1,0 +1,188 @@
+{
+  "status": "HOLD",
+  "crossingFacesAtBedLevel": [
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / DK_LightDotRow [probe-oldtown-ours-crossdots]",
+      "samples": 13,
+      "at": [
+        [
+          -341.8,
+          -127.7
+        ],
+        [
+          -341.2,
+          -127.7
+        ],
+        [
+          -338.8,
+          -127.7
+        ],
+        [
+          -338.2,
+          -127.7
+        ],
+        [
+          -341.8,
+          -193.7
+        ],
+        [
+          -341.2,
+          -193.7
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-1,-7 [probe-oldtown-ours-crosslight]",
+      "samples": 3,
+      "at": [
+        [
+          -3,
+          -390.3
+        ],
+        [
+          -1.9,
+          -386.7
+        ],
+        [
+          -2.5,
+          -386.7
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-6,-3 [probe-oldtown-ours-crosslight]",
+      "samples": 1,
+      "at": [
+        [
+          -337.6,
+          -187.7
+        ]
+      ]
+    },
+    {
+      "source": "Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-6,1 [probe-oldtown-ours-crosslight]",
+      "samples": 1,
+      "at": [
+        [
+          -337.6,
+          109.3
+        ]
+      ]
+    }
+  ],
+  "overBedFaces": [
+    {
+      "source": "Network (our routes, old pieces) / Tram [DK_Iron]",
+      "samples": 234,
+      "at": [
+        [
+          -341.8,
+          134.3
+        ],
+        [
+          -342.4,
+          133.3
+        ],
+        [
+          -342.4,
+          133.3
+        ],
+        [
+          -341.8,
+          133.3
+        ],
+        [
+          -341.8,
+          133.3
+        ],
+        [
+          -341.2,
+          133.3
+        ]
+      ]
+    },
+    {
+      "source": "Network (our routes, old pieces) / Kerb_Granite [DK_Granite_Kerb]",
+      "samples": 6,
+      "at": [
+        [
+          -352.3,
+          279.3
+        ],
+        [
+          -336.6,
+          -400.8
+        ],
+        [
+          -332,
+          -400.8
+        ],
+        [
+          -327.7,
+          -404.4
+        ],
+        [
+          -327.9,
+          -408.5
+        ],
+        [
+          -10,
+          -402.7
+        ]
+      ]
+    },
+    {
+      "source": "Network (our routes, old pieces) / Kerb_Granite [DK_Granite_Kerb_B]",
+      "samples": 3,
+      "at": [
+        [
+          -352.2,
+          273.6
+        ],
+        [
+          -345,
+          267.8
+        ],
+        [
+          -340.9,
+          267.9
+        ]
+      ]
+    }
+  ],
+  "offBedSamples": [
+    [
+      "tram/T1/trunk",
+      -349.557,
+      277.612
+    ],
+    [
+      "tram/T1/trunk",
+      -345.526,
+      268.659
+    ],
+    [
+      "tram/T1/trunk",
+      -340.328,
+      266.884
+    ],
+    [
+      "tram/T1/trunk",
+      -337.343,
+      -393.144
+    ],
+    [
+      "tram/T1/trunk",
+      -336.78,
+      -392.936
+    ],
+    [
+      "tram/T1/trunk",
+      -323.057,
+      -411.176
+    ]
+  ],
+  "unreadable": 0,
+  "proxiesCountedAsFaces": 0,
+  "note": "source counts count triangle hits, not unique defects; audit totals count affected sample positions"
+}

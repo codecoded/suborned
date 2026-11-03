@@ -1,0 +1,32 @@
+{
+  "originCommit": "71bf4032f881002c4f2841ed375c076716500e0e",
+  "historicalWorldRecoveredFrom": "out/scratch/splice/world-before.json",
+  "identicalFrame": {
+    "origin": [
+      -130,
+      -230
+    ],
+    "x": [
+      0,
+      -1
+    ],
+    "y": [
+      1,
+      0
+    ]
+  },
+  "identicalEyeCm": 160,
+  "files": {
+    "out/scratch/splice/recovery-g3a/historical-geometry.summary.json": "b01636eb1a9fc711b5fb4a791f2edf544a6d9aba441fa61ecff3d2297d19af38",
+    "out/scratch/splice/recovery-g3a/historical-handover.site.json": "26271e3da3977bbbf376399aa87e1baec1982e97c2f91f33644343de5f802bcf",
+    "out/scratch/splice/recovery-g3a/historical-harbour-district.plan.json": "67b17343184a3522689928ce7013443117076cc67ed68e9a202fd9c86d232db8",
+    "out/scratch/splice/recovery-g3a/historical-rulebook.json": "27c5cdac970f8b3b6fe2d5637aea722139a23ae8a19f2baa23ac3e7ee9162199",
+    "out/scratch/splice/recovery-g3a/historical-civic-block.json": "1bc3620f355b40cac801439e06e765b00f62420fccc235edb263641e2228020a",
+    "out/scratch/splice/recovery-g3a/historical-kit.json": "c9929a6d77cd1ea507afc7988818ea15cd67c4bda5a3855a11aa4a622ab4389e",
+    "out/scratch/splice/recovery-g3a/historical-civic-block.adjust.json": "3fd052439866781b898af9a179c8ead0906fcbd7b06dd8bbb22061a34f2461cb",
+    "out/scratch/splice/recovery-g3a/historical-handover.people.json": "870a08ae71e25a5a4fc11aab1ea8ebade25e9d41545e72212a2404da28a0b2e0",
+    "out/scratch/splice/recovery-g3a/historical.world.json": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "out/scratch/splice/recovery-g3a/current.world.json": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5"
+  },
+  "geometrySourceDiff": ""
+}

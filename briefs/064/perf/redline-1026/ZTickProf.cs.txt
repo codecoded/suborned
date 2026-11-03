@@ -1,0 +1,24 @@
+using System; using System.Linq; using System.Globalization; using Suborned.Sim;
+static class TickProf {
+  public static int Run(Engine.Inputs inputs, string root, string[] args) {
+    string what = args[1]; int reps = int.Parse(args[2], CultureInfo.InvariantCulture);
+    BatchCli.PlayOne(inputs, root, what); BatchCli.PlayOne(inputs, root, what); // warm (JIT)
+    Prof.SightN = 0; Prof.SightT = 0; Prof.RouteN = Prof.RouteT = Prof.NearN = Prof.NearT = Prof.RouteNull = Prof.PullT = Prof.PullLF = Prof.RawLen = 0; Prof.LF = 0; Prof.Sum.Clear(); Prof.Max.Clear(); Prof.Ticks.Clear(); Prof.On = true;
+    var sw = System.Diagnostics.Stopwatch.StartNew(); int endTick = 0; string res = "";
+    for (int i = 0; i < reps; i++) { var p = BatchCli.PlayOne(inputs, root, what); endTick = p.G.Tick; res = p.G.Result + " " + p.G.FailCode; }
+    sw.Stop(); Prof.On = false;
+    double us = 1e6 / System.Diagnostics.Stopwatch.Frequency;
+    var t = Prof.Ticks.Select(x => x.total * us).OrderBy(x => x).ToArray();
+    double P(double q) => t[Math.Min(t.Length - 1, (int)Math.Ceiling(q * t.Length) - 1)];
+    Console.WriteLine(FormattableString.Invariant($"{what} x{reps}: end tick {endTick} ({res}); wall {sw.Elapsed.TotalMilliseconds / reps:0.0} ms a play (incl. load/verify); Step: {t.Length} ticks, mean {t.Average():0.0} us, p50 {P(0.5):0.0}, p99 {P(0.99):0.0}, p999 {P(0.999):0.0}, max {t[^1]:0.0} us; step sum {t.Sum() / 1000 / reps:0.00} ms a play"));
+    Console.WriteLine(FormattableString.Invariant($"  Sight3: {Prof.SightN / (double)reps:0} calls a play, {Prof.SightN / (double)t.Length:0.0} a tick, {Prof.SightT * us / 1000 / reps:0.00} ms a play ({100.0 * Prof.SightT * us / t.Sum():0}% of step time, incl. timer cost)"));
+    Console.WriteLine(FormattableString.Invariant($"  Grid.Route: {Prof.RouteN / (double)reps:0} calls a play, {Prof.RouteT * us / 1000 / reps:0.00} ms a play ({100.0 * Prof.RouteT * us / t.Sum():0}%), {Prof.RouteT * us / Math.Max(1, Prof.RouteN):0} us a call; of it string-pull {Prof.PullT * us / 1000 / reps:0.00} ms ({Prof.LF / Math.Max(1.0, Prof.RouteN):0} LineFree a route, raw path {Prof.RawLen / Math.Max(1.0, Prof.RouteN):0} cells), null routes {Prof.RouteNull / (double)reps:0}; Grid.Nearest(pred): {Prof.NearN / (double)reps:0} calls, {Prof.NearT * us / 1000 / reps:0.00} ms a play"));
+    var al = Prof.Ticks.Select(x => (double)x.alloc).OrderBy(x => x).ToArray();
+    Console.WriteLine(FormattableString.Invariant($"  alloc: mean {al.Average():0} B a tick, p99 {al[(int)(0.99 * al.Length)]:0}, max {al[^1]:0}; {al.Sum() / reps / 1048576.0:0.00} MB a play; gen0 GCs over the run {System.GC.CollectionCount(0)}"));
+    foreach (var kv in Prof.Sum.OrderByDescending(k => k.Value).Take(14)) Console.WriteLine(FormattableString.Invariant($"  {kv.Key,-18} {kv.Value * us / 1000 / reps,8:0.000} ms a play  {kv.Value * us / t.Length,8:0.00} us a tick  max {Prof.Max[kv.Key] * us,8:0.0} us"));
+    // per-tick median over reps of the worst ticks
+    var byTick = Prof.Ticks.GroupBy(x => x.tick).Select(gr => (tick: gr.Key, med: gr.Select(x => x.total * us).OrderBy(x => x).ElementAt(gr.Count() / 2), top: gr.GroupBy(x => x.top).OrderByDescending(z => z.Count()).First().Key, sight: gr.Select(x => x.sight * us).OrderBy(x => x).ElementAt(gr.Count() / 2), sn: gr.First().sightN, alloc: gr.First().alloc, route: gr.Select(x => x.route * us).OrderBy(x => x).ElementAt(gr.Count() / 2), rn: gr.First().routeN)).OrderByDescending(x => x.med).Take(8);
+    Console.WriteLine("  worst ticks (median over reps): " + string.Join(", ", byTick.Select(x => FormattableString.Invariant($"{x.tick}:{x.med:0}us({x.top}; sight {x.sight:0}us in {x.sn} lines; route {x.route:0}us in {x.rn}; {x.alloc / 1024.0:0}KB)"))));
+    return 0;
+  }
+}

@@ -1,0 +1,189 @@
+{
+ "note": "Brief 074 follow-up (Latch, scratch): the old DecoKit reel's flight (boulevard -> circus -> parade -> skyport -> sea, looking back) re-flown through today's plan. Unity x,y,z = plan x, height, plan y. Boulevard x=0 heading north (+z) to Crown Circus (monument at 0,0), past Space HQ's south flank, down the Parade (z=0, x 136-258), out the pier to the skyport tower (x 545) and the pad (650), then out to sea looking back west. Old reel: eye 6-12 m on the boulevard at ~15 m/s, fov 58, 62 s. v2: segment times aligned to the old reel's keys (boulevard 0-16 s, circus 16-25, parade 25-38, skyport tower 38-56, look back 56-62); our circus-to-skyport is ~3x the old distance, so the parade-to-pier leg runs faster (up to ~40 m/s against the old's 11).",
+ "fov": 58,
+ "fps": 30,
+ "keys": [
+  {
+   "t": 0,
+   "name": "boulevard",
+   "eye": [
+    2,
+    6,
+    -300
+   ],
+   "look": [
+    0,
+    8,
+    -180
+   ]
+  },
+  {
+   "t": 8,
+   "name": "boulevard",
+   "eye": [
+    2,
+    9,
+    -180
+   ],
+   "look": [
+    0,
+    10,
+    -60
+   ]
+  },
+  {
+   "t": 16,
+   "name": "approaching the circus",
+   "eye": [
+    3,
+    12,
+    -75
+   ],
+   "look": [
+    0,
+    14,
+    0
+   ]
+  },
+  {
+   "t": 21,
+   "name": "past the monument on its east side",
+   "eye": [
+    18,
+    15,
+    -30
+   ],
+   "look": [
+    10,
+    18,
+    20
+   ]
+  },
+  {
+   "t": 25,
+   "name": "banking right, climbing past Space HQ",
+   "eye": [
+    10,
+    50,
+    -48
+   ],
+   "look": [
+    110,
+    50,
+    -72
+   ]
+  },
+  {
+   "t": 29,
+   "name": "climbing over the boulevard roofs",
+   "eye": [
+    50,
+    66,
+    -78
+   ],
+   "look": [
+    220,
+    36,
+    -20
+   ]
+  },
+  {
+   "t": 33,
+   "name": "Space HQ's south flank",
+   "eye": [
+    125,
+    62,
+    -64
+   ],
+   "look": [
+    300,
+    30,
+    0
+   ]
+  },
+  {
+   "t": 38,
+   "name": "down the Parade",
+   "eye": [
+    200,
+    38,
+    -4
+   ],
+   "look": [
+    400,
+    32,
+    0
+   ]
+  },
+  {
+   "t": 40.5,
+   "name": "over the Parade gate",
+   "eye": [
+    290,
+    48,
+    -6
+   ],
+   "look": [
+    500,
+    40,
+    0
+   ]
+  },
+  {
+   "t": 44,
+   "name": "over the pier to the skyport tower",
+   "eye": [
+    440,
+    58,
+    -40
+   ],
+   "look": [
+    545,
+    34,
+    0
+   ]
+  },
+  {
+   "t": 50,
+   "name": "round the tower's sea side",
+   "eye": [
+    600,
+    72,
+    -70
+   ],
+   "look": [
+    545,
+    40,
+    0
+   ]
+  },
+  {
+   "t": 56,
+   "name": "turning back to the city",
+   "eye": [
+    690,
+    64,
+    -80
+   ],
+   "look": [
+    400,
+    45,
+    -10
+   ]
+  },
+  {
+   "t": 62,
+   "name": "out to sea, the skyline across the water",
+   "eye": [
+    760,
+    58,
+    -120
+   ],
+   "look": [
+    100,
+    55,
+    0
+   ]
+  }
+ ]
+}

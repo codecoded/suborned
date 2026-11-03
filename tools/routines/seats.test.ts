@@ -44,12 +44,16 @@ describe('the seats file (contracts/people/handover.seats.json)', () => {
     for (const iv of by.values()) for (const [i, a] of iv.entries()) for (const b of iv.slice(i + 1)) expect(a[0] < b[1] && b[0] < a[1]).toBe(false);
     expect(Object.keys(seats.seated).length).toBeGreaterThan(0);
   });
-  test('view only: not in sim/data, never read by the engine, not an engine input of the Unity bundle, not in the people hash', () => {
+  // engine 0.28.0 (brief 054 §3.3, Keel): a chair's `face` is how its sitter faces, an engine input through the sim people file's `faces`
+  // (tools/sim/people.ts, hashed with that file); the engine never opens the seats file itself, and the Unity bundle still copies it as view only
+  test('its faces reach the engine only through the sim people file: not in sim/data, never opened by the engine, not an engine input of the Unity bundle', () => {
     expect(SEATS_FILE.startsWith('sim/data/')).toBe(false);
-    expect(peopleFiles().some((f) => f.endsWith('handover.seats.json'))).toBe(false);
-    // the engine: no source file of Suborned.Sim names it
+    const simPeople = JSON.parse(readFileSync(join(root, 'sim/data/handover.people.json'), 'utf8'));
+    expect(simPeople.from).toContain(SEATS_FILE);
+    expect(Object.keys(simPeople.faces).some((k: string) => k.includes('-seat-'))).toBe(true);
+    // the engine: no source file of Suborned.Sim opens it (a comment may name it)
     const engine = join(root, 'sim/Suborned.Sim');
-    for (const f of readdirSync(engine).filter((f) => f.endsWith('.cs'))) expect(readFileSync(join(engine, f), 'utf8')).not.toContain('handover.seats');
+    for (const f of readdirSync(engine).filter((f) => f.endsWith('.cs'))) expect(readFileSync(join(engine, f), 'utf8')).not.toMatch(/"[^"\n]*handover\.seats/);
     // the Unity bundle copies it beside the inputs for the host to draw (view only, unhashed), never as an engine input: not in INPUTS,
     // so neither the CLI, the scenarios nor engine.json's input hashes see it
     const unity = readFileSync(join(root, 'tools/sim/unity.ts'), 'utf8');

@@ -1,0 +1,11 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"Vale leaves in official car\" (Suture N1): nobody touches Vale; the Scout sends the rivals away late (4:10, away 3:50) so they are gone at 8:00 and the car leaves with him.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "scout", "do": "move", "to": "rival-park"},
+  {"tick": 2500, "op": "scout", "do": "mislead", "target": "rivals"}
+ ],
+ "until": 5100
+}

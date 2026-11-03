@@ -1,0 +1,168 @@
+{
+ "note": "face-on yaw only (within 45 deg of facing+180); top 1% most vivid median in the head figure rect; rim_blue_excluded drops hue 195-265 (the cobalt band on the ring back); CIEDE2000 via briefs/061/glint/grade.py",
+ "export": "out/scratch/latch/072/g/g.world.json sha256 6841dcfc6f91ddea79ec6f275e5191f516dc91ffad884005c85724decbe1ce88",
+ "rows": [
+  {
+   "shot": "h1-walk-y210.png",
+   "state": "walk",
+   "facing": 0,
+   "yaw": 210,
+   "target": "#55E6B0",
+   "model": "#54EAB4",
+   "all": [
+    "#2B69C5",
+    52.9
+   ],
+   "rim_blue_excluded": [
+    "#66E9BC",
+    2.4
+   ],
+   "blue_px": 497,
+   "px": 3000
+  },
+  {
+   "shot": "h2-walk-y030.png",
+   "state": "walk",
+   "facing": 180,
+   "yaw": 30,
+   "target": "#55E6B0",
+   "model": "#54EAB4",
+   "all": [
+    "#3375C8",
+    49.5
+   ],
+   "rim_blue_excluded": [
+    "#67E9BC",
+    2.4
+   ],
+   "blue_px": 354,
+   "px": 3000
+  },
+  {
+   "shot": "h3-walk-y210.png",
+   "state": "walk",
+   "facing": 0,
+   "yaw": 210,
+   "target": "#55E6B0",
+   "model": "#54EAB4",
+   "all": [
+    "#66E9BC",
+    2.4
+   ],
+   "rim_blue_excluded": [
+    "#66E9BC",
+    2.4
+   ],
+   "blue_px": 257,
+   "px": 3000
+  },
+  {
+   "shot": "h1-clearing-y210.png",
+   "state": "clearing",
+   "facing": 0,
+   "yaw": 210,
+   "target": "#FFB624",
+   "model": "#FFB500",
+   "all": [
+    "#FEA900",
+    3.9
+   ],
+   "rim_blue_excluded": [
+    "#FEA900",
+    3.9
+   ],
+   "blue_px": 495,
+   "px": 3000
+  },
+  {
+   "shot": "h2-clearing-y030.png",
+   "state": "clearing",
+   "facing": 180,
+   "yaw": 30,
+   "target": "#FFB624",
+   "model": "#FFB500",
+   "all": [
+    "#FEA900",
+    3.9
+   ],
+   "rim_blue_excluded": [
+    "#FEAA00",
+    3.5
+   ],
+   "blue_px": 352,
+   "px": 3000
+  },
+  {
+   "shot": "h3-clearing-y210.png",
+   "state": "clearing",
+   "facing": 0,
+   "yaw": 210,
+   "target": "#FFB624",
+   "model": "#FFB500",
+   "all": [
+    "#FEA900",
+    3.9
+   ],
+   "rim_blue_excluded": [
+    "#FEA900",
+    3.9
+   ],
+   "blue_px": 248,
+   "px": 3000
+  },
+  {
+   "shot": "h1-stop-y210.png",
+   "state": "stop",
+   "facing": 0,
+   "yaw": 210,
+   "target": "#F2432E",
+   "model": "#FE2D23",
+   "all": [
+    "#F33A30",
+    1.9
+   ],
+   "rim_blue_excluded": [
+    "#F33A30",
+    1.9
+   ],
+   "blue_px": 499,
+   "px": 3000
+  },
+  {
+   "shot": "h2-stop-y030.png",
+   "state": "stop",
+   "facing": 180,
+   "yaw": 30,
+   "target": "#F2432E",
+   "model": "#FE2D23",
+   "all": [
+    "#F43C30",
+    1.5
+   ],
+   "rim_blue_excluded": [
+    "#F43C30",
+    1.5
+   ],
+   "blue_px": 353,
+   "px": 3000
+  },
+  {
+   "shot": "h3-stop-y210.png",
+   "state": "stop",
+   "facing": 0,
+   "yaw": 210,
+   "target": "#F2432E",
+   "model": "#FE2D23",
+   "all": [
+    "#F33A30",
+    1.9
+   ],
+   "rim_blue_excluded": [
+    "#F33A30",
+    1.9
+   ],
+   "blue_px": 280,
+   "px": 3000
+  }
+ ]
+}

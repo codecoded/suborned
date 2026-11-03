@@ -403,7 +403,7 @@ def topiary_cone(s):
     topiary(Cards(s), random.Random(4404))
 
 
-@asset("ShrubMound", "Plants", bevel=0.0)
+@asset("ShrubMound", "Plants", bevel=0.0, floor="clamp")  # brief 055 K-1: drooping cards stop at the ground
 def shrub_mound(s):
     rng = random.Random(4505)
     cd = Cards(s)
@@ -419,7 +419,7 @@ def shrub_mound(s):
     lobes_mound(cd, rng, lobes, pal.Leaf_Shrub, 0.4, per=10, shell=(0.2, 0.45), **mound)  # inner fill
 
 
-@asset("FlowerBed", "Plants", bevel=0.0)
+@asset("FlowerBed", "Plants", bevel=0.0, floor="clamp")  # brief 055 K-1
 def flower_bed(s):
     rng = random.Random(4606)
     cd = Cards(s)

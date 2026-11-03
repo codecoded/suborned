@@ -1,0 +1,65 @@
+{
+  "run": "r001",
+  "brief": "085",
+  "note": "Proposal for Sky to read; nothing here reaches text.json or the game.",
+  "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+  "git": "3868d04490f12df264e7715d9e831940d4402168",
+  "inputs": {
+    "sim/data/handover.people.json": "5b38499783a6a9395122d4387132f3f6bc56b649584dfb331def541b499dcc59",
+    "contracts/missions/handover/text.json": "866c6098f59116be1fe5ead0e00558a742bacd6932fef13027c94d11edde34d0",
+    "briefs/085/fable/writer.md": "6d02b45f4d71bad2a1cc6f6720ae58a08698397c188405394484313bcc6f52f0",
+    "briefs/085/fable/editor.md": "d7e76873a3f4169ddf6b406ddeb59a237393412490c0449b5ad2e59d07bce5bc"
+  },
+  "calls": [
+    {
+      "id": "01-write-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 129,
+      "costUsd": 0.3361218,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 66,
+      "costUsd": 0.2196169,
+      "hits": 8
+    },
+    {
+      "id": "01-write-listen-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 162,
+      "costUsd": 0.4126067,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-listen-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 107,
+      "costUsd": 0.28034590000000004,
+      "hits": 8
+    },
+    {
+      "id": "01-review-fit",
+      "role": "systems-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 53,
+      "costUsd": 0.1971582,
+      "hits": 8
+    }
+  ],
+  "callCount": 5,
+  "wallSeconds": 323,
+  "modelSeconds": 517,
+  "faults": [],
+  "reviewFaults": 1
+}

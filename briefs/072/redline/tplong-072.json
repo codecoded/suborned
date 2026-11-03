@@ -1,0 +1,124 @@
+{
+  "schema": "suborned.tplong/1",
+  "note": "Redline 072-D (2026-10-27, phase 3 2026-10-28): the tp-long rows for the one Air sitting, at 1920x1080, -novsync. SPEC, NOT RUN. Same precondition as perf-072.json (064 A3 items 1, 5, 7 + every face with holed L2 copies + 072-F + 072-G in one development player). Row variant fields: everyFace, moduleShadows (db30a0af), surfaceDetail on|off (79283d9f). Rows interleave today / every / every-flat so none always runs warmer. tp rows draw the holed L2s themselves (+25-45 k module tris against phase 2), so every - today here prices the holes at street level. BRIEF 075 (Redline, 2026-10-28): rows unchanged; the player must hold 074-H and 075-A/B/C1-2. TpLongRun.RowVariant has only everyFace, moduleShadows, surfaceDetail: the 075 street-level rows (sky old|gradient, colourways family|base at tp-street and tp-worst) are PENDING (Latch) and specified in briefs/075/redline/perf-075-pending.json, not here. surfaceDetail now also switches the road's detail pair (075-B).",
+  "rows": [
+    {
+      "view": "overhead",
+      "yaw": 30,
+      "w": 1920,
+      "h": 1080,
+      "name": "play-opening-today",
+      "variant": {
+        "everyFace": "off",
+        "surfaceDetail": "off"
+      }
+    },
+    {
+      "view": "overhead",
+      "yaw": 30,
+      "w": 1920,
+      "h": 1080,
+      "name": "play-opening-every",
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy",
+        "surfaceDetail": "on"
+      }
+    },
+    {
+      "view": "overhead",
+      "yaw": 30,
+      "w": 1920,
+      "h": 1080,
+      "name": "play-opening-flat",
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy",
+        "surfaceDetail": "off"
+      }
+    },
+    {
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        0,
+        -20
+      ],
+      "faceHeading": 180,
+      "w": 1920,
+      "h": 1080,
+      "name": "tp-street-every",
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy",
+        "surfaceDetail": "on"
+      }
+    },
+    {
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        0,
+        -20
+      ],
+      "faceHeading": 180,
+      "w": 1920,
+      "h": 1080,
+      "name": "tp-street-today",
+      "variant": {
+        "everyFace": "off",
+        "surfaceDetail": "off"
+      }
+    },
+    {
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        -10,
+        -25
+      ],
+      "faceHeading": 90,
+      "w": 1920,
+      "h": 1080,
+      "name": "tp-worst-flat",
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy",
+        "surfaceDetail": "off"
+      }
+    },
+    {
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        -10,
+        -25
+      ],
+      "faceHeading": 90,
+      "w": 1920,
+      "h": 1080,
+      "name": "tp-worst-today",
+      "variant": {
+        "everyFace": "off",
+        "surfaceDetail": "off"
+      }
+    },
+    {
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        -10,
+        -25
+      ],
+      "faceHeading": 90,
+      "w": 1920,
+      "h": 1080,
+      "name": "tp-worst-every",
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy",
+        "surfaceDetail": "on"
+      }
+    }
+  ]
+}

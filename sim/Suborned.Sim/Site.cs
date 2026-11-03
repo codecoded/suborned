@@ -12,10 +12,21 @@ namespace Suborned.Sim
         /// <summary>Every head's facing (a mast carries several; the mission's poles one, Facing). World: built by the world's rules
         /// (sim/data/handover.takedown.json watchers), so the Tech's cabinet can loop it; the mission's poles are the mission's.</summary>
         public Pt[] Facings = Array.Empty<Pt>(); public bool World;
+        /// <summary>Brief 055 §7: the camera's kind, which sets its lens height (rulebook perception.mount): the mission's poles "pole-camera"
+        /// (site cameras[].kind), the world's masts "mast-camera". "" only on a site written before 0.28.0 (the range's parked poles).</summary>
+        public string Kind = "";
     }
     public sealed class CastRole
     {
-        public string Role = "", Id = "", Name = "", Temperament = "", Need = "", Secret = "", Lover = ""; // Secret, Lover: from the people file (motive-lovers.md)
+        public string Role = "", Id = "", Name = "", Called = "", Temperament = "", Need = "", Secret = "", Lover = ""; // Secret, Lover: from the people file (motive-lovers.md)
+    }
+
+    /// <summary>Brief 059 K6 (site getaway.stands): a place the getaway car can stand: its car place, heading, exit lane (brief 018), the fight's
+    /// ambush spots and police stands, and the point the rival car stops at for it. Car is the place's own point, CarCell its drive-grid cell.</summary>
+    public sealed class Stand
+    {
+        public string Id = "", Car = "", RivalStop = ""; public Pt Facing, CarAt, CarCell; public Pt[] Exit = Array.Empty<Pt>(); public int ExitHalfCm;
+        public string[] Ambush = Array.Empty<string>(), Police = Array.Empty<string>();
     }
 
     /// <summary>A place that hides a body (brief 013; Vantage §2.1): a closed container on the street (holds Holds) or a service door (any number).</summary>
@@ -65,9 +76,11 @@ namespace Suborned.Sim
         }
         /// <summary>On the street inside the exit lane: within half its width of a segment, between the segment's ends (the lane's ends are
         /// square), or of an inner corner. Integers only.</summary>
-        public bool InExitLane(Pt p)
+        public bool InExitLane(Pt p) => InExitLane(p, ExitLane, ExitHalfCm);
+        /// <summary>Brief 059 K6: inside a stand's exit lane.</summary>
+        public bool InExitLane(Pt p, Stand st) => InExitLane(p, st.Exit, st.ExitHalfCm);
+        static bool InExitLane(Pt p, Pt[] L, int half)
         {
-            var L = ExitLane; int half = ExitHalfCm;
             for (int i = 1; i < L.Length; i++)
             {
                 Pt a = L[i - 1], b = L[i];
@@ -82,9 +95,12 @@ namespace Suborned.Sim
         }
         /// <summary>The point `cm` along the exit lane's centreline from its start (the car's foot); its last point if the lane is shorter
         /// (brief 018 §10, Pulse: the blocker's open post).</summary>
-        public Pt LanePointAt(int cm)
+        public Pt LanePointAt(int cm) => LanePointAt(cm, ExitLane);
+        /// <summary>Brief 059 K6: along a stand's exit lane.</summary>
+        public Pt LanePointAt(int cm, Stand st) => LanePointAt(cm, st.Exit);
+        static Pt LanePointAt(int cm, Pt[] L)
         {
-            var L = ExitLane; long left = Math.Max(0, cm);
+            long left = Math.Max(0, cm);
             for (int i = 1; i < L.Length; i++)
             {
                 long seg = G.Dist(L[i - 1], L[i]);
@@ -94,9 +110,12 @@ namespace Suborned.Sim
             return L[L.Length - 1];
         }
         /// <summary>The point of the lane nearest p, kept a metre inside its sides (or on the centreline for a lane narrower than 2 m).</summary>
-        public Pt NearestInExitLane(Pt p)
+        public Pt NearestInExitLane(Pt p) => NearestInExitLane(p, ExitLane, ExitHalfCm);
+        /// <summary>Brief 059 K6: in a stand's exit lane.</summary>
+        public Pt NearestInExitLane(Pt p, Stand st) => NearestInExitLane(p, st.Exit, st.ExitHalfCm);
+        static Pt NearestInExitLane(Pt p, Pt[] L, int half)
         {
-            var L = ExitLane; Pt best = L[0]; long bd = long.MaxValue; int inset = Math.Max(0, ExitHalfCm - 100);
+            Pt best = L[0]; long bd = long.MaxValue; int inset = Math.Max(0, half - 100);
             for (int i = 1; i < L.Length; i++)
             {
                 Pt a = L[i - 1], b = L[i];
@@ -109,7 +128,7 @@ namespace Suborned.Sim
             }
             return best;
         }
-        public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
+        public readonly int GuardMark, RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
         public readonly long Purse;
         /// <summary>Brief 031: the cell's Heat at the mission's start as the mission gives it (mission.json start.heat, via the site); 0 when absent.</summary>
         public readonly int Heat;
@@ -117,6 +136,13 @@ namespace Suborned.Sim
         /// mission names none, and the rulebook's fight.rivalsPublic stands.</summary>
         public readonly string RivalsPublic = "";
         public readonly int Arms; // the mission's Arms: sidearms issued to the cell (rulebook weapons.sidearmArms each)
+        /// <summary>Brief 059 K6 (site getaway.stands): the getaway car's stands, the first the square's bay where it starts (getaway.car).</summary>
+        public readonly List<Stand> Stands = new List<Stand>();
+        public Stand? StandById(string id) { foreach (var x in Stands) if (x.Id == id) return x; return null; }
+        /// <summary>Brief 059 K7, K10 (site rivals.car, rivals.posts): the rival car's points (entry, drop, park = RivalsPark, tail, front) with
+        /// their drive-grid cells and headings, and the crew's foot points (the lookout's post, his way off the map, the wheelman's place at Vale's car).</summary>
+        public readonly string RivalCarEntry = "", RivalCarDrop = "", RivalCarTail = "", RivalCarFront = "", RivalLookout = "", RivalLookoutExit = "", RivalValeDoor = "";
+        public readonly Pt RivalFacingEntry, RivalFacingDrop, RivalFacingPark, RivalFacingTail, RivalFacingFront;
         public readonly List<CoverPoint> Cover = new List<CoverPoint>(); // brief 011 fight AI (Pulse): contracts/world/civic-block.cover.json
         public readonly string CoverSha = "";
         public readonly List<(string id, Pt at, string kind)> Refuges = new List<(string, Pt, string)>(); // where the crowd runs (Pulse §4)
@@ -197,12 +223,12 @@ namespace Suborned.Sim
             {
                 x.Only("id", "kind", "at", "facings", "range", "coneDeg", "inSim", "src");
                 if (x["kind"].Str() != "mast-camera") continue; // the robot dock is an origin (above), not a watcher
-                var wid = x["id"].Str(); var seg = wid.Substring(wid.LastIndexOf('/') + 1).Replace("-camera", ""); // street/records-square/mast-camera-314 → mast-314
+                var wid = x["id"].Str(); var seg = wid.Substring(wid.LastIndexOf('/') + 1).Replace("-camera", ""); // street/records-square/mast-camera-z0 → mast-z0
                 var fs = new List<Pt>(); foreach (var f in x["facings"].Items) { var v = Pt.Of(f); if (v == new Pt(0, 0)) throw new FormatException($"{f.Path}: a facing can't be zero"); fs.Add(v); }
                 int range = x["range"].Int(), deg = x["coneDeg"].Int();
                 if (fs.Count == 0 || range <= 0 || range > 100_000 || deg < 2 || deg > 178) throw new FormatException($"{x.Path}: a camera needs facings, a range and a cone 2..178°");
                 if (Cameras.Exists(c => c.Id == seg)) throw new FormatException($"{x.Path}: camera {seg} repeats");
-                Cameras.Add(new Camera { Id = seg, At = Pt.Of(x["at"]), Facing = fs[0], Facings = fs.ToArray(), Reach = range, Half = (int)((long)range * TanHalf[deg / 2] / 10000), World = true });
+                Cameras.Add(new Camera { Id = seg, At = Pt.Of(x["at"]), Facing = fs[0], Facings = fs.ToArray(), Reach = range, Half = (int)((long)range * TanHalf[deg / 2] / 10000), World = true, Kind = "mast-camera" });
             }
             HasTakedownWorld = true;
         }
@@ -221,7 +247,7 @@ namespace Suborned.Sim
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             Mission = r["mission"].Str();
             if (Mission != "handover" && Mission != "range") throw new FormatException("only the Handover plays (brief 011), and the fight range (brief 029)");
-            r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "src");
+            r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "floor", "collide", "drawn", "src");
             Grid = new Grid(r["grid"]);
             // brief 023 (engine 0.8.2, rulebook car.drive): where a car may be, on the walk grid's window and cells. Required: no car moves without it
             var dg = r.Opt("drive") ?? throw new FormatException("site drive is missing: engine 0.8.2 routes every moving car on the drive grid (rulebook car.drive, tools/sim/drive.ts)");
@@ -249,8 +275,8 @@ namespace Suborned.Sim
             }
             foreach (var c in r["cameras"].Items)
             {
-                c.Only("id", "at", "facing", "reach", "half", "src", "reason");
-                var cam = new Camera { Id = c["id"].Str(), At = Pt.Of(c["at"]), Facing = Pt.Of(c["facing"]), Reach = c["reach"].Int(), Half = c["half"].Int() };
+                c.Only("id", "kind", "at", "facing", "reach", "half", "src", "reason");
+                var cam = new Camera { Id = c["id"].Str(), Kind = c.Opt("kind")?.Str() ?? "", At = Pt.Of(c["at"]), Facing = Pt.Of(c["facing"]), Reach = c["reach"].Int(), Half = c["half"].Int() };
                 cam.Facings = new[] { cam.Facing };
                 if (cam.Facing == new Pt(0, 0) || cam.Reach <= 0 || cam.Reach > 100_000 || cam.Half < 0) throw new FormatException($"{c.Path}: a camera needs a facing and a reach");
                 Cameras.Add(cam);
@@ -274,10 +300,25 @@ namespace Suborned.Sim
             }
             CarBlockPath = Drive.CarRoute(carStand[CarPickup], carStand[CarBlock], DriveLaneCm) ?? throw new FormatException($"car.drive: no drive from '{CarPickup}' to '{CarBlock}'");
             CarServicePath = Drive.CarRoute(carStand[CarPickup], carStand[CarService], DriveLaneCm) ?? throw new FormatException($"car.drive: no drive from '{CarPickup}' to '{CarService}' (the turned driver's way to the service bay)");
-            var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]); RivalsFront = P(ri["front"]);
+            var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "car", "posts", "src"); RivalsPark = P(ri["park"]); RivalsEntry = ri.Opt("entry") is JNode rie ? P(rie) : ""; /* brief 059: read by no engine rule (the crew comes by car, rivals.car); engine 0.33.0: optional, and tools/cover and tools/geometry read rival-car-entry, so Vantage can retire the place */ RivalsFront = P(ri["front"]);
+            if (Mission == "handover") // brief 059 K10: the rival car and the crew on foot (tools/sim/stands.ts, SX-3); required: the engine runs the crew from them
+            {
+                var rc = ri.Opt("car") ?? throw new FormatException($"{ri.Path}.car is missing: engine 0.32.0 drives the rival car between its points (brief 059 K10; bun run sim:site --fold-stands)");
+                rc.Only("entry", "drop", "park", "tail", "front", "facing", "route", "src"); rc["src"].Str();
+                RivalCarEntry = P(rc["entry"]); RivalCarDrop = P(rc["drop"]); RivalCarTail = P(rc["tail"]); RivalCarFront = P(rc["front"]);
+                if (P(rc["park"]) != RivalsPark) throw new FormatException($"{rc.Path}.park is not rivals.park");
+                var rf = rc["facing"]; rf.Only("entry", "drop", "park", "tail", "front");
+                RivalFacingEntry = F(rf["entry"]); RivalFacingDrop = F(rf["drop"]); RivalFacingPark = F(rf["park"]); RivalFacingTail = F(rf["tail"]); RivalFacingFront = F(rf["front"]);
+                rc["route"]["src"].Str(); // Glyph's approach line; the engine routes the car on the drive grid between the points (Pulse §1)
+                foreach (var id in new[] { RivalCarEntry, RivalCarDrop, RivalsPark, RivalCarTail, RivalCarFront })
+                    if (!carStand.ContainsKey(id)) carStand[id] = Drive.NearestFree(at[id]) ?? throw new FormatException($"rival car point '{id}' has no drivable cell within 6 m (rulebook car.drive)");
+                var rp2 = ri.Opt("posts") ?? throw new FormatException($"{ri.Path}.posts is missing: engine 0.32.0 places the crew on foot (brief 059 K10)");
+                rp2.Only("lookout", "lookoutExit", "valeDoor", "src"); rp2["src"].Str();
+                RivalLookout = P(rp2["lookout"]); RivalLookoutExit = P(rp2["lookoutExit"]); RivalValeDoor = P(rp2["valeDoor"]);
+            }
             if (ri.Opt("public") is JNode rp) { RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, RivalsPublic) < 0) throw new FormatException($"{rp.Path} = '{RivalsPublic}' is not one of {string.Join(", ", Rules.RivalsPublics)}"); }
             var se = r["security"]; se.Only("entry", "via", "to", "src"); SecEntry = P(se["entry"]); SecVia = P(se["via"]); SecTo = P(se["to"]);
-            var ge = r["getaway"]; ge.Only("car", "exit", "src"); GetawayCar = P(ge["car"]);
+            var ge = r["getaway"]; ge.Only("car", "exit", "stands", "src"); GetawayCar = P(ge["car"]);
             // brief 018 §1: the car's exit lane, derived from the plan by tools/sim/getaway.ts (Splice). Required: unknown = reject, never invented
             var ex = ge.Opt("exit") ?? throw new FormatException($"{ge.Path}.exit is missing: the car's exit lane comes from the plan's routes.getaway (brief 018 §1); no lane is invented");
             ex.Only("polyline", "w", "src"); ex["src"].Str();
@@ -289,9 +330,32 @@ namespace Suborned.Sim
             if (ExitHalfCm < 50 || ExitHalfCm > 5000) throw new FormatException($"{ex.Path}.w is outside 1..100 m");
             var fi = r["fight"]; fi.Only("ambush", "police", "entry", "guard", "src");
             FightAmbush = fi["ambush"].Items.Select(P).ToArray(); FightPolice = fi["police"].Items.Select(P).ToArray(); FightEntry = P(fi["entry"]); FightGuard = P(fi["guard"]);
-            var sc = r["schedule"]; sc.Only("rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");
+            // brief 059 K6 (site getaway.stands; tools/sim/stands.ts, SX-2): the car's stands, the first its start (getaway.car, its exit and the fight's spots)
+            if (ge.Opt("stands") is JNode sts)
+            {
+                foreach (var x in sts.Items)
+                {
+                    x.Only("id", "car", "facing", "exit", "ambush", "police", "rivalStop", "src"); x["src"].Str();
+                    var st = new Stand { Id = x["id"].Str(), Car = P(x["car"]), Facing = F(x["facing"]), Ambush = x["ambush"].Items.Select(P).ToArray(), Police = x["police"].Items.Select(P).ToArray(), RivalStop = P(x["rivalStop"]) };
+                    if (Stands.Exists(y => y.Id == st.Id)) throw new FormatException($"{x.Path}: stand {st.Id} repeats");
+                    var xe = x["exit"]; xe.Only("polyline", "w", "src"); xe["src"].Str();
+                    var pl = new List<Pt>(); foreach (var q in xe["polyline"].Items) pl.Add(Pt.Of(q));
+                    if (pl.Count < 2) throw new FormatException($"{xe.Path}.polyline needs two points at least");
+                    st.Exit = pl.ToArray(); st.ExitHalfCm = MetresToCm(xe["w"]) / 2;
+                    if (st.ExitHalfCm < 50 || st.ExitHalfCm > 5000) throw new FormatException($"{xe.Path}.w is outside 1..100 m");
+                    if (st.Ambush.Length != FightAmbush.Length || st.Police.Length != FightPolice.Length) throw new FormatException($"{x.Path}: a stand has as many ambush spots and police stands as the square (SX-2)");
+                    st.CarAt = at[st.Car]; st.CarCell = Drive.NearestFree(st.CarAt) ?? throw new FormatException($"{x.Path}: stand {st.Id}'s car has no drivable cell within 6 m (rulebook car.drive)");
+                    if (!carStand.ContainsKey(st.RivalStop)) carStand[st.RivalStop] = Drive.NearestFree(at[st.RivalStop]) ?? throw new FormatException($"{x.Path}.rivalStop has no drivable cell");
+                    Stands.Add(st);
+                }
+                if (Stands.Count == 0 || Stands[0].Car != GetawayCar) throw new FormatException($"{sts.Path}: the first stand is the car's start (getaway.car)");
+                if (!Enumerable.SequenceEqual(Stands[0].Exit, ExitLane) || !Enumerable.SequenceEqual(Stands[0].Ambush, FightAmbush) || !Enumerable.SequenceEqual(Stands[0].Police, FightPolice)) throw new FormatException($"{sts.Path}[0]: the start stand's exit and spots are getaway.exit and the fight's");
+            }
+            else if (Mission == "handover") throw new FormatException($"{ge.Path}.stands is missing: engine 0.32.0 drives the getaway car between its stands (brief 059 K6; bun run sim:site --fold-stands)");
+            else Stands.Add(new Stand { Id = "square", Car = GetawayCar, CarAt = at[GetawayCar], CarCell = at[GetawayCar], Exit = ExitLane, ExitHalfCm = ExitHalfCm, Ambush = FightAmbush, Police = FightPolice, Facing = new Pt(100, 0) }); // the range: its parked car's one stand
+            var sc = r["schedule"]; sc.Only("guardMark", "rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");
             int Sec(string k, int lo) { int v = sc[k].Int(); if (v < lo || v > 3600) throw new FormatException($"{sc.Path}.{k} = {v} is outside {lo}..3600"); Schedule[k] = v; return v; }
-            RivalsArrive = Sec("rivalsArrive", 0); Chime = Sec("chime", 0); DriverLast = Sec("driverLast", 0); ValeExits = Sec("valeExits", 0); ValeAtCar = Sec("valeAtCar", 0); Over = Sec("over", 1);
+            GuardMark = sc.Opt("guardMark")?.Int() ?? -1; RivalsArrive = Sec("rivalsArrive", 0); Chime = Sec("chime", 0); DriverLast = Sec("driverLast", 0); ValeExits = Sec("valeExits", 0); ValeAtCar = Sec("valeAtCar", 0); Over = Sec("over", 1);
             BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");
@@ -327,8 +391,8 @@ namespace Suborned.Sim
             var cast = r["cast"]; cast.Only("waitress", "driver", "guard", "councillor", "from", "sha256", "startsAt", "fixture", "src");
             foreach (var role in new[] { "waitress", "driver", "guard", "councillor" })
             {
-                var v = cast[role]; v.Only("id", "name", "temperament", "need", "secret", "lover");
-                Cast.Add(new CastRole { Role = role, Id = v["id"].Str(), Name = v["name"].Str(), Temperament = v["temperament"].Str(), Need = v["need"].Str(), Secret = v.Opt("secret")?.Str() ?? "", Lover = v.Opt("lover")?.Str() ?? "" });
+                var v = cast[role]; v.Only("id", "name", "called", "temperament", "need", "secret", "lover"); // called: brief 089, optional (GameNames.cs)
+                Cast.Add(new CastRole { Role = role, Id = v["id"].Str(), Name = v["name"].Str(), Called = v.Opt("called")?.Str() ?? "", Temperament = v["temperament"].Str(), Need = v["need"].Str(), Secret = v.Opt("secret")?.Str() ?? "", Lover = v.Opt("lover")?.Str() ?? "" });
             }
         }
 
@@ -344,6 +408,13 @@ namespace Suborned.Sim
         public bool Sight(Pt a, Pt b, int eye)
         {
             foreach (var o in Occluders) if (o.Blocks(a, b, eye)) return false;
+            return true;
+        }
+        /// <summary>Brief 055 §7 (rulebook perception.mount): true if no occluder's prism crosses the 3D line from a at za to b at zb (block z
+        /// cm). own: a camera's lens point, whose own piece (an occluder whose footprint holds it in plan) never blocks its lines.</summary>
+        public bool Sight3(Pt a, int za, Pt b, int zb, bool own = false, bool ownB = false)
+        {
+            foreach (var o in Occluders) { if ((own && o.Contains(a)) || (ownB && o.Contains(b))) continue; if (o.Blocks3(a, za, b, zb)) return false; }
             return true;
         }
         public bool InsideOccluder(Pt p) { foreach (var o in Occluders) if (o.Contains(p)) return true; return false; }

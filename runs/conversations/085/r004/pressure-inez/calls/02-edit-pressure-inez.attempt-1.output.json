@@ -1,0 +1,50 @@
+{
+  "picked": 2,
+  "why": "Take 2 has the truest moment: she says yes before she knows to what, and the Fixer gently makes her hear it. For Aster, unresolved conflict: the sheet says she never tells him and the door is empty about three minutes. §07 [c2f50e911d9850c901298a11] and the human GDD [8664d78e25f965957c631193] say a pressured Inez tells him someone knows, he runs back, and the door is clear about 1:39. I used the sheet's \"a few minutes\" and had her speak only of the call, which holds under both, but \"a few minutes\" is doubtful at 1:39. Please rule on it.",
+  "changes": [
+    "Replaced the \"selling\" opening with a joke about the Bureau as a bad customer, built from take 1's mistaken identity. It's her humour from the sheet, and the threat kills it on the next line.",
+    "Moved the Fixer's kindness to straight after her yes (\"on your feet all shift\"), so warmth and steel sit together and \"Softly\" gives the low voice a reason.",
+    "Took \"He'll be pleased\" from take 3 and cut \"So I lie to him\". The fondness now shows she hates it without her saying so, and her reason stays in her own words.",
+    "Rewrote the close so the threat is plain and the Fixer takes no pleasure in it. Used \"learns\" because \"hears\" echoes Milena's scene, and made \"from his door\" explicit so the ask is clear."
+  ],
+  "beats": [
+    {
+      "speaker": "Inez",
+      "line": "Bureau sent you? Worst table I've got. Never leaves, never tips."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not the Bureau, no. The Office could learn about you and Okafor."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who told you? Who can see us? Whatever it is, yes."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Softly. You've been on your feet all shift. Hear it first."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Say it, then. Nobody's on my tables."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "When I telephone, call Okafor over from his door, a few minutes."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I'll say it can't wait, not on the line. He'll be pleased."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "He will. Don't call, and the Office learns. I'd rather it didn't."
+    }
+  ],
+  "learned": [
+    "Inez knows the Fixer's face now."
+  ],
+  "opens": [
+    "Call Inez"
+  ]
+}

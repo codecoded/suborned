@@ -12,14 +12,20 @@ import { buildChrome, refresh, setHint, setFps } from './ui.js';
 import { makeCones } from './cones.js';
 import { commitsOnRelease, holdFor, startCharge, beginFire, releaseHold, stopAll, stepFire, shooters, isDrawn, FOLLOW_M, fightOn, syndicate, focusFire, underFire } from './fire.js';
 import { liveStatus } from './status.js';
+import { MODES, occFrame, setMode as setOcc } from './occlusion.js';
 import { gainsFrame, resetGains, cancelsOf, cancelHtml, isFresh, on as doneOn } from './gains.js';
+import { initMobile, syncMobile } from './mobile.js';
+import { initTouch } from './touch.js';
 
 const $ = (id) => document.getElementById(id);
 window.addEventListener('error', (e) => { $('errors').textContent += `${e.message} (${e.filename?.split('/').pop()}:${e.lineno})\n`; });
 window.addEventListener('unhandledrejection', (e) => { $('errors').textContent += `${e.reason}\n`; });
 
-const canvas = $('c'), renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const canvas = $('c'), Q = new URLSearchParams(location.search);
+const mobile = initMobile(); // body.m / body.touch, the dock and the panels (mobile.js)
+// a phone draws at most 2x (3x screens are 2.25x the pixels for nothing), and without multisampling; ?pr=1.5 pins the ratio and turns the auto-lowering off
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile.touch }), prCap = Q.get('pr') ? Number(Q.get('pr')) : 2;
+let pr = Math.min(devicePixelRatio, prCap), prLock = !!Q.get('pr'), prAt = 0; renderer.setPixelRatio(pr); G.dpr = pr;
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0xcfe8ef);
 scene.add(new THREE.HemisphereLight(0xffffff, 0xb8a98f, 1.5)); const sun = new THREE.DirectionalLight(0xfff1d6, 2.2); sun.position.set(-10, 24, 8); scene.add(sun);
 const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 300), rig = new Rig(camera); G.rig = rig;
@@ -36,19 +42,26 @@ const preset = () => PRESETS[G.preset];
 
 function newWorld() { G.world?.dispose(); G.world = buildWorld(scene); G.trail = 0; G.alert = 0; G.cash = 100000; G.selTarget = null; G.group = [true, false, false, false]; G.sel = 0; G.carry = null; G.world.picks = G.world.ents.flatMap((e) => e.pick.map((m) => (m.userData.ent = e, m))); G.world.cones = makeCones(G.world); setCrowd(G.crowd); if (rig.mode === 'cmd') rig.focus.set(2, 0, 4.5); G.plan.clear(); G.paused = false; G.vale = null; G.sessions = []; G.fightUntil = 0; G.charge = null; G.beat = G.stopped = G.tooFar = G.ordered = G.doneInfo = G.stoppedInfo = null; resetGains(); closeRing(); }
 newWorld();
-function resize() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+let fitKey = '';
+function resize() {
+  renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  const key = `${mobile.touch}${innerWidth / innerHeight < 1.5}`; if (key !== fitKey) { fitKey = key; rig.fit(innerWidth / innerHeight, mobile.touch); } // stand back in portrait; turning the phone refits once
+}
 addEventListener('resize', resize); resize();
 
 const project = (x, y, z) => { V.set(x, y, z).project(camera); return V.z > 1 ? null : { x: (V.x * 0.5 + 0.5) * innerWidth, y: (-V.y * 0.5 + 0.5) * innerHeight }; };
 // Everyone under the cursor, nearest first. The one you are on stays (a little hysteresis), Tab steps through the overlap.
-function entsAt(cx, cy) {
-  ray.setFromCamera({ x: cx / innerWidth * 2 - 1, y: -(cy / innerHeight) * 2 + 1 }, camera);
-  const out = []; for (const h of ray.intersectObjects(G.world.picks, false)) { const e = h.object.userData.ent; if (!out.includes(e)) out.push(e); } return out;
+function entsAt(cx, cy, fat = 0) {
+  const at = (x, y) => { ray.setFromCamera({ x: x / innerWidth * 2 - 1, y: -(y / innerHeight) * 2 + 1 }, camera); const out = []; for (const h of ray.intersectObjects(G.world.picks, false)) { const e = h.object.userData.ent; if (!out.includes(e)) out.push(e); } return out; };
+  let out = at(cx, cy);
+  if (!out.length && fat) for (const [dx, dy] of FAT_RING) { out = at(cx + dx * fat, cy + dy * fat); if (out.length) break; } // a finger is wider than a lamp post: look a little around it
+  return out;
 }
+const FAT_RING = [[0, -1], [0, 1], [-1, 0], [1, 0], [-0.7, -0.7], [0.7, -0.7], [-0.7, 0.7], [0.7, 0.7]];
 // Your own agent under the cursor always wins: within AGENT_PX of its body (feet to head) on screen, whatever stands behind or beside it.
 const AGENT_PX = 26;
-function agentNear(cx, cy) {
-  let best = null, bd = AGENT_PX;
+function agentNear(cx, cy, fat = false) {
+  let best = null, bd = fat ? 30 : AGENT_PX;
   for (const a of G.world.agents) {
     if (G.view === 'tp' && a === agentOf()) continue; // in third person the camera sits on the one you drive
     const f = project(a.g.position.x, 0, a.g.position.z), h = project(a.g.position.x, 1.9, a.g.position.z); if (!f || !h) continue;
@@ -57,10 +70,11 @@ function agentNear(cx, cy) {
   }
   return best;
 }
-function pick(cx, cy) {
-  const hits = entsAt(cx, cy), g = new THREE.Vector3();
+function pick(cx, cy, fat = false) {
+  const hits = entsAt(cx, cy, fat ? 22 : 0), g = new THREE.Vector3();
+  ray.setFromCamera({ x: cx / innerWidth * 2 - 1, y: -(cy / innerHeight) * 2 + 1 }, camera); // the ground point is under the finger itself, not under the nearest thing
   ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), g);
-  const own = agentNear(cx, cy); if (own) return { ent: own, point: g, hits: [own, ...hits.filter((e) => e !== own)] };
+  const own = agentNear(cx, cy, fat); if (own) return { ent: own, point: g, hits: [own, ...hits.filter((e) => e !== own)] };
   const keep = [G.tabEnt, G.stick].find((e) => e && hits.includes(e));
   return { ent: keep ?? hits[0] ?? null, point: g, hits };
 }
@@ -185,40 +199,59 @@ const travel = () => (down ? Math.hypot(G.ptr.x - down.x, G.ptr.y - down.y) : 0)
 function cancelHold() { const c = G.charge; if (!c || c.done) return; G.charge = null; if (down) down.cancelled = true; say(`${c.way.id === 'fire' ? 'Fire' : c.way.verb} cancelled`, 'warn'); }
 let down = null, lastClick = { t: 0, x: 0, y: 0, ent: null };
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-canvas.addEventListener('pointerdown', (e) => {
-  if (e.button === 1) e.preventDefault(); canvas.setPointerCapture(e.pointerId); G.ptr.x = e.clientX; G.ptr.y = e.clientY;
-  down = { b: e.button, x: e.clientX, y: e.clientY, t: performance.now(), hit: pick(e.clientX, e.clientY), drag: false, ring: false };
-  if (e.button === 0 && !G.ring) { // hold the left button on a person to fire; a quick click is still a click
-    const P = preset(), t = P.holdActs ? down.hit.ent : holdFor(down.hit.ent) ? down.hit.ent : G.aim ? G.aimT : null, way = P.holdActs ? (t && !t.agent ? mainFor(t) : null) : holdFor(t); // "hold acts": the hold is the main calm act
-    if (way) { down.charge = true; startCharge(t, way, false, e.shiftKey); if (way.id !== 'fire' && crew().length > 1) G.charge.only = planFor(t, way, crew(), e.shiftKey).agents; } // best placed is chosen now and stays
-  }
-  if (e.button === 2 && preset().rightFires && !G.ring && !(G.view === 'tp' && G.tpAim === 'aim')) { // right hold fires: same charge, the pill says so
+// The three steps of a press, shared by the mouse and by touch (touch.js calls them with its own numbers).
+// opts.touch: a finger. opts.defer: a finger that may still turn into a pan, so the hold waits (startHold). opts.arm: Fire mode is on, so a press on a person or car is a right press.
+function press(b, x, y, shift = false, opts = {}) {
+  G.ptr.x = x; G.ptr.y = y; if (opts.touch) G.ptr.over = true;
+  down = { b, x, y, t: performance.now(), hit: pick(x, y, opts.touch), drag: false, ring: false, touch: !!opts.touch, shift };
+  if (b === 0 && !G.ring && !opts.defer) startHold();
+  if (b === 2 && preset().rightFires && !G.ring && !(G.view === 'tp' && G.tpAim === 'aim')) { // right hold fires: same charge, the pill says so
     const t = forceWay(down.hit.ent) ? down.hit.ent : G.view === 'tp' ? hostileAhead() : null, way = forceWay(t);
     if (way && t.hostile && fightOn()) { down.rfocus = true; focusFire(t, shooters(t, true)); } // Syndicate: once a fight is on, a right click on a hostile focuses fire at once, no hold
     else if (way) { down.rcharge = true; startCharge(t, way); G.charge.right = true; G.charge.extra = `down in ${ACTS.fire.t} s`; }
   }
-  if (e.button === 2 && preset().right === 'press') { // 0.2.34: the ring opens on press
+  if (b === 2 && preset().right === 'press') { // 0.2.34: the ring opens on press
     const h = down.hit; down.ring = true;
     if (G.ring) rightTap(h); else if (h.ent && !h.ent.agent && waysFor(h.ent).length) openRing(h.ent, waysFor(h.ent), preset().ring); else rightTap(h);
   }
+}
+function startHold() { // hold the left button on a person to fire; a quick click is still a click
+  if (!down || down.b !== 0 || G.ring || down.charge) return;
+  const P = preset(), t = P.holdActs ? down.hit.ent : holdFor(down.hit.ent) ? down.hit.ent : G.aim ? G.aimT : null, way = P.holdActs ? (t && !t.agent ? mainFor(t) : null) : holdFor(t); // "hold acts": the hold is the main calm act
+  if (way) { down.charge = true; startCharge(t, way, false, down.shift); if (way.id !== 'fire' && crew().length > 1) G.charge.only = planFor(t, way, crew(), down.shift).agents; } // best placed is chosen now and stays
+}
+// A finger that turns into a pan or a stick lets go of the press without any order.
+function dropPress() { if (G.charge && !G.charge.done && down && (down.charge || down.rcharge)) G.charge = null; down = null; G.holdEnt = null; $('marker').style.opacity = ''; }
+canvas.addEventListener('pointerdown', (e) => {
+  if (e.pointerType === 'touch') return; // touch.js
+  if (e.button === 1) e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch {}
+  press(e.button, e.clientX, e.clientY, e.shiftKey);
 });
 // Aim (right button held, third person) then the left button: the browser sends the second button as a mouse event, not a pointer event.
 let chord = false;
 canvas.addEventListener('mousedown', (e) => { if (e.button === 2 && down?.b === 0 && down.charge && G.charge && !G.charge.done) return cancelHold(); /* a chorded right click (the browser sends no second pointerdown) */ if (e.button === 0 && G.aim && !G.charge && !(preset().rightFires && G.tpAim === 'fire')) { const way = holdFor(G.aimT); if (way) { startCharge(G.aimT, way); chord = true; } } });
 canvas.addEventListener('mouseup', (e) => { if (e.button === 0 && chord) { chord = false; releaseHold(); } });
-canvas.addEventListener('pointermove', (e) => {
-  G.ptr.x = e.clientX; G.ptr.y = e.clientY; if (!down) return;
-  if (!down.drag && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) down.drag = true;
-  if (down.drag && (down.b === 0 || down.b === 1) && G.view === 'tp' && !down.charge) rig.orbit(e.movementX, e.movementY);
-  if (down.b === 1 && G.view === 'cmd') rig.pan(e.movementX, e.movementY);
+function moveTo(x, y, mx, my) {
+  G.ptr.x = x; G.ptr.y = y; if (!down) return;
+  if (!down.drag && !down.touch && Math.hypot(x - down.x, y - down.y) > 6) down.drag = true; // a finger never box-selects: it pans
+  if (down.drag && (down.b === 0 || down.b === 1) && G.view === 'tp' && !down.charge) rig.orbit(mx, my);
+  if (down.b === 1 && G.view === 'cmd') rig.pan(mx, my);
   if (down.drag && down.b === 0 && G.view === 'cmd' && !down.charge) { // a drag box on the ground picks agents
-    const r = { x0: Math.min(down.x, e.clientX), x1: Math.max(down.x, e.clientX), y0: Math.min(down.y, e.clientY), y1: Math.max(down.y, e.clientY) }; G.box = r;
+    const r = { x0: Math.min(down.x, x), x1: Math.max(down.x, x), y0: Math.min(down.y, y), y1: Math.max(down.y, y) }; G.box = r;
     Object.assign($('box').style, { display: 'block', left: r.x0 + 'px', top: r.y0 + 'px', width: r.x1 - r.x0 + 'px', height: r.y1 - r.y0 + 'px' });
   }
-});
-canvas.addEventListener('pointerup', (e) => {
-  if (down && e.button !== down.b) return; // another button came up: not this hold
+}
+canvas.addEventListener('pointermove', (e) => { if (e.pointerType !== 'touch') moveTo(e.clientX, e.clientY, e.movementX, e.movementY); });
+// A finger's tap: the thing under it opens its ring (the game's mapping: a left click on a thing opens the ring, nothing taken); the ground walks (double: runs); your own agent selects.
+function touchTap(hit, dbl) {
+  const e = hit.ent;
+  if (!G.ring && e && !e.agent && waysFor(e).length) { lastClick = { t: 0, x: 0, y: 0, ent: null }; return rightTap(hit); }
+  leftClick(hit, dbl, false);
+}
+function release(b, x, y, shift = false, ctrl = false, touch = false) {
+  if (down && b !== down.b) return; // another button came up: not this hold
   const d = down; down = null; G.holdEnt = null; if (!d) return;
+  if (touch) G.ptr.over = false;
   const now = performance.now(), hold = (now - d.t) / 1000;
   if (d.rfocus) return; // the focus was given on the press; it lasts until the target is down
   if (d.rcharge) { const c = G.charge;
@@ -227,16 +260,27 @@ canvas.addEventListener('pointerup', (e) => {
   if (d.charge) { const c = G.charge; if (c?.ready && !c.done) { G.charge = null; if (d.cancelled || !c.ent) return; doAct(c.ent, c.way, 'Hold', c.run || runHeld(), null, c.only); return; } /* let go after full: the order */
     if (c && !c.done && c.t < 0.2 && !c.ent.hostile) G.charge = null; /* a quick click on a bystander is its normal click */ else return releaseHold(); }
   if (G.aim && d.b === 2) { G.aim = false; return; }
-  if (d.drag && d.b === 0 && G.box) { boxSelect(G.box, e.shiftKey || e.ctrlKey || e.metaKey); G.box = null; $('box').style.display = 'none'; }
+  if (d.drag && d.b === 0 && G.box) { boxSelect(G.box, shift || ctrl); G.box = null; $('box').style.display = 'none'; }
   if (d.drag || d.ring) return;
-  const hit = pick(e.clientX, e.clientY);
+  const hit = pick(x, y, touch);
   if (d.b === 0) {
-    const dbl = now - lastClick.t < 350 && (hit.ent ? lastClick.ent === hit.ent : !lastClick.ent && Math.hypot(e.clientX - lastClick.x, e.clientY - lastClick.y) < 24);
-    lastClick = dbl ? { t: 0, x: 0, y: 0, ent: null } : { t: now, x: e.clientX, y: e.clientY, ent: hit.ent };
-    leftClick(hit, dbl, e.shiftKey, e.ctrlKey || e.metaKey);
+    const near = touch ? 40 : 24, dbl = now - lastClick.t < 350 && (hit.ent ? lastClick.ent === hit.ent : !lastClick.ent && Math.hypot(x - lastClick.x, y - lastClick.y) < near);
+    lastClick = dbl ? { t: 0, x: 0, y: 0, ent: null } : { t: now, x, y, ent: hit.ent };
+    if (touch) touchTap(hit, dbl); else leftClick(hit, dbl, shift, ctrl);
   } else if (d.b === 2) {
     if (hold >= RIGHT_TAP_S && G.view === 'tp') return; else if (hold >= RIGHT_TAP_S) say('Right hold · nothing happens', 'warn'); else rightTap(hit);
   }
+}
+canvas.addEventListener('pointerup', (e) => { if (e.pointerType !== 'touch') release(e.button, e.clientX, e.clientY, e.shiftKey, e.ctrlKey || e.metaKey); });
+// Fingers (touch.js): one-finger tap / hold / pan / stick, two-finger pinch and twist
+initTouch(canvas, {
+  mobile, view: () => G.view, size: () => [innerWidth, innerHeight],
+  press: (x, y) => { const h = G.touchFire && G.view === 'cmd' ? pick(x, y, true).ent : null, arm = !!h && !!forceWay(h); press(arm ? 2 : 0, x, y, false, { touch: true, defer: !arm }); },
+  hold: startHold, move: (x, y) => moveTo(x, y, 0, 0), release: (x, y) => release(down?.b ?? 0, x, y, false, false, true), drop: dropPress,
+  holding: () => !!down && (down.charge || down.rcharge),
+  pan: (dx, dy) => rig.pan(dx, dy), orbit: (dx, dy) => rig.orbit(dx, dy), pinch: (r) => rig.pinch(r), turn: (d) => { if (G.view === 'cmd') { rig.turn(d); say(`Turn ${d > 0 ? 'E' : 'Q'}`); } },
+  fireDown: () => { if (G.view === 'tp') press(2, innerWidth / 2, innerHeight / 2, false, { touch: true }); },
+  fireUp: () => { if (down?.b === 2) release(2, innerWidth / 2, innerHeight / 2, false, false, true); },
 });
 addEventListener('pointermove', (e) => { if (G.ring) ringPointer(e, false); });
 addEventListener('pointerup', () => { G.holdEnt = null; if (G.charge?.ring) releaseHold(); });
@@ -294,6 +338,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Tab') { // step through the people under the cursor
     e.preventDefault(); const hits = entsAt(G.ptr.x, G.ptr.y).filter(actionable); if (hits.length > 1) { const i = hits.indexOf(G.stick); G.tabEnt = hits[(i + 1) % hits.length]; G.tabAt = { x: G.ptr.x, y: G.ptr.y }; say(`Target · ${G.tabEnt.name}`); } return;
   }
+  if (e.code === 'KeyO') return stepOcc(e.shiftKey ? -1 : 1);
   if (e.code === 'KeyL') { G.histOpen = !G.histOpen; return; }
   if (e.code === 'KeyG' && syndicate()) return toggleFree();
   if (e.code === 'KeyF') { const on = !selected().every(isDrawn); selected().forEach((a) => { a.drawnUntil = on ? G.clock + 1e9 : 0; }); return say(`${names(selected())} ${on ? 'draw' : 'holster'}`); }
@@ -381,16 +426,26 @@ function setCrowd(level) {
     e.pick.forEach((m) => { m.userData.ent = e; w.picks.push(m); });
   }
 }
-// ---- third person: buildings that hide the agent fade out (the camera inside one counts)
-const fadeRay = new THREE.Ray();
-function fadeBuildings(real) {
-  const me = agentOf(), cam = camera.position, tgt = new THREE.Vector3(me.g.position.x, 1.2, me.g.position.z), d = cam.distanceTo(tgt), p = new THREE.Vector3();
-  fadeRay.set(cam, tgt.clone().sub(cam).normalize());
-  for (const b of G.world.buildings) {
-    const hit = G.view === 'tp' && (b.box.containsPoint(cam) || (fadeRay.intersectBox(b.box, p) && cam.distanceTo(p) < d));
-    b.mesh.material.opacity += ((hit ? 0.16 : 1) - b.mesh.material.opacity) * Math.min(1, real * 8);
-  }
+// ---- brief 056: occlusion options (occlusion.js); the bar at the top right switches them live, O steps through them
+const occBar = $('occ');
+// On a phone the bar folds to one line, [ ‹ ] [E Floors ▾] [ › ]: the arrows step like O and Shift+O, the middle opens A to F and the silhouettes. The head and the short names show only there (data-short, CSS).
+const OCC_SHORT = { column: 'Column', sil: 'Silhouettes', circle: 'Circle', whole: 'Whole', floors: 'Floors', mix: 'Circle + sil' };
+function drawOcc() {
+  occBar.innerHTML = `<span class="occhead"><button data-occstep="-1" aria-label="Previous option">‹</button><button data-occopen class="occcur" aria-label="Occlusion options"><b>${MODES.find(([k]) => k === G.occ)[1][0]}</b> ${OCC_SHORT[G.occ]} <i>${occBar.classList.contains('open') ? '▴' : '▾'}</i></button><button data-occstep="1" aria-label="Next option">›</button></span>`
+    + '<span class="occt">Occlusion</span>' + MODES.map(([k, t]) => `<button data-occ="${k}" data-short="${t[0]} ${OCC_SHORT[k]}" class="${G.occ === k ? 'on' : ''}">${t}</button>`).join('')
+    + '<span class="occt">Silhouettes</span>' + [['auto', 'By option'], ['on', 'On'], ['off', 'Off']].map(([k, t]) => `<button data-sil="${k}" class="${G.sil === k ? 'on' : ''}">${t}</button>`).join('');
 }
+function stepOcc(dir) { const i = MODES.findIndex(([k]) => k === G.occ); setOcc(MODES[(i + (dir < 0 ? MODES.length - 1 : 1)) % MODES.length][0]); drawOcc(); return say(`Occlusion · ${MODES.find(([k]) => k === G.occ)[1]}`); }
+occBar.addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.occstep) return stepOcc(+b.dataset.occstep);
+  if (b.hasAttribute('data-occopen')) { occBar.classList.toggle('open'); return drawOcc(); }
+  if (b.dataset.occ) setOcc(b.dataset.occ); if (b.dataset.sil) G.sil = b.dataset.sil;
+  occBar.classList.remove('open'); drawOcc(); // a pick folds the panel so the scene shows
+});
+new MutationObserver(() => document.body.classList.toggle('occ-open', occBar.classList.contains('open'))).observe(occBar, { attributes: true, attributeFilter: ['class'] });
+occBar.addEventListener('pointerdown', (e) => e.stopPropagation()); occBar.addEventListener('mousedown', (e) => e.stopPropagation());
+{ const q = new URLSearchParams(location.search); if (q.get('occ')) G.occ = q.get('occ'); if (q.get('sil')) G.sil = q.get('sil'); if (q.get('yaw')) { rig.yaw = rig.yawTarget = Number(q.get('yaw')) * Math.PI / 180; } setOcc(G.occ); drawOcc(); }
 // ---- pause and plan
 function togglePause() {
   G.paused = !G.paused;
@@ -512,7 +567,7 @@ function frame(now) {
     const dx = a.fireFrom.g.position.x - a.g.position.x, dz = a.fireFrom.g.position.z - a.g.position.z, l = Math.hypot(dx, dz) || 1, ph = (performance.now() / 450) % 1, pop = Math.max(0, 1 - (G.clock - (a.incomingAt ?? -9)) / 0.35);
     pair.forEach((g, k) => { const f = (ph + k * 0.5) % 1, r = 1.1 + f * 1; g.position.set(a.g.position.x + dx / l * r, 0.07, a.g.position.z + dz / l * r); g.rotation.y = -Math.atan2(dz, dx); g.scale.setScalar(1 + pop * 0.5); g.children[0].material.opacity = Math.min(1, (1 - f) * 1.3) * (0.7 + 0.3 * pop); });
   });
-  fadeBuildings(real); drawGhosts(); document.body.classList.toggle('paused', G.paused);
+  occFrame(camera, real); drawGhosts(); document.body.classList.toggle('paused', G.paused);
   if (G.vale && !G.vale.done) { const v = G.vale, locked = new Set(G.sessions.filter((s) => s.lock && s.ent.id.startsWith('officer')).flatMap((s) => s.agents.map((a) => a.id))); v.n = locked.size; v.sim = G.clock - v.t0s; v.real = (performance.now() - v.t0r) / 1000; if (v.n >= 3) v.done = true; }
   placeRing(project);
   { // brief 043: the done moment, and the warning on open ground when a click would drop an act in progress (after the pointer has rested a moment)
@@ -524,10 +579,15 @@ function frame(now) {
   const hint = G.paused ? (G.planMode === 'sync' ? 'Paused · Space starts every order together' : 'Paused · Space to go') : G.ring ? (crew().length > 1 ? preset().holdActs ? 'Shift runs there' : 'Shift runs there · Alt: everyone or the best placed' : P.right === 'press' ? 'Right click again takes the lit way' : 'Click away to close') : G.view === 'tp' && G.prompt ? 'E does it' : G.view === 'tp' && G.clock - (G.tpAt ?? -99) < 5 ? 'T lets go of the agent' : preset().holdActs && G.hover ? 'Hold the left button to do it · right hold, then let go, fires' : G.hover?.hostile ? 'Hold the left button to fire' : P.dbl.thing && (G.hover || G.selTarget) ? (P.dbl.thing === 'run' ? 'Double click runs there' : 'Double click to do it') : '';
   setHint(hint); refresh(project);
   renderer.render(scene, camera);
-  frames++; if (now - fpsAt > 1000) { setFps(Math.round(frames * 1000 / (now - fpsAt))); frames = 0; fpsAt = now; }
+  frames++; if (now - fpsAt > 1000) {
+    const f = Math.round(frames * 1000 / (now - fpsAt)); frames = 0; fpsAt = now;
+    if (mobile.touch && !prLock && f < 40 && pr > 1 && now - prAt > 3000 && !document.hidden) { pr = Math.max(1, pr - 0.5); renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight); G.dpr = pr; prAt = now; } // frames dropped: draw fewer pixels
+    setFps(f, mobile.touch ? ` ${pr}x` : '');
+  }
+  syncMobile();
 }
 requestAnimationFrame(frame);
 
 // for the headless check
 $('histkey').innerHTML = icon('talk', 20); $('histkey').addEventListener('click', () => { G.histOpen = !G.histOpen; });
-window.__ctl = { project, ways: (id, ai) => waysFor(G.world.byId[id], G.world.agents[ai]).map((w) => w.id), planFor, setCrowd, entsAt, marker, defaultsOk: () => G.world.ents.every((e) => G.world.agents.every((a) => !['knock', 'kill'].includes(defaultFor(e, a)?.id))), select: (i) => setGroup(G.group.map((_, k) => k === i), false), squad: selectAll, G, screenOf: (id) => { const e = G.world.byId[id]; return project(e.g.position.x, e.h * 0.5, e.g.position.z); }, setView, preset: (k) => { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; closeRing(); G.selTarget = null; drawChrome(); } };
+window.__ctl = { setOcc: (m) => { setOcc(m); drawOcc(); }, setSil: (v) => { G.sil = v; drawOcc(); }, yaw: (d) => { rig.yaw = rig.yawTarget = d * Math.PI / 180; }, camera, rig, project, ways: (id, ai) => waysFor(G.world.byId[id], G.world.agents[ai]).map((w) => w.id), planFor, setCrowd, entsAt, marker, defaultsOk: () => G.world.ents.every((e) => G.world.agents.every((a) => !['knock', 'kill'].includes(defaultFor(e, a)?.id))), select: (i) => setGroup(G.group.map((_, k) => k === i), false), squad: selectAll, G, screenOf: (id) => { const e = G.world.byId[id]; return project(e.g.position.x, e.h * 0.5, e.g.position.z); }, setView, preset: (k) => { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; closeRing(); G.selTarget = null; drawChrome(); } };

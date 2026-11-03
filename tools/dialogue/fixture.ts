@@ -1,5 +1,5 @@
 // The Handover's hand-written words (contracts/missions/handover/text.json) as fixture tables: the reference the generator must match or beat (brief 012).
-// The Handover casts a café server (Inez), the official driver, the door guard and Councillor Vale; their lines are the reference for the voice groups
+// The Handover casts a café server (Inez), the official driver, the door guard and Councillor Popovic; their lines are the reference for the voice groups
 // counter, driver, security and official. Only the situations every person can be in are taken (reply, confirm, questioned, gunfire); the mission's own
 // moments (the guard lured, the car crossing a camera) stay in text.json, which the game reads as it always has.
 import type { Cell, Group, SceneT } from '../../contracts/dialogue/voices.schema';

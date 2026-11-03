@@ -1,0 +1,200 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Motive 059c probe re-compose (engine 0.32.0 + balance rulings): route B board and go at the yard. Listen to the driver, Pay him before 5:40 (he warns the lookout off), false tip at 3:10, the Tech boards the getaway car at 5:30 and Drives it round once Vale's car parks (car.parks 6:25.9); the Scout and Fixer walk to the yard (73,-19)/(73,-11) at 5:55; the Take at 6:45 (done 7:23, after the off-duty official-entrance guards have crossed the yard: a Take done before 7:23 has the carry seen, Alert 2); the Enforcer carries Vale 3.5 m and boards; panic after he is in (drawn earlier, the guards crossing the yard scatter into the carry's 3 m); the Scout and Fixer board once the blocker is down; Go.",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7950,
+    -4000
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "gap": 62
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "driver",
+   "label": "heard",
+   "gap": 5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Boarding pavilion",
+   "gap": 62
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "pay",
+   "by": "5:40",
+   "label": "turned"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8600,
+    -3400
+   ],
+   "after": [
+    "heard"
+   ],
+   "gap": 52
+  },
+  {
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals",
+   "at": "3:10",
+   "label": "tip"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7300,
+    -1900
+   ],
+   "after": [
+    "tip"
+   ],
+   "at": "5:55",
+   "label": "scout-yard"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7300,
+    -1100
+   ],
+   "after": [
+    "turned"
+   ],
+   "at": "5:55",
+   "label": "fixer-yard"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in",
+   "at": "5:30"
+  },
+  {
+   "op": "tech",
+   "do": "drive-car",
+   "target": "service-drive",
+   "label": "drive",
+   "when": "car.parks"
+  },
+  {
+   "op": "enforcer",
+   "do": "take",
+   "when": "car.parks",
+   "label": "take",
+   "at": "6:45"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "take",
+    "drive"
+   ],
+   "when": "take.done",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "in"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in"
+   ],
+   "gap": 1,
+   "unless": [
+    "captured",
+    "withdraw.car"
+   ]
+  }
+ ]
+}

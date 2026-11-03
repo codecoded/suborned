@@ -1,0 +1,165 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a "out/scratch/keel/base-0342" --b tree --a-scripts contracts/missions/handover/routes --b-scripts "out/scratch/keel/0351/routes-1input" --all --json "briefs/039/keel/0.35.1/route-diff-0.34.2-vs-0.35.1-one-input.json"
+· engines ready (1.9 s); playing 42 routes on A and 42 on B
+A = out/scratch/keel/base-0342 (built here)    B = the working tree    (= means the value did not move)
+route                            outcome            fail                   end              Trail  Alert  health lost
+careless-body-found              =                  =                      3:29.4 → 3:32.3  =      =      33 % → 34 %
+    note  the route script differs between A and B
+    first log line apart (line 44):
+      A  3:12.0  order.stance  scout: free.
+      B  3:12.0  order.draw  fixer draws (1.0 s).
+careless-enforcer-watches-guard  =                  =                      2:53.6 → 2:55.1  =      =      33 % → 34 %
+    note  the route script differs between A and B
+    first log line apart (line 45):
+      A  2:53.6  fail.enforcer-down  The Enforcer is down.
+      B  2:53.6  shot.hit  police-2 fires on enforcer at 0 m (1000 ‰): hit.
+careless-g-disable               =                  =                      =                =      =      16 % → 21 %
+    note  the route script differs between A and B
+    first log line apart (line 38):
+      A  3:45.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:45.5  order.draw  scout draws (1.0 s).
+careless-guard-left-door-held    failure            vale-leaves            6:13.0           6      1      0 %
+careless-loop-runs-out           failure            entry-seen-camera      2:52.9           4      0      0 %
+careless-reporter-not-stopped    =                  =                      =                =      =      33 % → 26 %
+    note  the route script differs between A and B
+    first log line apart (line 80):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  scout draw : the weapon is already drawn
+careless-scout-idles-pickup      =                  =                      =                =      =      33 % → 26 %
+    note  the route script differs between A and B
+    first log line apart (line 80):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  scout draw : the weapon is already drawn
+careless-takedown-seen-camera    failure            entry-seen-camera      2:37.0           1      1      0 %
+careless-takedown-seen-crowd     failure            vale-leaves            6:13.0           7      3      0 %
+careless-thin-all                =                  =                      =                =      =      22 % → 17 %
+    note  the route script differs between A and B
+    first log line apart (line 109):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  scout draw : the weapon is already drawn
+fail-district-seals              failure            sealed                 5:05.0           8      2      0 %
+fail-enforcer-down               =                  =                      1:40.6 → 2:13.6  =      =      33 % → 34 %
+    note  the route script differs between A and B
+    first log line apart (line 17):
+      A  0:39.0  shot.hit  guard fires on enforcer at 3 m (1000 ‰): hit.
+      B  0:39.0  shot.miss  guard fires on enforcer at 3 m (500 ‰): miss.
+fail-entry-seen-camera           failure            entry-seen-camera      4:42.9           3      1      0 %
+fail-entry-seen-guard            failure            entry-seen-guard       3:52.9           2      1      0 %
+fail-rivals-reach-vale           failure            rivals-reach-vale      6:39.5           2      1      0 %
+fail-take-seen-camera            failure            abduction-seen-camera  6:10.0           1      1      0 %
+fail-vale-dead                   failure            vale-dead              6:12.0           7      3      0 %
+fail-vale-leaves                 failure            vale-leaves            6:13.0           1      0      0 %
+fight-loud-enforcer-down         =                  =                      3:14.2 → 3:15.5  =      =      33 % → 34 %
+    note  the route script differs between A and B
+    first log line apart (line 99):
+      A  3:14.2  fail.enforcer-down  The Enforcer is down.
+      B  3:14.9  crowd.sheltered  1 reach shelter.
+fight-loud-wait-square           =                  =                      3:58.4 → 4:00.7  =      =      33 % → 34 %
+    note  the route script differs between A and B
+    first log line apart (line 92):
+      A  3:58.4  fail.enforcer-down  The Enforcer is down.
+      B  3:58.9  shot.hit  rival-1 fires on enforcer at 13 m (562 ‰): hit.
+fight-loud-wait-yard             =                  =                      =                =      =      50 % → 34 %
+    note  the route script differs between A and B
+    first log line apart (line 41):
+      A  6:27.9  rivals.follow-car  The rivals posted round our car go after it.
+      B  6:26.9  fire.focus-waits  fixer: camera:pickup is out of reach. The focus waits; fixer fights on.
+fight-safe-cell-down             failure → none     cell-down → -          3:20.9 → 8:30.0  =      =      100 % → 8 %
+    note  the route script differs between A and B
+    first log line apart (line 33):
+      A  2:40.5  order.stance  scout: hold.
+      B  2:40.5  order.draw  fixer draws (1.0 s).
+fight-safe-rivals-reach-vale     failure            rivals-reach-vale      6:39.5           2      1      0 %
+loud                             =                  =                      =                =      =      11 % → 8 %
+    note  the route script differs between A and B
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  fire.security-2  scout fires on security-2 until down.
+loud-fight                       =                  =                      =                =      =      27 % → 21 %
+    note  the route script differs between A and B
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  fire.security-2  scout fires on security-2 until down.
+loud-left-downed                 =                  =                      =                =      =      44 % → 30 %
+    note  the route script differs between A and B
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  fire.security-2  scout fires on security-2 until down.
+loud-left-standing               =                  =                      =                =      =      22 % → 8 %
+    note  the route script differs between A and B
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  fire.security-2  scout fires on security-2 until down.
+route-a                          =                  =                      =                =      =      22 % → 8 %
+    note  the route script differs between A and B
+    first log line apart (line 46):
+      A  4:01.1  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:01.1  order.draw  scout draws (1.0 s).
+route-a-board                    =                  =                      =                =      =      =
+    note  the route script differs between A and B
+    first log line apart (line 46):
+      A  4:01.4  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:01.4  order.draw  scout draws (1.0 s).
+route-a-disable                  =                  =                      =                =      =      22 % → 8 %
+    note  the route script differs between A and B
+    first log line apart (line 52):
+      A  4:01.1  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:01.1  order.draw  scout draws (1.0 s).
+route-a-pressure                 =                  =                      =                =      =      16 % → 13 %
+    note  the route script differs between A and B
+    first log line apart (line 46):
+      A  3:50.1  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:50.1  order.draw  scout draws (1.0 s).
+route-a-pressure-board           =                  =                      =                =      =      50 % → 21 %
+    note  the route script differs between A and B
+    first log line apart (line 46):
+      A  3:50.4  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:50.4  order.draw  scout draws (1.0 s).
+route-b                          =                  =                      =                =      =      33 % → 26 %
+    note  the route script differs between A and B
+    first log line apart (line 70):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  scout draw : the weapon is already drawn
+route-b-board                    =                  =                      =                =      =      33 % → 26 %
+    note  the route script differs between A and B
+    first log line apart (line 70):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  scout draw : the weapon is already drawn
+route-b-thin                     =                  =                      =                =      =      22 % → 17 %
+    note  the route script differs between A and B
+    first log line apart (line 72):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  scout draw : the weapon is already drawn
+route-g                          =                  =                      =                =      =      16 % → 21 %
+    note  the route script differs between A and B
+    first log line apart (line 39):
+      A  3:45.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:45.5  order.draw  scout draws (1.0 s).
+route-g-board                    success → failure  - → rivals-reach-vale  3:59.6 → 4:08.5  =      =      11 % → 26 %
+    note  the route script differs between A and B
+    first log line apart (line 39):
+      A  3:45.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:45.5  order.draw  scout draws (1.0 s).
+route-g-fast                     =                  =                      =                =      =      5 % → 4 %
+    note  the route script differs between A and B
+    first log line apart (line 32):
+      A  2:40.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  2:40.5  order.draw  scout draws (1.0 s).
+route-g-fast-board               =                  =                      =                =      =      5 % → 4 %
+    note  the route script differs between A and B
+    first log line apart (line 32):
+      A  2:40.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  2:40.5  order.draw  scout draws (1.0 s).
+route-g-kill                     =                  =                      =                =      =      22 % → 13 %
+    note  the route script differs between A and B
+    first log line apart (line 47):
+      A  5:12.2  order.panic  Panic: 4 armed operatives fire at will.
+      B  5:12.2  order.draw  scout draws (1.0 s).
+route-g-kill-board               =                  =                      =                =      =      33 % → 26 %
+    note  the route script differs between A and B
+    first log line apart (line 47):
+      A  5:12.2  order.panic  Panic: 4 armed operatives fire at will.
+      B  5:12.2  order.draw  scout draws (1.0 s).
+withdraw                         withdrawn          -                      0:30.0           0      0      0 %
+
+42 routes: 29 moved, 13 unchanged
+(7.2 s)

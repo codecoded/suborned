@@ -1,0 +1,5 @@
+flowerbed (alpha leaves+coral)     mean residual   4.77  max   5.04 (8-bit grey, per-frame, after best integer shift)
+shrubmounds (alpha leaves)         mean residual   3.44  max   4.03 (8-bit grey, per-frame, after best integer shift)
+paving (opaque reference)          mean residual   2.19  max   2.54 (8-bit grey, per-frame, after best integer shift)
+trough stone (opaque reference)    mean residual   2.38  max   2.74 (8-bit grey, per-frame, after best integer shift)
+frames 24 ; note: residual includes sub-pixel resampling of real texture detail, so higher-frequency foliage is expected to sit above flat stone even with zero alpha shimmer

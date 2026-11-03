@@ -1,24 +1,30 @@
-// bun tools/hud-budget/cli.ts <shot.png | folder> [--state rest|active|alt|log|briefing] [--hud f.png | --world f.png | --rects f.json] [--manifest f.json] [--debug out.png] [--json] [--skip-unmasked]
+// bun tools/hud-budget/cli.ts <shot.png | folder> [--state rest|active|alt|log|page|briefing] [--hud f.png | --world f.png | --rects f.json] [--manifest f.json] [--debug out.png] [--json] [--skip-unmasked]
 // A folder is a batch: for each shot.png it looks for shot.hud.png, shot.world.png or shot.rects.json (the HUD mask) and shot.manifest.json (speech and beats, and the state).
+// shot.parts.json (when there) names the refusal pops (pop-N), the done chips (gain-chip-N) and the clock bar (pill) the manifest does not: each is held to its own caps (budget.ts fromParts).
 // --rects may also be one file for a folder: { "<shot>.png": [rects] | { "state": "active", "rects": [rects] } }.
 // Exit 1 if any shot fails: HUD above its coverage limit (rest 15%, active 22%, alt 30%), a line of running text that is not speech, a block of stacked text.
+// State `page` (the briefing page, GDD v0.27.0 §10) has no coverage limit or reading cap: it is held to the page's own checks instead (page.ts, briefs/070/glyph-page-budget.md).
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
-import { analyse, debugImage, maskOf, type Manifest, type Options, type Rect, type Report, type State } from './budget';
+import { analyse, debugImage, fromParts, maskOf, type Manifest, type Options, type Rect, type Report, type State } from './budget';
 import { decodePng, encodePng } from './png';
+import { PAGE } from './page';
 
 const args = process.argv.slice(2), flag = (n: string) => { const i = args.indexOf(n); return i < 0 ? undefined : args[i + 1]; };
 const target = args[0]?.startsWith('--') ? undefined : args[0];
-if (!target) { console.error('usage: bun tools/hud-budget/cli.ts <shot.png | folder> [--state rest|active|alt|log|briefing] [--hud f] [--world f] [--rects f.json] [--manifest f.json] [--debug out.png] [--json]'); process.exit(2); }
+if (!target) { console.error('usage: bun tools/hud-budget/cli.ts <shot.png | folder> [--state rest|active|alt|log|page|briefing] [--hud f] [--world f] [--rects f.json] [--manifest f.json] [--debug out.png] [--json]'); process.exit(2); }
 const img = (f: string) => decodePng(readFileSync(f)), json = <T>(f: string) => JSON.parse(readFileSync(f, 'utf8')) as T;
 
 function one(shot: string, base: string, force: Record<string, string | undefined>): { rep: Report; opts: Options } {
   const pick = (k: string, ext: string) => force[k] ?? (existsSync(base + ext) ? base + ext : undefined);
   const hud = pick('hud', '.hud.png'), world = pick('world', '.world.png'), rects = pick('rects', '.rects.json'), man = pick('manifest', '.manifest.json');
-  const manifest = man ? json<Manifest>(man) : undefined;
+  let manifest = man ? json<Manifest>(man) : undefined;
+  // Refusal pops (GDD §10: an icon and at most four words), the done chips (`gain-chip-N`) and the clock bar (`pill`) are registered with the HUD's parts (<shot>.parts.json, "pop-N"), not in every build's manifest: a pop the manifest does not name is added as a `pop` element, so it is held to its own four-word line, not read as running text. Off-screen and unseen parts are left out.
+  const parts = pick('parts', '.parts.json');
+  if (manifest && parts) manifest = { ...manifest, elements: [...manifest.elements, ...fromParts(json<Record<string, number[]>>(parts), manifest, img(shot))] };
   let rs: Rect[] | undefined, rstate: State | undefined;
   if (rects && !hud && !world) { let j = json<any>(rects); if (j && !Array.isArray(j) && !j.rects) j = j[basename(shot)]; if (!j) throw new Error(`${rects} has no entry for ${basename(shot)}`); rs = Array.isArray(j) ? j : j.rects; rstate = j.state; }
-  const state = (force.state ?? manifest?.state ?? rstate ?? /\.(rest|active|alt|log|briefing)\b/.exec(basename(shot))?.[1] ?? 'rest') as State;
+  const state = (force.state ?? manifest?.state ?? rstate ?? /\.(rest|active|alt|log|briefing|page)\b/.exec(basename(shot))?.[1] ?? 'rest') as State;
   const opts: Options = { state, manifest, hud: hud ? img(hud) : undefined, world: !hud && world ? img(world) : undefined, rects: rs };
   if (!opts.hud && !opts.world && !opts.rects) throw new Error(`${shot}: no HUD mask (give --hud, --world or --rects, or put ${basename(base)}.hud.png beside it)`);
   return { rep: analyse(img(shot), opts), opts };
@@ -34,7 +40,8 @@ for (const s of shots) {
   if (args.includes('--skip-unmasked') && unmasked(s)) { skipped++; continue; } // a capture with no HUD layer (a world study): listed in the total, not judged
   const { rep, opts } = one(s, s.replace(/\.png$/, ''), shots.length > 1 ? { state: force.state, rects: force.rects } : force); all[s] = rep; if (!rep.pass) bad++;
   if (!args.includes('--json')) {
-    console.log(`${rep.pass ? 'PASS' : 'FAIL'}  ${basename(s).padEnd(34)} ${rep.state.padEnd(6)} HUD ${rep.coveragePct.toFixed(1).padStart(5)}% of the screen (limit ${rep.limitPct}%, footprint ${rep.footprintPct.toFixed(0)}%)  running text ${rep.sentences.length} line${rep.sentences.length === 1 ? '' : 's'}, ${rep.blocks.length} block${rep.blocks.length === 1 ? '' : 's'}; speech ${rep.speech.length}, beats ${rep.beats.length}  [${rep.mask} mask]`);
+    if (rep.state === 'page') console.log(`${rep.pass ? 'PASS' : 'FAIL'}  ${basename(s).padEnd(34)} page   ${rep.pageWords} words (at most ${PAGE.words}), ${rep.failures.length} fault${rep.failures.length === 1 ? '' : 's'}; coverage not judged  [${rep.mask} mask]`);
+    else console.log(`${rep.pass ? 'PASS' : 'FAIL'}  ${basename(s).padEnd(34)} ${rep.state.padEnd(6)} HUD ${rep.coveragePct.toFixed(1).padStart(5)}% of the screen (limit ${rep.limitPct}%, footprint ${rep.footprintPct.toFixed(0)}%)  running text ${rep.sentences.length} line${rep.sentences.length === 1 ? '' : 's'}, ${rep.blocks.length} block${rep.blocks.length === 1 ? '' : 's'}; speech ${rep.speech.length}, beats ${rep.beats.length}  [${rep.mask} mask]`);
     for (const f of rep.failures) console.log(`      - ${f}`); for (const f of rep.warnings) console.log(`      ~ ${f}`);
   }
   const dbg = flag('--debug'); if (dbg && shots.length === 1) { const im = img(s); writeFileSync(dbg, encodePng(debugImage(im, rep, maskOf(im, opts).mask))); }

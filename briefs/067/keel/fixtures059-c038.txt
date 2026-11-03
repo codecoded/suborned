@@ -1,0 +1,6 @@
+$ bun tools/game/playing.ts bun "tools/sim/fixtures059.ts" --check
+ok   bal-loud-x4
+ok   bal-rb-ff
+ok   bal-rbb-ff
+ok   sq-route-a-board
+ok   sq-ra-h3

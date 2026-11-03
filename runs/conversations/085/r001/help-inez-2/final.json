@@ -1,0 +1,54 @@
+{
+  "id": "help-inez-2",
+  "title": "Help Inez, second visit",
+  "kind": "turn",
+  "picked": 3,
+  "why": "Take 3 has the most life: she says yes too fast, the Fixer makes her hear the price, and she works out that the Fixer knows about Okafor.",
+  "changes": [
+    "Changed Inez's line to \"And his door empty. What happens to him?\" She no longer implies the door is empty for only a minute.",
+    "Did not use the review's suggested line: at 13 words, it breaks the 12-word limit. Mine makes the same correction and names no duration for the empty door.",
+    "Left all other beats unchanged.",
+    "The last version showed beats only, so learned and opens are carried from take 3. Please check them against your saved version."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "Look under my saucer, Inez. The rest of your loan's paid."
+    },
+    {
+      "speaker": "Inez",
+      "line": "My Bureau card. Yes, whatever it is, only put it away."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Hear it first. When I telephone, call Okafor over from his door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Why would he... you know about us. Who else knows?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "It stays with us. He'd stand with you about a minute."
+    },
+    {
+      "speaker": "Inez",
+      "line": "And his door empty. What happens to him?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nothing, if this goes right. He never sees us."
+    },
+    {
+      "speaker": "Inez",
+      "line": "I'm with you. I see trouble on that square, I'll warn you."
+    }
+  ],
+  "learned": [
+    "Inez is with us, and watching."
+  ],
+  "opens": [
+    "Call Inez"
+  ],
+  "faults": []
+}

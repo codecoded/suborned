@@ -1,0 +1,188 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "probe 067: the Scout runs back and forth across the entrance camera's view (16 legs of 10 m, 3 s each), then walks off",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 200,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 230,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 260,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 290,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 320,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 350,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 380,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 410,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 440,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 470,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 500,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 530,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 560,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 590,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 620,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7000,
+    -4300
+   ],
+   "run": true
+  },
+  {
+   "tick": 650,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    6000,
+    -4500
+   ],
+   "run": true
+  },
+  {
+   "tick": 680,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    4600,
+    -5600
+   ]
+  }
+ ],
+ "until": 1200
+}

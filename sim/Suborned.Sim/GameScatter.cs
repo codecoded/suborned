@@ -18,7 +18,7 @@ namespace Suborned.Sim
             {
                 case "startled": return w.At;
                 case "fleeing": return w.Run == null ? w.At : w.Run.At((long)(Tick - w.RunStart) * R.CrowdRunSpeed);
-                case "returning": return w.Run == null ? w.At : w.Run.At((long)(Tick - w.RunStart) * opSpeed);
+                case "returning": return w.Run == null ? w.At : w.Run.At((long)(Tick - w.RunStart) * peopleWalk);
                 // brief 013: a witness on the way to a phone or to look at a body, a victim staggering; at the phone they are off the street
                 case "reporting": case "checking": return w.Run == null || Tick < w.RunStart ? w.At : w.Run.At((long)(Tick - w.RunStart) * w.Pace);
                 case "woken": return w.Run == null || Tick < w.RunStart ? w.At : w.Run.At((long)(Tick - w.RunStart) * w.Pace);
@@ -47,7 +47,7 @@ namespace Suborned.Sim
                             var pos = CrowdPos(w); if (!pos.HasValue) break;
                             Pt? from = null;
                             foreach (var s in shotsThisTick) if (G.D2(s, pos.Value) <= scatter2) { from = s; break; }
-                            if (!from.HasValue) foreach (var d in drawn) if (G.Within(d, pos.Value, witnessRange) && Sees(d, pos.Value)) { from = d; break; }
+                            if (!from.HasValue) foreach (var d in drawn) if (R.PeopleCone ? Notices(w.P, pos.Value, d, "weapon-drawn") : G.Within(d, pos.Value, witnessRange) && Sees(d, pos.Value)) { from = d; break; } // brief 054 §3.2: a drawn weapon in their cone
                             if (!from.HasValue) break;
                             w.St = "startled"; w.At = pos.Value; w.Run = null; w.RunStart = Tick; lastShooterFor[w.P.Id] = from.Value;
                             w.Until = Tick + (w.P.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks); startled++;
@@ -74,7 +74,7 @@ namespace Suborned.Sim
                         }
                         break;
                 }
-                if (w.St == "returning" && (w.Run == null || (long)(Tick - w.RunStart) * opSpeed >= w.Run.Length)) { w.St = ""; w.Run = null; back++; }
+                if (w.St == "returning" && (w.Run == null || (long)(Tick - w.RunStart) * peopleWalk >= w.Run.Length)) { w.St = ""; w.Run = null; back++; }
             }
             shotsThisTick.Clear();
             if (startled > 0) Note("crowd.startled", $"{startled} on the street are startled and run.");
@@ -85,8 +85,8 @@ namespace Suborned.Sim
 
         Path RouteOf(Pt a, Pt b)
         {
-            var fa = S.Grid.NearestFree(a) ?? a; var fb = S.Grid.NearestFree(b) ?? b;
-            var route = S.Grid.Route(fa, fb);
+            var fa = Walk.NearestFree(a) ?? a; var fb = Walk.NearestFree(b) ?? b;
+            var route = Walk.Route(fa, fb);
             return new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
         }
 
@@ -110,7 +110,10 @@ namespace Suborned.Sim
 
         /// <summary>Pulse §4: a person on the street, not sheltered, blocks a watcher's sightline that passes within crowd.occlude of them,
         /// between two bodies' width (2 × occlude) of either end.</summary>
-        public bool CrowdBlocks(Pt a, Pt b)
+        public bool CrowdBlocks(Pt a, Pt b) => R.MountOn ? CrowdBlocksZ(a, FloorAt(a) + eye, b, FloorAt(b) + eye) : CrowdBlocksZ(a, int.MinValue, b, int.MinValue);
+        /// <summary>Brief 055 §7 (perception.mount): the line from a at za to b at zb (block z cm) is blocked by a person only where it runs below
+        /// their head top (their floor + mount.headTop); za int.MinValue: the flat test (any person across the line blocks it).</summary>
+        public bool CrowdBlocksZ(Pt a, int za, Pt b, int zb)
         {
             if (People2 == null || !Start.Crowd) return false;
             if (occludersTick != Tick)
@@ -126,7 +129,12 @@ namespace Suborned.Sim
                 if (dot <= 0 || dot >= l2) continue;
                 if (G.D2(p, a) <= end2 || G.D2(p, b) <= end2) continue;
                 long cross = px * dy - py * dx;
-                if (cross * cross <= occ * occ * l2) return true;
+                if (cross * cross <= occ * occ * l2)
+                {
+                    if (za == int.MinValue) return true;
+                    // the line's height at p's foot along it, z = za + (zb − za)·dot/l2, at or below p's head top
+                    if ((long)za * l2 + (long)(zb - za) * dot <= (long)(FloorAt(p) + R.MountHeadTopCm) * l2) return true;
+                }
             }
             return false;
         }

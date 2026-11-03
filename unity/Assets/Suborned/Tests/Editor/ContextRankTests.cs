@@ -67,6 +67,27 @@ namespace Suborned.Play.Tests
             var b = new[] { W("watch", ok: false), W("loop") }; Assert.AreEqual("loop", Picked(C("camera", b), b));
         }
 
+        [Test] public void OnAStandDriveIsTheQuickClick()
+        {
+            var w = new[] { W("drive-car") }; Assert.AreEqual("drive-car", Picked(C("stand", w), w), "brief 059 K6: a stand's one way is Drive");
+            var l = new[] { W("drive-car", ok: false) }; Assert.AreEqual(ContextRank.Act.Lock, C("stand", l).Act, "a refused Drive (held, busy) says its lock");
+        }
+
+        [Test] public void RivalsTakeTheFalseTipAtTheirCar()
+        {
+            var w = new[] { W("watch"), W("mislead"), W("fire") }; Assert.AreEqual("watch", Picked(C("rivals", w), w), "brief 059 §2.2: a free learn first (the timetable)");
+            var t = new[] { W("watch", ok: false), W("mislead"), W("fire") }; Assert.AreEqual("mislead", Picked(C("rivals", t), t), "then the tip; never Fire as a click");
+        }
+
+        [Test] public void OnACameraLoopLeadsTheRingAndWatchStandsAtThree()
+        {
+            var t = new[] { W("watch"), W("loop"), W("disable"), W("fire") }; var c = C("camera", t);
+            Assert.AreEqual(new List<int> { 1, 0, 2, 3 }, c.Order, "the Tech: Loop 12, Watch 3, Disable 6, Fire 9");
+            Assert.AreEqual("watch", Picked(c, t), "the quick click still watches first");
+            var s = new[] { W("watch"), W("fire") }; Assert.AreEqual(new List<int> { 0, 1 }, C("camera", s).Order, "the Scout: Watch keeps 12");
+            var p = new[] { W("watch"), W("loop") }; Assert.AreEqual(new List<int> { 0, 1 }, C("person", p).Order, "only a camera's ring moves Loop");
+        }
+
         [Test] public void PatrolWatchesThenReroutesAndTheEnforcerAloneGetsTheRing()
         {
             var a = new[] { W("watch"), W("reroute") }; Assert.AreEqual("watch", Picked(C("patrol", a), a));
@@ -80,6 +101,17 @@ namespace Suborned.Play.Tests
         {
             var a = new[] { W("board") }; Assert.AreEqual("board", Picked(C("car", a), a));
             var b = new[] { W("go") }; Assert.AreEqual("go", Picked(C("car", b), b));
+        }
+
+        /// <summary>Brief 067 C1.5 (Glyph): on the car Go leads only once Vale is aboard (its outcome "win"); Board before Drive (the two no longer
+        /// tie, so the hold has one way); Go before Vale (a withdraw) is last of the car's ways.</summary>
+        [Test] public void OnTheCarGoLeadsOnlyWithValeAboardAndTheWithdrawIsLast()
+        {
+            var won = new[] { W("board"), W("drive-car"), W("go", outcome: "win") };
+            var cw = C("car", won); Assert.AreEqual(2, cw.Order[0], "Vale aboard: Go first"); Assert.AreEqual(0, cw.Order[1]); Assert.AreEqual(1, cw.Order[2]);
+            var out0 = new[] { W("go", outcome: "withdraw"), W("drive-car"), W("board") };
+            var co = C("car", out0); Assert.AreEqual(new List<int> { 2, 1, 0 }, co.Order, "Vale not aboard: Board, Drive, then the withdraw last");
+            var bd = new[] { W("drive-car"), W("board") }; Assert.AreEqual("board", Picked(C("car", bd), bd), "Board and Drive no longer tie: Board is the quick way while someone is outside");
         }
 
         [Test] public void ABodyIsCarriedNeverHidden()

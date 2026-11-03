@@ -12,7 +12,7 @@ namespace Suborned.World
     /// one LODGroup: LOD0 = the source's renderers, LOD1 and LOD2 = children `__LOD1`, `__LOD2` carrying the catalogue's `lods[i].file`
     /// meshes, switching at `lods[i].screen` (else the piece's `lodCategory` switch point), the last level culled (brief 048: below 1 % of the screen under 8 m, 0.4 % above). Every LOD
     /// material is the library material of its slot's name (Kit/Materials); an unmapped slot = reject, and a LOD slot the LOD0 does not
-    /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted. A multi-part piece (the SignalEye)
+    /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted. A multi-part piece (the SignalLens)
     /// puts each level's parts under one `__LOD<i>` child, each named as the LOD0 part it stands for.</summary>
     public static class KitLods
     {
@@ -34,7 +34,7 @@ namespace Suborned.World
 
         public static void Build(KitPlacer kit)
         {
-            CullSmallCount = CullOnly = LevelsBelowCull = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
+            CullSmallCount = CullOnly = LevelsBelowCull = Classed = ShadowsOff = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
             Folder(KitPlacer.BuiltRoot.TrimEnd('/'));
             var written = new Dictionary<string, string>(System.StringComparer.Ordinal); // built path → id
             foreach (var id in kit.Prefabs.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
@@ -52,7 +52,8 @@ namespace Suborned.World
                 try
                 {
                     Strip(go);
-                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id]);
+                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id], kit.LodClass.TryGetValue(id, out var lc) ? lc.distances : null,
+                        new Row { LodSize = kit.LodSizeOf(id), Objects = kit.ObjectsOf(id) });
                     if (RobotKit.Rig(go, id)) RobotFaces++; // brief 026: a service robot's face and head, from robots.json (view only)
                     if (!PrefabUtility.SaveAsPrefabAsset(go, path)) throw new IOException($"World: could not save {path}");
                 }
@@ -68,7 +69,7 @@ namespace Suborned.World
             Debug.Log($"World: kit built {written.Count} prefabs: {Groups} LODGroups ({Levels} LOD levels beyond LOD0; a cull level on each: {CullSmallCount} small pieces below {CullSmall:P0} of the screen or half their commander-view height, the rest below {CullLarge:P1}; {CullOnly} cull-only, {LevelsBelowCull} levels below their cull dropped); colliders stripped {Colliders} " +
                 $"(concave mesh {ConcaveMesh}, convex mesh {ConvexMesh}, box {Boxes}, other {OtherColliders}); LOD slots the LOD0 does not list {ExtraSlots} " +
                 $"({string.Join(", ", ExtraSlotPieces)}), all mapped; " +
-                $"removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts; robot faces rigged {RobotFaces}");
+                $"{Classed} switched by distance class (kit.json lodClasses, follow view {FollowFov}°); removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts; robot faces rigged {RobotFaces}");
         }
 
         static bool SameLods(List<(string file, float screen)> a, List<(string file, float screen)> b) => a.Count == b.Count && a.Zip(b, (x, y) => x == y).All(v => v);
@@ -105,22 +106,86 @@ namespace Suborned.World
         /// CommanderHalfMax is the widest play zoom (HostCameraLab.zoomMax, the orthographic half-height): no cull may come within half
         /// of the smallest height a piece has there, so the commander view never loses a piece.</summary>
         const float CullSmallM = 8f, CullSmall = 0.01f, CullLarge = 0.004f, CommanderHalfMax = 18.5f;
-        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods)
+        /// <summary>Brief 072 (Redline's plan 3.1): the follow view's vertical FOV the distance classes are set against, and the play-zoom guard:
+        /// no L1 switch nearer than GuardM, so the orthographic play camera (relative height = size / (2 · ortho size), at most zoom 18.5,
+        /// equal to perspective at 18.5 / tan 27.5° = 35.5 m) always draws L0.</summary>
+        public const float FollowFov = 55f, GuardM = 36f;
+        static float K => 2f * Mathf.Tan(FollowFov * 0.5f * Mathf.Deg2Rad); // 1.041
+        /// <summary>The screen-relative height at which a group of size s (m) switches at distance d (m), lodBias 1.</summary>
+        public static float ScreenAt(float s, float d) => s / (K * d);
+        /// <summary>The distance at which a group of size s switches at screen-relative height h.</summary>
+        public static float DistanceAt(float s, float h) => s / (K * h);
+        public static int Classed;
+
+        /// <summary>Brief 075 remap: a placed piece that stands where the play camera holds it at L0 (the roofline's theme pieces on the 3-storey roofs,
+        /// strict under the play-zoom guard) keeps L0 to at least minD metres: when its group's L1 would switch nearer, every switch of this instance
+        /// is moved out by the same factor (the levels keep their order, the cull moves out with them). The prefab is untouched (the same piece on the
+        /// street keeps its catalogue switches). Returns 1 when the instance was moved, else 0.</summary>
+        public static int Floor(Transform piece, float minD)
         {
+            if (!piece.TryGetComponent<LODGroup>(out var g)) return 0;
+            var lods = g.GetLODs(); if (lods.Length < 2) return 0;
+            var s = piece.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
+            float d = DistanceAt(size, lods[0].screenRelativeTransitionHeight / QualitySettings.lodBias);
+            if (d >= minD) return 0;
+            float f = d / minD;
+            for (int i = 0; i < lods.Length; i++) lods[i].screenRelativeTransitionHeight *= f;
+            g.SetLODs(lods);
+            return 1;
+        }
+
+        /// <summary>Brief 077 (Latch): what a row adds to its LODs: `lodSize` (the LODGroup's size, 0 = its bounds) and `objects[]` (per-object shadows).</summary>
+        public sealed class Row { public float LodSize; public IReadOnlyList<(string name, bool shadows)> Objects = System.Array.Empty<(string, bool)>(); }
+
+        /// <summary>One piece's LODs on `go`, as Build makes them (the brief 077 tests call it).</summary>
+        public static void Piece(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist, Row row) => Lod(id, category, go, lods, dist, row);
+
+        /// <summary>Brief 077: a row's `objects[].shadows` on LOD0 (each LOD level copies its LOD0 part's shadow mode): every renderer whose part name is
+        /// an object turned off casts no shadow. An object with no renderer = reject.</summary>
+        public static int ObjectShadows(string id, GameObject go, IReadOnlyList<(string name, bool shadows)> objects)
+        {
+            int off = 0; var r0 = Lod0(go).ToArray();
+            foreach (var (name, shadows) in objects)
+            {
+                var rs = r0.Where(r => Part(r.name) == name || Part(r.transform.parent ? r.transform.parent.name : "") == name && r.transform.parent != go.transform).ToArray();
+                // a single-object FBX imports as one renderer named after the file (DK_CafeTerrace_TB for its object DK_CafeTerrace): a one-object row is that renderer
+                if (rs.Length == 0 && objects.Count == 1 && r0.Length == 1) rs = r0;
+                if (rs.Length == 0 && shadows) continue; // nothing to change on a part that casts as it always did
+                if (rs.Length == 0) throw new InvalidDataException($"World: kit `{id}` objects[] names `{name}` (shadows off) but LOD0 has no such part ({string.Join(", ", r0.Select(r => r.name))})");
+                if (shadows) continue;
+                foreach (var r in rs) { r.shadowCastingMode = ShadowCastingMode.Off; off++; }
+            }
+            return off;
+        }
+        public static int ShadowsOff;
+
+        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist = null, Row row = null)
+        {
+            if (row != null && row.Objects.Count > 0) ShadowsOff += ObjectShadows(id, go, row.Objects);
             var r0 = Lod0(go).ToArray();
             if (r0.Length == 0) { if (lods.Count == 0) return; throw new InvalidDataException($"World: kit `{id}` has no renderers for LOD0"); }
             var bounds = new Bounds(go.transform.position, Vector3.zero); foreach (var r in r0) bounds.Encapsulate(r.bounds);
             float size = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            if (row != null && row.LodSize > 0f) size = row.LodSize; // brief 077: the row's heights (and so its cull) are against its lodSize, not its bounds
             bool small = size < CullSmallM;
+            if (dist != null)
+            {   // brief 072: switch by distance from the piece's own unscaled size (the LODGroup's size is its bounds' largest side), not the catalogue's screens
+                if (dist.Length < lods.Count) throw new InvalidDataException($"World: kit `{id}` has {lods.Count} LODs and its class {dist.Length} distances");
+                lods = lods.Select((l, i) => (l.file, ScreenAt(size, dist[i]))).ToList();
+                Classed++;
+            }
             // brief 048 (Redline's plan item 3): a small piece with no distance versions (planters, pots, robots, bike racks, kiosks' parts)
             // gets a cull-only group too; ground pieces never (a culled tile is a hole), nor a large piece (it would cull past the clip anyway)
             if (lods.Count == 0 && (!small || category == "Ground")) return;
             float cull = Mathf.Min(small ? CullSmall : CullLarge, 0.5f * size / (2f * CommanderHalfMax));
+            // the class's cull distance (330 m for modules): a class is always [L1, L2, cull], so the cull is distances[2] whatever number of LODs the
+            // piece has (Splice, 072: distances[lods.Count] read a one-LOD crown's L2 400 m as its cull); 0 = the default cull above
+            if (dist is { Length: >= 3 } && dist[2] > 0f) cull = ScreenAt(size, dist[2]);
             // a level that would only switch in below the cull never shows: it goes (the street category's L2 at 0.003 had pulled the cull
             // down to 0.15 %, about 500 m for a bollard, so small pieces still drew to the 350 m clip)
             var kept = lods.Where(l => l.screen > cull).ToList(); LevelsBelowCull += lods.Count - kept.Count; lods = kept;
             if (lods.Count == 0) CullOnly++;
-            // a multi-part piece (brief 009: the SignalEye's body, Walk, Stop, Beam and Halo are sibling objects Unity switches and
+            // a multi-part piece (brief 061: the SignalLens's body, rim, figure, digits, beam and halo are sibling objects Unity drives and
             // lights apart) matches each LOD file renderer to its LOD0 part by name (its `_L1` tag and Blender's `.001` suffix dropped)
             bool parts = r0.Length > 1;
             var byPart = new Dictionary<string, MeshRenderer>(System.StringComparer.Ordinal);
@@ -163,10 +228,50 @@ namespace Suborned.World
             lg.fadeMode = LODFadeMode.None;
             lg.SetLODs(levels.ToArray());
             lg.RecalculateBounds();
+            if (row != null && row.LodSize > 0f) lg.size = row.LodSize; // brief 077: after SetLODs and RecalculateBounds, which set the size from the renderers
             Groups++; if (small) CullSmallCount++;
         }
 
-        /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalEye_L1_Beam`, `DK_SignalEye_Beam.001` → `DK_SignalEye_Beam`).</summary>
+        /// <summary>Brief 072 build check (Redline's plan 3.1): the L1 switch distance of every placed LODGroup under the world root, from its world
+        /// size (LODGroup.size × the largest lossy scale, as Unity measures it). Under the layers that hold buildings (facades, civic,
+        /// signatures, landmarks, megastructures, frontages) and the roof crowns (roofs) one nearer than GuardM fails the build: the play camera would
+        /// draw it below L0. Elsewhere (street props, trees) it is counted and logged as a warning. Returns (groups checked, nearest L1 distance, failures).</summary>
+        public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root) => PlayZoomGuard(root, null);
+
+        /// <summary>Brief 077: `atPlay` names the groups whose catalogue row declares `lodAtPlay` (their own LODs switch at play zoom by design); they are
+        /// counted in AtPlayExempt and never fail. Everything else as before.</summary>
+        public static int AtPlayExempt;
+        public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root, System.Func<LODGroup, bool> atPlay)
+        {
+            AtPlayExempt = 0;
+            // `roofs` (Redline phase 2 F2): the roof crowns have their own `crown` class (L1 at 45 m) since 072, so a crown below L0 at play zoom fails too
+            var strict = new HashSet<string>(System.StringComparer.Ordinal) { "facades", "civic", "signatures", "landmarks", "megastructures", "frontages", "roofs" };
+            int n = 0, failed = 0, other = 0; float nearest = float.PositiveInfinity; string nearestName = "";
+            var bad = new List<string>(); var below = new SortedDictionary<string, (int n, float d)>(System.StringComparer.Ordinal);
+            foreach (var g in root.GetComponentsInChildren<LODGroup>(true))
+            {
+                var lods = g.GetLODs(); if (lods.Length < 2) continue; // a cull-only group never draws below L0
+                if (atPlay != null && atPlay(g)) { AtPlayExempt++; continue; }
+                var t = g.transform; while (t.parent && t.parent != root) t = t.parent;
+                if (t.name == "horizon") continue; // the sky bodies draw L0 always; the band is 1–8 km out
+                var s = g.transform.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
+                // Unity switches at size · lodBias / (K · d), so the distance grows with the bias (Redline phase 2 F6: it divided; same at bias 1)
+                float d = DistanceAt(size, lods[0].screenRelativeTransitionHeight / QualitySettings.lodBias);
+                n++;
+                bool isStrict = strict.Contains(t.name);
+                if (isStrict && d < nearest) { nearest = d; nearestName = g.name; }
+                if (d >= GuardM) continue;
+                if (isStrict) { failed++; if (bad.Count < 12) bad.Add($"{t.name}/{g.name} L1 at {d:F1} m"); }
+                else { other++; var k = $"{t.name}/{g.name}"; below[k] = below.TryGetValue(k, out var e) ? (e.n + 1, Mathf.Min(e.d, d)) : (1, d); }
+            }
+            // pieces outside the strict layers (street props, trees) that the play camera draws below L0: reported, not failed
+            if (below.Count > 0) Debug.LogWarning($"World: play-zoom guard: {other} groups outside the facade layers switch to L1 nearer than {GuardM} m (drawn below L0 at the widest play zoom): " +
+                string.Join("; ", below.Select(kv => $"{kv.Key} x{kv.Value.n} from {kv.Value.d:F1} m")));
+            if (failed > 0) throw new InvalidDataException($"World: play-zoom guard: {failed} LOD groups switch to L1 nearer than {GuardM} m (the play camera would draw them below L0): {string.Join("; ", bad)}");
+            return (n, nearest, nearestName, failed, other);
+        }
+
+        /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalLens_L1_Beam`, `DK_SignalLens_Beam.001` → `DK_SignalLens_Beam`).</summary>
         public static string Part(string name) => System.Text.RegularExpressions.Regex.Replace(System.Text.RegularExpressions.Regex.Replace(name, @"\.\d{3}$", ""), @"_L\d+(?=_|$)", "");
 
         /// <summary>One LOD renderer: the LOD file's mesh `l` standing where its LOD0 part `src` stands, with `src`'s render settings.</summary>

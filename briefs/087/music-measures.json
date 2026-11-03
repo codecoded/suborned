@@ -1,0 +1,201 @@
+{
+ "note": "Measures only; Chime cannot hear. Tempo reads run about 1 % high against ACE-Step takes with an exact stated tempo, so treat small gaps as noise.",
+ "pieces": [
+  {
+   "seconds": 53.6,
+   "rate": 48000,
+   "channels": 2,
+   "lufs_i": -23.0,
+   "swing_4s_lu": 6.0,
+   "true_peak": -10.3,
+   "bands_lt200_lt1k_lt4k_hi": [
+    -4.5,
+    -3.5,
+    -7.8,
+    -14.2
+   ],
+   "centroid_hz": 798,
+   "tempo_whole": 116.0,
+   "key_best_two": [
+    "A major 0.68",
+    "D minor 0.61"
+   ],
+   "tempo_12s_windows_folded": [
+    116.0,
+    116.0,
+    116.0,
+    116.0
+   ],
+   "tempo_within_2pct": 0.0,
+   "stated_bpm": 112,
+   "last_2s_vs_whole_lu": -3.6,
+   "id": "lounge_spy",
+   "style": "Lounge-spy",
+   "stated_key": "D minor",
+   "bars": 25,
+   "source_take": "lounge_spy_ace_t4.wav",
+   "bar_repeat": {
+    "low_lt200": {
+     "repeat": 0.27,
+     "level_steadiness_db": 3.2
+    },
+    "mid_200_1k": {
+     "repeat": 0.01,
+     "level_steadiness_db": 4.5
+    },
+    "high_gt1k": {
+     "repeat": -0.07,
+     "level_steadiness_db": 3.8
+    }
+   },
+   "mp3": "briefs/087/music/lounge_spy.mp3"
+  },
+  {
+   "seconds": 54.3,
+   "rate": 48000,
+   "channels": 2,
+   "lufs_i": -23.0,
+   "swing_4s_lu": 3.6,
+   "true_peak": -12.3,
+   "bands_lt200_lt1k_lt4k_hi": [
+    -2.4,
+    -5.0,
+    -9.8,
+    -28.9
+   ],
+   "centroid_hz": 376,
+   "tempo_whole": 84.6,
+   "key_best_two": [
+    "A minor 0.77",
+    "A major 0.65"
+   ],
+   "tempo_12s_windows_folded": [
+    85.2,
+    84.0,
+    84.6,
+    84.0
+   ],
+   "tempo_within_2pct": 1.0,
+   "stated_bpm": 84,
+   "last_2s_vs_whole_lu": -0.6,
+   "id": "analog_theremin",
+   "style": "Analog synth and theremin",
+   "stated_key": "A minor",
+   "bars": 19,
+   "source_take": "analog_theremin_ace_t1.wav",
+   "bar_repeat": {
+    "low_lt200": {
+     "repeat": 0.67,
+     "level_steadiness_db": 2.3
+    },
+    "mid_200_1k": {
+     "repeat": 0.32,
+     "level_steadiness_db": 1.8
+    },
+    "high_gt1k": {
+     "repeat": 0.09,
+     "level_steadiness_db": 4.8
+    }
+   },
+   "mp3": "briefs/087/music/analog_theremin.mp3"
+  },
+  {
+   "seconds": 54.5,
+   "rate": 48000,
+   "channels": 2,
+   "lufs_i": -23.0,
+   "swing_4s_lu": 4.3,
+   "true_peak": -9.8,
+   "bands_lt200_lt1k_lt4k_hi": [
+    -2.9,
+    -5.5,
+    -7.3,
+    -18.2
+   ],
+   "centroid_hz": 649,
+   "tempo_whole": 133.9,
+   "key_best_two": [
+    "C minor 0.77",
+    "D# major 0.57"
+   ],
+   "tempo_12s_windows_folded": [
+    132.4,
+    133.9,
+    132.4,
+    133.9
+   ],
+   "tempo_within_2pct": 1.0,
+   "stated_bpm": 132,
+   "last_2s_vs_whole_lu": 0.5,
+   "id": "big_band_tension",
+   "style": "Big-band tension",
+   "stated_key": "C minor",
+   "bars": 30,
+   "source_take": "big_band_tension_ace_t2.wav",
+   "bar_repeat": {
+    "low_lt200": {
+     "repeat": 0.49,
+     "level_steadiness_db": 4.7
+    },
+    "mid_200_1k": {
+     "repeat": 0.59,
+     "level_steadiness_db": 1.5
+    },
+    "high_gt1k": {
+     "repeat": 0.2,
+     "level_steadiness_db": 6.8
+    }
+   },
+   "mp3": "briefs/087/music/big_band_tension.mp3"
+  },
+  {
+   "seconds": 52.5,
+   "rate": 48000,
+   "channels": 2,
+   "lufs_i": -23.0,
+   "swing_4s_lu": 4.2,
+   "true_peak": -9.5,
+   "bands_lt200_lt1k_lt4k_hi": [
+    -5.1,
+    -6.8,
+    -3.2,
+    -29.9
+   ],
+   "centroid_hz": 888,
+   "tempo_whole": 194.0,
+   "key_best_two": [
+    "F major 0.81",
+    "F minor 0.72"
+   ],
+   "tempo_12s_windows_folded": [
+    97.0,
+    97.0,
+    97.0,
+    97.0
+   ],
+   "tempo_within_2pct": 1.0,
+   "stated_bpm": 96,
+   "last_2s_vs_whole_lu": -4.2,
+   "id": "civic_clockwork",
+   "style": "Civic clockwork (my pick)",
+   "stated_key": "F major",
+   "bars": 21,
+   "source_take": "civic_clockwork_ace_t2.wav",
+   "bar_repeat": {
+    "low_lt200": {
+     "repeat": 0.3,
+     "level_steadiness_db": 6.6
+    },
+    "mid_200_1k": {
+     "repeat": 0.33,
+     "level_steadiness_db": 0.9
+    },
+    "high_gt1k": {
+     "repeat": 0.64,
+     "level_steadiness_db": 3.9
+    }
+   },
+   "mp3": "briefs/087/music/civic_clockwork.mp3"
+  }
+ ]
+}

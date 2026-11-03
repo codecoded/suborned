@@ -1,0 +1,30 @@
+$ bun tools/game/playing.ts bun test tools/missions tools/route-diff tools/routines "--timeout=420000"
+bun test v1.4.3 (c6da4a4d3)
+
+tools/missions/check/check.test.ts:
+251 | describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
+252 |   test('route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships', async () => {
+253 |     const c = await check(L, engineAt('tree'), () => {}, { slack: false }); // the working tree's engine, rules, site and people: the route scripts are written against Keel's brief 018 engine (0.7.0: Board and Go), not yet committed; once it is, HEAD and the tree agree
+254 |     expect([c.plays['route-a']!.outcome, c.plays['route-b']!.outcome]).toEqual(['success', 'success']);
+255 |     expect([c.plays['route-a']!.gunfire, c.plays['route-b']!.gunfire]).toEqual([0, 0]);
+256 |     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
+                                                                        ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "MC-0",
++   "MC-3",
++ ]
+
+- Expected  - 1
++ Received  + 4
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/missions/check/check.test.ts:256:67)
+(fail) the Handover, played headless (Keel's engine on the working tree) > route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships [3120.18ms]
+
+ 117 pass
+ 1 fail
+ 1799 expect() calls
+Ran 118 tests across 10 files. [53.69s]
+error: script "guard" exited with code 1

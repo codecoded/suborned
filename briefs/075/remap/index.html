@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Brief 075 remap: pictures (Latch)</title>
+<style>body{font:14px/1.45 -apple-system,Helvetica,Arial,sans-serif;margin:0;background:#f4efe6;color:#2a2a2a}header{padding:14px 24px;background:#24333a;color:#f4efe6}h1{margin:0;font-size:20px}h2{font-size:16px;margin:22px 0 8px}main{padding:8px 24px 40px}img,video{width:100%;border:1px solid #cbbfa8;border-radius:4px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cap{font-size:12px;margin:2px 0 10px}code{font-size:12px}table{border-collapse:collapse}td,th{padding:3px 10px;border-bottom:1px solid #d8cfc0;text-align:left}</style></head><body>
+<header><h1>Brief 075 · the old town remapped around the Handover: pictures</h1><div>Export f41a0df9… (plan v0.5.0 + Datum's arch at (0, 44)), scene rebuilt by HarbourWorldBuilder from <code>out/scratch/latch/golden075/pin/s5-remap.world.json</code>. Every picture offscreen in batchmode.</div></header>
+<main>
+<h2>Plan sheet</h2><p><a href="sheet.html">sheet.html</a> (Datum: the plan with the old town drawn over it) · <a href="plan-sheet.html">plan-sheet.html</a> (the checker's CAD sheet).</p>
+<h2>Overhead, top-down orthographic, the sheet's extent (x −460…380, y −560…300, 2 px/m, north up)</h2>
+<div class="two"><div><img src="frames/overhead-old.png"><div class="cap">old: the old DecoKitStreet scene (old project copy), z − 206 into the plan frame</div></div><div><img src="frames/overhead.png"><div class="cap">now: the remap (<code>Overhead075.Cli</code>; frames/overhead.json)</div></div></div>
+<h2>Golden view (old camera carried into the plan: eye (1.94, 9.72, −120.78))</h2>
+<div class="two"><div><img src="../golden/old.png"><div class="cap">old</div></div><div><img src="../golden/s5-remap.png"><div class="cap">s5-remap (life t 77) · all steps: <a href="../golden/index.html">golden/index.html</a></div></div></div>
+<h2>Play zoom (ortho 14, pitch 38, yaw 30; day)</h2>
+<div class="two">
+<div><img src="frames/today-day-corner-east-wall-a-y030.png"><div class="cap">corner: east-wall/a at Lamplight Lane (rounded StreamCorner)</div></div>
+<div><img src="frames/today-day-corner-n1-y030.png"><div class="cap">corner: n1 on the boulevard</div></div>
+<div><img src="frames/today-day-circus-crescents-y030.png"><div class="cap">Crown Circus and its four crescents (wide, ortho 48)</div></div>
+<div><img src="frames/today-day-orbit-gardens-wide-y030.png"><div class="cap">Orbit Gardens (wide, ortho 30)</div></div>
+<div><img src="frames/today-day-orbit-gardens-y030.png"><div class="cap">Orbit Gardens (play zoom; the dithered band is the occlusion fade over the S1 beam)</div></div>
+<div><img src="frames/today-day-harbour-terrace-wide-y030.png"><div class="cap">harbour terrace (wide, ortho 26): flat, no steps or promenade dressing yet</div></div>
+</div>
+<h2>Handover unchanged (golden/play s3-life before | now)</h2>
+<table><tr><th>view</th><th>mean diff frame</th><th>centre</th><th>% px &gt; 12</th></tr>
+<tr><td>office front 30</td><td>0.02</td><td>0.01</td><td>0.02</td></tr><tr><td>office front 210</td><td>0.04</td><td>0.06</td><td>0.02</td></tr>
+<tr><td>café square 30</td><td>0.10</td><td>0.09</td><td>0.12</td></tr><tr><td>café square 210</td><td>1.71</td><td>0.02</td><td>2.88 (top-right edge only: the frontage across Garden Row, outside the zone)</td></tr></table>
+<div class="two"><img src="frames/pair-office-front-y030.png"><img src="frames/pair-office-front-y210.png"><img src="frames/pair-cafe-square-y030.png"><img src="frames/pair-cafe-square-y210.png"></div>
+<h2>Flyby with life (the old reel's flight, <code>../flyby/remap-keys.json</code>)</h2>
+<video src="../flyby/new-remap.mp4" controls></video>
+<img src="../flyby/grid-remap.png"><div class="cap">old reel / s4-oldtown (074 flight) / now</div>
+</main></body></html>

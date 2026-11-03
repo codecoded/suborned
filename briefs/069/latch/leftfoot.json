@@ -1,0 +1,1365 @@
+{
+  "schema": "suborned.proof069/leftfoot-1",
+  "clipMeta": "firstFrame 0 lastFrame 35 loopBlend True; take 'mixamo.com' 0..35; clip length 1.1667 s, frameRate 30",
+  "loopQuality_current": "GetMuscleClipQualityInfo not found",
+  "source_generic": {
+    "Left": {
+      "planted": 16,
+      "yawMedian": 0.52,
+      "yawRange": [-3.593, 8.933],
+      "pitchMedianPlanted": -40.154,
+      "yawAllFrames": [-169.35, 179.496],
+      "minHeight": 0.087
+    },
+    "Right": {
+      "planted": 18,
+      "yawMedian": -12.842,
+      "yawRange": [-19.323, -10.939],
+      "pitchMedianPlanted": -39.231,
+      "yawAllFrames": [-176.582, -8.416],
+      "minHeight": 0.087
+    }
+  },
+  "humanoid_self": {
+    "Left": {
+      "planted": 16,
+      "yawMedian": 0.934,
+      "yawRange": [-3.504, 8.939],
+      "pitchMedianPlanted": -40.582,
+      "yawAllFrames": [-179.635, 169.842],
+      "minHeight": 0.088
+    },
+    "Right": {
+      "planted": 17,
+      "yawMedian": -12.954,
+      "yawRange": [-18.864, -11.117],
+      "pitchMedianPlanted": -39.18,
+      "yawAllFrames": [-176.507, -8.408],
+      "minHeight": 0.086
+    }
+  },
+  "walkAvatar": {
+    "fileBindPose": {
+      "yawL": 3.685,
+      "yawR": -12.068,
+      "pitchL": -65.389,
+      "pitchR": -39.179
+    },
+    "avatarRestPose": {
+      "yawL": 3.685,
+      "yawR": -12.068,
+      "pitchL": -65.389,
+      "pitchR": -39.179
+    },
+    "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+    "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+  },
+  "rest_c6": {
+    "fileBindPose": {
+      "yawL": 0,
+      "yawR": 0,
+      "pitchL": -43.187,
+      "pitchR": -44.094
+    },
+    "avatarRestPose": {
+      "yawL": 0,
+      "yawR": 0,
+      "pitchL": -43.187,
+      "pitchR": -44.094
+    },
+    "map": "LeftUpperLeg=LeftUpLeg, LeftLowerLeg=LeftLeg, LeftFoot=LeftFoot, LeftToes=LeftToeBase, RightUpperLeg=RightUpLeg, RightLowerLeg=RightLeg, RightFoot=RightFoot, RightToes=RightToeBase",
+    "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+  },
+  "current_c6": {
+    "Left": {
+      "planted": 22,
+      "yawMedian": -5.225,
+      "yawRange": [-30.024, 3.544],
+      "pitchMedianPlanted": -20.308,
+      "yawAllFrames": [-87.571, 7.149],
+      "minHeight": 0.115
+    },
+    "Right": {
+      "planted": 16,
+      "yawMedian": 9.855,
+      "yawRange": [6.61, 10.842],
+      "pitchMedianPlanted": -42.905,
+      "yawAllFrames": [6.61, 158.164],
+      "minHeight": 0.106
+    }
+  },
+  "footIK_c6": {
+    "Left": {
+      "planted": 16,
+      "yawMedian": -3.15,
+      "yawRange": [-8.066, 5.857],
+      "pitchMedianPlanted": -18.479,
+      "yawAllFrames": [-85.112, 15.641],
+      "minHeight": 0.08
+    },
+    "Right": {
+      "planted": 18,
+      "yawMedian": -0.943,
+      "yawRange": [-7.692, 3.933],
+      "pitchMedianPlanted": -44.094,
+      "yawAllFrames": [-7.692, 175.687],
+      "minHeight": 0.118
+    }
+  },
+  "rest_guard": {
+    "fileBindPose": {
+      "yawL": 0,
+      "yawR": 0,
+      "pitchL": -47.547,
+      "pitchR": -48.263
+    },
+    "avatarRestPose": {
+      "yawL": 0,
+      "yawR": 0,
+      "pitchL": -47.547,
+      "pitchR": -48.263
+    },
+    "map": "LeftUpperLeg=LeftUpLeg, LeftLowerLeg=LeftLeg, LeftFoot=LeftFoot, LeftToes=LeftToeBase, RightUpperLeg=RightUpLeg, RightLowerLeg=RightLeg, RightFoot=RightFoot, RightToes=RightToeBase",
+    "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+  },
+  "current_guard": {
+    "Left": {
+      "planted": 16,
+      "yawMedian": -10.322,
+      "yawRange": [-38.9, -4.949],
+      "pitchMedianPlanted": -23.92,
+      "yawAllFrames": [-110.077, 4.38],
+      "minHeight": 0.119
+    },
+    "Right": {
+      "planted": 18,
+      "yawMedian": 15.014,
+      "yawRange": [9.45, 72.744],
+      "pitchMedianPlanted": -46.591,
+      "yawAllFrames": [9.138, 157.61],
+      "minHeight": 0.137
+    }
+  },
+  "footIK_guard": {
+    "Left": {
+      "planted": 16,
+      "yawMedian": -2.576,
+      "yawRange": [-7.742, 6.877],
+      "pitchMedianPlanted": -22.808,
+      "yawAllFrames": [-140.865, 15.743],
+      "minHeight": 0.101
+    },
+    "Right": {
+      "planted": 18,
+      "yawMedian": -1.342,
+      "yawRange": [-8.143, 4.174],
+      "pitchMedianPlanted": -48.263,
+      "yawAllFrames": [-8.143, 176.082],
+      "minHeight": 0.139
+    }
+  },
+  "rest_cp_commuter_01": {
+    "fileBindPose": {
+      "yawL": 1.809,
+      "yawR": -1.809,
+      "pitchL": -26.745,
+      "pitchR": -26.745
+    },
+    "avatarRestPose": {
+      "yawL": 1.809,
+      "yawR": -1.809,
+      "pitchL": -26.744,
+      "pitchR": -26.744
+    },
+    "map": "LeftUpperLeg=LeftUpLeg, LeftLowerLeg=LeftLeg, LeftFoot=LeftFoot, LeftToes=LeftToeBase, RightUpperLeg=RightUpLeg, RightLowerLeg=RightLeg, RightFoot=RightFoot, RightToes=RightToeBase",
+    "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+  },
+  "current_cp_commuter_01": {
+    "Left": {
+      "planted": 13,
+      "yawMedian": -11.337,
+      "yawRange": [-23.083, -8.467],
+      "pitchMedianPlanted": -4.501,
+      "yawAllFrames": [-36.138, 6.166],
+      "minHeight": 0.06
+    },
+    "Right": {
+      "planted": 16,
+      "yawMedian": 9.496,
+      "yawRange": [6.997, 19.146],
+      "pitchMedianPlanted": -26.465,
+      "yawAllFrames": [5.522, 135.269],
+      "minHeight": 0.059
+    }
+  },
+  "footIK_cp_commuter_01": {
+    "Left": {
+      "planted": 17,
+      "yawMedian": -3.907,
+      "yawRange": [-8.534, 5.854],
+      "pitchMedianPlanted": -2.36,
+      "yawAllFrames": [-18.454, 18.086],
+      "minHeight": 0.039
+    },
+    "Right": {
+      "planted": 18,
+      "yawMedian": -2.718,
+      "yawRange": [-9.659, 2.029],
+      "pitchMedianPlanted": -26.744,
+      "yawAllFrames": [-179.586, 169.2],
+      "minHeight": 0.067
+    }
+  },
+  "rest_cp_guard_02": {
+    "fileBindPose": {
+      "yawL": 1.696,
+      "yawR": -1.696,
+      "pitchL": -26.393,
+      "pitchR": -26.393
+    },
+    "avatarRestPose": {
+      "yawL": 1.696,
+      "yawR": -1.696,
+      "pitchL": -26.393,
+      "pitchR": -26.393
+    },
+    "map": "LeftUpperLeg=LeftUpLeg, LeftLowerLeg=LeftLeg, LeftFoot=LeftFoot, LeftToes=LeftToeBase, RightUpperLeg=RightUpLeg, RightLowerLeg=RightLeg, RightFoot=RightFoot, RightToes=RightToeBase",
+    "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+  },
+  "current_cp_guard_02": {
+    "Left": {
+      "planted": 13,
+      "yawMedian": -10.732,
+      "yawRange": [-21.92, -7.675],
+      "pitchMedianPlanted": -4.145,
+      "yawAllFrames": [-33.881, 7.29],
+      "minHeight": 0.06
+    },
+    "Right": {
+      "planted": 16,
+      "yawMedian": 8.688,
+      "yawRange": [6.057, 18.043],
+      "pitchMedianPlanted": -26.082,
+      "yawAllFrames": [4.629, 134.834],
+      "minHeight": 0.06
+    }
+  },
+  "footIK_cp_guard_02": {
+    "Left": {
+      "planted": 17,
+      "yawMedian": -4.026,
+      "yawRange": [-8.55, 5.524],
+      "pitchMedianPlanted": -2.02,
+      "yawAllFrames": [-18.248, 17.894],
+      "minHeight": 0.038
+    },
+    "Right": {
+      "planted": 18,
+      "yawMedian": -2.572,
+      "yawRange": [-9.525, 2.051],
+      "pitchMedianPlanted": -26.393,
+      "yawAllFrames": [-149.363, 179.794],
+      "minHeight": 0.067
+    }
+  },
+  "variant_noLoopBlend": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.634, 169.842],
+        "minHeight": 0.088
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.086
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.57, 7.149],
+        "minHeight": 0.115
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.106
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": 0.119
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.137
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.921, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.06
+      }
+    }
+  },
+  "variant_noLoopBlendAny": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 6,
+        "yawMedian": 7.802,
+        "yawRange": [0, 8.939],
+        "pitchMedianPlanted": -26.46,
+        "yawAllFrames": [-179.634, 169.842],
+        "minHeight": 0.084
+      },
+      "Right": {
+        "planted": 19,
+        "yawMedian": -12.748,
+        "yawRange": [-18.864, -8.408],
+        "pitchMedianPlanted": -39.183,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.081
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 26,
+        "yawMedian": -4.711,
+        "yawRange": [-55.429, 6.045],
+        "pitchMedianPlanted": -19.749,
+        "yawAllFrames": [-87.57, 7.149],
+        "minHeight": 0.128
+      },
+      "Right": {
+        "planted": 19,
+        "yawMedian": 9.865,
+        "yawRange": [6.61, 59.274],
+        "pitchMedianPlanted": -43.312,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.104
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 17,
+        "yawMedian": -10.685,
+        "yawRange": [-72.902, -4.232],
+        "pitchMedianPlanted": -24.503,
+        "yawAllFrames": [-110.078, 4.38],
+        "minHeight": 0.134
+      },
+      "Right": {
+        "planted": 15,
+        "yawMedian": 15.609,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.114
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 15,
+        "yawMedian": -11.337,
+        "yawRange": [-32.196, -2.497],
+        "pitchMedianPlanted": -14.192,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.071
+      },
+      "Right": {
+        "planted": 10,
+        "yawMedian": 9.888,
+        "yawRange": [9.178, 32.137],
+        "pitchMedianPlanted": -27.927,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.04
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 15,
+        "yawMedian": -10.732,
+        "yawRange": [-30.573, -1.77],
+        "pitchMedianPlanted": -13.794,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.072
+      },
+      "Right": {
+        "planted": 10,
+        "yawMedian": 9.097,
+        "yawRange": [8.409, 30.499],
+        "pitchMedianPlanted": -27.531,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.04
+      }
+    }
+  },
+  "variant_takeRange": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.635, 169.842],
+        "minHeight": 0.088
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.086
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.571, 7.149],
+        "minHeight": 0.115
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.106
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": 0.119
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.137
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.92, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.06
+      }
+    }
+  },
+  "variant_takeRangeNoBlend": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.634, 169.842],
+        "minHeight": 0.088
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.086
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.57, 7.149],
+        "minHeight": 0.115
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.106
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": 0.119
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.137
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.921, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.06
+      }
+    }
+  },
+  "variant_heightFromFeetOff": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.635, 169.842],
+        "minHeight": -0.928
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": -0.93
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.57, 7.149],
+        "minHeight": -0.867
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": -0.876
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": -0.864
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": -0.846
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": -0.878
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": -0.879
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.92, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": -0.887
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": -0.887
+      }
+    }
+  },
+  "variant_copyIdleAvatar": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 15.312,
+        "yawR": -14.91,
+        "pitchL": -37.805,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.964,
+        "yawRange": [-3.61, 8.827],
+        "pitchMedianPlanted": -40.273,
+        "yawAllFrames": [-179.648, 170.021],
+        "minHeight": 0.109
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.974,
+        "yawRange": [-18.872, -11.223],
+        "pitchMedianPlanted": -39.19,
+        "yawAllFrames": [-176.543, -8.436],
+        "minHeight": 0.107
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 11,
+        "yawMedian": 0.588,
+        "yawRange": [-11.702, 7.252],
+        "pitchMedianPlanted": -35.751,
+        "yawAllFrames": [-177.917, 177.682],
+        "minHeight": 0.114
+      },
+      "Right": {
+        "planted": 12,
+        "yawMedian": 12.269,
+        "yawRange": [9.266, 12.594],
+        "pitchMedianPlanted": -45.108,
+        "yawAllFrames": [9.266, 142.751],
+        "minHeight": 0.112
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 10,
+        "yawMedian": 0.344,
+        "yawRange": [-4.483, 8.068],
+        "pitchMedianPlanted": -25.2,
+        "yawAllFrames": [-177.451, 178.659],
+        "minHeight": 0.13
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 17.974,
+        "yawRange": [12.012, 45.197],
+        "pitchMedianPlanted": -47.393,
+        "yawAllFrames": [11.112, 140.071],
+        "minHeight": 0.147
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 11,
+        "yawMedian": -1.874,
+        "yawRange": [-6.322, 7.132],
+        "pitchMedianPlanted": -25.47,
+        "yawAllFrames": [-179.383, 142.418],
+        "minHeight": 0.085
+      },
+      "Right": {
+        "planted": 15,
+        "yawMedian": 15.463,
+        "yawRange": [14.187, 45.07],
+        "pitchMedianPlanted": -23.778,
+        "yawAllFrames": [8.884, 107.739],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 11,
+        "yawMedian": -0.842,
+        "yawRange": [-4.995, 8.065],
+        "pitchMedianPlanted": -25.236,
+        "yawAllFrames": [-58.36, 177.826],
+        "minHeight": 0.085
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 14.696,
+        "yawRange": [12.379, 43.786],
+        "pitchMedianPlanted": -23.289,
+        "yawAllFrames": [8.05, 106.856],
+        "minHeight": 0.06
+      }
+    }
+  },
+  "variant_enforceTPose": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.635, 169.842],
+        "minHeight": 0.088
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.086
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.571, 7.149],
+        "minHeight": 0.115
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.106
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": 0.119
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.137
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.92, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.06
+      }
+    }
+  },
+  "variant_neutralLegs": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 0,
+        "yawR": 0,
+        "pitchL": -40,
+        "pitchR": -40
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.889,
+        "yawRange": [-3.617, 8.845],
+        "pitchMedianPlanted": -40.298,
+        "yawAllFrames": [-179.652, 169.815],
+        "minHeight": 0.072
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.947,
+        "yawRange": [-18.848, -11.189],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.584, -8.416],
+        "minHeight": 0.07
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 14,
+        "yawMedian": 0.529,
+        "yawRange": [-5.655, 5.535],
+        "pitchMedianPlanted": -41.835,
+        "yawAllFrames": [-170.886, 11.979],
+        "minHeight": 0.101
+      },
+      "Right": {
+        "planted": 14,
+        "yawMedian": -11.179,
+        "yawRange": [-15.981, -7.423],
+        "pitchMedianPlanted": -41.983,
+        "yawAllFrames": [-179.696, 161.664],
+        "minHeight": 0.104
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 18,
+        "yawMedian": -6.032,
+        "yawRange": [-13.308, 3.679],
+        "pitchMedianPlanted": -46.903,
+        "yawAllFrames": [-165.971, 9.93],
+        "minHeight": 0.146
+      },
+      "Right": {
+        "planted": 19,
+        "yawMedian": -7.39,
+        "yawRange": [-15.209, -3.997],
+        "pitchMedianPlanted": -46.273,
+        "yawAllFrames": [-176.164, 178.241],
+        "minHeight": 0.15
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 17,
+        "yawMedian": -6.215,
+        "yawRange": [-10.109, 1.21],
+        "pitchMedianPlanted": -27.197,
+        "yawAllFrames": [-169.616, 9.866],
+        "minHeight": 0.073
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -8.229,
+        "yawRange": [-12.447, -6.567],
+        "pitchMedianPlanted": -24.955,
+        "yawAllFrames": [-175.247, 94.329],
+        "minHeight": 0.069
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -4.879,
+        "yawRange": [-7.573, 1.937],
+        "pitchMedianPlanted": -26.65,
+        "yawAllFrames": [-167.966, 10.626],
+        "minHeight": 0.074
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -8.749,
+        "yawRange": [-13.176, -7.154],
+        "pitchMedianPlanted": -24.63,
+        "yawAllFrames": [-173.021, 60.007],
+        "minHeight": 0.069
+      }
+    }
+  },
+  "variant_twist0": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.634, 169.842],
+        "minHeight": 0.088
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.181,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.086
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.571, 7.149],
+        "minHeight": 0.115
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.106
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": 0.119
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.137
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.92, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.06
+      }
+    }
+  },
+  "variant_twist1": {
+    "loopQuality": "GetMuscleClipQualityInfo not found",
+    "clipLength": 1.167,
+    "rest": {
+      "fileBindPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "avatarRestPose": {
+        "yawL": 3.685,
+        "yawR": -12.068,
+        "pitchL": -65.389,
+        "pitchR": -39.179
+      },
+      "map": "LeftUpperLeg=mixamorig:LeftUpLeg, LeftLowerLeg=mixamorig:LeftLeg, LeftFoot=mixamorig:LeftFoot, LeftToes=mixamorig:LeftToeBase, RightUpperLeg=mixamorig:RightUpLeg, RightLowerLeg=mixamorig:RightLeg, RightFoot=mixamorig:RightFoot, RightToes=mixamorig:RightToeBase",
+      "limits": "LeftLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightLowerLeg: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightFoot: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); LeftToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00); RightToes: default True min (0.00, 0.00, 0.00) max (0.00, 0.00, 0.00) center (0.00, 0.00, 0.00)"
+    },
+    "self": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": 0.934,
+        "yawRange": [-3.504, 8.939],
+        "pitchMedianPlanted": -40.582,
+        "yawAllFrames": [-179.634, 169.842],
+        "minHeight": 0.088
+      },
+      "Right": {
+        "planted": 17,
+        "yawMedian": -12.954,
+        "yawRange": [-18.864, -11.117],
+        "pitchMedianPlanted": -39.18,
+        "yawAllFrames": [-176.507, -8.408],
+        "minHeight": 0.086
+      }
+    },
+    "c6": {
+      "Left": {
+        "planted": 22,
+        "yawMedian": -5.225,
+        "yawRange": [-30.024, 3.544],
+        "pitchMedianPlanted": -20.308,
+        "yawAllFrames": [-87.571, 7.149],
+        "minHeight": 0.115
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.855,
+        "yawRange": [6.61, 10.842],
+        "pitchMedianPlanted": -42.905,
+        "yawAllFrames": [6.61, 158.164],
+        "minHeight": 0.106
+      }
+    },
+    "guard": {
+      "Left": {
+        "planted": 16,
+        "yawMedian": -10.322,
+        "yawRange": [-38.9, -4.949],
+        "pitchMedianPlanted": -23.92,
+        "yawAllFrames": [-110.077, 4.38],
+        "minHeight": 0.119
+      },
+      "Right": {
+        "planted": 18,
+        "yawMedian": 15.014,
+        "yawRange": [9.45, 72.744],
+        "pitchMedianPlanted": -46.591,
+        "yawAllFrames": [9.138, 157.61],
+        "minHeight": 0.137
+      }
+    },
+    "cp_commuter_01": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -11.337,
+        "yawRange": [-23.083, -8.467],
+        "pitchMedianPlanted": -4.501,
+        "yawAllFrames": [-36.138, 6.166],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 9.496,
+        "yawRange": [6.997, 19.146],
+        "pitchMedianPlanted": -26.465,
+        "yawAllFrames": [5.522, 135.269],
+        "minHeight": 0.059
+      }
+    },
+    "cp_guard_02": {
+      "Left": {
+        "planted": 13,
+        "yawMedian": -10.732,
+        "yawRange": [-21.92, -7.675],
+        "pitchMedianPlanted": -4.145,
+        "yawAllFrames": [-33.881, 7.29],
+        "minHeight": 0.06
+      },
+      "Right": {
+        "planted": 16,
+        "yawMedian": 8.688,
+        "yawRange": [6.057, 18.043],
+        "pitchMedianPlanted": -26.082,
+        "yawAllFrames": [4.629, 134.834],
+        "minHeight": 0.06
+      }
+    }
+  }
+}

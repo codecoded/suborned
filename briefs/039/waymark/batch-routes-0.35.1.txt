@@ -1,0 +1,44 @@
+$ bun run guard dotnet out/missions/engine/tree/bin/suborned-sim.dll batch contracts/missions/handover/routes  (engine 0.35.1, working tree; routes.json itself is the manifest, not a script: 'unknown key closing')
+ok   careless-body-found              failure   enforcer-down          3:32.3  T 8  A 2   expects failure enforcer-down A 2
+ok   careless-enforcer-watches-guard  failure   enforcer-down          2:55.1  T 1  A 2   expects failure enforcer-down A 2
+ok   careless-g-disable               success   -                      3:59.6  T 3  A 2   expects success  A 2
+ok   careless-guard-left-door-held    failure   vale-leaves            6:13.0  T 6  A 1   expects failure vale-leaves A 1
+ok   careless-loop-runs-out           failure   entry-seen-camera      2:52.9  T 4  A 0   expects failure entry-seen-camera A 0
+ok   careless-reporter-not-stopped    success   -                      7:32.2  T 4  A 1   expects success  A 1
+ok   careless-scout-idles-pickup      success   -                      7:32.2  T 4  A 1   expects success  A 1
+ok   careless-takedown-seen-camera    failure   entry-seen-camera      2:37.0  T 1  A 1   expects failure entry-seen-camera A 1
+ok   careless-takedown-seen-crowd     failure   vale-leaves            6:13.0  T 7  A 3   expects failure vale-leaves A 3
+ok   careless-thin-all                success   -                      7:29.3  T 19  A 2   expects success  A 2
+ok   fail-district-seals              failure   sealed                 5:05.0  T 8  A 2   expects failure sealed A 2
+ok   fail-enforcer-down               failure   enforcer-down          2:13.6  T 6  A 2   expects failure enforcer-down A 2
+ok   fail-entry-seen-camera           failure   entry-seen-camera      4:42.9  T 3  A 1   expects failure entry-seen-camera A 1
+ok   fail-entry-seen-guard            failure   entry-seen-guard       3:52.9  T 2  A 1   expects failure entry-seen-guard A 1
+ok   fail-rivals-reach-vale           failure   rivals-reach-vale      6:39.5  T 2  A 1   expects failure rivals-reach-vale A 1
+ok   fail-take-seen-camera            failure   abduction-seen-camera  6:10.0  T 1  A 1   expects failure abduction-seen-camera A 1
+ok   fail-vale-dead                   failure   vale-dead              6:12.0  T 7  A 3   expects failure vale-dead A 3
+ok   fail-vale-leaves                 failure   vale-leaves            6:13.0  T 1  A 0   expects failure vale-leaves A 0
+ok   fight-loud-enforcer-down         failure   enforcer-down          3:15.5  T 9  A 2   expects failure enforcer-down A 2
+ok   fight-loud-wait-square           failure   enforcer-down          4:00.7  T 8  A 2   expects failure enforcer-down A 2
+ok   fight-loud-wait-yard             withdrawn -                      7:29.5  T 9  A 3   expects withdrawn  A 3
+OFF  fight-safe-cell-down             none      -                      8:30.0  T 5  A 1   expects failure cell-down A 1
+ok   fight-safe-rivals-reach-vale     failure   rivals-reach-vale      6:39.5  T 2  A 1   expects failure rivals-reach-vale A 1
+ok   loud-fight                       success   -                      5:06.8  T 26  A 2   expects success  A 2
+ok   loud-left-downed                 success   -                      5:04.7  T 27  A 2   expects success  A 2
+ok   loud-left-standing               success   -                      5:04.7  T 27  A 2   expects success  A 2
+ok   loud                             success   -                      5:01.7  T 27  A 2   expects success  A 2
+ok   route-a-board                    success   -                      4:15.5  T 4  A 0   expects success  A 0
+ok   route-a-disable                  success   -                      4:37.3  T 5  A 1   expects success  A 1
+ok   route-a-pressure-board           success   -                      4:13.8  T 6  A 0   expects success  A 0
+ok   route-a-pressure                 success   -                      4:31.5  T 6  A 0   expects success  A 0
+ok   route-a                          success   -                      4:37.3  T 4  A 0   expects success  A 0
+ok   route-b-board                    success   -                      7:35.4  T 4  A 0   expects success  A 0
+ok   route-b-thin                     success   -                      7:32.2  T 4  A 0   expects success  A 0
+ok   route-b                          success   -                      7:32.2  T 4  A 0   expects success  A 0
+ok   route-g-board                    success   -                      3:59.6  T 5  A 1   expects success  A 1
+ok   route-g-fast-board               success   -                      3:02.0  T 5  A 1   expects success  A 1
+ok   route-g-fast                     success   -                      2:58.6  T 5  A 1   expects success  A 1
+ok   route-g-kill-board               success   -                      5:36.1  T 2  A 1   expects success  A 1
+ok   route-g-kill                     success   -                      5:47.0  T 2  A 1   expects success  A 1
+ok   route-g                          success   -                      3:59.6  T 5  A 1   expects success  A 1
+ok   withdraw                         withdrawn -                      0:30.0  T 0  A 0   expects withdrawn  A 0
+41/42 routes play to their intended outcome

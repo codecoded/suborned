@@ -17,7 +17,9 @@
 //   unless  an engine log code (or several) that must not be logged by the order or `clear` s after it (captured: nobody left behind at
 //           the extract; withdraw.car: the car does not leave before Vale is in, brief 031);
 //   every   seconds between the search's coarse tries (default 5): a step whose window is shorter (a takedown on a passer-by is taken only
-//           while he is within reach, about 2 s) sets it under that window, so the search can't step over it (brief 023).
+//           while he is within reach, about 2 s) sets it under that window, so the search can't step over it (brief 023);
+//   refused an engine refusal code: the step is placed at the first tick the engine refuses the order with that code, not where it is
+//           taken (brief 059 MC-13: a player's Go on a held car, refused car-held, is part of the record).
 // A step is never taken where its order would end its op's walk in (engine 0.23.0: a person act given out of reach walks in, and any
 // other order to that agent ends the walk, so the act silently never happens); it waits until the act has started and ended, as a busy
 // agent's next order always did.
@@ -35,7 +37,7 @@ export const Step = z.strictObject({
   run: z.boolean().optional(), force: z.boolean().optional(), stance: z.enum(['hold', 'return', 'free']).optional(), how: z.enum(['knockout', 'kill']).optional(),
   label: z.string().min(1).optional(), after: z.array(z.string().min(1)).optional(), gap: z.number().nonnegative().optional(),
   at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), unless: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional(), why: z.string().min(1).optional(),
-  every: z.number().min(0.1).max(5).optional(),
+  every: z.number().min(0.1).max(5).optional(), refused: z.string().min(1).optional(),
 });
 export const Plan = z.strictObject({
   schema: z.literal('suborned.mission.plan/1'), mission: z.string().min(1), note: z.string().min(1),
@@ -66,6 +68,7 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
     const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12, { replay: false })).map((p, k) => {
       const t = ts[k]!, mine = p.orders.findLast(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
       const cuts = !!s.op && p.log.some(l => l.code === 'order.walk-in-ends' && l.tick === t && l.text.startsWith(`${s.op}:`));
+      if (s.refused) return !!mine && !mine.ok && mine.code === s.refused && (!s.when || logged(p.log, s.when, t));
       return !!mine?.ok && !cuts && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => (typeof s.unless === 'string' ? [s.unless] : s.unless!).includes(l.code)));
     });
     let found = -1;

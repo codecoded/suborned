@@ -1,0 +1,121 @@
+{
+ "stand aim": {
+  "open": {
+   "px": 599,
+   "tall": 58,
+   "zmax": 1.63
+  },
+  "hedge 0.85 m": {
+   "px": 503,
+   "tall": 42,
+   "zmax": 1.63
+  },
+  "hedge 0.45 m": {
+   "px": 423,
+   "tall": 33,
+   "zmax": 1.63
+  }
+ },
+ "kneel": {
+  "open": {
+   "px": 479,
+   "tall": 48,
+   "zmax": 1.24
+  },
+  "hedge 0.85 m": {
+   "px": 381,
+   "tall": 30,
+   "zmax": 1.24
+  },
+  "hedge 0.45 m": {
+   "px": 262,
+   "tall": 21,
+   "zmax": 1.24
+  }
+ },
+ "kneel+aim": {
+  "open": {
+   "px": 489,
+   "tall": 47,
+   "zmax": 1.22
+  },
+  "hedge 0.85 m": {
+   "px": 391,
+   "tall": 29,
+   "zmax": 1.22
+  },
+  "hedge 0.45 m": {
+   "px": 275,
+   "tall": 20,
+   "zmax": 1.22
+  }
+ },
+ "kneel+duck": {
+  "open": {
+   "px": 517,
+   "tall": 44,
+   "zmax": 1.02
+  },
+  "hedge 0.85 m": {
+   "px": 419,
+   "tall": 26,
+   "zmax": 1.02
+  },
+  "hedge 0.45 m": {
+   "px": 296,
+   "tall": 17,
+   "zmax": 1.02
+  }
+ },
+ "shield face": {
+  "open": {
+   "px": 474,
+   "tall": 43,
+   "zmax": 1.0
+  },
+  "hedge 0.85 m": {
+   "px": 113,
+   "tall": 8,
+   "zmax": 1.0
+  },
+  "hedge 0.45 m": {
+   "px": 37,
+   "tall": 40,
+   "zmax": 1.0
+  }
+ },
+ "squat (glyph)": {
+  "open": {
+   "px": 417,
+   "tall": 26,
+   "zmax": 0.95
+  },
+  "hedge 0.85 m": {
+   "px": 261,
+   "tall": 15,
+   "zmax": 0.95
+  },
+  "hedge 0.45 m": {
+   "px": 60,
+   "tall": 6,
+   "zmax": 0.95
+  }
+ },
+ "cower hold": {
+  "open": {
+   "px": 534,
+   "tall": 41,
+   "zmax": 1.04
+  },
+  "hedge 0.85 m": {
+   "px": 480,
+   "tall": 31,
+   "zmax": 1.04
+  },
+  "hedge 0.45 m": {
+   "px": 385,
+   "tall": 22,
+   "zmax": 1.04
+  }
+ }
+}

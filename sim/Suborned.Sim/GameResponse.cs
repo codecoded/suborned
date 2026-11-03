@@ -76,7 +76,7 @@ namespace Suborned.Sim
         void CoverScene(TdAct? a, Pt scene, string stash, int launch)
         {
             if (a == null) return;
-            var at = S.Grid.NearestFree(scene) ?? scene;
+            var at = Walk.NearestFree(scene) ?? scene;
             foreach (var u in Units) if (u.St != "gone" && u.Act == a.Id && u.Scene && G.Within(u.Dest, at, witnessRange)) { if (stash.Length > 0 && !u.ToOpen.Contains(stash) && u.St != "hold") u.ToOpen.Add(stash); return; }
             Unit? best = null; int bt = int.MaxValue;
             foreach (var u in Units)
@@ -90,7 +90,7 @@ namespace Suborned.Sim
             if (best == null) return;
             if (best.St != "wait")
             {
-                var from = UnitPose(best)!.Value.pos; var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, at);
+                var from = UnitPose(best)!.Value.pos; var route = Walk.Route(Walk.NearestFree(from) ?? from, ClearStop(best.Id, at)); // brief 081 (fight.spacing): beside who stands there
                 best.Route = new Path(route != null && route.Length >= 2 ? route : new[] { from, at }); best.Launch = Tick; best.St = "walk"; // radioed: it turns now
             }
             best.Dest = at; best.Act = a.Id; best.Scene = true; best.Verified = false; best.ToOpen.Clear(); if (stash.Length > 0) best.ToOpen.Add(stash);
@@ -128,7 +128,7 @@ namespace Suborned.Sim
         void BuildDests(TdAct? a, Pt scene, Person? raiser)
         {
             var l = new List<Pt>();
-            void add(Pt? p) { if (!p.HasValue) return; var f = S.Grid.NearestFree(p.Value) ?? p.Value; foreach (var x in l) if (G.Within(x, f, witnessRange)) return; l.Add(f); }
+            void add(Pt? p) { if (!p.HasValue) return; var f = Walk.NearestFree(p.Value) ?? p.Value; foreach (var x in l) if (G.Within(x, f, witnessRange)) return; l.Add(f); }
             add(scene);
             if (a != null)
             {
@@ -207,8 +207,8 @@ namespace Suborned.Sim
         /// a confirmation (Motive §2.3). Its officers verify and search like any unit.</summary>
         void CallScene(int arrival, Pt scene, TdAct? a)
         {
-            var from = S.Stand(S.SecEntry); var to = S.Grid.NearestFree(scene) ?? scene;
-            var route = S.Grid.Route(from, to);
+            var from = S.Stand(S.SecEntry); var to = Walk.NearestFree(scene) ?? scene;
+            var route = Walk.Route(from, to);
             if (route != null && route.Length >= 2) securityPath = new Path(route);
             SecurityArrives = arrival; unitsSent++;
             if (sealOnArrival) { sealOnArrival = false; SealFrom(arrival, () => pendingSealOrigin); }
@@ -218,7 +218,7 @@ namespace Suborned.Sim
         void Cordon(int launch)
         {
             cordonSent = true; var lv = DialNow;
-            var mouths = new List<Pt>(); foreach (var (id, at, kind) in S.Refuges) if (kind == "mouth") mouths.Add(S.Grid.NearestFree(at) ?? at);
+            var mouths = new List<Pt>(); foreach (var (id, at, kind) in S.Refuges) if (kind == "mouth") mouths.Add(Walk.NearestFree(at) ?? at);
             for (int i = 0; i < lv.A3Units && mouths.Count > 0; i++) { var u0 = Units.Count; if (!SendPolice(null, mouths[i % mouths.Count], false, launch + i * R.LaunchGapTicks, "")) break; for (int j = u0; j < Units.Count; j++) Units[j].Cordon = true; }
             if (lv.DoorsLock) Note("doors.lock", "Lockdown: the Office doors are locked.");
         }
@@ -231,8 +231,8 @@ namespace Suborned.Sim
         }
         int TravelTicks(Pt from, Pt to, int speed)
         {
-            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(to) ?? to;
-            var route = S.Grid.Route(a, b); long len = route == null ? G.Dist(a, b) * 10L : new Path(route).Length;
+            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            var route = Walk.Route(a, b); long len = route == null ? G.Dist(a, b) * 10L : new Path(route).Length;
             return (int)((len + speed - 1) / speed);
         }
         int CombatantCount()
@@ -240,7 +240,7 @@ namespace Suborned.Sim
             int n = 0;
             if (!GuardDown && !GuardGun.Down) n++; if (!PatrolDown) n++;
             foreach (var g in SecGuns) if (!g.Down) n++;
-            if (RivalsPresent) n++;
+            foreach (var m in Crew) if (!m.Fight && Up(m) && m.OnFoot) n++; // brief 059: each member of the crew on the street
             foreach (var h in Hostiles) if (!h.Down && h.Present) n++;
             foreach (var u in Units) if (!u.Patrol && !u.Legacy && !u.Gun.Down && u.St != "gone") n++;
             return n;
@@ -271,8 +271,12 @@ namespace Suborned.Sim
         bool UnitSees(Unit u, Pt p, bool crowd = true)
         {
             var s = UnitPose(u); if (!s.HasValue) return false;
-            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, u.Robot ? 0 : near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p)); // brief 031 L2: a robot by its cone only, an officer also within near
+            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, u.Robot ? 0 : near, p) && UnitEyeSees(u, s.Value.pos, p) && !(crowd && UnitEyeCrowd(u, s.Value.pos, p)); // brief 031 L2: a robot by its cone only, an officer also within near
         }
+        /// <summary>Brief 055 §7: a unit's eye above its floor (perception.mount): the patrol robot's face, a response robot's lamp, an officer's eye.</summary>
+        int UnitMount(Unit u) => u.Patrol ? R.MountPatrolCm : u.Robot ? R.MountRobotCm : eye;
+        bool UnitEyeSees(Unit u, Pt pos, Pt p) => u.Patrol || u.Robot ? EyeSees(pos, UnitMount(u), p) : Sees(pos, p);
+        bool UnitEyeCrowd(Unit u, Pt pos, Pt p) => u.Patrol || u.Robot ? EyeCrowd(pos, UnitMount(u), p) : CrowdBlocks(pos, p);
 
         void UnitsStep()
         {
@@ -310,8 +314,8 @@ namespace Suborned.Sim
                         if (Tick < u.Launch) break;
                         {
                             var from = u.Patrol ? PatrolPose()!.Value.pos : u.From;
-                            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(u.Dest) ?? u.Dest;
-                            var route = S.Grid.Route(a, b); u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
+                            var a = Walk.NearestFree(from) ?? from; var b = ClearStop(u.Id, Walk.NearestFree(u.Dest) ?? u.Dest); // brief 081 (engine 0.37.0; fight.spacing): officers sent to one place spread round it, each past the last's claim
+                            var route = Walk.Route(a, b); u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
                             u.Launch = Tick; u.St = "walk";
                             if (u.Patrol) Note("patrol.alarm", "The patrol leaves its sweep for the alarm.");
                         }
@@ -341,7 +345,7 @@ namespace Suborned.Sim
                 if (standDown && (u.St == "hold" || (u.St == "check" && !HeldScene(u))) && !u.Legacy && !u.Cordon)
                 {
                     if (u.Patrol) { var p = UnitPose(u)!.Value.pos; u.St = "gone"; PatrolAlarmed = false; chasePos = p; PatrolChasing = true; patrolReturning = true; PatrolGun.NoFoeSince = -1; Note("patrol.stands-down", "The patrol goes back to its sweep."); continue; }
-                    var here = UnitPose(u)!.Value.pos; var route = S.Grid.Route(S.Grid.NearestFree(here) ?? here, S.Grid.NearestFree(u.From) ?? u.From);
+                    var here = UnitPose(u)!.Value.pos; var route = Walk.Route(Walk.NearestFree(here) ?? here, Walk.NearestFree(u.From) ?? u.From);
                     u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { here, u.From }); u.Launch = Tick; u.St = "back";
                 }
                 if (u.St == "back" && u.Route != null && (long)(Tick - u.Launch) * u.Speed >= u.Route.Length) u.St = "gone";
@@ -427,7 +431,7 @@ namespace Suborned.Sim
         {
             if (at >= INF) { sealOnArrival = true; if (origin != null) { try { pendingSealOrigin = origin(); } catch (Exception e) when (!(e is OutOfMemoryException)) { } } return; }
             int seal = at + T(SealS);
-            if (seal < Lockdown) { int lockBefore = Lockdown; Lockdown = seal; if (origin != null) SealOrigin(lockBefore, origin); Note("seal.starts", $"Confirmed at Alert {Alert}: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)})."); }
+            if (seal < Lockdown) { int lockBefore = Lockdown; Lockdown = seal; SealMoved(lockBefore); if (origin != null) NoteSealOrigin(lockBefore, origin); Note("seal.starts", $"Confirmed at Alert {Alert}: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)})."); }
         }
 
         // ---------------------------------------------------------------- the scene held (Motive rev 4 R4.1; Sky 2026-10-16)
@@ -483,34 +487,53 @@ namespace Suborned.Sim
             else return;
             var h = new SceneHold { Act = a.Id, At = at }; h.Doors.AddRange(DoorsInSightOf(at));
             SceneHolds.Add(h);
-            if (!Units.Exists(u => !u.Robot && u.Act == a.Id && u.Scene && u.St != "gone" && u.St != "back" && G.Within(u.Dest, S.Grid.NearestFree(at) ?? at, witnessRange))) // a unit already bound for this scene (Alert 2's response unit)
+            if (!Units.Exists(u => !u.Robot && u.Act == a.Id && u.Scene && u.St != "gone" && u.St != "back" && G.Within(u.Dest, Walk.NearestFree(at) ?? at, witnessRange))) // a unit already bound for this scene (Alert 2's response unit)
             {
                 int counted = unitsSent;
-                if (SendPolice(a, S.Grid.NearestFree(at) ?? at, true, Tick + T(DialNow.DispatchS), "")) { unitsSent = counted; Note("security.called", $"A body is found: a unit is sent to hold the scene{(h.Doors.Count > 0 ? " (" + string.Join(", ", h.Doors) + ")" : "")}. Security is coming."); }
+                if (SendPolice(a, Walk.NearestFree(at) ?? at, true, Tick + T(DialNow.DispatchS), "")) { unitsSent = counted; Note("security.called", $"A body is found: a unit is sent to hold the scene{(h.Doors.Count > 0 ? " (" + string.Join(", ", h.Doors) + ")" : "")}. Security is coming."); }
             }
         }
 
         // ---------------------------------------------------------------- check-in marks (Motive §5.1)
 
         /// <summary>A staff person's post now or next in their routine (a stop at a staffed door's place), and its shift (contiguous stops
-        /// there). The cast guard's post is the mission's (he holds it all mission).</summary>
+        /// there). The cast guard's post is the mission's (he holds it all mission). Engine 0.34.0 (brief 067 L, Pulse's note 3; GDD §05:
+        /// every staff post checks in every 90 s from its shift start): a stop at a post's waiting point (the people file's `beside`) is a stop
+        /// at the door it stands beside, so the relief who stands beside a post a cast person holds keeps her marks; a stop there right
+        /// before a stop at that door is a relief's wait (the last minute of her walk), not her shift.</summary>
         (string place, Pt at, int from, int to)? PostOf(Person p, int tick)
         {
             if (!IsStaff(p)) return null;
             var stops = StopsOf(p); if (stops == null) return null;
+            string PostAt(int k)
+            {
+                var pl = stops[k].place;
+                if (People2 == null || !People2.Beside.TryGetValue(pl, out var door)) return pl;
+                bool wait = k + 1 < stops.Count && stops[k + 1].place == door && stops[k + 1].from == stops[k].to;
+                return wait ? "" : door;
+            }
             for (int i = 0; i < stops.Count; i++)
             {
-                var (place, from, to, _) = stops[i];
+                var (_, from, to, _) = stops[i]; var place = PostAt(i);
+                if (place.Length == 0) continue;
                 Pt? door = null; foreach (var (id, at, kind) in S.Refuges) if (kind == "door" && id == "door:" + place) door = at;
                 if (!door.HasValue) continue;
-                int j = i; while (j + 1 < stops.Count && stops[j + 1].place == place && stops[j + 1].from == stops[j].to) j++;
+                int j = i; while (j + 1 < stops.Count && PostAt(j + 1) == place && stops[j + 1].from == stops[j].to) j++;
                 int end = p == GuardP ? INF : stops[j].to;
+                if (p == GuardP && S.GuardMark >= 0) { int per = T(R.CheckInPeriodS), off = ((from - T(S.GuardMark)) % per + per) % per; from -= off; } // brief 080 (pacing): his marks stay 1:00, 2:30, 4:00 when the shift comes forward, whatever minute his stop began
                 if (end > tick) return (place, door.Value, from, end);
                 i = j;
             }
             return null;
         }
-        List<(string place, int from, int to, bool outside)>? StopsOf(Person p) => People2 != null && People2.Stops.TryGetValue(p.Id, out var s) ? s : null;
+        List<(string place, int from, int to, bool outside)>? StopsOf(Person p)
+        {
+            if (People2 == null || !People2.Stops.TryGetValue(p.Id, out var s)) return null;
+            if (!Start.OldClock) return s;
+            if (oldStops.TryGetValue(p.Id, out var o)) return o; // test only: a minute later, as the walkers are (SeedStart)
+            o = new List<(string, int, int, bool)>(s.Count); foreach (var (pl, f, t, ou) in s) o.Add((pl, f + T(OldClockS), t + T(OldClockS), ou)); oldStops[p.Id] = o; return o;
+        }
+        readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> oldStops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);
         /// <summary>The next check-in mark at or after `tick` of a staff person (ticks), or -1.</summary>
         public int NextMarkOf(Person p, int tick)
         {
@@ -586,7 +609,7 @@ namespace Suborned.Sim
                         Note("person.missed", $"{Who(p)} expected {Who(q)} at {place} and grows suspicious.");
                         var at = PosOfPerson(p) ?? placeAt;
                         if (IsStaff(p) || PosOfPerson(p) == null) AddRep(a, "missing", p.Id, p, placeAt, Tick + T(IsStaff(p) ? R.PostCallS : R.CallS), "radio");
-                        else WalkToPhone(a, p, WalkerOf(p), "missing", at, opSpeed, Tick, placeAt, "");
+                        else WalkToPhone(a, p, WalkerOf(p), "missing", at, peopleWalk, Tick, placeAt, "");
                     }
                 }
             }
@@ -637,8 +660,8 @@ namespace Suborned.Sim
         {
             guardBackAt = -1; if (GuardDown || !GuardHeld || heldPhase != "woken") return;
             var from = heldPos; GuardHeld = false;
-            guardRun = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
-            guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
+            guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
+            guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + guardSpeed - 1) / guardSpeed);
             Note("guard.back-to-post", "The guard walks back to his post.");
         }
 

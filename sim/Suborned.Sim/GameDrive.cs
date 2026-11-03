@@ -62,7 +62,7 @@ namespace Suborned.Sim
         /// "busy": a busy agent is pinned anyway), scaled by the playground pace.</summary>
         int DriveCapMm(Op op, bool run)
         {
-            bool canRun = run && !(op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.Id == OpId.Tech && LoopOn);
+            bool canRun = run && !(op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.Id == OpId.Tech && Tethered);
             int pace = PaceOf(op, canRun);
             return Math.Max(1, (int)((long)pace * DrivePacePm / 1000));
         }
@@ -159,7 +159,7 @@ namespace Suborned.Sim
             if (op.Gun.TrigT.Length > 0 || op.Gun.Trig || op.Gun.TrigTap) { ClearTrigger(op.Gun); if (op.Gun.Order.Length == 0) op.Gun.Target = ""; } // tuning.md §11: control ends, the trigger with it
             var resume = op.DriveResume; bool resumeRun = op.DriveResumeRun; op.DriveResume = null; op.DriveResumeRun = false;
             if (!release || DriveOnRelease != "resume" || !resume.HasValue || op.Down || op.Inside || op.InCar || op.Busy != null) return;
-            var route = S.Grid.Route(op.Pos, resume.Value); if (route == null) return;
+            var route = Walk.Route(op.Pos, resume.Value); if (route == null) return;
             op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; if (op.Walk.Length == 0) { op.Walk = null; return; }
             bool run = resumeRun && DriveCapMm(op, true) > DriveCapMm(op, false); // a run where one is allowed (as RunRefusal, without its refusal)
             op.Running = run; op.WalkSpeed = PaceOf(op, run);

@@ -190,6 +190,7 @@ Shader "DecoKit/Complex Lit Cutaway"
             // -------------------------------------
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_FORWARD
@@ -335,6 +336,7 @@ Shader "DecoKit/Complex Lit Cutaway"
             // -------------------------------------
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/GBufferOutputFormat.hlsl"
             ENDHLSL
@@ -438,6 +440,7 @@ Shader "DecoKit/Complex Lit Cutaway"
             // -------------------------------------
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_DEPTH_NORMALS

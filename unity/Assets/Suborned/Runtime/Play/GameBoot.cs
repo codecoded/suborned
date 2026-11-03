@@ -19,6 +19,13 @@ namespace Suborned.Play
     {
         public static bool Arg(string name) => Environment.GetCommandLineArgs().Contains(name);
         public static string ArgValue(string name) { var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, name); return i >= 0 && i + 1 < a.Length ? a[i + 1] : null; }
+        [System.Runtime.InteropServices.DllImport("libc", EntryPoint = "_exit")] static extern void SysExit(int code);
+        /// <summary>Brief 078: `-fastExit` (the batch's delta proof, shots and stills): the report is written, so the process ends now with this exit code. Application.Quit tears the whole scene down, about 23 s on OldTown.unity, and a delta checks nothing there; a full proof still quits through Unity.</summary>
+        public static void Leave(int code)
+        {
+            if (Application.isEditor || !Arg("-fastExit")) { Application.Quit(code); return; }
+            try { SysExit(code); } catch (Exception e) { Debug.LogWarning($"-fastExit: {e.Message}; quitting through Unity"); Application.Quit(code); }
+        }
 
         /// <summary>A proof, a batch row or a probe launched this player (the same rule as tools/game/playing.ts: any flag but a person's launch
         /// flags: -windowed, -popupwindow, -screen-*, -window-mode, -monitor, -psn_, -NS*, -Apple*). Batchmode always.</summary>
@@ -46,6 +53,7 @@ namespace Suborned.Play
             if (ArgValue("-rangeShots") is string rs) { var sg = new GameObject("range-shots"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<RangeShots>().Dir = rs; return; } // brief 029, engine 0.18 (Latch)
             if (ArgValue("-shots031") is string sd) { var sg = new GameObject("shots-031"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots031>().Dir = sd; return; } // brief 031's shots (Latch)
             if (ArgValue("-drawCheck") is string dc) { var dg = new GameObject("draw-check"); UnityEngine.Object.DontDestroyOnLoad(dg); dg.AddComponent<DrawCheck>().Dir = dc; return; } // Splice 2026-10-21: the short blank-frame check `bun run game` takes after a rebuild
+            if (ArgValue("-proof123") is string p123) { var pg = new GameObject("proof-123"); UnityEngine.Object.DontDestroyOnLoad(pg); pg.AddComponent<Proof123Run>().Dir = p123; return; } // host round 4 (batch 0.2.123): the fight and looks frames alone
             var dir = ArgValue("-gameProof"); if (dir == null) return;
             var go = new GameObject("game-proof"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<GameProof>().Dir = dir;
         }
@@ -89,12 +97,23 @@ namespace Suborned.Play
             Destroy(t); return seen.Count > 16;
         }
 
+        /// <summary>`-proofOnly a,b,…`: run just these sections (GATED names, `drive` for the driven session, `frames` for the follow and people spots); every other section stays null.
+        /// The batch uses it for a delta proof (tools/game/proofdelta.ts). A null section fails the gate unless the ledger holds an earlier pass with nothing it reads changed since.</summary>
+        static readonly HashSet<string> only = GameBoot.ArgValue("-proofOnly") is string po ? new HashSet<string>(po.Split(',', StringSplitOptions.RemoveEmptyEntries)) : null;
+        static bool Only(string section) { bool on = only == null || only.Contains(section); if (on) Stamp(section); return on; }
+        /// <summary>Brief 078: when each section started, seconds since the player began, in order: proof.json's frames.sectionAt, printed by the check as what each took.</summary>
+        static readonly List<(string name, float at)> stamps = new();
+        static void Stamp(string name) { foreach (var x in stamps) if (x.name == name) return; stamps.Add((name, Time.realtimeSinceStartup)); }
+        /// <summary>Brief 078: the follow and people frame-time spots are not in the proof; `-proofSpots` (bun run batch --spots) or `-proofOnly frames` takes them. They never gated and the Air is the real measure.</summary>
+        static bool Spots => GameBoot.Arg("-proofSpots") || (only != null && only.Contains("frames"));
+
         IEnumerator Start()
         {
             Directory.CreateDirectory(Dir);
             HandoverHost h = null; float t0 = Time.realtimeSinceStartup;
             while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write(null, "no host after 60 s"); Application.Quit(2); yield break; } yield return null; }
             h.controls.conversations = ConversationScenes.Never; // brief 032: the proof measures play, never a conversation cutaway (its café spot played one)
+            Stamp("boot");
             yield return new WaitForSecondsRealtime(3f); // the HUD built, the briefing up, the world streamed in
             log.Add($"briefing up: {h.ShowBriefing}, modal {h.Modal}, screen {Screen.width}x{Screen.height} {Screen.fullScreenMode}, HUD scale {HudScale()}");
             yield return Shot("briefing", "active");
@@ -106,12 +125,13 @@ namespace Suborned.Play
             yield return Shot("play", "rest");
             // frame times at play zoom, the clock running
             var dts = new List<float>(); float s0 = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup - s0 < 10f) { yield return null; dts.Add(Time.unscaledDeltaTime * 1000f); }
+            float frameS = only == null ? 10f : 1f; // a delta proof is not a frame-time measure
+            while (Time.realtimeSinceStartup - s0 < frameS) { yield return null; dts.Add(Time.unscaledDeltaTime * 1000f); }
             dts.Sort(); float mean = dts.Average(), p95 = dts[(int)(dts.Count * 0.95f)], p99 = dts[(int)(dts.Count * 0.99f)];
             int slow = dts.Count(d => d > 1000f / 60f * 1.2f);
             // brief 016: the same at each of the four yaws (the view turned with the host's own snap; 1 s to settle, 6 s sampled each)
             var byYaw = new List<string>();
-            for (int k = 0; k < 4; k++)
+            for (int k = 0; k < (only == null ? 4 : 0); k++)
             {
                 h.TurnSnap(k); yield return new WaitForSecondsRealtime(1f);
                 var ys = new List<float>(); float y0 = Time.realtimeSinceStartup;
@@ -123,36 +143,45 @@ namespace Suborned.Play
             h.TurnSnap(0);
             // the test follow view (Sky 2026-10-18): frame times behind an agent at the café front, the pickup and mid-fight (FollowSpots)
             var follow = new List<string>();
-            yield return FollowSpots(h, Dir, log, follow);
+            if (Spots) yield return FollowSpots(h, Dir, log, follow);
             // brief 025: take control of the Scout at street level (frame times while driven), E on Inez, let go; the session replays headless (game:check)
             var drive = new List<string>(); var session = new string[1];
-            yield return DriveSpot(h, Dir, log, drive, session);
+            if (Only("drive")) yield return DriveSpot(h, Dir, log, drive, session);
             // Latch 2026-10-21: the input checks (a ground click while driven, WASD taking the stick back; a fire order stopping a walk)
             var driveClick = new string[] { "null" }; var fireStop = new string[] { "null" };
             ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}");
-            yield return ProofInput.DriveClick(h, log, driveClick);
-            yield return ProofInput.FireStop(h, log, fireStop);
+            if (Only("driveClick")) yield return ProofInput.DriveClick(h, log, driveClick);
+            if (Only("fireStop")) yield return ProofInput.FireStop(h, log, fireStop);
             // brief 041: the ring-on-press and hold-ring checks are the Built scheme's (0.2.34 as it was); the Double click scheme (the default) has its own (dblClick)
             h.controls.preset = ControlPreset.Built; h.ControlsChanged(); yield return null;
-            var ringCheck = new string[] { "null" }; yield return ProofInput.RingCheck(h, log, ringCheck); // brief 038's done-check
-            var act = new string[] { "null" }; yield return ProofFire.Act(h, Dir, log, act);
+            var ringCheck = new string[] { "null" }; if (Only("ringCheck")) yield return ProofInput.RingCheck(h, log, ringCheck); // brief 038's done-check
+            var act = new string[] { "null" }; if (Only("act")) yield return ProofFire.Act(h, Dir, log, act);
             h.controls.preset = ControlPreset.DoubleClick; h.ControlsChanged(); yield return null;
             // brief 024 (action-game controls, firing): the input map, the act on the prompt, the trigger and its marks and animation, the cars
             var inputMap = new string[] { "null" }; ProofFire.InputMap(log, inputMap);
-            var dblClick = new string[] { "null" }; yield return ProofInput.DblClick(h, Dir, log, dblClick); // brief 041: single and double clicks on a person, a prop and the ground; the right tap and hold
             // brief 041's port: Click walks, hold acts (the default) from here on: its Handover proofs, then fire, cars and the click-through under it
             h.controls.preset = ControlPreset.HoldActs; h.ControlsChanged(); yield return null;
-            var holdActs = new string[] { "null" }; yield return ProofHold.Handover(h, Dir, log, holdActs);
-            var done = new string[] { "null" }; yield return ProofDone.Handover(h, Dir, log, done);
-            var rings = new string[] { "null" }; yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
-            var fire = new string[] { "null" }; var fireSession = new string[1]; yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
-            var cars = new string[] { "null" }; yield return ProofFire.Cars(h, Dir, log, cars);
-            var hudClick = new string[] { "null" }; yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
+            var dblClick = new string[] { "null" }; if (Only("dblClick")) yield return ProofInput.DblClick(h, Dir, log, dblClick); // item 33 (in the default preset): a left click rings a thing, a double keeps it, the ground walks and runs; a right tap does nothing, a right hold fires
+            var holdActs = new string[] { "null" }; if (Only("holdActs")) yield return ProofHold.Handover(h, Dir, log, holdActs);
+            var done = new string[] { "null" }; if (Only("done")) yield return ProofDone.Handover(h, Dir, log, done);
+            var levels = new string[] { "null" }; if (Only("levels")) yield return ProofLevels.Handover(h, Dir, log, levels); // brief 055 step 1: people on the drawn floor (the Office landing and steps)
+            var r29 = new string[] { "null" }; if (Only("r29")) yield return Proof29.Run(h, Dir, log, r29);
+            var r118 = new string[] { "null" }; if (Only("r118")) yield return Proof118.Run(h, Dir, log, r118); // batch 0.2.118: engine 0.31.0's cameras (gated), Glint's H, R and V shots (pictures, measured by Glint) // engine 0.28/0.29 port round (next-batch 19-31): mood, cones, a downed agent, the patrol, the junction
+            var r059 = new string[] { "null" }; if (Only("r059")) yield return Proof059.Run(h, Dir, log, r059);
+            var r067 = new string[] { "null" }; if (Only("r067")) yield return Proof067.Run(h, Dir, log, r067); // batch 0.2.123: brief 067
+            var r123 = new string[] { "null" }; if (Only("r123")) yield return Proof123.Run(h, Dir, log, r123); // batch 0.2.123 host round 4: the fight with no lines (each shooter's facing measured), the rival crew's four looks at 3:10 (not gated yet) (Sky's 0.2.122 notes, Glyph's spec): the square and the cars, cones on demand, portrait and third person, locked ways, squad Board and Drive, the conversation from the ground, the lock reticle, the host record // batch 0.2.123: brief 059 (the rival car seen arriving at 2:35, the drop at 2:46, the park at 3:10; the Watch; Vale driven round; the Take from the back seat; Drive)
+            var r083 = new string[] { "null" }; if (Only("r083")) yield return Proof083.Run(h, Dir, log, r083); // brief 083: Sky's play notes on 0.2.159
+            var seed = new string[] { "null" }; if (only != null && only.Contains("seed") || only == null) Stamp("seed"); if (only != null && only.Contains("seed") || only == null) yield return ProofSeed.Run(h, Dir, log, seed); // brief 080: the seed, Replay, a saved run
+            var rings = new string[] { "null" }; if (Only("rings")) yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
+            var fire = new string[] { "null" }; var fireSession = new string[1]; if (Only("fire")) yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
+            var cars = new string[] { "null" }; if (Only("cars")) yield return ProofFire.Cars(h, Dir, log, cars);
+            var hudClick = new string[] { "null" }; if (Only("hudClick")) yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
             ProofInput.Focusless(false);
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
-            yield return PeopleCost(h, log, people, 6f, Dir);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
+            if (Spots) yield return PeopleCost(h, log, people, 6f, Dir);
+            Stamp("menu");
+            var frames = $"{{\"sectionAt\": __SECTIONAT__, \"seed\": {seed[0]}, \"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"levels\": {levels[0]}, \"r29\": {r29[0]}, \"r118\": {r118[0]}, \"r059\": {r059[0]}, \"r067\": {r067[0]}, \"r123\": {r123[0]}, \"r083\": {r083[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
@@ -161,18 +190,19 @@ namespace Suborned.Play
             var rangeClick = new string[] { "null" }; var leash = new string[] { "null" }; var holdRange = new string[] { "null" };
             {
                 ProofInput.Focusless(true);
-                h.SwitchRangeScene(); // the run saved, then the range scene (the pause menu's own switch)
+                if (Only("leash") || Only("holdRange") || Only("hudClick")) h.SwitchRangeScene(); // the run saved, then the range scene (the pause menu's own switch)
                 HandoverHost rh = null; float r0 = Time.realtimeSinceStartup;
-                while (((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
+                while ((Only("leash") || Only("holdRange") || Only("hudClick")) && ((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
                 if (rh != null && rh.rangeMode && rh.Game != null) { yield return new WaitForSecondsRealtime(1.5f); yield return ProofInput.RangePanelClick(rh, log, rangeClick); yield return ProofInput.Leash(rh, Dir, log, leash); rh.controls.preset = ControlPreset.HoldActs; rh.ControlsChanged(); yield return ProofHold.Range(rh, Dir, log, holdRange); } // brief 041: the hold preset on the range // brief 041: the leash on the range's open floor
                 else log.Add("rangePanelClick: no range host after 60 s");
                 ProofInput.Focusless(false);
             }
+            Stamp("end"); frames = frames.Replace("__SECTIONAT__", "{" + string.Join(", ", stamps.ConvertAll(x => $"\"{x.name}\": {F(x.at)}")) + "}");
             frames = frames.Replace("__LEASH__", leash[0]).Replace("__HOLDRANGE__", holdRange[0]);
-            frames = frames.Replace("__HUDCLICK__", $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
+            frames = frames.Replace("__HUDCLICK__", !Only("hudClick") ? "null" : $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
             Write(frames, rendered ? "ok" : "blank");
-            yield return new WaitForSecondsRealtime(0.5f);
-            Application.Quit(rendered ? 0 : 3); // the Handover's run was saved by the switch (QuitFromMenu's save)
+            yield return new WaitForSecondsRealtime(0.1f);
+            GameBoot.Leave(rendered ? 0 : 3); // the Handover's run was saved by the switch (QuitFromMenu's save)
         }
 
         /// <summary>Route G's orders up to the way out (briefs/013/play/route-g-by-hand.script.json): the fight starts on the walk out with Vale.</summary>
@@ -442,8 +472,8 @@ namespace Suborned.Play
                 }
                 // an old robot: the first report brought the patrol robot; a second, from the square's mast (within robot reach of the square's
                 // dock), brings a porter from the dock: the Enforcer idles in the mast's sight until one of the response's robots has him
-                var mast = g.S.Cameras.Find(x => x.Id == "mast-314");
-                var ms = mast == null ? null : Spot(g, mast.At, mast.Facings.Length > 0 ? mast.Facings[0] : mast.Facing, 600, "enforcer", p => g.InSight("camera:mast-314", p, false));
+                var mast = g.S.Cameras.Find(x => x.Id == "mast-z0");
+                var ms = mast == null ? null : Spot(g, mast.At, mast.Facings.Length > 0 ? mast.Facings[0] : mast.Facing, 600, "enforcer", p => g.InSight("camera:mast-z0", p, false));
                 log.Add($"mast spot {ms}");
                 if (ms.HasValue) { h.Issue(new Suborned.Sim.Order { Op = "enforcer", Do = "move", Point = ms.Value }); Arrive(h, 3, 1500); }
                 string robot = null; int cap2 = 0;

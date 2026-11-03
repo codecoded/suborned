@@ -1,0 +1,2966 @@
+{
+ "buildings": 320,
+ "neighbour_pairs": 189,
+ "wall_family": {
+  "cream": 42,
+  "lilac": 37,
+  "peach": 34,
+  "apricot": 33,
+  "butter": 32,
+  "seagreen": 32,
+  "mint": 31,
+  "blush": 25,
+  "sky": 20,
+  "sand": 19,
+  "powder": 9,
+  "ivory": 6
+ },
+ "distinct": {
+  "wall": 12,
+  "plinth": 11,
+  "roof": 17,
+  "A": 23,
+  "B": 23
+ },
+ "distinct_dE8": {
+  "wall": 11,
+  "plinth": 11,
+  "roof": 7
+ },
+ "distinct_enamel_dE8": 20,
+ "neighbours_same": {
+  "family": 0,
+  "wall": 0,
+  "plinth": 1,
+  "roof": 16,
+  "A": 0
+ },
+ "export_accent": {
+  "accent_teal": 44,
+  "accent_red": 34,
+  "accent_coral": 31,
+  "accent_tangerine": 28,
+  "accent_flamingo": 24,
+  "accent_turquoise": 23,
+  "accent_cerulean": 22,
+  "accent_mint": 20,
+  "accent_plum": 19,
+  "accent_royal": 18,
+  "accent_cobalt": 15,
+  "accent_jade": 14,
+  "accent_lime": 9,
+  "accent_peach": 9
+ },
+ "export_accent2": {
+  "accent_coral": 39,
+  "accent_tangerine": 33,
+  "accent_teal": 30,
+  "accent_turquoise": 28,
+  "accent_royal": 27,
+  "accent_cerulean": 25,
+  "accent_red": 24,
+  "accent_plum": 21,
+  "accent_mint": 20,
+  "accent_flamingo": 15,
+  "accent_jade": 15,
+  "accent_lime": 13,
+  "accent_peach": 12,
+  "accent_cobalt": 8
+ },
+ "export_accent_neighbours_same": 3,
+ "export_accent_pairs": 189,
+ "spec": {
+  "families": 13,
+  "swatches": 127,
+  "wall_swatches": 12,
+  "plinth_swatches": 11,
+  "area_enamel": 24
+ },
+ "neighbour_wall_dE_summary": {
+  "min": 6.1,
+  "median": 22.1,
+  "under5": 0
+ },
+ "rows": {
+  "bld/avenue-court/19": {
+   "area": "gardens",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#ebd9b4",
+   "A": "#eea82d",
+   "B": "#2c56a6"
+  },
+  "bld/avenue-court/24": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fadcdf",
+   "A": "#1f8fc4",
+   "B": "#7a3b78"
+  },
+  "bld/avenue-court/27": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#efdfc0",
+   "A": "#1f8fc4",
+   "B": "#f8e26c"
+  },
+  "bld/boulevard-west/0": {
+   "area": "records",
+   "family": "ivory",
+   "wall": "#efe8d6",
+   "plinth": "#d8cdb8",
+   "roof": "#f7ecd6",
+   "A": "#36b0a8",
+   "B": "#1f8fc4"
+  },
+  "bld/boulevard-west/1": {
+   "area": "records",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fafaf7",
+   "A": "#2c56a6",
+   "B": "#eea82d"
+  },
+  "bld/boulevard-west/2": {
+   "area": "records",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#ebd9b4",
+   "A": "#296587",
+   "B": "#2c56a6"
+  },
+  "bld/boulevard-west/3": {
+   "area": "records",
+   "family": "ivory",
+   "wall": "#efe8d6",
+   "plinth": "#d8cdb8",
+   "roof": "#fafaf7",
+   "A": "#36b0a8",
+   "B": "#1f8fc4"
+  },
+  "bld/boulevard-west/4": {
+   "area": "records",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e8f2f8",
+   "A": "#f8e26c",
+   "B": "#296587"
+  },
+  "bld/boulevard-west/5": {
+   "area": "records",
+   "family": "ivory",
+   "wall": "#efe8d6",
+   "plinth": "#d8cdb8",
+   "roof": "#e6f5ee",
+   "A": "#296587",
+   "B": "#2c56a6"
+  },
+  "bld/crescent-court/3": {
+   "area": "crescent",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#ebd9b4",
+   "A": "#b4a3d6",
+   "B": "#e88a96"
+  },
+  "bld/crescent-court/4": {
+   "area": "crescent",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d5eee8",
+   "A": "#5bb0e0",
+   "B": "#2c56a6"
+  },
+  "bld/crescent-court/5": {
+   "area": "crescent",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e6f5ee",
+   "A": "#2c56a6",
+   "B": "#f07a28"
+  },
+  "bld/crescent-court/6": {
+   "area": "crescent",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fbe9dc",
+   "A": "#b4a3d6",
+   "B": "#5bb0e0"
+  },
+  "bld/crescent-court/7": {
+   "area": "crescent",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#f7ecd6",
+   "A": "#36b0a8",
+   "B": "#b5d334"
+  },
+  "bld/crescent-court/8": {
+   "area": "crescent",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbdfcb",
+   "A": "#2c56a6",
+   "B": "#1e9c78"
+  },
+  "bld/crescent-court/9": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#f7ecd6",
+   "A": "#e07560",
+   "B": "#e88a96"
+  },
+  "bld/crescent-east/0": {
+   "area": "crescent",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#eee6f7",
+   "A": "#f07a28",
+   "B": "#e07560"
+  },
+  "bld/crescent-east/1": {
+   "area": "crescent",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#e8f2f8",
+   "A": "#e88a96",
+   "B": "#b5d334"
+  },
+  "bld/crescent-east/12": {
+   "area": "crescent",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#f7ecd6",
+   "A": "#7fd0b8",
+   "B": "#5bb0e0"
+  },
+  "bld/crescent-east/13": {
+   "area": "crescent",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#e8f2f8",
+   "A": "#7fd0b8",
+   "B": "#b4a3d6"
+  },
+  "bld/crescent-east/14": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbdfcb",
+   "A": "#5bb0e0",
+   "B": "#36b0a8"
+  },
+  "bld/crescent-east/15": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#eee6f7",
+   "A": "#f8e26c",
+   "B": "#2c56a6"
+  },
+  "bld/crescent-east/2": {
+   "area": "crescent",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#e6f5ee",
+   "A": "#7fd0b8",
+   "B": "#7a3b78"
+  },
+  "bld/crescent-east/3": {
+   "area": "crescent",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#eee6f7",
+   "A": "#b4a3d6",
+   "B": "#36b0a8"
+  },
+  "bld/crescent-east/4": {
+   "area": "crescent",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#f7ecd6",
+   "A": "#2c56a6",
+   "B": "#b5d334"
+  },
+  "bld/crescent-east/5": {
+   "area": "crescent",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e6f5ee",
+   "A": "#7fd0b8",
+   "B": "#7a3b78"
+  },
+  "bld/crescent-north/0": {
+   "area": "crescent",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#ebd9b4",
+   "A": "#7fd0b8",
+   "B": "#f07a28"
+  },
+  "bld/crescent-north/1": {
+   "area": "crescent",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#eee6f7",
+   "A": "#5bb0e0",
+   "B": "#b5d334"
+  },
+  "bld/crescent-north/2": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#e6f5ee",
+   "A": "#7a3b78",
+   "B": "#7fd0b8"
+  },
+  "bld/crescent-north/3": {
+   "area": "crescent",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#d6eaf8",
+   "A": "#f8e26c",
+   "B": "#7a3b78"
+  },
+  "bld/crescent-north/4": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#eee6f7",
+   "A": "#1e9c78",
+   "B": "#f8e26c"
+  },
+  "bld/crescent-north/5": {
+   "area": "crescent",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#eee6f7",
+   "A": "#e88a96",
+   "B": "#b4a3d6"
+  },
+  "bld/docks-boulevard/0": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#faf6ea",
+   "A": "#36b0a8",
+   "B": "#f8e26c"
+  },
+  "bld/docks-boulevard/1": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#faf6ea",
+   "A": "#c42a1f",
+   "B": "#86add3"
+  },
+  "bld/docks-boulevard/10": {
+   "area": "docks",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#e8f2f8",
+   "A": "#1f8fc4",
+   "B": "#f07a28"
+  },
+  "bld/docks-boulevard/11": {
+   "area": "docks",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#d6eaf8",
+   "A": "#eea82d",
+   "B": "#fc9c84"
+  },
+  "bld/docks-boulevard/12": {
+   "area": "docks",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#efdfc0",
+   "A": "#fc9c84",
+   "B": "#1e9c78"
+  },
+  "bld/docks-boulevard/14": {
+   "area": "docks",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d6eaf8",
+   "A": "#36b0a8",
+   "B": "#2c56a6"
+  },
+  "bld/docks-boulevard/15": {
+   "area": "docks",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#d6eaf8",
+   "A": "#fc9c84",
+   "B": "#2c56a6"
+  },
+  "bld/docks-boulevard/16": {
+   "area": "docks",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#d5eee8",
+   "A": "#86add3",
+   "B": "#1f8fc4"
+  },
+  "bld/docks-boulevard/17": {
+   "area": "docks",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fce0c0",
+   "A": "#2c56a6",
+   "B": "#36b0a8"
+  },
+  "bld/docks-boulevard/18": {
+   "area": "docks",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#faf6ea",
+   "A": "#36b0a8",
+   "B": "#eea82d"
+  },
+  "bld/docks-boulevard/19": {
+   "area": "docks",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#e6f5ee",
+   "A": "#1f8fc4",
+   "B": "#86add3"
+  },
+  "bld/docks-boulevard/2": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#e8f2f8",
+   "A": "#fc9c84",
+   "B": "#36b0a8"
+  },
+  "bld/docks-boulevard/20": {
+   "area": "docks",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#e8f2f8",
+   "A": "#c42a1f",
+   "B": "#86add3"
+  },
+  "bld/docks-boulevard/21": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#e8f2f8",
+   "A": "#2c56a6",
+   "B": "#36b0a8"
+  },
+  "bld/docks-boulevard/22": {
+   "area": "docks",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d5eee8",
+   "A": "#fc9c84",
+   "B": "#1f8fc4"
+  },
+  "bld/docks-boulevard/23": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#efdfc0",
+   "A": "#f07a28",
+   "B": "#1e9c78"
+  },
+  "bld/docks-boulevard/3": {
+   "area": "docks",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fbf0c6",
+   "A": "#f07a28",
+   "B": "#f8e26c"
+  },
+  "bld/docks-boulevard/5": {
+   "area": "docks",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#d5eee8",
+   "A": "#36b0a8",
+   "B": "#f8e26c"
+  },
+  "bld/docks-boulevard/6": {
+   "area": "docks",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fbe9dc",
+   "A": "#c42a1f",
+   "B": "#86add3"
+  },
+  "bld/docks-boulevard/7": {
+   "area": "docks",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#e2e9f8",
+   "A": "#3b8fc8",
+   "B": "#f8e26c"
+  },
+  "bld/docks-boulevard/8": {
+   "area": "docks",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#def1dc",
+   "A": "#1f8fc4",
+   "B": "#36b0a8"
+  },
+  "bld/docks-boulevard/9": {
+   "area": "docks",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d6eaf8",
+   "A": "#eea82d",
+   "B": "#2c56a6"
+  },
+  "bld/docks-east/0": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#e6f5ee",
+   "A": "#36b0a8",
+   "B": "#c42a1f"
+  },
+  "bld/docks-south/10": {
+   "area": "docks",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbf0c6",
+   "A": "#c42a1f",
+   "B": "#3b8fc8"
+  },
+  "bld/docks-south/12": {
+   "area": "docks",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e8f2f8",
+   "A": "#3b8fc8",
+   "B": "#36b0a8"
+  },
+  "bld/docks-south/13": {
+   "area": "docks",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#efdfc0",
+   "A": "#1f8fc4",
+   "B": "#f07a28"
+  },
+  "bld/docks-south/15": {
+   "area": "docks",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#d5eee8",
+   "A": "#3b8fc8",
+   "B": "#86add3"
+  },
+  "bld/docks-south/16": {
+   "area": "docks",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e8f2f8",
+   "A": "#eea82d",
+   "B": "#36b0a8"
+  },
+  "bld/docks-south/4": {
+   "area": "docks",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#d5eee8",
+   "A": "#2c56a6",
+   "B": "#1f8fc4"
+  },
+  "bld/docks-south/5": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#ebd9b4",
+   "A": "#86add3",
+   "B": "#eea82d"
+  },
+  "bld/docks-south/6": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#d6eaf8",
+   "A": "#eea82d",
+   "B": "#f8e26c"
+  },
+  "bld/docks-south/7": {
+   "area": "docks",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e2e9f8",
+   "A": "#36b0a8",
+   "B": "#1e9c78"
+  },
+  "bld/docks-south/8": {
+   "area": "docks",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#ebd9b4",
+   "A": "#eea82d",
+   "B": "#f8e26c"
+  },
+  "bld/docks-south/9": {
+   "area": "docks",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#e6f5ee",
+   "A": "#1f8fc4",
+   "B": "#eea82d"
+  },
+  "bld/garden-row-east/0": {
+   "area": "records",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fafaf7",
+   "A": "#fc9c84",
+   "B": "#eea82d"
+  },
+  "bld/harbour-boulevard/0": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#efdfc0",
+   "A": "#7fd0b8",
+   "B": "#f07a28"
+  },
+  "bld/harbour-boulevard/1": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fce0c0",
+   "A": "#fc9c84",
+   "B": "#1f8fc4"
+  },
+  "bld/harbour-boulevard/10": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fadcdf",
+   "A": "#1f8fc4",
+   "B": "#fc9c84"
+  },
+  "bld/harbour-boulevard/11": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fbe9dc",
+   "A": "#fc9c84",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-boulevard/13": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#ebd9b4",
+   "A": "#e07560",
+   "B": "#2c56a6"
+  },
+  "bld/harbour-boulevard/14": {
+   "area": "harbour",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#e6f5ee",
+   "A": "#c42a1f",
+   "B": "#1f8fc4"
+  },
+  "bld/harbour-boulevard/15": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#eee6f7",
+   "A": "#e07560",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-boulevard/16": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fbdfcb",
+   "A": "#7a3b78",
+   "B": "#c42a1f"
+  },
+  "bld/harbour-boulevard/17": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#d6eaf8",
+   "A": "#c42a1f",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-boulevard/18": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#fbf0c6",
+   "A": "#7a3b78",
+   "B": "#36b0a8"
+  },
+  "bld/harbour-boulevard/19": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#d5eee8",
+   "A": "#f8e26c",
+   "B": "#1e9c78"
+  },
+  "bld/harbour-boulevard/2": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fbe9dc",
+   "A": "#eea82d",
+   "B": "#e07560"
+  },
+  "bld/harbour-boulevard/20": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#faf6ea",
+   "A": "#1f8fc4",
+   "B": "#1e9c78"
+  },
+  "bld/harbour-boulevard/21": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#eee6f7",
+   "A": "#3b8fc8",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-boulevard/22": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#faf6ea",
+   "A": "#1f8fc4",
+   "B": "#f8e26c"
+  },
+  "bld/harbour-boulevard/23": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fce0c0",
+   "A": "#fc9c84",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-boulevard/3": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#efdfc0",
+   "A": "#7fd0b8",
+   "B": "#f8e26c"
+  },
+  "bld/harbour-boulevard/4": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#d5eee8",
+   "A": "#f8e26c",
+   "B": "#c42a1f"
+  },
+  "bld/harbour-boulevard/5": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#d6eaf8",
+   "A": "#f07a28",
+   "B": "#fc9c84"
+  },
+  "bld/harbour-boulevard/6": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d5eee8",
+   "A": "#e07560",
+   "B": "#36b0a8"
+  },
+  "bld/harbour-boulevard/7": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#faf6ea",
+   "A": "#7fd0b8",
+   "B": "#7a3b78"
+  },
+  "bld/harbour-boulevard/8": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#d5eee8",
+   "A": "#7a3b78",
+   "B": "#3b8fc8"
+  },
+  "bld/harbour-court/0": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fce0c0",
+   "A": "#f8e26c",
+   "B": "#c42a1f"
+  },
+  "bld/harbour-court/1": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fce0c0",
+   "A": "#3b8fc8",
+   "B": "#fc9c84"
+  },
+  "bld/harbour-court/10": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbf0c6",
+   "A": "#fc9c84",
+   "B": "#f07a28"
+  },
+  "bld/harbour-court/11": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#def1dc",
+   "A": "#7fd0b8",
+   "B": "#3b8fc8"
+  },
+  "bld/harbour-court/12": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#e2e9f8",
+   "A": "#fc9c84",
+   "B": "#1f8fc4"
+  },
+  "bld/harbour-court/13": {
+   "area": "harbour",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#d6eaf8",
+   "A": "#c42a1f",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-court/14": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#d6eaf8",
+   "A": "#eea82d",
+   "B": "#1f8fc4"
+  },
+  "bld/harbour-court/15": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#e8f2f8",
+   "A": "#3b8fc8",
+   "B": "#1e9c78"
+  },
+  "bld/harbour-court/16": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbdfcb",
+   "A": "#36b0a8",
+   "B": "#1e9c78"
+  },
+  "bld/harbour-court/17": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fbdfcb",
+   "A": "#7a3b78",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-court/18": {
+   "area": "harbour",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#eee6f7",
+   "A": "#e07560",
+   "B": "#1e9c78"
+  },
+  "bld/harbour-court/19": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fbe9dc",
+   "A": "#f07a28",
+   "B": "#2c56a6"
+  },
+  "bld/harbour-court/2": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fce0c0",
+   "A": "#7a3b78",
+   "B": "#e07560"
+  },
+  "bld/harbour-court/3": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbdfcb",
+   "A": "#2c56a6",
+   "B": "#7fd0b8"
+  },
+  "bld/harbour-court/4": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#efdfc0",
+   "A": "#36b0a8",
+   "B": "#3b8fc8"
+  },
+  "bld/harbour-court/5": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbe9dc",
+   "A": "#c42a1f",
+   "B": "#1e9c78"
+  },
+  "bld/harbour-court/6": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbdfcb",
+   "A": "#1f8fc4",
+   "B": "#3b8fc8"
+  },
+  "bld/harbour-court/7": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#fce0c0",
+   "A": "#7fd0b8",
+   "B": "#fc9c84"
+  },
+  "bld/harbour-court/8": {
+   "area": "harbour",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e2e9f8",
+   "A": "#fc9c84",
+   "B": "#c42a1f"
+  },
+  "bld/harbour-court/9": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbe9dc",
+   "A": "#7a3b78",
+   "B": "#f8e26c"
+  },
+  "bld/harbour-east/0": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#faf6ea",
+   "A": "#36b0a8",
+   "B": "#7a3b78"
+  },
+  "bld/harbour-east/1": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#faf6ea",
+   "A": "#7a3b78",
+   "B": "#3b8fc8"
+  },
+  "bld/harbour-east/2": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fbe9dc",
+   "A": "#f8e26c",
+   "B": "#7a3b78"
+  },
+  "bld/harbour-east/3": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#d6eaf8",
+   "A": "#f07a28",
+   "B": "#36b0a8"
+  },
+  "bld/harbour-east/4": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#def1dc",
+   "A": "#7fd0b8",
+   "B": "#eea82d"
+  },
+  "bld/harbour-east/5": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fce0c0",
+   "A": "#c42a1f",
+   "B": "#e07560"
+  },
+  "bld/harbour-east/6": {
+   "area": "harbour",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbdfcb",
+   "A": "#2c56a6",
+   "B": "#e07560"
+  },
+  "bld/harbour-east/7": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#eee6f7",
+   "A": "#1e9c78",
+   "B": "#7a3b78"
+  },
+  "bld/harbour-east/8": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fce0c0",
+   "A": "#eea82d",
+   "B": "#c42a1f"
+  },
+  "bld/lamplight-court-e/0": {
+   "area": "lamplight",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbf0c6",
+   "A": "#f07a28",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-court-e/1": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbf0c6",
+   "A": "#36b0a8",
+   "B": "#e07560"
+  },
+  "bld/lamplight-court-w/0": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#eee6f7",
+   "A": "#eea82d",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-court-w/1": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#f7ecd6",
+   "A": "#fcc4ac",
+   "B": "#3b8fc8"
+  },
+  "bld/lamplight-court-w/10": {
+   "area": "lamplight",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbdfcb",
+   "A": "#1e9c78",
+   "B": "#e07560"
+  },
+  "bld/lamplight-court-w/2": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbf0c6",
+   "A": "#eea82d",
+   "B": "#f8e26c"
+  },
+  "bld/lamplight-court-w/3": {
+   "area": "lamplight",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#def1dc",
+   "A": "#e07560",
+   "B": "#e88a96"
+  },
+  "bld/lamplight-court-w/4": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#faf6ea",
+   "A": "#b5d334",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-court-w/5": {
+   "area": "lamplight",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#faf6ea",
+   "A": "#fc9c84",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-court-w/6": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fadcdf",
+   "A": "#e88a96",
+   "B": "#36b0a8"
+  },
+  "bld/lamplight-court-w/7": {
+   "area": "lamplight",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#e6f5ee",
+   "A": "#fcc4ac",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-court-w/8": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fadcdf",
+   "A": "#e8553a",
+   "B": "#f07a28"
+  },
+  "bld/lamplight-court-w/9": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#efdfc0",
+   "A": "#3b8fc8",
+   "B": "#eea82d"
+  },
+  "bld/lamplight-east/1": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#eee6f7",
+   "A": "#eea82d",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-east/10": {
+   "area": "lamplight",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbdfcb",
+   "A": "#eea82d",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-east/11": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e8f2f8",
+   "A": "#1e9c78",
+   "B": "#36b0a8"
+  },
+  "bld/lamplight-east/3": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbf0c6",
+   "A": "#36b0a8",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-east/4": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbe9dc",
+   "A": "#e07560",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-east/6": {
+   "area": "lamplight",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#fce0c0",
+   "A": "#36b0a8",
+   "B": "#f8e26c"
+  },
+  "bld/lamplight-south-e/0": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#f7ecd6",
+   "A": "#7a3b78",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-south-e/1": {
+   "area": "lamplight",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#efdfc0",
+   "A": "#e88a96",
+   "B": "#fc9c84"
+  },
+  "bld/lamplight-south-e/10": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fce0c0",
+   "A": "#1e9c78",
+   "B": "#e88a96"
+  },
+  "bld/lamplight-south-e/2": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#efdfc0",
+   "A": "#fcc4ac",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-south-e/3": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbdfcb",
+   "A": "#1e9c78",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-south-e/4": {
+   "area": "lamplight",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e6f5ee",
+   "A": "#e88a96",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-south-e/5": {
+   "area": "lamplight",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e6f5ee",
+   "A": "#7a3b78",
+   "B": "#e07560"
+  },
+  "bld/lamplight-south-e/6": {
+   "area": "lamplight",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#efdfc0",
+   "A": "#e07560",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-south-e/7": {
+   "area": "lamplight",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#faf6ea",
+   "A": "#b5d334",
+   "B": "#e07560"
+  },
+  "bld/lamplight-south-e/8": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e6f5ee",
+   "A": "#eea82d",
+   "B": "#e07560"
+  },
+  "bld/lamplight-south-e/9": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e8f2f8",
+   "A": "#f8e26c",
+   "B": "#eea82d"
+  },
+  "bld/lamplight-south-w/10": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fce0c0",
+   "A": "#1e9c78",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-south-w/11": {
+   "area": "lamplight",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fce0c0",
+   "A": "#3b8fc8",
+   "B": "#f07a28"
+  },
+  "bld/lamplight-south-w/12": {
+   "area": "lamplight",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#fadcdf",
+   "A": "#1e9c78",
+   "B": "#7a3b78"
+  },
+  "bld/lamplight-south-w/13": {
+   "area": "lamplight",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbf0c6",
+   "A": "#f07a28",
+   "B": "#fc9c84"
+  },
+  "bld/lamplight-south-w/2": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#e8f2f8",
+   "A": "#f07a28",
+   "B": "#f8e26c"
+  },
+  "bld/lamplight-south-w/3": {
+   "area": "lamplight",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#efdfc0",
+   "A": "#fc9c84",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-south-w/4": {
+   "area": "lamplight",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#ebd9b4",
+   "A": "#fcc4ac",
+   "B": "#f07a28"
+  },
+  "bld/lamplight-south-w/5": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fce0c0",
+   "A": "#eea82d",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-south-w/6": {
+   "area": "lamplight",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbf0c6",
+   "A": "#36b0a8",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-south-w/7": {
+   "area": "lamplight",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#fce0c0",
+   "A": "#1e9c78",
+   "B": "#f8e26c"
+  },
+  "bld/lamplight-south-w/8": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#def1dc",
+   "A": "#3b8fc8",
+   "B": "#36b0a8"
+  },
+  "bld/lamplight-south-w/9": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#e6f5ee",
+   "A": "#fcc4ac",
+   "B": "#fc9c84"
+  },
+  "bld/lamplight-west/1": {
+   "area": "lamplight",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#e6f5ee",
+   "A": "#7a3b78",
+   "B": "#3b8fc8"
+  },
+  "bld/lamplight-west/10": {
+   "area": "lamplight",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbe9dc",
+   "A": "#fc9c84",
+   "B": "#3b8fc8"
+  },
+  "bld/lamplight-west/2": {
+   "area": "lamplight",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbdfcb",
+   "A": "#e88a96",
+   "B": "#fc9c84"
+  },
+  "bld/lamplight-west/3": {
+   "area": "lamplight",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbdfcb",
+   "A": "#b5d334",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-west/4": {
+   "area": "lamplight",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#f7ecd6",
+   "A": "#eea82d",
+   "B": "#3b8fc8"
+  },
+  "bld/lamplight-west/5": {
+   "area": "lamplight",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e6f5ee",
+   "A": "#1e9c78",
+   "B": "#b5d334"
+  },
+  "bld/lamplight-west/6": {
+   "area": "lamplight",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e8f2f8",
+   "A": "#f07a28",
+   "B": "#3b8fc8"
+  },
+  "bld/lamplight-west/7": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#ebd9b4",
+   "A": "#e07560",
+   "B": "#fcc4ac"
+  },
+  "bld/lamplight-west/8": {
+   "area": "lamplight",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fadcdf",
+   "A": "#3b8fc8",
+   "B": "#e8553a"
+  },
+  "bld/lamplight-west/9": {
+   "area": "lamplight",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbf0c6",
+   "A": "#fcc4ac",
+   "B": "#1e9c78"
+  },
+  "bld/lantern-boulevard/0": {
+   "area": "lantern",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#ebd9b4",
+   "A": "#e07560",
+   "B": "#eea82d"
+  },
+  "bld/lantern-boulevard/1": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#faf6ea",
+   "A": "#e88a96",
+   "B": "#2c56a6"
+  },
+  "bld/lantern-boulevard/2": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e6f5ee",
+   "A": "#f07a28",
+   "B": "#c42a1f"
+  },
+  "bld/lantern-boulevard/3": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#def1dc",
+   "A": "#f8e26c",
+   "B": "#e88a96"
+  },
+  "bld/lantern-south/0": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#d5eee8",
+   "A": "#e8609a",
+   "B": "#f07a28"
+  },
+  "bld/lantern-south/1": {
+   "area": "lantern",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#efdfc0",
+   "A": "#fcc4ac",
+   "B": "#f8e26c"
+  },
+  "bld/lantern-south/10": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#ebd9b4",
+   "A": "#7a3b78",
+   "B": "#36b0a8"
+  },
+  "bld/lantern-south/11": {
+   "area": "lantern",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#e8f2f8",
+   "A": "#2c56a6",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-south/12": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbdfcb",
+   "A": "#1f8fc4",
+   "B": "#36b0a8"
+  },
+  "bld/lantern-south/13": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbf0c6",
+   "A": "#f07a28",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-south/14": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbe9dc",
+   "A": "#e07560",
+   "B": "#fcc4ac"
+  },
+  "bld/lantern-south/15": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#f7ecd6",
+   "A": "#fc9c84",
+   "B": "#7a3b78"
+  },
+  "bld/lantern-south/16": {
+   "area": "lantern",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fce0c0",
+   "A": "#f07a28",
+   "B": "#fcc4ac"
+  },
+  "bld/lantern-south/2": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#ebd9b4",
+   "A": "#c42a1f",
+   "B": "#e07560"
+  },
+  "bld/lantern-south/3": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#efdfc0",
+   "A": "#f07a28",
+   "B": "#e8609a"
+  },
+  "bld/lantern-south/4": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e6f5ee",
+   "A": "#fc9c84",
+   "B": "#f07a28"
+  },
+  "bld/lantern-south/5": {
+   "area": "lantern",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#e8f2f8",
+   "A": "#f07a28",
+   "B": "#fcc4ac"
+  },
+  "bld/lantern-south/6": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#efdfc0",
+   "A": "#f8e26c",
+   "B": "#f07a28"
+  },
+  "bld/lantern-south/7": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#fbdfcb",
+   "A": "#e07560",
+   "B": "#eea82d"
+  },
+  "bld/lantern-south/8": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbe9dc",
+   "A": "#36b0a8",
+   "B": "#eea82d"
+  },
+  "bld/lantern-south/9": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbdfcb",
+   "A": "#eea82d",
+   "B": "#1f8fc4"
+  },
+  "bld/lantern-west/0": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fce0c0",
+   "A": "#c42a1f",
+   "B": "#e07560"
+  },
+  "bld/lantern-west/1": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbdfcb",
+   "A": "#c42a1f",
+   "B": "#fcc4ac"
+  },
+  "bld/lantern-west/10": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbdfcb",
+   "A": "#e8609a",
+   "B": "#f07a28"
+  },
+  "bld/lantern-west/11": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fadcdf",
+   "A": "#c42a1f",
+   "B": "#1f8fc4"
+  },
+  "bld/lantern-west/12": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#f7ecd6",
+   "A": "#e8609a",
+   "B": "#f8e26c"
+  },
+  "bld/lantern-west/13": {
+   "area": "lantern",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fbdfcb",
+   "A": "#1f8fc4",
+   "B": "#e07560"
+  },
+  "bld/lantern-west/14": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbdfcb",
+   "A": "#fcc4ac",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-west/15": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e6f5ee",
+   "A": "#c42a1f",
+   "B": "#e07560"
+  },
+  "bld/lantern-west/16": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#e6f5ee",
+   "A": "#e07560",
+   "B": "#1f8fc4"
+  },
+  "bld/lantern-west/17": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbe9dc",
+   "A": "#1f8fc4",
+   "B": "#eea82d"
+  },
+  "bld/lantern-west/18": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#faf6ea",
+   "A": "#eea82d",
+   "B": "#e88a96"
+  },
+  "bld/lantern-west/19": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#e6f5ee",
+   "A": "#fc9c84",
+   "B": "#1f8fc4"
+  },
+  "bld/lantern-west/2": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#e6f5ee",
+   "A": "#e88a96",
+   "B": "#e8609a"
+  },
+  "bld/lantern-west/20": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#faf6ea",
+   "A": "#e8609a",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-west/21": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#ebd9b4",
+   "A": "#36b0a8",
+   "B": "#7a3b78"
+  },
+  "bld/lantern-west/22": {
+   "area": "lantern",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fbdfcb",
+   "A": "#2c56a6",
+   "B": "#7a3b78"
+  },
+  "bld/lantern-west/23": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e8f2f8",
+   "A": "#f8e26c",
+   "B": "#36b0a8"
+  },
+  "bld/lantern-west/24": {
+   "area": "lantern",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fadcdf",
+   "A": "#e88a96",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-west/25": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e8f2f8",
+   "A": "#fcc4ac",
+   "B": "#f07a28"
+  },
+  "bld/lantern-west/26": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e6f5ee",
+   "A": "#c42a1f",
+   "B": "#f07a28"
+  },
+  "bld/lantern-west/27": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbdfcb",
+   "A": "#36b0a8",
+   "B": "#e88a96"
+  },
+  "bld/lantern-west/28": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#def1dc",
+   "A": "#fc9c84",
+   "B": "#1f8fc4"
+  },
+  "bld/lantern-west/29": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#ebd9b4",
+   "A": "#fcc4ac",
+   "B": "#eea82d"
+  },
+  "bld/lantern-west/3": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e6f5ee",
+   "A": "#c42a1f",
+   "B": "#7a3b78"
+  },
+  "bld/lantern-west/30": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#faf6ea",
+   "A": "#e07560",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-west/31": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#eee6f7",
+   "A": "#e8609a",
+   "B": "#eea82d"
+  },
+  "bld/lantern-west/32": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbe9dc",
+   "A": "#fc9c84",
+   "B": "#f07a28"
+  },
+  "bld/lantern-west/33": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#efdfc0",
+   "A": "#f8e26c",
+   "B": "#e88a96"
+  },
+  "bld/lantern-west/34": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#ebd9b4",
+   "A": "#e8609a",
+   "B": "#f8e26c"
+  },
+  "bld/lantern-west/35": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbdfcb",
+   "A": "#36b0a8",
+   "B": "#c42a1f"
+  },
+  "bld/lantern-west/36": {
+   "area": "lantern",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#eee6f7",
+   "A": "#36b0a8",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-west/37": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fce0c0",
+   "A": "#e88a96",
+   "B": "#f8e26c"
+  },
+  "bld/lantern-west/38": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbdfcb",
+   "A": "#e88a96",
+   "B": "#fc9c84"
+  },
+  "bld/lantern-west/39": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#f7ecd6",
+   "A": "#7a3b78",
+   "B": "#fcc4ac"
+  },
+  "bld/lantern-west/4": {
+   "area": "lantern",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e6f5ee",
+   "A": "#c42a1f",
+   "B": "#1f8fc4"
+  },
+  "bld/lantern-west/40": {
+   "area": "lantern",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbe9dc",
+   "A": "#eea82d",
+   "B": "#e8609a"
+  },
+  "bld/lantern-west/41": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e8f2f8",
+   "A": "#2c56a6",
+   "B": "#36b0a8"
+  },
+  "bld/lantern-west/42": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fadcdf",
+   "A": "#f8e26c",
+   "B": "#7a3b78"
+  },
+  "bld/lantern-west/43": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbf0c6",
+   "A": "#eea82d",
+   "B": "#7a3b78"
+  },
+  "bld/lantern-west/5": {
+   "area": "lantern",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#eee6f7",
+   "A": "#2c56a6",
+   "B": "#c42a1f"
+  },
+  "bld/lantern-west/6": {
+   "area": "lantern",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fbf0c6",
+   "A": "#1f8fc4",
+   "B": "#36b0a8"
+  },
+  "bld/lantern-west/7": {
+   "area": "lantern",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#faf6ea",
+   "A": "#c42a1f",
+   "B": "#e07560"
+  },
+  "bld/lantern-west/8": {
+   "area": "lantern",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fadcdf",
+   "A": "#fcc4ac",
+   "B": "#e88a96"
+  },
+  "bld/lantern-west/9": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbf0c6",
+   "A": "#e07560",
+   "B": "#fc9c84"
+  },
+  "bld/parade-north/1": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fbe9dc",
+   "A": "#7fd0b8",
+   "B": "#36b0a8"
+  },
+  "bld/parade-north/10": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fadcdf",
+   "A": "#f07a28",
+   "B": "#f8e26c"
+  },
+  "bld/parade-north/11": {
+   "area": "crescent",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#e8f2f8",
+   "A": "#7fd0b8",
+   "B": "#7a3b78"
+  },
+  "bld/parade-north/12": {
+   "area": "crescent",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#f7ecd6",
+   "A": "#36b0a8",
+   "B": "#2c56a6"
+  },
+  "bld/parade-north/13": {
+   "area": "crescent",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#e2e9f8",
+   "A": "#e88a96",
+   "B": "#e07560"
+  },
+  "bld/parade-north/14": {
+   "area": "crescent",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#d6eaf8",
+   "A": "#f8e26c",
+   "B": "#e88a96"
+  },
+  "bld/parade-north/15": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fbe9dc",
+   "A": "#3b8fc8",
+   "B": "#eea82d"
+  },
+  "bld/parade-north/16": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fce0c0",
+   "A": "#2c56a6",
+   "B": "#7fd0b8"
+  },
+  "bld/parade-north/17": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#eee6f7",
+   "A": "#1e9c78",
+   "B": "#eea82d"
+  },
+  "bld/parade-north/18": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#faf6ea",
+   "A": "#36b0a8",
+   "B": "#1e9c78"
+  },
+  "bld/parade-north/19": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbdfcb",
+   "A": "#1f8fc4",
+   "B": "#2c56a6"
+  },
+  "bld/parade-north/2": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d6eaf8",
+   "A": "#c42a1f",
+   "B": "#7a3b78"
+  },
+  "bld/parade-north/20": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fadcdf",
+   "A": "#36b0a8",
+   "B": "#7fd0b8"
+  },
+  "bld/parade-north/21": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#f7ecd6",
+   "A": "#36b0a8",
+   "B": "#eea82d"
+  },
+  "bld/parade-north/22": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e8f2f8",
+   "A": "#1e9c78",
+   "B": "#7fd0b8"
+  },
+  "bld/parade-north/23": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbe9dc",
+   "A": "#2c56a6",
+   "B": "#fc9c84"
+  },
+  "bld/parade-north/24": {
+   "area": "crescent",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbe9dc",
+   "A": "#36b0a8",
+   "B": "#1e9c78"
+  },
+  "bld/parade-north/3": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#fbdfcb",
+   "A": "#1f8fc4",
+   "B": "#7a3b78"
+  },
+  "bld/parade-north/4": {
+   "area": "crescent",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#fbdfcb",
+   "A": "#2c56a6",
+   "B": "#e88a96"
+  },
+  "bld/parade-north/7": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#d5eee8",
+   "A": "#e07560",
+   "B": "#3b8fc8"
+  },
+  "bld/parade-north/8": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#eee6f7",
+   "A": "#1f8fc4",
+   "B": "#eea82d"
+  },
+  "bld/parade-north/9": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#e6f5ee",
+   "A": "#1e9c78",
+   "B": "#7fd0b8"
+  },
+  "bld/parade-south/0": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#f7ecd6",
+   "A": "#7fd0b8",
+   "B": "#c42a1f"
+  },
+  "bld/parade-south/1": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d6eaf8",
+   "A": "#1e9c78",
+   "B": "#f8e26c"
+  },
+  "bld/parade-south/10": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e2e9f8",
+   "A": "#e07560",
+   "B": "#7a3b78"
+  },
+  "bld/parade-south/11": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#ebd9b4",
+   "A": "#1f8fc4",
+   "B": "#7a3b78"
+  },
+  "bld/parade-south/12": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fadcdf",
+   "A": "#1f8fc4",
+   "B": "#2c56a6"
+  },
+  "bld/parade-south/13": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#def1dc",
+   "A": "#f8e26c",
+   "B": "#7a3b78"
+  },
+  "bld/parade-south/14": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#d5eee8",
+   "A": "#7a3b78",
+   "B": "#1f8fc4"
+  },
+  "bld/parade-south/15": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fbdfcb",
+   "A": "#c42a1f",
+   "B": "#36b0a8"
+  },
+  "bld/parade-south/16": {
+   "area": "harbour",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#faf6ea",
+   "A": "#eea82d",
+   "B": "#7fd0b8"
+  },
+  "bld/parade-south/17": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#d6eaf8",
+   "A": "#f8e26c",
+   "B": "#eea82d"
+  },
+  "bld/parade-south/2": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e6f5ee",
+   "A": "#7a3b78",
+   "B": "#36b0a8"
+  },
+  "bld/parade-south/3": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#efdfc0",
+   "A": "#3b8fc8",
+   "B": "#1e9c78"
+  },
+  "bld/parade-south/4": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#d5eee8",
+   "A": "#1e9c78",
+   "B": "#3b8fc8"
+  },
+  "bld/parade-south/5": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#eee6f7",
+   "A": "#36b0a8",
+   "B": "#eea82d"
+  },
+  "bld/parade-south/7": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#e8f2f8",
+   "A": "#fc9c84",
+   "B": "#f8e26c"
+  },
+  "bld/parade-south/8": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#d5eee8",
+   "A": "#7a3b78",
+   "B": "#1e9c78"
+  },
+  "bld/parade-south/9": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#ebd9b4",
+   "A": "#c42a1f",
+   "B": "#36b0a8"
+  },
+  "bld/pylon-row-east/0": {
+   "area": "records",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e2e9f8",
+   "A": "#2c56a6",
+   "B": "#1f8fc4"
+  },
+  "bld/rocket-west/0": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#e8f2f8",
+   "A": "#36b0a8",
+   "B": "#f07a28"
+  },
+  "bld/rocket-west/1": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#ebd9b4",
+   "A": "#7a3b78",
+   "B": "#1f8fc4"
+  },
+  "bld/rocket-west/10": {
+   "area": "records",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fbf0c6",
+   "A": "#eea82d",
+   "B": "#f8e26c"
+  },
+  "bld/rocket-west/11": {
+   "area": "records",
+   "family": "ivory",
+   "wall": "#efe8d6",
+   "plinth": "#d8cdb8",
+   "roof": "#e6f5ee",
+   "A": "#1f8fc4",
+   "B": "#fc9c84"
+  },
+  "bld/rocket-west/12": {
+   "area": "records",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#faf6ea",
+   "A": "#2c56a6",
+   "B": "#7a3b78"
+  },
+  "bld/rocket-west/13": {
+   "area": "records",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fafaf7",
+   "A": "#fc9c84",
+   "B": "#2c56a6"
+  },
+  "bld/rocket-west/14": {
+   "area": "records",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e2e9f8",
+   "A": "#eea82d",
+   "B": "#f8e26c"
+  },
+  "bld/rocket-west/15": {
+   "area": "records",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#faf6ea",
+   "A": "#f8e26c",
+   "B": "#296587"
+  },
+  "bld/rocket-west/16": {
+   "area": "records",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#ebd9b4",
+   "A": "#1f8fc4",
+   "B": "#8e2f25"
+  },
+  "bld/rocket-west/17": {
+   "area": "records",
+   "family": "ivory",
+   "wall": "#efe8d6",
+   "plinth": "#d8cdb8",
+   "roof": "#fafaf7",
+   "A": "#36b0a8",
+   "B": "#eea82d"
+  },
+  "bld/rocket-west/18": {
+   "area": "records",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#fbe9dc",
+   "A": "#1f8fc4",
+   "B": "#7a3b78"
+  },
+  "bld/rocket-west/19": {
+   "area": "records",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#fafaf7",
+   "A": "#f8e26c",
+   "B": "#8e2f25"
+  },
+  "bld/rocket-west/2": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#d5eee8",
+   "A": "#c42a1f",
+   "B": "#7fd0b8"
+  },
+  "bld/rocket-west/20": {
+   "area": "records",
+   "family": "ivory",
+   "wall": "#efe8d6",
+   "plinth": "#d8cdb8",
+   "roof": "#e6f5ee",
+   "A": "#8e2f25",
+   "B": "#7a3b78"
+  },
+  "bld/rocket-west/21": {
+   "area": "records",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#d5eee8",
+   "A": "#eea82d",
+   "B": "#8e2f25"
+  },
+  "bld/rocket-west/22": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#e2e9f8",
+   "A": "#f8e26c",
+   "B": "#2c56a6"
+  },
+  "bld/rocket-west/23": {
+   "area": "harbour",
+   "family": "butter",
+   "wall": "#f7e38c",
+   "plinth": "#1f8fc4",
+   "roof": "#f7ecd6",
+   "A": "#1e9c78",
+   "B": "#3b8fc8"
+  },
+  "bld/rocket-west/24": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#d6eaf8",
+   "A": "#fc9c84",
+   "B": "#2c56a6"
+  },
+  "bld/rocket-west/25": {
+   "area": "harbour",
+   "family": "powder",
+   "wall": "#ccdcf0",
+   "plinth": "#2c56a6",
+   "roof": "#fbe9dc",
+   "A": "#2c56a6",
+   "B": "#36b0a8"
+  },
+  "bld/rocket-west/26": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#d6eaf8",
+   "A": "#e07560",
+   "B": "#1f8fc4"
+  },
+  "bld/rocket-west/27": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbf0c6",
+   "A": "#7a3b78",
+   "B": "#1e9c78"
+  },
+  "bld/rocket-west/28": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#def1dc",
+   "A": "#e07560",
+   "B": "#f07a28"
+  },
+  "bld/rocket-west/29": {
+   "area": "harbour",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#f7ecd6",
+   "A": "#3b8fc8",
+   "B": "#1e9c78"
+  },
+  "bld/rocket-west/3": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fbdfcb",
+   "A": "#c42a1f",
+   "B": "#36b0a8"
+  },
+  "bld/rocket-west/30": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#eee6f7",
+   "A": "#7fd0b8",
+   "B": "#e07560"
+  },
+  "bld/rocket-west/31": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e8f2f8",
+   "A": "#7fd0b8",
+   "B": "#eea82d"
+  },
+  "bld/rocket-west/32": {
+   "area": "harbour",
+   "family": "sky",
+   "wall": "#9ccdee",
+   "plinth": "#2c56a6",
+   "roof": "#d6eaf8",
+   "A": "#c42a1f",
+   "B": "#e07560"
+  },
+  "bld/rocket-west/33": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#f7ecd6",
+   "A": "#e07560",
+   "B": "#1f8fc4"
+  },
+  "bld/rocket-west/34": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#e2e9f8",
+   "A": "#36b0a8",
+   "B": "#c42a1f"
+  },
+  "bld/rocket-west/4": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#fadcdf",
+   "A": "#1f8fc4",
+   "B": "#7fd0b8"
+  },
+  "bld/rocket-west/5": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#d6eaf8",
+   "A": "#eea82d",
+   "B": "#7fd0b8"
+  },
+  "bld/rocket-west/6": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#ebd9b4",
+   "A": "#c42a1f",
+   "B": "#7a3b78"
+  },
+  "bld/rocket-west/7": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#e6f5ee",
+   "A": "#7fd0b8",
+   "B": "#1f8fc4"
+  },
+  "bld/rocket-west/8": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#d6eaf8",
+   "A": "#1f8fc4",
+   "B": "#e07560"
+  },
+  "bld/rocket-west/9": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#ebd9b4",
+   "A": "#eea82d",
+   "B": "#c42a1f"
+  },
+  "tower/avenue-gate-e": {
+   "area": "harbour",
+   "family": "sand",
+   "wall": "#ddbe8a",
+   "plinth": "#8e2f25",
+   "roof": "#fadcdf",
+   "A": "#fc9c84",
+   "B": "#3b8fc8"
+  },
+  "tower/avenue-gate-w": {
+   "area": "harbour",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#def1dc",
+   "A": "#36b0a8",
+   "B": "#7a3b78"
+  },
+  "tower/avenue-needle": {
+   "area": "harbour",
+   "family": "apricot",
+   "wall": "#f9b977",
+   "plinth": "#1e8c6e",
+   "roof": "#fce0c0",
+   "A": "#7a3b78",
+   "B": "#36b0a8"
+  },
+  "tower/avenue-starburst": {
+   "area": "harbour",
+   "family": "seagreen",
+   "wall": "#9ad2c6",
+   "plinth": "#e2661f",
+   "roof": "#d6eaf8",
+   "A": "#1e9c78",
+   "B": "#36b0a8"
+  },
+  "tower/crescent-terrace": {
+   "area": "crescent",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#e8f2f8",
+   "A": "#2c56a6",
+   "B": "#5bb0e0"
+  },
+  "tower/crescent-tower": {
+   "area": "crescent",
+   "family": "blush",
+   "wall": "#f4c3c8",
+   "plinth": "#c42a1f",
+   "roof": "#f7ecd6",
+   "A": "#b5d334",
+   "B": "#7a3b78"
+  },
+  "tower/harbour-hotel": {
+   "area": "harbour",
+   "family": "peach",
+   "wall": "#f2c4a4",
+   "plinth": "#e8735a",
+   "roof": "#fbdfcb",
+   "A": "#1e9c78",
+   "B": "#fc9c84"
+  },
+  "tower/lantern-beacon": {
+   "area": "lantern",
+   "family": "lilac",
+   "wall": "#d8c8ec",
+   "plinth": "#7a3b78",
+   "roof": "#fce0c0",
+   "A": "#e88a96",
+   "B": "#36b0a8"
+  },
+  "tower/parade-gate-n": {
+   "area": "harbour",
+   "family": "cream",
+   "wall": "#ebdaba",
+   "plinth": "#36b0a8",
+   "roof": "#fbdfcb",
+   "A": "#fc9c84",
+   "B": "#c42a1f"
+  },
+  "tower/parade-gate-s": {
+   "area": "harbour",
+   "family": "mint",
+   "wall": "#c8e8c6",
+   "plinth": "#d9548a",
+   "roof": "#e6f5ee",
+   "A": "#36b0a8",
+   "B": "#eea82d"
+  }
+ }
+}

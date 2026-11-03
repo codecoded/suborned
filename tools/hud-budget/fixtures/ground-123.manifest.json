@@ -1,0 +1,15 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 416, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 14, "y": 438, "w": 86, "h": 38, "text": "follow view chip"},
+  {"kind": "line", "x": 1171, "y": 627, "w": 273, "h": 38, "text": "Hold · Board · 1 s · 1 s"},
+  {"kind": "image", "x": 790, "y": 402, "w": 108, "h": 38, "text": "fire line: who, how long, the stop key"},
+  {"kind": "image", "x": 707, "y": 362, "w": 26, "h": 44, "text": "lock reticle"},
+  {"kind": "image", "x": 1072, "y": 812, "w": 26, "h": 44, "text": "lock reticle"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 234, "h": 17, "text": "Rival: Nobody in reach. Close the gap."},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

@@ -1,0 +1,138 @@
+# ens op-base · RB= · 
+plan	k	outcome	fail	end	T	A	St	vale-in	spring	composed
+route-a	0	success		4:52.8	5	1	3	4:52.8	4:10.6	yes
+route-a	5	success		4:54.0	5	1	3	4:54.0	4:11.8	yes
+route-a	4	success		4:53.1	5	1	3	4:53.1	4:10.9	yes
+route-a	2	success		4:54.0	5	1	3	4:54.0	4:11.8	yes
+route-a	1	success		4:53.2	5	1	3	4:53.2	4:11.0	yes
+route-a	3	success		4:53.0	5	1	3	4:53.0	4:10.8	yes
+route-a	7	success		4:54.5	5	1	3	4:54.5	4:12.3	yes
+route-a	6	success		4:53.0	5	1	3	4:53.0	4:10.8	yes
+route-a-board	0	success		4:27.5	5	1	2	4:27.5	4:10.6	yes
+route-a-board	1	success		4:27.9	5	1	2	4:27.9	4:11.0	yes
+route-a-board	2	success		4:28.7	5	1	2	4:28.7	4:11.8	yes
+route-a-board	3	success		4:27.7	5	1	2	4:27.7	4:10.8	yes
+route-a-board	4	success		4:27.8	5	1	2	4:27.8	4:10.9	yes
+route-a-board	5	success		4:28.7	5	1	2	4:28.7	4:11.8	yes
+route-a-board	7	success		4:29.2	5	1	2	4:29.2	4:12.3	yes
+route-a-board	6	success		4:27.7	5	1	2	4:27.7	4:10.8	yes
+route-a-pressure	0	failure	rivals-reach-vale	3:15.4	7	1	1	-	3:03.2	no: step 19 (enforcer board car): not taken between 1832 and 5100
+route-a-pressure	1	failure	rivals-reach-vale	3:14.8	7	1	1	-	3:03.6	no: step 19 (enforcer board car): not taken between 1836 and 5100
+route-a-pressure	2	failure	rivals-reach-vale	3:15.2	7	1	1	-	3:04.4	no: step 19 (enforcer board car): not taken between 1844 and 5100
+route-a-pressure	3	failure	rivals-reach-vale	3:15.6	7	1	1	-	3:03.4	no: step 19 (enforcer board car): not taken between 1834 and 5100
+route-a-pressure	4	failure	rivals-reach-vale	3:15.7	7	1	1	-	3:03.5	no: step 19 (enforcer board car): not taken between 1835 and 5100
+route-a-pressure	5	failure	rivals-reach-vale	3:15.2	7	1	1	-	3:04.4	no: step 19 (enforcer board car): not taken between 1844 and 5100
+route-a-pressure	6	failure	rivals-reach-vale	3:15.6	7	1	1	-	3:03.4	no: step 19 (enforcer board car): not taken between 1834 and 5100
+route-a-pressure	7	failure	rivals-reach-vale	3:15.6	7	1	1	-	3:04.9	no: step 19 (enforcer board car): not taken between 1849 and 5100
+route-a-pressure-board	0	failure	rivals-reach-vale	3:11.7	7	1	1	-	3:03.2	no: step 19 (enforcer board car): not taken between 1832 and 5100
+route-a-pressure-board	1	failure	rivals-reach-vale	3:11.1	7	1	1	-	3:03.6	no: step 19 (enforcer board car): not taken between 1836 and 5100
+route-a-pressure-board	2	failure	rivals-reach-vale	3:12.9	7	1	1	-	3:04.4	no: step 19 (enforcer board car): not taken between 1844 and 5100
+route-a-pressure-board	3	failure	rivals-reach-vale	3:11.8	7	1	1	-	3:03.4	no: step 19 (enforcer board car): not taken between 1834 and 5100
+route-a-pressure-board	4	failure	rivals-reach-vale	3:12.0	7	1	1	-	3:03.5	no: step 19 (enforcer board car): not taken between 1835 and 5100
+route-a-pressure-board	5	failure	rivals-reach-vale	3:12.9	7	1	1	-	3:04.4	no: step 19 (enforcer board car): not taken between 1844 and 5100
+route-a-disable	0	success		4:52.8	6	1	3	4:52.8	4:10.6	yes
+route-a-disable	1	success		4:53.2	6	1	3	4:53.2	4:11.0	yes
+route-a-pressure-board	7	failure	rivals-reach-vale	3:13.4	7	1	1	-	3:04.9	no: step 19 (enforcer board car): not taken between 1849 and 5100
+route-a-pressure-board	6	failure	rivals-reach-vale	3:11.8	7	1	1	-	3:03.4	no: step 19 (enforcer board car): not taken between 1834 and 5100
+route-a-disable	2	success		4:54.0	6	1	3	4:54.0	4:11.8	yes
+route-a-disable	3	success		4:53.0	6	1	3	4:53.0	4:10.8	yes
+route-a-disable	4	success		4:53.1	6	1	3	4:53.1	4:10.9	yes
+route-b	0	success		7:32.2	3	0	3	7:29.9	7:23.0	yes
+route-a-disable	5	success		4:54.0	6	1	3	4:54.0	4:11.8	yes
+route-b	1	success		7:32.2	3	0	3	7:29.9	7:23.0	yes
+route-a-disable	7	success		4:54.5	6	1	3	4:54.5	4:12.3	yes
+route-a-disable	6	success		4:53.0	6	1	3	4:53.0	4:10.8	yes
+route-b	2	success		7:33.4	3	0	3	7:31.1	7:24.2	yes
+route-b	3	success		7:33.7	3	0	3	7:31.4	7:24.5	yes
+route-b	4	success		7:34.2	3	0	3	7:31.9	7:25.0	yes
+route-b	5	success		7:33.6	3	0	3	7:31.3	7:24.4	yes
+route-b	6	success		7:33.3	3	0	3	7:31.0	7:24.1	yes
+route-b	7	success		7:33.1	3	0	3	7:30.8	7:23.9	yes
+route-b-board	0	success		7:36.1	3	0	3	7:29.9	7:23.0	yes
+route-b-board	1	success		7:36.1	3	0	3	7:29.9	7:23.0	yes
+route-b-board	2	success		7:37.3	3	0	3	7:31.1	7:24.2	yes
+route-b-board	3	success		7:37.6	3	0	3	7:31.4	7:24.5	yes
+route-b-board	4	success		7:38.1	3	0	3	7:31.9	7:25.0	yes
+route-b-board	5	success		7:37.5	3	0	3	7:31.3	7:24.4	yes
+route-b-board	6	success		7:37.2	3	0	3	7:31.0	7:24.1	yes
+route-b-board	7	success		7:37.0	3	0	3	7:30.8	7:23.9	yes
+route-g	0	success		4:11.1	6	1	3	4:11.1	3:54.2	yes
+route-g	1	success		4:11.1	6	1	3	4:11.1	3:54.2	yes
+route-g	2	success		4:12.3	6	1	3	4:12.3	3:55.4	yes
+route-g	3	success		4:12.6	6	1	3	4:12.6	3:55.7	yes
+route-g	4	success		4:13.1	6	1	3	4:13.1	3:56.2	yes
+route-g	5	success		4:12.5	6	1	3	4:12.5	3:55.6	yes
+route-g	6	success		4:12.2	6	1	3	4:12.2	3:55.3	yes
+route-g	7	success		4:12.0	6	1	3	4:12.0	3:55.1	yes
+route-g-board	0	success		4:11.1	6	1	3	4:11.1	3:54.2	yes
+route-g-board	1	success		4:11.1	6	1	3	4:11.1	3:54.2	yes
+route-g-board	2	success		4:12.3	6	1	3	4:12.3	3:55.4	yes
+route-g-board	3	success		4:12.6	6	1	3	4:12.6	3:55.7	yes
+route-g-board	4	success		4:13.1	6	1	3	4:13.1	3:56.2	yes
+route-g-board	5	success		4:12.5	6	1	3	4:12.5	3:55.6	yes
+route-g-board	6	success		4:12.2	6	1	3	4:12.2	3:55.3	yes
+route-g-board	7	success		4:12.0	6	1	3	4:12.0	3:55.1	yes
+route-g-fast	1	success		3:10.9	6	1	3	3:10.9	2:54.0	yes
+route-g-fast	3	success		3:10.7	6	1	3	3:10.7	2:53.8	yes
+route-g-fast	2	success		3:11.0	6	1	3	3:11.0	2:54.1	yes
+route-g-fast	4	success		3:11.5	6	1	3	3:11.5	2:54.6	yes
+route-g-fast	5	success		3:10.7	6	1	3	3:10.7	2:53.8	yes
+route-g-fast	0	none		8:30.0	6	1	3	3:10.6	2:53.7	no: step 26 (cell go): not taken between 1866 and 5100
+route-g-fast	6	success		3:11.0	6	1	3	3:11.0	2:54.1	yes
+route-g-fast	7	success		3:12.4	6	1	3	3:12.4	2:55.5	yes
+route-g-fast-board	1	success		3:13.1	6	1	3	3:10.9	2:54.0	yes
+route-g-fast-board	2	success		3:13.1	6	1	3	3:11.0	2:54.1	yes
+route-g-fast-board	3	success		3:13.0	6	1	3	3:10.7	2:53.8	yes
+route-g-fast-board	4	success		3:13.8	6	1	3	3:11.5	2:54.6	yes
+route-g-kill	0	success		5:50.5	2	1	3	5:50.5	5:21.2	yes
+route-g-kill	1	success		5:50.5	2	1	3	5:50.5	5:21.2	yes
+route-g-fast-board	5	success		3:13.0	6	1	3	3:10.7	2:53.8	yes
+route-g-fast-board	0	failure	rivals-reach-vale	3:16.8	6	1	2	-	2:53.7	no: step 19 (fixer fire rival-2): not taken between 1737 and 5100
+route-g-fast-board	6	success		3:13.1	6	1	3	3:11.0	2:54.1	yes
+route-g-fast-board	7	success		3:14.7	6	1	3	3:12.4	2:55.5	yes
+route-g-kill	2	success		5:51.7	2	1	3	5:51.7	5:22.4	yes
+route-g-kill	3	success		5:52.0	2	1	3	5:52.0	5:22.7	yes
+route-g-kill	4	success		5:52.5	2	1	3	5:52.5	5:23.2	yes
+route-g-kill	5	success		5:51.9	2	1	3	5:51.9	5:22.6	yes
+route-g-kill	6	success		5:51.6	2	1	3	5:51.6	5:22.3	yes
+route-g-kill	7	success		5:51.4	2	1	3	5:51.4	5:22.1	yes
+loud	0	success		5:18.5	27	2	-1	5:17.4	-	yes
+loud	1	success		5:18.5	27	2	-1	5:17.4	-	yes
+loud	2	success		5:19.7	27	2	-1	5:18.6	-	yes
+loud	3	success		5:20.0	27	2	-1	5:18.9	-	yes
+loud	4	success		5:20.5	27	2	-1	5:19.4	-	yes
+loud	5	success		5:19.9	27	2	-1	5:18.8	-	yes
+ra-h2	0	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1734 and 5100
+ra-h2	1	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1738 and 5100
+loud	6	success		5:19.6	27	2	-1	5:18.5	-	yes
+loud	7	success		5:19.4	27	2	-1	5:18.3	-	yes
+ra-h2	2	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1746 and 5100
+ra-h2	3	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1736 and 5100
+ra-h2	4	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1737 and 5100
+ra-h3	0	success		4:50.8	5	1	3	4:50.8	4:10.2	yes
+ra-h2	5	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1746 and 5100
+ra-h3	1	success		4:50.7	5	1	3	4:50.7	4:10.6	yes
+ra-h2	6	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1736 and 5100
+ra-h2	7	none		8:30.0	5	1	2	-	-	no: step 19 (cell panic): not taken between 1751 and 5100
+ra-h3	2	success		4:51.5	5	1	3	4:51.5	4:11.4	yes
+ra-h3	3	success		4:50.5	5	1	3	4:50.5	4:10.4	yes
+ra-h3	4	success		4:50.6	5	1	3	4:50.6	4:10.5	yes
+ra-h3	5	success		4:51.5	5	1	3	4:51.5	4:11.4	yes
+ra-h3	6	success		4:50.5	5	1	3	4:50.5	4:10.4	yes
+ra-h3	7	success		4:52.0	5	1	3	4:52.0	4:11.9	yes
+rb-st	0	success		7:32.2	3	0	3	7:29.9	7:23.0	yes
+rb-st	1	success		7:32.2	3	0	3	7:29.9	7:23.0	yes
+rb-st	2	success		7:33.4	3	0	3	7:31.1	7:24.2	yes
+rb-st	3	success		7:33.7	3	0	3	7:31.4	7:24.5	yes
+rb-st	4	success		7:34.2	3	0	3	7:31.9	7:25.0	yes
+rb-st	5	success		7:33.6	3	0	3	7:31.3	7:24.4	yes
+rb-st	6	success		7:33.3	3	0	3	7:31.0	7:24.1	yes
+rb-st	7	success		7:33.1	3	0	3	7:30.8	7:23.9	yes
+rbb-st	0	success		7:36.1	3	0	3	7:29.9	7:23.0	yes
+rbb-st	1	success		7:36.1	3	0	3	7:29.9	7:23.0	yes
+rbb-st	2	success		7:37.3	3	0	3	7:31.1	7:24.2	yes
+rbb-st	3	success		7:37.6	3	0	3	7:31.4	7:24.5	yes
+rbb-st	5	success		7:37.5	3	0	3	7:31.3	7:24.4	yes
+rbb-st	4	success		7:38.1	3	0	3	7:31.9	7:25.0	yes
+rbb-st	6	success		7:37.2	3	0	3	7:31.0	7:24.1	yes
+rbb-st	7	success		7:37.0	3	0	3	7:30.8	7:23.9	yes

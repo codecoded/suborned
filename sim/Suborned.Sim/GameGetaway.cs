@@ -34,7 +34,13 @@ namespace Suborned.Sim
     {
         /// <summary>The hostiles that went for the road (brief 018 §1), in the order picked.</summary>
         public readonly List<string> Blockers = new List<string>();
-        bool blockersPicked; string pickFrom = ""; bool carWasHeld, blockerOut; // the pick due this tick (rivals, police); the hold's last state; blocker.out logged
+        bool blockersPicked; string pickFrom = ""; bool carWasHeld, blockerOut;
+        bool pickLater; // engine 0.33.0 (Motive M059-S1.3): the safe spring found nobody of the crew on foot: the blocker is picked at the first step-out
+        int valeAboardAt = -1, goRefusedAt = -1; string goRefused = "";
+        /// <summary>Engine 0.30.0 (brief 060 #8): Vale boarded the getaway car this run (his board.in, chain vale-in-getaway-car). Output only.</summary>
+        public bool ValeBoarded => valeAboardAt >= 0;
+        /// <summary>Engine 0.30.0: the Take outside landed (chain vale-taken-outside). Output only.</summary>
+        public bool ValeTakenOutside => Chain.Contains("vale-taken-outside"); // brief 057 §4 (engine 0.30.0): output only, read by FailCause.Car; never hashed, never read by a rule // the pick due this tick (rivals, police); the hold's last state; blocker.out logged
 
         /// <summary>End of the tick's fire (Waymark, c018): a pick due this tick is made among the candidates still standing after it (a
         /// candidate downed by this tick's shots is no candidate); the blocker's fall and the hold coming free are logged by code.</summary>
@@ -43,7 +49,9 @@ namespace Suborned.Sim
             if (pickFrom.Length > 0)
             {
                 var from = pickFrom; pickFrom = "";
-                PickBlockers(Hostiles.FindAll(h => from == "rivals" ? IsRival(h.Id) : !IsRival(h.Id) && h.Present));
+                var cands = Hostiles.FindAll(h => from == "rivals" ? IsRival(h.Id) && !(CrewOf(h.Id) is CrewMember bm && !bm.Fight) : !IsRival(h.Id) && h.Present); // brief 059 (Motive M059-4.3): never one still in the car
+                if (R.FightAlways && from == "rivals" && !cands.Exists(h => Up(h))) pickLater = true; // Motive M059-S1.3: nobody on foot at the spring: the first to step out (JoinFightOnFoot)
+                else PickBlockers(cands);
             }
             if (FightBranch.Length == 0) return;
             if (!blockerOut && Blockers.Count > 0)
@@ -51,9 +59,47 @@ namespace Suborned.Sim
                 bool any = false; foreach (var id in Blockers) { var b = HostileOf(id); if (b != null && Up(b)) any = true; }
                 if (!any) { blockerOut = true; var b0 = HostileOf(Blockers[0])!; Note("blocker.out", $"{b0.Id}, on the road, is {(b0.Down ? "down" : "gone")}: nobody blocks the lane now."); }
             }
-            bool held = CarHeld();
+            var holders = CarHolders(); bool held = holders.Count > 0;
+            if (held) NoteNewHolders(holders); // engine 0.34.0 (Motive M067-SQ1): car.held.<how>
             if (carWasHeld && !held) Note("car.free", "Nothing holds the getaway car: it can go.");
             carWasHeld = held;
+        }
+
+        /// <summary>Engine 0.34.0 (Motive briefs/067/motive-square.md §2, M067-SQ1; Waymark's MC-11 clause 3: no played script logs car.held.answer
+        /// or car.held.post): the first tick a body holds the getaway car at this stand, car.held.&lt;how&gt; says why it is there: blocker (his lane),
+        /// press (for the held car, K3 a, or the drawn crew for the Vale holder), advance (on the car or an operative), answer (a step out of a
+        /// line, to cover, a close), post (a walk to a stand, spot or post). A body in the hold or on the exit lane, or a named blocker wherever he
+        /// stands (the gate); a gate hold by whoever is coming before a blocker is named is no body in the hold and logs nothing. Once a body a
+        /// stand. Log only: nothing reads it.</summary>
+        readonly HashSet<string> heldLogged = new HashSet<string>(StringComparer.Ordinal);
+        void NoteNewHolders(List<string> holders)
+        {
+            foreach (var id in holders)
+            {
+                string key = CurStand.Id + "/" + id; if (heldLogged.Contains(key)) continue;
+                var h = HostileOf(id); bool blocker = h != null && h.Blocker; var at = PosOf(id);
+                if (!blocker && !(at.HasValue && HoldsCar(at.Value))) continue; // a gate hold (fight.alwaysRule): no body in the hold
+                heldLogged.Add(key);
+                string how = HeldHow(id, h);
+                Note("car.held." + how, how switch
+                {
+                    "blocker" => $"{id} holds the getaway car from the road: the blocker.",
+                    "press" => $"{id} holds the getaway car: he came for it.",
+                    "advance" => $"{id} holds the getaway car: his advance took him within {R.HoldCm / 100} m of it.",
+                    "answer" => $"{id} holds the getaway car: his answer to fire took him within {R.HoldCm / 100} m of it.",
+                    _ => $"{id} holds the getaway car: he stands at his post, or on his way to it, within {R.HoldCm / 100} m of it.",
+                });
+            }
+        }
+        /// <summary>Why a holder is in the hold (car.held.&lt;how&gt;): a final-fight body by its walk's Why; a member of the crew before the fight by
+        /// his displacement (the press, a kite step); the patrol by its chase; anyone else is at his own post. Read-only.</summary>
+        string HeldHow(string id, Hostile? h)
+        {
+            if (h != null) return h.Blocker ? "blocker" : forCar.Contains(id) ? "press" : h.Why;
+            if (CrewOf(id) is CrewMember m) return m.Disp == null ? "post" : m.Disp.Press ? "press" : "answer";
+            if (id == "patrol") return PatrolChasing ? "advance" : "post";
+            int k = SecIndex(id);
+            return unitDisp.ContainsKey(id) || (k >= 0 && secDisp.ContainsKey(k)) ? "answer" : "post";
         }
         /// <summary>The tick the getaway car left (INF while it hasn't).</summary>
         public int CarLeftTick = INF;
@@ -65,20 +111,61 @@ namespace Suborned.Sim
         /// <summary>Anyone in the getaway car: an operative, or Vale.</summary>
         public bool AnyInCar { get { foreach (var op in Ops) if (op.InCar) return true; return Vale == ValeAt.Car; } }
 
-        bool HoldsCar(Pt p) => G.Within(p, Car, R.HoldCm) || S.InExitLane(p);
+        bool HoldsCar(Pt p) => G.Within(p, Car, R.HoldCm) || InLane(p); // brief 059 K6: the current stand's exit lane
         static bool Up(Hostile h) => !h.Down && h.Gun.St != "break" && h.Gun.St != "gone";
 
         /// <summary>The holders of the getaway car now, in id order (brief 018 §1): the HUD names them, Go's refusal lists them. Read-only.</summary>
         public List<string> CarHolders()
         {
             var l = new List<string>();
-            foreach (var h in Hostiles) if (Up(h) && (h.Present || FightBranch == "safe") && HoldsCar(h.Pos(Tick))) l.Add(h.Id); // a broken rival no longer holds it (Pulse §2.1)
+            foreach (var h in Hostiles)
+            {
+                if (!Up(h)) continue;
+                if (CrewOf(h.Id) is CrewMember rm && !rm.Fight) continue; // brief 059: a member still in the car (his body not on the street yet)
+                if ((h.Present || FightBranch == "safe") && HoldsCar(h.Pos(Tick))) l.Add(h.Id); // a broken rival no longer holds it (Pulse §2.1)
+            }
             foreach (var id in CombatantIds())
             {
                 if (IsFightHostile(id) || l.Contains(id) || !Combatant(id)) continue;
                 var at = PosOf(id); if (at.HasValue && HoldsCar(at.Value)) l.Add(id);
             }
+            foreach (var id in GateHolders(out _)) if (!l.Contains(id)) l.Add(id);
             l.Sort(StringComparer.Ordinal);
+            return l;
+        }
+
+        /// <summary>Engine 0.33.0, the gate (Sky's S1 = no; Motive M059-S1.2, rulebook fight.alwaysRule (1)): with fight.safe.always, from the final
+        /// fight's start until it is over, Go with Vale aboard waits for the fight's blocker to be out. He holds the car wherever he stands while he
+        /// is up. Before a blocker is named, whoever is coming holds it: car:rivals while a member still rides in the rival car (`until` the first
+        /// of them steps out, or -1 while the car drives with no step-out set yet: its stop tick plus rivals.out), a member walking back to the fight
+        /// or due to wake (safe), the officers on their way (loud). Empty when the gate is open. Read-only.</summary>
+        List<string> GateHolders(out int until)
+        {
+            var l = new List<string>(); until = -1;
+            if (!R.FightAlways || Vale != ValeAt.Car || FightBranch.Length == 0 || FightBranch == "range" || FightOverTick != INF || blockerOut) return l;
+            if (Blockers.Count > 0) { foreach (var id in Blockers) { var b = HostileOf(id); if (b != null && Up(b)) l.Add(id); } return l; }
+            foreach (var h in Hostiles)
+            {
+                if (!Up(h)) continue;
+                if (CrewOf(h.Id) is CrewMember rm && !rm.Fight) continue; // riding: the car holds, below
+                if (h.Present || FightBranch == "safe") l.Add(h.Id);
+            }
+            if (FightBranch == "safe")
+            {
+                bool riding = false; int first = INF, firstN = int.MaxValue;
+                foreach (var m in Crew)
+                {
+                    if (m.Fight) continue; // a body on the street: above
+                    if (CrewComing(m)) { if (m.Mode == CrewMode.Aboard) { riding = true; if (m.OutAt < first) first = m.OutAt; if (m.N < firstN) firstN = m.N; } else if (!l.Contains(m.Id)) l.Add(m.Id); }
+                    else if (CrewWaking(m) && !l.Contains(m.Id)) l.Add(m.Id); // knocked out, not tied: he comes back when he wakes (M059-3.4)
+                }
+                if (riding)
+                {
+                    l.Add("car:rivals");
+                    // the first step-out: set already, else the car's stop plus CarArrive's step (a late entry: rivals.step × the rider's number; else rivals.out)
+                    until = first < INF ? first : CarMoving ? ccStart + ccProf!.Length - 1 + (CarSt == CrewCar.Entering ? T(Cr.StepS) * firstN : T(Cr.OutS)) : -1;
+                }
+            }
             return l;
         }
         /// <summary>A holder still stands (rulebook fight.hold): Go is refused.</summary>
@@ -120,9 +207,9 @@ namespace Suborned.Sim
         {
             if (o.Target.Length > 0 && o.Target != "car") return No("target-unknown", $"board names the getaway car (\"car\"), not '{o.Target}'");
             if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
-            if (op.Id == OpId.Tech && LoopOn) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
+            if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
-            if (!G.Within(op.Pos, Car, R.AtReachCm)) return No("stand-at-getaway", "stand at the getaway car", cm: R.AtReachCm);
+            if (!AtGetaway(op.Pos)) return No("stand-at-getaway", "stand at the getaway car", cm: R.CarReachCm); // brief 059: not while it drives; engine 0.33.1: within car.footprint.reach of its body
             bool carrying = op.Carrying.HasValue || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);
             op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             Engage(op, o, R.BoardS + (carrying ? R.CarryS : 0));
@@ -131,14 +218,15 @@ namespace Suborned.Sim
         void LandBoard(Op op)
         {
             if (op.Down) return;
-            var seat = S.Stand(S.GetawayCar); string name = Sim.Op.Name(op.Id), with = "";
+            if (!AtGetaway(op.Pos)) { Note("board.missed", $"The getaway car is gone from beside the {Sim.Op.Name(op.Id)}: nobody boards."); return; } // brief 059: it drove off while he got in
+            var seat = GetawaySeat; string name = Sim.Op.Name(op.Id), with = ""; // brief 059 K6: the stand it is at
             op.InCar = true; op.Pos = seat; op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             if (op.Carrying.HasValue)
             {
                 var c = OpOf(op.Carrying.Value); op.Carrying = null; c.CarriedBy = null; c.InCar = true; c.Pos = seat;
                 with = " with the " + Sim.Op.Name(c.Id); Chain.Add(Sim.Op.Name(c.Id) + "-in-getaway-car");
             }
-            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Car; with = " with Vale"; Chain.Add("vale-in-getaway-car"); }
+            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Car; valeAboardAt = Tick; with = $" with {ValeName}"; Chain.Add("vale-in-getaway-car"); }
             Note("board.in", $"The {name} is in the car{with}.");
         }
 
@@ -149,15 +237,17 @@ namespace Suborned.Sim
             if (o.Point.HasValue) to = o.Point.Value;
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
             else return No("no-place", $"no place '{o.To}'");
-            if (!S.Grid.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
-            if (S.Grid.Route(S.Stand(S.GetawayCar), to) == null) return No("no-walk", "no walk there");
+            var walk = Walk;
+            if (walk.CarCovers(to) && walk.RouteBeside(walk.NearestFree(GetawaySeat) ?? GetawaySeat, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): as Move, beside a standing car
+            if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
+            if (walk.Route(GetawaySeat, to) == null) return No("no-walk", "no walk there");
             Engage(op, o, R.BoardS);
             return "";
         }
         void LandStepOut(Op op, Order o)
         {
             if (op.Down || !op.InCar) return;
-            op.InCar = false; op.Pos = S.Stand(S.GetawayCar);
+            op.InCar = false; op.Pos = Walk.NearestFree(GetawaySeat) ?? GetawaySeat; // engine 0.33.1 (car.footprint): out at the car's side, the free cell nearest its seat
             Note("board.out", $"The {Sim.Op.Name(op.Id)} steps out of the car.");
             var why = Move(op, o);
             if (why.Length > 0) Note("order.rejected", $"{o.Op} move {o.To}: {why}");
@@ -168,9 +258,10 @@ namespace Suborned.Sim
         string Go(Order o)
         {
             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
-            if (!AnyInCar) return No("car-empty", "nobody is in the car");
+            if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
+            if (!CarHasDriver()) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); } // engine 0.34.0 (Motive M067-K3 c)
             var hs = CarHolders();
-            if (hs.Count > 0) return No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
+            if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; GateHolders(out int until); return No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)); }
             Leave();
             return "";
         }
@@ -184,11 +275,15 @@ namespace Suborned.Sim
             {
                 if (Over) why = No("mission-over", "the mission is over");
                 else if (!AnyInCar) why = No("car-empty", "nobody is in the car");
-                else { var hs = CarHolders(); why = hs.Count > 0 ? No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs)) : ""; }
+                else if (!CarHasDriver()) why = No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); // engine 0.34.0 (Motive M067-K3 c)
+                else { var hs = CarHolders(); GateHolders(out int until); why = hs.Count > 0 ? No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)) : ""; }
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             var a = AnswerOf(why); refusal = saved; return a;
         }
+
+        /// <summary>car-held's words: the holders; the rival car still coming, with its seconds to the first step-out (Motive M059-S1.7).</summary>
+        string HeldWords(List<string> hs, int until) => $"the car is held: {string.Join(", ", hs)}" + (hs.Contains("car:rivals") ? until >= 0 ? $" (the rival car is coming: out in {Math.Max(0, until - Tick + Hz - 1) / Hz} s)" : " (the rival car is coming)" : "");
 
         void Leave()
         {
@@ -200,8 +295,8 @@ namespace Suborned.Sim
                 else { Chain.Add(name + "-walks-out"); Note("walked", $"The {name} is left behind on a calm street and walks out."); }
             }
             CarLeftTick = Tick;
-            if (Vale == ValeAt.Car) { Result = Outcome.Success; Chain.Add("car-leaves-with-vale"); Note("success", "The car leaves with Vale. The crew escapes."); }
-            else { Result = Outcome.Withdrawn; Withdrew(true); Chain.Add("car-leaves-without-vale"); Note("withdraw.car", "The car leaves without Vale: the cell withdraws."); }
+            if (Vale == ValeAt.Car) { Result = Outcome.Success; Chain.Add("car-leaves-with-vale"); Note("success", $"The car leaves with {ValeName}. The crew escapes."); }
+            else { Result = Outcome.Withdrawn; Withdrew(true); Chain.Add("car-leaves-without-vale"); Note("withdraw.car", $"The car leaves without {ValeName}: the cell withdraws."); }
             EndOpenFight(); // brief 018 §4: the final fight is judged at the tick the car leaves
             fightClosedLate = true; // Finish replaces a checkpoint already taken at this tick with the state after Go
         }
@@ -259,22 +354,22 @@ namespace Suborned.Sim
             {
                 if (!Up(h)) continue;
                 var from = h.Pos(Tick); var post = BlockPost(from, out _);
-                var to = S.Grid.NearestFree(post); if (!to.HasValue) continue;
-                var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, to.Value); if (route == null) continue;
+                var to = Walk.NearestFree(post); if (!to.HasValue) continue;
+                var route = Walk.Route(Walk.NearestFree(from) ?? from, to.Value); if (route == null) continue;
                 scored.Add((new Path(route).Length, h.Id, h));
             }
             scored.Sort((a, b) => a.mm != b.mm ? a.mm.CompareTo(b.mm) : string.CompareOrdinal(a.id, b.id));
             for (int i = 0; i < scored.Count && i < R.Blockers; i++)
             {
                 var (_, _, h) = scored[i];
-                var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : S.Grid.NearestFree(post) ?? post;
+                var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : Walk.NearestFree(post) ?? post;
                 if (cv != null) TakeCover(h.Gun, cv); else ReleaseCover(h.Gun); // the cover it held before (a joined officer's) is free again
-                h.Blocker = true; h.Home = to; MoveTo(h, to); Blockers.Add(h.Id);
+                h.Blocker = true; h.Home = to; MoveTo(h, to); h.Why = "blocker"; Blockers.Add(h.Id);
                 Note("fight.blocker", $"{h.Id} goes for the road ({(cv != null ? "cover at " + cv.Id : "the lane, in the open")}).");
             }
         }
         /// <summary>The blocker's post (brief 018 §10, Pulse): the cover BlockCover gives, else the open lane centreline fight.blockNear along it.</summary>
-        Pt BlockPost(Pt from, out CoverPoint? cv) { cv = BlockCover(from); return cv != null ? cv.At : S.LanePointAt(R.BlockNearCm); }
+        Pt BlockPost(Pt from, out CoverPoint? cv) { cv = BlockCover(from); return cv != null ? cv.At : LaneAt(R.BlockNearCm); } // brief 059 K6: the stand's lane
         /// <summary>The free cover point inside the exit lane and between fight.blockNear and fight.blockFar of the car point (straight line, as
         /// the hold), nearest `from` (present, at least partial; ties by id), or null.</summary>
         CoverPoint? BlockCover(Pt from)
@@ -282,7 +377,7 @@ namespace Suborned.Sim
             CoverPoint? best = null; long bd = long.MaxValue;
             foreach (var c in LiveCover)
             {
-                if (coverTaken.ContainsKey(c.Id) || c.Q < R.CoverQPartial || !c.Present(Tick / Hz) || !S.InExitLane(c.At)) continue;
+                if (coverTaken.ContainsKey(c.Id) || c.Q < R.CoverQPartial || !c.Present(Tick / Hz) || !InLane(c.At)) continue;
                 if (G.Within(c.At, Car, R.BlockNearCm - 1) || !G.Within(c.At, Car, R.BlockFarCm)) continue; // the ring: not at the door, in the cell's reach
                 long d = G.D2(from, c.At);
                 if (d < bd || (d == bd && best != null && string.CompareOrdinal(c.Id, best.Id) < 0)) { bd = d; best = c; }
@@ -290,14 +385,15 @@ namespace Suborned.Sim
             return best;
         }
 
-        /// <summary>A rival within cell.atReach of the car while Vale is in it, with no operative standing within cell.reach of it (brief 018 §1).</summary>
+        /// <summary>A rival at the car (engine 0.33.1: within car.footprint.reach of its body; was cell.atReach of its centre) while Vale is in it,
+        /// with no operative standing within cell.reach of it (brief 018 §1).</summary>
         bool RivalReachesVale()
         {
             if (Vale != ValeAt.Car) return false;
             bool rival = false;
-            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && G.Within(h.Pos(Tick), Car, R.AtReachCm)) rival = true;
+            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && AtGetaway(h.Pos(Tick))) rival = true;
             if (!rival) return false;
-            foreach (var op in Ops) if (!op.Down && !op.InCar && !op.Inside && G.Within(op.Pos, Car, actReach)) return false;
+            foreach (var op in Ops) if (Guards(op) && G.Within(op.Pos, Car, actReach)) return false; // engine 0.35.2 (Motive rulings-0.35.1 §2): a drawn op only
             return true;
         }
 
@@ -357,11 +453,12 @@ namespace Suborned.Sim
         /// <summary>The getaway's state for the checkpoint hash: no bytes until someone boards, a blocker is picked or the car leaves.</summary>
         internal void HashGetaway(Hash.H h)
         {
-            bool any = Blockers.Count > 0 || CarLeftTick != INF || CarSeenBy.Length > 0 || carWasHeld || pickFrom.Length > 0; foreach (var op in Ops) any |= op.InCar;
+            bool any = Blockers.Count > 0 || CarLeftTick != INF || CarSeenBy.Length > 0 || carWasHeld || pickFrom.Length > 0 || pickLater; foreach (var op in Ops) any |= op.InCar;
             if (!any) return;
             foreach (var op in Ops) h.Z(op.InCar);
             foreach (var x in Blockers) h.S(x);
             h.Z(carWasHeld).Z(blockerOut);
+            if (pickLater) h.S("pickLater"); // engine 0.33.0: only a run whose spring found nobody on foot adds bytes
             h.I(CarLeftTick).S(CarSeenBy);
             foreach (var (op, fate, why) in LeftBehindAtGo) h.S(op).S(fate).S(why);
         }

@@ -16,7 +16,11 @@ namespace Suborned.World
         /// <summary>The prefabs the builder places (KitLods writes them from the sources at kit import: colliders stripped, LODGroup from the catalogue).</summary>
         public const string BuiltRoot = KitRoot + "Prefabs/Built/";
         readonly Dictionary<string, string> prefabs = new(), sources = new(), generated = new(), categories_ = new();
+        readonly HashSet<string> rejectedGenerated = new(System.StringComparer.Ordinal);
+        /// <summary>The Generated/ prefab paths of rejected generated pieces (brief 061's retired crossing pieces): KitImport.Generated removes them.</summary>
+        public IReadOnlyCollection<string> RejectedGenerated => rejectedGenerated;
         readonly Dictionary<string, List<(string file, float screen)>> lods = new();
+        readonly Dictionary<string, (string name, float[] distances)> lodClass = new(System.StringComparer.Ordinal);
         readonly List<(string, string)> uses = new();
         readonly Dictionary<string, GameObject> loaded = new();
         readonly Dictionary<string, int> placed = new();
@@ -28,8 +32,17 @@ namespace Suborned.World
             var categories = new Dictionary<string, (float l1, float l2)>();
             if (J.Get(root, "lodCategories") is Dictionary<string, object> cats)
                 foreach (var kv in cats) categories[kv.Key] = (J.F(kv.Value, "l1"), J.F(kv.Value, "l2"));
+            // brief 072 (Redline's plan 3.1): distance classes; a piece with `lodClass` switches by distance, not by its screen numbers
+            var classes = new Dictionary<string, float[]>(System.StringComparer.Ordinal);
+            if (J.Get(root, "lodClasses") is Dictionary<string, object> lcs)
+                foreach (var kv in lcs)
+                    classes[kv.Key] = J.Get(kv.Value, "distances") is List<object> ds ? ds.ConvertAll(d => (float)(double)d).ToArray()
+                        : throw new InvalidDataException($"World: kit.json lodClasses.{kv.Key} has no distances");
+            foreach (var kv in classes) classDistances[kv.Key] = kv.Value;
             foreach (var a in J.A(root, "assets"))
             {
+                if (J.S(a, "status") == "rejected" && J.S(a, "source") == "generated") // where its generated prefab stood (KitImport.Generated removes it)
+                    foreach (var f in J.A(a, "files")) if (J.S(f, "role") == "fbx") rejectedGenerated.Add(KitRoot + "Prefabs/Generated/" + Path.GetFileNameWithoutExtension(J.S(f, "path")) + ".prefab");
                 if (J.S(a, "status") != "adopted") continue;
                 var id = J.S(a, "id");
                 foreach (var f in J.A(a, "files"))
@@ -53,7 +66,16 @@ namespace Suborned.World
                         l.Add((KitRoot + J.S(ls[i], "file"), screen));
                     }
                 lods[id] = l;
+                if (J.S(a, "lodClass") is { } lc)
+                    lodClass[id] = (lc, classes.TryGetValue(lc, out var dist) ? dist : throw new InvalidDataException($"World: kit `{id}` lodClass `{lc}` is not in kit.json lodClasses"));
                 categories_[id] = J.S(a, "category") ?? "";
+                // brief 077: a row's LODGroup size (`lodSize`), per-object shadows (`objects[].shadows` on/off) and its declared `lodAtPlay` (its own
+                // LODs switch at play zoom by design: the testbed planting, Sky 2026-10-30), which exempts it from the play-zoom guard
+                if (J.Get(a, "lodSize") is { } lsz) lodSize[id] = System.Convert.ToSingle(lsz, System.Globalization.CultureInfo.InvariantCulture);
+                if (J.Get(a, "objects") is List<object> objs)
+                    objects[id] = objs.Select(o => (J.S(o, "name"), J.S(o, "shadows") switch { "off" => false, "on" or null => true, var x => throw new InvalidDataException($"World: kit `{id}` objects[].shadows `{x}` is not on/off") })).ToArray();
+                if (J.B(a, "lodAtPlay")) { atPlay.Add(id); atPlayBuilt.Add(prefabs[id]); }
+                if (J.Get(a, "replaces") is string rp) replacesOf[id] = rp; else if (J.Get(a, "replaces") is { } ro && J.S(ro, "id") is string rid) replacesOf[id] = rid;
                 if (J.Get(a, "tags") is { } tags && J.Get(tags, "use") is List<object> use) foreach (var u in use) uses.Add(((string)u, id));
             }
         }
@@ -64,8 +86,26 @@ namespace Suborned.World
         public IReadOnlyDictionary<string, string> Sources => sources;
         /// <summary>id → LOD1, LOD2 files (asset paths) with their screen-relative switch heights (LOD0 = the source).</summary>
         public IReadOnlyDictionary<string, List<(string file, float screen)>> Lods => lods;
+        /// <summary>Brief 072: id → its distance class (kit.json `lodClass`) and that class's [L1, L2, cull] switch distances in metres (cull 0 = none).</summary>
+        public IReadOnlyDictionary<string, (string name, float[] distances)> LodClass => lodClass;
+        /// <summary>The class's distances by name (the column bake's `column` class).</summary>
+        public float[] ClassDistances(string name) => classDistances.TryGetValue(name, out var d) ? d : throw new InvalidDataException($"World: kit.json lodClasses has no `{name}`");
+        readonly Dictionary<string, float[]> classDistances = new(System.StringComparer.Ordinal);
         /// <summary>id → the catalogue's `category` (Street, Ground, Plants, ...; "" when it has none).</summary>
         public IReadOnlyDictionary<string, string> Categories => categories_;
+        /// <summary>Brief 077 (Latch; the seam, before): the row's `lodSize` (0 = none), its `objects[]` shadow flags and its declared `lodAtPlay`.</summary>
+        public float LodSizeOf(string id) => lodSize.TryGetValue(id, out var v) ? v : 0f;
+        public IReadOnlyList<(string name, bool shadows)> ObjectsOf(string id) => objects.TryGetValue(id, out var v) ? v : System.Array.Empty<(string, bool)>();
+        public bool AtPlay(string id) => atPlay.Contains(id);
+        /// <summary>Brief 077: the adopted piece a rebuild replaces (kit.json `replaces`, e.g. RecordsTower_TB -> RecordsTower), else null: rules written
+        /// against the old id (the civic restyle's slot bindings) follow the rebuild, which keeps its stone slots by name.</summary>
+        public string ReplacesOf(string id) => replacesOf.TryGetValue(id, out var v) ? v : null;
+        readonly Dictionary<string, string> replacesOf = new(System.StringComparer.Ordinal);
+        /// <summary>Whether a placed instance's built prefab (Prefabs/Built/...) is a row that declares `lodAtPlay` (the play-zoom guard's exemption).</summary>
+        public bool AtPlayPrefab(string builtPath) => !string.IsNullOrEmpty(builtPath) && atPlayBuilt.Contains(builtPath);
+        readonly Dictionary<string, float> lodSize = new(System.StringComparer.Ordinal);
+        readonly Dictionary<string, (string, bool)[]> objects = new(System.StringComparer.Ordinal);
+        readonly HashSet<string> atPlay = new(System.StringComparer.Ordinal), atPlayBuilt = new(System.StringComparer.Ordinal);
         /// <summary>Generated pieces: id → FBX asset path.</summary>
         public IReadOnlyDictionary<string, string> Generated => generated;
         /// <summary>Every adopted piece's `tags.use` entries (e.g. `site:harbour-hotel`, `landmark:skyport-tower`), in catalogue order.</summary>
@@ -155,14 +195,23 @@ namespace Suborned.World
             Combine.Kit(el, b.Value, n);
             placed[layer] = Placed(layer) + 1;
             tris[layer] = (tris.TryGetValue(layer, out var k) ? k : 0) + n;
+            KitPosters.Placed(t, el ? el.name : "", r.Id); // brief 075-F1: a board takes its ad (the export's pick or its default) on every instance
             return t;
+        }
+
+        /// <summary>Counts pieces placed some other way (KitColumns: one baked column instance stands for `pieces` export pieces).</summary>
+        public void Count(string layer, int pieces, int triangles)
+        {
+            placed[layer] = Placed(layer) + pieces;
+            tris[layer] = (tris.TryGetValue(layer, out var k) ? k : 0) + triangles;
         }
 
         /// <summary>The piece r baked into `layer`'s tile batches by material instead of standing as an instance (its LOD0, placed as
         /// Place places it): many small pieces that never fade (bed tufts, paving bands, bollards) then draw as a few batches.
         /// slots: this piece's material slots drawn in another kit material (KitSlots).</summary>
-        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots, float elementYaw = 0f)
+        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots, float elementYaw = 0f, System.Func<Material, Material> remap = null)
         {
+            KitPosters.Baked(id, r.Id); // brief 075-F1: a board baked into batches could not take its ad
             var root = Prefab(r.Id).transform; var used = new HashSet<string>(); int n = 0;
             var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? elementYaw : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
             int orbit = 0;
@@ -183,7 +232,10 @@ namespace Suborned.World
                 {
                     var kit = new MeshKit().Mesh(mesh, s, trs * mr.transform.localToWorldMatrix);
                     if (kit.Empty) continue;
-                    Combine.Baked(el, layer, kit, KitSlots.For(mats[Mathf.Min(s, mats.Length - 1)], slots, used)); n += kit.TriangleCount;
+                    var bm = KitSlots.For(mats[Mathf.Min(s, mats.Length - 1)], slots, used); if (remap != null) bm = remap(bm); // brief 048 (Splice): the crossing parts' light drawn as emission only, at bake time
+                    // the strip light's pool: held, its chords' joints mitred, then baked by RoadPoolJoints.Fill (no fan gaps, no doubled overlaps)
+                    if (bm && RoadPoolJoints.Collecting && bm.name.StartsWith(RoadPoolJoints.Pool, System.StringComparison.Ordinal)) { RoadPoolJoints.Add(el, layer, kit, bm); n += kit.TriangleCount; continue; }
+                    Combine.Baked(el, layer, kit, bm); n += kit.TriangleCount;
                 }
             }
             if (n == 0) throw new InvalidDataException($"World: kit `{r.Id}` has no meshes");
@@ -203,11 +255,50 @@ namespace Suborned.World
                         layer.name, f.SignKit, f.SignKit.At, f.SignKit.Base, f.Yaw);
         }
 
+        /// <summary>Brief 075 NP-1: every kit ref anywhere in the parsed world names a piece of the imported kit (adopted in kit.json, its prefab on
+        /// disk), checked before anything is built; one unknown, candidate or rejected id fails the build with every offender listed (no box, no stand-in).
+        /// Walks the DTO graph by reflection, so a new field holding refs is checked without being listed here. Returns the refs checked.</summary>
+        public int CheckRefs(WorldDto world)
+        {
+            var bad = new SortedDictionary<string, (int n, string first)>(System.StringComparer.Ordinal); int seen = 0;
+            var visited = new HashSet<object>(RefEq.Instance);
+            void Walk(object o, string path)
+            {
+                if (o == null || o is string || o.GetType().IsPrimitive || o is Vector2 || o is Vector3 || o is System.Enum) return;
+                if (!visited.Add(o)) return;
+                if (o is KitRefDto r)
+                {
+                    seen++;
+                    bool ok = r.Id != null && prefabs.TryGetValue(r.Id, out var path0) && (AssetDatabase.LoadAssetAtPath<GameObject>(path0) || File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", path0)));
+                    if (!ok) bad[r.Id ?? "(null)"] = bad.TryGetValue(r.Id ?? "(null)", out var b) ? (b.n + 1, b.first) : (1, path);
+                    return;
+                }
+                if (o is System.Collections.IDictionary) return; // raw json and lookup tables carry no refs of their own
+                if (o is System.Collections.IEnumerable e) { int i = 0; foreach (var x in e) Walk(x, $"{path}[{i++}]"); return; }
+                var ns = o.GetType().Namespace;
+                if (ns == null || !ns.StartsWith("Suborned", System.StringComparison.Ordinal)) return;
+                foreach (var f in o.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
+                    if (f.Name != "Raw") Walk(f.GetValue(o), path + "." + f.Name);
+            }
+            Walk(world, "world");
+            if (bad.Count > 0)
+                throw new InvalidDataException($"World: NP-1 {bad.Values.Sum(b => b.n)} kit refs name pieces not in the imported kit (not adopted, or no prefab: run `bun run kit`): " +
+                    string.Join("; ", bad.Select(kv => $"{kv.Key} x{kv.Value.n} (e.g. {kv.Value.first})")));
+            return seen;
+        }
+
         public string Summary()
         {
             var sb = new System.Text.StringBuilder("World: kit placed");
             foreach (var kv in placed) sb.Append($" {kv.Key} {kv.Value} ({tris[kv.Key]} tris)");
             return sb.ToString();
+        }
+
+        sealed class RefEq : IEqualityComparer<object>
+        {
+            public static readonly RefEq Instance = new();
+            public new bool Equals(object a, object b) => ReferenceEquals(a, b);
+            public int GetHashCode(object o) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(o);
         }
 
         static Bounds Union(Bounds a, Bounds b) { a.Encapsulate(b); return a; }

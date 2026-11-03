@@ -1595,3 +1595,53 @@ Each value moved one step either way: the `today` sweep (3,792 policies) and all
 - **Keel, Waymark, Suture:** nothing new from this section.
 
 **Sky on running, 2026-10-22:** "I think running only in front of camera, patrol bots and guards get you noticed, anyone else fine, need to loosen that up." (Context: moving about on foot feels slow, which lowers exploration.) Ruling for Keel: only security notices a runner (cameras, robots, guards; police officers count as security, Sky confirmed "yep"); ordinary people no longer remember a run. The walk pace and Sky's three-speed idea (walk, jog drawn, sprint holstered) are not decided.
+
+## 17. Time to down, and loud against quiet (2026-10-24, for Sky; nothing changed yet)
+
+**Asked by:** Aster, from Suture's first bot pass (`out/qa/20261024-082727/report.html`, tree engine 0.30.0). It found 120 plays where the Enforcer went from his first hit to down in under 5 s, and 2 where the rivals took Vale off him within 5 s of that hit. Sky also lost the Scout and the Fixer to police quickly in his last run.
+
+### 17.1 What happens (replayed, engine 0.30.0)
+- **`careless-enforcer-watches-guard`:** two officers walk up to the holstered Enforcer and fire at 0 m. Point blank always hits, so they land 6 hits in 4.5 s. He never fires back: nobody draws for the cell (Sky's answer 1), and weapons free only acts for an agent who is already drawn.
+- **Scout, Fixer and Tech** (Sky's sessions and `loud-left-downed`):
+  - Two trained hostiles at 9–14 m, in the effective band (750 ‰), fire on the same cadence.
+  - The counter of a new pair starts at 500 (`acc-start`), so each one's first two shots both hit. That is 4 hits in about 1.5 s.
+  - **An op with 4 health is down 1.5–2.2 s after the first hit.**
+  - That is below my own readability floor of 2.5 s (§6.4, rule 7), which was meant to keep a down from coming before the player can see it and answer.
+- **So under 5 s for the Enforcer was built in, but it was never the aim.** 6 health / (2 × 1 hit per 1.5 s) is 4.5 s at point blank. The ops at 1.5 s are a fault, from two volleys landing together with the counter's head start.
+
+### 17.2 What I tried (scratch copies of the inputs; the rulebook is untouched)
+- **The set:** the 38 Handover routes plus the 21 bot exemplars, including Sky's sessions. That is 59 scripts per variant, in about 2.5 s each.
+- **Where:** `out/scratch/motive/058/ttk/` (`cmp2.py` prints the table).
+- **The times are the shortest first-hit-to-down in the set.**
+
+| variant | Enforcer | ops | routes that change |
+|---|---|---|---|
+| today | 4.5 s (5 under 5 s) | 1.5 s (5 under 2.5 s) | — |
+| `acc-start` 500 → 0 (the first shot finds its range) | 3.4 s | 2.2 s | **breaks all 6 loud routes**: the cell's opening shot at the guard now misses, so the entry is seen by the guard at 2:38. Rejected. |
+| `acc-point` 1000 → 750 | 4.9 s | 1.5 s | fixes only point blank. Rejected. |
+| **health: Enforcer 6 → 8, ops 4 → 5** | **6.0 s (none under 5 s)** | **3.7 s (none under 2.5 s)** | **none of the 38 routes changes outcome, time or Trail.** `fail-enforcer-down` now fails as sealed (Waymark retargets it). One of Sky's sessions (`s-20261022-181256`) survives where the rivals took Vale. |
+
+### 17.3 Proposal for Sky: health-enforcer 8, health-op 5
+- **Why health, not damage or accuracy:**
+  - It is the only change that clears both floors and leaves the 38 routes alone.
+  - Syndicate (1993) made toughness something you bring into the mission (chest and heart mods), and a hit stays a whole pip on the HUD.
+- **Pips:** the Enforcer's roster pips go from 6 to 8, and the ops' from 4 to 5. Glyph checks that the roster fits.
+- **Floors restated for Suture's checks:**
+  - the Enforcer, whose down fails the mission: at least 5 s from his first hit, under two trained shooters at any range;
+  - the ops: at least 2.5 s.
+- **What it does to the loud and fight routes:**
+  - Every loud and fight route keeps its result and Trail in this set. Loud still wins at 5:10, 13 T. Its shots are heard at 2:33, and the seal runs 2:25 from the response being on the street.
+  - Mutants of loud will survive their fights a little more often. Suture re-runs the pass on the change before Sky decides (it is 31 s).
+
+### 17.4 Loud against quiet: not the balance I want
+- **On the tree, loud wins 59 % of its mutants and quiet 52 %.** Loud is faster (311 s against 338 s) and costs $0 against Trail 18.6 to 6.0. MC-2 still holds (loud costs the most Trail), but within the Handover the player never pays that Trail: the capstone has no next mission, so loud's price is only the debrief line.
+- **Why the rates look the way they do:**
+  - Under timing slop, the quiet routes fail on instant stealth fails (entry seen by the guard, the camera or the patrol).
+  - Loud fails only when its fight is lost, and it has slack until the seal.
+  - So the 59 % against 52 % measures how much slack each route has, not how easy it is. But Sky (§05) wants "fighting out is a last resort, not a route", and a route that holds up better under slop is one players will drift to.
+- **What I'd change (each needs Sky first; I'm not proposing values yet):**
+  1. **Make loud's price felt in the mission:** the debrief and the going-loud card show the Heat it lands, against the threshold that schedules a fight next mission (Motive's Heat threshold, §06).
+  2. **Give the quiet routes slack** where the slop is only timing (Waymark and Suture: which instant fails dominate the quiet mutants' losses, and are any of them unreadable?).
+  3. **Keep the health change from widening the gap:** if the re-run pass shows loud's mutant wins rising by more than 5 points, take the extra back through the seal at S2 (2:25 → 2:10), not through health.
+
+**Next owner:** Sky (17.3 yes or no, and 17.4's direction). Then Keel (two values, plus the pip count for Latch and Glyph), Suture (re-run the pass on the change, with the floors as checks), and Waymark (retarget `fail-enforcer-down`).

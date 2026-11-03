@@ -17,7 +17,8 @@ namespace Suborned.World
     public static class FadeTags
     {
         static readonly HashSet<string> Whole = new(System.StringComparer.Ordinal)
-        { "buildings", "skins", "facades", "roofs", "frontages", "fabric", "megastructures", "gates", "signatures", "landmarks" };
+        { "buildings", "skins", "facades", "roofs", "frontages", "fabric", "megastructures", "gates", "signatures", "landmarks",
+          Layer072.BuildingsEvery, Layer072.BuildingsToday, Layer072.SkinsEvery, Layer072.SkinsToday, Layer072.Shell }; // brief 072-E: the shell's shadow is cut with its modules
         /// <summary>Layers that hold buildings and furniture: only their facade-atlas batches fade.</summary>
         static readonly HashSet<string> BuildingsOnly = new(System.StringComparer.Ordinal) { "civic" };
 

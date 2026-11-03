@@ -1,0 +1,145 @@
+{
+  "takes": [
+    {
+      "situation": "Zhou is wiping down the car and haggles over how long the wait lasts.",
+      "beats": [
+        {
+          "speaker": "driver",
+          "line": "Mind the paint. I drive the Councillor home at the chime."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Your pay card's been stamped short, we hear. One small favour, then."
+        },
+        {
+          "speaker": "driver",
+          "line": "Last envelope with \"a small favour\" came up short. Say exactly what."
+        },
+        {
+          "speaker": "fixer",
+          "line": "When he's in, we want him at the service bay, not home."
+        },
+        {
+          "speaker": "driver",
+          "line": "Don't say who \"we\" is. I can't repeat what I never heard."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Sensible. Wait there with him till we've finished."
+        },
+        {
+          "speaker": "driver",
+          "line": "Not for this money. A couple of minutes, then I drive on."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Long enough for us to get him out of the back seat."
+        },
+        {
+          "speaker": "driver",
+          "line": "Don't show me that. Anyone watching out here, I'll send off."
+        }
+      ],
+      "learned": [
+        "Zhou's paid: Vale's car waits briefly."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    },
+    {
+      "situation": "Zhou won't take the envelope until the job is said aloud, then reads it back.",
+      "beats": [
+        {
+          "speaker": "driver",
+          "line": "Not on the Councillor's bonnet. Last envelope said \"nothing much\", and lied."
+        },
+        {
+          "speaker": "fixer",
+          "line": "You drive him on short wages. We can mend a lean month."
+        },
+        {
+          "speaker": "driver",
+          "line": "Mend it how? My trip sheet says home, at the chime."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Not tonight. Once he's in, you drive him to the service bay."
+        },
+        {
+          "speaker": "driver",
+          "line": "Sit how long? This buys a couple of minutes, then I drive."
+        },
+        {
+          "speaker": "fixer",
+          "line": "That'll do. We'll have him out of that back seat."
+        },
+        {
+          "speaker": "driver",
+          "line": "Not in front of me. Anyone watching out here, I'll send off."
+        },
+        {
+          "speaker": "fixer",
+          "line": "The envelope's yours. You haven't asked who we are."
+        },
+        {
+          "speaker": "driver",
+          "line": "Can't repeat what I don't know. Chime, service bay, couple of minutes."
+        }
+      ],
+      "learned": [
+        "Zhou's paid: Vale's car waits briefly."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    },
+    {
+      "situation": "Zhou is already counting the money, so the Fixer holds the taken envelope over the terms.",
+      "beats": [
+        {
+          "speaker": "driver",
+          "line": "Hold on, I'm counting. Wages come by tube, and they come short."
+        },
+        {
+          "speaker": "fixer",
+          "line": "It's all there, and it's yours. Now, the Councillor's drive home."
+        },
+        {
+          "speaker": "driver",
+          "line": "Vague money's cost me. I drive the Councillor home, so what changes?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "Not home. At the chime, you take him to the service bay."
+        },
+        {
+          "speaker": "driver",
+          "line": "The east yard. And after that I don't want to see anything."
+        },
+        {
+          "speaker": "fixer",
+          "line": "You wait with him. We get him out of the back seat."
+        },
+        {
+          "speaker": "driver",
+          "line": "Don't say who. Then there's nothing to get out of me."
+        },
+        {
+          "speaker": "fixer",
+          "line": "It's in your pocket now. You wait till we've got him."
+        },
+        {
+          "speaker": "driver",
+          "line": "Couple of minutes, then I'm gone. Anyone watching here, I'll send off."
+        }
+      ],
+      "learned": [
+        "Zhou's paid: Vale's car waits briefly."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2976 @@
+{
+ "old_assets": 1135,
+ "our_assets": 3294,
+ "clashes": [
+  {
+   "guid": "000ceb7ea191a4dedbd6adf45847536e",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Rubber.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Rubber.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "0058dcc96c08244a38f7cf7e36650d4b",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Tile_Tactile.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Tile_Tactile.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0088a4af4d94a4d678ede1c8b4a30634",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_PortholeBay_7.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_PortholeBay_7.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "0120c2960542549c193c4ac8001ee4a0",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_PottedTopiary.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_PottedTopiary.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "0145024d18a894b94847a54d00a5aa07",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_GraniteNose.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_GraniteNose.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "016c9d3e119fd496db46bb0c3cf1ee80",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_Cypress.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_Cypress.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "02609d137e500426aa243b4cda068b02",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_GraniteCorner_0.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_GraniteCorner_0.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "026b69f093a8140b79fc0010ef566cba",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_ArcadeBay_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_ArcadeBay_3.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "026fd5584741443e89b984ab92fa27ae",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamBay_6.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_6.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "02be44eb4636349b8b5c6630a3a14dfd",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_PalmFan.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "02dd2c4075a914731b5a2f2166671483",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_BikeLean.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_BikeLean.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "02ebc4a7b4d564905abd8a52ad529d76",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_GraniteCorner_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_GraniteCorner_3.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "02ef1c76a372a44ee88b7c7d0c9cec38",
+   "old": "art/OldTownArt/DecoKit/Models/Skyport/DK_SkyRail_Pylon_Tall.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyport/DK_SkyRail_Pylon_Tall.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "031f0c41fa1f0488c990bcbcdf59ca30",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_PneumaticPost.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_PneumaticPost.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "041fd17a7c25f4a23b105efd8053fd7a",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_DecoCorner_10.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_DecoCorner_10.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "042415f2455664893980205ec0894390",
+   "old": "art/OldTownArt/DecoKit/Models/Booths/DK_CoffeeCart.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Booths/DK_CoffeeCart.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "04bdf967e0fa04bf8a32671e931efcae",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Structures/DK_CurvedKiosk.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Structures/DK_CurvedKiosk.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "057dcd7c31d414037ae7867a25e48489",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_BalconyBay_4.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_BalconyBay_4.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "061e3435934f84b30a162312c741489a",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_WindowBox.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_WindowBox.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "062c960c73f1c49ff913c16a2c2b7bb8",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamBay_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamBay_3.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "06315513ee6d647a68def2dbc55e73aa",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_Automat.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_Automat.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "080664bf5e392479789220c8d6df3f54",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_SandwichBoard.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_SandwichBoard.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "08a12c9e1a03049dcb23622faff80731",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Iron.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Iron.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "090559bad47a94fee912968782a89045",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_CoinTelescope.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_CoinTelescope.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "09625fc8c2dc44b68be1d036132a8d45",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_DecoCorner_10.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_DecoCorner_10.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0b23707be9f7447be8609ab8aff635a2",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamEnd_9.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamEnd_9.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0bc30c0a049cb4a3cb87417968a6cf9e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_GraniteCorner_2.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_GraniteCorner_2.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0bd5daeeb1008432e9a1eb1c9e86ff48",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Wall_C.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Wall_C.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "0c003c583ddf84ff6954326ba7976907",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_InlayArc_R16.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_InlayArc_R16.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0cba07afc4e45480bbca1d25249726df",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotButler_Far.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotButler_Far.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "0d01e3b1e22244bd2ac703bc340589bb",
+   "old": "art/OldTownArt/DecoKit/Shaders/DK_RobotFace.shader",
+   "ours": "Assets/Suborned/Shaders/DecoKit/DK_RobotFace.shader",
+   "same_bytes": true
+  },
+  {
+   "guid": "0d30357018bad4d0fa1f9f202c5cd3b2",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_InlayArc_R16.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_InlayArc_R16.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "0d5868490136242e8ada4deea3c3a8af",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_BikeRack.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_BikeRack.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0ec016f2f688342858f1586b4c4fca51",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Billboard_Ads.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Billboard_Ads.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "0ee60c2b2a4b7489c8032555e9f8dd18",
+   "old": "art/OldTownArt/DecoKit/Textures/terrazzo_ivory_v1_normal.png",
+   "ours": "Assets/Suborned/Kit/Textures/terrazzo_ivory_v1_normal.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "0f6ed28bf45c540cda6dc2543292f57c",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_CoconutPalm.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_CoconutPalm.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "0faf4b796983d45fab1ed65063fe91b7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_SteamVent.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_SteamVent.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "1041602ea457f41bbb1fdb976b647e85",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_PlanterBed.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_PlanterBed.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "109e54fa610fc489b996a792dbbd42ae",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Landmarks/DK_SkyBridge.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Landmarks/DK_SkyBridge.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "129ea58d7fe144ebcbc668845cbe0527",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Steel_Satin.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Steel_Satin.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "13bf0647a758940948e1b77c3c83184a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Wall_B.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Wall_B.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "14383cb55e5c744f294d8bd0e79c2b39",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Water.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Water.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "148b2cb154b8b4425af0798fd043c5db",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_BalconyBay_8.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_BalconyBay_8.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "157a2dd46facb4e7fb82ba4b48bdb2fc",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_PottedFern.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_PottedFern.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "15b0d2ae5e4f84cbb97e2a18cd771014",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Fin.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Fin.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "17a30e54729b0462fb22986d84839804",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_SkyRail_Car_Head.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_SkyRail_Car_Head.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "17cbf99ae7cab4810abb64fb7de65358",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotPorter_Far.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotPorter_Far.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "18b17a8d2e01f49b1bc119650da6f329",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_BladeSign_Cafe.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_BladeSign_Cafe.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "192c61a25f3e94a5681b9529bbf703f6",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Window_Teal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Window_Teal.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "1a6f0ca430e534ca38d6ec84ae7e836a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_DrainGrate.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_DrainGrate.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "1ad2b1299a9734181a4437588f6ce214",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_HallBay.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_HallBay.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "1b3fddccbf5004311be1ff924b68978e",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_Barrier.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_Barrier.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "1ba368ca724214960b0b5d1628c75768",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotButler.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotButler.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "1bca45c61ce334927975d292bb778e85",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_Streetlamp.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_Streetlamp.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "1c1da2daa5645411295a1008260a86a9",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_Bench.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_Bench.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "1c9089d18229b40bf90a5046683813f5",
+   "old": "art/OldTownArt/DecoKit/Models/Signals/DK_PlazaSphereLamp.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signals/DK_PlazaSphereLamp.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "1d1207adc1b6b47668140ebd60d9fa46",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Screen.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Screen.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "1d7179b9d76c748f3bc982946bd7d6e3",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_PortholeBay_7.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_PortholeBay_7.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "1f4971577d168417e8ecce9c1afdc1ff",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Tile_TramRail.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Tile_TramRail.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "1fb08b3556f834355ab6a59f75bffb64",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Screen_Amber.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Screen_Amber.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "20028c79490204544913ac40feff0de2",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Booths/DK_CoffeeCart.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Booths/DK_CoffeeCart.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "206122040e60d470e92cddeccf1aacf6",
+   "old": "art/OldTownArt/DecoKit/Shaders/DK_ComplexLitCutaway.shader",
+   "ours": "Assets/Suborned/Shaders/DecoKit/DK_ComplexLitCutaway.shader",
+   "same_bytes": false
+  },
+  {
+   "guid": "20f4d58a5726341a5aa9285f355e48c2",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_AirCar_Teal.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_AirCar_Teal.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "2307dfa4d048c472fa50498413f42d78",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Steel_Ivory.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Steel_Ivory.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "243699abe1c1f4b5694a7f519871def4",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_TreePit_Flags_2.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_TreePit_Flags_2.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "244b77d91c13542c399184629dd34f41",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_CypressOlive.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "24c47d40a646e4c3695d3b6161c42390",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Dial.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Dial.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "2529b42165e1d45a8bcfb0013bb5aba3",
+   "old": "art/OldTownArt/DecoKit/Shaders/DK_LitCutaway.shader",
+   "ours": "Assets/Suborned/Shaders/DecoKit/DK_LitCutaway.shader",
+   "same_bytes": false
+  },
+  {
+   "guid": "25e94b7d92ec04ca9ba5a1da19a175c4",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Conservatory.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Conservatory.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "262b6da38759d4b65940dbf9390937dd",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotWaiter_Far.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotWaiter_Far.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "2645f0d8d33634d2dbf2afda703b1ada",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Granite_Kerb.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Granite_Kerb.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "2699b85f895c5471ba650b5798befad8",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_Automat.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_Automat.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "269c1885c6cfc41f88ca02db5647438b",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Limestone_Tex.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Limestone_Tex.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "269c430150dbc4f74b8bc79ff7d7db32",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_PneumaticPost.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_PneumaticPost.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "27a5388a4772840bcbb33b2d9c354d26",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Highrise/DK_Tower_Terrace.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Highrise/DK_Tower_Terrace.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "283aed1028ddf41f6907fbafc810deed",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Decal_Transit.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Decal_Transit.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "285789ea1b5e142f3be6221acc36f525",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_Bollard.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_Bollard.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "29454acbd3d8c454e9bfa7f729c6649f",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_Granite_1.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_Granite_1.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "29669296eac554a0ba7834907fc24a84",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_Deckchair.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_Deckchair.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "29748f5bc097d47388aad49e5a6c379a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Pave_Flags_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Pave_Flags_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "298bb88b00a9646a9adda9189bd66f62",
+   "old": "art/OldTownArt/DecoKit/Textures/decals_transit_v1_alpha.png",
+   "ours": "Assets/Suborned/Kit/Textures/decals_transit_v1_alpha.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "2b590828aaac44973a75f09bb44077f7",
+   "old": "art/OldTownArt/DecoKit/Models/Structures/DK_FlutedColumn.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Structures/DK_FlutedColumn.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "2b7ee80e281124bfcb8133055837b575",
+   "old": "art/OldTownArt/DecoKit/Models/Highrise/DK_Tower_Terrace.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Highrise/DK_Tower_Terrace.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "2b821957b77b942ca999195c16595215",
+   "old": "art/OldTownArt/DecoKit/Textures/awning_stripe_teal_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/awning_stripe_teal_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "2c22a6ed62f5f4b228516afd7ae6f724",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Billboard_Ads_Lit.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Billboard_Ads_Lit.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "2ce262aedacdf4ef7a144749710f0b18",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Limestone_Joint.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Limestone_Joint.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "2cf88456cc23640b2ae08a93276fd447",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamBay_9W.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamBay_9W.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "2d9d847276d0b4b65b0c5a9a95b11a66",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Bronze.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Bronze.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "2da7f4b8bf5314e548625f9c9b6fe831",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_PlazaFountain.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_PlazaFountain.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "2f588702c3d3b4047a984a91b73db7ba",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_CornerTower_12.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_CornerTower_12.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "306aa0291d9524283aab3749d2623922",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_InlayArc_R10.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_InlayArc_R10.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "3132a3b22c66d4a5c8e2a8d16838b9bc",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Wall_A.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Wall_A.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "317c73eb312f24429991e53c73be7d8c",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Rooftop_A.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Rooftop_A.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "32a0645659ee345beaa71ce1fb9a7dc9",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Robots/DK_RobotNanny.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Robots/DK_RobotNanny.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "32a4f28f0f5c64123b43e4fe041af40e",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_CoreConifer.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "338dd5643d0a84a408000470c7d9f274",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Iron_Cast.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Iron_Cast.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "35b00b1946dc047a89c2e941bd22fc75",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_RecyclingBins.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_RecyclingBins.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "35f069baf130147b183b68aa987cb8c7",
+   "old": "art/OldTownArt/DecoKit/Textures/billboard_ads_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/billboard_ads_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "361a4d2a6f01649fd806cbd2670e3465",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_DecoBay_10.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_DecoBay_10.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "367c6ac94de2b45e5ab6cbce1748daa5",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_DrinkingFountain.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_DrinkingFountain.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "37b007d3d07fe4211baded5ff40feb80",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamCorner_2.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamCorner_2.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "37cf86c52ec0a4d479b3a78fd676a838",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Teal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Teal.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "38bcca648b47f46b38f6dc61073560c6",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Rooftop_A.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Rooftop_A.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "3b1651e4f009c43ab8d3089d9e2f81a4",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Vehicles/DK_Tram.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Vehicles/DK_Tram.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "3b2caa041851b49a1934084239b015e0",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_OvalPlanter.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_OvalPlanter.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "3b75f9b118adf42c4a45306fc3c59d22",
+   "old": "art/OldTownArt/DecoKit/Models/Structures/DK_DecoPavilion.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Structures/DK_DecoPavilion.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "3b941447482d540cba0a217af88e0eda",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_BikeRack.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_BikeRack.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "3bdf624a2df934166bd8d98d9efe5524",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Tank.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Tank.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "3cd88f42d10154b9d8b0dc9241aa0630",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_PottedTopiary.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_PottedTopiary.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "3db2f483f19e741a9a694c54614f3e9f",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Steel.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Steel.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "3e42776b6afae4126b1f275484b136a0",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Pool.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Pool.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "3e4aecf9e17b846c1bd77838a4225339",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_Streetlamp.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_Streetlamp.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "3e89b82e862994f91af7230303382a90",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_RobotEye.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_RobotEye.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "3ef0dd14ad9ca4a2b853e24daabde472",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Cabin.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Cabin.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "3f26d5cdf2da74a1aaf6de57be18fbc8",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Foliage.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Foliage.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "3f9e20c4452f0456bbc3c3ed4f845cd8",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Tile_Tactile.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Tile_Tactile.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "3fed6cdb78cfc47efa8bd3db2244c4b5",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Lightbox_Travel.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Lightbox_Travel.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "406f61fd4aa754dbd9ba76e0c07aa547",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Highrise/DK_Tower_Needle.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Highrise/DK_Tower_Needle.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "40a9d05d20be147a28b14f50f8fa5f3f",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_SandwichBoard.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_SandwichBoard.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "413414a6db08c45a1806559101f173b2",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_StreetClock.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_StreetClock.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "41e92f254485b4e1eb54c4a0757db5fa",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_AirCar_Saucer.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_AirCar_Saucer.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "41f83291538de4ce699666b0d0208f48",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamCorner_6.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamCorner_6.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "433756afb28b843858befe95094a1c82",
+   "old": "art/OldTownArt/DecoKit/Models/Highrise/DK_Tower_Starburst.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Highrise/DK_Tower_Starburst.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "436db225de0b04a9ba3f37a2cb5bc2e9",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_LapPool.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_LapPool.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "43a0f295a310a4b6e99c9b6c4f518cb2",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Tennis.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Tennis.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "4449990b2046f43d4971dfa2bb2445a6",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_PlazaFountain.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_PlazaFountain.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "44ce676d57e2b4120a01432a272d9eff",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Rooftop_B.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Rooftop_B.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "451a046907fdc41cb8e87cd410b4d2ee",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamCorner_9.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamCorner_9.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "45735815c768f4d4a8b2598e418a20f3",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_TopiaryCone.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_TopiaryCone.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "458f400baa9224e60be7f12f532f32f7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_Granite_0.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_Granite_0.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "463fa30e89bab40c9b67b35ab1245fe5",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_LifebuoyStand.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_LifebuoyStand.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "469fb2148eb0446a3bd331969e2a6d31",
+   "old": "art/OldTownArt/DecoKit/Models/Landmarks/DK_LinerDock.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Landmarks/DK_LinerDock.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "472f911c9a6004a2aab1dc8e06ac8a06",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Powder.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Powder.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "47fb709adae6f421da831c6d87acdfcd",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyport/DK_Skyport_Tower.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyport/DK_Skyport_Tower.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "482527de15307454c96d1a6650ccf60f",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_NeonStar_Wall.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_NeonStar_Wall.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "48524863806b84b7f8dcbf46e18d0d71",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leather_Black.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leather_Black.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "4863973e4e8a547cc85f5ebec350c2be",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_RoundBench.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_RoundBench.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "48706ddef874a49f3be3dc6efd2e11be",
+   "old": "art/OldTownArt/DecoKit/Models/Booths/DK_Lockers.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Booths/DK_Lockers.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "487a30dd7eefa4e779bb578aadb2c59c",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Tile_Ivory.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Tile_Ivory.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "49a2becb5f9ec473e98e36a502ff5718",
+   "old": "art/OldTownArt/DecoKit/Models/Booths/DK_PhoneBooth.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Booths/DK_PhoneBooth.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "4ac9210c7f944467dabbf39398b35307",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_TreePit_Flags_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_TreePit_Flags_3.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "4b2d03db021c84718b2e73fdd94032bb",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Pave_Flags_0.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Pave_Flags_0.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "4b83569d67af61e458304325a23e5dfd",
+   "old": "art/OldTownArt/Settings/PC_RPAsset.asset",
+   "ours": "Assets/Settings/PC_RPAsset.asset",
+   "same_bytes": false
+  },
+  {
+   "guid": "4c7faf37081e243ee998b0585c3d6b97",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_Bench.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_Bench.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "4cf40a2bc9ec44110b564689e1f2f25a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Conservatory.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Conservatory.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "4e0f3f951f3674c8490dc0ce29803311",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_GraniteCorner_1.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_GraniteCorner_1.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "4f59b9ee06b6548dbac422f4c5fafff3",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_FacetedPot.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_FacetedPot.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "503a40111f03e4b8c844285b3bf320ef",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_Granite_0.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_Granite_0.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "51adfa12b0362447bacff5c3cd863a04",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Pave_Flags.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Pave_Flags.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "526ea43ee92c34215a13601fe8547a40",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_Deckchair.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_Deckchair.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "52b6d3d7c3ff64c35a596781e6edd277",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Neon_Red.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Neon_Red.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "52cdf15a93a394275b92dc74d52fea77",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_CafeSet_Tulip.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_CafeSet_Tulip.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "53276db91a432499a88049eb0eea349c",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Pool_Water.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Pool_Water.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "53811dc5dc33448ecb73f961b4ffbdb6",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_VendingMachine_Snack.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_VendingMachine_Snack.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "53dc1eecceaab4e36821930370f7db37",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamEnd_9W.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamEnd_9W.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "540a01458e14f4add83d63be442479d9",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamEnd_2.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamEnd_2.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "5468dc2fd53db415493bdfd5b32e6a78",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_AirCar_Coral.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_AirCar_Coral.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "55a498d5d3de74f4abcd96a0d0783485",
+   "old": "art/OldTownArt/Data/RobotGlyphs.txt",
+   "ours": "Assets/Suborned/Runtime/Robots/RobotGlyphs.txt",
+   "same_bytes": false
+  },
+  {
+   "guid": "58a99e340c519453ba293f87e75c7c2e",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_RecyclingBins.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_RecyclingBins.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "58c93f45f3c6644aea3d5716af998e4f",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Glow_Amber.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Glow_Amber.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "59b29f487a9234f4895a9e80cc5ef7c1",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_CableSpan_6.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_CableSpan_6.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "5a40ab86d089244b4a1f37ca9c1d582c",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_TopiaryCone.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_TopiaryCone.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "5a9e68e21d6244a5f8dcd9905b8a2810",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_Granite_1.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_Granite_1.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "5aea0461025fd4cb88c820fea740df51",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Bark_Palm.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Bark_Palm.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "5b1145482cec441a8bc606acae0676bd",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_ArcadeBay_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_ArcadeBay_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "5b2b56adb86d8400ca3f4d9d99ec7c07",
+   "old": "art/OldTownArt/DecoKit/Textures/flower_cluster_coral_v1_alpha.png",
+   "ours": "Assets/Suborned/Kit/Textures/flower_cluster_coral_v1_alpha.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "5b866449a1497416f87611cd7b8fcaae",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_Cypress.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "5bdc8117b9f334b75911430ded8db15a",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotWaiter.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotWaiter.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "5c84fd7932f7a42c78c318af09054085",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamCorner_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamCorner_3.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "5d746b656777e451bb17d537b190386e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Vehicles/DK_HoverScooter.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Vehicles/DK_HoverScooter.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "5e80828092dca4613817669751df6dcb",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_GraniteNose.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_GraniteNose.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "5ed980da6ca554930afe3327786d6366",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_PlanterHex.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_PlanterHex.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "5ede6a3fd41734015bfa5f0244a2e3ab",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Signal_Green.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Signal_Green.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "5f2f5084f87014b388657d486e376c6f",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Planter.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Planter.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "5f59218cb8c494b6ab76fd4d610c999a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_SkyRail_Pylon_Head.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_SkyRail_Pylon_Head.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "610a70203ff1a4f649eb07a704e928a6",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_Cypress.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_Cypress.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "617dbbe7204da4c7c8db76bd024757aa",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_VendingMachine_Snack.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_VendingMachine_Snack.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "61be356c4f7184761ae78fe440fcebd9",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Granite_Kerb_B.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Granite_Kerb_B.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "623d9cea3a099422c94c2a4569036e37",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_TreePit_Flags_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_TreePit_Flags_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "623f1dfc88fdd4c17a2d822cfbfbd772",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_TreePit_Flags_2.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_TreePit_Flags_2.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "625bb4f36d7154b52a3b73b3b17b64a6",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Structures/DK_TramCanopy.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Structures/DK_TramCanopy.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "62c0448f41acf4fa79b81179f45a1f8e",
+   "old": "art/OldTownArt/DecoKit/Models/Vehicles/DK_Tram.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Vehicles/DK_Tram.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "62e698bc2f7cf4da1815f85f39e1a602",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_TreePit_Flags_0.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_TreePit_Flags_0.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "63592817a86ec44ee8932635d38c1883",
+   "old": "code/Runtime/OldTown/Robots/RobotIdle.cs",
+   "ours": "Assets/Suborned/Runtime/Robots/RobotIdle.cs",
+   "same_bytes": false
+  },
+  {
+   "guid": "64640579724534984b23132ffe739728",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "64bff1eb873504710b89ba870d0295ab",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Pylon_A.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Pylon_A.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "65a8d370365b9491bbc819ce67b45902",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Rooftop_C.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Rooftop_C.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "6706120a2785146929b1003170d59082",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamCorner_4.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamCorner_4.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "6739f71e4c51e4bd6a79de9158a13fee",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_DecoEnd_10.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_DecoEnd_10.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "67cf4567a9f7d46e2be5e0f26676ed97",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_GraniteCorner_0.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_GraniteCorner_0.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "68f727ef6208040778f92b629cf2d352",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_BistroSet.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_BistroSet.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "69115ea04333e4f3794cf177febeded4",
+   "old": "art/OldTownArt/DecoKit/Models/Vehicles/DK_HoverScooter.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Vehicles/DK_HoverScooter.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "6af3a7c3bb488467e9c903f96037f0b2",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Hull_Silver.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Hull_Silver.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "6b2c98d603acd4788bd9179cbb656a3a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamBay_6.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamBay_6.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "6b4137711d42f49eb8c40ff3d2af5b68",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_PlanterBed.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_PlanterBed.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "6b6da522554ee4cfa8d9f7ca0884a420",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Terrazzo_Seafoam.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Terrazzo_Seafoam.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "6bc5181985b0b404ca2d970c88beee7e",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Flame.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Flame.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "6be2cc061cabd4781bb23f51d4e57491",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_TreePit_Flags_1.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_TreePit_Flags_1.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "6dd94976bbdff4a1dbba2f3ce9d6ed81",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_BladeSign_Cinema.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_BladeSign_Cinema.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "6fbbef8b92b854d6eb831a57096204f3",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_InlayArc_R6.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_InlayArc_R6.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "70aa4a15df0614e2986117b94ab9842e",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamBay_9W.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_9W.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "70e7acfdfa4b34c149432e4add611bb1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Planter.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Planter.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "710a9a5c8b08a4e00853403c4304e4fd",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Landmarks/DK_SphereStation.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Landmarks/DK_SphereStation.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7134a1f74f9d54d7c833c36e2a11b902",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_PortholeBay_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_PortholeBay_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "71dbdf33c1bd14bc88f75cf32c5cc00e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_WindowBox.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_WindowBox.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "72411e7fcfedb4ca387623ad1f2c99ed",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_BalconyBay_4.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_BalconyBay_4.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7288ed90ccfe645269db7fe7fd3731d4",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Render_White.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Render_White.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "730616c571c0a473c94673eac86b449d",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_Barrier.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_Barrier.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "74ef0be7929524db3915bfe74f6e497e",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_LatticeMast.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_LatticeMast.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "75aa4f2e45a88470caa0c576c1796904",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Tile_Mint.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Tile_Mint.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "75c3279833336488b83646ac7f1b61d9",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_Planter_Urn.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_Planter_Urn.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "75ebd48a7dc6c40aaac9adbe1e67f56a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_SkyRail_Pylon_Shaft.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_SkyRail_Pylon_Shaft.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "75f5e5c21948b487291e120ff4e3b3bf",
+   "old": "art/OldTownArt/DecoKit/Models/Signals/DK_CCTVPole.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signals/DK_CCTVPole.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "77af53749d76941698b56082a61a4658",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Banner_Comet.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Banner_Comet.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "78e2d079edd5449d48f4bd35449d21fa",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Signal_Red.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Signal_Red.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "78fa36840ab344b5cb3cd5cadf1edcc7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Wall_A.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Wall_A.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "79021e8d6169f441298da9fbe18e5bd7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signals/DK_PlazaSphereLamp.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signals/DK_PlazaSphereLamp.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "792af1d250f914d16a23adebcb1a92c5",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_InlayArc_R6.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_InlayArc_R6.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "793fc9a56a1eb44c3a35ced2f895b0e9",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_TrashCans.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_TrashCans.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7a37c5946fccf45fd82cf67fd8828315",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_TrashCans.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_TrashCans.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "7a578024b975949e1af5f6485273a6f9",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamBay_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamBay_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7bdd2ae8976e34bb9a0b9a58913ec4db",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Pave_Flags_2.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Pave_Flags_2.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "7cfc3b91a6f5a4ccabd63d69a4293604",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_ShrubMound.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_ShrubMound.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7d4104b2f4b1c449091fdeff19400e36",
+   "old": "art/OldTownArt/DecoKit/Models/Highrise/DK_Tower_Needle.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Highrise/DK_Tower_Needle.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "7d7d601c0ed194243932c45d7e190e10",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamBay_4.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamBay_4.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7da7be6a9b47f4a15ab576e664f057a4",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_BistroSet.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_BistroSet.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "7dd43973d10454812a8dfb5f2fb068d1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signals/DK_DomeCamera.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signals/DK_DomeCamera.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7e33836d963314c2896a982a1c71d86b",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_LampSoft.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_LampSoft.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "7e5b1fc424c69465ebc340be2f3ef98c",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Wall_C.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Wall_C.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7edcd6f10d599484ea55bb844779abe9",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Mint.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Mint.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "7f03a78696ea248f992b29c78f705e03",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_Planter_Urn.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_Planter_Urn.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7f0cb81a66f5644b3bc13502550e0f1e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Drum.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Drum.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "7f2076e772c6a4e8ca8b82be7351becb",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_DrinkingFountain.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_DrinkingFountain.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "7fadede6ea1434e318bc394cff05c75e",
+   "old": "art/OldTownArt/DecoKit/Textures/terrazzo_seafoam_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/terrazzo_seafoam_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "808bd128bc33d4fb98759b28425c1d03",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Structures/DK_DecoPavilion.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Structures/DK_DecoPavilion.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "80a7d784688364a2b855ca190aba112f",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_CafeTable_Tulip.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_CafeTable_Tulip.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "80fee7d90079b441882b69b67eb61b5f",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Tile_TerrazzoArc.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Tile_TerrazzoArc.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "811bc39939b0c496db5a1b08ba0bd0d9",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotShopkeeper_Far.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotShopkeeper_Far.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "820bbace442f148d6a5d3ec112e58aed",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_BackDoorLamp.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_BackDoorLamp.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "83684e8a651bb4cc38b9847af037db13",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Stem.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Stem.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "83eacc8e5b6374192bf9bb755c961ada",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_BalconyBay_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_BalconyBay_3.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "8466e68f956d441f3ba4f22fc5bcf7ac",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Lamp.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Lamp.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "84e6355532c454e489532548ceff36d9",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Chrome.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Chrome.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "84f15d4e6671d454983300425dc8ee3a",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_HangingBasket.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_HangingBasket.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "84fe1084e5a6b4318a6be4de88d46899",
+   "old": "code/Runtime/OldTown/Robots/RobotFace.cs",
+   "ours": "Assets/Suborned/Runtime/Robots/RobotFace.cs",
+   "same_bytes": false
+  },
+  {
+   "guid": "8509b710433f64abb96286ae4a778005",
+   "old": "art/OldTownArt/DecoKit/Models/Signals/DK_InfoLightbox.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signals/DK_InfoLightbox.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "85c8bf799f150422494bd347fd1c13a3",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Glass.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Glass.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "85f7d5c32dc144908bb1b8804af3fd0b",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Rope.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Rope.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "8638378eeea1c4f039671bdc0c0a4282",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Fabric_Banner.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Fabric_Banner.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "869086cdac4974a0a98f6867986bde17",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_BikeLean.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_BikeLean.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "872cfe0e116654ed7a895cc6f0fdbea2",
+   "old": "art/OldTownArt/DecoKit/Models/Landmarks/DK_Skylon.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Landmarks/DK_Skylon.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "8741f2419dce64f36a1580a2d31c345c",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Petiole.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Petiole.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "8763af95f74c447ff984cf6ef7f64a35",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_CrateStack.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_CrateStack.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "8768e97fb829943b684efa2958bba43a",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_SkyRail_Pylon_Shaft.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_SkyRail_Pylon_Shaft.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "87c0448248443433b96109d343dcbc89",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Landmarks/DK_LinerDock.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Landmarks/DK_LinerDock.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "880c018f089fa454aaa783a09c9ff997",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamCorner_6.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamCorner_6.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "8851a30d2bef94ef2b8a86743a761234",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Dish.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Dish.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "8878b0e6383064732a551a592bbf0260",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Spray.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Spray.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "887a3d1b5aa144e62b504ff38249a345",
+   "old": "art/OldTownArt/DecoKit/Models/Structures/DK_BusShelter.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Structures/DK_BusShelter.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "88802bec440d544c1ab633ab2bcff17a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Tile_Terrazzo.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Tile_Terrazzo.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "888fa53b24b51487e949490f39cf7544",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Timber.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Timber.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "889021a03d8fe448d81ac69f545d3515",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_LapPool.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_LapPool.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "88e7ab516e2e1487eba0cec989553166",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Marquee_Cinema.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Marquee_Cinema.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "896d0cb5855de42efa61bcc5a907b84b",
+   "old": "art/OldTownArt/DecoKit/Models/Structures/DK_CurvedKiosk.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Structures/DK_CurvedKiosk.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "8a32d9a9a301f43a5acbf54bf49e19c5",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_ManholeCover.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_ManholeCover.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "8b2535749c91c4fac98c63a3ce98b6bf",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Pool.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Pool.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "8b3e72f43ee83481b80693ec9e9cf339",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Limestone.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Limestone.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "8cb41a4f75fbc4c6a925804d4863a04f",
+   "old": "art/OldTownArt/DecoKit/Models/Landmarks/DK_SkyBridge.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Landmarks/DK_SkyBridge.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "8d0b18dd8abf541ca80d594264cd5f45",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Signal_Amber.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Signal_Amber.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "8eb5781bb57b64bd9a30660274e98ac1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_CornerTower_12.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_CornerTower_12.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "8f1fbb32230b142b8ad0c4a70238cd0b",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_VendingMachine_Cola.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_VendingMachine_Cola.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "900c5851749be411398d1a92462f50f7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Booths/DK_Lockers.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Booths/DK_Lockers.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "90600caf70a2e4ded908361c7f789cf2",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamEnd_3W.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamEnd_3W.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "90871cb9da5b64f2fa2d72e122ad4b7d",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Concrete.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Concrete.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "90a60b6dc073b46baac03ebcc2e6f49a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Pylon_B.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Pylon_B.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9313426c35aa4408285921031bc0b04a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Robots/DK_RobotButler.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Robots/DK_RobotButler.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "93d914a12ecd54c288cf263690070eab",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Tile_TerrazzoArc.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Tile_TerrazzoArc.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9448a93480d114e81be6fc6ad36339e8",
+   "old": "art/OldTownArt/DecoKit/Textures/cypress_foliage_v1_alpha.png",
+   "ours": "Assets/Suborned/Kit/Textures/cypress_foliage_v1_alpha.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "94d7ed25b61464dbcb80ea8ceff8641c",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Robots/DK_RobotWaiter.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Robots/DK_RobotWaiter.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "960a7859808f8468b859343484ef7a2a",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Timber_B.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Timber_B.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "974c95b4109de4548b40ff870f0690c1",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Gold.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Gold.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "98b2b093e70414d418d1d149463b2143",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_DrainGrate.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_DrainGrate.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "990321600d0134efab8cfcc80b95c8b8",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Coconut.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Coconut.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "99102cb1cacd54311a15afc60a76ae92",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Fin.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Fin.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9995b6678de7d411b884defea7a94734",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Whitewall.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Whitewall.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "9a965b8448cef4799b83e61df46ef610",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamEnd_9W.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamEnd_9W.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "9aca11df7c3854ef8af866527783428d",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_OvalPlanter.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_OvalPlanter.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "9c7fd96a1b4944bd484f158c2f97a63e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_TreePit_Flags_0.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_TreePit_Flags_0.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9c8e64b18fdaa4d13a7c85ca8c8b20f9",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyport/DK_SkyRail_Pylon_Tall.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyport/DK_SkyRail_Pylon_Tall.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9d36927b564bd4214ba29fa9e7955ac6",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyport/DK_SkyPad_Roof.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyport/DK_SkyPad_Roof.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9e6556e17ec0b4aaba66722ce077e028",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Bandstand.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Bandstand.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9e655d03ff2ec4a3aba86d5e43f46bb1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_Planter_Trough.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_Planter_Trough.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "9f4e37ea568ca4e9c8473b8ab5559136",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Tile_Teal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Tile_Teal.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "9f81a408dccaa443c97c86454a0241e8",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_PipeBundle_6.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_PipeBundle_6.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a00ca8801ca7a4d64a4807918b3f6780",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Neon_Teal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Neon_Teal.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "a0834e65b9cca4afdb6096bd47186fc7",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_BackDoorLamp.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_BackDoorLamp.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a1e1394b14dae4956ac5a2a9edcfeaef",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamBay_9.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamBay_9.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "a2b1559e8f54c403c8aab424fe6cd633",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamBay_3W.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamBay_3W.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "a32421056a36442b2a1859cc75cb7d64",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Charcoal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Charcoal.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "a336d9a47e68d42d9b242218e5d2da45",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_CafeSet.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_CafeSet.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a38eedc2a25124017b1364dbafa83808",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_CoconutPalm.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_CoconutPalm.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "a394415b99ba24908bbc83c84e816619",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_Planter_Trough.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_Planter_Trough.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a3ab1734995ab4e15a0960e7c3c67bac",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_InlayArc_R10.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_InlayArc_R10.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "a3de2ddf001644a7c81a2878a0ea2b82",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_SkyRail_Pylon_Foot.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_SkyRail_Pylon_Foot.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "a404f6b60f9e647d09fb0582008a202f",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_PottedPalm_Small.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_PottedPalm_Small.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "a441ea68e7a3e4163bf10d996bc60574",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamEnd_9.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamEnd_9.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a474c7cfd2ccc41d7807e70a21b656fa",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Terrazzo_Ivory.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Terrazzo_Ivory.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "a4b6821afe86e4a5cab16fbdfce2646d",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamCorner_2.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamCorner_2.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "a58d5ebe109dd4dc58745eb622b5cf7a",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_StreetClock.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_StreetClock.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a5f7eeef2440143c5ab931376a46461c",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_Pallet.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_Pallet.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a6507bbae50014b71991cd775ff63ffe",
+   "old": "art/OldTownArt/DecoKit/Models/Landmarks/DK_DiscTower.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Landmarks/DK_DiscTower.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "a6b46152eb8fb48d38b638043e9e26bf",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Mustard.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Mustard.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "a78d7ea6aa775429180451eabbd72eda",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Flower_Coral.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Flower_Coral.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "a8078ca1938804b459d077957e68aec3",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signals/DK_InfoLightbox.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signals/DK_InfoLightbox.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "a9974dfa13f684576870a891d451b4f5",
+   "old": "art/OldTownArt/DecoKit/Textures/banner_comet_teal_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/banner_comet_teal_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "aa09a03667d74471ba3eb95c3bbf6e11",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Drum.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Drum.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "aa5be2c258144466892ef5c074e4208b",
+   "old": "art/OldTownArt/DecoKit/Models/Landmarks/DK_SphereStation.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Landmarks/DK_SphereStation.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "aaa0c214083da4d5cb658a1ca96c08ca",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_MilkCrates.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_MilkCrates.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "aab36bba7e99e48d6a4d1725fff0611d",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamEnd_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamEnd_3.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "ab65a7c76fd794a108f8b16276621943",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_HangingBasket.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_HangingBasket.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "af4d1c24a7aee42a0aba000fc7034b92",
+   "old": "art/OldTownArt/DecoKit/Textures/awning_stripe_teal_v1_normal.png",
+   "ours": "Assets/Suborned/Kit/Textures/awning_stripe_teal_v1_normal.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "b01195adfe7584fd0bcc45fae1226ecd",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamBay_4.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamBay_4.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "b01adba654ac6487f8e86a6e3fef7760",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_FlowerBed.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b0225b1a00fbf4d0097c8ba9a2e76e1b",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_SteamVent.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_SteamVent.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b063e465138864e0f8325d83e3214f43",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Face_Teal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Face_Teal.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "b11d65e0589e2418b8b7d220d0438cf3",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Bandstand.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Bandstand.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b18a130274cec4ce7adfb2d5e88815b1",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_AdColumn.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_AdColumn.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "b1dc7126f2d8449e599d5a3f7258b4ec",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_TerraceScreen.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_TerraceScreen.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b262b32119fa34f6695eb7384bee3efe",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_BladeSign_Hotel.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_BladeSign_Hotel.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b33ca4972678f4faaabeb3aaefc18261",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_GrandStair.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_GrandStair.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b39943e7671424cf88ffcf5d7b0d3aae",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamEnd_3W.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamEnd_3W.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b463236d4f3ac41239265bad9c485f02",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamEnd_2.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamEnd_2.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b4b3424329f974b8c91c48cb49e929fd",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_AdColumn.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_AdColumn.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b557fca8ecca44cd2b8c09be7ac946fc",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Royal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Royal.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "b5985064dcc064fcbbd61c575a5675a1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_SkyRail_Car_Mid.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_SkyRail_Car_Mid.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b5eb1f2062b1444aba1f563ef13bb548",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Fabric_Ivory.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Fabric_Ivory.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "b6143e3fba6984cc18a901fecb76a6e9",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_Bollard.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_Bollard.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b644d882d640e4285931b52d7b765ea5",
+   "old": "art/OldTownArt/DecoKit/Models/Structures/DK_TramCanopy.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Structures/DK_TramCanopy.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b64b22337d3f743c88e8181b85e5ee8a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Rooftop_B.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Rooftop_B.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b66a561b5d77f4f4cbff017cc79f05b0",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamBay_2.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamBay_2.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b6ce1ac566fa84a999fa266910181333",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_DecoEnd_10.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_DecoEnd_10.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b73d17e7014a14f1199f21d5c1cdf3b3",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotPorter.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotPorter.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b7f6859168e15404cb8a73bd37d741f9",
+   "old": "art/OldTownArt/DecoKit/Models/Landmarks/DK_ParabolicArch.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Landmarks/DK_ParabolicArch.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b8452bbc2147f40c3a10603cc5457088",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Booths/DK_PhoneBooth.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Booths/DK_PhoneBooth.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "b8de44bf08bf44a7a8bd48c610928522",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotShopkeeper.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotShopkeeper.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b8fc6f2bc35c94786ab8b4e804cd0a6c",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamEnd_4.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamEnd_4.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "b9e9af3c090124a6dac8aefd2417d54d",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_FacetedPot.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_FacetedPot.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "ba113e031d68440be979eafe9c301574",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_CafeSet.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_CafeSet.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "ba215294cffab40ccbba4d116db12278",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_BladeSign_Cafe.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_BladeSign_Cafe.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "ba3f9857a21d149da9ef02bfb3ed1a72",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Window_Tower.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Window_Tower.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "ba5b7dd975d4143289a431bc8ba14708",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "bafbc4b8e4cb74713aa69ee3055ca222",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_FanPalm.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_FanPalm.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "bb2ffcea19051497eb599a75ef4753ca",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_CoinTelescope.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_CoinTelescope.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "bb568e6490ed9492cab305bb4fc58373",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Pastry.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Pastry.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "bb60b61bbdfeb44a0afd8ca64becf675",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Neon_Gold.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Neon_Gold.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "bc052430a85044fbcb1e4d2cb7456f2d",
+   "old": "art/OldTownArt/DecoKit/Models/Booths/DK_TicketMachine.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Booths/DK_TicketMachine.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "bc9f8d875f7ee4bb78361c39e79a0d30",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_GraniteCorner_2.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_GraniteCorner_2.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "bd0c6cd4894184df4a8523582067ef2a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Robots/DK_RobotPorter.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Robots/DK_RobotPorter.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "be391a538544346c2bec0db545ad6249",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_VendingMachine_Cola.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_VendingMachine_Cola.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "beef8910dc4a44fa48674dcee7cbc6c1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Mast.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Mast.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "bf53c01b12caf48c7be9d54417e6e041",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Coral.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Coral.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "bfc588147e090462a90a45639b27a052",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Rooftop_C.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Rooftop_C.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "bfdf2b03c62d94548879c27386d17b75",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Booths/DK_UtilityCabinet.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Booths/DK_UtilityCabinet.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c03a3763f515240218e3a735c73475a3",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Tile_Red.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Tile_Red.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "c08cdb81e221f44b9bcab41b46e416c7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Structures/DK_BusShelter.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Structures/DK_BusShelter.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c0ce68f967ae54e42b06bd41853c967d",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signals/DK_CCTVPole.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signals/DK_CCTVPole.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c20691c9bd77d44a7ad76b76a2d83766",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Glow_Seafoam.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Glow_Seafoam.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "c2de2c109a8714ba790ecf782e0a35bb",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Pave_Flags_2.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Pave_Flags_2.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c2fafea7458d34605a41b8a09f4c6de7",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_MilkCrates.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_MilkCrates.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "c3113df47312d4bc18f29fde7ea11155",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_HallCornerWing.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_HallCornerWing.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c344ff06ea77947cc8a32430a5988166",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_SkyRail_Car_Mid.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_SkyRail_Car_Mid.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "c427369f4465e40e0a25bede970ca10e",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "c486df4de547943689c7c4625243fcd5",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Bulb_Dim.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Bulb_Dim.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "c4cfad6ab5e4842bbbd86a29e3f52639",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Street/DK_Hydrant.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Street/DK_Hydrant.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c68289110fd014fd7b4ade8273c561b3",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Tile_Blue.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Tile_Blue.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "c6a6b2e3175214070af154e7eab40398",
+   "old": "art/OldTownArt/DecoKit/Models/Skyport/DK_SkyPad_Roof.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyport/DK_SkyPad_Roof.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "c6ee31bddc14645ac81388d0a13213b8",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_PortholeBay_4.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_PortholeBay_4.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "c7745e21bab4244b18312e6b8ff1461b",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Radome.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Radome.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "c7b312c39862e4c1ea23dea74eead1d9",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_SkyRail_Pylon_Head.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_SkyRail_Pylon_Head.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "c84d63e6ec2e24d959cc52a2c3372901",
+   "old": "art/OldTownArt/DecoKit/Textures/terrazzo_ivory_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/terrazzo_ivory_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "c8f5042de761e4a8ca3d68baa608e2b3",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Tile_Terrazzo.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Tile_Terrazzo.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "c91b77c0ae03847b1bbf2c8501b48e5c",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_RoundBench.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_RoundBench.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c93a8ba80c764439a9561a8fea555a94",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_SkyRail_Car_Head.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_SkyRail_Car_Head.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "c9a2dd9ec0e3349df8da654728e32241",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Landmarks/DK_ParabolicArch.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Landmarks/DK_ParabolicArch.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "c9fc02fba47a146afa4bfedfb395bd21",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamCorner_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamCorner_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "ca1193cc5e3db4b0d985abffdc82d33a",
+   "old": "art/OldTownArt/DecoKit/Models/Skyport/DK_CircusMonument.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyport/DK_CircusMonument.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "caf26c096fa9740e4bdda8b32989611e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_PottedFern.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_PottedFern.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "cbe35337061604d1599200d21b9df2fc",
+   "old": "art/OldTownArt/DecoKit/Textures/terrazzo_seafoam_v1_normal.png",
+   "ours": "Assets/Suborned/Kit/Textures/terrazzo_seafoam_v1_normal.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "cc7f268a218f142f2bf91b4e839c8092",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Tennis.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Tennis.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "ccc565ef7cbb740fc9f11e571d0dd962",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_CafeSet_Tulip.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_CafeSet_Tulip.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "cda35e0fd1bf94fa58a1f4bb45700f94",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_ManholeCover.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_ManholeCover.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "ce6403af7f97749d6ae712fb500ddbfd",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Soil.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Soil.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "ce8e571649ab54f438bdf2b06835ccb5",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Cola.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Cola.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "cf562699a84de4bda9c5fd34680a27c0",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamEnd_4.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamEnd_4.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "cfe02a4f535f241389ab4497803d064a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_StreamEnd_6.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_StreamEnd_6.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d01832f302c694ac8903121076a4b765",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Landmarks/DK_DiscTower.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Landmarks/DK_DiscTower.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d067ab58fbf1a45c0b9984ad2bb9a866",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Hull_Ivory.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Hull_Ivory.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "d08b3d7dc97644de5b9ccba6d5cebcae",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Red.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Red.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "d0c698cadd39a4eb29fd45e291d6947e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_CableSpan_6.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_CableSpan_6.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d1d3f69fb86db4aa5a296e13fc09db5b",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Pave_Flags_0.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Pave_Flags_0.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d2523c57208d54b45a1308a5216e824a",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Mast.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Mast.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "d25a7095ae51b4f2c9736c9c197c6199",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Skin.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Skin.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "d3c948fe90e964cb69f86b7986e5f10b",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Bakelite.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Bakelite.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "d4c47d3dc85624321918b3b9617f29cf",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_Billboard_Pylon_A.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_Billboard_Pylon_A.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d55d7bbd957e74c218648874fd8a4932",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Lobby.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Lobby.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "d59884545ebd14affb262b9d84aaa272",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotNanny_Far.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotNanny_Far.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "d5e4b956c30994fb0b6a25a2acc3e5b5",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_GraniteCorner_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_GraniteCorner_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d6366f85fc6624623b69535698bc7711",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Pave_Flags_1.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Pave_Flags_1.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d67c5f8abf1b547a69246aa28597b19c",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Fabric_Coral.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Fabric_Coral.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "d6ddd80cdf7d84e2ba629a954ec3bfe3",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_FlowerBed.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_FlowerBed.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "d72f1623f97e94f5dab27881742f9fae",
+   "old": "art/OldTownArt/DecoKit/Textures/facade_panel_v1_normal.png",
+   "ours": "Assets/Suborned/Kit/Textures/facade_panel_v1_normal.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "d92c4e5a147a94ae4a53a02cb1e729fb",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_LifebuoyStand.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_LifebuoyStand.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "db5c59eb2a05449dbaed2a8af3039cb9",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_BladeSign_Hotel.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_BladeSign_Hotel.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "db9bca79bb409435e858e5cfb33ee3dc",
+   "old": "art/OldTownArt/DecoKit/Textures/poster_travel_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/poster_travel_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "dd0b615dc196d431ebe1ee3c060c6907",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_NeonStar_Wall.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_NeonStar_Wall.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "dd1bce85824914460b6f93f28542655a",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_PortholeBay_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_PortholeBay_3.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "ddeddb1c39f714d2b8a0e642cd2b6e66",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Wall_B.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Wall_B.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "de0b0d7437c7a4d67a8706741a3721e0",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Cabana.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Cabana.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "de15efc811ee34732a176491602a729d",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamBay_9.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamBay_9.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "de81ca63be72b4fe091c2324e176e669",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_HallCornerWing.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_HallCornerWing.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "deb332faf1b3441cfa8a52231192f688",
+   "old": "art/OldTownArt/DecoKit/Textures/palm_frond_feather_v1_alpha.png",
+   "ours": "Assets/Suborned/Kit/Textures/palm_frond_feather_v1_alpha.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "df3afe455b81344a2abcae604c997a5f",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_CoreShrub.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "dfa10c9d1f950491f907c334c9a79e07",
+   "old": "art/OldTownArt/DecoKit/Textures/palm_frond_fan_v1_alpha.png",
+   "ours": "Assets/Suborned/Kit/Textures/palm_frond_fan_v1_alpha.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "dfa89cb15e359424397c65866571d530",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamBay_2.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamBay_2.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "dfa8fb61b87e7428aa9a20f136f51ecb",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_CrateStack.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_CrateStack.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "dfc06f19e76ea44608713f96d4c7313a",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Radome.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Radome.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e00e2331590eb479ca523d2a251a43b7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Signage/DK_BladeSign_Cinema.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Signage/DK_BladeSign_Cinema.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e0a2610806f6845b2b431372abff2d31",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_PlanterHex.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_PlanterHex.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "e105bedd508b74992b9a204ca5060ee0",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamEnd_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamEnd_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e155532be9e74405b948f9e95f8b312b",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_LatticeMast.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_LatticeMast.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e18cae7830e164fb6b131711213ad8b6",
+   "old": "art/OldTownArt/DecoKit/Models/Alleys/DK_AlleyBridge.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Alleys/DK_AlleyBridge.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "e1d61f0b6322848dcb51ce0b7c2e4d9c",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamCorner_9.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamCorner_9.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "e3bab975409574e059e16efcb66677a2",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_TerraceScreen.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_TerraceScreen.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "e3f2d9a2ebb1e47eaa00648618879ee7",
+   "old": "art/OldTownArt/DecoKit/Models/Skyport/DK_Skyport_Tower.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyport/DK_Skyport_Tower.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "e47096dc70bb74cf186ceb3b17768e42",
+   "old": "art/OldTownArt/DecoKit/Shaders/DK_Cutaway.hlsl",
+   "ours": "Assets/Suborned/Shaders/DecoKit/DK_Cutaway.hlsl",
+   "same_bytes": false
+  },
+  {
+   "guid": "e53ccf8d630ad43ff8b797e4f0c5e4e6",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Neon_Coral.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Neon_Coral.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "e60da21bdeb234aef9563e0641f95cb1",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Booths/DK_TicketMachine.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Booths/DK_TicketMachine.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e6637520538814d3db82fd75b87dc6de",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Tank.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Tank.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e6781cf57c5f84055be71026bb1982c5",
+   "old": "art/OldTownArt/DecoKit/Textures/shrub_leaves_v1_alpha.png",
+   "ours": "Assets/Suborned/Kit/Textures/shrub_leaves_v1_alpha.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "e69595b7dbe074394a1e6f77144c2621",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_TreePit_Flags_1.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_TreePit_Flags_1.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e6ccda0cee44540d6a3232ba1f04f119",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Robots/DK_RobotShopkeeper.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Robots/DK_RobotShopkeeper.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e7dd8a5f462244d3bac54e3722e98e5e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_Straight.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_Straight.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "e8c564b4794994064b3b414c6d4c3b9c",
+   "old": "art/OldTownArt/DecoKit/Models/Facades/DK_StreamBay_3W.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Facades/DK_StreamBay_3W.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "ea6a3385d2fcd4da981dcc0da492d33e",
+   "old": "art/OldTownArt/DecoKit/Models/Robots/DK_RobotNanny.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Robots/DK_RobotNanny.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "eafa1d0c6e6f24d879f9fd6919653519",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_BalconyBay_3.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_BalconyBay_3.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "eb619d6ae491c4a2c8a81501387a95e2",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Seafoam.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Seafoam.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "eb71024047e8d4966a9cb3d8a8cea44d",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Pave_Flags_1.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Pave_Flags_1.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "ec0bbff81e9bb4efaa96cb8657706bdd",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Billboard_Pylon_B.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Billboard_Pylon_B.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "ec1044222f319431fa1ad8012a4b321d",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Enamel_Cream.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Enamel_Cream.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "ed084d9cfcfec4efb9987734987cd246",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Structures/DK_FlutedColumn.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Structures/DK_FlutedColumn.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "ed9e0d3da4a21419eb16328d40016eba",
+   "old": "art/OldTownArt/DecoKit/Textures/hull_panels_v1_mask.png",
+   "ours": "Assets/Suborned/Kit/Textures/hull_panels_v1_mask.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "ef3c6b72c6eb247a2ba81083d0751ec9",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Kerb_Straight.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Kerb_Straight.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "efb4ad8ee5b88412a8bb332b837f1ee7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_BalconyBay_8.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_BalconyBay_8.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "efe20550985304b8d997bd8d49bac2f0",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_AirCar_Teal.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_AirCar_Teal.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "f0318a1cac2314a18be119aee79ede4c",
+   "old": "art/OldTownArt/DecoKit/Models/Street/DK_Hydrant.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Street/DK_Hydrant.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "f0f11d13c22584d4cac1a5911b7dfa36",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_StreamCorner_4.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_StreamCorner_4.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f1238122dc16946cc87ad103fc0ecef3",
+   "old": "art/OldTownArt/DecoKit/Models/Sky/DK_AirCar_Saucer.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Sky/DK_AirCar_Saucer.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "f1cbf1dcaa1934a4f87fcba4bba2920d",
+   "old": "art/OldTownArt/DecoKit/Textures/hull_panels_v1.png",
+   "ours": "Assets/Suborned/Kit/Textures/hull_panels_v1.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "f1f7dc71ff9cd465ab5c3ed06e833767",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_SkyRail_Pylon_Foot.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_SkyRail_Pylon_Foot.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f21db79b017de466ba43b0ac328c2a6b",
+   "old": "art/OldTownArt/DecoKit/Models/Signage/DK_Marquee_Cinema.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signage/DK_Marquee_Cinema.fbx",
+   "same_bytes": true
+  },
+  {
+   "guid": "f252bb9cfd4d145d181fd29c9ba46790",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_CafeChair_Tulip.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_CafeChair_Tulip.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "f256435583d0541e4b9171b363b38da5",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_Pallet.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_Pallet.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f288ae1f4751b564a96ac7587541f7a2",
+   "old": "art/OldTownArt/Settings/PC_Renderer.asset",
+   "ours": "Assets/Settings/PC_Renderer.asset",
+   "same_bytes": false
+  },
+  {
+   "guid": "f32d9f3019c9e4bdfb1be3f48211671d",
+   "old": "art/OldTownArt/DecoKit/Models/Ground/DK_Pave_Flags_3.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Ground/DK_Pave_Flags_3.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "f33ddec486447441eae10f3efedfeabd",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plaza/DK_HallBay.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plaza/DK_HallBay.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f3a9352729f4a4618a834e705bf8d4b6",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Tile_Grey.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Tile_Grey.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "f474b7a2d8a0540cab189fefdea46912",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Stone_Dark.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Stone_Dark.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "f4b945d2af9674c4b956114073ff1baf",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_PalmFeather.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "f51749fcdd8634274b1416e44f17c173",
+   "old": "art/OldTownArt/DecoKit/Models/Signals/DK_DomeCamera.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Signals/DK_DomeCamera.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "f51b2c1a8545843a7b76daf5bd118bd7",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Landmarks/DK_Skylon.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Landmarks/DK_Skylon.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f5c45ba8bb29a414db8d42fcb11652bb",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Rooftop/DK_Roof_Cabana.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Rooftop/DK_Roof_Cabana.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f5f55342c6e65416a96167283aa62b5b",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_AlleyBridge.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_AlleyBridge.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f64b50ee5c2a54271aaeb79ecf6902f4",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Awning_Teal.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Awning_Teal.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "f65a97ce5040241b2955b68223358655",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Sky/DK_AirCar_Coral.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Sky/DK_AirCar_Coral.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f6fef2f312ce84e56ae496ae6c89bfab",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Kerb_GraniteCorner_1.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Kerb_GraniteCorner_1.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f740c65dd712644f88dac449c6a186ce",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Face_Amber.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Face_Amber.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "f825c375e68064928995752c1b463113",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyport/DK_CircusMonument.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyport/DK_CircusMonument.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f83c52f39233941af8196532f93257c8",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Highrise/DK_Tower_Starburst.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Highrise/DK_Tower_Starburst.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "f8aa8305a047d41379c07786dec8199b",
+   "old": "art/OldTownArt/DecoKit/Models/Booths/DK_UtilityCabinet.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Booths/DK_UtilityCabinet.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "f9162975df9654c9ab7c1e37711019c6",
+   "old": "art/OldTownArt/DecoKit/Models/Skyline/DK_StreamEnd_6.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Skyline/DK_StreamEnd_6.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "f9de67e2b8970493c9400a22c2fc17fc",
+   "old": "art/OldTownArt/DecoKit/Models/Plaza/DK_GrandStair.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plaza/DK_GrandStair.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "fa51c65385b454d53a36e4365ce3bbdd",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Facades/DK_PortholeBay_4.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Facades/DK_PortholeBay_4.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "fb1948f14003b497b90ac8c665ee678a",
+   "old": "art/OldTownArt/DecoKit/Models/Furnish/DK_CafeTable_Tulip.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Furnish/DK_CafeTable_Tulip.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "fb20937b51e2946278b3500522637624",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Gutter_Setts.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Gutter_Setts.mat",
+   "same_bytes": false
+  },
+  {
+   "guid": "fb705c3ee8f6447629a8cf0cf5063176",
+   "old": "art/OldTownArt/DecoKit/Textures/facade_panel_v1_mask.png",
+   "ours": "Assets/Suborned/Kit/Textures/facade_panel_v1_mask.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "fc35c65d5cb9b4a3791dd1880c66f5cd",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_Leaf_Shrub.mat",
+   "same_bytes": true
+  },
+  {
+   "guid": "fc68f66c2822a49c9aedb2a6566f4ac8",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Plants/DK_FanPalm.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Plants/DK_FanPalm.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "fd088c5f09bb64794a4933ee09dae0e2",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Ground/DK_Tile_TramRail.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Ground/DK_Tile_TramRail.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "fd1b67255de954622851ea1163be2c6d",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Skyline/DK_DecoBay_10.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Skyline/DK_DecoBay_10.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "fd61c40ac9b694ba5856abc1222c4345",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Alleys/DK_PipeBundle_6.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Alleys/DK_PipeBundle_6.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "fd6c8ced4cda34afcb192d0b3c779c71",
+   "old": "art/OldTownArt/DecoKit/Models/Rooftop/DK_Roof_Dish.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Rooftop/DK_Roof_Dish.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "fe685dc1571f54e56a0985c93666ea2e",
+   "old": "art/OldTownArt/DecoKit/Prefabs/Furnish/DK_CafeChair_Tulip.prefab",
+   "ours": "Assets/Suborned/Kit/Prefabs/Furnish/DK_CafeChair_Tulip.prefab",
+   "same_bytes": true
+  },
+  {
+   "guid": "fea9ac89414544ba2af6425afddc7f9d",
+   "old": "art/OldTownArt/DecoKit/Textures/hull_panels_v1_normal.png",
+   "ours": "Assets/Suborned/Kit/Textures/hull_panels_v1_normal.png",
+   "same_bytes": true
+  },
+  {
+   "guid": "ff4dbbd6a0e564132936f79ffb0fed39",
+   "old": "art/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx",
+   "ours": "Assets/Suborned/Kit/Models/Plants/DK_ShrubMound.fbx",
+   "same_bytes": false
+  },
+  {
+   "guid": "ff8d50edba16a4e34a9bec3cd5d80b84",
+   "old": "art/OldTownArt/DecoKit/Materials/DK_GlassDark.mat",
+   "ours": "Assets/Suborned/Kit/Materials/DK_GlassDark.mat",
+   "same_bytes": false
+  }
+ ]
+}

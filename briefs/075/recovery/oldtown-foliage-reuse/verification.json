@@ -1,0 +1,29 @@
+{
+  "inputHashesStillMatch": true,
+  "inputCount": 74,
+  "rendersPresent": true,
+  "sourceGalleryPresent": true,
+  "shaderSources": [
+    {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Shaders/DK_LitCutaway.shader",
+      "sha256": "f80b9800051951c250cda4dcdcc000433d39975bb83b52ed154269cbf5ebe22f",
+      "guid": "92902edf0ab892fb40f51a8701887fed"
+    },
+    {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Shaders/DK_ComplexLitCutaway.shader",
+      "sha256": "6432195e990a9c6456b067b6cc81ee330b0c6d517984d9002d8ab8541dee7974",
+      "guid": "daa729f856d160b6847192c7304dec72"
+    },
+    {
+      "path": "unity/Assets/Suborned/Shaders/DecoKit/DK_LitCutaway.shader",
+      "sha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+      "guid": "2529b42165e1d45a8bcfb0013bb5aba3"
+    },
+    {
+      "path": "unity/Assets/Suborned/Shaders/DecoKit/DK_ComplexLitCutaway.shader",
+      "sha256": "134d90c3bca6184d85a74facddb122de5cd4cd517a486085b0a72056e173d8ff",
+      "guid": "206122040e60d470e92cddeccf1aacf6"
+    }
+  ],
+  "renderCount": 33
+}

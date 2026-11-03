@@ -1,0 +1,93 @@
+{
+  "format": "asciicast-v2",
+  "header": {
+    "version": 2,
+    "width": 100,
+    "height": 30,
+    "timestamp": 1793655618,
+    "title": "The Suborned A07: real offline people pipeline execution",
+    "env": {
+      "SHELL": "/bin/zsh",
+      "TERM": "dumb"
+    }
+  },
+  "events": [
+    [
+      0.072198,
+      "o",
+      "THE SUBORNED / A07 / PEOPLE AND RELATIONSHIPS\r\nRecorded execution. Original AI responses are archived, not generated live.\r\nNo model calls, database calls or new Unity compilation in this replay.\r\n\r\n[1/6] ORIGINAL AI RUN -> VALIDATED CAST\r\n"
+    ],
+    [
+      0.075464,
+      "o",
+      "PASS promoted cast: r016 round 2 / 41e1daca4504dd0d\r\n"
+    ],
+    [
+      0.076007,
+      "o",
+      "PASS recorded usage: $0.6905 / 3 calls; highest: Keel critic $0.2800659\r\nPASS critic gate: checker-failed candidates no longer trigger a critic call\r\n"
+    ],
+    [
+      3.162148,
+      "o",
+      "PASS archived r016 replay: failed P-0 -> correction -> Keel pass -> ACCEPTED\r\nThis check makes no model call and does not certify the two-minute first-play gate.\r\nFull prompts, retrieved passages and outputs: runs/levels/.../r016/round-*\r\n"
+    ],
+    [
+      5.664574,
+      "o",
+      "\r\n[2/6] EXPAND THE PROMOTED CAST WITH CURRENT PRODUCTION RULES\r\n$ bun run people\r\n"
+    ],
+    [
+      8.316495,
+      "o",
+      "PASS 130 people / 222 directed ties / 87 places\r\nPASS P-0..P-16 and N-1..N-8: coverage, routines, needs, ties, names, secrets\r\nPASS M-2: waitress, driver, guard and councillor all cast from those people\r\nCast values + current rules/names/needs data -> deterministic expansion.\r\n"
+    ],
+    [
+      10.817455,
+      "o",
+      "\r\n[3/6] AUTOMATIC ENGINE EXPORT\r\n"
+    ],
+    [
+      10.824022,
+      "o",
+      "PASS all 4 mission profiles match the shipped game: names, needs, temperament, ties.\r\nFresh full export / 047a96edd03e02eedecc\r\nProduction export / 69f13ffc4c29aebd6095\r\nDIFFERENT background projection: production predates the city tram remap.\r\nThis replay stages current-plan people; it is a labelled local variant.\r\nExported 130 simulated people; positions in engine centimetres.\r\nMission casting: Inez, Arthur, Lukac, Popovic; Inez and Arthur remain lovers.\r\n"
+    ],
+    [
+      13.326064,
+      "o",
+      "\r\n[4/6] STAGE THE OUTPUT INTO A REAL UNITY PLAYER\r\nReuse the existing player binary and scene; stage freshly generated people data.\r\n"
+    ],
+    [
+      14.255281,
+      "o",
+      "PASS StreamingAssets/sim/handover.people.json staged automatically\r\nSimBundle.Load checks this SHA-256 before Engine.FromTexts consumes it.\r\nPASS updated engine hash manifest and ad hoc signature for the replay variant.\r\n"
+    ],
+    [
+      16.757701,
+      "o",
+      "\r\n[5/6] START THE PLAYER AND CAPTURE THE GENERATED PEOPLE FUNCTIONING\r\n"
+    ],
+    [
+      16.759941,
+      "o",
+      "Route A orders use the real host; no relationship or expression overrides.\r\nCapturing cafe routines, social Intel, guard response and street-level people...\r\n"
+    ],
+    [
+      50.520966,
+      "o",
+      "PASS Unity player / Build 0.2.232 \u00b7 c049 \u00b7 sim 0.39.0 \u00b7 bc1df7d0+\r\nPASS cafe-routines / tick 440 / 120 captured frames\r\nPASS social-intel / tick 800 / 0 captured frames\r\nPASS guard-leaves-post / tick 1344 / 120 captured frames\r\nPASS street-level-people / tick 448 / 100 captured frames\r\n"
+    ],
+    [
+      53.022236,
+      "o",
+      "\r\n[6/6] RETAIN THE PROOF AND RECORDED COSTS\r\n"
+    ],
+    [
+      53.024894,
+      "o",
+      "Historical run: 3 model calls / recorded usage $0.6905 (subscription valuation).\r\nHighest call: Keel critic $0.2800659. Offline replay: zero model calls.\r\nBefore: failed r008 candidates still incurred 2 critic calls ($0.4135186).\r\nAfter: failed r016 round 1 incurred 0 critic calls, 0 critic tokens, $0.\r\nDifferent candidates/objectives: no equal-work percentage is claimed.\r\nPASS evidence/people.json / inputs, outputs, checks, hashes, costs and capture.\r\n"
+    ]
+  ],
+  "sha256": "3e1cb05fdcc96603229f45809b9bb0ecf86552d5a7674eaf39fd836a988de7e4",
+  "kind": "Actual timed CLI output; model responses archived; no GUI screen recording"
+}

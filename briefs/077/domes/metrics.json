@@ -1,0 +1,1873 @@
+{
+ "schema": "suborned.metrics077.domes/1",
+ "brief": "077 the domes go",
+ "author": "Vela (Opus 5.5)",
+ "date": "2026-10-30",
+ "status": "candidates, review only: nothing catalogued, copied into Unity or placed",
+ "measured_vs_estimated": {
+  "measured": [
+   "triangles and welded vertices per LOD (pieces.json, exact; welded = identical position, normal, uv, colour collapsed as Unity's importer welds)",
+   "submeshes, fit and bounds (troughs077.py)",
+   "current domes' triangles and L1 (contracts/world/kit.json)",
+   "texture source sizes (PNG headers) and sha256"
+  ],
+  "computed": [
+   "texture memory at the stated import format with full mip chains",
+   "caf\u00e9-square totals from the world export's placements",
+   "Unity LOD relative heights"
+  ],
+  "estimated": [
+   "frame time (Redline's models: k <= 0.7 ms per M drawn triangles incl. shadows, 1.5-3 us a draw, 2.1-2.5 ms/Mpx)",
+   "SetPass and draw deltas in Unity"
+  ],
+  "not_measured": [
+   "any Unity or Air frame time, SetPass or draw count",
+   "the shader variant the vertex colour needs",
+   "Unity import (tangents, weld, vertex colour) of these FBXs"
+  ]
+ },
+ "placements_in_zone": {
+  "PlanterRun_4_A": 5,
+  "PlanterRun_4_B": 4,
+  "PlanterRun_4_C": 3,
+  "PlanterRun_2_A": 0,
+  "PlanterRun_Corner_A": 0,
+  "PlanterRun_End_A": 0,
+  "BedTuft_A": 31,
+  "BedTuft_B": 32,
+  "BedTuft_C": 29,
+  "PlanterArc": 4,
+  "CafeTerrace": 1
+ },
+ "pieces": {
+  "PlanterRun_4_A_TB": {
+   "replaces": "PlanterRun_4_A",
+   "placements": 5,
+   "now_planting_tris": 672,
+   "now_stone_tris": 60,
+   "lods": {
+    "gameplay": {
+     "lod": 3,
+     "tris": 1487,
+     "vertices_welded": 1872,
+     "mesh_sha256": "9c45647604e6a4090b27eb77737356185fcb401567982359a7855619795df37a"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2597,
+     "vertices_welded": 2835,
+     "mesh_sha256": "1314d6aff9ddae12fd52b9d2fb787c6ab5f89027bac72bdc3bac9d57c488c731"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3777,
+     "vertices_welded": 3916,
+     "mesh_sha256": "8307f906d778de22a4f8d697517ec535e44d494c0692d3ae081c423fecf5e6fb"
+    },
+    "inspection": {
+     "lod": 0,
+     "tris": 5595,
+     "vertices_welded": 5306,
+     "mesh_sha256": "a6db4545cb7e0d4eb377122e12169a0d1f673acdef566db6db9bb9446f4da320"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_4_A_TB.fbx",
+    "sha256": "7be3f3a5fbe04932e746293b88620544486289f772201e8c581fe0dd5f94f7c4",
+    "bytes": 1061436
+   },
+   "composition": {
+    "leafCount": 131,
+    "flowerHeads": 12,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.025251873331027797,
+    "fittedGeometryVariants": 194,
+    "lod": {
+     "gameplay": 1519,
+     "near": 2725,
+     "close": 3905,
+     "inspection": 5723
+    },
+    "seed": 4278796513,
+    "clusters": 11,
+    "palette": "Concept coral and amber, dense tropical border"
+   }
+  },
+  "PlanterRun_4_B_TB": {
+   "replaces": "PlanterRun_4_B",
+   "placements": 4,
+   "now_planting_tris": 612,
+   "now_stone_tris": 60,
+   "lods": {
+    "gameplay": {
+     "lod": 3,
+     "tris": 1355,
+     "vertices_welded": 1688,
+     "mesh_sha256": "67e9e0a4b52237d87e122ab553a62c8299bb1aed47a0c3059a3beff04c3a3763"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2357,
+     "vertices_welded": 2555,
+     "mesh_sha256": "266c97e924f3e0bdae6a00ca1fbe7e315b46a71caa594d34aa27a8f732e02373"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3481,
+     "vertices_welded": 3580,
+     "mesh_sha256": "ccdd10c7901e607250a0fc03699a0e025ec1fb81cf2662b39acf92a7760152b2"
+    },
+    "inspection": {
+     "lod": 0,
+     "tris": 4849,
+     "vertices_welded": 4626,
+     "mesh_sha256": "028b65c437cbff57863d630b632ce759a09970b670c774d092edd10b219b21cf"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_4_B_TB.fbx",
+    "sha256": "760abe71f68c069ff7d7839b3361191b5c0a68cfa8f6a38947a0aad67df02c95",
+    "bytes": 956012
+   },
+   "composition": {
+    "leafCount": 124,
+    "flowerHeads": 9,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.02022551663262126,
+    "fittedGeometryVariants": 230,
+    "lod": {
+     "gameplay": 1387,
+     "near": 2485,
+     "close": 3609,
+     "inspection": 4977
+    },
+    "seed": 4228463656,
+    "clusters": 11,
+    "palette": "Concept coral and amber, dense tropical border"
+   }
+  },
+  "PlanterRun_4_C_TB": {
+   "replaces": "PlanterRun_4_C",
+   "placements": 3,
+   "now_planting_tris": 582,
+   "now_stone_tris": 60,
+   "lods": {
+    "gameplay": {
+     "lod": 3,
+     "tris": 1518,
+     "vertices_welded": 1927,
+     "mesh_sha256": "90c8655ff1b30e0b461059f049a0c00c6e42e8ce1ca05238ad01570c917ec1f6"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2666,
+     "vertices_welded": 2924,
+     "mesh_sha256": "c523d1c2461cf8d7aefb0b98e78a894ac30f44f108fadf640e635a7b182ff054"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3846,
+     "vertices_welded": 4005,
+     "mesh_sha256": "f229c506f08e0bf27169ecaf455fa536f4c08f6644097667c618dd286d3e9e12"
+    },
+    "inspection": {
+     "lod": 0,
+     "tris": 5916,
+     "vertices_welded": 5589,
+     "mesh_sha256": "d28f9bf7bc998d7dcf5eb6f6f4d23ee6e250a03809dbdac7281b1dcd2a7715e7"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_4_C_TB.fbx",
+    "sha256": "a64fe027ddddd2f0790da33637f01a03ce245a32dda4d4647a62ad550fb6ef0e",
+    "bytes": 1095964
+   },
+   "composition": {
+    "leafCount": 131,
+    "flowerHeads": 13,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.014091604413661557,
+    "fittedGeometryVariants": 235,
+    "lod": {
+     "gameplay": 1550,
+     "near": 2794,
+     "close": 3974,
+     "inspection": 6044
+    },
+    "seed": 4245241275,
+    "clusters": 11,
+    "palette": "Concept coral and amber, dense tropical border"
+   }
+  },
+  "PlanterRun_2_A_TB": {
+   "replaces": "PlanterRun_2_A",
+   "placements": 0,
+   "now_planting_tris": 495,
+   "now_stone_tris": 36,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 2486,
+     "vertices_welded": 2350,
+     "mesh_sha256": "66ccadc0acafb28b6b96e7f5b5e55724646186df6f39b48cf60149d105af16d3"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 1748,
+     "vertices_welded": 1786,
+     "mesh_sha256": "c2de4cfc89b055b8bd11f3de0372b0b0718405973f0a7a644d1f50d494e07fc2"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 1196,
+     "vertices_welded": 1288,
+     "mesh_sha256": "c819e7cb9e08daddc6537cd5da001fa56d81e64250e76e55c8652a844fe875e3"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 680,
+     "vertices_welded": 846,
+     "mesh_sha256": "be288874b496623cb8723102c320556dc224298aff316e8bc2585fe5d4b8350f"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_2_A_TB.fbx",
+    "sha256": "1db8fc6927ff01039dfd163c06e1939a20871a16171afa89f7a28bb4ccbc4ebd",
+    "bytes": 501996
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 60,
+    "flowerHeads": 5,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.037312417519604776,
+    "beds": [
+     {
+      "id": "PlanterRun_2_A",
+      "seed": 3032017547,
+      "clusters": 6
+     }
+    ]
+   }
+  },
+  "PlanterRun_2_B_TB": {
+   "replaces": "PlanterRun_2_B",
+   "placements": 0,
+   "now_planting_tris": 405,
+   "now_stone_tris": 36,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 2689,
+     "vertices_welded": 2561,
+     "mesh_sha256": "4140a0da3177d69948f131d12f89dde8be6e8c95464ae73f9da0f6c66cc351cd"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 1897,
+     "vertices_welded": 1955,
+     "mesh_sha256": "f1d73ff11c76cd6fca2109d8d9be9eea9df47ec27e55858d2cba4361767c40ec"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 1289,
+     "vertices_welded": 1401,
+     "mesh_sha256": "2c5dffdf92fb651a91faacc54d9f0f0c45ffce55112ec62818d9a53b56b374e1"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 739,
+     "vertices_welded": 925,
+     "mesh_sha256": "97fd82133642e9f24638f903c13bb7c5122963bc9cca536d8524839f08d3e5b1"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_2_B_TB.fbx",
+    "sha256": "e286016b03e00da9c579b68d51abb7e8dabb7809253d7712ed47f496cd47d5e2",
+    "bytes": 541372
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 67,
+    "flowerHeads": 5,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.04705998323891904,
+    "beds": [
+     {
+      "id": "PlanterRun_2_B",
+      "seed": 3048795166,
+      "clusters": 6
+     }
+    ]
+   }
+  },
+  "PlanterRun_2_C_TB": {
+   "replaces": "PlanterRun_2_C",
+   "placements": 0,
+   "now_planting_tris": 360,
+   "now_stone_tris": 36,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 2528,
+     "vertices_welded": 2388,
+     "mesh_sha256": "3a5f9bd85333e028cb4d7608e788754d1995567c659f21b8c500b05360c55bf6"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 1754,
+     "vertices_welded": 1796,
+     "mesh_sha256": "588e23dea7a194b6e88c5d0b37414b1e241b82e9db1b61bce286f01fba5c0998"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 1202,
+     "vertices_welded": 1298,
+     "mesh_sha256": "1eb93085e13bb4a27332092702c4be47828044d2d36e252a0db737c3efc6940e"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 682,
+     "vertices_welded": 852,
+     "mesh_sha256": "d9891c815e25c62cd3db2a95b4be82de90bc5c217787ad6ffa2806a73f707dc0"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_2_C_TB.fbx",
+    "sha256": "56276beb919a49aa81f27aa5e4edb3a3a1cac4706505446143f947ea5281fc40",
+    "bytes": 505756
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 60,
+    "flowerHeads": 5,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.034597463919213936,
+    "beds": [
+     {
+      "id": "PlanterRun_2_C",
+      "seed": 3065572785,
+      "clusters": 6
+     }
+    ]
+   }
+  },
+  "PlanterRun_Corner_A_TB": {
+   "replaces": "PlanterRun_Corner_A",
+   "placements": 0,
+   "now_planting_tris": 584,
+   "now_stone_tris": 204,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 4259,
+     "vertices_welded": 4051,
+     "mesh_sha256": "5b27e3eb2b855699795dc0406e131c5b078fb4350d51de427c89030c91ff75b1"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3053,
+     "vertices_welded": 3129,
+     "mesh_sha256": "819d5f54be75798ac6c4208328bd9937982227c8f8fbde8e9bf6f13589d0b475"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2077,
+     "vertices_welded": 2243,
+     "mesh_sha256": "c130fb90ef660fdbbf2bf364d02dfd0e3da75f87a59f41397db3f870576e6986"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 1195,
+     "vertices_welded": 1483,
+     "mesh_sha256": "1022fe91089737e8babb61d078c39d4d86e956016d93d1a23e845504f9fc47ef"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_Corner_A_TB.fbx",
+    "sha256": "2c280dd72bee9ff7f72f8db81057ec39c544bc3d57c30b0aef2482a3f35b5142",
+    "bytes": 837804
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 107,
+    "flowerHeads": 8,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.03817826948861014,
+    "beds": [
+     {
+      "id": "PlanterRun_Corner_A",
+      "seed": 2484930574,
+      "clusters": 10
+     }
+    ]
+   }
+  },
+  "PlanterRun_Corner_B_TB": {
+   "replaces": "PlanterRun_Corner_B",
+   "placements": 0,
+   "now_planting_tris": 554,
+   "now_stone_tris": 204,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 4899,
+     "vertices_welded": 4573,
+     "mesh_sha256": "e29c852147b8b43492f0574a711f61275c4ba0f7c84107d7d98bff29f81a96bb"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3117,
+     "vertices_welded": 3211,
+     "mesh_sha256": "0c575879182ef85ed03a798649db63ede069b967a7b2b6a357bdb3fae2fac0f7"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2197,
+     "vertices_welded": 2381,
+     "mesh_sha256": "9d4ca9e3b6d14d75954b1f1e7587941a7887398d80d09e2892de9bed7557c204"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 1239,
+     "vertices_welded": 1561,
+     "mesh_sha256": "b01e6975457c8f8a8bab04c2531df1f1844913616a1f53e94dbae2d58dba3b76"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_Corner_B_TB.fbx",
+    "sha256": "eeef6a3eca996875c2a0857e8fbcf699ec46a1ecca7d80c1b9f108e87ea4aeb9",
+    "bytes": 896716
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 100,
+    "flowerHeads": 12,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.015381742982888177,
+    "beds": [
+     {
+      "id": "PlanterRun_Corner_B",
+      "seed": 2468152955,
+      "clusters": 10
+     }
+    ]
+   }
+  },
+  "PlanterRun_Corner_C_TB": {
+   "replaces": "PlanterRun_Corner_C",
+   "placements": 0,
+   "now_planting_tris": 404,
+   "now_stone_tris": 204,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 4488,
+     "vertices_welded": 4216,
+     "mesh_sha256": "2e153cd6f2a8ddb2d6e3821320163ee6379261ff7e9bdad123d680d8b3998617"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 3012,
+     "vertices_welded": 3088,
+     "mesh_sha256": "e6dbb903c72d12a6531eb7cb9375886bc74526419dea43c63721ee0e748eac1a"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 2092,
+     "vertices_welded": 2258,
+     "mesh_sha256": "69260201f5042d080e36fe2b2b4d8ed82d6074aaa4a07f8d50da16ad0cc472ac"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 1188,
+     "vertices_welded": 1484,
+     "mesh_sha256": "89e20172c2d97f16198180a33097007f573a5f130d8b478ca2b59132edfb9785"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_Corner_C_TB.fbx",
+    "sha256": "d731b5d08ecdd20f97940e1b1ba5e14c482cf5c96141f3c97f13da288a6bac58",
+    "bytes": 848748
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 100,
+    "flowerHeads": 10,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.01787658033560023,
+    "beds": [
+     {
+      "id": "PlanterRun_Corner_C",
+      "seed": 2451375336,
+      "clusters": 10
+     }
+    ]
+   }
+  },
+  "PlanterRun_End_A_TB": {
+   "replaces": "PlanterRun_End_A",
+   "placements": 0,
+   "now_planting_tris": 385,
+   "now_stone_tris": 200,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 1537,
+     "vertices_welded": 1497,
+     "mesh_sha256": "49ae671b1a8306513629040d0586110c882783adeb704730238b6cf0efa73bd3"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 1249,
+     "vertices_welded": 1277,
+     "mesh_sha256": "355f525a5221741a1f913e960e7aeea82f6e5e35f82b95b81b491b25e4a50dc4"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 825,
+     "vertices_welded": 889,
+     "mesh_sha256": "55211766689a8ca01ba51916ab3ea270696d8f2187670a6222e2734e43235a8e"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 489,
+     "vertices_welded": 597,
+     "mesh_sha256": "1e4f4afb98cd9e5ab03658537edd0c922f8fd342029218b1a14ca0aa2bd0017c"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_End_A_TB.fbx",
+    "sha256": "3f6e9ccf13cd7d05138e7416b68e8eb04b698eb05fda808f0e596810dddb7e05",
+    "bytes": 349420
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 47,
+    "flowerHeads": 2,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.05189476381569447,
+    "beds": [
+     {
+      "id": "PlanterRun_End_A",
+      "seed": 3344311720,
+      "clusters": 4
+     }
+    ]
+   }
+  },
+  "PlanterRun_End_B_TB": {
+   "replaces": "PlanterRun_End_B",
+   "placements": 0,
+   "now_planting_tris": 385,
+   "now_stone_tris": 200,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 1677,
+     "vertices_welded": 1651,
+     "mesh_sha256": "3492719a04041af2a991fbf5e436b5c38d6c5270636bfad61ba803705080fee4"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 1389,
+     "vertices_welded": 1431,
+     "mesh_sha256": "6e4805c31f44a8ab6b8c639d909d2ce73097dc41097f8bc07bd7155c7d03a9f8"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 909,
+     "vertices_welded": 987,
+     "mesh_sha256": "2cb2ff928a1c1b58da8cdd7e3cd91f220c48bcb27c6a06e86314da401bf9c626"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 545,
+     "vertices_welded": 667,
+     "mesh_sha256": "591b560ffdd10f83612fb89bdb529a3b5ac8cd443b18a65148558fddf0021371"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_End_B_TB.fbx",
+    "sha256": "a10a25c7996200987266ef0db24dbfd4b85bf9df336f5d2283466ed928a719e1",
+    "bytes": 383772
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 54,
+    "flowerHeads": 2,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.09203680947058787,
+    "beds": [
+     {
+      "id": "PlanterRun_End_B",
+      "seed": 3394644577,
+      "clusters": 4
+     }
+    ]
+   }
+  },
+  "PlanterRun_End_C_TB": {
+   "replaces": "PlanterRun_End_C",
+   "placements": 0,
+   "now_planting_tris": 340,
+   "now_stone_tris": 200,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 1007,
+     "vertices_welded": 1005,
+     "mesh_sha256": "41e8ae9b2eb44995da8c298c84c844b77577cbcb870757adaff1e557ac4c6932"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 1007,
+     "vertices_welded": 1005,
+     "mesh_sha256": "41e8ae9b2eb44995da8c298c84c844b77577cbcb870757adaff1e557ac4c6932"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 639,
+     "vertices_welded": 673,
+     "mesh_sha256": "29f13afcf16d6716b2c4ce115b7e1cb43543e3683db900c3fee0a36c2e0d0adb"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 383,
+     "vertices_welded": 453,
+     "mesh_sha256": "f38ba97656193e9b7bfff9a1cd35ae7b7c0d2eef919cc631f840b2c5540a1ede"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterRun_End_C_TB.fbx",
+    "sha256": "8dfc9209b4c6378490320fc1c4f69e1bdf28d0a50fa3d8cb1d3bd7b961bd1520",
+    "bytes": 266396
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 40,
+    "flowerHeads": 0,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": null,
+    "beds": [
+     {
+      "id": "PlanterRun_End_C",
+      "seed": 3377866958,
+      "clusters": 4
+     }
+    ]
+   }
+  },
+  "BedTuft_A_TB": {
+   "replaces": "BedTuft_A",
+   "placements": 31,
+   "now_planting_tris": 95,
+   "now_stone_tris": 0,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 638,
+     "vertices_welded": 585,
+     "mesh_sha256": "adbf85407551247a8890d1f63cbf3641dc931ef7ef7aa1dabb99d74fe87acc7a"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 350,
+     "vertices_welded": 365,
+     "mesh_sha256": "57107757f8ce7715c2176177a050fce7770697a32589e3b3950d655ac30b3ae1"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 258,
+     "vertices_welded": 282,
+     "mesh_sha256": "12f3f71bb820600ffbae63ea32c54f917245b2b57a40cd2e25486a24fa7b402b"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 142,
+     "vertices_welded": 183,
+     "mesh_sha256": "ec653564829f61e4c45029add7fb344e6129e50dccbd539a03a55c3c1d765b8c"
+    }
+   },
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_BedTuft_A_TB.fbx",
+    "sha256": "07879d7f361d0e1aa114aeca058ce7acfe97b934f31acede4066a9d59b5ac421",
+    "bytes": 134524
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 10,
+    "flowerHeads": 2,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.146451600547923,
+    "beds": [
+     {
+      "id": "BedTuft_A",
+      "seed": 3939246141,
+      "clusters": 1
+     }
+    ]
+   }
+  },
+  "BedTuft_B_TB": {
+   "replaces": "BedTuft_B",
+   "placements": 32,
+   "now_planting_tris": 95,
+   "now_stone_tris": 0,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 680,
+     "vertices_welded": 623,
+     "mesh_sha256": "9803867446254fc5da1bfe06a1dcb714c5b661362e267c73285a44db8e7860a5"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 356,
+     "vertices_welded": 375,
+     "mesh_sha256": "5cb769a0261773768cb48a1e56cc9f2c6e717239eb42938b9779415030d207bb"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 264,
+     "vertices_welded": 292,
+     "mesh_sha256": "e525d5c27af76ae130a8d5383586dfa1a06ea264bf12766c972c83899c6340ae"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 144,
+     "vertices_welded": 189,
+     "mesh_sha256": "79a6fac95a494fb2a7b1067836e3941dfda319f79a8c1aaa7cd615d385fb11a3"
+    }
+   },
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_BedTuft_B_TB.fbx",
+    "sha256": "fdb777e72f6a7c2f531d1f1e3191be4535b0ea6521451b6b41176aa663701a88",
+    "bytes": 138988
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 10,
+    "flowerHeads": 2,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.021592469723465582,
+    "beds": [
+     {
+      "id": "BedTuft_B",
+      "seed": 3888913284,
+      "clusters": 1
+     }
+    ]
+   }
+  },
+  "BedTuft_C_TB": {
+   "replaces": "BedTuft_C",
+   "placements": 29,
+   "now_planting_tris": 80,
+   "now_stone_tris": 0,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 248,
+     "vertices_welded": 247,
+     "mesh_sha256": "834112911ff52801e0534c8001d96b7be7a3b66648f72a8937ac549a565ccb45"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 248,
+     "vertices_welded": 247,
+     "mesh_sha256": "834112911ff52801e0534c8001d96b7be7a3b66648f72a8937ac549a565ccb45"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 156,
+     "vertices_welded": 164,
+     "mesh_sha256": "547b7c45ee6595016b954c33626865bda3c50c4e574eac06b30a95f5f00e0398"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 92,
+     "vertices_welded": 109,
+     "mesh_sha256": "440c483c6df3dcd592ea1dc790dad94c538f6d4f6215b35a505ecc60b120542c"
+    }
+   },
+   "materials": [
+    "DK_Leaf_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_BedTuft_C_TB.fbx",
+    "sha256": "48d925004691b7c6139129a71f4335fffaa9ae00685e1faccaacdcdac7255b0d",
+    "bytes": 85500
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 10,
+    "flowerHeads": 0,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": null,
+    "beds": [
+     {
+      "id": "BedTuft_C",
+      "seed": 3905690903,
+      "clusters": 1
+     }
+    ]
+   }
+  },
+  "PlanterArc_TB": {
+   "replaces": "PlanterArc",
+   "placements": 4,
+   "now_planting_tris": 1784,
+   "now_stone_tris": 1232,
+   "lods": {
+    "close": {
+     "lod": 0,
+     "tris": 11052,
+     "vertices_welded": 9830,
+     "mesh_sha256": "a918b5a2970352103b308a4457c976cf47248349c1bff0895c1cd70a502b90b5"
+    },
+    "near": {
+     "lod": 1,
+     "tris": 5004,
+     "vertices_welded": 5195,
+     "mesh_sha256": "002ab966c9a1bd01f9a495adfe59b3a5855c6f60795104be2c92d16842eb9a40"
+    },
+    "gameplay": {
+     "lod": 2,
+     "tris": 2784,
+     "vertices_welded": 3530,
+     "mesh_sha256": "c290b4e502e737c738eb741762a1de7ed87b82164b2784b01c7252ee44652a50"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_PlanterArc_TB.fbx",
+    "sha256": "7ad2a0511a2f720f9b8239582bd8a92f9846e36f58f502b41dd24a57157a8a1b",
+    "bytes": 1425420
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close"
+    ],
+    "prototypeInstances": 4,
+    "drawBatches": 4,
+    "materials": 4,
+    "detail": "close",
+    "triangles": 49584,
+    "lod": {
+     "gameplay": 14272,
+     "near": 24048,
+     "close": 49584
+    },
+    "leavesPerBed": 207,
+    "flowersPerBed": 27,
+    "projectedLeafPixels": 0.55,
+    "newTextures": 0,
+    "opaque": true,
+    "design": "Rounded glossy leaf clumps, arching tropical rosettes, three clustered coral/amber flower accents, profiled smooth pale stone",
+    "sameSilhouetteAtEveryLOD": true,
+    "sharedMapsWithCafe": true,
+    "lodRule": "fountain-garden.js: projected 0.55 m leaf span; close >= 44 px, near >= 24 px, else gameplay"
+   }
+  },
+  "GlobeLamp_TB": {
+   "replaces": null,
+   "placements": 4,
+   "now_planting_tris": 0,
+   "now_stone_tris": null,
+   "lods": {
+    "gameplay": {
+     "lod": 0,
+     "tris": 1016,
+     "vertices_welded": 869,
+     "mesh_sha256": "019d6cd435c48b19ca9787bed803b29cd9d0e63dc738060321a0752ca6a0f1fc"
+    }
+   },
+   "materials": [
+    "DK_Chrome_TB",
+    "DK_Opal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_GlobeLamp_TB.fbx",
+    "sha256": "71995ae3ea47742ce3429b637cf612537ee7cf912d8714ab0ee1b9db7de84039",
+    "bytes": 72492
+   },
+   "composition": {
+    "testbed": [
+     {
+      "i": 0,
+      "plan": [
+       3.2267374992370605,
+       4.662302494049072
+      ],
+      "base": 0.4650000035762787
+     },
+     {
+      "i": 1,
+      "plan": [
+       -4.662302494049072,
+       3.2267374992370605
+      ],
+      "base": 0.4650000035762787
+     },
+     {
+      "i": 2,
+      "plan": [
+       -3.2267374992370605,
+       -4.662302494049072
+      ],
+      "base": 0.4650000035762787
+     },
+     {
+      "i": 3,
+      "plan": [
+       4.662302494049072,
+       -3.2267374992370605
+      ],
+      "base": 0.4650000035762787
+     }
+    ],
+    "inPlanterArcFrame": {
+     "at": [
+      1.015097742665605,
+      0.5416063236955004
+     ],
+     "z": 0.4650000035762787,
+     "yawFromArc": 0
+    },
+    "light": {
+     "colour": "#fff1d8",
+     "range": 5.8,
+     "decay": 2,
+     "shadows": false,
+     "at": 2.31
+    },
+    "materials": {
+     "chrome": "#d8dfe4 metal 1 rough .16 (testbed chrome finish)",
+     "globe": "opal #fffdf0, emissive #fff1d2 x 0.06"
+    }
+   }
+  },
+  "CafeTerrace_Planting_TB": {
+   "replaces": "CafeTerrace",
+   "placements": 1,
+   "now_planting_tris": 3060,
+   "now_stone_tris": 312,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 44694,
+     "vertices_welded": 42444,
+     "mesh_sha256": "467806f21c5f1a3fb28527dd6893f1335b630cb8a65916757a3a6d1eebec8461"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 31194,
+     "vertices_welded": 32120,
+     "mesh_sha256": "8f22be73a3eb7acc65c7ea6d9c4646a5b0b4bc651d9bae53d1f01c6aa53cdab0"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 21282,
+     "vertices_welded": 23090,
+     "mesh_sha256": "420f24e06c1e4dd0ee99ad11db67ee67a4ab80af51bbc3dcf193259eda45753e"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 12182,
+     "vertices_welded": 15224,
+     "mesh_sha256": "2fecdf79f493fbf94907529798adb122fb22e1720c266da49b8bbb4acceb6d20"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_CafeTerrace_Planting_TB.fbx",
+    "sha256": "7cc2b96617632bee0f4590a8f9df7af4e700df2659801e45242c655c66618ac6",
+    "bytes": 8225516
+   },
+   "composition": {
+    "levels": [
+     "gameplay",
+     "near",
+     "close",
+     "inspection"
+    ],
+    "leafCount": 1092,
+    "flowerHeads": 88,
+    "footprintViolations": 0,
+    "bloomIntersections": 0,
+    "bloomLeafIntersections": 0,
+    "minimumBloomClearance": 0.012812316944403102,
+    "beds": [
+     {
+      "id": "CafeTerrace-run-0",
+      "seed": 1127909043,
+      "clusters": 49
+     },
+     {
+      "id": "CafeTerrace-run-1",
+      "seed": 1111131424,
+      "clusters": 49
+     }
+    ]
+   }
+  },
+  "CivicBed_civic-facade-southwest_TB": {
+   "replaces": "the BedTuft stations and bed-hedge fill of civic-facade-southwest",
+   "placements": 1,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 28285,
+     "vertices_welded": 26726,
+     "mesh_sha256": "8cd074beeb5f9484d5fb295674ad8c59e5f733f6cc52fe831275e34df253a212"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 19033,
+     "vertices_welded": 19652,
+     "mesh_sha256": "4c5db1c6e3ced89dcf5dc53f9a919141a996312b16357de9be860236fed3280f"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 13125,
+     "vertices_welded": 14269,
+     "mesh_sha256": "7070ac96ce75a4b65aa8dbd0fea8bf3db3f82c38fc6658b41572c4307bbe470d"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 7483,
+     "vertices_welded": 9396,
+     "mesh_sha256": "7d329679eb2319af8a72030f4df16e69c825b84653c6d6158fd3320774a89a19"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_CivicBed_civic-facade-southwest_TB.fbx",
+    "sha256": "e2d4fb9888a2720b28ae49e1b314004e5c7cf5e0846f24eb27ff5da8867608c8",
+    "bytes": 5090172
+   },
+   "placement": {
+    "angle": -6.814967501999605e-05,
+    "t": [
+     -180.42776566587972,
+     -264.04295125310557
+    ],
+    "err": 0.0006378014014268682,
+    "base": 0.18
+   },
+   "bake_match": {
+    "foliage:gameplay": 7006,
+    "foliage:near": 11742,
+    "flowers:gameplay": 453,
+    "flowers:near": 1359,
+    "stone:gameplay": 208,
+    "stone:near": 832,
+    "soil:gameplay": 24,
+    "soil:near": 24
+   }
+  },
+  "CivicBed_civic-facade-southeast_TB": {
+   "replaces": "the BedTuft stations and bed-hedge fill of civic-facade-southeast",
+   "placements": 1,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 26521,
+     "vertices_welded": 25396,
+     "mesh_sha256": "d1f78ca3d5510fe30a1d648ff8925577591230721edad4f3661b3873f2339b08"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 19339,
+     "vertices_welded": 19902,
+     "mesh_sha256": "a3bb072b9b4eaf4192c8ce013c5dfb91fe6aba83b914b52723007e321c9964ea"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 13023,
+     "vertices_welded": 14129,
+     "mesh_sha256": "473a2f49bb634b9f74e8f921251da443b7bfc32faa69ad0ba130847ccbdd6893"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 7521,
+     "vertices_welded": 9354,
+     "mesh_sha256": "9d0757665fcc34a8dd233e8b124f11ea28df8a6aed238609bd85faaffbbb20eb"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_CivicBed_civic-facade-southeast_TB.fbx",
+    "sha256": "ab8511078535766e423e74dfd09e4651cc891d0653f884bee5554f3022d62787",
+    "bytes": 4989948
+   },
+   "placement": {
+    "angle": 3.1415801647186683,
+    "t": [
+     -123.50029305683637,
+     -307.5005156318131
+    ],
+    "err": 0.0006775401759570622,
+    "base": 0.18
+   },
+   "bake_match": {
+    "foliage:gameplay": 7144,
+    "foliage:near": 11940,
+    "flowers:gameplay": 353,
+    "flowers:near": 1059,
+    "stone:gameplay": 208,
+    "stone:near": 832,
+    "soil:gameplay": 24,
+    "soil:near": 24
+   }
+  },
+  "CivicBed_civic-office-west_TB": {
+   "replaces": "the BedTuft stations and bed-hedge fill of civic-office-west",
+   "placements": 1,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 52252,
+     "vertices_welded": 51366,
+     "mesh_sha256": "b992b141a3a240e32a8955fce8af5dba9d765fe58c8206d8a24863e1d3d86cd8"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 44962,
+     "vertices_welded": 45790,
+     "mesh_sha256": "ad83e71d52d983288d86a66f09825c18916293960b143134c2e92a2714525b1a"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 29058,
+     "vertices_welded": 31230,
+     "mesh_sha256": "65ed93e726ca008cd79d1e875c9a3647184c5449256ba6fff9c3a1b74a80a040"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 17138,
+     "vertices_welded": 20842,
+     "mesh_sha256": "6b50005e4ffa05b696037e5a636546d3496f12213487cb345b479bdc7b2ba6ac"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_CivicBed_civic-office-west_TB.fbx",
+    "sha256": "f52e038d09157f721cd2e58bc86ef34d9f964a3a87024811bab2ee34dcefd836",
+    "bytes": 10868268
+   },
+   "placement": {
+    "angle": -3.1415815646637775,
+    "t": [
+     -117.19992093011321,
+     -307.4996279141135
+    ],
+    "err": 0.0006451184787111002,
+    "base": 0.18
+   },
+   "bake_match": {
+    "foliage:gameplay": 16750,
+    "foliage:near": 27954,
+    "flowers:gameplay": 358,
+    "flowers:near": 1074,
+    "stone:gameplay": 256,
+    "stone:near": 1024,
+    "soil:gameplay": 30,
+    "soil:near": 30
+   }
+  },
+  "CivicBed_civic-office-north_TB": {
+   "replaces": "the BedTuft stations and bed-hedge fill of civic-office-north",
+   "placements": 1,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 21426,
+     "vertices_welded": 20898,
+     "mesh_sha256": "c25a5de22b6c90edb0e4c98cae9bb1055c42dabf265038e282221efcf3047014"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 18294,
+     "vertices_welded": 18502,
+     "mesh_sha256": "990ada28c3388bd1a7d80d9bf4a905014eae629ec3824904bb0210c00709e645"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 11886,
+     "vertices_welded": 12688,
+     "mesh_sha256": "a32d5fb80e5a757bc2e4c55481d507c3abdca2343e4fd56b8f881d9bf695fe07"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 6946,
+     "vertices_welded": 8422,
+     "mesh_sha256": "ab846c1684a1313b4fdac512206830edb406bcbc1dccc49f3a9d32a6a4ba9792"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_CivicBed_civic-office-north_TB.fbx",
+    "sha256": "e18a576f7d4e8e7b6b2f6b4412e956eb83199c388fc8a13c140a6bcbad1e731e",
+    "bytes": 4464060
+   },
+   "placement": {
+    "angle": -3.141559548912267,
+    "t": [
+     -122.09991828472891,
+     -307.4989622566538
+    ],
+    "err": 0.0005618356274663186,
+    "base": 0.18
+   },
+   "bake_match": {
+    "foliage:gameplay": 6768,
+    "foliage:near": 11400,
+    "flowers:gameplay": 154,
+    "flowers:near": 462,
+    "stone:gameplay": 208,
+    "stone:near": 832,
+    "soil:gameplay": 24,
+    "soil:near": 24
+   }
+  },
+  "CivicBed_civic-dropoff-west_TB": {
+   "replaces": "the BedTuft stations and bed-hedge fill of civic-dropoff-west",
+   "placements": 1,
+   "lods": {
+    "inspection": {
+     "lod": 0,
+     "tris": 23303,
+     "vertices_welded": 22025,
+     "mesh_sha256": "c3fc5e7b9b31cd2d22b27c58b018cd4a0823445095e8088d7cd4f4544d18d3c3"
+    },
+    "close": {
+     "lod": 1,
+     "tris": 15617,
+     "vertices_welded": 16147,
+     "mesh_sha256": "4d9f0b25318a1db6c3ca4e249c9440f75cb6798bb91b807f565e8d70403130a5"
+    },
+    "near": {
+     "lod": 2,
+     "tris": 10777,
+     "vertices_welded": 11733,
+     "mesh_sha256": "637ab46f0df541c2fd6a67e5edc0cc7c522b41ea433a74f23a47afea01ab3caa"
+    },
+    "gameplay": {
+     "lod": 3,
+     "tris": 6151,
+     "vertices_welded": 7733,
+     "mesh_sha256": "9d5bd587103c72696d55f4b72d8c3b50af366c638d3b1d747200e70d88e48f2f"
+    }
+   },
+   "materials": [
+    "DK_Soil_TB",
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "fbx": {
+    "path": "out/decokit/troughs077/Models/DK_CivicBed_civic-dropoff-west_TB.fbx",
+    "sha256": "8546c1cf644e9922eee372b36cdbd0b1422fff5c015cb8fc4565d3c6a9f08085",
+    "bytes": 4192748
+   },
+   "placement": {
+    "angle": 7.407900196884067e-06,
+    "t": [
+     -198.49992790795122,
+     -317.2002937485772
+    ],
+    "err": 0.0005397086095000177,
+    "base": 0.18
+   },
+   "bake_match": {
+    "foliage:gameplay": 5740,
+    "foliage:near": 9612,
+    "flowers:gameplay": 377,
+    "flowers:near": 1131,
+    "stone:gameplay": 288,
+    "stone:near": 1152,
+    "soil:gameplay": 34,
+    "soil:near": 34
+   }
+  }
+ },
+ "census_now": {
+  "PlanterRun_2_A": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_2_A.fbx",
+   "kit_tris": 531,
+   "by_material": {
+    "DK_Limestone": 36,
+    "DK_Leaf_CivicDark": 170,
+    "DK_Bloom_Cream": 60,
+    "DK_Bloom_Coral": 165,
+    "DK_Leaf_Civic": 100
+   },
+   "planting_tris": 495,
+   "stone_tris": 36,
+   "l1": [
+    125
+   ]
+  },
+  "PlanterRun_2_B": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_2_B.fbx",
+   "kit_tris": 441,
+   "by_material": {
+    "DK_Limestone": 36,
+    "DK_Leaf_Civic": 170,
+    "DK_Leaf_CivicDark": 100,
+    "DK_Bloom_Flamingo": 90,
+    "DK_Bloom_Peach": 45
+   },
+   "planting_tris": 405,
+   "stone_tris": 36,
+   "l1": [
+    103
+   ]
+  },
+  "PlanterRun_2_C": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_2_C.fbx",
+   "kit_tris": 396,
+   "by_material": {
+    "DK_Limestone": 36,
+    "DK_Leaf_Civic": 170,
+    "DK_Bloom_Peach": 45,
+    "DK_Bloom_Cream": 45,
+    "DK_Leaf_CivicDark": 100
+   },
+   "planting_tris": 360,
+   "stone_tris": 36,
+   "l1": []
+  },
+  "PlanterRun_4_A": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_4_A.fbx",
+   "kit_tris": 732,
+   "by_material": {
+    "DK_Limestone": 60,
+    "DK_Leaf_CivicDark": 232,
+    "DK_Bloom_Coral": 105,
+    "DK_Bloom_Cream": 135,
+    "DK_Leaf_Civic": 200
+   },
+   "planting_tris": 672,
+   "stone_tris": 60,
+   "l1": [
+    179
+   ]
+  },
+  "PlanterRun_4_B": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_4_B.fbx",
+   "kit_tris": 672,
+   "by_material": {
+    "DK_Limestone": 60,
+    "DK_Leaf_Civic": 232,
+    "DK_Bloom_Peach": 90,
+    "DK_Bloom_Flamingo": 90,
+    "DK_Leaf_CivicDark": 200
+   },
+   "planting_tris": 612,
+   "stone_tris": 60,
+   "l1": [
+    165
+   ]
+  },
+  "PlanterRun_4_C": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_4_C.fbx",
+   "kit_tris": 642,
+   "by_material": {
+    "DK_Limestone": 60,
+    "DK_Leaf_Civic": 232,
+    "DK_Bloom_Cream": 90,
+    "DK_Bloom_Peach": 60,
+    "DK_Leaf_CivicDark": 200
+   },
+   "planting_tris": 582,
+   "stone_tris": 60,
+   "l1": [
+    157
+   ]
+  },
+  "PlanterRun_Corner_A": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_Corner_A.fbx",
+   "kit_tris": 788,
+   "by_material": {
+    "DK_Limestone": 204,
+    "DK_Leaf_CivicDark": 254,
+    "DK_Bloom_Cream": 120,
+    "DK_Bloom_Coral": 60,
+    "DK_Leaf_Civic": 150
+   },
+   "planting_tris": 584,
+   "stone_tris": 204,
+   "l1": [
+    197
+   ]
+  },
+  "PlanterRun_Corner_B": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_Corner_B.fbx",
+   "kit_tris": 758,
+   "by_material": {
+    "DK_Limestone": 204,
+    "DK_Leaf_Civic": 254,
+    "DK_Leaf_CivicDark": 150,
+    "DK_Bloom_Flamingo": 90,
+    "DK_Bloom_Peach": 60
+   },
+   "planting_tris": 554,
+   "stone_tris": 204,
+   "l1": [
+    189
+   ]
+  },
+  "PlanterRun_Corner_C": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_Corner_C.fbx",
+   "kit_tris": 608,
+   "by_material": {
+    "DK_Limestone": 204,
+    "DK_Leaf_Civic": 254,
+    "DK_Leaf_CivicDark": 150
+   },
+   "planting_tris": 404,
+   "stone_tris": 204,
+   "l1": [
+    152
+   ]
+  },
+  "PlanterRun_End_A": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_End_A.fbx",
+   "kit_tris": 585,
+   "by_material": {
+    "DK_Limestone": 200,
+    "DK_Leaf_CivicDark": 132,
+    "DK_Bloom_Coral": 108,
+    "DK_Bloom_Cream": 45,
+    "DK_Leaf_Civic": 100
+   },
+   "planting_tris": 385,
+   "stone_tris": 200,
+   "l1": [
+    141
+   ]
+  },
+  "PlanterRun_End_B": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_End_B.fbx",
+   "kit_tris": 585,
+   "by_material": {
+    "DK_Limestone": 200,
+    "DK_Leaf_Civic": 132,
+    "DK_Bloom_Peach": 45,
+    "DK_Bloom_Flamingo": 108,
+    "DK_Leaf_CivicDark": 100
+   },
+   "planting_tris": 385,
+   "stone_tris": 200,
+   "l1": [
+    142
+   ]
+  },
+  "PlanterRun_End_C": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterRun_End_C.fbx",
+   "kit_tris": 540,
+   "by_material": {
+    "DK_Limestone": 200,
+    "DK_Leaf_Civic": 132,
+    "DK_Bloom_Cream": 63,
+    "DK_Bloom_Peach": 45,
+    "DK_Leaf_CivicDark": 100
+   },
+   "planting_tris": 340,
+   "stone_tris": 200,
+   "l1": [
+    130
+   ]
+  },
+  "BedTuft_A": {
+   "fbx": "out/decokit/Models/Plaza/DK_BedTuft_A.fbx",
+   "kit_tris": 95,
+   "by_material": {
+    "DK_Leaf_Civic": 50,
+    "DK_Bloom_Coral": 30,
+    "DK_Bloom_Cream": 15
+   },
+   "planting_tris": 95,
+   "stone_tris": 0,
+   "l1": []
+  },
+  "BedTuft_B": {
+   "fbx": "out/decokit/Models/Plaza/DK_BedTuft_B.fbx",
+   "kit_tris": 95,
+   "by_material": {
+    "DK_Leaf_CivicDark": 50,
+    "DK_Bloom_Flamingo": 30,
+    "DK_Bloom_Peach": 15
+   },
+   "planting_tris": 95,
+   "stone_tris": 0,
+   "l1": []
+  },
+  "BedTuft_C": {
+   "fbx": "out/decokit/Models/Plaza/DK_BedTuft_C.fbx",
+   "kit_tris": 80,
+   "by_material": {
+    "DK_Leaf_CivicDark": 50,
+    "DK_Bloom_Cream": 15,
+    "DK_Bloom_Peach": 15
+   },
+   "planting_tris": 80,
+   "stone_tris": 0,
+   "l1": []
+  },
+  "PlanterArc": {
+   "fbx": "out/decokit/Models/Plaza/DK_PlanterArc.fbx",
+   "kit_tris": 3016,
+   "by_material": {
+    "DK_Limestone": 784,
+    "DK_Limestone_Tex": 112,
+    "DK_Faience_Teal": 112,
+    "DK_Accent_Gold": 224,
+    "DK_GroundCover": 56,
+    "DK_Leaf_CoreShrub": 336,
+    "DK_Leaf_Shrub": 1008,
+    "DK_Flower_Coral": 384
+   },
+   "planting_tris": 1784,
+   "stone_tris": 1232,
+   "l1": [
+    754,
+    180
+   ]
+  },
+  "CafeTerrace": {
+   "fbx": "out/decokit/Models/Plaza/DK_CafeTerrace.fbx",
+   "kit_tris": 3372,
+   "by_material": {
+    "DK_Limestone": 312,
+    "DK_Leaf_CivicDark": 1230,
+    "DK_Bloom_Coral": 135,
+    "DK_Leaf_Civic": 1230,
+    "DK_Bloom_Cream": 210,
+    "DK_Bloom_Flamingo": 150,
+    "DK_Bloom_Peach": 105
+   },
+   "planting_tris": 3060,
+   "stone_tris": 312,
+   "l1": [
+    843,
+    202
+   ]
+  },
+  "OvalPlanter": {
+   "fbx": "/Users/sky/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Street/DK_OvalPlanter.fbx",
+   "kit_tris": 3336,
+   "by_material": {
+    "DK_Enamel_Ivory": 2332,
+    "DK_Enamel_Teal": 128,
+    "DK_Chrome": 128,
+    "DK_Soil": 748
+   },
+   "planting_tris": 0,
+   "stone_tris": 3336,
+   "l1": []
+  }
+ },
+ "zone_total": {
+  "now (domes, cushions, tufts)": {
+   "tris": 26055
+  },
+  "proposed, BedTuft per unit: gameplay LOD (testbed's choice at play zoom)": {
+   "tris": 56469,
+   "gpu_ms_upper": 0.064
+  },
+  "proposed, BedTuft per unit: top LOD everywhere": {
+   "tris": 206815,
+   "gpu_ms_upper": 0.379
+  },
+  "proposed, bed level (testbed's civic beds): gameplay LOD": {
+   "tris": 90030,
+   "gpu_ms_upper": 0.134
+  },
+  "proposed, bed level: top LOD everywhere": {
+   "tris": 309872,
+   "gpu_ms_upper": 0.595
+  }
+ },
+ "draws": {
+  "note": "draws are estimates; in the swap scene some civic planting is baked into shared batches (Latch 075), so today's draw count per piece is not known here",
+  "per_unit_tufts": "92 instances x 2 submeshes (leaf, petal; C has no blooms: 1) = up to +184 forward draws without instancing, 6 with the GPU Resident Drawer; shadow the same again per cascade",
+  "bed_level": "5 pieces x 3 submeshes = 15 forward draws, 10 shadow per cascade; one-off meshes, so no instancing needed",
+  "render_thread_ms": {
+   "per_unit": "+0.83 to +1.66 (forward + 2 shadow cascades, no instancing)",
+   "bed_level": "+0.07 to +0.14 at most for 45 draws"
+  }
+ },
+ "bedtuft": {
+  "flag": "Not 92 x 12k. The ~12k a bed is the testbed's per BED (its civic flowerBedRun beds), and we have 5 tufted beds: 45,239 triangles at the gameplay LOD for all five. Per unit, a testbed clump in the 0.62 m disc is 92-144 triangles at gameplay (638-680 at the top LOD), so 92 units are 11,678 at gameplay.",
+  "rings_match": "Our five tufted bed-kerb rings are the testbed's own civic beds (civic-planting-layout flowerBedRun outlines), each moved rigidly: max vertex error < 1 mm (domes077.manifest.json civicBeds). So the bed-level composition is literally the testbed's planting of those beds, reproduced by its code to the triangle (gameplay counts equal the bake's, bakeLod).",
+  "per_unit_reads": "Close up the per-unit clumps read as a planted bed, but on today's flat green bed-hedge fill, lower and with fewer flowers than the testbed's beds. At play zoom they read as a loose row of clumps along the ring. The same 3 variants repeat 30 times each, with random yaw. Acceptable as a stopgap, not the testbed's look.",
+  "bed_level_reads": "The testbed's beds: a dense planted mass with a canopy row and tall coral/amber blooms, dark soil at the rim, no hedge slab. It matches the testbed column.",
+  "proposal_for_splice": "Generator rule: a civic bed ring (bed-kerb) is planted by one bed-level composition (cafe-garden-composition with the bed's flowerBedRun planting points: centre canopy row every 0.38 m, border rows every 0.30 m at (w/2 - wall) x 0.62-0.8, rounded-end points), not by BedTuft stations. The bed-hedge fill is dropped and soil sits 3 mm proud of the kerb top. Our five beds are the testbed's, so their compositions are those bakes (CivicBed_<bed>_TB). Any new ring gets a flowerBedRun-style point set from its outline. Cost: 45,239 triangles at gameplay for the five (vs 8,305 tufts + hedge today), 15 forward draws instead of up to 184.",
+  "recommend": "Bed level. It's the testbed's own design, it reads continuous, and it trades about +33k triangles (<= +0.07 ms GPU) for about 170 fewer draws than per-unit tufts would add. Per-unit BedTuft_<v>_TB is built and rendered as asked."
+ },
+ "leaf_shader": {
+  "owner": "Latch (shader code), Glint (look in the grade)",
+  "found": "DK Lit Cutaway's passes include URP's stock LitForwardPass / GBuffer / DepthNormals: no vertex colour and no back-face normal flip (unity/Assets/Suborned/Shaders/DecoKit/DK_LitCutaway.shader lines 198, 345, 449).",
+  "changes": [
+   "Vertex colour: a shader_feature_local _DK_VERTEX_COLOR. Pass COLOR through Varyings and multiply albedo by color.rgb in the forward, GBuffer and Meta passes. The values are linear multipliers (three's), exported linear (FBX colors_type LINEAR); check Unity imports them unconverted. They carry the four leaf tints, root-to-tip occlusion and dark stems.",
+   "Back faces: leaf, petal and stem materials are Cull Off (testbed DoubleSide). In the forward, GBuffer and DepthNormals fragments, flip the world normal and the tangent frame for back faces (FRONT_FACE_SEMANTIC + IS_FRONT_VFACE), or the undersides light as if facing away. The shadow caster stays Cull Off.",
+   "Roughness: the testbed reads roughness = 0.49 (leaf) or 0.64 (petal) x ORM green. URP Lit wants smoothness in the metallic map's alpha, so derive a mask map at build time (A = 1 - k x ORM.g, same size, deterministic) or add a roughness-map keyword. Either is a format derivation, not a texture cut.",
+   "Normal scale 0.16 (_BumpScale), base colour #afbea1 on leaves, white on petals, soil maps on DK_Soil_TB (normal 0.4)."
+  ],
+  "setpass": "One new keyword set (vertex colour + normal + mask + cull off) for leaf and petal: forward SetPass +1, shadow +1 (cull off). The lamps' chrome and opal can map onto the kit's existing DK_Chrome / DK_Lamp_Deco (0 new). Not measured.",
+  "start_now": "Can start in parallel: the candidate FBXs and the material spec are in out/decokit/troughs077/Models and briefs/077/troughs/metrics.json."
+ },
+ "textures": {
+  "new_MiB": 0.0,
+  "note": "every piece shares the troughs' atlas v2 + soil set (9.0 MiB with mips, BC7/BC5, counted once in briefs/077/troughs/metrics.json); the lamps are untextured"
+ },
+ "alpha": "none anywhere: opaque curved meshes (testbed opaque: true)",
+ "shadows": "leaves, stems, petals and lamps cast; soil does not",
+ "lights": {
+  "globe_lamps": "4 point lights, #fff1d8, range 5.8 m, decay 2, no shadows, at 2.31 m (testbed intensity 0 by day): night only, a per-pixel cost in their 5.8 m radius (Glint)"
+ },
+ "not_ported": [
+  "records_tower.py and cafe_upper.py embed planting() too (the Records Office crown trough and the caf\u00e9 roof trough): still domes, not in this brief's list",
+  "the testbed's two island palms (fountain-garden-layout palms on islands 0 and 1): our PlanterArc has none; a placement decision",
+  "OvalPlanter (civic-monument) has no dome planting (soil only)"
+ ],
+ "provenance": {
+  "sources": {
+   "testbed/src/cafe-garden-composition.js": "1698822e17b3e6aa8d8e34b0c00e8a6baece9c27fa2e66185b2b27208f821cd9",
+   "testbed/src/flower-look-shapes.js": "5f63e30ed3c6ab18051fbaae92e189cbcdbb615f06c1e31a30dd61dc7c48a840",
+   "testbed/src/garden-botanical-geometry.js": "a5c083357de2ce9e9ea6ba14658b98e42a67f83719269651cb2a1a96f6be0e03",
+   "testbed/src/cafe-botanical-geometry.js": "432d0ae591b324050e8fac827d2f940ca8585672afa91b6f1e0703317923c6ae",
+   "testbed/src/garden-stem-geometry.js": "d34dcd1f9c32d036cd6e101672da6c0f7b0642f0823d07ba3154005cb4d1284d",
+   "testbed/src/cafe-bed-geometry.js": "38b08a6b0bae95849393478d8f82a75ea0cccf947f12abb84f25e9ec51201f31",
+   "testbed/src/garden-render-batches.js": "c231ab67b8600532ff6f586b08e7ee7482af7f60ede6d5b06d7af6f1235877ad",
+   "testbed/src/garden-runtime.js": "d7fe5b48f4a67538a831ac010dc17373fb1df5125a9a40c1ad6905a0bb2dfdbf",
+   "testbed/src/garden-cache.js": "20d7766927bb5b25fb2c7b8e3433d4fb925bea623fa4884adfa45c5b0e4d1894",
+   "testbed/src/fountain-garden.js": "c373c5ac01e197677bd2d63e48a4980de71135eeed2a9de8f11f3c40ebbc119c",
+   "testbed/src/fountain-garden-layout.js": "269c34cf3006bca7c35ba69f20d889b7626a8604142646420e662fa1a113c534",
+   "testbed/src/fountain-garden-lights.js": "10fb4ccafb6435a1f0219a6f548af977d1f0fc50d589981aa4804b3f65692053",
+   "testbed/src/civic-planting-layout.js": "a4f8a6b91864d6d31d095963cf359c2fcb312772d954d5a883f25aa7a6c01932",
+   "testbed/src/flower-bed-layout.js": "62cd5b99a722bc01ec82caf99187999c21adc54a4737c34122b8c851c61b22db",
+   "testbed/src/civic-district-look.js": "d1dc8c5fb43a1eba7d22cb3c5c22be823bc846dc013152a6ff9396978f61d85f",
+   "testbed/src/civic-paving-material.js": "60ed9d0a8678c9d518966e891f7140883d6a85cf3fabccad597d4ffaddb51b9f"
+  },
+  "generator": {
+   "tools/decokit/domes077.ts": "3b4eb60f44dbd425ddcb74ad919ef017ea5f8e67db23ba5e57a15e6c04d8b27a",
+   "out/decokit/troughs077/paths.json": "ad5c33dedd1a60eebf84af235e09632da2d054b75776a921698c9638be3de7eb",
+   "tools/decokit/domes077.py": "fc52830ee1248c2f448f0cc53191aca19087506303e7741efeb7d8f903ce6808",
+   "tools/decokit/domes077_paths.py": "aaa414077fcf827222ed18dc262c7adeaa6c693902a44de4e644e2686e9413aa",
+   "tools/decokit/review077_domes.py": "4ccfaa2c83c347ecb02149466f8af5f9f350d2b74ac5a5d47827abffde2def46",
+   "tools/decokit/review077_domes_page.py": "3e2288c4c4676e6b41e10d0704eed7413c3dfe18aad4f7eef2d135b7a51719d6",
+   "tools/decokit/troughs077_lib.py": "427aa115fb6aab2580545ebbc15c2672f0e78a030b554f3503418665cd956627"
+  },
+  "bins": {
+   "PlanterRun_2_A_TB.bin": "c65771bcd3f14cbb153cceb1a1c20e895926300ba602898cdbeb50352758803a",
+   "PlanterRun_2_B_TB.bin": "4d429420accdad91979a8984817757496d771e264ae8c1376391e4193798519e",
+   "PlanterRun_2_C_TB.bin": "8afd70e07300a42d54926c63cadfa310971aff3ac2b8995735c981e61af4849e",
+   "PlanterRun_Corner_A_TB.bin": "07ba12fc5584b894ae0d3fd09ded1e629e8e51e197507c79c0e0f6559bb81d54",
+   "PlanterRun_Corner_B_TB.bin": "02f1221a818f82b06cc1bb7fc90609644a69fa9e0c9d53978d62f6618e5803dc",
+   "PlanterRun_Corner_C_TB.bin": "63e85973b69ff0364f201a8a19f86ed83b17d21d4402471723a4d2429729c77e",
+   "PlanterRun_End_A_TB.bin": "95ce386161bb833c8458f0a5a1d5d65ba7c3d37c96856972f046916bb0123b13",
+   "PlanterRun_End_B_TB.bin": "02a77da197196bedebf857cfb70f198dee98f6f1c26efeca8786b4dd2545e8c8",
+   "PlanterRun_End_C_TB.bin": "4a21519ce3d0d1594f56079faea3eca2436d7167faab375708ac372b34f7e446",
+   "BedTuft_A_TB.bin": "de05606cf7eb05610dc7e0a09a1703b2b40d8bfaffc46d7ab5217a5d7108f9d6",
+   "BedTuft_B_TB.bin": "6d5867953ed8eca170df097ae102232943f2b32ae18e42b3c44f1ee4d64fddd9",
+   "BedTuft_C_TB.bin": "9204d1ed4d115fad4345bda95c1b43fd698e605c31d0141f0de1d23686e50650",
+   "CivicBed_civic-facade-southwest_TB.bin": "5b12799cf9ad0180dee3259bb2db401ac2bbb359175ca4d396588bc35aab5c0f",
+   "CivicBed_civic-facade-southeast_TB.bin": "b79a0f41618071a83d4eb47ac7016a064297b6ddbb735a04366e52b7153310a4",
+   "CivicBed_civic-office-west_TB.bin": "b52e72f61bed1aae4af9028b1e6a9319bb5f932b4318b4a2a84be2e6323454af",
+   "CivicBed_civic-office-north_TB.bin": "130dec738966672a4ee4fe710a98291cc32e3efd25dfa552d95ec33f41d2a112",
+   "CivicBed_civic-dropoff-west_TB.bin": "7be01b08ccc3e53e8a8cbf5a1332d22865019eaf1236f9e749a51542bc2c1296",
+   "testbed_civic_beds.bin": "b18b239ffe45c3982e899990c67dfb4eaf05becd6354f95c27c6a08eca39b2a0",
+   "PlanterArc_TB.bin": "91dda792613f1bf624af01eb1789001402679d2f76fc1f5ff6e06b65ad4741d9",
+   "testbed_fountain.bin": "7c18848996fa94d823ec4ee1a794896fbf3088eb315c9e73d9c4b1d95d8e4ab2",
+   "GlobeLamp_TB.bin": "f77441ddd0111aa0b75dc38929d55224dbb4f6b7b9d9088c6e83d2860afaea76",
+   "CafeTerrace_Planting_TB.bin": "5d6a8a39f02d15fe319ded8994d8dc8346a11f5ecd74c680803712f370a31680"
+  }
+ }
+}

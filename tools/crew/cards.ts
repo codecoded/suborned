@@ -25,8 +25,9 @@ const roles: Role[] = section('§14').split(/^### /m).slice(1).map(block => {
   return { name, job, model, fields: rest.filter(l => /^[a-z]+: /.test(l)).map(l => [l.slice(0, l.indexOf(':')), l.slice(l.indexOf(':') + 2)] as [string, string]) };
 });
 
-// Claude mapping stays unchanged. Codex inherits the selected session model and effort.
-const MODEL: Record<string, string> = { 'Opus 5.5': 'opus', 'GPT 6.1 Sol': 'sonnet' };
+// Every Claude role runs on Opus 5.5 at medium effort (Sky, 2026-10-26: "change the subagents to be opus 5.5 medium"). Codex inherits the selected session model and effort.
+const MODEL: Record<string, string> = { 'Opus 5.5': 'opus', 'GPT 6.1 Sol': 'opus' };
+const EFFORT = 'medium';
 // Web search and fetch for every role (Sky, 2026-10-15: the GDD doesn't cover a project this complex). runAgent pipeline calls stay tool-less.
 const WEB = ['WebSearch', 'WebFetch'];
 const WORK = ['Read', 'Edit', 'Write', 'Bash', 'Glob', 'Grep', 'StructuredOutput', ...WEB], REVIEW = ['Read', 'Bash', 'Glob', 'Grep', 'StructuredOutput', ...WEB], UNITY = ['mcp__unity'];
@@ -75,10 +76,11 @@ function card(r: Role, provider: 'claude' | 'codex' = 'claude'): string {
 name: ${agent(r)}
 description: "${r.job} (${r.name}). Owns: ${field(r, 'owns').replace(/"/g, "'")}"
 model: ${MODEL[r.model] ?? 'inherit'}
+effort: ${EFFORT}
 tools: ${(TOOLS[r.name] ?? WORK).join(', ')}
 ---
 # ${r.name} · ${r.job}
-GDD model: ${r.model}${MODEL[r.model] === 'sonnet' ? ' (target); runs on Claude sonnet for now' : ''}. Generated from ${gddPath} by tools/crew/cards.ts; edit the GDD, never this card.`
+GDD model: ${r.model}${r.model !== 'Opus 5.5' ? ' (target); runs on Claude Opus 5.5 for now' : ''}, effort ${EFFORT}. Generated from ${gddPath} by tools/crew/cards.ts; edit the GDD, never this card.`
     : `# ${r.name} · ${r.job}\nGDD model preference: ${r.model}. This Codex role inherits the session's selected model and reasoning effort. Generated from ${gddPath} by tools/crew/cards.ts; edit the GDD, never this card.`;
   return `${preamble}
 

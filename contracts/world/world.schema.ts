@@ -14,12 +14,19 @@ export type World = {
   view: { yaw: number; pitch: number; zoom: number; focus: V }; // play camera: compass yaw (0 = north), pitch, ortho size
   ground: {
     roads: Road[]; foot: Road[]; medians: Mass[]; circuses: Circus[];
-    water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`
-    pieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces, each with a kit ref (kinds kerb, pave-flags, tree-pit, drain, manhole, tactile, terrazzo): paving laid on the plot slabs and the carriageway, not furniture; z = the piece's base. Brief 028 Road: and the road finish (kinds road-ribbon, road-shoulder, road-pinstripe, road-lozenge, road-seam; ids street/roadfinish/<kind>-<n>): ribbon, shoulder and pinstripe lie along their kerb face with `yaw` = atan2(n.x, -n.y) for n the unit normal into the carriageway and `kit.scale[0]` stretching the 6 m piece to its span (z 0, a kerbed bay's floor 0.02, the pinstripe at the walking surface beside it: 0.18, 0.02 or -0.03); a lozenge lies along its carriageway's middle line, a seam across it (`kit.scale[2]`). Only road finish and capstone kinds are drawn from here; ground.roads[].surface and kerbSurface carry the look keys of the carriageway and its kerb cap (streetscape.roads.finish)
+    water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`. Brief 075 remap (tools/world/gen/oldtown/ground.ts, a plan with `oldtown` only): ids `oldtown/*` are the old town's ground: flats = lawn borders (`bed-kerb`) and lawns (`park`) on every rectangular park plot, Orbit Gardens' terrazzo paths, the harbour terrace and promenade (`flags`) and steps band (`limestone`); water = the gardens' basin and canal (walkers keep off it); quays = solids drawn and read by nothing else: the basin and canal coping and the quay coping (`granite`), the basin's terrazzo ring, the circus pavement ring (`pavement`)
+    pieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces, each with a kit ref (kinds kerb, pave-flags, tree-pit, drain, manhole, tactile, terrazzo): paving laid on the plot slabs and the carriageway, not furniture; z = the piece's base. Brief 028 Road: and the road finish (kinds road-ribbon, road-shoulder, road-lozenge, road-seam; ids street/roadfinish/<kind>-<n>; road-pinstripe retired 072-G, never exported): ribbon and shoulder lie along their kerb face with `yaw` = atan2(n.x, -n.y) for n the unit normal into the carriageway and `kit.scale[0]` stretching the 6 m piece to its span (z 0, a kerbed bay's floor 0.02); a lozenge lies along its carriageway's middle line, a seam across it (`kit.scale[2]`). Only road finish and capstone kinds are drawn from here; ground.roads[].surface and kerbSurface carry the look keys of the carriageway and its kerb cap (streetscape.roads.finish)
     plots: Mass[]; // one 0.18 m pavement slab per plot (the ground a plot stands on, courts and setback strips included)
+    footways?: Footway[]; // brief 061: the continuous footway at each gate's lane mouth (present when the plan carries streetscape.continuousFootway): the table is also a flat in `flats` (id `<footway id>/table` under ground/), at the pavement top, so the walk floor and the audits read it as floor
+    /** Brief 075 (the 1950s tram street, tools/world/gen/street/tramstreet.ts): the kerbside strip's bays on every tram street (plan streetscape.sections.tramStreet): `parallel` (the Boulevard, 6.0 x 2.4 against the kerb), `loading` (12 m, at a serviceBay trade) and `angle` (the primaries' 30-degree stalls 2.6 x 4.8; `yaw` = the stall's axis, the way a car noses in). Marks only, at `level` on the carriageway: parked cars are life's (Keel, Pulse). Not in counts.ground until the Unity reader draws them. */
+    kerbside?: KerbBay[];
+    /** Brief 075: the primaries' kerbed palm islands in the kerbside strip (2.0 along x 4.8, pavement top, ids ground/island/<road>/<n>), each carrying a palm (and a lamp on alternate ones) in `street`. Not in counts.ground until the Unity reader draws them. */
+    islands?: Mass[];
     drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
-  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[] };
+  transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[]; /** brief 075 roll-out (the sky track to the old reel's profile, tools/world/gen/street/skytrack.ts): the old pylon stacks at the plan's pylons and the beam sweep data; absent when the stack is not adopted (a builder then draws skyRail's ribbons and posts) */ skyTrack?: SkyTrack; /** brief 075: no overhead wires (Sky 2026-10-28, "no overhead wires though!"): there is no `wires` key; world rule TS-W0 fails an export that carries one, a TramWire_* kit ref or a span-pole item */ };
+  /** Brief 075: presentation dressing only, never sim data (the sim reads the plan, the mission and the civic block, never this export; live trams are Pulse's timetable and Latch's mover): one parked Tram per line at its first stop. */
+  dressing?: { trams: ParkedTram[] };
   buildings: Mass[]; // generated building parts (podium, body, upper, tower-lower, tower-upper), id bld/<plot>/<n>/<part>; none under a megastructure
   roofs: Roof[]; // one programme per building roof
   skins: Skin[]; // the procedural facade of every plot building (grammar §2-3): window family, accent and per-face bay rhythm; Unity draws walls the kit does not cover from these, never a glass grid
@@ -30,17 +37,26 @@ export type World = {
   street: StreetItem[]; // trees, lamps, furniture, transit kits, station entrances, watchers
   crossings?: Crossing[]; // kerb-to-kerb crossings (present when the plan carries streetscape.crossings.strip): each is its landings (keep-clear footprints, not drawn), the strip between them, and its parts (street items: light bars or dots, signal orbs, kerb studs, inlay arcs)
   /** The coverage rules' doing (streetscape.crossings.coverage.rules; present when the plan carries them): the crossings each rule placed, the twins dropped (each named with the crossing it kept), the furniture moved out of a landing's way, and the sites left out for want of ground, each with why. SF-22 holds the crossings to it. */
-  crossingRules?: { sites: Record<string, number>; twins: string[]; moved: string[]; left: string[] };
+  crossingRules?: { sites: Record<string, number>; twins: string[]; moved: string[]; left: string[]; /** footway sites an existing crossing serves (the civic block's own), each named with it: `<site id>: <crossing id>` */ served?: string[] };
   levels: Level[]; // standards.levels.list: street, deck, concourse; decks carry their columns
   megastructures: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; // gateway: a kit arch standing on the megastructure's quay (its yaw turns the piece's +X); parts: extruded rings (bodies, halls, legs); prims: cranes, saucer, vaults
   civic: Mass[]; // the civic block: buildings, structures and objects at exact size
   takedown?: Takedown; // brief 013 (Vantage C, Pulse, Motive §8): where a body can be hidden, where a witness can report, where the response starts; derived by tools/world/gen/street/quiet.ts, present when the civic block is
   landmarks: Landmark[];
   signatures: SignatureOut[]; // plan signatures[] (SpaceHQ): the kit piece on its ground, no plot building on `ground`
+  /** Brief 075-C, landmark livery (tools/world/gen/livery.ts, rule LV-1): the material slots each placed landmark piece paints, as `<slot>__<colour>` keys Latch swaps per instance. */
+  liveries?: Liveries;
+  /** Brief 075-F (tools/world/gen/billboards.ts postersOf, Vela's kit.json `posters`): the ad each placed board shows and the poster sheet of each poster piece, per instance; Latch swaps each `slots` base material for its key's, as the liveries. Without it every board shows the canonical cell. */
+  posters?: { placed: PosterPlaced[] };
   gates: Mass[];
   horizon: Horizon; // derived (grammar §9): the sea plane and the distant band of kit pieces beyond the district; nothing here is in the plan
   counts: Record<string, number>; // elements per layer, as the Unity build must report them
 };
+
+/** Brief 075: a kerbside bay (ground.kerbside). */
+export type KerbBay = { id: string; kind: 'parallel' | 'angle' | 'loading'; road: string; ring: V[]; yaw: number; level: number };
+/** Brief 075: a parked tram (dressing.trams): the kit Tram with its pivot at `kit.at` (the footprint centre 0.108 m ahead of it along the track), +Z the nose, on the rail top `z`. */
+export type ParkedTram = { id: string; line: string; stop: string; kit: KitRef & { at: V }; z: number };
 
 /** Carriageway ribbon along `line` at `level`, with kerb strips either side. Foot paths use kerbWidth 0. */
 export type Road = { id: string; surface: string; kerbSurface: string; line: V[]; width: number; level: number; kerbWidth: number; kerbHeight: number };
@@ -51,14 +67,34 @@ export type Flat = { id: string; surface: string; ring: V[]; level: number };
  *  flat it reaches (`civic/bay/<bay>`); `kerb` = the segment of the road's kerb the drive crosses, which is DROPPED there: along it the kerb strip (`kerbWidth` m wide, the road's) has height `kerbHeight` (0 = flush
  *  with the carriageway), so the way runs level from the road into the drive. Nothing stands on it and street items keep 2 m off it (SF-2); no pylon (SF-18) and no crossing (SF-20) either. */
 export type Drive = { id: string; surface: string; ring: V[]; level: number; road: string; to: string; kerb: [V, V]; kerbWidth: number; kerbHeight: number };
+/** A continuous footway (brief 061; plan standards.streetscape.continuousFootway): a gate's lane mouth where the pavement of the higher road `road` runs on across the lane `lane` at kerb height and the lane's traffic gives way. All rings are counter-clockwise, the lane as wide as its carriageway.
+ *  `frame`: `origin` = the point of the higher road's near kerb line on the lane's axis, `along` = the kerb line's direction, `into` = the unit vector from the kerb into the lane (away from the carriageway); `half` = half the lane's width; `depth` = how far the table reaches into the lane.
+ *  `table`: a flat at `level` (the pavement top, 0.18) in the plots' paving `surface`, between the two plot corners; the world also lists it in ground.flats (id `table.id`). `ramp`: the lane's carriageway rising from 0 at `depth + run` into the lane to `level` at `depth` (its top on the table's back edge; 1 in run/rise);
+ *  `lip`: the table's front edge on its side of the kerb line, `d` wide, falling `drop` from the table to the carriageway. `bands`: flush threshold strips, one across the lane at the ramp's foot (level 0) and one along the table's front edge behind the lip (level `level`). `posts`: the lane's two bollards (street items
+ *  `street/footway/<gate>/post-a|b`), at the table's back corners just outside the lane's kerb faces. No kerb return stands at the mouth's corners, the upstand kerb is not laid across it, and the higher road's light ribbon runs straight on. */
+export type Footway = {
+  id: string; gate: string; lane: string; road: string; level: number; frame: { origin: V; along: V; into: V }; half: number; depth: number;
+  table: { id: string; ring: V[]; surface: string };
+  ramp: { ring: V[]; run: number; rise: number; surface: string };
+  lip: { ring: V[]; d: number; drop: number; surface: string };
+  bands: { ring: V[]; level: number; surface: string }[];
+  posts: V[];
+};
 /** Extruded footprint from base to base + height. */
 export type Mass = {
   id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number };
+  /** Brief 074, the building's colourway: the facade.json wall family (`unity/Assets/Suborned/Editor/World/facade.json` `families` key: cream | peach | mint | sky | sand | ivory | blush | powder | butter |
+   *  lilac | apricot | seagreen; `civic` on the civic block's café and Records Office masses). One per building (FacadeKit.HostOf: the mass id less `/podium`, `/body`, `/upper`, `/lower`), on every
+   *  mass of it, chosen by the export (tools/world/gen/colourways.ts: the area's family weights, seeded by the building id; no two street neighbours share one). Unity reads it in place of its own pick
+   *  (wall, plinth and roof from that family). Absent on masses that are not buildings (megastructure parts, gates, civic furniture). Checked by CW-1. */
+  colourway?: string;
   /** Civic only (brief 008 B3): the play camera's architecture fade may thin this mass (a parasol, a frontage, a shelter: it stands between the camera and a person). */
   fade?: true;
   /** Civic only: the id of the kit mass that is this mass's ground storey. This mass starts above it (its `base` is that piece's top): draw no plinth, shopfront or ground floor at its base. */
   groundBy?: string;
-  /** Civic only (brief 028): this mass stays for its id, footprint and clearance but draws nothing: the piece beside it carries it (`BoardingPavilion_TB_Square` has its own supports, so the two `square-pavilion-support-*` piers are hidden). */
+  /** This mass stays for its id, footprint and clearance but draws nothing: a piece carries it. Civic (brief 028): `BoardingPavilion_TB_Square` has its own supports, so the two
+   *  `square-pavilion-support-*` piers are hidden. Buildings (brief 075-C, rule T-K1): a tower site's stand-in `tower/<site>/lower` and `/upper` where the site's regenerated kit
+   *  piece stands (signatures tower/<site>, source kit); the every-face pass dresses none of their faces and the coverage check counts them dressed by that piece. */
   hidden?: true;
   /** Civic only: a material this mass draws in place of its kit piece's own, by the piece's material slot (`{ DK_Water: 'DK_Pool_Civic' }` on the atom fountain). Absent = the piece's own. */
   materials?: Record<string, string>;
@@ -70,12 +106,20 @@ export type SkyRail = {
   id: string; surface: string; pylonSurface: string; line: V[]; pylons: V[];
   height: number; width: number; depth: number; pylonSize: number; ground: number; spacing: number; capDepth: number;
 };
+/** Brief 075 roll-out (tools/world/gen/street/skytrack.ts): the old sky track. `beam`: Latch sweeps the section (the kit piece `piece` carries it and its materials, metric UVs: u = metres along x uPerMetre)
+ *  along each beam's centre `line` (plan frame, 2 m steps) with its top at `top`: width x depth, filleted corners `fillet`, a teal stripe band `stripe` [z0, z1] below the top standing `stripeProud` off each flank.
+ *  `pylons`: one per plan pylon (transit.skyRail[].pylons, unmoved), the old stack: `foot` (SkyRail_Pylon_Tall or _Foot) on the ground at `z`, `shaft` (SkyRail_Pylon_Shaft, scale[1] = its height) from the foot's
+ *  top, `head` (SkyRail_Pylon_HeadTwin on a double path, _Head on a single one) hanging from the beam's underside at `z` (its top); kit +Z along the track (yaw as every KitRef). */
+export type SkyTrack = {
+  beam: { piece: string; width: number; depth: number; fillet: number; stripe: [number, number]; stripeProud: number; uPerMetre: number; beams: { id: string; line: V[]; top: number }[] };
+  pylons: { id: string; at: V; yaw: number; ground: number; on: string; /** absent: no plinth fits, the bare shaft runs to the ground */ foot?: KitRef & { at: V; z: number }; shaft: KitRef & { at: V; z: number }; head: KitRef & { at: V; z: number } }[];
+};
 export type Level = { id: string; name: string; height: number; decks: Deck[]; stairs: Stair[] };
 /** Slab with its top at the level height. `group` = the walkable piece the deck belongs to (decks touching at one level share it). */
 export type Deck = { id: string; surface: string; columnSurface: string; ring: V[]; columns: V[]; thickness: number; columnSize: number; ground: number; group: string };
 export type Stair = { id: string; surface: string; foot: V; head: V; bottom: number; top: number; width: number; riser: number };
 /** shape: sphere (a ball of `radius` standing on `base`) or cylinder (radius, base → base + height). */
-export type Landmark = { id: string; surface: string; shape: 'sphere' | 'cylinder'; centre: V; radius: number; base: number; height: number; source?: Source; kit?: KitRef; kits?: (KitRef & { at: V })[]; why?: string }; // why = what stopped the kit piece fitting; kits = several pieces on one landmark (the skyport's pads, standing on base + height)
+export type Landmark = { id: string; surface: string; shape: 'sphere' | 'cylinder'; centre: V; radius: number; base: number; height: number; source?: Source; kit?: KitRef; kits?: (KitRef & { at: V })[]; why?: string; gateway?: KitRef & { at: V } }; // why = what stopped the kit piece fitting; kits = several pieces on one landmark (the skyport's pads, standing on base + height); gateway = the landmark's arch (plan landmarks[].gateway: the Crown Avenue arch for crown-vista) standing on the pavement at `at`, away from the landmark's own disc, turned by its yaw (kit +X = plan +x at 0)
 
 /** Primitive solid. Plan frame; `c` = centre in plan, `base` = lowest z, `yaw` = radians from +x toward +y.
  *  size [a, b, h]: a along yaw, b across it. box: a × b × h · cyl: a = b = diameter · sphere: a = b = h = diameter (base = bottom) ·
@@ -88,10 +132,30 @@ export type Roof = {
   kit?: KitRef & { at: V }; // the programme's kit piece (hover-pad: SkyPad_Roof) standing on the slab at `at`; its procedural stand-in is then not in `parts`
   crown?: KitRef & { at: V }; // grammar §6: the kit crown (Crown_*) at the roof centre; absent on plan tower sites (their regen order carries the crown)
   form?: 'terrace'; // a stepped garden terrace: too shallow for the kit's programmes, planted along its length
+  /** Brief 075 remap (tools/world/gen/roofline.ts, the old DecoKitRoofline): programme `roofline` = the roof split along its wall into plots, each with its theme (lido, tennis, garden, cafe, glass, machine, sun, planters, mast) in the roof's frame (`c` its centre, `size` [along, across], `yaw` = the roof's; +across = toward the street). */
+  plots?: { id: string; theme: string; c: V; size: V; yaw: number }[];
+  /** The roofline's kit pieces at true size, each standing at `z` (deck, lawn or bare slab), `at` = pivot as every KitRef; drawn like `kit`. */
+  kits?: (KitRef & { at: V; z: number })[];
 };
 /** A kit facade piece on a building's street face. `a`→`b` is the span of the face it covers (a corner's `a`→`b` is its front cell; its side cell runs 8 m × scale from the vertex along the leaving edge); `kit.at` = footprint centre, `base` = pavement top.
  *  Bay: 6 m × x wide, body 14 m deep behind the face, a canopy (size z − 14) in front. End: closes a run at a party wall or court. Corner: 8 × 8 m quarter round at a convex 90° vertex. `edge` = index of the building ring's edge. */
-export type Facade = { id: string; building: string; form: 'bay' | 'end' | 'corner'; storeys: number; kit: KitRef & { at: V }; base: number; a: V; b: V; edge: number };
+export type Facade = {
+  id: string; building: string; form: FacadeForm; storeys: number; kit: KitRef & { at: V }; base: number; a: V; b: V; edge: number;
+  /** Brief 072-C (the every-face pass, tools/world/gen/faces.ts): the wall face this piece dresses, `<mass id>#<edge>` of that mass's ring (a pier: `#v<vertex>`). Absent on the wave-2 street pieces. */
+  face?: string;
+  /** Brief 072-C/D (briefs/072/redline/plan.md §6), the every-face modules: `family` (side | alley | stack-base | stack-mid | stack-top | corner-out | corner-in | pilaster),
+   *  `service` = the SERVICE rule that made it an AlleyWall (court | yard | back-to-back), `normal` = the face's outward normal, `column` = the bay position its storey modules share
+   *  (`id`, `storeys` = modules in it: Latch bakes one prefab per family, storeys and colourway), `casts` = its shadow policy (proxy-l2: an L2 proxy casts, the module does not). */
+  family?: 'side' | 'alley' | 'stack-base' | 'stack-mid' | 'stack-top' | 'corner-out' | 'corner-in' | 'pilaster'; service?: 'court' | 'yard' | 'back-to-back'; normal?: V; column?: { id: string; storeys: number }; casts?: 'proxy-l2' | 'none';
+  /** On every facade piece (tools/world/gen/faces.ts dressFields): `lod.set` = the piece whose L0..L2 chain draws it (`levels` of them), `category` = the catalogue's switch category, `class` = the
+   *  distance class of an every-face piece (kit.json `lodClasses`: bay3 | bay4 | storey | cornerStorey | landmark | crown); `combine.block` = the plot (or tower site), `combine.cell` = the 32 m HLOD cell
+   *  [floor(x / 32), floor(y / 32)]; `colourway` = the building's colourway (brief 074: the facade.json wall family its building's masses carry, `buildings[].colourway`; `base` only on a piece whose building has none),
+   *  the material set the piece is drawn in; `instance` = the GPU instancing key, `<piece>|<colourway>`. CW-1: a piece's colourway is its building's. */
+  lod?: { set: string; levels: number; category: string; class?: string }; combine?: { block: string; cell: [number, number] }; colourway?: string; instance?: string;
+};
+/** bay, end, corner: the wave-2 street pieces (facades.ts). Brief 072-C (faces.ts), `base` = the module's foot: side = a SideBay (a wall the public sees), service = an AlleyWall
+ *  (a service back), stack = one storey band of SideBayStack (walls over 4 storeys, upper tiers, party walls above a lower neighbour), pier = a CornerPier at a corner (`a` = `b` = the corner), pilaster = a SidePilaster taking the rest of a run no whole number of 6 m modules fills. */
+export type FacadeForm = 'bay' | 'end' | 'corner' | 'side' | 'service' | 'stack' | 'pier' | 'pilaster';
 /** A procedural facade skin (tools/world/gen/skins.ts). family: ribbon | porthole | balcony | shed (no curtain wall, ever). accent: the look surface of the
  *  building's one accent role (its speed bands carry it). glass: clear (`surface` 'glass'), ribbon width = share x bay width, never wider than maxPane, sill and
  *  head above each row's floor, set back `reveal`, chrome mullions every `mullion` m. pier: the stone between ribbons, with a chrome-or-stone `frame` round each. */
@@ -159,40 +223,41 @@ export type Connector = {
 /** A crossing (streetscape.crossings.strip): a `kerb` crossing is two landings (one on each kerb of `road`) and the `strip` across the carriageway between them,
  *  `line` its centre line from one landing's kerb point to the other's, `width` across it; `refuges` = the rings of the median the strip crosses where the median is refuge width, where people wait;
  *  `control` = `signal` where the plan says the road class has one: the crossing then carries signal orbs (a zebra no longer exists, brief 009). A `stop` or `bank` crossing is one landing (the way from a tram platform,
- *  or from a station bank, across the road): `line` runs along its long axis (`size[0]`), `strip` is the landing's own footprint, and it has no kerb ends, so no orbs, studs or arcs.
- *  `items` = the ids of every street item that is a part of this crossing, in drawing order (the two light lines, then orbs, studs, arcs); each part names it back in `crossing`. A part is in exactly one crossing.
+ *  or from a station bank, across the road): `line` runs along its long axis (`size[0]`), `strip` is the landing's own footprint, and it has no kerb ends, so no signal heads.
+ *  `items` = the ids of every street item that is a part of this crossing, in drawing order (the two light lines, then the signal heads); each part names it back in `crossing`. A part is in exactly one crossing.
  *  `walk` = the walk-axis yaw (plan frame, radians): the way across, from `line[0]` to `line[1]`. The light lines run along it, kerb to kerb; no piece lies across it (SF-20 holds every light piece's long axis off the carriageway's axis by 30 degrees or more).
  *  Nothing here is a slab: the landing is not drawn, the paving under it is the street's. */
-export type Crossing = { id: string; kind: 'kerb' | 'stop' | 'bank'; road: string; items: string[]; landings: Landing[]; line: [V, V]; strip: V[]; width: number; walk: number; control?: 'signal'; refuges: V[][] };
+/** A signal crossing's cycle (brief 061, plan strip.signal.cycle; look only, the sim and the people read nothing from it): seconds. WALK `walk`, CLEARING `clearing` (= ceil(W / 1.4 m/s), W = the crossing's kerb-to-kerb length), STOP `stop` (= 14 + clearing), its last `arrive` seconds shown as ARRIVING.
+ *  The cycle is walk + clearing + stop; the phase at mission second t is (t + offset) mod cycle, offset a whole number of seconds in [0, cycle) hashed from the crossing's id. Every head of the crossing shows the same state. Only a crossing with `control` has one. */
+export type SignalCycle = { walk: number; clearing: number; stop: number; arrive: number; offset: number };
+export type Crossing = { id: string; kind: 'kerb' | 'stop' | 'bank'; road: string; items: string[]; landings: Landing[]; line: [V, V]; strip: V[]; width: number; walk: number; control?: 'signal'; /** present with `control` (plan strip.signal.cycle) */ cycle?: SignalCycle; refuges: V[][] };
 /** Where people step on or off a crossing (a kerb crossing's two ends; a stop or bank crossing's one patch): the footprint `size` = [depth along `yaw` from the kerb, width along the kerb, 0.02] centred on `at`, `yaw` across the road,
  *  `z` the surface under it (the pavement top 0.18; a tram stop's patch lies on the carriageway at 0). Keep-clear only, NOT drawn: nothing stands within 2 m of it (SF-2), a pylon keeps 2 m (SF-18), a Handover point keeps its 1.2 m (CD-1);
- *  `id` = the id the old landing slab had. A kerb end's studs, arc and orb stand on it. */
+ *  `id` = the id the old landing slab had. A kerb end's signal head stands on it. */
 export type Landing = Pick<StreetItem, 'id' | 'edge' | 'at' | 'yaw' | 'z' | 'size'>;
-/** A signal orb's state, set by the plan (`streetscape.crossings.strip.signal.state`, `walk` at build) and switched by city life (Pulse, brief 005): every orb of a crossing shows the same one. */
+/** A signal head's state at build and in the editor (`streetscape.crossings.strip.signal.state`, `walk`); at run time the head shows the state its crossing's `cycle` gives at the mission clock (brief 061: WALK, CLEARING, STOP, ARRIVING; look only, Latch's SignalHead): every head of a crossing shows the same one. */
 export type SignalState = 'walk' | 'stop';
-/** `signal-orb` (brief 009): the SignalEye piece, a chrome orb hovering over a kerb end (`id` `<crossing>/signal/a|b`) or a refuge (`/signal/r0..`), a round display on each of its two faces showing the walking figure (`walk`) or the stop pictogram
+/** `signal-orb` (brief 009): the SignalLens piece (brief 061; before it, the SignalEye), a chrome lens hovering over a kerb end (`id` `<crossing>/signal/a|b`) or a refuge (`/signal/r0..`), a round display on each of its two faces showing the walking figure (`walk`) or the stop pictogram
  *  (`stop`, red is allowed on this display only), a thin beam from its underside down to a glowing disc on the ground (`halo`) where people wait.
  *  The item stands where the beam lands: `at` is the halo's centre (and the orb's, vertically above), `z` the ground there (= `halo.z`, the piece's pivot), `size` [halo diameter, halo diameter, height of the finial];
  *  the orb's centre hangs `hover` above `z`, `size` across (the diameter). `faces[0]` is the heading display A (the piece's front, +Z) looks along: the walk heading at this kerb end, toward the far kerb; `faces[1]` the way back (display B).
- *  The orb hangs overhead (canopy-class, exempt from the ground rules); the halo and the studs are ground items. Only the orb's body casts a shadow (the item's `castShadows`); the beam, halo and displays never do. */
+ *  The orb hangs overhead (canopy-class, exempt from the ground rules); the halo is a ground item (its ring in the paving). Only the orb's body casts a shadow (the item's `castShadows`); the beam, halo and displays never do. */
 export type Signal = { state: SignalState; hover: number; size: number; faces: [number, number]; halo: { at: V; z: number; r: number } };
 
 export type StreetItem = {
   id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id; surface = a look key (not enumerated here): `trim` by default, `park`, `enamel`, `crossing` for the landing patches of a plan without streetscape.crossings.strip, `glow` (light bars and dots), `inlay` (arcs), `orb` (signal orbs), `booth` for a phone booth, `tub` for a palm tub
   sight: 'blocks' | 'glazed' | 'open'; staffed?: { trade?: string; occupation?: string; hours: [number, number] | 'service' }; variant?: string;
-  /** A crossing's part (kinds `crossing-bar`, `crossing-dots`, `crossing-edge`, `crossing-stud`, `crossing-arc`, `signal-orb`): the crossing it belongs to. Every such part carries it. `yaw`: the way across (light pieces: their long axis; studs), the heading from the arc's centre toward the mouth corner it rounds (arcs),
+  /** A crossing's part (kinds `crossing-bar`, `crossing-dots`, `signal-orb`; the brass edge lines, kerb studs, inlay arcs and lit strip of brief 009 are gone, brief 061): the crossing it belongs to. Every such part carries it. `yaw`: the way across (light pieces: their long axis; studs), the heading from the arc's centre toward the mouth corner it rounds (arcs),
    *  the heading display A looks along (orbs); `z` the surface it lies on (an orb: the ground under its halo). */
   crossing?: string;
   /** `signal-orb` only. */
   signal?: Signal;
-  /** `crossing-dots` only: one module of a light line, a row of `n` flush light dots `d` across, `pitch` apart, along `yaw`, centred on `at`; `size` = [the module's length, its frame width, thickness]. (`crossing-bar`: one flush light bar, `size` = [length along `yaw`, frame width, thickness].) */
+  /** `crossing-dots` only: one module of a light line, a row of `n` flush light dots `d` across, `pitch` apart, along `yaw`, centred on `at`; `n` = dots in the 2 m or 1 m laying module; `size` = [the piece's length along the walk = module - pitch + seat width (1.8 or 0.8 m), the seat's width (0.30), thickness]; `at` is the module's centre, so rows laid end to end at the module step keep the pitch across every joint (brief 061, plan lightsFit). (`crossing-bar`: one flush light bar, `size` = [length along `yaw`, frame width, thickness].) */
   dots?: { n: number; pitch: number; d: number };
-  /** `crossing-arc` only: a quarter ring of seafoam inlay in the paving that rounds one corner of a crossing's mouth: the centre line of a band `w` wide at radius `r` about `at` (the circle's centre, which is the piece's pivot), swept `sweep` radians symmetrically about `yaw` (toward the corner);
-   *  `outer` = the outer radius including the brass hairline: the circle is tangent to the kerb line and to the strip's edge line. `size` = [outer, outer, thickness]. */
-  arc?: { r: number; w: number; sweep: number; outer: number };
   /** Parts of a crossing only: whether Unity casts a shadow from the item. The signal orb's body does (the piece's other parts never); every other part is flush paving or light and casts none. */
   castShadows?: boolean;
   source?: Source; kit?: KitRef; // wave 1: street furniture, plants, signs; absent on a layer the kit has not reached
+  /** Brief 075-F (tools/world/gen/billboards.ts, rules BB-1..BB-4): kind `billboard-pylon` stands on the ground (a Billboard_Pylon, `at` its pivot, `size` its footprint and height); kind `billboard-wall` hangs on a party wall above a lower neighbour: `z` = its foot, `edge` = `<mass id>#<edge index>` of the wall, `at` = its pivot (the piece's footprint centre + pivotOffset), its back in front of the wall modules. Both carry their kit piece; rooftop boards are `roofs[].kit` on the sign-frame roofs. */
   /** Brief 013: the item is a closed container that can hold a body out of every sightline (`holds` at a time), resolved from its kit piece's `tags.stash` (contracts/world/kit.json; a candidate piece too, so the world is right before Vela adopts it). Only `dumpster` today. Absent = it hides nothing. */
   stash?: { holds: number };
 };
@@ -244,3 +309,12 @@ export type ReportPoint = { id: string; kind: 'door' | 'call-box'; at: V; stand:
 export type Origin = { id: string; kind: 'dock' | 'post'; at: V; stand: V; item?: string; door?: string };
 export type Coverage = { samples: number; worstM: number; medianM: number; within: number; baselineWithin: number; baselineWorstM: number };
 export type WatcherNote = { id: string; kind: string; at: V; facings: number[]; range: number; coneDeg: number; item: string };
+
+/** Brief 075-C, landmark livery: `colours` = colour name -> hex (and a finish where the old reel set one; none = the slot keeps its own finish); `placed` = every placed piece that takes
+ *  livery: `host` = the export object holding the kit ref (landmark/sphere, signature/space-hq, tower/avenue-gate-w, mega/skyport-tower, a roof id), `ref` = the key path of the kit ref in it
+ *  (`kit`, `kits[1]`, `gateway`; `use` = the piece Unity places for that megastructure by its kit `landmark:<name>` tag), `piece` = the kit id, `slots` = kit material -> material key
+ *  `<slot>__<colour>` (074's colourway form; Vela's tinted material of that name). Derived from the catalogue by rule, never by hand. */
+export type LiveryPlaced = { host: string; ref: string; piece: string; slots: Record<string, string> };
+export type Liveries = { colours: Record<string, { hex: string; metallic?: number; smoothness?: number }>; placed: LiveryPlaced[] };
+/** One placed board or poster piece (`host` = the element whose kit ref it is: a roof, a street item, a civic mass) and what it shows: `key` an ad of kit.json posters.adOrder (a billboard) or the sheet 'A' | 'B' (AdColumn, SandwichBoard, Marquee_Cinema); `back` the ad on a pylon's back face; `slots` base material → material (empty: sheet A keeps the base). */
+export type PosterPlaced = { host: string; piece: string; key: string; back?: string; slots: Record<string, string> };

@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace Suborned.World.Play
 {
-    /// <summary>The game build (Aster, 2026-10-17): the HarbourDistrict scene with the Handover host installed (PlayInstall, as the Editor's
+    /// <summary>The game build (Aster, 2026-10-17; the old town from Sky, 2026-10-30): OldTown.unity with the Handover host installed (PlayInstall, as the Editor's
     /// Play uses it) and the engine bundle in StreamingAssets (the Suborned.Sim DLL is a plugin; StreamingAssets/sim carries engine.json,
     /// headless.json, the rulebook, people rules, text, site, people, provisional and takedown), a release macOS (Apple silicon) player in
     /// out/build/play/The Suborned.app. Only BuildPlayerOptions carry the build (EditorBuildSettings and the scene list are untouched); after
@@ -22,8 +22,20 @@ namespace Suborned.World.Play
     public static class GameBuild
     {
         public const string AppName = "The Suborned";
-        public static string Dir => Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "play");
+        public static string Dir => scratchDir ?? Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "play");
         public static string AppPath => Path.Combine(Dir, AppName + ".app");
+        /// <summary>A scratch build's folder (CliScratch), else null: the game build's own out/build/play.</summary>
+        static string scratchDir;
+
+        /// <summary>A scratch player for a proof between batches (Latch, host round 4 of batch 0.2.123): the same build into `-scratchBuild &lt;dir&gt;`
+        /// (default out/scratch/latch/build), taking no build number: tools/game/version.json and out/build/play are untouched, the app says
+        /// "&lt;next&gt;-scratch". Batch (Editor closed): Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Play.GameBuild.CliScratch</summary>
+        public static void CliScratch()
+        {
+            var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-scratchBuild");
+            scratchDir = Path.GetFullPath(i >= 0 && i + 1 < a.Length ? a[i + 1] : Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "scratch", "latch", "build"));
+            Cli();
+        }
 
         // A second player build in the same Editor domain ships a player whose URP pipeline fails to start (GPUResidentDrawer resources
         // null in GPUInstanceDataBuffer: a black screen; the build skips the shader pass, 1 warning and 1 MB lighter). The first build after
@@ -74,19 +86,21 @@ namespace Suborned.World.Play
             // brief 029: the fight range is rebuilt from Keel's range sites every build (seconds), so a new layout or piece never ships stale
             if (EditorSceneManager.GetActiveScene().isDirty) throw new InvalidOperationException($"Game: save or close {EditorSceneManager.GetActiveScene().path} first (the build rebuilds {RangeScene.ScenePath})");
             RangeScene.Build();
+            // Sky 2026-10-30: the game plays the old town (OldTown.unity: the swap, whose Handover zone is our builder's output). OldTownPlay.Rebuild's chain makes it; the host is installed there.
             var active = EditorSceneManager.GetActiveScene();
-            if (active.path != HarbourWorldBuilder.ScenePath)
+            if (active.path != OldTownPlay.ScenePath)
             {
-                if (active.isDirty) throw new InvalidOperationException($"Game: save or close {active.path} first (the build opens {HarbourWorldBuilder.ScenePath})");
-                if (!File.Exists(Path.Combine(Application.dataPath, "..", HarbourWorldBuilder.ScenePath))) throw new FileNotFoundException($"Game: {HarbourWorldBuilder.ScenePath} is missing; build the world first");
-                EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
+                if (active.isDirty) throw new InvalidOperationException($"Game: save or close {active.path} first (the build opens {OldTownPlay.ScenePath})");
+                if (!File.Exists(Path.Combine(Application.dataPath, "..", OldTownPlay.ScenePath))) throw new FileNotFoundException($"Game: {OldTownPlay.ScenePath} is missing; run the swap first (the batch's unity-world step)");
+                EditorSceneManager.OpenScene(OldTownPlay.ScenePath, OpenSceneMode.Single);
             }
             var scene = EditorSceneManager.GetActiveScene();
-            if (GameObject.Find(PlayInstall.RootName) is null || Object.FindAnyObjectByType<HandoverHost>() is null) { PlayInstall.InstallOpen(true); EditorSceneManager.SaveScene(scene); }
+            if (GameObject.Find(PlayInstall.RootName) is null || Object.FindAnyObjectByType<HandoverHost>() is null) OldTownPlay.InstallOpen();
             else if (scene.isDirty) EditorSceneManager.SaveScene(scene);
 
             Directory.CreateDirectory(Dir); builtThisDomain = true;
             var ver = Version.Next(); // Sky 2026-10-19: "need to be upping build numbers now": 0.2.<build>, counted in tools/game/version.json
+            if (scratchDir != null) ver.Suffix = "-scratch"; // a scratch build takes no number (CliScratch)
             BuildReport report; var product = PlayerSettings.productName; bool timing = PlayerSettings.enableFrameTimingStats;
             var bundleVersion = PlayerSettings.bundleVersion; var buildNumber = PlayerSettings.macOS.buildNumber;
             try
@@ -99,7 +113,7 @@ namespace Suborned.World.Play
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
-                    scenes = new[] { FrontEndBuild.ScenePath, HarbourWorldBuilder.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
+                    scenes = new[] { FrontEndBuild.ScenePath, OldTownPlay.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
                     target = BuildTarget.StandaloneOSX,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
@@ -111,8 +125,9 @@ namespace Suborned.World.Play
             EditorUtility.SetDirty(Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings"));
             AssetDatabase.SaveAssets();
             var s = report.summary; bool ok = s.result == BuildResult.Succeeded;
+            OldTownPlay.WriteContents(report, Dir);
             string post = ok ? Finish(ver) : "";
-            if (ok) ver.Commit(); // only a build that succeeded takes the number
+            if (ok && scratchDir == null) ver.Commit(); // only a build that succeeded takes the number (a scratch build never does)
             var line = $"Game: build {ver.Full} ({ver.Recording}, sim {BuildStamp.Sim}, {ver.Sha}{(ver.Dirty ? "+" : "")}) {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; engine {b.Source}, DLL {b.DllSha[..12]}; {post}";
             File.WriteAllText(Path.Combine(Dir, "build.json"),
                 $"{{\n \"result\": \"{s.result}\",\n \"at\": \"{DateTime.UtcNow:o}\",\n \"seconds\": {s.totalTime.TotalSeconds:F0},\n \"app\": \"{Esc(AppPath)}\",\n \"version\": \"{ver.Full}\",\n \"build\": {ver.Build},\n \"recording\": \"{ver.Recording}\",\n \"sim\": \"{BuildStamp.Sim}\",\n \"sha\": \"{ver.Sha}\",\n \"dirty\": {(ver.Dirty ? "true" : "false")},\n \"engine\": \"{Esc(b.Source)}\",\n \"dllSha256\": \"{b.DllSha}\",\n \"errors\": {s.totalErrors},\n \"warnings\": {s.totalWarnings},\n \"post\": \"{Esc(post)}\"\n}}\n");
@@ -155,8 +170,8 @@ namespace Suborned.World.Play
         public sealed class Version
         {
             [Serializable] sealed class File { public string version = "0.2"; public int build; public string note = ""; }
-            public string Base = "0.2", Recording = "", Sha = "", Note = ""; public int Build; public bool Dirty;
-            public string Full => $"{Base}.{Build}";
+            public string Base = "0.2", Recording = "", Sha = "", Note = "", Suffix = ""; public int Build; public bool Dirty;
+            public string Full => $"{Base}.{Build}{Suffix}";
             public static string FilePath => Path.Combine(HarbourWorldBuilder.RepoRoot, "tools", "game", "version.json");
             const string Stamp = "Assets/StreamingAssets/" + BuildStamp.FileName;
 

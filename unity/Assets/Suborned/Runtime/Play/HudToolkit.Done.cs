@@ -16,7 +16,7 @@ namespace Suborned.Play
     /// It reads the host only: replays are untouched.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class ChipEl { public VisualElement Root, Face, Mark, Lines, Unl; public readonly List<(VisualElement row, VisualElement icon, Label word)> Rows = new(); public readonly List<(VisualElement pill, VisualElement icon, Label word, VisualElement strike)> Pills = new(); public int Id = -1; }
+        sealed class ChipEl { public VisualElement Root, Face, Mark, Lines, Unl; public readonly List<(VisualElement row, VisualElement icon, Label word)> Rows = new(); public readonly List<(VisualElement pill, VisualElement icon, Label word, VisualElement strike)> Pills = new(); public int Id = -1; public readonly List<string> Facts = new(), Verbs = new(); }
         readonly List<ChipEl> chipEls = new();
         readonly List<(VisualElement root, VisualElement icon, Label num, VisualElement face, VisualElement under)> winEls = new();
         VisualElement cancelTag; Label cancelTagText; Vector2 restAt; float restSince;
@@ -61,9 +61,14 @@ namespace Suborned.Play
             chipEls.Add(c); return c;
         }
 
+        /// <summary>Glyph 058 §3, the window marker's count: m:ss when the window runs a minute or more (the loop's 2:00, 1:12, 0:09), plain
+        /// seconds under that (the guard's, the patrol's, the desk's clock: 14, 3).</summary>
+        public static string WindowCount(int left, int total) => left < 0 ? "" : total >= 60 ? $"{left / 60}:{left % 60:00}" : left.ToString();
+
         /// <summary>Per frame after the pill (the commander view and third person alike; none while the end card or the briefing is up).</summary>
         void DoneMarks()
         {
+            SealFrame(); // brief 057 §4.1: the seal clock under the clock pill
             var h = host; var g = h.Game; float now = Time.unscaledTime; bool on = g != null && !m.Ended && !m.BriefingOpen && h.View != null && h.Modal == ModalGate.Modal.None;
             int used = 0; var words = new List<string>(); var stackTop = new Dictionary<string, float>();
             Rect pill = PillRect(); var bubbles = SpeechRects(); var markTop = new Dictionary<string, float>();
@@ -72,6 +77,7 @@ namespace Suborned.Play
             if (on)
                 foreach (var w in h.WindowMarks)
                 {
+                    if (CueNoPlate(w.Kind)) continue; /* brief 084: no plate over anything that moves */
                     var at = h.AnchorWorld(w.Key); if (!at.HasValue) continue;
                     bool person = w.Key is "guard" or "patrol"; if (!Proj(at.Value + Vector3.up * (person ? 2.45f : w.Key.StartsWith("camera/") ? 0.75f : 1.7f), out var q)) continue;
                     while (winEls.Count <= wu)
@@ -86,28 +92,37 @@ namespace Suborned.Play
                         winEls.Add((r, ic, nl, f, u));
                     }
                     var (wr, wi, wn, wf, wu2) = winEls[wu++]; Show(wr, true);
-                    Icon(wi, "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face);
-                    if (face) CameoOf(wf, w.Face); else Text(wn, w.Left.ToString());
+                    Icon(wi, w.Kind == "disable" ? "p_alert" : w.Kind == "rivals-next" ? "nextevent" : w.Kind == "vale-car" ? "car" : "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face); // Glyph 058 §3: the desk's clock wears the siren; Glyph 059: the rivals' next move (nextevent), Vale's car (car)
+                    if (face) CameoOf(wf, w.Face); else Text(wn, w.Label.Length > 0 ? w.Label : WindowCount(w.Left, w.Total));
                     bool low = !face && w.Left >= 0 && w.Left <= 10; wr.style.opacity = low ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 4f)) : 1f;
                     bool timed = w.Left >= 0 && w.Total > 0; Show(wu2.parent, timed);
                     if (timed) { wu2.style.width = Length.Percent(Mathf.Clamp01(w.Left / (float)w.Total) * 100f); wu2.style.backgroundColor = low ? LookSoon : LookLive; }
                     float ww = float.IsNaN(wr.resolvedStyle.width) ? 60f : wr.resolvedStyle.width, wx = q.x - ww / 2f, wb = ClearOfSpeech(bubbles, wx, ww, q.y - 12f, WinH); // above the thing's speech, never on it
                     wr.style.left = wx; wr.style.top = wb - WinH; markTop[w.Key] = wb - WinH;
-                    wwords.Add($"{w.Kind}:{w.Thing}:{(face ? "face" : w.Left.ToString())}");
+                    wwords.Add($"{w.Kind}:{w.Thing}:{(face ? "face" : WindowCount(w.Left, w.Total))}");
                 }
             for (int i = wu; i < winEls.Count; i++) Show(winEls[i].root, false);
             WindowMarksShown = wu; WindowWords = string.Join(" ", wwords);
             if (on)
+            {
+                // brief 085 (the budget's two chips on screen; r067-drive-parked drew three): only the newest two that can be drawn; DoneChips itself keeps them all
+                bool ChipPlace(HandoverHost.DoneChip ch, out Vector2 q)
+                {
+                    q = default; if (now - ch.Born > HandoverHost.DoneChipS || h.CardOver(ch.AnchorKey, ch.Born)) return false; // brief 085: a conversation's card stands in the chip's spot and says more; its facts show once
+                    var at = h.AnchorWorld(ch.AnchorKey) ?? ch.At; if (!at.HasValue) return false; ch.At = at;
+                    bool person = ch.AnchorKey is "waitress" or "driver" or "guard" or "councillor" || ch.AnchorKey.StartsWith("op/") || ch.AnchorKey == "patrol";
+                    if (!Proj(at.Value + Vector3.up * (person ? 2.3f : ch.AnchorKey.StartsWith("camera/") ? 0.7f : 1.6f), out q)) return false;
+                    return q.y >= 0f; // Glyph's N11: the anchor above the frame: no chip (the feed card carries the beat)
+                }
+                int placeable = 0; foreach (var ch0 in h.DoneChips) if (ChipPlace(ch0, out _)) placeable++;
                 foreach (var ch in h.DoneChips)
                 {
-                    float age = now - ch.Born; if (age > HandoverHost.DoneChipS) continue;
-                    var at = h.AnchorWorld(ch.AnchorKey) ?? ch.At; if (!at.HasValue) continue; ch.At = at;
-                    bool person = ch.AnchorKey is "waitress" or "driver" or "guard" or "councillor" || ch.AnchorKey.StartsWith("op/") || ch.AnchorKey == "patrol";
-                    if (!Proj(at.Value + Vector3.up * (person ? 2.3f : ch.AnchorKey.StartsWith("camera/") ? 0.7f : 1.6f), out var q)) continue;
+                    if (!ChipPlace(ch, out var q) || placeable-- > ChipsOnScreen) continue;
+                    float age = now - ch.Born;
                     var c = used < chipEls.Count ? chipEls[used] : NewChip(); used++; Show(c.Root, true);
                     if (c.Id != ch.Id)
                     {
-                        c.Id = ch.Id; CameoOf(c.Face, ch.Agent);
+                        c.Id = ch.Id; CameoOf(c.Face, ch.Agent); c.Facts.Clear(); c.Verbs.Clear(); foreach (var l in ch.Lines) if (c.Facts.Count < 3) c.Facts.Add(l.Word); foreach (var u in ch.Unlocks) if (c.Verbs.Count < 3) c.Verbs.Add(u.Word); // Glyph budget §3: the manifest spells the chip's rows
                         Bg(c.Mark, ch.Tone == "ok" ? "badges/mark_ok" : ch.Tone == "soft" ? "badges/mark_half" : "badges/mark_no", Color.white); // the tone only picks the kit's badge
                         for (int i = 0; i < 3; i++)
                         {
@@ -127,15 +142,20 @@ namespace Suborned.Play
                     float x = q.x - cw / 2f, bottom = (stackTop.TryGetValue(ch.AnchorKey, out var st0) ? st0 - 6f : markTop.TryGetValue(ch.AnchorKey, out var mt) ? mt - 8f : q.y - 10f) - rise; // over its window's marker
                     bottom = ClearOfSpeech(bubbles, x, cw, bottom, chh);
                     // lift clear of the pill when they share the thing (the playground's hover lift)
-                    if (pill.width > 0 && x < pill.xMax && x + cw > pill.xMin && bottom > pill.yMin - 8f && bottom - chh < pill.yMax) bottom = pill.yMin - 8f;
+                    float pillClear = stackTab != null && stackTab.style.display != DisplayStyle.None ? 10f + 4f : 8f; // Glyph N4 (0.2.125): 4 px clear of the stack tab seated 10 px up on the pill's top edge
+                    if (pill.width > 0 && x < pill.xMax && x + cw > pill.xMin && bottom > pill.yMin - pillClear && bottom - chh < pill.yMax) bottom = pill.yMin - pillClear;
                     float W = root.layout.width > 0 ? root.layout.width : 1920f; x = Mathf.Clamp(x, 14f, Mathf.Max(14f, W - cw - 14f));
-                    c.Root.style.left = x; c.Root.style.top = bottom - chh; stackTop[ch.AnchorKey] = bottom - chh + rise; c.Root.style.opacity = Mathf.Min(1f, Mathf.Min(age / 0.12f, (HandoverHost.DoneChipS - age) / 0.5f)); c.Root.BringToFront();
+                    float ctop = Mathf.Max(8f, bottom - chh); // Glyph's N11: never cut by the top of the frame
+                    c.Root.style.left = x; c.Root.style.top = ctop; stackTop[ch.AnchorKey] = ctop + rise; c.Root.style.opacity = Mathf.Min(1f, Mathf.Min(age / 0.12f, (HandoverHost.DoneChipS - age) / 0.5f)); c.Root.BringToFront();
                     var ws = new List<string>(); foreach (var l in ch.Lines) ws.Add(l.Word); foreach (var u in ch.Unlocks) ws.Add((u.Shut ? "~" : "→") + u.Word); words.Add(string.Join("|", ws));
                 }
+            }
             for (int i = used; i < chipEls.Count; i++) { Show(chipEls[i].Root, false); chipEls[i].Id = -1; }
             ChipsShown = used; ChipWords = string.Join(" / ", words);
         }
 
+        /// <summary>The budget's cap (tools/hud-budget CHIP_MAX.onScreen).</summary>
+        const int ChipsOnScreen = 2;
         static float Ease(float t) => 1f - (1f - t) * (1f - t);
 
         /// <summary>The speech bubbles on screen now (panel space): speech is placed first; a chip or a window marker stacks above it.</summary>
@@ -152,12 +172,13 @@ namespace Suborned.Play
             return l;
         }
         /// <summary>The bottom for a box (x, width, height) at `bottom`, raised until it clears every speech bubble by 10 px.</summary>
-        static float ClearOfSpeech(List<Rect> bubbles, float x, float w, float bottom, float hh)
+        static float ClearOfSpeech(List<Rect> bubbles, float x, float w, float bottom, float hh, float gap = 10f)
         {
+            float pad = Mathf.Max(4f, gap - 6f);
             for (int guard = 0; guard < 4; guard++)
             {
-                bool hit = false; var box = new Rect(x - 4f, bottom - hh - 4f, w + 8f, hh + 8f);
-                foreach (var b in bubbles) if (b.Overlaps(box)) { bottom = b.yMin - 10f; hit = true; box = new Rect(x - 4f, bottom - hh - 4f, w + 8f, hh + 8f); } // review 5: 8 px between as drawn (the bubble's rim eats 2)
+                bool hit = false; var box = new Rect(x - 4f, bottom - hh - pad, w + 8f, hh + 2f * pad);
+                foreach (var b in bubbles) if (b.Overlaps(box)) { bottom = b.yMin - gap; hit = true; box = new Rect(x - 4f, bottom - hh - pad, w + 8f, hh + 2f * pad); } // review 5: 8 px between as drawn (the bubble's rim eats 2)
                 if (!hit) break;
             }
             return bottom;

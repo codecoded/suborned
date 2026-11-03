@@ -1,0 +1,373 @@
+{
+ "schema": "keel.route-moves/1",
+ "engine": "suborned.sim/0.31.0",
+ "against": "runs/missions/handover/c036 (suborned.sim/0.30.0)",
+ "note": "Brief 058 \u00a76 (Loop v2): every route that loops is re-timed by Waymark; 13 of 38 scripts move outcome, all by the loop running out 2:00 after it lands; 25 hold outcome, end, Trail, Alert and Standing (10 of them loop and move only in hashes and log ticks). Disable and the 054 run memory move no recorded script.",
+ "moves": [
+  {
+   "route": "careless-guard-left-door-held",
+   "expects": "c036",
+   "before": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "end": "8:30.0",
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "loopOn": "1:18.6",
+    "loopEnds": "2:19.7"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:48.6",
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "loopOn": "0:36.6",
+    "loopEnds": "2:36.6"
+   },
+   "why": "Loop v2: its loop (landing 0:36.6) runs out 2:36.6 and the entrance camera sees the entry at 2:48.6, before the rivals; plant the loop later (it must still run at its Enter) to keep the rivals-reach-vale fail",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "fail-entry-seen-patrol",
+   "expects": "c036",
+   "before": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "end": "4:40.4",
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "loopOn": "1:36.5",
+    "loopEnds": null
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "4:40.4",
+    "trail": 4,
+    "alert": 1,
+    "standing": 2,
+    "loopOn": "0:54.5",
+    "loopEnds": "2:54.5"
+   },
+   "why": "Loop v2: its loop (ordered 0:34.5, landing 0:54.5) runs out 2:54.5, so at the 4:40.4 Enter the camera sees the entry before the patrol does; to keep it the patrol twin the loop must still run at the Enter (planted after 2:40)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "loud",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "5:10.0",
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:38.5"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.7",
+    "trail": 8,
+    "alert": 2,
+    "standing": 1,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.5, 1.2 s before the Enter at 2:37.7 (058 \u00a74: as A)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "loud-fast",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "5:10.0",
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:38.5"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.7",
+    "trail": 8,
+    "alert": 2,
+    "standing": 1,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.5, 1.2 s before the Enter at 2:37.7 (058 \u00a74: as A)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "loud-fight",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "5:12.8",
+    "trail": 12,
+    "alert": 2,
+    "standing": -1,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:38.5"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.7",
+    "trail": 8,
+    "alert": 2,
+    "standing": 1,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.5, 1.2 s before the Enter at 2:37.7 (058 \u00a74: as A)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "loud-left-downed",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "5:13.0",
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:38.5"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.7",
+    "trail": 8,
+    "alert": 2,
+    "standing": 1,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.5, 1.2 s before the Enter at 2:37.7 (058 \u00a74: as A)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "loud-left-standing",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "5:13.0",
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:38.5"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.7",
+    "trail": 8,
+    "alert": 2,
+    "standing": 1,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.5, 1.2 s before the Enter at 2:37.7 (058 \u00a74: as A)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "route-a",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "4:59.7",
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:54.2"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:53.4",
+    "trail": 5,
+    "alert": 1,
+    "standing": 2,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop ordered 0:16.5 lands 0:36.5 and runs out 2:36.5; the Enter at 2:53.4 is seen by the entrance camera (058 \u00a74: plant the loop after the Reroute, ordered about 1:01.5, live 1:21.5 to 3:21.5)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "route-a-board",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "4:27.9",
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:54.2"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:53.4",
+    "trail": 5,
+    "alert": 1,
+    "standing": 2,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop ordered 0:16.5 lands 0:36.5 and runs out 2:36.5; the Enter at 2:53.4 is seen by the entrance camera (058 \u00a74: plant the loop after the Reroute, ordered about 1:01.5, live 1:21.5 to 3:21.5)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "route-g",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "4:44.7",
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:37.8"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.0",
+    "trail": 2,
+    "alert": 0,
+    "standing": 2,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop lands 0:36.6 and runs out 2:36.6; the Enter at 2:37.0 is seen (058 \u00a74: plant ordered at 0:30 or later)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "route-g-board",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "4:11.5",
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "loopOn": "1:18.5",
+    "loopEnds": "2:37.8"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "2:37.0",
+    "trail": 2,
+    "alert": 0,
+    "standing": 2,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop lands 0:36.6 and runs out 2:36.6; the Enter at 2:37.0 is seen (058 \u00a74: plant ordered at 0:30 or later)",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "route-g-kill",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "6:11.7",
+    "trail": 2,
+    "alert": 1,
+    "standing": 3,
+    "loopOn": "1:18.5",
+    "loopEnds": "4:04.8"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "4:04.0",
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.6, before the Enter at 4:04.0 (and the dead guard is in its view); 058 \u00a74: plant ordered between 1:44 and 2:11",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  },
+  {
+   "route": "route-g-kill-board",
+   "expects": "c036",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "end": "5:38.5",
+    "trail": 2,
+    "alert": 1,
+    "standing": 3,
+    "loopOn": "1:18.5",
+    "loopEnds": "4:04.8"
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "end": "4:04.0",
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "loopOn": "0:36.5",
+    "loopEnds": "2:36.5"
+   },
+   "why": "Loop v2: the loop runs out 2:36.6, before the Enter at 4:04.0 (and the dead guard is in its view); 058 \u00a74: plant ordered between 1:44 and 2:11",
+   "rule": "cell.loop.run (Loop v2, brief 058 \u00a76)"
+  }
+ ],
+ "holds": [
+  "careless-body-found",
+  "careless-enforcer-watches-guard",
+  "careless-reporter-not-stopped",
+  "careless-scout-idles-pickup",
+  "careless-takedown-seen-camera",
+  "careless-takedown-seen-crowd",
+  "fail-district-seals",
+  "fail-enforcer-down",
+  "fail-entry-seen-camera",
+  "fail-entry-seen-guard",
+  "fail-rivals-reach-vale",
+  "fail-take-seen-camera",
+  "fail-vale-dead",
+  "fail-vale-leaves",
+  "fight-loud-enforcer-down",
+  "fight-safe-rivals-reach-vale",
+  "route-a-pressure",
+  "route-a-pressure-board",
+  "route-b",
+  "route-b-block",
+  "route-b-block-board",
+  "route-b-board",
+  "route-g-fast",
+  "route-g-fast-board",
+  "withdraw"
+ ]
+}

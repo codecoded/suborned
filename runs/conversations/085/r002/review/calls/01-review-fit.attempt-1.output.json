@@ -1,0 +1,29 @@
+{
+  "faults": [
+    {
+      "scene": "pay-driver",
+      "line": "Fixer: \"We've paid seventy thousand already. One short drive with the Councillor.\"",
+      "problem": "The figure is wrong: $70,000 is the price to Pay Inez, while the purse sums imply $40,000 for the driver (pay + driver $110,000, help + driver $80,000) [5a29be8544e336060f678471].",
+      "fix": "Drop the figure: \"We've paid already. One short drive with the Councillor.\""
+    },
+    {
+      "scene": "pay-driver",
+      "line": "Fixer: \"Until we've got him out of the back seat. Not long.\"",
+      "problem": "The GDD says this Take happens inside the car and ends with the Enforcer at the wheel, marked Decided, not built, so the line promises a removal the decided rule doesn't have [97f56ffa9d3e5a5394af33cc].",
+      "fix": "Keep it true under either version: \"Until we've got him. Not long.\""
+    },
+    {
+      "scene": "pay-driver",
+      "line": "Zhou: \"I won't look. Anyone watching this bay, I can send off.\"",
+      "problem": "They are talking in the official car's bay on the south side, so \"this bay\" puts Zhou's offer in the wrong place; it belongs to the service bay in the east yard.",
+      "fix": "Name the place: \"I won't look. Anyone watching the service bay, I can send off.\""
+    },
+    {
+      "scene": "call-inez",
+      "line": "Fixer: \"It's time, Miss Nikolaou. The Bureau's paid. Call Okafor across now.\"",
+      "problem": "Pay and Pressure also lead to this call [96030c4c4a1a18523a3fdbbb], and pressure-inez opens \"Call Inez\", but neither clears the loan, so the line is false on those routes.",
+      "fix": "Cut the sentence: \"It's time, Miss Nikolaou. Call Okafor across now.\""
+    }
+  ],
+  "notes": "listen-inez, help-inez-1, help-inez-2 and pressure-inez have no line faults. These checks rest only on the supplied passages; I had no file access, so nothing was checked against the rest of the GDD.\n\nFor Aster, not resolved here:\n1. Scene format: §10 allows at most 3 opening beats and never the reply, result or read, so the scene can't contradict the outcome [dd77e34fb83021a7c1081a41, 606e5d36a162a974f82d9889]. All six scenes run 7–10 beats and play results, including Inez agreeing, the driver's terms and the Scout's read. Either the scenes or §10 must change. Brief 085 may intend a change, but the passages supplied don't show one.\n2. Two-visit Help: the sheets for help-inez-1 and help-inez-2 say the first Help doesn't win her and a second payment does. The approach table gives one Help at $40,000 and 35 s, and the purse sum only works if the whole of Help costs $40,000 [c407d23e4f6647fe2f4315a1, 5a29be8544e336060f678471, 4c8fad65dcc365c5f3afdb7e]. The lines name no price, so I raised no line fault. Confirm that two visits split the $40,000; two full payments plus the driver would cost $120,000 against the $100,000 purse.\n3. Sheet facts not in the supplied passages: Inez warning the cell after Help, Zhou's couple-of-minutes wait, and Zhou sending off a watcher. I took these as the sheet states them and did not verify them.\n4. \"Enter the Office\" in call-inez: the Handover passage has the Enforcer waiting for the entrance camera loop on the Take the guard route [97f56ffa9d3e5a5394af33cc]. If the same camera covers Enforcer entry on the call route, \"Door empty\" doesn't mean an unseen entry and the card may need adjusting. The passages don't settle this.\n\nNext owner: Fable for the four line fixes; Aster for items 1–4."
+}

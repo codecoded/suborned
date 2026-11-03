@@ -1,0 +1,260 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "brief 080: routes/loud-left-downed.json on seed 14: shots roll, and on seed 0 this route's entry is seen before its fight. The pin is what the shot and late rows read (a fight on film, not a roll); the route stays Waymark's.",
+ "start": {
+  "seed": 14
+ },
+ "orders": [
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "run": true
+  },
+  {
+   "tick": 600,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 800,
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol"
+  },
+  {
+   "tick": 1250,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ]
+  },
+  {
+   "tick": 1510,
+   "op": "enforcer",
+   "do": "fire",
+   "target": "guard"
+  },
+  {
+   "tick": 1510,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    975,
+    -4625
+   ],
+   "run": true
+  },
+  {
+   "tick": 1510,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "run": true
+  },
+  {
+   "tick": 1550,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "run": true
+  },
+  {
+   "tick": 1571,
+   "op": "enforcer",
+   "do": "enter"
+  },
+  {
+   "tick": 1571,
+   "op": "tech",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "tick": 2241,
+   "op": "scout",
+   "do": "draw"
+  },
+  {
+   "tick": 2241,
+   "op": "scout",
+   "do": "fire",
+   "target": "security-1"
+  },
+  {
+   "tick": 2241,
+   "op": "fixer",
+   "do": "draw"
+  },
+  {
+   "tick": 2241,
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-1"
+  },
+  {
+   "tick": 2241,
+   "op": "tech",
+   "do": "draw"
+  },
+  {
+   "tick": 2241,
+   "op": "tech",
+   "do": "fire",
+   "target": "security-1"
+  },
+  {
+   "tick": 2256,
+   "op": "scout",
+   "do": "fire",
+   "target": "security-2"
+  },
+  {
+   "tick": 2256,
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-2"
+  },
+  {
+   "tick": 2256,
+   "op": "tech",
+   "do": "fire",
+   "target": "security-2"
+  },
+  {
+   "tick": 2287,
+   "op": "scout",
+   "do": "fire",
+   "target": "rivals"
+  },
+  {
+   "tick": 2287,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    4300,
+    -3100
+   ]
+  },
+  {
+   "tick": 2287,
+   "op": "fixer",
+   "do": "fire",
+   "target": "rivals"
+  },
+  {
+   "tick": 2287,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    4400,
+    -3350
+   ]
+  },
+  {
+   "tick": 2514,
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2"
+  },
+  {
+   "tick": 2514,
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2"
+  },
+  {
+   "tick": 2574,
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-3"
+  },
+  {
+   "tick": 2574,
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-3"
+  },
+  {
+   "tick": 2615,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    100,
+    -4500
+   ]
+  },
+  {
+   "tick": 2615,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ]
+  },
+  {
+   "tick": 2615,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 2967,
+   "op": "enforcer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3007,
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 3007,
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 3007,
+   "op": "fixer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3008,
+   "op": "tech",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3048,
+   "op": "cell",
+   "do": "go"
+  }
+ ],
+ "until": 5100
+}

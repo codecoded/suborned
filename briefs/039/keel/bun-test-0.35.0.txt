@@ -1,0 +1,8 @@
+(fail) the Handover, played headless (Keel's engine on the working tree) > route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships [4723.86ms]
+(fail) the real engine > a route script made 5 s late moves, and the move is found [3186.26ms]
+(fail) what the quiet play can reach (recorded routes, taken against the reference) > there are recorded routes that touch Inez, and each of their orders is taken at its recorded tick [0.17ms]
+(fail) the repository > no C# or TS line has code swallowed into a comment, a commented-out statement or an unclosed /* [214.21ms]
+(fail) end to end on a scratch copy > nothing changed: nothing to declare (every objective, every run) [59943.97ms]
+(fail) end to end on a scratch copy > a harmless edit: --check names the file and writes nothing; the real run declares it and the replays pass [1217.11ms]
+ 2118 pass
+ 6 fail

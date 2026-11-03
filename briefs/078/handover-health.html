@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>078 · Handover health at 1c8bf221</title>
+<style>
+body{font:15px/1.45 -apple-system,system-ui,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;color:#222;background:#fbf8f2}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:26px 0 8px;border-bottom:1px solid #ddd;padding-bottom:3px}
+.meta{color:#666;font-size:13px}
+.verdict{background:#fff;border-left:5px solid #c9822b;padding:10px 14px;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:#fff}td,th{border:1px solid #ddd;padding:5px 7px;vertical-align:top;text-align:left}th{background:#f1ece2}
+.b{background:#b3261e;color:#fff}.s{background:#c9822b;color:#fff}.p{background:#5b7f95;color:#fff}.ok{background:#3c7d4a;color:#fff}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:12px;font-weight:600}
+code{font-size:12.5px;background:#f1ece2;padding:0 3px}
+</style></head><body>
+<h1>Handover health · what it's like to play at HEAD</h1>
+<div class="meta">Suture (playtest-qa-lead) · 2026-10-30 · commit 1c8bf221 on work/2026-10-21-fight-and-testbed, recorded run c045 · engine suborned.sim/0.35.2 · read-only, no commits, nothing in Unity. Logs: <code>out/scratch/suture/078/</code></div>
+
+<div class="verdict"><b>Verdict.</b> In the simulation the Handover is healthy. It ships: 893 plays, MC-0 to MC-15 all pass. All three quiet routes win, and so does the loud route, with the price the design intends (quiet: 4–7 Trail, Alert ≤ 1, Standing ≥ 2; loud: 26–27 Trail, Alert 2, Standing −1, a raised investigation). Every §07 fail can be reached, and every run replays exactly.<br><br>
+It is not yet proven as a game a person plays. Nobody has played it since Sky's 0.2.122 on 26 Oct. Since then these have all landed, checked only by the sim and by screenshots: fight B, the rivals' drive-in, the new walking pace, squad boarding, sticky targets, cones on demand, the 3-storey café, the old-town world (brief 075) and the planting (brief 077).<br><br>
+One real bug blocks the next build. The square's mast camera was renamed in brief 075, which breaks the sim's own checks, so <code>bun run batch</code> stops at its first step. The mission's text also points at the camera's old name.<br><br>
+The things most likely to hurt a real player: the timing on route B is very tight (4 s of slack after 5:00), the quiet final fights are still short (8–21 s), and the two-car getaway that §07 route B describes has not been built.</div>
+
+<h2 id="u0146">Update, build 0.2.146: bot rows and go/no-go for Sky (commit 2f4749eb, 30 Oct)</h2>
+<div class="verdict"><b>GO: Sky can play 0.2.146.</b> Seven bot rows played the built game through real input, and nothing stops play: no crash, no stuck run, no console error, every end card shown, every row replayed as identical, and the rings' offers were taken (only 6 refusals in 355 orders, all with a reason: no-walk, already-watched). The mast fix (B1) holds; a bot Watched and a camera reported as <code>mast-z0</code>.<br><br>
+<b>Expect to lose the first tries.</b> No row won. Only the two human-pace rows were trying to, and both failed on timing, which is S1 showing up in the player. If that feels unfair, that's the thing to tell us. The sample is small (two rows), and the bots follow scripts, so this doesn't prove what a planning person would do.</div>
+<table>
+<tr><th>row</th><th>what happened</th><th>findings</th></tr>
+<tr><td>human-b, route A</td><td>Slow on Inez: Listen at 1:40, turned at 4:58, she calls at 5:02. The camera loop had been set at 3:17, ran out at 5:37, and the Enforcer's entry was seen at 5:44.8. “A camera saw you.”</td><td>A fair fail, and the clearest example of S1: 2:00 of loop doesn't survive a slow Inez</td></tr>
+<tr><td>human-a, route B then G</td><td>Turned the driver by 2:03 ($70,000), then switched route and never gave the false tip. The rival wheelman reached Vale's car at 6:39.5. Five loitering reports; ended at Alert 1.</td><td>Right by §07. The loitering reports show how quickly idling is noticed at human pace (T12 to test)</td></tr>
+<tr><td>loud-car (my scratch route)</td><td>Scout, Fixer and Enforcer stand on Apron Road and shoot the rival car: hit from 3:50, disabled 4:02.7, burning 4:14.7, <b>exploded 4:20.7</b>, Alert 3, 40 Trail. Vale then left at 6:13, since this route doesn't go for him.</td><td>The car FX ran with 0 console errors, p99 6.1 ms, worst frame 21 ms. The grader's memory flag is one step of about 60 MB around the fight, then flat: not a leak. No picture of this blast was kept; the blast I looked at is the proof's <code>car-blast.png</code> (Vale's car), which reads well</td></tr>
+<tr><td>loud-car, first try</td><td>Same idea on the full loud route. The human-pace bot ran late (guard shot at 3:15, not 2:31), the Enforcer never got inside, and police shot him at 4:10 before any shot at the car.</td><td>Good read of the fail camera (below)</td></tr>
+<tr><td>random, greedy, cautious</td><td>Enforcer down at 1:54.7; Vale left at 6:13 (twice). These bots don't plan, so these ends are expected.</td><td>See S8–S10</td></tr>
+</table>
+<h3>What I can now check that I couldn't before</h3>
+<table>
+<tr><th>item</th><th>result in the player</th><th>evidence</th></tr>
+<tr><td>Price before commit</td><td><span class="tag ok">works</span> The hold pill names it: “Hold · Help Inez · $40k · 61 s · +1 Trail”, “Hold · Pay Inez · $90k · 50 s · +2 Trail · Alert 1”, “Hold · Watch Inez · 27 s”.</td><td><code>done-help-pip</code>, <code>r29-mood-likely</code>, <code>hold-act-offer</code></td></tr>
+<tr><td>Rings</td><td><span class="tag ok">works</span> Q-OFFER found nothing: no way offered and then refused without a reason. A shut way shows its reason (“Listen · Already heard”). <b>One to look at:</b> in <code>r067-shut-ring-guard</code> the ring for the door guard opens about 570 px from him, by Vale's car. It may be the proof's scripted click, not the game. Unproven; watch for it.</td><td>bot rows; <code>r067-shut-ring-guard</code></td></tr>
+<tr><td>Cones</td><td><span class="tag ok">works</span> Quiet by default, the guard's amber cone clear when it matters. Figures on the Office steps go dark in the building's shadow at 6:00 (<code>r067-cones-after</code>): polish, for you to judge.</td><td><code>r067-cones-before/after</code></td></tr>
+<tr><td>Fail camera</td><td><span class="tag s">mixed</span> The words are right every time (“A police officer shot the Enforcer.”). The getaway-lost shot reads well from above. But the Enforcer-down shot is at street level, with his back filling the frame and the officer mostly hidden behind him, and a red wash over the whole steps. It says why better than it shows who.</td><td><code>lc/loud-car/anomalies/end-card.jpg</code>, <code>fail-getaway-lost</code></td></tr>
+<tr><td>End cards</td><td><span class="tag ok">works</span> Q-CARD clean on all 7 rows: head, cause, time, money, Trail, security and Standing.</td><td><code>card.json</code></td></tr>
+</table>
+<p>Still only a person can judge: whether these read at a glance, whether the fight is fun, and how it runs on the Air. Frame times here are the Studio's, under load 14.</p>
+<h3>New from these rows</h3>
+<table>
+<tr><th>#</th><th>tag</th><th>issue</th><th>owner</th></tr>
+<tr><td>S8</td><td><span class="tag s">should-fix</span></td><td><b>A saved run stops before its fail.</b> In all 7 rows the session script ends with outcome “none”, 1.2–1.6 s before the real end (e.g. <code>until</code> 2487, fail at tick 2500; <code>card.json</code> also says result none at the earlier tick). The likely cause is that it is written during the fail camera's 3 s rewind; I didn't trace the code. The last seconds, the ones a bug report needs, can't be replayed. All 7 rows here ended in a fail, so I can't say whether a win is affected.</td><td>Latch</td></tr>
+<tr><td>S9</td><td><span class="tag s">should-fix</span></td><td><b>A hitch on re-ordering a busy agent?</b> The cautious row had 77 frames of about 95 ms, 73 of them within 1.5 s of a cancel-and-reorder. No other row shows this, and the Studio was under load 14, so measure it before trusting it. A person would feel it as a stutter on the click.</td><td>Redline, then Latch</td></tr>
+<tr><td>S10</td><td><span class="tag s">should-fix</span></td><td><b>False alarm in the bot check.</b> Q-GIVER flags the Tech offered for Drive from inside the car. That's right by §07 (the car's Drive has landed since the check was written). The fix is the exempt list in BotRun.cs and my <code>tools/qa/grade.ts</code>.</td><td>Latch · Suture</td></tr>
+<tr><td>P6</td><td><span class="tag p">polish</span></td><td>A body lies 25 cm into a solid (random row, 0:26). The Q-FEET share (99.88 % against 99.9 %) is the old kerb-step reading, not a floor fault. The budget's one red is Latch's known false positive.</td><td>Pulse/Keel · Suture</td></tr>
+</table>
+<p class="meta">Rows: tools/qa/bot.json at the night's seeds, one player per row in real time, through <code>bun run guard</code>; 12:36–13:15, 39 minutes. That's over the 10-minute check limit because rows play at real time and one at a time. Files: <code>out/scratch/suture/078/bot-0146/</code>. The loud-car route is scratch, not a shipped route. Status of the list below: B1 fixed in b00cace3; B2 is what this round answers, up to Sky's hands. S6 and the rest stand unless marked.</p>
+
+<h2 id="proofs">Proof sections: what still catches anything (for Splice's delta proofs)</h2>
+<p><b>The pattern:</b> game-check rarely finds a game fault. It found two real ones I can name in the recent logs (a missing hover ring and a broken third-person entry, both 0.2.123, plus a rings cut in 0.2.134). Most of its reds were the proof itself going stale after a retime, or real-time holds failing under load. So delta proofs should keep the sections and run them on what changed, and proofs should read ticks from the route scripts instead of hard-coding them. Evidence: 36 game-check logs still on disk (26–30 Oct) and <code>briefs/041/port-progress.md</code>; older logs have rotated, so “no reds” means no reds lately, not never. Times come from picture timestamps on 0.2.146; the full proof is about 13 minutes.</p>
+<table>
+<tr><th>section</th><th>cost</th><th>recent reds</th><th>call</th><th>run when</th></tr>
+<tr><td><b>r118</b></td><td>183 s, 80 pictures, the biggest</td><td>0 in the logs. The square-drawn signals of 0.2.120–121 were caught by eye, not by it</td><td><span class="tag s">thin hard</span> Keep the asserts (<code>cam058</code>, <code>heads</code>, <code>uncut</code>, <code>reach</code>). Retire most of the 32 h1/h2 head pictures and the 24 evening and night frames (the two groups overlap). <code>camStates</code>, <code>rim</code>, <code>vale</code>, <code>cut4</code>, <code>footway</code> have no pass or fail at all</td><td>world, lighting, cut code</td></tr>
+<tr><td><b>r29</b></td><td>93 s, 42 pictures</td><td>0.2.118, 0.2.123, 0.2.132, 0.2.143–144: all stale ticks or proof timing as far as shown (the 0.2.143 stray hover isn't explained)</td><td><span class="tag s">thin</span> Keep <code>mood</code>, <code>cones</code>, <code>down</code>, <code>patrol</code>, <code>reroute</code>, <code>seal</code>, <code>inezRound</code>. The 21 boulevard, circus, junction, civic and bay pictures look like retirement candidates; check what they were for before cutting. <b>Fix or drop <code>goHeld</code></b>: its script n185 is stale, so it reads “mission-over”, tests nothing, and can't fail</td><td>rules, missions, HUD words</td></tr>
+<tr><td><b>r067</b></td><td>75 s, 32 pictures</td><td>0.2.123: found a real fault (third person entered off-heading)</td><td><span class="tag ok">keep</span>, thin the pictures. It holds Sky's own notes (locked ways, squad board, conversation, cones)</td><td>host, input, HUD</td></tr>
+<tr><td><b>r059</b></td><td>27 s, 13 pictures</td><td>0 as a gate since 26 Oct</td><td><span class="tag ok">keep</span> Cheap, and it covers the rivals' timetable and the pickup, the heart of the Handover</td><td>rules, missions, cars</td></tr>
+<tr><td><b>r123</b></td><td>19 s, 7 pictures</td><td>Not gated</td><td><span class="tag ok">keep as pictures</span> Fight body reads only; gate it or leave it to Glyph's review</td><td>figures, fight HUD</td></tr>
+<tr><td>holdRange</td><td>part of about 50 s of hold shots</td><td>0.2.123 real fault (hover ring); 0.2.127 under load; 0.2.132 stale</td><td><span class="tag ok">keep</span> Flaky under load: quiet machine only</td><td>input, fire, host</td></tr>
+<tr><td>holdActs, dblClick</td><td>as above</td><td>0.2.127 under load only</td><td><span class="tag ok">keep</span> Same load warning</td><td>input, host</td></tr>
+<tr><td>rings</td><td>short</td><td>0.2.134 real fault</td><td><span class="tag ok">keep</span></td><td>HUD, fire</td></tr>
+<tr><td>fire, cars</td><td>short</td><td>0.2.124, 0.2.134–136: mostly <code>secondLock</code>, the proof's own stage-setting</td><td><span class="tag s">simplify</span> Keep; separate the stage from the check. Now also the one place the car FX is seen</td><td>fire, cars, FX</td></tr>
+<tr><td>done</td><td>17 s</td><td>0.2.123: stale ticks</td><td><span class="tag ok">keep</span> Read ticks from the routes</td><td>rules, HUD</td></tr>
+<tr><td>act, ringCheck, inputMap, hudClick, driveClick, fireStop, leash</td><td>small</td><td>0 in the logs</td><td><span class="tag p">delta only</span> Don't retire: they guard input, and they aren't what makes the proof slow</td><td>input or camera code only</td></tr>
+<tr><td>levels</td><td>3 s</td><td>0</td><td><span class="tag p">delta only</span></td><td>walk file, world</td></tr>
+<tr><td>Frame-time spots (overhead, follow, drive, people)</td><td>about 2 min</td><td>They don't gate. Studio proxy, often marked noisy</td><td><span class="tag s">move out</span> The Air is the real measure</td><td>render changes</td></tr>
+</table>
+
+<h2>Machine state (commands run)</h2>
+<table>
+<tr><th>check</th><th>result</th><th>Handover?</th></tr>
+<tr><td><code>bun tools/game/playing.ts --check</code></td><td>nobody playing (all load went through <code>bun run guard</code>)</td><td>n/a</td></tr>
+<tr><td><code>bun run missions:check handover</code></td><td><span class="tag ok">SHIPS</span> 893 plays in 20.7 s, MC-0..MC-15 ok, engine 1c8bf2210443</td><td>yes</td></tr>
+<tr><td><code>bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts</code></td><td>exit 0 (plan v0.5.6)</td><td>yes</td></tr>
+<tr><td><code>bun run sim check</code></td><td><span class="tag b">358/360</span> N67 “site has no camera 'mast-314'”, N110 NullReference (same cause). 13 s</td><td>yes: B1</td></tr>
+<tr><td><code>dotnet test sim/Suborned.Sim.Tests</code></td><td><span class="tag b">18 fail</span> / 2607, every one “site has no camera 'mast-314'” (N67/N110 ×5 harnesses, Sight fan, Redline E7 ×4 cultures, Rules refusals, Rounds, FailCause coverage). 3:14</td><td>yes: B1</td></tr>
+<tr><td><code>bun run test</code> (parallel)</td><td>19 fail / 2377, 7:40. None touch the Handover: block-grammar BG-1, frontage-square R-F1, pylon-clear, road-pavement ×2, skyline ×6 (levels), decokit fit ×2, world overlap ×2, oldmatch footprints, life presentation counts, drift-auto, kit digest; plus lint <code>tools/lint/comments.test.ts</code>, which catches S6</td><td>no (S6 is a proof)</td></tr>
+<tr><td><code>bun run typecheck</code></td><td>clean</td><td>n/a</td></tr>
+<tr><td><code>sim batch</code> fixtures + 027 checkpoints + 045 + 057 + c045 routes</td><td>59 played in 2.1 s, 10 not ok. All 42 c045 route scripts and DP1 pass. Not ok: cp-loud 11 vs 10 checkpoints, cp-safe 29 vs 28 (the fight-lab writer drops the closing checkpoint at <code>until</code> 1033/2870, not on a 100-tick mark; drive-session ends on 300 so it passes); sky-0.2.58 ×2 and n185 on old inputs (engines 0.24/0.30); four 045 <code>*.shots.json</code> and c045 <code>routes.json</code> aren't scripts</td><td>no gameplay fault (S5)</td></tr>
+<tr><td><code>bun run game:check</code></td><td>not run: <code>--dry-run</code> says it would <b>build 0.2.143</b> (513 inputs changed since 0.2.142, built 27 Oct 23:55). A Unity build wasn't asked for</td><td>see B2</td></tr>
+</table>
+
+<h2>Ranked issues (first check, at 1c8bf221)</h2>
+<table>
+<tr><th>#</th><th>tag</th><th>issue · evidence</th><th>owner (job)</th></tr>
+<tr><td>B1</td><td><span class="tag ok">fixed</span></td><td><b>Fixed in b00cace3.</b> <b>The mast camera's id changed under the mission.</b> In the brief 075 remap (c47b5a96, 28 Oct; the zone-local ids in 0812091d) the camera's id in <code>sim/data/handover.takedown.json</code> became <code>street/records-square/mast-camera-z0</code>. <code>Site.cs:226</code> turns that id into <code>mast-z0</code>, which breaks the following:
+<br>• <b>The checks.</b> sim check fails N67 and N110, and dotnet test fails 18. <code>tools/sim/unity.ts</code> exits 1 on any failed scenario, so <code>bun run batch</code> stops at step 1 and no build can pass game-check (360/360).
+<br>• <b>The game.</b> Every <code>camera-mast-314</code> key in <code>contracts/missions/handover/text.json</code> misses: the name, the hover text, the Watch, Loop, Disable and Fire lines, and the Scout's and Tech's spoken lines. The HUD falls back to generic text, and the fail camera would say “a camera”. This is read from the code (HandoverHost.cs:1262, HostFailCam.cs:398); it isn't in any build yet.
+<br>• <b>A proof.</b> <code>GameBoot.cs:457</code> looks up <code>mast-314</code> and skips the old-robot proof without a word.
+<br>Waymark's question answered: this is a real Handover bug, not only a stale scenario.</td><td>Keel (a stable mission id for the mast, or the rename through sim and tests) · Fable (text keys) · Latch (GameBoot) · Splice (zone-local ids must not rename ids the mission uses; add a check)</td></tr>
+<tr><td>B2</td><td><span class="tag b">blocker</span></td><td><b>Nobody has played this Handover.</b> The last person to play was Sky, on 0.2.122 (26 Oct, brief 067). 0.2.139 got Glyph's SHIP on 27 Oct, and there is no record that Sky played it. The bot rows (brief 060) last ran on 0.2.122. The next build carries 513 changed inputs, the 075 world round the Handover zone among them. Nothing since 26 Oct has been seen working in a player's hands; it has only been checked in the sim and judged from stills.</td><td>Aster (order) → Latch (batch and build after B1) → Suture (bot human rows, an uncoached look) → Sky</td></tr>
+<tr><td>S1</td><td><span class="tag s">should-fix</span></td><td><b>The timing slack is tight for a person.</b> From the mission check's slack lines:
+<br>• route-b-board: every step from 5:00 on can slip only <b>4 s</b> before the rivals reach Vale.
+<br>• route-a-board: 7 s before the guard sees the entry.
+<br>• route-g-fast: 13 s.
+<br>MC-5 passes, but it measures the margin to the closing event, not to a late click. A bot or person playing in real time will miss 4 s windows.</td><td>Motive (is 4 s intended?) → Waymark (re-measure at the 060 human profile's pace)</td></tr>
+<tr><td>S2</td><td><span class="tag s">should-fix</span></td><td><b>The two-car getaway is in the GDD but not built.</b> Sky picked it (option A, 26 Oct; GDD v0.30.0). §07 route B describes it: the Enforcer takes the wheel of Vale's car and the cell makes two Go's. There is no rule switch for it and no route script. Both c045 route B scripts use the one-car way (the Tech drives the cell's car round). T11 asks players to play it.</td><td>Aster (does Sky still want it before submission?) → Keel → Waymark → Latch. Or mark it unbuilt in the GDD</td></tr>
+<tr><td>S3</td><td><span class="tag s">should-fix</span></td><td><b>The quiet final fights are short.</b> Route B 8 s (7:24.0–7:32.1), route G 10 s, route A 21 s; loud 35 s. Sky (067 #10): “The fight should be a lot more fun.” Brief 039 aimed for 30–60 s. Fight B is in, but the quiet fights are still a single beat.</td><td>Motive (rule) · Sky judges in play</td></tr>
+<tr><td>S4</td><td><span class="tag s">should-fix</span></td><td><b>The fight-lab reference is out of date.</b> The committed <code>briefs/027/keel/fight-lab.json</code> is from 0.34.1, before fight B, and the working tree now holds a 0.35.2 rewrite. Sky never approved a matrix; Sky approved fight B's design (26 Oct) and the stall fix (27 Oct). The 0.35.2 matrix is the first measurement of the fight Sky picked, and it sits closer to the GDD:
+<br>• <b>Loud runs.</b> L1–L4 all still fail (L2 now enforcer-down at 2:21.8, not sealed at 3:13.3). The tight-kite loud runs now last until the district seals instead of the Enforcer going down at about 3:09.
+<br>• <b>Prepared runs.</b> P-A and P-G now pass (P-G had failed rivals-reach-vale). P-B now wins (it had failed rivals-reach-vale) but loses <b>26 % health against the 25 % bar</b>, the one FAIL left. The trigger list goes from 5 to 0.
+<br>• <b>Time to go down.</b> An op 2.5 → 5.5 s, the Enforcer 5.5 → 7.0 s (the trigger line is &lt; 2.5 s).
+<br>Recommend adopting 0.35.2 as the reference. Motive rules on whether P-B's 26 % stands.</td><td>Motive (rule) · Keel (keep the file) · Aster (commit)</td></tr>
+<tr><td>S5</td><td><span class="tag s">should-fix</span></td><td><b>The pinned-script batch is always red.</b> 10 not ok, none of them a game fault. A batch that is always red hides real regressions. The fixes:
+<br>• cp-loud and cp-safe: the writer and the record check disagree about the closing checkpoint.
+<br>• Retire or re-stamp the sky-0.2.58 sessions and n185.
+<br>• Keep the 045 <code>*.shots.json</code> and <code>routes.json</code> out of script folders.</td><td>Keel (<code>sim/cli/FightLab.cs</code> Script.Write or the batch record check) · Aster (retire or re-stamp) · Splice</td></tr>
+<tr><td>S6</td><td><span class="tag s">should-fix</span></td><td><b>Code swallowed into a comment in the fire proof.</b> At <code>unity/Assets/Suborned/Runtime/Play/ProofFire.cs:117</code>, <code>yield return Shoot(dir, "tp-options", …); Keys(); yield return Frames(3);</code> sits after a trailing <code>//</code>. The third-person ring proof never takes its tp-options shot or releases E. The lint test fails on it. (<code>AvatarCheck069.cs:136</code> is also flagged; that one isn't the Handover.)</td><td>Latch</td></tr>
+<tr><td>S7</td><td><span class="tag s">should-fix</span></td><td><b>None of the player tests T1–T15 has been run</b> with 6 new players. Every read on readability (rings, cones, prices, the debrief, Talkers) comes from Sky alone or from the bots.</td><td>Suture (needs a build) · Aster (players)</td></tr>
+<tr><td>P1</td><td><span class="tag p">polish</span></td><td><b>Route A with Help never shows the guard fighting for the cell.</b> The reference script <i>runs</i> the Enforcer past the guard at 2:52, the guard “notices the enforcer running”, and the engine drops <code>guard-fights-them</code>. route-a-pressure and the route B scripts keep the ally. §07 promises that the guard fights the rivals; on the main route a player won't see it, and may not be told why.</td><td>Waymark (walk that leg) · Glyph/Fable (say why he isn't helping)</td></tr>
+<tr><td>P2</td><td><span class="tag p">polish</span></td><td>Glyph's nits on 0.2.139, last listed open: the holder disc's gap to the visible rim, the focus stack following posture, the Tech's kneel reading as upright.</td><td>Latch · Forma</td></tr>
+<tr><td>P3</td><td><span class="tag p">polish</span></td><td>Listed “next batch” on 26 Oct, not confirmed closed: the shuffle during the warned ambush wait, H7 re-aimed at the service door, Chime's cues for rivals.for-car and cell-down.</td><td>Pulse/Motive · Motive/Fable · Chime</td></tr>
+<tr><td>P4</td><td><span class="tag p">polish</span></td><td>Open-for-Sky items that touch the Handover: 11 (tension at the getaway), 17 (the final fight per agent, on trial), 21 (the done moment), 26 (the yard's exit lane), 7 (night).</td><td>Aster → Sky</td></tr>
+<tr><td>P5</td><td><span class="tag p">polish</span></td><td><code>bun run test</code> takes 7:40, close to the 10-minute cap.</td><td>Splice</td></tr>
+</table>
+
+<h2>Played through the sim (c045 scripts, <code>suborned-sim play</code>)</h2>
+<table>
+<tr><th>run</th><th>what happened</th><th>against §07</th></tr>
+<tr><td>route A (Inez, Help ×2)</td><td>Watch 0:09 → Listen 1:11 → Help (“not yet” at 2:01) → turned 2:51 → the guard walks to her → Enter 2:52.9 → out with Vale 3:30.9. Inez warns of the ambush (fires late, 4:01) and the fight runs 4:03–4:24, four rivals down. Win at 4:39 with $20,000 left, 4 T, A0. Three agents walk out on a calm street. The debrief notes Inez may be questioned.</td><td>Right. The guard's ally is lost (P1)</td></tr>
+<tr><td>route B (driver, Pay)</td><td>The driver is paid, the rivals are tipped off, the patrol is rerouted. The Tech drives the cell's car to the service drive, the Enforcer takes Vale outside, the fight runs 7:24–7:32 and the car goes 7:35. Win with $30,000 left, 4 T, A0. The guard fights for the cell, the lookout is warned off, the wheelman is away.</td><td>The one-car way only (S2). 4 s of slack (S1)</td></tr>
+<tr><td>route G (the guard)</td><td>The guard is knocked out, then Enter, Vale out, a 10 s fight, win at 3:59.6, 5 T, A1. In the debrief a witness volunteers and the guard <b>talks</b> (“fear 1 + resentment 0 &gt; bravery 0 + loyalty 0”).</td><td>Right: a Talker you meet again</td></tr>
+<tr><td>loud</td><td>The guard is shot at 2:31, the seal clock starts, a body is found (Alert 2), Enter takes 68 s, the police come in from the north street, and the car leaves at 5:01.7. 27 T, Standing −1, security raised, the car seen and hunted.</td><td>Right: a heavy debrief</td></tr>
+<tr><td>a fail (takedown seen by camera)</td><td>“The entrance camera reports the breach. Vale is locked down.” Fails at 2:37, with the cause naming the camera.</td><td>Right</td></tr>
+</table>
+<p>Loop coverage in the sim:
+<br>• Watch, Learn, Turn (Help, Pressure, Pay), Time (the guard's walk, the loop, check-ins), Take, Fight (safe and loud), the getaway (both stands), all 8 fail lines, the debrief (route, chain, investigators, Talkers), Trail, Alert, Standing and the next-mission carry-over all run, and all are checked by MC rules.
+<br>• Seen only in screenshots, never in a person's play since 0.2.122: the price shown before you commit, the rings, the cones and the fail camera.</p>
+
+<h2>What I couldn't check</h2>
+<p>I couldn't check the following:
+<br>• Unity compile and console: no Editor or MCP was running.
+<br>• game:check: it would start a Unity build of 0.2.143.
+<br>• Whether the 075 world in Unity matches the sim site (unity-match).
+<br>• The price shown before commit, and how the rings, cones and fail camera read in a player.
+<br>• Air performance.
+<br>• Whether Sky has played 0.2.139 or later. Nothing in the briefs says so.</p>
+</body></html>

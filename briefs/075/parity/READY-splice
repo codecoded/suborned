@@ -1,0 +1,16 @@
+Splice, brief 075 "nowhere near as good as original", 2026-10-29. Scope cut by Aster's STOP (notes.md): ground storey (job 2) not started; billboards not mine.
+
+1. OV-1, no intersecting buildings (new world rule, enforced from plan 0.5.2)
+   tools/world/rules/overlap.ts (+ overlap.test.ts, 6 tests: live passes; a mass pushed 2 m; two buildings' bays laid over each other; the old Bays rule put back), registered in tools/world/rules/index.ts.
+   Masses (buildings, civic as one, megastructure parts), facade-piece solid volumes and thin frames (eyebrows, slabs) from kit.collide.json; tol 0.1 m + the voxel cell.
+   Handover's protected buildings (plan standards.blocks.exempt "handover:", civic) among themselves: counted, not failed (79 faults, 42 pairs: today's grammar's CornerPier_Out_Top etc.; ZK-1 pins them).
+   Count outside the Handover, same plan, intoWalls on -> off: 146 faults (64 piece-mass, 82 piece-piece) between 60 building pairs -> 0.
+   Cause: StreamEnd's ribbon eyebrows wrap 1.6 m past the bay line at every floor, so the old Bays rule (round toward a lower neighbour) runs into that neighbour's wall (east-wall-s/2 into /3 is the curved end in the Skyport view).
+   Fix: tools/world/gen/oldblocks.ts OLD_BLOCK.intoWalls = false: an end rounds only into open ground or where the plan names an end cap.
+   NOTE for the old-builder swap: DecoKitFrontage.Bays has the same rule, so the old-built scene will reproduce it unless that rule changes there too; run OV-1 on its export.
+
+2. Old palette assignment (forced: Vela's facade.json now carries only the old families, the generator crashed)
+   tools/world/gen/colourways.ts (ensembleOf / oldOf / piecesAt; 074 neighbour repair removed), oldstreet.ts (soft-* palette, no plain), build.ts (one call), rules/colourways.ts (CW-1 reworked), colourways.test.ts, oldstreet.test.ts.
+   Families now: southside 98, boulevard 79, gardens 13, harbour 9, soft-* 15 (4/4/4/3).
+
+Evidence: bun run world x2 exit 0, sha256 a330039f...386f6d both; world:faces exit 0; bun run plan exit 0 (158 PASS, 0 FAIL/WAIVE); --overlay handover exit 0 (163 PASS); cover and cover --check exit 0; sim:site exit 0, sim/data unchanged (Handover site did not move: no re-record); typecheck clean; bun run test tools/world tools/plan: 640 pass, 0 fail.

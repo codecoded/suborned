@@ -1,0 +1,46 @@
+== without PROBE_SHIELD=0
+FAIL  MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 29/39
+FAIL  MC-5  The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event: route A 2:56 early
+HOLDS handover: 274 plays on engine tree in 5.9 s; report out/missions/handover/check.html
+        route-a-pressure-board: expected success at A 1, got failure rivals-reach-vale at A 1
+        route-b: expected success at A 0, got failure rivals-reach-vale at A 0
+        route-b-board: expected success at A 0, got failure rivals-reach-vale at A 0
+        route-g: expected success at A 1, got failure rivals-reach-vale at A 1
+        route-g-board: expected success at A 1, got failure rivals-reach-vale at A 1
+        route-g-fast: expected success at A 1, got failure rivals-reach-vale at A 1
+        route-g-fast-board: expected success at A 1, got failure rivals-reach-vale at A 1
+        careless-reporter-not-stopped: expected success at A 2, got failure rivals-reach-vale at A 1
+== without PROBE_DRAWNBREAK=0
+FAIL  MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 34/39
+FAIL  MC-2  The loud route exists, wins, and costs more T than every quiet win (variants too): loud 14 T vs quiet route-a 5, route-a-board 5, route-a-pressure 7
+FAIL  MC-6  The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2): no quiet or no loud win
+FAIL  MC-10  Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no 
+HOLDS handover: 915 plays on engine tree in 20.7 s; report out/missions/handover/check.html
+        loud: expected success at A 2, got failure enforcer-down at A 2
+        loud-fight: expected success at A 2, got failure enforcer-down at A 2
+        loud-fast: expected success at A 2, got failure enforcer-down at A 2
+        loud-left-downed: expected success
+        loud-left-standing: expected success
+== without PROBE_LANE=0
+ok    MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 39/39
+SHIPS handover: 915 plays on engine tree in 26.6 s; report out/missions/handover/check.html
+== without PROBE_FIXPOS=0
+FAIL  MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 34/39
+FAIL  MC-2  The loud route exists, wins, and costs more T than every quiet win (variants too): loud 15+3 (case) T vs quiet route-a 5+12, route-a-board 5, route-
+FAIL  MC-5  The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event: route A 2:56 early, route G 4:13 early
+FAIL  MC-10  Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no 
+HOLDS handover: 282 plays on engine tree in 9.7 s; report out/missions/handover/check.html
+        route-b: expected success at A 0, got none at A 0
+        route-b-board: expected success at A 0, got none at A 0
+        careless-reporter-not-stopped: expected success at A 2, got none at A 2
+        careless-scout-idles-pickup: expected success at A 1, got none at A 1
+        careless-g-disable: expected success
+== without PROBE_GATE=0
+ok    MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 39/39
+SHIPS handover: 915 plays on engine tree in 28.4 s; report out/missions/handover/check.html
+== without PROBE_LATE=0
+ok    MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 39/39
+SHIPS handover: 915 plays on engine tree in 22.6 s; report out/missions/handover/check.html
+== without PROBE_FLOOR=0
+ok    MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 39/39
+SHIPS handover: 915 plays on engine tree in 23.6 s; report out/missions/handover/check.html

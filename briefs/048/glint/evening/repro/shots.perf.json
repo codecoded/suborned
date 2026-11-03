@@ -1,0 +1,2 @@
+{ "schema": "suborned.shots/1", "defaults": { "hud": true },
+  "shots": [ { "name": "perf-opening", "tick": 0, "perf": 6 } ] }

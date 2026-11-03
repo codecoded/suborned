@@ -1,0 +1,657 @@
+{
+ "note": "Held props for the new pipeline's figures (brief 069; the cell's pistol first). Today's game figures keep tools/figures/props.json (their own rigs, offsets per figure); this file is the new pipeline's: one convention for every held prop, one offset per skeleton (the shared MPFB rig, Attach_* bones placed and turned by rule in fit.json attach), and a seat check that fails loudly. Built by tools/figures/charpipe/props/prop_build.py; shown and checked by prop_show.py.",
+ "convention": {
+  "units": "metres, true size",
+  "origin": "the grip point: where the palm closes around the grip (for a prop without a grip, the point that rests in or on the hand)",
+  "axes": "Unity axes, left-handed: +Z forward along the prop's working line (a pistol's barrel, muzzle at +Z), +Y up (a pistol's slide, held level), +X the prop's right side. The FBX is written so Unity imports these axes with an identity root: in Blender the barrel is -Y and the slide +Z before export (Blender's FBX export puts Blender +Y at Unity -Z; the figures face -Y in Blender, +Z in Unity). prop_build.py reads the written FBX back in Unity's frame and fails if the bulk is not forward of the grip (+Z) and the slide above it (+Y).",
+  "attach": "every Attach_* bone carries the same frame by rule (fit.json attach.frame): its own +Z (Unity) is the prop's working line there, its +Y the prop's up. So a prop sits at localPosition = offset, localRotation = identity under the bone, one offset per skeleton for every figure on it"
+ },
+ "props": {
+  "pistol": {
+   "label": "The cell's sidearm, design 4 (Sky's pick, 2026-10-27): compact boxy body, glossy white and piano-black panels, polished chrome muzzle frame and side disc, one thin aubergine line",
+   "concept": "paid/069-props/codex/pistol_v3_gloss_contrast.png",
+   "sheet": "paid/069-props/codex/pistol_d4_sheet_1.png",
+   "sheetCells": {
+    "cols": 3,
+    "rows": 2,
+    "views": {
+     "right": [
+      0,
+      0
+     ],
+     "left": [
+      0,
+      1
+     ],
+     "threeQuarter": [
+      0,
+      2
+     ],
+     "muzzle": [
+      1,
+      0
+     ],
+     "rear": [
+      1,
+      1
+     ],
+     "top": [
+      1,
+      2
+     ]
+    },
+    "note": "row, col on the sheet; 'left' = the gun's left side (muzzle to the image's right)"
+   },
+   "mesh": {
+    "job": "069-props",
+    "pass": "pistol-mesh",
+    "budgetUsd": 1.0,
+    "estUsd": 0.6,
+    "model": "tripo:v3.1@0",
+    "views": [
+     "left",
+     "muzzle",
+     "right",
+     "rear"
+    ],
+    "viewsNote": "Tripo multiview slots [front, left, back, right], 'left' being the object's own left (as the Fixer's take showed: her left side went in 'left'). With the gun's left side as the front, the object's own left (the viewer's right) is the muzzle end, its back is the gun's right side, its right is the rear. Each sheet cell is cut on the sheet's flat grey, recentred on the object at the sheet's one scale (no view is rescaled alone), 1024 px.",
+    "settings": {
+     "texture": true,
+     "pbr": true,
+     "faceLimit": 3000,
+     "geometryQuality": "standard",
+     "textureQuality": "detailed",
+     "orientation": "default"
+    },
+    "settingsNote": "pbr on: the finish is gloss (white enamel, piano black, chrome) and Tripo's metallic-roughness map carries it; the figures are matte, this prop is meant to shine. faceLimit 3000 for a 2-3k prop (the tray is 2.2k). Standard geometry: 'detailed' is for dense meshes and is cut to 3k anyway."
+   },
+   "size": {
+    "lengthM": 0.18,
+    "axis": "barrel"
+   },
+   "grip": {
+    "rule": "the closed hand of the drawn states (attach.hand.show.onlyWhile), solved per prop from its own grip surface (prop_show.solve_grip, contact): the grip pushed out of the palm until no palm vertex is inside it, then each finger bone closes, knuckle first, up to curlMaxDeg and stops at contact (the step before a vertex of it or the bones beyond goes inside the prop by more than tolM). The solved angles go to attach.json hand.grip.curlDeg: in the game a hand layer masked to the right fingers, its Humanoid finger muscles Latch's to tune to them. Only figures with finger bones (the 52-bone cell). Checked (fails loudly): seen down the grip's own axis, the middle and ring fingers (wrapFingers), knuckle to tip, each turn at least wrapMinDeg about the grip's centre at their height (the grip is inside the closed fingers), and the right hand crosses the prop in at most handCrossMaxPairs triangle pairs; the index (trigger finger), the little finger and the thumb are reported.",
+    "wrapMinDeg": 150,
+    "seatFromClosedHand": true,
+    "seatNote": "for figures with finger bones: the grip goes where the closed middle finger's circle has its centre (knuckle, last joint, tip), its height along the grip kept: attach.json hand.localPositionFingerBoned. Rigid-handed figures (the crowd) keep attach.hand.offset.",
+    "wrapFingers": [
+     "Middle",
+     "Ring"
+    ],
+    "curlMaxDeg": {
+     "Index": [
+      60,
+      80,
+      50
+     ],
+     "Middle": [
+      90,
+      100,
+      70
+     ],
+     "Ring": [
+      90,
+      100,
+      70
+     ],
+     "Pinky": [
+      90,
+      100,
+      70
+     ],
+     "Thumb": [
+      30,
+      40,
+      30
+     ]
+    },
+    "contact": {
+     "stepDeg": 2,
+     "stepM": 0.002,
+     "tolM": 0.001,
+     "maxPushSteps": 25,
+     "thenarM": 0.025,
+     "scanSteps": 41,
+     "thumbTurnDeg": 40
+    },
+    "handCrossMaxPairs": 30,
+    "mode": "contact",
+    "curlDeg": {
+     "Index": [
+      45,
+      60,
+      35
+     ],
+     "Middle": [
+      75,
+      85,
+      50
+     ],
+     "Ring": [
+      78,
+      85,
+      50
+     ],
+     "Pinky": [
+      80,
+      85,
+      50
+     ],
+     "Thumb": [
+      15,
+      25,
+      20
+     ]
+    },
+    "modeNote": "fixed: curlDeg with the grip at the closed middle finger's circle centre (wraps: middle 180, ring 248 degrees; 330 hand-grip crossing pairs). contact: solved from the prop's surface (prop_show.solve_grip: slide lifted off the hand, grip pushed out of the palm, thumb turned out, each finger closed to contact): 60 pairs but no wrap (middle 88, ring 73), the hand reads open. Neither meets both gates on this pistol: its grip is 7.2 cm deep and 3.9 cm wide at the palm (a real compact pistol's is about 4.5-5 by 3), so the Fixer's fingers (fitted 5-7 cm past the webs) can't close round it without passing through. Kept on fixed (the grip reads closed at play zoom) until the grip's size is settled."
+   },
+   "texPx": 1024,
+   "material": {
+    "smoothnessFloor": 0.0,
+    "note": "URP Lit from Tripo's PBR: albedo, and the metallic map packed R metallic / A smoothness (1 - roughness), as build.write_metal does"
+   },
+   "attach": {
+    "hand": {
+     "bone": "Attach_RightHand",
+     "offset": [
+      0,
+      0,
+      0.025
+     ],
+     "clips": [
+      "draw",
+      "aim_pistol",
+      "aim",
+      "shoot",
+      "cover_in",
+      "cover_kneel",
+      "cover_fire",
+      "cover_out",
+      "run_armed",
+      "walk_armed"
+     ],
+     "turnFromClip": {
+      "clip": "aim_pistol",
+      "rule": "the barrel lies along the aim line while aiming: over the aim frames (seat.aimFrames) of every figure shown, the level line from between the shoulders out through the gun hand is read in the bone's frame and averaged; the prop's one localRotation turns the bone's working line (+Z) onto it by the shortest arc. It is the clip's aim, the same on every figure of the skeleton (the spread across figures is reported). Was the forearm line (ForeArm -> Hand), which in this bladed two-handed aim runs 55-60 degrees across the facing."
+     },
+     "offsetNote": "2.5 cm forward along the barrel: the slide's rear clears the wrist and sleeve (aim_pistol on the Fixer: 5-10 crossings with the forearm at 0 and 1.5 cm)",
+     "show": {
+      "bone": "Attach_RightHand",
+      "onlyWhile": [
+       "draw",
+       "aim_pistol",
+       "aim",
+       "shoot",
+       "cover_in",
+       "cover_kneel",
+       "cover_fire",
+       "cover_out",
+       "run_armed",
+       "walk_armed"
+      ],
+      "rule": "Sky, 2026-10-27: 'I would just hide the gun for now when holstered.' The pistol exists only in the right hand: SetActive(true) only while the figure's Animator state is one of onlyWhile, SetActive(false) in every other state (as the tray: tools/figures/props.json). The names are the game's states (HostViews.Figures.cs; tools/figures/clips.json): draw the raise, aim_pistol/aim the hold (an armed op standing in a fight plays aim_pistol), shoot the recoil, cover_in/cover_kneel/cover_out/cover_fire the cover set with the pistol up (cover_pin is hands over the head: hidden), run_armed the armed run, walk_armed the armed walk (in the clip set; the game walks an armed op with walk/walk_f today, so a drawn op walking shows no gun).",
+      "holster": "there is no holster clip: the Holster order plays no state of its own, so the gun shows until the figure leaves the drawn states above. If Latch wants it exact, the sim's Gun.Drawn (false once HolsterAt has passed) is the switch, gated by the same list."
+     },
+     "seat": "hand",
+     "seatNote": "the grip is seated by the hand alone, not by a clip: localRotation identity under Attach_RightHand (barrel along the hand's rest forearm line, slide on the thumb side), so the closed fingers wrap the grip and the offset is the same on every figure and in both engines. Where the barrel points in a clip is the wrist's: Unity's Humanoid wrist in aim_pistol differs from Blender's (Latch's probe: pitch -18 to -5; PropCal: a single offset fitted to the level aim leaves -9 to +15 degrees of pitch and -20 to +4 of yaw over the hold), so no fixed offset holds the barrel level: the level aim is a runtime correction on the hand in the drawn states (Latch: rotate the hand, or the prop about its grip, so +Z lies on the aim line; PropCal reports the size of it)."
+    },
+    "holster": {
+     "bone": "Attach_HipRight",
+     "offsetRule": {
+      "outM": "half the prop's width + clearM",
+      "clearM": 0.012,
+      "backM": 0.07,
+      "note": "Tried in walk on the Fixer before the roles split: at the hip line the hanging hand and forearm crossed it at 4 of 6 frames; 7 cm back 2; 2 cm back and 8 cm up 4; 12 cm back and 6 cm up 3. The guard's trials are in seat.holster.trials and the result",
+      "upM": 0.0
+     },
+     "clips": [
+      "walk",
+      "run",
+      "crouch_walk"
+     ],
+     "note": "Attach_HipRight (fit.json attach.frame: up forward, working line down): barrel down, slide forward, out from the hip by half the prop's width + clearM, backM behind the hip line. For roles with a hidden holster (the cell) it is unused.",
+     "wornHipProp": "a figure wearing a hip prop at Attach_HipRight (the crowd's cross-body bag) has no free holster point: the holster is not shown or checked on it, and the report says so",
+     "parked": false,
+     "usedBy": "roles whose holster is visible (roles.guard)"
+    },
+    "support": {
+     "bone": "Attach_LeftHand",
+     "frame": "the prop's own frame (Unity: +Z barrel, +Y slide, +X its right): Latch's left-hand IK target for Attach_LeftHand = prop.transform * (position, rotation)",
+     "rule": {
+      "fingerThicknessM": 0.022,
+      "frontInsetM": 0.012,
+      "heightFrom": "the right middle finger's height on the grip",
+      "longAxis": [
+       1,
+       -1,
+       0
+      ],
+      "thumb": [
+       0,
+       0,
+       1
+      ],
+      "text": "a two-handed cup: the left palm against the gun's left side over the right hand's fingers: at the grip's section at the right middle finger's height, out from the grip's left face by the right fingers' thickness, back from the grip's front by frontInsetM; the left hand's long axis (its attach frame's +Z) runs across under the grip to the right and down (longAxis), its thumb side (+Y) forward along the frame (thumb). Checked in Unity (PropCal -support): over the aim hold the target lies within the left arm's reach."
+     },
+     "fingers": {
+      "curlDeg": {
+       "Index": [
+        35,
+        45,
+        30
+       ],
+       "Middle": [
+        40,
+        50,
+        35
+       ],
+       "Ring": [
+        40,
+        50,
+        35
+       ],
+       "Pinky": [
+        40,
+        50,
+        35
+       ],
+       "Thumb": [
+        5,
+        10,
+        5
+       ]
+      },
+      "note": "the left hand's support pose (data, like grip): fingers half closed round the right hand, thumb along the frame; a hand layer masked to the left fingers"
+     }
+    }
+   },
+   "seat": {
+    "clip": "aim_pistol",
+    "propBodyMaxPairs": 0,
+    "rule": "fails loudly (exit 1): in aim_pistol at each aim frame the grip point lies within gripToPalmMaxM of the right hand's surface (the hands are rigid and open: no fist closes on it), the barrel (+Z) points along the aim line (level, from between the shoulders out through the gun hand) within barrelToSightMaxDeg, and no prop triangle crosses the body outside the two hands (LOD0; the clip aims two-handed, so prop-hand crossings are counted and shown, not failed: the open fingers pass through the grip); holstered (roles with a visible holster) in walk, no prop triangle crosses the torso or legs. The angles to the forearm and to the hips' facing are reported: the clip aims bladed and two-handed, so its right forearm runs 55-60 degrees across the facing, and a barrel along the forearm pointed that far off the target (Latch's import measured the muzzle off the facing). A line from the eyes through the hand was tried and pointed 25-28 degrees at the ground: the clip holds the gun at chest height",
+    "gripToPalmMaxM": 0.03,
+    "aimFrames": {
+     "handWithinM": 0.05,
+     "count": 3,
+     "rule": "the clip's frames where the right hand is within handWithinM of its highest point above the hips (the clip raises the pistol, then lowers it), count of them evenly spaced"
+    },
+    "holster": {
+     "clip": "walk",
+     "frames": [
+      0.0,
+      0.17,
+      0.33,
+      0.5,
+      0.67,
+      0.83
+     ],
+     "trials": [
+      {
+       "armOutDeg": 0,
+       "backM": 0.07
+      },
+      {
+       "armOutDeg": 6,
+       "backM": 0.07
+      },
+      {
+       "armOutDeg": 10,
+       "backM": 0.07
+      },
+      {
+       "armOutDeg": 0,
+       "backM": 0.1
+      },
+      {
+       "armOutDeg": 6,
+       "backM": 0.1
+      }
+     ],
+     "rule": "for each figure whose role shows the holster: the holstered prop crossing the torso or legs fails; crossings with the hanging arm are reported per trial (armOutDeg: the upper arm on the holster side turned out about the figure's facing, a fixed layer for holster roles; backM: the holster's offset behind the hip line), and the trial with the fewest is the one roles.guard and attach.holster carry"
+    },
+    "barrelToSightMaxDeg": 8
+   },
+   "class": "handgun",
+   "gripFit": {
+    "rule": "the grip region only (below the slide's underside, behind the trigger guard) scaled about the grip's own centre line to the class's grip block at its middle height (depth along the barrel, width across), blended over blendM below the slide so the frame stays joined; the slide, guard and muzzle untouched",
+    "blendM": 0.015,
+    "guardClearM": 0.004
+   },
+   "gripPoint": {
+    "belowSlideFrac": 0.4,
+    "rearFrac": 0.5,
+    "muzzleProbeFrac": 0.12,
+    "rule": "the slide's underside is the lowest point of the front muzzleProbeFrac of the length (only slide there); the grip is the part below it in the rear rearFrac; the grip point (the pivot, socket grip) is the centre of the grip's section belowSlideFrac of the grip's height down from the slide"
+   }
+  },
+  "carbine": {
+   "label": "The Enforcer's carbine (Sky's delivery, out/enforcer-lods-v1: v6 source 23,772 tris, runtime LODs 2,499 / 997 / 400)",
+   "class": "longgun",
+   "source": {
+    "lods": [
+     "out/enforcer-lods-v1/Enforcer_Rifle_LOD0.glb",
+     "out/enforcer-lods-v1/Enforcer_Rifle_LOD1.glb",
+     "out/enforcer-lods-v1/Enforcer_Rifle_LOD2.glb"
+    ],
+    "maps": {
+     "pattern": "out/enforcer-lods-v1/Enforcer_Rifle_LOD{k}_{map}_{size}.png",
+     "sizes": [
+      "2K",
+      "1K",
+      "512"
+     ],
+     "px": [
+      2048,
+      1024,
+      512
+     ]
+    },
+    "authoring": "out/enforcer-lods-v1/Enforcer_Rifle_LOD_Authoring.blend (not used at runtime)"
+   },
+   "gripSearch": {
+    "from": 0.1,
+    "to": 0.45,
+    "underFrom": 0.24,
+    "underTo": 0.45,
+    "dropM": 0.03,
+    "belowFrac": 0.4,
+    "rule": "fractions of the length from the butt; the pistol grip is the run of the bottom profile in [from, to] more than dropM below the receiver's underside (the median bottom in [underFrom, underTo])"
+   },
+   "gripFit": {
+    "blendM": 0.012,
+    "marginM": 0.01,
+    "rule": "as the pistol: the grip region scaled about its centre line to the class's grip block (depth and width), blended in over blendM below the receiver; and, since the carbine scaled to 0.9 m leaves its grip 4.5 cm tall (too short for a hand), lengthened downward to the block's height (height true)",
+    "height": true,
+    "windowM": 0.035
+   },
+   "support": {
+    "fromGripM": 0.29,
+    "belowM": 0.0,
+    "longAxis": [
+     1,
+     0.3,
+     0
+    ],
+    "thumb": [
+     0,
+     0,
+     1
+    ],
+    "rule": "the left palm under the handguard, fromGripM ahead of the grip along the barrel (the chosen rifle clips' own hand spacing: rifle_aim 0.289 m, rifle_run 0.309 m), at the handguard's underside, centred; the left hand's long axis across under the handguard toward the right and slightly up (longAxis), its thumb forward (thumb), so the palm faces up into the handguard"
+   },
+   "material": {
+    "rule": "URP Lit per LOD from the delivered maps (prop_textures.py): albedo (sRGB), normal (OpenGL +Y, as Unity), and the metallic map R metallic (ORM blue), G occlusion (ORM red), A smoothness = max(1 - roughness (ORM green), clearcoat x clearcoatSmoothness)",
+    "clearcoatSmoothness": 0.9,
+    "lost": "URP Lit has no clearcoat layer and no anisotropy: the clearcoat survives only as extra smoothness where it is (no second specular lobe, no separate coat roughness or coat normal); the anisotropy map (brushed-metal streak direction) is dropped: the chrome reads as plain polished metal"
+   },
+   "attach": {
+    "hand": {
+     "bone": "Attach_RightHand",
+     "offset": [
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  }
+ },
+ "clipFiles": {
+  "note": "clips the prop pictures play that are not in fit.json clips.list (same Mixamo library, the game's own idle)",
+  "idle": "Neutral_Idle__c9c80e28.fbx",
+  "pistol_idle": "Pistol_Idle__c9c6b74c.fbx",
+  "pistol_aim": "Pistol_Idle__c9cdb599.fbx",
+  "pistol_run": "Pistol_Run__c9c9b1f3.fbx",
+  "rifle_idle": "Rifle_Aiming_Idle__c9c84492.fbx",
+  "rifle_aim": "Rifle_Aiming_Idle__c9c84492.fbx",
+  "rifle_fire": "Firing_Rifle__c9c863fe.fbx",
+  "rifle_walk": "Walk_With_Rifle__c9cc1182.fbx",
+  "rifle_run": "Rifle_Run__c9c814a0.fbx"
+ },
+ "roles": {
+  "note": "Sky, 2026-10-27: the weapon and the holster per role are data. 'the enforcer will have their own carbine'; 'guards should have their weapon holstered as it's a extra visual cue they're a guard'. holster: hidden = the weapon exists only in the hand, shown in the drawn states only (props.<weapon>.attach.hand.show); visible = it hangs at Attach_HipRight at all times and moves to the hand in the drawn states. A role whose holster is visible keeps Attach_HipRight free: the crowd's test cross-body bag is not built on it (fit/lib.role_skips). A person's role is its row's `role` (fit/e2e.json, fit/fixer.json).",
+  "cell": {
+   "members": [
+    "scout",
+    "fixer",
+    "tech"
+   ],
+   "weapon": "pistol",
+   "holster": "hidden"
+  },
+  "enforcer": {
+   "members": [
+    "enforcer"
+   ],
+   "weapon": "carbine",
+   "holster": "hidden",
+   "status": "the carbine is a separate prop, to come"
+  },
+  "guard": {
+   "weapon": "pistol",
+   "weaponStatus": "placeholder: the cell's pistol or a city-style guard sidearm is open with Sky",
+   "holster": "visible",
+   "armOutDeg": 10,
+   "armOutNote": "the trial with no contact (seat.holster.trials, e2e guard in walk, 6 frames): arm out 0 deg 1,058 crossing pairs at 2 frames; 6 deg 216 at 2; 10 deg none; 10 cm back with 0 deg 942 at 2, with 6 deg 169 at 1. Holster 7 cm behind the hip line. In the game this is a small fixed layer on the right upper arm for holster roles (Latch)"
+  },
+  "citizen": {
+   "weapon": null,
+   "holster": null
+  }
+ },
+ "unityCalibration": {
+  "rule": "Unity's frame is the source of truth for every held-prop offset (Latch's probe, 2026-10-27: Blender's retarget of aim_pistol held the hand level where Unity's Humanoid pitched it -18 to -5 degrees). tools/figures/charpipe/props/unity/PropCal.cs, run in a scratch Unity project (out/scratch/forma/unityprobe) on the built figures imported by Latch's rule (Create From This Model, the _avatarT T-pose by bone name, auto-mapping off) and the game's clip with its game meta, measures the prop's offset in Unity and writes props/<prop>/a/propcal.json; prop_show.py takes the rotation from it (Blender only previews it), and its own barrel angle is reported, not failed. The barrel's rule in Unity: the mean over every aim frame of every figure, the residual pitch and yaw over the hold reported.",
+  "command": "Unity -batchmode -nographics -projectPath out/scratch/forma/unityprobe -executeMethod PropCal.Run -figs fixer_v7_H,e2e_guard_H -clip Assets/T/aim_pistol.fbx -attach Attach_RightHand -forward 0.025 -out <propcal.json> (figures and their _avatarT in Assets/F, the game's clip and walk.fbx with their metas in Assets/T)"
+ },
+ "spec": {
+  "note": "Sky, 2026-10-27 ('go this route, we want official best practice'): every weapon follows one studio spec, written once. Pivot at the grip point; Unity axes (+Z barrel/muzzle, +Y up, +X the weapon's right); named sockets, each a position and rotation in the weapon's own frame, mapped onto Unity Animation Rigging constraints (Latch). References: briefs/069/research/weapon-grip-spec.md.",
+  "axes": "Unity, left-handed: +Z forward along the barrel (the muzzle at +Z), +Y up, +X the weapon's right; the pivot (origin) at the grip socket",
+  "sockets": {
+   "grip": {
+    "what": "the right hand's grip point: the weapon's pivot (position 0, rotation identity)",
+    "rig": "the weapon parented to Attach_RightHand at the hand-seated offset (attach.hand), or the target of a Multi-Parent/Override Transform; Multi-Aim on the weapon root lays +Z on the aim line at runtime"
+   },
+   "support": {
+    "what": "the left palm on the weapon (a pistol: cupping over the right fingers; a long gun: under the handguard)",
+    "rig": "Two Bone IK target for the left arm (tip Attach_LeftHand: the target's position and rotation are the Attach_LeftHand frame's), hint at the left elbow"
+   },
+   "shoulder": {
+    "what": "long guns: the stock's butt plate centre, where it meets the shoulder",
+    "rig": "Multi-Position/Override target that pulls the weapon's butt onto the right shoulder (or the aim's pivot)"
+   },
+   "muzzle": {
+    "what": "the muzzle's centre, +Z out",
+    "rig": "muzzle-flash and tracer origin; the aim line's start"
+   }
+  },
+  "classes": {
+   "handgun": {
+    "grip": {
+     "depthM": 0.05,
+     "widthM": 0.03,
+     "heightM": 0.1,
+     "note": "a compact handgun's grip below the slide: the Glock G26's frame is 32 mm wide and 106 mm tall with the magazine (references)"
+    },
+    "lengthM": 0.18
+   },
+   "longgun": {
+    "grip": {
+     "depthM": 0.05,
+     "widthM": 0.03,
+     "heightM": 0.1,
+     "note": "a carbine's pistol grip is the same hand's grip: the handgun block"
+    },
+    "lengthM": 0.9,
+    "lengthStatus": "Sky, 2026-10-27: 0.9 m (the delivered carbine is 1.594 m and is scaled to it)",
+    "barrelToSupportHand": true,
+    "barrelNote": "a shouldered long gun is placed by its grip with its butt at the shoulder (the standard): turned in the right hand so its shoulder socket lies on the line from the grip to the right shoulder; at runtime Multi-Aim turns it about the shoulder line to the target and Two Bone IK takes the left hand to the support socket. The earlier rule (barrel along the clip's right-to-left hand line) left the butt 18.5 cm off the shoulder: the clip's grip-to-shoulder distance on the Fixer is 0.359 m (the 0.35 m length of pull fits), but its hand line runs 26 degrees off the grip-to-shoulder line",
+    "lengthOfPullM": 0.35,
+    "lengthOfPullNote": "Sky, 2026-10-27 ('whatever suits'): the standard length of pull, 35 cm from the grip to the butt; the stock stretched along the barrel to it and the forward section and barrel shortened to keep 0.9 m overall (prop_build_longgun.py)",
+    "placeBy": "gripAndShoulder"
+   }
+  },
+  "checks": {
+   "aimFrames": 3,
+   "wrapMinDeg": 150,
+   "wrapFingers": [
+    "Middle",
+    "Ring"
+   ],
+   "handCrossMaxPairs": 30,
+   "rule": "at aimFrames of the class's aim clip (the frames where the right hand is near its highest), with the clip's own fingers: the middle and ring fingers each turn at least wrapMinDeg about the grip (knuckle to tip, seen down the grip), and the right hand crosses the weapon in at most handCrossMaxPairs triangle pairs; reported: the support socket's gap to the clip's own left Attach_LeftHand (closed at runtime by Two Bone IK) and, for long guns, the shoulder socket's gap to the right shoulder. Measured in Blender (weapon_show.py, preview) and in Unity (PropCal, the truth)."
+  },
+  "handPose": {
+   "stepDeg": 2,
+   "stepM": 0.002,
+   "maxPushSteps": 25,
+   "maxDeg": {
+    "Index": [
+     80,
+     100,
+     70
+    ],
+    "Middle": [
+     90,
+     100,
+     70
+    ],
+    "Ring": [
+     90,
+     100,
+     70
+    ],
+    "Pinky": [
+     90,
+     100,
+     70
+    ],
+    "Thumb": [
+     30,
+     40,
+     30
+    ]
+   },
+   "rule": "the standard hand pose per weapon class (Sky via Aster: 'official best practice'), sized to the class's grip block, for Latch's hand-override layer: solved per figure against the block itself (weapon_show.hand_pose): the block's centre on Attach_RightHand pushed out of the palm, each finger closed knuckle first to contact. The class pose is the angles per bone (about each bone's own X, toward the palm); checks.json handPoses has them per figure, and the seat (the grip socket's localPosition under Attach_RightHand). The block leans by the weapon's own grip rake (gripFit.rakeDeg), so the pose is per weapon (the 'hand pose per weapon' override).",
+   "thenarY": 0.015,
+   "search": {
+    "alongM": [
+     0.0,
+     0.01,
+     0.02,
+     0.03,
+     0.04,
+     0.05,
+     0.06,
+     0.07,
+     0.08
+    ],
+    "rule": "the block's centre tried at these offsets along the hand (the bone's working line, toward the fingers); kept only where the block touches the palm (it began inside the palm and was pushed just clear: further out it floats past the fingers and its winding reads high with the fingers straight); of those, the largest smaller-of-middle-and-ring wrap about the block's centre line"
+   },
+   "seat": "knuckleLine",
+   "artist": {
+    "handgun": {
+     "curlDeg": {
+      "Index": [
+       40,
+       55,
+       30
+      ],
+      "Middle": [
+       80,
+       95,
+       65
+      ],
+      "Ring": [
+       85,
+       95,
+       65
+      ],
+      "Pinky": [
+       85,
+       95,
+       65
+      ],
+      "Thumb": [
+       25,
+       35,
+       25
+      ]
+     },
+     "seat": [
+      -0.03,
+      0,
+      0.02
+     ]
+    },
+    "longgun": {
+     "curlDeg": {
+      "Index": [
+       40,
+       55,
+       30
+      ],
+      "Middle": [
+       80,
+       95,
+       65
+      ],
+      "Ring": [
+       85,
+       95,
+       65
+      ],
+      "Pinky": [
+       85,
+       95,
+       65
+      ],
+      "Thumb": [
+       25,
+       35,
+       25
+      ]
+     },
+     "seat": [
+      -0.03,
+      0,
+      0.02
+     ]
+    }
+   }
+  }
+ },
+ "clipSets": {
+  "note": "Sky, 2026-10-27: weapon clip sets from the store's Mixamo library, through the clip stage (tools/figures/clips.json, the shared neutral-leg avatar, the finger limits). Picked for hands already closed on a weapon of standard size (right middle and ring fingers' summed bend 160-210 deg against 50-90 for the empty-hand clips), both hands on the weapon where the class is two-handed, in place (hips travel under 0.1 m for idle/aim/walk/run), and one pack per class so the grip matches across its clips. Survey: out/scratch/forma/char-pipeline/props/weapon_clips_survey.json. Licence: Adobe Mixamo, royalty-free in games; the raw files are not redistributed.",
+  "handgun": {
+   "idle": "pistol_aim",
+   "draw": "pistol_draw",
+   "aim": "pistol_aim",
+   "fire": "pistol_fire",
+   "holster": "pistol_holster",
+   "walk": "pistol_walk",
+   "run": "pistol_run",
+   "stance": "one stance, the pistol pack's two-handed cup (Mixamo Pistol_Idle c9cdb599, the pack of Pistol_Walk and Pistol_Run c9cdb75a): aim is it; fire is it held with a recoil; draw and holster are the standard layered transition between the idle and its first frame (the library has no draw or holster in this stance: Drawing_Gun reaches behind the back, the Pistol_Start/Pistol/Pistol_To_Idle pack aims one-handed with the hands 27 cm apart); walk is the game's walk with it on the upper body. Sky, 2026-10-27: 'the pistol is really bad' (mixed sources: Drawing_Gun, Shooting_Pistol's body swing); armed idle is the aim itself (the low-ready Pistol_Idle c9c6b74c is another pack's stance)"
+  },
+  "longgun": {
+   "idle": "rifle_idle",
+   "aim": "rifle_aim",
+   "fire": "rifle_fire",
+   "walk": "rifle_walk",
+   "run": "rifle_run",
+   "raise": "rifle_raise",
+   "lower": "rifle_lower",
+   "stance": "one stance, the rifle aim pack (Rifle_Aiming_Idle c9c84492, Firing_Rifle c9c863fe, Rifle_Run c9c814a0): idle is the aim held (the pack has no lowered idle), fire from the same pack; raise and lower are the standard 0.6 s blend between the unarmed idle and the aim's first frame"
+  },
+  "speedBands": {
+   "walk": [
+    1.1,
+    1.7
+   ],
+   "run": [
+    2.3,
+    3.2
+   ],
+   "rule": "a locomotion clip's natural speed (clips.py: the planted foot's speed in the hips' frame) must lie in its slot's band, the game's own walk (1.53) and run (2.48) clips' range. A weapon pack whose walk or run lies outside it (Pistol_Walk 2.51 m/s: a brisk tactical walk, 0.83 s cycle with a 0.93 m stride, the measure is right; Pistol_Run c9cdb75a 4.42 m/s, a sprint) is not used: the slot takes a clip in band (pistol_run: Pistol_Run c9c9b1f3, 2.86) or the standard split, the game's walk on the legs with the pack's aim on the upper body (pistol_walk)"
+  }
+ }
+}

@@ -1,0 +1,7 @@
+080 host · Latch · 2026-10-30 · build 0.2.159, BATCH OK (12 steps, 1197 s), engine 0.37.0 DLL 187fac583f5c; unity-match 471/471. No commit.
+Seed: rolled in NewFightGame (HostSeed.cs). New game rolls; Replay, Return and Restart mission keep the seed. Shown: pause menu, debrief's last line, .end.txt; in the saved script's start and record. `-seed n` pins. Proof section `seed` ok (not gated: Splice): rolled, kept, saved run replays exact, another seed differs.
+Pins: automation runs on seed 0 unless pinned. r29 down seed 14, r29 seal seed 1; shots and late rows read tools/game/pins/*.json (seed 3, 14), because seed 0 of the loud routes is seen at the door. Proof ticks in r29, r059, r067 moved a minute with the clock.
+Shown: odds + Alt sum and streak note (HostOdds.cs), close and Enforcer warnings, Coming row, closed-in lines, miss tracer and bigger puff, driver hidden aboard. Clock strings, marks and H9 (3:00) moved.
+Not seen by eye: the fire chip and its Alt plate in a fight, the Coming row, the closed-in card. Words and data checked only. Glyph: 2x crop.
+Open: r123 (not gated) loud part: fixture bal-loud-x4 ends at 2:37 on seed 0. tools/game closing-hash test red (Sky's session 1 has no open-fight save on this engine: Keel). mission.json clock.transit note still says 17:24:30; at 17:25:30 departures are 0:30, 1:30, 2:30 and no runtime code reads it (Waymark). H9: Motive hasn't ruled.
+Videos: briefs/080/fight/seed-A.mp4 (108, win), seed-B.mp4 (117, rivals-reach-vale), sheets beside them; final hashes equal headless.

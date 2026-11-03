@@ -1,0 +1,40 @@
+{
+ "schema": "suborned.proofwords/1",
+ "note": "The capitalised words the proofs compare that text.json holds (brief 078; tools/game/words.ts). The words step and proofdelta.test.ts fail a word that leaves text.json, and a new comparison not listed here: so a change to the words needs only the sections that read them, not every proof that pins one.",
+ "words": {
+  "Proof059.cs": [
+   "Drive"
+  ],
+  "Proof067.cs": [
+   "Board",
+   "Drive",
+   "Fire",
+   "Guard"
+  ],
+  "Proof083.cs": [
+   "Click again to stop"
+  ],
+  "Proof118.cs": [
+   "Camera cut",
+   "Disable",
+   "Fire",
+   "Loop"
+  ],
+  "Proof29.cs": [
+   "Carry",
+   "Learned",
+   "Vale reached the getaway car",
+   "Watch"
+  ],
+  "ProofDone.cs": [
+   "Guard back",
+   "Help"
+  ],
+  "Proof085Scenes.cs": [
+   "Back to my post",
+   "Break",
+   "Inez warned him.",
+   "Yes. Yes"
+  ]
+ }
+}

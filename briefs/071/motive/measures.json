@@ -1,0 +1,54 @@
+{
+ "vale-car-official-to-bay": {
+  "m": 34.0,
+  "road_m": 12.4,
+  "yard_m": 21.5,
+  "s": 13.3
+ },
+ "vale-car-bay-out-east": {
+  "m": 47.9,
+  "road_m": 31.4,
+  "yard_m": 16.4,
+  "s": 14.5
+ },
+ "getaway-square-to-service-drive": {
+  "m": 121.0,
+  "road_m": 107.5,
+  "yard_m": 13.5,
+  "s": 28.3
+ },
+ "service-lane-to-getaway-bay": {
+  "m": 67.0,
+  "cell_walk_s": 37.2,
+  "rival_run_s": 23.9
+ },
+ "cabinet-to-getaway-bay": {
+  "m": 40.3,
+  "cell_walk_s": 22.4,
+  "rival_run_s": 14.4
+ },
+ "meet-driver-to-getaway-bay": {
+  "m": 78.6,
+  "cell_walk_s": 43.6,
+  "rival_run_s": 28.1
+ },
+ "ambush-1-to-service-bay": {
+  "m": 54.4,
+  "cell_walk_s": 30.2,
+  "rival_run_s": 19.4
+ },
+ "lane-start-from-car-m": {
+  "square (today)": 7.8,
+  "yard stand service-drive (today)": 16.65,
+  "service bay, Vale car (today's letter)": 22.25,
+  "service bay, Vale car (B10: from the car)": 0.0
+ },
+ "bay-lane-B10": {
+  "drive_m": 22.25,
+  "road_m": 7.75,
+  "post_10m_at": [
+   7375,
+   -1500
+  ]
+ }
+}

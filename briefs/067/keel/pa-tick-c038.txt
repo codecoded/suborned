@@ -1,0 +1,96 @@
+# P-A handover tick on c038's route-a-board (engine 0.34.1, tree 7aa8f88a); scratch build out/scratch/keel/pa (ScenariosFightLab.cs:375 and ScenariosFightLabAdv.cs:65 read PA_TICK; the tree still says 2490)
+# route-a-board c038: fight.ambush + cell panic at 4:01.4 (tick 2414); c037's panic was tick 2506, so 2490 was 1.6 s before the fight. 2398 keeps that offset.
+=== PA_TICK=2490  $ PA_TICK=2490 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           4:38.3    4/4     0  2→3   calm    active      0    0    0     5 %    1    3    16    2/2    c0/0 s2   pass
+lab             P-A  success           4:56.1    4/4     0  2→3   calm    active      0    1    0    38 %    7    3    35    2/1    c0/0 s15  FAIL — 1 op down; health lost 38 % > 25
+lab             6.4 triggers: 6.4.5 P-A downs 1 op
+lab-snap-off    P-A  success           4:56.1    4/4     0  2→3   calm    active      0    1    0    38 %    7    3    35    2/1    c0/0 s15  FAIL — 1 op down; health lost 38 % > 25
+lab-snap-off    6.4 triggers: 6.4.5 P-A downs 1 op
+lab-cover       P-A  success           4:56.2    4/4     0  2→3   calm    active      0    0    0    27 %    5    3    35    2/1    c0/0 s14  FAIL — health lost 27 % > 25
+lab-charge-off  P-A  success           4:56.1    4/4     0  2→3   calm    active      0    1    0    38 %    7    3    35    2/1    c0/0 s15  FAIL — 1 op down; health lost 38 % > 25
+lab-charge-off  6.4 triggers: 6.4.5 P-A downs 1 op
+lab-field-on    P-A  success           4:56.5    4/4     0  2→3   calm    active      0    0    0    33 %    7    3    34    2/1    c0/0 s15  FAIL — health lost 33 % > 25
+lab-kite-off    P-A  success           4:30.0    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    24    3/2    c0/0 s2   pass
+every run replays identically from its order log
+=== PA_TICK=2414  $ PA_TICK=2414 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:10.8    4/4     0  2→3   calm    active      0    0    0    22 %    4    3    26    2/2    c0/0 s7   pass
+lab             P-A  success           5:15.3    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    2/2    c0/0 s14  FAIL — health lost 33 % > 25
+lab-snap-off    P-A  success           5:15.3    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    31    1/1    c0/0 s14  FAIL — health lost 33 % > 25
+lab-cover       P-A  success           5:15.3    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    29    2/2    c0/0 s14  FAIL — health lost 33 % > 25
+lab-charge-off  P-A  success           5:15.3    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    2/2    c0/0 s14  FAIL — health lost 33 % > 25
+lab-field-on    P-A  success           5:15.3    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    2/2    c0/0 s14  FAIL — health lost 33 % > 25
+lab-kite-off    P-A  success           4:55.7    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    20    3/3    c0/0 s0   pass
+every run replays identically from its order log
+=== PA_TICK=2398  $ PA_TICK=2398 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:10.9    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    15    3/2    c0/0 s3   pass
+lab             P-A  success           5:07.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    1/1    c0/0 s9   pass
+lab-snap-off    P-A  success           5:07.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    1/1    c0/0 s9   pass
+lab-cover       P-A  success           5:10.3    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    32    1/1    c0/0 s9   pass
+lab-charge-off  P-A  success           5:07.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    1/1    c0/0 s9   pass
+lab-field-on    P-A  success           5:07.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    1/1    c0/0 s9   pass
+lab-kite-off    P-A  success           4:38.0    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    27    2/2    c0/0 s0   pass
+every run replays identically from its order log
+=== PA_TICK=2380  $ PA_TICK=2380 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:09.4    4/4     0  2→3   calm    active      0    0    0    22 %    4    3    18    1/0    c0/0 s7   pass
+lab             P-A  success           5:11.9    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s13  pass
+lab-snap-off    P-A  success           5:09.7    4/4     0  2→3   calm    active      0    0    0    27 %    5    3    30    2/0    c0/0 s13  FAIL — health lost 27 % > 25
+lab-cover       P-A  success           5:11.9    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s13  pass
+lab-charge-off  P-A  success           5:11.9    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s13  pass
+lab-field-on    P-A  success           5:11.9    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s13  pass
+lab-kite-off    P-A  success           4:57.2    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    34    2/0    c0/0 s15  pass
+every run replays identically from its order log
+=== PA_TICK=2390  $ PA_TICK=2390 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:10.5    4/4     0  2→3   calm    active      0    0    0    27 %    5    3    16    3/0    c0/0 s8   FAIL — health lost 27 % > 25
+lab             P-A  success           5:13.6    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s15  pass
+lab-snap-off    P-A  failure rivals-reach-vale 4:11.3    4/4     0  2→2   calm    active      0    1    0    33 %    6    2    26    2/0    c0/0 s14  FAIL — failure rivals-reach-vale; 1 op down; health lost 33 % > 25
+lab-snap-off    6.4 triggers: 6.4.5 P-A fails rivals-reach-vale
+lab-cover       P-A  success           5:05.8    4/4     0  2→3   calm    active      0    0    0    22 %    4    3    34    2/0    c0/0 s19  pass
+lab-charge-off  P-A  success           5:13.6    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s15  pass
+lab-field-on    P-A  success           5:13.6    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    29    2/0    c0/0 s15  pass
+lab-kite-off    P-A  success           4:51.1    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    33    2/0    c0/0 s14  pass
+every run replays identically from its order log
+=== PA_TICK=2396  $ PA_TICK=2396 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:10.7    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    15    3/3    c0/0 s3   pass
+lab             P-A  success           5:12.4    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    27    2/2    c0/0 s6   pass
+lab-snap-off    P-A  success           5:12.4    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    27    2/2    c0/0 s6   pass
+lab-cover       P-A  success           5:07.5    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    33    2/1    c0/0 s9   pass
+lab-charge-off  P-A  success           5:12.4    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    27    2/2    c0/0 s6   pass
+lab-field-on    P-A  success           5:12.4    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    27    2/2    c0/0 s6   pass
+lab-kite-off    P-A  success           4:40.7    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    32    2/2    c0/0 s5   pass
+every run replays identically from its order log
+=== PA_TICK=2400  $ PA_TICK=2400 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:10.6    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    15    3/2    c0/0 s3   pass
+lab             P-A  success           5:06.8    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-snap-off    P-A  success           5:06.8    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-cover       P-A  success           5:09.8    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    32    1/1    c0/0 s9   pass
+lab-charge-off  P-A  success           5:06.8    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-field-on    P-A  success           5:06.8    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-kite-off    P-A  success           4:38.0    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    28    1/1    c0/0 s0   pass
+every run replays identically from its order log
+=== PA_TICK=2402  $ PA_TICK=2402 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:10.7    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    15    3/2    c0/0 s3   pass
+lab             P-A  success           5:13.5    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-snap-off    P-A  success           5:13.5    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-cover       P-A  success           5:08.3    4/4     0  2→3   calm    active      0    0    0    11 %    2    3    35    1/1    c0/0 s9   pass
+lab-charge-off  P-A  success           5:13.5    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-field-on    P-A  success           5:13.5    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    32    1/1    c0/0 s9   pass
+lab-kite-off    P-A  success           4:37.9    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    28    1/1    c0/0 s0   pass
+every run replays identically from its order log
+=== PA_TICK=2406  $ PA_TICK=2406 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:04.8    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    17    3/2    c0/0 s3   pass
+lab             P-A  success           5:14.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    3/2    c0/0 s9   pass
+lab-snap-off    P-A  success           5:14.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    3/2    c0/0 s9   pass
+lab-cover       P-A  success           5:12.5    4/4     0  2→3   calm    active      0    0    0    27 %    5    3    39    2/1    c0/0 s15  FAIL — health lost 27 % > 25
+lab-charge-off  P-A  success           5:14.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    3/2    c0/0 s9   pass
+lab-field-on    P-A  success           5:14.4    4/4     0  2→3   calm    active      0    0    0    16 %    3    3    31    3/2    c0/0 s9   pass
+lab-kite-off    P-A  success           4:37.9    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    26    2/2    c0/0 s0   pass
+every run replays identically from its order log
+=== PA_TICK=2410  $ PA_TICK=2410 bun run guard dotnet out/scratch/keel/pa/bin/suborned-sim.dll fight-lab --runs P-A
+today           P-A  success           5:11.8    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    11    2/2    c0/0 s0   pass
+lab             P-A  success           5:15.7    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    3/2    c0/0 s12  FAIL — health lost 33 % > 25
+lab-snap-off    P-A  success           5:15.7    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    3/2    c0/0 s12  FAIL — health lost 33 % > 25
+lab-cover       P-A  success           5:15.7    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    3/2    c0/0 s12  FAIL — health lost 33 % > 25
+lab-charge-off  P-A  success           5:15.7    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    3/2    c0/0 s12  FAIL — health lost 33 % > 25
+lab-field-on    P-A  success           5:15.7    4/4     0  2→3   calm    active      0    0    0    33 %    6    3    30    3/2    c0/0 s12  FAIL — health lost 33 % > 25
+lab-kite-off    P-A  success           4:48.6    4/4     0  2→3   calm    active      0    0    0     0 %    0    3    22    2/2    c0/0 s0   pass
+every run replays identically from its order log

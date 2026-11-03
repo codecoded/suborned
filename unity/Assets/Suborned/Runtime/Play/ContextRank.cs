@@ -31,10 +31,10 @@ namespace Suborned.Play
 
         public static int Tier(Way w) => w.Do switch
         {
-            "take" or "enter" or "board" or "go" or "call" => 1,
+            "take" or "enter" or "board" or "go" or "call" or "drive-car" => 1, // brief 059 K6: a stand's one way is Drive (the quick click)
             "watch" or "listen" => 2,
             "turn" => 3,
-            "loop" or "reroute" or "mislead" => 4,
+            "loop" or "disable" or "reroute" or "mislead" => 4,
             "carry" or "stash" or "restrain" or "drop" => 5,
             "takedown" => 6,
             "fire" => 7,
@@ -43,7 +43,10 @@ namespace Suborned.Play
 
         static int Sub(Way w) => w.Do switch
         {
+            "go" => w.Outcome == "withdraw" ? 9 : -1, // brief 057 §4.2: once Vale is aboard, Go is the car's first way (before another agent's Board); brief 067 C1.5 (Glyph): Go before Vale (a withdraw) is last
+            "board" => 0, "drive-car" => 1, // brief 067 C1.5: on the car, Board before Drive (both tier 1: without these the hold fell to the ring)
             "watch" => 0, "listen" => 1,
+            "disable" => 1, // engine 0.31.0 (Glyph 058 §1): Loop leads on a camera; Disable after the cabinet's loops and Reroute
             "carry" => 0, "stash" => 1, "restrain" => 2, "drop" => 3,
             "takedown" => w.How == "kill" ? 1 : 0,
             "turn" => w.Approach == "pressure" ? 1 : 0, // Pressure is never a default: last of the turns
@@ -87,6 +90,10 @@ namespace Suborned.Play
             var ch = new Choice(); var avail = new List<Way>();
             foreach (var w in ways) if (w.Available) avail.Add(w);
             avail.Sort(Compare); foreach (var w in avail) ch.Order.Add(w.Index);
+            // Aster's call (batch 0.2.123, Glyph's 0.2.122 question): on a camera Loop leads the ring at 12 o'clock and Watch stands next, at 3
+            // (Disable at 6, Fire at 9 as before); the Scout, with no Loop, keeps Watch at 12. Only the ring's order: the quick click below still
+            // ranks Watch first (watching a camera teaches its cone before it is looped).
+            if (kind == "camera") { int li = avail.FindIndex(w => w.Do == "loop"); if (li > 0) { int ix = ch.Order[li]; ch.Order.RemoveAt(li); ch.Order.Insert(0, ix); } }
             if (kind is "crowd" or "unit") { ch.Act = Act.Silent; ch.Why = "passer-by"; return ch; } // never a plain click on a passer-by or a unit
             if (avail.Count == 0)
             {

@@ -1,0 +1,141 @@
+077 planting is see-through, sim side · Keel (Opus 5.5) · 2026-10-30
+Status: the rule is in and tested. The narrowed digest is in, behind a site option that the 077 adoption turns on once. The probe has been run.
+Nothing is adopted or regenerated, and nothing is re-recorded. sim/data is byte-identical: a rebuild with the committed options === handover.site.json.
+
+1. The rule (rulebook terms; tools/sim/solids.ts head, "render-only")
+- needs: a kit piece placed in the Handover window, plus its kit.collide.json entry.
+- changes:
+  - An entry that declares `volumes: []` is render-only. It is drawn, but stands no solid: no walk cell, no sight occluder, no cover.
+    The grid's digest never names it. Its stonework is a separate piece, or separate volumes, with its own entry.
+  - No entry at all is NOT render-only. It is listed `unmeasured`. A civic mass still stands as its prism, as before (until now that was silent).
+    buildSite refuses to build: "kit.collide.json has no entry for X, placed in the Handover window: measure it (bun run collide) or declare it render-only (volumes [])".
+  - An entry with no volumes list at all is an error, read by drawnSolids before anything is placed.
+  - Render-only is never inferred, from a name, a class or a height.
+- who sees: nobody. A render-only piece is invisible to sight and to the walk. Planting never hides anybody (Sky 2026-10-30, "yeah, see through").
+- digest (grid.collide): solidDigest covers the same fields as before (schema, frame, rule, and each piece's bounds and volumes).
+  - It covers only the pieces that stand at least one solid in the window, plus the camera pole (CCTVPole). A render-only piece adds nothing.
+  - A piece whose volumes all fall outside the window, or inside a building's own walls, adds nothing.
+  - A volume or bounds change, or a solid piece coming or going, still moves it.
+  - Why it's behind an option: today's digest names 5 placed render-only inlays (InlayBand_12_2, InlayBand_06_2, InlayArc_R4_W06/R9_W12/R2_W06).
+    Turning it on therefore moves grid.collide once, and with it every recording's inputs. That should happen at the adoption's regeneration, not before.
+  - The option: SiteOptions.solidDigest. `bun run sim:site --solid-digest` writes grid.collide = solidSha and grid.drawn.digest = "solid".
+    optionsOfSite reads it back from the committed site, so a plain `bun run sim:site` keeps it from then on. Off (the default today), the bytes are unchanged.
+  - The C# engine doesn't read grid.collide or grid.drawn's keys (Site.cs grid.Only lists "drawn"; Grid.cs never opens it), so no engine change is needed.
+
+2. Files (mine)
+- tools/sim/solids.ts:
+  - render-only in placePiece;
+  - unmeasured for a civic kit mass with no entry;
+  - the volumes-list check;
+  - `solidDigest`; Drawn.renderOnly and Drawn.solidSha;
+  - drawnSolids takes an optional collide (`collideIn`, for tests and the probe).
+- tools/sim/site.ts: the unmeasured refusal, the solidDigest option (CLI --solid-digest / --no-solid-digest), grid.drawn.digest.
+- tools/sim/solids.test.ts: 6 new tests, and the site test reads grid.drawn.digest.
+
+3. Evidence
+- Fail before: on a detached worktree of HEAD (out/scratch/keel/077/head, since removed), with only the new test file and a shim for the missing export: 6 fail, 13 pass.
+- Pass after (this tree): `bun run test tools/sim/solids.test.ts`: 19 pass, 0 fail.
+- `bun run guard bun run test tools/sim tools/geometry tools/routines tools/cover tools/missions`: 208 pass, 0 fail. `bun run typecheck`: clean.
+- The new tests:
+  - (a) A 1.9 m test piece with `volumes: []` on open ground: no solid, listed renderOnly, volumes count unchanged, solidSha unchanged.
+    The legacy collideSha does move, which is the bug Splice found.
+  - (b) The control: the same piece with one box stands 1.9 m and moves solidSha.
+  - (c) No entry: unmeasured, and stands as its 1.9 m prism.
+  - (d) No volumes list: throws.
+  - (e) solidDigest is unchanged by a render-only piece added, removed or re-bounded. It moves for a volume +1 cm, for bounds -1 cm, for a solid piece removed, and for a real window piece losing one volume.
+  - (f) The site: with the option off a rebuild === committed. With it on, only grid.collide and grid.drawn.digest differ.
+- Site refusal on a missing entry, checked in process: out/scratch/keel/077/refuse.ts.
+
+4. The probe (out/scratch/keel/077/adopt-probe.ts; output adopt-probe.json and .log; paths.ts, cells.ts)
+- Built on Splice's probe. The adoption is applied in memory as Sky approved it: same ids, footprints and frames.
+  - The 27 077 candidates are adopted in a kit copy, and the bed-level rule places the five CivicBedPlanting (BedTuft 92 -> 0).
+  - Each dome piece is drawn as its _TB rebuild.
+  - The companions' planting goes at their piece's transform (CafeTerrace, RecordsTower, CafeUpper_3; CafeUpper_4 isn't placed).
+  - A GlobeLamp_TB goes in each PlanterArc's frame, as the manifest says.
+  - kit.collide.json is as on disk: Vela's rev-3 stone-only volumes, and planting declared [].
+- New sight blockers: 0. Site occluders 298 -> 298, none changed. grid.drawn.sightOccluders 301 -> 301.
+- handover.site.json changes only in `grid`:
+  - rows: 4 cells blocked -> free, 0 free -> blocked (free 43,346 -> 43,350). drawn.walkCells 2439 -> 2435.
+  - grid.collide moves. With the option on, so does grid.drawn.digest.
+  - No place, stand, camera, cover, getaway or fight key moves.
+- By part (all with the solid digest):
+  - beds only: rows unchanged, collide moves.
+    The cause is BedTuft_A/B/C leaving (184 real volumes, retired with the domes). The tufts never blocked a cell first (the bed kerb does), so the rows hold.
+  - beds + companions + lamps, no swaps: rows unchanged, collide moves (the tufts and the lamp's 7 volumes).
+  - beds + _TB swaps: the 4 cells.
+  - Render-only alone (the five beds and three companions added to today's world, tufts kept): solids 2790 -> 2790, solidSha 796da831... -> 796da831... (unchanged).
+    The legacy digest under the same test goes bd405cc8 -> 630d4fbb.
+  - With no collide entry for the five, all five are named unmeasured, and the site refuses.
+- The 4 cells: all along the café terrace's west and south side.
+  - Block cm: (-1275,-4475), (-1075,-4625), (-925,-4275), (-675,-3975).
+  - Before, they were blocked by civic/cafe/terrace (CafeTerrace, 92 volumes in the window). After, the terrace is CafeTerrace_TB, 24 stone volumes to 0.68 m.
+  - The old terrace's planting volumes reached past the stone. Nearest places: police-4 0.8 m, police-2 1.1 m, police-1 1.8 m, ambush-2 2.2 m, d:West side 2.2 m.
+- Solid volumes in the window, by piece:
+  - BedTuft_A/B/C 62/64/58 -> 0;
+  - CafeTerrace 92 -> CafeTerrace_TB 24;
+  - PlanterArc 100 -> PlanterArc_TB 4;
+  - PlanterRun_4_A/B/C 15/32/21 -> _TB 5/4/3;
+  - RecordsTower 10 -> RecordsTower_TB 10 (identical volumes);
+  - GlobeLamp_TB 0 -> 28.
+- grid.collide: committed bd405cc8c7de... The full adoption gives:
+  - legacy 2b5de7d378a9... (the planting is named);
+  - solid fc49104d6d75... (moved only by real volume changes: the tufts retired, the troughs re-measured, the lamps added).
+- Routes (engine A*, tools/routines/walk.ts, with the 4 cells freed): of 1,111 place pairs with an end within 20 m, 17 change.
+  - Pairs with police-4: d:Café door, d:Behind café, d:West side, d:Between tables, beside-inez, ambush-2, police-1, police-2, security-entry.
+  - d:Behind café with d:Fountain, d:Plaza west, ambush-4 and police-3.
+  - d:Plaza west with security-entry and police-2.
+  - police-2 with rival-lookout, and police-3 with security-entry.
+- G-3a (the geometry audit's eye-height count, with the probe's occluders):
+  - now: 59.
+  - adopted, visible.ts as it is: 75 (+16).
+  - adopted, render-only pieces not stamped: 71 (+12).
+  - The +4 that see-through removes: CafeTerrace_Planting and three of the bed compositions (dropoff-west, facade-southwest, office-north). Office-west and facade-southeast stay under the eye or inside an occluder.
+  - The +12 that remain are 12 PlanterRun modules (run-west-south/0-2, run-west-cafe/0-1, run-east-south/0-2, run-east-cafe/0-3). Each _TB trough FBX carries its planting in the same mesh, and the measure stamps the mesh, leaves included, past 1.6 m.
+    The sim is right (stone-only volumes to 0.65 m); the measure isn't.
+  - The ratchet holds G-3a at 58 (today it is 59 already), so `bun run geometry --check` fails at adoption unless the measure honours see-through.
+
+5. Handoffs before adoption
+- Splice (tools/geometry/visible.ts, the export measure):
+  - Don't stamp a piece whose kit.collide.json entry declares `volumes: []`. This takes G-3a 75 -> 71.
+  - For a piece that carries planting in its own mesh (the 12 _TB troughs, and any _TB with planting objects), stamp only its stonework: either its non-planting objects (kit `objects`; materials DK_Leaf_TB, DK_Petal_TB, DK_Soil_TB), or nothing above its declared collide top. This takes G-3a 71 -> 59.
+  - Either way the same rule holds: the sim and the audit both read planting as see-through.
+- Vela, optional and Splice's call: split the troughs' planting into companions, as she did for CafeTerrace, RecordsTower and CafeUpper. Then the measure needs only the first rule.
+
+6. The sequence (one regeneration, then replay; the shared tree, nothing stashed)
+ 0. Before anything moves, on the tree as it is now: `bun run guard bun run sim hashes > out/scratch/077-replay/before.json`. This records every scenario's and route script's checkpoints, and the inputs hash in its "inputs".
+ 1. Splice adopts: kit.json statuses, the swaps, the companions and lamps placement, BedTuft and domes rejected, the visible.ts rule in 5.
+    Then: `bun run plan` and `bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts` (exit 0); `bun run world`; `bun run cover`, then `bun run cover --check`.
+ 2. Regenerate once: `bun run sim:site --solid-digest`.
+    Expected diff in sim/data/handover.site.json: grid.rows 4 cells '#'->'.'; grid.drawn.walkCells 2439 -> 2435; grid.drawn.digest "solid"; grid.collide a new solid digest. Nothing else.
+    Anything else moving is a stop: compare it against this probe. handover.takedown.json may move, since it walks the same grid; check it with git diff.
+ 3. `bun run rounds`, then git diff sim/data/handover.rounds.json. Inez's legs walk the site grid; only beside-inez <-> police-4 changed in the probe, so expect no change.
+ 4. Checks: `bun run guard bun run test tools/sim tools/routines tools/geometry tools/missions tools/cover`; `bun run typecheck`; `bun run guard bun run sim check` (C# scenarios on the new site); `bun run geometry --check` (G-3a <= ratchet once 5 is in).
+ 5. Behaviour across the input edit (Suture or Waymark):
+    `bun run guard bun run sim hashes --start-text <before.json "inputs"> > out/scratch/077-replay/after.json`.
+    Diff it against before.json. A scenario or route script whose checkpoints and result are identical didn't change behaviour: its record needs only the new inputs stamp, not a new outcome.
+ 6. The mission check:
+    - `bun run guard bun run missions:check handover --engine tree --inputs tree`. It must say SHIPS. The last record was c044: SHIPS, 893 plays.
+    - `bun run missions:check replay handover c044` fails on inputs, as expected. Record the new run once: `bun run missions:rerecord "077: testbed planting adopted, see-through; site 4 walk cells freed at the café terrace, grid.collide solid digest"`.
+ 7. Pinned scripts outside the route folder: `bun run guard bun run sim batch sim/Suborned.Sim/Fixtures briefs/027/checkpoints briefs/045/runs briefs/057`.
+    Every one fails on inputs. Re-record only those whose after.json behaviour moved (5) or whose outcome differs, each with its own tool:
+    - `bun run sim drive-session` for drive-session.script.json;
+    - fight-lab for the cp-* checkpoints;
+    - the 059/067 balance and square fixtures by their owners (Motive).
+    Re-stamp the rest.
+
+7. Recordings the change could plausibly affect (by the 17 routes in 4)
+- The final fight. Its police and ambush posts stand 0.8-2.2 m from the freed cells, and police-1..4, ambush-2 and ambush-4 walk to and from them.
+  - Route scripts: loud, loud-fight, loud-left-downed, loud-left-standing, fight-loud-enforcer-down, fight-loud-wait-square, fight-loud-wait-yard, fight-safe-rivals-reach-vale, fight-safe-unguarded, fail-district-seals, fail-enforcer-down, fail-rivals-reach-vale, fail-vale-dead, withdraw.
+  - Fixtures: bal-loud-x4, bal-rb-ff, bal-rbb-ff, cp-loud, cp-safe.
+- Security's entry and the rival lookout: security-entry <-> police-2/3/4 and d:Plaza west; rival-lookout <-> police-2.
+- d:Behind café, d:Plaza west and d:West side, where scripts use them: fail-district-seals names d:West side and d:Plaza west.
+- Unlikely to change behaviour:
+  - Quiet routes (route-a/b/g and their -board, -pressure, -fast and -kill variants, careless-*, fail-entry-*, fail-take-*). Their walks don't use the 17 changed pairs unless an order sends a crew member past the terrace's west side.
+  - Inez's rounds (only beside-inez <-> police-4 moved).
+  - Sight: no occluder moves, so no cone, camera or witness result can change.
+- Every recording's inputs hash changes regardless, because the site's bytes move: the rows, and the digest through the troughs' real volumes. step 5 is what separates a stamp from a re-record.
+
+Next owners
+- Splice: the visible.ts rule (5); then adoption and steps 1-2.
+- Suture or Waymark: steps 0 (before Splice starts), 3-7.
+- Aster: no decision is open on the sim side. The 4 freed cells come from the terrace planting no longer standing as a solid, which is what Sky asked for.

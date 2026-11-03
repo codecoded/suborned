@@ -16,7 +16,17 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         public static bool ShotBusy { get; private set; }
+        /// <summary>Brief 060 (-bot): the HUD manifest as a capture would write it now (no capture), else null.</summary>
+        public static string ManifestNow(string state = "rest") => live != null && live.on ? live.Manifest(state, Screen.height) : null;
         public static string LastShot { get; private set; } = "";
+
+        /// <summary>Brief 078 (the car effects' captures): the HUD layer drawn into `rt`, cleared to transparent, instead of the screen; null puts
+        /// it back. False when the kit view is not drawing.</summary>
+        public static bool HudInto(RenderTexture rt)
+        {
+            if (live == null || !live.on || live.doc == null) return false;
+            var ps = live.doc.panelSettings; ps.targetTexture = rt; ps.clearColor = rt != null; ps.colorClearValue = new Color(0, 0, 0, 0); return true;
+        }
 
         /// <summary>Queue a capture to `basePath` (absolute, no extension); `state` is rest, active or alt (rest becomes briefing while the briefing card is up, log while the history panel is open). Poll ShotBusy.</summary>
         public static string Shoot(string basePath, string state)
@@ -35,7 +45,7 @@ namespace Suborned.Play
             var full = ScreenCapture.CaptureScreenshotAsTexture();
             int w = full.width, h = full.height;
             File.WriteAllBytes(basePath + ".png", full.EncodeToPNG());
-            if (state == "rest" && host != null && host.ShowBriefing) state = "briefing"; // Splice's budget state for the briefing card (modal)
+            if (state == "rest" && host != null && host.ShowBriefing) state = BriefOnStreet ? "page" : "briefing"; // brief 070: the briefing page's own budget state (glyph-page-budget §1; the 0.2.117 card kept `briefing`)
             else if (state == "rest" && host != null && host.FeedHistoryOpen) state = "log"; // Splice's budget state for the open history panel (a reading surface, 18 %)
             File.WriteAllText(basePath + ".manifest.json", Manifest(state, h));
             File.WriteAllText(basePath + ".parts.json", Parts(h)); // brief 014 round 2: every visible HUD part's rect, for the 2x inspection crops
@@ -58,23 +68,44 @@ namespace Suborned.Play
 
         static bool Visible(VisualElement e)
         {
+            if (e.panel == null) return false; // Glyph N2 (0.2.137): an element taken off the panel (a released lock reticle) keeps its last rect: never in the manifest
             for (var x = e; x != null; x = x.parent) { if (x.resolvedStyle.display == DisplayStyle.None || x.resolvedStyle.visibility == Visibility.Hidden || x.resolvedStyle.opacity < 0.05f) return false; }
             return true;
         }
 
+        static string J(string t) => (t ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", " ");
+
         string Manifest(string state, int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
+            bool pillUp = vpill != null && Visible(vpill) && PillWords.Length > 0;
+            if (state == "rest" && pillUp) state = "active"; // Glyph budget §1: the state from the pill, not the view (r123-fight-ground: the follow view's Board pill was a `rest` frame)
             var sb = new StringBuilder(); sb.Append("{\n \"state\": \"").Append(state).Append("\",\n \"elements\": [");
-            bool first = true;
-            foreach (var (e, kind, text) in manifest)
+            bool first = true; var lay = root.panel.visualTree.layout; var screen = new Rect(0f, 0f, lay.width, lay.height);
+            foreach (var (e, kind0, text) in manifest)
             {
-                if (!Visible(e)) continue; var b = e.worldBound; if (b.width < 1 || b.height < 1) continue;
-                string t = text?.Invoke() ?? ""; if (kind is "speech" or "beat" or "line" && t.Length == 0) continue;
+                if (!Visible(e)) continue; var b = e.worldBound; if (b.width < 1 || b.height < 1 || !b.Overlaps(screen)) continue; // Glyph N5 (0.2.137): a mark off the frame is not counted
+                string kind = e == vpill ? (PillState == "lock" ? "lock" : "pill") : kind0; // Glyph budget §1, §2: the order pill and the lock pill, their own kinds
+                string t0 = text?.Invoke(); if (text != null && t0 == null) continue; string t = t0 ?? ""; // a null text: the element stands for nothing now (a kill's body root: its plate is the mark)
+                if (kind is "speech" or "beat" or "line" or "lock" && t.Length == 0) continue;
                 sb.Append(first ? "\n" : ",\n"); first = false;
                 sb.Append("  {\"kind\": \"").Append(kind).Append("\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k))
-                  .Append(", \"text\": \"").Append(t.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", " ")).Append("\"}");
+                  .Append(", \"text\": \"").Append(J(t)).Append('"');
+                if (mfPart.TryGetValue(e, out var part)) sb.Append(", \"part\": \"").Append(part).Append('"'); // brief 070: the page's pieces (page.ts)
+                if (mfN.TryGetValue(e, out var pn)) sb.Append(", \"n\": \"").Append(J(pn)).Append('"');
+                if (mfRows.TryGetValue(e, out var rows)) { sb.Append(", \"rows\": ["); for (int i = 0; i < rows.Length; i++) sb.Append(i == 0 ? "\"" : ", \"").Append(J(rows[i])).Append('"'); sb.Append(']'); }
+                sb.Append('}');
             }
+            // Glyph budget §3: each done chip on screen, its rows spelled (facts, verbs), never one joined text
+            foreach (var c in chipEls)
+            {
+                if (c.Id < 0 || !Visible(c.Root)) continue; var b = c.Root.worldBound; if (b.width < 1 || b.height < 1 || !b.Overlaps(screen)) continue;
+                static string Arr(List<string> xs) { var o = new StringBuilder("["); for (int i = 0; i < xs.Count; i++) o.Append(i == 0 ? "\"" : ", \"").Append(xs[i].Replace("\\", "\\\\").Replace("\"", "\\\"")).Append('"'); return o.Append(']').ToString(); }
+                sb.Append(first ? "\n" : ",\n"); first = false;
+                sb.Append("  {\"kind\": \"chip\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k)).Append(", \"facts\": ").Append(Arr(c.Facts)).Append(", \"verbs\": ").Append(Arr(c.Verbs)).Append('}');
+            }
+            // Glyph budget §5: the clock bar (the status pill top right), its rect only: its figures are read off the picture (the next mark's label is a word, see the report)
+            if (pill != null && Visible(pill) && pill.worldBound.width >= 1) { var pb = pill.worldBound; sb.Append(first ? "\n" : ",\n").Append("  {\"kind\": \"bar\", \"x\": ").Append(R(pb.x * k)).Append(", \"y\": ").Append(R(pb.y * k)).Append(", \"w\": ").Append(R(pb.width * k)).Append(", \"h\": ").Append(R(pb.height * k)).Append('}'); first = false; }
             // the pill's Alert lamps and pause glyph: icons by construction (the checker reads the lamp rings and the pause bars as strokes)
             var group = new[] { lamps[0], lamps[1], lamps[2], pauseIcon };
             Rect u = default; bool any = false; foreach (var e in group) if (e != null && Visible(e)) { var b = e.worldBound; u = any ? Rect.MinMaxRect(Mathf.Min(u.xMin, b.xMin), Mathf.Min(u.yMin, b.yMin), Mathf.Max(u.xMax, b.xMax), Mathf.Max(u.yMax, b.yMax)) : b; any = true; }
@@ -87,7 +118,7 @@ namespace Suborned.Play
         string Parts(int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
-            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoBubble), ("scene-skip", convoSkip) };
+            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoLine), ("scene-skip", convoSkip) };
             for (int i = 0; i < 4; i++) list.Add(($"portrait-{i + 1}", colWins[i]?.Clip));
             for (int i = 0; i < 4; i++) { list.Add(($"roster-weapon-{i + 1}", colWins[i]?.Arm)); list.Add(($"roster-status-{i + 1}", colWins[i]?.Status)); list.Add(($"roster-dots-{i + 1}", colWins[i]?.Dots)); } // brief 046: the row under each portrait
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));
@@ -117,7 +148,7 @@ namespace Suborned.Play
         }
 
         /// <summary>Worst-case values for the layout audit (Sky's wrapped "Pa / y"): every price line shows $100k, 88 s, +12, ≥2; chips 88 s; the
-        /// pill 8:30 and Trail 12. Display only: the run is never touched.</summary>
+        /// pill 7:30 and Trail 12. Display only: the run is never touched.</summary>
         public static bool Stress;
 
         /// <summary>The layout audit: every visible label whose text is wider than its box, or that runs onto a second line while it is meant to
@@ -213,7 +244,7 @@ namespace Suborned.Play
             float one = l.MeasureTextSize("Vale", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).y;
             var lines = new List<(string key, string text)> { ("win", t.EndWin), ("withdraw", t.EndWithdraw) };
             foreach (var kv in t.EndFail) lines.Add(("fail." + kv.Key, kv.Value));
-            foreach (var (code, fl) in t.Fails) lines.Add(("briefing.fails." + code, fl.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))); // the fallback head (HudModel.EndCard) when less.end has no line for the code
+            foreach (var (code, fl) in t.Fails) if (!t.EndFail.ContainsKey(code)) lines.Add(("briefing.fails." + code, fl.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))); // the fallback head (HudModel.EndCard) when less.end has no line for the code
             lines.Add(("fallback", "The attempt failed"));
             foreach (var (key, text) in lines)
             {

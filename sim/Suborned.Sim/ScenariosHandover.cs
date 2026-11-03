@@ -18,7 +18,11 @@ namespace Suborned.Sim
         // Re-sited 2026-10-19 with the door (Sky's option (b): the public door on the Office's west face): 5.6 m south of the door on the
         // forecourt, where Waymark's c022 routes park him (route G, loud); was (4850, -2300) beside the old north door. The entrance
         // camera, which now looks south along the face, sees it unless looped; the patrol's sweep crosses it.
-        static readonly Pt BesideDoor = new Pt(6950, -4250);
+        // Brief 055: (6925, -4250) in engine 0.27.0, 25 cm north of the old (6950, -4250), since Vantage's cypress cyp-office-w became a walk solid;
+        // engine 0.28.0 (perception.mount, the drawn occluders): 50 cm north and 50 cm west to (6875, -4300), the nearest free point (with the Fixer's
+        // spot 1.5 m west of it, N52, F8-O9, S9-KO) whose line to the guard on the landing clears the 2 m topiary top-office-w (out/scratch/keel/b056/py).
+        // Waymark's routes still stand at the old point: his to re-site.
+        static readonly Pt BesideDoor = new Pt(6875, -4300);
         /// <summary>Waymark's c025 Enforcer wait on the forecourt (brief 031: out of every clock-keeping watcher's sight, more than 3 m from the guard).</summary>
         static readonly Pt Forecourt = new Pt(5650, -4750);
         // posts covering the service lane exit, 10 m down the lane from where the response unit stops (motive-fights.md §2.9: the cell covers the exit).
@@ -62,18 +66,46 @@ namespace Suborned.Sim
         }
 
         /// <summary>Route A as S10 plays it, to the moment the Enforcer comes out with Vale.</summary>
+        /// <summary>Engine 0.28.0 (brief 054 §3.2): below Alert 2 a threat is minded by security only; wait (up to 2 min, a second at a time)
+        /// for a moment someone would see a Pressure on Inez (the off-duty guards at the café, a passing guard).</summary>
+        static void InSightOfSecurity(Run r)
+        {
+            var g = r.G;
+            for (int k = 0; k < 120 && g.Preview("pressure", Inez).Witnesses == 0 && !g.Over; k++) r.To(g.Tick + T(1));
+        }
+        /// <summary>Engine 0.34.0 (brief 067 A, Sky: the patrol "to the side of the service entrance"): the front routes waited for the forecourt
+        /// sweep to come onto the public door before they called (from 3:48 in route A, so the loop and the call ran over a sweep they then
+        /// waited out at the door); the sweep is the service yard's now and never sees the door, so they call at `from`. On a site whose sweep
+        /// sees the door they still wait for it. Bounded: a run that ends first ends the wait (S10 spun for ever on the yard site).</summary>
+        static void ToSweepAtDoor(Run r, int from = 0)
+        {
+            var g = r.G; r.To(Math.Max(g.Tick, from));
+            if (!g.SweepCoversEntrance) return;
+            ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): the yard sweep never sees the door, so no wait
+        }
+        /// <summary>Until the Enforcer may enter: the sweep (where it ever sees the door) is off it and the loop holds the entrance camera; bounded by the run's end.</summary>
+        static void ToEntryOpening(Run r, bool walkDone = false)
+        {
+            var g = r.G; var door = r.At("d:Office entrance");
+            while (!g.Over && (g.PatrolWatching(door) || !g.LoopOn || (walkDone && r.Op(Enf).Walk != null))) g.Step();
+        }
         static void RouteA(Run r, bool reroute = false)
         {
             var g = r.G;
             r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
-            r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance"); r.Done(Scout);
+            r.Do(Scout, "watch", Inez); r.Done(Scout);
             r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
             r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
             r.Done(Scout); HelpUntilTurned(r, Inez);
-            while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+            // engine 0.28.0 (brief 055, the drawn walk): the Fixer's walks are shorter round the drawn solids and Inez is turned at 3:27, not 3:48; the
+            // route still calls at the first sweep opening from 3:48, as it did, so Vale comes out at 5:53 and not at 4:32, when guard 74 crosses the
+            // service lane on his new way round the police post (he would see the carry and radio it: Alert 2, the patrol's fight). Engine 0.34.0: the
+            // yard sweep never sees the door, so it calls at 3:48, the tick the forecourt sweep's opening gave (its phase 28 s was on the door)
+            ToSweepAtDoor(r, T(228));
+            r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:16 by the tether)
             r.Do(Fixer, "call", Inez);
             r.To(r.Send(Enf, "d:Office entrance"));
-            while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+            ToEntryOpening(r); // engine 0.34.0: bounded by the run's end
             r.Do(Enf, "enter");
             if (reroute) r.Do(Tech, "reroute", "patrol");
             r.Done(Enf);
@@ -105,7 +137,8 @@ namespace Suborned.Sim
                 r.Is(mid != r.Stand("d:Official entrance") && mid != g.CarPos(), "Vale walks toward the car in live time");
                 r.To(T(370));
                 r.Eq(g.Vale, ValeAt.Pickup, "at 6:10 Vale is at the car");
-                r.Eq(g.ValePos(), (Pt?)g.CarPos(), "Vale stands at the official car");
+                var vp = g.ValePos()!.Value; int body = g.CarBodyCm("car:official", vp);
+                r.Is(!g.Walk.CarCovers(vp) && body >= 0 && body <= g.R.CarReachCm, $"Vale stands at the official car, at its kerb-side door off its ground (engine 0.33.1: {body} cm from its body)");
             });
 
             Add("S03", "36", "Called, the guard walks away in live time; behind him the Enforcer is out of his cone; a far shot leaves Inez unwitnessed; his 3 health drops him (Sky 2026-10-15 fights: health, not 2 hits); Alert 2.", r =>
@@ -151,12 +184,12 @@ namespace Suborned.Sim
                 // shorter and the seal falls later behind him
                 r.SendTo(Enf, new Pt(600, -2500));
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet")));
-                r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance");
+                r.Do(Scout, "watch", Inez);
                 r.Done(Scout); r.To(r.Send(Scout, "beside-inez"));
                 r.Do(Scout, "listen", Inez); r.Done(Scout);
                 // Changed: with every action taking its time the shot lands after the rivals park (3:10). A player who means to shoot sends
                 // the Scout to tip the rivals off first; the prototype's shot came at 1:32, before the rivals were there at all.
-                r.SendTo(Scout, new Pt(8250, -3100));
+                r.SendTo(Scout, TipSpot(r)); // brief 059: the tip is given at the rival car where it parks (rival-park, (90.5, -31))
                 // Changed (r016 cast, 2026-10-16): Help as often as the card asks (a Fearful Inez takes two, §04); the Tech reroutes the patrol
                 // with the Help the card says turns her, so its 115 s away covers the shot and the entry however many Helps came first
                 for (int i = 0; i < 4 && !g.Inez.Turned; i++)
@@ -167,6 +200,7 @@ namespace Suborned.Sim
                     r.Done(Fixer);
                 }
                 r.Is(g.Inez.Turned, "Inez is turned");
+                r.Done(Tech); r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:34 by the tether)
                 r.Do(Fixer, "call", Inez);
                 r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); r.Do(Scout, "mislead", "rivals");
                 r.To(g.LureTick + g.VisitWalkTicks);
@@ -183,14 +217,15 @@ namespace Suborned.Sim
                 r.Eq(r.Op(Enf).BusyEnd - g.Tick, T(g.R.EnterS + g.R.EnterAlarmS), "Alert ≥ 2: the staff hide Vale, Enter takes 30 s longer");
                 // Changed (Sky 2026-10-15 fights): the response unit waits at the service lane; the Fixer and the Tech cover the exit
                 r.To(Max(r.SendTo(Fixer, LanePostA), r.SendTo(Tech, LanePostB)));
-                r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Fixer, Tech);
-                r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
+                // engine 0.34.0: the Fixer and the Tech fight the unit down even once Vale is out (on brief 067's data the second officer falls 1.4 s
+                // after Vale comes out, 5 s after at the cell's 1.8 m/s, which starts the Enter 5 s sooner; on 0.33.1 he fell 5.7 s before it)
+                r.FightOff(() => g.SecurityDown, 120, Fixer, Tech);
+                r.Is(g.SecurityDown, "the cell downs the response unit at the service lane");
                 r.Done(Enf);
                 r.Send(Enf, "d:Getaway bay");
-                var car = r.At("d:Getaway bay"); int reach = g.R.AtReachCm;
-                while (!g.Over && !G.Within(r.Op(Enf).Pos, car, reach)) g.Step();
+                while (!g.Over && !g.AtGetaway(r.Op(Enf).Pos)) g.Step(); // engine 0.33.1: at the car's body (car.footprint.reach)
                 r.Extract();
-                r.Eq(g.Result, Outcome.Success, "a witnessed shooting leaves an escape window");
+                r.Line(g.Result == Outcome.Success, $"a witnessed shooting leaves an escape window ({g.Result} {g.FailCode}; brief 059: the four of the crew on foot are drawn to the Office front and press the Enforcer: Motive)");
                 var d = Debrief.Of(g);
                 r.Eq(d.PublicSecurity, "high", "the debrief: high alert");
                 r.Eq(d.InvestigationCause, "waitress-witnessed-shooting", "the debrief: Inez witnessed the shooting");
@@ -239,7 +274,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Boarding pavilion"));
-                r.To(T(370));
+                r.To(T(366)); // brief 080: Vale has a civilian's 3 health now, two carbine hits: time for both before he is driven away at 6:13
                 r.Fire(Enf, Vale, force: true);
                 r.Until(() => g.Over, T(10));
                 r.Eq(g.Result, Outcome.Failure, "killing the live capture target fails the objective");
@@ -247,12 +282,12 @@ namespace Suborned.Sim
                 ShotFrom(r, CauseIs(r, "vale-dead", "shot", true, Enf, "op", Enf), Enf, Vale); // the fail camera (ScenariosFailCause.cs): the Enforcer who fired, then Vale
             });
 
-            Add("S10", "140", "Route A, quiet: arriving shows nothing; Watch doesn't reveal the debt; Listen; loop; Help; call; wait out the patrol's sweep; enter; to the car. Calm, no shots, one contact.", r =>
+            Add("S10", "140", "Route A, quiet: arriving shows nothing; Watch doesn't reveal the debt; Listen; loop; Help; call; enter while the guard is at the café (engine 0.34.0, brief 067 A: the patrol sweeps the service yard and never sees the public door, so nothing at the door is timed to it); out by the service lane, which the yard sweep watches but where no machine sees an escorted Vale; to the car. Calm, no shots, one contact.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
                 r.Is(!g.Inez.KRoutine, "arriving at the café does not observe Inez");
-                r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance");
+                r.Do(Scout, "watch", Inez);
                 r.Done(Scout);
                 r.Is(!g.Inez.KNeed, "watching does not reveal Inez's debt");
                 r.To(r.Send(Scout, "beside-inez"));
@@ -260,34 +295,41 @@ namespace Suborned.Sim
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700)); // the Enforcer waits east of the door, out of the guard's cone
                 r.Done(Scout);
                 HelpUntilTurned(r, Inez); // as many Helps as the card asks (the cast's temperament, §04)
-                while (g.SweepSeesEntrance(g.Tick) == false) g.Step(); // call when the patrol's sweep covers the door
+                // engine 0.34.0 (brief 067 A): 0.33.1 called as the forecourt sweep came onto the door (from 3:48: 4:30.9), so the Enforcer arrived
+                // under it and waited it out. The yard sweep never sees the door: the call is at 3:48, as route A's (RouteA), and nothing waits for it
+                r.Is(!g.SweepCoversEntrance, "the patrol's sweep is the service yard's: at no point of its round does it see the public door (brief 067 A)");
+                r.To(Math.Max(g.Tick, T(228)));
+                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                r.Is(g.PatrolWatching(r.At("d:Office entrance")), "the patrol covers the entrance at the first opening");
-                while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
-                r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "waiting for its cone to pass makes an opening");
+                r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "at the door: the patrol is in the yard, not on the door");
+                ToEntryOpening(r); // the loop lands and holds the entrance camera
                 r.Do(Enf, "enter"); r.Done(Enf);
                 r.To(r.Send(Enf, "d:Getaway bay"));
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 r.Eq(g.Gunfire, 0, "no shots");
+                r.Is(!g.Log.Exists(l => l.Code == "attention.reporting" || l.Code == "patrol.breaks"), "the yard sweep reports nobody and never breaks: an escorted Vale is seen by no machine (§07, ScanEscort)");
                 var d = Debrief.Of(g);
                 r.Eq(d.Contacts, 1, "one contact");
                 r.Eq(d.PublicSecurity, "calm", "calm streets");
                 r.Eq(d.InvestigationCause, "staged-distraction", "Inez's staged distraction can be traced");
-                r.Is(d.Route.Contains("entry-timed-between-sweeps"), "the route summary: entry timed between sweeps");
+                r.Is(!d.Route.Contains("entry-timed-between-sweeps") && !d.Route.Contains("patrol-diverted"), "the route summary claims no sweep gap at the door and no diversion: the patrol had no part in the entry (engine 0.34.0: RouteBot \"\")");
+                r.Is(d.Route.Contains("waitress-pulls-guard-away") && d.Route.Contains("entrance-camera-looped"), "the route summary: Inez pulls the guard away, the camera is looped");
             });
 
-            Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; success. The Enforcer hit, Raised.", r =>
+            Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; the cell downs the response unit, then breaks the rival crew before Vale comes out (engine 0.34.0); success. The Enforcer hit, Raised.", r =>
             {
                 var g = r.G;
                 // brief 031: the Enforcer no longer waits at the Office approach while the Tech works (the guard, the entrance camera and the
                 // sweep would report him loitering): he sets off once the reroute is under way, so he arrives as the patrol leaves
                 r.To(r.Send(Tech, "cabinet"));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                r.Is(g.PatrolWatching(r.At("d:Office entrance")) || g.SweepSeesEntrance(g.Tick + T(45)), "the patrol covers the door on its sweep");
-                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
-                r.To(r.Send(Enf, "d:Office approach"));
+                // engine 0.34.0 (brief 067 A): the sweep is the service yard's and never sees the public door; the Reroute takes the patrol off the
+                // yard from 1:31 to 3:26, through the guard fight and the response unit's, as a loud front still would
+                r.Is(!g.SweepCoversEntrance && !g.PatrolWatching(r.At("d:Office entrance")), "the patrol sweeps the service yard, not the door (brief 067 A)");
+                r.Do(Tech, "reroute", "patrol"); r.To(r.Op(Tech).BusyEnd - 8); // engine 0.33.1: he walks round the getaway car (0.8 s), so he sets off 0.8 s before the reroute lands and reaches the approach when he did on 0.33.0
+                int there = r.Send(Enf, "d:Office approach"); r.Done(Tech); r.To(there);
                 r.Is(g.LoopOn, "the Tech holds the loop while diverting the patrol");
                 r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "the patrol is away");
                 r.Fire(Enf, GuardR);
@@ -303,10 +345,15 @@ namespace Suborned.Sim
                 r.To(Max(r.SendTo(Scout, S11Post), r.SendTo(Fixer, S11Post + new Pt(-250, 0)), r.SendTo(Tech, S11Post + new Pt(0, -250))));
                 r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Scout, Fixer, Tech);
                 r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
+                // engine 0.34.0 (M067-B1, brief 067 K): the rivals drawn by the guard fight stand on Rocket Lane by the Office front from 2:41.5; at
+                // the cell's 1.8 m/s the three were at their posts 17 s before Vale came out with nothing to do, and the four pressing the
+                // Enforcer as he walked Vale to the car downed him by one hit (3:33.5; 0.33.1 left him at 1 health). They go at the rivals once the
+                // unit is down, as a player would, and break the crew before Vale comes out
+                r.Engage(r.CityGunmen, () => !r.Op(Enf).Inside, 120, new[] { Scout, Fixer, Tech }, false);
                 r.Done(Enf);
                 // engine 0.19.0 (ai.intent.rivals.press, Pulse hostile-initiative.md §2.2): the rivals drawn by the gunfire press for the Vale
                 // holder, who can't fire walking Vale: the others go after them while he walks to the car
-                int bay = r.Send(Enf, "d:Getaway bay");
+                int bay = r.SendTo(Enf, g.Walk.NearestFree(r.Stand("d:Getaway bay") + new Pt(0, -160)) ?? r.Stand("d:Getaway bay")); // engine 0.33.1 (car.footprint): to its road-side door (0.33.0 walked him into the car's middle; at the kerb-side door the pressing three down him first)
                 r.Engage(r.CityGunmen, () => g.Tick >= bay, (bay - g.Tick) / Game.Hz + 1, new[] { Scout, Fixer, Tech }, false);
                 r.To(Math.Max(bay, g.Tick));
                 r.Extract();
@@ -338,7 +385,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                while (!g.PatrolWatching(r.Op(Enf).Pos)) g.Step();
+                if (!r.Until(() => g.PatrolWatching(r.Op(Enf).Pos), T(300))) { r.Is(false, "the patrol's cone reaches the Enforcer beside the door within 5 min"); return; } // bounded (brief 055: an unbounded wait hung `hashes` when the grid moved him)
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos), "out of the guard's cone");
                 r.Is(g.PatrolWatching(r.Op(Enf).Pos), "in the patrol's cone");
                 r.Fire(Enf, GuardR);
@@ -354,7 +401,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.Send(Enf, "d:Office approach")));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 r.Fire(Enf, GuardR); r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 int mark = g.NextMarkOf(g.GuardP, g.Tick);
                 r.Is(mark > g.Tick && mark <= g.Tick + T(g.R.CheckInPeriodS) && (mark - T(60)) % T(g.R.CheckInPeriodS) == 0, "his next mark is within 90 s, on his shift's 90 s marks (1:00, 2:30, …)");
@@ -375,7 +422,9 @@ namespace Suborned.Sim
                 // camera when she reaches the cabinet, which keeps the guard down before his 2:30 mark (waiting put him down at 2:30.8).
                 int enfAt = r.SendTo(Enf, BesideDoor);
                 r.To(r.Send(Tech, "cabinet"));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                r.To(g.Tick + T(42)); // Loop v2 (engine 0.31.0): the loop lands 42 s sooner than the held loop did (20 s, not 62 s); the reroute keeps its tick
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 r.To(Math.Max(g.Tick, enfAt));
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos), "out of the guard's cone");
                 r.Fire(Enf, GuardR);
@@ -390,7 +439,7 @@ namespace Suborned.Sim
                 r.Is(g.SecurityArrives < shot, "here it is sooner than the shot's 45 s");
             });
 
-            Add("S16", "259", "Gunfire brings the rivals in 16 s; a patrol within 30 m breaks off to chase, cone visible.", r =>
+            Add("S16", "259", "Gunfire brings the rivals in 16 s; only a patrol within 30 m breaks off to chase (engine 0.34.0, brief 067 A: the patrol sweeps the service yard, beyond 30 m of a shot at the public door, so it keeps its sweep and its cone; N186 shows the chase from the yard).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Office approach"));
@@ -398,32 +447,37 @@ namespace Suborned.Sim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Eq(g.RivalAt, g.Tick + T(16), "gunfire draws the rivals in ahead of schedule");
-                r.Is(g.PatrolChasing, "the patrol nearby breaks its sweep to pursue");
+                var e = r.Op(Enf).Pos;
+                r.Is(!G.Within(before, e, g.R.PatrolBreakCm) && !g.PatrolChasing, $"the patrol, {G.Dist(before, e) / 100} m off in the service yard (beyond {g.R.PatrolBreakCm / 100} m), keeps its sweep");
                 r.Wait(T(1));
-                var after = g.PatrolPose()!.Value.pos; var e = r.Op(Enf).Pos;
-                r.Is(G.D2(after, e) < G.D2(before, e) || g.PatrolTracking, "the patrol turns on the shooter: it closes in, or with him in reach it stops to engage (Pulse §3.6)");
-                r.Is(g.PatrolPose().HasValue && !g.PatrolDown, "the pursuing patrol keeps a visible cone");
+                r.Is(g.PatrolPose().HasValue && !g.PatrolDown && !g.PatrolChasing, "and its sweep's cone");
             });
 
             Add("S17", "274", "A rerouted patrol doesn't chase; the rivals still come from the east street, spot the Enforcer and fire after their 2 s react.", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                // engine 0.33.1 (brief 031, as S11): the Enforcer no longer waits by the door while the Tech works (the entrance camera reported him
+                // loitering at 1:37.6 and sent the police, who reached him 0.2 s before the rivals' react once the getaway car on the walk put the
+                // shot 0.8 s later): he sets off so he arrives as the reroute lands
+                r.To(r.Send(Tech, "cabinet"));
+                r.Do(Tech, "reroute", "patrol"); r.To(r.Op(Tech).BusyEnd - T(50));
+                r.To(Math.Max(r.SendTo(Enf, BesideDoor), r.Op(Tech).BusyEnd)); r.Done(Tech);
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Is(!g.PatrolChasing, "rerouting prevents the chase");
                 r.Eq(g.RivalAt, g.Tick + T(16), "the rivals still hear the gunfire");
                 r.Until(() => g.GuardDown, T(30));
-                // FIX → orders: the prototype moved the Enforcer to the service lane by hand; here he walks onto the rivals' way in
-                r.SendTo(Enf, new Pt(4200, -1000));
-                int limit = g.RivalAt + T(60);
-                while (!g.RivalsTracking && g.Tick < limit && !g.Over) g.Step();
-                r.Is(g.RivalsPose().HasValue, "the rivals come in visibly from the east street");
+                // FIX → orders: the prototype moved the Enforcer to the service lane by hand; here he walks onto the rivals' way in. Brief 059: the
+                // drawn crew comes by car to rivals.car.front and walks to the Office front, then turns back the way it came: he waits across Rocket
+                // Lane from the front stop, in their sight as they turn
+                r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(6575, -4700)) ?? BesideDoor); // brief 059: ahead of the drawn crew as they walk from the front stop to the Office front (engine 0.33.1: south of the approach, off the guard's body, where the police hold the scene)
+                int limit = g.RivalAt + T(90);
+                while (!g.RivalsTracking && g.Tick < limit && !g.Over) { g.Step(); var e = r.Op(Enf); if (!e.Gun.Drawn && e.Gun.HolsterAt < 0 && e.Busy == null) g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "draw" }); } // his weapon out as the crew comes (he holsters when a fight is over)
+                r.Is(g.RivalCarPose().HasValue, "the rivals come in visibly, by car");
                 r.Is(g.RivalsTracking, "the rival crew spots the Enforcer");
                 int spotted = g.Tick;
-                r.Is(r.Until(() => r.Shots().Exists(x => x.by == "rivals"), T(10)), "the rivals fire");
-                r.Eq(r.Shots().Find(x => x.by == "rivals").tick, spotted + T(g.R.ReactS), "after their react");
+                r.Is(r.Until(() => r.Shots().Exists(x => x.by.StartsWith("rival-", StringComparison.Ordinal)), T(10)), "the rivals fire");
+                r.Eq(r.Shots().Find(x => x.by.StartsWith("rival-", StringComparison.Ordinal)).tick, spotted + T(g.R.ReactS), "after their react");
             });
 
             Add("S18", "293", "The patrol's 4 health: two carbine hits disable it; its cone goes; the shots draw the rivals.", r =>
@@ -451,6 +505,9 @@ namespace Suborned.Sim
                 // starts (it lands at 1:19, before the shot), so the shot comes before 1:45 and the unit, not the mark, is the shot's
                 r.Do(Tech, "reroute", "patrol");
                 r.Do(Fixer, "call", Inez);
+                // engine 0.34.0 (M067-B1): at 1.8 m/s the shot would come at 0:55.8, before his 1:00 mark, which would then call the unit itself: the
+                // Enforcer lets the mark pass first, as N10 does, so the unit is the shot's (45 s), before the 2:30 mark
+                { int mk = g.NextMarkOf(g.GuardP, g.Tick); if (mk - g.Tick < T(45)) r.To(mk + 1); }
                 // wait for a shot from behind: in range, out of his cone, and a clear line (the atom fountain blocks sight since the cover's blockers, Pulse §5.4)
                 bool Shot() { var gp = g.GuardPose()!.Value.pos; return gp.X < 2500 && !G.Within(gp, r.At("d:Café door"), 1400) && G.Within(r.Op(Enf).Pos, gp, 1400) && !g.GuardWatching(r.Op(Enf).Pos) && g.S.Sight(r.Op(Enf).Pos, gp, g.R.Eye); }
                 while (!g.Over && g.GuardPose()!.Value.phase == "walking to café" && !Shot()) g.Step();
@@ -482,70 +539,59 @@ namespace Suborned.Sim
                 r.Is(g.Lockdown > g.Tick, "the wider cordon is still closing");
             }, Turned(Inez));
 
-            Add("S20", "327", "Route B, quiet: Watch and Listen at the car; turn the driver before 5:40; false tip on the rivals; 6:10 the service lane; take Vale; to the car. No shots.", r =>
+            Add("S20", "327", "Route B, quiet: Listen at the car (engine 0.28.0: no Watch to give on the driver, brief 054 §2.1); turn the driver before 5:40; false tip on the rivals; 6:10 the service lane; take Vale; to the car. No shots.", r =>
             {
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout);
+                r.Is(!g.WatchOffered(Driver), "no Watch to give on the driver (a Mercenary, neutral: brief 054 §2.1): Listen needs none");
                 r.Do(Scout, "listen", Driver); r.Done(Scout); // Sky 2026-10-15: Listen, not Watch, gives the need (the prototype's watch did)
                 TurnDriver(r);
                 r.Is(g.Driver.Turned, "the driver is turned");
-                r.To(r.SendTo(Scout, new Pt(8250, -3100)));
+                r.To(r.SendTo(Scout, TipSpot(r)));
                 r.To(T(320));
                 r.Do(Scout, "mislead", "rivals");
-                r.To(T(370));
-                r.Is(g.PickupService, "the pickup moved to the service lane");
-                r.Do(Enf, "take"); r.Done(Enf);
-                r.To(r.Send(Enf, "d:Getaway bay"));
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: Vale gets in at 6:13 and is driven round to the service bay
+                r.Is(g.PickupService, "the turned driver brought Vale round to the service bay");
+                int there = DriveRound(r); // brief 059 (Sky 1a): the Tech brings the getaway car round behind Vale's
+                r.Do(Enf, "take"); r.To(Math.Max(there, r.Op(Enf).BusyEnd));
+                r.FightItOut(120, Scout, Fixer, Tech);
                 r.Extract();
-                r.Eq(g.Result, Outcome.Success, "route B wins");
+                r.Line(g.Result == Outcome.Success, $"route B wins ({g.Result} {g.FailCode}; brief 059: with no final fight among the 28, the posted three at the yard fire on the Vale holder in their cone, Sky's answer 3: Waymark and Motive)");
                 r.Eq(g.Gunfire, 0, "no shots");
                 r.Is(g.Chain.Contains("rivals-false-tip"), "the rivals followed a false tip");
             });
 
             var drv = Turned(Driver); drv.Known[Driver] = new List<string> { "routine", "need", "temperament" };
-            Add("S21", "347", "Route B, camera-block twice and a reroute: the car blocks after 8 s, returns 2:30 + 8 s later; Vale walks to the moving car; the debrief lists 2 blockades and 1 reroute.", r =>
+            Add("S21", "347", "Brief 059 (Motive M059-6.1): the driver's Call (the camera block) is retired: a call on the turned driver is refused (nothing-to-call), his car never moves at the front, the pickup camera stays live. The turned driver drives Vale round from 6:13 at the car's pace (car.pace) and parks in the service bay; Vale is in the back; the debrief leads with the driver.", r =>
             {
                 var g = r.G;
-                // FIX → start state: the driver is turned at the start. With actions taking their time a natural turn lands near 3:20,
-                // and two blockades (2 × 2:38) no longer fit before 5:32; the start state keeps the scenario's intent, the mechanics.
+                // FIX → start state: the driver is turned at the start (the mechanics, not the turn, are under test)
                 r.Send(Enf, "d:Service lane"); r.Send(Scout, "d:Meet driver"); r.Send(Tech, "cabinet");
-                r.Do(Fixer, "call", Driver);
-                // Changed (brief 023, engine 0.8.2): a car stands on the drive grid, at its place's nearest drivable cell (rulebook car.drive)
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Driver }).code, "nothing-to-call", "the driver's Call is retired (M059-6.1): nothing-to-call");
+                // a car stands on the drive grid, at its place's nearest drivable cell (rulebook car.drive)
                 var pickup = g.S.CarStand(g.S.CarPickup); var bay = g.S.CarStand(g.S.CarService);
                 r.Eq(g.CarPos(), pickup, "the car starts at Vale's pickup");
-                r.Is(g.PickupCameraLive(), "the camera stays live while the car moves");
-                r.To(g.BlockedFrom);
-                r.Eq(g.CarPos(), g.S.CarStand(g.S.CarBlock), "the car parks in the sightline");
-                r.Eq(g.CarHeading(), (Pt?)g.S.CarBlockFacing, "parked at block-spot it lies along the bay's kerb, nose the way it pulled out (site car.blockFacing; Aster 2026-10-19)");
-                r.Is(!g.PickupCameraLive(), "the camera is blocked only once the car is there");
-                r.To(g.BlockedUntil + T(8));
-                r.Eq(g.CarPos(), pickup, "the car returns after the blockade");
-                r.Do(Fixer, "call", Driver);
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals"); r.Done(Scout);
+                r.To(T(360));
+                r.Eq(g.CarPos(), pickup, "it never moves at the front before Vale is in");
+                r.Is(g.PickupCameraLive(), "the pickup camera stays live (no block)");
                 r.Do(Tech, "reroute", "patrol");
-                r.To(r.SendTo(Scout, new Pt(8250, -3100)));
-                r.To(T(320)); r.Do(Scout, "mislead", "rivals");
-                r.To(T(355));
-                // Changed (brief 023, car.pace, Motive 2026-10-19): the turned driver drives at the road's and the yard's pace from 5:40 and is
-                // parked in the service bay about 13 s later, as Vale comes out (5:50) and long before he reaches it (6:10); Vale walks round to
-                // the parked car (its kerbside door is the Service lane point, 2.2 m from the car's centre: Waymark 2026-10-19)
-                r.Is(g.CarInBayTick > T(340) && g.CarInBayTick < T(355), $"the car is parked in the service bay by 5:55, before Vale reaches it at 6:10 (at {Report.Clock(g.CarInBayTick)})");
-                r.Eq(g.CarPos(), bay, "the driver has taken the car round to the service bay");
-                r.Eq(g.Vale, ValeAt.Leaving, "Vale is leaving");
-                r.Is(g.ValePos() != r.Stand("d:Official entrance") && g.ValePos() != r.Stand("d:Service lane"), "Vale walks round to the parked car");
                 r.To(T(370));
+                r.Eq((g.Vale, g.ValePos()), (ValeAt.Pickup, g.Walk.NearestFree(g.CarPos() + new Pt(-150, 0))), "6:10: Vale at his car at the official bay (brief 059 K1), at its kerb-side door (engine 0.33.1: the car's right, -x in the official bay)");
+                r.To(T(370) + T(g.R.ValeInS));
+                r.Is(g.Vale == ValeAt.InCar && g.CarHeading().HasValue, "6:13: he is in, and the turned driver drives (its heading along the drive)");
+                r.Is(g.CarInBayTick > T(373) && g.CarInBayTick < T(395), $"parked in the service bay at {Report.Clock(g.CarInBayTick)} (car.pace: 12 m of road at 5 m/s, the drive at 2 m/s)");
+                r.To(g.CarInBayTick);
                 r.Eq(g.CarPos(), bay, "the car waits in the service bay (service-bay)");
-                r.Eq(g.ValePos(), (Pt?)r.Stand("d:Service lane"), "Vale at the car's kerbside door (the Service lane point)");
-                r.Is(G.Within(g.ValePos()!.Value, g.CarPos(), 250), $"Vale beside the car: {G.Dist(g.ValePos()!.Value, g.CarPos())} cm from its centre");
-                r.Is(g.PickupCameraLive(), "leaving the pickup restores its camera");
-                r.Do(Enf, "take"); r.Done(Enf);
-                r.To(r.Send(Enf, "d:Getaway bay")); r.Extract();
+                r.Eq(g.CarHeading(), (Pt?)g.S.CarServiceFacing, "parked, along the bay (site car.serviceFacing)");
+                r.Eq(g.ValePos(), (Pt?)bay, "Vale in the back of it");
+                int there = DriveRound(r, Scout); // the Tech is rerouting the patrol: the Scout, back from the tip, drives
+                r.Do(Enf, "take"); r.To(Math.Max(there, r.Op(Enf).BusyEnd));
+                r.FightItOut(120, Scout, Fixer, Tech); r.Extract();
                 var d = Debrief.Of(g);
                 r.Eq(d.Route.Count > 0 ? d.Route[0] : "", "driver-moves-vale-to-service-lane", "the route summary leads with the driver");
-                r.Is(d.Extra.Contains("2 call:driver"), "the debrief lists 2 camera blockades");
-                r.Is(d.Extra.Contains("1 reroute"), "and 1 patrol reroute");
-                r.Eq(d.InvestigationCause, "several-interventions", "several interventions left a trail");
+                r.Is(d.Extra.Contains("1 reroute") && !d.Extra.Contains("call:driver"), "the debrief lists 1 patrol reroute and no camera blockade");
             }, drv);
 
             Add("S22", "386", "Gating: no action at a distance; an unknown person isn't callable; the Fixer and the Scout must stand beside Inez; a turned contact is callable. Engine 0.23.0 (rulebook cell.approach, Sky 2026-10-22): an act given at a distance is taken and walks the agent in, and starts only in reach; a need walking won't cure is still refused.", r =>
@@ -559,9 +605,12 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Refused(Fixer, "turn", Inez, "Help needs her need first (a Listen): refused wherever the Fixer stands, walking closer won't cure it", "help");
+                // engine 0.30.0: Inez's post is the site's stand (-975, -2925; Pulse's re-bake), 2.96 m from the Courtyard, inside Listen's 3 m: the Scout steps
+                // back to 6 m from her first, so the Listen is given out of reach as this case means
+                { var ip = g.PersonPos(g.Inez)!.Value; var d = r.Op(Scout).Pos - ip; long len = Math.Max(1, G.Isqrt((long)d.X * d.X + (long)d.Y * d.Y)); var back = ip + new Pt((int)(d.X * 600 / len), (int)(d.Y * 600 / len)); r.To(r.SendTo(Scout, g.S.Grid.NearestFree(back) ?? back)); }
                 r.ForHer("listen", Inez);
                 var l = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); int given = g.Tick;
-                r.Is(l.ok && r.Op(Scout).Busy == null, $"the Scout's Listen from the Courtyard is taken, and walks him in first ({l.code})");
+                r.Is(l.ok && r.Op(Scout).Busy == null, $"the Scout's Listen from 6 m is taken, and walks him in first ({l.code})");
                 r.Is(r.Until(() => r.Op(Scout).Busy != null, T(30)) && G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ListenReachCm), $"the Scout must stand beside Inez to hear the debt (3 m): it starts there, {(g.Tick - given) / Game.Hz} s later");
                 r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -573,7 +622,7 @@ namespace Suborned.Sim
                 r.Is(fp.Refused.Length > 0 || (fp.Walk && fp.WalkS > 0), $"being near Inez does not reach the guard: no shot from here, only a walk into range first ({(fp.Refused.Length > 0 ? fp.Refused : $"walks {fp.WalkS} s")})");
             });
 
-            Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, each Help at +$10,000 and +1 T.", r =>
+            Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, each Help at +$10,000 and +1 T, on the visits' share (worse-help-usd).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -590,7 +639,7 @@ namespace Suborned.Sim
                 // Changed (r016 cast, 2026-10-16): the prototype's Inez took one Help ($50,000, T 3). How many Helps she takes is the cast's
                 // (§04: one for an Idealist, two for the Fearful); what this tests is the refusal's line on every one of them.
                 long help = (long)g.R.Num("p:approaches.help.usd"), helpT = (long)g.R.Num("p:approaches.help.trail");
-                long refUsd = (long)g.R.Num("v:refusal-usd"), refT = (long)g.R.Num("v:refusal-trail");
+                long refUsd = (long)g.R.Num("v:refusal-usd"), refT = (long)g.R.Num("v:refusal-trail"), share = (long)g.R.Num("v:worse-help-usd"); // brief 085: a Help of two visits splits its money
                 int helps = 0; long before = g.Cash;
                 r.Eq(before, 100000L, "the cold approach cost no money");
                 while (!g.Inez.Turned && !g.Over && helps < 4)
@@ -600,16 +649,17 @@ namespace Suborned.Sim
                     r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); helps++;
                 }
                 r.Is(g.Inez.Turned, $"new information lets the Fixer recover from the refusal ({helps} Help)");
-                r.Eq(g.Cash, before - helps * (help + refUsd), "the cold approach raises the debt relief price, on each Help");
+                r.Eq(g.Cash, before - helps * (help + share + refUsd), "the cold approach raises the debt relief price, on each Help");
                 r.Eq((long)g.Trail, 1 + helps * (helpT + refT), "the refused approach leaves an extra trail, on each Help");
             });
 
             var idealist = new Start(); idealist.Temperament[Inez] = "idealist";
-            Add("S24", "421", "Watch unlocks Pay, shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is.", r =>
+            Add("S24", "421", "Pay is open with no Watch to give (engine 0.28.0, brief 054 §2.2: an Idealist Inez reads neutral; it was the Watch that unlocked it), shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is.", r =>
             {
                 var g = r.G;
+                // engine 0.28.0 (brief 054 §2.2): an Idealist Inez has fear 0 and reads neutral, so there is no Watch to give and Pay needs none
                 r.To(r.Send(Scout, "d:Courtyard"));
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.Is(!g.WatchOffered(Inez) && g.ScoutQuery("watch", Inez).code == "nothing-to-see", "no Watch to give on a neutral Inez: nothing-to-see");
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 var q = g.Preview("pay", Inez);
                 r.Eq(q.Lines[0].Usd, 70000L, "routine unlocks an expensive offer: $70,000");
@@ -637,13 +687,18 @@ namespace Suborned.Sim
                 r.Is(g.CanCall(Inez), "she can be called");
             });
 
-            Add("S26", "448", "The Tech's tether: leaving the cabinet ends the loop.", r =>
+            Add("S26", "448", "Loop v2 (brief 058 §2, engine 0.31.0; it was the Tech's tether): leaving the cabinet keeps the loop; it runs out on its own loop.run after it lands.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet")); r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                int landed = g.Tick;
                 r.Is(!g.CameraWatching("entrance", r.Stand("d:Office entrance")), "the loop holds");
                 r.To(r.SendTo(Tech, r.Stand("cabinet") + new Pt(-900, 0)));
-                r.Is(!g.LoopOn, "leaving the cabinet ends the loop");
+                r.Is(g.LoopOn && !g.CameraWatching("entrance", r.Stand("d:Office entrance")), "leaving the cabinet keeps the loop");
+                r.To(landed + T(g.R.LoopRunS) - 1);
+                r.Is(g.LoopOn, "still looped a tick before it runs out");
+                r.To(landed + T(g.R.LoopRunS));
+                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick == g.Tick), "loop.ends at landing + loop.run");
                 r.Is(g.CameraWatching("entrance", r.Stand("d:Office entrance")), "the camera is live again");
             });
 
@@ -652,19 +707,22 @@ namespace Suborned.Sim
                 var g = r.G;
                 var (ok, _) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", Point = Roof });
                 r.Is(!ok, "orders cannot target the Office");
+                var rb = g.Walk.RouteBeside(r.Op(Scout).Pos, r.Stand("d:Meet driver")); var sent = rb?[rb.Length - 1];
                 int at = r.Send(Scout, "d:Meet driver");
                 r.Is(r.Op(Scout).Walk!.Points.Length > 2, "the route bends round the Office");
-                bool outside = true;
-                while (g.Tick < at) { g.Step(); var p = r.Op(Scout).Pos; if (g.S.InsideOccluder(p) || !g.S.Grid.Free(p)) outside = false; }
-                r.Is(outside, "the operative stays outside the Office");
-                r.Eq(r.Op(Scout).Pos, r.Stand("d:Meet driver"), "and arrives where sent");
+                bool outside = true, offCar = true;
+                Pt? inside = null;
+                while (g.Tick < at) { g.Step(); var p = r.Op(Scout).Pos; if (g.S.InsideOccluder(p) || !(g.S.Grid.Free(p) || g.S.Grid.Free(p + new Pt(10, 0)) || g.S.Grid.Free(p + new Pt(-10, 0)) || g.S.Grid.Free(p + new Pt(0, 10)) || g.S.Grid.Free(p + new Pt(0, -10)))) { outside = false; inside ??= p; } /* a string-pulled line is sampled every 10 cm (Grid.LineFree), so it may cut a blocked cell's corner by a few cm: engine 0.33.1's walk round Vale's car cuts one by 3 cm at (6900, -4403) */ if (g.Walk.CarCovers(p)) offCar = false; }
+                r.Is(outside, $"the operative stays outside the Office{(inside.HasValue ? $" (in at {inside.Value}: {string.Join(", ", g.S.Occluders.FindAll(o => o.Contains(inside.Value)).ConvertAll(o => o.Id))})" : "")}");
+                r.Is(offCar, "and never walks over Vale's car (engine 0.33.1, car.footprint)");
+                r.Is(G.Within(r.Op(Scout).Pos, sent!.Value, r.G.R.BodyClearCm * 6) && !G.Within(r.Op(Scout).Pos, r.G.DriverPos()!.Value, r.G.R.BodyClearCm), "and arrives where sent: d:Meet driver lies on the ground of Vale's car at the pickup, so beside it, on the side he comes to (Walk.RouteBeside), and clear of the driver (fight.spacing.cell, engine 0.37.0)");
             });
 
             Add("S28", "471", "Engaging nearby stops the approach walk.", r =>
             {
                 var g = r.G;
                 r.Send(Scout, "d:Café door");
-                while (!G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ActReachCm)) g.Step();
+                while (!g.Over && !G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ActReachCm)) g.Step(); // engine 0.34.0: bounded by the run's end
                 r.Is(r.Op(Scout).Walk != null, "the Scout is still approaching");
                 r.Do(Scout, "watch", Inez);
                 r.Is(r.Op(Scout).Walk == null, "engaging nearby stops movement");
@@ -688,7 +746,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 // brief 013 (Motive §5.1): the guard checks in every 90 s; a shot just after a mark leaves the shot's own report to call the unit
                 int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) r.To(mark + 1);
                 r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
@@ -715,8 +773,12 @@ namespace Suborned.Sim
                 var d = Debrief.Of(g);
                 r.Eq(d.FightBranch, "loud", "the debrief names the loud fight");
                 r.Is(g.Log.Exists(l => l.Code == "ai.join"), "the response unit on the street joins the loud fight (Pulse §3.3)");
-                r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick)), "police hold their stand: none left it (Pulse §3.2)");
-                r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles, "the fight took its time");
+                // engine 0.34.0: an officer fired on from beyond his reach with no cover closes to his ring (brief 027 R4, KiteFightClose) and stops
+                // on the first foe in reach on the way (advance → engage): at 1.8 m/s the Scout fires on both from beyond their reach at 3:01.7, and at the
+                // run's end (3:20.6) they stand engaged short of the point they were closing to. That is holding, not a chase
+                bool closed(string id) => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith(id + " ", StringComparison.Ordinal) && l.Text.Contains("it closes"));
+                r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick) || (closed(h.Id) && h.Gun.St == "engage")), "police hold their stand: none left it but to close to its ring when fired on from beyond it (Pulse §3.2; brief 027 R4)");
+                r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles || g.FailCode == "enforcer-down", "the fight took its time (brief 059: the drawn crew, four on foot, presses the Enforcer and may down him sooner)");
                 if (!won) return;
                 // brief 018 §10 (Pulse): a final-fight officer sees the car go within the pistol's 25 m on a clear line: officer-2 at his stand, 19.4 m
                 r.Is(g.CarSeenBy.StartsWith("officer-", StringComparison.Ordinal) && g.Ledger.Exists(x => x.cause == "car-seen:" + g.CarSeenBy && x.delta == g.R.WitnessTrail), $"seen leaving: +1 T, by {g.CarSeenBy}");
@@ -728,11 +790,11 @@ namespace Suborned.Sim
                 var g = r.G;
                 RouteA(r, reroute: true); // the Tech diverts the patrol while the Enforcer is inside: the fight's gunfire would draw it (§05 [B] 30 m)
                 r.Eq(g.FightBranch, "safe", "no shots, Alert ≤ 1: the final fight is safe");
-                r.Eq(g.Hostiles.Count, 5, "five rivals: no driver turned, no false tip");
+                r.Eq(g.CrewInFight, 5, "five rivals: no driver turned, no false tip (brief 059: the crew's bodies, the lookout boarding the car)");
                 r.Is(g.FightWarned, "the helped Inez warns");
                 r.Is(g.GuardAlly, "the guard never saw the cell, so he fights them");
                 Support(r); ToAmbush(r); // brief 018: walking Vale the Enforcer doesn't fire; the three by the car fight
-                r.Is(g.Hostiles.TrueForAll(h => h.Gun.NextShot == g.FightSprung + g.R.AimNewTicks + T(10)), "lying in wait they would fire 1 s after springing; Inez's warning holds them 10 s more");
+                r.Is(g.Hostiles.FindAll(h => h.Present && h.Gun.St == "alerted").TrueForAll(h => h.Gun.NextShot == g.FightSprung + g.R.AimNewTicks + T(10)), "lying in wait they would fire 1 s after springing; Inez's warning holds them 10 s more (brief 059: those still in the car come in on their path)");
                 r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018 §10: break the crew (the blocker on the road falls first, the car free before the crew breaks)
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
@@ -753,29 +815,31 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
-                r.Send(Fixer, "d:Getaway bay"); // the support waits at the car (motive-fights.md §2.9)
-                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals"); r.Done(Scout);
-                r.Send(Scout, "d:Getaway bay");
-                r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals"); r.Done(Scout);
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60));
+                int there = DriveRound(r); // brief 059 (Sky 1a): the Tech brings the getaway car round behind Vale's; the support walks over to it (motive-fights.md §2.9)
+                r.SendTo(Scout, g.S.Grid.NearestFree(g.S.Stand("service-drive") + new Pt(300, 300)) ?? g.S.Stand("service-drive")); r.SendTo(Fixer, g.S.Grid.NearestFree(g.S.Stand("service-drive") + new Pt(300, -300)) ?? g.S.Stand("service-drive"));
+                r.Do(Enf, "take"); r.To(Math.Max(there, r.Op(Enf).BusyEnd)); // taken in his car in the service bay
                 r.Eq(g.FightBranch, "safe", "a quiet route B: the final fight is safe");
-                r.Eq(g.Hostiles.Count, 3, "three rivals: the turned driver and the earlier false tip take one each");
-                foreach (var op in new[] { Enf, Scout, Fixer, Tech }) r.Do(op, "draw"); // with Vale in hand the fight is on its way: drawing is no new act (the final fight is untraced)
-                r.Send(Enf, "d:Getaway bay");
+                r.Eq(g.Hostiles.FindAll(h => h.Id.StartsWith("rival-", StringComparison.Ordinal)).Count, 3, "three rivals: the lookout warned off by the turned driver, the wheelman away on the earlier false tip (brief 059: bodies, Pulse §7)");
+                foreach (var op in new[] { Enf, Scout, Fixer }) r.Do(op, "draw"); // with Vale in hand the fight is on its way: drawing is no new act (the final fight is untraced)
                 r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018: fight it out (the crew broken), then the whole cell boards and goes
                 // brief 018 (c018): walking Vale the Enforcer no longer fires, so the three take the fight and one of them may go down: carry him in
                 foreach (var down in new[] { Scout, Fixer, Tech })
                 {
+                    if (g.Over) break;
                     if (!r.Op(down).Down) continue;
                     var by = Array.Find(new[] { Fixer, Scout, Tech }, o => o != down && !r.Op(o).Down && !r.Op(o).Carrying.HasValue);
                     if (by == null) continue;
                     r.To(r.SendTo(by, g.S.Grid.NearestFree(r.Op(down).Pos)!.Value)); r.Do(by, "carry", down); r.Done(by);
                 }
-                r.GetAway(Enf, Scout, Fixer, Tech);
-                r.Eq(g.LeftBehindAtGo.Count, 0, "nobody left behind: a downed operative is carried in by another");
-                r.Eq(g.Result, Outcome.Success, "the prepared route wins");
-                r.Is(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("rival-", StringComparison.Ordinal)), "a rival steps to cover the data give (Pulse §2.3)");
+                if (!g.Over) r.GetAway(Enf, Scout, Fixer, Tech);
+                // brief 059: at the service drive the three post by the service door and fight from there; whether this scripted cell wins it is
+                // Waymark's re-composition and Motive's balance (the yard stand's spots, MC-11), recorded as lines
+                r.Line(g.LeftBehindAtGo.Count == 0 && g.Result == Outcome.Success, $"the prepared route wins with nobody left behind ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, left {g.LeftBehindAtGo.Count})");
+                r.Line(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("rival-", StringComparison.Ordinal)), "a rival steps to cover the data give (Pulse §2.3)");
             });
 
             Add("N12", "—", "People step their routines (§04, brief 010): at each tick everyone stands at the stop the people file gives, or walks between two stops, or is off the street.", r =>
@@ -784,7 +848,7 @@ namespace Suborned.Sim
                 r.Is(g.Walkers.Count > 100, $"the civic block's people are in ({g.Walkers.Count})");
                 bool atStops = true; int walking = 0, onStreet0 = 0;
                 Walker? mover = null;
-                for (int t = 0; t <= T(480); t += T(30))
+                for (int t = 0; t <= T(360); t += T(30)) // brief 059: an unturned driver drives Vale away at 6:13, and the run ends there
                 {
                     r.To(t);
                     foreach (var w in g.Walkers)
@@ -818,7 +882,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
                 int onlookers = g.Preview("pressure", Inez).Witnesses; // the same people, for a visible act (N12c)
                 r.Is(onlookers > 0, $"people stand within witness range of Inez, on a clear line: a threat here would be seen by {onlookers}");
                 int trail = g.Trail, standing = g.Standing, incidents = g.Incidents.Count;
@@ -841,7 +905,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
                 int trail = g.Trail, standing = g.Standing;
                 var q = g.Preview("pressure", Inez);
                 r.Is(q.Witnesses > 0, $"the card counts who would see it ({q.Witnesses})");
@@ -861,10 +925,12 @@ namespace Suborned.Sim
                 r.Wait(T(2));
                 r.Is(g.Sightings.Exists(s => s.Watcher == "camera:pickup" && s.Op == "fixer"), "the pickup camera logged the Fixer, with place and time");
                 r.Is(g.ExposedByWatcher.Contains(Driver), "logged beside the driver: the driver is exposed");
-                r.Do(Fixer, "call", Driver);
+                // brief 059 (Motive M059-6.1): the driver's Call, his only job for the cell, is retired, so his exposure has no job to show:
+                // the job-exposed ladder is Inez's call's (N17 family) now
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Driver }).code, "nothing-to-call", "no Call on the driver");
                 r.To(T(200));
                 var next = g.BetweenMissions(g.Investigate());
-                r.Is(next.Lines.Exists(l => l.Line == "ladder" && l.Who == Driver && l.Detail.StartsWith("job-exposed", StringComparison.Ordinal)), "the driver's job was exposed: resentment, not bravery");
+                r.Is(!next.Lines.Exists(l => l.Line == "ladder" && l.Who == Driver && l.Detail.StartsWith("job-exposed", StringComparison.Ordinal)), "no job, nothing exposed on the ladder");
             }, drvKnown);
 
             // N17 and N17b test the Talker rule on Inez (Game.Question: what she would tell an investigator), and that the investigation, if its
@@ -909,8 +975,7 @@ namespace Suborned.Sim
             Add("N17c", "—", "The lie itself (people.rules talker.lie), whoever the cast is: the start state makes Inez an Idealist (bravery helper from the start, §04); helped, she is no Talker, covers for the cell, and in a neutral district her lie gives the investigators nothing.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout); // engine 0.28.0: an Idealist Inez reads neutral: no Watch to give, Listen needs none
                 r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez);
                 var q = g.Question(g.Inez);
                 r.Is(q.Outcome == "lies" && q.Facts.Count == 1 && q.Facts[0] == "nothing", $"questioned, Inez lies: nothing ({q.Outcome} {string.Join(",", q.Facts)})");
@@ -955,8 +1020,10 @@ namespace Suborned.Sim
                 r.To(scoutAt);
                 r.Eq(r.Op(Scout).Pos, r.Stand("d:Courtyard"), "the Scout is there at the tick the run gives");
                 r.Is(r.Op(Fixer).Walk != null, "the Fixer is still walking");
+                var fixerEnd = r.Op(Fixer).Walk!.End;
                 r.To(fixerAt);
-                r.Eq(r.Op(Fixer).Pos, r.Stand("d:Courtyard"), "the Fixer arrives at the tick the walk gives");
+                r.Eq(r.Op(Fixer).Pos, fixerEnd, "the Fixer arrives at the tick the walk gives");
+                r.Is(fixerEnd != r.Stand("d:Courtyard") && G.Within(fixerEnd, r.Stand("d:Courtyard"), g.R.BodyClearCm * 6) && !G.Within(fixerEnd, r.Op(Scout).Pos, g.R.BodyClearCm), "beside the Scout, not in her (fight.spacing.cell, engine 0.37.0)");
                 r.Is(walkTicks - runTicks > 0, $"running saved {walkTicks - runTicks} ticks");
             });
 
@@ -965,12 +1032,12 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
-                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
-                r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); r.Do(Enf, "take"); r.Done(Enf); // brief 059: in his car in the service bay
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", To = "d:Getaway bay", Run = true });
-                r.Is(!ok && why.Contains("Vale"), $"carrying Vale, the run is refused: {why}");
+                r.Is(!ok && why.Contains(g.ValeName), $"carrying {g.ValeName}, the run is refused: {why}");
                 r.Eq(g.QuoteMove(Enf, r.Stand("d:Getaway bay")).RunRefused, why, "the move chip shows the same reason");
                 r.Send(Enf, "d:Getaway bay");
                 r.Eq(r.Op(Enf).WalkSpeed, g.R.CellSpeed, "he walks");
@@ -991,14 +1058,14 @@ namespace Suborned.Sim
             }, purse);
 
             var merc = new Start(); merc.Temperament[Inez] = "mercenary"; merc.Known[Inez] = new List<string> { "routine", "need", "temperament" }; merc.Known[Driver] = new List<string> { "routine", "need", "temperament" };
-            Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver ($40,000): the order can't be given.", r =>
+            Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver twice ($40,000 over two visits, brief 085): the second can't be given.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "pay"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "a Mercenary takes the fee");
                 r.Eq(g.Cash, 30000L, "$70,000 spent");
                 r.To(r.Send(Fixer, "d:Boarding pavilion"));
-                r.Refused(Fixer, "turn", Driver, "$110,000 is over the purse: the driver can't be helped", "help");
+                r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer); r.Eq(g.Cash, 10000L, "the first visit, $20,000"); r.Refused(Fixer, "turn", Driver, "$90,000 spent, $110,000 was asked: the second visit can't be paid", "help");
             }, merc);
 
             // the refused approach and the one-step-worse line are the rules under test: the start state makes Inez an Idealist (Pay refused,
@@ -1024,7 +1091,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 var q = g.Preview("help", Inez);
-                r.Eq(q.Lines.Count, 4, "four line items: base, refused before, one more Help, trust over time");
+                r.Eq(q.Lines.Count, 8, "eight line items: base, refused before, one more Help, the visits' share first and later (brief 085), trust over time, and the mood's ready and ready-at-one (brief 054 §4.2)");
                 r.Eq(q.Lines[0].Line, "base", "the first is the base");
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 var m = g.Inez.Memory.Find(x => x.Act == "help");
@@ -1056,9 +1123,17 @@ namespace Suborned.Sim
             IntentCases(); // engine 0.19.0: hostile intent per agent (Pulse hostile-initiative.md, Sky's answers) and weapons free on the block (ScenariosWeaponsFree.cs)
             FireLineCases(); // Sky 2026-10-22 (build 0.2.48): the driven Scout at the kerb fires on the patrol (ScenariosFireLine.cs)
             FinalIntentCases(); // engine 0.20.0 (tuning.md §15.2, PROVISIONAL): the final fight per agent (ScenariosFinalIntent.cs)
+            SealCarCases(); // engine 0.30.0 (briefs 057 §2 and §4, 060 #8): FailCause.Car, the debrief true to the run, the seal window, the reroute walk and PatrolLegs (ScenariosSealCar.cs)
             WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
+            PressedCallCases(); ListenSpotCases(); SeedCases(); // brief 085: ScenariosPressedCall.cs; brief 080: the seed and the rolled shot (ScenariosSeed.cs)
             FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
+            NoticeCases(); // engine 0.28.0 (briefs 054, 055): sight from real heights, civilian notice by cone and Alert, the Watch that shows something (ScenariosNotice.cs)
+            CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
+            Pickup059(); // engine 0.32.0 (brief 059): route B at the service door, the rival crew of five, Drive, Sky's S1–S3 both ways (ScenariosPickup059.cs)
+            Always059(); // engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
+            FightBCases(); // engine 0.35.0 (brief 039 B): Covering fire holding Vale, Talk down on the blocker (ScenariosFightB.cs)
+            Pace067(); // engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
         }
     }
 }

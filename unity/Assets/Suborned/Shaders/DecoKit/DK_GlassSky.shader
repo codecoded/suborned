@@ -4,6 +4,11 @@
 //   the pane = a glaze tint (_BaseColor, alpha = film cover looking straight at it) that turns to the mirror at grazing angles (fresnel, alpha up to _Edge);
 //   the mirror = R.y up: _SkyHorizon to _SkyZenith, R.y down: _Street (the warm paving, seen when the camera looks down at the pane, as the play camera does);
 //   a faint diagonal sheen streak; everything scaled by the scene's trilight ambient (light.json ambient: by day 1, at night about 0.25, so night follows the phase light).
+// Lit panes (Glint, brief 048, 2026-10-24: the evening and night phases; RoadLight drives it on a RUNTIME COPY of the material, the .mat stays at 0): _Lit is the share of panes that
+// have their interior light on (0 = none, which is every .mat as shipped and renders exactly as before), _LitColour the warm light. A pane is a cell of 6 m along the facade by 3.6 m high
+// in world space (the facade bays are 6 m wide and a floor is 3.6 m: the cell is not tied to the individual bay, so the share is what it promises, not which window); each cell has its own
+// hash, lit when the hash is under _Lit, with a soft edge so the share can ease in; about one in five lit panes is cooler (a screen, not a lamp). The glow is added to the film's premultiplied
+// colour before the fog, so distance haze takes it too; it does not depend on the sun or the ambient.
 // Premultiplied blend (One OneMinusSrcAlpha), no depth write, no shadow, no depth-only pass. Fog (the atmosphere's distance haze) mixes toward the fog colour.
 Shader "Suborned/DecoKit/GlassSky"
 {
@@ -17,6 +22,8 @@ Shader "Suborned/DecoKit/GlassSky"
         _Fresnel("Fresnel power", Range(1, 6)) = 3
         _Sheen("Sheen streak", Range(0, 1)) = 0.12
         _Glow("Horizon glow (reflection when the view runs along the street)", Range(0, 1)) = 0.85
+        _Lit("Share of panes lit (evening and night; 0 = none)", Range(0, 1)) = 0
+        _LitColour("Interior light", Color) = (1.0, 0.72, 0.4, 1)
         [HideInInspector] _Cull("__cull", Float) = 2.0
     }
     SubShader
@@ -38,9 +45,13 @@ Shader "Suborned/DecoKit/GlassSky"
             // the same renderer as its frame) fell back to the per-renderer path (Latch, 0.2.80 tp-long: SetPass 332 -> 390, shadow casters 898 -> 1,885)
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            // brief 079 (the café's square patch, Sky's fight video): the film goes with the wall it sits in. Without the cut it stayed whole in a person's capsule, a hard-edged tinted
+            // pane over the street behind; FadeReach gives this material a twin only because the keyword exists here. The plain variant is as it was.
+            #pragma multi_compile_fragment _ _DK_CUT
+            #include "DK_Cutaway.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-                half4 _BaseColor; half4 _SkyHorizon; half4 _SkyZenith; half4 _Street; half _Edge; half _Fresnel; half _Sheen; half _Glow;
+                half4 _BaseColor; half4 _SkyHorizon; half4 _SkyZenith; half4 _Street; half _Edge; half _Fresnel; half _Sheen; half _Glow; half _Lit; half4 _LitColour;
             CBUFFER_END
 
             struct A { float4 pos : POSITION; float3 nrm : NORMAL; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -58,6 +69,7 @@ Shader "Suborned/DecoKit/GlassSky"
 
             half4 frag(V i, half facing : VFACE) : SV_Target
             {
+                DKCutaway(i.pos);
                 half3 n = normalize(i.wn) * (facing > 0 ? 1 : -1);
                 half3 v = GetWorldSpaceNormalizeViewDir(i.wp);
                 half ndv = saturate(dot(n, v));
@@ -74,6 +86,15 @@ Shader "Suborned/DecoKit/GlassSky"
                 half cover = lerp(_BaseColor.a, _Edge, fres);
                 half3 col = (lerp(_BaseColor.rgb, mirror, saturate(0.4 + fres)) + sheen) * day;
                 half3 pm = col * cover;
+                if (_Lit > 0.0001)
+                {
+                    float2 cell = float2(floor((i.wp.x + i.wp.z) / 6.0), floor(i.wp.y / 3.6));
+                    float h = frac(sin(dot(cell, float2(12.9898, 78.233))) * 43758.5453);
+                    float h2 = frac(sin(dot(cell, float2(39.3468, 11.135))) * 24634.6345);
+                    half lit = smoothstep(_Lit, _Lit - 0.12, h);
+                    half3 lc = _LitColour.rgb * lerp(half3(1, 1, 1), half3(0.78, 0.94, 1.1), step(0.8, h2));
+                    pm += lc * (lit * cover);
+                }
                 pm = MixFogColor(pm, unity_FogColor.rgb * cover, i.fog);
                 return half4(pm, cover);
             }

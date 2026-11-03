@@ -1,0 +1,4 @@
+Source Assets/CharPipe/Figures/cp_commuter_01/cp_commuter_01.fbx. The generated avatar's humanDescription (auto map + the rest pose Unity built) assigned to ModelImporter.humanDescription and reimported:
+meta now holds 52 human bone rows and 56 skeleton rows; avatar after reimport: valid True, human True.
+(autoGenerateAvatarMappingIfUnspecified was True; set false for the write.)
+So the mapping and pose are serialisable into the meta (humanDescription.human / .skeleton) by a generator. See import-report.json avatarRestVsBindLeftUpperArmDeg for whether Unity changed the arm rest on its own.

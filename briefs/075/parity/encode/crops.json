@@ -1,0 +1,88 @@
+{
+ "frame": 180,
+ "files": {
+  "before": 124533699,
+  "after": 338597546,
+  "master": 687099332
+ },
+ "crops": {
+  "sky-before": {
+   "unique_colours": 51,
+   "std_rgb": [
+    5.68,
+    1.55,
+    1.47
+   ]
+  },
+  "sky-after": {
+   "unique_colours": 37,
+   "std_rgb": [
+    5.71,
+    1.7,
+    1.3
+   ]
+  },
+  "sky-master": {
+   "unique_colours": 68,
+   "std_rgb": [
+    5.64,
+    1.67,
+    1.35
+   ]
+  },
+  "wall-before": {
+   "unique_colours": 12697,
+   "std_rgb": [
+    68.55,
+    60.1,
+    44.36
+   ]
+  },
+  "wall-after": {
+   "unique_colours": 11529,
+   "std_rgb": [
+    68.92,
+    60.11,
+    44.08
+   ]
+  },
+  "wall-master": {
+   "unique_colours": 10320,
+   "std_rgb": [
+    69.55,
+    60.16,
+    43.71
+   ]
+  }
+ },
+ "vs_master": {
+  "before": {
+   "sky": {
+    "mad": 0.68,
+    "psnr_db": 48.72
+   },
+   "wall": {
+    "mad": 3.286,
+    "psnr_db": 32.67
+   },
+   "frame": {
+    "mad": 2.931,
+    "psnr_db": 33.4
+   }
+  },
+  "after": {
+   "sky": {
+    "mad": 0.688,
+    "psnr_db": 48.97
+   },
+   "wall": {
+    "mad": 2.649,
+    "psnr_db": 33.7
+   },
+   "frame": {
+    "mad": 2.382,
+    "psnr_db": 34.3
+   }
+  }
+ }
+}

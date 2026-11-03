@@ -33,7 +33,30 @@ namespace Suborned.Sim
             }
             if (dots && marks) throw new FormatException("grid: a free cell is '.' (walk grid) or names its surface 'r'/'y' (drive grid), never both in one grid");
             Surfaces = marks;
+            // brief 055 (engine 0.27.0): the floor of every cell, block z cm (the pavement 0, the carriageway -18, the Office landing 75), per row as run-length
+            // pairs [cm, cells] (tools/sim/solids.ts floorRows). Absent (a drive grid, a range site): every cell is the pavement.
+            floor = new short[Nx * Ny];
+            if (g.Opt("floor") is JNode fl)
+            {
+                var fr = fl.Items; if (fr.Count != Nx) throw new FormatException("grid floor rows != nx");
+                for (int i = 0; i < Nx; i++)
+                {
+                    var run = fr[i].Items; if (run.Count % 2 != 0) throw new FormatException($"grid floor row {i}: [cm, cells] pairs");
+                    int j = 0;
+                    for (int k = 0; k < run.Count; k += 2)
+                    {
+                        int cm = run[k].Int(), n = run[k + 1].Int();
+                        if (cm < -1000 || cm > 10000 || n < 1 || j + n > Ny) throw new FormatException($"grid floor row {i}: a run of {n} at {cm} cm is out of range");
+                        for (int m = 0; m < n; m++) floor[i * Ny + j + m] = (short)cm;
+                        j += n;
+                    }
+                    if (j != Ny) throw new FormatException($"grid floor row {i} covers {j} cells, not ny {Ny}");
+                }
+            }
         }
+        readonly short[] floor;
+        /// <summary>Brief 055: the floor under p, block z cm (0 off the grid: the pavement datum). Read by the host and the tools; no rule reads it yet (sight stays at eye-cm above the pavement).</summary>
+        public int FloorAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return i >= 0 && j >= 0 && i < Nx && j < Ny ? floor[i * Ny + j] : 0; }
         /// <summary>The surface of the cell at p ('r', 'y', '.'), or '#' off free ground.</summary>
         public char SurfaceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? surface[i * Ny + j] : '#'; }
 
@@ -131,22 +154,26 @@ namespace Suborned.Sim
             return true;
         }
         public bool FreeCell(int i, int j) => i >= 0 && j >= 0 && i < Nx && j < Ny && free[i * Ny + j];
+        /// <summary>Engine 0.33.1 (rulebook car.footprint): a free cell no standing car blocks. `m` is one game's mask of the cells its standing
+        /// cars cover (Game.CarCells, index i·Ny + j), or null: the grid as built. The grid itself never changes (one grid serves every game).</summary>
+        public bool Open(int i, int j, bool[]? m) => FreeCell(i, j) && (m == null || !m[i * Ny + j]);
         public int CI(int x) => FloorDiv(x - X0, Cell);
         public int CJ(int y) => FloorDiv(y - Y0, Cell);
         static int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
         public bool Free(Pt p) => FreeCell(CI(p.X), CJ(p.Y));
+        public bool Free(Pt p, bool[]? m) => Open(CI(p.X), CJ(p.Y), m);
         public Pt Centre(int i, int j) => new Pt(X0 + i * Cell + Cell / 2, Y0 + j * Cell + Cell / 2);
 
-        /// <summary>The nearest free cell centre to p (ties: lowest i, then j), within 6 m.</summary>
-        public Pt? NearestFree(Pt p)
+        /// <summary>The nearest free cell centre to p (ties: lowest i, then j), within 6 m. `m`: the cells standing cars block (Open).</summary>
+        public Pt? NearestFree(Pt p, bool[]? m = null)
         {
-            if (Free(p)) return p;
+            if (Free(p, m)) return p;
             int ci = CI(p.X), cj = CJ(p.Y); Pt? best = null; long bd = long.MaxValue;
             for (int r = 1; r <= 12; r++)
             {
                 for (int i = ci - r; i <= ci + r; i++) for (int j = cj - r; j <= cj + r; j++)
                 {
-                    if (!FreeCell(i, j)) continue;
+                    if (!Open(i, j, m)) continue;
                     var c = Centre(i, j); long d = G.D2(c, p);
                     if (d < bd) { bd = d; best = c; }
                 }
@@ -155,11 +182,78 @@ namespace Suborned.Sim
             return null;
         }
 
+        /// <summary>Is p inside the grid's window (on a cell, free or not)?</summary>
+        public bool InGrid(Pt p) { int i = CI(p.X), j = CJ(p.Y); return i >= 0 && j >= 0 && i < Nx && j < Ny; }
+        /// <summary>Engine 0.33.0 (brief 060, Suture's cause A): the free cell nearest p with no distance cap: p's cell clamped into the grid, then
+        /// rings outward from it until one holds a free cell; of that ring the centre nearest p (ties: the lower i, then j). Null only for a grid
+        /// with no free cell. NearestFree's 6 m search answers first where it can.</summary>
+        public Pt? NearestFreeAny(Pt p, bool[]? m = null)
+        {
+            var near = NearestFree(p, m); if (near.HasValue) return near;
+            int ci = Math.Max(0, Math.Min(Nx - 1, CI(p.X))), cj = Math.Max(0, Math.Min(Ny - 1, CJ(p.Y)));
+            int rmax = Math.Max(Nx, Ny);
+            for (int r = 0; r <= rmax; r++)
+            {
+                Pt? best = null; long bd = long.MaxValue;
+                for (int i = ci - r; i <= ci + r; i++) for (int j = cj - r; j <= cj + r; j++)
+                {
+                    if (Math.Max(Math.Abs(i - ci), Math.Abs(j - cj)) != r || !Open(i, j, m)) continue; // the ring only
+                    var c = Centre(i, j); long d = G.D2(c, p);
+                    if (d < bd) { bd = d; best = c; }
+                }
+                if (best.HasValue) return best;
+            }
+            return null;
+        }
+
+        /// <summary>Engine 0.33.0: each free cell's connected piece of the grid (Route's 8 neighbours, no corner cutting), its id the lowest cell
+        /// index in it; -1 for a blocked cell. Built once, on first use, the same on every thread.</summary>
+        int[] Pieces()
+        {
+            var c = pieces; if (c != null) return c;
+            lock (piecesLock)
+            {
+                if (pieces != null) return pieces;
+                int n = Nx * Ny; var lab = new int[n]; for (int k = 0; k < n; k++) lab[k] = -1;
+                var stack = new Stack<int>();
+                for (int k0 = 0; k0 < n; k0++)
+                {
+                    if (!free[k0] || lab[k0] >= 0) continue;
+                    lab[k0] = k0; stack.Push(k0);
+                    while (stack.Count > 0)
+                    {
+                        int k = stack.Pop(), i = k / Ny, j = k % Ny;
+                        for (int d = 0; d < 8; d++)
+                        {
+                            int ni = i + DI[d], nj = j + DJ[d];
+                            if (!FreeCell(ni, nj)) continue;
+                            if (d >= 4 && (!FreeCell(i + DI[d], j) || !FreeCell(i, j + DJ[d]))) continue;
+                            int nk = ni * Ny + nj; if (lab[nk] >= 0) continue;
+                            lab[nk] = k0; stack.Push(nk);
+                        }
+                    }
+                }
+                pieceSize = new int[n]; for (int k = 0; k < n; k++) if (lab[k] >= 0) pieceSize[lab[k]]++;
+                pieces = lab; return lab;
+            }
+        }
+        int[]? pieces, pieceSize; readonly object piecesLock = new object();
+        /// <summary>The piece a free point's cell lies in (-1 off free ground) and its size in cells.</summary>
+        public int PieceOf(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? Pieces()[i * Ny + j] : -1; }
+        public int PieceSize(int piece) { Pieces(); return piece >= 0 ? pieceSize![piece] : 0; }
+        /// <summary>The free cell of `piece` nearest p (no cap; ties: the lower cell index), or null when the piece is empty.</summary>
+        public Pt? NearestFreeIn(Pt p, int piece)
+        {
+            var lab = Pieces(); Pt? best = null; long bd = long.MaxValue;
+            for (int k = 0; k < lab.Length; k++) { if (lab[k] != piece) continue; var c = Centre(k / Ny, k % Ny); long d = G.D2(c, p); if (d < bd) { bd = d; best = c; } }
+            return best;
+        }
+
         /// <summary>True if the straight segment a→b stays on free cells (sampled every 10 cm).</summary>
-        public bool LineFree(Pt a, Pt b)
+        public bool LineFree(Pt a, Pt b, bool[]? m = null)
         {
             int n = Math.Max(1, G.Dist(a, b) / 10);
-            for (int k = 0; k <= n; k++) if (!Free(G.Lerp(a, b, k, n))) return false;
+            for (int k = 0; k <= n; k++) if (!Free(G.Lerp(a, b, k, n), m)) return false;
             return true;
         }
 
@@ -180,9 +274,9 @@ namespace Suborned.Sim
         }
         [ThreadStatic] static Pool? pool;
 
-        public Pt[]? Route(Pt a, Pt b)
+        public Pt[]? Route(Pt a, Pt b, bool[]? m = null)
         {
-            Pt? s0 = NearestFree(a); if (!s0.HasValue || !Free(b)) return null;
+            Pt? s0 = NearestFree(a, m); if (!s0.HasValue || !Free(b, m)) return null;
             int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), ti = CI(b.X), tj = CJ(b.Y);
             int n = Nx * Ny, s = si * Ny + sj, t = ti * Ny + tj;
             var P = pool ??= new Pool(); P.Fit(n); var heap = P.Heap;
@@ -196,8 +290,8 @@ namespace Suborned.Sim
                 for (int d = 0; d < 8; d++)
                 {
                     int ni = i + DI[d], nj = j + DJ[d];
-                    if (!FreeCell(ni, nj)) continue;
-                    if (d >= 4 && (!FreeCell(i + DI[d], j) || !FreeCell(i, j + DJ[d]))) continue; // no corner cutting
+                    if (!Open(ni, nj, m)) continue;
+                    if (d >= 4 && (!Open(i + DI[d], j, m) || !Open(i, j + DJ[d], m))) continue; // no corner cutting
                     int nk = ni * Ny + nj; if (P.IsClosed(nk)) continue;
                     int ng = P.G(k) + (d < 4 ? orth : diag);
                     if (ng < P.G(nk)) { P.Set(nk, ng, k); heap.Push(ng + H(ni, nj, ti, tj), nk); }
@@ -218,7 +312,7 @@ namespace Suborned.Sim
             while (at < raw.Count - 1)
             {
                 int to = raw.Count - 1;
-                while (to > at + 1 && !LineFree(raw[at], raw[to])) to--;
+                while (to > at + 1 && !LineFree(raw[at], raw[to], m)) to--;
                 path.Add(raw[to]); at = to;
             }
             return path.ToArray();
@@ -227,9 +321,9 @@ namespace Suborned.Sim
         /// <summary>Brief 027 (fight.close, EXPERIMENTAL): the nearest free cell centre by walk from `from` (Dijkstra over the walk grid, 8 neighbours,
         /// no corner cutting, ties to the lower cell index) for which `ok` holds, within `maxCm` of walk; null if none. The cell `from` stands on
         /// counts (its centre is tried first).</summary>
-        public Pt? Nearest(Pt from, Func<Pt, bool> ok, int maxCm)
+        public Pt? Nearest(Pt from, Func<Pt, bool> ok, int maxCm, bool[]? m = null)
         {
-            Pt? s0 = NearestFree(from); if (!s0.HasValue) return null;
+            Pt? s0 = NearestFree(from, m); if (!s0.HasValue) return null;
             int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), n = Nx * Ny, s = si * Ny + sj;
             var P = pool ??= new Pool(); P.Fit(n); var heap = P.Heap;
             P.Set(s, 0, -1); heap.Push(0, s);
@@ -243,8 +337,8 @@ namespace Suborned.Sim
                 for (int d = 0; d < 8; d++)
                 {
                     int ni = i + DI[d], nj = j + DJ[d];
-                    if (!FreeCell(ni, nj)) continue;
-                    if (d >= 4 && (!FreeCell(i + DI[d], j) || !FreeCell(i, j + DJ[d]))) continue;
+                    if (!Open(ni, nj, m)) continue;
+                    if (d >= 4 && (!Open(i + DI[d], j, m) || !Open(i, j + DJ[d], m))) continue;
                     int nk = ni * Ny + nj; if (P.IsClosed(nk)) continue;
                     int ng = g + (d < 4 ? orth : diag);
                     if (ng < P.G(nk)) { P.Set(nk, ng, k); heap.Push(ng, nk); }

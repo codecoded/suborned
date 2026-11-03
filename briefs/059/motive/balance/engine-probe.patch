@@ -1,0 +1,341 @@
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameAi.cs tree/sim/Suborned.Sim/GameAi.cs
+--- orig/sim/Suborned.Sim/GameAi.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameAi.cs	2026-10-26 01:06:52
+@@ -176,6 +176,7 @@
+             Func<Pt, bool> sees = p => Sees(pos, p);
+             var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
+             bool moving = h.Moving(Tick);
++            if (PEnv("PROBE_TRACE") == "1" && Tick % 20 == 0 && IsRival(h.Id)) Note("probe.trace", $"{h.Id} st {g.St} pos {pos.X},{pos.Y} foes {foes.Count} moving {moving} blocker {h.Blocker} present {h.Present} until {g.Until}");
+             switch (g.St) // one transition a tick (Pulse §1.4)
+             {
+                 case "alerted":
+@@ -210,6 +211,7 @@
+                     return;
+             }
+             if (g.St != "engage" || foes.Count == 0) { if (g.St != "engage") LoseTarget(g); return; }
++            if (moving && h.Blocker && PEnv("PROBE_BLKHOLD") == "1") return; // probe 2026-10-26: GDD §06 the blocker walks to its post without firing
+             if (moving && !R.CoverStepFires && CoverStepping(h)) return; // tuning.md §8.3 fallback: a step to cover fires nothing
+             if (moving && Lab && !LabFireMoving) return; // tuning.md §8.3 (Sky 2026-10-21, engine 0.15.0): a hostile fires as it walks in both presets (the lab's hostilesFireMoving switch can still turn it off there)
+             string t = ChooseTarget(h.Id, g, pos, foes);
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameCombat.cs tree/sim/Suborned.Sim/GameCombat.cs
+--- orig/sim/Suborned.Sim/GameCombat.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameCombat.cs	2026-10-26 01:06:52
+@@ -164,6 +164,7 @@
+         int CoverMod(string t, Pt at, Pt from)
+         {
+             if (IsOpId(t) && OpOf(Sim.Op.Parse(t)).InCar) return R.ModCover; // brief 018 §2: in the car, a target still beside cover
++            if (ProbeShield && t == "enforcer" && Vale == ValeAt.WithEnforcer) return PEnv("PROBE_SHIELD") == "2" ? R.ModCover / 2 : R.ModCover; // probe: Vale shields the man who carries him (as beside cover; never stacks)
+             if (LiveCover.Count == 0 || IsPropertyId(t) || Moving(t)) return 1000;
+             return CoverRules.Modifier(LiveCover, at, from, Tick / Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
+         }
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameCrew.cs tree/sim/Suborned.Sim/GameCrew.cs
+--- orig/sim/Suborned.Sim/GameCrew.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameCrew.cs	2026-10-26 01:06:52
+@@ -472,11 +472,44 @@
+                     { var from = RivalCarPose()!.Value.pos; CarLeg(CrewCar.ToStand, CarRouteP(S.Drive.NearestFree(from) ?? from, S.CarStand(st.RivalStop)), st.RivalStop); }
+                     break;
+             }
++            if (ProbeFloor > 0) ProbeRecall(st, lookoutBoards);
+             // Pulse §7: the count is a consequence, never a subtraction; a crew above its size is an engine fault
+             int bodies = Hostiles.FindAll(h => IsRival(h.Id)).Count + (lookoutBoards ? 1 : 0);
+             if (bodies > Cr.Size) throw new InvalidOperationException($"the safe fight holds {bodies} of a crew of {Cr.Size}");
+         }
+ 
++        /// <summary>Probe M059-S1.4 (rivals-floor): fewer than the floor able and coming at the safe fight's start: the tipped car cuts its tip short
++        /// and brings the wheelman to the stand's rival stop; the warned lookout walks back from his exit. Earliest at the stand first. Nothing spawns.</summary>
++        void ProbeRecall(Stand st, bool lookoutBoards)
++        {
++            int coming = 0; foreach (var h in Hostiles) if (IsRival(h.Id) && Up(h)) coming++;
++            if (lookoutBoards) coming++;
++            bool carAway = CarSt == CrewCar.Away || CarSt == CrewCar.TipOut;
++            if (!carAway && Up(Wheelman) && Wheelman.Mode == CrewMode.Aboard && Wheelman.H == null) coming++;
++            var opts = new List<(long t, int who)>();
++            if (carAway && Up(Wheelman) && Wheelman.Mode == CrewMode.Aboard) { var from = RivalCarPose()?.pos ?? S.CarStand(S.RivalCarEntry); opts.Add((CarProfile(CarRouteP(from, S.CarStand(st.RivalStop))).Length + T(Cr.OutS), 5)); }
++            var l = Lookout; if (!l.Gun.Down && (lookoutWarned || (l.Mode == CrewMode.Walking && l.Goal == "exit"))) { var from = l.Mode == CrewMode.Gone ? S.Stand(S.RivalLookoutExit) : MemberPos(l, Tick); opts.Add((WalkMm(from, SpotFor(l, st)) / Math.Max(1, rivSpeed), 4)); }
++            opts.Sort((a, b) => a.t != b.t ? a.t.CompareTo(b.t) : a.who.CompareTo(b.who));
++            foreach (var (t, who) in opts)
++            {
++                if (coming >= ProbeFloor) break;
++                if (who == 5)
++                {
++                    var from = RivalCarPose()?.pos ?? S.CarStand(S.RivalCarEntry);
++                    CarLeg(CrewCar.ToStand, CarRouteP(S.Drive.NearestFree(from) ?? from, S.CarStand(st.RivalStop)), st.RivalStop);
++                    crewNextAt = INF; crewNext = ""; wheelmanAwayAtStart = false; RivalsDelayedUntil = Tick;
++                    Note("rivals.recalled", "The rival car cuts its trip short and comes back for the fight.");
++                }
++                else
++                {
++                    var from = l.Mode == CrewMode.Gone ? S.Stand(S.RivalLookoutExit) : MemberPos(l, Tick);
++                    lookoutWarned = false; l.Mode = CrewMode.Walking; l.Goal = "fight"; JoinFightOnFoot(l, from);
++                    Note("rivals.recalled", "The rival lookout comes back for the fight.");
++                }
++                coming++;
++            }
++        }
++
+         /// <summary>Host read: the safe fight's crew, its bodies and those still to come with the car (the lookout boarding it; not the wheelman
+         /// away on a tip, who joins only if it ends in time). 0 outside the safe fight.</summary>
+         public int CrewInFight
+@@ -495,7 +528,7 @@
+         /// yet on the map read as nothing on the street).</summary>
+         bool CrewDue()
+         {
+-            if (FightBranch != "safe") return false;
++            if (FightBranch != "safe" || crewDueOff) return false;
+             foreach (var m in Crew) if (m.H == null && Up(m) && !m.Fight && !(m == Wheelman && wheelmanAwayAtStart) && (m.Mode == CrewMode.Aboard || m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Walking && m.Goal == "board")) && (CarSt != CrewCar.Stopped || m.OutAt < INF)) return true;
+             return false;
+         }
+@@ -533,6 +566,8 @@
+         {
+             var g = m.Gun; g.St = "routine"; g.Target = ""; LoseTarget(g);
+             var h = new Hostile { Id = m.Id, Gun = g, Speed = rivSpeed };
++            bool fixPos = PEnv("PROBE_FIXPOS") == "1"; Pt where0 = MemberPos(m, Tick); // probe: read where he stands before he becomes a fight body (0.32 read the new body's (0,0))
++            bool onFootNow = m.Mode != CrewMode.Aboard && m.Mode != CrewMode.Boarding; Pt spot0 = fixPos && onFootNow ? SpotFor(m, st) : default;
+             m.H = h; m.Fight = true; m.Disp = null;
+             if (m.Mode == CrewMode.Aboard || m.Mode == CrewMode.Boarding)
+             {
+@@ -541,15 +576,15 @@
+             }
+             else if (m.Mode == CrewMode.Walking && m.Goal != "exit")
+             {
+-                var spot = SpotFor(m, st); bool toSpot = m.Goal == "spot" && m.SpotStand == st.Id;
++                var spot = fixPos ? spot0 : SpotFor(m, st); bool toSpot = m.Goal == "spot" && m.SpotStand == st.Id;
+                 h.Present = true;
+                 if (toSpot) { h.Run = m.Walk; h.RunStart = m.WalkStart; h.Speed = m.Speed; h.At = h.Home = m.Walk!.End; }
+-                else { h.At = MemberPos(m, Tick); h.Home = spot; MoveToFight(h, spot); }
++                else { h.At = fixPos ? where0 : MemberPos(m, Tick); h.Home = spot; MoveToFight(h, spot); }
+             }
+             else // posted (a spot, the lookout's post, the yard door, the front) or talking: he lurks where he stands; the lookout and wheelman walk to their spots
+             {
+-                var at = MemberPos(m, Tick); h.Present = true; h.At = h.Home = at;
+-                if ((m.Post != "spot" || m.SpotStand != st.Id) && m.Post != "door") { var spot = SpotFor(m, st); h.Home = spot; MoveToFight(h, spot); }
++                var at = fixPos ? where0 : MemberPos(m, Tick); h.Present = true; h.At = h.Home = at;
++                if ((m.Post != "spot" || m.SpotStand != st.Id) && m.Post != "door") { var spot = fixPos ? spot0 : SpotFor(m, st); h.Home = spot; MoveToFight(h, spot); }
+             }
+             Hostiles.Add(h);
+         }
+@@ -578,6 +613,7 @@
+             m.Fight = true; m.Mode = CrewMode.Walking; m.ModeTick = Tick;
+             h.Present = true; h.At = from; var spot = SpotFor(m, st); h.Home = spot; MoveToFight(h, spot);
+             if (FightSprung != INF) { h.Gun.Engaged = true; h.Gun.St = "advance"; } // after the spring he comes in on his path, as police do
++            if (probePickLater && !blockersPicked && FightSprung != INF) { probePickLater = false; pickFrom = "rivals"; } // probe S1.3
+             return true;
+         }
+         /// <summary>F6, Dropping: the car left the drop for a stand elsewhere.</summary>
+@@ -707,7 +743,7 @@
+             Note("rivals.down", $"{m.Id} of the rival crew is down."); Chain.Add(m.Id + "-down");
+             int on = 0, dn = 0;
+             foreach (var x in Crew) { if (x.Gun.Down) { on++; dn++; continue; } if (x.Mode == CrewMode.Gone || x.Mode == CrewMode.Aboard) continue; on++; }
+-            if (dn * 2 > on && !CrewBrokenPre) CrewBreaks();
++            if ((ProbeDrawnBreak ? dn >= 1 : dn * 2 > on) && !CrewBrokenPre) CrewBreaks(); // probe: a crew outside its ambush breaks at its first man down
+         }
+         /// <summary>Motive M059-3.5: the crew breaks before the final fight: whoever is up on foot goes to the car (it stops where it is) and boards;
+         /// it leaves the way it came and is back at the park security.rivals.retreat after the break. Off the map, they walk off it.</summary>
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameFight.cs tree/sim/Suborned.Sim/GameFight.cs
+--- orig/sim/Suborned.Sim/GameFight.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameFight.cs	2026-10-26 01:06:52
+@@ -29,6 +29,12 @@
+         public readonly List<string> FightWhy = new List<string>();
+         Path? guardAllyPath; int guardAllyStart;
+         bool rivalsAbsorbed, misledOnce;
++        // ---- Motive 059c probe (scratch only; every switch off = engine 0.32.0 byte for byte)
++        static string PEnv(string k) => Environment.GetEnvironmentVariable(k) ?? "";
++        static readonly bool ProbeGate = PEnv("PROBE_GATE") == "1", ProbeLate = PEnv("PROBE_LATE") == "1", ProbeDrawnBreak = PEnv("PROBE_DRAWNBREAK") == "1", ProbeNoPress = PEnv("PROBE_DRAWNBREAK") == "1" || PEnv("PROBE_DRAWNBREAK") == "2", ProbeShield = PEnv("PROBE_SHIELD") == "1" || PEnv("PROBE_SHIELD") == "2", ProbeBlockerLane = PEnv("PROBE_LANE") == "1";
++        static readonly int ProbeFloor = PEnv("PROBE_FLOOR").Length > 0 ? int.Parse(PEnv("PROBE_FLOOR")) : 0;
++        bool probePickLater, probeGaveUp;
++        static readonly int ProbeCapS = PEnv("PROBE_CAP").Length > 0 ? int.Parse(PEnv("PROBE_CAP")) : 0;
+ 
+ 
+         /// <summary>The Enforcer has Vale: the final fight begins (§07: always).</summary>
+@@ -107,7 +113,8 @@
+             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
+             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
+             var e = Enforcer; var car = Car;
+-            if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) Spring(false);
++            if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (ProbeLate && Vale == ValeAt.Car))) Spring(false);
++            if (ProbeCapS > 0 && FightBranch == "safe" && FightSprung != INF && !probeGaveUp && Tick >= FightSprung + T(ProbeCapS)) ProbeGiveUp();
+             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+             if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
+             if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
+@@ -156,6 +163,23 @@
+         }
+ 
+ 
++        /// <summary>Probe (GDD §07 'up to 60 s'): the crew that has not broken PROBE_CAP s after the spring gives up: every member still up runs for his
++        /// car (a rider still aboard never gets out). Judged as no outcome (the +1 needs the crew broken by its losses).</summary>
++        void ProbeGiveUp()
++        {
++            probeGaveUp = true; bool any = false;
++            var carAt = RivalCarPose() is var rcp && rcp.HasValue ? S.Grid.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark);
++            foreach (var h in Hostiles)
++            {
++                if (!IsRival(h.Id) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
++                if (!h.Present) { h.Gun.St = "gone"; continue; }
++                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); any = true;
++            }
++            foreach (var m in Crew) if (m.H == null && Up(m) && m.Mode == CrewMode.Aboard) { m.OutAt = INF; }
++            crewDueOff = true;
++            FightWhy.Add("rivals-give-up"); Note("rivals.give-up", any ? "The rival crew gives up the fight and makes for its car." : "The rival crew gives up the fight.");
++        }
++        bool crewDueOff;
+         void MisledOnce() { misledOnce = true; }
+         /// <summary>A false tip has landed this mission (brief 059: the safe fight counts the wheelman away, not this; a read for the debrief).</summary>
+         public bool MisledEver => misledOnce;
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameGetaway.cs tree/sim/Suborned.Sim/GameGetaway.cs
+--- orig/sim/Suborned.Sim/GameGetaway.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameGetaway.cs	2026-10-26 01:06:52
+@@ -48,7 +48,9 @@
+             if (pickFrom.Length > 0)
+             {
+                 var from = pickFrom; pickFrom = "";
+-                PickBlockers(Hostiles.FindAll(h => from == "rivals" ? IsRival(h.Id) && !(CrewOf(h.Id) is CrewMember bm && !bm.Fight) : !IsRival(h.Id) && h.Present)); // brief 059 (Motive M059-4.3): never one still in the car
++                var cands = Hostiles.FindAll(h => from == "rivals" ? IsRival(h.Id) && !(CrewOf(h.Id) is CrewMember bm && !bm.Fight) : !IsRival(h.Id) && h.Present);
++                if (ProbeLate && from == "rivals" && !cands.Exists(h => Up(h))) probePickLater = true; // probe S1.3: nobody on foot: picked at the first step-out
++                else PickBlockers(cands); // brief 059 (Motive M059-4.3): never one still in the car
+             }
+             if (FightBranch.Length == 0) return;
+             if (!blockerOut && Blockers.Count > 0)
+@@ -89,6 +91,15 @@
+             {
+                 if (IsFightHostile(id) || l.Contains(id) || !Combatant(id)) continue;
+                 var at = PosOf(id); if (at.HasValue && HoldsCar(at.Value)) l.Add(id);
++            }
++            if (ProbeGate && Vale == ValeAt.Car && FightBranch.Length > 0 && FightOverTick == INF && !blockerOut) // probe M059-S1.2: the fight always comes
++            {
++                if (Blockers.Count > 0) { foreach (var id in Blockers) { var b = HostileOf(id); if (b != null && Up(b) && !l.Contains(id)) l.Add(id); } }
++                else
++                {
++                    foreach (var h in Hostiles) if (Up(h) && !l.Contains(h.Id)) l.Add(h.Id);
++                    if (FightBranch == "safe") foreach (var m in Crew) if (m.H == null && Up(m) && (m.Mode == CrewMode.Aboard || m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Walking && (m.Goal == "board" || m.Goal == "fight"))) && !(m == Wheelman && wheelmanAwayAtStart) && !l.Contains(m.Id)) l.Add(m.Id);
++                }
+             }
+             l.Sort(StringComparer.Ordinal);
+             return l;
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameIntent.cs tree/sim/Suborned.Sim/GameIntent.cs
+--- orig/sim/Suborned.Sim/GameIntent.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameIntent.cs	2026-10-26 01:06:52
+@@ -152,6 +152,7 @@
+         {
+             if (!R.Intent.RivalsPress) return false;
+             var g = m.Gun; if (!RivalsDrawn || m.Fight || !Up(m) || !m.OnFoot || g.Down || g.W == null) return false;
++            if (ProbeNoPress && CrewBrokenPre) return false; // probe: a broken crew flees, it never presses (PROBE_DRAWNBREAK 1 or 2; 2 keeps the more-than-half break)
+             bool pressing = m.Disp != null && m.Disp.Press;
+             var e = Enforcer;
+             if (Vale != ValeAt.WithEnforcer || e.Inside || e.Down) return pressing;
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameKite.cs tree/sim/Suborned.Sim/GameKite.cs
+--- orig/sim/Suborned.Sim/GameKite.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GameKite.cs	2026-10-26 01:06:52
+@@ -179,6 +179,7 @@
+             }
+             // rivals: out of the shooter's line
+             if (h == null || Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
++            if (ProbeBlockerLane && h.Blocker) return; // probe: §06 the blocker keeps its lane and answers only from it
+             g.StepAt = Tick;
+             var dest = KiteHide(g, pos, sp, Car, out var c);
+             if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GamePublicFight.cs tree/sim/Suborned.Sim/GamePublicFight.cs
+--- orig/sim/Suborned.Sim/GamePublicFight.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/GamePublicFight.cs	2026-10-26 01:06:52
+@@ -141,6 +141,7 @@
+         /// or is down when it ends. The crew absorbed into the ambush is judged by the ambush.</summary>
+         bool RivalsBroken(PublicFight f)
+         {
++            if (f.Final && probeGaveUp) return false; // probe: a crew that gave up was not broken
+             var set = new List<string>(f.Rivals);
+             if (f.Final) foreach (var h in Hostiles) if (IsRivalId(h.Id) && h.Present && !set.Contains(h.Id)) set.Add(h.Id);
+             int judged = 0;
+diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/Site.cs tree/sim/Suborned.Sim/Site.cs
+--- orig/sim/Suborned.Sim/Site.cs	2026-10-25 22:15:07
++++ tree/sim/Suborned.Sim/Site.cs	2026-10-26 02:12:03
+@@ -26,6 +26,7 @@
+     public sealed class Stand
+     {
+         public string Id = "", Car = "", RivalStop = ""; public Pt Facing, CarAt, CarCell; public Pt[] Exit = Array.Empty<Pt>(); public int ExitHalfCm;
++        public int DriveEnd = -1, DriveHalfCm; // Motive 2026-10-26 probe (PROBE_YARDLANE=2): Exit[0..DriveEnd] is the drive at the drive's width, Exit[DriveEnd..] the carriageway at the road's
+         public string[] Ambush = Array.Empty<string>(), Police = Array.Empty<string>();
+     }
+ 
+@@ -78,7 +79,7 @@
+         /// square), or of an inner corner. Integers only.</summary>
+         public bool InExitLane(Pt p) => InExitLane(p, ExitLane, ExitHalfCm);
+         /// <summary>Brief 059 K6: inside a stand's exit lane.</summary>
+-        public bool InExitLane(Pt p, Stand st) => InExitLane(p, st.Exit, st.ExitHalfCm);
++        public bool InExitLane(Pt p, Stand st) => st.DriveEnd > 0 ? InExitLane(p, st.Exit[..(st.DriveEnd + 1)], st.DriveHalfCm) || InExitLane(p, st.Exit[st.DriveEnd..], st.ExitHalfCm) : InExitLane(p, st.Exit, st.ExitHalfCm);
+         static bool InExitLane(Pt p, Pt[] L, int half)
+         {
+             for (int i = 1; i < L.Length; i++)
+@@ -112,7 +113,7 @@
+         /// <summary>The point of the lane nearest p, kept a metre inside its sides (or on the centreline for a lane narrower than 2 m).</summary>
+         public Pt NearestInExitLane(Pt p) => NearestInExitLane(p, ExitLane, ExitHalfCm);
+         /// <summary>Brief 059 K6: in a stand's exit lane.</summary>
+-        public Pt NearestInExitLane(Pt p, Stand st) => NearestInExitLane(p, st.Exit, st.ExitHalfCm);
++        public Pt NearestInExitLane(Pt p, Stand st) { if (st.DriveEnd <= 0) return NearestInExitLane(p, st.Exit, st.ExitHalfCm); var a = NearestInExitLane(p, st.Exit[..(st.DriveEnd + 1)], st.DriveHalfCm); var b = NearestInExitLane(p, st.Exit[st.DriveEnd..], st.ExitHalfCm); return G.D2(p, a) <= G.D2(p, b) ? a : b; }
+         static Pt NearestInExitLane(Pt p, Pt[] L, int half)
+         {
+             Pt best = L[0]; long bd = long.MaxValue; int inset = Math.Max(0, half - 100);
+@@ -273,6 +274,8 @@
+                 if (!Grid.Free(s)) throw new FormatException($"place {kv.Key} stands on blocked ground");
+                 stand[kv.Key] = s;
+             }
++            { var pp = Environment.GetEnvironmentVariable("PROBE_PLACES") ?? ""; // Motive 059c probe (scratch): id:x:y;… moves a place (at and stand)
++              foreach (var e in pp.Split(';', StringSplitOptions.RemoveEmptyEntries)) { var f = e.Split(':'); var q = new Pt(int.Parse(f[1]), int.Parse(f[2])); if (!Grid.Free(q)) throw new FormatException($"probe place {f[0]} stands on blocked ground"); at[f[0]] = q; stand[f[0]] = q; } }
+             foreach (var c in r["cameras"].Items)
+             {
+                 c.Only("id", "kind", "at", "facing", "reach", "half", "src", "reason");
+@@ -346,6 +349,13 @@
+                     if (st.Ambush.Length != FightAmbush.Length || st.Police.Length != FightPolice.Length) throw new FormatException($"{x.Path}: a stand has as many ambush spots and police stands as the square (SX-2)");
+                     st.CarAt = at[st.Car]; st.CarCell = Drive.NearestFree(st.CarAt) ?? throw new FormatException($"{x.Path}: stand {st.Id}'s car has no drivable cell within 6 m (rulebook car.drive)");
+                     if (!carStand.ContainsKey(st.RivalStop)) carStand[st.RivalStop] = Drive.NearestFree(at[st.RivalStop]) ?? throw new FormatException($"{x.Path}.rivalStop has no drivable cell");
++                    if (Environment.GetEnvironmentVariable("PROBE_YARDLANE") is "1" or "2" && st.Id == "service-drive") // Motive 059c probe: the lane is the car's way out, drive included: 30 m from the car
++                    {
++                        var head = new List<Pt> { st.CarAt }; long left = 3000 - G.Dist(st.CarAt, st.Exit[0]); head.Add(st.Exit[0]);
++                        for (int k = 1; k < st.Exit.Length && left > 0; k++) { var a0 = st.Exit[k - 1]; var b0 = st.Exit[k]; long d0 = G.Dist(a0, b0); if (d0 <= left) { head.Add(b0); left -= d0; } else { head.Add(new Pt(a0.X + (int)((b0.X - a0.X) * left / d0), a0.Y + (int)((b0.Y - a0.Y) * left / d0))); left = 0; } }
++                        st.Exit = head.ToArray();
++                        if (Environment.GetEnvironmentVariable("PROBE_YARDLANE") == "2") { st.DriveEnd = 1; st.DriveHalfCm = 150; } // the drive part at the drive's 3 m (civic-block service-drive y -16.5..-13.5), the road part at the road's
++                    }
+                     Stands.Add(st);
+                 }
+                 if (Stands.Count == 0 || Stands[0].Car != GetawayCar) throw new FormatException($"{sts.Path}: the first stand is the car's start (getaway.car)");
+diff -ru --exclude=obj --exclude=bin orig/sim/cli/Probe.cs tree/sim/cli/Probe.cs
+--- orig/sim/cli/Probe.cs	2026-10-25 22:15:07
++++ tree/sim/cli/Probe.cs	2026-10-26 02:10:18
+@@ -36,4 +36,28 @@
+         foreach (var st in s.Stands) Console.WriteLine($"stand {st.Id}: car {st.CarAt} (drive cell {st.CarCell}), facing {st.Facing}, rival stop {st.RivalStop}, Drive from the square {g.DriveTicks(st.Id) / 10.0:0.0} s");
+         Console.Write("guard at door sees:"); foreach (var id in s.PlaceIds) if (g.GuardWatching(s.Stand(id))) Console.Write($" {id}"); Console.WriteLine();
+     }
++
++    /// <summary>Motive 059c (scratch): ambush-spot candidates round a stand. Every free walk cell within 20 m of the stand's car: its distance to the car,
++    /// the service door and Vale's rear door, a line to the car and to the door, the hold and the lane, and the grid walk to the blocker's open lane post.</summary>
++    public static void Yard(Engine.Inputs i, string standId)
++    {
++        var s = i.SiteData; var st = s.StandById(standId)!; var car = st.CarAt; var door = s.Stand("d:Service lane"); var vd = s.Stand("rival-vale-door");
++        var post = s.LanePointAt(1000, st); var postF = s.Grid.NearestFree(post) ?? post; int speed = i.Rules.CellSpeed;
++        Console.WriteLine($"stand {standId} car {car} lane post {post} (free {postF}); lane from {st.Exit[0]}, {G.Dist(car, st.Exit[0]) / 100.0:0.00} m from the car; post {G.Dist(car, post) / 100.0:0.00} m from the car; lane {string.Join(" ", st.Exit)} half {st.ExitHalfCm} cm; rival stop {st.RivalStop} {s.Stand(st.RivalStop)} lane {(s.InExitLane(s.Stand(st.RivalStop), st) ? 1 : 0)} car {G.Dist(car, s.Stand(st.RivalStop)) / 100.0:0.0} m; rear door lane {(s.InExitLane(vd, st) ? 1 : 0)}");
++        foreach (var id in st.Ambush) Row(s, st, id, s.Stand(id), car, door, vd, postF);
++        if (Environment.GetEnvironmentVariable("YARD_LINE") == "1") { for (int y = -2500; y <= 500; y += 250) { Console.Write($"y {y,6}:"); for (int x = 5000; x <= 9000; x += 250) { var q = new Pt(x, y); if (!s.Grid.Free(q)) { Console.Write("    #"); continue; } var rr = s.Grid.Route(q, postF); Console.Write(rr == null ? "    -" : $"{new Path(rr).Length / 1000.0,5:0.0}"); } Console.WriteLine(); } return; }
++        for (int x = car.X - 2000; x <= car.X + 2000; x += 50) for (int y = car.Y - 2000; y <= car.Y + 2000; y += 50)
++        {
++            var p = new Pt(x, y); if (!s.Grid.Free(p)) continue;
++            long dc = G.Dist(p, car), dd = G.Dist(p, door), dv = G.Dist(p, vd);
++            if (dc < 1000 || dc > 1500 || dd < 800 || dv < 800 || s.InExitLane(p, st)) continue;
++            if (!s.Sight(p, car, 160) || !s.Sight(p, door, 160)) continue;
++            Row(s, st, "cand", p, car, door, vd, postF);
++        }
++    }
++    static void Row(Site s, Stand st, string id, Pt p, Pt car, Pt door, Pt vd, Pt post)
++    {
++        var r = s.Grid.Route(s.Grid.NearestFree(p) ?? p, post); long walk = r == null ? -1 : new Path(r).Length;
++        Console.WriteLine($"{id,-14} {p.X,6} {p.Y,6}  car {G.Dist(p, car) / 100.0,5:0.0} m  door {G.Dist(p, door) / 100.0,5:0.0} m  valeDoor {G.Dist(p, vd) / 100.0,5:0.0} m  lineCar {(s.Sight(p, car, 160) ? 1 : 0)} lineDoor {(s.Sight(p, door, 160) ? 1 : 0)} lane {(s.InExitLane(p, st) ? 1 : 0)}  toPost {(walk < 0 ? -1 : walk / 1000.0),5:0.00} m"); // Path.Length is in mm (Motive 2026-10-26: was / 100, a units slip)
++    }
+ }
+diff -ru --exclude=obj --exclude=bin orig/sim/cli/Program.cs tree/sim/cli/Program.cs
+--- orig/sim/cli/Program.cs	2026-10-25 22:15:07
++++ tree/sim/cli/Program.cs	2026-10-26 01:06:52
+@@ -64,6 +64,7 @@
+                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
+                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
+                 case "probe": Probe.Run(inputs); return 0;
++                case "motive-yard": Probe.Yard(inputs, args.Length > 1 ? args[1] : "service-drive"); return 0;
+                 case "range": return RangeCli.Run(root, args); // brief 029: the fight range, on its own inputs
+                 case "fight-lab": return FightLabCli.Run(inputs, root, args); // brief 027 §6.5: the balance matrix (briefs/027/keel/fight-lab.json)
+                 case "drive-session": return DriveSession.Record(inputs, root, args.Length > 1 ? args[1] : null); // brief 025: record DP1's session

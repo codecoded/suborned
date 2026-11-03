@@ -1,0 +1,56 @@
+--- /Users/sky/Projects/suborned/sim/Suborned.Sim/GameOrders.cs	2026-10-30 19:49:40
++++ tree/sim/Suborned.Sim/GameOrders.cs	2026-10-31 16:59:39
+@@ -714,7 +714,8 @@
+             var sv = ServerOf(p);
+             var from = GuardPose()!.Value.pos; var to = sv != null ? sv.At : PersonPos(p)!.Value;
+             guardOut = new Path(Walk.Route(Walk.NearestFree(from) ?? from, Walk.NearestFree(to) ?? to)!);
+-            walkT = walk; stayT = T(R.SummonStayS); guardRunning = false;
++            bool mpPressed = MotivePress.On && p.Has("pressure"); // MOTIVE PROBE
++            walkT = walk; stayT = mpPressed ? T(MotivePress.StayS) : T(R.SummonStayS); guardRunning = false;
+             if (sv != null) // brief 022: he walks to her post and stops rounds.close from it, at her side (PartnerStop), facing her
+             {
+                 var side = PartnerStop(p, lover); // baked free and walkable from his post; a stop his grid cannot reach falls back as no stop does
+@@ -727,9 +728,10 @@
+             }
+             else cafeFace = S.CafeFacing;
+             guardBack = new Path(Walk.Route(Walk.NearestFree(guardOut.End) ?? guardOut.End, Walk.NearestFree(from) ?? from)!);
+-            LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT; lover.Summoned++;
++            backT = mpPressed ? (int)((guardBack.Length + MotivePress.Run - 1) / MotivePress.Run) : walkT; // MOTIVE PROBE
++            LureTick = Tick; GuardAwayUntil = Tick + walkT + stayT + backT; lover.Summoned++;
+             AddTrail(R.CallTrail, "call:" + p.Role); Remember(p, "job", "fixer", false);
+-            Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}");
++            Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}"); if (MotivePress.Note) Note("mp.away", $"{GuardAwayUntil}");
+             Note("call." + p.Role, $"{p.Name} calls {lover.Name}. He leaves his post and walks over to her ({walkT / Hz} s), to stay {R.SummonStayS} s.");
+             return "";
+         }
+--- /Users/sky/Projects/suborned/sim/Suborned.Sim/Game.cs	2026-10-30 19:49:40
++++ tree/sim/Suborned.Sim/Game.cs	2026-10-31 16:58:20
+@@ -291,7 +291,7 @@
+         // numbers read once from the rules and the site
+         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
+         readonly int cellWalk, peopleWalk, secSpeed, guardSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
+-        int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
++        int walkT, stayT, backT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
+ 
+         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
+         {
+@@ -603,7 +603,7 @@
+             int age = Tick - LureTick;
+             if (age < walkT) { long mm = guardOut.Length * age / walkT; return (guardOut.At(mm), guardOut.Heading(mm), "walking to café"); }
+             if (age < walkT + stayT) return (guardOut.End, cafeFace, "at café"); // brief 022: facing her when she has a round
+-            long back = guardBack.Length * (age - walkT - stayT) / walkT;
++            long back = guardBack.Length * (age - walkT - stayT) / backT;
+             return (guardBack.At(back), guardBack.Heading(back), "returning to door");
+         }
+         public bool GuardAtDoor => !GuardDown && !GuardHeld && (LureTick < 0 || Tick >= GuardAwayUntil);
+--- /Users/sky/Projects/suborned/sim/cli/Adaptive.cs	2026-10-30 19:49:40
++++ tree/sim/cli/Adaptive.cs	2026-10-31 16:59:50
+@@ -328,7 +328,7 @@
+         }
+         if (g.Cause != null) { w.Key("cause"); g.Cause.Write(w); }
+         var marks = new SortedDictionary<string, int>(StringComparer.Ordinal);
+-        foreach (var l in g.Log) if (!marks.ContainsKey(l.Code) && Marks.Contains(l.Code)) marks[l.Code] = l.Tick;
++        foreach (var l in g.Log) if (!marks.ContainsKey(l.Code) && (Marks.Contains(l.Code) || l.Code == "mp.away")) marks[l.Code] = l.Code == "mp.away" ? int.Parse(l.Text, CultureInfo.InvariantCulture) : l.Tick;
+         w.Open("marks"); foreach (var kv in marks) w.Prop(kv.Key, kv.Value); w.EndObj();
+         w.OpenArr("held"); foreach (var l in g.Log) if (l.Code.StartsWith("car.held.", StringComparison.Ordinal)) w.Obj().Prop("tick", l.Tick).Prop("how", l.Code.Substring(9)).Prop("who", l.Text.Split(' ')[0]).EndObj(); w.EndArr(); // MC-11 reads them
+         // full health to down (design §4: nobody under 5 s, the Enforcer under 7 s): each op's first hit to the line that says he fell; a measure only

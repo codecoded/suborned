@@ -5,7 +5,7 @@
 //       Inez's word the district ends at +4, Hero (Motive's route A row)
 //  N96  a rival fight not won: the Enforcer fires one shot on the feared rival crew as it arrives, then the cell withdraws: 0
 //  N97  firing first on rivals nobody fears: N96's orders with neutral rivals: −1 seen-fight-first
-//  N98  a fight with security: the patrol shot down from the walk north of the Office at 4:30: −1 seen-fight-security, once, 30 s after the last shot
+//  N98  a fight with security: the patrol shot down from the walk north of the service yard at 4:30: −1 seen-fight-security, once, 30 s after the last shot
 //  N99  a mixed fight: the patrol shot down, then the rival crew its gunfire draws, driven off inside 30 s: one fight, −1 (authority outranks)
 //  N100 a fight nobody heard: N98's orders with no crowd and no cast within 30 m: no move, steady
 //  N101 two fights 30 s apart: N99's orders with a wait before the rivals (the fight's end, people back): two fights, −1 and +1 (N99 is the closer twin: one)
@@ -17,11 +17,13 @@ namespace Suborned.Sim
 {
     public static partial class Scenarios
     {
-        /// <summary>The walk north of the Office, 26 m from the public door on its west face; the Enforcer fires at 4:30 (ShotAt), when the
-        /// patrol's sweep is 23 m off and a person of the city crossing from the square is within 30 m. Re-sited 2026-10-19 (Keel, brief 023:
-        /// the door on the west face, the sweep along the forecourt): was a corner of the square at (2000, -1000) firing on arrival at 0:30, but
-        /// the sweep is 60 m from the square now and nobody of the city is near the forecourt before 3:30.</summary>
-        static readonly Pt ShotCorner = new Pt(4300, -2600);
+        /// <summary>The walk at the office plot's north edge, 21 m north of the service yard's sweep; the Enforcer fires at 4:30 (ShotAt), when people
+        /// of the city walking there are within 30 m and the cast is not. Engine 0.34.0 (brief 067 A: the patrol sweeps the service yard, not the
+        /// forecourt): was the walk north of the Office at (3675, -3300), 26 m from the public door, from which the yard sweep is out of sight and
+        /// the Enforcer's walk in to it takes him beyond 30 m of everybody (N98: "Nobody heard it"); found by a search of corners and times
+        /// (out/scratch/keel/probe n98: 2:00 to 6:00 every 30 s, 5 m apart) for N98 and N100 together. Re-sited 2026-10-19 (Keel, brief 023: the
+        /// door on the west face, the sweep along the forecourt): was a corner of the square at (2000, -1000) firing on arrival at 0:30.</summary>
+        static readonly Pt ShotCorner = new Pt(4000, -1000); // engine 0.28.0 (brief 055 §7): (4300, -2600) to (3675, -3300), the drawn cypress cyp-office-e; engine 0.34.0: (4000, -1000), the yard sweep
         const int ShotAt = 2700;
 
         static string Moves(Game g) => string.Join(", ", FightMoves(g).Select(m => $"{m.delta.ToString(System.Globalization.CultureInfo.InvariantCulture)} {m.cause} {m.who}"));
@@ -36,7 +38,7 @@ namespace Suborned.Sim
             return n;
         }
 
-        /// <summary>The Enforcer shoots the patrol robot down from the walk north of the Office at 4:30; returns the tick it went down.</summary>
+        /// <summary>The Enforcer shoots the patrol robot down from the walk north of the service yard at 4:30; returns the tick it went down.</summary>
         static int PatrolShotDown(Run r)
         {
             var g = r.G;
@@ -46,19 +48,36 @@ namespace Suborned.Sim
             return g.Tick;
         }
 
-        /// <summary>The rival crew arrives (3:10) by its car; the Enforcer, waiting beside it out of their way, fires on them as they come.</summary>
+        /// <summary>A shot's target is one of the rival crew (brief 059: five people, rival-1..5).</summary>
+        static bool CrewT(string id) => id.StartsWith("rival-", StringComparison.Ordinal);
+        /// <summary>Brief 059: the crew is five people; these operatives fire on "rivals" (the nearest member on the street) again each time one
+        /// goes down, until the crew breaks (more than half of it on the map down: Motive M059-3.5) or the limit passes.</summary>
+        static void FireUntilBroken(Run r, int limitS, params string[] ops)
+        {
+            var g = r.G; int end = g.Tick + T(limitS);
+            while (!g.Over && g.Tick < end && g.RivalsDelayMethod != "fire")
+            {
+                foreach (var op in ops) { var o = r.Op(op); if (!o.Down && o.Gun.Order.Length == 0 && o.Busy == null && o.Gun.W != null) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "fire", Target = "rivals" }); }
+                g.Step();
+            }
+        }
+
+        /// <summary>The rival crew arrives by its car and drops three who post round the cell's car (brief 059, 2:46); the Enforcer, waiting by the
+        /// square out of their way, fires on them as they post.</summary>
         static void FireOnArrivingRivals(Run r, bool once)
         {
             var g = r.G;
-            // c025 (brief 031): he waits outside the pickup camera's cone (Waymark's tip point) and walks beside the rival car as it parks
-            r.To(r.SendTo(Enf, new Pt(8600, -3400)));
-            r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), $"the rival crew is here at {Report.Clock(g.Tick)}");
-            r.To(r.SendTo(Enf, Beside(r, g.S.Stand(g.S.RivalsPark)) ?? g.S.Stand(g.S.RivalsPark)));
+            // brief 059: the crew's first bodies on the street are the posted three, round the cell's car at the square
+            // engine 0.34.0 (brief 067 K): he waits at (20, -30), 7 m nearer the café terrace than (24, -36): without the square's planters the
+            // crew's walks to their posts and the crowd's legs no longer pass (24, -36), and nobody of the city is within 30 m of it when he fires
+            r.To(r.SendTo(Enf, new Pt(2000, -3000)));
+            r.Is(r.Until(() => g.Crew[1].Mode == CrewMode.Posted, T(200)), $"the rival crew posts round our car at {Report.Clock(g.Tick)}");
             r.Do(Enf, "draw");
             r.Fire(Enf, "rivals");
-            r.Is(r.Until(() => r.Shots().Exists(x => x.by == Enf && x.target == "rivals"), T(10)), "the Enforcer fires on the crew");
+            r.Is(r.Until(() => r.Shots().Exists(x => x.by == Enf && CrewT(x.target)), T(10)), "the Enforcer fires on the crew");
             if (once) { r.Do(Enf, "cease"); r.Is(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "stance", Stance = "hold" }).ok, "he holds his fire"); return; } // engine 0.19.0: the crew sees the street and fires back (Sky's answer 3); hold keeps him from answering (cease alone stands weapons free down only until he is shot at)
-            r.Is(r.Until(() => g.RivalsDelayMethod == "fire", T(20)), $"the crew is driven back at {Report.Clock(g.Tick)}");
+            FireUntilBroken(r, 60, Enf);
+            r.Is(g.RivalsDelayMethod == "fire", $"the crew is driven back at {Report.Clock(g.Tick)}");
         }
 
         /// <summary>The patrol down, the Enforcer walks within reach of the rival crew its gunfire drew to the Office front and fires on them
@@ -69,8 +88,9 @@ namespace Suborned.Sim
             r.Is(r.Until(() => g.RivalsDrawn && g.RivalsPresent, T(30)), $"the gunfire draws the rival crew ({Report.Clock(g.Tick)})");
             r.To(r.SendTo(Enf, g.S.Grid.NearestFree(NearFront) ?? NearFront));
             if (waitForPeople) r.Is(r.Until(() => HeardBy(g, Enf, true) > 0, T(120)), $"people back on the street within reach at {Report.Clock(g.Tick)}");
-            r.Fire(Enf, "rivals");
-            r.Is(r.Until(() => g.RivalsDelayMethod == "fire", T(30)), $"the crew is driven back at {Report.Clock(g.Tick)}");
+            r.Until(() => g.Crew.Exists(m => m.OnFoot && !m.Gun.Down && G.Within(g.MemberPos(m, g.Tick), r.Op(Enf).Pos, r.Op(Enf).Gun.W!.MaxCm)), T(60)); // brief 059: the crew comes member by member
+            FireUntilBroken(r, 60, Enf);
+            r.Is(g.RivalsDelayMethod == "fire", $"the crew is driven back at {Report.Clock(g.Tick)}");
         }
         /// <summary>Between the shot corner and the Office front, 16 m from where the drawn rivals make for (d:Office approach). Re-sited
         /// 2026-10-19 with the door (brief 023; was (3600, -2000)).</summary>
@@ -89,7 +109,7 @@ namespace Suborned.Sim
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
                 var bo = g.Log.FindAll(l => l.Code == "blocker.out"); var cf = g.Log.FindAll(l => l.Code == "car.free"); // moved here from N113 (2026-10-19)
-                r.Is(bo.Count == 1 && cf.Count >= 1 && cf[0].Tick >= bo[0].Tick, $"logged by code: blocker.out, then car.free ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
+                r.Is(bo.Count == 1 && (cf.Count == 0 || cf[0].Tick >= bo[0].Tick), $"logged by code: blocker.out, and car.free (if the car was held) after it (brief 059: the blocker can fall before he holds it) ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
                 r.Eq(g.Fights.Count, 1, "one fight: the final fight");
                 var f = g.Fights[0];
                 r.Is(f.Final && f.Public, "the final fight, and the public heard it");
@@ -155,7 +175,7 @@ namespace Suborned.Sim
                 r.Eq((f.OnRivals, f.OnSecurity, f.RivalsFirst, f.Outcome, f.Delta), (true, false, "cell", "none", 0), "the cell fired first on feared rivals and did not break them: 0");
                 r.Is(g.RivalsDelayMethod != "fire", "the crew was not driven back");
                 r.Eq(FightMoves(g).Count, 0, "no fight move");
-            }, new Start { FinalFight = false });
+            }, new Start { FinalFight = false, OneInput = false }); // brief 039: the old controls (cease)
 
             Add("N97", "—", "Firing first on rivals nobody fears (rulebook fight.public; a scenario fixes rivals.public neutral): N96's orders exactly. The cell fired the first shot between it and the crew: Standing −1 when the fight ends, cause seen-fight-first.", r =>
             {
@@ -170,9 +190,9 @@ namespace Suborned.Sim
                 r.Eq((f.Public, f.RivalsFirst, f.Outcome, f.Delta, f.Cause), (true, "cell", "first", -1, "seen-fight-first"), "the cell fired first on neutral rivals: −1");
                 var m = FightMoves(g);
                 r.Eq((m.Count, m[0].tick, m[0].who), (1, f.End, "rivals"), "once, when the fight ends (here, with the mission)");
-            }, new Start { FinalFight = false, RivalsPublic = "neutral" });
+            }, new Start { FinalFight = false, RivalsPublic = "neutral", OneInput = false }); // brief 039: the old controls (cease)
 
-            Add("N98", "—", "A fight with security (rulebook fight.public): the Enforcer shoots the patrol robot down from the walk north of the Office at 4:30, people of the city within 30 m. Standing −1 once, not at the first shot but when the fight ends, 30 s (crowd.quiet) after the last shot by or at the cell; cause seen-fight-security, naming the patrol. Trail and Alert are the shots' own, as before; the district ends at +1.", r =>
+            Add("N98", "—", "A fight with security (rulebook fight.public): the Enforcer shoots the patrol robot down from the walk north of the service yard at 4:30 (engine 0.34.0; the walk north of the Office before), people of the city within 30 m. Standing −1 once, not at the first shot but when the fight ends, 30 s (crowd.quiet) after the last shot by or at the cell; cause seen-fight-security, naming the patrol. Trail and Alert are the shots' own, as before; the district ends at +1.", r =>
             {
                 var g = r.G;
                 r.To(r.SendTo(Enf, ShotCorner)); r.To(Math.Max(g.Tick, ShotAt));
@@ -183,14 +203,15 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.Fights.Count > 0, T(60)), $"the fight ends at {Report.Clock(g.Tick)}");
                 var f = g.Fights[0];
                 r.Eq(f.End - f.Last, g.R.FightQuietTicks, "30 s after the last shot");
-                r.Eq((f.Public, f.OnSecurity, f.FirstSecurity, f.Outcome, f.Delta), (true, true, "patrol", "security", -1), "a fight with authority: −1");
+                r.Eq((f.Public, f.OnSecurity, f.FirstSecurity, f.Outcome, f.Delta), (true, true, "patrol", "security", -2), "a fight with authority, city people within reach: −2 (Sky 2026-10-30)");
                 var m = FightMoves(g);
+                if (!r.Is(m.Count == 1, $"one Standing move ({Moves(g)})")) return; // engine 0.34.0: no index past the moves there are (N98 threw on an empty list)
                 r.Eq((m.Count, m[0].tick, m[0].cause, m[0].who), (1, f.End, "seen-fight-security", "patrol"), "once, when it ends");
-                r.Eq(g.Standing, g.R.StandingStart - 1, "+2 → +1");
+                r.Eq(g.Standing, g.R.StandingStart - 2, "+2 → 0");
                 r.Eq((g.Trail, g.Alert), (g.R.GunfireTrail + g.R.HitTrail + g.R.DownTrail, g.R.GunfireAlert), "Trail and Alert are the shots' own: a shooting, a hit, a down; Alert 2");
                 r.Wait(T(5));
                 var l = OneLine(r, g.BetweenMissions(g.Investigate()));
-                r.Eq((l.From, l.End, l.Word, l.Drift, l.To, l.Cause, l.Who), (2, 1, 0, 0, 1, "seen-fight-security", "patrol"), "the district ends at +1, the fight its cause");
+                r.Eq((l.From, l.End, l.Word, l.Drift, l.To, l.Cause, l.Who), (2, 0, 0, 0, 0, "seen-fight-security", "patrol"), "the district ends at 0, the fight its cause");
             }, new Start { FinalFight = false });
 
             // N99, N101: the patrol shot down, then the rival crew its gunfire draws, driven off: inside 30 s one fight, after 30 s two.
@@ -200,20 +221,20 @@ namespace Suborned.Sim
                 PatrolShotDown(r);
                 if (apart) r.Is(r.Until(() => g.Fights.Count == 1, T(60)), $"the patrol's fight ends at {Report.Clock(g.Tick)}");
                 FireOnDrawnRivals(r, apart);
-                int first = r.Shots().Find(x => (x.by == Enf && x.target == "rivals") || (x.by == "rivals" && x.target == Enf)).tick;
+                int first = r.Shots().Find(x => (x.by == Enf && CrewT(x.target)) || (CrewT(x.by) && x.target == Enf)).tick;
                 int gap = first - r.Shots().FindLast(x => x.tick < first && (x.by == Enf || x.target == Enf)).tick;
                 r.Is(apart ? gap >= g.R.FightQuietTicks : gap < g.R.FightQuietTicks, $"the rivals' fight starts {gap / 10} s after the last shot at the patrol");
                 r.Is(r.Until(() => g.OpenFight == null, T(60)), $"the last fight ends at {Report.Clock(g.Tick)}");
             }
-            Add("N99", "—", "A mixed fight (rulebook fight.public: authority outranks): the Enforcer shoots the patrol down from the walk north of the Office, then walks on the rival crew its gunfire draws and drives it off, never 30 s without a shot. One fight, on security and on rivals (broken): −1, seen-fight-security, once; the win over the rivals counts for nothing.", r =>
+            Add("N99", "—", "A mixed fight (rulebook fight.public: authority outranks): the Enforcer shoots the patrol down from the walk north of the service yard, then walks on the rival crew its gunfire draws and drives it off, never 30 s without a shot. One fight, on security and on rivals (broken): −1, seen-fight-security, once; the win over the rivals counts for nothing.", r =>
             {
                 var g = r.G;
                 PatrolThenRivals(r, false);
                 r.Eq(g.Fights.Count, 1, "one fight: no 30 s gap");
                 var f = g.Fights[0];
-                r.Eq((f.Public, f.OnSecurity, f.OnRivals, f.Outcome, f.Delta, f.Cause), (true, true, true, "security", -1, "seen-fight-security"), "on security and rivals: authority outranks, −1");
+                r.Eq((f.Public, f.OnSecurity, f.OnRivals, f.Outcome, f.Delta, f.Cause), (true, true, true, "security", -2, "seen-fight-security"), "on security and rivals: authority outranks, −2");
                 r.Is(f.CrewBroken >= 0, "though the rivals broke");
-                r.Eq(Moves(g), "-1 seen-fight-security patrol", "one move, naming the patrol");
+                r.Eq(Moves(g), "-2 seen-fight-security patrol", "one move, naming the patrol");
             }, new Start { FinalFight = false });
 
             Add("N100", "—", "A fight nobody heard (rulebook fight.public): N98's orders in a world with no crowd (Start.Crowd off); the cast's civilians (Inez, the driver, Vale inside) are all beyond 30 m of every shot. The fight ends unheard: Standing does not move, and the district stands steady at +2. Trail and Alert are N98's.", r =>
@@ -236,9 +257,12 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 PatrolThenRivals(r, true);
-                r.Eq(string.Join(", ", g.Fights.Select(f => $"{f.Public} {f.Outcome}")), "True security, True rivals", "two fights: the patrol's, then the rivals' (won)");
-                r.Eq(Moves(g), "-1 seen-fight-security patrol, 1 seen-fight-rivals rivals", "two moves");
-                r.Eq(g.Standing, g.R.StandingStart, "+2 → +1 → +2");
+                // engine 0.30.0: on the face-margin grid the response unit (on the street from 4:58) holds within 30 m of the Enforcer's spot and sees his
+                // weapon at 5:33.7, so the second fight is on security too (authority outranks): still two fights 30 s apart, two moves, which is this
+                // case's rule; the rivals-won +1 is N95's (feared rivals driven off)
+                r.Eq(string.Join(", ", g.Fights.Select(f => $"{f.Public} {f.Outcome}")), "True security, True security", "two fights: the patrol's, then the rivals' with the response unit in it");
+                r.Eq(Moves(g), "-2 seen-fight-security patrol, -2 seen-fight-security security-1", "two moves, one a fight each");
+                r.Eq(g.Standing, g.R.StandingStart - 4, "+2 → 0 → -2");
             }, new Start { FinalFight = false, Security = 0 });
         }
     }

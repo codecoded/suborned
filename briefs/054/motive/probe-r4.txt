@@ -1,0 +1,105 @@
+# brief 054 rev 4 probe (Motive, 2026-10-24). Engine: the working tree's sim/ (suborned.sim/0.27.0) copied to out/scratch/motive/b054/{base,cone}; routes: contracts/missions/handover/routes snapshot (38 scripts).
+# cone = base + probe-r4.patch. Env: CIV_MODE 0 today, 1 cone+care (unknown stop facings hashed), 2 unknown stops face the act, 3 unknown stops blind; CIV_SHOT 1 gunfire turns heads; CIV_STAFFCONE 0 security unchanged, 2 security by the guard cone + 3 m. Played with: bun run guard dotnet <dll> batch --list list.txt --no-replay
+
+## CIV_MODE=0 vs base: every finalHash identical
+
+## recommended rule (CIV_MODE=1, CIV_SHOT=1, security unchanged) vs today: base | rule
+careless-body-found.json                 failure  enforcer-down          4:09.5 T  2 A2 St  1 rej0   |  same
+careless-enforcer-watches-guard.json     failure  enforcer-down          3:35.2 T  2 A2 St  2 rej0   |  same
+careless-guard-left-door-held.json       failure  rivals-reach-vale      8:30.0 T  6 A1 St  2 rej1   |  same
+careless-reporter-not-stopped.json       success  -                      7:59.6 T  3 A2 St  3 rej0   |  same
+careless-scout-idles-pickup.json         success  -                      7:59.6 T  3 A1 St  3 rej0   |  same
+careless-takedown-seen-camera.json       failure  entry-seen-camera      2:37.0 T  1 A1 St  2 rej1   |  same
+careless-takedown-seen-crowd.json        failure  enforcer-down          6:53.9 T  8 A3 St  0 rej0   |  failure  enforcer-down          6:32.9 T  7 A3 St  1 rej1
+fail-district-seals.json                 failure  sealed                 5:05.0 T  9 A2 St -1 rej1   |  failure  sealed                 5:05.0 T  8 A2 St  0 rej1
+fail-enforcer-down.json                  failure  enforcer-down          1:46.7 T 12 A2 St  0 rej0   |  same
+fail-entry-seen-camera.json              failure  entry-seen-camera      4:42.9 T  3 A1 St  2 rej0   |  same
+fail-entry-seen-guard.json               failure  entry-seen-guard       3:52.9 T  2 A1 St  2 rej0   |  same
+fail-entry-seen-patrol.json              failure  entry-seen-patrol      4:40.4 T  4 A0 St  2 rej0   |  same
+fail-rivals-reach-vale.json              failure  rivals-reach-vale      6:10.0 T  2 A1 St  2 rej0   |  same
+fail-take-seen-camera.json               failure  abduction-seen-camera   6:10.0 T  1 A1 St  2 rej0   |  same
+fail-vale-dead.json                      failure  vale-dead              6:12.0 T  8 A3 St  0 rej0   |  same
+fail-vale-leaves.json                    failure  vale-leaves            8:30.0 T  1 A1 St  2 rej0   |  same
+fight-loud-enforcer-down.json            failure  enforcer-down          4:01.7 T  8 A2 St  0 rej0   |  same
+fight-safe-rivals-reach-vale.json        failure  rivals-reach-vale      7:29.0 T  3 A1 St  2 rej0   |  same
+loud-fast.json                           success  -                      5:09.6 T 14 A2 St -2 rej0   |  success  -                      5:09.6 T 13 A2 St -1 rej0
+loud-fight.json                          success  -                      5:12.4 T 13 A2 St -2 rej0   |  success  -                      5:12.4 T 12 A2 St -1 rej0
+loud-left-downed.json                    success  -                      5:12.6 T 14 A2 St -2 rej0   |  success  -                      5:12.6 T 13 A2 St -1 rej0
+loud-left-standing.json                  success  -                      5:12.6 T 14 A2 St -2 rej0   |  success  -                      5:12.6 T 13 A2 St -1 rej0
+loud.json                                success  -                      5:09.6 T 14 A2 St -2 rej0   |  success  -                      5:09.6 T 13 A2 St -1 rej0
+route-a-board.json                       success  -                      4:27.6 T  5 A1 St  2 rej0   |  same
+route-a-pressure-board.json              success  -                      3:37.9 T  7 A1 St  2 rej0   |  same
+route-a-pressure.json                    success  -                      4:00.7 T  7 A1 St  2 rej0   |  same
+route-a.json                             success  -                      4:48.9 T  5 A1 St  3 rej0   |  same
+route-b-block-board.json                 success  -                      7:44.2 T  4 A0 St  3 rej0   |  same
+route-b-block.json                       success  -                      7:59.5 T  4 A0 St  3 rej0   |  same
+route-b-board.json                       success  -                      7:44.2 T  3 A0 St  3 rej0   |  same
+route-b.json                             success  -                      7:59.5 T  3 A0 St  3 rej0   |  same
+route-g-board.json                       success  -                      4:11.2 T  6 A1 St  3 rej0   |  same
+route-g-fast-board.json                  success  -                      3:52.8 T  6 A1 St  3 rej0   |  same
+route-g-fast.json                        success  -                      4:15.6 T  6 A1 St  3 rej0   |  same
+route-g-kill-board.json                  success  -                      5:38.2 T  2 A1 St  3 rej0   |  same
+route-g-kill.json                        success  -                      6:01.0 T  2 A1 St  3 rej0   |  same
+route-g.json                             success  -                      4:34.0 T  6 A1 St  3 rej0   |  same
+withdraw.json                            withdrawn -                      0:30.0 T  0 A0 St  2 rej0   |  same
+
+## same, CIV_MODE=2 and 3 (unknown stop facings worst and best): identical outcomes to CIV_MODE=1 (checked by script)
+
+## witness events changed (react drawn threat violence-seen startled reports-landed)
+script                                 react drawn threat viol startled landed   (base -> rule)
+careless-takedown-seen-crowd           27->13  0->0  0->0  0->0  4->24  16->3
+fail-district-seals                    2->2  1->0  0->0  0->0  6->6  2->2
+fail-vale-dead                         0->0  2->1  0->0  1->1  1->1  0->0
+loud-fast                              2->2  1->0  0->0  0->0  13->13  4->4
+loud-fight                             2->2  1->0  0->0  0->0  13->13  4->4
+loud-left-downed                       2->2  1->0  0->0  0->0  10->10  4->4
+loud-left-standing                     2->2  1->0  0->0  0->0  13->13  4->4
+loud                                   2->2  1->0  0->0  0->0  13->13  4->4
+route-a-pressure-board                 0->0  0->0  9->2  0->0  10->10  0->0
+route-a-pressure                       0->0  0->0  9->2  0->0  9->9  0->0
+
+## alternative: security by their guard cone + 3 m (CIV_STAFFCONE=2), shots not turning heads
+careless-reporter-not-stopped.json       success  -                      7:59.6 T  3 A2 St  3 rej0   |  success  -                      7:59.6 T  4 A2 St  3 rej0
+careless-takedown-seen-crowd.json        failure  enforcer-down          6:53.9 T  8 A3 St  0 rej0   |  failure  enforcer-down          6:32.9 T  7 A3 St  1 rej1
+fail-district-seals.json                 failure  sealed                 5:05.0 T  9 A2 St -1 rej1   |  failure  sealed                 5:05.0 T  8 A2 St  0 rej1
+loud-fast.json                           success  -                      5:09.6 T 14 A2 St -2 rej0   |  success  -                      5:09.6 T 13 A2 St -1 rej0
+loud-fight.json                          success  -                      5:12.4 T 13 A2 St -2 rej0   |  success  -                      5:12.4 T 12 A2 St -1 rej0
+loud-left-downed.json                    success  -                      5:12.6 T 14 A2 St -2 rej0   |  success  -                      5:12.6 T 13 A2 St -1 rej0
+loud-left-standing.json                  success  -                      5:12.6 T 14 A2 St -2 rej0   |  success  -                      5:12.6 T 13 A2 St -1 rej0
+loud.json                                success  -                      5:09.6 T 14 A2 St -2 rej0   |  success  -                      5:09.6 T 13 A2 St -1 rej0
+route-a-pressure-board.json              success  -                      3:37.9 T  7 A1 St  2 rej0   |  success  -                      3:37.9 T  6 A1 St  3 rej0
+route-a-pressure.json                    success  -                      4:00.7 T  7 A1 St  2 rej0   |  success  -                      4:00.7 T  6 A1 St  3 rej0
+
+## alternative: no Alert gate (odd acts seen by the cone at every Alert), security unchanged, shots not turning heads
+careless-takedown-seen-crowd.json        failure  enforcer-down          6:53.9 T  8 A3 St  0 rej0   |  failure  enforcer-down          6:32.9 T  7 A3 St  1 rej1
+fail-district-seals.json                 failure  sealed                 5:05.0 T  9 A2 St -1 rej1   |  failure  sealed                 5:05.0 T  8 A2 St  0 rej1
+loud-fast.json                           success  -                      5:09.6 T 14 A2 St -2 rej0   |  success  -                      5:09.6 T 13 A2 St -1 rej0
+loud-fight.json                          success  -                      5:12.4 T 13 A2 St -2 rej0   |  success  -                      5:12.4 T 12 A2 St -1 rej0
+loud-left-downed.json                    success  -                      5:12.6 T 14 A2 St -2 rej0   |  success  -                      5:12.6 T 13 A2 St -1 rej0
+loud-left-standing.json                  success  -                      5:12.6 T 14 A2 St -2 rej0   |  success  -                      5:12.6 T 13 A2 St -1 rej0
+loud.json                                success  -                      5:09.6 T 14 A2 St -2 rej0   |  success  -                      5:09.6 T 13 A2 St -1 rej0
+  1:46.0 witness.threat: 5 saw the threat: p-garden-row-east-06/resident@(-910,-3500),p-garden-row-east-07/resident@(-668,-2411),p-pylon-row-east-01/resident@(-669,-1981),p-records-office-73/guar
+
+## fight lab (today and lab presets; verdict column unchanged on all 270 lines; 6.4 triggers of today and lab unchanged): rows that moved, base then rule
+base lab             L1   failure entry-seen-camera 0:56.0   13/13    2  2→0   raised  active      1    0    0     5 %    1    3    16    2/1    c0/0 s0   pass (fail)
+rule lab             L1   failure entry-seen-camera 0:56.0   12/12    2  2→1   raised  active      1    0    0     5 %    1    3    16    2/1    c0/0 s0   pass (fail)
+base lab             L2   failure enforcer-down 2:24.3   42/42    2  2→-2  raised  active      1    2    0    66 %   12    7    49    1/1    c0/0 s0   pass (fail)
+rule lab             L2   failure enforcer-down 2:24.3   41/41    2  2→-1  raised  active      1    2    0    66 %   12    7    49    1/1    c0/0 s0   pass (fail)
+base lab             L3:tight-focus-reset-kite failure enforcer-down 4:49.2   18/18    2  2→-2  raised  active      1    4    0   100 %   18    1    39    1/1    c1/10 s26  pass (fail)
+rule lab             L3:tight-focus-reset-kite failure enforcer-down 4:49.2   17/17    2  2→-1  raised  active      1    4    0   100 %   18    1    39    1/1    c1/10 s26  pass (fail)
+base lab             L3:tight-step200-focus-norivals-at236-runkite failure enforcer-down 4:06.2   18/18    2  2→-3  raised  active      1    4    0   100 %   19    3    45    1/1    c0/8 s19  pass (fail)
+rule lab             L3:tight-step200-focus-norivals-at236-runkite failure enforcer-down 4:06.2   17/17    2  2→-2  raised  active      1    4    0   100 %   19    3    45    1/1    c0/8 s19  pass (fail)
+base lab             L4   failure enforcer-down 7:02.8   50/50    3  2→-3  high    active      1    1    0    33 %    6    8    43    2/2    c0/0 s0   pass (fail)
+rule lab             L4   failure enforcer-down 7:16.7   51/51    3  2→-4  high    active      1    1    0    33 %    6    8    43    2/2    c0/0 s0   pass (fail)
+base today           L1   failure entry-seen-camera 0:56.1   14/14    2  2→-1  raised  active      1    0    0    16 %    3    2    11    1/0    c0/0 s0   pass (fail)
+rule today           L1   failure entry-seen-camera 0:56.1   12/12    2  2→1   raised  active      1    0    0    16 %    3    2    11    1/0    c0/0 s0   pass (fail)
+base today           L1c  failure enforcer-down 3:45.3   35/35    2  2→-2  raised  active      1    3    0    83 %   15    4    31    3/0    c2/6 s3   pass (fail)
+rule today           L1c  failure enforcer-down 3:45.3   34/34    2  2→-1  raised  active      1    3    0    83 %   15    4    31    3/0    c2/6 s3   pass (fail)
+base today           L2   failure enforcer-down 2:27.6   56/56    3  2→-2  high    active      1    3    0    83 %   16    9    38    2/2    c0/0 s0   pass (fail)
+rule today           L2   failure enforcer-down 2:27.6   55/55    3  2→-1  high    active      1    3    0    83 %   16    9    38    2/2    c0/0 s0   pass (fail)
+base today           L3:tight-enfgo-carfree-kite failure enforcer-down 4:06.8   20/20    2  2→-2  raised  active      1    4    0   100 %   18    3    32    1/1    c3/8 s21  pass (fail)
+rule today           L3:tight-enfgo-carfree-kite failure enforcer-down 4:06.8   19/19    2  2→-1  raised  active      1    4    0   100 %   18    3    32    1/1    c3/8 s21  pass (fail)
+base today           L3:tight-kite failure sealed    5:05.0   20/20    2  2→-2  raised  active      1    3    0    66 %   12    3    32    1/1    c0/10 s15  pass (fail)
+rule today           L3:tight-kite failure sealed    5:05.0   19/19    2  2→-1  raised  active      1    3    0    66 %   12    3    32    1/1    c0/10 s15  pass (fail)
+base today           L4   failure sealed    7:21.7   56/56    3  2→-4  high    active      1    1    0    27 %    5    9    34    3/2    c0/0 s0   pass (fail)
+rule today           L4   failure sealed    7:21.7   57/57    3  2→-5  high    active      1    1    0    27 %    5    9    34    3/2    c0/0 s0   pass (fail)

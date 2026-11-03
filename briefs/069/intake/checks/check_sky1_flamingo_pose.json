@@ -1,0 +1,124 @@
+{
+ "still": "paid/069-intake/codex/sky1_flamingo_pose.png",
+ "base": "out/scratch/forma/char-pipeline/intake/silhouette_f.png",
+ "verdict": {
+  "pass": false,
+  "fails": [
+   "a figure runs past its third of the sheet"
+  ],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 0.6,
+   "arm_screenLeft": 47.6,
+   "arm_screenRight": 46.9,
+   "armGapRows": 0.949,
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1237,
+   "feetSpacingH_base": 0.1248,
+   "legSplayDeg": 0.3,
+   "footLengthH": 0.1407,
+   "footYawDegEst": [
+    2.4,
+    1.2
+   ],
+   "backgroundFlatness": 0.9
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 178,
+   "bottom": 857,
+   "heightPx": 679,
+   "left": 33,
+   "right": 500,
+   "touchesEdge": false,
+   "armGapRows": 0.949,
+   "armDownFromHorizontal": {
+    "screenLeft": 47.6,
+    "screenRight": 46.9
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1237,
+   "footWidthH": 0.0515,
+   "legSplayDeg": 0.3,
+   "footOutwardH": [
+    0.0029,
+    0.0015
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 180,
+   "bottom": 855,
+   "heightPx": 675,
+   "left": 189,
+   "right": 308,
+   "touchesEdge": false,
+   "footLengthH": 0.1407,
+   "x0": 512
+  },
+  "back": {
+   "top": 179,
+   "bottom": 858,
+   "heightPx": 679,
+   "left": 1,
+   "right": 474,
+   "touchesEdge": true,
+   "x0": 1024
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 51,
+   "right": 459,
+   "touchesEdge": false,
+   "armGapRows": 0.964,
+   "armDownFromHorizontal": {
+    "screenLeft": 45.2,
+    "screenRight": 45.2
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1248,
+   "footWidthH": 0.0439,
+   "legSplayDeg": 0.7,
+   "footOutwardH": [
+    -0.0018,
+    -0.0018
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 192,
+   "right": 284,
+   "touchesEdge": false,
+   "footLengthH": 0.1103,
+   "x0": 512
+  },
+  "back": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 51,
+   "right": 459,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "footYawDeg": 12.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0,
+  "legSplayDeg": 4.0,
+  "feetSpacingHLoose": 0.06
+ }
+}

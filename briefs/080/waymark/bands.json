@@ -1,0 +1,673 @@
+{
+ "seeds": 200,
+ "from": 1,
+ "engine": "tree",
+ "seconds": 33,
+ "rigid": [
+  {
+   "id": "R-1",
+   "rule": "no crash: every play gave its line",
+   "ok": true,
+   "value": "1400 plays, 0 errors"
+  },
+  {
+   "id": "R-2",
+   "rule": "no stall: every play reaches a verdict by the close",
+   "ok": false,
+   "value": "34 plays reach the close with no verdict",
+   "note": "first: prepared-loud#24, prepared-loud#137, quiet-a#69, quiet-b#8, quiet-b#19, quiet-b#37"
+  },
+  {
+   "id": "R-3",
+   "rule": "every fail names its cause (fail code and culprit)",
+   "ok": true,
+   "value": "734/734"
+  },
+  {
+   "id": "R-4",
+   "rule": "every order shows its price: each verb given has its line on the card (text.json less.price), each Listen and Turn had its quote when given",
+   "ok": true,
+   "value": "18/18 verbs, 0 unquoted acts"
+  },
+  {
+   "id": "R-5",
+   "rule": "a saved run replays exactly from seed + orders (a win and a fail of each plan; the bands' own run gives the same hash)",
+   "ok": true,
+   "value": "12/12"
+  },
+  {
+   "id": "R-6",
+   "rule": "unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace",
+   "ok": true,
+   "value": "5/5"
+  },
+  {
+   "id": "R-7",
+   "rule": "no reference window under 30 s at a person's pace: each step 30 s late loses at most 10 points of wins",
+   "ok": false,
+   "value": "9/11",
+   "note": "quiet-b take: 85 % → 68 %; quiet-g knockout: 68 % → 17 %"
+  }
+ ],
+ "bands": [
+  {
+   "id": "B-1 quiet-a",
+   "rule": "prepared quiet wins ≥ 90 %",
+   "ok": true,
+   "value": "99%"
+  },
+  {
+   "id": "B-1 quiet-b",
+   "rule": "prepared quiet wins ≥ 90 %",
+   "ok": false,
+   "value": "80.5%"
+  },
+  {
+   "id": "B-1 quiet-g",
+   "rule": "prepared quiet wins ≥ 90 %",
+   "ok": false,
+   "value": "70.5%"
+  },
+  {
+   "id": "B-2 thin-quiet",
+   "rule": "thin quiet wins 60-85 %",
+   "ok": false,
+   "value": "48.5%"
+  },
+  {
+   "id": "B-3 careless",
+   "rule": "careless wins ≤ 30 %",
+   "ok": true,
+   "value": "0%"
+  },
+  {
+   "id": "B-4 prepared-loud",
+   "rule": "prepared loud wins 60-80 % (Waymark proposes; Motive confirms); only wins whose final fight was loud",
+   "ok": false,
+   "value": "2%"
+  },
+  {
+   "id": "B-5 unprepared-loud",
+   "rule": "unprepared loud wins ≤ 20 % (Waymark proposes; Motive confirms)",
+   "ok": true,
+   "value": "0%"
+  },
+  {
+   "id": "B-6",
+   "rule": "prepared loud clearly above unprepared (≥ 40 points)",
+   "ok": false,
+   "value": "2 % against 0 %"
+  },
+  {
+   "id": "B-7 quiet-a",
+   "rule": "quiet final fight: median 30-60 s, 95 % under 90 s",
+   "ok": false,
+   "value": "median 16 s, p95 38 s"
+  },
+  {
+   "id": "B-7 quiet-b",
+   "rule": "quiet final fight: median 30-60 s, 95 % under 90 s",
+   "ok": false,
+   "value": "median 15 s, p95 78 s"
+  },
+  {
+   "id": "B-7 quiet-g",
+   "rule": "quiet final fight: median 30-60 s, 95 % under 90 s",
+   "ok": true,
+   "value": "median 34 s, p95 76 s"
+  },
+  {
+   "id": "B-7 thin-quiet",
+   "rule": "quiet final fight: median 30-60 s, 95 % under 90 s",
+   "ok": false,
+   "value": "median 9 s, p95 25 s"
+  },
+  {
+   "id": "B-8 prepared-loud",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": false,
+   "value": "median 26 s, p95 47 s, worst 105 s"
+  },
+  {
+   "id": "B-8 quiet-a",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": true,
+   "value": "median 15 s, p95 42 s, worst 178 s"
+  },
+  {
+   "id": "B-8 quiet-b",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": false,
+   "value": "median 63 s, p95 83 s, worst 94 s"
+  },
+  {
+   "id": "B-8 quiet-g",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": false,
+   "value": "median 49 s, p95 95 s, worst 134 s"
+  },
+  {
+   "id": "B-9 quiet-a",
+   "rule": "agents down per win ≤ 0.5, prepared",
+   "ok": true,
+   "value": "0.17"
+  },
+  {
+   "id": "B-9 quiet-b",
+   "rule": "agents down per win ≤ 0.5, prepared",
+   "ok": true,
+   "value": "0.25"
+  },
+  {
+   "id": "B-9 quiet-g",
+   "rule": "agents down per win ≤ 0.5, prepared",
+   "ok": true,
+   "value": "0.34"
+  },
+  {
+   "id": "B-10 prepared-loud",
+   "rule": "agents down per win ≤ 1.5, loud",
+   "ok": true,
+   "value": "0.34"
+  },
+  {
+   "id": "B-10 unprepared-loud",
+   "rule": "agents down per win ≤ 1.5, loud",
+   "ok": true,
+   "value": "no win"
+  },
+  {
+   "id": "B-11 careless",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": false,
+   "value": "0-0 s"
+  },
+  {
+   "id": "B-11 prepared-loud",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "26-46 s"
+  },
+  {
+   "id": "B-11 quiet-a",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "13-24 s"
+  },
+  {
+   "id": "B-11 quiet-b",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "10-22 s"
+  },
+  {
+   "id": "B-11 quiet-g",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "24-52 s"
+  },
+  {
+   "id": "B-11 thin-quiet",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "6-17 s"
+  },
+  {
+   "id": "B-11 unprepared-loud",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": false,
+   "value": "2-8 s"
+  },
+  {
+   "id": "B-12",
+   "rule": "at least one prepared quiet route wins on every seed",
+   "ok": true,
+   "value": "200/200"
+  },
+  {
+   "id": "B-13",
+   "rule": "loud's Trail at least 3× quiet's",
+   "ok": false,
+   "value": "lowest loud win 17 T against quiet median up to 11 T"
+  },
+  {
+   "id": "B-14",
+   "rule": "nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling)",
+   "ok": false,
+   "value": "Enforcer: 88 of 305 falls under 7 s, fastest 1.5 s; others: 65 of 397 under 5 s, fastest 1.5 s"
+  }
+ ],
+ "plans": [
+  {
+   "plan": "careless",
+   "style": "careless",
+   "plays": 200,
+   "wins": 0,
+   "winPct": 0,
+   "fails": {
+    "entry-seen-camera": 200
+   },
+   "undecided": 0,
+   "loudShare": 0,
+   "winsLoud": 0,
+   "fightMed": 0,
+   "fightP25": 0,
+   "fightP75": 0,
+   "fightP95": 0,
+   "fightMax": 0,
+   "fightN": 0,
+   "endMed": "0:00",
+   "hpMed": 0,
+   "downPerPlay": 0,
+   "downPerWin": 0,
+   "tMed": 0,
+   "tMax": 0,
+   "aMed": 0,
+   "standingMed": 0,
+   "heatMed": 0,
+   "heatMax": 0,
+   "tAll": 5,
+   "standingAll": 1,
+   "idleMed": 14,
+   "idleP95": 46,
+   "idleMax": 57,
+   "refusedMed": 0,
+   "inputsMed": 9,
+   "reported": 199,
+   "givenUp": 0
+  },
+  {
+   "plan": "prepared-loud",
+   "style": "prepared-loud",
+   "plays": 200,
+   "wins": 35,
+   "winPct": 17.5,
+   "fails": {
+    "rivals-reach-vale": 4,
+    "enforcer-down": 157,
+    "none": 2,
+    "sealed": 2
+   },
+   "undecided": 2,
+   "loudShare": 82,
+   "winsLoud": 4,
+   "fightMed": 33,
+   "fightP25": 26,
+   "fightP75": 46,
+   "fightP95": 72,
+   "fightMax": 111,
+   "fightN": 200,
+   "endMed": "5:39",
+   "hpMed": 14,
+   "downPerPlay": 1.58,
+   "downPerWin": 0.34,
+   "tMed": 6,
+   "tMax": 59,
+   "aMed": 0,
+   "standingMed": 3,
+   "heatMed": 6,
+   "heatMax": 59,
+   "tAll": 18,
+   "standingAll": 1,
+   "idleMed": 26,
+   "idleP95": 47,
+   "idleMax": 105,
+   "refusedMed": 0,
+   "inputsMed": 29,
+   "reported": 4,
+   "givenUp": 0
+  },
+  {
+   "plan": "quiet-a",
+   "style": "prepared-quiet",
+   "plays": 200,
+   "wins": 198,
+   "winPct": 99,
+   "fails": {
+    "none": 1,
+    "rivals-reach-vale": 1
+   },
+   "undecided": 1,
+   "loudShare": 0,
+   "winsLoud": 0,
+   "fightMed": 16,
+   "fightP25": 13,
+   "fightP75": 24,
+   "fightP95": 38,
+   "fightMax": 42,
+   "fightN": 200,
+   "endMed": "4:42",
+   "hpMed": 2,
+   "downPerPlay": 0.19,
+   "downPerWin": 0.17,
+   "tMed": 4,
+   "tMax": 35,
+   "aMed": 0,
+   "standingMed": 3,
+   "heatMed": 4,
+   "heatMax": 35,
+   "tAll": 4,
+   "standingAll": 3,
+   "idleMed": 15,
+   "idleP95": 42,
+   "idleMax": 178,
+   "refusedMed": 0,
+   "inputsMed": 26,
+   "reported": 0,
+   "givenUp": 1
+  },
+  {
+   "plan": "quiet-b",
+   "style": "prepared-quiet",
+   "plays": 200,
+   "wins": 161,
+   "winPct": 80.5,
+   "fails": {
+    "none": 16,
+    "rivals-reach-vale": 23
+   },
+   "undecided": 16,
+   "loudShare": 3,
+   "winsLoud": 3,
+   "fightMed": 15,
+   "fightP25": 10,
+   "fightP75": 22,
+   "fightP95": 78,
+   "fightMax": 84,
+   "fightN": 200,
+   "endMed": "6:32",
+   "hpMed": 7,
+   "downPerPlay": 0.55,
+   "downPerWin": 0.25,
+   "tMed": 11,
+   "tMax": 32,
+   "aMed": 2,
+   "standingMed": 1,
+   "heatMed": 11,
+   "heatMax": 32,
+   "tAll": 9,
+   "standingAll": 1,
+   "idleMed": 63,
+   "idleP95": 83,
+   "idleMax": 94,
+   "refusedMed": 0,
+   "inputsMed": 26,
+   "reported": 0,
+   "givenUp": 0
+  },
+  {
+   "plan": "quiet-g",
+   "style": "prepared-quiet",
+   "plays": 200,
+   "wins": 141,
+   "winPct": 70.5,
+   "fails": {
+    "none": 15,
+    "vale-leaves": 16,
+    "rivals-reach-vale": 26,
+    "sealed": 2
+   },
+   "undecided": 15,
+   "loudShare": 0,
+   "winsLoud": 0,
+   "fightMed": 34,
+   "fightP25": 24,
+   "fightP75": 52,
+   "fightP95": 76,
+   "fightMax": 148,
+   "fightN": 184,
+   "endMed": "5:19",
+   "hpMed": 7,
+   "downPerPlay": 0.6,
+   "downPerWin": 0.34,
+   "tMed": 10,
+   "tMax": 32,
+   "aMed": 1,
+   "standingMed": 3,
+   "heatMed": 10,
+   "heatMax": 32,
+   "tAll": 6,
+   "standingAll": 2,
+   "idleMed": 49,
+   "idleP95": 95,
+   "idleMax": 134,
+   "refusedMed": 0,
+   "inputsMed": 23,
+   "reported": 16,
+   "givenUp": 1
+  },
+  {
+   "plan": "thin-quiet",
+   "style": "thin-quiet",
+   "plays": 200,
+   "wins": 97,
+   "winPct": 48.5,
+   "fails": {
+    "rivals-reach-vale": 101,
+    "vale-leaves": 1,
+    "entry-seen-camera": 1
+   },
+   "undecided": 0,
+   "loudShare": 0,
+   "winsLoud": 0,
+   "fightMed": 9,
+   "fightP25": 6,
+   "fightP75": 17,
+   "fightP95": 25,
+   "fightMax": 74,
+   "fightN": 198,
+   "endMed": "4:10",
+   "hpMed": 8,
+   "downPerPlay": 0.54,
+   "downPerWin": 0.07,
+   "tMed": 17,
+   "tMax": 38,
+   "aMed": 0,
+   "standingMed": 2,
+   "heatMed": 17,
+   "heatMax": 38,
+   "tAll": 6,
+   "standingAll": 1,
+   "idleMed": 15,
+   "idleP95": 51,
+   "idleMax": 76,
+   "refusedMed": 0,
+   "inputsMed": 19,
+   "reported": 10,
+   "givenUp": 0
+  },
+  {
+   "plan": "unprepared-loud",
+   "style": "unprepared-loud",
+   "plays": 200,
+   "wins": 0,
+   "winPct": 0,
+   "fails": {
+    "entry-seen-camera": 191,
+    "sealed": 8,
+    "enforcer-down": 1
+   },
+   "undecided": 0,
+   "loudShare": 0,
+   "winsLoud": 0,
+   "fightMed": 4,
+   "fightP25": 2,
+   "fightP75": 8,
+   "fightP95": 46,
+   "fightMax": 137,
+   "fightN": 198,
+   "endMed": "0:00",
+   "hpMed": 0,
+   "downPerPlay": 0.06,
+   "downPerWin": 0,
+   "tMed": 0,
+   "tMax": 0,
+   "aMed": 0,
+   "standingMed": 0,
+   "heatMed": 0,
+   "heatMax": 0,
+   "tAll": 6,
+   "standingAll": 1,
+   "idleMed": 5,
+   "idleP95": 29,
+   "idleMax": 179,
+   "refusedMed": 0,
+   "inputsMed": 9,
+   "reported": 10,
+   "givenUp": 0
+  }
+ ],
+ "windows": [
+  {
+   "plan": "quiet-a",
+   "rule": "call",
+   "base": 100,
+   "late": 98,
+   "holds": true
+  },
+  {
+   "plan": "quiet-a",
+   "rule": "enter",
+   "base": 100,
+   "late": 98,
+   "holds": true
+  },
+  {
+   "plan": "quiet-a",
+   "rule": "go",
+   "base": 100,
+   "late": 100,
+   "holds": true
+  },
+  {
+   "plan": "quiet-b",
+   "rule": "pay",
+   "base": 85,
+   "late": 85,
+   "holds": true
+  },
+  {
+   "plan": "quiet-b",
+   "rule": "tip",
+   "base": 85,
+   "late": 85,
+   "holds": true
+  },
+  {
+   "plan": "quiet-b",
+   "rule": "reroute",
+   "base": 85,
+   "late": 88,
+   "holds": true
+  },
+  {
+   "plan": "quiet-b",
+   "rule": "take",
+   "base": 85,
+   "late": 68,
+   "holds": false
+  },
+  {
+   "plan": "quiet-b",
+   "rule": "go",
+   "base": 85,
+   "late": 83,
+   "holds": true
+  },
+  {
+   "plan": "quiet-g",
+   "rule": "knockout",
+   "base": 68,
+   "late": 17,
+   "holds": false
+  },
+  {
+   "plan": "quiet-g",
+   "rule": "enter",
+   "base": 68,
+   "late": 83,
+   "holds": true
+  },
+  {
+   "plan": "quiet-g",
+   "rule": "go",
+   "base": 68,
+   "late": 62,
+   "holds": true
+  }
+ ],
+ "saved": [
+  {
+   "plan": "careless",
+   "seed": 1,
+   "outcome": "failure",
+   "same": true
+  },
+  {
+   "plan": "prepared-loud",
+   "seed": 1,
+   "outcome": "success",
+   "same": true
+  },
+  {
+   "plan": "prepared-loud",
+   "seed": 2,
+   "outcome": "failure",
+   "same": true
+  },
+  {
+   "plan": "quiet-a",
+   "seed": 1,
+   "outcome": "success",
+   "same": true
+  },
+  {
+   "plan": "quiet-a",
+   "seed": 69,
+   "outcome": "none",
+   "same": true
+  },
+  {
+   "plan": "quiet-b",
+   "seed": 1,
+   "outcome": "success",
+   "same": true
+  },
+  {
+   "plan": "quiet-b",
+   "seed": 8,
+   "outcome": "none",
+   "same": true
+  },
+  {
+   "plan": "quiet-g",
+   "seed": 1,
+   "outcome": "success",
+   "same": true
+  },
+  {
+   "plan": "quiet-g",
+   "seed": 2,
+   "outcome": "none",
+   "same": true
+  },
+  {
+   "plan": "thin-quiet",
+   "seed": 1,
+   "outcome": "success",
+   "same": true
+  },
+  {
+   "plan": "thin-quiet",
+   "seed": 4,
+   "outcome": "failure",
+   "same": true
+  },
+  {
+   "plan": "unprepared-loud",
+   "seed": 1,
+   "outcome": "failure",
+   "same": true
+  }
+ ]
+}

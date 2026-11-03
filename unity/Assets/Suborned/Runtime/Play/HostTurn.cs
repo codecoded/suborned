@@ -136,8 +136,8 @@ namespace Suborned.Play
         void TurnLookAt(Vector3 world) { TurnQueueCancel(); if (Turning) turnPivot = new Vector3(world.x, 0f, world.z); }
 
         /// <summary>Per frame: the points the fade keeps clear besides the screen centre, in order of need (the shader keeps the first
-        /// ArchitectureFade.MaxPoints): the selected agents, the action target, the cursor's ground point, the other agents, then Inez, the
-        /// guard and Vale while an agent sees him. Only what is near the frame.</summary>
+        /// ArchitectureFade.MaxPoints): the selected agents, the action target, the cursor's ground point, the guard, the other agents, the
+        /// signal figures, then Inez, the driver and Vale (everyone who takes a silhouette also takes a capsule). Only what is near the frame.</summary>
         void FadePoints()
         {
             if (!fade || !cam || views == null || Game == null) return;
@@ -171,10 +171,31 @@ namespace Suborned.Play
             // the rivals, the legacy officers), every carried body and Vale keep a clean disc, so none stands in the architecture's ghost dither
             foreach (var w in FigurePoints()) Add(w, rp);
             Add(Person("waitress"), rp);
-            if (ValeSeen) Add(Person("councillor"), rp);
+            // Glint 056 (2026-10-26): the cut list is the silhouette list (HostViews.SilhouetteKey); the silhouette is the backstop for what a cut
+            // cannot reach, never a person's only mark. Vale is not gated by ValeSeen: his silhouette is not (Aster's Q1: key people's silhouettes stay as built).
+            Add(Person("driver"), rp);
+            Add(Person("councillor"), rp);
             ServedTable();
             fade.SetPoints(fadePoints);
         }
+
+        /// <summary>Glint 056 (2026-10-26) test: the keys of the silhouette people near the frame (FadePoints' margin) with no kept cut point
+        /// within 1 m: a person whose only mark would be the silhouette. "" when none (the pass). Logged on every proof shot.</summary>
+        public string UncutSilhouettePeople()
+        {
+            if (!fade || !cam || views == null) return "";
+            var sb = new System.Text.StringBuilder();
+            foreach (var (key, at) in views.SilhouettePeople())
+            {
+                var vp = cam.WorldToViewportPoint(at);
+                if (vp.z <= 0f || vp.x < -0.15f || vp.x > 1.15f || vp.y < -0.15f || vp.y > 1.15f) continue;
+                if (fade.HasPointNear(at, 1f)) continue;
+                if (sb.Length > 0) sb.Append(','); sb.Append(key);
+            }
+            return sb.ToString();
+        }
+        /// <summary>How many points FadePoints asked for this frame (before the fade's cap).</summary>
+        public int FadePointCount => fadePoints.Count;
 
         /// <summary>World points of the signal figures on the street (hostiles, units, the patrol, the rivals, the legacy officers, as drawn),
         /// every carried body (at its carrier) and Vale when he is with the Enforcer.</summary>

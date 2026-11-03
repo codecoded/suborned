@@ -4,8 +4,10 @@
     "palette": "light.sun",
     "value": 1,
     "intensity": 1.8,
-    "pitch": 38,
+    "pitch": 44.7,
     "yaw": 330,
+    "exposureMatch": "Glint, brief 075-A: the whole old light rig is ported at our sun's level. The old reel ran sun 3 under post exposure -0.8; every light value of it is here multiplied by 0.6 (= 1.8 / 3) in linear and the exposure raised by log2(3 / 1.8) = +0.737 EV to -0.063. For everything the sun, ambient and sky light (the stone, the sea, the sky, the fog) the displayed frame is the same as the old reel's, while the things the game calibrated at our exposure (the crossing heads, the silhouette ink and rim that must stay under the bloom, the day emissives, the night look) keep their values. Scaled: sun 3 -> 1.8, ambient (value 0.79 on the old colours, about 0.6 in linear), the sky's stored colours (spaceSky, each channel solved through Unity's sRGB step so the shader sees exactly 0.6 x the old), the long haze, the bloom threshold 0.8 -> 0.48.",
+    "r075": "Glint, brief 075-A (2026-10-28; Sky: 'back to the old world'). The old reel's sun (DecoKitStreet, old-keys.json light dump): intensity 3 (here 1.8, see exposureMatch), colour (1, 0.93, 0.8) = #ffedcc, 44.7 degrees up. The yaw stays 330: the old azimuth (-135 from the old boulevard's +z) belongs to the old street's frame; 330 keeps the civic square and the cafe terrace lit in the home frame (008 B5).",
     "honest": "Glint, 008 light-honest (2026-10-15). Retuned on honest frames (Capture: ARGBHalf, the player's HDR chain). Honest frames showed B5's orange came from the grade, not the sun: the highlights tint (1, 0.85, 0.66) is a full-strength multiplier above luma 0.55 and the colour filter warmed everything. Both are neutral now, the sun keeps the warmth (colour unchanged, #ffe0d0), and the intensity rises 1.35 -> 1.6 to pay back what the tint took (1.7 puts 11 percent of the home frame at R 246 or more, 1.6 puts 4 percent), with the ambient down 10 percent so shade stays shade. Sun paving (238, 206, 169) -> about (237, 217, 198), the paintings' lit paving (mean of four: 240, 220, 201). Evidence: briefs/008/light-honest/.",
     "note": "Glint, 008 B5. Low warm sun from the south-east (yaw 330, was 52 from the south-west): the civic square, the cafe terrace and the cafe front are lit in the home frame (yaw 52 left the west half of the square under the tall block west of it), shadows fall north-west out of the frame. The Records Office public face points north and is in soft shade under any southern sun. Intensity 1.35 (was 2.5): at 2.5 the lit stone and paving clipped in the Neutral tonemap (no form on lit surfaces) while the shade read dark; the lift now comes from the ambient. Sun colour pinker (#ffe0d0) so lit ivory reads peach-cream, not mustard."
   },
@@ -24,22 +26,24 @@
   },
   "fade": {
     "note": "Latch, 008 B5 (Glint's ask; Glint to tune). The play camera's ArchitectureFade: ghostShadow is what stays of faded architecture in the sun's shadow map (1 = its full shadow, 0 = none). The ghost itself keeps 0.2 (GDD §15); its shadow keeps more, so the street behind a faded tower is lit yet the tower still marks the ground with a lighter shadow.",
-    "ghostShadow": 0.4
+    "ghostShadow": 0.4,
+    "capsule": "Glint, brief 056 F (2026-10-25). With ArchitectureFade.capsules on, the sun's shadow map is NOT cut (a tower casts its full shadow; ghostShadow above serves the column dither, capsules off), the cut's rim is scaled by the wall's own lit luminance (rimLit) and the silhouettes' ink and rim are set per phase so the grade lands them on the contract's colours. Values: Resources/Atmosphere/signals.json (capsule, silhouette); code: briefs/056-occlusion.md 'Glint (2026-10-25)'."
   },
   "ambient": {
     "mode": "trilight",
     "sky": {
       "palette": "light.ambientSky",
-      "value": 0.69
+      "value": 0.79
     },
     "equator": {
       "palette": "light.ambientEquator",
-      "value": 0.71
+      "value": 0.79
     },
     "ground": {
       "palette": "light.ambientGround",
-      "value": 0.41
+      "value": 0.79
     },
+    "r075": "Glint, brief 075-A: the old reel's Trilight ambient as its scene held it (RenderSettings sky (0.708, 0.729, 0.761), equator (0.755, 0.722, 0.673), ground (0.798, 0.735, 0.642), intensity 1): palette light.ambientSky / Equator / Ground = #b5bac2 / #c0b8ac / #cbbca4, at value 0.79 (about 0.6 in linear: exposureMatch on the sun). Was #dedce0 x 0.69, #faeadc x 0.71, #e2c5a4 x 0.41. Against the sun at 3 the old shade is a little deeper than ours was (sun to sky-fill ratio about 6.5 against 5.4), the old reel's firmer form.",
     "r026": "Glint, 026 phase 1 (2026-10-19), variant B (briefs/026/glint/lighting.html): sun 1.6 -> 1.8, ambient x0.9 / 0.88 / 0.82 (0.77/0.81/0.5 -> 0.69/0.71/0.41), ACES in place of Neutral (the filmic toe and shoulder give form to the mid-values while the cream and the shade anchors hold: lit paving about 235, shade paving about 160), exposure +0.15, contrast 14 -> 6 (ACES carries it), saturation 14 -> 18, bloom 0.22. Hues unchanged.",
     "honest": "Glint, 008 light-honest: values x 0.9 (was 0.85 / 0.9 / 0.55) with the sun at 1.6. Shade on paving over sun on paving, linear Y: 0.60 -> 0.50 (the paintings 0.40 to 0.63, the play-angle painting 0.48); shaded paving (183, 167, 150) -> about (169, 156, 145), the paintings' shaded stone and paving (161-197, 148-185, 137-173). Hues unchanged, so shaded ivory stays ivory (R-B 24).",
     "note": "Glint, 008 B5. Shade carries the stone: a neutral-warm equator (#faeadc x 0.9, was #f8e6cc x 0.62) so shaded ivory stays ivory, a near-neutral sky fill (#dedce0 x 0.85, was #b2cbe6 x 0.7: a blue fill greyed cream paving and streets in shade), a warm ground bounce. Same wall in sun and shade (stone / seafoam / paving, displayed Y): was 0.25 / 0.12 / 0.42, now 0.64 / 0.48 / 0.69."
@@ -65,6 +69,48 @@
     "glowStrength": 0.22,
     "disc": 0.0
   },
+  "spaceSky": {
+    "note": "Glint, brief 075-A (2026-10-28). The old reel's day sky, not a lookalike: DecoKit/Space Age Sky (Shaders/DecoKit/DK_SpaceSky.shader, the old DK_SpaceSky.shader ported verbatim plus inert evening hooks) with the old DK_Sky_Street.mat's values (~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Generated/DK_Sky_Street.mat, sha256 40ca9140...; the colours at 0.6 in linear for our sun, see coloursOld and sun.exposureMatch; every other value as stored), set by Atmosphere.SpaceSky with SetColor / SetVector as DecoKitSky.Apply set them, so Unity's sRGB-to-linear step on material colours applies as it did there (that is why the stored colours are above 1: DecoKitSky.Apply multiplied its sampled colours by the sky gain 1.5 = the a channel). It replaces skyGradient by day; night keeps night.skyGradient. Teal zenith and mid (the old 88,168,170 and 127,218,208), the warm horizon haze (246,229,195), the sun disc and aureole (glare: the haze brightens toward the sun), wind-stretched cirrus from the old noise sheet, and the old far-city band (DK_Skyline_Far, -1 to 9 degrees, gain 1.1) tinted by the haze of its own azimuth. The planet and moons are drawn by our horizon band as geometry (brief 007 E, 072), so their radii here are 0 (RaySphere never hits; the ring needs the planet's radius, so it goes with it). _SunDir is our sun's, set by the builder. Textures are the old files, byte for byte, in Resources/Atmosphere (new GUIDs, the old import settings).",
+    "shader": "DecoKit/Space Age Sky",
+    "coloursOld": "the old .mat's stored values: _Zenith (0.14638105, 0.58735883, 0.6029668), _Mid (0.31834608, 1.051653, 0.9461358), _Horizon (1.3823731, 1.1753069, 0.8185868), _SunColor (1.5, 1.356992, 1.0956913), _CirrusColor (1.425, 1.425, 1.4399999), a 1.5 / 0.6; `colours` are these solved per channel so that after Unity's sRGB-to-linear step the shader sees 0.6 x the old linear value (light.json sun.exposureMatch).",
+    "colours": {
+      "_Zenith": [0.10777, 0.46421, 0.47682, 1.5],
+      "_Mid": [0.24677, 0.83949, 0.7542, 1.5],
+      "_Horizon": [1.1068, 0.93944, 0.6511, 1.5],
+      "_SunColor": [1.20188, 1.08629, 0.87508, 1.5],
+      "_CirrusColor": [1.14126, 1.14126, 1.15338, 0.6]
+    },
+    "vectors": {
+      "_Aureole": [0.8, 180, 0.6, 0.15],
+      "_Body": [2.6, 0.1, 0.35, 0.35],
+      "_Cirrus": [0.3, 0.8, 2.5, 0.6],
+      "_CirrusWind": [0.002, 0.0005, 0, 0],
+      "_Planet": [-0.19674662, 0.4848096, 0.85220325, 0],
+      "_PlanetAxis": [0.42, 0.88, -0.22, 1.3],
+      "_Ring": [1.28, 2.25, 0.85, 1],
+      "_Moon1": [0.17564061, 0.39073113, 0.9035926, 0],
+      "_Moon2": [-0.4022497, 0.6946584, 0.5963597, 0],
+      "_SkylineBand": [-0.017453292, 0.15707964, 1.1, 1]
+    },
+    "floats": { "_MidHeight": 0.95, "_HazeHeight": 0.1, "_SunDisc": 60, "_SunRadius": 0.012 },
+    "textures": {
+      "_NoiseTex": "Assets/Suborned/Resources/Atmosphere/dk_sky_noise.png",
+      "_SkylineTex": "Assets/Suborned/Resources/Atmosphere/dk_skyline_far.png"
+    }
+  },
+  "ocean": {
+    "note": "Glint, brief 075-A (2026-10-28; water ownership agreed in briefs/075/notes.md: the shader and its light response are Glint's). The old reel's sea: Suborned/DK Ocean (Shaders/DecoKit/DK_Ocean.shader, the old DecoKit/Ocean ported verbatim plus our far-shore fade, the perspective haze, instancing and a DepthNormals pass) with DecoKitHarbour.Ocean's values: two wind-drifted layers of the old wave sheet (DK_Sea_Normal; tiles 42 and 11 m, slope 0.55, speed 1) flattening from 80 to 1600 m, a lit teal body (sRGB 0.05, 0.32, 0.42) with back-lit crests (0.1, 0.55, 0.5), Fresnel toward the reflection probe lifted toward the zenith (0.45) and capped (0.55), and the tight sun glitter (power 1200 x 40) that the bloom turns into sparkle. It replaces Suborned/Water for the district water and the horizon sea alike (one material, name `water`, so SeaFade and the far-shore fade are unchanged). Colours are given as DecoKitHarbour gave them (SetColor with the sRGB triple).",
+    "shader": "Suborned/DK Ocean",
+    "waveTex": "Assets/Suborned/Resources/Atmosphere/dk_sea_normal.png",
+    "deep": [0.05, 0.32, 0.42],
+    "scatter": [0.1, 0.55, 0.5],
+    "sky": [0.45, 0.55, 0, 0],
+    "waves": [42, 11, 0.55, 1],
+    "wind": [0.8, 0.6, 0, 0],
+    "fade": [80, 1600, 0, 0],
+    "sun": [1200, 40, 0, 0],
+    "f0": 0.02
+  },
   "reflection": {
     "ground": "light.reflectGround",
     "street": {
@@ -87,16 +133,19 @@
   "post": {
     "tonemapping": "ACES",
     "bloom": {
-      "threshold": 1.1,
-      "intensity": 0.22,
-      "scatter": 0.6,
-      "tint": "light.bloomTint"
+      "threshold": 0.48,
+      "intensity": 0.6,
+      "scatter": 0.85,
+      "tint": "light.bloomTint",
+      "r075": "Glint, brief 075-A: DK_StreetGrade's bloom whole (threshold 0.8 at the old sun 3 = 0.48 here, exposureMatch on the sun; intensity 0.6, scatter 0.85, tint (1, 0.96, 0.9) = #fff5e6, URP defaults otherwise: half-resolution prefilter, one skipped mip, low-quality filtering), was 1.1 / 0.22 / 0.6. It is what blooms lit cream stone and the sun glints on the sea into the old reel's soft painted glow."
     },
     "colour": {
-      "postExposure": 0.15,
-      "contrast": 6,
-      "saturation": 18,
+      "postExposure": -0.063,
+      "contrast": 10,
+      "saturation": 25,
+      "r075": "Glint, brief 075-A: DK_StreetGrade's colour adjustments whole: post exposure -0.8 at the old sun 3 = -0.063 here (exposureMatch on the sun), contrast 10, saturation 25, filter white, hue 0 (072-G had already moved contrast and saturation; the exposure follows the sun to 3). ACES (ACES1000Nits preset, URP's default) as before.",
       "filter": "light.filter",
+      "r072": "Glint, brief 072-G (2026-10-27; Sky 'yeo' to the grade toward the old DecoKit's). DecoKit's street grade (DK_StreetGrade, DecoKitStreet: ACES, exposure -0.8 with a #ffedcc sun at 3, contrast 10, saturation 25, no shadow tint) against today's. Moved: contrast 6 -> 10 (DecoKit's), saturation 18 -> 25 (DecoKit's; the follow and long tiers take it as is; the play tier multiplies it by lens.json gradePlay, which goes 14 -> 8 percent so the play camera lands at 35.0, about today's 36.9: the play view was ALREADY above DecoKit's 25, and contrast 10 adds colour of its own), postExposure +0.15 -> +0.02 (DecoKit's -0.8 at sun 3 is about -0.06 at our sun 1.8; +0.02 keeps lit cream at about 236 at play zoom, not grey), the sun from pink-peach #ffe0d0 toward DecoKit's gold (#ffe4c8; the full #ffecca turned lit paving S 0.41 and the shaded powder-blue road teal-green, hue 204 -> 173; Sky keeps the powder-blue road), the shadows tint milder (light.gradeShadows #c7d1eb -> #d0d8ec: DecoKit had none; a cool shade still keeps the road blue). Measured at play zoom, office-front yaw 30 (frame mean S 0.245 -> 0.273; lit paving (227,196,154) S 0.32 -> (228,194,141) S 0.38; shaded road H 204 -> 196; lit top-20 percent (235,211,182) -> (236,211,172)). Night is its own block and does not move (frames byte-identical). The crossing heads' day trims are refitted for this grade in Resources/Atmosphere/signals.json; lens.json evening deltas re-based so the evening grade is unchanged. Evidence: briefs/072/grade/.",
       "honest": "Glint, 008 light-honest. The colour filter is neutral (was #fffbf4): it warmed shade as well as sun (shaded paving R-B 31 against the paintings' 17-24). Post-exposure, contrast and saturation are unchanged (saturation keeps the enamel accents saturated)."
     },
     "shadowsMidtonesHighlights": {
@@ -106,12 +155,14 @@
       "midtonesWeight": 0.0,
       "highlights": "light.gradeHighlights",
       "highlightsWeight": 0.0,
+      "r075": "Glint, brief 075-A: DK_StreetGrade had no ShadowsMidtonesHighlights; light.gradeShadows goes to white (#ffffff), so all three are neutral, as the old grade.",
       "honest": "Glint, 008 light-honest. Weight 0 is NOT off: URP treats the colour as a full-strength multiplier (sRGB to linear, by luma: shadows below 0.3, highlights above 0.55), so the old highlights (1, 0.85, 0.66) took G to 0.69 and B to 0.39 of itself on every lit surface (honest sun paving R-B 69), and the old shadows (0.6, 0.66, 0.85) turned dark roads mauve. Highlights are neutral white now (the warmth is the sun's); shadows keep a mild cool tint (#c7d1eb), the paintings' cool darks (road in shade: painting (97, 97, 106); honest before (130, 120, 123), now about (116, 110, 118)). Signals draw outside this grade (Aster 008 B5); until that is built, an unlit swatch through the grade shifts deltaE 9.7 / 4.3 / 6.5 (cones / guard / rivals) before, 7.2 / 5.0 / 3.3 now."
     },
     "vignette": {
-      "intensity": 0.1,
+      "intensity": 0.0,
       "smoothness": 0.5,
-      "colour": "light.haze"
+      "colour": "light.haze",
+      "r075": "Glint, brief 075-A: DK_StreetGrade had no vignette (was 0.1)."
     },
     "whiteBalance": {
       "temperature": 0,
@@ -180,6 +231,7 @@
         { "kind": "awning", "light": "spot", "intensity": 16, "range": 6.5, "spotAngle": 90, "inner": 0.35, "count": 4, "colour": "night.lampInterior", "aim": "paving 1.15 m out", "emissivePiece": "awning lamp" },
         { "kind": "palm", "light": "spot", "intensity": 14, "range": 6.5, "spotAngle": 45, "colour": "night.uplight", "aim": "up the trunk, +3 m", "emissivePiece": "uplight can", "note": "attach to the real palm meshes, not the empty transforms" },
         { "kind": "street", "light": "spot", "intensity": 19, "range": 6.5, "spotAngle": 85, "colour": "night.lampStreet", "aim": "down", "emissivePiece": "street-lamp globe", "note": "range 11 -> 6.5: the floor pool is only about 4 m from the head, so the cone volume shrinks by 3.4x with the pool unchanged; intensity x1.35 pays back the smaller range window (URP smooth window at 0.62 of range 0.73 against 0.97)" },
+        { "kind": "globe", "light": "point", "intensity": 7, "range": 5.8, "height": 2.31, "above": "the GlobeLamp_TB base (its pivot; the opal's centre)", "colour": "night.lampGlobe", "fixture": "GlobeLamp_TB (world.Civic Kit.Id, one per PlanterArc, the four fountain islands)", "emissivePiece": "GlobeLamp_TB opal (DK_Opal_TB): emissive globeOpal", "note": "Glint 077 (briefs/077/light/). The testbed's fountain-garden-lights.js: #fff1d8, 28 cd, distance 5.8, decay 2, no shadows, 2.31 m up, 0 by day (16 at evening). three.js divides direct diffuse by pi and URP does not, so 28 cd is about 9 here; 9 put the paving between the four islands near white (pools overlap at 9.5 m spacing), 7 keeps the cream paving in the pool readable and the frame unblown. Night only, like the street lamps: off at evening and by day. Unshadowed, no cookie; the light sits inside the opal, which casts no shadow from it." },
         { "kind": "office", "light": "mixed", "fixture": "RecordsEntrance* and RecordsEntrance_Official (the capstone front, played at yaw 210)", "note": "Glint 026 round 3. The Records Office front had no lamp kind. Five lights, all unshadowed, named by the entrance piece's own frame (door axis, landing 4.6 m wide, 0.75 m above street), placed relative to it.",
           "parts": [
             { "name": "door", "light": "point", "intensity": 9, "range": 5.5, "colour": "night.lampInterior", "at": "door axis, 2.9 m above the landing, 0.6 m out from the face", "emissivePiece": "AwningLamp (x2 flanking the door)" },
@@ -191,13 +243,16 @@
     },
     "emissive": {
       "note": "For Vela. HDR _EmissionColor intensity per material, on its own glow-only material so signals and the grade never meet it. One per-material night scalar (0 by day, so day frames do not move). Interior opal and cove exist already: add the multiplier.",
-      "night": { "tableOpal": 2.2, "wallAwningLampOpal": 4.0, "uplightLens": 2.3, "pendantCove": 2.6, "interiorOpal": 2.6, "sign": 3.2, "signCoral": 2.0 },
-      "dayResidual": { "pendantCove": 0.35, "sign": 0.6, "note": "what the testbed kept lit by day; optional" },
+      "night": { "tableOpal": 2.2, "wallAwningLampOpal": 4.0, "uplightLens": 2.3, "pendantCove": 2.6, "interiorOpal": 2.6, "sign": 3.2, "signCoral": 2.0, "roadLens": 5.0, "globeOpal": 2.5 },
+      "globeOpalNote": "Glint 077: DK_Opal_TB's _EmissionColor = linear(#fff1d2) x level, alpha = level (the .mat is written at the day level 0.06, the testbed's). Day 0.06, evening 0.06 (the globe lamps are night lamps), night 2.5 (testbed 3.5; 3.5 blooms the globe wider than the pool reads, 2.5 reads as a lit opal). ABSOLUTE levels, not a multiplier: night / day is x41.7, past roadlight.json's emission cap (0..10, which would reject the whole file), so do not put it in roadlight.json `glow` as mode emission.",
+      "dayResidual": { "globeOpal": 0.06, "pendantCove": 0.35, "sign": 0.6, "roadLens": 1.4, "note": "what the testbed kept lit by day; optional. roadLens (Vela, brief 048): the kerb strip light, DK_Road_Lens #FFE6B5. The .mat is written at the day value (1.4: a pale cream line, no glow); the rig raises it to night.roadLens (5.0) at evening (about 3.0) and night (5.0), the testbed `auto`" },
+      "evening": { "roadLens": 3.0, "roadPoolAlpha": 0.14, "windows": { "litShareEvening": 0.35, "litShareNight": 0.75 }, "note": "Glint, brief 048. The dusk lights (the road strip, the lit windows, any sign), driven at runtime by Runtime/RoadLight.cs from Resources/Atmosphere/roadlight.json (the same levels: lens 1.4 / 3.0 / 5.0 in the .mat's own scale, pool alpha 0 / 0.14 / 0.22 on DK_Road_Pool; `glow`: DK_GlassDark lit share 0.35 evening, 0.75 night, the neon and lightbox materials x1.25 / x1.7 of their own emission); change both files together. Runtime copies of the materials are driven, never the Kit .mat. The evening SUN, SKY, HAZE and GRADE are not built into the scene (the scene is saved in the day State): they are lens.json `evening` and haze.json `evening`, applied by LightPhase / AtmosphereLens / DistanceHaze by LightPhase.Dusk. The scene's day and night States here are unchanged." },
       "pieces": [
         { "name": "TableLamp_Opal", "size": "0.29 m tall, atom-age opal diffuser on a brass body (thin brass line, SF-21), diffuser tinted per lamp from the cycle", "emissive": "tableOpal" },
         { "name": "AwningLamp", "size": "chrome plate 0.24 x 0.07, opal strip 0.2 x 0.03, projecting chrome eyelid so the lens is not seen from the play view", "emissive": "wallAwningLampOpal" },
         { "name": "UplightCan_Palm", "size": "chrome can r 0.08 x 0.13 long, recessed lens r 0.063, on a short chrome stem, 0.425 m from the trunk", "emissive": "uplightLens" },
-        { "name": "StreetLampGlobe", "size": "opal globe on the existing DK_Lamp head (the head is only 0.2 m at y 4.3), clearly a globe at zoom 14", "emissive": "tableOpal", "intensity": 3.0 }
+        { "name": "StreetLampGlobe", "size": "opal globe on the existing DK_Lamp head (the head is only 0.2 m at y 4.3), clearly a globe at zoom 14", "emissive": "tableOpal", "intensity": 3.0 },
+        { "name": "GlobeLamp_TB", "size": "testbed atomic globe lamp, 2.62 m, opal 0.49 x 0.35 m at 2.31 m on a chrome stem (DK_Chrome)", "emissive": "globeOpal", "material": "DK_Opal_TB" }
       ]
     }
   },
@@ -229,9 +284,12 @@
     "night.lampLilac": { "hex": "#b79be4" },
     "night.lampInterior": { "hex": "#ffd39b" },
     "night.lampStreet": { "hex": "#ffe6bf" },
+    "night.lampGlobe": { "hex": "#fff1d8", "note": "Glint 077: the testbed's globe lamp light (fountain-garden-lights.js)" },
     "night.uplight": { "hex": "#e4efc7" },
     "light.sun": {
-      "hex": "#ffe0d0"
+      "hex": "#ffedcc",
+      "r075": "Glint 075-A: the old reel's sun colour (1, 0.93, 0.8); was #ffe4c8",
+      "note": "Glint 072-G: #ffe0d0 -> #ffe4c8, toward the old DecoKit sun #ffedcc (see post.colour.r072)"
     },
     "light.sunGlow": {
       "hex": "#ffe0b0"
@@ -247,25 +305,31 @@
       "hex": "#3f86de"
     },
     "light.ambientSky": {
-      "hex": "#dedce0"
+      "hex": "#b5bac2",
+      "note": "Glint 075-A: the old reel's trilight sky (0.708, 0.729, 0.761); was #dedce0 x 0.69"
     },
     "light.ambientEquator": {
-      "hex": "#faeadc"
+      "hex": "#c0b8ac",
+      "note": "Glint 075-A: the old reel's trilight equator (0.755, 0.722, 0.673); was #faeadc x 0.71"
     },
     "light.ambientGround": {
-      "hex": "#e2c5a4"
+      "hex": "#cbbca4",
+      "note": "Glint 075-A: the old reel's trilight ground (0.798, 0.735, 0.642); was #e2c5a4 x 0.41"
     },
     "light.reflectGround": {
       "hex": "#6b5d50"
     },
     "light.bloomTint": {
-      "hex": "#fff0d6"
+      "hex": "#fff5e6",
+      "note": "Glint 075-A: DK_StreetGrade's bloom tint (1, 0.96, 0.9); was #fff0d6"
     },
     "light.filter": {
       "hex": "#ffffff"
     },
     "light.gradeShadows": {
-      "hex": "#c7d1eb"
+      "hex": "#ffffff",
+      "r075": "Glint 075-A: neutral (DK_StreetGrade had none); was #d0d8ec",
+      "note": "Glint 072-G: #c7d1eb -> #d0d8ec, milder (DecoKit had no shadow tint; see post.colour.r072)"
     },
     "light.gradeMid": {
       "hex": "#ffffff"

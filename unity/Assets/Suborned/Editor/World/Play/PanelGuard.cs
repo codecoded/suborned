@@ -171,12 +171,13 @@ namespace Suborned.World.Play
         public static List<Target> Targets(HandoverHost h)
         {
             var g = h.Game; var l = new List<Target>();
-            void Add(string kind, string key, string label, string id = "") { if (!l.Exists(x => x.Kind == kind && x.Key == key)) l.Add(new Target { Kind = kind, Key = key, Label = label, Id = id }); }
+            void Add(string kind, string key, string label, string id = "", bool security = false) { if (!l.Exists(x => x.Kind == kind && x.Key == key)) l.Add(new Target { Kind = kind, Key = key, Label = label, Id = id, Security = security }); }
             foreach (var p in g.People) if (p.Role.Length > 0) Add("person", p.Role, p.Role, p.Role);
             Add("patrol", "patrol", "the patrol");
             foreach (var c in g.S.Cameras) Add("camera", c.Id, $"the {c.Id} camera");
-            Add("rivals", "rivals", "the rival crew"); Add("security", "security", "the response unit");
-            Add("car", "official", "the official car"); Add("car", "getaway", "the getaway car");
+            Add("rivals", "rivals", "the rival crew"); Add("rivals", "car:rivals", "the rival car", "car:rivals"); Add("security", "security", "the police"); // brief 059: the car, and each member drawn (Pickables)
+            foreach (var st in g.S.Stands) Add("stand", st.Id, st.Id, st.Id); // brief 059 K6: the getaway car's stands (Drive)
+            Add("car", "official", "Vale's car"); Add("car", "getaway", "the getaway car"); // Fable 067 (the glossary)
             Add("door", "door", "the public door"); Add("cabinet", "cabinet", "the control cabinet");
             foreach (var op in new[] { "scout", "fixer", "tech", "enforcer" }) Add("op", op, op);
             int crowd = 0; for (int i = 0; i < g.Walkers.Count && crowd < 3; i++) if (g.Walkers[i].P is Person cp && !cp.Down) { Add("crowd", "crowd/" + i, "a passer-by", cp.Id); crowd++; }
@@ -184,7 +185,7 @@ namespace Suborned.World.Play
             foreach (var x in g.Hostiles) if (!x.Down) Add("hostile", x.Id, x.Id.StartsWith("rival") ? "a rival" : "an officer");
             foreach (var u in g.Units) if (u.St is not ("gone" or "wait")) Add("unit", u.Id, u.Robot ? "a response robot" : "an officer");
             foreach (var s in g.S.Stashes) Add("stash", s.Id, s.Id, s.Id);
-            foreach (var p in h.Pickables()) Add(p.T.Kind, p.T.Key, p.T.Label, p.T.Id);
+            foreach (var p in h.Pickables()) Add(p.T.Kind, p.T.Key, p.T.Label, p.T.Id, p.T.Security); // Pulse 067 W2: the crowd's shift guards are pickables
             return l;
         }
     }

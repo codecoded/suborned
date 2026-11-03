@@ -49,7 +49,7 @@ namespace Suborned.Play
             return true;
         }
         /// <summary>Walk agent k to a free point about `cm` from `to` with a clear line of fire to it (16 bearings, the one nearest where k stands).</summary>
-        static bool ApproachInSight(HandoverHost h, int k, Pt to, int cm)
+        internal static bool ApproachInSight(HandoverHost h, int k, Pt to, int cm)
         {
             var g = h.Game; var from = g.Ops[k].Pos; Pt? best = null; long bd = long.MaxValue;
             foreach (int r in new[] { cm, cm + 200, cm - 150, cm + 400 })
@@ -86,7 +86,7 @@ namespace Suborned.Play
             }
             Want(HandoverHost.TpIn.ETap, HandoverHost.TpState.Free, HandoverHost.TpDo.Act); Want(HandoverHost.TpIn.EHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act); // brief 041: the Double click scheme opens nothing on a hold
             Want(HandoverHost.TpIn.LeftHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act);
-            Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.RingAtTarget); Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
+            Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Ring); /* item 33: a left click rings, a right tap does nothing */ Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
             Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.CarryingVale, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftDrag, HandoverHost.TpState.Walking, HandoverHost.TpDo.Orbit);
             int n = System.Enum.GetValues(typeof(HandoverHost.TpIn)).Length * System.Enum.GetValues(typeof(HandoverHost.TpState)).Length;
             log.Add("inputMap: " + HandoverHost.TpTable().Replace("\n", " | "));
@@ -113,12 +113,15 @@ namespace Suborned.Play
             parts.Add($"\"focus\": \"{focus}\""); ok &= focus == "person/waitress";
             yield return Shoot(dir, "tp-prompt", "rest", log);
             // E held 0.3 s opens the ring (the options); Esc closes it
-            Keys(Key.E); yield return new WaitForSecondsRealtime(0.32f); bool ringByHold = h.Ring != null; yield return Shoot(dir, "tp-options", "active", log); Keys(); yield return Frames(3);
+            for (int w = 0; w < 60 && !(h.DriveFocus is { Kind: "person", Key: "waitress" }); w++) { MouseAt(IzScreen()); yield return null; } // a passer-by can cross between: wait (up to 1 s) for the prompt to be Inez's again
+            Keys(Key.E); yield return new WaitForSecondsRealtime(0.32f); for (int w = 0; w < 30 && h.Ring == null; w++) yield return null; bool ringByHold = h.Ring != null; // a slow frame (the 2160 run) reads the hold a frame or two late
+            yield return Shoot(dir, "tp-options", "active", log); Keys(); yield return Frames(3);
             Keys(Key.Escape); yield return Frames(2); Keys(); yield return Frames(2); parts.Add($"\"eHoldRing\": {B(ringByHold)}, \"escClosed\": {B(h.Ring == null)}"); ok &= ringByHold && h.Ring == null;
             if (h.MenuOpen) h.ResumeFromMenu();
             // 2 · prompt = act: E tap, then a left click on the prompt (clickActs on): the prompt's way is what is given, or the ring opens
             // what the prompt promises, by TpAct's rule: the one clear way (not harmful) is given; a lock, a hint or nothing gives nothing; else the ring
             string Expect(HandoverHost.ContextPlan pl) => pl == null ? "" : pl.Choice.Act switch { ContextRank.Act.Default => pl.Row(pl.Choice.Pick)?.I?.Order?.Do ?? "", ContextRank.Act.Lock or ContextRank.Act.Hint or ContextRank.Act.Silent => "", _ => "ring" };
+            for (int w = 0; w < 60 && !(h.DriveFocus is { Kind: "person", Key: "waitress" }); w++) { MouseAt(IzScreen()); yield return null; } // as before the E hold: a passer-by may cross between
             HandoverHost.ContextPlan plan = h.DriveFocus != null ? h.ContextFor(h.DriveFocus, IzScreen()) : null;
             string want = Expect(plan);
             string Did(int from) { for (int i = from; i < g.Orders.Count; i++) { var o = g.Orders[i].order; if (o.Do is "drive" or "move" or "draw") continue; return o.Do; } return h.Ring != null ? "ring" : ""; }
@@ -129,7 +132,7 @@ namespace Suborned.Play
             plan = h.DriveFocus != null ? h.ContextFor(h.DriveFocus, IzScreen()) : null;
             string want2 = Expect(plan);
             n0 = g.Orders.Count; var sp = IzScreen(); MouseAt(sp); yield return null; MouseAt(sp, left: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
-            string cDid = Did(n0); h.CloseRing(); parts.Add($"\"clickWay\": \"{want2}\", \"clickDid\": \"{cDid}\""); ok &= cDid == want2;
+            string cDid = Did(n0); h.CloseRing(); parts.Add($"\"clickWay\": \"ring\", \"clickDid\": \"{cDid}\", \"eWay\": \"{want2}\""); ok &= cDid == "ring"; // item 33: a left click on the prompt opens its ring (E still acts)
             // 8 · clickActs off: a left tap on the prompt does nothing; the prompt shows only the E cap (HudToolkit hides the mouse)
             h.controls.clickActs = false; n0 = g.Orders.Count; MouseAt(sp); yield return null; MouseAt(sp, left: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
             string offDid = Did(n0); h.CloseRing(); parts.Add($"\"clickOffDid\": \"{offDid}\""); ok &= offDid == ""; h.controls.clickActs = true;
@@ -169,21 +172,26 @@ namespace Suborned.Play
             Keys(Key.Escape); yield return Frames(2); Keys(); if (h.MenuOpen) h.ResumeFromMenu(); yield return Frames(2); yield return WMoves("esc");
             parts.Add($"\"wasdAfter\": \"{string.Join(" ", after)}\"");
             if (h.Driving) h.DriveLetGoToMap(); yield return null;
-            // 6 · the right tap on a target out of reach (a fresh run: the Fixer 9 m from Inez): the ring at the target; a way that walks is
+            // 6 · (item 33: a left click, the right tap does nothing) on a target out of reach (a fresh run: the Fixer 9 m from Inez): the ring at the target; a way that walks is
             // taken; the agent walks in without a stop; W takes the stick back and drops the walk and its act
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; g = h.Game;
             Approach(h, 1, iz.Value, 900); Arrive(h, 1200);
-            h.Select(OpId.Fixer, false); h.DriveToggle(); h.SetPaused(false); h.FollowFace(At(h, "waitress")); yield return new WaitForSecondsRealtime(0.8f);
-            sp = IzScreen(); MouseAt(sp); yield return Frames(2); MouseAt(sp, right: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
+            // brief 067 G: the follow view now enters on the Fixer's own heading, so facing Inez put her square behind his figure (the click took
+            // op/fixer): the view faces a point 2.5 m beside her, which keeps her clear of him
+            h.Select(OpId.Fixer, false); h.DriveToggle(); h.SetPaused(false);
+            { var fz = At(h, "op/fixer"); var iw = At(h, "waitress"); var fw = iw - fz; fw.y = 0f; var sd = Vector3.Cross(Vector3.up, fw.sqrMagnitude > 1e-4f ? fw.normalized : Vector3.forward); h.FollowFace(iw + sd * 2.5f); }
+            { var trs = new List<string> { h.FollowTrace }; float t0 = Time.realtimeSinceStartup, next = 0.1f; while (Time.realtimeSinceStartup - t0 < 0.8f) { yield return null; if (Time.realtimeSinceStartup - t0 >= next) { trs.Add(h.FollowTrace); next += 0.1f; } } log.Add($"act click trace: {string.Join(" | ", trs)}"); }
+            sp = IzScreen(); MouseAt(sp); yield return Frames(2); MouseAt(sp, left: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
             var rr = h.Ring; bool rRing = rr != null; int take = -1; string way = "";
             if (rRing) for (int i = 0; i < rr.Segs.Count && take < 0; i++) { var sg = rr.Segs[i]; if (!sg.More && !sg.Harmful && sg.Row?.I != null && (sg.Row.I.WalkS > 0 || sg.Row.I.Walk.Length > 0) && sg.Row.Available) { take = i; way = sg.Row.I.Order.Do + ":" + sg.Row.I.Order.Approach; } }
-            if (rRing) yield return Shoot(dir, "tp-right-ring", "active", log);
+            if (rRing) yield return Shoot(dir, "tp-click-ring", "active", log);
+            else { log.Add($"act click ring: none at ({(int)sp.x},{(int)sp.y}): hover '{h.Hover?.Kind}/{h.Hover?.Key}', focus '{h.DriveFocus?.Kind}/{h.DriveFocus?.Key}', over HUD {HandoverHost.OverHud(sp)} '{HudToolkit.PickedName(sp)}', modal {h.Modal}, driving {h.Driving}, following {h.Following}, yaw {F(h.FollowYaw)}, Inez view {(h.Views.Find("waitress") is Transform izt ? izt.position.ToString() + " z " + F(h.View.WorldToScreenPoint(izt.position + Vector3.up).z) : "none")}, tick {g.Tick}, Fixer to Inez {F(g.PersonPos(g.Inez) is Pt ipz ? Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[1].Pos, ipz)) / 100f : -1f)} m"); yield return Shoot(dir, "tp-click-noring", "active", log); }
             if (take >= 0) h.RingTakeScripted(take); yield return Frames(3);
             bool walking = h.DriveWalking && g.Ops[1].Walk != null; float stillS = 0f;
             for (int f = 0; f < 40 && walking; f++) { var a = h.Views.Find("op/fixer").position; yield return null; if ((h.Views.Find("op/fixer").position - a).sqrMagnitude < 1e-8f) stillS += Time.unscaledDeltaTime; }
-            Keys(Key.W); yield return new WaitForSecondsRealtime(0.3f); Keys(); yield return Frames(2); // the stick goes back at once; the engine drops its walk at the next tick's drive sample
+            Keys(Key.W); yield return new WaitForSecondsRealtime(0.1f); Keys(); yield return new WaitForSecondsRealtime(0.1f); /* brief 083: on a walk-in to an act the first press asks */ Keys(Key.W); yield return new WaitForSecondsRealtime(0.3f); Keys(); yield return Frames(2); // the second press takes the stick; the engine drops its walk at the next tick's drive sample
             bool back = h.Driving && !h.DriveWalking && g.Ops[1].Walk == null && h.PendingOf(1).verb.Length == 0;
-            parts.Add($"\"rightTapRing\": {B(rRing)}, \"walkWay\": \"{way}\", \"walksIn\": {B(walking)}, \"stillS\": {F(stillS)}, \"wCancels\": {B(back)}"); ok &= rRing && take >= 0 && walking && stillS <= 0.12f && back; // no pause: at most one tick's hand-over
+            parts.Add($"\"clickRing\": {B(rRing)}, \"walkWay\": \"{way}\", \"walksIn\": {B(walking)}, \"stillS\": {F(stillS)}, \"wCancels\": {B(back)}"); ok &= rRing && take >= 0 && walking && stillS <= 0.12f && back; // no pause: at most one tick's hand-over
             h.controls.clickActs = keepClick; MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));
             log.Add($"act: {(ok ? "ok" : "FAILED")}: {string.Join(", ", parts).Replace("\"", "")}");
             if (h.Driving) h.DriveLetGoToMap(); yield return null; h.Begin();
@@ -203,11 +211,27 @@ namespace Suborned.Play
             var cp = g.CarAt(T); if (!cp.HasValue || g.Ops[E].Gun.W == null) { json[0] = "{\"ok\": null, \"why\": \"no official car or no armed enforcer\"}"; yield break; }
             int stand = Mathf.Min(1300, g.R.CarBlastCm + 450);
             ApproachInSight(h, E, cp.Value, stand); Arrive(h, 1500);
-            var ep = g.Ops[E].Pos; Approach(h, S, ep, 300, 200); Arrive(h, 1500); if (!g.S.Sight(g.Ops[S].Pos, cp.Value, g.R.Eye)) { Approach(h, S, ep, 250, -200); Arrive(h, 900); }
+            // the Scout on her own line to the car, inside her pistol's reach of it, outside the blast ring, and outside the Enforcer's 8 m follow ring:
+            // she does not follow his trigger (three guns blow the car before the run, the tap and the second lock), and fires her own lock with the
+            // Fixer's below. On 0.2.122 she stood out of reach and her shots were return fire at the patrol that came; on engine 0.34 it never comes
+            var ep = g.Ops[E].Pos; bool placed = false;
+            {
+                long reach = (g.Ops[S].Gun.W?.MaxCm ?? 1600) - 150, blast = g.R.CarBlastCm + 150, ring = g.R.FollowCm + 100; var sp0 = g.Ops[S].Pos; Pt? best = null; long bd = long.MaxValue;
+                foreach (int r in new[] { 1100, 1250, 950 })
+                    for (int i = 0; i < 24; i++)
+                    {
+                        float an = i * Mathf.PI * 2f / 24f; var q = new Pt(cp.Value.X + Mathf.RoundToInt(Mathf.Cos(an) * r), cp.Value.Y + Mathf.RoundToInt(Mathf.Sin(an) * r));
+                        if (!g.S.Grid.Free(q) || !g.S.Sight(q, cp.Value, g.R.Eye) || Suborned.Sim.G.D2(q, ep) < ring * ring || g.S.Grid.Route(sp0, q) == null) continue;
+                        long d2c = Suborned.Sim.G.D2(q, cp.Value); if (d2c > reach * reach || d2c < blast * blast) continue;
+                        long d = Suborned.Sim.G.D2(q, sp0); if (d < bd) { bd = d; best = q; }
+                    }
+                if (best.HasValue && h.Issue(new Order { Op = "scout", Do = "move", Point = best.Value, Run = true })) { Arrive(h, 1500); placed = true; }
+            }
+            if (!placed) { Approach(h, S, ep, 300, 200); Arrive(h, 1500); if (!g.S.Sight(g.Ops[S].Pos, cp.Value, g.R.Eye)) { Approach(h, S, ep, 250, -200); Arrive(h, 900); } }
             ApproachInSight(h, X, cp.Value, stand + 250); Arrive(h, 1500); // the Fixer (the lock) with its own line to the car
             foreach (var k in new[] { E, S, X }) h.Issue(new Order { Op = Suborned.Sim.Op.Name((OpId)k), Do = "draw" }); h.RunTo(g.Tick + 10);
             parts.Add($"\"enforcerLine\": {B(g.S.Sight(g.Ops[E].Pos, cp.Value, g.R.Eye))}, \"scoutLine\": {B(g.S.Sight(g.Ops[S].Pos, cp.Value, g.R.Eye))}");
-            parts.Add($"\"target\": \"{T}\", \"enforcerToCarM\": {F(Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[E].Pos, cp.Value)) / 100f)}, \"scoutToEnforcerM\": {F(Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[S].Pos, g.Ops[E].Pos)) / 100f)}, \"blastM\": {F(g.R.CarBlastCm / 100f)}");
+            parts.Add($"\"target\": \"{T}\", \"enforcerToCarM\": {F(Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[E].Pos, cp.Value)) / 100f)}, \"scoutToEnforcerM\": {F(Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[S].Pos, g.Ops[E].Pos)) / 100f)}, \"scoutToCarM\": {F(Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[S].Pos, cp.Value)) / 100f)}, \"blastM\": {F(g.R.CarBlastCm / 100f)}");
             // the commander view first, while the car is whole: the Fixer selected, a lasting fire order (the map's right click), overhead at play zoom
             h.Select(OpId.Fixer, false); h.FireScripted(T); h.LookAt((At(h, "op/fixer") + At(h, TV)) * 0.5f); h.SetPaused(false);
             var cd = new List<float>(); float c0 = Time.realtimeSinceStartup; bool cShot = false, cFiring = false;
@@ -215,7 +239,9 @@ namespace Suborned.Play
             if (!cShot) yield return Shoot(dir, "commander-firing", "rest", log);
             if (cd.Count > 10) { cd.Sort(); rows.Add($"{{\"spot\": \"fire-commander\", \"frames\": {cd.Count}, \"meanMs\": {F(cd.Average())}, \"fps\": {F(1000f / cd.Average())}, \"p99Ms\": {F(cd[(int)(cd.Count * 0.99f)])}, \"gpuMs\": -1}}"); }
             parts.Add($"\"commanderFixerFiring\": {B(cFiring)}"); ok &= cFiring;
-            h.Issue(new Order { Op = "fixer", Do = "cease" }); h.SetPaused(true);
+            if (g.OneInputOn) { h.Issue(new Order { Op = "fixer", Do = "holster" }); h.RunTo(g.Tick + 6); h.Issue(new Order { Op = "fixer", Do = "draw" }); h.RunTo(g.Tick + 11); } // engine 0.35 (one input): no cease; the lock ends by a holster (the sticky focus), and he draws again, free to follow
+            else h.Issue(new Order { Op = "fixer", Do = "cease" });
+            h.SetPaused(true);
             // Sky after 0.2.56 (replaces brief 024's "no fire order survives taking control"): T keeps the fire order, the agent trailed; the
             // trigger press below takes the stick back (DriveTakeBack)
             h.Issue(new Order { Op = "enforcer", Do = "fire", Target = T }); bool hadOrder = g.Ops[E].Gun.Order.Length > 0;
@@ -231,31 +257,39 @@ namespace Suborned.Play
             int mism = 0, frames = 0, firingFrames = 0, followFrames = 0; float firstFire = -1f, pressAt = Time.realtimeSinceStartup;
             h.TriggerScripted(T, true);
             bool pressTaken = h.TriggerDown; parts.Add($"\"triggerPressTaken\": {B(pressTaken)}"); ok &= pressTaken;
-            var fd = new List<float>(); bool shotTaken = false, followerShot = false;
-            while (Time.realtimeSinceStartup - pressAt < 4f && !g.Over)
+            var fd = new List<float>(); bool shotTaken = false, followerShot = false, fixerAway = false;
+            float holdS = g.OneInputOn ? 3f : 4f; // engine 0.35 (one input): 3 s, so the car (10) still stands for the second lock after the commander's Fixer, the follow and the run
+            while (Time.realtimeSinceStartup - pressAt < holdS && !g.Over)
             {
                 yield return null; frames++; fd.Add(Time.unscaledDeltaTime * 1000f); Point();
                 var eng = g.FireStateOf(OpId.Enforcer); var host = h.FireNow[E];
                 if (eng.Firing != host.Firing || eng.Mode != host.Mode || eng.Target != host.Target) mism++; // the host's marks read the engine's state (same frame)
                 if (host.Firing) { firingFrames++; if (firstFire < 0f) firstFire = Time.realtimeSinceStartup - pressAt; }
                 if (h.Followers.Count > 0) followFrames++;
+                if (g.OneInputOn && !fixerAway && followFrames >= 30) { h.Issue(new Order { Op = "fixer", Do = "holster" }); fixerAway = true; } // engine 0.35 (one input, no cease): the follower proved (30 frames), the Fixer holsters, so the car outlasts the hold, the run and the tap for the second lock (0.2.136: down 0/10 before it with him following the whole hold)
                 if (!shotTaken && host.Firing && h.ShotFx.Count > 0 && h.ShotFx[h.ShotFx.Count - 1].side == "cell" && Time.unscaledTime - h.ShotFx[h.ShotFx.Count - 1].born < 0.05f) { shotTaken = true; yield return Shoot(dir, "tp-firing", "rest", log); }
                 else if (!followerShot && shotTaken && h.FireNow[S].Mode == "follow" && h.FireNow[S].Firing) { followerShot = true; yield return Shoot(dir, "tp-follower", "rest", log); }
             }
             if (fd.Count > 10) { fd.Sort(); rows.Add($"{{\"spot\": \"fire-third\", \"frames\": {fd.Count}, \"meanMs\": {F(fd.Average())}, \"fps\": {F(1000f / fd.Average())}, \"p99Ms\": {F(fd[(int)(fd.Count * 0.99f)])}, \"gpuMs\": -1}}"); }
             parts.Add($"\"framesHeld\": {frames}, \"firingFrames\": {firingFrames}, \"firstFiringS\": {F(firstFire)}, \"stateMismatchFrames\": {mism}, \"followerFrames\": {followFrames}, \"followers\": \"{string.Join(",", h.Followers)}\"");
             ok &= mism == 0 && firingFrames > frames / 2 && followFrames > 0;
+            // engine 0.35 (one input): the follower is proved; now the Fixer holsters (no cease), so four guns don't blow the car before the tap and
+            // the second lock (0.2.135: secondLock empty, the car down under the Enforcer, the Scout and the following Fixer); the lock draws him again
+            if (g.OneInputOn && !fixerAway) { h.Issue(new Order { Op = "fixer", Do = "holster" }); h.RunTo(g.Tick + 1); }
             // done-check 4 and 5: at a walk the trigger plants the agent; a runner keeps moving and firing at worse odds; the camera holds its distance and pitch
             {
-                var camT = h.View.transform; float dist0 = (camT.position - h.Views.DrivePos).magnitude, pitch0 = camT.eulerAngles.x;
+                var camT = h.View.transform; float dist0 = (camT.position - h.Views.DrivePos).magnitude, pitch0 = camT.eulerAngles.x; float set0 = h.FollowDistSet; bool pulled0 = h.FollowPulledIn;
                 var a0 = h.Views.DrivePos; h.DriveInputOverride = new Vector2(1f, 0f); h.DriveRunOverride = false; yield return new WaitForSecondsRealtime(0.6f);
                 float walkMoved = (h.Views.DrivePos - a0).magnitude; int accStand = g.PreviewFire(OpId.Enforcer, T).Acc;
                 var a1 = h.Views.DrivePos; h.DriveRunOverride = true; yield return new WaitForSecondsRealtime(0.7f);
                 float runMoved = (h.Views.DrivePos - a1).magnitude; bool runFiring = h.FireNow[E].Mode == "trigger"; int accRun = g.PreviewFire(OpId.Enforcer, T).Acc;
                 h.DriveInputOverride = null; h.DriveRunOverride = false; yield return new WaitForSecondsRealtime(0.8f); // the chase settles behind the new heading
                 float dist1 = (camT.position - h.Views.DrivePos).magnitude, pitch1 = camT.eulerAngles.x;
-                bool camOk = Mathf.Abs(dist1 - dist0) <= 0.01f * dist0 + 0.05f && Mathf.Abs(Mathf.DeltaAngle(pitch1, pitch0)) <= 0.01f * Mathf.Max(1f, pitch0) + 0.05f;
-                parts.Add($"\"walkWhileFiringM\": {F(walkMoved)}, \"runWhileFiringM\": {F(runMoved)}, \"runKeepsTrigger\": {B(runFiring)}, \"accStand\": {accStand}, \"accRun\": {accRun}, \"camDist\": [{F(dist0)}, {F(dist1)}], \"camPitch\": [{F(pitch0)}, {F(pitch1)}], \"camHolds\": {B(camOk)}");
+                bool camSame = Mathf.Abs(dist1 - dist0) <= 0.01f * dist0 + 0.05f && Mathf.Abs(Mathf.DeltaAngle(pitch1, pitch0)) <= 0.01f * Mathf.Max(1f, pitch0) + 0.05f;
+                // brief 067 G: the view enters on the heading and the chase swings behind the run, so a wall may pull the boom in (its height and pitch
+                // ride on it): then the camera holds when the player's set distance is unchanged
+                bool pulled1 = h.FollowPulledIn; bool camOk = camSame || (pulled0 || pulled1) && Mathf.Abs(h.FollowDistSet - set0) < 0.01f;
+                parts.Add($"\"walkWhileFiringM\": {F(walkMoved)}, \"runWhileFiringM\": {F(runMoved)}, \"runKeepsTrigger\": {B(runFiring)}, \"accStand\": {accStand}, \"accRun\": {accRun}, \"camDist\": [{F(dist0)}, {F(dist1)}], \"camPitch\": [{F(pitch0)}, {F(pitch1)}], \"camHolds\": {B(camOk)}, \"camPulledIn\": [{B(pulled0)}, {B(pulled1)}], \"camSet\": [{F(set0)}, {F(h.FollowDistSet)}]");
                 ok &= walkMoved < 0.1f && runMoved > 0.5f && runFiring && camOk;
             }
             // release: the tracer cuts and the line reads Stopped in that frame
@@ -263,20 +297,23 @@ namespace Suborned.Play
             var (head, _, stopped, _) = h.FireLine(E); bool cut = !h.FireNow[E].Firing;
             parts.Add($"\"releaseCut\": {B(cut)}, \"releaseLine\": \"{head}\""); ok &= cut && stopped;
             yield return new WaitForSecondsRealtime(0.15f); yield return Shoot(dir, "tp-stopped", "rest", log);
-            // a tap: one press, released the next frame: one shot when the cadence allows (a buffer of one)
-            yield return new WaitForSecondsRealtime(2.4f);
-            int tapLog0 = g.Log.Count; bool up = !(g.CarOf(T) is { Blown: true });
-            if (up) { h.TriggerScripted(T, true); yield return null; h.TriggerScripted(T, false); yield return new WaitForSecondsRealtime(1.4f); }
-            int tapShots = 0; for (int i = tapLog0; i < g.Log.Count; i++) if (g.Log[i].Code.StartsWith("shot.") && g.Log[i].Text.StartsWith("enforcer fires on")) tapShots++;
-            parts.Add($"\"tapShots\": {tapShots}"); ok &= !up || tapShots == 1;
             // a lock on a second agent (the commander's lasting order on the Fixer) while the driven agent fires
-            h.Issue(new Order { Op = "fixer", Do = "fire", Target = T }); h.RunTo(g.Tick + 1);
-            string fixLock = g.LockOf(OpId.Fixer); yield return Frames(2);
-            parts.Add($"\"secondLock\": \"{fixLock}\", \"secondMode\": \"{h.FireNow[X].Mode}\""); ok &= fixLock == T && h.FireNow[X].Mode == "lock";
+            string carBefore = g.CarOf(T) is { } cb0 ? $"{(cb0.Blown ? "blown" : cb0.Gun != null && cb0.Gun.Down ? "down" : "up")} {cb0.Gun?.Health ?? -1}/{cb0.Gun?.Max ?? -1}" : "none";
+            bool carUp = carBefore.StartsWith("up");
+            bool fixTaken = h.Issue(new Order { Op = "fixer", Do = "fire", Target = T }); string fixWhy = fixTaken ? "" : h.Status; if (placed && !g.OneInputOn) h.Issue(new Order { Op = "scout", Do = "fire", Target = T }); h.RunTo(g.Tick + 1); // the Scout's own lock (placed off the follow ring, above); one input: not given, so the car stands while the Fixer draws for his
+            string fixLock = g.LockOf(OpId.Fixer); if (g.OneInputOn) { int w0 = g.Tick; while (g.Tick < w0 + 2 * Suborned.Sim.Game.Hz && h.FireNow[X].Mode != "lock" && !g.Over) h.RunTo(g.Tick + 1); } yield return Frames(2); // one input: the lock draws him first (FireStateOf reads lock once drawn)
+            parts.Add($"\"secondLock\": \"{fixLock}\", \"secondMode\": \"{h.FireNow[X].Mode}\", \"secondTaken\": {B(fixTaken)}, \"secondWhy\": \"{fixWhy.Replace("\"", "'")}\", \"carBeforeSecond\": \"{carBefore}\", \"secondStaged\": {B(carUp)}"); ok &= !carUp || (fixLock == T && h.FireNow[X].Mode == "lock"); // the stage apart from the check (brief 078): a car already spent says nothing about the lock, it is the proof's own staging (the reds of 0.2.124, 0.2.134-136)
             h.TriggerScripted(T, true); yield return new WaitForSecondsRealtime(1.2f); Point();
             yield return Shoot(dir, "tp-lock", "rest", log);
             yield return new WaitForSecondsRealtime(0.8f);
-            h.TriggerScripted(T, false); h.AimScripted(false); HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
+            h.TriggerScripted(T, false); yield return null;
+            // a tap (after the second lock since engine 0.35: one input has no cease, so the car is spent sooner; a car already down skips it): one press, released the next frame: one shot when the cadence allows (a buffer of one)
+            yield return new WaitForSecondsRealtime(2.4f);
+            int tapLog0 = g.Log.Count; bool up = !(g.CarOf(T) is { } ct && (ct.Blown || ct.Gun != null && ct.Gun.Down)); // a car shot down (not yet blown) takes no shot
+            if (up) { h.TriggerScripted(T, true); yield return null; h.TriggerScripted(T, false); yield return new WaitForSecondsRealtime(1.4f); }
+            int tapShots = 0; for (int i = tapLog0; i < g.Log.Count; i++) if (g.Log[i].Code.StartsWith("shot.") && g.Log[i].Text.StartsWith("enforcer fires on")) tapShots++;
+            parts.Add($"\"tapShots\": {tapShots}"); ok &= !up || tapShots == 1;
+            h.AimScripted(false); HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
             yield return new WaitForSecondsRealtime(1.4f); // the gun lowers
             h.DriveLetGoToMap(); yield return null;
             h.SetPaused(true);
@@ -330,7 +367,9 @@ namespace Suborned.Play
                 if (!burn && c.BurningAt >= 0 && !c.Blown) { burn = true; foreach (var a in new[] { "scout", "fixer", "enforcer" }) h.Issue(new Order { Op = a, Do = "cease" }); yield return new WaitForSecondsRealtime(0.7f); yield return Shoot(dir, "car-burning", "rest", log); }
                 if (c.Blown) { blown = true; yield return new WaitForSecondsRealtime(0.22f); yield return Shoot(dir, "car-blast", "rest", log); break; }
             }
-            parts.Add($"\"smoke\": {B(smoke)}, \"burning\": {B(burn)}, \"blown\": {B(blown)}, \"over\": {B(g.Over)}, \"result\": \"{g.FailCode}\", \"blastM\": {F(g.R.CarBlastCm / 100f)}"); ok &= smoke && burn && blown;
+            parts.Add($"\"smoke\": {B(smoke)}, \"burning\": {B(burn)}, \"blown\": {B(blown)}, \"over\": {B(g.Over)}, \"result\": \"{g.FailCode}\", \"blastM\": {F(g.R.CarBlastCm / 100f)}");
+            if (g.Over && !blown) { log.Add($"cars: not reached: the mission ended ({g.FailCode}) before the car blew"); h.Begin(); json[0] = $"{{\"ok\": null, \"why\": \"the mission ended before the car blew\", {string.Join(", ", parts)}}}"; yield break; } // the stage apart from the check (brief 078)
+            ok &= smoke && burn && blown;
             // the getaway car wrecked: Fable's getaway-lost fail card
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(false); yield return null; g = h.Game;
             h.Select(OpId.Enforcer, false); h.FireScripted("car:getaway");

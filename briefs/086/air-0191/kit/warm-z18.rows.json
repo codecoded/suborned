@@ -1,0 +1,27 @@
+{
+ "schema": "suborned.tplong.resolved/1",
+ "outDir": "set by the command line",
+ "rows": [
+  {
+   "name": "play-z18",
+   "view": "overhead",
+   "kind": "play",
+   "agent": "scout",
+   "walk": [
+    0,
+    0
+   ],
+   "faceHeading": -1,
+   "yaw": 30,
+   "zoom": 18.5,
+   "settleSeconds": 1.5,
+   "seconds": 12,
+   "w": 1920,
+   "h": 1080,
+   "clockRunning": true,
+   "hud": true,
+   "vsync": false,
+   "variant": {}
+  }
+ ]
+}

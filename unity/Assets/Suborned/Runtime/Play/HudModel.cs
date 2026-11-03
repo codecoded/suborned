@@ -27,7 +27,7 @@ namespace Suborned.Play
             public bool Done; internal bool WasActing; internal int LastEnd = -1; internal float DoneAt = -10f; }
         /// <summary>How long a finished act's ring stays, full, with its tick (unscaled seconds: it holds through a pause).</summary>
         public const float DoneSeconds = 1.2f;
-        public struct Pips { public Vector3 World; public int Hp, Max; public bool Cell; }
+        public struct Pips { public Vector3 World; public int Hp, Max; public bool Cell; public string Id; }
         public struct Downed { public Vector3 World; public string Line; }
         /// <summary>One person in Intel (Glyph's intel_panel): what the cell knows of them, and the secret and the lover tie only once known.</summary>
         public sealed class IntelRow { public string Role = "", Name = "", Job = "", NeedIcon = "p_unknown", NeedMark = "unk", TempIcon = "p_unknown", Next = "", NextIcon = "", Secret = ""; public bool Turned, Known; }
@@ -107,14 +107,14 @@ namespace Suborned.Play
             {
                 var p = g.PersonByRole(Roles[i]); var r = Intel[i];
                 r.Role = Roles[i]; r.Name = h.Text?.TargetName(Roles[i], p.Name) ?? p.Name; r.Name = r.Name.Length > 0 ? char.ToUpperInvariant(r.Name[0]) + r.Name[1..] : r.Name;
-                r.Job = Roles[i] switch { "waitress" => "café waitress", "driver" => "Vale's driver", "guard" => "door guard", _ => "the councillor" };
+                r.Job = Roles[i] switch { "waitress" => "café waitress", "driver" => $"{h.ValeWord}'s driver", "guard" => "door guard", _ => "the councillor" };
                 r.NeedIcon = p.KNeed ? p.Need : p.Suspected.Length > 0 ? p.Suspected : "p_unknown"; r.NeedMark = p.KNeed ? "ok" : p.Suspected.Length > 0 ? "sus" : "unk";
                 r.TempIcon = p.KTemperament ? p.Temperament : "p_unknown"; r.Turned = p.Turned;
                 r.Known = p.KRoutine || p.KNeed || p.KTemperament || p.Turned || p.Suspected.Length > 0; if (r.Known) IntelKnown++;
                 // the secret, and the lover tie it reveals, only once the cell knows it (Listen, or a Watch of the pair together)
                 r.Secret = p.Knows("secret") ? (p.Secret == "affair" && p.Lover != null ? $"Secret: seeing {h.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name}" : p.Secret == "record" ? "Secret: a record" : $"Secret: {p.Secret}") : "";
                 (r.Next, r.NextIcon) = Roles[i] == "councillor" ? (g.Vale == ValeAt.WithEnforcer ? ("with the Enforcer", "take") : ("Take him at his car", "take"))
-                    : p.Turned ? ("Call them when it counts", "call") : !p.KRoutine ? ("Watch: learn the routine", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
+                    : p.Turned ? ("Call them when it counts", "call") : !p.KRoutine && g.WatchOffered(Roles[i]) ? (Roles[i] == "guard" ? "Watch: his sight" : "Watch: their mood", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
             }
             if (h.Ending.Length > 0) EndCard(h); else Ended = false;
         }
@@ -135,27 +135,29 @@ namespace Suborned.Play
                 var s = Slots[i]; var op = g.Ops[i]; var d = h.DoingOf(i);
                 s.Key = h.AgentKeyLabel(i); s.Name = Names[i]; s.Selected = h.Selected[i]; s.HintRing = h.HintNow != null && h.HintNow.Portrait == i;
                 s.Hp = h.Seg(op.Gun.Health); s.HpMax = h.Seg(Mathf.Max(op.Gun.Max, op.Gun.Health)); s.Armed = op.Gun.W != null; s.Drawn = op.Gun.Drawn && op.Gun.HolsterAt < 0; // brief 027: one segment per 10 with the lab (Latch 2026-10-21: Armed and Drawn had slipped into this comment, so the sidearm mark never showed)
-                s.Stance = op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down;
+                s.Stance = h.OneInput ? "" : op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down; // engine 0.35: one input has no stance
                 s.Busy = d.Busy; s.Phase = d.Phase; s.Glyph = d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph; s.Label = d.Label; s.Progress = d.Progress;
                 s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : d.Phase == "firing" ? (h.FireDownS(i) is int fs && fs >= 0 ? $"{fs} s" : "?") : ""; // firing: until the target is down at the present odds, "?" while the line is broken (Glyph fight r1 #6)
                 s.Under = op.Down ? "" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
-                    : s.Armed && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
+                    : s.Armed && op.Gun.Drawn ? (h.OneInput ? "drawn" : $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}") : "";
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
                 s.Role = Op.Name((OpId)i); s.Hurt = op.Gun.Health < op.Gun.Max && !op.Down; s.CancelTitle = $"Cancel {d.CancelVerb}"; s.CancelBody = d.CancelText;
                 s.InCar = op.InCar && !ended; s.LeftFate = "";
                 if (!ended && !op.InCar && h.GoCardOpen) foreach (var (who, fate, _) in goLeft) if (who == s.Role) s.LeftFate = fate;
                 s.Icon = AtlasIcon(op.Busy?.Do ?? (d.Phase is "walking" or "running" ? "move" : d.Verb), op.Busy?.Approach ?? "", d.Phase);
-                s.StateTag = op.Down ? "DOWN" : op.CarryBody.Length > 0 && d.Phase != "walking" && d.Phase != "acting" ? "CARRYING" : op.CarryBody.Length > 0 ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
-                s.Pace = op.CarryBody.Length > 0 ? (i == (int)OpId.Enforcer ? $"walk only · {g.R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {g.R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s") : "";
-                if (op.CarryBody.Length > 0) s.Icon = "s_carrying";
+                bool carries = op.CarryBody.Length > 0 || op.Carrying.HasValue; // item 31: a downed agent carried reads as carrying too
+                s.StateTag = op.Down ? "DOWN" : carries ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
+                s.Pace = carries ? (i == (int)OpId.Enforcer ? $"walk only · {g.R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {g.R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s") : "";
+                if (carries) s.Icon = "s_carrying";
                 s.Queued = d.Queued.StartsWith("then: ") ? "then " + d.Queued[6..] : d.Queued;
                 // state, never a control (Fable C2, C4; the controls are taught once, by the hints)
-                s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
+                s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? (h.OneInput ? "Drawn" : $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}") : "";
                 // under the agent: number and verb; over a busy one: the ring
                 var t = h.Views?.Find("op/" + Op.Name((OpId)i)); bool on = t && t.gameObject.activeSelf;
                 var m = Marks[i]; m.World = on ? t.position : null; m.Num = Nums[i]; m.Selected = h.Selected[i];
                 m.Verb = op.Busy != null ? HandoverHost.Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
                 var r = Rings[i]; bool busyRing = on && d.Busy && d.Phase != "down" && !ended;
+                if (h.OneInput && (d.Phase is "drawing" or "aiming" or "firing" || d.Verb is "draw" or "holster" or "fire")) busyRing = false; // Glyph G2 (0.2.135, b-final): draw, holster and fire show on the body and the portrait's sidearm mark, never a gun disc on the street
                 // the beat after an act: it was acting (not walking to it) and the engine's end tick has come, so it ran out, not cancelled
                 bool acting = busyRing && !(d.Phase is "walking" or "running") && op.Busy != null;
                 if (r.WasActing && !acting && r.LastEnd >= 0 && g.Tick >= r.LastEnd && !op.Down) r.DoneAt = Time.unscaledTime;
@@ -175,7 +177,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && h.Able((int)h.Agent); /* item 29: a downed agent's knobs are empty sockets */ VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -187,16 +189,17 @@ namespace Suborned.Play
             VerbLit = h.LitSlot; VerbCaption = $"{Names[(int)h.Agent]}: {(h.LitSlot >= 0 && h.LitSlot < slots.Length ? slots[h.LitSlot].Label : "")}";
             // the fight
             Fighters.Clear(); Down.Clear();
-            foreach (var (id, gun) in h.Fighters()) { var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
+            HashSet<string> focus = null; if (h.OneInput && g.FightOn) { focus = new HashSet<string>(); for (int k = 0; k < 4; k++) if (h.IsFocus(g.Ops[k].Gun.Order)) focus.Add(g.Ops[k].Gun.Order); } // Glyph N2: the ring's and the disc's rule // engine 0.35 (Glyph b-final): pips over the focus only; the cell's on the roster
+            foreach (var (id, gun) in h.Fighters()) { if (focus != null && !focus.Contains(id)) continue; var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { Id = id, World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
             for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip
-            var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it
+            var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || hov.Security || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it; Pulse 067 W2: a shift guard wears the hover ring as the door guard does
             Cursor = h.AimLine != null ? (h.AimNoLine ? 3 : 2) : act ? 1 : 0;
             if (h.Frozen && h.TargetFreeze && !h.controls.actionPlate && !ended) Cursor = 2; // brief 030 (no plate): target mode is a crosshair cursor
             HoverRing = act ? h.TargetWorld(hov) : null;
             string alt = !ended && h.Panel == null && h.Loud == null ? h.AimLine ?? (hov == null ? h.MoveChip : null) : null;
             var it = h.HoverIntent;
-            if (alt != null) { ChipText = alt; Chip = h.AimLine == null ? ChipKind.Move : h.AimLine.StartsWith("CIVILIAN") || h.AimLine.StartsWith("Vale") ? ChipKind.AimWarn : ChipKind.Aim; }
+            if (alt != null) { ChipText = alt; Chip = h.AimLine == null ? ChipKind.Move : h.AimLine.StartsWith("CIVILIAN") || h.AimLine.StartsWith(h.ValeWord) ? ChipKind.AimWarn : ChipKind.Aim; }
             else if (it != null && hov != null && !ended && h.Panel == null && it.Actionable)
             {
                 // the price, only where a right click acts; a target this agent can't act on shows the hover ring alone (Fable A6, A7: no "can't
@@ -252,9 +255,9 @@ namespace Suborned.Play
             LoudOpen = h.Loud != null; LoudLines.Clear();
             if (LoudOpen) { LoudCard(h); LoudProgress = h.GateProgress; LoudAt = h.Loud.Gui; }
             // the hint and the toast, the briefing
-            Hint = h.HintNow != null && !ended && !h.ShowBriefing ? h.HintNow.Line : null; HintRing = h.HintNow?.Ring;
+            Hint = h.HintNow != null && !ended && !h.ShowBriefing && !h.Starting ? h.HintNow.Line : null; HintRing = h.HintNow?.Ring;
             Toast = h.Toast != null && Time.unscaledTime < h.ToastUntil ? h.Toast : null;
-            BriefingOpen = h.ShowBriefing && !ended; if (BriefingOpen && Briefing.Count == 0) BriefingParts(h); else if (!BriefingOpen) Briefing.Clear();
+            BriefingOpen = (h.ShowBriefing || h.Starting) && !ended; /* brief 062 B: the play HUD stays down through the start sequence; the roster and the clock bar enter on their own beats (HudToolkit.Briefing) */ if (BriefingOpen && Briefing.Count == 0) BriefingParts(h); else if (!BriefingOpen) Briefing.Clear();
             // the feed and the ticker
             Feed = h.Feed; Unread = h.Unread; FeedFold = g.FightOn; HistoryOpen = h.FeedHistoryOpen; Filter = h.FeedFilter;
             HistoryRows(h); // Sky 2026-10-18: the panel always shows the newest entry (collapsed), so the list is kept either way (cached by key)
@@ -331,7 +334,7 @@ namespace Suborned.Play
             Briefing.Add(("<b>The cell</b>", Part.Body));
             foreach (var k in new[] { "scout", "fixer", "tech", "enforcer" }) if (t.Cell.TryGetValue(k, out var cl)) Briefing.Add(("   " + cl, Part.Small));
             var c = h.controls;
-            Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   right click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
+            Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
         }
 
         /// <summary>The end card in the player's words (Fable §1 I): a headline, the result line from the text's fails, the tally, then the debrief
@@ -342,9 +345,12 @@ namespace Suborned.Play
             RestartKey = h.controls.Label(PlayAction.Restart);
             var g = h.Game; var d = h.EndDebrief; Ended = true; EndLines.Clear();
             string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
-            string head = failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : "";
-            EndLines.Add(g.Result == Outcome.Success ? "Vale is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
-            EndLines.Add(g.Result == Outcome.Success ? "The crew escapes with Vale alive." : failLine.Length > 0 ? failLine : g.FailText);
+            string head = h.Text != null && h.Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : ""; // Glyph's 0.2.104 review: the title is less.end.fail's ("District sealed"), so the line under it is the only one about the car
+            string sealStory = null;
+            if (g.FailCode == "closed-in" && g.Cause is Suborned.Sim.FailCause cin && h.ClosedInWords(cin) is { Length: > 0 } cl) failLine = cl; // brief 080: less.closedIn by Cause.Why
+            if (g.FailCode == "sealed" && g.Cause is Suborned.Sim.FailCause sc) { var (sl, _, ss) = h.SealedWords(sc); if (!string.IsNullOrEmpty(sl)) failLine = sl; sealStory = ss; } // brief 057 §4: the line says which of held, ready, empty it was (FailCause.Car), so the card and the story agree
+            EndLines.Add(g.Result == Outcome.Success ? $"{h.ValeWord} is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
+            EndLines.Add(g.Result == Outcome.Success ? $"The crew escapes with {h.ValeWord} alive." : failLine.Length > 0 ? failLine : g.FailText);
             EndLines.Add($"Done at {HandoverHost.MissionClock(g.Tick)}   ·   ${g.S.Purse - g.Cash:N0} spent   ·   Trail {g.Trail}");
             if (d != null)
             {
@@ -352,12 +358,31 @@ namespace Suborned.Play
                 string inv = d.InvestigationState switch { "little" => "Investigators: none yet.", "early" => "Investigators have a few leads.", "active" => "An investigation is open" + (Cause(d.InvestigationCause) is string cz ? $": {cz}." : "."), _ => "" };
                 EndLines.Add($"{sec} {inv}".Trim());
                 foreach (var st in h.StandingLines()) EndLines.Add(st.line); // brief 014: one Standing line per district (the debrief)
-                var route = d.Route.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
-                if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
+                var ids = new List<string>(d.Route); if (h.SealedCar == "empty") ids.Remove("vale-reaches-getaway-car"); // brief 057 §4 (Suture: Debrief.cs claims it on every route; Keel's fix comes): never say Vale reached the car when the fail says he had not
+                var route = ids.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)?.Replace("{vale}", h.ValeWord)).FindAll(x => x != null);
+                if (!string.IsNullOrEmpty(sealStory)) route.Add(sealStory); // "Police held the car." / "Go was never given." after "Vale reached the getaway car."
+                if (route.Count > 0) EndLines.Add(string.Join(" ", route));
+                if (d.FightBranch.Length > 0) EndLines.Add(FightLine(h, d));
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
                 Getaway(h, d);
             }
+            if (d != null) EndLines.Add($"Seed {g.Seed}"); // brief 080: the run's seed, small, last line of the debrief
             if (h.ShowDebug) EndLines.Add(h.Ending);
+        }
+
+        /// <summary>The end card's Final fight line (Fable's debrief.fight by branch, {n} hostiles and {hits} taken; the host's words without the
+        /// text), then engine 0.33.0's why (Debrief.FightWhy, the ids sim FightWhy.Add gives) as Fable's debrief.fightWhy clauses, each a sentence,
+        /// in the engine's order, an id without a clause left out.</summary>
+        static string FightLine(HandoverHost h, Debrief d)
+        {
+            var t = h.Text;
+            string line = t != null && t.DebriefFight.TryGetValue(d.FightBranch, out var fl) && fl.Length > 0
+                ? fl.Replace("{n}", d.FightHostiles.ToString()).Replace("{hits}", d.FightHits.ToString())
+                : $"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.";
+            if (t == null) return line;
+            var seen = new System.Collections.Generic.HashSet<string>();
+            foreach (var id in d.FightWhy) if (seen.Add(id) && t.FightWhy.TryGetValue(id, out var w) && w.Length > 0) line += " " + w;
+            return line;
         }
 
         /// <summary>Brief 018 §3 (Fable's debrief.between and debrief.getaway): who was left behind and their fate, each captive (talks in n, or
@@ -387,9 +412,9 @@ namespace Suborned.Play
         {
             "waitress-pulls-guard-away" => "Inez drew the guard off the door.", "guard-shot-beside-waitress" => "The guard was shot beside Inez.", "guard-shot-away-from-waitress" => "The guard was shot away from Inez.",
             "entrance-camera-looped" => "The entrance camera was looped.", "patrol-diverted" => "The patrol was rerouted.", "entry-timed-between-sweeps" => "The Enforcer went in between the patrol's sweeps.",
-            "vale-taken-through-office" => "The Enforcer took Vale through the Office.", "vale-reaches-getaway-car" => "Vale reached the getaway car.",
-            "driver-moves-vale-to-service-lane" => "The driver brought Vale round to the service lane.", "pickup-camera-blocked" => "The driver's car blinded the pickup camera.",
-            "rivals-driven-back" => "The rivals were driven back.", "rivals-follow-false-tip" => "The rivals followed a false tip.", "vale-intercepted-outside" => "Vale was taken outside.",
+            "vale-taken-through-office" => "The Enforcer took {vale} through the Office.", "vale-reaches-getaway-car" => "{vale} reached the getaway car.",
+            "driver-moves-vale-to-service-lane" => "The driver brought {vale} round to the service lane.", // engine 0.33.0: pickup-camera-blocked is retired with car.blocks
+            "rivals-driven-back" => "The rivals were driven back.", "rivals-follow-false-tip" => "The rivals followed a false tip.", "vale-intercepted-outside" => "{vale} was taken outside.",
             _ => null,
         };
 
@@ -423,9 +448,10 @@ namespace Suborned.Play
                         "turned" => i.Orders > 1 ? "Works, one step worse" : "Works", "kept" => "Works", "refused" => "They would refuse", "not-yet" => "Not yet: one more try",
                         _ => "? until the Scout learns who they are",
                     };
-                case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Learns their routine";
+                case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
                 case "listen": return "Learns their need and temperament";
-                case "loop": return "Loops the camera; the Tech stays at the cabinet";
+                case "loop": return "Loops the camera for two minutes; the Tech is free to go"; // engine 0.31.0: no tether
+                case "disable": return "Cuts the camera for good; the desk notices";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
                 case "go": return i.Outcome == "win" ? "Wins the mission" : "Withdraws"; // brief 018: who stays is the Go line itself
                 case "board": return i.Outcome.Length > 0 ? "In the car " + i.Outcome : "In the car";
@@ -434,10 +460,13 @@ namespace Suborned.Play
             }
         }
 
+        /// <summary>A cast role's kit badge (the briefing's ways and file card read it too).</summary>
+        public static string PersonBadge(string role) => role switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "councillor" => "badges/npc_councillor", "guard" => "badges/signal_guard", _ => "badges/npc_passer" };
+
         static string Badge(HandoverHost.Target t) => t.Kind switch
         {
-            "person" => t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "councillor" => "badges/npc_councillor", "guard" => "badges/signal_guard", _ => "badges/npc_passer" },
-            "rivals" => "badges/signal_rival", "patrol" => "badges/signal_unit", "security" or "hostile" => "badges/signal_police", "camera" => "badges/signal_camera", _ => "",
+            "person" => PersonBadge(t.Key),
+            "rivals" => "badges/signal_rival", "patrol" => "badges/npc_patrol", "security" or "hostile" => "badges/signal_police", "camera" => "badges/signal_camera", _ => "",
         };
 
         /// <summary>The kit's outcome mark for a card's outcome: turned or kept ok, refused no, not yet half, unknown "?".</summary>
@@ -447,8 +476,8 @@ namespace Suborned.Play
         public static string AtlasIcon(string verb, string approach, string phase) => verb switch
         {
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
-            "watch" or "listen" or "mislead" or "loop" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
-            "act" => "enter", "board" or "go" => "car", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
+            "watch" or "listen" or "mislead" or "loop" or "disable" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
+            "act" => "enter", "board" or "go" or "drive-car" or "ride" => "car", /* brief 059 K6: Drive, and riding in the car */ "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" or "cease" => "fire", /* Fable 067 H21: the cease tip wears the fire glyph */
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)
             _ => phase == "holding" ? "s_looping" : "s_ready",

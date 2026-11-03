@@ -1,0 +1,183 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "move",
+   "to": "beside-inez",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Courtyard",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "tick": 90,
+   "op": "scout",
+   "do": "watch",
+   "target": "waitress"
+  },
+  {
+   "tick": 290,
+   "op": "scout",
+   "do": "listen",
+   "target": "waitress"
+  },
+  {
+   "tick": 710,
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "help"
+  },
+  {
+   "tick": 850,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 1050,
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol"
+  },
+  {
+   "tick": 1210,
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "help"
+  },
+  {
+   "tick": 1500,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ]
+  },
+  {
+   "tick": 1710,
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress"
+  },
+  {
+   "tick": 1710,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "run": true
+  },
+  {
+   "tick": 1710,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    725,
+    -5025
+   ]
+  },
+  {
+   "tick": 1710,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "tick": 1729,
+   "op": "enforcer",
+   "do": "enter"
+  },
+  {
+   "tick": 1729,
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ]
+  },
+  {
+   "tick": 2109,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    2000,
+    -6500
+   ]
+  },
+  {
+   "tick": 2411,
+   "op": "scout",
+   "do": "draw"
+  },
+  {
+   "tick": 2411,
+   "op": "fixer",
+   "do": "draw"
+  },
+  {
+   "tick": 2411,
+   "op": "tech",
+   "do": "draw"
+  },
+  {
+   "tick": 2411,
+   "op": "enforcer",
+   "do": "draw"
+  },
+  {
+   "tick": 2629,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 2733,
+   "op": "enforcer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 2773,
+   "op": "cell",
+   "do": "go"
+  },
+  {
+   "tick": 2412,
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-3"
+  }
+ ],
+ "until": 5100,
+ "note": "Composed by tools/sim/fixtures059.ts from briefs/067/motive/plans/ra-h3.plan.json on the working tree's engine: SQ2-NO-STALL (M067-SQ2): route A, the Scout, Fixer and Tech fight it out at the square: the rivals left with nobody in reach advance, the fight ends and the run wins. Re-compose when the engine moves."
+}

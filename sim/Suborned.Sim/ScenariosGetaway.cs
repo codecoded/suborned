@@ -42,7 +42,7 @@ namespace Suborned.Sim
         static int BoardVale(Run r)
         {
             var g = r.G; var car = r.At("d:Getaway bay");
-            if (!G.Within(r.Op(Enf).Pos, car, g.R.AtReachCm)) { int at = r.SendTo(Enf, r.Stand("d:Getaway bay")); while (!g.Over && g.Tick < at) g.Step(); }
+            if (!g.AtGetaway(r.Op(Enf).Pos)) { int at = r.SendTo(Enf, r.Stand("d:Getaway bay")); while (!g.Over && g.Tick < at) g.Step(); }
             r.Do(Enf, "board", "car"); int took = r.Op(Enf).BusyEnd - g.Tick; r.Done(Enf); if (!g.Over) g.Step();
             return took;
         }
@@ -81,10 +81,10 @@ namespace Suborned.Sim
         }
         /// <summary>Board and go, covered (brief 018 §5): the Enforcer walks Vale straight to the car while the three by it fire on the blocker
         /// alone, then on whoever is up to draw the fire off him (rivals shoot whoever last shot at them), until he is in with Vale; then they hold.</summary>
-        static void CoveredBoardAndGo(Run r, bool go, bool draw = true)
+        static void CoveredBoardAndGo(Run r, bool go, bool draw = true, Pt? door = null)
         {
             var g = r.G; string[] sup = { Scout, Fixer, Tech };
-            int at = r.SendTo(Enf, r.Stand("d:Getaway bay"));
+            int at = r.SendTo(Enf, door ?? r.Stand("d:Getaway bay"));
             DownBlocker(r, sup);
             if (!draw) foreach (var op in sup) { g.Issue(new Order { Tick = g.Tick, Op = op, Do = "cease" }); g.Issue(new Order { Tick = g.Tick, Op = op, Do = "stance", Stance = "hold" }); }
             if (draw) r.Engage(() => Targets(g, false), () => g.Tick >= at, 60, sup, false, advance: false);
@@ -188,8 +188,8 @@ namespace Suborned.Sim
                 int from = g.Tick; r.Wait(T(20));
                 r.Is(!r.Shots().Exists(x => x.tick > from && x.by == Scout), "she fires nothing from the car");
                 var shots = ShotsAt(g, Scout, from);
-                bool cover(int m, int pm) { for (int d = m * 100; d < m * 100 + 100; d++) if (g.R.Accuracy(g.R.Pistol, d, false, g.R.ModCover, false, true) == pm) return true; return false; }
-                r.Is(shots.TrueForAll(x => cover(x.m, x.pm)), $"any shot at her in the car is at one beside cover, ×500 ({shots.Count} shots: {string.Join(", ", shots.Select(x => x.pm))} ‰)");
+                bool cover(int m, int pm) { for (int d = m * 100; d < m * 100 + 100; d++) if (g.R.Accuracy(g.R.Pistol, d, false, g.R.ModCover, false, true) == pm || g.R.Accuracy(g.R.Pistol, d, true, g.R.ModCover, false, true) == pm) return true; return false; } // standing or walking (engine 0.33.0: the lookout fires walking in to his spot, M059-B1)
+                r.Is(shots.TrueForAll(x => x.m * 100 < g.R.PointBlankCm || cover(x.m, x.pm)), $"any shot at her in the car past point blank is at one beside cover, ×500 (at arm's length cover counts for nothing: tuning.md §8.4; {shots.Count} shots: {string.Join(", ", shots.Select(x => x.m + " m " + x.pm))} ‰)");
             });
 
             Add("N112", "—", "Left behind, downed and fighting (brief 018 §3 rows 1 and 2), and Go without Vale: the guard downs the Scout in front of the Office (N26's fixture); the Fixer boards the empty car and the car goes. The outcome is Withdrawn and the left-behind rules apply: the Scout is captured downed; the Tech and the Enforcer, standing while the guard still fights, are captured fighting. Custody (campaign.custody, founding cell bravery 2, loyalty 3): downed holds 2 missions (talks at the third questioning, 3 + 0 > 2 + 0), abandoned holds 1 (2 + 1 > 2 + 0); +4 T each to the campaign; a captive gives every face, the car and place and time.", r =>
@@ -227,7 +227,7 @@ namespace Suborned.Sim
                 r.Eq(d.LeftBehind.Count, 3, "the debrief carries who was left");
                 var fc = CauseIs(r, "withdraw", "car-left-without-vale", false, "getaway-car", "car", ""); // the fail camera (ScenariosFailCause.cs): the car that left without him
                 r.Is(fc != null && fc.Culprits[0].At == r.At(g.S.GetawayCar) && d.Cause == fc, "at the getaway bay; the debrief carries the same cause");
-            });
+            }, new Start { OneInput = false }); // brief 039: the old controls (stance hold)
 
             Add("N113", "—", "§4's twin of N95 (brief 018 §4): route A, quiet, the feared rivals' ambush; the three by the car down the blocker and draw the fire while the Enforcer walks Vale in, and the car goes with the crew unbroken. The final fight is judged when the car leaves: public, but no outcome holds (driven off needs the crew broken): Standing 0 from the fight, cause none; Inez's word still adds +1 between missions (+2 → +3). The three left by the car are captured fighting: the captures move nothing. The blocker is not replaced.", r =>
             {
@@ -237,7 +237,7 @@ namespace Suborned.Sim
                 Support(r);
                 ToAmbush(r);
                 var b = g.Hostiles.Find(h => h.Blocker)!;
-                CoveredBoardAndGo(r, go: false, draw: false); // the three by the car down the blocker and draw the fire while the Enforcer boards
+                CoveredBoardAndGo(r, go: false, draw: false, door: g.Walk.NearestFree(r.Stand("d:Getaway bay") + new Pt(0, -160))); // the three by the car down the blocker and draw the fire while the Enforcer boards (engine 0.33.1: by its road-side door, out of the guard's sight: at the kerb side he sees Vale carried, a Menace step)
                 r.Is(!g.CarHeld() && (b.Down || b.Gun.St == "break" || b.Gun.St == "gone"), $"the car is free: the blocker {b.Id} is down");
                 r.Is(g.Hostiles.Exists(h => h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone"), "the crew is not broken");
                 r.Eq(g.Hostiles.Count(h => h.Blocker), 1, "the job of the road did not pass on");
@@ -260,7 +260,7 @@ namespace Suborned.Sim
                 r.Eq((l.From, l.End, l.Word, l.To), (2, 2, 1, 3), "2 + 0 the fight + 1 Inez's word = +3 (Motive's board-and-go row)");
                 r.Eq(next.Captives.Count, 3, "three captives");
                 r.Is(next.Captives.TrueForAll(c => c.Holds >= 1 && c.Facts.Contains("contact:" + g.Inez.Id)), $"each is held a mission or more and would give Inez as a contact ({string.Join(", ", next.Captives.Select(c => c.Holds))})");
-            });
+            }, new Start { OneInput = false }); // brief 039: the old controls (DrawFire: one shot, then cease)
 
             Add("N114", "—", "Left behind, walked (brief 018 §3 row 4): route A fought out until the crew breaks (FightItOutAll; with the blocker on the road, the car comes free before the crew breaks), the Enforcer boards with Vale and the car goes before the guard's missed check-in (the rivals downed him) calls security. The fight is over and no seal runs: the three left walk out, nobody is captured, no captive in the debrief. The fight +1 (the crew driven off).", r =>
             {
@@ -273,10 +273,12 @@ namespace Suborned.Sim
                 r.Is(g.Lockdown == Never, "no seal clock");
                 r.Is(r.Do("cell", "go"), "Go");
                 r.Eq(g.Result, Outcome.Success, "the win");
-                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => x.fate == "walked" && x.why == "walked"), $"the fight over and no seal: the three left walk out ({string.Join("; ", g.LeftBehindAtGo)})");
-                r.Eq(g.Captured.Count, 0, "nobody captured");
+                // brief 059: the crew's five bodies may down one of the three; a downed operative is captured (row 1), the rest walk (row 4)
+                int downed = g.LeftBehindAtGo.Count(x => x.why == "downed");
+                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => (x.fate == "walked" && x.why == "walked") || (x.fate == "captured" && x.why == "downed")) && downed < 3, $"the fight over and no seal: the three left standing walk out ({string.Join("; ", g.LeftBehindAtGo)})");
+                r.Eq(g.Captured.Count, downed, "nobody standing captured");
                 var next = Debrief.Of(g).Next;
-                r.Is(next.Captives.Count == 0 && next.Lines.Count(l => l.Line == "left-behind" && l.Detail == "walked (walked)") == 3, "no captive; three walked lines");
+                r.Is(next.Captives.Count == downed && next.Lines.Count(l => l.Line == "left-behind" && l.Detail == "walked (walked)") == 3 - downed, "no captive but the downed; the walked lines");
                 r.Eq(FightMoves(g).Sum(m => m.delta), 1, "the crew driven off: +1");
             });
 
@@ -284,7 +286,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // c022's route G-kill timings (N68)
+                    Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // c022's route G-kill timings (N68)
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), Mv(1540, Fixer, "d:Getaway bay"));
                 r.Is(r.Until(() => g.Lockdown != Never, T(120)) && !g.Over, $"the seal clock runs ({Report.Clock(g.Tick)}; seal {Report.Clock(g.Lockdown)})");
@@ -293,7 +295,7 @@ namespace Suborned.Sim
                 var a = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", To = "d:Getaway bay" });
                 r.Is(a.ok && r.Op(Fixer).BusyEnd - g.Tick == T(g.R.BoardS), $"a move on a boarded operative: 1 s to step out ({a.why})");
                 r.Done(Fixer); g.Step();
-                r.Is(!r.Op(Fixer).InCar && r.Op(Fixer).Pos == r.Stand("d:Getaway bay"), "out at the car's side");
+                r.Is(!r.Op(Fixer).InCar && r.Op(Fixer).Pos == g.Walk.NearestFree(r.Stand("d:Getaway bay")), "out at the car's side (engine 0.33.1: the free cell nearest its seat, off its ground)");
                 r.Do(Fixer, "board", "car"); r.Eq(r.Op(Fixer).BusyEnd - g.Tick, T(g.R.BoardS), "back in: 1 s"); r.Done(Fixer); g.Step();
                 r.Is(g.Lockdown != Never && g.Tick < g.Lockdown && !g.Over, "the seal clock runs, not yet sealed");
                 r.Is(r.Do("cell", "go"), "Go before the seal");
@@ -306,7 +308,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor), r.Send(Fixer, "d:Getaway bay")));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 r.Do(Fixer, "board", "car"); r.Done(Fixer);
                 r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
                 r.Is(r.Until(() => g.CarWatcher().Length > 0, T(120)), $"the response unit has the car in sight ({Report.Clock(g.Tick)}: {g.CarWatcher()})");
@@ -330,7 +332,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => r.Op(Scout).Down, T(30)), "the guard downs the Scout");
                 r.Is(g.Do(new Order { Tick = g.Tick, Op = "cell", Do = "withdraw" }), "withdraw");
                 r.Eq((g.Result, g.Captured.Count, g.LeftBehindAtGo.Count), (Outcome.Withdrawn, 0, 0), "a free abort: nobody captured");
-            });
+            }, new Start { OneInput = false }); // brief 039: the old controls (stance hold)
         }
 
         /// <summary>N10's loud route to the car: the guard shot, the Enforcer in and out with Vale, the cell drawn, the Enforcer walking Vale to the car.</summary>
@@ -338,7 +340,7 @@ namespace Suborned.Sim
         {
             var g = r.G;
             r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-            r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) r.To(mark + 1);
             r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
             r.To(r.Send(Enf, "d:Office entrance"));

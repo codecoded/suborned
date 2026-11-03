@@ -23,7 +23,11 @@ namespace Suborned.Play
     {
         public const string Schema = "suborned.tplong.report/1";
 
-        [Serializable] public class Row { public string name = "", view = "follow", kind = "third", agent = "scout"; public float[] walk = { 0, 0 }; public float faceHeading = -1, yaw = 30, zoom = 14, settleSeconds = 1.5f, seconds = 6; public int w = 2880, h = 1864; }
+        [Serializable] public class Row { public string name = "", view = "follow", kind = "third", agent = "scout"; public float[] walk = { 0, 0 }; public float faceHeading = -1, yaw = 30, zoom = 14, settleSeconds = 1.5f, seconds = 6; public int w = 2880, h = 1864; public RowVariant variant = new(); }
+        /// <summary>Brief 072-E (Redline's tplong-072.json): the every-face A/B before a row. everyFace "on" | "off" (EveryFace; off needs the
+        /// development build's `today` walls), moduleShadows "proxy" | "lod0" (the modules' L2 proxies on, or the modules cast from their own LODs); 072-F surfaceDetail "on" | "off"
+        /// (LookLab: the surface-detail fetches skipped by a global float, same materials); "" = as built.</summary>
+        [Serializable] public class RowVariant { public string everyFace = "", moduleShadows = "", surfaceDetail = "", softShadows = "", bloom = "", leavesAlpha = "", shadows = "", oldFar = "", planting = "", upscale = "", gpuSplit = ""; public float renderScalePct; /* brief 086: TpLongVariants, TpLongGpu; all default to as built */ }
         [Serializable] public class FileData { public string schema = "", outDir = ""; public Row[] rows; }
 
         sealed class Res
@@ -44,6 +48,28 @@ namespace Suborned.Play
             var r = go.AddComponent<TpLongRun>(); r.path = a[i + 1]; r.dir = a[i + 2];
         }
 
+        EveryFace everyFace; ShadowProxy[] moduleProxies; bool[] moduleProxiesBuilt;
+
+        /// <summary>Brief 072-E: sets the row's every-face switches (every row sets both, so the order of rows never matters).</summary>
+        void ApplyVariant(RowVariant v)
+        {
+            if (moduleProxies == null)
+            {
+                everyFace = FindAnyObjectByType<EveryFace>(FindObjectsInactive.Include);
+                moduleProxies = FindObjectsByType<ShadowProxy>(FindObjectsInactive.Include).Where(p => p.module).ToArray();
+                moduleProxiesBuilt = moduleProxies.Select(p => p.On).ToArray();
+            }
+            string ef = string.IsNullOrEmpty(v?.everyFace) ? "on" : v.everyFace, ms = v?.moduleShadows ?? "";
+            if (ef != "on" && ef != "off") throw new InvalidOperationException($"row variant everyFace `{ef}`: on or off");
+            if (ms != "" && ms != "proxy" && ms != "lod0") throw new InvalidOperationException($"row variant moduleShadows `{ms}`: proxy or lod0");
+            string sd = string.IsNullOrEmpty(v?.surfaceDetail) ? "on" : v.surfaceDetail;
+            if (sd != "on" && sd != "off") throw new InvalidOperationException($"row variant surfaceDetail `{sd}`: on or off");
+            if (ef == "off" && (!everyFace || !everyFace.HasToday)) throw new InvalidOperationException("row variant everyFace off, but this player has no `today` walls (EveryFace; development builds only)");
+            if (everyFace) everyFace.Set(ef == "on");
+            for (int i = 0; i < moduleProxies.Length; i++) if (moduleProxies[i]) moduleProxies[i].Use(ms == "" ? moduleProxiesBuilt[i] : ms == "proxy");
+            LookLab.SetSurfaceDetail(sd == "on"); TpLongVariants.Apply(v);
+        }
+
         IEnumerator Start()
         {
             Directory.CreateDirectory(dir);
@@ -59,7 +85,9 @@ namespace Suborned.Play
             {
                 var res = new Res { Name = row.name }; results.Add(res);
                 yield return CaptureSize.Apply(row.w, row.h);
-                string err = Guard(() => { if (h.Following) h.FollowToggle(); h.Begin(); h.IntelOpen = false; h.StartClock(); });
+                string err = Guard(() => ApplyVariant(row.variant));
+                if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
+                err = Guard(() => { if (h.Following) h.FollowToggle(); h.Begin(); h.IntelOpen = false; h.StartClock(); });
                 if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
                 yield return null; yield return null;
                 if (row.view == "follow")
@@ -69,11 +97,11 @@ namespace Suborned.Play
                     if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
                     yield return FollowAt(k, row.faceHeading);
                 }
-                h.SetPaused(false);
+                if (row.view != "follow") TpLongVariants.PlaceOverhead(h, row.zoom, row.yaw); h.SetPaused(false); /* brief 086: a play row's zoom and yaw, never read before */
                 yield return new WaitForSecondsRealtime(row.settleSeconds);
                 if (row.view == "follow") { var cam = h.View; if (cam) res.Heading = Mathf.Repeat(cam.transform.eulerAngles.y, 360f); }
-                yield return Time_(res, row.seconds);
-                res.W = Screen.width; res.H = Screen.height;
+                TpLongVariants.BeforeWindow(h.View); if (row.variant?.gpuSplit == "on") StartCoroutine(TpLongGpu.Sample(row.name, row.seconds, dir)); yield return Time_(res, row.seconds);
+                TpLongVariants.CheckBloom(h.View); res.W = Screen.width; res.H = Screen.height;
                 err = Guard(() => Census(res));
                 if (err != null) { Fail(res, err); allOk = false; }
                 h.SetPaused(true);
@@ -95,6 +123,7 @@ namespace Suborned.Play
             yield return PalmLods(); // brief 048 (Aster 2026-10-22, Sky approved palm LODs): Market Street east and west, and the commander view
             yield return SignalsHaze(); // Glint 2026-10-23: the signals in a long third-person view under the haze
             yield return GlassFrames(); // Vela 2026-10-23: tower windows (DK_GlassSky) and the facade's class 3 shopfront glass, close, in third person
+            yield return RoadTest(); // brief 055/028: the enamel road in the road boards' two views, for the compare with the testbed
             Write(allOk ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(allOk ? 0 : 1);
         }
 
@@ -138,7 +167,7 @@ namespace Suborned.Play
                     .Where(r => r.enabled && r.bounds.max.y > 0.6f && r.bounds.size.x < 20f && r.bounds.size.z < 20f).Select(r => r.bounds).ToArray();
                 foreach (var (name, dir, side) in new[] { ("palms-east", Vector3.right, -5.5f), ("palms-west", Vector3.left, 5.5f) })
                 {
-                    var at = new Vector3(-20f, 3f, -410f + side);
+                    var at = new Vector3(-20f, 3f, -410f + side + h.worldZ);
                     for (int k = 0; k < 15 && Blocked(at, dir, blockers); k++) at += dir * 4f;
                     go.transform.SetPositionAndRotation(at, Quaternion.LookRotation(dir + Vector3.down * 0.06f));
                     rows.Add(Levels(pc, name));
@@ -159,6 +188,60 @@ namespace Suborned.Play
         }
         string dir_ => dir;
 
+        // ---------------------------------------------------------------- the road views (brief 055 / 028: the enamel beside the testbed)
+
+        /// <summary>The road as built (the enamel; Sky 2026-10-24: "it's the white lines that aren't needed - look at the testbed version")
+        /// in the two views of Vela's road boards (tools/decokit/road_board.py; briefs/028/road/boards), for the compare with the testbed:
+        /// office-210 = the play camera (orthographic size 14, pitch 38, compass yaw 210) on the Records Office front (plan -160, -281);
+        /// boulevard-third = third person (fov 55, eye 3.24 m, far as the follow view) down the Boulevard from plan (-9.5, -104), looking south.
+        /// No HUD (the boards have none); the play view's post and haze. Pictures road-&lt;finish&gt;-office-210.jpg, road-&lt;finish&gt;-boulevard-third.jpg
+        /// and road.json (finish = RoadFinish.Current, "enamel" when the scene has no switch).</summary>
+        IEnumerator RoadTest()
+        {
+            var view = h.View; if (!view) yield break;
+            if (h.Following) h.FollowToggle(); h.Begin(); h.SetPaused(true); yield return null; yield return null;
+            string fin = Suborned.RoadFinish.Current.Length > 0 ? Suborned.RoadFinish.Current : "enamel"; var rows = new List<string>();
+            var go = new GameObject("tplong-road-cam"); var pc = go.AddComponent<Camera>(); pc.CopyFrom(view); pc.enabled = false;
+            go.AddComponent<UniversalAdditionalCameraData>().renderPostProcessing = true;
+            var tsrc = view.GetComponent<TacticalShadows>(); TacticalShadows tsn = null; if (tsrc) { tsn = go.AddComponent<TacticalShadows>(); JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(tsrc), tsn); } // Glint (brief 048 evening): the road test's camera keeps the play camera's shadows, so its frames show them
+            var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>(); var phase0 = lp ? lp.Current : LightPhase.Phase.Day;
+            foreach (var ph in lp ? new[] { LightPhase.Phase.Day, LightPhase.Phase.Evening, LightPhase.Phase.Night } : new[] { LightPhase.Phase.Day }) // item 21 (Glint, brief 048): the strip light by phase; day keeps its old names
+            {
+            if (lp) { if (ph == LightPhase.Phase.Evening) lp.SetEvening(); else lp.Set(ph == LightPhase.Phase.Night); var t0 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - t0 < 2.5f) yield return null; } // RoadLight eases over 1.5 s (unscaled)
+            string sfx = ph == LightPhase.Phase.Day ? "" : "-" + ph.ToString().ToLowerInvariant();
+            foreach (var name in new[] { "office-210", "office-30", "boulevard-third" }) // office-30: the opening heading on the same front (Glint, brief 028 road fix)
+            {
+                Vector3 at; Quaternion rot;
+                if (name.StartsWith("office-"))
+                {
+                    pc.orthographic = true; pc.orthographicSize = 14f; pc.nearClipPlane = 0.3f; pc.farClipPlane = 1500f;
+                    rot = Quaternion.Euler(38f, name == "office-30" ? 30f : 210f, 0f); var focus = new Vector3(-160f, 0f, -281f + h.worldZ); at = focus - rot * Vector3.forward * 400f;
+                    if (tsn) tsn.focusDepth = 400f; // the street 400 m along the view (TacticalShadows fits its cascades there)
+                }
+                else
+                {
+                    pc.orthographic = false; pc.fieldOfView = 55f; pc.nearClipPlane = 0.2f; pc.farClipPlane = Mathf.Min(h.followFar, DistanceHaze.FarClip > 0f ? DistanceHaze.FarClip : h.followFar);
+                    rot = Quaternion.Euler(0f, 180f, 0f); at = new Vector3(-9.5f, 3.24f, -104f + h.worldZ);
+                }
+                go.transform.SetPositionAndRotation(at, rot);
+                yield return new WaitForEndOfFrame();
+                int w = Screen.width, ht = Screen.height; var rt = new RenderTexture(w, ht, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                try
+                {
+                    for (int i = 0; i < 2; i++) { pc.targetTexture = rt; pc.Render(); }
+                    var prev = RenderTexture.active; RenderTexture.active = rt; var tx = new Texture2D(w, ht, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, w, ht), 0, 0); tx.Apply(); RenderTexture.active = prev;
+                    File.WriteAllBytes(Path.Combine(dir, $"road-{fin}-{name}{sfx}.jpg"), tx.EncodeToJPG(90)); Destroy(tx);
+                }
+                catch (Exception e) { Debug.LogError("TpLongRun: road picture: " + e.Message); }
+                pc.targetTexture = null; rt.Release(); Destroy(rt);
+                rows.Add($"{{\"view\": \"{name}{sfx}\", \"lens\": {F(Suborned.RoadLight.Instance ? Suborned.RoadLight.Instance.LensLevel : -1f)}, \"pool\": {F(Suborned.RoadLight.Instance ? Suborned.RoadLight.Instance.PoolAlpha : -1f)}, \"camera\": [{F(at.x)}, {F(at.y)}, {F(at.z)}], \"ortho\": {(pc.orthographic ? "true" : "false")}, \"far\": {F(pc.farClipPlane)}}}");
+            }
+            }
+            if (lp) { if (phase0 == LightPhase.Phase.Evening) lp.SetEvening(); else lp.Set(phase0 == LightPhase.Phase.Night); }
+            Destroy(go);
+            try { File.WriteAllText(Path.Combine(dir, "road.json"), "{\n \"schema\": \"suborned.tplong.road/2\", \"finish\": \"" + fin + "\", \"size\": [" + Screen.width + ", " + Screen.height + "], \"views\": [\n  " + string.Join(",\n  ", rows) + "\n ]\n}\n"); } catch (Exception e) { Debug.LogError("TpLongRun: road.json: " + e.Message); }
+        }
+
         // ---------------------------------------------------------------- glass (Vela 2026-10-23)
 
         /// <summary>Two stills from the follow view's lens (fov, far 350, post) facing Market Street's north side: `tp-shopfront-glass` (eye 2 m at the
@@ -175,7 +258,7 @@ namespace Suborned.Play
             // Market Street runs along x at z -410 (18 m road): the north side's ground-floor shops (the hotel's, as palms-east shows them) stand about
             // 9 m past the north kerb; 0.2.80's first try looked south from x -30 and went down a side street
             var north = Vector3.forward;
-            foreach (var (name, at, pitch) in new[] { ("tp-shopfront-glass", new Vector3(5f, 2f, -404f), 0f), ("tp-tower-windows", new Vector3(5f, 3f, -414f), 32f) })
+            foreach (var (name, at, pitch) in new[] { ("tp-shopfront-glass", new Vector3(5f, 2f, -404f + h.worldZ), 0f), ("tp-tower-windows", new Vector3(5f, 3f, -414f + h.worldZ), 32f) })
             {
                 var p = at; var look = Quaternion.AngleAxis(-pitch, Vector3.Cross(Vector3.up, north)) * north; // tilted up by `pitch`
                 for (int k = 0; k < 15 && Blocked(p, north, blockers); k++) p += Vector3.right * 4f;
@@ -247,7 +330,7 @@ namespace Suborned.Play
                     var rt = new RenderTexture(gw2, gh2, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB); Color32[] px = null;
                     try
                     {
-                        for (int i = 0; i < 2; i++) { c.targetTexture = rt; c.Render(); } // the second frame: a camera made fresh gets its post on its second (AtmosphereLens)
+                        for (int i = 0; i < 2; i++) { c.targetTexture = rt; SignalsFeature.Want(); c.Render(); } // brief 064 A3 item 7: the signal layer draws after post when asked // the second frame: a camera made fresh gets its post on its second (AtmosphereLens)
                         var prev = RenderTexture.active; RenderTexture.active = rt; var tx = new Texture2D(gw2, gh2, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, gw2, gh2), 0, 0); tx.Apply(); RenderTexture.active = prev;
                         if (name != null) File.WriteAllBytes(Path.Combine(dir, name + ".png"), tx.EncodeToPNG()); else px = tx.GetPixels32(); Destroy(tx);
                     }
@@ -305,7 +388,7 @@ namespace Suborned.Play
                     yield return null; Shoot(bc, $"signals-{d}-control-offset");
                     foreach (var mm in fanMats) { mm.SetFloat("_OffsetFactor", 0f); mm.SetFloat("_OffsetUnits", 0f); mm.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.Always); }
                     yield return null; Shoot(bc, $"signals-{d}-control-ztest-always");
-                    foreach (var mm in fanMats) mm.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.LessEqual);
+                    foreach (var mm in fanMats) { mm.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.LessEqual); mm.SetFloat("_OffsetFactor", -2f); mm.SetFloat("_OffsetUnits", -2f); } // back as built (FanMat's offset)
                     controlMats = fanMats.Count;
                     Layers(true); AtmosphereSettings.Enabled = false; yield return null; Shoot(bc, $"signals-{d}-bare-nohaze"); // the frame with no fan (the base camera does not draw the signal layer)
                     foreach (var r in fanRenderers) if (r) r.gameObject.layer = SignalLayer; // the mask: the fans alone on black

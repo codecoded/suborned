@@ -1,0 +1,26 @@
+{
+ "fit": "guard",
+ "labels": {
+  "hat": 297
+ },
+ "pieces": {
+  "hat": {
+   "srcFaces": 481,
+   "tris": 481,
+   "seconds": 0.09,
+   "srcVerts": 297
+  },
+  "suit": {
+   "wrapped": 3515,
+   "verts": 6322,
+   "pctWrapped": 55.6,
+   "tris": 11518,
+   "seconds": 49.3
+  }
+ },
+ "seconds": {
+  "body": 0.66,
+  "classify": 0.06,
+  "pieces": 49.39
+ }
+}

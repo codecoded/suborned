@@ -51,3 +51,14 @@ export function ctxOf(plan: Plan, d: Derived, civ: Civic, pav = 0.18): Ctx {
 export const heightOf = (B: any, n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown;
 /** Largest storey count whose H fits under `cap` metres. */
 export const storeysUnder = (B: any, cap: number) => Math.floor((cap - B.plinth - B.groundStorey - B.roofCrown) / B.upperStorey) + 1;
+/** The storey band a building of `use` in `area` draws from (brief 066, standards.buildings.playStreets): an area cap with its own `storeys` band replaces the
+ *  use band wherever the use band reaches higher; otherwise the use band, its top clipped by the cap's metres. Sheds and towers never come here. */
+export function bandFor(B: any, use: string, area: string): { lo: number; hi: number; mode: number; capped: boolean } {
+  const band = B.bands[use], [lo, hi] = band.storeys as [number, number], cap = B.caps?.[area];
+  if (cap?.storeys && hi > cap.storeys[1]) { // the cap's band, its top also held under the cap's metres (the neighbour-contrast re-draw reads hi as given)
+    const chi = cap.m ? Math.max(cap.storeys[0], Math.min(cap.storeys[1], storeysUnder(B, cap.m))) : cap.storeys[1];
+    return { lo: cap.storeys[0], hi: chi, mode: Math.min(cap.mode ?? cap.storeys[0], chi), capped: true };
+  }
+  const top = cap?.m ? Math.min(hi, storeysUnder(B, cap.m)) : hi;
+  return { lo, hi: top, mode: band.mode, capped: false };
+}

@@ -13,6 +13,8 @@ namespace Suborned
         public MeshRenderer proxy;
         public Renderer[] casters;
         public ShadowCastingMode[] was;
+        /// <summary>Brief 072-E: the proxy of an every-face module (cast from its L2; switched by the perf harness's moduleShadows, not `proxies`).</summary>
+        public bool module;
 
         public bool On => proxy && proxy.enabled;
 

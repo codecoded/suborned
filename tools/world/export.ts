@@ -1,6 +1,7 @@
 // bun run world: write out/world/<plan id>.world.json (suborned.world/2, contracts/world/world.schema.ts) from the plan.
 // Exits 1, writing nothing, unless the plan passes the checker and every generated deck has its connectors.
-// usage: bun tools/world/export.ts [plan.json] [--out file] [--kit kit.json] [--dev]   (--dev: develop against a plan the checker refuses; the export is marked; --kit: generate against that catalogue, e.g. a proposal with candidate pieces set to adopted, instead of contracts/world/kit.json)
+// usage: bun tools/world/export.ts [plan.json] [--out file] [--kit kit.json] [--road-finish enamel|asphalt] [--dev]   (--road-finish: the road finish set of this export, over the plan's own roads.finish.set; brief 055 road test)
+// earlier usage line, still true: [plan.json] [--out file] [--kit kit.json] [--dev]   (--dev: develop against a plan the checker refuses; the export is marked; --kit: generate against that catalogue, e.g. a proposal with candidate pieces set to adopted, instead of contracts/world/kit.json)
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { derive, type Plan } from '../plan/plan';
@@ -11,13 +12,14 @@ import { withKit } from './gen/kitrefs';
 import { report } from './report';
 import { hasWorldStandards, worldRules } from '../plan/world-rules';
 import { ctxOf as worldCtx } from '../plan/world-ctx';
+import { withFinishSet } from '../plan/finish-set';
 
 const root = resolve(import.meta.dir, '../..');
 const args = process.argv.slice(2), opt = (k: string) => (args.includes(k) ? args[args.indexOf(k) + 1] : undefined), dev = args.includes('--dev');
-const src = args.find(a => a.endsWith('.json') && a !== opt('--out') && a !== opt('--kit')) ?? 'contracts/world/harbour-district.plan.json';
+const src = args.find(a => a.endsWith('.json') && a !== opt('--out') && a !== opt('--kit') && a !== opt('--road-finish')) ?? 'contracts/world/harbour-district.plan.json';
 const json = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 
-const plan: Plan = json(src), d = derive(plan), civ = civic(plan.civic, json(plan.civic.block));
+const plan: Plan = withFinishSet(json(src) as Plan, opt('--road-finish')), d = derive(plan), civ = civic(plan.civic, json(plan.civic.block));
 const failed = check(plan, d, civ).checks.filter(c => !c.ok);
 for (const c of failed) console.error(`${dev ? 'dev: ' : ''}FAIL ${c.id} ${c.rule}: ${c.value}`);
 if (failed.length && !dev) { console.error('world: plan fails the checker; no export (--dev to develop against it)'); process.exit(1); }
@@ -33,5 +35,7 @@ const out = resolve(root, opt('--out') ?? `out/world/${plan.id}.world.json`);
 mkdirSync(dirname(out), { recursive: true });
 const text = JSON.stringify(w);
 writeFileSync(out, text);
+writeFileSync(out.replace(/\.world\.json$/, '.faces.json'), JSON.stringify({ piers: gen.faces.piers, stream: gen.faces.stream, log: gen.faces.log }, null, 1)); // brief 072-C: the every-face pass's log, read by `bun run world:faces`
+if (gen.shopFit.clamped || gen.shopFit.low.length) console.log(`shopfronts: ${gen.shopFit.clamped} boxes clamped under the fascia behind them; ${gen.shopFit.low.length} left as they were (clamping would make them under 3.2 m)${gen.shopFit.low.slice(0, 8).map(l => `\n  low ${l.id} behind ${l.piece}: ${l.height} m`).join('')}`); // brief 072-C ruling 2
 console.log(`world → ${out} (${(text.length / 1024).toFixed(0)} KiB)${failed.length || worldFailed.length ? ' [DEV: fails the checker]' : ''}`);
 report(w, gen, d);

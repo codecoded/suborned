@@ -1,0 +1,116 @@
+{
+ "schema": "suborned.charpipe.base-pose/1",
+ "note": "Intake stage, step 1 (brief 069 v2): measure the MPFB base's rest pose (MPFB's own A-pose, before any T-pose), man and woman at the reference macros,",
+ "m": {
+  "standingHeightM": 1.695,
+  "Left": {
+   "armDownFromHorizontal": 48.9,
+   "armForward": -0.8,
+   "shoulderToWristDownFromHorizontal": 41.9,
+   "elbowBend": 46.6,
+   "wristBend": 12.3,
+   "fingerSpread": 32.7,
+   "thumbFromIndex": 51.2,
+   "legOutFromVertical": 6.0,
+   "kneeBend": 6.3,
+   "palmNormal": [
+    0.78,
+    -0.02,
+    0.63
+   ],
+   "footYawOut": 1.8,
+   "footPitchDown": 26.8
+  },
+  "Right": {
+   "armDownFromHorizontal": 48.9,
+   "armForward": -0.8,
+   "shoulderToWristDownFromHorizontal": 41.9,
+   "elbowBend": 46.6,
+   "wristBend": 12.3,
+   "fingerSpread": 32.7,
+   "thumbFromIndex": 51.2,
+   "legOutFromVertical": 6.0,
+   "kneeBend": 6.3,
+   "palmNormal": [
+    -0.78,
+    -0.02,
+    0.63
+   ],
+   "footYawOut": 1.8,
+   "footPitchDown": 26.8
+  },
+  "hipJointWidthM": 0.217,
+  "ankleSpacingM": 0.396,
+  "toeSpacingM": 0.404,
+  "shoulderWidthM": 0.372,
+  "ankleSpacingOverHipJoints": 1.83,
+  "fractionOfHeight": {
+   "hipJointWidthM": 0.128,
+   "ankleSpacingM": 0.234,
+   "toeSpacingM": 0.238,
+   "shoulderWidthM": 0.22
+  },
+  "neckForwardFromVertical": 20.1,
+  "headForwardFromVertical": -2.4,
+  "trunkForwardFromVertical": 0.8,
+  "wristHeightFraction": 0.626,
+  "shoulderHeightFraction": 0.814,
+  "handOutFromBodyCentreFraction": 0.287
+ },
+ "f": {
+  "standingHeightM": 1.695,
+  "Left": {
+   "armDownFromHorizontal": 47.6,
+   "armForward": 1.4,
+   "shoulderToWristDownFromHorizontal": 44.1,
+   "elbowBend": 38.9,
+   "wristBend": 13.8,
+   "fingerSpread": 33.3,
+   "thumbFromIndex": 51.4,
+   "legOutFromVertical": 5.4,
+   "kneeBend": 7.5,
+   "palmNormal": [
+    0.77,
+    -0.07,
+    0.63
+   ],
+   "footYawOut": 3.5,
+   "footPitchDown": 27.8
+  },
+  "Right": {
+   "armDownFromHorizontal": 47.6,
+   "armForward": 1.4,
+   "shoulderToWristDownFromHorizontal": 44.1,
+   "elbowBend": 38.9,
+   "wristBend": 13.8,
+   "fingerSpread": 33.3,
+   "thumbFromIndex": 51.4,
+   "legOutFromVertical": 5.4,
+   "kneeBend": 7.5,
+   "palmNormal": [
+    -0.77,
+    -0.07,
+    0.63
+   ],
+   "footYawOut": 3.5,
+   "footPitchDown": 27.8
+  },
+  "hipJointWidthM": 0.189,
+  "ankleSpacingM": 0.329,
+  "toeSpacingM": 0.342,
+  "shoulderWidthM": 0.308,
+  "ankleSpacingOverHipJoints": 1.74,
+  "fractionOfHeight": {
+   "hipJointWidthM": 0.112,
+   "ankleSpacingM": 0.194,
+   "toeSpacingM": 0.202,
+   "shoulderWidthM": 0.182
+  },
+  "neckForwardFromVertical": 21.6,
+  "headForwardFromVertical": -3.0,
+  "trunkForwardFromVertical": -2.7,
+  "wristHeightFraction": 0.574,
+  "shoulderHeightFraction": 0.746,
+  "handOutFromBodyCentreFraction": 0.248
+ }
+}

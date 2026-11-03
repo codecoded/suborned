@@ -1,0 +1,72 @@
+{
+ "schema": "suborned.charpipe.clips/1",
+ "brief": "069 round 2 (walk and run first, Sky 2026-10-26)",
+ "note": "The clip stage's data. sources: where clips come from and under what licence. audition: candidates per gait, measured as sourced by pipeline/clips.py audit (nothing is repaired: a clip that fails a check is rejected). clips: the picks the game gets, by name. A pick is copied as sourced, untouched, and given a Humanoid meta: Unity's Humanoid retargets it onto every figure's avatar (Mixamo names on both sides, nothing to map by hand), Every walk and run in both libraries is the in-place version (no root motion; measured below), so the speed comes from the clip itself: in place, a planted foot travels backward at exactly the walking speed, so the audit measures that (strideMs, on the clip's own rig) and the game moves a figure at strideMs x (figure humanScale / the clip avatar's humanScale), both scales Unity's own: the same normalisation Unity applies to root motion, nothing tuned. A clip passes only if it is in place, its loop closes, and its planted foot moves steadily (a foot that speeds up and slows down while down would skate however it is driven). Adding a clip = adding a row. The old game's own picks (Standard_Walk, Female_Tough_Walk, Old_Man_Walk, Running__c9c610bc, Pistol_Walk, Pistol_Run) are left out: nothing carries over (Sky, 2026-10-26). skeletonReference: the clip stage also writes Clips/reference_tpose.json, the reference rig's rest direction per bone, and checks every pick's rig against it (a clip on a different rest would need its own correction, so it is rejected).",
+ "checks": {
+  "loopCloseDeg": 3.0,
+  "loopCloseHipsM": 0.02,
+  "inPlaceMaxTravelM": 0.05,
+  "plantedSpeedCvPct": 12.0,
+  "plantedSideDriftM": 0.03,
+  "contactBandM": 0.03
+ },
+ "sources": {
+  "mixamo": {
+   "path": "~/Projects/the-suborned-store/source-art/Anim/mixamo_library",
+   "rig": "Mixamo (mixamorig:*), 65 bones with fingers, T-pose bind",
+   "licence": "Adobe Mixamo terms: royalty-free in commercial games; the raw files may not be redistributed on their own (they ship only inside the built game). https://community.adobe.com/questions-696/mixamo-faq-licensing-royalties-ownership-eula-and-tos-589400",
+   "take": "mixamo.com"
+  },
+  "ual": {
+   "path": "out/scratch/forma/char-pipeline/dl/ual/x/Animation Library[Standard]/Unity/AnimationLibrary_Unity_Standard.fbx",
+   "rig": "Quaternius universal rig (Rigify DEF-* names), 53 bones with fingers",
+   "licence": "CC0 1.0 (License.txt in the pack; https://opengameart.org/content/universal-animation-library, zip sha256 18ff1a7215f4852b320203e8aaf02a1578b5c8eef9027fbaedfcedc7b85a3ac2)"
+  }
+ },
+ "audition": {
+  "walk": [
+   "mixamo:Walking__c9c60315.fbx",
+   "mixamo:Walk__c9ccf814.fbx",
+   "mixamo:Walk_Forward__c9ce9616.fbx",
+   "mixamo:Female_Walk__c9c68b91.fbx",
+   "mixamo:Catwalk_Walk_Forward_01__733bfe2e.fbx",
+   "ual:Walk_Loop",
+   "ual:Walk_Formal_Loop"
+  ],
+  "run": [
+   "mixamo:Running__c9c6cb0d.fbx",
+   "mixamo:Running__c9c81fce.fbx",
+   "mixamo:Run__c9c72c68.fbx",
+   "mixamo:Run_Forward__c9ccde24.fbx",
+   "mixamo:Standard_Run__c9ccc5dd.fbx",
+   "mixamo:Jogging__c9c8707d.fbx",
+   "mixamo:Jog_Forward__c9cd7a95.fbx",
+   "mixamo:Fast_Run__c9ce7bbc.fbx",
+   "ual:Jog_Fwd_Loop",
+   "ual:Sprint_Loop"
+  ]
+ },
+ "clips": {
+  "walk": {
+   "source": "mixamo:Walk__c9ccf814.fbx",
+   "loop": true,
+   "why": "steadiest planted foot of the walks (speed varies 3.4 % while down; Walk_Forward 9.8 %), loop closes exactly (0.0 deg; Walk_Forward 2.98), 5 mm side drift, an even 2.0 steps/s; the catwalk crosses its feet, a style not a crowd walk; trunk lean 3.7 deg"
+  },
+  "run": {
+   "source": "mixamo:Run__c9c72c68.fbx",
+   "loop": true,
+   "why": "a natural running lean (18 deg hips to neck, as sourced; Run_Forward 31, Standard_Run 25 lean like sprinters), planted foot steady (3.3 %), loop exact, 3.4 m/s on its own rig; runner-up Jog_Forward (13 deg, 2.6 m/s, steadiest at 1.8 %) for a hurry gait"
+  }
+ },
+ "rejected": {
+  "UAL (all)": "its rig is Rigify DEF-* names: Unity's Humanoid would need a hand-made bone map, so it isn't the 'rig already matches' source (it also has no root motion); kept CC0 for later if mapped once",
+  "Walking__c9c60315, Female_Walk, Jogging, UAL Walk_Loop, Walk_Formal_Loop": "planted foot unsteady as sourced (speed varies 22-142 % while down): they would skate whatever speed is chosen",
+  "Running__c9c81fce": "not a loop (110 deg apart, travels 4.5 m)"
+ },
+ "skeletonReference": {
+  "source": "mixamo:Walk__c9ccf814.fbx",
+  "bones": "Spine Spine1 Spine2 Neck Head LeftShoulder RightShoulder LeftArm RightArm LeftForeArm RightForeArm LeftHand RightHand LeftUpLeg RightUpLeg LeftLeg RightLeg and the 30 finger bones",
+  "why": "the figures' rest pose takes these bones' rest directions from the clips' own rig, so a retarget that copies turns from the rest (Unity's Humanoid; the proof's preview) adds nothing of its own: with MPFB's leaning spine, or even a straight one, the run leaned 17 degrees more than the clip. Feet and toes keep the body's own direction (that is anatomy, not pose).",
+  "checkDeg": 6.0
+ }
+}

@@ -6,13 +6,18 @@ import { idOf, kindOf, plotRing } from '../edges';
 import { edgeN } from '../geo';
 import { avenueVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
+import { kerbReturnStd, returnAt } from '../kerbreturn';
+import { footwayTangentAt } from './footway';
+import { OLD_STREET, lampStation, palmStations } from '../oldstreet';
+import { oldPalmEdge } from './palms';
+import { sectionOf } from '../../../plan/sections';
 
 const ROADS = ['primary', 'district', 'access'];
 
 /** A crossing landing at `s` along a plot edge (`at(s, d)`: s along the edge, d in from the kerb line), flanked by bollards, and by beacons on a district road (`flank` false: the patch alone, on a civic kerb).
  *  Recorded in L.landings with the ids it was placed with. */
 export function landing(ctx: Ctx, L: Layer, at: (s: number, d: number) => V, s: number, yaw: number, edge: string, cls: string, road: string, force = true, flank = true, fixedId?: string): boolean {
-  const S = ctx.S, sec = S.sections[cls], n0 = L.items.length;
+  const S = ctx.S, sec = sectionOf(S.sections, ctx.plan, cls, road), n0 = L.items.length;
   if (!L.add('crossing', at(s, 0.9), yaw + Math.PI / 2, ctx.pav, edge, { size: [1.8, S.crossings.w, 0.02], r: 2.2, force, ...(fixedId ? { id: fixedId, uncounted: true } : {}) })) return false;
   const id = L.items[L.items.length - 1]!.id;
   if (flank) for (const o of [-2.4, 2.4]) L.add('bollard', at(s + o, sec.kerb - 0.3), yaw, ctx.pav, edge, { size: S.bollards.size, r: 0.2 });
@@ -32,27 +37,46 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       const kind = kindOf(ring.c[i]!); if (!ROADS.includes(kind)) continue;
       const a = ring.p[i]!, b = ring.p[(i + 1) % n]!, len = dist(a, b), u: V = [(b[0] - a[0]) / len, (b[1] - a[1]) / len], nrm = edgeN(a, b), id = `${plot.id}/e${i}`, r = rng(`street/${id}`);
       const at = (s: number, d: number): V => [a[0] + u[0] * s - nrm[0] * d, a[1] + u[1] * s - nrm[1] * d], yaw = Math.atan2(u[1], u[0]), lampYaw = Math.atan2(nrm[1], nrm[0]); // the lamp's arm (kit +X) points along the kerb normal, over the carriageway
-      const sec = S.sections[kind], par = nrm[0] + nrm[1] > 0 ? 0 : 1, tree = kind === 'district' || (kind === 'access' && avenue.has(plot.area));
+      const sec = sectionOf(S.sections, ctx.plan, kind, idOf(ring.c[i]!)), par = nrm[0] + nrm[1] > 0 ? 0 : 1, tree = kind === 'district' || (kind === 'access' && avenue.has(plot.area));
       if (len < 14) continue;
       if (kind === 'primary') { for (let s = 45 + par * 20; s < len - 10; s += dense ? 90 : 150) L.add('hydrant', at(s, 0.8), 0, z, id); continue; }
       // crossings at both ends of district and access edges, flanked by bollards; beacons on district crossings.
       // A crossing's size is [depth from the kerb, width along the road] and its yaw across the road (SF-19: it was
       // [w, depth], which ran the 4 m across the road)
-      for (const s of [5, len - 5]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
+      // brief 028 (kerbReturn.landings): a crossing landing next to a rounded kerb return stands on the straight, its near edge `clear` (3) m past the arc's tangent point: centre = tangent + 3 + w / 2 (R + 5 on a 6 m return); a square corner keeps the old 5 m centre.
+      // Where the edge cannot hold two landings, one stands in the middle.
+      // brief 061 (coverage.rules.edges false): these landings are candidates, not crossings: pairCrossings keeps the ones a coverage rule calls for (and the civic block's partners) and drops the rest with their bollards and beacons, so the furniture round them stays where it was
+      const W: number = S.crossings.w, clear = kerbReturnStd(S).clear, rA = returnAt(ctx, plot.id, a), rB = returnAt(ctx, plot.id, b), me = idOf(ring.c[i]!);
+      // brief 061: a gate's lane mouth is a continuous footway, its corners are square (no return); the landings and kiosks keep the distance the return's tangent point gave them (footwayTangentAt)
+      const tA = rA?.t ?? footwayTangentAt(ctx, [idOf(ring.c[(i + n - 1) % n]!), me], a), tB = rB?.t ?? footwayTangentAt(ctx, [me, idOf(ring.c[(i + 1) % n]!)], b);
+      const sA = Math.max(5, (rA ? !rA.civic : tA > 0) ? tA + clear + W / 2 : 0), sB = len - Math.max(5, (rB ? !rB.civic : tB > 0) ? tB + clear + W / 2 : 0); // a civic corner's landings stay where the block puts its own (5 m off the corner)
+      for (const s of sB - sA >= W + 0.5 ? [sA, sB] : [len / 2]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
+      // the tree grid keeps its rhythm (hydrants and benches are set against it); the first tree a rounded corner's kerb, or SF-8's 6 m from its tangent point, crowds out is skipped, never squeezed
       const s0 = 9, s1 = len - 9, nT = s1 > s0 ? Math.floor((s1 - s0) / S.trees.spacing) + 1 : 0, t0 = s0 + (s1 - s0 - (nT - 1) * S.trees.spacing) / 2, kerbMid = 0.45 + 0.75;
-      if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
+      // brief 075 (golden view): an old-street road (oldstreet.ts) takes the old boulevard's palms: 10 m, staggered between the walks by the old phase, 1.2 m off the kerb line (the old 1.0 breaks SF-5)
+      // brief 075 roll-out (palms district-wide): every planted district and access edge (oldstreet.ts OLD_STREET.palms.classes; street/palms.ts: the capstone zone keeps 12 m), not only the old-street roads; an edge not along its road (|t . dir| < 0.9) keeps the 12 m grid
+      const palms = tree && oldPalmEdge(ctx, plot.id, me, kind) ? palmStations(ctx, me, a, u, at(len / 2, 0), s0, s1) : null;
+      if (tree && palms) for (const s of palms) L.add('tree', at(s, OLD_STREET.palms.kerb), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
+      else if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
       else if (kind === 'access' && corners.has(plot.area)) for (const s of [9, len - 9]) L.add('tree', at(s, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
+      // brief 075: on an old-street edge the kerb furniture stands between the palms (the 10 m grid leaves no other ground 2 m off a palm): each kind walks the palm-grid
+      // midpoints from its own first station and stands at the first free one at least its spacing past the last it placed; elsewhere the fixed stride as before
+      const walk = (from: number, to: number, every: number, f: (q: number) => boolean): void => {
+        if (!palms) { for (let s = from; s < to; s += every) f(s); return; }
+        const half = OLD_STREET.palms.spacing / 2, ms = [palms[0]! - half, ...palms.map(x => x + half)].filter(m => m >= lampStation(palms, from) - 1e-6 && m < to);
+        let last = -Infinity; for (const m of ms) if (m - last >= every - 1e-6 && f(m)) last = m;
+      };
       // lamps: atom rings midway between trees (district 8 m high, every 48 per side; access 6 m, every 36)
-      if (kind === 'district') for (let k = 0, s = s0 + 6 + (par ? 24 : 0); s < s1; k++, s += 48) L.add('lamp', at(s, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 8], variant: 'atom-ring', r: 0.6 });
-      if (kind === 'access') for (let s = s0 + (par ? 18 : 0); s < s1; s += 36) L.add('lamp', at(s, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 6], variant: 'atom-ring', r: 0.6 });
+      if (kind === 'district') walk(s0 + 6 + (par ? 24 : 0), s1, 48, q => L.add('lamp', at(q, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 8], variant: 'atom-ring', r: 0.6 }));
+      if (kind === 'access') walk(s0 + (par ? 18 : 0), s1, 36, q => L.add('lamp', at(q, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 6], variant: 'atom-ring', r: 0.6 }));
       const bench = kind === 'district' ? 36 : avenue.has(plot.area) ? 48 : 0;
-      for (let s = 18 + par * 6; bench && s < len - 9; s += bench) { if (L.add('bench', at(s, 0.8), yaw, z, id, { r: 1 })) L.add('bin', at(s + 1.6, 0.8), 0, z, id, { r: 0.4 }); }
-      for (let s = 30 + par * 12; s < len - 9; s += dense ? S.catalogue.hydrant.spacing ?? 90 : 150) L.add('hydrant', at(s, 0.8), 0, z, id);
-      for (let s = 60 + par * 30; s < len - 9; s += 150) L.add('phone-booth', at(s, 1), yaw, z, id);
-      for (let s = 100 + par * 50; s < len - 9; s += 250) L.add('mailbox', at(s, 0.75), yaw, z, id);
-      for (let s = 25 + par * 10; s < len - 9; s += kind === 'district' ? 50 : 100) if (L.free(at(s, 0.8), 0.4)) L.add('bin', at(s, 0.8), 0, z, id, { r: 0.4 });
+      if (bench) walk(18 + par * 6, len - 9, bench, q => { if (!L.add('bench', at(q, 0.8), yaw, z, id, { r: 1 })) return false; L.add('bin', at(q + 1.6, 0.8), 0, z, id, { r: 0.4 }); return true; });
+      walk(30 + par * 12, len - 9, dense ? S.catalogue.hydrant.spacing ?? 90 : 150, q => L.add('hydrant', at(q, 0.8), 0, z, id));
+      walk(60 + par * 30, len - 9, 150, q => L.add('phone-booth', at(q, 1), yaw, z, id));
+      walk(100 + par * 50, len - 9, 250, q => L.add('mailbox', at(q, 0.75), yaw, z, id));
+      walk(25 + par * 10, len - 9, kind === 'district' ? 50 : 100, q => L.free(at(q, 0.8), 0.4) && L.add('bin', at(q, 0.8), 0, z, id, { r: 0.4 }));
       // corner furniture (staffed kiosks, advertising columns), sparse and chosen by seed, 8 m clear of the junction
-      if (kind === 'district' && len > 30) for (const s of [8.5, len - 8.5]) {
+      if (kind === 'district' && len > 30) for (const s of [8.5 + tA, len - 8.5 - tB]) { // kerbReturn.dressing: measured from the arc's tangent point
         const p = at(s, 0.75);
         if (r.chance(0.3) && far('newsstand', p, 120) && L.add('newsstand', p, yaw, z, id)) sparse.newsstand!.push(p);
         else if (r.chance(0.3) && far('advertising-column', p, 60) && L.add('advertising-column', at(s, 1.0), 0, z, id)) sparse['advertising-column']!.push(p);

@@ -1,0 +1,6 @@
+Splice · brief 075 remap · 2026-10-28
+export out/world/harbour-district.world.json sha256 06a0a5fef36299296849b9d68bf09e532208c588103036febcaac6291e0409db (bun run world twice, same hash)
+plan 1042dbf789b63a789d881b506c8be788443e4fc5139d2c91f561f720ac3a0c1b · bun run plan exit 0 (143 PASS) · with the Handover overlay exit 0 (148 PASS, V-1 64/65 +1 by design)
+old frontage: 16 plots, 85 buildings, 522 true-size pieces, 0 scaled, 54 corners, 48 ends (24 _M), 4 crescents / 16 bays (briefs/075/remap/oldblocks.json)
+cover + cover --check exit 0 (77 points, only the plan hash input moved) · sim:site byte-identical to HEAD (site and takedown)
+notes: briefs/075/notes.md "Remap: frontage, stations, arch (Splice)"

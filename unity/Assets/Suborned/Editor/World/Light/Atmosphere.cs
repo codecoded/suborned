@@ -22,8 +22,9 @@ namespace Suborned.World
                 RenderSettings.ambientEquatorColor = look.Colour(J.Get(amb, "equator"));
                 RenderSettings.ambientGroundColor = look.Colour(J.Get(amb, "ground"));
             }
-            if (look.Light("skyGradient") is { } sky)
-                RenderSettings.skybox = Sky(look, sky, RenderSettings.sun ? -RenderSettings.sun.transform.forward : Vector3.up);
+            var toSun = RenderSettings.sun ? -RenderSettings.sun.transform.forward : Vector3.up;
+            if (look.Light("spaceSky") is { } space) RenderSettings.skybox = SpaceSky(space, toSun); // brief 075-A: the old reel's sky (night keeps its own skyGradient)
+            else if (look.Light("skyGradient") is { } sky) RenderSettings.skybox = Sky(look, sky, toSun);
             if (look.Light("post") is { } post) Grade(lighting, Profile(look, post, "grade"), "grade");
         }
 
@@ -43,8 +44,38 @@ namespace Suborned.World
                 return m;
         }
 
+        /// <summary>Brief 075-A (Glint): the old reel's day sky, DecoKit/Space Age Sky (ported verbatim, Shaders/DecoKit/DK_SpaceSky.shader), from
+        /// light.json `spaceSky`: `colours` and `vectors` are the old DK_Sky_Street.mat's stored values, set with SetColor / SetVector exactly as
+        /// DecoKitSky.Apply set them (so Unity's sRGB-to-linear conversion of material colours applies as it did there), `floats` likewise,
+        /// `textures` asset paths by property. _SunDir is the scene sun's. Unknown shader or missing texture = reject.</summary>
+        public static Material SpaceSky(object sky, Vector3 toSun)
+        {
+            var name = J.S(sky, "shader");
+            var m = new Material(Shader.Find(name) ?? throw new InvalidDataException($"World: light.json spaceSky.shader `{name}` not found")) { name = "sky" };
+            static Vector4 V(object a) { var l = (System.Collections.Generic.List<object>)a; var v = Vector4.zero; for (int i = 0; i < l.Count && i < 4; i++) v[i] = (float)(double)l[i]; return v; }
+            if (J.Get(sky, "colours") is System.Collections.Generic.Dictionary<string, object> cs) foreach (var kv in cs) { var v = V(kv.Value); m.SetColor(kv.Key, new Color(v.x, v.y, v.z, v.w)); }
+            if (J.Get(sky, "vectors") is System.Collections.Generic.Dictionary<string, object> vs) foreach (var kv in vs) m.SetVector(kv.Key, V(kv.Value));
+            if (J.Get(sky, "floats") is System.Collections.Generic.Dictionary<string, object> fs) foreach (var kv in fs) m.SetFloat(kv.Key, (float)(double)kv.Value);
+            if (J.Get(sky, "textures") is System.Collections.Generic.Dictionary<string, object> ts)
+                foreach (var kv in ts) m.SetTexture(kv.Key, AssetDatabase.LoadAssetAtPath<Texture2D>((string)kv.Value) ?? throw new InvalidDataException($"World: light.json spaceSky texture {kv.Value} missing"));
+            m.SetVector("_SunDir", new Vector4(toSun.x, toSun.y, toSun.z, 0));
+            return m;
+        }
+
         /// <summary>A grade profile from a phase's `post` block, saved beside the scene as &lt;scene&gt;-&lt;name&gt;.asset.</summary>
         public static VolumeProfile Profile(Look look, object post, string name)
+        {
+            var profile = Build(look, post, name);
+            var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-" + name + ".asset";
+            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CreateAsset(profile, path);
+            foreach (var o in profile.components) AssetDatabase.AddObjectToAsset(o, profile);
+            AssetDatabase.SaveAssets();
+            return profile;
+        }
+
+        /// <summary>The grade profile of a phase's `post` block, in memory (Profile saves it; review tools use it unsaved).</summary>
+        public static VolumeProfile Build(Look look, object post, string name)
         {
             var profile = ScriptableObject.CreateInstance<VolumeProfile>();
             profile.name = name;
@@ -79,11 +110,6 @@ namespace Suborned.World
                 var vg = profile.Add<Vignette>(true);
                 vg.intensity.Override(J.F(v, "intensity")); vg.smoothness.Override(J.F(v, "smoothness")); vg.color.Override(look.Palette(J.S(v, "colour")));
             }
-            var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-" + name + ".asset";
-            AssetDatabase.DeleteAsset(path);
-            AssetDatabase.CreateAsset(profile, path);
-            foreach (var o in profile.components) AssetDatabase.AddObjectToAsset(o, profile);
-            AssetDatabase.SaveAssets();
             return profile;
         }
 
@@ -109,6 +135,7 @@ namespace Suborned.World
         {
             var d = cam.GetUniversalAdditionalCameraData();
             d.renderPostProcessing = true;
+            d.dithering = true; // brief 075 banding (Glint): no 8-bit steps in the sky and shading gradients; AtmosphereLens sets it at runtime too
             cam.allowHDR = true;
         }
     }

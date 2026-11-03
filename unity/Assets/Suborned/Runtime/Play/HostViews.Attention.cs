@@ -22,12 +22,46 @@ namespace Suborned.Play
         readonly Dictionary<string, CamHead> camHeads = new();
         static readonly Color LensDim = new(0.09f, 0.12f, 0.13f), Phosphor = new(0.75f, 0.95f, 0.9f), AlarmLens = new(1f, 0.35f, 0.24f);
 
-        /// <summary>The pole's head (housing, hood and lens) at 3.25 m, looking along the camera's facing, tilted down to its ground.</summary>
+        /// <summary>The world's pole-camera scale (tools/world/gen/kitrefs.ts: CCTVPole's 3.18 m to the plan's 5.5 m mount, GDD §05 pole-camera).</summary>
+        static readonly Vector3 PoleScale = new(1.182f, 1.728f, 1.23f);
+        /// <summary>The kit pole's lens at that scale (tools/decokit/signals.py cctv_pole: the glass at 2.767 m up, 0.724 m out, 12 deg
+        /// nose-down, so 4.78 m up, 0.89 m out and ~17 deg down once scaled): the rulebook's pole lens is 4.79 m (brief 055).</summary>
+        const float LensUp = 4.78f, LensOut = 0.89f, LensDown = 16.7f;
+        /// <summary>How high a mission camera's head stands above the ground (the kit pole's lens, or the 3.2 m stand-in's head).</summary>
+        public float CamHeadUp => host.cctvPole ? LensUp : 3.25f;
+        /// <summary>A mission camera's drawn height (for the callouts' figure box).</summary>
+        public float CameraTall => host.cctvPole ? 5.5f : 3.4f;
+
+        /// <summary>The kit pole under the stand-in's transform (kept as the click target and the view's anchor, 1.6 m up): the stand-in's
+        /// cylinder is hidden and its collider runs the pole's 5.5 m; the model faces the camera's facing. The parent's scale is equal in x
+        /// and z, so the yaw does not shear.</summary>
+        void KitPole(Suborned.Sim.Camera c, Transform pole)
+        {
+            if (pole.GetComponent<MeshRenderer>() is MeshRenderer mr) mr.enabled = false;
+            var col = pole.GetComponent<CapsuleCollider>(); col.height = 5.5f / 1.6f; col.center = new Vector3(0f, (2.75f - 1.6f) / 1.6f, 0f);
+            var fwd = frame.Dir(c.Facing); fwd.y = 0f; if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
+            var m = Object.Instantiate(host.cctvPole, pole, false).transform; m.name = "model";
+            m.localPosition = new Vector3(0f, -1f, 0f); m.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
+            m.localScale = new Vector3(PoleScale.x / 0.25f, PoleScale.y / 1.6f, PoleScale.z / 0.25f);
+        }
+
+        /// <summary>The pole's head (housing, hood and lens) at 3.25 m, looking along the camera's facing, tilted down to its ground; on the
+        /// kit pole only the cue lens, set over the model's glass.</summary>
         void CamHeadFor(Suborned.Sim.Camera c, Vector3 at)
         {
             if (c.World) return; // the world's own masts draw themselves
             var fwd = frame.Dir(c.Facing); if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
             var head = new GameObject("camera/" + c.Id + "/head").transform; head.SetParent(root, false);
+            if (host.cctvPole)
+            {
+                var f = fwd; f.y = 0f; f.Normalize();
+                head.position = at + Vector3.up * LensUp + f * LensOut; head.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(LensDown, Vector3.Cross(Vector3.up, f)) * f, Vector3.up);
+                var kl = Unlit(LensDim);
+                var k = Part(head, "lens", sphere, kl, new Vector3(0f, 0f, 0.07f), new Vector3(0.26f, 0.32f, 0.04f));
+                k.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                camHeads["camera/" + c.Id] = new CamHead { Head = head, Lens = kl, Rest = head.rotation, Scale = k.localScale };
+                return;
+            }
             head.position = at + Vector3.up * 3.25f; head.rotation = Quaternion.LookRotation((fwd + Vector3.down * 0.3f).normalized, Vector3.up);
             Part(head, "housing", cube, Lit(host.carColour), new Vector3(0f, 0f, 0.02f), new Vector3(0.24f, 0.22f, 0.5f));
             Part(head, "hood", cube, Lit(new Color(0.42f, 0.45f, 0.48f)), new Vector3(0f, 0.13f, 0.08f), new Vector3(0.3f, 0.035f, 0.62f));
@@ -166,13 +200,30 @@ namespace Suborned.Play
         public const int InsetLayer0 = 24;
         static readonly Color InsetGround = new(0.969f, 0.957f, 0.925f);
 
-        /// <summary>The close-up of `view` into slot k's texture (128 px, the watcher alone on cream), or none (null view): its camera on only
+        /// <summary>Brief 085 (the white disc on the guard's second line): which view each slot shows this frame, set before any slot frames. A figure sits on one layer at a time and a slot
+        /// keeps the layers it moved a figure from, so when a callout left and the guard's slot moved from 1 to 0, slot 0 moved him to its layer and slot 1, let go in the same pass, put him back
+        /// on his old one: slot 0's camera saw nothing but cream. Any change lets go of every slot first, then claims afresh; two slots showing one person share the first one's layer.</summary>
+        public void InsetViews(string[] want)
+        {
+            bool same = true; for (int k = 0; k < insets.Length; k++) { var cur = insets[k]?.View ?? ""; if (cur != (want[k] ?? "")) same = false; }
+            if (same) return;
+            for (int k = 0; k < insets.Length; k++) { var s = insets[k] ??= NewInset(k); Restore(s); s.View = ""; }
+            for (int k = 0; k < insets.Length; k++)
+            {
+                var s = insets[k]; string v = want[k] ?? ""; s.View = v; int layer = InsetLayer0 + k;
+                for (int j = 0; j < k; j++) if (insets[j].View == v && v.Length > 0) { layer = -1 - j; break; }
+                if (layer < 0) { s.Cam.cullingMask = 1 << (InsetLayer0 + (-1 - layer)); continue; }
+                s.Cam.cullingMask = 1 << layer;
+                if (v.Length > 0 && things.TryGetValue(v, out var th)) { Move(s, th.t, layer); if (camHeads.TryGetValue(v, out var hh)) Move(s, hh.Head, layer); }
+            }
+        }
+
+        /// <summary>The close-up of `view` into slot k's texture (256 px, so a conversation's face holds at 2x; the watcher alone on cream), or none (null view): its camera on only
         /// while a callout is up.</summary>
-        public RenderTexture InsetFrame(int k, string view)
+        public RenderTexture InsetFrame(int k, string view, float zoom = 1f)
         {
             var s = insets[k] ??= NewInset(k);
-            if (view != s.View) { Restore(s); s.View = view ?? ""; if (s.View.Length > 0 && things.TryGetValue(s.View, out var th)) { Move(s, th.t, InsetLayer0 + k); if (camHeads.TryGetValue(s.View, out var hh)) Move(s, hh.Head, InsetLayer0 + k); } }
-            bool on = s.View.Length > 0 && things.TryGetValue(s.View, out var x) && x.shown && x.t.gameObject.activeInHierarchy;
+            bool on = s.View.Length > 0 && s.View == (view ?? "") && things.TryGetValue(s.View, out var x) && x.shown && x.t.gameObject.activeInHierarchy;
             if (s.Cam.enabled != on) s.Cam.enabled = on;
             if (!on) return null;
             // frame the watcher's face: the camera head's lens, a robot's display, a person's head
@@ -190,7 +241,7 @@ namespace Suborned.Play
             }
             fwd.y = Mathf.Clamp(fwd.y, -0.3f, 0.3f); if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward; fwd.Normalize();
             var cpos = at + fwd * 2.2f + Vector3.up * 0.25f;
-            s.Cam.transform.SetPositionAndRotation(cpos, Quaternion.LookRotation(at - cpos, Vector3.up)); s.Cam.orthographicSize = size;
+            s.Cam.transform.SetPositionAndRotation(cpos, Quaternion.LookRotation(at - cpos, Vector3.up)); s.Cam.orthographicSize = size * zoom;
             return s.Rt;
         }
 
@@ -199,7 +250,7 @@ namespace Suborned.Play
             var go = new GameObject("inset/" + k); go.transform.SetParent(root, false);
             var c = go.AddComponent<UnityEngine.Camera>(); c.orthographic = true; c.nearClipPlane = 0.05f; c.farClipPlane = 8f; c.cullingMask = 1 << (InsetLayer0 + k);
             c.clearFlags = CameraClearFlags.SolidColor; c.backgroundColor = InsetGround; c.allowHDR = false; c.allowMSAA = false; c.depth = -10;
-            var rt = new RenderTexture(128, 128, 16, RenderTextureFormat.ARGB32) { name = "inset" + k, antiAliasing = 1 }; rt.Create(); c.targetTexture = rt;
+            var rt = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32) { name = "inset" + k, antiAliasing = 1 }; rt.Create(); c.targetTexture = rt;
             var d = go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
             d.renderPostProcessing = false; d.renderShadows = false; d.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.None; d.requiresColorOption = UnityEngine.Rendering.Universal.CameraOverrideOption.Off; d.requiresDepthOption = UnityEngine.Rendering.Universal.CameraOverrideOption.Off;
             c.enabled = false;

@@ -1,0 +1,330 @@
+{
+ "schema": "suborned.074-counts/1",
+ "before": {
+  "export": "out/scratch/latch/072/g/g.world.json sha256 6841dcfc6f91ddea79ec6f275e5191f516dc91ffad884005c85724decbe1ce88",
+  "when": "2026-10-28 10:42"
+ },
+ "after": {
+  "export": "out/scratch/latch/074/pin/074.world.json sha256 67a3a07b6ffcc1b4ae9bcc8a822e6a3a8b61b56bbc38595deba19a009960d6c4",
+  "when": "2026-10-28 11:00"
+ },
+ "note": "No number here is UnityStats (that needs the visible Game view; queued for when the Studio is free). census* = Baseline072's census method (16:9 frustum + LOD pick; counts shadows-only renderers as visible, as the baseline did). main* = the same without shadows-only renderers. setPassEstimate = distinct shader variants: forward (every visible material, its keywords) + SSAO depth-normals prepass (opaque, _ALPHATEST_ON/_NORMALMAP) + shadow (per cascade, its casters, _ALPHATEST_ON); fullscreen passes (sky, SSAO, post, copies) not counted. shadow* = casters per cascade by URP's split for this camera reproduced (CullingResults culling planes and sphere, bounds test; LOD-picked meshes): an estimate. frameMs = batchmode offscreen Camera.Render, GPU waited on, indicative only.",
+ "views": [
+  {
+   "view": "office-front y030",
+   "materials": [
+    88,
+    94,
+    6
+   ],
+   "setPass": [
+    35,
+    35,
+    0
+   ],
+   "fwd": [
+    19,
+    19,
+    0
+   ],
+   "shadowVariants": [
+    11,
+    11,
+    0
+   ],
+   "mainRenderers": [
+    230,
+    230,
+    0
+   ],
+   "mainTris": [
+    653254,
+    653254,
+    0
+   ],
+   "shadowTris": [
+    418785,
+    418785,
+    0
+   ],
+   "modules": [
+    5,
+    5,
+    0
+   ]
+  },
+  {
+   "view": "office-front y210",
+   "materials": [
+    85,
+    88,
+    3
+   ],
+   "setPass": [
+    36,
+    36,
+    0
+   ],
+   "fwd": [
+    18,
+    18,
+    0
+   ],
+   "shadowVariants": [
+    12,
+    12,
+    0
+   ],
+   "mainRenderers": [
+    213,
+    213,
+    0
+   ],
+   "mainTris": [
+    635578,
+    635578,
+    0
+   ],
+   "shadowTris": [
+    384005,
+    384005,
+    0
+   ],
+   "modules": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "view": "cell-open y030",
+   "materials": [
+    137,
+    149,
+    12
+   ],
+   "setPass": [
+    41,
+    41,
+    0
+   ],
+   "fwd": [
+    22,
+    22,
+    0
+   ],
+   "shadowVariants": [
+    12,
+    12,
+    0
+   ],
+   "mainRenderers": [
+    292,
+    292,
+    0
+   ],
+   "mainTris": [
+    768881,
+    769027,
+    146
+   ],
+   "shadowTris": [
+    772663,
+    772955,
+    292
+   ],
+   "modules": [
+    18,
+    18,
+    0
+   ]
+  },
+  {
+   "view": "cell-open y210",
+   "materials": [
+    134,
+    150,
+    16
+   ],
+   "setPass": [
+    42,
+    42,
+    0
+   ],
+   "fwd": [
+    22,
+    22,
+    0
+   ],
+   "shadowVariants": [
+    13,
+    13,
+    0
+   ],
+   "mainRenderers": [
+    273,
+    273,
+    0
+   ],
+   "mainTris": [
+    752384,
+    752426,
+    42
+   ],
+   "shadowTris": [
+    696259,
+    696405,
+    146
+   ],
+   "modules": [
+    15,
+    15,
+    0
+   ]
+  },
+  {
+   "view": "wide-lamplight y030",
+   "materials": [
+    62,
+    91,
+    29
+   ],
+   "setPass": [
+    36,
+    36,
+    0
+   ],
+   "fwd": [
+    17,
+    17,
+    0
+   ],
+   "shadowVariants": [
+    13,
+    13,
+    0
+   ],
+   "mainRenderers": [
+    244,
+    244,
+    0
+   ],
+   "mainTris": [
+    475986,
+    476148,
+    162
+   ],
+   "shadowTris": [
+    474338,
+    474704,
+    366
+   ],
+   "modules": [
+    78,
+    78,
+    0
+   ]
+  }
+ ],
+ "census": {
+  "before": {
+   "columns": {
+    "placed": 2265,
+    "singleModules": 2389,
+    "layoutPrefabsPlaced": 165,
+    "layoutPrefabsInFolder": 165,
+    "meshAssetsInFolder": 495,
+    "distinctMeshesPlaced": 495,
+    "trianglesAllLodsOfPlacedMeshes": 573512
+   },
+   "materials": {
+    "scene": 289,
+    "modules": 14,
+    "shadowProxies": 29,
+    "sceneShaderVariants": 29,
+    "moduleShaderVariants": 6
+   }
+  },
+  "after": {
+   "columns": {
+    "placed": 2265,
+    "singleModules": 2389,
+    "layoutPrefabsPlaced": 165,
+    "layoutPrefabsInFolder": 165,
+    "meshAssetsInFolder": 495,
+    "distinctMeshesPlaced": 495,
+    "trianglesAllLodsOfPlacedMeshes": 573512
+   },
+   "materials": {
+    "scene": 349,
+    "modules": 58,
+    "shadowProxies": 29,
+    "sceneShaderVariants": 29,
+    "moduleShaderVariants": 6
+   }
+  },
+  "proxyMaterialsAfter": [
+   "DK_Bark_Fibre",
+   "DK_Bark_Palm",
+   "DK_Beacon_Rose",
+   "DK_Bronze",
+   "DK_Chrome",
+   "DK_Coconut",
+   "DK_Crown_Gold",
+   "DK_Enamel_Charcoal",
+   "DK_Enamel_Coral",
+   "DK_Enamel_Ivory",
+   "DK_Enamel_Mustard",
+   "DK_Enamel_Seafoam",
+   "DK_Enamel_Teal",
+   "DK_GlassDark",
+   "DK_Gold",
+   "DK_Iron",
+   "DK_Lamp",
+   "DK_Leaf_PalmFeather",
+   "DK_Leaf_Shrub",
+   "DK_Limestone_Tex",
+   "DK_Lobby",
+   "DK_Render_White",
+   "DK_Soil",
+   "DK_Steel",
+   "DK_Steel_Ivory",
+   "DK_Stone_Dark",
+   "DK_Terrazzo_Ivory",
+   "DK_Window_Film",
+   "DK_Window_Tower"
+  ],
+  "moduleRootsByWallMaterialAfter": {
+   "DK_Limestone_Tex__apricot": 214,
+   "DK_Limestone_Tex__blush": 344,
+   "DK_Limestone_Tex__butter": 557,
+   "DK_Limestone_Tex__cream": 567,
+   "DK_Limestone_Tex__ivory": 256,
+   "DK_Limestone_Tex__lilac": 334,
+   "DK_Limestone_Tex__mint": 588,
+   "DK_Limestone_Tex__peach": 337,
+   "DK_Limestone_Tex__powder": 474,
+   "DK_Limestone_Tex__sand": 227,
+   "DK_Limestone_Tex__seagreen": 490,
+   "DK_Limestone_Tex__sky": 266
+  },
+  "moduleShaderVariants": {
+   "before": [
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT",
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT,_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_EMISSION",
+    "DecoKit/Lit Cutaway|_METALLICSPECGLOSSMAP,_NORMALMAP,_OCCLUSIONMAP",
+    "Suborned/DecoKit/GlassSky|"
+   ],
+   "after": [
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT",
+    "DecoKit/Complex Lit Cutaway|_CLEARCOAT,_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_DETAIL_MULX2",
+    "DecoKit/Lit Cutaway|_EMISSION",
+    "DecoKit/Lit Cutaway|_METALLICSPECGLOSSMAP,_NORMALMAP,_OCCLUSIONMAP",
+    "Suborned/DecoKit/GlassSky|"
+   ]
+  }
+ }
+}

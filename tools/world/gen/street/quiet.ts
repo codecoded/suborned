@@ -18,6 +18,7 @@ import { SITING, cornerOf, junctionCorners } from '../../civic/siting';
 import { type Ctx, r3, r4, rv } from '../common';
 import { cataloguedFor } from '../kitrefs';
 import type { Layer } from './kit';
+import { sectionOf } from '../../../plan/sections';
 
 const STEP = 2; // m between kerb candidates along a road
 const CLEAR_POINT = 1.2; // m: nothing on the ground within this of a Handover point (CD-1)
@@ -71,7 +72,7 @@ export function dressQuiet(ctx: Ctx, L: Layer): Takedown | undefined {
     const size = sizeOf(kind), out: Cand[] = [];
     for (const r of d.roads) {
       if (r.gyratory) continue;
-      const sec = ctx.S.sections[r.class] as { kerb: number }, off = r.w / 2 + 0.45 + size[1] / 2 + 0.05;
+      const sec = sectionOf(ctx.S.sections, ctx.plan, r.class, r.id) as { kerb: number }, off = r.w / 2 + 0.45 + size[1] / 2 + 0.05;
       if (size[1] + 0.5 > sec.kerb) continue; // the kerb zone must hold it (the plan: items ≥ 0.45 m from the kerb face, inside the zone)
       let run = 0;
       for (let i = 1; i < r.line.length; i++) {

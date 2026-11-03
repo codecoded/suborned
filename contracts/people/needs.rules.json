@@ -1,7 +1,7 @@
 {
  "schema": "suborned.needs.rules/1",
  "author": "Motive (design), Pulse (phase 1 file)",
- "gdd": "v0.23.0 (§04 changes in v0.24)",
+ "gdd": "v0.25.0",
  "rule": "A need is a kind and a record. A KIND is a mechanic on a short closed list: which approaches act on it (metBy), what it requires, how Help pays. A RECORD is the open part (\"Bureau loan\"): its label, its size (sets Help's price line) and its holder (the person or office that could meet it without the cell's money). Every other word is text. The model never adds a kind (unknown = reject); Sky accepts a proposed kind as a rules change. One need per person. A record may narrow its kind's approaches, never widen them. No two records of an area differ only in wording: each differs in size, holder or kind. Phase 1: sizes are all standard, holders unset, one record per kind per area.",
  "src": "Sky 2026-10-18 (brief 017): briefs/017-open-needs.md; Sky's answers 1-6",
  "kinds": {
@@ -31,9 +31,9 @@
    ],
    "help": "favour",
    "requires": "home",
-   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.housing (§07 brief: Vale signed the clearance order for the marked block)",
+   "src": "Sky 2026-10-18 (brief 017); kind as people.rules.json needs.list.housing (the city's paperwork: a home is held or lost by stamped forms, §01 world)",
    "proposed": true,
-   "reason": "a home under a clearance order or a waiting list: the Handover's own cause, and a need only the civic order can meet or threaten. Needs a home in the district."
+   "reason": "a home under a clearance order or a waiting list: the city decides homes on paper, so only a civic hand can meet or threaten the need. Needs a home in the district. Story only (the Handover's file on the cell, GDD §07, is not this need)."
   },
   "papers": {
    "metBy": [

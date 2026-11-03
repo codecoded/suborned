@@ -49,7 +49,7 @@ namespace Suborned.Sim
                 var q0 = g.QuoteMove(Scout, door);
                 r.Is(q0.RunSeenBy.Contains("camera:entrance"), "the engine's truth: the entrance camera would see the run");
                 r.Is(q0.Seen.Seen == "?" && q0.Seen.SeenBy.Count == 0 && q0.Seen.MaybeSeenBy.Contains("camera:entrance"), $"the card shows '?' (seen {q0.Seen.Seen}, maybe {string.Join(",", q0.Seen.MaybeSeenBy)})");
-                r.Eq(q0.Seen.AlertIfSeen, g.R.RunAlert, "and the Alert a seen run would raise");
+                r.Eq(q0.Seen.AlertIfSeen, g.Alert, "and the Alert a seen run would raise: the Alert now (engine 0.34.0, brief 067, Motive M067-B2: cell.runAlert is retired; a run is noticed on the watchers' clocks, attention.run)");
                 var far = g.QuoteMove(Scout, r.Stand("crew:fixer"));
                 r.Is(!far.Seen.MaybeSeenBy.Contains("camera:entrance"), "a route no camera could see, whatever its facing, shows no '?' for it");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "watch", Target = "camera:entrance" }).code, "too-far", "the Tech watches the machines too (Sky 2026-10-18), but not from the start: too far"); // was only-scout before Sky 2026-10-18
@@ -151,13 +151,13 @@ namespace Suborned.Sim
                 r.Is(g.KnownFans().Exists(f => f.Watcher == "camera:entrance"), "and still drawn on Alt");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "watch", Target = "camera:pickup" }).code, "agent-down", "a downed Scout watches nothing");
                 r.Is(!g.Detection().Exists(n => n.Op == Scout), "a downed operative is not noticed");
-            });
+            }, new Start { OneInput = false }); // brief 080: stance hold, or she out-shoots the guard
 
             Add("N45", "—", "The response unit and the rivals come for the cell: their sight is known from the moment they are on the street (rulebook sight.kinds learn arrival), never watched, never told. Gunfire at the guard draws both.", r =>
             {
                 var g = r.G;
-                r.Is(!g.Known("security-1")!.Sight && !g.Known("rivals")!.Sight, "neither is known before they come");
-                r.Is(g.ConeFan("security-1") == null && g.ConeFan("rivals") == null, "nor on the street");
+                r.Is(!g.Known("security-1")!.Sight && !g.Known("rival-1")!.Sight, "neither is known before they come"); // brief 059: the crew is five watchers, rival-1..5
+                r.Is(g.ConeFan("security-1") == null && g.ConeFan("rival-1") == null, "nor on the street");
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.Fire(Enf, GuardR);
@@ -170,7 +170,7 @@ namespace Suborned.Sim
                 r.Is(g.KnownFans().Exists(x => x.Watcher == "security-1"), "drawn on Alt");
                 r.Is(g.RivalsDrawn, "the gunfire drew the rivals");
                 r.Is(r.Until(() => g.RivalsPresent || g.Over, T(120)) && g.RivalsPresent, "they come");
-                var kr = g.Known("rivals")!;
+                var kr = g.Known("rival-1")!;
                 r.Is(kr.Sight && kr.How == "arrival", "their sight is known when they come");
             }, NoFight());
         }

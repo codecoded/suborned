@@ -1,0 +1,6 @@
+READY-old-splice · brief 075 old buildings: the old frontage system on the plan's blocks (Splice, 2026-10-28)
+export sha256 85559b335cf390176be9d7c3a63b0feadf751785b920e911afa354a135ae53b9 (out/world/harbour-district.world.json; bun run world twice, same hash)
+module tools/world/gen/oldblocks.ts · report briefs/075/old/oldblocks.json (bun tools/world/oldblocks-report.ts --json) · tests tools/world/gen/oldblocks.test.ts
+counts: 18 plots, 324 buildings, 1675 true-size pieces (0 scaled): 1436 bays, 92 corners, 147 ends (72 _M), 4 crescents / 24 bays
+checks: plan exit 0, plan --overlay exit 0, world:faces 0 undressed, cover + cover --check exit 0, sim:site unchanged by this work, missions:check handover --inputs tree SHIPS, typecheck 0, bun run test tools/world tools/plan 591 pass 0 fail
+notes: briefs/075/notes.md "Old buildings: frontage"

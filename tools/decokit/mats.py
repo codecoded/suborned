@@ -21,13 +21,17 @@ import bpy
 # lightest brass the gate lets through: a lighter, yellower brass drifts onto the guard amber (L 73, C 68), so the highlight brass leans rose (#AD866F, 21.3).
 # DK_Gold, DK_Gold17 and DK_Accent_Gold are brass; the crown pieces (crown.py) draw DK_Crown_Gold / DK_Crown_Gold17 at the old values, so the shared names can turn.
 # Gold stays hairline, frame, bead and the small metal of a piece, never a fat panel. 15 Oct: the brass rows are kind `brass` (satin, KIND below), the crown rows stay `metal`.
-BRASS, BRASS_LIGHT, CROWN_GOLD, CROWN_GOLD17 = "#99784D", "#AD866F", "#E3D681", "#C9C08E"
+# 27 Oct (brief 072-G; Sky on the 072-B proposal: "yep, more, more reds / blues allowed as well"): the signal gate that held brass dark and rose is gone (2026-10-16), so the
+# street brass is a warm brass-gold again: BRASS #C29A55 (DK_Accent_Gold, DK_Brass_Civic: frames, beads, bands up to ~15 cm), BRASS_LIGHT #D6B676 (DK_Gold17), and DK_Gold is
+# DecoKit's own #D6AE62 (kind `brass`, not DecoKit's `metal`: full metal mirrored the dark zenith, black studs in Unity). Crowns unchanged. Never a large gold or brass panel.
+BRASS, BRASS_LIGHT, CROWN_GOLD, CROWN_GOLD17 = "#C29A55", "#D6B676", "#E3D681", "#C9C08E"
+GOLD_DK = "#D6AE62"  # DecoKit's DK_Gold
 
 LIB = {
     # enamel
     "DK_Enamel_Ivory": ("enamel", "#EFE8D6"), "DK_Enamel_Cream": ("enamel", "#F3DDB0"),
     "DK_Enamel_Teal": ("enamel", "#1F6C67"), "DK_Enamel_Seafoam": ("enamel", "#72B5A7"),
-    "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#820606"),
+    "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#C42A1F"),
     "DK_Enamel_Mustard": ("enamel", "#EEA82D"), "DK_Enamel_RedBright": ("enamel", "#C42A1F"), "DK_Enamel_Powder": ("enamel", "#86ADD3"),
     "DK_Enamel_Royal": ("enamel", "#2C56A6"), "DK_Enamel_Charcoal": ("enamel", "#2B2F33"),
     # ceramic paving
@@ -39,11 +43,11 @@ LIB = {
     "DK_Soil": ("stone", "#3B2C22"),
     # metal
     "DK_Chrome": ("chrome", "#EDEDED"), "DK_Steel": ("metal", "#A9ABAE"),
-    "DK_Gold": ("brass", BRASS), "DK_Iron": ("metal", "#3A3C3E"),
+    "DK_Gold": ("brass", GOLD_DK), "DK_Iron": ("metal", "#3A3C3E"),
     # misc
     "DK_Rubber": ("rubber", "#1B1C1E"), "DK_Glass": ("glass", "#CFEDE6"),
     "DK_GlassDark": ("glass", "#35585A"),
-    "DK_Lamp": ("emit", "#FFE2A6", 6.0), "DK_Signal_Red": ("emit", "#E8609A", 4.0),
+    "DK_Lamp": ("emit", "#FFE2A6", 6.0), "DK_Signal_Red": ("emit", "#FF3B26", 4.0),
     "DK_Signal_Amber": ("emit", "#FFB21E", 4.0), "DK_Signal_Green": ("emit", "#2EE07A", 4.0),
     "DK_Screen": ("emit", "#7FE3D4", 1.5), "DK_RobotEye": ("emit", "#FF8A1E", 3.0),
     # textured (TEXTURES below): decals are alpha-keyed sheets, tiles are metric-scale albedo
@@ -99,15 +103,22 @@ LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal
 # Signal_Red #FF3B26 6.7 -> the flamingo accent (24.6). DK_Signal_Red stays only because legacy FBXs bind it by name.
 # 20 Oct (Sky, brief 026 compare): Enamel_Mustard back to #EEA82D (the old mustard; "everything else, old looked better"); Enamel_Red stays oxblood #820606.
 # 14 Oct (Sky, brass over gold): Gold #E3D681 20.6 -> BRASS #99784D 21.3 (the crowns keep #E3D681 as DK_Crown_Gold).
+# 27 Oct (brief 072-G, Sky: "more reds / blues allowed"): all four back to DecoKit's colours: Mustard #EEA82D, Gold #D6AE62 (as satin brass), Enamel_Red #C42A1F (bright enamel red,
+# pillar boxes and trims), Signal_Red #FF3B26 (only legacy FBXs bind it; ALIAS still keeps every generated piece on DK_Beacon_Rose). The tuple stays: unity_mats rewrites these .mat files
+# under their old guids.
 WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red")
-LIB["DK_Signal_Red"] = ("emit", ACCENT["flamingo"], 4.0)
 
 # Window film (brief 048, Vela): DK_GlassDark is the glass in front of every facade bay (ribbons, deco columns, portholes, shop transoms). As URP Lit at smoothness 0.98 and alpha 0.3 over a
 # charcoal back wall it mirrored the dark street-canyon cube and read as a black void in third person. Unity draws it with Suborned/DecoKit/GlassSky (a fake sky, no probe: see the shader):
 # the glaze is the old colour at alpha 0.72 (the 1.1 m cavity behind it is the adopted store pieces', charcoal and unreachable from here), the mirror a pale warm horizon to a soft blue zenith (the paintings' windows: dark teal glass with sky glints). Blender keeps the same alpha.
 # GLASS_SHADER_GUID is the .shader.meta guid (unity/Assets/Suborned/Shaders/DecoKit/DK_GlassSky.shader.meta).
 GLASS_SHADER_GUID = "0a6625b81c13d56024a16fdc589a1954"
-GLASS_FILM = {"DK_GlassDark": dict(alpha=0.72, glaze="#4A8588", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D8E6E4", zenith="#86B8E0", street="#A78F78")}
+# 27 Oct (brief 072-G): the glaze a step bluer and a touch clearer (#4A8588 a0.72 -> #3F7A8E a0.65: blue-teal glass with more sky, toward DecoKit's #35585A a0.3 mirror).
+# 28 Oct (brief 075-B, Sky "back to the old world textures"): the film's fake sky is the old street's own (DecoKit DK_Sky_Street.png, the Skybox/Panoramic gradient the old windows reflected through
+# their baked probes): horizon #D1DBDD (the texel above the horizon), zenith #75A4D6 (5 % from the top). Was #D8E6E4 / #86B8E0. Glaze, alpha and the rest stay (the old a0.3 over the charcoal cavity is
+# brief 048's black void without probes; the old reel's green-teal windows are its probes and grade, Glint's 075-A).
+# 29 Oct (brief 075 old palette, Sky: "back to old town"): the glaze is the old DK_GlassDark colour again, #35585A (was 072-G's #3F7A8E): the old reel's dark glass ribbons.
+GLASS_FILM = {"DK_GlassDark": dict(alpha=0.65, glaze="#35585A", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D1DBDD", zenith="#75A4D6", street="#A78F78")}
 
 LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
 ALIAS = {"Signal_Red": "DK_Beacon_Rose"}  # generated pieces never use DK_Signal_Red on a world surface
@@ -144,7 +155,7 @@ GROUND = {
     "DK_Ground_Kerb": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0),
     "DK_Ground_Gutter": dict(albedo="ground_gutter_v1.png", normal="ground_gutter_v1_normal.png", mask="ground_gutter_v1_mask.png", tile=(4.0, 0.375), smoothness=1.0),
     "DK_Ground_Pavement": dict(albedo="ground_pavement_v1.png", normal="ground_pavement_v1_normal.png", mask="ground_pavement_v1_mask.png", tile=(4.0, 4.0), smoothness=1.0),
-    "DK_Ground_Lawn": dict(albedo="ground_lawn_v1.png", normal="ground_lawn_v1_normal.png", tile=(8.0, 8.0), smoothness=0.2),
+    "DK_Ground_Lawn": dict(albedo="ground_lawn_v1.png", normal="ground_lawn_v1_normal.png", tile=(8.0, 8.0), smoothness=0.12),  # brief 075-B: the old DK_Lawn's .12 (was .2: a sheen on turf)
     "DK_Ground_Path": dict(albedo="ground_path_v1.png", normal="ground_path_v1_normal.png", tile=(2.0, 2.0), smoothness=0.12),
     # Round 2: the legacy ground pieces (Pave_Flags_i, Kerb_Granite*, TreePit_Flags_i, Tile_*, gutters) bind these four names by their FBX materials and UV conventions (sheet
     # quadrants 0..1 over the 4 m sheet; kerb stone 0.5 m metric). The generator's .mat of the same name wins over the legacy one and keeps its guid, so the same pieces now use the
@@ -155,7 +166,14 @@ GROUND = {
     "DK_Granite_Kerb_B": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0, tint="#EAE6DF"),
 }
 
-UV_MAPPED = ("decal", "art", "emit", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
+# Brief 074-B (colourways.py): Unity draws DK_Limestone_Tex on the neutral panel sheet (the old sheet's luminance, its cream moved into the .mat's tint) so a colourway's tint can land
+# any wall family; Blender keeps facade_panel_v1 for the base row (TEXTURES above), so the FBX bytes do not move. The materials table names the sheet Unity uses (the catalogue
+# copies what the table and the .mat name), so the old sheet leaves the kit copy: replaced, not added.
+# Brief 075 (old palette, Sky 2026-10-29): the colourways are the old DecoKitColourways variants again, tinted over the old sheet itself, so Unity draws DK_Limestone_Tex on
+# facade_panel_v1 as the old kit did (the legacy .mat) and the neutral sheet is gone.
+UNITY_TEXTURE = {}
+
+UV_MAPPED = ("decal", "art", "emit", "emitmap", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")
 EXTRA_TEXDIRS = tuple(Path(p).expanduser() for p in os.environ.get("DECOKIT_TEXDIRS_EXTRA", "").split(os.pathsep) if p)  # candidate textures (brief 008): searched first, the store stays read-only
 ART_DIRS = (Path(__file__).resolve().parent / "art/cafe",)  # source art kept in this repo (brief 020: the café's paintings and floor, with PROVENANCE.json)
@@ -200,10 +218,14 @@ KIND = {
     # satin brass (Sky, 15 Oct, brief 009: "satin brass"): the street-level brass pieces drew `metal` (metallic 1.0, smoothness 0.7), which has no diffuse colour and mirrors the dark
     # zenith above a street: near-black studs and edge lines in Unity. Metallic 0.3, smoothness 0.5 is lit by sun and sky and reads as the brass hex; the colours are unchanged
     # (dE2000 21.3 from the guard amber). The skyline crowns keep `metal` and their gold (DK_Crown_Gold, DK_Crown_Gold17: crown.py).
-    "brass": (0.5, 0.3, 0.0, 0.0, 1.0),
+    # 27 Oct (brief 072-G): (0.5, 0.3) -> (0.4, 0.6): brass-gold reads as metal and catches the sun, and keeps its colour in shade (still not DecoKit's full metal).
+    "brass": (0.4, 0.6, 0.0, 0.0, 1.0),
     "ground": (0.75, 0.0, 0.0, 0.0, 1.0),  # world-metre-UV ground (GROUND); roughness comes from the _mask alpha where there is one
     "paving": (0.5, 0.0, 0.0, 0.0, 1.0),  # sheet-mapped stone (paving.py); roughness comes from the _mask alpha
     "face": (0.2, 0.0, 0.0, 0.0, 0.0),  # robot display face: drawn by DK_RobotFace.shader in Unity, clear here
+    # brief 061 (Vela): an emission-only signal surface. Base colour black; the emission colour is the state's (set per head at runtime by a MaterialPropertyBlock); with a texture (a glyph atlas or a clock
+    # ring, white on clear) the texture is the emission map AND the alpha clip, so only the glyph draws. register(name, "emitmap", state hex, strength[, cutoff]); Unity: unity_mats.emitmap_text.
+    "emitmap": (0.2, 0.0, 0.0, 0.0, 1.0),
     "glow": (1.0, 0.0, 0.0, 0.0, 1.0),  # light volume (crossing beam, halo disc; brief 009): register(name, "glow", hex, strength, alpha); no .mat is written, Latch draws it additive, double-sided
 }
 
@@ -235,6 +257,25 @@ class RobotPal:
         if key.startswith("Enamel_"):
             return get(robot_enamel(key))
         return getattr(pal, key)
+
+
+# Car enamels (brief 070, Vela): DK_CarEnamel_<X> is a base enamel row (same kind and hex, so a later colour change follows) with car_tex.py's flake / film / orange-peel pair laid over it,
+# tiled 1 m on the 1 m box-projected UVs (isotropic, so it holds on every face). The cars draw these through car_enamel(); Unity writes them as the robot enamels are (unity_mats.robot_enamel_text).
+CAR_DETAIL = dict(detail="car_enamel_detail_v1.png", detailNormal="car_enamel_detail_v1_normal.png", tile=(1.0, 1.0), bump=0.25)
+
+
+def car_enamel(base):
+    """The car variant of an enamel row (base = 'DK_Accent_Coral' -> 'DK_CarEnamel_Coral'): registered on first ask; returns the Blender material."""
+    name = "DK_CarEnamel_" + base.split("_", 2)[-1]
+    if name not in LIB:
+        kind, hexstr, *extra = LIB[base]
+        LIB[name] = (kind, hexstr, *extra)
+    return get(name)
+
+
+def _detail_of(name):
+    """The detail pair a material carries: the robot enamels' or the car enamels', else None."""
+    return ROBOT_DETAIL if name.startswith("DK_RobotEnamel_") else CAR_DETAIL if name.startswith("DK_CarEnamel_") else None
 
 
 def register(name, kind, hexstr, *extra):
@@ -277,9 +318,11 @@ def get(name):
     if kind == "face":
         m.surface_render_method = "BLENDED"
         b.inputs["Alpha"].default_value = alpha
-    if kind in ("emit", "glow"):
+    if kind in ("emit", "glow", "emitmap"):
         b.inputs["Emission Color"].default_value = col
         b.inputs["Emission Strength"].default_value = extra[0]
+    if kind == "emitmap":  # emission only: the base is black, so the lit state is all the surface shows
+        b.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1.0)
     if kind == "glow":
         m.surface_render_method = "BLENDED"
         b.inputs["Alpha"].default_value = extra[1]
@@ -304,17 +347,30 @@ def get(name):
             nt.links.new(tex.outputs["Color"], b.inputs["Base Color"])
         if kind == "emit":  # lit artwork (lightboxes): the texture is the emission
             nt.links.new(tex.outputs["Color"], b.inputs["Emission Color"])
+        if kind == "emitmap":  # the glyph is the emission (x the state colour) and its alpha the clip
+            mix = nt.nodes.new("ShaderNodeMix")
+            mix.data_type, mix.blend_type = "RGBA", "MULTIPLY"
+            mix.inputs["Factor"].default_value = 1.0
+            mix.inputs["B"].default_value = col
+            nt.links.new(tex.outputs["Color"], mix.inputs["A"])
+            nt.links.new(mix.outputs["Result"], b.inputs["Emission Color"])
+            nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
+            for lk in list(b.inputs["Base Color"].links):  # the texture colour was linked to the base above: an emitter has none
+                nt.links.remove(lk)
+            b.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1.0)
+            m.surface_render_method = "DITHERED"
         if kind in ("decal", "cutout"):
             nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
             m.surface_render_method = "DITHERED"
         _pbr_maps(nt, b, tex, TEXTURES[name][0])
-    if name.startswith("DK_RobotEnamel_"):  # the detail pair, as Unity reads it: albedo x2 around mid grey (linear), normal at the material's strength
+    dp = _detail_of(name)
+    if dp:  # the detail pair, as Unity reads it: albedo x2 around mid grey (linear), normal at the material's strength
         nt = m.node_tree
         uvn, mp = nt.nodes.new("ShaderNodeTexCoord"), nt.nodes.new("ShaderNodeMapping")
-        mp.inputs["Scale"].default_value = (1 / ROBOT_DETAIL["tile"][0], 1 / ROBOT_DETAIL["tile"][1], 1)
+        mp.inputs["Scale"].default_value = (1 / dp["tile"][0], 1 / dp["tile"][1], 1)
         nt.links.new(uvn.outputs["UV"], mp.inputs["Vector"])
         imgs = []
-        for f in (ROBOT_DETAIL["detail"], ROBOT_DETAIL["detailNormal"]):
+        for f in (dp["detail"], dp["detailNormal"]):
             t = nt.nodes.new("ShaderNodeTexImage")
             pth = tex_path(f)
             if pth is None:
@@ -334,7 +390,7 @@ def get(name):
         nt.links.new(g.outputs["Vector"], mul.inputs["B"])
         nt.links.new(mul.outputs["Result"], b.inputs["Base Color"])
         nm = nt.nodes.new("ShaderNodeNormalMap")
-        nm.inputs["Strength"].default_value = ROBOT_DETAIL["bump"]
+        nm.inputs["Strength"].default_value = dp["bump"]
         nt.links.new(imgs[1].outputs["Color"], nm.inputs["Color"])
         nt.links.new(nm.outputs["Normal"], b.inputs["Normal"])
     m.diffuse_color = col  # viewport solid colour
@@ -344,7 +400,8 @@ def get(name):
 def _pbr_maps(nt, b, tex, file):
     """A pave_sheet.py set (<stem>_mask.png beside it) also drives normal + roughness, as Unity's Lit reads them."""
     stem = file[:-4]
-    maps = [tex_path(f"{stem}_{k}.png") for k in ("normal", "mask")]
+    g = next((e for e in GROUND.values() if e.get("albedo") == file and e.get("normal") and e.get("mask")), None)  # brief 075-B: a GROUND row may share another set's maps
+    maps = [tex_path(g["normal"]), tex_path(g["mask"])] if g else [tex_path(f"{stem}_{k}.png") for k in ("normal", "mask")]
     if not all(maps):
         return
     vec = tex.inputs["Vector"].links[0].from_socket if tex.inputs["Vector"].is_linked else None
@@ -384,6 +441,12 @@ def metric_tiling(name, kind):
 
 
 def export_json(path):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps(dict(materials=material_rows()), indent=1))
+
+
+def material_rows():
+    """The material table rows for every LIB entry this process registered (export_kit merges them into the table on disk on a partial run: tables.py)."""
     rows = []
     for name, (kind, hexstr, *extra) in LIB.items():
         rough, metal, coat, coat_rough, alpha = KIND[kind]
@@ -393,8 +456,7 @@ def export_json(path):
         tex = TEXTURES.get(name)
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
-                         emission=extra[0] if extra else 0.0, texture=tex[0] if tex else "",
-                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": ROBOT_DETAIL} if name.startswith("DK_RobotEnamel_") else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
+                         emission=extra[0] if extra else 0.0, **({"cutoff": extra[1]} if kind == "emitmap" and len(extra) > 1 else {}), texture=UNITY_TEXTURE.get(name, tex[0]) if tex else "",
+                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": _detail_of(name)} if _detail_of(name) else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
+    return rows
 

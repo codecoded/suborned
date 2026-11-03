@@ -103,10 +103,10 @@
     "reason": "the GDD names the temperament but not which institutions exist. Two kinds keep it checkable from data the expander already has (work unit, home)."
   },
   "approaches": {
-    "ask": { "requires": "nothing", "usd": 0, "timeS": 25, "trail": 1, "leaves": "remembered refusal: later offers +$10,000, +1 T" },
-    "pay": { "requires": "routine", "usd": 70000, "timeS": 50, "trail": 2, "leaves": "traceable payment; neutral" },
-    "help": { "requires": "need", "usd": 40000, "timeS": 50, "trail": 1, "leaves": "gratitude; bravery can grow" },
-    "pressure": { "requires": "need", "usd": 0, "timeS": 35, "trail": 3, "leaves": "fear; resentment grows; can identify Fixer" },
+    "ask": { "requires": "nothing", "usd": 0, "timeS": 20, "trail": 1, "leaves": "remembered refusal: later offers +$10,000, +1 T" },
+    "pay": { "requires": "routine", "usd": 70000, "timeS": 35, "trail": 2, "leaves": "traceable payment; neutral" },
+    "help": { "requires": "need", "usd": 40000, "timeS": 35, "trail": 1, "leaves": "gratitude; bravery can grow" },
+    "pressure": { "requires": "need", "usd": 0, "timeS": 25, "trail": 3, "leaves": "fear; resentment grows; can identify Fixer" },
     "src": "§04 approaches [B], Inez's prices in the training mission. Reference prices: a person's own price is Keel's rule, not this file's."
   },
   "needs": {
@@ -181,14 +181,14 @@
     }
   },
   "secrets": {
-    "rule": "0 or 1 secret per simulated person, from this closed list. A secret is a fact the person hides, separate from their need: the need is what they want (Help meets it), the secret is what they fear known (Pressure threatens it). Learned only by the cell, only by Listen, or by a Watch that ends while two lovers stand together (rulebook summon.together). Never told along ties, never in a keeper's tips. Read by turn.pressure: a known secret is Pressure's leverage. Until the need `secret` retires (Pulse's cast tables), a person may still carry that need; the person field `secret` is this list's.",
+    "rule": "0 or 1 secret per simulated person, from this closed list. A secret is a fact the person hides, separate from their need: the need is what they want (Help meets it), the secret is what they fear known (Pressure threatens it). Learned only by the cell, only by Listen (a Watch never teaches a secret: brief 054 §9.2). Never told along ties, never in a keeper's tips. Read by turn.pressure: a known secret is Pressure's leverage. Until the need `secret` retires (Pulse's cast tables), a person may still carry that need; the person field `secret` is this list's.",
     "perPerson": { "min": 0, "max": 1 },
     "list": {
       "affair": {
         "requires": "lover-tie", "learnedBy": ["scout.listen", "cell.watch"],
         "src": "Story spine v0.1: Inez's affair with the guard is her secret; Pressure threatens to expose it",
         "proposed": true,
-        "reason": "every person with a lover tie holds `affair`, and nobody else does: the tie is the secret, so the checker can see it. Watch teaches it only when it ends with the two lovers together."
+        "reason": "every person with a lover tie holds `affair`, and nobody else does: the tie is the secret, so the checker can see it. Listen alone teaches it (brief 054 §9.2)."
       },
       "record": {
         "requires": "nothing", "learnedBy": ["scout.listen"],
@@ -207,7 +207,7 @@
         "direction": "both", "maxPerPerson": 4, "between": "any", "introduces": true,
         "src": "§04 between missions: introduces a friend (new contact); arrested (lost unless freed)",
         "proposed": true,
-        "reason": "limit 4 [S]. Family may live apart and need not share a family name (a mixed cast, §15)."
+        "reason": "limit 4 [S]. Family may live apart; they share one family name (names.lists.families, Sky 2026-11-02, brief 089)."
       },
       "workmate": {
         "direction": "both", "maxPerPerson": 3, "between": "same-employer", "introduces": true,
@@ -434,23 +434,62 @@
   },
   "names": {
     "scope": "district",
-    "pool": "one pool per district, carried by the cast tables (brief 010 B); every simulated person's given and family name come from it",
+    "pool": "real names (brief 089, Sky: \"why can't they be a bit more normal\"): every simulated person's given and family name are drawn from the national frequency lists of one country (`lists`), by sex and decade of birth; the cast tables' old pools are no longer read",
     "form": { "parts": ["given", "family"], "pattern": "^\\p{Lu}[\\p{L}'-]{1,15}$" },
     "noEraDate": "no digits, years, dates, generational suffixes (Jr, Sr, II, III) or titles in a name; the pattern forbids them",
     "avoid": ["Betty", "Peggy", "Dottie", "Dolores", "Mabel", "Gertrude", "Hank", "Buddy", "Butch", "Biff", "Skip", "Sonny", "Junior", "Chester", "Elmer"],
-    "minGiven": 60,
-    "minFamily": 80,
-    "origins": ["anglo", "celtic", "french", "iberian", "italian", "germanic", "nordic", "slavic", "greek", "levantine", "arabic", "persian", "turkish", "west-african", "east-african", "south-asian", "east-asian", "southeast-asian", "polynesian", "caribbean", "latin-american"],
+    "minGiven": 20,
+    "minFamily": 15,
+    "origins": ["us", "fr", "es", "no", "se", "pl", "jp", "kr", "cn", "in", "ng"],
     "minOrigins": 6,
     "maxOriginShare": 0.25,
     "uniqueFullName": true,
     "background": "unnamed",
     "pinned": [
-      { "part": "given", "name": "Inez", "position": "server", "employer": "cafe", "src": "§07 cast: Inez (café waitress, in debt)" },
-      { "part": "family", "name": "Vale", "role": "councillor", "employer": "records-office", "src": "§07 cast: Councillor Vale" }
+      { "part": "given", "name": "Inez", "position": "server", "employer": "cafe", "country": "se", "src": "§07 cast: Inez (café waitress, in debt); Sky 2026-11-02 (brief 089): Inez keeps her name" },
+      { "part": "family", "name": "Nikolaou", "position": "server", "employer": "cafe", "country": "se", "src": "brief 089: Inez keeps her surname; Inez and Nikolaou are both borne in Sweden (sources.json se.pins) and in the US" },
+      { "part": "given", "name": "Milena", "position": "server", "employer": "cafe", "person": "p-cafe-12", "country": "se", "src": "brief 089: Milena keeps her name; she is the listen partner mission.json names (Milena Rask, p-cafe-12 by tools/missions/handover/mission.test.ts), whom no mission role casts" },
+      { "part": "family", "name": "Rask", "position": "server", "employer": "cafe", "person": "p-cafe-12", "country": "se", "src": "brief 089: Milena keeps her surname; Milena and Rask are both borne in Sweden (sources.json se.pins)" },
+      { "part": "given", "name": "Uros", "role": "councillor", "employer": "records-office", "country": "se", "src": "§07 cast: the Councillor; brief 089 (Sky did not object to Fable's draw): Councillor Uros Popovic" },
+      { "part": "family", "name": "Popovic", "role": "councillor", "employer": "records-office", "country": "se", "src": "brief 089: Councillor Uros Popovic; both borne in Sweden (sources.json se.pins)" },
+      { "part": "given", "name": "Arthur", "role": "guard", "employer": "records-office", "country": "se", "src": "§07 cast: the door guard; brief 089: Arthur Reilly" },
+      { "part": "family", "name": "Reilly", "role": "guard", "employer": "records-office", "country": "se", "src": "brief 089: the door guard Arthur Reilly; both borne in Sweden (sources.json se.pins) and in the US" },
+      { "part": "given", "name": "Aleksander", "role": "official-driver", "employer": "records-office", "country": "se", "src": "§07 cast: the driver; brief 089: Aleksander Lukac" },
+      { "part": "family", "name": "Lukac", "role": "official-driver", "employer": "records-office", "country": "se", "src": "brief 089: the driver Aleksander Lukac; both borne in Sweden (sources.json se.pins)" }
     ],
-    "src": "§15 people: people prompts carry no era date; mixed cast (ages, builds, ethnicities); brief 010 A: a pool per district, no era date, a mixed cast",
+    "lists": {
+      "dir": "contracts/people/names",
+      "countries": { "us": { "weight": 1 }, "fr": { "weight": 1 }, "es": { "weight": 1 }, "no": { "weight": 1 }, "se": { "weight": 1 }, "pl": { "weight": 1 }, "jp": { "weight": 1 }, "kr": { "weight": 1 }, "cn": { "weight": 1 }, "in": { "weight": 1 }, "ng": { "weight": 1 } },
+      "skipTop": 3,
+      "banList": "contracts/people/llm-name-ban-list.json",
+      "exclusions": "contracts/people/names/exclusions.json",
+      "ageReference": 2026,
+      "ages": {
+        "default": [22, 62],
+        "byPosition": { "resident": [20, 84], "keeper": [30, 66], "councillor": [52, 66], "guard": [24, 58] },
+        "byFigure": { "el1": [66, 84] }
+      },
+      "sex": "figure",
+      "families": "share",
+      "heritage": {
+        "figures": { "c6": "european", "d5c": "european", "d4": "european", "d4b": "european", "workers_d5": "european", "cafe_w3": "european", "councillor": "european", "d6": "east-asian", "c1": "east-asian", "d2m": "african", "driver": "african", "guard": "african", "security": "african", "cafe_w2": "african", "cafe_w5": "south-asian" },
+        "groups": {
+          "european": { "countries": ["us", "fr", "es", "no", "se", "pl"], "usFamily": "white" },
+          "east-asian": { "countries": ["jp", "kr", "cn", "us"], "usFamily": "api" },
+          "african": { "countries": ["ng", "us"], "usFamily": "black" },
+          "south-asian": { "countries": ["in"] }
+        },
+        "mixed": { "countries": ["us", "fr", "se"], "family": "any" },
+        "src": "brief 089 follow-up (Aster, 2026-11-02): the city is mixed and its figures show it; names fit the figure, as GTA fits a name to a character's background",
+        "proposed": true,
+        "reason": "Pulse read each figure's face in its front render (briefs/020/people/crowd.png and cast.png; Vale C as on the brief 063 boards) and wrote down the heritage it shows: light-skinned European faces (c6, d5c, d4 and its recolour d4b, workers_d5, cafe_w3, Vale C), East Asian (d6, c1), Black (d2m and its recolour the driver, the duty suit worn by every guard and officer, cafe_w2), South Asian (cafe_w5); the elder EL1, the shopper SH2 (sunglasses) and Inez's W6 show none clearly and draw from every country. A family is drawn among its heritage's countries (an American from the census surnames weighted by the census's own share for that group); a family whose figures show different heritages is drawn among the US, France and Sweden, countries of many heritages whose national lists already carry names of many origins (from the US lists by all surnames, not by one share). The pinned five keep their names whatever they wear."
+      },
+      "src": "brief 089, Sky 2026-11-02: the city gets normal names, as GTA and Desperados III do, drawn from real frequency lists by origin, sex and age, never by a model; families share a surname (\"sure - family name makes it more a real city\")",
+      "proposed": true,
+      "reason": "A person (or a family) is drawn one country by weight, then a given name from that country's list for their sex and decade of birth (age counted back from ageReference) and a family name from the same country's list, each weighted by how common it is, the top 3 of each list never drawn, nor any name on the ban list, the exclusions or the avoid list, nor a pinned name. Sex is the body of the figure the host dresses the person in, so a name fits the figure the player sees. Ages: the default working band, residents to old age, the councillor older (his portrait is grey), the elder figure EL1 66 and up. Everyone a family tie joins carries the family's one name and country; the data has no spouse tie, so spouses share it too (the custom of five of the six countries; in Spain a wife keeps hers, but the city shows one surname). Draws are by the person's id and the family's (its first member's id), so the same people get the same names."
+    },
+    "src": "§15 people: people prompts carry no era date; mixed cast (ages, builds, ethnicities); brief 010 A: a pool per district, no era date, a mixed cast; brief 089",
     "proposed": true,
-    "reason": "the GDD gives the principle, not the numbers. Each pool entry is tagged with one origin from the closed list; ≥ 6 origins and no origin over a quarter of a pool make a mixed cast checkable. 60 × 80 = 4,800 full names keeps every simulated person in a district unique. The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the GDD names Inez and Vale, so the person the Handover pins by role takes that name part; no other name is ever authored."
+    "reason": "the GDD gives the principle, not the numbers. Each person is drawn one of the closed list's countries; ≥ 6 countries and no country over a quarter of the people keep the cast mixed. Each country list keeps at least minGiven given names per sex and decade and minFamily family names after the skips (15: Wikipedia's ranked surname tables for China and Korea are short). The avoid list holds names that date a person to 1950s Americana (the §15 failure in names). Pinned: the five named people (Sky, brief 089) take their names on whoever the Handover casts in the role (or, for Milena, the person the mission's listen partner is); no other name is ever authored."
   }
 }

@@ -3,7 +3,9 @@
 // transit, whose hash covers tools/plan, the plan checker), shows the files behind each, and declares them with a cause that names those files.
 //   --check      report only: what would be declared or refused, nothing written (exit 1 if anything needs a declaration)
 //   --cause      the cause words, in place of the generated one (the files are still listed in the report)
-//   --base       the state the working tree is compared with (default HEAD, with its own ledgers)
+//   --base       the state the working tree is compared with (default HEAD, with its own ledgers). It has to be a state whose runs replay OK under its own ledgers:
+//                after a checkpoint taken red (code committed, its declaration not), HEAD is not one, every run is refused and the report says so; pass the last good commit
+//                (the one that last changed the ledger, which the report names). The GDD version that is current does not count as a difference between the two states.
 // It never declares a drift that changes a replay's result. For each objective with a failing run it replays that objective's runs at the base
 // state and at the working tree with the declaration in place provisionally (a scratch ledger, LEVELS_LEDGER), and compares line for line, with the
 // code line reduced to the rules whose result differs. Any run that still fails, or whose replay differs from the base's, refuses the whole
@@ -19,7 +21,7 @@ import { peopleFiles, peopleHash } from '../levels/people/hash';
 import { skylineFiles, skylineHash } from '../levels/skyline/hash';
 import { toolsHash, transitFiles } from '../levels/toolhash';
 import { root } from '../rag/config';
-import { causeText, codeFinding, judgeRun, type RunReplay, type RunVerdict } from './core';
+import { baseIsRed, causeText, codeFinding, judgeRun, type RunReplay, type RunVerdict } from './core';
 
 type Objective = { name: string; ledger: string; id: string; files: (base: string) => string[]; hash: (base: string) => Promise<string> };
 /** The four ledgers. tools/plan (the plan checker) is part of transit's hash: there is no separate plan ledger. */
@@ -31,11 +33,13 @@ export const OBJECTIVES: Objective[] = [
 ];
 
 const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); if (r.exitCode !== 0) throw new Error(`git ${a.join(' ')}: ${r.stderr.toString().trim()}`); return r.stdout.toString().trim(); };
+/** The commit that last changed a file (a ledger: the state a person last declared a code state at), or '' when git has none. */
+const lastChange = (file: string): string => { try { return git('log', '-1', '--format=%h', '--', file); } catch { return ''; } };
 
-/** The tree at `rev`, enough to replay in: tools, contracts, runs, GDD, the crew cards (a run pins their hashes) and the sim's data, with this tree's node_modules. Cached by commit. */
+/** The tree at `rev`, enough to replay in: tools, contracts, runs, GDD, the crew cards (a run pins their hashes), the sim's data and the facade spec (brief 074: tools/world/gen/colourways.ts reads unity/.../facade.json when it loads), with this tree's node_modules. Cached by commit. */
 export function materialize(rev: string): { dir: string; label: string } {
   const commit = git('rev-parse', `${rev}^{commit}`), dir = resolve(root, 'out/drift-auto/base', commit.slice(0, 12));
-  const have = ['tools', 'contracts', 'runs', 'GDD', '.claude/agents', 'sim/data', 'package.json', 'tsconfig.json', 'bunfig.toml'].filter(p => git('ls-tree', commit, '--', p) !== '');
+  const have = ['tools', 'contracts', 'runs', 'GDD', '.claude/agents', 'sim/data', 'unity/Assets/Suborned/Editor/World/facade.json', 'package.json', 'tsconfig.json', 'bunfig.toml'].filter(p => git('ls-tree', commit, '--', p) !== '');
   if (!existsSync(resolve(dir, '.ready'))) {
     rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true });
     const tar = Bun.spawnSync(['sh', '-c', `git archive ${commit} ${have.join(' ')} | tar -x -C '${dir}'`], { cwd: root, stdout: 'pipe', stderr: 'pipe' });
@@ -115,6 +119,11 @@ if (import.meta.main) {
     if (moved.length) {
       refused++;
       console.log(`  REFUSED: ${moved.length} of ${d.verdicts.length} runs would change their replay result; nothing declared`);
+      const red = moved.filter(baseIsRed);
+      if (red.length) { // the base is the one that fails: the refusal says nothing about the tree's edits
+        const last = lastChange(d.o.ledger);
+        console.log(`  note: ${base.label} is no state to compare with: ${red.length} of these ${moved.length} runs already fail there (the ledger it was committed with declares nothing for its code). Compare with a state where they replayed OK: --base <rev>${last ? ` (${d.o.ledger} last changed at ${last})` : ''}`);
+      }
       for (const v of moved) {
         console.log(`    ${v.id}: ${v.reason}`);
         for (const l of v.failLines ?? []) {

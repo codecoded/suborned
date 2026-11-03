@@ -1,0 +1,112 @@
+--- sim/Suborned.Sim/GameAi.cs	2026-10-30 15:41:23
++++ out/scratch/pulse/tree/sim/Suborned.Sim/GameAi.cs	2026-10-31 06:08:57
+@@ -305,18 +305,41 @@
+             int n = 0, down = 0;
+             bool Crew(Hostile h) => IsRival(h.Id) && (!Range || who == null || h.Wave == who.Wave); // brief 029: in the range a crew is one spawn
+             foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down || talked.Contains(h.Id)) down++; } // brief 039: a rival talked down counts as one down
+-            if (down * 2 <= n) return;
++            if (PulseSw.WholeFinal && !Range) n = Math.Max(n, Cr.Size - Start.CrewGone.Count);
++            if (!Range && PulseSw.Nerve == "none") return;
++            if (!Range && PulseSw.Nerve == "last") { if (down < n - 1) return; }
++            else if (down * 2 <= n) return;
++            if (!Range && PulseSw.Nerve == "hit") { crewPastHalf = true; NerveStep(); return; }
+             bool any = false;
+             var carAt = Range ? S.Stand(S.RivalsPark) : RivalCarPose() is var rcp && rcp.HasValue ? Walk.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark); // brief 059: they run for their car where it stands
+             foreach (var h in Hostiles)
+             {
+                 if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
+                 if (!h.Present) { h.Gun.St = "gone"; if (CrewOf(h.Id) is CrewMember gm && !gm.Fight) { gm.Mode = CrewMode.Gone; gm.ModeTick = Tick; } continue; } // still lying in wait, or still in the car: it never comes
+-                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); h.Why = "break"; any = true;
++                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = PulseSw.BreakSpeed > 0 ? PulseSw.BreakSpeed : rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); h.Why = "break"; any = true;
+             }
+             if (any) { FightWhy.Add("rivals-break"); Note("ai.break", "More than half the crew is down: the rivals break for their car."); }
+         }
+ 
++        bool crewPastHalf; int lastAlone = -1;
++        bool NoneInReach(Hostile h) { var pos = h.Pos(Tick); foreach (var o in Ops) if (!o.Down && !o.Inside && !o.InCar && G.Within(pos, o.Pos, h.Gun.W!.EffCm) && Sees(pos, o.Pos)) return false; return true; }
++        /// <summary>PULSE probe: past half the crew down, a rival breaks once he has been hit; one unhurt fights on. No crew member up in the car is written off.</summary>
++        void NerveStep()
++        {
++            if (!crewPastHalf || Range) return;
++            Pt? carAt = null; bool any = false;
++            foreach (var h in Hostiles)
++            {
++                if (!IsRival(h.Id) || !h.Present || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
++                bool alone = PulseSw.Alone && !Hostiles.Exists(x => x != h && IsRival(x.Id) && x.Present && !x.Down && x.Gun.St != "break" && x.Gun.St != "gone") && !Crew.Exists(m => m.H != h && Up(m) && !m.Fight && (m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Aboard && CrewComing(m))));
++                if (alone && lastAlone < 0) lastAlone = Tick;
++                if (h.Gun.Health >= h.Gun.Max && !(alone && NoneInReach(h) && Tick - lastAlone >= T(PulseSw.LastS))) continue;
++                carAt ??= RivalCarPose() is var rcp && rcp.HasValue ? Walk.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark);
++                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = PulseSw.BreakSpeed > 0 ? PulseSw.BreakSpeed : rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt.Value); h.Why = "break"; any = true;
++            }
++            if (any) { if (!FightWhy.Contains("rivals-break")) FightWhy.Add("rivals-break"); Note("ai.break", "Past half down: a hit rival breaks for the car."); }
++        }
++
+         /// <summary>The response unit joins a loud final fight (Pulse §3.3): at the fight's start, or its arrival if later, each officer still
+         /// up runs (no alert delay) to the nearest police stand; a stand taken sends it to the nearest free cover within ai.seek.police of the
+         /// stand, else to a slot ai.overflow beside it, across the line to the car, alternating sides.</summary>
+--- sim/Suborned.Sim/GameFight.cs	2026-10-30 19:49:40
++++ out/scratch/pulse/tree/sim/Suborned.Sim/GameFight.cs	2026-10-31 06:04:47
+@@ -112,7 +112,7 @@
+         {
+             ContactStep(); // brief 027 verdict 6.4.8: an observer for the fight-lab matrix (output only)
+             if (FightBranch.Length == 0 || FightOverTick != INF) return;
+-            JoinResponse();
++            JoinResponse(); NerveStep();
+             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
+             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
+             var e = Enforcer; var car = Car;
+--- sim/Suborned.Sim/GameCrew.cs	2026-10-30 19:49:40
++++ out/scratch/pulse/tree/sim/Suborned.Sim/GameCrew.cs	2026-10-31 06:04:47
+@@ -750,7 +750,7 @@
+             {
+                 if (!Up(x) || x.Fight || !x.OnFoot) continue;
+                 var from = MemberPos(x, Tick); x.Until = INF; x.Disp = null; // brief 081 (engine 0.37.0): read before the detour is dropped: he leaves from where he stands, not from his old post (rival-4's 22 m jump at 4:21.5)
+-                if (car) { StartWalk(x, from, StepOutAt(), "flee", rivSpeed); any = true; }
++                if (car) { StartWalk(x, from, StepOutAt(), "flee", PulseSw.BreakSpeed > 0 ? PulseSw.BreakSpeed : rivSpeed); any = true; }
+                 else StartWalk(x, from, S.Stand(S.RivalLookoutExit), "exit", rivSpeed);
+             }
+             if (car && !any) CrewLeaves();
+@@ -759,7 +759,7 @@
+         void CrewLeaves()
+         {
+             var cp = RivalCarPose(); if (!cp.HasValue) return;
+-            int parks = Tick + T(R.RivalsRetreatS); RivalsDelayedUntil = parks;
++            int parks = Tick + T(PulseSw.Retreat >= 0 ? PulseSw.Retreat : R.RivalsRetreatS); RivalsDelayedUntil = parks;
+             CarLeg(CrewCar.TipOut, CarRouteP(S.Drive.NearestFree(cp.Value.pos) ?? cp.Value.pos, S.CarStand(S.RivalCarEntry)), S.RivalCarEntry);
+             crewNextAt = Math.Max(Tick + 1, parks - (CarProfile(CarRoute(S.RivalCarEntry, S.RivalsPark)).Length - 1)); crewNext = "tip-back";
+         }
+--- sim/Suborned.Sim/GameCrewBodies.cs	2026-10-26 03:39:56
++++ out/scratch/pulse/tree/sim/Suborned.Sim/GameCrewBodies.cs	2026-10-31 06:04:47
+@@ -55,8 +55,8 @@
+         void CrewBreakCheck()
+         {
+             int on = 0, dn = 0;
+-            foreach (var x in Crew) { if (x.Gun.Down && x.Mode == CrewMode.Gone) continue; if (x.Gun.Down) { on++; dn++; continue; } if (x.Mode == CrewMode.Gone || x.Mode == CrewMode.Aboard) continue; on++; } // a member never on the map (Start.CrewGone) is not counted
+-            if (dn * 2 > on && !CrewBrokenPre) CrewBreaks();
++            foreach (var x in Crew) { if (x.Gun.Down && x.Mode == CrewMode.Gone) continue; if (x.Gun.Down) { on++; dn++; continue; } if (!PulseSw.WholePre && (x.Mode == CrewMode.Gone || x.Mode == CrewMode.Aboard)) continue; on++; } // a member never on the map (Start.CrewGone) is not counted
++            if (PulseSw.PreOff) return; if (dn * 2 > on && !CrewBrokenPre) CrewBreaks();
+         }
+ 
+         /// <summary>Motive M059-S1.6: each tick of a takedown on a member, a crewmate on foot who sees the taker (his cone with its near ring, a
+--- sim/Suborned.Sim/GameUnguarded.cs	2026-10-27 03:47:10
++++ out/scratch/pulse/tree/sim/Suborned.Sim/GameUnguarded.cs	2026-10-31 06:11:37
+@@ -32,7 +32,7 @@
+         static bool Guards(Op o) => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0;
+ 
+         /// <summary>K3 (a): no drawn operative stands outside the getaway car, held (a holder stands), with Vale in it, in the safe fight still on.</summary>
+-        bool CarUnguarded() => !Range && FightBranch == "safe" && FightOverTick == INF && Vale == ValeAt.Car && !Array.Exists(Ops, Guards) && CarHeld();
++        bool CarUnguarded() => !(PulseSw.NoPress && crewPastHalf) && !Range && FightBranch == "safe" && FightOverTick == INF && Vale == ValeAt.Car && !Array.Exists(Ops, Guards) && CarHeld();
+ 
+         /// <summary>K3 (a), once a tick as it starts: the rivals go for the unguarded car, or back to cover once it is guarded again.</summary>
+         void UnguardedStep()
+--- sim/Suborned.Sim/GameGetaway.cs	2026-10-27 03:47:10
++++ out/scratch/pulse/tree/sim/Suborned.Sim/GameGetaway.cs	2026-10-31 06:23:52
+@@ -174,7 +174,7 @@
+         /// <summary>A combatant still up and not broken, anywhere (a lying-in-wait ambusher counts, as for the hold): the fight is still on.</summary>
+         bool FightStillOn()
+         {
+-            foreach (var h in Hostiles) if (Up(h) && (h.Present || FightBranch == "safe")) return true;
++            foreach (var h in Hostiles) if (Up(h) && (h.Present || FightBranch == "safe") && !(PulseSw.PastFree && crewPastHalf && IsRival(h.Id))) return true;
+             foreach (var id in CombatantIds()) if (!IsFightHostile(id) && Combatant(id)) return true;
+             return false;
+         }

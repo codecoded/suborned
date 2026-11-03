@@ -119,6 +119,7 @@ def make(entry, store, dst):
     sc.frame_start, sc.frame_end = 1, T + 1
     bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.select_all(action='DESELECT'); arm.select_set(True); bpy.context.view_layer.objects.active = arm
+    _pin_fbx()
     bpy.ops.export_scene.fbx(filepath=dst, use_selection=True, object_types={'ARMATURE'}, add_leaf_bones=False, bake_anim=True,
                              bake_anim_use_all_actions=False, bake_anim_use_nla_strips=False, bake_anim_simplify_factor=SIMPLIFY, bake_anim_step=1.0,
                              axis_forward='-Z', axis_up='Y', apply_unit_scale=True, apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False,
@@ -404,3 +405,210 @@ def make_testbed(entry, store, dst):
                              axis_forward='-Z', axis_up='Y', apply_unit_scale=True, apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False,
                              primary_bone_axis='Y', secondary_bone_axis='X', armature_nodetype='NULL', path_mode='STRIP')
     return nf
+
+
+# ---------------------------------------------------------------------------------------------------------------- brief 039 B: cover and pin
+# The library has the kneel, the duck and the aim, but not a kneeler who ducks or one who rises to fire over the cover; nor the small layered reactions (a flinch per
+# round, a kick per shot, a peek as the pin runs out). Two kinds, both on the library's Mixamo skeleton (the clips below share one rest pose, so a bone's local
+# rotation copies straight across): 'layer' keeps a donor clip bone for bone on the hips and legs and takes the upper body from a second clip; 'additive' holds one
+# donor frame and turns bones about the figure's own axes, for Unity's additive layer (the clip's frame 0 is the reference pose: clips.json 'additive').
+# Axes: fw the way the figure faces, lt its left, up. pitch +deg bends the bone's chain toward fw, roll +deg toward its left, yaw +deg turns it to its left.
+# Prototype and proof: briefs/039/forma/pin-poses.md (sections C and D).
+
+LEGS = ('Hips', 'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase', 'LeftToe_End', 'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase', 'RightToe_End')
+
+
+def _pin_fbx():
+    """the same bytes every build (brief 069, Latch: the authored clips differed run to run): the exporter's object ids hashed from their keys, not
+    random, and the header's creation time fixed, as the figures' export (charpipe/build.py pin_fbx)."""
+    import hashlib, datetime
+    from io_scene_fbx import export_fbx_bin as eb, fbx_utils
+    fbx_utils._key_to_uuid = lambda uuids, key: int.from_bytes(hashlib.sha256(repr(key).encode()).digest()[:8], 'big') >> 1 or 1
+    orig = getattr(eb, '_cp_orig_header', None) or eb.fbx_header_elements; eb._cp_orig_header = orig
+    eb.fbx_header_elements = lambda root, scene_data, time=None: orig(root, scene_data, datetime.datetime(2026, 1, 1))
+
+
+def _export(arm, dst, n):
+    act = arm.animation_data.action
+    act.frame_range = (1, n); sc = bpy.context.scene; sc.frame_start, sc.frame_end = 1, n
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.select_all(action='DESELECT'); arm.select_set(True); bpy.context.view_layer.objects.active = arm
+    bpy.ops.export_scene.fbx(filepath=dst, use_selection=True, object_types={'ARMATURE'}, add_leaf_bones=False, bake_anim=True,
+                             bake_anim_use_all_actions=False, bake_anim_use_nla_strips=False, bake_anim_simplify_factor=SIMPLIFY, bake_anim_step=1.0,
+                             axis_forward='-Z', axis_up='Y', apply_unit_scale=True, apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False,
+                             primary_bone_axis='Y', secondary_bone_axis='X', armature_nodetype='NULL', path_mode='STRIP')
+    return n
+
+
+def _load_arm(path):
+    new = load(path); arm, _ = rigs(new)
+    for o in new:
+        if o.type != 'ARMATURE': bpy.data.objects.remove(o, do_unlink=True)
+    return arm
+
+
+def _sample(arm, frames):
+    """each bone's local pose (matrix_basis) at each frame (fractional frames sample between keys)"""
+    sc = bpy.context.scene; out = []
+    for fr in frames:
+        sc.frame_set(int(math.floor(fr)), subframe=fr - math.floor(fr))
+        out.append({pb.name[len('mixamorig:'):]: pb.matrix_basis.copy() for pb in arm.pose.bones})
+    return out
+
+
+def _axes(arm):
+    """the figure's fw, lt, up in armature space, from its rest pose"""
+    M = arm.matrix_world; Mi = M.to_3x3().inverted(); B = arm.data.bones
+    W = lambda n: M @ B['mixamorig:' + n].head_local
+    fw = W('LeftToeBase') - W('LeftFoot'); fw.z = 0; fw.normalize()
+    lt = W('LeftArm') - W('RightArm'); lt.z = 0; lt.normalize()
+    a = lambda v: (Mi @ v).normalized()
+    return a(fw), a(lt), a(Vector((0, 0, 1)))
+
+
+def _turn(arm, bone, axis, deg):
+    """rotate the bone (and so its children) about an armature-space axis through its head"""
+    pb = arm.pose.bones.get('mixamorig:' + bone)
+    if pb is None or abs(deg) < 1e-6: return
+    M = pb.matrix.copy(); hd = M.translation.copy()
+    pb.matrix = Matrix.Translation(hd) @ Matrix.Rotation(math.radians(deg), 4, axis) @ Matrix.Translation(-hd) @ M
+    bpy.context.view_layer.update()
+
+
+def _apply_turns(arm, turns, k):
+    fw, lt, up = _axes(arm)
+    AX = {'pitch': up.cross(fw).normalized(), 'roll': up.cross(lt).normalized(), 'yaw': up}
+    for bone, ax, deg in turns: _turn(arm, bone, AX[ax], deg * k)
+
+
+def _key(arm, poses):
+    """write poses (list of {bone: matrix_basis}) as a fresh action, frame 1 on; only the hips travel (Unity's Humanoid import discards and warns on any other bone's translation)"""
+    for a in bpy.data.actions:
+        if a.name.startswith('mixamo.com'): a.name = 'orig'            # the library takes (donor, upper): the export's take must be 'mixamo.com' itself
+    arm.animation_data_create(); arm.animation_data.action = None
+    act = bpy.data.actions.new('mixamo.com'); arm.animation_data.action = act
+    for i, P in enumerate(poses):
+        for n, m in P.items():
+            pb = arm.pose.bones['mixamorig:' + n]; loc, rot, _ = m.decompose()
+            pb.rotation_mode = 'QUATERNION'; pb.rotation_quaternion = rot
+            pb.location = loc if n == 'Hips' else Vector()
+            pb.keyframe_insert('rotation_quaternion', frame=i + 1)
+            if n == 'Hips': pb.keyframe_insert('location', frame=i + 1)
+
+
+def _reach(arm, R):
+    """both arms straight out to a two-handed grip in front of the chest (cover_fire: the rise reads as a line of forearms over the prop).
+    R: forward/up/side offsets in metres from the shoulders' midpoint, for the right and left wrists; 'bend' the elbow's share of slack; 'pole' the elbows' drop."""
+    fw, lt, up = _axes(arm)
+    P = arm.pose.bones
+    def H(n): return P['mixamorig:' + n].head.copy()          # armature space
+    def aim(name, d):
+        pb = P['mixamorig:' + name]; m3 = pb.matrix.to_3x3(); c = (m3 @ Vector((0, 1, 0))).normalized()
+        pb.matrix = Matrix.Translation(pb.matrix.translation) @ (c.rotation_difference(d.normalized()).to_matrix() @ m3).to_4x4()
+        bpy.context.view_layer.update()
+    mid = (H('LeftArm') + H('RightArm')) * 0.5
+    scale = (H('LeftForeArm') - H('LeftArm')).length + (H('LeftHand') - H('LeftForeArm')).length
+    for side, key in (('Right', 'right'), ('Left', 'left')):
+        f, u, s = R[key]
+        S = H(side + 'Arm'); E0 = H(side + 'ForeArm'); W0 = H(side + 'Hand')
+        l1 = (E0 - S).length; l2 = (W0 - E0).length
+        T = mid + (fw * f + up * u + lt * s) * scale
+        d = T - S; dist = min(max(d.length, abs(l1 - l2) + 1e-4), (l1 + l2) * R.get('straight', 0.97)); dn = d.normalized()
+        a = (l1 * l1 - l2 * l2 + dist * dist) / (2 * dist); h = math.sqrt(max(l1 * l1 - a * a, 0.0))
+        out = lt if side == 'Left' else -lt
+        po, pu = R.get('pole', (0.6, -1.0))
+        pole = out * po + up * pu; perp = (pole - dn * pole.dot(dn)).normalized()
+        E = S + dn * a + perp * h; Wr = S + dn * dist
+        aim(side + 'Arm', E - S); aim(side + 'ForeArm', Wr - E)
+        aim(side + 'Hand', fw + up * R.get('handUp', 0.05))
+
+
+def make_layer(entry, store, dst):
+    """cover_pin / cover_fire: entry['donor'] on the hips and legs (entry['legs']: {'range': [a, b]} plays its frames, {'hold': f} holds one), the upper body (Spine
+    and everything above it) from entry['upper'] (entry['upperFrames']: {'range': [a, b]}, or {'hold': f, 'shiver': frames, 'cycles': n}: a triangle wave from f to
+    f + shiver, n times over the clip). One of the two is a range, and it sets the length. entry['turns'] (optional, [bone, axis, deg] as for 'additive') turn the
+    upper body first (cover_fire squares the aim's bladed shoulders to the cover), and entry['reach'] (optional) then puts both arms straight out (_reach).
+    The result is one full-body clip, so the host needs no Avatar Mask: it cross-fades to it on its base layer like any other state."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc = bpy.context.scene; sc.render.fps = FPS
+    lg, ug = entry['legs'], entry['upperFrames']
+    n = (lg['range'][1] - lg['range'][0] + 1) if 'range' in lg else (ug['range'][1] - ug['range'][0] + 1)
+    def frames(g):
+        if 'range' in g: return [g['range'][0] + i for i in range(n)]
+        cyc, sh = g.get('cycles', 0), g.get('shiver', 0.0)
+        return [g['hold'] + (sh * (1 - abs(((i / (n - 1)) * cyc * 2) % 2 - 1)) if cyc and n > 1 else 0.0) for i in range(n)]
+    up_arm = _load_arm(os.path.join(store, entry['upper'])); U = _sample(up_arm, frames(ug))
+    bpy.data.objects.remove(up_arm, do_unlink=True)
+    arm = _load_arm(os.path.join(store, entry['donor'])); L = _sample(arm, frames(lg))
+    bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode='POSE')
+    for pb in arm.pose.bones: pb.rotation_mode = 'QUATERNION'
+    poses = []
+    for i in range(n):
+        P = {b: (L[i][b] if b in LEGS else U[i][b]) for b in L[i]}
+        if entry.get('reach') or entry.get('turns'):
+            if arm.animation_data: arm.animation_data.action = None
+            for b, m in P.items(): arm.pose.bones['mixamorig:' + b].matrix_basis = m
+            bpy.context.view_layer.update()
+            if entry.get('turns'): _apply_turns(arm, entry['turns'], 1.0)
+            if entry.get('reach'): _reach(arm, entry['reach'])
+            P = {pb.name[len('mixamorig:'):]: pb.matrix_basis.copy() for pb in arm.pose.bones}
+        poses.append(P)
+    _key(arm, poses)
+    return _export(arm, dst, n)
+
+
+def additive_env(t, attack, tau, length, tail=0.1):
+    """a round's jolt: up to 1 in `attack` s, then an exponential release (tau), eased to exactly 0 over the last `tail` s so the restart never snaps"""
+    if t <= 0: return 0.0
+    e = t / attack if t < attack else math.exp(-(t - attack) / tau)
+    if t > length - tail: s = max(0.0, (length - t) / tail); e *= s * s * (3 - 2 * s)
+    return e
+
+
+def make_additive(entry, store, dst):
+    """flinch_add / kick_add / pin_peek_add: entry['donor'] held at entry['refFrame'], then entry['turns'] ([bone, 'pitch'|'roll'|'yaw', deg]) scaled per frame. Frame 1
+    (Unity's frame 0) is the donor pose untouched: the additive reference pose, so the clip adds only the turns. entry['env'] = {'attack', 'tau', 'length'} (seconds):
+    a one-shot, restarted per event; entry['pose'] = n: n frames of the full turns after the reference, a held pose whose weight the host drives.
+    Rotations only, and none on the hips: a hips drop in an additive layer would sink the planted feet (the flinch's drop comes from the spine's curl)."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc = bpy.context.scene; sc.render.fps = FPS
+    arm = _load_arm(os.path.join(store, entry['donor'])); ref = _sample(arm, [entry.get('refFrame', 1)])[0]
+    bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode='POSE')
+    for pb in arm.pose.bones: pb.rotation_mode = 'QUATERNION'
+    arm.animation_data.action = None
+    if 'env' in entry:
+        ev = entry['env']; n = int(round(ev['length'] * FPS)) + 1
+        ks = [additive_env(i / FPS, ev['attack'], ev['tau'], ev['length'], ev.get('tail', 0.1)) for i in range(n)]
+    else:
+        ks = [0.0] + [1.0] * int(entry['pose'])
+    poses = []
+    for k in ks:
+        for b, m in ref.items(): arm.pose.bones['mixamorig:' + b].matrix_basis = m
+        bpy.context.view_layer.update()
+        _apply_turns(arm, entry['turns'], k)
+        poses.append({pb.name[len('mixamorig:'):]: pb.matrix_basis.copy() for pb in arm.pose.bones})
+    _key(arm, poses)
+    return _export(arm, dst, len(ks))
+
+
+def make_blend(entry, store, dst):
+    """pistol_draw / pistol_holster (brief 069, Sky: the pistol set from one stance): the standard layered transition where the library has no
+    draw or holster in the aim's own stance: every bone's local rotation (and the hips' place) eased from entry['from'] ({src, frame}: the idle's
+    hands-down pose) to entry['to'] ({src, frame}: the aim's first frame), over entry['frames'] frames (smoothstep), so the clip starts exactly where
+    the idle is and ends exactly where the aim begins: no jump at either transition. entry['reverse'] plays it backwards (the holster)."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc = bpy.context.scene; sc.render.fps = FPS
+    fa = _load_arm(os.path.join(store, entry['from']['src'])); A = _sample(fa, [entry['from']['frame']])[0]; bpy.data.objects.remove(fa, do_unlink=True)
+    arm = _load_arm(os.path.join(store, entry['to']['src'])); Bp = _sample(arm, [entry['to']['frame']])[0]
+    bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode='POSE')
+    for pb in arm.pose.bones: pb.rotation_mode = 'QUATERNION'
+    n = entry['frames']; poses = []
+    for i in range(n):
+        t = i / (n - 1); t = t * t * (3 - 2 * t)
+        if entry.get('reverse'): t = 1 - t
+        P = {}
+        for b in Bp:
+            la, ra, _ = A.get(b, Bp[b]).decompose(); lb, rb, _ = Bp[b].decompose()
+            P[b] = Matrix.Translation(la.lerp(lb, t)) @ ra.slerp(rb, t).to_matrix().to_4x4()
+        poses.append(P)
+    _key(arm, poses); _export(arm, dst, n)

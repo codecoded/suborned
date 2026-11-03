@@ -335,3 +335,295 @@ Sky playing 0.2.65: "I had the whole squad selected but some of my agents weren'
 - Taken includes what the engine resolves: a holstered gun draws (`draw-ticks` 1.0 s, then `aim-new` 1.0 s), out of reach or line walks in (`weapons.close`). A focus out of reach is taken but never walks in, and it lapses after `line-lapse-s` 3 s.
 - Read-only. No rule, state, inputs or run hash moves (today 312/312, range 86/86 identical to 0.25.0 under `--start-text BASE`). Scenarios QF-HOST, QF-ALL, QF-LINE, QF-CANT, QF-FOCUS (range) and QF-BUSY (Handover) keep it equal to `Issue`.
 - Use it for every selected agent before a squad fire order, and give the order to each one it takes. Each one it refuses gets its code on the plate (two words, Fable). Ask once per order or per hovered target, never per frame for all targets: the walk check runs one grid search per agent out of reach.
+
+## Engine 0.28.0: sight from real heights, who notices what, the Watch that shows something (briefs 055 §7, 054 rev 4)
+One bump. Every inputs hash moves (the rulebook, the drawn site, the people file's `faces`, the re-baked rounds); a run pinned to 0.27.0 replays byte-identical on its own inputs (the rules read only when their rulebook sections are there).
+
+**What the host must read (Latch):**
+- **The fan has shadows.** `Fan.Shadows` (Pt[][], convex, block frame cm): stretches inside `Points`/`More` the watcher does not see, behind a solid it sees over (a 2 m planting under the 4.79 m lens: about 1 m behind it) or under (the patrol robot's 0.95 m eye and a 1.1 m planter: from some way behind it on), and behind a person when the eye is above their head. Draw a point as in sight when it is in a polygon and in no shadow; cut the shadows out of the wedge's fill or rim. `SightTests` hold the fan to `InSight` at every sample.
+- **The mission's cameras are pole cameras** (site `cameras[].kind`, lens 4.79 m above its floor). Draw them with `CCTVPole` at the plan's 5.5 m mount (Motive, brief 055 §7), not the 3.2 m stand-in, so the glass is where the engine sees from.
+- **A civilian's cone on hover, only where it matters** (brief 054 §3.1): `Game.PersonCone(personId)` → `PersonSight` (Kind `wedge`: At, Facing, Reach 1300, HalfCm 2252 at the reach, a ±60° sector with no near ring; `ring`: security, all round within Reach; `none`). Draw it on hover only if `Game.CaresAbout(personId, act)` for the act armed (`takedown`, `carry`, `weapon-drawn`, `threat` for Pressure, `run`), or the person is on the armed card's eye (`Quote.WitnessIds` for Pressure, `TakedownQuote.People`), or an operative they would see is doing a seen act now (`Game.NoticesNow(personId, act, point)`). Below Alert 2 a Pressure, a run or Vale's grip draws no civilian cone; a takedown, a carry or a drawn weapon does. Alt: the cones of the armed card's people, the 6 nearest. Never compute a cone in the host: the engine's reads are the rule.
+- **The Watch offer.** `Game.WatchOffered(role)`: false → no Watch row at all (panel, ring, verbs 1–4, ContextRank skip it; Intel's next step goes to Listen). `ScoutQuery("watch", role).code == "nothing-to-see"` says the same (free; text.json has no line for it: never shown). After a Watch, `already-watched` greys the row as before; if the person's mood changes the row comes back. Listen and Pay need a Watch only while one is offered (`needs-routine` otherwise), so the driver can be listened to and paid at once.
+- **Mood on the card.** `Game.MoodOf(role)`: the mood the cell knows (`""` none, `uneasy`, `scared`, `friendly`, `neutral`), from its last Watch, or the true one once Listen has told the temperament. `Quote.Mood`, `Quote.Likely` (a dashed ✓: the approach the mood favours) and `Quote.Hurt` (a dashed ½) on the turn previews. Two new price lines on turn.help (`ready`, `ready-at-one`), one on turn.pay and turn.pressure (`ready`): they hold only when a mood lifts a suiting fit.
+- **Strings in code** (Fable's words, brief 054 §7): `HudModel.cs:117` "Watch: learn the routine" and `:426` "Learns their routine" promise a routine the Watch no longer teaches.
+
+Reads are read-only and cost little: `PersonCone`, `NoticesNow` and `CaresAbout` per hovered person, not per frame for everyone.
+
+## Engine 0.29.0: a body at your feet, and no affair Watch (brief 054 §9, Motive 2026-10-24)
+- **`PersonSight.NearCm`** (new field on `PersonCone(id)`): a civilian's near sense for a body, 150 cm (rulebook `witness.notice.near`, `people-near-body-cm`). It is set for every civilian on the street, a wedge or not (a civilian with no facing still finds a body within 1.5 m); 0 for security (their `ring` already covers it), off the street, or a rulebook with no near row. Glyph's mark (§9.1): while the armed order leaves or drops a body (a takedown, a drop), draw a ring rim of `NearCm` at the civilian's feet with their wedge. No other new mark.
+- `NoticesNow(id, "body", at)` now answers true within `NearCm` on a clear line whatever the facing; `NoticesNow(id, "takedown" | "carry", at)` stays cone-only. `CaresAbout` is unchanged (a body is an always act).
+- **The affair Watch is gone:** `WatchOffered(role)` is never true for the affair; with the lovers together a Watch on Inez is offered only for her mood (and refused `already-watched` once watched or turned). No host string promised it; nothing to remove.
+- Inputs moved (rulebook, people rules text, the rounds file's rules sha): every inputs hash, DP1 and the lab checkpoints re-recorded with only the engine pin and hashes moved.
+
+## Engine 0.30.0: the reroute walks, the seal's car and clock, a true debrief (briefs 057 §2 and §4, 060 #8; Suture's bot pass)
+All in `sim/Suborned.Sim`; the Unity plugin copy (`unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll`) still predates 0.29 (`tools/game/runtime-compile.test.ts` fails on `PersonSight`): copy the 0.30.0 build in first. Names are exact; your reflection in HostSeal and HostReroute finds them, but plain calls are better now.
+
+**The patrol (brief 057 §2; Sky: "the robot follows the drawn path and moves smoothly").** With `cell.reroute.walk` in the rulebook the rerouted patrol walks: from where it stands at the landing, on the walk grid at `patrol-chase-cm-s` (0.85 m/s, 8.5 cm a tick) to `patrol-reroute`, waits facing away, then walks back so it stands on its sweep exactly where `SweepPos` has it at `PatrolAwayUntil`. The whole trip is inside the false orders, and the patrol is blind throughout as before, so the window marker's `reroute:patrol` and `patrol.returns` keep their meaning and tick. From route A's landing the trip is about 46 s out, 19 s waiting and 50 s back. `PatrolPose()` is the walk, never a jump (N186: the largest step in a tick is 9 cm).
+- `Pt[]? Game.PatrolRoute()`: the path from now as one polyline (block cm): on the sweep, where it stands then both ends; rerouted, the walk out, the wait spot, the walk back, the sweep. Null when it is down. HostReroute already reads this name; it no longer needs its own `Grid.Route` fallback.
+- `PatrolPlan Game.PatrolLegs()`: the same, with times. `Mode` (`sweep`, `away`, `chase`, `alarm`, `down`), `At`, `SweepA`, `SweepB` and `Wait` (the site's `patrol-a`, `patrol-b` and `patrol-reroute`, never typed in), and `AwayUntil` and `BackAt` (both `PatrolAwayUntil` while rerouted, else -1). `Legs` is a `List<PatrolLeg>`, each with `Kind` (`out`, `wait`, `back`, `meet`, `sweep`, `chase`, `alarm`, `hold`), `bool Walk` (true: it moves along `Points`; false: it stands at `Points[0]`), `List<Pt> Points`, `List<int> Ticks` (the tick it is at each point; a chase's are estimates), and `int From` and `Until` (-1: no end known).
+- To draw while the reroute is in play: show `PatrolRoute()` while `PatrolAwayUntil > Tick`, and the sweep line otherwise. The robot lies within 1 cm of the line read the tick before (N186, 2,496 ticks). A new order can change the line, so re-read it each frame or when `Mode` changes.
+
+**The seal (brief 057 §4).**
+- `FailCause.Car` (`string`): on a `sealed` fail, `"empty"` (Vale not aboard), `"ready"` (Vale aboard, the car free, Go never given) or `"held"` (Vale aboard while combatants held the car). On every other ending it is `""`. `FailCause.Holders` (`List<string>`) is exactly `CarHolders()` at the seal, in id order: the ids Go's `car-held` names. `HostSeal.SealCarOf` gets `IEnumerable` and joins them, so your `{holders}` phrase works unchanged. Also `int AboardAt` (Vale's `board.in` tick, -1), `int GoRefusedAt` (the last refused Go before the seal, -1) and `string GoRefused` (`car-held` or `car-empty`). The cause's JSON carries `car`, `holders`, `aboardAt`, `goRefusedAt` and `goRefused` for the seal only.
+- `Game.Windows()` now ends with `seal:district` while the clock runs (`!Over && Lockdown < INF`): `Until` = `Lockdown`, plus new `OpenWindow.From` (the tick the clock was last set or pulled earlier: your underline's span) and `OpenWindow.Origin` (`CauseOrigin`). The other kinds have `From` -1 and `Origin` null. HostDone's window list will pick it up at once, so give `WindowKey("seal","district")` the lock marker or skip it there if HostSeal draws its own.
+- `CauseOrigin? Game.SealOrigin` (live): the report whose seal time is running now (a later report that pulled the clock earlier, else the one that set it). It is null before the clock is set. `Because` is `loud-fight`, `response` or `confirmed`. `Report` is the report itself (`gunfire:<target>`, `drawn-seen:<op>`, `post-empty:<who>` for a missed check-in, `report:<kind>:<victim>`). `Reporter.Id` and `Reporter.Kind` are in the engine's grammar (`camera:<id>`, `guard`, `patrol`, `security-<n>`, `robot-<n>`, a person's role or id, `desk`, `heard`), and `Confirmer` is set for `confirmed`. `Game.SealFirstOrigin` is the one that started it. HostSeal's `GetProperty("SealOrigin")` finds it, so the log guess can go.
+- `seal.starts` is now also logged when the response's call sets the clock (rulebook `security.sealWarns`), with the time, the unit's arrival and the report it came from. `fight.loud` still announces the loud fight's own clock.
+
+**The debrief (brief 060 #8).** `Debrief.Of(g).Route` claims only what happened. `vale-reaches-getaway-car` appears only once Vale boarded (`Game.ValeBoarded`), `vale-intercepted-outside` only once the Take landed (`Game.ValeTakenOutside`), and `vale-taken-through-office` only on `enter.out`. The guard, loop, patrol and pickup-camera lines appear only when they held at the Enter or the Take (`Game.AtEntry`, `Game.AtTake`: `RouteFacts` with `Lured`, `Looped`, `PatrolAway`, `PatrolSweeping` and `CameraBlocked`). A rerouted entry now reads `patrol-diverted` (0.29 said `entry-timed-between-sweeps`). There are no new ids, so Fable's `debrief.route` covers them all, and the `{holders}` story line follows `FailCause.Car`. `HudModel.cs:389-393`'s map keys are unchanged.
+
+**Refusals.** A call or turn on someone who is no cast role (a crowd id such as `p-records-office-73`) is now refused with `not-a-contact` or `target-unknown` instead of throwing. `CanCall` returns false for them.
+
+**The grid.** The mission cameras' poles (entrance (53, -44.5), pickup (74, -40), r 0.48 m) are walk solids, so routes keep the body clear: the crew's route to the driver passes 0.77 m from the pickup pole (it was -0.28 m, through it).
+
+### Engine 0.30.0, also: the batch notice read (Redline 064 #1)
+- `NoticeProbe? Game.NoticeProbeOf(string id)`: the person resolved once a tick (where they stand on the street, how they face). It is null when they are not on the street. `NoticeProbe.At` is their position and `NoticeProbe.Id` their id.
+- `bool Game.NoticesAt(NoticeProbe probe, string act, Pt at)`: exactly `NoticesNow(id, act, at)` (scenario NQ-1: 123,627 reads, 0 differ), without re-scanning the street for each point. A probe from another tick throws, so make one per tick.
+- `Occluder.Blocks3` no longer allocates a `Pt[]` for each test (#3). Every scenario hash and every range hash is identical to the baseline's.
+
+### Engine 0.30.0, also: Listen and Watch locks while the agent is busy (the 0.2.116 bot row, Q-OFFER `listen:needs-routine`)
+- Listen still needs the routine while a Watch is still to give on that person (`WatchOffered(role)`: brief 054 §2.1). `WM-1` and `NQ-2` hold to it.
+- `LearnQuery(agent, verb, target)` used to answer `agent-busy` before anything else. `Locked` lets `agent-busy` through under the hold preset, so a busy Scout's Listen on Inez was offered and then refused as `needs-routine` once he was free. For a busy agent, LearnQuery now returns the order's own refusal first (`needs-routine`, `needs-need`, `already-heard`, `only-scout`, `nothing-to-see`, …), and `agent-busy` only when reach or line is the only other bar (`too-far`, `no-clear-line`, `no-walk`).
+- The host should read: `LearnQuery(<the agent who will give it>, verb, role)`. That agent is always the Scout for Listen, whoever is selected, because HostValeSteps already hands Listen to the Scout. Show any code other than `too-far` and `agent-busy` as the lock. No host change is needed beyond asking for the giver: with this engine, `Locked` gets `needs-routine` and shuts the wedge.
+
+## Engine 0.31.0: Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (briefs 058 §6 and 054 §8; Sky 2026-10-25)
+One bump. The rulebook (`cell.loop.run`, `cell.disable`, values `loop-s` 20, `loop-run-s` 120, `disable-s` 10, `disable-trail` 2; `tether-m` and `cancel.loopHeld` retired; `witness.notice.never` gains `disable`) and the site's people sha (the needs text, brief 041) moved, so every inputs hash moves. A run pinned before 0.31.0 replays on its own inputs: the engine keeps the tether, its refusals and the held-loop cancel for a rulebook that still carries `cell.loop.tether`. The dll copy into Unity is the batch's sim step (`tools/sim/unity.ts`).
+
+**What the host must change (Latch):**
+- **The loop has an end, and no tether.** A landed loop plays `cell.loop.run` (2:00) from its landing wherever the Tech goes; the Tech may run, Watch, board and walk off. Drop the walk-off stopgap's hold (058 §5) and the "Holding the loop" plate with this engine: a move never ends a loop now. `Game.LoopUntil` is the tick it ends (`INF` when none runs); `Windows()` lists `loop:<cam>` with that `Until` (was -1), so the window marker counts 2:00 down like the others (Glyph 058 §3: drop `m.Face` for the loop). At the end the engine logs `loop.ends` ("The entrance loop runs out").
+- **Cancel:** a landed loop is no activity of the Tech's: `ActivityOf(Tech)` never reads `loop / holding` and a cancel on her is `nothing-to-cancel` unless she is still splicing (then `lost`, as before).
+- **One loop at a time:** a Loop on another camera while one runs is refused `loop-holds` with `Answer.tick` = the tick the running loop ends (text.json `{tick}`); a Loop on the camera already looping is taken: a re-splice, `loop.s` again, +1 T, a fresh 2:00 from its landing (no stacking). A Loop or a Disable on a dead camera (shot or cut) is refused `camera-dead`.
+- **Disable, the Tech's new verb on a camera:** order `{ "do": "disable", "op": "tech", "target": "<camera id>" }` (the ids the cabinet loops: `entrance`, `pickup`, `mast-314`), at the cabinet (`stand-at-cabinet`), 10 s, +2 T when it lands (`camera.cut`). The camera is dead to the end: `CameraDark(id)` true, `CameraDeadAs(id)` = `"cut"` (`"shot"` for a shot-out one, `""` while it lives: Glyph's dead disc, 058 board 02), its fan `Live` false. Refusals: `only-tech`, `stand-at-cabinet`, `disable-wrong-target`, `camera-dead`, `unknown-verb` (a rulebook with no `cell.disable`). A cut ends a loop on that camera (`loop.ends`).
+- **The desk's clock:** after a cut, `Windows()` lists `disable:<cam>` with `From` the cut's tick and `Until` the tick its report lands (the desk's next scan of that screen + `post-call-s`); it goes when the report lands (`camera.cut-reported`: a reported incident, Alert to at least `byIncident[n-1]`, the dial's dispatch to the camera). Before the order: `Game.CutNoticedAt(cam, landAt)` is when a cut landing at `landAt` would be noticed (the order line's "in n s": landAt = now + `disable-s` for an order given now) and `Game.AlertIfCut()` the Alert its report would raise (the siren's number: 1 for the first incident, 2 after). `Game.CutReps` (`Cam`, `From`, `LandAt`, `Done`) is the same, read-only.
+- **Camera shot price:** unchanged in the engine and already right: `PreviewFire(op, "camera:<id>")` gives `TrailShooting` 2 (0 once the cell has fired at it), `TrailHit` 0, `TrailDown` 0. Build the pill, the panel row, the aim chip and HostFight's cost line from those three (058 §3): never "/hit" for a camera or a car. Any armed operative may fire on a camera (scenario CAM-ANY): offer Fire on a camera's ring to every armed selected agent.
+- **Running at Alert 2:** `QuoteMove(op, to).RunRememberedBy` now lists the civilians who would see the run in their cone and keep the face when Alert ≥ 2 and the run is not loud (no fight, no shot fired, not under fire); before 0.31.0 it was always empty. `RunSeenBy` and `AlertIfRun` are unchanged (security is free of a run from Alert 2). Draw it as the move card's "remembers" mark (brief 054 §3.5).
+- **Unchanged names you already read:** `LoopOn`, `LoopCam`, `Windows()`, `PatrolRoute()`, `PatrolLegs()`, `FailCause.Car`/`Holders`, `SealOrigin`. `PatrolLeg.ToString()` is now culture-invariant (it wrote -1 with the culture's minus).
+
+**New log codes:** `camera.cut`, `camera.cut-reported`, `loop.dead` (the camera died while the loop was being spliced: nothing lands, nothing charged), `disable.dead` (shot while being cut). Changed text, same codes: `loop.on` ("One feed repeats until m:ss" / "re-splices"), `loop.ends` ("runs out" / "the line is cut"). The ledger's Trail causes: `loop`, `disable:<cam>`; the Alert cause of a cut's report: `report:cut:camera:<cam>`.
+**New refusal codes:** `camera-dead`, `disable-wrong-target` (both in `Answer.Codes`; Fable's text.json has both). `run-tethered`, `board-tethered` and the held loop's cancel line are no longer given on the live rulebook (kept for pinned runs).
+
+## Engine 0.32.0: the pickup round the back, the rival crew of five, the getaway car's Drive (brief 059 K1–K11; GDD v0.25.0 §07; Sky's answers 1a, 2a, 3a)
+One bump. The rulebook (`rivals` section, `cell.driveCar`, `car.pickup`, `fight.safe.leaveUnfought`, `fight.loud.entry`, `memory.acts.saw-getaway`, eleven values; `fight-safe-hostiles` and `fight-modifier` retired), the site (rival-park at (90.5, -31); `getaway.stands`, `rivals.car` and `rivals.posts` folded in from the old side file) and mission.json's timeline moved, so every inputs hash moves. The dll copy into Unity is the batch's sim step (`tools/sim/unity.ts`). Scenarios P59-* (`sim/Suborned.Sim/ScenariosPickup059.cs`) show every rule below working.
+
+**Vale and his car (K1–K5).**
+- Vale always walks out of the official door at 5:50 to his car in the official bay (6:10). He gets in `car.pickup.valeIn` (3 s) later: new `ValeAt.InCar` (added last to the enum). With the driver **unturned**, his car then drives him away and the run fails `vale-leaves` (cause `driven-away`, Sky 3a). With the driver **turned**, it drives round on the drive grid at `car.pace` to the service bay (`car.parks` at about 6:25.9, then `PickupService` true) and waits there until the 8:30 close, when it drives him on (`car.leaves`, then `vale-leaves`). The service-lane walk is gone: `vale.exits` and `vale.at-car` are always the front, so drop HostFeed.cs:315–316's and HostTakedown.cs:439's `PickupService` branches for those two codes.
+- Reads: `Game.CarPos()` and `CarHeading()` follow the car while it drives; `ValePos()` is the car's while he is `InCar`. `ValeCarParked` (bool) = parked round the back with him in it. `DriverPos()` = the driver's seat. `CarAtMouth` (bool) = the car stopped at the drive's mouth because the getaway car stood on the drive first (K5; log `car.blocked`). In that case the Take there is in-car as in the bay.
+- **The Take:** with the driver turned the Take is in his car once it parks (`TakeInCar`). It is refused `driver-brings-vale` at the front and `car-not-parked` while the car drives. With the driver unturned it is the front Take as before, but only while he stands at the car (6:10 to 6:13). A front Take with the rival car parked and its wheelman aboard fails `rivals-reach-vale` (cause `beat-to-pickup`, culprit the wheelman: P59-BEAT).
+- **The driver's Call is retired** (Motive M059-6.1): `call` on the driver is refused `nothing-to-call`. Nothing blocks the pickup camera any more (`PickupCameraLive()` is the loop's answer alone). Remove HostFeed.cs:264/317's and HostLess.cs:46's `car.blocks` entries: the code is never logged now, and text.json has no card for it.
+
+**The getaway car's Drive (K6; `drive` stays Take control).**
+- Order `{ "do": "drive-car", "op": "<agent in the car>", "target": "<stand id>" }`. The stand ids are the site's `getaway.stands`: `square` (the Getaway bay, where it starts) and `service-drive`. Everyone in the car rides: the others get a `ride` busy order to the same end tick. The order is logged `order.drive-car` and its landing `car.parked`.
+- Refusals: `drive-no-driver` (the agent is not in the car), `unknown-stand`, `drive-here` (already there), `drive-busy` (someone in the car is mid-act), `drive-held` (`Answer.ids` = the holders, as for `car-held`), `drive-fight` (the final fight has started: fight where you are and Go), `unknown-verb` (a rulebook with no `cell.driveCar`). Board is refused while it drives, and a Board that lands after it leaves is `board.missed`.
+- Reads: `Game.CurStand` (`Stand`: `Id`, `Car`, `CarAt`, `Facing`, `Exit`, `ExitHalfCm`, `Ambush`, `Police`) is where it stands now. `GetawayDest` (`Stand?`) is where it is going, `GetawayDriving` (bool), `GetawayCarPos()` and `GetawayHeading()` its live pose (the engine's own car point is `GetawayCarPos()` now, so seats, the exit lane and the fight follow it), and `GetawaySeat` the boarding point at the current stand. `DriveTicks(standId)` is the drive's length in ticks for the order line (-1 for no stand). `LiveCoverOf(of)` counts the live cover points round a car. The exit lane, the fight spots, the police posts and the ambush spots are the current stand's. The turned driver who sees the getaway car park within witness range learns it (memory act `saw-getaway`: the Talker test as for anyone).
+
+**The rival crew of five (K7–K10; Pulse briefs/059/pulse/rival-routine.md).**
+- Ids `rival-1`..`rival-3` (the three posted round our car), `rival-4` (the lookout) and `rival-5` (the wheelman), plus the car `car:rivals`. Nobody of the crew is on the map before the car turns in. Its timetable is computed back from the 3:10 park and stored on the game: `CrewEntry` 2:35.6, `CrewDropArrive` 2:46.4, `CrewDropLeave` 2:54.4. The car drops the three at `rival-drop`; they walk to their spots round the getaway car's stand (rival-1 to ambush-3, rival-2 to ambush-1, rival-3 to ambush-2). It parks at `rival-park` at 3:10 and the lookout posts at `rival-lookout`.
+- **One read for the bodies:** `RivalPoses()` → `(members: List<(id, pos, facing, mode)>, car: (pos, heading, state))`. `mode` is one of `aboard`, `walking`, `posted`, `talking`, `boarding`, `fight`, `down`. A member aboard is listed at the car, a member down where he fell, a member gone not at all. Car `state` is one of `off`, `entering`, `dropping`, `rounding`, `parked`, `tail`, `tipout`, `away`, `tipback`, `tostand`, `stopped`, `front`. `RivalCarPose()` is the car alone. `MemberBeat(id)` is the pose a posted member plays now (rulebook `rivals.beats`: `watch`, `lean`, `check-watch`, `look-around`, `read-paper`, `pace-out`, `pace-back`; the wheelman aboard `wheel`, `mirror`, `window-arm`; `walk`, `talk`, `board`; `""` in the fight; `lean` reads `watch` with no cover beside him), so Forma's idles can key off it. `Crew` (`List<CrewMember>`), `CarSt` and `CrewOf(id)` are there for the debug view only: draw from `RivalPoses()`.
+- **What a Watch on the rivals teaches** (`watch` on `rivals` or `car:rivals`, Scout): `RivalsWatched` turns true and `RivalNext(id)` → `(kind, tick, at)` shows each member's and the car's next move: car `stops`/`leaves`/`follows`/`back`, posted `spring` (the ring round our car), lookout `leaves`. `CrewNextMove` is the car's raw next event (debug).
+- **The follows:** the posted three walk after a Driven getaway car (`rivals.follow-car`, at `rivals-follow-cm-s`: Sky's S3). The car tails Vale's car round the back when he is driven (`rivals.follows`), and the wheelman walks to his door (`rivals.at-vale`, fail cause `tail` if he gets there first). The false tip (`mislead` at the parked car with the wheelman aboard; refusals `no-rivals`, `stand-near-rivals`) sends the car away and back (`rivals.tip-leaves`, `rivals.back`). The turned driver warns the lookout off (`rivals.warned`, `rivals.word-off`, `rivals.lookout-gone`, `rivals.no-warning`). Gunfire before 2:35 brings the car in within 16 s to the Office front (`rivals.drawn`, `rivals.drawn-stop`).
+- **Fights:** the safe fight's rivals are the crew's own bodies (no fresh spawns). `CrewInFight` (int) = bodies plus those still coming (the lookout boarding). A cell shot at a lurking member springs the ambush. On the street a member is hit and downed one by one (`rivals.hit`, `rivals.down`). If more than half of the crew on the map is down before the final fight it breaks: it leaves in its car for `rivals-retreat-s` and comes back with whoever is still up (`rivals.retreat`, `CrewBrokenPre`). Sky's S1: with crew still to come, Go leaves unfought (`fight.safe.leaveUnfought` true). S2: the loud fight's police come from the entry nearest the car's stand (`fight.loud.entry` `nearest`).
+- **Changed meanings (Latch):**
+  - `WatcherIds()` lists `rival-1`..`rival-5`, and `WatcherKind(id)` answers `rivals` for each. HostAttention.cs:71 skips them already.
+  - `PosOf("rivals")` and `GunOf("rivals")` are null, and `Known("rivals")` is gone. ProofRings.cs:91 and HostFight's rivals-gun rows must read members (`PosOf("rival-n")`, `GunOf("rival-n")`) or `RivalPoses()`.
+  - `fire` on `rivals` is an alias for the nearest firable member. `mislead` and `watch` take `rivals` or `car:rivals`.
+  - `RivalsPresent` = the car on the map or any member on foot.
+  - `RivalsPose()` is a migration shim (the car's pose, else the first member on foot). HostViews.cs:174–179, HostLess.cs:318 and HostFeed.cs:369 should move to `RivalPoses()`: one marker per member and one for the car, so HostViews' three followers go.
+  - HostFeed.cs:63's `"rivals" => "the pickup"` should name the place the member stands.
+  - HostFeed.cs:183's mislead feedback should read `CarSt` (`away`) rather than `RivalsPresent`.
+  - PanelGuard's `rivals` row, HostTargetRings.cs:94 and HostAim.cs:263 keep the family; HostAim.cs:540 already names `rival-n` "a rival".
+
+**Codes.** New refusals: `drive-no-driver`, `unknown-stand`, `drive-here`, `drive-busy`, `drive-held`, `drive-fight`, `driver-brings-vale`, `car-not-parked` (all in `Answer.Codes` and in text.json's locks; `drive-here` and `drive-fight` have placeholder words for Fable). Retired: `car-gone`, `car-busy`, `call-too-late`. New log codes: `car.parks`, `car.parked`, `car.blocked`, `car.leaves`, `order.drive-car`, and `rivals.coming`, `.drop`, `.post`, `.arrive`, `.follows`, `.follow-car`, `.at-vale`, `.tip-leaves`, `.back`, `.warned`, `.word-off`, `.lookout-gone`, `.no-warning`, `.drawn-stop`, `.joins`, `.late`, `.hit`, `.down`, `.retreat`. The ones Fable has not yet worded are in text.json's `silentLogs` (PLACEHOLDER). `Start.valeWaits` (Vale waits at his car past 6:13) is test only: never set it from the host.
+
+**Dead camera, cut or shot:** unchanged since 0.31.0. `CameraDeadAs(id)` is `"cut"`, `"shot"` or `""`.
+
+## Engine 0.33.0: the final fight always comes, the crew as people, Motive's balance fixes, the crowd's legs (brief 059 Sky's S1 = no; Motive s1-rulings.json, balance-rulings.json; brief 060 cause A)
+One bump. The rulebook moved (values `fight-always` 1, `rivals-floor` 3, `rivals-free-cm` 150; `fight.safe.always`/`floor` replace the retired `fight.safe.leaveUnfought`; `fight.alwaysRule`, `rivals.free`, `rivals.peopleRule`; the ai.intent foe `crewmate` in rivals calm and alerted), the site moved (svc-ambush-1 at (77.35, -8.0), Vantage; `rivals.entry` dropped; the cover's north refuge is `mouth:rival-car-entry`), and the crowd's legs moved, so every inputs hash and many routes move. Scenarios S1-*, BAL-*, CREW-BODY and CREW-FREE (`sim/Suborned.Sim/ScenariosAlways059.cs`) show each rule; `GateC037Tests` and `CrowdLegTests` are xunit tests (they read the repo's routes and the people file).
+
+**The gate (Go).** With `fight-always` 1, from the final fight's start until it is over, Go with Vale aboard is refused `car-held` while the fight's blocker is up, wherever he stands (not only within 8 m or on the lane). Before a blocker is named (the late spring below), whoever is coming holds it:
+- `car:rivals` while a member still rides in the rival car. The answer's `tick` is then the first rider's step-out tick (or `-1` while the car drives with no step-out set yet; its stop plus rivals.out). The words read "(the rival car is coming: out in N s)". Show the countdown from `tick` (Motive M059-S1.7: "Rivals coming · 18 s"; Fable words it). `GoQuery()` answers the same.
+- a member walking back to the fight (the recalled lookout) or one knocked out and due to wake, by his id; the loud fight's officers on their way.
+Go without Vale and the menu's Withdraw are not gated. Drive is still `drive-fight` once the fight has started. Draw `car:rivals` as a holder with the car's marker (it is a car target id already).
+
+**The late spring.** The ambush springs as before, or once Vale is in the car. If nobody of the crew is on foot then, no blocker is picked until the first rider steps out (`fight.blocker` logs it then, among those on foot). Each member who steps out after the spring fires `AimNewT` after his step-out. With `fight-always` 0 none of this applies, and engine 0.32.0's leave-unfought behaviour comes back (S1-GATE-SWITCH-OFF).
+
+**The floor and crew destroyed.** At the safe fight's start, if fewer than `rivals-floor` members are up and coming, away members come back, the earliest at the stand first:
+- the tipped car cuts its trip short and rides to the stand's rival stop (`CarSt` `tostand`; `RivalsDelayedUntil` becomes now);
+- or the warned lookout walks back from where he is (or from `rival-lookout-exit` once gone): he reappears in `RivalPoses()` walking, mode `fight`.
+Each logs `rivals.recalled`, and the fight's why gains `rivals-recalled`. With every member killed or tied (none knocked out to wake), the fight is over at its start: `rivals.wiped`, fight why `crew-destroyed`, chain `rivals-destroyed`; the gate is open. The debrief's `fight.why` carries both codes.
+
+**The crew as people (takedown, carry, drop, stash, restrain).** `takedown` on `rival-1`..`rival-5` (the Enforcer) and the body orders `carry`, `drop`, `stash`, `restrain` on a rival body work as on anyone, through the brief-013 pipeline (`Bodies`, `Acts`, `BodyById("rival-n")`, the same log codes: `takedown.starts/out/dead/fails`, `carry.body`, `carry.down`, `stash.*`, `restrain.done`, `restrain.freed`). A member in the rival car or in the final fight is refused `person-away`; fire on him there.
+- He is armed and aware of the Enforcer by his own facing cone (no all-round near ring): aware, the takedown fails (`takedown.fails`) and he fires.
+- A crewmate on foot who sees a takedown on one of the crew (his cone with its near ring, a line, inside his weapon's max) fires on the taker: `rivals.see-takedown`. His cause in `FireCauses`/`ai.why` is the new `crewmate` (HudToolkit.Roster.cs `WhyIcon` needs a case for it; FireCauseOrder puts it after `violence`).
+- Knocked out, he wakes after wake-s: `rivals.wakes` (never `victim.wakes`). He makes no report and no statement, keeps the Enforcer as a foe (he shoots him on sight before the fight), and rejoins his crew: his post, the front if drawn, the car if the crew has gone back to it, off the map (`rivals.gone`) if the car is away; in a running safe fight he joins it.
+- Tied, a crewmate within `rivals-free-cm` frees him in free-s: `rivals.frees`. A civilian finder frees him too, as for anyone.
+- Civilians who see the act or find the body report it, and the Trail and Alert are charged as for anyone. A rival never reports, is never missed, and between missions a rival act counts only as a found killing: `TakedownQuote` on a rival reads `Armed` true, `IfNeverFound` "" and `TrailIfMissing` 0.
+- `RivalPoses()` lists a member taken down where his body is (at his carrier while carried) and not at all while stashed. A fight body that fell is listed where he fell (0.32.0 listed (0,0): HostViews can drop any guard for that). `MemberPos` follows the body.
+
+**Balance fixes (no new codes).**
+- M059-B1: a posted or walking member becomes a fight body where he stands (0.32.0 started them all at (0,0)).
+- M059-B2: a rival blocker never takes the kite step out of a shooter's line; he keeps his lane.
+- M059-B3: a crew broken before the final fight never presses (no `ai.kite` "presses" after `rivals.retreat`).
+
+**Brief 060, cause A (the crowd).** A routine leg whose end has no free walk cell within 6 m (off the window, as the T1 stop) now joins the walk grid at the free cell nearest it with no cap (`Grid.NearestFreeAny`) and leaves the window from there. An end on a cut-off pocket (cafe-table-5-seat-2) joins the other end's piece. No routine leg with an end in the window is a straight line now (`CrowdLegTests`). The 5:30, 6:30 and 7:30 clerks bound for T1 walk round the Office and past the official bay to Apron Road's north end; they no longer walk through the Office. So `OnTheStreet` no longer counts people inside it, and more of them see the official bay from about 5:45 to 6:10 (N82 re-staged). `HostViews.GiveWay` (cause B) is still Latch's.
+
+**Retired.**
+- `fight.safe.leaveUnfought`, and the scenarios P59-S1-GO and P59-S1-HOLD.
+- The debrief route line `pickup-camera-blocked` (with `car.blocks`: nothing blocks the pickup camera now). HudModel.cs:397 and tools/qa/checks/outcome.ts:79 can drop it.
+- The site's `rivals.entry` (the engine reads it if present, and nothing needs it). Vantage can retire the place `rival-entry`.
+
+**Test only.** `Start.CrewGone` (script start key `crewGone`, rival ids): members killed before the mission, with no body. For the floor scenarios only: never set it from the host.
+
+**Codes for Fable** (text.json, not edited here). New log codes:
+- `rivals.recalled`: the floor brings back the tipped car or the warned lookout.
+- `rivals.wiped`: the safe fight is over at its start, the crew destroyed.
+- `rivals.see-takedown`: a crewmate sees one of the crew taken down and draws.
+- `rivals.wakes`: a knocked-out rival comes round (or is brought round).
+- `rivals.frees`: a crewmate unties a tied rival.
+- `rivals.gone`: a woken rival with his car away walks off the map.
+
+Also for Fable:
+- New fight why codes `rivals-recalled` and `crew-destroyed`.
+- The new fire cause `crewmate`.
+- `car-held` now sends `tick` when `car:rivals` holds: text.test's numbers check fails until its line takes `{tick}` or says why not.
+No refusal code is new or retired.
+
+**Fixtures.** `sim/Suborned.Sim/Fixtures/bal-loud-x4.script.json`, `bal-rb-ff.script.json` and `bal-rbb-ff.script.json` are Motive's probe plans composed on this engine (`bun tools/sim/fixtures059.ts`). Re-compose them when the engine moves, as DP1's drive session is re-recorded.
+
+## 0.33.x addendum (Latch: on top of your 0.33.0 port). Engine 0.33.1: cars are solid, Vale at his car's door, the official car's heading, a Drive runs to its stand (brief 041, Sky playing 0.2.122: "characters are walking through cars"; Fable's Drive question)
+One bump. The rulebook moved (`car.footprint` with values `car-len-cm` 473, `car-w-cm` 182, `car-clear-cm` 50, `car-reach-cm` 100; `cancel.driveCar` `drives-on`), so the inputs hash moves, and walks round the cars move many routes (route diff: briefs/059/keel/route-diff-0.33.1.txt). No site, mission or text change. `suborned-sim cars` prints the cars standing at the start, what lies on their ground, the crowd legs that would cross the cars' other places, and security people sharing one spot.
+
+**Sky's shot (cars-walk-through.png): two causes, both fixed in the engine.**
+- The heading. `Game.CarHeading()` returned null at the pickup, so the host fell back to its own rule (HostViews.Figures.cs: across the line from the car to `d:Meet driver`). Since 0.32.0 the driver stands 2.7 m *along* the official bay from the car, so that rule laid the car across the bay, rear on the kerb by the official door. `CarHeading()` now always answers (never null): `car.blockFacing` (0, -100), the bay's long axis, at the pickup; along its drive while it drives; `car.serviceFacing` in the service bay; along the road at the drive's mouth; the way it was going where it stopped. Your `CarFacing()` path already prefers it, so nothing to change; the `d:Meet driver` fallback is dead code now.
+- The walk. The walk grid never held cars. Now every simulated car that stands (the getaway car at its stand; Vale's car at the pickup, parked round the back or stopped; the rival car at its stops, parked, waiting or disabled; the range's cars; wrecks too) blocks the walk cells whose centres lie in its footprint (473 x 182 cm, centred on the car's point, along its heading) grown by 50 cm. While it drives it blocks nothing. The figure inside the car in the shot was the crowd's guards at `official-entrance`, which the car drawn across the bay covered; along the bay the car stands 1 m clear of that door.
+
+**Reads for the host (all read-only, never hashed).**
+- `Game.Walk` (a `WalkGrid`): the site grid seen with the cars standing now. Same calls as `Grid`: `Free`, `FreeCell`, `NearestFree`, `NearestFreeAny`, `LineFree`, `Nearest`, `Route`, plus `CarCovers(p)` (free ground a car covers) and `RouteBeside(a, b)`. Use it, not `g.S.Grid`, wherever the host tests or previews a walk: the click's free test and walk preview, `HandoverHost.ActPlace` (its `s.Grid.Route` / `NearestFree` / `Free`), `HostViews.GiveWay`'s free test (Suture's cause B), the bot's walk previews (BotRun). `S.Grid` stays the site's own ground (cells, floors, sight).
+- `Game.StandingCars()`: the cars standing now, `(Id, At, Heading)` in the order car:getaway, car:official, car:rivals (the range's by id). `Game.CarBodyCm(id, p)`: cm from p to that car's body (0 on it, -1 when it isn't standing).
+- `Game.AtGetaway(p)`: Board's own test. "At the car" is now within `car-reach-cm` (100 cm) of its **body**, not `at-reach-cm` (150 cm) of its centre (walkers can't reach the centre any more). `stand-at-getaway` answers `cm` 100 now. In `ActPlace`, board's "already there" test (`G.Dist(op.Pos, st) <= 100` on the stand's point) never holds now: use `g.AtGetaway(op.Pos)`.
+
+**What moves on the street.**
+- A move onto a car's ground (a click on the car, `move` to `d:Getaway bay`, `d:Meet driver`) ends beside it, on the side the agent comes to: a door (its long sides) for a point along the car, an end only for a point by that end (`d:Meet driver`, 34 cm off the official car's tail, ends behind the tail). No step in. The order's `To` is unchanged; the walk's end is the side point.
+- A walk an engine person makes *to* a car (the step in) ends at that side and then steps to the car's point; a walk out of one starts at the free cell nearest. The getaway car's step-out puts the agent at the free cell nearest its seat (0.33.0: the car's point).
+- Vale: walks from the official door to his car's **kerb-side door** (the car's right: -x in the official bay) and waits there (`ValeAt.Pickup`), not at the car's point; `ValePos()` is that door until he is in (`InCar`: the car's point; hide him then, as before). Seized at the front (`Taking`) he stays at the door; in the back round the back (`Taking` with the pickup round the back) he is at the car's point.
+- A disabled official car: the driver stands on its road side, Vale on its kerb side, across its heading (0.33.0 put them 1.5 m along +y, which in the official bay is along the car, under its nose and tail).
+- The crowd's routine legs go round the cars standing when each leg sets out (read at the start of each tick): the legs built at load go round the start's two cars (on 0.33.0, 45 of the 260 legs walked through one of them, from 2 to 6 m of each: the café's and the Office's traffic past the square's bay); after a car moves, a leg that would cross a standing car is walked again round it. A leg already under way when a car stops on it is not re-walked (the rival car's 8 s stop at `rival-drop` lies across 54 legs; a few people may cross it then).
+- A walk that was made before a car stopped is not re-walked either (an agent mid-walk when the getaway car arrives at `service-drive` may pass over it).
+
+**Cancel of a Drive (Fable's question).** 0.33.0 had no line for `drive-car`: the cancel took the default (`lost`), cleared the driver's order and left the car driving for ever (its landing never ran: `GetawayDriving` stayed true, Board refused, the car frozen at its end). Now a Drive under way is no cancel: `ActivityOf` for `drive-car` (the driver) and `ride` (the others in the car) gives `CanCancel` false, `CancelCost` **`drives-on`**, `CancelText` "the car drives on to {stand}: it stops only at a stand"; a `cancel` order is refused **`car-driving`**. Hide Cancel on the ring and HUD for those (as for any `CanCancel` false).
+
+**Codes for Fable** (text.json, not edited here).
+- New refusal: `car-driving` (a cancel of the Drive under way, by the driver or a rider). `Answer.Codes` lists it.
+- New cancel cost: `drives-on` (the car drives on to the stand it was given).
+- Changed: `stand-at-getaway`'s `{cm}` is 100 now and measured from the car's body ("within 1 m of the car").
+- No new or retired log code.
+
+**The "x2" over Vale's car.** Two (up to four) security people on one spot, all crowd: from 5:11 to 5:30 the shift guards p-records-office-29, -39, -61 and -74 stand on `official-entrance` (7625, -3000) together (the relief comes early on its leg and waits on the point); from 5:19 to 6:13 the relief guard p-records-office-73 stands on `office-entrance`, the cast guard's post (Suture's finding). The engine puts everyone at a stop on the stop's point; separate stands are Pulse's (handover.people.json), the drawing's spread is yours (`GiveWay`).
+
+**Test only.** None new.
+
+## Engine 0.34.0: the cell walks faster, a run is noticed not punished, hiding in a held car loses, the square's two rules, the patrol in the yard (brief 067, Sky playing 0.2.122; Motive motive-values.json and motive-square.md; Pulse, Vantage and Splice in briefs/067)
+One bump. The rulebook moved: values `op-speed-cm-s` 180, the new `people-walk-cm-s` 140, `op-run-speed-cm-s` 360, `carry-untrained-cm-s` 90 and `mod-running` 375; `cell.runAlert` retired; `crowd.walk`, `attention.run`, `ai.noStall`, `fight.unguarded` and `fight.holdRule` new. The site moved too: the patrol sweeps the service yard, the square's planters are gone, Vale's car points moved. The people file moved (Pulse's waiting points, `beside`). So every inputs hash and most routes move (route diff against e17d8ca7: `briefs/067/keel/route-diff-0.34.0.txt`). Scenarios PACE-SPLIT, RUN-*, K3-*, SQ1-WALK, SQ1-STEP, SQ2-NO-STALL, FACT-PATROL, POST-BESIDE and DOOR-KERB (`sim/Suborned.Sim/ScenariosPace067.cs`) show each rule.
+
+**The walk split (M067-B1): what your previews read.**
+- `R.CellSpeed` (cell.speed) is the cell's walk only, now 180 cm/s (was 140).
+- `R.PeopleWalk` (crowd.walk, 140) is the city's walk. It covers the summoned partner, reporters and tellers walking to a phone, a witness walking to a body, the crowd walking back from shelter, and the rounds bake's pace.
+- The other paces: `R.RunSpeed` 360, `R.CarryUntrainedSpeed` 90; the Enforcer carries at `R.CellSpeed`.
+- Every engine read that quotes an operative's walk now uses the cell's pace:
+  - the move quote (`WalkS`, `RunS`);
+  - the approach card (`WalkS`);
+  - `QuoteCarry` (`PaceCmS`, `S`);
+  - the fire order's walk into reach;
+  - `ActivityOf` (`TicksLeft`).
+- Your own previews that divide by `R.CellSpeed` show 1.8 m/s with no change on your side:
+  - HandoverHost's intent time and `ActWalk.Seconds`;
+  - `HostHold.WalkSeconds` and `HostHoldStatus.WalkLeftS`;
+  - HostSight's 4 s ahead;
+  - HudModel's and HostTakedown's "walk only · m/s" rows;
+  - HostDrive's pace and DriveCheck.
+- None of those may stand in for a person of the city, who walks at `R.PeopleWalk`. The engine's poses are the truth for people.
+- `VisitWalkTicks` (the summoned guard's walk to Inez) is the city's pace. It is unchanged, so Inez's call window is as on 0.33.1.
+
+**The run (M067-B2).** A run is seen and suspicious, never an Alert on its own.
+- `cell.runAlert` is retired and `R.RunAlert` is gone: drop any read of it.
+- `MoveQuote.AlertIfRun` and `SeenQuote.AlertIfSeen` are now the Alert as it stands: a run never raises them.
+  - HostFight.cs:418-421 still prints a run as "seen by … (Alert N)". The words should now say that a watcher notices it (Fable words it, Glyph cues it).
+  - `RunSeenBy` and `Seen` still say who would see it.
+- Which watchers count it: a watcher that keeps an attention clock (a live camera, the door guard not turned to your side, the patrol, the response's officers and robots).
+- What they do:
+  - On the run's first tick in its sight, the watcher's clock jumps to the noticed mark: `attention.noticed`, "… notices the {op} running in its sight.". Show its noticed cue on that tick.
+  - After that, each tick of the run in its sight counts as standing still does, so it turns wary and reports as for a loiterer.
+- `run.seen` still logs the sighting once a run, without "a found fault. Alert N".
+- Unchanged: a run is free at Alert 2 and above, when it is loud, and under fire; from Alert 2, ordinary people who see a run remember it (Sky's 054 call).
+
+**The held car (Motive M067-K3, as amended in motive-square.md §4).**
+- **(a) The walk to the car.**
+  - When: the safe fight, with Vale in the getaway car, the car held (`CarHolders()` not empty), and no operative standing outside it.
+  - The rivals up and not broken (not the blocker) walk to the car, firing as they walk (`rivals.for-car`). The first to come within 1 m of its body takes Vale (`rivals-reach-vale`).
+  - An operative standing outside again, or the car no longer held, sends them back to cover (`rivals.back-to-cover`).
+  - A free car with the cell aboard waits for Go: nothing walks to it.
+  - New read: `Game.RivalsForCar`, the ids walking for the car now (sorted). Draw them as coming for the car (Glyph's cue).
+- **(b) The cell down.** The tick the last operative goes down, in the car or not, the mission fails `cell-down` ("The whole cell is down."). The fail camera is the shot that downed the last to fall: why `shot`, the shooter first, then the operative (as for `enforcer-down`).
+- **(c) Go needs a driver.**
+  - With only the downed aboard, Go is refused `car-no-driver` ("nobody aboard can drive: only the downed are in the car"). `GoQuery()` answers the same.
+  - Once a standing operative is aboard, any standing operative may give Go from anywhere.
+
+**The square's two rules (M067-SQ1, SQ2).**
+- **SQ1, the hold is entered only on purpose.**
+  - An answer to fire never ends within 8 m of the car or on its exit lane. That covers a rival's step out of a line or to cover, and a police body's cover or close. When nothing outside serves, the body stands where it is.
+  - A walk to a post goes round the hold: the rival crew walking to its spots, police and the response unit walking to their stands. On screen they bend round the car at about 8 m.
+  - New log codes: `car.held.<how>` marks the first tick each body holds the car at a stand. `<how>` is one of `blocker`, `press`, `advance`, `answer`, `post`. These are log only: the holder list (`CarHolders()`, Go's `car-held` ids) is unchanged.
+- **SQ2, no stall.**
+  - A rival holding with nobody in his reach for 1 s advances again (`ai.advance`, "{id} has had nobody in reach for 1 s: he advances on the {op}[ to {cover}].").
+  - He goes for an operative he has cause to fire on: to the cover that shields him from that operative, else to the first point of the walk to him that has a clear line to him.
+  - Police and the blocker hold their posts.
+
+**The patrol in the service yard (brief 067 A).**
+- The sweep runs between patrol-a (61.25, -7.25) and patrol-b (76.25, -7.25), facing west toward the wing's east face and the service door. Rerouted, it waits at (46.25, -9.25) facing north.
+- It never sees the public door: `SweepSeesEntrance(t)` is false at every tick. The new reads `Game.SweepCoversEntrance` and `Game.PatrolWatchesEntry` (with `SweepSecondsOnEntry`; also `suborned-sim facts`) are false on this site.
+- Anything you time to the sweep at the front door has nothing to show there now; the yard is where the patrol matters.
+- The debrief never says `entry-timed-between-sweeps` on this site. It still says `patrol-diverted` when the patrol was rerouted at the Enter.
+- `patrol.rerouted` and `patrol.returns` now name no place: "leaves its sweep", "is back on its sweep".
+
+**Pulse's posts (brief 067 L).**
+- A relief waits at a point beside a staffed door and steps on at the change (the people file's `beside`).
+- `PostOf` reads that waiting point as her post, so she keeps her check-in marks (guard 73 from 5:30).
+- Guards posted at the Office's doors face out of them, toward the kerb.
+- At the change (5:30:00) a standing person can move up to 1.2 m in one tick. Ease that step (Pulse's note to you).
+- New read: `Game.FacingNow(id)`, the way a person faces now as the engine reads it.
+
+**Harness only.**
+- `Game.HarnessStepLimit` (static, 0 = off) bounds every game a harness makes; past it, `RunawayException`. Never set it from the host: a played session has no step limit.
+- `check` and `batch` take `--timeout s` (default 300).
+
+**Codes for Fable** (text.json, not edited here).
+- New log codes: `rivals.for-car`, `rivals.back-to-cover`, `ai.advance`, `car.held.blocker`, `car.held.press`, `car.held.advance`, `car.held.answer`, `car.held.post`, `fail.cell-down`.
+- New fail code: `cell-down`.
+- New refusal: `car-no-driver`. `Answer.Codes` lists it.
+- Changed texts: `run.seen` (no found fault, no Alert), `attention.noticed` (also "… running in its sight"), `patrol.rerouted` and `patrol.returns` (no "entrance sweep").
+- text.json still says the patrol watches the square or the door in these places:
+  - `patrol.about` and `watched` ("sweeps the square", "reaches the door at times");
+  - line 1123 ("A patrol sweeps this door … N shows when it comes round") and line 1851 ("The patrol sweeps past the door");
+  - line 2247 ("Mind the entrance");
+  - the watch reads on the patrol, lines 2088, 2089 and 2095 ("I know when it sees the door", "The door is clear between sweeps");
+  - `patrol-returns`'s trigger, line 735 ("its entrance sweep").
+- No log code is retired.
+
+**Retired.** `cell.runAlert` (`R.RunAlert`) and the `runner-seen:` Alert cause.
+
+**Fixtures.**
+- `bal-rb-ff` and `bal-rbb-ff` are now Motive's rb-rr and rbb-rr (the same plays, with the Tech's Reroute at 5:00).
+- New: `sq-route-a-board` and `sq-ra-h3`, the square's reference plays.
+- Re-compose them with `bun tools/sim/fixtures059.ts` when the engine moves. DP1's drive session is re-recorded on 0.34.0.
+
+## Engine 0.34.1: an advance closes on its operative (brief 067; Aster's ruling within M067-SQ2)
+No API change: a rival advancing on an operative now takes a cover only if it is strictly nearer him by walk (and inside or nearer the rival's reach of him), else walks to his stop point of him taking no kite step on the way (`Hostile.Closing`, hashed only when set), else holds, so the rivals no longer shuffle between two covers (ra-h3's rival-3, cv-030 and cv-029); the rulebook's `ai.noStall` text moved, so the inputs hash moves (DP1's drive session, CP-LOUD and CP-SAFE are re-recorded; scenario SQ2-CLOSES; route diff from 0.34.0: `briefs/067/keel/route-diff-0.34.1.txt`).
+
+## Engine 0.34.2: the patrol seeing the Enter is no fail (Sky 2026-10-26; GDD v0.28.0 §07)
+No API break: the Enter no longer ends in `entry-seen-patrol` (the code stays only for rulebooks pinned before 0.34.2). If the patrol robot sees the public door when the Enter starts, the Enter goes on and the robot radios a report: log `entry.seen` (made), then `attention.report.call` (3 s) later `entry.reported` (a found fault: Alert at least 1, a sighting with watcher `patrol`, an `alarm.dispatches` to the door), or `entry.stopped` if the patrol is downed first. New read `Game.EntryReport` (from, landAt, state "" | pending | landed | stopped), read-only. Rulebook `cell.enter.seen` is new, so the inputs hash moves (DP1's drive session re-recorded; scenario N120 re-pinned). PlayText's fail line for `entry-seen-guard` ("the guard, a live camera or ...") should drop the patrol; Fable words the three log codes. Route diff against HEAD: 43 routes, 0 moved (`briefs/070/keel/route-diff-head-0.34.2.txt`).
+
+## Engine 0.35.2: only a drawn agent guards a held car; the fight-on line once per fight (Motive rulings-0.35.1 §2, Sky's yes 2026-10-27; Fable briefs/039/fable-fight-on.md)
+No API change. `Debrief.Version` / `Engine.Version` is `suborned.sim/0.35.2`.
+- **The held car (fight.unguarded a).** "An operative standing outside the car" now means a drawn one (gun out or drawing; a gun being holstered doesn't count). Both tests read it: the rivals' walk to a held car with Vale aboard (`rivals.for-car`), and `rivals-reach-vale`'s "nobody within cell.reach of the car". An undrawn agent standing by is no guard, so a cell that never draws beside a held car loses `rivals-reach-vale` (0.35.1 idled to the close with no outcome). Pressing F answers it: a drawn agent outside sends the walkers back (`rivals.back-to-cover`), from the draw's first tick.
+- **Log texts changed** (codes unchanged): `rivals.for-car` "… sees nobody of the cell guarding the car and goes for Vale."; `rivals.back-to-cover` "… sees the cell drawn outside the car again …" (the "no longer held" text is unchanged, so `HostFeed`'s `t.Contains("no longer held")` branch still reads it).
+- **`fire.free-on`** logs once per fight: only with no `fire.free-on` since the last `fire.free-off` (read back from the log; no new state). Under one input the final fight's lulls no longer repeat it. Play is unchanged; the checkpoint hash reads log codes, so the 11 routes that repeated it move their hashes, not their outcomes.
+- **Routes:** fight-safe-cell-down (the never-draws script) ends `rivals-reach-vale` at 3:09.7 (was none at 8:30). The other 10 that move are log-only (route diff vs 7c27e980: `briefs/039/keel/0.35.2/`).
+- **Scenarios:** new K3-UNDRAWN, BAL-YARD-NEVER-DRAWN and F-ON-ONCE; K3-BACK now draws; N185 restated (the seal with the car held relied on the undrawn Tech; it ends `rivals-reach-vale` now). DP1 re-recorded.

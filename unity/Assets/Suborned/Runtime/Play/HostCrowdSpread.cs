@@ -18,6 +18,12 @@ namespace Suborned.Play
     public sealed partial class HostViews
     {
         const int SpreadCm = 72, KnotGapCm = 150, RowCm = 140, LaneCm = 90, WallReachCm = 400, WallStandCm = 90, StepCm = 14;
+        /// <summary>Pulse 067 L: a standing person's one-tick jump eased at a walk: longer than any tick of walking or running (0.5 m), at most 1.5 m.</summary>
+        const float StepEaseMinCm = 50f, StepEaseMaxCm = 150f;
+        /// <summary>For the proofs: standing jumps eased so far (the relief's step onto the post at 5:30).</summary>
+        public int StepEases { get; private set; }
+        /// <summary>For the proofs: the crowd views whose standing jump was eased (at most 64).</summary>
+        public readonly HashSet<string> StepEased = new();
         Game spreadGame;
         Pt?[] prevAt = System.Array.Empty<Pt?>(); Pt?[] atNow = System.Array.Empty<Pt?>(); Vector2[] offCur = System.Array.Empty<Vector2>(), offWant = System.Array.Empty<Vector2>();
         Vector2?[] spot = System.Array.Empty<Vector2?>(); int[] spotSince = System.Array.Empty<int>(); Pt?[] spotPt = System.Array.Empty<Pt?>();
@@ -39,7 +45,7 @@ namespace Suborned.Play
         static float U01(uint h) => (h & 0xFFFFFF) / 16777216f;
         static Vector2 V(Pt p) => new(p.X, p.Y);
         static Pt P(Vector2 v) => new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
-        bool FreeAt(Game g, Vector2 v) => g.S.Grid.Free(P(v));
+        bool FreeAt(Game g, Vector2 v) => host.CarWalk.Free(P(v)); // engine 0.33.1: a spot is never drawn on a standing car's ground (Game.Walk); the walls (Wall) stay the site's
 
         /// <summary>The crowd's drawn points this tick (engine cm), and each person's wanted facing (engine axes) where the spread sets one.</summary>
         void Spread(Game g)
@@ -52,7 +58,15 @@ namespace Suborned.Play
             {
                 var at = g.CrowdPos(g.Walkers[i]); atNow[i] = at; offWant[i] = Vector2.zero; faceWant[i] = null;
                 if (!at.HasValue) { prevAt[i] = null; offCur[i] = Vector2.zero; sincePt[i] = null; continue; }
-                if (!sincePt[i].HasValue || !sincePt[i].Value.Equals(at.Value)) { sincePt[i] = at; since[i] = g.Tick; }
+                if (!sincePt[i].HasValue || !sincePt[i].Value.Equals(at.Value))
+                {
+                    // Pulse 067 L (briefs/067/pulse.md §2.5): a person who has stood still and whose engine point then jumps a short way in one tick (a
+                    // relief stepping from her waiting point onto the post at the change, 1.2 m) walks it: the jump goes into the drawn offset, which
+                    // eases back at StepCm a tick (a walk, 1.4 m/s), so it never reads as a snap. Longer jumps still snap (a person put back on the street)
+                    if (!OldFan && prevAt[i] is { } pa && sincePt[i] is { } sp0 && sp0.Equals(pa) && since[i] <= g.Tick - 2)
+                    { var jump = V(pa) - V(at.Value); float jm = jump.magnitude; if (jm > StepEaseMinCm && jm <= StepEaseMaxCm) { offCur[i] += jump; StepEases++; if (StepEased.Count < 64) StepEased.Add(i < crowdKeys.Length ? crowdKeys[i] : ""); } }
+                    sincePt[i] = at; since[i] = g.Tick;
+                }
                 if (!groups.TryGetValue(at.Value, out var list)) { if (listPool.Count > 0) { list = listPool[^1]; listPool.RemoveAt(listPool.Count - 1); } else list = new List<int>(); groups[at.Value] = list; }
                 list.Add(i);
             }

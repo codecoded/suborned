@@ -1,0 +1,145 @@
+{
+  "takes": [
+    {
+      "situation": "Zhou won't take vague money again and makes the Fixer spell out the job, term by term.",
+      "beats": [
+        {
+          "speaker": "driver",
+          "line": "Seventy thousand. Last vague money cost me. Spell the job out."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Have you eaten today? You haggle like you haven't."
+        },
+        {
+          "speaker": "driver",
+          "line": "No. Pay card came back stamped short. Chime goes, then what?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "Drive the Councillor round to the service bay, east yard. Not home."
+        },
+        {
+          "speaker": "driver",
+          "line": "And wait there? A couple of minutes, then I drive on."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'll be there. We get him out of the back seat."
+        },
+        {
+          "speaker": "driver",
+          "line": "Won't ask who \"we\" is. Can't sell what I don't know."
+        },
+        {
+          "speaker": "fixer",
+          "line": "It's paid already, Zhou. I'd hate to have paid for nothing."
+        },
+        {
+          "speaker": "driver",
+          "line": "Anyone watching my bay, I send off. The rest I don't see."
+        }
+      ],
+      "learned": [
+        "Vale's driver Zhou: short, now paid."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    },
+    {
+      "situation": "Zhou opens high and loses on price, so the fun moves to itemising what seventy thousand buys.",
+      "beats": [
+        {
+          "speaker": "driver",
+          "line": "Eighty thousand. The Councillor's driver doesn't come cheap."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Seventy. I hear the clockwork collector's called on you twice this month."
+        },
+        {
+          "speaker": "driver",
+          "line": "Very politely. \"Kindly settle, kindly settle.\" Seventy, then. For what, exactly?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "The Councillor gets in at the chime. Service bay, not home."
+        },
+        {
+          "speaker": "driver",
+          "line": "East yard. I wait a couple of minutes, then I drive on."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Plenty. We get him out of the back seat. It's paid."
+        },
+        {
+          "speaker": "driver",
+          "line": "Who \"we\" is, I won't ask. Then I've nothing to tell."
+        },
+        {
+          "speaker": "fixer",
+          "line": "You're wasted on a front seat, Zhou. I mean that."
+        },
+        {
+          "speaker": "driver",
+          "line": "Anyone watching my bay, I send off. Free. Then I don't look."
+        }
+      ],
+      "learned": [
+        "Zhou, Vale's driver, took the money."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    },
+    {
+      "situation": "The Fixer pays before saying what for, and Zhou, suspicious of early money, makes the terms afterwards.",
+      "beats": [
+        {
+          "speaker": "fixer",
+          "line": "It's paid, Zhou. Seventy thousand, and you haven't heard the job."
+        },
+        {
+          "speaker": "driver",
+          "line": "My wages come down the tube late and thin. Nobody pays first."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We do. You're the only honest person on Apron Road, Zhou."
+        },
+        {
+          "speaker": "driver",
+          "line": "Honest is extra. I've been paid for \"small favours\". What, exactly?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "At the chime, take the Councillor to the service bay. Not home."
+        },
+        {
+          "speaker": "driver",
+          "line": "East yard. A couple of minutes, then I drive on."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Long enough. We get him out of the back seat."
+        },
+        {
+          "speaker": "driver",
+          "line": "I don't ask who \"we\" is. I asked once. Money stopped."
+        },
+        {
+          "speaker": "driver",
+          "line": "I send off anyone watching my bay. I never saw the rest."
+        }
+      ],
+      "learned": [
+        "Paid: Vale's car waits out back."
+      ],
+      "opens": [
+        "Be at the service bay"
+      ]
+    }
+  ]
+}

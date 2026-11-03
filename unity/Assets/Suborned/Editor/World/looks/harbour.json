@@ -1,5 +1,5 @@
 {
-  "note": "Harbour look (Vela, Sky: a mix). Base = sunrise warm cream and peach for ground, stone and plot bodies; accents = fair enamel (cobalt, flamingo, sunshine, mint, turquoise) on towers, megastructures, landmarks, enamel, signs, awnings only; water = lagoon turquoise; transit stays coral (flamingo-coral, clear of cone red). Colour lives on panels, awnings, signs, roofs and trim, not whole buildings. Exact hex, value 1; keys prefixed 'harbour.'. frontage/sign/awning/roof are not in the export yet. Roles and signal table: out/review/palette.html.",
+  "note": "Harbour look (Vela, Sky: a mix). Base = sunrise warm cream and peach for ground, stone and plot bodies; accents = fair enamel (cobalt, flamingo, sunshine, mint, turquoise) on towers, megastructures, landmarks, enamel, signs, awnings only; water = lagoon turquoise; transit stays coral (flamingo-coral, clear of cone red). Colour lives on panels, awnings, signs, roofs and trim, not whole buildings. Exact hex, value 1; keys prefixed 'harbour.'. frontage/sign/awning/roof are not in the export yet. Roles and signal table: out/review/palette.html. Brief 075 old palette (Sky 2026-10-29, Vela): 072-G's palette loosening is withdrawn: limestone, civic, residential, mixed, frontage, roof, commercial, accent_coral and accent_peach back to their values before it (style contract v0.24.0); the brass-gold trim kept; 072's eight added accent keys stay only while tools/world/gen/colour.ts names them.",
   "surfaces": {
     "asphalt": {
       "palette": "harbour.asphalt",
@@ -294,6 +294,46 @@
       "palette": "harbour.canvas",
       "value": 1,
       "smoothness": 0.2
+    },
+    "accent_red": {
+      "palette": "harbour.accent_red",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_royal": {
+      "palette": "harbour.accent_royal",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_cobalt": {
+      "palette": "harbour.accent_cobalt",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_tangerine": {
+      "palette": "harbour.accent_tangerine",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_plum": {
+      "palette": "harbour.accent_plum",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_cerulean": {
+      "palette": "harbour.accent_cerulean",
+      "value": 1,
+      "smoothness": 0.55
+    },
+    "accent_jade": {
+      "palette": "harbour.accent_jade",
+      "value": 1,
+      "smoothness": 0.55
+    },
+    "accent_lime": {
+      "palette": "harbour.accent_lime",
+      "value": 1,
+      "smoothness": 0.45
     }
   },
   "sky": {
@@ -378,7 +418,7 @@
       "hex": "#fbe8b8"
     },
     "harbour.trim": {
-      "hex": "#99784d"
+      "hex": "#c29a55"
     },
     "harbour.crossing": {
       "hex": "#d0c848"
@@ -486,7 +526,7 @@
       "hex": "#e8609a"
     },
     "harbour.accent_gold": {
-      "hex": "#99784d"
+      "hex": "#c29a55"
     },
     "harbour.accent_mint": {
       "hex": "#7fd0b8"
@@ -496,6 +536,30 @@
     },
     "harbour.canvas": {
       "hex": "#f7f4ec"
+    },
+    "harbour.accent_red": {
+      "hex": "#c42a1f"
+    },
+    "harbour.accent_royal": {
+      "hex": "#2c56a6"
+    },
+    "harbour.accent_cobalt": {
+      "hex": "#2f84e8"
+    },
+    "harbour.accent_tangerine": {
+      "hex": "#f07a28"
+    },
+    "harbour.accent_plum": {
+      "hex": "#7a3b78"
+    },
+    "harbour.accent_cerulean": {
+      "hex": "#1f8fc4"
+    },
+    "harbour.accent_jade": {
+      "hex": "#1e9c78"
+    },
+    "harbour.accent_lime": {
+      "hex": "#b5d334"
     }
   }
 }

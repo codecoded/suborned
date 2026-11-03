@@ -1,0 +1,28 @@
+# Motive brief 067, item 2 (the patrol in the service yard): the A and G plans with and without the Reroute, and the "entry seen by patrol"
+# chain. Scratch engine 0.33.1 + engine-probe.patch at the new pace with K3 (RB="op-run-speed-cm-s=360 run-alert=0 carry-untrained-cm-s=90
+# mod-running=375" PROBE_OPWALK=180 PROBE_RUNCLOCK=2 PROBE_K3=1), site bA (round 1 + the bench pair, so the square's fight resolves) for the
+# Reroute rows, site k (round 1) for the fesp rows. briefs/067/motive/sq/probe.ts, TREE=tree2. -nr = the same plan with the Reroute taken out.
+bA       ra-h3: success at 4:49.3 T 5 A 0 St 3 gun 0 | spring 4:01.1 blocker.out 4:09.1 car.free 4:09.1 over 4:34.9 vale-in 4:49.3
+bA       ra-h3-nr: success at 4:49.3 T 4 A 0 St 3 gun 0 | spring 4:01.1 blocker.out 4:09.1 car.free 4:09.1 over 4:34.9 vale-in 4:49.3
+bA       rad-h3: success at 4:49.3 T 6 A 1 St 3 gun 0 | spring 4:01.1 blocker.out 4:09.1 car.free 4:09.1 over 4:34.9 vale-in 4:49.3
+bA       rad-h3-nr: success at 4:49.3 T 5 A 1 St 3 gun 0 | spring 4:01.1 blocker.out 4:09.1 car.free 4:09.1 over 4:34.9 vale-in 4:49.3
+           (the patrol answers the dead screen at 0:41.6, is wary of the Tech at 1:30.8, stands down 1:38.2, back on its sweep 2:37.0; no report)
+bA       rg-ff: success at 3:59.6 T 6 A 1 St 3 gun 0 | spring 3:45.5 blocker.out 3:47.9 car.free - over 3:54.1 vale-in 3:59.6
+bA       rg-ff-nr: success at 3:59.6 T 5 A 1 St 3 gun 0 | spring 3:45.5 blocker.out 3:47.9 car.free - over 3:54.1 vale-in 3:59.6
+bA       rgkb-h3-nr: failure enforcer-down at 3:53.4 T 7 A 2 (2:59.8 takedown.seen "The patrol sees a body carried: Alert 2"; patrol.breaks; it shoots the Enforcer from 11 m)
+           (rgf-ff-nr, rgfb-ff-nr: not composed as edited: their knockout was timed on patrol.rerouted; a timing artefact of the edit, not a finding)
+k        fesp-a..f (route A, a Disable at 1:20-2:05 in place of the Loop, no Reroute): the patrol answers the dead screen (patrol.alarm) and walks
+           round the wing's north end to the camera; it arrives from the north facing west and never has the public door in its cone: every
+           Enter at 2:53.8 lands (enter.in). "entry seen by patrol" is not reached on this site by any chain I could compose.
+
+# The same comparisons on round 1's site (k) with the square rules and K3 on a held car (PROBE_K3=2 PROBE_SQ=7, tree2): the table in
+# briefs/067/motive-square.md §5.2 quotes these.
+k-rules  ra-h3: success at 4:37.3 T 5 A 0 St 3 gun 0 | spring 4:01.1 blocker.out 4:06.2 car.free 4:06.2 over 4:22.9 vale-in 4:37.3
+k-rules  ra-h3-nr: success at 4:37.3 T 4 A 0 St 3 gun 0 | spring 4:01.1 blocker.out 4:06.2 car.free 4:06.2 over 4:22.9 vale-in 4:37.3
+k-rules  rad-h3: success at 4:37.3 T 6 A 1 St 3 gun 0 | spring 4:01.1 blocker.out 4:06.2 car.free 4:06.2 over 4:22.9 vale-in 4:37.3
+k-rules  rad-h3-nr: success at 4:37.3 T 5 A 1 St 3 gun 0 | spring 4:01.1 blocker.out 4:06.2 car.free 4:06.2 over 4:22.9 vale-in 4:37.3
+           (0:41.6 patrol.alarm; 1:30.0 the patrol is wary of the Tech; 1:38.2 patrol.stands-down; no report)
+k-rules  rg-ff: success at 3:59.6 T 6 A 1 St 3 gun 0 | spring 3:45.5 blocker.out 3:47.6 car.free - over 3:52.3 vale-in 3:59.6
+k-rules  rg-ff-nr: success at 3:59.6 T 5 A 1 St 3 gun 0 | spring 3:45.5 blocker.out 3:47.6 car.free - over 3:52.3 vale-in 3:59.6
+k-rules  rgkb-bo: success at 5:36.1 T 2 A 1 St 2 gun 0 | spring 5:12.2 blocker.out 5:21.7 car.free 5:21.7 over - vale-in 5:36.1
+k-rules  rgkb-bo-nr: failure enforcer-down at 3:53.4 T 7 A 2 (2:59.8 takedown.seen "The patrol sees a body carried: Alert 2"; patrol.breaks)

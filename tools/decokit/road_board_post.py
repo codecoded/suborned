@@ -53,9 +53,15 @@ def frame(d, tag, haze):
     night = tag.endswith("night")
     if haze:
         dep = np.load(d / f"{tag}.depth.npy")
-        k = math.sqrt(-math.log(1 - HAZE["ground"]["reach"])) / HAZE["ground"]["farClip"]
-        f = np.where(np.isfinite(dep), 1 - np.exp(-((k * np.where(np.isfinite(dep), dep, 0)) ** 2)), 0.0)[..., None].astype(np.float32)
-        hz = hexlin(LIGHT["palette"]["night.haze" if night else "light.haze"]["hex"])
+        dd = np.where(np.isfinite(dep), dep, 0)
+        if HAZE.get("follow", {}).get("mode") == "linear":  # haze/2 (Glint, 2026-10-22): linear, clear to `start`, the haze colour at `end`
+            f = np.clip((dd - HAZE["follow"]["start"]) / (HAZE["follow"]["end"] - HAZE["follow"]["start"]), 0, 1)
+            f = np.where(np.isfinite(dep), f, 0.0)[..., None].astype(np.float32)
+            hz = hexlin(LIGHT["palette"]["night.haze"]["hex"] if night else HAZE["colour"])
+        else:  # haze/1: exp2
+            k = math.sqrt(-math.log(1 - HAZE["ground"]["reach"])) / HAZE["ground"]["farClip"]
+            f = np.where(np.isfinite(dep), 1 - np.exp(-((k * dd) ** 2)), 0.0)[..., None].astype(np.float32)
+            hz = hexlin(LIGHT["palette"]["night.haze" if night else "light.haze"]["hex"])
         lin = lin * (1 - f) + hz * f
     post = LIGHT["post"]
     thr, inten = post["bloom"]["threshold"], post["bloom"]["intensity"]

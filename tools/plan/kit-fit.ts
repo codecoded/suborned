@@ -10,7 +10,7 @@ import { adopted, slotOf } from '../world/gen/kitrefs';
 import { PART_USE, fitsPart } from '../world/gen/street/partkit';
 import type { Check } from './checks';
 import { type V, inPoly, lineDist } from './geom';
-import { quayBlock } from './street-zones';
+import { FLAT, boxRing, footprintOf, quayBlock, ringGap, roadAt, walkBlock } from './street-zones';
 import { footOf } from '../world/civic/foot';
 import { type R4, type WCtx, TIP_TOL, TOL, f1, rule } from './world-ctx';
 
@@ -47,32 +47,64 @@ export function kitFitChecks(c: WCtx): Check[] {
     const off = cs.map(q => [(q[0] - r.c[0]) * ux[0] + (q[1] - r.c[1]) * ux[1], -(q[0] - r.c[0]) * ux[1] + (q[1] - r.c[1]) * ux[0]] as V);
     if (off.some(o => Math.abs(o[0]) > r.size[0] / 2 + TOL || Math.abs(o[1]) > r.size[1] / 2 + TOL)) bad.push(`${r.id}: ${k.a.id} ${k.s.map(f1).join('×')} m outside the roof ${r.size.map(f1).join('×')}`);
   }
+  // roofs (brief 075 remap): each roofline piece inside the roof rect, standing on the roof (z at the slab or just over it)
+  for (const r of w.roofs) for (const [i, kr] of (r.kits ?? []).entries()) {
+    const k = piece(`${r.id}/kits-${i}`, kr); if (!k) continue;
+    const cs = footOf(k.a, kr), ux: V = [Math.cos(r.yaw), Math.sin(r.yaw)];
+    const off = cs.map(q => [(q[0] - r.c[0]) * ux[0] + (q[1] - r.c[1]) * ux[1], -(q[0] - r.c[0]) * ux[1] + (q[1] - r.c[1]) * ux[0]] as V);
+    if (off.some(o => Math.abs(o[0]) > r.size[0] / 2 + TOL || Math.abs(o[1]) > r.size[1] / 2 + TOL)) bad.push(`${r.id}/kits-${i}: ${k.a.id} outside the roof ${r.size.map(f1).join('×')}`);
+    if (kr.z < r.z - TOL || kr.z > r.z + 0.5) bad.push(`${r.id}/kits-${i}: ${k.a.id} at z ${f1(kr.z)}, roof ${f1(r.z)}`);
+  }
   // street: inside the item's slot
   const g = genCtx(plan, d, c.civ);
   for (const s of w.street) if (s.kit) {
     const k = piece(s.id, s.kit), slot = slotOf(g, s); if (!k) continue;
     if (PART_USE[s.kind]) { // a crossing's part: its slot is its own size, and the piece is the one of its use, unscaled
-      if (!k.a.tags.use.includes(PART_USE[s.kind]!) || s.kit.scale.some(v => v !== 1) || !fitsPart(k.a.size, s)) bad.push(`${s.id}: ${k.a.id} ${k.a.size.map(f1).join('×')} m is not the ${PART_USE[s.kind]} piece of the part's ${s.size.map(f1).join('×')} m`);
+      if (!PART_USE[s.kind]!.some(u => k.a.tags.use.includes(u)) || s.kit.scale.some(v => v !== 1) || !fitsPart(k.a.size, s)) bad.push(`${s.id}: ${k.a.id} ${k.a.size.map(f1).join('×')} m is not the ${PART_USE[s.kind]!.join(' / ')} piece of the part's ${s.size.map(f1).join('×')} m`);
       continue;
     }
     if (!slot) { bad.push(`${s.id}: a ${s.kind} has no slot`); continue; }
     if ((slot.along !== undefined && k.s[0] > slot.along + TOL) || (slot.depth !== undefined && k.s[2] > slot.depth + TOL) || (slot.maxH !== undefined && k.s[1] > slot.maxH + TOL)) bad.push(`${s.id}: ${k.a.id} ${k.s.map(f1).join('×')} m over slot ${slot.along ?? '-'}×${slot.depth ?? '-'}×${slot.maxH ?? '-'}`);
   }
-  // gateways: the plan's feet inside the piece's footprint; clear of the quay edge (SF-14 1.5 m), the pier walk, the pylons (3 m) and the beam envelope
+  // gateways (megastructures[].gateway on the pier quay, landmarks[].gateway on a pavement): the plan's feet inside the piece's footprint and in the gateway's `zones`
+  // (default quay); clear of the pylons (3 m), the beam envelope and the walks. Quay feet: on the quay, 1.5 m off its edge (SF-14), off the walks the megastructure spans.
+  // Frontage feet: in the frontage zone of their street (kerb + walk <= past the kerb face <= pavement), never a walk zone (SF-1) or a plan walk; and the keep-clear list:
+  // no doorway, and no standing street item (spill, vending, palm pit, lamp...), within 1.5 m of a plinth.
   const sky = d.sky.map(p => p.samples.map(s => s.p as V)), pylonHalf = (S.skyrail?.pylonSize ?? c.plan.standards.skyrail.pylonSize ?? 1.6) / 2, beamEnv = plan.standards.skyrail.beamCentres / 2 + 0.75;
-  for (const m of plan.megastructures ?? []) {
-    const gw = (m as any).gateway as { kit: string; feet: R4[] } | undefined, ref = w.megastructures.find(x => x.id === `mega/${m.id}`)?.gateway;
-    if (!gw) continue;
-    if (!ref) { total++; bad.push(`${m.id}: gateway ${gw.kit} not emitted`); continue; }
-    const k = piece(`${m.id}/gateway`, ref); if (!k) continue;
-    const box = corners(k.s, ref.at, ref.yaw ?? 0);
+  type Gw = { kit: string; feet: R4[]; zones?: string[] };
+  const gates: { id: string; gw: Gw; ref?: KitRef & { at: V }; spans: string[] }[] = [
+    ...(plan.megastructures ?? []).filter(m => (m as any).gateway).map(m => ({ id: m.id, gw: (m as any).gateway as Gw, ref: w.megastructures.find(x => x.id === `mega/${m.id}`)?.gateway, spans: m.spans.foot ?? [] })),
+    ...plan.landmarks.filter(l => l.gateway).map(l => ({ id: l.id, gw: l.gateway as Gw, ref: w.landmarks.find(x => x.id === `landmark/${l.id}`)?.gateway, spans: plan.foot.map(f => f.id) })),
+  ];
+  // brief 075 remap: where a block's run fronts the street (plan blocks[].runs[].faces = class:road) behind the section's pavement, the paved setback between the
+  // pavement and that building line is frontage ground too (the old 8 m avenue pavement, now Crown Avenue's 6.5 m access section with its 1.5 m setback to the old wall)
+  const runs = ((plan as { blocks?: { runs: { a: V; b: V; n: V; faces: string }[] }[] }).blocks ?? []).flatMap(b => b.runs);
+  // (p between the street and the run: in front of the facade by exactly the run's own distance past the kerb less p's, so never across the street)
+  const toLine = (p: V, road: string, dk: number) => runs.some(r => {
+    if (r.faces.split(':')[1] !== road) return false;
+    const u: V = [r.b[0] - r.a[0], r.b[1] - r.a[1]], L = Math.hypot(u[0], u[1]), t = ((p[0] - r.a[0]) * u[0] + (p[1] - r.a[1]) * u[1]) / L, s = (p[0] - r.a[0]) * r.n[0] + (p[1] - r.a[1]) * r.n[1];
+    const m: V = [(r.a[0] + r.b[0]) / 2, (r.a[1] + r.b[1]) / 2], rr = roadAt(g, m, '');
+    return t >= -TOL && t <= L + TOL && s >= -TOL && !!rr && rr.road === road && Math.abs(s - (rr.dk - dk)) < 0.5;
+  });
+  const KEEP = 1.5, standing = w.street.filter(s => !FLAT.has(s.kind) && s.z < 3), doors = w.frontages.filter(f => f.level === 'street').map(f => ({ id: f.id, ring: boxRing(f.entrance.c, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw) }));
+  for (const { id: gid, gw, ref, spans } of gates) {
+    if (!ref) { total++; bad.push(`${gid}: gateway ${gw.kit} not emitted`); continue; }
+    const k = piece(`${gid}/gateway`, ref); if (!k) continue;
+    const box = corners(k.s, ref.at, ref.yaw ?? 0), zones = gw.zones ?? ['quay'];
     gw.feet.forEach((f, i) => {
-      const id = `${m.id}/gateway/foot-${i}`, pts = rectPts(f);
+      const id = `${gid}/gateway/foot-${i}`, pts = rectPts(f), ring: V[] = [[f[0], f[2]], [f[1], f[2]], [f[1], f[3]], [f[0], f[3]]];
       if (rectPts(f, 6.4).some(q => !pointInQuad(q, box, TOL))) bad.push(`${id}: outside the piece's footprint`);
-      if (!pts.every(p => plan.quay.some(r => inPoly(p, r)))) bad.push(`${id}: not on the quay`); else if (quayBlock(c, pts)) bad.push(`${id}: within 1.5 m of the quay edge`);
-      for (const fp of plan.foot) { const e = Math.min(...pts.map(p => lineDist(p, fp.pts))) - fp.w / 2; if (e < -TOL && (m.spans.foot ?? []).includes(fp.id)) bad.push(`${id}: on the ${fp.id} walk`); }
+      const onQuay = pts.every(p => plan.quay.some(r => inPoly(p, r))), inFront = pts.every(p => { const r = roadAt(g, p, ''); return !!r && r.dk >= r.sec.kerb + r.sec.walk - TOL && (r.dk <= r.sec.pavement + TOL || toLine(p, r.road, r.dk)); });
+      if (!(zones.includes('quay') && onQuay) && !(zones.includes('frontage') && inFront)) bad.push(`${id}: not in its zone (${zones.join(' / ')})`);
+      else if (zones.includes('quay') && onQuay && quayBlock(c, pts)) bad.push(`${id}: within 1.5 m of the quay edge`);
+      for (const fp of plan.foot) { const e = Math.min(...pts.map(p => lineDist(p, fp.pts))) - fp.w / 2; if (e < -TOL && spans.includes(fp.id)) bad.push(`${id}: on the ${fp.id} walk`); }
+      if (zones.includes('frontage')) { const wb = walkBlock(g, pts, ''); if (wb) bad.push(`${id}: in ${wb}`); }
       for (const p of d.pylons) { const e = Math.min(...pts.map(q2 => Math.hypot(q2[0] - p.p[0], q2[1] - p.p[1]))) - pylonHalf; if (e < 3 - TOL) bad.push(`${id}: ${f1(e)} m from pylon ${f1(p.p[0])},${f1(p.p[1])} (3)`); }
       const bd = Math.min(...sky.flatMap(l => pts.map(p => lineDist(p, l)))); if (bd < beamEnv - TOL) bad.push(`${id}: ${f1(bd)} m from the beam (envelope ${beamEnv})`);
+      if (!zones.includes('frontage')) return;
+      const near = (r: V[]) => ringGap(r, ring) < KEEP - TOL, cx = (f[0] + f[1]) / 2, cy = (f[2] + f[3]) / 2, R = Math.hypot(f[1] - f[0], f[3] - f[2]) / 2 + KEEP + 10;
+      for (const s of standing) if (Math.hypot(s.at[0] - cx, s.at[1] - cy) < R && near(footprintOf(S, s.kind, s.variant, s.at, s.size, s.yaw))) bad.push(`${id}: ${s.id} (${s.kind}) within ${KEEP} m of the plinth`);
+      for (const dr of doors) if (Math.hypot(dr.ring[0]![0] - cx, dr.ring[0]![1] - cy) < R && near(dr.ring)) bad.push(`${id}: ${dr.id}'s doorway within ${KEEP} m of the plinth`);
     });
   }
   // regenerated towers: the tip stays under the crown ceiling (the Skyport Tower, the district's tallest mark, is not a tower site)
@@ -91,7 +123,7 @@ export function kitFitChecks(c: WCtx): Check[] {
     if (Math.abs(off) > TIP_TOL) bad2.push(`${s.id}: ${placed.kit.id} built to ${f1(built)} m, ${s.regen?.tip === undefined ? `its pair ${s.regen!.same}'s ` : ''}regen.tip ${stated} (${off > 0 ? '+' : ''}${f1(off)} m)`);
   }
   return [
-    rule('K-1', G, 'Every kit ref is an adopted piece that fits its slot (landmark disc and top, roof rect, kerb zone, gateway feet clear of quay edge, walk, pylons and beam); regenerated tower tips <= towers.crownTip', total, bad, 'all fit', 'brief 006 B; plan landmarks, roofs.kit, streetscape, towers.crownTip'),
+    rule('K-1', G, 'Every kit ref is an adopted piece that fits its slot (landmark disc and top, roof rect, kerb zone, gateway feet inside the piece, in their zone (quay or frontage), clear of quay edge, walk, pylons and beam, no doorway or standing item within 1.5 m of a frontage plinth); regenerated tower tips <= towers.crownTip', total, bad, 'all fit', 'brief 006 B; brief 075 vista (landmarks[].gateway); plan landmarks, roofs.kit, streetscape, towers.crownTip · failing examples: kit-fit.test.ts (a skyport gateway foot on the beam, a Crown Avenue foot moved onto the walk, a lamp against a plinth)'),
     rule('K-2', G, `A regenerated tower stands to the tip its order states: the placed piece's top (podium deck + height x scale) is within ${TIP_TOL} m of regen.tip (a pair takes its partner's); a site whose piece is not adopted yet is not judged`, total2, bad2, `±${TIP_TOL} m`, 'standards.buildings.towers.sites[].regen.tip · tools/decokit (a piece is built to its order and never stretched; a height change is regenerated) · failing example: out/plan/variants/heights-cut.plan.json, avenue-needle cut to 26 storeys (regen.tip 153.4) with the 158.4 m Tower_Needle still placed (+14.4 m), and the avenue gates cut to 30 (154.8) with the DiscTowers (+10.8 m)'),
   ];
 }

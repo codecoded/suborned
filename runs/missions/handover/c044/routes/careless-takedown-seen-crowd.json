@@ -1,0 +1,22 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D): route G's knockout done at 5:30, as the clerks come out by the public door, instead of at 2:31 on an empty square (the camera looped, the patrol rerouted to be away). Re-sited 2026-10-25 (Waymark, briefs 054 §6 and 058; engine 0.31.0): on engine 0.28.0 civilians see by a cone, and at 5:31 the clerks had their backs to the door, so the witness was guard 73; at 5:30.0 the clerks leaving face it: eleven see the blow, the Loyal and Idealist ones (05, 09, 34, 58, 69) report it, and the reports that land are theirs (05, 26, 34 and 69 at the door at 5:38.0, Alert 3: the act's +4 T); guard 73 sees it too but the clerks' word lands first. The witness who reports is a civilian the player can read (T9). Loop v2: the Enforcer waits on the forecourt out of every cone (as route G) and walks to the guard 11 s before the blow; the loop is planted at 4:20 (live 4:40 to 6:40) and the patrol rerouted at 4:45, so it leaves at 5:30; neither the camera nor the patrol sees the blow. The Enforcer, waiting by the downed guard, tries the door at 5:39, a second after the clerks' word has locked it (refused: lockdown), and the response finds him: Enforcer down at 6:33.9 (7 T). No final fight, so the agent and every final-intent rules cannot differ (FinalIntentTests, engine 0.28.0). The careful twin is route-g. c038 (Waymark, engine 0.34.1): since brief 059 an unturned driver drives Vale off at 6:13, before the response reaches the Enforcer (6:33.9 on c036), so the run ends Vale leaves in his car (Alert 3).",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet", "run": true},
+  {"tick": 0, "op": "enforcer", "do": "move", "to": [5650, -4750]},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Office approach"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "crew:fixer"},
+  {"tick": 462, "op": "scout", "do": "watch", "target": "guard"},
+  {"tick": 662, "op": "scout", "do": "move", "to": "crew:scout"},
+  {"tick": 2600, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 2850, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 3190, "op": "enforcer", "do": "move", "to": [6520, -4110]},
+  {"tick": 3300, "op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout"},
+  {"tick": 3360, "op": "tech", "do": "move", "to": "crew:tech"},
+  {"tick": 3390, "op": "enforcer", "do": "enter"},
+  {"tick": 3750, "op": "enforcer", "do": "move", "to": "d:Getaway bay"}
+ ],
+ "until": 6000
+}

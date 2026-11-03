@@ -207,6 +207,7 @@ namespace Suborned.Play
             // Glyph r1: the culprit and the caught operative together: aimed 60 % of the way from the op to the culprit, the camera looking
             // from the op's side (culprit above the centre, op below), zoomed so the pair spans about 40 % of the width (people 40-60 px)
             Vector3? op = failOpKey != null && views?.Find(failOpKey) is Transform ot && ot.gameObject.activeSelf ? ot.position : (Vector3?)null;
+            if (op == null && failOpKey != null && Game != null && IsOpName(failOpKey[3..]) && Game.Ops[(int)Op.Parse(failOpKey[3..])].InCar) op = GetawayWorld; // engine 0.34.0 cell-down: the last to fall may be in the car (not drawn): the car stands for him
             var cu = failCulprit; FailCulpritAt = cu + Vector3.up * 2.2f; FailOpAt = op;
             float yawBase = yaw0, size = failZoom; var aim = cu;
             if (op is Vector3 o)
@@ -387,19 +388,30 @@ namespace Suborned.Play
         {
             var t = Text; string why = c.Why;
             if (c.Fail == "sealed") why = c.Origin?.Reporter?.Kind is "desk" or "heard" ? c.Origin.Reporter.Kind : c.Origin?.Because ?? why;
-            string cap = t != null && t.FailCaption.TryGetValue(c.Fail + "|" + why, out var cp) ? cp : (Text?.EndFail.TryGetValue(c.Fail, out var ef) == true ? ef : c.Fail);
+            // a fail code the text does not word yet (engine 0.34.0's cell-down) says the engine's own fail sentence, never the bare code
+            string cap = t != null && t.FailCaption.TryGetValue(c.Fail + "|" + why, out var cp) ? cp : (Text?.EndFail.TryGetValue(c.Fail, out var ef) == true ? ef : endGame?.FailText is { Length: > 0 } ft ? ft : c.Fail);
             string tip = t != null && t.FailTip.TryGetValue(c.Fail + "|" + why, out var tp) ? tp : "";
-            var by = who ?? (c.Culprits.Count > 0 ? c.Culprits[0] : null);
-            string byWords = by == null ? "Someone" : by.Kind switch
+            if (c.Fail == "sealed" && SealedWords(c).tip is string st && st.Length > 0) tip = st; // brief 057 §4 (Fable's less.sealed.tip): what to do next time, by the car's state
+            string byWords = FailByWords(c, who);
+            string agent = c.Ops.Count > 0 ? "the " + (t != null && t.Speakers.TryGetValue(c.Ops[0], out var ag) ? ag : c.Ops[0]) : "us";
+            string Fill(string s) => s.Replace("{by}", byWords).Replace("{agent}", agent);
+            return (Fill(cap), Fill(tip));
+        }
+
+        /// <summary>Brief 080: the closed-in fail's line (Fable's less.closedIn) by the cause's why; "" when the text has none.</summary>
+        public string ClosedInWords(FailCause c) => Text != null && Text.ClosedInLine.TryGetValue(c.Why, out var l) ? l.Replace("{by}", FailByWords(c, null)) : "";
+
+        /// <summary>{by} in words: the culprit named as the fail camera names it (less.failcam.by).</summary>
+        string FailByWords(FailCause c, Blamed who)
+        {
+            var t = Text; var by = who ?? (c.Culprits.Count > 0 ? c.Culprits[0] : null);
+            return by == null ? "Someone" : by.Kind switch
             {
                 "camera" => Cap(t != null && t.TargetNames.TryGetValue("camera-" + by.Id.Replace("camera:", ""), out var cn) ? cn : "a camera"),
                 "op" => "The " + (t != null && t.Speakers.TryGetValue(by.Id, out var sp) ? sp : Cap(by.Id)),
                 "person" => t != null && t.TargetNames.TryGetValue(by.Id, out var pn) ? Cap(pn) : (t != null && t.FailBy.TryGetValue("person", out var ap) ? ap : "A passer-by"),
                 _ => t != null && t.FailBy.TryGetValue(by.Id == "rivals" ? "rivals" : by.Kind, out var bw) ? bw : Cap(by.Id),
             };
-            string agent = c.Ops.Count > 0 ? "the " + (t != null && t.Speakers.TryGetValue(c.Ops[0], out var ag) ? ag : c.Ops[0]) : "us";
-            string Fill(string s) => s.Replace("{by}", byWords).Replace("{agent}", agent);
-            return (Fill(cap), Fill(tip));
         }
     }
 }

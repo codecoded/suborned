@@ -1,0 +1,49 @@
+{
+  "picked": 1,
+  "why": "Take 1 has the clearest order: she gives way, makes an ordinary call, gets him off the door, then tells him. This pass fixes only the two review faults. The window stays short and unnumbered [d8719fcc42e7edb421793dc5].",
+  "changes": [
+    "Okafor's line now reads \"It's only a door. All right, I'm coming.\" It's a promise, not a live action, so it no longer contradicts a shot where he stands idle.",
+    "The opens line now reads \"Enter the Office while door's empty.\" This ties the action to the short window [d8719fcc42e7edb421793dc5].",
+    "Mismatch with the review: it said the card has no limit and proposed a 10-word line, but the sheet caps opens at 6 words. I kept the cap, which meant dropping \"Enforcer\" from the line. The action is still named as the sheet gives it."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "It's time, Inez. Okafor hears what we agreed, and nothing else."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Yes, I'll call him. Did anyone hear you ask for me?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "It's me, love. Have they stamped your shift card yet?"
+    },
+    {
+      "speaker": "Okafor",
+      "line": "Not till the change. That's not your voice. What is it?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "I've something to tell you that can't wait. Not on the line."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "It's only a door. All right, I'm coming."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Someone knows about us, love. Whoever it was looked suspicious."
+    },
+    {
+      "speaker": "Okafor",
+      "line": "And my door's empty. I'm running back to it, now."
+    }
+  ],
+  "learned": [
+    "She told him: door's empty less."
+  ],
+  "opens": [
+    "Enter the Office while door's empty."
+  ]
+}

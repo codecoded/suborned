@@ -151,9 +151,9 @@ namespace Suborned.Play
             bool Ok(string verb) { Answer a = default; try { a = g.ScoutQuery(verb, role); } catch { return false; } return a.ok || a.code is "too-far" or "agent-busy"; }
             // brief 031: a Watch names its agent (the selected one if it can, else who'd learn soonest); Listen stays the Scout's
             if (!p.KRoutine && host.WatchBy(role) is OpId wb) return (wb, "watch");
-            if ((needOpen || tempOpen || tiesOpen) && Ok("listen")) return (OpId.Scout, "listen");
+            if ((needOpen || tempOpen || tiesOpen) && host.Able((int)OpId.Scout) && Ok("listen")) return (OpId.Scout, "listen"); // item 29: never a downed agent
             if ((needOpen || tempOpen || tiesOpen) && host.WatchBy(role) is OpId wb2) return (wb2, "watch");
-            if (!needOpen && !tempOpen && role != "councillor") return (OpId.Fixer, "turn");
+            if (!needOpen && !tempOpen && role != "councillor" && host.Able((int)OpId.Fixer)) return (OpId.Fixer, "turn");
             return null;
         }
 
@@ -189,8 +189,8 @@ namespace Suborned.Play
             {
                 var c = icards[i]; var role = intelOrder[i]; c.Who = role; var p = g.PersonByRole(role);
                 c.Root.style.backgroundColor = i == 0 ? CardFillFirst : CardFill; Show(c.Bar, i == 0);
-                Bg(c.Badge, CastBadge(role), Color.white); Show(c.BadgeRing, p.Turned); Show(c.BadgeTick, p.Turned);
-                string name = stress ? "Bartholomew" : host.Text?.TargetName(role, p.Name) ?? p.Name; if (name.Length > 0) name = char.ToUpperInvariant(name[0]) + name[1..]; string job = role switch { "waitress" => "café waitress", "driver" => "Vale's driver", "guard" => "door guard", _ => "" }; // "The driver", as the mock
+                Bg(c.Badge, FaceOf(role), Color.white); /* brief 062: the painted face, the guard his pictogram */ Show(c.BadgeRing, p.Turned); Show(c.BadgeTick, p.Turned);
+                string name = stress ? "Bartholomew" : host.Text?.TargetName(role, p.Name) ?? p.Name; if (name.Length > 0) name = char.ToUpperInvariant(name[0]) + name[1..]; string job = role switch { "waitress" => "café waitress", "driver" => $"{host.ValeWord}'s driver", "guard" => "door guard", _ => "" }; // "The driver", as the mock
                 Text(c.Name, name); Text(c.Role, "·  " + job);
                 float nw = c.Name.resolvedStyle.width; c.Role.style.left = 52 + (float.IsNaN(nw) ? 60 : nw) + 6;
                 // the slots, from the engine's knowledge
@@ -201,7 +201,7 @@ namespace Suborned.Play
                 Fill(c.Slots[1], p.KTemperament ? "learned" : "unk", p.Temperament, p.KTemperament ? IntelFragment("temperament", p.Temperament) : "");
                 bool tiesKnown = p.KSecret && p.Secret.Length > 0, noneKnown = p.KNeed && p.KTemperament && p.Secret.Length == 0;
                 string lover = p.Lover != null ? host.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; // "Loves Inez", "Loves the guard" (Aster)
-                Fill(c.Slots[2], tiesKnown || noneKnown ? "learned" : "unk", tiesKnown ? (p.Secret == "affair" ? "kin" : "secret") : noneKnown ? "secret_none" : "", tiesKnown ? IntelFragment("secret", p.Secret, lover) : noneKnown ? IntelFragment("secret", "") : "");
+                Fill(c.Slots[2], tiesKnown || noneKnown ? "learned" : "unk", tiesKnown ? (p.Secret == "affair" ? "lovers" : "secret") : noneKnown ? "secret_none" : "", tiesKnown ? IntelFragment("secret", p.Secret, lover) : noneKnown ? IntelFragment("secret", "") : "");
                 foreach (var sl in c.Slots) sl.Verb = sl.State == "unk" && nx is { verb: "watch" or "listen" } ? nx.Value.verb : sl.State == "unk" ? "listen" : "";
                 if (stress) foreach (var sl in c.Slots) { sl.Frag = IntelWorst[0]; }
                 // the chip

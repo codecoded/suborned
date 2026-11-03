@@ -1,0 +1,646 @@
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/Game.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/Game.cs
+--- sim/Suborned.Sim/Game.cs	2026-10-26 04:04:20
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/Game.cs	2026-10-26 05:50:44
+@@ -361,6 +361,7 @@
+         public void Step()
+         {
+             if (Over) return;
++            MotiveFight.Trace(this); // MF probe (scratch): positions every 2 s when MF_TRACE=1
+             try { StepInner(); }
+             catch (Exception e) when (!(e is OutOfMemoryException))
+             {
+@@ -689,7 +690,7 @@
+ 
+         /// <summary>A person's sight from `from` to `to` (rulebook perception; brief 055 §7 perception.mount: from the eye above its floor to the
+         /// target's head or chest above its own, in 3D; off: one eye height over a flat datum). Fire lines read it too.</summary>
+-        bool Sees(Pt from, Pt to) => R.MountOn ? SeesFrom(from, FloorAt(from) + eye, to) : S.Sight(from, to, eye);
++        bool Sees(Pt from, Pt to) => !MfScreened(from, to) && (R.MountOn ? SeesFrom(from, FloorAt(from) + eye, to) : S.Sight(from, to, eye)); // MF probe (scratch): the screen
+         /// <summary>The floor under p, block z cm (site grid.floor; brief 055).</summary>
+         int FloorAt(Pt p) => S.Grid.FloorAt(p);
+         /// <summary>Brief 055 §7: from an eye at height z (block cm) at `from`, the line to the target's head (its floor + eye) or its chest (its
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/GameAi.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/GameAi.cs
+--- sim/Suborned.Sim/GameAi.cs	2026-10-26 03:39:56
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/GameAi.cs	2026-10-26 05:45:20
+@@ -176,13 +176,14 @@
+             Func<Pt, bool> sees = p => Sees(pos, p);
+             var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
+             bool moving = h.Moving(Tick);
++            bool mfHold = MF.PinHold && MfPinned(g) && g.St != "break"; // MF probe (scratch): a pinned body keeps its spot
+             switch (g.St) // one transition a tick (Pulse §1.4)
+             {
+                 case "alerted":
+                     if (Tick >= g.Until)
+                     {
+                         if (foes.Count > 0) { g.St = "engage"; var t0 = ChooseTarget(h.Id, g, pos, foes); g.Target = t0; g.Acc = AccFor(g, t0); g.NextShot = Math.Max(g.NextShot, Tick); } // the wait was the aim
+-                        else { g.St = "advance"; Advance(h); }
++                        else if (!mfHold) { g.St = "advance"; Advance(h); }
+                     }
+                     break;
+                 case "advance":
+@@ -196,14 +197,14 @@
+                         else if (Tick - g.NoFoeSince >= T(R.EngageLapseS))
+                         {
+                             g.NoFoeSince = -1; LoseTarget(g);
+-                            if (IsHolder(h) && pos == h.Home) g.St = "hold"; else if (IsHolder(h) && KiteHolds(g)) g.St = "hold"; else { g.St = "advance"; Advance(h); } // brief 027 F2: no walk home while alarmed
++                            if (IsHolder(h) && pos == h.Home) g.St = "hold"; else if (IsHolder(h) && KiteHolds(g)) g.St = "hold"; else if (mfHold) g.St = "hold"; else { g.St = "advance"; Advance(h); } // brief 027 F2: no walk home while alarmed
+                         }
+                     }
+                     else g.NoFoeSince = -1;
+                     break;
+                 case "hold":
+                     if (foes.Count > 0) g.St = "engage";
+-                    else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { g.St = "advance"; Advance(h); }
++                    else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g) && !mfHold) { g.St = "advance"; Advance(h); }
+                     break;
+                 case "break":
+                     if (G.Within(pos, h.BreakTo ?? S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/GameCombat.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/GameCombat.cs
+--- sim/Suborned.Sim/GameCombat.cs	2026-10-26 03:39:56
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/GameCombat.cs	2026-10-26 05:45:20
+@@ -243,7 +243,7 @@
+                     Note("fire.done", $"{name}: the fight is over. The fire order on {g.Order} ends.");
+                     OrderEnd(op, true);
+                 }
+-                else if (g.Reached && PosOf(g.Order) is Pt rp && !G.Within(op.Pos, rp, g.W.MaxCm)) // engine 0.21.0 (Sky 2026-10-22, brief 041): a lasting order keeps firing on the move, walk or run, until the target is out of range
++                else if (!MF.Sticky && g.Reached && PosOf(g.Order) is Pt rp && !G.Within(op.Pos, rp, g.W.MaxCm)) // MF probe: sticky keeps it; engine 0.21.0 (Sky 2026-10-22, brief 041): a lasting order keeps firing on the move, walk or run, until the target is out of range
+                 {
+                     Note("fire.out-of-range", $"{name}: {g.Order} is out of range ({g.W.MaxCm / 100} m). The fire order ends.");
+                     OrderEnd(op, false);
+@@ -271,6 +271,15 @@
+             {
+                 if (trig && g.TrigTap && Tick >= g.NextShot) { g.TrigTap = false; Note("fire.tap-lost", $"{name} has no line on {t}: the shot is not fired."); } // §11.4: ready, nothing to fire at
+                 if (trig || follow) return; // never walked to join, never lapses: it fires once it has reach and a line
++                if (t == g.Order && MF.Sticky && (g.Reached || op.CloseSpent || !CloseOn))
++                {
++                    g.LostAt = -1; // MF probe (scratch): the focus holds; meanwhile the agent fires at will on whoever it can
++                    var t2 = g.Stance == "hold" ? "" : (FreeApplies ? FreeTarget(op) : BaseStanceTarget(op));
++                    if (t2.Length == 0 || t2 == t || !(PosOf(t2) is Pt at2)) return;
++                    long d2 = Dist(op.Pos, at2); if (d2 > g.W.MaxCm || !SeesId(op.Pos, t2, at2)) return;
++                    if (!Lab) { Aim(g, t2, false); if (Tick >= g.NextShot) { Shoot(name, g, op.Pos, t2, at2, d2, OpGait(op, at2), op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer); opShotTick[(int)op.Id] = Tick; } }
++                    return;
++                }
+                 if (t == g.Order)
+                 {
+                     if (CloseOn && !op.CloseSpent) { if (op.Walk == null && !op.Driven && Tick >= op.CloseAt && !CloseIn(op, at)) op.CloseAt = Tick + Hz; return; } // brief 027 fire.close: walk into range; no lapse (a run goes on first: tuning.md §8.2 rule 2)
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/GameFightLab.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/GameFightLab.cs
+--- sim/Suborned.Sim/GameFightLab.cs	2026-10-26 03:39:56
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/GameFightLab.cs	2026-10-26 06:00:15
+@@ -155,7 +155,7 @@
+                 int c = Labr.Chance[pips];
+                 return running && d > R.PointBlankCm ? c * R.ModTargetRunning / 1000 : c;
+             }
+-            pips = 0; return R.Accuracy(g.W!, d, gait, cov, vale, !g.Trained, running);
++            pips = 0; return MfAcc(g, t, from, at, R.Accuracy(g.W!, d, gait, cov, vale, !g.Trained, running), cov); // MF probe (scratch)
+         }
+ 
+         /// <summary>Tuning.md §8.3: an operative's gait this tick against a target at `at`: stand (no step), walk (a walk, a walk-in, a driven
+@@ -499,10 +499,10 @@
+         // ---------------------------------------------------------------- cover snap (B5)
+ 
+         /// <summary>coverSnap is on for this run (the lab and its switch).</summary>
+-        public bool CoverSnapOn => Lab && LabSnap;
++        public bool CoverSnapOn => (Lab && LabSnap) || (MF.Snap && R.Lab != null); // MF probe (scratch): the readable cover's snap without the lab
+         /// <summary>The snap radius and the marks' reach, in cm (0 with the snap off).</summary>
+-        public int CoverSnapCm => CoverSnapOn ? Labr!.CoverSnapCm : 0;
+-        public int CoverMarksCm => CoverSnapOn ? Labr!.CoverMarksCm : 0;
++        public int CoverSnapCm => CoverSnapOn ? (Labr ?? R.Lab)!.CoverSnapCm : 0;
++        public int CoverMarksCm => CoverSnapOn ? (Labr ?? R.Lab)!.CoverMarksCm : 0;
+ 
+         /// <summary>Who holds a cover point ("" free): a hostile that took it (GameAi) or an operative that snapped to it.</summary>
+         string CoverHolder(string id) => coverTaken.TryGetValue(id, out var who) ? who : "";
+@@ -539,7 +539,7 @@
+         CoverPoint? SnapPoint(Op op, Pt to)
+         {
+             if (!CoverSnapOn || LiveCover.Count == 0 || op.Driven || !op.Gun.Drawn || op.Gun.W == null) return null; // a drawn agent's move only (P7: the marks show for a drawn agent)
+-            int sec = Tick / Hz; long r2 = (long)Labr!.CoverSnapCm * Labr.CoverSnapCm; string me = Sim.Op.Name(op.Id);
++            int sec = Tick / Hz; long r2 = (long)CoverSnapCm * CoverSnapCm; string me = Sim.Op.Name(op.Id);
+             string foe = NearestCombatant(to); Pt? fp = foe.Length > 0 ? PosOf(foe) : null;
+             CoverPoint? best = null; int bestShield = 2; long bestD = long.MaxValue;
+             foreach (var c in LiveCover)
+@@ -584,7 +584,7 @@
+         {
+             var l = new List<CoverMark>(); if (!CoverSnapOn) return l;
+             var op = OpOf(opId); if (op.Down || !op.Gun.Drawn) return l; // P7: marks for a drawn agent
+-            int sec = Tick / Hz; long m2 = (long)Labr!.CoverMarksCm * Labr.CoverMarksCm;
++            int sec = Tick / Hz; long m2 = (long)CoverMarksCm * CoverMarksCm;
+             var foe = NearestCombatant(op.Pos); Pt? fp = foe.Length > 0 ? PosOf(foe) : null;
+             foreach (var c in LiveCover)
+             {
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/GameGetaway.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/GameGetaway.cs
+--- sim/Suborned.Sim/GameGetaway.cs	2026-10-26 04:08:45
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/GameGetaway.cs	2026-10-26 06:02:50
+@@ -324,7 +324,7 @@
+                 var (_, _, h) = scored[i];
+                 var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : Walk.NearestFree(post) ?? post;
+                 if (cv != null) TakeCover(h.Gun, cv); else ReleaseCover(h.Gun); // the cover it held before (a joined officer's) is free again
+-                h.Blocker = true; h.Home = to; MoveTo(h, to); Blockers.Add(h.Id);
++                h.Blocker = true; h.Home = to; if (MF.BlockPosted) { h.At = to; h.Run = null; } else MoveTo(h, to); Blockers.Add(h.Id); // MF probe (scratch): posted at the spring
+                 Note("fight.blocker", $"{h.Id} goes for the road ({(cv != null ? "cover at " + cv.Id : "the lane, in the open")}).");
+             }
+         }
+@@ -340,6 +340,7 @@
+                 if (coverTaken.ContainsKey(c.Id) || c.Q < R.CoverQPartial || !c.Present(Tick / Hz) || !InLane(c.At)) continue;
+                 if (G.Within(c.At, Car, R.BlockNearCm - 1) || !G.Within(c.At, Car, R.BlockFarCm)) continue; // the ring: not at the door, in the cell's reach
+                 long d = G.D2(from, c.At);
++                if (MF.BlockShield && !CoverRules.Protects(c, Car, Tick / Hz, R.PointBlankCm)) d += 1L << 40; // MF probe (scratch): prefer a post that shields him from the car
+                 if (d < bd || (d == bd && best != null && string.CompareOrdinal(c.Id, best.Id) < 0)) { bd = d; best = c; }
+             }
+             return best;
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/GameKite.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/GameKite.cs
+--- sim/Suborned.Sim/GameKite.cs	2026-10-26 03:39:56
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/GameKite.cs	2026-10-26 05:45:20
+@@ -140,6 +140,7 @@
+             if (g.KiteHasPrev && onKite && G.D2(pos, sp) <= (long)contact * contact) g.KiteWalked += G.Dist(g.KitePrev, pos);
+             g.KitePrev = pos; g.KiteHasPrev = true;
+             if (Tick < g.KiteAt + Kr.KiteReact) return;
++            if (MF.PinHold && MfPinned(g)) return; // MF probe (scratch): pinned, it neither closes nor re-plans
+             bool moving = h != null ? h.Moving(Tick) : u != null ? Moving(u.Id) : Moving(g.Id);
+             var sees = u != null ? (p => UnitSees(u, p, false)) : KiteSees(g.Id, pos);
+             bool maxAnswer = side != 2 && ShotAtRecently(g, g.KiteBy) && G.D2(pos, sp) <= (long)g.W.MaxCm * g.W.MaxCm && sees(sp); // §7.10 rule 1
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/GameOrders.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/GameOrders.cs
+--- sim/Suborned.Sim/GameOrders.cs	2026-10-26 05:05:58
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/GameOrders.cs	2026-10-26 05:45:20
+@@ -104,6 +104,7 @@
+                 case "drop": return Drop(op, o);
+                 case "stash": return Stash(op, o);
+                 case "restrain": return Restrain(op, o);
++                case "mf-mark": case "mf-talk": case "mf-screen": case "mf-burst": return MfMove(op, o); // MF probe (scratch)
+                 default: return No("unknown-verb", $"verb '{o.Do}' is unknown (unknown = reject)");
+             }
+         }
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/MF.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/MF.cs
+--- sim/Suborned.Sim/MF.cs	1970-01-01 07:00:00
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/MF.cs	2026-10-26 06:02:50
+@@ -0,0 +1,160 @@
++// Motive's fight-proposal probe (brief 039 reopened, Sky 2026-10-26: "The fight should be a lot more fun"). SCRATCH ONLY: this file lives in
++// out/scratch/motive-fight/tree, a copy of engine 0.33.1; nothing here is in sim/. Every switch is off by default, so with no MF_* variable set
++// the engine plays byte-identical to 0.33.1 (checked by the harness's `mf identity`).
++using System;
++using System.Collections.Generic;
++using System.Globalization;
++
++namespace Suborned.Sim
++{
++    public static class MF
++    {
++        static int I(string k, int d) { var v = Environment.GetEnvironmentVariable(k); return v != null && int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out var x) ? x : d; }
++        /// <summary>Sticky focus: a fire order survives its target leaving reach or line (no fire.out-of-range end, no line lapse once it has
++        /// had reach); while the focus can't be shot the agent fires at will (whoever attacks it, else the nearest), then takes the focus back.</summary>
++        public static bool Sticky = I("MF_STICKY", 0) == 1;
++        /// <summary>Suppression: a body shot at (hit or miss) within PinTicks fires at PinMod per mille (PinCoverMod while still beside cover).</summary>
++        public static int PinTicks = I("MF_PIN", 0);
++        public static int PinMod = I("MF_PINMOD", 500);
++        public static int PinCoverMod = I("MF_PINCOVERMOD", -1); // -1: PinMod
++        /// <summary>A pinned hostile neither advances nor closes in (it keeps its spot or its cover).</summary>
++        public static bool PinHold = I("MF_PINHOLD", 0) == 1;
++        /// <summary>Only the cell pins (hostile shots pin nobody): a one-sided reading, for comparison.</summary>
++        public static bool PinCellOnly = I("MF_PINCELL", 0) == 1;
++        /// <summary>Readable cover: the lab's cover marks and snap (1.5 m) without the rest of the lab; the probe's sharp player seeks the marks.</summary>
++        public static bool Snap = I("MF_SNAP", 0) == 1;
++        /// <summary>The blocker is on his post when the ambush springs (a Pulse change: he waits there), not walking to it in the open.</summary>
++        public static bool BlockPosted = I("MF_BLOCKPOSTED", 0) == 1;
++        /// <summary>The blocker's post is the lane cover that shields him from the getaway car where one exists (a Pulse change): the three at the
++        /// car must flank, mark or grind him.</summary>
++        public static bool BlockShield = I("MF_BLOCKSHIELD", 0) == 1;
++        // the four signature moves (orders mf-mark, mf-talk, mf-screen, mf-burst), each with one recharge
++        public static int Recharge = I("MF_RECHARGE", 200);
++        public static int MarkTicks = I("MF_MARK_T", 100), MarkMod = I("MF_MARK_MOD", 1000), MarkReachCm = I("MF_MARK_REACH", 3000);
++        public static bool MarkCover = I("MF_MARK_COVER", 1) == 1; // the marked body's cover doesn't count against the cell
++        public static int TalkCm = I("MF_TALK_R", 1200), TalkShoutS = I("MF_TALK_S", 2); public static bool TalkHalf = I("MF_TALK_HALF", 1) == 1;
++        public static int ScreenTicks = I("MF_SCREEN_T", 80), ScreenCm = I("MF_SCREEN_R", 400), ScreenReachCm = I("MF_SCREEN_REACH", 2400);
++        public static int BurstTicks = I("MF_BURST_T", 40), BurstCm = I("MF_BURST_R", 300);
++        public static string Describe() => FormattableString.Invariant($"posted {BlockPosted} shield {BlockShield} snap {Snap} sticky {Sticky} pin {PinTicks}t@{PinMod}/{PinCoverMod} hold {PinHold} cellOnly {PinCellOnly} recharge {Recharge}t");
++    }
++
++    public sealed partial class Game
++    {
++        // probe state (not hashed: a probe run is compared by its outcome and log, never by its checkpoints)
++        internal string MfMarkT = ""; internal int MfMarkUntil = -1;
++        internal readonly List<(Pt at, int until)> MfScreens = new List<(Pt, int)>();
++        internal readonly Dictionary<string, int> MfPinUntil = new Dictionary<string, int>(StringComparer.Ordinal);
++        internal readonly int[] MfReady = { 0, 0, 0, 0 };
++        public int MfMoves; // moves taken
++        public readonly List<(int tick, string op, string what)> MfLog = new List<(int, string, string)>();
++
++        /// <summary>A screen (the Tech's steam) between a and b: integer distance from its centre to the segment within its radius.</summary>
++        bool MfScreened(Pt a, Pt b)
++        {
++            if (MfScreens.Count == 0) return false;
++            foreach (var (c, until) in MfScreens)
++            {
++                if (Tick >= until) continue;
++                long dx = b.X - a.X, dy = b.Y - a.Y, l2 = dx * dx + dy * dy;
++                long t = l2 == 0 ? 0 : ((long)(c.X - a.X) * dx + (long)(c.Y - a.Y) * dy);
++                long px, py;
++                if (l2 == 0 || t <= 0) { px = a.X; py = a.Y; }
++                else if (t >= l2) { px = b.X; py = b.Y; }
++                else { px = a.X + dx * t / l2; py = a.Y + dy * t / l2; }
++                long ex = c.X - px, ey = c.Y - py;
++                if (ex * ex + ey * ey <= (long)MF.ScreenCm * MF.ScreenCm) return true;
++            }
++            return false;
++        }
++
++        /// <summary>Pinned: shot at within MF.PinTicks (hit or miss), or under the Enforcer's covering fire.</summary>
++        internal bool MfPinned(Gun g)
++        {
++            if (MfPinUntil.TryGetValue(g.Id, out var u) && Tick < u) return true;
++            if (MF.PinTicks <= 0 || g.ShotByTick < 0 || Tick - g.ShotByTick > MF.PinTicks) return false;
++            if (MF.PinCellOnly && !IsOpId(g.ShotBy)) return false;
++            return true;
++        }
++
++        /// <summary>The probe's accuracy on top of the engine's: a pinned shooter, the Scout's mark.</summary>
++        int MfAcc(Gun g, string t, Pt from, Pt at, int acc, int cov)
++        {
++            if (IsOpId(g.Id) && t == MfMarkT && Tick < MfMarkUntil)
++            {
++                if (MF.MarkCover && cov < 1000 && cov > 0) acc = acc * 1000 / cov; // its cover doesn't count against the cell
++                acc = Math.Min(1000, acc * MF.MarkMod / 1000);
++            }
++            if (MfPinned(g))
++            {
++                int m = MF.PinCoverMod >= 0 && CoverMod(g.Id, from, at) < 1000 ? MF.PinCoverMod : MF.PinMod; // the shooter still beside cover against its target: it ducks
++                acc = acc * m / 1000;
++            }
++            return acc;
++        }
++
++        bool MfReadyFor(Op op) => Tick >= MfReady[(int)op.Id];
++        void MfSpent(Op op, string what) { MfReady[(int)op.Id] = Tick + MF.Recharge; MfMoves++; MfLog.Add((Tick, Sim.Op.Name(op.Id), what)); Note("mf." + what, $"{Sim.Op.Name(op.Id)}: {what}"); }
++
++        bool MfHostileUp(string id) { var h = HostileOf(id); if (h != null) return h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone"; var gg = GunOf(id); return gg != null && !gg.Down && PosOf(id).HasValue && Combatant(id); }
++
++        /// <summary>The four moves as orders: mf-mark (Scout, a hostile within MarkReach with a line), mf-talk (Fixer, a rival within TalkCm with a
++        /// line, hurt or with one of its crew down: he breaks), mf-screen (Tech, a point within ScreenReach: a steam screen blocks every line
++        /// through it), mf-burst (Enforcer, a hostile within the carbine's max with a line, Vale held or not: it and everyone within BurstCm are
++        /// pinned for BurstTicks; no damage).</summary>
++        /// <summary>Whether the move would be taken now, without taking it (the probe player asks first, so the log stays readable).</summary>
++        public bool MfCan(Order o) { var op = OpOf(Sim.Op.Parse(o.Op)); if (op.Down || op.Inside || op.InCar || (op.Busy != null)) return false; mfDry = true; try { return MfMove(op, o).Length == 0; } finally { mfDry = false; } }
++        bool mfDry;
++
++        string MfMove(Op op, Order o)
++        {
++            if (!MfReadyFor(op)) return No("agent-busy", $"{o.Op}'s move recharges until {MfReady[(int)op.Id]}", tick: MfReady[(int)op.Id]);
++            switch (o.Do)
++            {
++                case "mf-mark":
++                {
++                    if (op.Id != OpId.Scout) return No("unknown-verb", "mark is the Scout's");
++                    if (!MfHostileUp(o.Target) || !(PosOf(o.Target) is Pt at)) return No("unknown-verb", "no hostile to mark");
++                    if (!G.Within(op.Pos, at, MF.MarkReachCm) || !Sees(op.Pos, at)) return No("out-of-range", "out of the Scout's reach or line");
++                    if (mfDry) return "";
++                    MfMarkT = o.Target; MfMarkUntil = Tick + MF.MarkTicks; MfSpent(op, "mark " + o.Target); return "";
++                }
++                case "mf-talk":
++                {
++                    if (op.Id != OpId.Fixer) return No("unknown-verb", "talk down is the Fixer's");
++                    var h = HostileOf(o.Target);
++                    if (h == null || !IsRival(h.Id) || !h.Present || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") return No("unknown-verb", "no rival to talk down");
++                    var at = h.Pos(Tick);
++                    if (!G.Within(op.Pos, at, MF.TalkCm) || !Sees(op.Pos, at)) return No("out-of-range", "out of the Fixer's reach or line");
++                    bool shaken = MF.TalkHalf ? h.Gun.Health * 2 <= h.Gun.Max : h.Gun.Health < h.Gun.Max;
++                    if (!shaken) return No("unknown-verb", "he isn't shaken yet: hurt him to half");
++                    if (mfDry) return "";
++                    var rcp = RivalCarPose(); var carAt = rcp.HasValue ? Walk.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark);
++                    ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt);
++                    MfSpent(op, "talk " + h.Id); if (MF.TalkShoutS > 0) { op.Gun.Order = ""; op.Busy = o; op.BusyStart = Tick; op.BusyEnd = Tick + T(MF.TalkShoutS); } return ""; // the shout: he stands, not firing
++                }
++                case "mf-screen":
++                {
++                    if (op.Id != OpId.Tech) return No("unknown-verb", "the screen is the Tech's");
++                    Pt at; if (o.Point.HasValue) at = o.Point.Value; else if (PosOf(o.Target) is Pt tp) at = tp; else return No("no-place", "no point");
++                    if (!G.Within(op.Pos, at, MF.ScreenReachCm)) return No("out-of-range", "out of the Tech's reach");
++                    if (mfDry) return "";
++                    MfScreens.Add((at, Tick + MF.ScreenTicks)); MfSpent(op, $"screen {at}"); return "";
++                }
++                case "mf-burst":
++                {
++                    if (op.Id != OpId.Enforcer) return No("unknown-verb", "covering fire is the Enforcer's");
++                    if (!MfHostileUp(o.Target) || !(PosOf(o.Target) is Pt at)) return No("unknown-verb", "no hostile to cover");
++                    var w = op.Gun.W; if (w == null) return No("unknown-verb", "no weapon");
++                    if (!G.Within(op.Pos, at, w.MaxCm) || !Sees(op.Pos, at)) return No("out-of-range", "out of reach or line");
++                    if (mfDry) return "";
++                    int n = 0;
++                    foreach (var id in CombatantIds()) { if (!(PosOf(id) is Pt p) || !G.Within(p, at, MF.BurstCm)) continue; var gg = GunOf(id); if (gg == null || gg.Down) continue; MfPinUntil[gg.Id] = Tick + MF.BurstTicks; n++; }
++                    foreach (var hh in Hostiles) { if (hh.Down || !hh.Present) continue; var p = hh.Pos(Tick); if (G.Within(p, at, MF.BurstCm)) { MfPinUntil[hh.Gun.Id] = Tick + MF.BurstTicks; n++; } }
++                    LastShotTick = Tick; shotsThisTick.Add(op.Pos); // heard as gunfire
++                    MfSpent(op, $"burst {o.Target} pins {n}"); return "";
++                }
++            }
++            return No("unknown-verb", "unknown move");
++        }
++    }
++}
+diff -ruN -x bin -x obj -x TestResults sim/Suborned.Sim/MotiveFight.cs out/scratch/motive-fight/tree/sim/Suborned.Sim/MotiveFight.cs
+--- sim/Suborned.Sim/MotiveFight.cs	1970-01-01 07:00:00
++++ out/scratch/motive-fight/tree/sim/Suborned.Sim/MotiveFight.cs	2026-10-26 06:11:58
+@@ -0,0 +1,297 @@
++// suborned-sim mf: Motive's fight-proposal probe (brief 039 reopened, 2026-10-26). SCRATCH ONLY (out/scratch/motive-fight/tree).
++// The Handover's final fight, safe and loud, from a recorded route's orders up to the fight, then a scripted player:
++//   plain  draws when the fight opens and lets weapons free shoot; the Enforcer walks Vale straight to the car; everyone boards once it is free
++//   sharp  the three fire first on whoever shoots the Vale holder, then the blocker, then the nearest; the Enforcer holds while the car is held
++//   moves  sharp, plus the four signature moves whenever they are ready and useful (mf-mark, mf-talk, mf-screen, mf-burst)
++// Benches: safe-a (route A board: Inez helped and warns, the guard never saw the cell), safe-g (route G kill: no warning, no ally, five rivals),
++// loud (the loud plan: the guard shot at 2:31, Enter at Alert 2, the fight at the service lane with police and the pressing crew).
++//   mf run <bench> <policy>   one run, its fight's log lines and its row
++//   mf all [--log]            every bench × policy, one row each (JSON lines to --out)
++//   mf identity               route-a-board, loud and route-g-kill as recorded: final hashes (compare with the shipped 0.33.1 binary)
++using System;
++using System.Collections.Generic;
++using System.Globalization;
++using System.IO;
++using System.Linq;
++namespace Suborned.Sim
++{
++public static class MotiveFight
++{
++    const string Scout = "scout", Fixer = "fixer", Tech = "tech", Enf = "enforcer";
++    static readonly string[] Cell4 = { Scout, Fixer, Tech, Enf };
++    static readonly string[] Three = { Scout, Fixer, Tech };
++    const int Never = int.MaxValue / 4;
++
++    public static int Run(Engine.Inputs inputs, string root, string[] args)
++    {
++        string sub = args.Length > 1 ? args[1] : "all";
++        string? Arg(string k) { int i = Array.IndexOf(args, k); return i > 0 && i + 1 < args.Length ? args[i + 1] : null; }
++        string Route(string n) => File.ReadAllText(System.IO.Path.Combine(root, "contracts/missions/handover/routes", n + ".json"));
++        Console.Error.WriteLine($"mf · {Engine.Version} · inputs {Hash.Hex(inputs.Hash)} · {MF.Describe()}");
++        if (sub == "identity")
++        {
++            foreach (var n in new[] { "route-a-board", "loud", "route-g-kill", "route-a" })
++            {
++                var sc = Suborned.Sim.Script.Parse(Route(n)); var g = Engine.Play(inputs, sc.Start, sc.Orders, sc.Until);
++                Console.WriteLine($"{n}: {g.Result} {g.FailCode} at {Report.Clock(g.Tick)} final {Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)}");
++            }
++            return 0;
++        }
++        var benches = (Arg("--benches") ?? "safe-a,safe-g,loud").Split(',');
++        var policies = (Arg("--policies") ?? "plain,sharp,moves").Split(',');
++        if (sub == "run") { benches = new[] { args[2] }; policies = new[] { args[3] }; }
++        var rows = new List<string>();
++        foreach (var b in benches)
++            foreach (var p in policies)
++            {
++                var (g, row) = Play(inputs, Route, b, p);
++                Console.WriteLine(row.Text);
++                rows.Add(row.Json);
++                if (sub == "run" || Array.IndexOf(args, "--log") > 0)
++                    foreach (var l in g.Log) if (l.Tick >= row.Spring - 20 && !l.Code.StartsWith("crowd.", StringComparison.Ordinal) && l.Code != "order.move") Console.WriteLine($"    {Report.Clock(l.Tick)}  {l.Code,-24} {l.Text}");
++            }
++        if (Arg("--out") is string o) File.AppendAllLines(o, rows);
++        return 0;
++    }
++
++    sealed class Row { public string Text = "", Json = ""; public int Spring; }
++    [ThreadStatic] static int humanOrders;
++    [ThreadStatic] static int TraceFrom;
++    static readonly bool TraceOn = Environment.GetEnvironmentVariable("MF_TRACE") == "1";
++    public static void Trace(Game g)
++    {
++        if (!TraceOn || TraceFrom < 0 || g.Tick < TraceFrom || (g.Tick - TraceFrom) % 20 != 0) return;
++        var sb = new System.Text.StringBuilder(); sb.Append($"  @{Report.Clock(g.Tick)} ");
++        foreach (var o in g.Ops) sb.Append($"{Sim.Op.Name(o.Id).Substring(0, 2)}({o.Pos.X / 100},{o.Pos.Y / 100}) hp{o.Gun.Health}{(o.Walk != null ? " w" : "")}{(o.InCar ? " car" : "")}{(o.Gun.Order.Length > 0 ? " o:" + o.Gun.Order : "")}{(o.Gun.Target.Length > 0 ? " t:" + o.Gun.Target : "")} | ");
++        foreach (var m in g.Crew) if (!m.Fight) sb.Append($"{m.Id}[{m.Mode}]({(g.MemberPose(m)?.pos.X ?? 0) / 100},{(g.MemberPose(m)?.pos.Y ?? 0) / 100}) hp{m.Gun.Health} t:{m.Gun.Target} | ");
++        foreach (var h in g.Hostiles) if (h.Present && !h.Down) sb.Append($"{h.Id}<{h.Gun.St}{(h.Blocker ? " B" : "")}>({h.Pos(g.Tick).X / 100},{h.Pos(g.Tick).Y / 100}) hp{h.Gun.Health} t:{h.Gun.Target} | ");
++        Console.WriteLine(sb.ToString());
++    }
++
++    static (Game g, Row row) Play(Engine.Inputs inputs, Func<string, string> route, string bench, string policy)
++    {
++        string script; int before; Start? start = null; TraceFrom = -1; humanOrders = 0;
++        switch (bench)
++        {
++            case "safe-a": script = route("route-a-board"); before = 2507; break; // the route to its spring (4:10.6: panic, the Enforcer walks): Inez warns, the guard is an ally
++            case "safe-g": script = route("route-g-kill"); before = 3213; break;  // the route to its spring (5:21.2: panic; the Enforcer at his wait 20 m off): no warning, no ally
++            case "loud": script = route("loud"); before = 2257; break;            // 3:45.7: out, the loud fight opens
++            case "loud-x": script = route("loud"); before = 2257; break;          // the same, with the Scout and the Fixer sent at 3:20 to cover the walk from the Office's west side
++            default: throw new ArgumentException("bench: safe-a, safe-g, loud");
++        }
++        var sc = Suborned.Sim.Script.Parse(script); start = sc.Start;
++        var r = new Run(Engine.New(inputs, start)); var g = r.G;
++        foreach (var (o, _) in sc.Orders.Select((o, k) => (o, k)).OrderBy(x => x.o.Tick).ThenBy(x => x.k))
++        {
++            if (o.Tick >= before) break;
++            g.RunTo(o.Tick); if (g.Over) break; o.Tick = g.Tick; g.Issue(o);
++        }
++        if (!g.Over && bench == "loud-x")
++        {
++            g.RunTo(2000);
++            var px = Environment.GetEnvironmentVariable("MF_LOUDX") ?? "4800,-3700,5000,-3400";
++            var v = px.Split(',').Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
++            var a = g.S.Grid.NearestFree(new Pt(v[0], v[1])); var b2 = g.S.Grid.NearestFree(new Pt(v[2], v[3]));
++            if (a.HasValue) g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", Point = a.Value });
++            if (b2.HasValue) g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", Point = b2.Value });
++        }
++        if (!g.Over) g.RunTo(before);
++        int handover = g.Tick, ordersBefore = g.Orders.Count;
++        if (Environment.GetEnvironmentVariable("MF_TRACE") == "1") TraceFrom = handover; else TraceFrom = -1;
++        if (!g.Over) { if (bench.StartsWith("loud", StringComparison.Ordinal)) Loud(r, policy); else Safe(r, policy); }
++        if (!g.Over) g.RunTo(g.Tick + Game.T(1));
++        g.Finish();
++        return (g, Measure(g, bench, policy, handover, ordersBefore));
++    }
++
++    // ---------------------------------------------------------------- the players
++
++    static void Safe(Run r, string policy) { Fight(r, policy, loud: false); }
++
++    static void Loud(Run r, string policy)
++    {
++        Fight(r, policy, loud: true);
++    }
++
++    static void DrawAll(Run r) { var g = r.G; foreach (var op in Cell4) if (!r.Op(op).Gun.Drawn && !r.Op(op).Down) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "draw" }); }
++
++    static void Fight(Run r, string policy, bool loud)
++    {
++        var g = r.G;
++        DrawAll(r);
++        if (policy == "plain" || policy == "plainmv")
++        {
++            // the plain player: draw, walk Vale straight to the car, board, and Go once the car is free; weapons free does the shooting
++            if (!g.AtGetaway(r.Op(Enf).Pos)) r.Send(Enf, "d:Getaway bay");
++            int limit = g.Tick + Game.T(150); bool enfIn = false;
++            while (!g.Over && g.Tick < limit)
++            {
++                var e = r.Op(Enf);
++                if (!enfIn && !e.Down && e.Walk == null && e.Busy == null && !e.InCar)
++                {
++                    if (g.AtGetaway(e.Pos)) g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "board", Target = "car" });
++                    else r.Send(Enf, "d:Getaway bay");
++                }
++                if (e.InCar) enfIn = true;
++                if (enfIn && !g.CarHeld()) break;
++                if (policy == "plainmv") Moves(r); // the plain player who also uses the four moves
++                g.Step();
++            }
++            if (g.Over) return;
++            CarryDowned(r); if (!g.Over) r.GetAway(Cell4);
++            return;
++        }
++        if (policy == "human")
++        {
++            // a human with the mouse: one right hold for the three on the blocker (else the nearest hostile), the Enforcer walks Vale straight in;
++            // when an agent's order ends (its target down, gone, out of range or out of line) the player notices 1.5 s later and gives one new
++            // order on the blocker (else the hostile nearest the car); weapons free fires meanwhile. Counts the orders a human had to give again.
++            if (!g.AtGetaway(r.Op(Enf).Pos)) r.Send(Enf, "d:Getaway bay");
++            var since = new Dictionary<string, int>(StringComparer.Ordinal);
++            int limitH = g.Tick + Game.T(150); bool enfInH = false;
++            while (!g.Over && g.Tick < limitH)
++            {
++                var e = r.Op(Enf);
++                if (!enfInH && !e.Down && e.Walk == null && e.Busy == null && !e.InCar)
++                {
++                    if (g.AtGetaway(e.Pos)) g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "board", Target = "car" });
++                    else r.Send(Enf, "d:Getaway bay");
++                }
++                if (e.InCar) enfInH = true;
++                if (enfInH && !g.CarHeld()) break;
++                var up = g.Hostiles.Where(h => h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone").ToList();
++                var blk = up.FirstOrDefault(h => h.Blocker);
++                var car = g.GetawayCarPos();
++                var pick = blk ?? up.OrderBy(h => G.D2(h.Pos(g.Tick), car)).ThenBy(h => h.Id, StringComparer.Ordinal).FirstOrDefault();
++                foreach (var op in Three)
++                {
++                    var o = r.Op(op); if (o.Down || o.InCar || o.Busy != null || o.Gun.W == null) continue;
++                    if (o.Gun.Order.Length > 0) { since.Remove(op); continue; }
++                    if (pick == null) continue;
++                    if (!since.TryGetValue(op, out var s0)) { since[op] = g.Tick; continue; }
++                    if (g.Tick - s0 < 15 && humanOrders > 0) continue; // the player's reaction (the first order goes at once)
++                    if (g.Issue(new Order { Tick = g.Tick, Op = op, Do = "fire", Target = pick.Id }).ok) { humanOrders++; since.Remove(op); }
++                }
++                g.Step();
++            }
++            if (g.Over) return;
++            CarryDowned(r); if (!g.Over) r.GetAway(Cell4);
++            return;
++        }
++        // sharp and moves: focus (whoever fires on the Vale holder, then the blocker, then the nearest), one tick at a time, so the three keep
++        // fighting while the Enforcer walks; he holds while the car is held and someone is firing on him, else walks Vale in and boards
++        r.Focus = true; r.CoverPlayer = g.CoverSnapOn; // with readable cover the sharp player takes the marks
++        int end = g.Tick + Game.T(150);
++        while (!g.Over && g.Tick < end)
++        {
++            var e = r.Op(Enf); bool held = g.CarHeld();
++            bool onHim = g.Hostiles.Exists(h => h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone" && h.Gun.Target == Enf)
++                || g.Crew.Exists(m => !m.Fight && !m.Gun.Down && m.OnFoot && g.RivalsDrawn && g.MemberPose(m) is var mp && mp.HasValue && G.Within(mp.Value.pos, e.Pos, 2500)); // the drawn crew pressing within 25 m
++            if (g.Vale == ValeAt.WithEnforcer && !e.Down && e.Busy == null)
++            {
++                if (g.AtGetaway(e.Pos) && e.Walk == null) g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "board", Target = "car" });
++                else if (onHim && !g.AtGetaway(e.Pos)) { if (e.Walk != null) g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = e.Pos }); }
++                else if (e.Walk == null) r.SendTo(Enf, g.GetawaySeat);
++            }
++            if (g.Vale == ValeAt.Car && !held) break;
++            if (policy == "moves") Moves(r);
++            int n = 0;
++            r.Engage(() => { var l = new List<string>(); foreach (var h in g.Hostiles) if (h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone") l.Add(h.Id); foreach (var x in r.CityGunmen()) if (!l.Contains(x)) l.Add(x); return l; },
++                     () => n++ >= 1, 2, Three, false, true);
++            if (n == 0) g.Step();
++        }
++        if (g.Over) return;
++        CarryDowned(r);
++        if (!g.Over) r.GetAway(Cell4);
++    }
++
++    /// <summary>The four moves, whenever ready and useful: the Scout marks the blocker (else whoever fires on the Vale holder); the Tech screens
++    /// the Enforcer from the nearest hostile aiming at him while he walks Vale; the Fixer talks down the shaken rival nearest him (the blocker
++    /// first); the Enforcer's covering fire pins whoever aims at him.</summary>
++    static void Moves(Run r)
++    {
++        var g = r.G; var e = r.Op(Enf);
++        // every threat on the street: the final fight's bodies and the crew still on foot (the loud press)
++        var up = new List<(string id, Pt pos, string target, bool blocker, bool rival)>();
++        foreach (var h in g.Hostiles) if (h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone") up.Add((h.Id, h.Pos(g.Tick), h.Gun.Target, h.Blocker, h.Id.StartsWith("rival-", StringComparison.Ordinal)));
++        foreach (var m in g.Crew) if (!m.Fight && !m.Gun.Down && m.OnFoot && g.MemberPose(m) is var mp && mp.HasValue) up.Add((m.Id, mp.Value.pos, m.Gun.Target, false, true));
++        if (up.Count == 0) return;
++        var blocker = up.FirstOrDefault(h => h.blocker);
++        var onEnf = up.Where(h => h.target == Enf || (h.rival && g.Vale == ValeAt.WithEnforcer && G.Within(h.pos, e.Pos, 2500))).OrderBy(h => G.D2(h.pos, e.Pos)).ThenBy(h => h.id, StringComparer.Ordinal).ToList();
++        bool Free(string op) { var o = r.Op(op); return !o.Down && !o.InCar && !o.Inside && o.Busy == null; }
++        if (Free(Scout))
++        {
++            var t = blocker.id != null ? blocker : onEnf.FirstOrDefault();
++            if (t.id != null && !(g.MfMarkT == t.id && g.MfMarkUntil > g.Tick)) Try(g, new Order { Tick = g.Tick, Op = Scout, Do = "mf-mark", Target = t.id });
++        }
++        if (Free(Tech) && g.Vale == ValeAt.WithEnforcer && onEnf.Count > 0 && !e.Inside)
++        {
++            var hp = onEnf[0].pos; var mid = new Pt((hp.X + e.Pos.X) / 2, (hp.Y + e.Pos.Y) / 2);
++            Try(g, new Order { Tick = g.Tick, Op = Tech, Do = "mf-screen", Point = mid });
++        }
++        if (Free(Fixer))
++        {
++            var fx = r.Op(Fixer).Pos;
++            foreach (var h in g.Hostiles.Where(h => h.Present && !h.Down && h.Id.StartsWith("rival-", StringComparison.Ordinal)).OrderBy(h => h.Blocker ? 0 : 1).ThenBy(h => G.D2(h.Pos(g.Tick), fx)).ThenBy(h => h.Id, StringComparer.Ordinal))
++                if (Try(g, new Order { Tick = g.Tick, Op = Fixer, Do = "mf-talk", Target = h.Id })) break;
++        }
++        if (!e.Down && !e.Inside && !e.InCar && e.Busy == null && onEnf.Count > 0)
++            Try(g, new Order { Tick = g.Tick, Op = Enf, Do = "mf-burst", Target = onEnf[0].id });
++    }
++
++    static bool Try(Game g, Order o) => g.MfCan(o) && g.Issue(o).ok;
++
++    /// <summary>Anyone downed is carried to the car by the nearest of the three still standing (as the fight lab's perfect player).</summary>
++    static void CarryDowned(Run r)
++    {
++        var g = r.G;
++        foreach (var down in Three)
++        {
++            if (g.Over || !r.Op(down).Down || r.Op(down).CarriedBy.HasValue) continue;
++            var by = Array.Find(new[] { Fixer, Scout, Tech }, o => o != down && !r.Op(o).Down && !r.Op(o).Carrying.HasValue && r.Op(o).CarryBody.Length == 0 && !r.Op(o).InCar);
++            if (by == null) continue;
++            var at = g.S.Grid.NearestFree(r.Op(down).Pos); if (!at.HasValue) continue;
++            int t = r.SendTo(by, at.Value); while (!g.Over && g.Tick < t) g.Step();
++            if (!g.Over && g.Issue(new Order { Tick = g.Tick, Op = by, Do = "carry", Target = down }).ok) r.Done(by);
++        }
++    }
++
++    // ---------------------------------------------------------------- the row
++
++    static Row Measure(Game g, string bench, string policy, int handover, int ordersBefore)
++    {
++        int beats = 1, lastBeat = -1, end0 = -1, blockerOut = Never, lostOrders = 0, spring = Never, firstShot = Never, lastShot = -1, carFree = Never, cellShots = 0, cellHits = 0, hitsTaken = 0, cellFirstHit = Never, foesDown = 0, breaks = 0;
++        string springCode = "";
++        foreach (var l in g.Log)
++        {
++            if (l.Tick < handover - 50) continue;
++            if (spring == Never && (l.Code == "fight.ambush" || l.Code == "fight.loud")) { spring = l.Tick; springCode = l.Code; }
++            if (l.Code == "car.free" && carFree == Never && spring != Never) carFree = l.Tick;
++            if (l.Code == "blocker.out" && blockerOut == Never && spring != Never) blockerOut = l.Tick;
++            if (l.Code == "fight.down" || l.Code == "security.down" || l.Code == "security.officer-down") foesDown++;
++            if (l.Code == "ai.break") breaks++;
++            if (l.Code == "fire.out-of-range" || l.Code == "fire.lapses") lostOrders++;
++            if (spring != Never && end0 < 0 && (l.Code == "rivals.joins" || l.Code == "response.reinforces" || l.Code == "ai.join" || l.Code.EndsWith(".down", StringComparison.Ordinal) && Array.IndexOf(Cell4, l.Code.Substring(0, l.Code.IndexOf('.'))) >= 0 || l.Code == "car.free")) { if (l.Tick != lastBeat) beats++; lastBeat = l.Tick; }
++            if (l.Code != "shot.hit" && l.Code != "shot.miss") continue;
++            int at = l.Text.IndexOf(" fires on ", StringComparison.Ordinal); if (at < 0) continue;
++            string by = l.Text.Substring(0, at), rest = l.Text.Substring(at + 10), t = rest.Substring(0, rest.IndexOf(' '));
++            bool cb = Array.IndexOf(Cell4, by) >= 0, ct = Array.IndexOf(Cell4, t) >= 0;
++            if (firstShot == Never) firstShot = l.Tick; lastShot = l.Tick;
++            if (cb) { cellShots++; if (l.Code == "shot.hit") { cellHits++; if (cellFirstHit == Never) cellFirstHit = l.Tick; } }
++            if (ct && !cb && l.Code == "shot.hit") hitsTaken++;
++        }
++        if (spring == Never) spring = handover;
++        if (carFree == Never) carFree = blockerOut;
++        int end = g.Tick, max = 0, lost = 0, down = 0;
++        foreach (var op in g.Ops) { max += op.Gun.Max; lost += op.Gun.Max - op.Gun.Health; if (op.Down) down++; }
++        string res = g.Result.ToString().ToLowerInvariant() + (g.FailCode.Length > 0 ? " " + g.FailCode : "");
++        double S(int a, int b) => a == Never || b == Never ? -1 : (b - a) / 10.0;
++        double len = S(firstShot == Never ? spring : firstShot, end), held = S(spring, carFree);
++        int capt = g.Captured.Count, moves = g.MfMoves;
++        var mv = string.Join(" ", g.MfLog.Select(x => $"{Report.Clock(x.tick)} {x.op} {x.what}"));
++        var text = FormattableString.Invariant($"{bench,-7} {policy,-6} {res,-26} spring {Report.Clock(spring),-7} first {(firstShot == Never ? "-" : Report.Clock(firstShot)),-7} free {(carFree == Never ? "-" : Report.Clock(carFree)),-7} end {Report.Clock(end),-7} fight {len,5:0.0} s  held {held,5:0.0} s  down {down} capt {capt} lost {lost * 100 / Math.Max(1, max),3} %  hits-taken {hitsTaken,2}  cell {cellHits}/{cellShots}  foes-down {foesDown} break {breaks} moves {moves} lost-orders {lostOrders} human-orders {humanOrders} beats {beats}  T {g.Trail} A {g.Alert} St {g.StandingAtStart}->{g.Standing}");
++        var json = FormattableString.Invariant($"{{\"bench\":\"{bench}\",\"policy\":\"{policy}\",\"result\":\"{res}\",\"spring\":{spring},\"firstShot\":{(firstShot == Never ? -1 : firstShot)},\"carFree\":{(carFree == Never ? -1 : carFree)},\"end\":{end},\"fightS\":{len},\"heldS\":{held},\"down\":{down},\"captured\":{capt},\"lostPct\":{lost * 100 / Math.Max(1, max)},\"hitsTaken\":{hitsTaken},\"cellHits\":{cellHits},\"cellShots\":{cellShots},\"foesDown\":{foesDown},\"breaks\":{breaks},\"moves\":{moves},\"lostOrders\":{lostOrders},\"humanOrders\":{humanOrders},\"beats\":{beats},\"trail\":{g.Trail},\"alert\":{g.Alert},\"standing\":[{g.StandingAtStart},{g.Standing}],\"mf\":\"{MF.Describe()}\",\"movesLog\":\"{mv}\"}}");
++        return new Row { Text = text, Json = json, Spring = spring };
++    }
++}
++}
+diff -ruN -x bin -x obj sim/cli/Program.cs out/scratch/motive-fight/tree/sim/cli/Program.cs
+--- sim/cli/Program.cs	2026-10-26 05:17:51
++++ out/scratch/motive-fight/tree/sim/cli/Program.cs	2026-10-26 05:48:13
+@@ -66,6 +66,7 @@
+                 case "probe": Probe.Run(inputs); return 0;
+                 case "cars": Probe.Cars(inputs); return 0; // engine 0.33.1 (car.footprint): the cars standing at the start, what lies on their ground, which routine legs cross it
+                 case "range": return RangeCli.Run(root, args); // brief 029: the fight range, on its own inputs
++                case "mf": return MotiveFight.Run(inputs, root, args); // Motive brief 039 probe (scratch only)
+                 case "fight-lab": return FightLabCli.Run(inputs, root, args); // brief 027 §6.5: the balance matrix (briefs/027/keel/fight-lab.json)
+                 case "drive-session": return DriveSession.Record(inputs, root, args.Length > 1 ? args[1] : null); // brief 025: record DP1's session
+                 case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;

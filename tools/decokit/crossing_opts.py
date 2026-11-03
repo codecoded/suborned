@@ -64,16 +64,16 @@ def light_dot_band3_1(s):
 
 
 def bar_n(s, length, lod):
-    """crossing_flat.bar() at any module length: the 5 cm brass frame, the seafoam lens inside it."""
+    """crossing_flat.bar() at any module length: the 5 cm charcoal enamel frame (072-G: was brass, none on the road edge), the seafoam lens inside it."""
     hi = lod == 0
     outer, inner = (rrect(length, DP, 0.14, 2), rrect(length - 2 * F, DP - 2 * F, 0.09, 2)) if hi else (rrect(length, DP, 0, 1), rrect(length - 2 * F, DP - 2 * F, 0, 1))
-    strip(s, outer, inner, BRASS, pal.Brass_Civic, closed=True)
+    strip(s, outer, inner, BRASS, pal.Enamel_Charcoal, closed=True)
     flat(s, inner, LIGHT, pal.Cross_Light)
 
 
 @asset("LightBar_2", "Ground", bevel=0.0, near=lambda s: bar_n(s, 2.0, 1))
 def light_bar_2(s):
-    """2 m end module of LightBar_4: seafoam lens 1.90 x 0.34 m in the same 5 cm brass frame, 2.00 x 0.44 m overall."""
+    """2 m end module of LightBar_4: seafoam lens 1.90 x 0.34 m in the same 5 cm charcoal frame, 2.00 x 0.44 m overall."""
     bar_n(s, 2.0, 0)
 
 
@@ -95,13 +95,13 @@ def light_pool_1(s):
     quad(s, 1.0, POOL_W, GLOW, pal.Cross_Pool)
 
 
-@asset("LightField_2", "Ground", bevel=0.0, near=lambda s: quad(s, 2.0, FIELD_W, GLOW, pal.Cross_Pool))
+@asset("LightField_2", "Ground", bevel=0.0, near=lambda s: quad(s, 2.0, FIELD_W, GLOW, pal.Cross_Pool), retired="brief 061 (Sky 2026-10-25): the lit field goes; the dot rows and the ring are the light")
 def light_field_2(s):
     """2 m of light spilt across the whole strip: one 2.0 x 3.9 m glow quad (kind glow, additive), 2 mm proud; fade = 1 - |v| / 1.95. Ends butt. Sits between the brass edge lines (y = +-2.0)."""
     quad(s, 2.0, FIELD_W, GLOW, pal.Cross_Pool)
 
 
-@asset("LightField_1", "Ground", bevel=0.0, near=lambda s: quad(s, 1.0, FIELD_W, GLOW, pal.Cross_Pool))
+@asset("LightField_1", "Ground", bevel=0.0, near=lambda s: quad(s, 1.0, FIELD_W, GLOW, pal.Cross_Pool), retired="brief 061 (Sky 2026-10-25): the lit field goes; the dot rows and the ring are the light")
 def light_field_1(s):
     """1 m end module of LightField_2 (1.0 x 3.9 m)."""
     quad(s, 1.0, FIELD_W, GLOW, pal.Cross_Pool)

@@ -10,10 +10,11 @@ const ROOT = resolve(import.meta.dir, '../../..');
 type Win = { id: string; rule: string; walk: { from: string; to: string } };
 type M = { destinations: { name: string; at: number[] }[]; windows?: Win[] };
 
-/** The rulebook's summon values: stay, walk maximum (s), walking pace (cm/s, cell.speed). */
+/** The rulebook's summon values: stay, walk maximum (s), walking pace (cm/s: the city's, crowd.walk since engine 0.34.0, brief 067 M067-B1;
+ *  a rulebook pinned before the split has only cell.speed, which was the one pace then). */
 export function summonRules(file = resolve(ROOT, 'contracts/rules/rulebook.json')) {
   const r = JSON.parse(readFileSync(file, 'utf8')), v = (k: string) => r.values?.[k]?.v as number | undefined, ref = (x: unknown) => (typeof x === 'string' && x.startsWith('v:') ? v(x.slice(2)) : undefined);
-  return { stayS: ref(r.summon?.stay), walkMaxS: ref(r.summon?.walkMax), paceCmS: ref(r.cell?.speed) };
+  return { stayS: ref(r.summon?.stay), walkMaxS: ref(r.summon?.walkMax), paceCmS: ref(r.crowd?.walk ?? r.cell?.speed) };
 }
 
 /** The summoned lover's walk between two mission destinations, in seconds, as the engine walks it: the grid route the engine plays at

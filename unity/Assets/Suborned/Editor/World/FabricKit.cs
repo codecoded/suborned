@@ -27,7 +27,7 @@ namespace Suborned.World
 
         void Part(Transform layer, string id, System.Action<Pb> draw)
         {
-            var kit = new MeshKit(); draw(new Pb(kit, atlas));
+            var kit = new MeshKit(); draw(new Pb(kit, atlas) { MatteLayer = Atlas.LayerRender }); // 072-F: cloth takes the render layer, never the roof
             nodes.Part(Nodes.Element(layer, id), id, kit, atlas.Matte);
         }
 

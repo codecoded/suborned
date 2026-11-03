@@ -13,6 +13,7 @@ import { dirname, join } from 'node:path';
 import { rng } from '../world/gen/common';
 import { Grid, Path, d2, dist, leg, type Pt } from './walk';
 import { RULES_FILE, parseRules, readRulesText, type RoutinesRules } from './rules';
+import { Clear, loadGround } from './clear';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE = 'sim/data/handover.site.json', PEOPLE = 'sim/data/handover.people.json', BLOCK = 'contracts/world/civic-block.json';
@@ -24,8 +25,8 @@ export const Hz = 10;
 type PeopleStop = [string, number, number, number];
 export type SimPerson = { id: string; name: string; job: string; ties: [string, string][]; stops: PeopleStop[] };
 export type PeopleIn = { startsAt: number; places: Record<string, Pt>; people: SimPerson[] };
-export type SiteIn = { grid: ConstructorParameters<typeof Grid>[0]; cast: Record<string, { id: string }>; places: Record<string, { at: Pt }>; guard: { post: string } };
-export type Inputs = { rules: RoutinesRules; rulesText: string; people: PeopleIn; site: SiteIn; tables: Record<string, Pt>; siteText: string; peopleText: string; blockText: string };
+export type SiteIn = { grid: ConstructorParameters<typeof Grid>[0]; cast: Record<string, { id: string }>; places: Record<string, { at: Pt; stand?: Pt }>; guard: { post: string } };
+export type Inputs = { rules: RoutinesRules; rulesText: string; people: PeopleIn; site: SiteIn; tables: Record<string, Pt>; siteText: string; peopleText: string; blockText: string; clear?: Clear };
 
 export function readInputs(): Inputs {
   const read = (f: string) => readFileSync(join(root, f), 'utf8');
@@ -36,7 +37,72 @@ export function readInputs(): Inputs {
     const n = o.polygon.length;
     tables[o.id] = [Math.round((o.polygon.reduce((a, p) => a + p[0]!, 0) / n) * 100), Math.round((o.polygon.reduce((a, p) => a + p[1]!, 0) / n) * 100)];
   }
-  return { rules: parseRules(rulesText), rulesText, people: JSON.parse(peopleText), site: JSON.parse(siteText), tables, siteText, peopleText, blockText };
+  const rules = parseRules(rulesText), ground = loadGround();
+  return { rules, rulesText, people: JSON.parse(peopleText), site: JSON.parse(siteText), tables, siteText, peopleText, blockText, clear: new Clear(ground, { bodyCm: ground.bodyCm, marginCm: rules.rounds.clear.marginCm, faceCm: rules.rounds.clear.faceCm }) };
+}
+
+// ---------------------------------------------------------------- the legs, kept clear of what is drawn
+
+/** How the round walks: a leg a -> b on the site grid, and whether a point stands clear of the drawn solids. With no `Clear` it is the plain grid walk (the engine's own). */
+export type LegWalker = {
+  /** the walk a -> b and what is left of its shortfall (cm; 0 = clear of every drawn solid by its keep-off distance) */
+  leg(a: Pt, b: Pt, endOk?: (p: Pt) => boolean): { path: Path; short: number };
+  clearAt(p: Pt): boolean;
+};
+export const plainWalker = (g: Grid): LegWalker => ({ leg: (a, b) => ({ path: leg(g, a, b), short: 0 }), clearAt: () => true });
+
+/** A leg that still comes short of a solid, eased clear: each of its points (not the first, which is her post) moves away from the closest point of the solid by what the leg lacks and 1 cm (the grid's
+ *  cells are 50 cm, so a leg between cell centres can be a few centimetres inside a body's clearance), if the point stays on free ground (the last on `endOk` too) and every segment it touches stays
+ *  a clear line on the grid. Repeats until the leg is clear or a move no longer helps. The leg keeps the doubled first and last points the file carries. */
+export function easeLeg(g: Grid, clear: Clear, pts: Pt[], skipCm: number, endOk: (p: Pt) => boolean): Pt[] {
+  let head = 1; while (head < pts.length && pts[head]![0] === pts[0]![0] && pts[head]![1] === pts[0]![1]) head++;
+  let tail = 1; while (tail < pts.length && pts[pts.length - 1 - tail]![0] === pts[pts.length - 1]![0] && pts[pts.length - 1 - tail]![1] === pts[pts.length - 1]![1]) tail++;
+  let U = pts.filter((p, i) => i === 0 || p[0] !== pts[i - 1]![0] || p[1] !== pts[i - 1]![1]);
+  if (U.length < 2) return pts;
+  const ok = (V: Pt[], i: number) => (i === V.length - 1 ? g.isFree(V[i]!) && endOk(V[i]!) : g.isFree(V[i]!)) && (i === 0 || g.lineFree(V[i - 1]!, V[i]!)) && (i === V.length - 1 || g.lineFree(V[i]!, V[i + 1]!));
+  for (let it = 0; it < 12; it++) {
+    const now = clear.pathShortfall(U, skipCm); if (now === 0) break;
+    const pushes = clear.pushes(U, skipCm).sort((x, y) => y.cm - x.cm);
+    let moved = false;
+    for (const set of [pushes, pushes.slice(0, 1)]) {
+      const V = U.map((p) => [...p] as Pt), touched = new Set<number>();
+      for (const { k, n, cm } of set) for (const i of [k, k + 1]) if (i > 0) { V[i] = [Math.round(V[i]![0] + n[0] * cm), Math.round(V[i]![1] + n[1] * cm)]; touched.add(i); }
+      if (!touched.size || ![...touched].every((i) => ok(V, i)) || clear.pathShortfall(V, skipCm) >= now) continue;
+      U = V; moved = true; break;
+    }
+    if (!moved) break;
+  }
+  return [...Array(head).fill(U[0]!), ...U.slice(1, -1), ...Array(tail).fill(U[U.length - 1]!)] as Pt[];
+}
+
+/** The round's walker (rules.rounds.clear): the plain grid walk when it keeps clear of the drawn solids (the first anchorCm of a leg, her post on the door's own face, is not measured); otherwise the
+ *  same walk on the grid with every cell stepCm further from a solid blocked, up to `tries` times, the first that comes clear (else the one that comes nearest, the plain one on a tie). */
+export function walkerOf(g: Grid, grid: SiteIn['grid'], clear: Clear | undefined, r: RoutinesRules['rounds']): LegWalker {
+  if (!clear) return plainWalker(g);
+  const cache = new Map<string, { path: Path; short: number }>(), c = r.clear;
+  const on = (ig: Grid, a: Pt, b: Pt): Path | undefined => {
+    const fa = ig.nearestFree(a), route = fa && ig.isFree(b) ? ig.route(fa, b) : undefined;
+    return route ? new Path([a, ...route, b]) : undefined;
+  };
+  return {
+    clearAt: (p) => clear.shortfall(p, p) === 0,
+    leg(a, b, endOk = () => true) {
+      const key = `${a}>${b}`, hit = cache.get(key); if (hit) return hit;
+      const plain = leg(g, a, b);
+      let best = { path: plain, short: clear.pathShortfall(plain.points, c.anchorCm) };
+      for (let k = 1; k <= c.tries && best.short > 0; k++) {
+        const p = on(clear.inflate(grid, k * c.stepCm, [a, b]), a, b); if (!p) break;
+        const short = clear.pathShortfall(p.points, c.anchorCm);
+        if (short < best.short) best = { path: p, short };
+      }
+      if (best.short > 0) { // a few centimetres short: ease the points clear rather than send her round by the next cell
+        const eased = easeLeg(g, clear, best.path.points, c.anchorCm, endOk), short = clear.pathShortfall(eased, c.anchorCm);
+        if (short < best.short) best = { path: new Path(eased), short };
+      }
+      cache.set(key, best);
+      return best;
+    },
+  };
 }
 
 // ---------------------------------------------------------------- the baked shapes
@@ -69,22 +135,30 @@ const secs = (cm: number, pace: number) => Math.max(1, Math.ceil(cm / pace - 1e-
 
 // ---------------------------------------------------------------- service points
 
-type Service = { table: string; at: Pt; face: Pt; path: Path; m: number; out: number };
+type Service = { table: string; at: Pt; face: Pt; path: Path; m: number; out: number; short: number };
 
-/** Where a server stands at a table: the first ring on which a gap between two chairs is free ground on the walk grid and clear of every chair, the gap that is the shortest walk from her post. */
-export function servicePoints(g: Grid, post: Pt, tables: Record<string, Pt>, seats: Record<string, Pt>, r: RoutinesRules['rounds'], prefix: string): Service[] {
-  const out: Service[] = [];
+/** Where a person who is placed at `at` stands: the site's stand for that place (Site.Stand: the point itself, or the free ground 0.6 m or so out when the point is on a building's face margin), else the point. */
+export const standOf = (site: SiteIn, at: Pt): Pt => Object.values(site.places).find((q) => q.at[0] === at[0] && q.at[1] === at[1])?.stand ?? at;
+
+/** Where a server stands at a table: the first ring on which a gap between two chairs is free ground on the walk grid, clear of every chair and of the set's own collision (a point closer than a body is pushed
+ *  out along the ring's ray, outStepCm at a time, up to outToCm), the gap that is the shortest walk from her post (a walk that keeps clear of the drawn solids before one that does not). */
+export function servicePoints(g: Grid, post: Pt, tables: Record<string, Pt>, seats: Record<string, Pt>, r: RoutinesRules['rounds'], prefix: string, walker: LegWalker = plainWalker(g)): Service[] {
+  const out: Service[] = [], sp = r.servicePoint;
   for (const id of Object.keys(tables).filter((t) => t.startsWith(prefix)).sort((a, b) => Number(a.slice(prefix.length)) - Number(b.slice(prefix.length)))) {
     const c = tables[id]!, chairs = Object.keys(seats).filter((p) => p.startsWith(id + '-seat-')).map((p) => seats[p]!);
     const ang = chairs.map((s) => Math.atan2(s[1] - c[1], s[0] - c[0])).sort((a, b) => a - b);
     const mids = ang.map((a, i) => { const b = i + 1 < ang.length ? ang[i + 1]! : ang[0]! + 2 * Math.PI; return (a + b) / 2; });
     let best: Service | undefined;
-    for (const ring of r.servicePoint.ringCm) {
+    for (const ring of sp.ringCm) {
       for (const th of mids) {
-        const p: Pt = [Math.round(c[0] + ring * Math.cos(th)), Math.round(c[1] + ring * Math.sin(th))];
-        if (!g.isFree(p) || chairs.some((s) => d2(s, p) < r.servicePoint.clearOfSeatCm ** 2)) continue;
-        const path = leg(g, post, p), m = Math.round(path.length / 10);
-        if (!best || m < best.m) best = { table: id, at: p, face: [c[0] - p[0], c[1] - p[1]], path, m, out: secs(m, r.pace.cmPerS) };
+        const at = (more: number): Pt => [Math.round(c[0] + (ring + more) * Math.cos(th)), Math.round(c[1] + (ring + more) * Math.sin(th))];
+        const ok = (q: Pt) => g.isFree(q) && !chairs.some((s) => d2(s, q) < sp.clearOfSeatCm ** 2);
+        if (!ok(at(0))) continue; // the gap is the ring's: a gap that fails the grid or a chair here is not rescued by moving out
+        let p: Pt | undefined;
+        for (let more = 0; more <= sp.outToCm && !p; more += sp.outStepCm) if (ok(at(more)) && walker.clearAt(at(more))) p = at(more);
+        if (!p) continue;
+        const { path, short } = walker.leg(post, p, (q) => ok(q)), m = Math.round(path.length / 10), end = path.end;
+        if (!best || (short === 0 ? 0 : 1) < (best.short === 0 ? 0 : 1) || ((short === 0) === (best.short === 0) && m < best.m)) best = { table: id, at: end, face: [c[0] - end[0], c[1] - end[1]], path, m, out: secs(m, r.pace.cmPerS), short };
       }
       if (best) break;
     }
@@ -292,7 +366,7 @@ export function findMeetings(g: Grid, people: PeopleIn, cast: Set<string>, rules
 export function build(inp: Inputs = readInputs()): { rounds: Rounds; text: string } {
   const { rules, people, site, tables } = inp, r = rules.rounds, g = new Grid(site.grid);
   const cast = new Set(Object.values(site.cast).map((c) => c.id).filter((x): x is string => typeof x === 'string'));
-  const seats: Record<string, Pt> = people.places;
+  const seats: Record<string, Pt> = people.places, walker = walkerOf(g, site.grid, inp.clear, r);
   const servers: Record<string, Server> = {};
   for (const p of [...people.people].sort((a, b) => (a.id < b.id ? -1 : 1))) {
     if (!r.who.jobs.includes(p.job)) continue;
@@ -300,13 +374,13 @@ export function build(inp: Inputs = readInputs()): { rounds: Rounds; text: strin
     p.stops.forEach(([pl, from, to, out], i) => {
       const prefix = r.who.terraces[pl];
       if (!prefix || out !== 1 || to <= 0 || from >= r.horizonS.v) return; // a stop out at a door with a terrace, going on at the mission's start or beginning inside the round's horizon
-      const post = people.places[pl]!, svc = servicePoints(g, post, tables, seats, r, prefix);
+      const post = standOf(site, people.places[pl]!), svc = servicePoints(g, post, tables, seats, r, prefix, walker);
       const origin = Math.max(0, from);
       const exc = bakeSpan(p.id, i, post, origin, svc, occupancy(people, cast, prefix), r);
       spans.push({ place: pl, from, to, origin, excursions: exc });
     });
     if (!spans.length) continue;
-    const post = people.places[spans[0]!.place]!;
+    const post = standOf(site, people.places[spans[0]!.place]!);
     const court = site.places['d:Courtyard']?.at ?? [post[0] + 350, post[1]];
     servers[p.id] = { name: p.name, post: spans[0]!.place, at: post, face: unit([court[0] - post[0], court[1] - post[1]]), spans };
   }
@@ -319,7 +393,7 @@ export function build(inp: Inputs = readInputs()): { rounds: Rounds; text: strin
   const meetings = findMeetings(g, people, cast, rules, r.horizonS.v);
   const base: Rounds = {
     schema: 'suborned.sim.rounds/1',
-    from: [SITE, PEOPLE, BLOCK, RULES_FILE, 'tools/routines/rounds.ts'],
+    from: [SITE, PEOPLE, BLOCK, RULES_FILE, 'contracts/world/kit.collide.json', 'tools/routines/rounds.ts', 'tools/routines/clear.ts'],
     frame: 'integer centimetres, block frame (x south, y east), as sim/data/handover.site.json. Round clock: whole seconds from the stop\'s origin (mission second 0 if the stop began earlier); legs in whole seconds along the site grid\'s route at pace. Ticks are 10 Hz.',
     rules: { file: RULES_FILE, sha256: sha(inp.rulesText), paceCmPerS: r.pace.cmPerS, lingerS: r.holds.lingerS, closeCm: rules.partners.closeCm.v, clearCm: rules.partners.clearCm.v, partS: rules.partners.partS.v, settleS: r.opening.settleS, stayS: rules.partners.summoned.stay.s, chanceStayS: rules.partners.chance.stayS },
     servers, meetings, guard, vectors: {},

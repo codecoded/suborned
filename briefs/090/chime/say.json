@@ -1,0 +1,7 @@
+{
+ "note": "One respelling per name for Qwen3-TTS, which has no pronunciation control. Each was chosen as the spelling the machine listener (Whisper small.en, no name prompt) most often heard as the target, across three or four voices and two or three seeds; game text keeps the real names, and only the text sent to the voice model is respelled.",
+ "Larthi": {"say": "Larrtee", "target": "LAR-tee", "heard_as_target": "12/12"},
+ "Popovic": {"say": "Popovitch", "target": "POP-o-vitch", "heard_as_target": "12/12"},
+ "Lukac": {"say": "Lukahtch", "target": "LOO-kahtch", "heard_as_target": "9/12 (the other 3 written 'Lukac', which may be the same sound)"},
+ "Nikolaou": {"say": "Nikolau", "target": "nee-ko-LOW", "heard_as_target": "6/6 (written Nicolau, Nicolaou or Nicholau)"}
+}

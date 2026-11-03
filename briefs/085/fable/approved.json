@@ -1,0 +1,325 @@
+{
+ "note": "The last words Sky agreed for each scene. listen-inez, help-inez-2 and call-inez: Fable's warmer versions, briefs/085/fable/warmer.json with two wording fixes, agreed 2026-11-01; names renamed for brief 089 (Okafor is Arthur, Zhou is Lukac, Sky 2026-11-02), a rename alone, so the agreement stands. help-inez-1, pressure-inez and pay-driver: r002, agreed 2026-10-31; text.json may now play a newer version marked awaiting-sky, and a generator run with --only reads these as what the player has read. call-inez's opens card: \"Camera off?\" became \"Camera blind?\" on Motive's review in r004, since a Loop also clears the camera; Sky has not read that one change. Plain pass, Sky 2026-11-02 (\"plain version is better\"): help-inez-2, pay-driver, call-inez and call-inez-pressure agreed in their plain wording (briefs/085/fable/plain-pass.md); listen-inez keeps its last agreed words here, since its new line 5 still awaits his read.",
+ "from": "runs/conversations/085/r002",
+ "scenes": [
+  {
+   "id": "listen-inez",
+   "beats": [
+    [
+     "Milena",
+     "Have you eaten? You've looked at that Office door all shift."
+    ],
+    [
+     "Inez",
+     "Eat? With the Bureau after me? Waiting tables, I can't keep up."
+    ],
+    [
+     "Milena",
+     "I owe them too. We'll be buried with those cards half stamped."
+    ],
+    [
+     "Inez",
+     "Then bury me somewhere I can sit down."
+    ],
+    [
+     "Milena",
+     "You'd get up to look at that door. Is it so handsome?"
+    ],
+    [
+     "Inez",
+     "Who says? Did Arthur say something? Who else has he told?"
+    ],
+    [
+     "Milena",
+     "He said nothing, you goose. You just did."
+    ],
+    [
+     "Inez",
+     "Yes, I'm seeing him. If the Office hears, it costs us both."
+    ],
+    [
+     "Milena",
+     "Not from me, they won't. Stop looking, though. You can't afford it."
+    ],
+    [
+     "Scout",
+     "Bureau loan, behind, could be cleared. Arthur, Office door, could be used."
+    ]
+   ],
+   "learned": [
+    "Debt: Bureau loan, and she's behind.",
+    "Secret: seeing Arthur, the door guard."
+   ],
+   "opens": [
+    "Help: clear her Bureau loan.",
+    "Pressure: threaten to expose the affair."
+   ]
+  },
+  {
+   "id": "help-inez-1",
+   "beats": [
+    [
+     "Fixer",
+     "I've paid part of your Bureau loan, Miss Nikolaou."
+    ],
+    [
+     "Inez",
+     "Wrong girl, mister. Have it sent back before the terrace sees."
+    ],
+    [
+     "Fixer",
+     "It's stamped at the Bureau now. It doesn't come back."
+    ],
+    [
+     "Inez",
+     "Who's been asking about me? What's it going to cost?"
+    ],
+    [
+     "Fixer",
+     "Nothing today. Later, one small thing that hurts nobody."
+    ],
+    [
+     "Inez",
+     "Thank you, then. But I can't do anything for it yet."
+    ],
+    [
+     "Fixer",
+     "We can wait. I'll be back with the rest."
+    ]
+   ],
+   "learned": [
+    "Inez took it. Not ready yet."
+   ],
+   "opens": [
+    "Help again"
+   ]
+  },
+  {
+   "id": "help-inez-2",
+   "beats": [
+    [
+     "Fixer",
+     "That's the rest paid. You owe the Bureau nothing, Miss Nikolaou."
+    ],
+    [
+     "Inez",
+     "Not so loud. I've owed them for years."
+    ],
+    [
+     "Fixer",
+     "Then take a breath first, Miss Nikolaou. We'll wait our turn."
+    ],
+    [
+     "Inez",
+     "Thank you, I mean that. Your turn. What do I owe?"
+    ],
+    [
+     "Fixer",
+     "A few minutes. When I telephone, call Arthur off the Office door."
+    ],
+    [
+     "Inez",
+     "Arthur. You know about us, then. What happens to him?"
+    ],
+    [
+     "Fixer",
+     "Easy, now. Nothing, if this goes right. And he never sees us."
+    ],
+    [
+     "Inez",
+     "You kept your word. I'll tell him to come over in person."
+    ],
+    [
+     "Inez",
+     "I'm with you. I watch that square anyway. Trouble, I'll warn you."
+    ]
+   ],
+   "learned": [
+    "Loan paid. Inez is with us."
+   ],
+   "opens": [
+    "Call Inez"
+   ]
+  },
+  {
+   "id": "pressure-inez",
+   "beats": [
+    [
+     "Inez",
+     "Is it the Bureau? I know I'm behind."
+    ],
+    [
+     "Fixer",
+     "Not the Bureau. Softly. The Office could learn about you and Arthur."
+    ],
+    [
+     "Inez",
+     "All right. Yes. Whatever it is, yes. Just not the Office."
+    ],
+    [
+     "Fixer",
+     "Hear it first. When I telephone, you call Arthur off the door."
+    ],
+    [
+     "Inez",
+     "He'd come. I'd say it can't go by telephone."
+    ],
+    [
+     "Fixer",
+     "Keep Arthur with you a few minutes. That's all we ask."
+    ],
+    [
+     "Inez",
+     "You're very polite about it. Go, before someone sees you."
+    ],
+    [
+     "Fixer",
+     "I know what this is. Not a word of us to Arthur."
+    ]
+   ],
+   "learned": [
+    "Threatened, she agreed; knows Fixer's face."
+   ],
+   "opens": [
+    "Call Inez"
+   ]
+  },
+  {
+   "id": "pay-driver",
+   "beats": [
+    [
+     "Lukac",
+     "It's paid, then. It's been a lean month. For what, exactly?"
+    ],
+    [
+     "Fixer",
+     "One short drive with the Councillor. You've earned an easy one."
+    ],
+    [
+     "Lukac",
+     "Easy. I won't ask who you are. Better I don't know."
+    ],
+    [
+     "Fixer",
+     "At the chime he gets in. Not home. The service bay."
+    ],
+    [
+     "Lukac",
+     "East yard, round the back. And I wait how long, exactly?"
+    ],
+    [
+     "Fixer",
+     "Until we've got him. Not long."
+    ],
+    [
+     "Lukac",
+     "I've heard 'not long' before. A couple of minutes, then I drive."
+    ],
+    [
+     "Fixer",
+     "Fair enough, Lukac. A couple of minutes. We'll be at the bay."
+    ],
+    [
+     "Lukac",
+     "I won't look. Anyone watching the bay, I can send off."
+    ]
+   ],
+   "learned": [
+    "Lukac waits a couple of minutes."
+   ],
+   "opens": [
+    "Be at the service bay"
+   ]
+  },
+  {
+   "id": "call-inez",
+   "beats": [
+    [
+     "Fixer",
+     "It's time, Miss Nikolaou. Call Arthur across now. You'll do fine."
+    ],
+    [
+     "Inez",
+     "Now? With the terrace looking? Yes. All right."
+    ],
+    [
+     "Inez",
+     "How's your shift, love?"
+    ],
+    [
+     "Arthur",
+     "Long. Nobody's come to the door all day. Good to hear you."
+    ],
+    [
+     "Inez",
+     "Come across. I've something to tell you, and not down a telephone."
+    ],
+    [
+     "Arthur",
+     "I've this door till shift's end. For you, it can wait."
+    ],
+    [
+     "Inez",
+     "Walk, love. Don't run. Let me keep you a while."
+    ],
+    [
+     "Arthur",
+     "Keep me as long as you like."
+    ]
+   ],
+   "learned": [
+    "Door empty a few minutes"
+   ],
+   "opens": [
+    "Camera blind? Then enter the Office."
+   ]
+  },
+  {
+   "id": "call-inez-pressure",
+   "beats": [
+    [
+     "Fixer",
+     "It's time, Miss Nikolaou. Call Arthur over."
+    ],
+    [
+     "Inez",
+     "Yes. I said I would. Yes."
+    ],
+    [
+     "Fixer",
+     "You're doing well. Not a word of us to him."
+    ],
+    [
+     "Inez",
+     "It's me, love. How long till your shift ends?"
+    ],
+    [
+     "Arthur",
+     "Too long. You sound done in. What is it?"
+    ],
+    [
+     "Inez",
+     "I've something to tell you. It can't go by telephone."
+    ],
+    [
+     "Arthur",
+     "Can it wait till I'm off? I've this door till then."
+    ],
+    [
+     "Inez",
+     "It can't wait. Please."
+    ],
+    [
+     "Arthur",
+     "It's only a door. All right, I'm coming."
+    ]
+   ],
+   "learned": [
+    "She'll warn him when he arrives."
+   ],
+   "opens": [
+    "Door 1:40. Camera blind? Then enter."
+   ]
+  }
+ ]
+}

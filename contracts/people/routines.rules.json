@@ -12,7 +12,7 @@
       "src": "Sky 2026-10-18 (the waitress walks the tables); briefs/014/pulse-cafe.md (a door is one person's post, so one server is drawn at the café door and she is the one who works the terrace)",
       "reason": "keyed by job and stop, never by id: any server who stands a door with tables beside it works them, in any café the plan draws. A server who works inside is not drawn, so she has no round."
     },
-    "pace": { "cmPerS": 140, "of": "values.op-speed-cm-s", "src": "life.json pedestrians.walkSpeed 1.4 m/s; rulebook op-speed-cm-s [S]", "reason": "the world's one walking pace, so Latch plays the one walk clip and a leg's seconds are its length over 1.4 m/s, rounded up to a whole second (never faster than the cell)." },
+    "pace": { "cmPerS": 140, "of": "values.people-walk-cm-s", "src": "life.json pedestrians.walkSpeed 1.4 m/s; rulebook people-walk-cm-s [S] (crowd.walk: the city's walk, split from the cell's op-speed-cm-s in engine 0.34.0, brief 067 M067-B1; Keel moved this pointer with it)", "reason": "the city's one walking pace, so Latch plays one walk clip for the city and a leg's seconds are its length over 1.4 m/s, rounded up to a whole second (never faster than the cell, which walks 1.8 m/s)." },
     "opening": {
       "settleS": 30,
       "src": "briefs/022-living-cafe.md consequences; GDD §07 schedule: 0:00 routines run, the camera opens on the cell",
@@ -42,9 +42,21 @@
       "ringCm": [130, 110, 150, 170],
       "clearOfSeatCm": 60,
       "face": "the table",
-      "src": "briefs/022-living-cafe.md; tools/decokit/furnish_cafe.py (three chairs at 72 cm round a table, 120 degrees apart)",
+      "outStepCm": 2,
+      "outToCm": 20,
+      "src": "briefs/022-living-cafe.md; tools/decokit/furnish_cafe.py (three chairs at 72 cm round a table, 120 degrees apart); Sky 2026-10-24 (the invisible ledge: kit.collide.json now draws the sets as boxes about 10 cm proud of the round chairs)",
       "proposed": true,
-      "reason": "she stands in the gap between two chairs, on the first ring that is free ground on the site's walk grid, the gap the shortest walk from her post reaches. 60 cm from every chair keeps her off a customer (P-16, no two on one place)."
+      "reason": "she stands in the gap between two chairs, on the first ring that is free ground on the site's walk grid, the gap the shortest walk from her post reaches. 60 cm from every chair keeps her off a customer (P-16, no two on one place). A gap whose point is closer to the set's collision than a body (clear.marginCm included) is pushed out along the ring's ray in outStepCm steps, up to outToCm past the ring, before the next ring is tried: a few centimetres, not a new ring."
+    },
+    "clear": {
+      "marginCm": 3,
+      "faceCm": 30,
+      "anchorCm": 150,
+      "stepCm": 10,
+      "tries": 8,
+      "src": "Sky 2026-10-24 (\"Inez seems to be walking on an invisible ledge\"); brief 055 rule G-1d (tools/geometry); the plan's standards.walking.body.r (65 cm) for the body; tools/sim/solids.ts for the solids",
+      "proposed": true,
+      "reason": "a round leg keeps a body's width and marginCm from every drawn solid that is not a building's face, and faceCm from a face (a wall, a plinth, the curved front): the site grid blocks by cell centre and a string-pulled leg cuts the corners of its blocked cells, so a leg came within 2 to 20 cm of a wall and 3 cm inside a chair's clearance. The baker measures each leg against the drawn solids and, when one comes short, routes again on the grid with every cell stepCm further blocked, up to `tries` times; the first anchorCm of a leg (her post, on the door's own face) is not measured. A leg that never comes clear is kept as the grid made it and counted in the summary."
     },
     "leashM": { "v": 25, "src": "briefs/022-living-cafe.md", "proposed": true, "reason": "a table further than 25 m of walking from her post is not hers; the flank tables are 15 to 19 m, so all eight tables are." },
     "horizonS": { "v": 900, "src": "mission window 8 to 12 min (GDD §01)", "reason": "the round is baked for 15 minutes of round clock, which holds cover the longest mission (12 min) with room; after it she stands her post." },
@@ -80,7 +92,7 @@
   },
   "partners": {
     "kinds": ["lover"],
-    "closeCm": { "v": 120, "src": "briefs/022-living-cafe.md; Sky 2026-10-18 (they stand together)", "proposed": true, "reason": "arm's length: far enough that two bodies (65 cm clearance on the walk grid) never overlap, near enough to read as a couple. Well inside together-m (4 m), so a Watch that ends with them standing together still teaches the affair." },
+    "closeCm": { "v": 120, "src": "briefs/022-living-cafe.md; Sky 2026-10-18 (they stand together)", "proposed": true, "reason": "arm's length: far enough that two bodies (65 cm clearance on the walk grid) never overlap, near enough to read as a couple." },
     "partS": { "v": 2, "src": "briefs/022-living-cafe.md", "proposed": true, "reason": "the beat they stand turned to each other before the one who came turns away." },
     "clearCm": { "v": 100, "src": "briefs/022-living-cafe.md addendum (Sky 2026-10-18: \"the guard stops on top of the Scout\"); the walk grid's 65 cm body clearance", "proposed": true, "reason": "the summoned partner never stops within a metre of anyone else: two bodies and a hand's width. Read at the tick of the call, over the operatives and everyone on the street." },
     "summoned": {

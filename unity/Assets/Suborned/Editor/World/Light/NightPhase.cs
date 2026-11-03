@@ -156,10 +156,44 @@ namespace Suborned.World
                     }
                 }
             }
+            // globe (Glint 077): a point inside each GlobeLamp_TB's opal, `height` over its base (the piece stands with its lowest point on Kit.Base)
+            if (kinds.TryGetValue("globe", out var kg))
+            {
+                int i = 0; foreach (var m in world.Civic.Where(m => m.Kit != null && m.Kit.Id == "GlobeLamp_TB").OrderBy(m => m.Id, System.StringComparer.Ordinal))
+                    Make(kg, $"globe/{m.Id}", new Vector3(m.Kit.At.x, m.Kit.Base + J.F(kg, "height"), m.Kit.At.y), null, i++);
+            }
             lp.lamps = made.Select(m => m.l).ToArray(); lp.lampIntensity = made.Select(m => m.i).ToArray();
+            lp.glows = Glows(n, root, look).ToArray();
             Lamps = made.Count;
             Debug.Log($"World: night phase built (light.json night): moon {s.sunIntensity}, reflection {s.reflectionIntensity}, grade-night; lamps {made.Count} (" +
                       string.Join(", ", made.GroupBy(m => m.l.name.Split('/')[0]).Select(g => $"{g.Key} {g.Count()}")) + $"), at most {lp.liveCap} lit within {lp.liveRadius} m; the scene is saved by day");
+        }
+
+        /// <summary>Brief 077: night.emissive `pieces[]` that name a `material` get an absolute-level glow: every renderer in the scene (the kit instances and the `batches` a baked piece joins) drawing that
+        /// material takes one scene-owned copy (&lt;scene&gt;-glow-&lt;material&gt;.mat, written at the day level), driven by LightPhase.ApplyGlows from
+        /// dayResidual / evening / night of the piece's `emissive` key (evening falls back to the day level). The colour is the material's own emission hue.</summary>
+        static IEnumerable<LightPhase.Glow> Glows(object n, Transform root, Look look)
+        {
+            var em = J.Get(n, "emissive"); if (em == null || J.Get(em, "pieces") is not List<object> pieces) yield break;
+            foreach (var pc in pieces)
+            {
+                var matName = J.S(pc, "material"); var key = J.S(pc, "emissive"); if (matName == null || key == null) continue;
+                float L(string block, float dflt) => J.Get(em, block) is { } b && J.Get(b, key) is double d ? (float)d : dflt;
+                float night = L("night", float.NaN); if (float.IsNaN(night)) throw new InvalidDataException($"World: light.json night.emissive.night has no `{key}` for {matName}");
+                float day = L("dayResidual", 0f), evening = L("evening", day);
+                var users = root.gameObject.scene.GetRootGameObjects().SelectMany(g => g.GetComponentsInChildren<Renderer>(true)).Where(r => r.sharedMaterials.Any(x => x && x.name == matName)).ToArray();
+                if (users.Length == 0) { Debug.Log($"World: night glow {matName}: nothing in the scene draws it"); continue; }
+                var src = users.SelectMany(r => r.sharedMaterials).First(x => x && x.name == matName);
+                var glow = new Material(src) { name = matName };
+                var e = src.GetColor("_EmissionColor"); float a0 = Mathf.Max(e.maxColorComponent, 1e-6f);
+                var hue = new Color(e.r / a0, e.g / a0, e.b / a0, 1f); // the material's own hue; its brightness is the level's
+                var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-glow-" + matName + ".mat"; AssetDatabase.DeleteAsset(path); AssetDatabase.CreateAsset(glow, path);
+                var g = new LightPhase.Glow { material = glow, colour = hue, day = day, evening = evening, night = night };
+                var c = hue * day; c.a = day; glow.SetColor("_EmissionColor", c); glow.EnableKeyword("_EMISSION"); glow.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                foreach (var r in users) { r.sharedMaterials = r.sharedMaterials.Select(x => x && x.name == matName ? glow : x).ToArray(); if (PrefabUtility.IsPartOfPrefabInstance(r)) PrefabUtility.RecordPrefabInstancePropertyModifications(r); }
+                Debug.Log($"World: night glow {matName} ({key}): day {day}, evening {evening}, night {night} (absolute), {users.Length} renderers on {Path.GetFileName(path)}");
+                yield return g;
+            }
         }
 
         static LightPhase.State Capture(Volume grade)

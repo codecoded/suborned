@@ -1,0 +1,47 @@
+{
+  "faults": [
+    {
+      "scene": "help-inez-1",
+      "line": "Not yet, then. Get some sleep. I'll bring the rest.",
+      "problem": "\"Get some sleep\" implies the second visit is a rest away, but it happens on the same live mission clock, during her shift, and the player can return at once.",
+      "fix": "Replace the sleep with something in the shift, keeping the required words: \"Not yet, then. Mind your tables. I'll bring the rest.\""
+    },
+    {
+      "scene": "pressure-inez",
+      "line": "When I telephone, call Okafor over from his door, a few minutes.",
+      "problem": "A pressured Inez clears the door for about 1:39, not about three minutes, and Pressure's price already shows \"Door 1:40\", so the line contradicts a time the player plans around.",
+      "fix": "Cut the duration: \"When I telephone, call Okafor over from his door.\""
+    },
+    {
+      "scene": "pay-driver",
+      "line": "Seventy thousand, paid, and I haven't heard the job. Nobody pays first.",
+      "problem": "$70,000 is Inez's Pay price; the driver costs $40,000 ($110,000 with Pay on Inez, $80,000 with Help), so the line states the wrong price and breaks the purse arithmetic.",
+      "fix": "Drop the figure and let the ring show the price: \"Paid, and I haven't heard the job. Nobody pays first.\""
+    },
+    {
+      "scene": "pay-driver",
+      "line": "Long enough. We get him out of the back seat.",
+      "problem": "The decided Take with a turned driver happens inside Vale's car and ends with the Enforcer at the wheel, so nobody is promised out of the back seat in the design (that Take is decided, not built).",
+      "fix": "Say nothing about how: \"Long enough. The back seat's our business.\""
+    },
+    {
+      "scene": "pay-driver",
+      "line": "I don't see that. Anyone watching my bay, I'll send off, free.",
+      "problem": "The only send-off in the rules is the false tip, which moves the rival car and wheelman but not the bay's lookout, and it is in question with no new rule to be built on it; \"free\" also promises a price nothing sets.",
+      "fix": "Cut to \"I don't see that.\" until Sky rules on the false tip, and if it stays, limit the offer to what the tip does and drop \"free\"."
+    },
+    {
+      "scene": "call-inez",
+      "line": "Keep me as long as you like.",
+      "problem": "This suggests Inez can hold him open-endedly, but the door has a fixed window of about 2:54 that the player times, and the sheet says he doesn't say how long it stands empty.",
+      "fix": "End on him coming, with no duration: \"Then I'm coming, love.\""
+    },
+    {
+      "scene": "call-inez",
+      "line": "opens: \"Camera off? Then enter the Office.\"",
+      "problem": "\"Off\" reads as Disable only, but a Loop also clears the entrance camera for an Enter, so the card hides the quieter option (Loop +1 T, against Disable +2 T and an incident) and points at one way.",
+      "fix": "Name both: \"Camera looped or off? Then enter the Office.\""
+    }
+  ],
+  "notes": "Clean at line level: listen-inez, help-inez-2, call-inez-pressure.\n\nSheet conflicts for Aster (not resolved here):\n1. The pressure-inez sheet says Inez never tells him anyone knows, that her reason keeps him at her side, and that the door is empty about three minutes. The capstone rule [c2f50e911d9850c901298a11] and the call-inez-pressure sheet say a pressured Inez tells him, he stays 5 s and runs back, and the door is clear about 1:39. I followed the rule. The sheet needs correcting before any regeneration, or the fault comes back.\n2. The pay-driver sheet tells Fable that getting Vale out of the back seat is the job, against the decided in-car Take [784d95fe1701a3acd7805808]. That Take is decided, not built, so the fix is neutral and holds under either version. The sheet also says Zhou bargains while its standard text says nobody bargains; the beats only joke about it, except \\\"free\\\", which is covered in the faults.\n3. Zhou's send-off rests on the false tip, which Sky has questioned [6c085fae87a8f5f8435ed3eb]. The passages I have don't show whether a turned driver gives any such action. If it is a button, the sheet's \\\"nothing new to press\\\" is also untrue. This needs Sky's ruling through Aster.\n4. The listen-inez sheet puts Milena just inside as a voice through the door. §10 says the scene doesn't play if either person is inside, and that the overheard pair fill the shot [ea8da39aa814ef6e55a3a745]. Stage her outside at the door, or check the gate. This is a staging fault, not a line fault.\n\nLower priority:\n- The driver's $40,000 is derived from the purse sums in [8e62d5b16cc9e9e9f38268da]; no passage here gives it as a line of its own.\n- The call-inez card says \\\"a few minutes\\\", as its sheet asks, while the pressure card says \\\"Door 1:40\\\". Both are true, but the player can't compare them directly. Whether to show about 2:54 is Aster's call.\n- Speaker labels are mixed (Inez/waitress, guard/Okafor, lower-case fixer). Tools should check they resolve to the right faces."
+}

@@ -32,18 +32,33 @@ namespace Suborned.Play.Tests
             Assert.AreEqual(Do.Fire, HandoverHost.TpResolve(In.LeftTap, St.Aiming));
         }
 
+        /// <summary>The brief's rows as the table has them now, in both presets (HandoverHost.HoldRing = the Built preset): brief 041 (Double click:
+        /// no hold opens a ring, a held E acts as a tap on release), item 33 (Sky 2026-10-24: a left click on the prompted target opens its ring;
+        /// a right tap does nothing, as on the map, the right button's hold aims). The rows of 0.2.43 (E hold rings, left tap acts, right tap rings at the target)
+        /// were stale since then; ProofFire checks the same rows in the player.</summary>
         [Test]
         public void TheRowsOfTheBrief()
         {
-            Assert.AreEqual(Do.Act, HandoverHost.TpResolve(In.ETap, St.Free));
-            Assert.AreEqual(Do.Ring, HandoverHost.TpResolve(In.EHold, St.Free));
-            Assert.AreEqual(Do.Act, HandoverHost.TpResolve(In.LeftTap, St.Walking));
-            Assert.AreEqual(Do.Orbit, HandoverHost.TpResolve(In.LeftDrag, St.Running));
-            Assert.AreEqual(Do.RingAtTarget, HandoverHost.TpResolve(In.RightTap, St.Free));
-            Assert.AreEqual(Do.Aim, HandoverHost.TpResolve(In.RightHold, St.Running));
-            Assert.AreEqual(Do.Nothing, HandoverHost.TpResolve(In.RightHold, St.CarryingVale));
-            Assert.AreEqual(Do.TakeLit, HandoverHost.TpResolve(In.ETap, St.RingOpen));
-            foreach (St s in Enum.GetValues(typeof(St))) Assert.AreEqual(Do.Look, HandoverHost.TpResolve(In.MiddleDrag, s));
+            bool was = HandoverHost.HoldRing;
+            try
+            {
+                foreach (bool built in new[] { false, true })
+                {
+                    HandoverHost.HoldRing = built; string p = built ? "Built" : "hold preset";
+                    Assert.AreEqual(Do.Act, HandoverHost.TpResolve(In.ETap, St.Free), p);
+                    Assert.AreEqual(built ? Do.Ring : Do.Act, HandoverHost.TpResolve(In.EHold, St.Free), p);
+                    Assert.AreEqual(built ? Do.Ring : Do.Act, HandoverHost.TpResolve(In.LeftHold, St.Free), p);
+                    Assert.AreEqual(Do.Ring, HandoverHost.TpResolve(In.LeftTap, St.Walking), p);
+                    Assert.AreEqual(Do.Orbit, HandoverHost.TpResolve(In.LeftDrag, St.Running), p);
+                    Assert.AreEqual(Do.Nothing, HandoverHost.TpResolve(In.RightTap, St.Free), p); Assert.AreEqual(Do.Nothing, HandoverHost.TpResolve(In.RightTap, St.RingOpen), p);
+                    Assert.AreEqual(Do.LowerAim, HandoverHost.TpResolve(In.RightTap, St.Aiming), p);
+                    Assert.AreEqual(Do.Aim, HandoverHost.TpResolve(In.RightHold, St.Running), p);
+                    Assert.AreEqual(Do.Nothing, HandoverHost.TpResolve(In.RightHold, St.CarryingVale), p);
+                    Assert.AreEqual(Do.TakeLit, HandoverHost.TpResolve(In.ETap, St.RingOpen), p);
+                    foreach (St s in Enum.GetValues(typeof(St))) Assert.AreEqual(Do.Look, HandoverHost.TpResolve(In.MiddleDrag, s), p);
+                }
+            }
+            finally { HandoverHost.HoldRing = was; }
         }
     }
 }

@@ -70,8 +70,9 @@ namespace Suborned.Sim
         public static string Json(string id, Game g, List<(bool ok, string what)> checks, bool replayIdentical)
         {
             var w = new JWriter().Obj().Prop("id", id).Prop("outcome", g.Result.ToString().ToLowerInvariant()).Prop("fail", g.FailCode).Prop("tick", g.Tick)
-                .Prop("cash", g.Cash).Prop("trail", g.Trail).Prop("alert", g.Alert).Prop("gunfire", g.Gunfire).Prop("standing", g.Standing)
+                .Prop("seed", g.Seed).Prop("cash", g.Cash).Prop("trail", g.Trail).Prop("alert", g.Alert).Prop("gunfire", g.Gunfire).Prop("standing", g.Standing)
                 .Prop("startHash", Hash.Hex(g.StartHash)).Prop("finalHash", Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)).Prop("replayIdentical", replayIdentical);
+            w.Open("stats").Prop("fightS", g.CellFightS).Prop("shots", g.CellShots).Prop("hits", g.CellHits).Prop("hpLost", g.CellHpLost).Prop("down", g.CellDownCount).EndObj(); // brief 080: what a band reads (output only, never hashed)
             if (g.Cause != null) { w.Key("cause"); g.Cause.Write(w); } // the fail camera's culprit (FailCause.cs): written only when the run failed or withdrew
             w.OpenArr("checkpoints"); foreach (var (t, h) in g.Checkpoints) w.Obj().Prop("tick", t).Prop("hash", Hash.Hex(h)).EndObj(); w.EndArr();
             w.OpenArr("checks"); foreach (var c in checks) w.Obj().Prop("ok", c.ok).Prop("what", c.what).EndObj(); w.EndArr();

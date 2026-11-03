@@ -1,0 +1,768 @@
+{
+ "note": "Written by briefs/061/datum/make.ts. before = the crossings in out/world/harbour-district.world.json (2026-10-24 14:47); after = the proposed coverage rules applied to them (each kept crossing stands where the generator puts it today). Detours: brief 009's method on the walks of walks.ts (a station = its nearer stair bank), served = a crossing of that road within a 30 m detour.",
+ "before": {
+  "total": 124,
+  "byClass": {
+   "access": 44,
+   "district": 39,
+   "primary": 26,
+   "circus ring": 7,
+   "district (stair foot)": 2,
+   "none (stair foot)": 4,
+   "primary (stair foot)": 2
+  },
+  "byRule": {
+   "edge": 66,
+   "civic": 8,
+   "arm": 11,
+   "island": 7,
+   "mall": 2,
+   "mid": 2,
+   "stop": 20,
+   "bank": 8
+  }
+ },
+ "after": {
+  "total": 26,
+  "byClass": {
+   "district": 12,
+   "access": 3,
+   "circus ring": 4,
+   "primary": 7
+  },
+  "byRule": {
+   "crossroads": 6,
+   "junction": 1,
+   "foot": 4,
+   "civic": 1,
+   "island": 4,
+   "stops": 10
+  }
+ },
+ "kept": [
+  {
+   "id": "crossing/market-street/1",
+   "rule": "crossroads",
+   "road": "market-street",
+   "class": "district",
+   "at": [
+    -77,
+    -410
+   ]
+  },
+  {
+   "id": "crossing/market-street/3",
+   "rule": "crossroads",
+   "road": "market-street",
+   "class": "district",
+   "at": [
+    -203,
+    -410
+   ]
+  },
+  {
+   "id": "crossing/market-street/5",
+   "rule": "junction",
+   "road": "market-street",
+   "class": "district",
+   "at": [
+    -27,
+    -410
+   ]
+  },
+  {
+   "id": "crossing/lamplight-lane/2",
+   "rule": "foot",
+   "road": "lamplight-lane",
+   "class": "access",
+   "at": [
+    -151,
+    -120
+   ]
+  },
+  {
+   "id": "crossing/circus-road/2",
+   "rule": "crossroads",
+   "road": "circus-road",
+   "class": "district",
+   "at": [
+    -117,
+    0
+   ]
+  },
+  {
+   "id": "crossing/circus-road/3",
+   "rule": "foot",
+   "road": "circus-road",
+   "class": "district",
+   "at": [
+    -151,
+    0
+   ]
+  },
+  {
+   "id": "crossing/crown-avenue/1",
+   "rule": "crossroads",
+   "road": "crown-avenue",
+   "class": "district",
+   "at": [
+    0,
+    203
+   ]
+  },
+  {
+   "id": "crossing/market-street/7",
+   "rule": "crossroads",
+   "road": "market-street",
+   "class": "district",
+   "at": [
+    103,
+    -410
+   ]
+  },
+  {
+   "id": "crossing/market-street/9",
+   "rule": "crossroads",
+   "road": "market-street",
+   "class": "district",
+   "at": [
+    213,
+    -410
+   ]
+  },
+  {
+   "id": "crossing/starline-street/2",
+   "rule": "foot",
+   "road": "starline-street",
+   "class": "access",
+   "at": [
+    -151,
+    -198
+   ]
+  },
+  {
+   "id": "crossing/orbit-walk/2",
+   "rule": "civic",
+   "road": "orbit-walk",
+   "class": "access",
+   "at": [
+    -160,
+    -267
+   ]
+  },
+  {
+   "id": "crossing/crown-circus/1",
+   "rule": "island",
+   "road": "crown-circus",
+   "class": "circus ring",
+   "at": [
+    22,
+    -30
+   ]
+  },
+  {
+   "id": "crossing/crown-circus/3",
+   "rule": "island",
+   "road": "crown-circus",
+   "class": "circus ring",
+   "at": [
+    -18,
+    32
+   ]
+  },
+  {
+   "id": "crossing/crown-circus/4",
+   "rule": "island",
+   "road": "crown-circus",
+   "class": "circus ring",
+   "at": [
+    -33,
+    -16
+   ]
+  },
+  {
+   "id": "crossing/crown-circus/6",
+   "rule": "island",
+   "road": "crown-circus",
+   "class": "circus ring",
+   "at": [
+    35,
+    12
+   ]
+  },
+  {
+   "id": "crossing/harbour-road/4",
+   "rule": "foot",
+   "road": "harbour-road",
+   "class": "primary",
+   "at": [
+    300,
+    14
+   ]
+  },
+  {
+   "id": "crossing/stop/T1/comet/l/0",
+   "rule": "stops",
+   "road": "boulevard",
+   "class": "district",
+   "at": [
+    -5,
+    -710
+   ]
+  },
+  {
+   "id": "crossing/stop/T1/records/l/0",
+   "rule": "stops",
+   "road": "boulevard",
+   "class": "district",
+   "at": [
+    -5,
+    -400
+   ]
+  },
+  {
+   "id": "crossing/stop/T1/circus/l/1",
+   "rule": "stops",
+   "road": "boulevard",
+   "class": "district",
+   "at": [
+    -5,
+    -52
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/harbour/l/0",
+   "rule": "stops",
+   "road": "harbour-road",
+   "class": "primary",
+   "at": [
+    311,
+    40
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/harbour-court/l/0",
+   "rule": "stops",
+   "road": "harbour-road",
+   "class": "primary",
+   "at": [
+    311,
+    -265
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/docks/l/1",
+   "rule": "stops",
+   "road": "harbour-road",
+   "class": "primary",
+   "at": [
+    311,
+    -530
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/comet/l/1",
+   "rule": "stops",
+   "road": "boulevard",
+   "class": "district",
+   "at": [
+    -10,
+    -731
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/lantern/l/1",
+   "rule": "stops",
+   "road": "sunset-way",
+   "class": "primary",
+   "at": [
+    -351,
+    -565
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/rocket/l/0",
+   "rule": "stops",
+   "road": "sunset-way",
+   "class": "primary",
+   "at": [
+    -351,
+    -300
+   ]
+  },
+  {
+   "id": "crossing/stop/T2/terraces/l/0",
+   "rule": "stops",
+   "road": "sunset-way",
+   "class": "primary",
+   "at": [
+    -351,
+    130
+   ]
+  }
+ ],
+ "walks": {
+  "lines": 245,
+  "roadCrossings": 687,
+  "places": 59
+ },
+ "served": {
+  "before": {
+   "n": 631,
+   "share": 92,
+   "medianDetour": 9,
+   "crossingsUnused": 64
+  },
+  "after": {
+   "n": 326,
+   "share": 47,
+   "medianDetour": 15,
+   "crossingsUnused": 3
+  },
+  "byClass": {
+   "before": {
+    "access": 313,
+    "district": 157,
+    "primary": 149,
+    "circus": 12
+   },
+   "after": {
+    "access": 90,
+    "district": 128,
+    "primary": 96,
+    "circus": 12
+   },
+   "all": {
+    "access": 351,
+    "district": 166,
+    "primary": 158,
+    "circus": 12
+   }
+  }
+ },
+ "lostByGroup": {
+  "lane": {
+   "places": 6,
+   "walkCrossings": 66
+  },
+  "lane mouth": {
+   "places": 11,
+   "walkCrossings": 156
+  },
+  "busy road, > 60 m": {
+   "places": 4,
+   "walkCrossings": 9
+  },
+  "busy road, ≤ 60 m": {
+   "places": 3,
+   "walkCrossings": 31
+  }
+ },
+ "lost": [
+  {
+   "road": "apron-road",
+   "name": "Apron Road",
+   "cls": "access",
+   "group": "lane",
+   "at": [
+    -128,
+    -316
+   ],
+   "walks": 28,
+   "before": 4,
+   "after": null,
+   "walksAre": [
+    "Café entrance – T1/comet ×2",
+    "Café entrance – T1/records ×2"
+   ]
+  },
+  {
+   "road": "satellite-street",
+   "name": "Satellite Street",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -60,
+    -388
+   ],
+   "walks": 28,
+   "before": 5,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/rocket ×4",
+    "Café entrance – T1/records ×2"
+   ]
+  },
+  {
+   "road": "satellite-street",
+   "name": "Satellite Street",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -60,
+    -408
+   ],
+   "walks": 24,
+   "before": 14,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/lantern ×4",
+    "T1/records – T2/rocket ×4"
+   ]
+  },
+  {
+   "road": "lantern-lane",
+   "name": "Lantern Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -60,
+    -410
+   ],
+   "walks": 20,
+   "before": 8,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/lantern ×4",
+    "Café entrance – T1/comet ×2"
+   ]
+  },
+  {
+   "road": "harbour-lane",
+   "name": "Harbour Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    120,
+    -399
+   ],
+   "walks": 16,
+   "before": 1,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/harbour-court ×4",
+    "T1/records – T2/docks ×4"
+   ]
+  },
+  {
+   "road": "dock-road",
+   "name": "Dock Road",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    231,
+    -424
+   ],
+   "walks": 14,
+   "before": 1,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/docks ×4",
+    "Café entrance – T2/docks ×2"
+   ]
+  },
+  {
+   "road": "dock-road",
+   "name": "Dock Road",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    120,
+    -419
+   ],
+   "walks": 14,
+   "before": 2,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/docks ×4",
+    "Café entrance – T2/docks ×2"
+   ]
+  },
+  {
+   "road": "satellite-street",
+   "name": "Satellite Street",
+   "cls": "access",
+   "group": "lane",
+   "at": [
+    -60,
+    -202
+   ],
+   "walks": 14,
+   "before": 28,
+   "after": null,
+   "walksAre": [
+    "Official entrance – T1/circus ×2",
+    "Official entrance – T2/harbour ×2"
+   ]
+  },
+  {
+   "road": "harbour-lane",
+   "name": "Harbour Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    231,
+    -394
+   ],
+   "walks": 12,
+   "before": 1,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/harbour-court ×4",
+    "Café entrance – T2/harbour-court ×2"
+   ]
+  },
+  {
+   "road": "observatory-lane",
+   "name": "Observatory Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -100,
+    10
+   ],
+   "walks": 8,
+   "before": 6,
+   "after": null,
+   "walksAre": [
+    "T1/circus – T2/terraces ×4",
+    "T2/harbour – S1 gardens ×2"
+   ]
+  },
+  {
+   "road": "rocket-lane",
+   "name": "Rocket Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -186,
+    -401
+   ],
+   "walks": 6,
+   "before": 1,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/rocket ×4",
+    "Official entrance – T2/lantern ×1"
+   ]
+  },
+  {
+   "road": "lantern-lane",
+   "name": "Lantern Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -186,
+    -419
+   ],
+   "walks": 6,
+   "before": 1,
+   "after": null,
+   "walksAre": [
+    "T1/records – T2/lantern ×4",
+    "Official entrance – T2/lantern ×1"
+   ]
+  },
+  {
+   "road": "lamplight-lane",
+   "name": "Lamplight Lane",
+   "cls": "access",
+   "group": "lane mouth",
+   "at": [
+    -100,
+    -8
+   ],
+   "walks": 8,
+   "before": 17,
+   "after": 219,
+   "walksAre": [
+    "T1/circus – T2/terraces ×4",
+    "T1/circus – S1 gardens ×2"
+   ]
+  },
+  {
+   "road": "rocket-lane",
+   "name": "Rocket Lane",
+   "cls": "access",
+   "group": "lane",
+   "at": [
+    -186,
+    -204
+   ],
+   "walks": 4,
+   "before": 3,
+   "after": null,
+   "walksAre": [
+    "Café entrance – T2/rocket ×2",
+    "Café kitchen door – T2/rocket ×2"
+   ]
+  },
+  {
+   "road": "lantern-lane",
+   "name": "Lantern Lane",
+   "cls": "access",
+   "group": "lane",
+   "at": [
+    -60,
+    -596
+   ],
+   "walks": 4,
+   "before": 6,
+   "after": null,
+   "walksAre": [
+    "Office entrance – T1/comet ×2",
+    "Office entrance – T2/comet ×2"
+   ]
+  },
+  {
+   "road": "sunset-way",
+   "name": "Sunset Way",
+   "cls": "primary",
+   "group": "busy road, > 60 m",
+   "at": [
+    -340,
+    -405
+   ],
+   "walks": 5,
+   "before": 8,
+   "after": 188,
+   "walksAre": [
+    "Café entrance – T2/lantern ×1",
+    "Café kitchen door – T2/lantern ×1"
+   ]
+  },
+  {
+   "road": "sunset-way",
+   "name": "Sunset Way",
+   "cls": "primary",
+   "group": "busy road, ≤ 60 m",
+   "at": [
+    -340,
+    -279
+   ],
+   "walks": 20,
+   "before": 16,
+   "after": 44,
+   "walksAre": [
+    "T1/records – T2/rocket ×4",
+    "T1/circus – T2/rocket ×4"
+   ]
+  },
+  {
+   "road": "orbit-walk",
+   "name": "Orbit Walk",
+   "cls": "access",
+   "group": "lane",
+   "at": [
+    -123,
+    -267
+   ],
+   "walks": 14,
+   "before": 8,
+   "after": 41,
+   "walksAre": [
+    "Café kitchen door – T1/comet ×2",
+    "Café kitchen door – T1/records ×2"
+   ]
+  },
+  {
+   "road": "market-street",
+   "name": "Market Street",
+   "cls": "district",
+   "group": "busy road, > 60 m",
+   "at": [
+    -310,
+    -410
+   ],
+   "walks": 2,
+   "before": 17,
+   "after": 152,
+   "walksAre": [
+    "Café entrance – T2/lantern ×1",
+    "Café kitchen door – T2/lantern ×1"
+   ]
+  },
+  {
+   "road": "sunset-way",
+   "name": "Sunset Way",
+   "cls": "primary",
+   "group": "busy road, > 60 m",
+   "at": [
+    -340,
+    -727
+   ],
+   "walks": 1,
+   "before": 7,
+   "after": 248,
+   "walksAre": [
+    "T2/comet – T2/lantern ×1"
+   ]
+  },
+  {
+   "road": "circus-road",
+   "name": "Circus Road",
+   "cls": "district",
+   "group": "busy road, ≤ 60 m",
+   "at": [
+    -189,
+    0
+   ],
+   "walks": 9,
+   "before": 11,
+   "after": 32,
+   "walksAre": [
+    "Café entrance – T2/terraces ×2",
+    "Café kitchen door – T2/terraces ×2"
+   ]
+  },
+  {
+   "road": "lamplight-lane",
+   "name": "Lamplight Lane",
+   "cls": "access",
+   "group": "lane",
+   "at": [
+    -100,
+    -42
+   ],
+   "walks": 2,
+   "before": 23,
+   "after": 112,
+   "walksAre": [
+    "T1/records – S1 gardens ×2"
+   ]
+  },
+  {
+   "road": "sunset-way",
+   "name": "Sunset Way",
+   "cls": "primary",
+   "group": "busy road, > 60 m",
+   "at": [
+    -340,
+    0
+   ],
+   "walks": 1,
+   "before": 19,
+   "after": 197,
+   "walksAre": [
+    "Office entrance – T2/terraces ×1"
+   ]
+  },
+  {
+   "road": "boulevard",
+   "name": "The Boulevard",
+   "cls": "district",
+   "group": "busy road, ≤ 60 m",
+   "at": [
+    0,
+    -369
+   ],
+   "walks": 2,
+   "before": 9,
+   "after": 46,
+   "walksAre": [
+    "T1/records – T2/harbour-court ×2",
+    "T1/records – T2/docks ×2"
+   ]
+  }
+ ]
+}

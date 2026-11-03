@@ -1,11 +1,12 @@
 import plan from '../../contracts/world/harbour-district.plan.json';
 import { streets, frontage, plots, plotArea } from './geom';
+import { bandFor } from '../world/gen/common';
 import { BANDS, DRAW, CAT, CATEGORY, K, RES_TRIPS, PROM, inOpen, bandOf, type Band } from './rules';
 const T: Record<string, any> = (plan as any).standards.frontage.trades;
 /** per metre of frontage at hour h (day clock): street presence by term */
-export function mixTerms(mix: Record<string, number>, h: number) {
+export function mixTerms(mix: Record<string, number> | undefined, h: number) { // an area with no street mix (a park) has no frontage presence
   let spill = 0, walk = 0, inside = 0, draw = 0, tot = 0;
-  for (const [t, wt] of Object.entries(mix)) {
+  for (const [t, wt] of Object.entries(mix ?? {})) {
     const c = CATEGORY[t], tr = T[t]; const cp = CAT[c];
     const o = inOpen(tr.hours, h) ? 1 : 0, d = DRAW[c][bandOf(h)] * o, f = wt / 100;
     spill += f * K.spillDepth * cp.spillRho * d;
@@ -14,14 +15,19 @@ export function mixTerms(mix: Record<string, number>, h: number) {
     walk += f * K.walkersMultiplier * (C / cp.dwell) * (K.lastLeg / K.walkSpeed); // Little's law, last leg
     if (t !== 'lobby' && t !== 'hotel-lobby') draw += f * d; tot += f;
   }
-  return { spill, walk, inside, draw: draw / tot };
+  return { spill, walk, inside, draw: tot ? draw / tot : 0 };
 }
 const sh = (h: number) => bandOf(h);
-export function homesPop(p: any) {
-  const m = (plan as any).standards.buildings.bands[p.use]; if (!m || !['residential', 'mixed'].includes(p.use)) return 0;
-  const a = plotArea(p);
-  const foot = p.use === 'mixed' ? m.mode - m.podium : m.mode; // mixed: podium storeys are frontage, body above is housing
-  return Math.round(a * 0.7 * foot * K.efficiency / K.homeM2 * K.perHome); // 0.7 = built share of the plot (courts, setbacks) [S]
+/** Storeys a plot's homes stand in: the mode of the band the world generator draws from (tools/world/gen/common.ts bandFor), so a play-street
+ *  cap (standards.buildings.caps, brief 066) holds here as it holds on the built blocks; uncapped areas keep the use band's mode, clipped by a cap's metres. */
+export function homeStoreys(p: any, B: any = (plan as any).standards.buildings) {
+  const m = B.bands[p.use]; if (!m || !['residential', 'mixed'].includes(p.use)) return 0;
+  const cb = bandFor(B, p.use, p.area), n = Math.min(cb.mode, cb.hi);
+  return Math.max(0, p.use === 'mixed' ? n - (m.podium ?? 0) : n); // mixed: podium storeys are frontage, body above is housing
+}
+export function homesPop(p: any, B: any = (plan as any).standards.buildings) {
+  const foot = homeStoreys(p, B); if (!foot) return 0;
+  return Math.round(plotArea(p) * 0.7 * foot * K.efficiency / K.homeM2 * K.perHome); // 0.7 = built share of the plot (courts, setbacks) [S]
 }
 export function streetDensity(h: number) {
   const out: any[] = [];

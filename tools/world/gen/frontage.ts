@@ -8,6 +8,7 @@ import { type Ctx, type Rng, r3, r4, rng, rv } from './common';
 import { frontKind, idOf, kindOf } from './edges';
 import { edgeN } from './geo';
 import type { Bld } from './masses';
+import { sectionOf } from '../../plan/sections';
 import type { Host, HostEdge } from './types';
 
 type Trade = { w: [number, number]; depth: number; service: string; hours: [number, number] | 'service'; wants: string[]; spill: string; sign: [string, string, string]; anchor?: boolean; areas?: string[] };
@@ -15,15 +16,16 @@ const QUIET: Record<string, number> = { access: 0, park: 1, quay: 2, walk: 3, di
 const OPEN = new Set(['party', 'court', 'none', 'primary']);
 
 /** Spill room in front of a facade: the section's frontage zone (never more than the spill depth), none where the pavement is under minPavement. */
-function spillZone(ctx: Ctx, kind: string, area = ''): number {
-  const base = ctx.S.sections[kind === 'walk' || kind === 'quay' || kind === 'park' ? 'none' : kind], avenue = kind === 'access' && (ctx.S.trees.avenues.access.avenue as string[]).includes(area);
+function spillZone(ctx: Ctx, kind: string, area = '', street = ''): number {
+  const own = ['primary', 'district', 'access'].includes(kind) && street ? sectionOf(ctx.S.sections, ctx.plan, kind, street) : undefined; // a road's own pavement (roads[].pavement) keeps its own frontage zone
+  const base = own?.own ? own : ctx.S.sections[kind === 'walk' || kind === 'quay' || kind === 'park' ? 'none' : kind], avenue = !own?.own && kind === 'access' && (ctx.S.trees.avenues.access.avenue as string[]).includes(area);
   const sec = avenue && base?.avenue ? { ...base, frontage: base.avenue.frontage } : base; // an avenue's frontage zone gives 0.5 m to the tree pit
   if (kind === 'mall') return Math.min(ctx.F.placement.spill.depth, 4);
   return sec && sec.pavement >= ctx.F.placement.spill.minPavement ? Math.min(ctx.F.placement.spill.depth, sec.frontage) : 0;
 }
 
 /** Facade runs of a building that tenancies may use: street kinds only, never a primary road; short arc edges are merged into chords. */
-export function buildingHost(ctx: Ctx, b: Bld): Host | null {
+export function buildingHost(ctx: Ctx, b: Pick<Bld, 'id' | 'area' | 'ring'>): Host | null {
   const { p, c } = b.ring, n = p.length, edges: HostEdge[] = [];
   const street = (i: number) => !OPEN.has(kindOf(c[i]!));
   for (let i = 0; i < n;) {
@@ -31,7 +33,7 @@ export function buildingHost(ctx: Ctx, b: Bld): Host | null {
     let j = i;
     while (j + 1 < n && street(j + 1) && c[j + 1] === c[i] && dist(p[j]!, p[j + 1]!) < 8 && dist(p[i]!, p[(j + 2) % n]!) <= 30) j++;
     const a = p[i]!, e = p[(j + 1) % n]!;
-    if (dist(a, e) >= 3) edges.push({ a, b: e, n: edgeN(a, e), kind: frontKind(c[i]!), street: idOf(c[i]!), spill: spillZone(ctx, frontKind(c[i]!), b.area), cornerA: street((i + n - 1) % n), cornerB: street((j + 1) % n) });
+    if (dist(a, e) >= 3) edges.push({ a, b: e, n: edgeN(a, e), kind: frontKind(c[i]!), street: idOf(c[i]!), spill: spillZone(ctx, frontKind(c[i]!), b.area, idOf(c[i]!)), cornerA: street((i + n - 1) % n), cornerB: street((j + 1) % n) });
     i = j + 1;
   }
   if (!edges.length) return null;
@@ -70,6 +72,13 @@ function prims(ctx: Ctx, h: Host, id: string, t: string, T: Trade, a: V, u: V, n
   if (bays && w >= 4.5 + 3) service = mk('bay', 'box', 'trim', at(depth + 0.1, -(w / 2 - 2.8)), [4.5, 0.2, 4.6], z);
   void r;
   return { front, entrance, canopy, sign, service };
+}
+
+/** The buildings with a street-level tenancy of `trade` (brief 075-F1b: the HOTEL corner tower). Each host's tenancies are drawn from its own seed
+ *  (rng frontage/<id>) and nothing else, so this is the trade the frontage pass gives the same building later. */
+export function tradeHosts(ctx: Ctx, blds: Pick<Bld, 'id' | 'area' | 'ring'>[], trade: string): Set<string> {
+  const hosts = blds.flatMap(b => buildingHost(ctx, b) ?? []);
+  return new Set(generateFrontages(ctx, hosts).filter(f => f.level === 'street' && f.trade === trade).map(f => f.host));
 }
 
 export function generateFrontages(ctx: Ctx, hosts: Host[]): Frontage[] {
@@ -113,13 +122,20 @@ export function generateFrontages(ctx: Ctx, hosts: Host[]): Frontage[] {
         const alt = candidates(ctx, h, e.kind, lastMid.w, before, false, false).filter(([t]) => t !== endT && T[t]!.w[0] <= lastMid.w && lastMid.w <= T[t]!.w[1]);
         if (alt.length) lastMid.t = r.weighted(alt, q => q[1])[0];
       }
+      // no middle between the two corner tenancies (brief 075: the old runs' corner-to-corner faces): the one at b must differ from the one at a; else it takes another
+      // anchor trade that fits its width, or the a one keeps the run alone
+      const startT = startSegs[startSegs.length - 1]?.t;
+      if (!lastMid && endT && startT === endT) {
+        const e0 = endSegs[0]!, alt = candidates(ctx, h, e.kind, e0.w, endT, false, true).filter(([t]) => t !== endT && T[t]!.w[0] <= e0.w && e0.w <= T[t]!.w[1]);
+        if (alt.length) e0.t = r.weighted(alt, q => q[1])[0]; else endSegs.length = 0;
+      }
       const ordered = [...startSegs, ...segs, ...endSegs.reverse()];
       // lay out from a: start segments, the middle, the end segments flush with b
       let at = 0; const mid = ordered.length;
       ordered.forEach((s, k) => {
         const isEnd = k >= startSegs.length + segs.length, w = s.w, pos = isEnd ? L - ordered.slice(k).reduce((n, x) => n + x.w, 0) : at, a: V = [e.a[0] + u[0] * pos, e.a[1] + u[1] * pos];
         if (!isEnd) at = pos + w;
-        const x = T[s.t]!, spill = x.spill === 'none' ? 0 : Math.min(ctx.F.placement.spill.depth, e.spill ?? (h.level === 'street' && !h.free && ['district', 'access'].includes(e.kind) ? spillZone(ctx, e.kind, h.area) : h.pavement)), id = `${h.id}/e${ei}-${k}`;
+        const x = T[s.t]!, spill = x.spill === 'none' ? 0 : Math.min(ctx.F.placement.spill.depth, e.spill ?? (h.level === 'street' && !h.free && ['district', 'access'].includes(e.kind) ? spillZone(ctx, e.kind, h.area, e.street) : h.pavement)), id = `${h.id}/e${ei}-${k}`;
         const g = prims(ctx, h, id, s.t, x, a, u, e.n, w, e.kind, spill, r);
         out.push({
           id, host: h.id, level: h.level, z: h.z, trade: s.t, area: h.area, street: e.street, a: rv(a), b: rv([a[0] + u[0] * w, a[1] + u[1] * w]), w: r3(w), normal: [r3(e.n[0]), r3(e.n[1])], yaw: r4(Math.atan2(u[1], u[0])),

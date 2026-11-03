@@ -15,6 +15,8 @@ namespace Suborned.Play
         sealed class GroundBatch { public Material Mat; public Mesh Mesh; public readonly List<Vector3> V = new(); public readonly List<int> T = new(); }
         readonly Dictionary<int, GroundBatch> groundBatches = new();
         const float GroundLift = 0.035f;
+        /// <summary>Brief 070 (Glyph N4): the briefing's stills show the 3D world only: no ground marks are drawn while it is on (ShotRunner `bare`).</summary>
+        public static bool WorldMarksOff;
 
         /// <summary>Metres per HUD pixel on the ground at the play camera's zoom (orthographic); a perspective view gets the play zoom's.</summary>
         float GroundPxM
@@ -109,6 +111,65 @@ namespace Suborned.Play
                 Quad(b, P(a0, ri), P(a0, ro), P(a1, ro), P(a1, ri));
             }
         }
+        /// <summary>Glyph r123 F1: the car's hold ring and exit lane reach no further than this from the car (a reach over 12 m fills the screen).</summary>
+        const float CarMarkReachM = 12f;
+
+        /// <summary>The drawn floor's height under a world point (SiteFrame's walk heights: kerbs, steps, landings); 0 outside the site window.</summary>
+        float FloorAt(Vector3 w) { var f = host.frame; var b = f.ToBlock(new Vector2(w.x, w.z)); return f.Height(b.x, b.y); }
+
+        /// <summary>Glyph r123 F1: a ring laid on the drawn floor (a wide ring crosses kerbs: each piece stands at the highest floor under it, so the
+        /// pavement never swallows it), `widthPx` wide, `dashes` &gt; 0 static dashes (50 % on), an ink underlay 2 px wider at `underAlpha`.</summary>
+        void FloorRing(Vector3 c, float r, Color col, float widthPx, int dashes, float underAlpha)
+        {
+            if (r <= 0f || col.a <= 0.01f) return; float m = GroundPxM;
+            if (underAlpha > 0f) FloorRingQuads(GroundOf(new Color(Ink.r, Ink.g, Ink.b, underAlpha), true), c, r, (widthPx + 2f) * m, dashes);
+            FloorRingQuads(GroundOf(col, false), c, r, widthPx * m, dashes);
+        }
+        void FloorRingQuads(GroundBatch b, Vector3 c, float r, float w, int dashes)
+        {
+            int n = dashes > 0 ? dashes * 4 : Mathf.Clamp(Mathf.CeilToInt(r * 16f), 48, 160); float ri = Mathf.Max(0f, r - w / 2f), ro = r + w / 2f;
+            for (int i = 0; i < n; i++)
+            {
+                if (dashes > 0 && (i & 2) != 0) continue; // four pieces a dash period, two on
+                float a0 = i * Mathf.PI * 2f / n, a1 = (i + 1) * Mathf.PI * 2f / n;
+                var p0 = new Vector3(c.x + Mathf.Cos(a0) * ri, 0f, c.z + Mathf.Sin(a0) * ri); var p1 = new Vector3(c.x + Mathf.Cos(a0) * ro, 0f, c.z + Mathf.Sin(a0) * ro);
+                var p2 = new Vector3(c.x + Mathf.Cos(a1) * ro, 0f, c.z + Mathf.Sin(a1) * ro); var p3 = new Vector3(c.x + Mathf.Cos(a1) * ri, 0f, c.z + Mathf.Sin(a1) * ri);
+                float y = Mathf.Max(Mathf.Max(FloorAt(p0), FloorAt(p1)), Mathf.Max(FloorAt(p2), FloorAt(p3))) + GroundLift;
+                p0.y = p1.y = p2.y = p3.y = y; Quad(b, p0, p1, p2, p3);
+            }
+        }
+
+        /// <summary>Glyph r123 F1: a path laid on the drawn floor (cut into pieces of at most 1 m, each at the floor under it), as GroundPath.</summary>
+        void FloorPath(List<Vector3> pts, Color col, float widthPx, bool dashed, float underAlpha)
+        {
+            if (pts == null || pts.Count < 2) return; var fine = new List<Vector3>();
+            for (int j = 1; j < pts.Count; j++)
+            {
+                var a = pts[j - 1]; var e = pts[j]; var d = e - a; d.y = 0f; int n = Mathf.Max(1, Mathf.CeilToInt(d.magnitude));
+                for (int s = j == 1 ? 0 : 1; s <= n; s++) { var p = Vector3.Lerp(a, e, s / (float)n); p.y = FloorAt(p); fine.Add(p); }
+            }
+            GroundPath(fine, col, widthPx, dashed, underAlpha);
+        }
+
+        /// <summary>The pieces of a polyline within `r` m (on the ground plane) of `c`.</summary>
+        static List<List<Vector3>> ClipToDisc(List<Vector3> pts, Vector3 c, float r)
+        {
+            var outL = new List<List<Vector3>>(); List<Vector3> cur = null; float r2 = r * r;
+            bool In(Vector3 p) { float dx = p.x - c.x, dz = p.z - c.z; return dx * dx + dz * dz <= r2; }
+            for (int j = 1; j < pts.Count; j++)
+            {
+                var a = pts[j - 1]; var b = pts[j]; float fx = a.x - c.x, fz = a.z - c.z, dx = b.x - a.x, dz = b.z - a.z;
+                float A = dx * dx + dz * dz, B = 2f * (fx * dx + fz * dz), C = fx * fx + fz * fz - r2, disc = B * B - 4f * A * C;
+                if (A < 1e-8f || disc <= 0f) { cur = null; continue; }
+                float sq = Mathf.Sqrt(disc), t0 = Mathf.Max(0f, (-B - sq) / (2f * A)), t1 = Mathf.Min(1f, (-B + sq) / (2f * A));
+                if (t1 <= t0) { cur = null; continue; }
+                var p0 = Vector3.Lerp(a, b, t0); var p1 = Vector3.Lerp(a, b, t1);
+                if (cur == null || t0 > 0f) { cur = new List<Vector3> { p0 }; outL.Add(cur); }
+                cur.Add(p1); if (t1 < 1f || !In(b)) cur = null;
+            }
+            outL.RemoveAll(l => l.Count < 2); return outL;
+        }
+
         /// <summary>A filled disc on the ground (radius in metres): the move preview's dark middle.</summary>
         void GroundDisc(Vector3 c, float r, Color col) { if (r > 0f && col.a > 0.01f) RingQuads(GroundOf(col, true), c, r / 2f, r, false); }
 
@@ -124,7 +185,7 @@ namespace Suborned.Play
         /// <summary>End of the HUD's frame: this frame's marks to the play camera.</summary>
         void GroundFlush()
         {
-            var cam = host.View; if (!cam) return;
+            var cam = host.View; if (!cam || WorldMarksOff) return;
             foreach (var b in groundBatches.Values)
             {
                 if (b.V.Count == 0) continue;

@@ -1,0 +1,1 @@
+{"schema": "suborned.mission.adaptive/1", "mission": "handover", "id": "listen-guard", "style": "careless", "note": "listen probe", "pace": "human", "rules": [{"id": "w", "op": "scout", "do": "watch", "target": "guard", "when": ["t>=:0:05"], "retry": 3}, {"id": "l", "op": "scout", "do": "listen", "target": "guard", "when": ["log:scout.watch.watched"], "retry": 5, "tries": 5}]}

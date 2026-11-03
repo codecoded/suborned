@@ -196,7 +196,7 @@ namespace Suborned.Play
             int placed = RangePanel.LabelsPlaced, moved = RangePanel.LabelsMoved, dropped = RangePanel.LabelsDropped, bars = HudToolkit.RangeBarsDrawn; string goal = HudToolkit.GoalNow ?? "";
             if (np != null) np.Numbers = false;
             Check("labels", placed > 0, $"labels placed {placed}, stepped clear {moved}, left off for room {dropped} (each placed clear of the others and the panel by construction)");
-            Check("goalLine", !goal.Contains("Vale"), $"the goal line in the range: \"{goal}\"");
+            Check("goalLine", !goal.Contains(h.ValeWord), $"the goal line in the range: \"{goal}\"");
             Check("bars", s1 && s2 && s3 && bars >= Mathf.Min(1, carsUp) + 1, $"bars over range cars and bystanders {bars} (on the floor: cars {carsUp}, bystanders {bystandersUp}); spawns {s1} {s2} {s3}; lab {g.Lab}");
             // the car's time: the Enforcer alone on the car, the fire line's words
             foreach (var a in new[] { "enforcer", "scout" }) h.Issue(new Order { Op = a, Do = "cease" });

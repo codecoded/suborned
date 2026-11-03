@@ -1,7 +1,7 @@
 // Road finish and paving inlay standards RF-1, RF-2 (brief 026/028; Sky 2026-10-20: the 2.5D testbed's road). Plan-side: they hold
 // standards.streetscape.roads and .inlays against the plan's road classes, the crossing strip and the kit (contracts/world/kit.json).
 // The world-side rule is RF-3 (tools/world/rules/roadfinish.ts: the pieces the generator lays are adopted, at their level, and stop short at the breaks); SF-23 (inlay siting) still waits for the export to carry the inlays (Splice).
-//       Added 2026-10-22 (brief 028 Road, Sky "can try"): the finish keys carry the export's look `surface`; the shoulder and pinstripe clauses; and the kerb faces no plot edge runs on (roads.kerbs: circus and foot-way mouths, kerbed bays).
+//       Added 2026-10-22 (brief 028 Road, Sky "can try"): the finish keys carry the export's look `surface`; the shoulder and pinstripe clauses (the pinstripe retired 072-G: a roads.pinstripe key or a set's `drop: pinstripe` now fails); and the kerb faces no plot edge runs on (roads.kerbs: circus and foot-way mouths, kerbed bays).
 // RF-1  every road class has a finish key the finish names; the ribbon covers named classes only; its pieces, the lozenge and the seam are kit pieces with their
 //       use tags (not rejected); the ribbon's section sits clear of the kerb face (offset ≥ section / 2); breaks stop short (> 0) at all six break kinds;
 //       lozenges spaced ≥ their length + 2 × stopShort apart; seams spaced > 0 and long > 0; no paint; crossings meet by stopping, never zebra or paint,
@@ -15,6 +15,7 @@ import type { Check } from './checks';
 import type { Civic } from './civic';
 import { dist, lineDist } from './geom';
 import type { Derived, Plan } from './plan';
+import { finishSet, finishSets } from './finish-set';
 
 export type KitRow = { id: string; status?: string; size?: number[]; tags?: { use?: string[] } };
 const root = resolve(import.meta.dir, '../..');
@@ -40,6 +41,14 @@ export function roadFinishChecks(plan: Plan, kit: KitRow[] = kitRows(), geo?: { 
     const bad: string[] = [], classes = [...new Set(plan.roads.map(r => r.class as string))];
     const keys = R.finish?.keys ?? {}, by = R.finish?.byClass ?? {};
     for (const c of classes) if (!by[c]) bad.push(`class ${c} has no finish`); else if (!keys[by[c]]?.material) bad.push(`class ${c}: finish ${by[c]} is not a key with a material`);
+    // brief 055 road test: the finish set (finish.set, default enamel) and every set the plan lists: a class table over finish keys, marks 'lozenges' or 'lanes'; the asphalt set's marks are held below
+    let sets: ReturnType<typeof finishSets> = [];
+    try { finishSet(R); sets = finishSets(R); } catch (e) { bad.push(String((e as Error).message)); }
+    for (const st of sets) {
+      for (const k of st.drop) if (k === 'pinstripe') bad.push(`finish set ${st.name}: drop "pinstripe": the pinstripe is retired (072-G), there is nothing to drop`); else if (!['ribbon', 'shoulder'].includes(k)) bad.push(`finish set ${st.name}: drop ${JSON.stringify(k)} is not ribbon or shoulder`);
+      if (st.marks !== 'lozenges' && st.marks !== 'lanes') bad.push(`finish set ${st.name}: marks ${JSON.stringify(st.marks)} is not lozenges or lanes`);
+      for (const c of classes) { const k = st.byClass[c]; if (!k) bad.push(`finish set ${st.name}: class ${c} has no finish`); else if (!keys[k]?.material || !keys[k]?.surface) bad.push(`finish set ${st.name}: class ${c}: ${k} is not a key with a material and a surface`); }
+    }
     if (R.finish?.paint !== false) bad.push('finish.paint is not false: the road is never painted');
     const rb = R.ribbon ?? {};
     for (const c of rb.classes ?? []) if (!classes.includes(c)) bad.push(`ribbon class ${c} is no road's class`);
@@ -61,6 +70,28 @@ export function roadFinishChecks(plan: Plan, kit: KitRow[] = kitRows(), geo?: { 
     for (const c of classes) { const k = keys[by[c]]; if (k && !(typeof k.surface === 'string' && k.surface)) bad.push(`class ${c}: finish ${by[c]} has no \`surface\` (the export's look key)`); }
     const fk = R.finish?.kerb; if (fk) { if (!(typeof fk.surface === 'string' && fk.surface)) bad.push('finish.kerb has no `surface` (the export\'s look key)'); for (const id of fk.pieces ?? []) piece(id, 'ground:kerb', bad, 'finish.kerb piece'); }
     // the shoulder: the pearl band beside the ribbon (brief 028 Road, Vela)
+    // the white marks of a 'lanes' set (roads.marks): kit pieces with their use tags, a line clear of the shoulder's chrome, lane counts that leave 3 m a lane between the edge lines
+    if (sets.some(x => x.marks === 'lanes')) {
+      const mk = R.marks;
+      if (!mk) bad.push('a finish set lays lanes marks but roads.marks is missing');
+      else {
+        piece(mk.pieces?.dash, 'ground:road-lane-dash', bad, 'marks dash');
+        const need = (R.shoulder?.to ?? 0) + (R.shoulder?.chrome ?? 0), inset: number = mk.edge?.offset ?? 0; // an edge line is optional (the clean asphalt has none); when laid it is a kit piece and clears the shoulder's chrome
+        if (mk.edge) piece(mk.pieces?.edge, 'ground:road-edge-line', bad, 'marks edge line');
+        if (mk.edge && (!num(mk.edge.offset) || !num(mk.edge.width) || mk.edge.offset - mk.edge.width / 2 <= need)) bad.push(`marks edge line ${mk.edge?.offset} ± ${(mk.edge?.width ?? 0) / 2} m from the kerb face does not clear the shoulder's outer chrome (${need} m)`);
+        if (num(mk.dash?.dividerWidth) && (mk.dash.dividerWidth <= 0 || mk.dash.dividerWidth > mk.dash.width)) bad.push(`marks dash dividerWidth ${mk.dash.dividerWidth} is not within 0..${mk.dash.width}`);
+        if (!num(mk.dash?.length) || !num(mk.dash?.spacing) || mk.dash.spacing < mk.dash.length + 2 * (num(mk.stopShort) ? mk.stopShort : 0)) bad.push(`marks dash spacing ${mk.dash?.spacing} < length ${mk.dash?.length} + 2 × stopShort`);
+        if (!num(mk.stopShort) || mk.stopShort < (num(R.breaks?.stopShort) ? R.breaks.stopShort : 0)) bad.push(`marks.stopShort ${mk.stopShort} is shorter than the breaks' ${R.breaks?.stopShort}: white marks stop at least as far from a crossing as the road's light`);
+        for (const [id, n] of Object.entries(mk.lanes ?? {}) as [string, number][]) {
+          const rd = plan.roads.find(r => r.id === id) as any;
+          if (!rd) { bad.push(`marks.lanes names ${id}, which is no road`); continue; }
+          const m = ((rd.median ?? 0) || rd.reservation || 0) / 2, half = m ? (rd.w / 2 - m) / 2 : rd.w / 2;
+          if (!Number.isInteger(n) || n < 1) bad.push(`marks.lanes ${id}: ${n} is not a lane count`);
+          else if (!m) bad.push(`marks.lanes ${id}: an undivided road takes its centre line, not a lane count`);
+          else if (2 * (half - inset) / n < 3.0 - 1e-9) bad.push(`marks.lanes ${id}: ${n} lanes leave ${(2 * (half - inset) / n).toFixed(2)} m each (< 3.0)`);
+        }
+      }
+    }
     const shd = R.shoulder, lzw = (kit.find(r => r.id === lz.piece)?.size?.[2] ?? 0.54) / 2, stop = num(sh) ? sh : 0;
     if (shd) {
       piece(shd.piece, 'ground:road-shoulder', bad, 'shoulder straight');
@@ -74,11 +105,8 @@ export function roadFinishChecks(plan: Plan, kit: KitRow[] = kitRows(), geo?: { 
         else if (half - (shd.to + shd.chrome) < 0.5) bad.push(`the seam span from the shoulder's outer chrome is ${half - (shd.to + shd.chrome)} m half-width on the narrowest carriageway (< 0.5)`);
       }
     }
-    const pst = R.pinstripe;
-    if (pst) {
-      piece(pst.piece, 'ground:pave-pinstripe', bad, 'pinstripe');
-      if (!num(pst.offset) || !num(pst.width) || pst.width <= 0 || pst.offset <= 0.02 + pst.width / 2) bad.push(`pinstripe offset ${pst.offset} must exceed the kerb crown's brass (0.02) + width ${pst.width} / 2`);
-    }
+    // brief 072-G (Sky said yes; GDD v0.31.0 §15: no brass on the road edge): the brass pavement pinstripe is retired, PaveEdge_Pinstripe_6m rejected in the kit; the generator never reads the key
+    if (R.pinstripe !== undefined) bad.push(`roads.pinstripe: the pavement pinstripe is retired (brief 072-G, no brass on the road edge); delete the key`);
     // the kerb faces no plot edge runs on (roads.kerbs): each lies on its road's carriageway edge, ends on the circus ring or a plot corner, faces into the carriageway; every kerbed bay touches its road
     const kb = R.kerbs;
     if (kb && geo) {
@@ -105,7 +133,7 @@ export function roadFinishChecks(plan: Plan, kit: KitRow[] = kitRows(), geo?: { 
       }
       for (const [id, k] of Object.entries(kb.bays?.notKerbed ?? {}) as [string, unknown][]) if (k && !geo.civ.bays.some(b => b.id === id)) bad.push(`notKerbed bay ${id} is not in the civic block`);
     }
-    out.push({ id: 'RF-1', group: 'Streetscape', rule: 'The road finish standard holds: every class enamel-or-named finish with its look key, no paint; ribbon, shoulder, pinstripe, lozenge and seam are kit pieces; the ribbon clears the kerb, the band clears the middle line and everything stops short at every break; the kerb faces no plot edge runs on lie on their road\'s edge and face into it; crossings keep their own light (signal, never zebra)', value: `${classes.length} classes, ${(rb.classes ?? []).length} ribboned, stop ${sh} m`, limit: 'all', ok: !bad.length, detail: bad.join('; ') || undefined, source: 'streetscape.roads · crossings.strip.control · kit.json · brief 026/028 (Road, Sky 2026-10-22)' });
+    out.push({ id: 'RF-1', group: 'Streetscape', rule: 'The road finish standard holds: every class enamel-or-named finish with its look key, no paint; ribbon, shoulder, lozenge and seam are kit pieces (no pinstripe: retired 072-G); the ribbon clears the kerb, the band clears the middle line and everything stops short at every break; the kerb faces no plot edge runs on lie on their road\'s edge and face into it; crossings keep their own light (signal, never zebra)', value: `${classes.length} classes, ${(rb.classes ?? []).length} ribboned, stop ${sh} m`, limit: 'all', ok: !bad.length, detail: bad.join('; ') || undefined, source: 'streetscape.roads · crossings.strip.control · kit.json · brief 026/028 (Road, Sky 2026-10-22)' });
   }
 
   const I = S.inlays;

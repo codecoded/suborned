@@ -4,7 +4,8 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { appCurrent, frameLines, installRunner, judgeShots, logProblems, matchResult, pick, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { onlyShots, timeLines, appCurrent, frameLines, gateWords, nextCommand, resumeFrom, sessionWords, type LastRun, type ProofGate, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { emptyLedger, picturesJudged, recordPictures } from './proofdelta';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -12,9 +13,9 @@ const stub = (id: string, ok: boolean, log: string[]): Step => ({ id, title: `ti
 const tmp = () => mkdtempSync(join(tmpdir(), 'batch-'));
 
 describe('the steps are the ones Sky named, in order', () => {
-  test('sim, kit, world, Unity, build, check, shots, budget, late-fight, tp-long', () => {
+  test('sim, words, compile, host logic, kit, world, Unity, build, check, shots, budget, late-fight, tp-long, perf064', () => {
     const ids = STEPS.map(s => s.id);
-    expect(ids).toEqual(['sim', 'compile', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long']);
+    expect(ids).toEqual(['sim', 'words', 'compile', 'hostlogic', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long', 'perf064']);
     expect(STEPS.find(s => s.id === 'sim')!.plan(ctx())).toEqual(['bun tools/sim/unity.ts --tree']);
     expect(STEPS.find(s => s.id === 'game-build')!.plan(ctx({ rebuild: true }))[0]).toContain('bun tools/game/cli.ts --build');
   });
@@ -59,6 +60,32 @@ describe('running them', () => {
     const text = screen(rows, { when: '2026-10-21 14:00', mode: 'editor', build: { version: '0.2.18', recording: 'c026', sha: 'abc', dirty: true }, proof, shotsOut: '/o' });
     expect(text).toContain('BATCH OK: 1 steps'); expect(text).toContain('0.2.18 (c026, abc+)'); expect(text).toContain('slowest of 2 spots: cafe 96.4 fps (p99 12.3 ms, gpu 7.7 ms)'); expect(text).toContain('Editor open');
     expect(frameLines(undefined, undefined)).toEqual([]);
+  });
+});
+
+describe('the load beside the perf rows (Redline R7)', () => {
+  const perf = (id: string, ok = true): Step => ({ id, title: `title ${id}`, perf: true, plan: () => [`do ${id}`], run: async () => ({ ok, detail: `${id} fine` }) });
+  test('a perf step carries the load at its start and end; other steps and dry runs do not', async () => {
+    const rows = await runSteps([stub('a', true, []), perf('p')], ctx(), ['a', 'p']);
+    expect(rows[0]!.load).toBeUndefined(); expect(rows[1]!.load!.start).toHaveLength(3); expect(rows[1]!.load!.end).toHaveLength(3); expect(rows[1]!.load!.ncpu).toBeGreaterThan(0);
+    expect((await runSteps([perf('p')], ctx({ dry: true }), ['p']))[0]!.load).toBeUndefined();
+  });
+  test('a skipped perf step has no load row', async () => {
+    const s: Step = { ...perf('p'), run: async () => ({ ok: true, skipped: true, detail: 'opt-in' }) };
+    expect((await runSteps([s], ctx(), ['p']))[0]!.load).toBeUndefined();
+  });
+  test('the screen prints the load under the row, and says NOISY MACHINE when it was', () => {
+    const calm = { id: 'tp-long', title: 't', status: 'ok' as const, seconds: 40, detail: 'ok', load: { ncpu: 18, start: [3, 4, 5] as [number, number, number], end: [4, 4.2, 5] as [number, number, number] } };
+    const loud = { ...calm, id: 'shots', load: { ncpu: 18, start: [3, 4, 5] as [number, number, number], end: [14.2, 8, 5.5] as [number, number, number] } };
+    const text = screen([calm, loud], { when: 'now', mode: 'batchmode', shotsOut: '/o' });
+    expect(text).toContain('load 1/5/15 min 3/4/5 at start -> 4/4.2/5 at end, 18 cores\n'); expect(text).toContain('-> 14.2/8/5.5 at end, 18 cores · NOISY MACHINE');
+    expect(text.match(/NOISY MACHINE/g)).toHaveLength(1);
+  });
+  test('the batch has a perf064 step, opt-in', async () => {
+    const p = STEPS.find(s => s.id === 'perf064')!;
+    expect(p.perf).toBe(true); expect(p.plan(ctx()).join('\n')).toContain('SKIPPED unless --perf064');
+    expect((await runSteps([p], ctx(), ['perf064']))[0]).toMatchObject({ status: 'skipped', detail: expect.stringContaining('opt-in') });
+    for (const id of ['game-check', 'shots', 'late-fight', 'tp-long']) expect(STEPS.find(s => s.id === id)!.perf).toBe(true);
   });
 });
 
@@ -196,5 +223,144 @@ describe('the batch shots rotate in one place (brief 050)', () => {
     const root = tmp(), elsewhere = tmp(); writeFileSync(join(elsewhere, 'old.png'), 'x');
     rotateShots(elsewhere, 2, root);
     expect(existsSync(elsewhere)).toBe(false); expect(existsSync(elsewhere + '-prev1')).toBe(false);
+  });
+});
+
+// briefs/067/splice.md item 3 and follow-up 2: the proof's r059 and r067 pictures are in the HUD budget (tools/game/proofset.json), judged by the batch's budget step.
+describe('the proof sets in the budget step', () => {
+  const ok = (name: string) => ({ ok: true, detail: `proof set ${name}: 13 of 13 pictures within budget`, problems: [], judged: 13, pass: 13 });
+  const older = (name: string) => ({ name, ok: true, judged: 0, detail: `proof set ${name}: not in this proof (an older build)` });
+  test('the plan names the sets and where their pictures are', () => {
+    const plan = STEPS.find(s => s.id === 'budget')!.plan(ctx({ shotsOut: '/o/shots' })).join('\n');
+    expect(plan).toContain('tools/game/proofset.json'); expect(plan).toContain('r059'); expect(plan).toContain('r067'); expect(plan).toContain('out/build/play/proof'); expect(plan).toContain('1920x1080');
+  });
+  test('a proof with an r059 section has its set judged, at the proof folder, under the stage folder; the set whose section it lacks is an older build\'s', () => {
+    const seen: string[][] = [];
+    const rows = judgeProofSets({ frames: { r059: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
+    expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059']]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, older('r067'), older('r123'), older('r083')]);
+  });
+  test('a proof with both sections has both judged, r059 then r067, each under its own stage folder', () => {
+    const seen: string[][] = [];
+    const rows = judgeProofSets({ frames: { r059: { ok: true }, r067: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
+    expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059'], ['/p/proof', 'r067', '/o/stage/r067']]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, { name: 'r067', ok: true, judged: 13 }, older('r123'), older('r083')]);
+  });
+  test('a proof from a build with neither section is an older build: said, not judged, not failed', () => {
+    let ran = false;
+    const rows = judgeProofSets({ frames: { r118: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return ok(name); });
+    expect(ran).toBe(false);
+    expect(rows).toMatchObject([older('r059'), older('r067'), older('r123'), older('r083')]);
+    expect(judgeProofSets(undefined, '/p', '/o', () => ok('x')).every(r => r.ok)).toBe(true);
+  });
+  test('a set the judge fails fails its row with its problems, and only its row', () => {
+    const rows = judgeProofSets({ frames: { r059: { ok: true }, r067: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => name === 'r067'
+      ? { ok: false, detail: `proof set ${name}: 2 faults`, problems: ['r067-patrol-post: not taken by the proof'], judged: 0, pass: 0 } : ok(name));
+    expect(rows[0]).toMatchObject({ name: 'r059', ok: true });
+    expect(rows[1]).toMatchObject({ name: 'r067', ok: false, problems: ['r067-patrol-post: not taken by the proof'] });
+  });
+});
+
+const cleanLedger = (() => { const p = { build: '0.2.146', commit: 'b00cace3', at: '', snapshot: 's', map: 'm' }; return recordPictures({ ...emptyLedger(), sections: { r059: p, r067: p, r123: p } }, ['r059', 'r067', 'r123'].map(n => ({ name: n, section: n, ok: true }))); })();
+describe('one player launch per step (brief 042, Splice 2026-10-26)', () => {
+  test('the player opens windowed at the step\'s size from its first frame; --behind goes through open -g and waits', () => {
+    const d = playerCommand(['-late', 'f.json', 'out', '-novsync'], [1920, 1080], false, '/a/G.app');
+    expect(d).toEqual(['/a/G.app/Contents/MacOS/The Suborned', '-screen-fullscreen', '0', '-screen-width', '1920', '-screen-height', '1080', '-late', 'f.json', 'out', '-novsync']);
+    const b = playerCommand(['-tplong', 'f.json'], [2880, 1864], true, '/a/G.app');
+    expect(b.slice(0, 6)).toEqual(['open', '-g', '-n', '-W', '/a/G.app', '--args']); expect(b.slice(6)).toEqual(d.slice(1, 3).concat(['-screen-width', '2880', '-screen-height', '1864', '-tplong', 'f.json']));
+  });
+  test('each player step names the whole list once in its plan', () => {
+    for (const id of ['shots', 'late-fight', 'tp-long', 'perf064']) expect(STEPS.find(s => s.id === id)!.plan(ctx({ perf064: true })).filter(l => l.includes('MacOS/The Suborned')).length).toBe(1);
+  });
+  test('the screen says how many launches each player step made', () => {
+    const t = screen([], { when: 'w', mode: 'batchmode', shotsOut: '/o', launches: { 'late-fight': 1, 'tp-long': 1 } });
+    expect(t).toContain('players late-fight 1 launch · tp-long 1 launch');
+    expect(screen([], { when: 'w', mode: 'batchmode', shotsOut: '/o', launches: {} })).not.toContain('players');
+  });
+  test('--rows cuts a list to the named rows in file order, and refuses a name the file lacks', () => {
+    const f = { schema: 'x', rows: [{ name: 'a' }, { name: 'b' }, { name: 'c' }] };
+    expect(onlyRows(f).rows.length).toBe(3);
+    expect(onlyRows(f, ['c', 'a']).rows.map(r => r.name)).toEqual(['a', 'c']);
+    expect(() => onlyRows(f, ['z'])).toThrow('no row z');
+  });
+});
+
+describe('delta proofs in the batch (brief 078)', () => {
+  const delta: ProofGate = { mode: 'delta', why: '6 of 20', ran: ['r29'], skips: { r118: 'not run, unchanged since build 0.2.146 (b00cace3)', leash: 'not run, unchanged since build 0.2.146 (b00cace3)' }, failed: [], notReached: [] };
+  test('the game-check row reads what the check prints, not "driven session ?" (0.2.146\'s row)', () => {
+    const log = 'game: driveSession replays headless on every checkpoint (12 checkpoints; x)\ngame: fireSession replays headless on every checkpoint (9 checkpoints; y)\n';
+    expect(sessionWords(log)).toBe('driven session replays, fire session replays');
+    expect(sessionWords('game: driveSession DOES NOT replay (0 checkpoints; x)\ngame: fireSession: not run, unchanged since build 0.2.146 (b00cace3)')).toBe('driven session DOES NOT replay, fire session not run');
+    expect(sessionWords('')).toBe('driven session ?, fire session ?');
+  });
+  test('the screen names what a delta did not run, and never as passed', () => {
+    const text = screen([{ id: 'game-check', title: 't', status: 'ok', seconds: 1, detail: gateWords(delta) }], { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: delta });
+    expect(text).toContain('proof   delta proof: 1 section ran, 2 not run, unchanged since build 0.2.146 (b00cace3)');
+    expect(text).toContain('proof   not run, unchanged since build 0.2.146 (b00cace3): r118, leash');
+    expect(text).not.toMatch(/r118.*(passed|\bok\b)/);
+  });
+  test('a failed batch prints the command that goes on from it, naming the proof sections it re-runs first', () => {
+    const rows = [{ id: 'game-check', title: 'player proof', status: 'FAILED' as const, seconds: 1, detail: 'game:check failed' }];
+    const text = screen(rows, { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: { ...delta, failed: ['r29'] } });
+    expect(text).toContain('next    bun run batch --from game-check');
+    expect(text).toContain('re-runs r29 alone');
+    expect(nextCommand('budget')).not.toContain('alone first');
+    expect(screen([{ id: 'a', title: 't', status: 'ok', seconds: 1, detail: '' }], { when: 'now', mode: 'batchmode', shotsOut: '/o' })).not.toContain('next ');
+  });
+  test('a bare batch goes on from the failed step only on the same tree and the same player', () => {
+    const last: LastRun = { failedStep: 'game-check', failedSections: ['r29'], build: '0.2.146', snapshot: 's1', at: 'now' };
+    expect(resumeFrom(last, 's1', '0.2.146')).toBe('game-check');
+    expect(resumeFrom(last, 's2', '0.2.146')).toBeUndefined();
+    expect(resumeFrom(last, 's1', '0.2.147')).toBeUndefined();
+    expect(resumeFrom(undefined, 's1', '0.2.146')).toBeUndefined();
+  });
+  test('the budget step does not judge again the pictures of a proof set the delta did not run, once they were judged clean on that pass', () => {
+    let ran = false;
+    const rows = judgeProofSets({ frames: { r059: null, r067: null, r123: null } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return { ok: false, detail: name, problems: ['stale'], judged: 1, pass: 0 }; }, { r059: 'not run, unchanged since build 0.2.146 (b00cace3)', r067: 'not run, unchanged since build 0.2.146 (b00cace3)', r123: 'not run, unchanged since build 0.2.146 (b00cace3)' }, cleanLedger);
+    expect(ran).toBe(false); expect(rows.every(r => r.ok && r.judged === 0)).toBe(true);
+    expect(rows[0]!.detail).toBe('proof set r059: not run, unchanged since build 0.2.146 (b00cace3)');
+  });
+  test('failing example (0.2.193 to 0.2.195): a section passed on a run that stopped before the budget has its pictures judged, red if they are red, and only a clean judgement stands after', () => {
+    const skips = { r067: 'not run, unchanged since build 0.2.192 (5cdf8eee+)' }, pass = { build: '0.2.192', commit: '5cdf8eee+', at: '', snapshot: 's1', map: 'm' }, l = { ...emptyLedger(), sections: { r067: pass } };
+    const red = () => ({ ok: false, detail: 'r067', problems: ['over'], judged: 32, pass: 31 });
+    const rows = judgeProofSets({ frames: { r067: null } }, '/p', '/o', red, skips, l), r067 = rows.find(r => r.name === 'r067')!;
+    expect(r067).toMatchObject({ ok: false, problems: ['over'], section: 'r067' }); expect(picturesJudged(l, 'r067', 'r067')).toBe(false);
+    const after = recordPictures(l, [{ name: 'r067', section: 'r067', ok: false }]); expect(after.pictures).toEqual({});
+    const clean = recordPictures(l, [{ name: 'r067', section: 'r067', ok: true }]); expect(picturesJudged(clean, 'r067', 'r067')).toBe(true);
+    expect(judgeProofSets({ frames: { r067: null } }, '/p', '/o', red, skips, clean).find(r => r.name === 'r067')).toMatchObject({ ok: true, judged: 0, detail: 'proof set r067: not run, unchanged since build 0.2.192 (5cdf8eee+)' });
+    // the section passes again on another tree: the old judgement no longer stands, and a red judgement takes off a clean one
+    expect(picturesJudged({ ...clean, sections: { r067: { ...pass, snapshot: 's2' } } }, 'r067', 'r067')).toBe(false);
+    expect(picturesJudged(recordPictures(clean, [{ name: 'r067', section: 'r067', ok: false }]), 'r067', 'r067')).toBe(false);
+  });
+  test('failing example: a proof set whose section is null with no skip is judged', () => {
+    let ran = 0;
+    judgeProofSets({ frames: { r059: null } }, '/p/proof', '/o/stage', (_d, name) => { ran++; return { ok: true, detail: name, problems: [], judged: 1, pass: 1 }; });
+    expect(ran).toBe(1);
+  });
+  test('a step whose when says no is not run, says why, and the batch goes on; --only runs it anyway', async () => {
+    const log: string[] = [], a = { ...stub('a', true, log), when: () => ({ run: false, why: 'engine, world and kit unchanged since build 0.2.146' }) }, b = stub('b', true, log);
+    const rows = await runSteps([a, b], ctx(), ['a', 'b']);
+    expect(log).toEqual(['b']); expect(rows[0]).toMatchObject({ status: 'skipped', why: 'engine, world and kit unchanged since build 0.2.146' });
+    const log2: string[] = [], a2 = { ...stub('a', true, log2), when: () => ({ run: false, why: 'no' }) };
+    expect((await runSteps([a2], ctx({ explicit: ['a'] }), ['a']))[0]).toMatchObject({ status: 'ok', why: 'asked for' }); expect(log2).toEqual(['a']);
+  });
+  test('the time budget is one line: step, seconds, why it ran or was skipped; steps not asked for are left out', () => {
+    const rows: Parameters<typeof timeLines>[0] = [
+      { id: 'compile', title: '', status: 'ok', seconds: 8, detail: '', why: 'always' }, { id: 'game-build', title: '', status: 'ok', seconds: 200, detail: '', why: 'proof 170 s; 7 of 20 sections' },
+      { id: 'sim', title: '', status: 'skipped', seconds: 0, detail: '', why: 'unchanged' }, { id: 'tp-long', title: '', status: 'skipped', seconds: 0, detail: '', why: 'unchanged' }, { id: 'perf064', title: '', status: 'skipped', seconds: 0, detail: '' }];
+    const l = timeLines(rows, 'delta');
+    expect(l).toEqual(['time    208 s: compile 8 s (always) · game-build 200 s (proof 170 s; 7 of 20 sections) · sim, tp-long skipped (unchanged)']);
+  });
+  test('a delta over 5 minutes warns and names its slowest step; failing example: a full batch never warns', () => {
+    const rows: Parameters<typeof timeLines>[0] = [{ id: 'game-build', title: '', status: 'ok', seconds: 290, detail: '', why: 'proof 250 s' }, { id: 'shots', title: '', status: 'ok', seconds: 20, detail: '' }];
+    expect(timeLines(rows, 'delta')[1]).toBe('WARNING this delta took 310 s, over the 300 s target; slowest: game-build 290 s (proof 250 s)');
+    expect(timeLines(rows, 'full')).toHaveLength(1);
+    expect(screen(rows, { when: 'now', mode: 'batchmode', shotsOut: '/o', gate: { ...delta } })).toContain('WARNING this delta took 310 s');
+  });
+  test('only the shots the change can affect; failing example: a name the file lacks is an error', () => {
+    const raw = { shots: [{ name: 'a' }, { name: 'b' }, { name: 'c' }] };
+    expect(onlyShots(raw, ['c', 'a']).shots.map(s => s.name)).toEqual(['a', 'c']);
+    expect(onlyShots(raw, 'all')).toBe(raw); expect(onlyShots(raw)).toBe(raw);
+    expect(() => onlyShots(raw, ['z'])).toThrow('shots.json lacks: z');
   });
 });

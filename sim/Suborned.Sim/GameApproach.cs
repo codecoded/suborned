@@ -33,7 +33,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>In place for a person act: within reach, and for a Watch on a clear line (walls and people), as Scout reads it.</summary>
-        bool InPlace(Op op, string verb, Pt at, int reach) => G.Within(op.Pos, at, reach) && (verb != "watch" || (Sees(op.Pos, at) && !CrowdBlocks(op.Pos, at)));
+        bool InPlace(Op op, string verb, Pt at, int reach) => ListenSpots(op, verb) ? ListenInPlace(op, at, reach) : G.Within(op.Pos, at, reach) && (verb != "watch" || (Sees(op.Pos, at) && !CrowdBlocks(op.Pos, at))); // engine 0.39.0: a Listen's own (GameListenSpot.cs)
 
         /// <summary>The walk in now and its ticks to the act's start: the grid route from the operative to where the person will be when the
         /// operative comes within `reach` of her (a server's round read ahead, a second at a time, up to two minutes: the first second t at
@@ -44,7 +44,7 @@ namespace Suborned.Sim
             int speed = Math.Max(1, PaceOf(op, false));
             (Path, int)? To(Pt where)
             {
-                var st = S.Grid.NearestFree(where); var rt = st.HasValue ? S.Grid.Route(op.Pos, st.Value) : null; if (rt == null) return null;
+                var st = Walk.NearestFree(where); var rt = st.HasValue ? Walk.Route(op.Pos, st.Value) : null; if (rt == null) return null;
                 var path = new Path(rt); long mm = Math.Max(0, path.Length - reach * 10L); return (path, (int)((mm + speed - 1) / speed));
             }
             var now = To(at.Value); if (ServerOf(p) == null || now == null) return now;
@@ -64,9 +64,9 @@ namespace Suborned.Sim
         bool CanWalkIn(Op op, Person p)
         {
             var at = PersonPos(p); if (!at.HasValue) return false;
-            var st = S.Grid.NearestFree(at.Value); return st.HasValue && S.Grid.Route(op.Pos, st.Value) != null;
+            var st = Walk.NearestFree(at.Value); return st.HasValue && Walk.Route(op.Pos, st.Value) != null;
         }
-        Path? WalkInRoute(Op op, Person p, string verb) => Intercept(op, p, ActReachOf(op, verb))?.path;
+        Path? WalkInRoute(Op op, Person p, Order o) => ListenSpots(op, o.Do) ? ListenWalk(op, p, o) : Intercept(op, p, ActReachOf(op, o.Do))?.path;
 
         /// <summary>Ticks this operative walks before the act starts, as the card shows it (the intercept's walk less the act's reach, at a walk):
         /// 0 in place, -1 no walk. A best estimate from the person's known routine; the walk itself re-aims as she moves. A Watch may walk on
@@ -76,6 +76,7 @@ namespace Suborned.Sim
             var at = PersonPos(p); if (!at.HasValue) return -1;
             int reach = ActReachOf(op, verb);
             if (InPlace(op, verb, at.Value, reach)) return 0;
+            if (ListenSpots(op, verb) && AheadRead(op, p) is (Pt, string, int, int startT)) return startT; // engine 0.39.0: the walk to the spot and any wait there
             var w = Intercept(op, p, reach); return w == null ? -1 : w.Value.ticks;
         }
 
@@ -96,7 +97,7 @@ namespace Suborned.Sim
         string WalkIn(Op op, Order o, Person p, bool engage)
         {
             if (!engage) return CanWalkIn(op, p) ? "" : No("no-walk", $"no walk to {p.Role}"); // engine 0.25.0 (brief 045 F5): a query needs only whether, not the walk
-            var path = WalkInRoute(op, p, o.Do); if (path == null) return No("no-walk", $"no walk to {p.Role}");
+            var path = WalkInRoute(op, p, o); if (path == null) return No("no-walk", $"no walk to {p.Role}");
             if (CoverSnapOn) DropCover(op); // brief 027 B5: walking off a cover point, as a click move
             op.Walk = path.Length > 0 ? path : null; op.WalkMm = 0; op.CloseWalk = false; op.Running = false; op.WalkSpeed = PaceOf(op, false);
             if (op.Gun.Order.Length > 0) op.CloseSpent = true; // a standing fire order fires on the walk (engine 0.21.0) and its walk-in is spent, as a move
@@ -119,15 +120,17 @@ namespace Suborned.Sim
             {
                 op.Act = null; op.Walk = null; op.WalkMm = 0;
                 var saved = refusal; refusal = default; string why;
+                listenArriving = true; // engine 0.39.0: in place was just asked; the act's own check asks reach alone
                 try { why = o.Do == "turn" ? Turn(op, o) : Scout(op, o); }
                 catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
+                listenArriving = false;
                 var code = refusal.code ?? "uncoded"; refusal = saved;
                 if (why.Length > 0) { Dropped.Add((Tick, op.Id, o, code, why)); Note("order.dropped", $"{name} {(o.Do == "turn" ? o.Approach : o.Do)} {o.Target}: {code}: {why}"); }
                 return;
             }
             if (op.Walk == null || Tick >= op.ActNext)
             {
-                var path = WalkInRoute(op, p, o.Do);
+                var path = WalkInRoute(op, p, o);
                 if (path == null) { DropAct(op, o, "no-walk", $"no walk to {p.Role}"); return; }
                 op.Walk = path.Length > 0 ? path : null; op.WalkMm = 0; op.ActNext = Tick + T(R.ApproachRepathS);
             }

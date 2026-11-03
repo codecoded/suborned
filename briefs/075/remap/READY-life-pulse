@@ -1,0 +1,7 @@
+Pulse · brief 075 remap · 2026-10-28
+plan 7cd629d8c21167169104ee8ba4235be54fa2a65ac455713d3e7a1feaa1de45d7 (v0.5.1) · life.json cadbfef0ad54e655a6852098f6ee8dfd0f472d2dfa6fe3cd1259cc185a7300f6 · presentation af3d63601783bc6470044ae5097e14b0dec9e29a679b1d4c7c089721ef99de57
+bun run life:presentation exit 0: 4 trams (T1 round), 12 sky rail (S1 both ways), 24 aircars on 3 lanes clear of structures (ring 36/44 m, spine over the boulevard 34 m), 0 walk loops dropped
+bun run life:journeys: 8 journeys via the one plan interchange (T1/terraces - S1/west-end); --check exit 0 · transcribe.ts clears journeys on every run: rerun life:journeys after it
+bun test tools/people tools/life: 275 pass 0 fail · typecheck: only tools/world/rules/reach.ts (not Pulse's)
+sim:site: handover.site.json and handover.people.json byte-identical (built from the existing out/people file); takedown.json differs only in phone-booth id counters (the plan's west row, not life)
+NOT done: out/people/harbour-district.people.json is stale (it names t1-records). Regenerating it moves the commute stop to t1-rocket: the people extract changes (600 diff lines) and the site's cast sha256 changes, so the Handover replay would need re-recording. Aster to decide.

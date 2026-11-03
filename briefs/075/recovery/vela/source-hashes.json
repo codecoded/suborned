@@ -1,0 +1,11 @@
+{
+  "tools/decokit/recovery075_foliage.py": "142398d176bbb65aba4dfcd5f9fb98b7c49c4bdf5f550d6f6c9022f1849207fb",
+  "tools/decokit/civic_common.py": "1bb8bb524ddd89a567b63fb773667c4e99f3588759df7e9dea956207cfed579e",
+  "tools/decokit/civic_street.py": "a2c3f1a018f4e6edd2d980ece4d0c4b487748655dc5116dfb3971cece3efe245",
+  "tools/decokit/plants.py": "d64df7a16d75db6ccd05f5d1ce5a3bd2ec033f9c389a8ce7ccd82cd2c8fd3a77",
+  "tools/decokit/mats.py": "f2000d3cb7f4f58551141d7fcf43b3d0db8bd3c8811de387ffa159a6f6cf4194",
+  "briefs/075/recovery/vela/check_render.py": "d633fefc040b7840b043dfa859e8602ec205de8a54a061dd65d16d6762e858c6",
+  "contracts/world/kit.collide.json": "8bde9d6e0f4b1644de05fe71a7264d67a6bd0645bcaa102695cba0c689e440ef",
+  "contracts/world/civic-block.json": "912f0272db1ceb6d8aea988a54a2243d1437151d7989ed9c704e8012441e06ff",
+  "briefs/075/civic/restyle.json": "3a3bf1fbce4141c7b9a43adee06da3e94f3f01da9028e94b34359e69af8a505b"
+}

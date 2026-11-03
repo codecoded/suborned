@@ -1,0 +1,7 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a HEAD --b "out/scratch/keel/b0342"
+· engines ready (1.9 s); playing 43 routes on A and 43 on B
+A = HEAD eef690a93e4c    B = out/scratch/keel/b0342 (built here)    (= means the value did not move)
+route  outcome  fail  end  Trail  Alert  health lost
+
+43 routes: 0 moved, 43 unchanged
+(9.7 s)

@@ -1,0 +1,24 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 416, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 867, "y": 1026, "w": 187, "h": 40, "text": "Get Vale to the car."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 1489, "y": 1419, "w": 203, "h": 25, "text": "Block the street. Nobody leaves."},
+  {"kind": "speech", "x": 581, "y": 248, "w": 192, "h": 25, "text": "One's heading for the road."},
+  {"kind": "image", "x": 581, "y": 381, "w": 26, "h": 26, "text": "car held marker"},
+  {"kind": "image", "x": 667, "y": 439, "w": 72, "h": 72, "text": "attention callout"},
+  {"kind": "image", "x": 14, "y": 438, "w": 86, "h": 30, "text": "squad button"},
+  {"kind": "image", "x": 106, "y": 435, "w": 38, "h": 36, "text": "weapons free toggle"},
+  {"kind": "line", "x": 1713, "y": 66, "w": 82, "h": 38, "text": "1:55"},
+  {"kind": "image", "x": 1834, "y": 614, "w": 54, "h": 30, "text": "reroute edge chip"},
+  {"kind": "image", "x": 650, "y": 357, "w": 99, "h": 38, "text": "fire line: who, how long, the stop key"},
+  {"kind": "image", "x": 1882, "y": 866, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "image", "x": 636, "y": 488, "w": 26, "h": 26, "text": "holder"},
+  {"kind": "image", "x": 677, "y": 388, "w": 26, "h": 26, "text": "holder"},
+  {"kind": "image", "x": 677, "y": 364, "w": 26, "h": 44, "text": "lock reticle"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 234, "h": 17, "text": "Passer-by: Run! Get off the street!"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

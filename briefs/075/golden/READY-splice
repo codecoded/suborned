@@ -1,0 +1,5 @@
+075 golden view, Splice (boulevard: old palms, old streamline frontage, old high-street colourways), 2026-10-28
+export out/world/harbour-district.world.json sha256 e39d78392ad8f81ec591487775d56ecfdc23bb2b48076154a50656b6e78ffb7f (same twice)
+plan contracts/world/harbour-district.plan.json sha256 48e18cc2… (Datum's boulevard section of 16:22: road 20 m, street-running T1)
+rules: tools/world/gen/oldstreet.ts OLD_STREET (roads ['boulevard']); kit: 4 colourway families oldapricot/oldceladon/oldrose/oldochre (12 .mats, copied)
+checks: world x2, world:faces (every face kit), plan 145/145, plan + Handover overlay 150/150, cover + --check ok, sim:site moved -> missions:check handover --inputs tree SHIPS (893 plays), typecheck clean

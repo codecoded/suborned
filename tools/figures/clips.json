@@ -1,4 +1,25 @@
 {
+ "avatar": {
+  "reference": "walk",
+  "footPitchDeg": 40,
+  "rule": "brief 069 (Latch, briefs/069/latch/leftfoot.md): every clip imports with Copy From Other Avatar from one shared reference avatar, so no clip's own frame 0 becomes its muscle zero. The reference is this clip's own Unity avatar (tools/figures/avatar.py, Unity's MakePoseValid) with neutral legs: each leg straight down, Foot->ToeBase along the hips' facing footPitchDeg down (the library's planted flat-foot pitch), the toe level; arms as Unity's T-pose. A clip that can't copy it only because its file has a lone root above the same bones (the clips authored in Blender, under `Armature`) gets its own avatar holding the same rest by bone name (tools/figures/avatar.py reference_rest), with Preserve Hierarchy on: one zero for every clip, never a clip's own frame 0.",
+  "relaxedHand": {
+   "clip": "hand_relaxed",
+   "flatBelowFracOfReference": 0.5,
+   "rule": "brief 069 (Sky, 2026-10-27: 'hands pose looks unnatural'): clips.py measures each clip's finger bend (fingerBendDeg in clips.rows.json: the two bends inside each finger, index to little, both hands, the clip's mean); one below this share of the reference walk's has flat fingers (fingersFlat). The game plays hand_relaxed on a finger-masked override layer over those clips (and always over a figure's rigid hand, which has no finger bones: a no-op there, its mesh carries the relaxed curl, fit.json transfer.fingers.rigidRelax)."
+  }
+ },
+ "targets": {
+  "note": "brief 069 (Aster, 2026-10-27: install only what the game uses, decided by data). A build of the clip stage is for one target (clips.py <spec> <out> [target]; run.ts builds 'game'). game: the clips without `game: false` reach the game's manifest and controller; the others (the pistol and rifle sets, hand_relaxed) are built beside them but stay out until weapons enter the game. fingerLimits: whether the clip avatars carry tools/figures/finger_limits.json; off for the game until finger-boned new-pipeline figures enter it (today's game figures have Unity's default limits, and both sides must match). pipeline: every clip, with the limits, for the new figures' checks (their _avatarT metas carry the same limits).",
+  "game": {
+   "fingerLimits": false,
+   "clips": "game"
+  },
+  "pipeline": {
+   "fingerLimits": true,
+   "clips": "all"
+  }
+ },
  "clips": [
   {
    "name": "idle",
@@ -10,9 +31,9 @@
   },
   {
    "name": "idle_alt",
-   "src": "Anim/mixamo_library/Breathing_Idle__c9c6d0d5.fbx",
+   "src": "Anim/mixamo_library/Standing_Idle__c9c831cf.fbx",
    "loop": true,
-   "use": "second idle so a crowd does not breathe in step",
+   "use": "second idle so a crowd does not breathe in step (6 s; hips 1.1 cm sideways). Was Breathing_Idle, whose 18.8 cm weight shift slid the planted feet in 0.2.122 and still swayed 7 px at play zoom once baked (brief 067, forma-sway.md)",
    "loco": false,
    "feet": true
   },
@@ -126,7 +147,8 @@
    "loop": false,
    "use": "hit reaction, large (staggers)",
    "loco": false,
-   "feet": true
+   "feet": true,
+   "travelsM": 1.371
   },
   {
    "name": "panic",
@@ -142,7 +164,8 @@
    "loop": false,
    "use": "duck and cover (1.5 s); hold the last frame",
    "loco": false,
-   "feet": true
+   "feet": true,
+   "travelsM": 0.412
   },
   {
    "name": "crouch",
@@ -166,7 +189,8 @@
    "loop": false,
    "use": "stunned, staggers and drops",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.073
   },
   {
    "name": "knockout",
@@ -174,7 +198,8 @@
    "loop": false,
    "use": "knocked out: the victim goes down and ends lying (5.6 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.388
   },
   {
    "name": "knockout_alt",
@@ -182,7 +207,8 @@
    "loop": false,
    "use": "knocked out, second variant (5 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.485
   },
   {
    "name": "kill_victim",
@@ -190,7 +216,8 @@
    "loop": false,
    "use": "killed: falls and ends lying (4.4 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 0.344
   },
   {
    "name": "kill_victim_back",
@@ -198,7 +225,8 @@
    "loop": false,
    "use": "killed from the front: falls backward (3.7 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 0.902
   },
   {
    "name": "kill_attacker",
@@ -206,7 +234,8 @@
    "loop": false,
    "use": "the Enforcer kills (5 s); pairs with kill_victim by eye, not by sync",
    "loco": false,
-   "feet": true
+   "feet": true,
+   "travelsM": 1.464
   },
   {
    "name": "struggle",
@@ -222,7 +251,8 @@
    "loop": false,
    "use": "being choked, goes limp (17 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.192
   },
   {
    "name": "carry",
@@ -376,7 +406,7 @@
   {
    "name": "sit",
    "loop": true,
-   "use": "seated on the caf\u00e9 chair (4.3 s loop): thighs level, feet flat in front, back upright. Place by manifest.seat (the root offset from the chair)",
+   "use": "seated on the café chair (4.3 s loop): thighs level, feet flat in front, back upright. Place by manifest.seat (the root offset from the chair)",
    "loco": false,
    "feet": false,
    "author": "tools/figures/author_clips.py",
@@ -460,6 +490,493 @@
    "use": "the cell's run (double-click): a leaning sprint, longer stride and flight than run (the old web testbed's run, retargeted); keep run for the crowd and panic",
    "loco": true,
    "feet": true
+  },
+  {
+   "name": "cover_kneel",
+   "src": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "loop": true,
+   "use": "in cover, not shot at: kneels behind the prop, pistol up, head and gun hands over it (brief 039 B)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cover_in",
+   "src": "Anim/mixamo_library/Pistol_Stand_To_Kneel__c9cdc166.fbx",
+   "loop": false,
+   "use": "arriving at a cover point: stand to kneel, pistol up (1.0 s; hips 7 cm, stays in place) (brief 039 B)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cover_out",
+   "src": "Anim/mixamo_library/Pistol_Kneel_To_Stand__c9cdc2f1.fbx",
+   "loop": false,
+   "use": "leaving cover: kneel to stand, pistol up (1.4 s; hips 7 cm, stays in place) (brief 039 B)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cover_pin",
+   "author": "tools/figures/author_clips.py",
+   "kind": "layer",
+   "donor": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "legs": {
+    "range": [
+     1,
+     115
+    ]
+   },
+   "upper": "Anim/mixamo_library/Ducking__c9c8aef4.fbx",
+   "upperFrames": {
+    "hold": 22,
+    "shiver": 2.5,
+    "cycles": 8
+   },
+   "loop": true,
+   "loco": false,
+   "feet": true,
+   "use": "pinned in cover: the kneel's legs, the upper body curled over with the hands over the head (the library duck at its frame 22, a 0.48 s shiver); a hump of back and elbows over the prop, no face (brief 039 B)"
+  },
+  {
+   "name": "cover_fire",
+   "author": "tools/figures/author_clips.py",
+   "kind": "layer",
+   "donor": "Anim/mixamo_library/Pistol_Kneel_To_Stand__c9cdc2f1.fbx",
+   "legs": {
+    "hold": 18
+   },
+   "upper": "Anim/mixamo_library/Pistol_Aim__c9c8b958.fbx",
+   "upperFrames": {
+    "range": [
+     1,
+     214
+    ]
+   },
+   "turns": [
+    [
+     "Spine1",
+     "yaw",
+     15
+    ],
+    [
+     "Spine2",
+     "yaw",
+     15
+    ],
+    [
+     "Neck",
+     "yaw",
+     -15
+    ],
+    [
+     "Head",
+     "yaw",
+     -15
+    ]
+   ],
+   "reach": {
+    "right": [
+     1.0,
+     -0.06,
+     -0.03
+    ],
+    "left": [
+     1.0,
+     -0.08,
+     0.03
+    ],
+    "straight": 0.99,
+    "pole": [
+     0.6,
+     -1.0
+    ],
+    "handUp": 0.05
+   },
+   "loop": true,
+   "loco": false,
+   "feet": true,
+   "use": "firing from cover: the half-rise (kneel to stand at its frame 18, held), the pistol aim on the upper body, its bladed shoulders squared 30 degrees to the cover and both arms straight out to a two-handed grip at shoulder height, so a line of forearms shows over the prop (Glyph, b-final.md) (brief 039 B)"
+  },
+  {
+   "name": "flinch_add",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "refFrame": 1,
+   "additive": true,
+   "refPose": 0,
+   "turns": [
+    [
+     "Spine",
+     "pitch",
+     14
+    ],
+    [
+     "Spine1",
+     "pitch",
+     8
+    ],
+    [
+     "Head",
+     "pitch",
+     15
+    ],
+    [
+     "LeftShoulder",
+     "roll",
+     -6
+    ],
+    [
+     "RightShoulder",
+     "roll",
+     6
+    ]
+   ],
+   "env": {
+    "attack": 0.0667,
+    "tau": 0.16,
+    "length": 0.5,
+    "tail": 0.12
+   },
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "use": "additive: a round lands near a pinned man (in cover or the open): spine and head curl, shoulders up, 2 frames in, out by 0.5 s; restarted per round (brief 039 B)"
+  },
+  {
+   "name": "kick_add",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Aim__c9c8b958.fbx",
+   "refFrame": 1,
+   "additive": true,
+   "refPose": 0,
+   "turns": [
+    [
+     "Spine1",
+     "pitch",
+     -7
+    ],
+    [
+     "Head",
+     "pitch",
+     -4
+    ],
+    [
+     "RightArm",
+     "pitch",
+     -10
+    ],
+    [
+     "LeftArm",
+     "pitch",
+     -10
+    ]
+   ],
+   "env": {
+    "attack": 0.0333,
+    "tau": 0.09,
+    "length": 0.3,
+    "tail": 0.08
+   },
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "use": "additive: one shot's kick (muzzle climb) over aim_pistol, cover_fire or the one-handed fire: 1 frame in, out by 0.3 s; restarted per shot (brief 039 B)"
+  },
+  {
+   "name": "pin_peek_add",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "refFrame": 1,
+   "additive": true,
+   "refPose": 0,
+   "first": 1,
+   "pose": 10,
+   "turns": [
+    [
+     "Spine",
+     "pitch",
+     -22
+    ],
+    [
+     "Neck",
+     "pitch",
+     -15
+    ],
+    [
+     "Head",
+     "pitch",
+     -20
+    ]
+   ],
+   "loop": true,
+   "loco": false,
+   "feet": true,
+   "use": "additive pose: the pinned man's head comes up as the pin runs out; the host drives its layer weight 0 to 1 from 1.2 s after the last round, over 0.6 s, back to 0 at the pin's end (brief 039 B)"
+  },
+  {
+   "name": "pistol_idle",
+   "src": "Anim/mixamo_library/Pistol_Idle__c9c6b74c.fbx",
+   "loop": true,
+   "use": "pistol: armed idle at low ready, both hands on the gun (12 cm apart), right fingers closed (middle 163 deg)",
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "pistol_draw",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+    "frame": 1
+   },
+   "frames": 18,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "use": "pistol: the draw as the standard layered transition (the pistol pack has no draw in its stance): the idle's hands-down pose eased into the aim's first frame over 0.6 s, so it starts where idle is and ends where pistol_aim begins",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "game": false
+  },
+  {
+   "name": "pistol_aim",
+   "src": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "loop": true,
+   "use": "pistol: aim hold, two-handed cup (hands 4 cm apart), right fingers closed (middle 184, ring 204 deg): the pistol pack's stance, the same grip as its walk and run",
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "pistol_fire",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "refFrame": 1,
+   "refPose": 0,
+   "turns": [
+    [
+     "RightArm",
+     "pitch",
+     -8
+    ],
+    [
+     "LeftArm",
+     "pitch",
+     -8
+    ],
+    [
+     "Spine2",
+     "pitch",
+     -2
+    ]
+   ],
+   "env": {
+    "attack": 0.0333,
+    "tau": 0.09,
+    "length": 0.4,
+    "tail": 0.08
+   },
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "use": "pistol: fire = the aim pose held with a recoil (the arms kick up 8 deg and settle in 0.4 s), the arms staying at aim height; a full clip from the aim's own frame 1, so aim and fire share the stance and the gun's direction",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "pistol_walk",
+   "author": "tools/figures/author_clips.py",
+   "kind": "layer",
+   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "legs": {
+    "range": [
+     1,
+     36
+    ]
+   },
+   "upper": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "upperFrames": {
+    "hold": 1,
+    "shiver": 0,
+    "cycles": 0
+   },
+   "loop": true,
+   "loco": true,
+   "feet": true,
+   "set": "pistol",
+   "use": "pistol: walk armed: the game's walk on the legs (1.53 m/s natural), the pistol pack's two-handed aim held on the upper body. The pack's own Pistol_Walk is a brisk tactical walk (0.83 s cycle, 0.93 m stance stride: 2.51 m/s, the game's walk_armed note says the same), outside the walk band (clipSets.speedBands), so the walk takes the standard upper/lower split",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "pistol_run",
+   "src": "Anim/mixamo_library/Pistol_Run__c9c9b1f3.fbx",
+   "loop": true,
+   "use": "pistol: run armed, two-handed (hands 4 cm), right fingers closed (181/206 deg), in place, 2.86 m/s natural: inside the run band. The pistol pack's Pistol_Run c9cdb75a is a sprint (4.42 m/s, 0.53 s cycle), outside it",
+   "loco": true,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "rifle_idle",
+   "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "loop": true,
+   "use": "rifle: armed idle = the aim pack's own idle aim (Rifle_Aiming_Idle), so idle, aim and fire share one stance and the feet never move between them (Latch: Rifle_Idle c9cd4f94, another pack, drifted the left foot 22.6 cm into the aim). The aim pack has no lowered idle",
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "rifle_aim",
+   "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "loop": true,
+   "use": "rifle: aim hold, shouldered, right 181/208, left 136 deg, hands 29 cm apart, in place",
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "rifle_fire",
+   "src": "Anim/mixamo_library/Firing_Rifle__c9c863fe.fbx",
+   "loop": false,
+   "use": "rifle: fire from the aim (the same pack and grip as rifle_aim and rifle_run)",
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "rifle_walk",
+   "src": "Anim/mixamo_library/Walk_With_Rifle__c9cc1182.fbx",
+   "loop": true,
+   "use": "rifle: walk with the rifle at low ready, both hands closed (183/183, left 147), in place",
+   "loco": true,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "rifle_run",
+   "src": "Anim/mixamo_library/Rifle_Run__c9c814a0.fbx",
+   "loop": true,
+   "use": "rifle: run, the aim pack's grip (181/208, left 136), in place",
+   "loco": true,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "pistol_holster",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+    "frame": 1
+   },
+   "frames": 18,
+   "reverse": true,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "use": "pistol: the holster, the draw played back (the aim's first frame eased to the idle's hands-down pose over 0.6 s)",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "game": false
+  },
+  {
+   "name": "rifle_raise",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+    "frame": 1
+   },
+   "donor": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "frames": 18,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "use": "rifle: the raise from the unarmed idle into the aim pack's stance, the standard 0.6 s blend into its first frame (as pistol_draw); its last frame is rifle_aim's first",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "rifle_lower",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+    "frame": 1
+   },
+   "donor": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "frames": 18,
+   "reverse": true,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "use": "rifle: the raise played back, the aim's first frame eased to the unarmed idle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
+  },
+  {
+   "name": "hand_relaxed",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+    "frame": 1
+   },
+   "frames": 2,
+   "loop": true,
+   "loco": false,
+   "feet": false,
+   "use": "the relaxed hand (brief 069): the reference walk's own hand held (its first frame, every bone; the game's layer masks it to the fingers) on a finger-masked override layer over the clips whose fingers are flat (clips.rows.json fingersFlat)",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "game": false
   }
  ]
 }

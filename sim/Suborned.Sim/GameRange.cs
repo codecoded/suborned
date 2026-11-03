@@ -51,6 +51,7 @@ namespace Suborned.Sim
                                                // (its effective ring, or its max ring when it is police answering this agent's fire)
         public bool Aimed;                     // the shooter's aim is on this target now
         public int Acc;                        // the chance of the next shot, per mille (0 with no line)
+        public RollSum Sum;                    // brief 080: the sum that gives it, rolled shots only
         public int Pips;                       // 1–4 with the lab's pips on, else 0
         public int Damage;                     // a hit's damage at this distance
         public string Cover = "none";          // the target's cover against this shooter as the shot counts it now: none, partial, full
@@ -79,7 +80,7 @@ namespace Suborned.Sim
         /// <summary>This run is on a fight range site (brief 029): the mission's rules are off, the fight's are on.</summary>
         public readonly bool Range;
         /// <summary>The verbs the range takes; any other is refused unknown-verb.</summary>
-        public static readonly string[] RangeVerbs = { "move", "drive", "cancel", "draw", "holster", "cease", "stance", "fire", "volley", "field", "panic", "carry", "spawn", "withdraw", "trigger", "follow", "free" }; // engine 0.19.0: free (tuning.md §14)
+        public static readonly string[] RangeVerbs = { "move", "drive", "cancel", "draw", "holster", "cease", "stance", "fire", "volley", "field", "panic", "carry", "spawn", "withdraw", "trigger", "follow", "free", "mark", "talk-down", "steam", "covering-fire" }; // engine 0.19.0: free (tuning.md §14)
         public static readonly string[] RangeSides = { "police", "rivals", "response" };
         public static readonly string[] RangePlacements = { "near", "eff", "beyond", "cover" };
         public const int RangeSlots = 6;
@@ -224,7 +225,8 @@ namespace Suborned.Sim
             if (f.Line) { f.Acc = ShotAcc(g, t, from, at, d, gait, false, out int pips); f.Pips = pips; }
             f.Count = f.Aimed ? g.Acc : AccFor(g, t);
             f.AimKept = !f.Aimed && g.Mem != null && g.Mem.ContainsKey(t);
-            f.ShotsToHit = f.Acc > 0 ? Math.Max(1, (1000 - f.Count + f.Acc - 1) / f.Acc) : 0;
+            f.ShotsToHit = f.Acc <= 0 ? 0 : Rolled ? (1000 + f.Acc - 1) / f.Acc : Math.Max(1, (1000 - f.Count + f.Acc - 1) / f.Acc); // brief 080: rolled, the shots a hit takes on average
+            if (f.Line && Rolled) f.Sum = SumOf(g, t, from, at, d, gait);
             if (agent)
             {
                 var op = OpOf(Sim.Op.Parse(by));
@@ -249,7 +251,7 @@ namespace Suborned.Sim
             if (f.Bystander) p.Add("bystander"); // brief 041 (Sky): the hold fires at anyone, no Ctrl; the host says how
             if (f.Cover != "none") p.Add(f.Cover == "full" ? "full cover" : "half cover");
             if (f.CoverLost) p.Add("moving: cover doesn't count");
-            if (f.Line && f.Acc > 0) p.Add(f.ShotsToHit == 1 ? "hits next shot" : $"hits in {f.ShotsToHit} shots");
+            if (f.Line && f.Acc > 0 && !Rolled) p.Add(f.ShotsToHit == 1 ? "hits next shot" : $"hits in {f.ShotsToHit} shots"); // brief 080: a rolled shot's chance says it all
             if (f.AimKept) p.Add("aim kept from before");
             else if (!f.Aimed && f.Line && f.ReadyIn >= 0) p.Add("new target: aims first");
             if (f.Steadying) p.Add("steadying after the run");

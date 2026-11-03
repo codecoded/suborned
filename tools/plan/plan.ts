@@ -1,8 +1,9 @@
 // Loads a suborned.plan/1 file and derives what the checks and drawings share: road geometry, plot polygons, the
 // pylon zones and the sky rail pylons.
-import { type Rect, type Sample, type Seg, type V, chainage, dist, filleted, inPoly, notched, pathLength, polyline, rectPoly, ring, sample } from './geom';
+import type { OwnPavement } from './sections';
+import { type Rect, type Sample, type Seg, type V, chainage, dist, filleted, inPoly, lineDist, notched, pathLength, polyline, rectPoly, ring, sample } from './geom';
 
-export type Road = { id: string; name: string; class: 'primary' | 'district' | 'access'; w: number; median?: number; reservation?: number; gyratory?: boolean; arc?: V; cw?: boolean; path: string[] };
+export type Road = { id: string; name: string; class: 'primary' | 'district' | 'access'; w: number; /** the road's own pavement section (brief 075 ask 1; tools/plan/sections.ts) */ pavement?: OwnPavement; median?: number; reservation?: number; gyratory?: boolean; arc?: V; cw?: boolean; path: string[] };
 export type Plot = { id: string; name?: string; use: string; area: string; rect?: Rect; poly?: V[]; notch?: [number, number, number]; civic?: string };
 export type Path = { id: string; role: string; double?: boolean; pts: number[][] };
 export type Stop = { id: string; name: string; path: string; at: V; length?: number; interchange?: string; fronts?: string };
@@ -19,7 +20,9 @@ export type Megastructure = {
 /** A landmark disc: r its ground, `top` the height cap (above the datum), `kit` the piece standing on it; the skyport has a caisson and `pads` (c, yaw in degrees) for its kit pieces. */
 export type Landmark = { id: string; name: string; c: V; r: number; kit?: string; top?: number; caisson?: { r: number; deck: number; how?: string }; pads?: { c: V; yaw: number }[]; [k: string]: unknown };
 /** brief 007 A: a signature structure outside the megastructure list (SpaceHQ): `ground` its rect (no plot building stands on it), `kit` the piece, `regen.variant` the regenerated version, `portal` its declared sky rail portal, `height` its tip. */
-export type Signature = { id: string; name: string; c: V; ground: [number, number, number, number]; kit?: string; yaw?: unknown; height?: number; regen?: { variant?: string; tip?: number; [k: string]: unknown }; portal?: { kind?: string; beams?: string; line?: string; path?: string; clearHalfWidth?: number; soffit?: number; openings?: { at: [number, number]; clearHalfWidth: number; z: [number, number] }; station?: string; [k: string]: unknown }; [k: string]: unknown };
+export type Signature = { id: string; name: string; c: V; ground: [number, number, number, number]; kit?: string; yaw?: unknown; height?: number; regen?: { variant?: string; tip?: number; [k: string]: unknown }; portal?: { kind?: string; beams?: string; line?: string; path?: string; clearHalfWidth?: number; soffit?: number; openings?: { at: [number, number]; clearHalfWidth: number; z: [number, number] }; /** the line's axis through the portal (an east-west portal on y = this; default 0) */ y?: number; station?: string; [k: string]: unknown };
+  /** rects a drum or portal stands on (solid at the foot) */ legs?: [number, number, number, number][];
+  /** its floors; `floor: 'public'` declares that level's floor public ground inside `ground` less `legs` (station banks may stand there) */ levels?: { level: string; floor?: 'public'; [k: string]: unknown }[]; [k: string]: unknown };
 export type Plan = {
   id: string; name: string; version: string; date: string; status: string;
   sheet: { drawing: string; x: V; y: V; grid: number; scale: string; inset: { drawing: string; name: string; x: V; y: V; scale: string } };
@@ -89,6 +92,17 @@ export function spanMax(std: any, landmarks: Disc[], path: PathGeo, s0: number, 
   const byCurve = Math.min(...path.samples.filter(x => x.s >= s0 - .01 && x.s <= s1 + .01).map(x => spanLimit(std, x.r)));
   const over = std.pylonClear?.span as number | undefined;
   return over !== undefined && crossesDisc(path, s0, s1, landmarks) ? Math.max(byCurve, over) : byCurve;
+}
+
+/** standards.skyrail.pylonClear.walk: whether a pylon centred at p would put its post in a foot path's clear walk zone (undefined when the plan does not ask). */
+export function pylonWalkBlock(plan: Plan): ((p: V) => boolean) | undefined {
+  const pc = plan.standards.skyrail.pylonClear as { walk?: { post?: number } } | undefined; if (!pc?.walk) return undefined;
+  const sec = (plan.standards as any).streetscape?.sections ?? {}, edge = sec.walk?.edgeBand ?? 0, band = sec.mall?.bands?.walk as [number, number] | undefined;
+  const h = ((pc.walk.post ?? 1.6) / 2) * Math.SQRT2;
+  return (p: V) => plan.foot.some(f => {
+    const off = lineDist(p, f.pts as V[]); if (off - h >= f.w / 2) return false;
+    return f.kind === 'mall' ? !!band && off + h > band[0] && off - h < band[1] : off - h < f.w / 2 - edge;
+  });
 }
 
 /**
@@ -207,17 +221,18 @@ function placePylons(std: any, path: PathGeo, allowed: (p: V) => boolean, portal
 
 type R4p = [number, number, number, number];
 /** A declared sky rail portal: where, the opening's half width and z range (the building carries the beam inside it). */
-export type Portal = { id: string; line: string; rect: R4p; half: number; z: [number, number]; ceiling: number };
+export type Portal = { id: string; line: string; rect: R4p; half: number; z: [number, number]; ceiling: number; /** the line's axis through it (y of an east-west portal) */ y: number };
 export function portalsOf(plan: Plan): Portal[] {
   const out: Portal[] = [], run = plan.standards.skyrail?.portal?.running?.twin;
   for (const s of plan.signatures ?? []) {
     const p = s.portal; if (!p?.openings) continue;
-    out.push({ id: `signatures/${s.id}`, line: `${p.line}/${p.path}`, rect: [p.openings.at[0], p.openings.at[1], -p.clearHalfWidth!, p.clearHalfWidth!], half: p.openings.clearHalfWidth, z: p.openings.z, ceiling: p.soffit ?? p.openings.z[1] });
+    const y = p.y ?? 0; // the portal's axis: an east-west line through the openings on y
+    out.push({ id: `signatures/${s.id}`, line: `${p.line}/${p.path}`, rect: [p.openings.at[0], p.openings.at[1], y - p.clearHalfWidth!, y + p.clearHalfWidth!], half: p.openings.clearHalfWidth, z: p.openings.z, ceiling: p.soffit ?? p.openings.z[1], y });
   }
   for (const m of plan.megastructures ?? []) {
-    for (const q of ((m as { portals?: { id: string; rect: R4p; opening: { clearHalfWidth: number; z: [number, number] } }[] }).portals ?? [])) out.push({ id: `${m.id}/${q.id}`, line: 'S1/trunk', rect: q.rect, half: q.opening?.clearHalfWidth ?? run?.clearHalfWidth ?? 6, z: q.opening?.z ?? run?.z ?? [21.5, 29], ceiling: (q.opening?.z ?? run?.z ?? [21.5, 29])[1] });
+    for (const q of ((m as { portals?: { id: string; rect: R4p; opening: { clearHalfWidth: number; z: [number, number] } }[] }).portals ?? [])) out.push({ id: `${m.id}/${q.id}`, line: 'S1/trunk', rect: q.rect, half: q.opening?.clearHalfWidth ?? run?.clearHalfWidth ?? 6, z: q.opening?.z ?? run?.z ?? [21.5, 29], ceiling: (q.opening?.z ?? run?.z ?? [21.5, 29])[1], y: 0 });
     const sp = (m.supports as { portal?: { clearHalfWidth: number } } | undefined)?.portal;
-    if (sp) for (const f of m.footprint as R4p[]) out.push({ id: `${m.id}/supports`, line: 'S1/trunk', rect: f, half: sp.clearHalfWidth, z: [0, plan.standards.skyrail?.portal?.station?.soffit ?? 30], ceiling: plan.standards.skyrail?.portal?.station?.soffit ?? 30 });
+    if (sp) for (const f of m.footprint as R4p[]) out.push({ id: `${m.id}/supports`, line: 'S1/trunk', rect: f, half: sp.clearHalfWidth, z: [0, plan.standards.skyrail?.portal?.station?.soffit ?? 30], ceiling: plan.standards.skyrail?.portal?.station?.soffit ?? 30, y: 0 });
   }
   return out;
 }
@@ -251,8 +266,13 @@ export function derive(plan: Plan): Derived {
   // standards.skyrail.pylonClear (opt-in, brief 007 round 3): a pylon's centre keeps `landmark` metres outside every landmark disc
   // (the Crown monument's basin and steps fill its disc). A plan without it places pylons as it always did: recorded runs rederive.
   const clear = plan.standards.skyrail.pylonClear?.landmark as number | undefined;
+  // standards.skyrail.pylonClear.walk (opt-in, brief 075: S2's pylons on the Skyport and Market piers): no part of a pylon's post (pylonSize square, any yaw:
+  // its half-diagonal) stands in a foot path's clear walk zone (SF-1: a walk's middle inside its edge bands, a mall's walk band), so the greedy steps the pylon
+  // back to the walk's edge band and the beam spans the walk; a plan without it places pylons as before
+  const walkOff = pylonWalkBlock(plan);
   const allowed = (p: V) => zones.some(z => kinds.has(z.kind) && inZone(p, z))
-    && (clear === undefined || !plan.landmarks.some(l => dist(p, l.c) < l.r + clear - 1e-9));
+    && (clear === undefined || !plan.landmarks.some(l => dist(p, l.c) < l.r + clear - 1e-9))
+    && (!walkOff || !walkOff(p));
   const pylons: Pylon[] = [], pylonGaps: Derived['pylonGaps'] = [];
   for (const p of sky) { const r = placePylons(plan.standards.skyrail, p, allowed, portalSpans(plan, p.line, p), plan.landmarks); pylons.push(...r.out); pylonGaps.push(...r.gaps); }
   return {

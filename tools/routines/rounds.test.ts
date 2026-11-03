@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { peopleFiles } from '../levels/people/hash';
 import { Grid, d2, leg, type Pt } from './walk';
 import { parseRules } from './rules';
-import { Hz, ROUNDS_CANDIDATE, ROUNDS_ENGINE, build, findMeetings, occupancy, pickStop, poseAt, readInputs, stopsOf, summary, type Events, type PeopleIn, type Rounds } from './rounds';
+import { Hz, ROUNDS_CANDIDATE, ROUNDS_ENGINE, build, findMeetings, occupancy, pickStop, poseAt, readInputs, servicePoints, standOf, stopsOf, summary, type Events, type PeopleIn, type Rounds } from './rounds';
 
 const root = join(import.meta.dir, '..', '..');
 const read = (f: string) => readFileSync(join(root, f), 'utf8');
@@ -28,9 +28,9 @@ describe('the rules (contracts/people/routines.rules.json)', () => {
     expect(() => parseRules(JSON.stringify({ ...raw, rounds: { ...raw.rounds, rest: { ...raw.rounds.rest, proposed: true, reason: undefined } } }))).toThrow(); // a proposed rule gives its reason
   });
   test('the numbers that copy the rulebook equal it', () => {
-    expect(rules.rounds.pace.cmPerS).toBe(rulebook['op-speed-cm-s']!.v);
+    expect(rules.rounds.pace.cmPerS).toBe(rulebook['people-walk-cm-s']!.v); // the city's walk (crowd.walk), split from the cell's in engine 0.34.0 (brief 067)
     expect(rules.partners.summoned.stay.s).toBe(rulebook['lover-stay-s']!.v);
-    expect(rules.partners.closeCm.v / 100).toBeLessThan(rulebook['together-m']!.v); // a Watch that ends with them standing together still teaches the affair
+    expect(rules.partners.closeCm.v).toBe(rulebook['partners-close-cm']!.v); // the engine's rounds.close (brief 054 §9.2 retired together-m: a Watch never teaches a secret)
     if (rulebook['partners-clear-cm']) expect(rules.partners.clearCm.v).toBe(rulebook['partners-clear-cm'].v); // Keel adds the value with the reader (brief 022 addendum)
   });
   test('the rest are inside what the engine can walk and a person can see', () => {
@@ -49,13 +49,22 @@ describe('the bake', () => {
     // once Keel moves the addendum's file (guard.stops) the engine's copy is held to the same bytes; until then it is the file before the addendum and the engine still reads that one
     if (existsSync(live) && JSON.parse(read(ROUNDS_ENGINE)).guard.stops) expect(read(ROUNDS_ENGINE)).toBe(text);
   });
+  test('the plain grid walk comes short of the drawn solids on the live world, and the baked legs do not (the invisible ledge: tables 1, 2 and 5)', () => {
+    const plain = servicePoints(g, sv.at, inp.tables, inp.people.places, rules.rounds, 'cafe-table-'), anchor = rules.rounds.clear.anchorCm;
+    const short = plain.filter((x) => inp.clear!.pathShortfall(x.path.points, anchor) > 0).map((x) => x.table);
+    expect(short.length).toBeGreaterThan(0); // if the grid ever keeps clear by itself, this rule has nothing left to do: retire it
+    for (const e of sp.excursions) expect(inp.clear!.pathShortfall(e.path, anchor)).toBe(0);
+    // a service point moved out is moved a few centimetres, not to another ring
+    for (const x of plain) { const e = sp.excursions.find((q) => q.table === x.table); if (e) expect(Math.hypot(e.at[0] - x.at[0], e.at[1] - x.at[1])).toBeLessThanOrEqual(rules.rounds.servicePoint.outToCm); }
+  });
   test('builds nothing the people hash reaches (the people verdicts and out/people stay as they were)', () => {
     expect(peopleFiles().filter((f) => /routines|rounds/.test(f))).toEqual([]);
   });
   test('finds the Handover\'s waitress, at the café door, and no one else in the mission window', () => {
     expect(Object.keys(R.servers)).toEqual([inp.site.cast['waitress']!.id]);
     expect(sv.post).toBe('cafe-entrance');
-    expect(sv.at).toEqual(P('d:Café door')); // her post is the mission's Café door point: the summons, M-2 and every window keep their ground
+    expect(sv.at).toEqual(inp.site.places['d:Café door']!.stand ?? P('d:Café door')); // her post is the mission's Café door point, where the site stands it (Site.Stand: 0.6 m out when the point is on the face margin): the summons, M-2 and every window keep their ground
+    expect(sv.at).toEqual(standOf(inp.site, inp.people.places['cafe-entrance']!)); // and it is where the people file places her, stood
     expect(sp.excursions.length).toBeGreaterThanOrEqual(6);
   });
   test('every service point is free ground, clear of the chairs, facing the table, and the walk to it is the grid\'s', () => {
@@ -67,8 +76,15 @@ describe('the bake', () => {
       const c = inp.tables[e.table]!; // she faces the table's centre
       const want = [c[0] - e.at[0], c[1] - e.at[1]], l = Math.hypot(want[0]!, want[1]!), f = Math.hypot(e.face[0], e.face[1]);
       expect((want[0]! * e.face[0] + want[1]! * e.face[1]) / (l * f)).toBeGreaterThan(0.99);
-      const path = leg(g, sv.at, e.at);
-      expect(e.path).toEqual(path.points);
+      // the walk is the grid's, eased clear of the drawn solids (rules.rounds.clear): it starts at her post, ends at the service point, every line of it is clear ground on the grid, and it keeps
+      // a body (and the margin) from every drawn solid and the face distance from a wall, past the first anchorCm from her post (Sky 2026-10-24, the invisible ledge; brief 055 G-1d)
+      expect(e.path[0]).toEqual(sv.at); expect(e.path[e.path.length - 1]).toEqual(e.at);
+      for (let i = 1; i < e.path.length; i++) if (e.path[i - 1]![0] !== sv.at[0] || e.path[i - 1]![1] !== sv.at[1]) expect(g.lineFree(e.path[i - 1]!, e.path[i]!)).toBe(true); // her post may stand on the face margin (Site.Stand stands it 0.6 m out): the lines from it are not checked
+      expect(inp.clear!.pathShortfall(e.path, rules.rounds.clear.anchorCm)).toBe(0);
+      expect(inp.clear!.shortfall(e.at, e.at)).toBe(0);
+      const plain = leg(g, sv.at, e.at); // the plain grid walk is never longer than hers, and the same when it was already clear
+      expect(e.m).toBeGreaterThanOrEqual(Math.round(plain.length / 10) - 1);
+      if (inp.clear!.pathShortfall(plain.points, rules.rounds.clear.anchorCm) === 0) expect(e.path).toEqual(plain.points);
       expect(e.out).toBe(Math.max(1, Math.ceil(e.m / rules.rounds.pace.cmPerS - 1e-9)));
       expect(e.out * rules.rounds.pace.cmPerS).toBeGreaterThanOrEqual(e.m); // never faster than the cell walks
       expect(e.m).toBeLessThanOrEqual(rules.rounds.leashM.v * 100);
@@ -148,13 +164,12 @@ describe('the guard\'s visit is the one the Handover was built on', () => {
 
 describe('where the summoned partner stands (partners.summoned.side; brief 022 addendum)', () => {
   const stops = R.guard.stops, beside = P('beside-inez'), court = P('d:Courtyard');
-  test('the stops are on the ring, on free ground, walkable, inside together-m, and the first is the default', () => {
+  test('the stops are on the ring, on free ground, walkable, and the first is the default', () => {
     expect(stops.length).toBeGreaterThan(1);
     expect(R.guard.ringCm).toBe(R.rules.closeCm);
     for (const st of stops) {
       expect(Math.abs(Math.hypot(st.at[0] - sv.at[0], st.at[1] - sv.at[1]) - R.rules.closeCm)).toBeLessThan(2);
       expect(g.isFree(st.at)).toBe(true);
-      expect(near(st.at, sv.at, rulebook['together-m']!.v)).toBe(true);
       expect(st.face[0] * (sv.at[0] - st.at[0]) + st.face[1] * (sv.at[1] - st.at[1])).toBeGreaterThan(0); // he faces her
     }
     expect(R.guard.stopAt).toEqual(stops[0]!.at); expect(R.guard.face).toEqual(stops[0]!.face);
@@ -166,8 +181,8 @@ describe('where the summoned partner stands (partners.summoned.side; brief 022 a
     expect(stops[0]!.deg).toBeGreaterThan(0); // her left: east of a south-facing post
     expect(stops[0]!.at[1]).toBeGreaterThan(sv.at[1]);
   });
-  test('the alcove is two metres wide, so only the front quarter is free at 1.2 m; the list is rebuilt from the grid, never typed', () => {
-    for (const st of stops) expect(Math.abs(st.deg)).toBeLessThanOrEqual(45);
+  test('his stops are the free ground of the ring in front of and beside her, never behind her; the list is rebuilt from the grid, never typed', () => {
+    for (const st of stops) expect(Math.abs(st.deg)).toBeLessThanOrEqual(90);
     expect(stopsOf(g, P(inp.site.guard.post), sv.at, sv.face, R.rules.closeCm, rules.partners.summoned.side.stepDeg)).toEqual(stops);
   });
   test('Waymark\'s play note: with the Scout at beside-inez (2.1 m from her) he no longer stops on top of the Scout', () => {
@@ -179,10 +194,13 @@ describe('where the summoned partner stands (partners.summoned.side; brief 022 a
   });
   test('the pick: the first stop nobody stands near; her other hand if someone does; the farthest if all are taken; nothing if the file has none', () => {
     const at = (i: number): Pt => stops[i]!.at, nudge = (p: Pt, d: number): Pt => [p[0] + d, p[1]];
+    const far = (p: Pt[]) => stops.find((s) => p.every((q) => Math.hypot(q[0] - s.at[0], q[1] - s.at[1]) >= 100));
     expect(pickStop(stops, [], 100)).toBe(stops[0]);
-    expect(pickStop(stops, [nudge(at(0), 40)], 100)).toBe(stops[1]); // a person on the first stop: the other side
-    expect(pickStop(stops, [at(0), at(1)], 100)).toBe(stops[stops.length - 1]); // both sides taken: every stop of a 1.2 m ring is within a metre of one of them, so the farthest from both: dead ahead
-    expect(pickStop(stops, [at(0)], 100)).toBe(stops[1]); // one side taken: the other
+    expect(pickStop(stops, [nudge(at(0), 40)], 100)).toBe(far([nudge(at(0), 40)])); // a person on the first stop: the first stop a metre clear of them
+    expect(far([nudge(at(0), 40)])).not.toBe(stops[0]);
+    expect(pickStop(stops, [at(0), at(1)], 100)).toBe(far([at(0), at(1)])); // two taken: the first stop a metre clear of both, in the file's order
+    expect(far([at(0), at(1)])).toBeDefined(); expect(far([at(0), at(1)])).not.toBe(stops[0]);
+    expect(pickStop(stops, [at(0)], 100)).toBe(far([at(0)])); // one stop taken: the first clear of it
     const all = stops.map((s, i) => nudge(s.at, 10 + i)); // everyone taken: the stop whose nearest person is farthest, the earlier on a tie
     const nearest = (s: (typeof stops)[number]) => Math.min(...all.map((p) => Math.hypot(p[0] - s.at[0], p[1] - s.at[1])));
     const best = Math.max(...stops.map((s) => Math.floor(nearest(s))));
@@ -223,7 +241,7 @@ describe('what the quiet play can reach (recorded routes, taken against the refe
     return taken;
   }
   test('there are recorded routes that touch Inez, and each of their orders is taken at its recorded tick', () => {
-    expect(scripts.length).toBe(7); // route A (Help, Pressure, and their board variants) and the three fail-entry-* routes
+    expect(scripts.length).toBe(8); // route A (Help, Pressure, and their board variants), the three fail-entry-* routes, and brief 058's route-a-disable and careless-loop-runs-out (Waymark, 2026-10-25)
     for (const { f, s } of scripts) for (const t of walk(s.orders!)) expect([f, t.o.tick, t.o.do, t.waited]).toEqual([f, t.o.tick, t.o.do, 0]);
   });
   test('the check can fail: a Help given while she is at a table is refused by reach', () => {

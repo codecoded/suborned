@@ -1,0 +1,16 @@
+{
+ "old": "briefs/074/flyby/old-stills/flyby_t20.png",
+ "new": "unity/Scratch/Captures/DecoKit/oldtown_proof_t20.png",
+ "size": [
+  1920,
+  1080
+ ],
+ "mean_abs_diff_0_255": 0.0356,
+ "rmse_0_255": 0.2661,
+ "psnr_db": 59.63,
+ "max_abs_diff": 84,
+ "pixels_identical_pct": 92.362,
+ "pixels_diff_gt_2_pct": 0.143,
+ "pixels_diff_gt_8_pct": 0.02,
+ "pixels_diff_gt_32_pct": 0.0
+}

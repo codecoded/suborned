@@ -5,7 +5,7 @@ import { describe, expect, test } from 'bun:test';
 import { selectCover } from '../cover/select';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { buildProvisional, buildSite, PROVISIONAL_FILE, SITE_FILE, sourceOfSite } from './site';
+import { buildProvisional, buildSite, optionsOfSite, PROVISIONAL_FILE, SITE_FILE, sourceOfSite } from './site';
 import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 
@@ -14,14 +14,22 @@ const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '
 const dotnet = Bun.which('dotnet');
 const sim = (...args: string[]) => {
   const r = Bun.spawnSync(['dotnet', 'run', '--project', 'sim/cli', '--', ...args], { cwd: root, env, stdout: 'pipe', stderr: 'pipe' });
-  return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() };
+  const out = r.stdout.toString(), err = r.stderr.toString();
+  return { code: r.exitCode, out, err: why(out, err) };
+};
+/** Why a run failed: stderr, and the failing checks a play reports on stdout (brief 072: a play that fails a check exits 1 with stderr empty, so the
+ *  message was blank; the reason, such as "record: the inputs differ from the record", is in its JSON's `checks`). */
+const why = (out: string, err: string): string => {
+  let failed: string[] = [];
+  try { const j = JSON.parse(out); failed = (Array.isArray(j?.checks) ? j.checks : []).filter((c: { ok?: boolean }) => c && c.ok === false).map((c: { what?: string }) => c.what ?? JSON.stringify(c)); } catch { /* not a play's JSON */ }
+  return [err.trim(), ...failed.map((w) => `check failed: ${w}`)].filter(Boolean).join('\n');
 };
 
 describe('sim/data/handover.site.json', () => {
   const src = sourceOfSite();
   const present = existsSync(join(root, src.people));
   test.skipIf(!present)(`is what tools/sim/site.ts makes from the plan, the civic block, mission.json and ${src.people} today (bun run sim:site)`, () => {
-    expect(readFileSync(join(root, SITE_FILE), 'utf8')).toBe(buildSite(src).json);
+    expect(readFileSync(join(root, SITE_FILE), 'utf8')).toBe(buildSite(src, optionsOfSite()).json);
   });
   test.skipIf(!present)('sim/data/handover.people.json comes from the same people file', () => {
     expect(readFileSync(join(root, PEOPLE_OUT), 'utf8')).toBe(buildPeople(src));
@@ -94,16 +102,19 @@ describe.skipIf(!dotnet)('the C# engine through its CLI', () => {
   }, 180_000);
 
   test('an order script plays to the outcome its scenario reached', () => {
-    const s = sim('script', 'S20');
+    // engine 0.33.0 (brief 059, Motive M059-B1, B7): route B's quiet win is Motive's rb-ff at the yard (BAL-YARD-FOCUS: the Scout and Fixer lock
+    // rival-1 then rival-2 from the spring); P59-B's at-will carry is lost now that the posted three fight from where they stand
+    const s = sim('script', 'BAL-YARD-FOCUS');
     expect(s.code, s.err).toBe(0);
     mkdirSync(join(root, 'out/sim'), { recursive: true });
-    const file = join(root, 'out/sim/s20.script.json');
+    const file = join(root, 'out/sim/bal-yard-focus.script.json');
     writeFileSync(file, s.out);
     const p = sim('play', file, '--json');
     expect(p.code, p.err).toBe(0);
     const r = JSON.parse(p.out);
-    expect(r.outcome).toBe('success');
-    expect(r.gunfire).toBe(0);
-    expect(r.replayIdentical).toBe(true);
+    // engine 0.35.0 (brief 039 B, cover and pin): rb-ff no longer wins as Motive composed it (its Go comes 1.4 s before the car is free; BAL-YARD-FOCUS
+    // records it as a missed line, Motive re-composes): the play reaches the outcome its scenario reached, whatever that is
+    expect(r.outcome).toBe(JSON.parse(s.out).expect.outcome);
+    expect(r.replayIdentical).toBe(true); // brief 080: rolled shots: this script's fight may not be the one it was composed for, so how much gunfire it takes is no check any more
   }, 180_000);
 });

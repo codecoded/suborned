@@ -1,0 +1,10 @@
+ProductName:		macOS
+ProductVersion:		27.0.1
+BuildVersion:		26A434
+Mac16,13
+Apple M4
+34359738368
+      Chipset Model: Apple M4
+      Total Number of Cores: 10
+          Resolution: 2880 x 1864 Retina
+ lowpowermode         0

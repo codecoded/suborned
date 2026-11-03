@@ -1,0 +1,14 @@
+{
+    "name": "Suborned.OldTown.Swap.Editor",
+    "rootNamespace": "Suborned.OldTown.Editor.Swap",
+    "references": ["Suborned.OldTown", "Suborned.OldTown.Editor", "Suborned.World.Editor", "Suborned.Runtime", "Unity.InputSystem", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime", "Unity.Collections"],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

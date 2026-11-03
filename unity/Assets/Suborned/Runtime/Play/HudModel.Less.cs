@@ -17,10 +17,13 @@ namespace Suborned.Play
         static readonly Regex Num = new(@"(\d+)"), Plus = new(@"\+(\d+)"), AtLeast = new(@"≥\s*(\d+)"), Arrow = new(@"→\s*(\d+)"), Speed = new(@"(\d+(?:\.\d+)?) m/s");
 
         /// <summary>The eye's hover line (Glyph, "Eyes, revised"): one sentence.</summary>
+        /// <summary>The move card's eye with a number (engine 0.31.0, RunRememberedBy): who keeps the runner's face.</summary>
+        public static string RememberTip(int n) => n == 1 ? "A passer-by would remember your face." : $"{n} passers-by would remember your face.";
+
         public static string EyeTip(string eye, string seenBy) => eye == "open" ? $"Seen by {(string.IsNullOrEmpty(seenBy) || seenBy == "?" ? "a watcher" : seenBy)}." : eye == "unk" ? "Unknown. Watch first." : "Unseen.";
 
         /// <summary>Fable's field order (less.price.order), the price line's columns.</summary>
-        public static readonly string[] FieldOrder = { "left", "usd", "time", "trail", "alert", "eye", "learns", "pace", "mark", "hits", "walk", "run" }; // "left": the Go row's cameos and fates (brief 018)
+        public static readonly string[] FieldOrder = { "left", "usd", "time", "trail", "door", "alert", "eye", "learns", "pace", "mark", "hits", "walk", "run" }; // "left": the Go row's cameos and fates (brief 018)
 
         /// <summary>Compact money for a price line (Sky 2026-10-16: the line stays short): 100,000 → 100k, 1,500 → 1.5k, under 1,000 as it is;
         /// a range "40,000–60,000" → "40k–60k". The status pill and the debrief keep whole dollars.</summary>
@@ -45,6 +48,7 @@ namespace Suborned.Play
             if (o.Do == "board") return "Board";
             if (o.Do == "go") return "Go"; // brief 018 §6.5 (Glyph r1): who stays is the row's cameos and fate glyphs, not a sentence
             if (o.Do == "loop") return "Loop";
+            if (o.Do == "disable") return "Disable";
             if (o.Do == "stash") return "Hide";
             if (o.Do == "reroute") return "Reroute";
             var label = t?.Action(PriceVerb(o), null).label ?? PriceVerb(o);
@@ -52,7 +56,7 @@ namespace Suborned.Play
         }
 
         /// <summary>A second one-word tag where several rows share a name (the cabinet's loops: entrance, pickup, mast).</summary>
-        public static string Tag(HandoverHost.Intent i) => i.Order?.Do == "loop" ? (i.Order.Target is "entrance" or "pickup" ? i.Order.Target : "mast") : "";
+        public static string Tag(HandoverHost.Intent i) => i.Order?.Do is "loop" or "disable" ? (i.Order.Target is "entrance" or "pickup" ? i.Order.Target : "mast") : "";
 
         /// <summary>The line's fields for an intent (zero fields hidden), in Fable's order.</summary>
         public static List<PField> PriceLine(HandoverHost h, HandoverHost.Intent i)
@@ -78,20 +82,24 @@ namespace Suborned.Play
                     case "time":
                         {
                             var m = Num.Match(i.Time ?? ""); if (!m.Success) break;
-                            if (o.Do == "board" && i.WalkS > 0) { F("walk", "s_moving", $"{i.WalkS} s"); F("time", "p_time", $"{m.Groups[1].Value} s"); break; } // Glyph r1: "9 s" was walk 8 + board 1; the walk and the boarding apart
+                            // Glyph N1 (0.2.125, GDD §14 hold: walk + act as one time): one figure, the sum, with the clock, for every way with a walk (Board too);
+                            // the walk and the act apart only under Alt (AltLine). It was "Board · walk 7 s · 1 s" on the ring and "Hold · Board · 1 s · 1 s" on the pill
                             int s = int.Parse(m.Groups[1].Value) + System.Math.Max(0, i.WalkS);
                             F("time", "p_time", $"{s} s");
                             break;
                         }
                     case "trail":
                         {
-                            if (o.Do == "fire") { F("trail", "p_trail", $"+{h.Game.R.HitTrail}/hit"); break; }
+                            if (o.Do == "fire") { var ft = HandoverHost.IsOpName(o.Op) ? h.FireTrail(Op.Parse(o.Op), o.Target, o.Force) : HandoverHost.PropertyId(o.Target) ? $"+{h.Game.R.GunfireTrail}" : $"+{h.Game.R.HitTrail}/hit"; if (ft.Length > 0) F("trail", "p_trail", ft); break; } // brief 058 §3: one price from PreviewFire (HandoverHost.FireTrail): a camera or a car the shooting once (+0 once paid), never /hit
                             int n = td ? i.Td.TrailIfFound : Plus.Match(i.Trail ?? "") is var pm && pm.Success ? int.Parse(pm.Groups[1].Value) : 0;
                             if (n <= 0) break;
                             var f = F("trail", "p_trail", $"+{n}");
                             if (td && !foundSaid && i.SeenMark != "no") { f.Found = true; foundSaid = true; } // Glyph §2: the found glyph once before the numbers that only happen if the body is found
                             break;
                         }
+                    case "door": // brief 085: how long a pressed call clears the public door (Fable's less.price.fields.door): text only, no icon; the same list drives the wedge, chip, pill and panel
+                        if (h.DoorClock(o) is string door) F("door", "", (h.Text?.DoorField ?? "Door {clock}").Replace("{clock}", door));
+                        break;
                     case "alert":
                         {
                             var a = i.Alert ?? ""; string v = null;
@@ -113,7 +121,7 @@ namespace Suborned.Play
                     case "learns":
                         {
                             var f = F("learns", "", "");
-                            if (o.Do == "watch") f.Icons.Add(i.Outcome == "its sight" ? "cone" : "routine");
+                            if (o.Do == "watch") f.Icons.Add(i.Outcome == "its sight" ? "cone" : i.Outcome == "mood" ? "mood_uneasy" : "routine"); // brief 054: a mood Watch learns a face
                             else if (o.Do == "listen") { f.Icons.Add("p_unknown"); f.Icons.Add("p_unknown"); } // need and temperament, unknown until heard (as Intel draws them)
                             if (f.Icons.Count == 0) l.Remove(f);
                             break;
@@ -152,6 +160,7 @@ namespace Suborned.Play
                 if (q.HoldsDoors.Count > 0) F("door_held", $"{q.HoldS / 60}:{q.HoldS % 60:00}");
                 if (o.How == "knockout" && q.WakesAt >= 0) F("body_out", HandoverHost.MissionClock(q.WakesAt));
                 if (o.How == "kill" && q.Ties > 0) F("talker", q.Ties.ToString());
+                if (h.ComingShort(q) is { Length: > 0 } cs) F("nextevent", cs); // brief 080: who arrives before it ends
                 foreach (var (icon, text) in i.Rows) if (icon == "call" && Num.Match(text) is var rm && rm.Success) F("call", rm.Groups[1].Value + " s");
                 return l;
             }

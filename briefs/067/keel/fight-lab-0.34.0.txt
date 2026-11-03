@@ -1,0 +1,18 @@
+# suborned-sim fight-lab (the default matrix, briefs/027/keel/fight-lab.json): suborned.sim/0.33.1 (d4361806) -> suborned.sim/0.34.0 (the tree, brief 067)
+wins 18 -> 23 of 294 rows
+outcome moves:
+   20  failure enforcer-down -> failure sealed
+    8  failure sealed -> failure enforcer-down
+    6  failure sealed -> success
+    2  success -> failure enforcer-down
+    1  failure enforcer-down -> success
+win flips (preset, row: before -> after, end, T):
+  lab-cover       L3                                               success  3:38.6 29 T -> failure enforcer-down 2:56.6 22 T
+  lab-kite-off    L3:tight-cycle-kite                              failure sealed 4:39.3 38 T -> success  4:20.7 28 T
+  lab-kite-off    L3:tight-focus-reset-kite                        failure sealed 4:39.3 38 T -> success  4:20.1 28 T
+  lab-kite-off    L3:tight-hold-runkite                            failure sealed 4:39.3 28 T -> success  4:30.4 30 T
+  lab-kite-off    L3:tight-kite                                    failure sealed 4:39.3 28 T -> success  4:20.6 28 T
+  lab-kite-off    L3:tight-reset-kite                              failure sealed 4:39.3 38 T -> success  4:20.7 28 T
+  lab-kite-off    L3:tight-step200-focus-norivals-at236-runkite    failure sealed 4:39.3 30 T -> success  4:16.5 30 T
+  lab-snap-off    L3:km10-fm5-step200-norivals-at208-runkite       success  4:33.7 32 T -> failure enforcer-down 3:47.4 30 T
+  today           L3:tight-enfgo-carfree-runkite                   failure enforcer-down 3:20.3 20 T -> success  3:54.2 30 T

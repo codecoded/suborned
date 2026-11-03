@@ -1,0 +1,61 @@
+{
+ "options": {
+  "1": {
+   "id": "m1",
+   "name": "Bright and quick",
+   "what": "about 25, Inez's age: a bright, quick, grinning tease",
+   "cos_to_larthi_mean": 0.956,
+   "cos_to_inez_mean": 0.982,
+   "pitch_hz_median": 279.0,
+   "pitch_spread_semitones": 8.3,
+   "speaking_s_total": 13.9,
+   "word_errors_in_picked": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "2": {
+   "id": "m2",
+   "name": "Swedish lilt",
+   "what": "about 25: a light Swedish accent, sing-song, relaxed and dry",
+   "cos_to_larthi_mean": 0.963,
+   "cos_to_inez_mean": 0.976,
+   "pitch_hz_median": 267.0,
+   "pitch_spread_semitones": 9.2,
+   "speaking_s_total": 14.1,
+   "word_errors_in_picked": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "3": {
+   "id": "m3",
+   "name": "Older and husky",
+   "what": "early forties: low, husky, slow, a big sister's dry warmth",
+   "cos_to_larthi_mean": 0.965,
+   "cos_to_inez_mean": 0.951,
+   "pitch_hz_median": 143.0,
+   "pitch_spread_semitones": 7.1,
+   "speaking_s_total": 13.9,
+   "word_errors_in_picked": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "old_milena_cos_to_larthi": 0.988,
+ "note": "Cosines from Qwen3-TTS Base's own speaker encoder: relative only (different people's references sit 0.93-0.99 apart). Lower is further.",
+ "reel": {
+  "seconds": 143.0,
+  "lufs_i": -20.3
+ }
+}

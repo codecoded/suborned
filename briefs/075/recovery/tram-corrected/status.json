@@ -1,0 +1,12 @@
+{
+  "status": "candidate ready for NEW independent Redline review; whole tram HOLD",
+  "protectedInputs": 8668,
+  "unexpectedProtectedDrift": [],
+  "candidateSaves": 1,
+  "captureContinuation": "reader-cache lifetime fix only; same saved geometry/assets, no regeneration",
+  "candidateScene": "unity/Assets/Scenes/probe-recovery075-tramcorrected.unity",
+  "G-3a": "59 > 58 HOLD",
+  "sight": "unapplied/HOLD",
+  "mainWindingBodyUnchanged": true,
+  "persistentCandidateGenerationJobs": 1
+}

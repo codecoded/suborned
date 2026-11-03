@@ -1,0 +1,409 @@
+{
+ "schema": "suborned.composition/1",
+ "brief": "075-E",
+ "made": "2026-10-28",
+ "by": "Splice (tools-engineer)",
+ "sources": {
+  "frontage": "~/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit/DecoKitFrontage.cs (class table, caps, ends where a segment stands taller than its neighbour)",
+  "runs": [
+   "~/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit/DecoKitCityBlocks.cs (boulevard, terrace and garden walls, crescents)",
+   "~/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit/DecoKitSouthside.cs and DecoKitBlock.cs (Southside blocks)"
+  ],
+  "roofs": "~/Projects/the-suborned/game/Assets/TheSuborned/Editor/DecoKit/DecoKitRoofline.cs",
+  "elevation": "~/Projects/the-suborned/workbench/Tools/Blender/decokit/skyline.py (ground_trims, floor_trims: G 5.0, FH 3.4, SP 1.05, D 14)",
+  "scene": "~/Projects/the-suborned/game/Assets/TheSuborned/Scenes/DecoKitStreet.unity (prefab instances counted by GUID; read only)"
+ },
+ "oldScene": {
+  "note": "prefab instances in the saved scene (11,423 in all): the facade, roof and tower families",
+  "families": {
+   "StreamBay": 316,
+   "Roof": 120,
+   "StreamCorner": 70,
+   "StreamEnd": 37,
+   "DecoEnd": 12,
+   "PortholeBay": 28,
+   "BalconyBay": 18,
+   "ArcadeBay": 5,
+   "AlleyWall": 11,
+   "DecoBay": 5,
+   "Tower": 17,
+   "CornerTower": 2,
+   "DecoCorner": 1
+  },
+  "pieces": {
+   "StreamBay_6": 98,
+   "StreamBay_3": 79,
+   "StreamBay_4": 74,
+   "StreamBay_9W": 35,
+   "Roof_Cabana": 34,
+   "StreamCorner_3": 32,
+   "Roof_Planter": 32,
+   "StreamBay_9": 30,
+   "StreamCorner_4": 24,
+   "StreamEnd_9W": 14,
+   "StreamEnd_6": 12,
+   "DecoEnd_10": 12,
+   "StreamEnd_9": 11,
+   "Roof_Tank": 10,
+   "PortholeBay_7": 10,
+   "PortholeBay_3": 9,
+   "PortholeBay_4": 9,
+   "BalconyBay_8": 9,
+   "BalconyBay_3": 8,
+   "Roof_Conservatory": 8,
+   "StreamCorner_6": 8,
+   "StreamCorner_9": 6,
+   "Roof_Pool": 6,
+   "Roof_LapPool": 6,
+   "Roof_Dish": 5,
+   "ArcadeBay_3": 5,
+   "AlleyWall_9": 5,
+   "DecoBay_10": 5,
+   "Roof_Drum": 4,
+   "AlleyWall_6": 4,
+   "Roof_Bandstand": 4,
+   "Roof_Radome": 4,
+   "Roof_Mast": 3,
+   "Tower_Setback": 3,
+   "Tower_Stepped": 3,
+   "Roof_LatticeMast": 3,
+   "CornerTower_12": 2,
+   "Tower_Terrace": 2,
+   "AlleyWall_6D": 2,
+   "Tower_Starburst": 2,
+   "Tower_Saucer": 2,
+   "Tower_Lantern": 2,
+   "Tower_Atom": 2,
+   "Roof_Fin": 1,
+   "Tower_Needle": 1,
+   "BalconyBay_4": 1,
+   "DecoCorner_10": 1
+  },
+  "shares": {
+   "bays": {
+    "StreamBay": 0.849,
+    "PortholeBay": 0.075,
+    "BalconyBay": 0.048,
+    "ArcadeBay": 0.013,
+    "DecoBay": 0.013
+   },
+   "corners": {
+    "StreamCorner": 0.959,
+    "DecoCorner": 0.014,
+    "CornerTower": 0.027
+   },
+   "ends": {
+    "StreamEnd": 0.755,
+    "DecoEnd": 0.245
+   },
+   "streamlineOfFacadePieces": 0.974
+  }
+ },
+ "recipe": {
+  "note": "a run is (class, bays) segments between caps; each segment is one building (the old pieces are named #run.segment); counted from the runs as written in code",
+  "bays": {
+   "S": 254,
+   "P": 28,
+   "B": 22,
+   "D": 16,
+   "A": 5,
+   "H": 16
+  },
+  "buildings": {
+   "S": 76,
+   "P": 10,
+   "B": 7,
+   "D": 6,
+   "A": 3,
+   "H": 2
+  },
+  "weights": {
+   "S": 0.745,
+   "P": 0.098,
+   "B": 0.069,
+   "D": 0.059,
+   "A": 0.029
+  },
+  "weightsNote": "buildings per class family, the civic hall (H, not in our kit) left out: tools/world/gen/stream.ts RECIPE",
+  "pattern": [
+   "streamline flanks a feature: Southside long faces S + P x3 + S, S + B x2 + S, S + A + S",
+   "the boulevard walls alternate stream codes and heights by segment (S9, D10, S6, S9W, P7, B8)",
+   "a block's short end takes the class of the long face it adjoins (2 bays)",
+   "crescents: one S6 building of 4 chord bays rounding off at its end"
+  ],
+  "classes": {
+   "S2": "StreamBay_2 / StreamEnd_2 / StreamCorner_2",
+   "S3": "StreamBay_3 / StreamEnd_3 / StreamCorner_3",
+   "S3W": "StreamBay_3W / StreamEnd_3W / StreamCorner_3",
+   "P3": "PortholeBay_3 / StreamEnd_3W / StreamCorner_3",
+   "B3": "BalconyBay_3 / StreamEnd_3 / StreamCorner_3",
+   "S4": "StreamBay_4 / StreamEnd_4 / StreamCorner_4",
+   "P4": "PortholeBay_4 / StreamEnd_4 / StreamCorner_4",
+   "B4": "BalconyBay_4 / StreamEnd_4 / StreamCorner_4",
+   "S6": "StreamBay_6 / StreamEnd_6 / StreamCorner_6",
+   "S9": "StreamBay_9 / StreamEnd_9 / StreamCorner_9",
+   "S9W": "StreamBay_9W / StreamEnd_9W / StreamCorner_9",
+   "D10": "DecoBay_10 / DecoEnd_10 / DecoCorner_10",
+   "P7": "PortholeBay_7 / StreamEnd_6 / StreamCorner_6",
+   "B8": "BalconyBay_8 / StreamEnd_9W / StreamCorner_9",
+   "A3": "ArcadeBay_3 / HallCornerWing (ours: StreamEnd_3 / StreamCorner_3)"
+  }
+ },
+ "caps": {
+  "corner": "every block corner: an 8 x 8 m quarter-round cell (StreamCorner_n by the class), ribbons and canopy wrapping it, an ivory fin and mast over the round",
+  "end": "a run that stops at a lane or plaza rounds off (StreamEnd_n: R 3 quarter round, ribbons wrapping the 14 m side); a streamline segment taller than its neighbour rounds off toward it",
+  "tower": "CornerTower_12 at the parade corners (Cap.Tower: 10 m cell, 2 m proud of both faces): 2 in the scene",
+  "open": "a run that joins another"
+ },
+ "elevation": {
+  "ground": "black granite plinth 0-0.45, shopfront glazing, teal fascia 4.0-5.0 with two gold beads, ivory canopy 1.6 m out at 3.85-4.0 with a chrome nose",
+  "floors": "per 3.4 m floor: a sill band on the 1.05 m spandrel, a full-width ribbon window 2.35 m tall (chrome mullions every 1.5 m), an ivory eyebrow 0.45 m proud over it",
+  "parapet": "a band 0.35-0.6 m over the top floor, ivory coping 0.95-1.1 m",
+  "glassRatio": "ribbon glass 2.35 / 3.4 = 0.69 of every upper storey's height across the bay's whole width (less mullions); the ground storey glazed under the canopy"
+ },
+ "rooflines": {
+  "rule": "every roof on the straight walls is programmed: a 14 m deep strip per building at its own height, split at bay joints into 12-30 m plots, each a theme unlike the one before, on a terrazzo deck",
+  "themes": {
+   "Cabana": 34,
+   "Planter": 32,
+   "Tank": 10,
+   "Conservatory": 8,
+   "Pool": 6,
+   "LapPool": 6,
+   "Dish": 5,
+   "Drum": 4,
+   "Bandstand": 4,
+   "Radome": 4,
+   "Mast": 3,
+   "LatticeMast": 3,
+   "Fin": 1
+  },
+  "crowns": "five crowned towers across the block halves on a limestone plinth (DiscTower, Tower_Starburst, Tower_Atom, Tower_Lantern, Tower_Terrace); StreamCorner fins and masts; DecoBay stepped crowns"
+ },
+ "tallWalls": "no stacking: whole-wall pieces of 2, 3, 4, 6, 9 and 10 storeys (12.9-43.6 m) were the walls; anything taller was a tower prefab (Tower_*, Highrise) standing on the blocks. Ours: the whole-wall pieces where their code fits the wall (0.9-1.1), Vela's StreamBayStack / StreamCornerStack / StreamEndStack (plan frame: Base 5.65, Mid 3.6, Top 3.95) where none does",
+ "ours": {
+  "grammar": "tools/world/gen/stream.ts (class table, RECIPE, the corner and end frame), faces.ts STREAMLINE, facades.ts (recipe pick, ends at tails, corner frame, CornerTower_12)",
+  "before": {
+   "label": "before",
+   "families": {
+    "SideBayStack": {
+     "pieces": 9200,
+     "publicPieces": 4990,
+     "metres": 13310,
+     "publicMetres": 8820
+    },
+    "StreamBay": {
+     "pieces": 327,
+     "publicPieces": 327,
+     "metres": 2082,
+     "publicMetres": 2082
+    },
+    "ShopFill": {
+     "pieces": 585,
+     "publicPieces": 585,
+     "metres": 1723,
+     "publicMetres": 1723
+    },
+    "PortholeBay": {
+     "pieces": 224,
+     "publicPieces": 224,
+     "metres": 1423,
+     "publicMetres": 1423
+    },
+    "BalconyBay": {
+     "pieces": 191,
+     "publicPieces": 191,
+     "metres": 1238,
+     "publicMetres": 1238
+    },
+    "StreamCorner": {
+     "pieces": 48,
+     "publicPieces": 48,
+     "metres": 780,
+     "publicMetres": 780
+    },
+    "SideBay": {
+     "pieces": 128,
+     "publicPieces": 128,
+     "metres": 757,
+     "publicMetres": 757
+    },
+    "SidePilaster": {
+     "pieces": 1517,
+     "publicPieces": 1259,
+     "metres": 833,
+     "publicMetres": 691
+    },
+    "StreamEnd": {
+     "pieces": 108,
+     "publicPieces": 108,
+     "metres": 634,
+     "publicMetres": 634
+    },
+    "ArcadeBay": {
+     "pieces": 14,
+     "publicPieces": 14,
+     "metres": 92,
+     "publicMetres": 92
+    },
+    "DecoBay": {
+     "pieces": 8,
+     "publicPieces": 8,
+     "metres": 48,
+     "publicMetres": 48
+    },
+    "DecoEnd": {
+     "pieces": 4,
+     "publicPieces": 4,
+     "metres": 23,
+     "publicMetres": 23
+    },
+    "CornerPier": {
+     "pieces": 720,
+     "publicPieces": 720,
+     "metres": 0,
+     "publicMetres": 0
+    },
+    "AlleyWall": {
+     "pieces": 465,
+     "publicPieces": 0,
+     "metres": 2766,
+     "publicMetres": 0
+    }
+   },
+   "streamlineShare": {
+    "publicMetres": 34.5,
+    "publicPieces": 10.7,
+    "allPieces": 6.8
+   },
+   "totals": {
+    "pieces": 13539,
+    "publicPieces": 8606,
+    "publicMetres": 18311
+   }
+  },
+  "after": {
+   "label": "after",
+   "families": {
+    "StreamBayStack": {
+     "pieces": 2104,
+     "publicPieces": 2104,
+     "metres": 4862,
+     "publicMetres": 4862
+    },
+    "StreamBay": {
+     "pieces": 672,
+     "publicPieces": 672,
+     "metres": 4300,
+     "publicMetres": 4300
+    },
+    "SideBayStack": {
+     "pieces": 6148,
+     "publicPieces": 1943,
+     "metres": 7153,
+     "publicMetres": 2706
+    },
+    "ShopFill": {
+     "pieces": 580,
+     "publicPieces": 580,
+     "metres": 1715,
+     "publicMetres": 1715
+    },
+    "SidePilaster": {
+     "pieces": 1968,
+     "publicPieces": 1709,
+     "metres": 1188,
+     "publicMetres": 1047
+    },
+    "StreamCorner": {
+     "pieces": 46,
+     "publicPieces": 46,
+     "metres": 746,
+     "publicMetres": 746
+    },
+    "PortholeBay": {
+     "pieces": 104,
+     "publicPieces": 104,
+     "metres": 665,
+     "publicMetres": 665
+    },
+    "StreamEnd": {
+     "pieces": 112,
+     "publicPieces": 112,
+     "metres": 658,
+     "publicMetres": 658
+    },
+    "SideBay": {
+     "pieces": 73,
+     "publicPieces": 73,
+     "metres": 454,
+     "publicMetres": 454
+    },
+    "BalconyBay": {
+     "pieces": 42,
+     "publicPieces": 42,
+     "metres": 265,
+     "publicMetres": 265
+    },
+    "StreamCornerStack": {
+     "pieces": 34,
+     "publicPieces": 34,
+     "metres": 224,
+     "publicMetres": 224
+    },
+    "ArcadeBay": {
+     "pieces": 16,
+     "publicPieces": 16,
+     "metres": 106,
+     "publicMetres": 106
+    },
+    "DecoBay": {
+     "pieces": 15,
+     "publicPieces": 15,
+     "metres": 89,
+     "publicMetres": 89
+    },
+    "CornerTower": {
+     "pieces": 3,
+     "publicPieces": 3,
+     "metres": 50,
+     "publicMetres": 50
+    },
+    "StreamEndStack": {
+     "pieces": 10,
+     "publicPieces": 10,
+     "metres": 30,
+     "publicMetres": 30
+    },
+    "DecoEnd": {
+     "pieces": 4,
+     "publicPieces": 4,
+     "metres": 23,
+     "publicMetres": 23
+    },
+    "CornerPier": {
+     "pieces": 598,
+     "publicPieces": 598,
+     "metres": 0,
+     "publicMetres": 0
+    },
+    "AlleyWall": {
+     "pieces": 463,
+     "publicPieces": 0,
+     "metres": 2747,
+     "publicMetres": 0
+    }
+   },
+   "streamlineShare": {
+    "publicMetres": 67,
+    "publicPieces": 39.2,
+    "allPieces": 24.3
+   },
+   "totals": {
+    "pieces": 12992,
+    "publicPieces": 8065,
+    "publicMetres": 17940
+   }
+  }
+ }
+}

@@ -1,0 +1,166 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe 2026-10-26: G-fast at the yard, Go as soon as Vale is aboard (S1 leak (a))",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    3800,
+    -5000
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1025,
+    -4625
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "guard",
+   "gap": 31
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "reroute"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6520,
+    -4110
+   ],
+   "after": [
+    "reroute"
+   ],
+   "when": "patrol.rerouted"
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "guard",
+   "how": "knockout",
+   "when": "patrol.rerouted",
+   "label": "td",
+   "gap": 9
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "reroute"
+   ],
+   "label": "tech-car"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in"
+  },
+  {
+   "op": "tech",
+   "do": "drive-car",
+   "target": "service-drive",
+   "label": "drive"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7300,
+    -1100
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7300,
+    -1900
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "enter",
+    "drive"
+   ],
+   "when": "enter.out",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "in"
+   ],
+   "every": 0.5,
+   "unless": [
+    "withdraw.car"
+   ]
+  }
+ ]
+}

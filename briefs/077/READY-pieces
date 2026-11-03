@@ -1,0 +1,88 @@
+077 final pieces · the original ids with testbed planting · Vela (Opus 5.5) · 2026-10-30 (Sky: "yep agree, and yes, use LoDs at game play")
+
+Revision 3 (collide, after briefs/077/READY-splice section 4). The volumes copied from the dome pieces are gone. Each rebuilt row's `collide` is now measured by collide.py, exactly as `bun run collide` measures a shipped mesh, on its new stonework alone: the trough, wall or kerb blocks and the planting doesn't. Order: domes077_final.py writes stone/DK_<id>_stone.fbx (or names the stripped L0) as `collide_from`, then `bun tools/decokit/domes077_collide.ts` writes the volumes into the manifest and its copy here.
+- 16 rows re-declared. PlanterRun_2/4/End: one box to 0.65 m within the trough (x +-1.0 / +-2.0 / -0.99..0.65, not +-2.19). Corner: 9 boxes to 0.66 m. CafeTerrace: 24 boxes to 0.68 m (was 1.12). CafeUpper_3/4: 1 each. PlanterArc: 1 to 0.52 m. RecordsTower keeps its builder-declared volumes (records_tower.py; the roof planting is 14 m up).
+- Check (collide.test's rule, 0.15 m slack, against each new L0 mesh's bounds measured by collide.py): 17 rows, 117 volumes, 0 outside (out/scratch/vela/077/probe/collide_check.ts).
+- tools/decokit/collide.test.ts itself still fails 2 tests until Splice re-runs `bun run kit --catalogue --extra out/decokit-077` and `bun run collide`. Its kit.json and kit.collide.json entries still hold the previous FBX sha256s and the copied volumes (CafeTerrace_TB 0.95 against 0.83). I don't write contracts. The walk changes at adoption either way (held with Sky's sight decision).
+
+Revision 2 (after briefs/077/READY-splice and Latch's shadow note). Every file below is rebuilt, so the sha256s are new.
+- CivicBedPlanting_* soil: it was transformed into the piece frame twice, which put it 20-45 m off. It now sits in the bed. Sizes are now the beds' (office-west 1.85 x 10.10 m, was 25.7 x 22.7).
+- CivicBedPlanting_facade-southwest: rebuilt at yaw 0 with Splice's vertex i to vertex i fit (true angle pi). The start-vertex search is gone, so all five place at yaw 0. Splice: re-run tools/world/civic/bed-level-import.ts.
+- Soil split out: in every LOD file of every planting piece, the soil is its own object `<object>_soil` (DK_Soil_TB only, no vertex colour), to draw with shadows off on today's shader. The main object carries stone (where there is any) + DK_Leaf_TB + DK_Petal_TB for DecoKit/Lit Cutaway Leaf. Manifest files[].objects lists each object, its materials and shadows on/off.
+- Footprint check in tools/decokit/domes077_final.py: the build fails if any submesh's plan bounds leave the piece's footprint by more than 5 cm. The footprint is the stone box for the embedded pieces, the parent's stone box for the companions, and the world ring in the piece frame for the civic beds. 22 pieces were checked and all pass (out/decokit-077/checks.json, copied to briefs/077/pieces/checks.json). The old soil (25.7 m against a 10.1 m ring) would have failed it.
+
+Where
+- Pieces: out/decokit-077/ (a DECOKIT_OUT-style root, beside out/decokit so nothing adopted is overwritten): Models/<Category>/DK_<id>.fbx + DK_<id>_L1/_L2/_L3.fbx.
+- Manifest: out/decokit-077/decokit_manifest.json (export_kit.py's row format, plus status candidate, lods[].level/screen/sha256/mesh_sha256, lodSize, lodRule, stone, collide + collide_note, replaces, provenance). It's copied for the record to briefs/077/pieces/decokit_manifest.json, with the stonework proof in briefs/077/pieces/stone.json.
+- Generators: tools/decokit/domes077_paths.py, domes077.ts (the testbed's own code, sha256 pinned), domes077_final.py; check renders: review077_final.py.
+
+Pieces (L0 = file, then each LOD level @ its LODGroup switch height; sha256 of the L0 file; every file's sha256 and mesh_sha256 are in the manifest)
+  PlanterRun_2_A                       Models/Plaza/DK_PlanterRun_2_A.fbx                         L0   2522  | close 1784@0.3333 / near 1232@0.1481 / gameplay 716@0.0833  | sha256 3371c4511ba044a97559112149aa00ce1f80c1d597fb9ddc2b53e863e5d2e43e
+  PlanterRun_2_B                       Models/Plaza/DK_PlanterRun_2_B.fbx                         L0   2725  | close 1933@0.3333 / near 1325@0.1481 / gameplay 775@0.0833  | sha256 414a6d1c227c22e863af9ac89b0f2ce98435904ef2bdee1f355345bb36014323
+  PlanterRun_2_C                       Models/Plaza/DK_PlanterRun_2_C.fbx                         L0   2564  | close 1790@0.3333 / near 1238@0.1481 / gameplay 718@0.0833  | sha256 5b844c1e1eeb48e4676092b2532987a74162773b5974ac7c37cb96ddec11af74
+  PlanterRun_4_A                       Models/Plaza/DK_PlanterRun_4_A.fbx                         L0   5655  | close 3837@0.6667 / near 2657@0.2963 / gameplay 1547@0.1667  | sha256 44a37d6e397d607e5ae7f717609c8123d72e98935e887e7fbf10c5605d43f29d
+  PlanterRun_4_B                       Models/Plaza/DK_PlanterRun_4_B.fbx                         L0   4909  | close 3541@0.6667 / near 2417@0.2963 / gameplay 1415@0.1667  | sha256 98f091a7240fa9e437186a9095dcb69f1378efac523c97585c4653ce4d306470
+  PlanterRun_4_C                       Models/Plaza/DK_PlanterRun_4_C.fbx                         L0   5976  | close 3906@0.6667 / near 2726@0.2963 / gameplay 1578@0.1667  | sha256 03c04a0c7e47c1bc457e8a550d7a696e6b3e611447c2163d05fd58f729aa08eb
+  PlanterRun_Corner_A                  Models/Plaza/DK_PlanterRun_Corner_A.fbx                    L0   4463  | close 3257@0.39 / near 2281@0.1733 / gameplay 1399@0.0975  | sha256 6f1423e388e54ca9543272eda69630caebe12b6c4626eff700c280504125a38f
+  PlanterRun_Corner_B                  Models/Plaza/DK_PlanterRun_Corner_B.fbx                    L0   5103  | close 3321@0.39 / near 2401@0.1733 / gameplay 1443@0.0975  | sha256 dd3e81814ff722ec3aeb6547fd362904077cc8252843b5a654c4d57b0baf1f35
+  PlanterRun_Corner_C                  Models/Plaza/DK_PlanterRun_Corner_C.fbx                    L0   4692  | close 3216@0.39 / near 2296@0.1733 / gameplay 1392@0.0975  | sha256 f5e46025032de6ac4d9d411df233b7be1d446a1992b47145c31b99603d8468a5
+  PlanterRun_End_A                     Models/Plaza/DK_PlanterRun_End_A.fbx                       L0   1737  | close 1449@0.2733 / near 1025@0.1215 / gameplay 689@0.0683  | sha256 4ec77e1a933a20108cd4db81f42a0af3276407e14ce4d67b2bfe2cec8020756f
+  PlanterRun_End_B                     Models/Plaza/DK_PlanterRun_End_B.fbx                       L0   1877  | close 1589@0.2761 / near 1109@0.1227 / gameplay 745@0.069  | sha256 fcbf336a83d21898e8ac4154093fb5fcfcd8fc02e6c3d4fc7e51a128bd69670c
+  PlanterRun_End_C                     Models/Plaza/DK_PlanterRun_End_C.fbx                       L0   1207  | close 1207@0.2733 / near 839@0.1215 / gameplay 583@0.0683  | sha256 0ac29b28bf452fdef147ac540eeb89bb42b155f837be68d52731bdd028d36f53
+  CafeTerrace                          Models/Plaza/DK_CafeTerrace.fbx                            L0    312  | L1 216@0.008 / L2 64@0.003  | sha256 3f716916a6f3c877e201e464e6b17c7f6948c32109f46c9cc5fbf38409cc8b46
+  CafeTerrace_Planting                 Models/Plaza/DK_CafeTerrace_Planting.fbx                   L0  44694  | close 31194@0.6667 / near 21282@0.2963 / gameplay 12182@0.1667  | sha256 d28bb85892158e73417f65a601acde1f30436283ad8cf7f2ef369c5ab5cd1e6e  | lodSize 4.0
+  RecordsTower                         Models/Landmarks/DK_RecordsTower.fbx                       L0  34895  | L1 6831@0.15 / L2 3380@0.05  | sha256 485ac26017db9b4f4f1892f1dba1f6f6115104a2cb94d02adb76539f1622eecf
+  RecordsTower_Planting                Models/Landmarks/DK_RecordsTower_Planting.fbx              L0  65692  | close 50194@0.6667 / near 33462@0.2963 / gameplay 19430@0.1667  | sha256 90b2c978ee1c6c024d4bb6ce62f10e2948703aa688eec599eb649a6080d627da  | lodSize 4.0
+  CafeUpper_3                          Models/Plaza/DK_CafeUpper_3.fbx                            L0  13543  | L1 3325@0.008 / L2 1226@0.003  | sha256 561044f89592d3a35ca8819c38101460c4e8881ce3c3e87b2462155caefd87c7
+  CafeUpper_3_Planting                 Models/Plaza/DK_CafeUpper_3_Planting.fbx                   L0  32835  | close 22665@0.6667 / near 15493@0.2963 / gameplay 8911@0.1667  | sha256 2d1368c785625453acddddaa726f3051838e766dd2e71feba3dc3c0b93c061c7  | lodSize 4.0
+  CafeUpper_4                          Models/Plaza/DK_CafeUpper_4.fbx                            L0  17387  | L1 4224@0.008 / L2 1409@0.003  | sha256 8a0a3c585d259d6ce4618fcb1a8d77948f1b7bca52f7fd82dc791c530b14bf95
+  CafeUpper_4_Planting                 Models/Plaza/DK_CafeUpper_4_Planting.fbx                   L0  29074  | close 20650@0.6667 / near 14038@0.2963 / gameplay 8050@0.1667  | sha256 228efbd70808f24b2ffbc615bd1cdcc43930fc04f8f4abc2153c5d99f1debcfd  | lodSize 4.0
+  CivicBedPlanting_facade-southwest    Models/Plaza/DK_CivicBedPlanting_facade-southwest.fbx      L0  28285  | close 19033@0.6667 / near 13125@0.2963 / gameplay 7483@0.1667  | sha256 d3e868b3aff1588b7ab08c676874acb18ec78b8d0b77503c88c25d1f17b0c9e1  | lodSize 4.0
+  CivicBedPlanting_facade-southeast    Models/Plaza/DK_CivicBedPlanting_facade-southeast.fbx      L0  26521  | close 19339@0.6667 / near 13023@0.2963 / gameplay 7521@0.1667  | sha256 2b9e2a0b896f47d8d59ae4e339a261b88ed247897c9cc1e738763561ef677cf0  | lodSize 4.0
+  CivicBedPlanting_office-west         Models/Plaza/DK_CivicBedPlanting_office-west.fbx           L0  52252  | close 44962@0.6667 / near 29058@0.2963 / gameplay 17138@0.1667  | sha256 b451dcaf73442217dbe3ec2dd1a1c0bdc6e2008d9bcad10bce8ab410975941ea  | lodSize 4.0
+  CivicBedPlanting_office-north        Models/Plaza/DK_CivicBedPlanting_office-north.fbx          L0  21426  | close 18294@0.6667 / near 11886@0.2963 / gameplay 6946@0.1667  | sha256 8faee5d4f4dc1fbf999a66dfcd2c313dde5dcbe0c6b60af0a996d76339439a1f  | lodSize 4.0
+  CivicBedPlanting_dropoff-west        Models/Plaza/DK_CivicBedPlanting_dropoff-west.fbx          L0  23303  | close 15617@0.6667 / near 10777@0.2963 / gameplay 6151@0.1667  | sha256 3cec6b3d6d340eed774bf3c47e0f8a02e9e17a12e53114bcb40f5114a068a719  | lodSize 4.0
+  PlanterArc                           Models/Plaza/DK_PlanterArc.fbx                             L0  12284  | near 6236@0.3442 / gameplay 4016@0.1878  | sha256 ac2d09cc2790b940e047b91efc7138840c76fe7f728b5cb27ec6675bc32876e7
+  GlobeLamp_TB                         Models/Plaza/DK_GlobeLamp_TB.fbx                           L0   1016  | sha256 ae63f57a781d1d123bad0578867650d1a73e7a483333cab86395c9a564143e59
+
+What each is
+- PlanterRun_2/4/Corner/End_<A|B|C>, PlanterArc: the original id. Every LOD is the adopted stonework (faces, normals, UVs, stone slots, same order: checked face by face against the adopted FBX, stone.json) + one testbed planting level. The dome slots (DK_Leaf_Civic(Dark), DK_Bloom_*, DK_Leaf_CoreShrub, DK_Leaf_Shrub, DK_Flower_Coral, DK_GroundCover) are gone; DK_Soil_TB, DK_Leaf_TB, DK_Petal_TB follow the stone slots. Levels: L0 inspection, L1 close, L2 near, L3 gameplay (PlanterArc: L0 close, L1 near, L2 gameplay).
+- CafeTerrace, CafeUpper_3, CafeUpper_4, RecordsTower: the original id, its own LOD files and switch points (RecordsTower keeps lodClass landmark). Each level is the adopted level with the dome faces and slots removed; the stonework is unchanged. The planting is the companion <id>_Planting, placed at the parent's transform (same pivot and frame) with the four testbed levels. Why a companion: a 23-35 m LODGroup's own size would put the leaf-scale switch heights above 1.
+- CivicBedPlanting_<bed> (5): the testbed's bed-level planting of each tufted civic bed. Pivot = the world ring's centroid at the kerb base, yaw 0, base 0.18 (row `placement`: at, world bed id, ring fit < 1 mm).
+- GlobeLamp_TB: the testbed's globe lamp, one level (chrome housing DK_Chrome + opal globe DK_Opal_TB), no light baked in. Placement: one per PlanterArc at the row's arc-frame offset.
+- Soil at run joints fixed: open-ended runs (all PlanterRun pieces, the terrace and crown troughs) take their soil flush with the open ends and inset on the side walls only, so neighbouring pieces' soil meets (check render out/scratch/vela/077/f/final-runs-runs-close-y210-auto.png).
+
+LOD heights
+- Per piece, from its own size (the largest bounds side): screen = size x px-per-m / 1080, at the testbed's switch points (café recipe 180 / 80 / 45 px per m; fountain 80 / 43.6). PlanterRun_4: 0.667 / 0.296 / 0.167, as derived. The 2, Corner and End pieces and PlanterArc are smaller, so their heights are lower (listed above). At play zoom (orthographic 14) every piece draws its gameplay level; close cameras get full detail.
+- Companions and civic beds carry lodSize 4.0 with 0.667 / 0.296 / 0.167. That switches at orthographic half-height 3 / 6.75 / 12, the same leaf-scale rule whatever the group's extent.
+- Per-piece values are better than one shared set: a single 0.667 / 0.296 / 0.167 on a 2 m piece would hold it at near or close at play zoom.
+
+Cost at play zoom (all dome-family placements in the civic block, measured triangles): today 95,735 (pieces incl. their stone, plus 92 tufts) -> final 172,769, +77,034, GPU <= +0.16 ms upper by Redline's k (two cascades, all in view). Notable: the Records roof planting is 6,032 -> 19,430; the café roof 9,250 -> 8,911; the 5 civic beds 45,239 (vs 8,305 tufts). No alpha, no new textures beyond the troughs' 9.0 MiB testbed set.
+
+BedTuft_A/B/C: no longer needed. All 92 placements are in the five civic beds, which go bed level, and nothing else in the world export places them (render008.py's bed_sample is a render-only sample). Splice rejects them once the world generator stops placing tuft stations. The BedTuft_<v>_TB candidates aren't for the catalogue.
+
+Colliders, cover, sight: every rebuilt id declares its current measured volumes (manifest `collide`, copied from contracts/world/kit.collide.json for the adopted sha), so bun run collide keeps them exactly; companions and civic beds declare none (render-only); GlobeLamp_TB is measured as usual. Restyle: every restyle.json binding on these ids is on a stone slot (DK_Limestone, DK_Enamel_Charcoal, DK_Enamel_Seafoam), all kept by name, so bindings are unchanged.
+
+Splice needs to
+- Catalogue from out/decokit-077 (rows are candidate). Keep each row's lods[].screen: tools/kit/lod.ts lodScreens replaces screens with the category's two values (street 0.008 / 0.003), which would hold every piece at L0. It needs a per-id three-level override or to honour the manifest's screens.
+- Read declared collide from this manifest (collide.ts declaredVolumes reads GEN_ROOT's only).
+- New materials DK_Soil_TB, DK_Leaf_TB, DK_Petal_TB, DK_Opal_TB (spec: briefs/077/troughs/metrics.json `materials`, briefs/077/domes/metrics.json `leaf_shader`) and the six testbed maps (sha256 in briefs/077/troughs/metrics.json `textures`) into the kit.
+- World generator: the bed-level rule (five CivicBedPlanting placements, no BedTuft stations, no bed-hedge surface), the <id>_Planting companions at their parents' transforms, and GlobeLamp_TB per PlanterArc. Reject the dome versions once each lands. Vendor the testbed modules domes077.ts imports (paths in the manifest provenance).
+
+Latch (+ Glint) needs to
+- KitLods: build L1-L3 from the rows, and honour lodSize (LODGroup.size = 4.0) on the companions and civic beds.
+- The leaf shader: vertex colour, back-face normal flip, ORM-derived smoothness mask (briefs/077/domes/metrics.json `leaf_shader`). The lamps' night light (#fff1d8, 5.8 m, decay 2, no shadows, 2.31 m above the base).
+- Default-off placement, then the Unity capture for Sky. Redline measures on the Air.
+
+Evidence (all run)
+  bun run guard ... Blender -b -P tools/decokit/domes077_paths.py                  -> PATHS077
+  bun tools/decokit/domes077.ts                                                    -> DOMES077 footprintViolations 0
+  bun run guard ... Blender -b -t 8 -P tools/decokit/domes077_final.py             -> DOMES077 FINAL DONE 27 (stonework asserted identical, every level)
+  bun run guard ... Blender -b -t 8 -P tools/decokit/review077_final.py -- out/scratch/vela/077/f <civic|runs> [auto|L0]   (renders of the final files placed as the export places them)
+  bun run typecheck                                                                -> clean
+Not done (by the limits): no catalogue, kit copy, scene, plan, sim or mission edit, no paid call, no commit.
+
+Open
+- CafeUpper_4 isn't placed; it's built for parity with _3.
+- Perspective cameras: a companion switches on its centre's distance, so the far end of a 35 m terrace may show a level below what its near end would get. That's invisible in the ortho play camera.
+- FBX bytes carry Blender's timestamp and ids; mesh_sha256 is the stable content hash.

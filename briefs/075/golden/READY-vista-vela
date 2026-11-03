@@ -1,0 +1,3 @@
+2026-10-28T09:59:51Z
+Vela, brief 075 golden vista: ParabolicArch@crown-avenue, DiscTower@crown-vista (gold; livery key DK_Crown_Gold__gold), TramWire_Contact/Span/Hanger/Rosette/Pole, all adopted. Pieces, pivots and placement: briefs/075/notes.md "Golden: the vista and the wires". Sheet: briefs/075/golden/vista/contact_sheet.png.
+Checks: collide --check ok (354); cover --check 0; typecheck 0; kit + decokit tests 45/0.

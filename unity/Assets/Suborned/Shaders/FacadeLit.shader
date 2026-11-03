@@ -42,6 +42,10 @@ Shader "Suborned/FacadeLit"
         _DetailNormalMapScale("Scale", Range(0.0, 2.0)) = 1.0
         [Normal] _DetailNormalMap("Normal Map", 2D) = "bump" {}
 
+        // brief 072-F: the shared tiled surface detail (Vela's surface_detail_v1: R albedo x2, G height, B smoothness offset), one layer per
+        // surface class (FacadeSurface.hlsl); set by Atlas.Make. A texture sits outside UnityPerMaterial, so the SRP batcher still holds.
+        [NoScaleOffset] _SurfaceDetail("Surface detail", 2DArray) = "" {}
+
         // SRP batching compatibility for Clear Coat (Not used in Lit)
         [HideInInspector] _ClearCoatMask("_ClearCoatMask", Float) = 0.0
         [HideInInspector] _ClearCoatSmoothness("_ClearCoatSmoothness", Float) = 0.0
@@ -112,6 +116,7 @@ Shader "Suborned/FacadeLit"
 
             HLSLPROGRAM
             #pragma target 2.0
+            #pragma require 2darray
 
             // -------------------------------------
             // Shader Stages

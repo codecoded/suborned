@@ -1,0 +1,136 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a "out/scratch/keel/base-0342" --b tree --scripts tree --all --json "out/scratch/keel/route-diff-0342-vs-tree.json"
+· engines ready (3.8 s); playing 42 routes on A and 42 on B
+A = out/scratch/keel/base-0342 (built here)    B = the working tree    (= means the value did not move)
+route                            outcome            fail                   end              Trail    Alert  health lost
+careless-body-found              =                  =                      3:29.4 → 3:32.3  =        =      33 % → 34 %
+    first log line apart (line 44):
+      A  3:12.0  order.stance  scout: free.
+      B  3:12.0  order.rejected  scout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+careless-enforcer-watches-guard  =                  =                      2:53.6 → 2:55.1  =        =      33 % → 34 %
+    first log line apart (line 45):
+      A  2:53.6  fail.enforcer-down  The Enforcer is down.
+      B  2:53.6  shot.hit  police-2 fires on enforcer at 0 m (1000 ‰): hit.
+careless-g-disable               =                  =                      =                =        =      16 % → 21 %
+    first log line apart (line 38):
+      A  3:45.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:45.5  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+careless-guard-left-door-held    failure            vale-leaves            6:13.0           6        1      0 %
+careless-loop-runs-out           failure            entry-seen-camera      2:52.9           4        0      0 %
+careless-reporter-not-stopped    success → none     =                      7:32.2 → 8:30.0  4 → 10   1 → 2  33 % → 34 %
+    first log line apart (line 76):
+      A  7:25.0  shot.hit  fixer fires on rival-1 at 13 m (562 ‰): hit.
+      B  7:25.0  shot.miss  fixer fires on rival-1 at 13 m (281 ‰): miss.
+careless-scout-idles-pickup      success → none     =                      7:32.2 → 8:30.0  =        =      33 % → 34 %
+    first log line apart (line 76):
+      A  7:25.0  shot.hit  fixer fires on rival-1 at 13 m (562 ‰): hit.
+      B  7:25.0  shot.miss  fixer fires on rival-1 at 13 m (281 ‰): miss.
+careless-takedown-seen-camera    failure            entry-seen-camera      2:37.0           1        1      0 %
+careless-takedown-seen-crowd     failure            vale-leaves            6:13.0           7        3      0 %
+careless-thin-all                =                  =                      =                =        =      22 % → 17 %
+    first log line apart (line 103):
+      A  7:25.0  shot.hit  scout fires on officer-1 at 7 m (562 ‰): hit.
+      B  7:25.0  shot.miss  scout fires on officer-1 at 7 m (281 ‰): miss.
+fail-district-seals              failure            sealed                 5:05.0           8        2      0 %
+fail-enforcer-down               =                  =                      1:40.6 → 2:13.6  =        =      33 % → 34 %
+    first log line apart (line 17):
+      A  0:39.0  shot.hit  guard fires on enforcer at 3 m (1000 ‰): hit.
+      B  0:39.0  shot.miss  guard fires on enforcer at 3 m (500 ‰): miss.
+fail-entry-seen-camera           failure            entry-seen-camera      4:42.9           3        1      0 %
+fail-entry-seen-guard            failure            entry-seen-guard       3:52.9           2        1      0 %
+fail-rivals-reach-vale           failure            rivals-reach-vale      6:39.5           2        1      0 %
+fail-take-seen-camera            failure            abduction-seen-camera  6:10.0           1        1      0 %
+fail-vale-dead                   failure            vale-dead              6:12.0           7        3      0 %
+fail-vale-leaves                 failure            vale-leaves            6:13.0           1        0      0 %
+fight-loud-enforcer-down         =                  =                      3:14.2 → 3:15.5  =        =      33 % → 34 %
+    first log line apart (line 99):
+      A  3:14.2  fail.enforcer-down  The Enforcer is down.
+      B  3:14.9  crowd.sheltered  1 reach shelter.
+fight-loud-wait-square           =                  =                      3:58.4 → 4:00.7  =        =      33 % → 34 %
+    first log line apart (line 92):
+      A  3:58.4  fail.enforcer-down  The Enforcer is down.
+      B  3:58.9  shot.hit  rival-1 fires on enforcer at 13 m (562 ‰): hit.
+fight-loud-wait-yard             =                  =                      =                =        =      50 % → 34 %
+    first log line apart (line 41):
+      A  6:27.9  rivals.follow-car  The rivals posted round our car go after it.
+      B  6:26.9  fire.focus-waits  fixer: camera:pickup is out of reach. The focus waits; fixer fights on.
+fight-safe-cell-down             failure → none     cell-down → -          3:20.9 → 8:30.0  =        =      100 % → 26 %
+    first log line apart (line 33):
+      A  2:40.5  order.stance  scout: hold.
+      B  2:40.5  order.rejected  scout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+fight-safe-rivals-reach-vale     failure            rivals-reach-vale      6:39.5           2        1      0 %
+loud                             success → failure  - → enforcer-down      5:01.7 → 4:28.9  27 → 20  =      11 % → 60 %
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  order.rejected  scout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+loud-fight                       success → failure  - → enforcer-down      5:06.8 → 4:28.9  26 → 20  =      27 % → 60 %
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  order.rejected  scout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+loud-left-downed                 success → failure  - → enforcer-down      5:04.7 → 4:28.9  27 → 20  =      44 % → 60 %
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  order.rejected  scout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+loud-left-standing               success → failure  - → enforcer-down      5:04.7 → 4:28.9  27 → 20  =      22 % → 60 %
+    first log line apart (line 61):
+      A  3:45.1  order.stance  scout: free.
+      B  3:45.1  order.rejected  scout stance : 'stance' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-a                          success → failure  - → rivals-reach-vale  4:37.3 → 4:25.6  =        =      22 % → 34 %
+    first log line apart (line 46):
+      A  4:01.1  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:01.1  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-a-board                    success → failure  - → rivals-reach-vale  4:15.5 → 4:20.3  =        =      0 % → 17 %
+    first log line apart (line 46):
+      A  4:01.4  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:01.4  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-a-disable                  success → failure  - → rivals-reach-vale  4:37.3 → 4:25.6  =        =      22 % → 34 %
+    first log line apart (line 52):
+      A  4:01.1  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:01.1  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-a-pressure                 success → failure  - → rivals-reach-vale  4:22.6 → 4:09.1  =        =      16 % → 34 %
+    first log line apart (line 46):
+      A  3:50.1  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:50.1  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-a-pressure-board           success → failure  - → rivals-reach-vale  4:13.8 → 4:05.9  =        =      50 % → 34 %
+    first log line apart (line 46):
+      A  3:50.4  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:50.4  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-b                          success → none     =                      7:32.2 → 8:30.0  =        =      33 % → 34 %
+    first log line apart (line 66):
+      A  7:25.0  shot.hit  fixer fires on rival-1 at 13 m (562 ‰): hit.
+      B  7:25.0  shot.miss  fixer fires on rival-1 at 13 m (281 ‰): miss.
+route-b-board                    success → failure  - → rivals-reach-vale  7:35.4 → 7:41.8  =        =      33 % → 39 %
+    first log line apart (line 66):
+      A  7:25.0  shot.hit  fixer fires on rival-1 at 13 m (562 ‰): hit.
+      B  7:25.0  shot.miss  fixer fires on rival-1 at 13 m (281 ‰): miss.
+route-b-thin                     =                  =                      =                =        =      22 % → 17 %
+    first log line apart (line 72):
+      A  7:25.3  order.panic  Panic: 3 armed operatives fire at will.
+      B  7:25.3  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-g                          =                  =                      =                =        =      16 % → 21 %
+    first log line apart (line 39):
+      A  3:45.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:45.5  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-g-board                    success → failure  - → rivals-reach-vale  3:59.6 → 4:08.5  =        =      11 % → 26 %
+    first log line apart (line 39):
+      A  3:45.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  3:45.5  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-g-fast                     =                  =                      =                =        =      5 % → 8 %
+    first log line apart (line 32):
+      A  2:40.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  2:40.5  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-g-fast-board               =                  =                      =                =        =      5 % → 4 %
+    first log line apart (line 32):
+      A  2:40.5  order.panic  Panic: 4 armed operatives fire at will.
+      B  2:40.5  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-g-kill                     success → failure  - → rivals-reach-vale  5:43.3 → 5:31.9  =        =      22 % → 34 %
+    first log line apart (line 47):
+      A  5:12.2  order.panic  Panic: 4 armed operatives fire at will.
+      B  5:12.2  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+route-g-kill-board               success → failure  - → rivals-reach-vale  5:36.1 → 5:27.8  =        =      33 % → 34 %
+    first log line apart (line 47):
+      A  5:12.2  order.panic  Panic: 4 armed operatives fire at will.
+      B  5:12.2  order.rejected  cell panic : 'panic' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses
+withdraw                         withdrawn          -                      0:30.0           0        0      0 %
+
+42 routes: 29 moved, 13 unchanged
+(12.4 s)

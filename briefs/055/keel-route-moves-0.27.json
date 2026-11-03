@@ -1,0 +1,89 @@
+{
+ "schema": "keel.route-moves/1",
+ "engine": "suborned.sim/0.26.0 -> suborned.sim/0.27.0",
+ "brief": "055",
+ "inputs": "every inputs hash moves (site: grid rows, grid.floor/collide/drawn, cover; takedown text)",
+ "engineOnly": "on the 0.26.0 inputs every route replays byte-identical on 0.27.0 (263/313 entries identical; the 50 that move are the scenarios that stand at BesideDoor, re-sited to (6925, -4250))",
+ "split": "all 13 outcome moves come from the grid (old grid + new cover: 0 moves); the cover change (fountain blocker and 11 points out) moves no outcome",
+ "fix": "re-site [6950,-4250] to [6925,-4250] (the scenarios' BesideDoor) or another free point, and re-record; route-g-kill: re-time the stash order",
+ "moves": [
+  {
+   "route": "contracts/missions/handover/routes/careless-body-found.json",
+   "before": "Failure:enforcer-down",
+   "now": "Failure:rivals-reach-vale",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/careless-takedown-seen-camera.json",
+   "before": "Failure:entry-seen-camera",
+   "now": "Withdrawn:",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/careless-takedown-seen-crowd.json",
+   "before": "Failure:enforcer-down",
+   "now": "Failure:rivals-reach-vale",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/fail-district-seals.json",
+   "before": "Failure:sealed",
+   "now": "Failure:rivals-reach-vale",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/loud-fast.json",
+   "before": "Success:",
+   "now": "Failure:enforcer-down",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/loud-fight.json",
+   "before": "Success:",
+   "now": "Failure:enforcer-down",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/loud-left-downed.json",
+   "before": "Success:",
+   "now": "Failure:enforcer-down",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/loud-left-standing.json",
+   "before": "Success:",
+   "now": "Failure:enforcer-down",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/loud.json",
+   "before": "Success:",
+   "now": "Failure:enforcer-down",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/route-a-board.json",
+   "before": "Success:",
+   "now": "Withdrawn:",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/route-a.json",
+   "before": "Success:",
+   "now": "Withdrawn:",
+   "why": "order to [6950,-4250]: (69.5, -42.5) is inside cyp-office-w's body clearance (Vantage: the four Office cypresses are walk solids since brief 055; 103 cells closed); the move is refused, the Enforcer stays where he was, and the Enter that follows is refused (\"stand at the public door\")"
+  },
+  {
+   "route": "contracts/missions/handover/routes/route-g-kill-board.json",
+   "before": "Success:",
+   "now": "Withdrawn:",
+   "why": "as route-g-kill"
+  },
+  {
+   "route": "contracts/missions/handover/routes/route-g-kill.json",
+   "before": "Success:",
+   "now": "Failure:rivals-reach-vale",
+   "why": "the carry to stash/office-service-door/door is longer round the Office-front cypresses: the stash order at 3:06.4 lands before he stands at it, then \"carrying, the operative walks\" refuses the run to d:Office entrance"
+  }
+ ]
+}

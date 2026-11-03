@@ -1,0 +1,20 @@
+diff --git a/contracts/rules/rulebook.schema.ts b/contracts/rules/rulebook.schema.ts
+index e6a50414..f5e7c364 100644
+--- a/contracts/rules/rulebook.schema.ts
++++ b/contracts/rules/rulebook.schema.ts
+@@ -328,6 +328,7 @@ export const Rulebook = z.strictObject({
+     turn: z.enum(['aborted', 'lost']), loop: z.literal('lost'), loopHeld: z.literal('ends').optional() /* retired in engine 0.31.0 with the tether (brief 058 §6); optional only for runs pinned before it */, reroute: z.literal('lost'), mislead: z.literal('lost'),
+     enter: z.enum(['staff-report', 'quiet']), take: z.enum(['vale-reports', 'quiet']), carry: z.literal('lost'), carrying: z.literal('put-down'),
+     takedown: z.literal('released').optional(), body: z.literal('lost').optional(), // brief 013 (optional only for runs pinned before it)
++    driveCar: z.literal('drives-on').optional(), // engine 0.33.1: a Drive under way is no cancel (optional only for runs pinned before it)
+     rule: text,
+   }),
+   perception: ground({
+@@ -429,6 +430,7 @@ export const Rulebook = z.strictObject({
+   car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(),
+     // brief 059 K1–K4 (engine 0.32.0): Vale gets into his car at the official bay; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+     pickup: z.strictObject({ valeIn: Ref, rule: text }).optional(),
++    footprint: z.strictObject({ len: Ref, w: Ref, clear: Ref, reach: Ref, rule: text }).optional(), // engine 0.33.1 (optional only for runs pinned before it)
+     target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
+   fight: ground({
+     // brief 059 (engine 0.32.0, Motive M059-3.7): `minus` is retired (the −1s are people who have left); optional only so runs pinned before it parse, and

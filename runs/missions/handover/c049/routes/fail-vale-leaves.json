@@ -1,0 +1,21 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"Vale leaves in official car\" (Suture N1): nobody touches Vale; the Scout sends the rivals away late (4:10, away 3:50) so they are gone at 8:00 and the car leaves with him. c038 (Waymark, engine 0.34.1): since brief 059 the unturned driver drives Vale off at 6:13; the run ends at Alert 0 (the patrol sweeps the service yard, brief 067 A, and her wait is out of every watcher's sight).",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "move",
+   "to": "rival-park"
+  },
+  {
+   "tick": 2500,
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals"
+  }
+ ],
+ "until": 4500
+}

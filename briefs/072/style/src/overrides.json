@@ -1,0 +1,106 @@
+{
+ "kit": {
+  "DK_Gold": {
+   "hex": "#CFA65A",
+   "metallic": 0.6,
+   "smoothness": 0.6
+  },
+  "DK_Gold17": {
+   "hex": "#D6B676",
+   "metallic": 0.6,
+   "smoothness": 0.6
+  },
+  "DK_Accent_Gold": {
+   "hex": "#C29A55",
+   "metallic": 0.6,
+   "smoothness": 0.6
+  },
+  "DK_Brass_Civic": {
+   "hex": "#C29A55",
+   "metallic": 0.6,
+   "smoothness": 0.6
+  },
+  "DK_Enamel_Red": {
+   "hex": "#C42A1F"
+  },
+  "DK_Signal_Red": {
+   "hex": "#FF3B26"
+  },
+  "DK_GlassDark": {
+   "hex": "#3F7A8E",
+   "alpha": 0.65
+  }
+ },
+ "swatches": {
+  "cream_w": "#EBDABA",
+  "peach_w": "#F2C4A4",
+  "mint_w": "#C0E3D0",
+  "sky_w": "#BCD9EE",
+  "sand_w": "#E3CA9E",
+  "ivory_w": "#EFE8D6",
+  "civic_w": "#EDE5D2",
+  "gold": "#C29A55",
+  "sand_p": "#C29A55",
+  "civic_trim": "#C29A55",
+  "t_hotel": "#C9A46A",
+  "glass_clear": "#2C6478",
+  "glass_t": "#A7CAD8",
+  "glass_dark": "#233F50",
+  "e_mustard": "#EEA82D",
+  "e_coral_deep": "#E07560",
+  "e_royal": "#2C56A6",
+  "e_teal_deep": "#1F6C67"
+ },
+ "facadeMaterials": {
+  "matte": 0.22,
+  "glossy": 0.72
+ },
+ "areaEnamelAdd": {
+  "lantern": [
+   "e_mustard",
+   "e_coral_deep"
+  ],
+  "docks": [
+   "e_mustard",
+   "e_royal"
+  ],
+  "crescent": [
+   "e_royal"
+  ],
+  "records": [
+   "e_mustard"
+  ],
+  "harbour": [
+   "e_mustard",
+   "e_coral_deep"
+  ],
+  "lamplight": [
+   "e_mustard",
+   "e_coral_deep"
+  ],
+  "gardens": [
+   "e_mustard"
+  ]
+ },
+ "look": {
+  "limestone": "#F0E3CA",
+  "residential": "#F3E3C6",
+  "mixed": "#F7EAD2",
+  "commercial": "#F5D3B5",
+  "frontage": "#F0E0C3",
+  "civic": "#F7DFA8",
+  "roof": "#F6EBD6",
+  "trim": "#C29A55",
+  "accent_gold": "#C29A55",
+  "accent_coral": "#F28A70",
+  "accent_peach": "#F8B898"
+ },
+ "areaEnamelReplace": {
+  "civic": {
+   "e_seafoam_pale": "e_teal_deep"
+  }
+ },
+ "plus": {
+  "road": "DK_Ground_RoadAsphalt"
+ }
+}

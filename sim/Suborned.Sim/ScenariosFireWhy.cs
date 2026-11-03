@@ -41,7 +41,8 @@ namespace Suborned.Sim
             r.Is(once, "once a pair"); r.Is(cause, "every line names a cause"); r.Is(match, "each line is FireWhyFirst's (tick and causes)");
         }
 
-        /// <summary>Route fight-loud-enforcer-down's orders (contracts/missions/handover/routes, 2026-10-22), copied so the case stands alone.</summary>
+        /// <summary>Route fight-loud-enforcer-down's orders (contracts/missions/handover/routes, 2026-10-22), copied so the case stands alone; engine
+        /// 0.34.0: the last walk is to the car, not into the police (FW-VALE reads the rivals' cause, and the rivals must get a line on him first).</summary>
         static readonly string[] FightLoudOrders =
         {
             "{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true}",
@@ -51,7 +52,7 @@ namespace Suborned.Sim
             "{\"tick\":1236,\"op\":\"enforcer\",\"do\":\"fire\",\"target\":\"guard\"}",
             "{\"tick\":1276,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Office entrance\",\"run\":true}",
             "{\"tick\":1312,\"op\":\"enforcer\",\"do\":\"enter\"}",
-            "{\"tick\":1992,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"police-1\"}",
+            "{\"tick\":1992,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Getaway bay\"}", // engine 0.34.0: to the car (the route walked him at police-1: at 1.8 m/s he reached the police before a rival had a line on him, and the police took him first, fired and Vale)
         };
 
         static void FireWhyCases()
@@ -83,7 +84,10 @@ namespace Suborned.Sim
                 var gw = Why(r, Enf, GuardR);
                 r.Is(gw.HasValue && gw.Value.Since >= t0 && gw.Value.First.SequenceEqual(new[] { "drawn", "face" }), $"the guard took him as the fire order drew his weapon: drawn, face ({(gw.HasValue ? Cs(gw.Value.First) : "-")})");
                 r.Is(gw.HasValue && gw.Value.Causes.Length > 0 && gw.Value.Causes[0] == "fired", $"once he has fired, the guard's strongest cause is that he fired ({(gw.HasValue ? Cs(gw.Value.Causes) : "-")}); Main {(gw.HasValue ? gw.Value.Main : "-")}");
-                r.Is(r.Until(() => WhyAny(r, Enf, x => x.By != GuardR && x.Since >= t0) != null || g.Over, T(30)), "another hostile takes him");
+                // engine 0.34.0 (brief 067 A): up to 120 s (was 30): the patrol sweeps the service yard, beyond 30 m of the shot, so it no longer
+                // breaks at the first shot (0:47.7 on the forecourt); sent to the scene by the guard's radio at 0:48.6, it reaches the approach and
+                // takes him at 1:30.1, fired first
+                r.Is(r.Until(() => WhyAny(r, Enf, x => x.By != GuardR && x.Since >= t0) != null || g.Over, T(120)), "another hostile takes him");
                 var w = WhyAny(r, Enf, x => x.By != GuardR && x.Since >= t0);
                 r.Is(w.HasValue && w.Value.First.Length > 0 && w.Value.First[0] == "fired", $"{(w.HasValue ? w.Value.By : "-")} takes the Enforcer: fired first ({(w.HasValue ? Cs(w.Value.First) : "-")})");
                 FireWhyLog(r);
@@ -136,20 +140,22 @@ namespace Suborned.Sim
             Add("FW-SEEN", "—", "engine 0.25.0: HI-RIVALS: the calm crew takes the drawn Enforcer for the draw; he holsters at once; it stays on him for what it saw (seen), its first causes kept (drawn first)", r =>
             {
                 var g = r.G; Free(r, false);
-                r.To(r.SendTo(Enf, new Pt(8600, -3400)));
-                r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), "the rival crew is here");
-                var park = g.S.Stand(g.S.RivalsPark); var e = Beside(r, park) ?? park;
+                // brief 059: the lookout (rival-4) posts across Apron Road at 3:18, facing the official bay: the Enforcer stands 6 m in front of him, where the bay's watchers see his draw (Alert 2: the crew alerted, ai.intent.rivals)
+                r.Is(r.Until(() => g.Crew[3].Mode == CrewMode.Posted, T(200)), "the rival crew is here");
+                var post = g.MemberPos(g.Crew[3], g.Tick); var face = g.Crew[3].Base; long fl = Math.Max(1, G.Isqrt((long)face.X * face.X + (long)face.Y * face.Y));
+                var front = new Pt(post.X + (int)(face.X * 600L / fl), post.Y + (int)(face.Y * 600L / fl)); var e = g.S.Grid.NearestFree(front) ?? front;
                 r.To(r.SendTo(Enf, e));
+                r.Until(() => g.MemberWatching(g.Crew[3], r.Op(Enf).Pos), T(45)); // his beats turn him (and pace him 2 m): wait for the watch beat
                 r.Is(g.RivalsStreetWatching(r.Op(Enf).Pos), "he stands in the crew's cone");
-                r.Is(g.FireCauses("rivals", OpId.Enforcer).Length == 0, "holstered, the calm crew has no cause");
+                r.Is(g.FireCauses("rival-4", OpId.Enforcer).Length == 0, "holstered, the calm crew has no cause");
                 r.Do(Enf, "draw");
-                r.Is(r.Until(() => g.RivalsGun.Target == Enf || g.Over, T(6)), "the crew takes the drawn Enforcer");
-                var w0 = Why(r, Enf, "rivals");
+                r.Is(r.Until(() => g.Crew[3].Gun.Target == Enf || g.Over, T(6)), "the crew takes the drawn Enforcer");
+                var w0 = Why(r, Enf, "rival-4");
                 r.Is(w0.HasValue && w0.Value.Main == "drawn", $"for the draw ({(w0.HasValue ? Cs(w0.Value.First) : "-")})");
                 r.Do(Enf, "holster");
                 r.Is(r.Until(() => !r.Op(Enf).Gun.Drawn, T(3)), "he holsters");
                 r.Is(g.RivalsSawAct.Contains(Enf), "the crew saw him act");
-                var w = Why(r, Enf, "rivals");
+                var w = Why(r, Enf, "rival-4") ?? WhyAny(r, Enf, x => x.By.StartsWith("rival-", StringComparison.Ordinal)); // brief 059: his beats may turn rival-2 away a moment; another of the crew keeps him
                 r.Is(w.HasValue && w.Value.Causes.SequenceEqual(new[] { "seen" }), $"holstered, the crew's cause is what it saw: seen ({(w.HasValue ? Cs(w.Value.Causes) : "-")})");
                 r.Is(w.HasValue && w0.HasValue && w.Value.First.SequenceEqual(w0.Value.First) && w.Value.First[0] == "drawn", $"its first causes are kept ({(w.HasValue ? Cs(w.Value.First) : "-")})");
                 FireWhyLog(r);

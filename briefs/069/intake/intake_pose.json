@@ -1,0 +1,48 @@
+{
+ "m": {
+  "standingHeightM": 1.734,
+  "armDownFromHorizontal": 45.0,
+  "elbowBend": 0.0,
+  "palmNormalLeft": [
+   0.46,
+   0.74,
+   0.49
+  ],
+  "hipJointWidthFraction": 0.125,
+  "ankleSpacingFraction": 0.125,
+  "footYawOut": 0.0,
+  "wristHeightFraction": 0.584,
+  "handOutFraction": 0.319,
+  "tiles": [
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_m_m_front.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_m_m_left.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_m_m_back.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_s_m_front.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_s_m_left.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_s_m_back.png"
+  ]
+ },
+ "f": {
+  "standingHeightM": 1.596,
+  "armDownFromHorizontal": 45.0,
+  "elbowBend": 0.0,
+  "palmNormalLeft": [
+   0.45,
+   0.75,
+   0.48
+  ],
+  "hipJointWidthFraction": 0.119,
+  "ankleSpacingFraction": 0.119,
+  "footYawOut": 0.0,
+  "wristHeightFraction": 0.595,
+  "handOutFraction": 0.293,
+  "tiles": [
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_m_f_front.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_m_f_left.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_m_f_back.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_s_f_front.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_s_f_left.png",
+   "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/intake/_s_f_back.png"
+  ]
+ }
+}

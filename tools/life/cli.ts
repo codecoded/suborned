@@ -2,7 +2,7 @@
 import plan from '../../contracts/world/harbour-district.plan.json';
 import { streets, frontage, plots } from './geom';
 import { BANDS, DRAW, CAT, CATEGORY, K, RES_TRIPS, PROM, type Band } from './rules';
-import { mixTerms, homesPop } from './model';
+import { mixTerms, homesPop, homeStoreys } from './model';
 const P: any = plan, tt: { lines: any[] } = P.timetable, T: Record<string, any> = P.standards.frontage.trades, r2 = (n: number) => Math.round(n * 100) / 100;
 const bands = BANDS.map(b => b.id);
 const byBand = <T>(f: (b: Band) => T) => Object.fromEntries(bands.map(b => [b, f(b as Band)])) as Record<string, T>;
@@ -23,7 +23,7 @@ const expected = Object.fromEntries(Object.entries(metres).map(([a, m]) => {
   for (const [t, len] of Object.entries(m)) { if (t === 'tram-kiosk' || t === 'skyrail-kiosk') continue; const u = len / occ[t].meanWidth; units += u; staff += u * occ[t].staffPerUnit; per[t] = { units: r2(u) }; }
   return [a, { frontageMetres: Math.round(Object.values(m).reduce((s, v) => s + v, 0)), units: Math.round(units), staff: Math.round(staff), trades: per }];
 }));
-const homes = plots.map(p => ({ plot: p.id, area: p.area, use: p.use, residents: homesPop(p) })).filter(h => h.residents > 0);
+const homes = plots.map(p => ({ plot: p.id, area: p.area, use: p.use, storeys: homeStoreys(p), residents: homesPop(p) })).filter(h => h.residents > 0);
 
 // ---- character: lively/quiet from open hours x draw (street-level mix of each area)
 const cls = (d: number) => d >= 0.45 ? 'lively' : d >= 0.2 ? 'steady' : 'quiet';
@@ -36,7 +36,15 @@ const order: Record<string, string[]> = {};
 for (const l of tt.lines) order[l.line] = [l.runs[0].from, ...l.runs.map((r: any) => r.to)];
 const planStops = new Set<string>([...P.tram.flatMap((l: any) => l.stops.map((s: any) => `${l.id}/${s.id}`)), ...P.skyrail.flatMap((l: any) => l.stations.map((s: any) => `${l.id}/${s.id}`))]);
 for (const l of tt.lines) for (const s of order[l.line]) if (!planStops.has(s)) throw new Error(`timetable stop ${s} is not a stop or station in the plan`);
-const loads: Record<string, number> = { 'T1/comet': 6, 'T1/records': 6, 'T1/circus': 10, 'T2/harbour': 6, 'T2/harbour-court': 4, 'T2/docks': 6, 'T2/comet': 6, 'T2/lantern': 8, 'T2/rocket': 4, 'T2/terraces': 5, 'S1/gardens': 12, 'S1/circus': 24, 'S1/harbour': 14, 'S1/skyport': 20 };
+// loads per service [S], by what the stop is in the plan, never by name: a tram stop 6, a sky rail station 14; an interchange (plan `interchange`)
+// half as many again (riders changing lines), a line's end stop (a terminal loop, the sheet edge) +2 [S]
+const stopRec = new Map<string, any>([...P.tram.flatMap((l: any) => l.stops.map((s: any) => [`${l.id}/${s.id}`, { ...s, mode: 'tram' }])), ...P.skyrail.flatMap((l: any) => l.stations.map((s: any) => [`${l.id}/${s.id}`, { ...s, mode: 'skyrail' }]))]);
+const LOAD = { tram: 6, skyrail: 14, interchange: 1.5, end: 2 };
+const loads: Record<string, number> = {};
+for (const l of tt.lines) order[l.line].forEach((ref, i, xs) => { const s = stopRec.get(ref)!; loads[ref] = Math.round(LOAD[s.mode as 'tram' | 'skyrail'] * (s.interchange ? LOAD.interchange : 1) + (i === 0 || i === xs.length - 1 ? LOAD.end : 0)); });
+// interchange pairs: the plan's own (a stop's `interchange` names the stop or station it pairs with), each pair once
+const pairs: Record<string, string> = {};
+for (const [ref, s] of [...stopRec].sort((a, b) => a[0] < b[0] ? -1 : 1)) if (s.interchange && !pairs[s.interchange]) { if (!stopRec.has(s.interchange)) throw new Error(`${ref}: interchange ${s.interchange} is not a stop or station in the plan`); pairs[ref] = s.interchange; }
 const services = tt.lines.map((l: any) => { let t = 0; const off: Record<string, number> = {}; order[l.line].forEach((s, i) => { off[s.split('/')[1]] = t; if (i < l.runs.length) t += l.runs[i].sec + l.dwellSec; });
   return { line: l.line, headwaySec: l.headwaySec, dwellSec: l.dwellSec, speed: l.speed, stops: order[l.line].map(s => s.split('/')[1]), runSec: l.runs.map((r: any) => r.sec), offsetSec: off, loadPerService: Object.fromEntries(order[l.line].map(s => [s.split('/')[1], loads[s]])) }; });
 
@@ -47,6 +55,20 @@ const delivBand: Record<string, number> = { night: 0.02, early: 0.25, morning: 0
 const deliveries = Object.fromEntries(Object.entries(metres).map(([a, m]) => { let daily = 0;
   for (const [t, len] of Object.entries(m)) daily += len / occ[t].meanWidth * (delivVisits[CATEGORY[t]] ?? 0);
   return [a, { visitsPerDay: Math.round(daily), perHour: byBand(b => r2(daily * delivBand[b] / hrs(b))) }]; }));
+
+// ---- area traffic bias and recurring events, by the trades in each area's street mix (an area with none of the trades gets neither)
+const MIX: Record<string, Record<string, number>> = P.standards.frontage.mix;
+const trading = (ts: string[]) => P.areas.map((a: any) => a.id as string).filter((a: string) => ts.some(t => (MIX[a]?.[t] ?? 0) > 0));
+const FREIGHT = ['hiring-hall', 'ships-chandler', 'rocket-parts-chandler', 'bonded-warehouse'], NIGHT = ['cocktail-lounge', 'jazz-club', 'dance-hall'];
+const areaBias: Record<string, Record<string, number>> = {};
+for (const a of trading(FREIGHT)) areaBias[a] = { ...areaBias[a], lorry: 2.0 };
+for (const a of trading(NIGHT)) areaBias[a] = { ...areaBias[a], car: 1.3, 'hover-car': 1.3 };
+const opens = (a: string, ts: string[]) => [...new Set(ts.filter(t => (MIX[a]?.[t] ?? 0) > 0).map(t => T[t].hours[0] as number))].sort((x, y) => x - y);
+const events = [
+  ...trading(['hiring-hall']).map((a: string) => ({ id: `shift/${a}`, area: a, atHours: [6, 14, 22], windowS: 1200, surge: 2.0, who: 'port and industrial workers; hiring-hall crowd at 5 (plan "a crowd at 5")', src: 'plan hiring-hall hours; shift length 8 h [S]' })),
+  ...trading(NIGHT).map((a: string) => ({ id: `nightlife-open/${a}`, area: a, atHours: opens(a, NIGHT), windowS: 1800, surge: 1.5, who: 'the area\'s lounges, jazz clubs and dance halls open, queues form', src: 'plan trade hours (opening)' })),
+  ...trading(['cinema']).map((a: string) => ({ id: `cinema-out/${a}`, area: a, atHours: [14, 17, 20, 23], windowS: 600, surge: 1.4, who: 'cinema lets out [S]', src: 'plan cinema hours [12,24]' })),
+];
 
 const life = {
   schema: 'suborned.life/1',
@@ -67,9 +89,9 @@ const life = {
     serviceHours: { from: 5, to: 25, note: 'runs 05:00-01:00 [S]; none 01:00-05:00' },
     headwayMultiplierByBand: byBand(b => b === 'night' ? 0 : b === 'late' ? 2 : b === 'early' ? 1.5 : 1), headwayNote: '[S] multiplier on headwaySec; 0 = no service. Mission bands run at the timetable headway, so the timetable price (wait + ride) is the price in play.',
     walkSpeed: K.walkSpeed, walkSpeedSrc: 'r008 timetable openQuestions: 1.4 m/s [S]',
-    interchange: { pairs: { 'T1/circus': 'S1/circus', 'T1/comet': 'T2/comet', 'T2/harbour': 'S1/harbour' }, maxWalkM: P.standards.skyrail.interchange, src: 'r008 notes; plan skyrail.interchange 150' },
+    interchange: { pairs, maxWalkM: P.standards.skyrail.interchange, src: 'plan stops\' and stations\' `interchange`; plan skyrail.interchange 150' },
     services,
-    loadSrc: '[S] people alighting and boarding per service at the peak band, scaled by loadByBand',
+    loadSrc: `[S] people alighting and boarding per service at the peak band, scaled by loadByBand; by what the stop is in the plan: tram stop ${LOAD.tram}, sky rail station ${LOAD.skyrail}, x${LOAD.interchange} at an interchange, +${LOAD.end} at a line's end`,
     loadByBand: byBand(b => trafficMult[b as Band]),
     kiosks: 'every stop gets a tram-kiosk, every station a skyrail-kiosk, regardless of area [P frontage.mixNote]',
   },
@@ -85,7 +107,7 @@ const life = {
     },
     speedUnit: 'm/s', flowUnit: 'vehicles per hour per direction at band multiplier 1',
     byBand: byBand(b => trafficMult[b as Band]), bandSrc: '[S]',
-    areaBias: { docks: { lorry: 2.0 }, lantern: { car: 1.3, 'hover-car': 1.3 } },
+    areaBias, areaBiasSrc: '[S] by what an area trades (plan standards.frontage.mix), never by name: freight trades (hiring hall, chandlers, bonded warehouse) lorry x2.0; nightlife (cocktail lounge, jazz club, dance hall) car and hover-car x1.3',
     rules: ['vehicles follow lanes; they leave only to jump clear (GDD §06 vehicle strike)', 'a stalled lorry or tram blocks (GDD §06 citizen actions)', 'spawn at the district edge gates [P gates], seed = plan id + clock'],
   },
   deliveries: {
@@ -118,14 +140,10 @@ const life = {
       concourse: { z: 24, mixFrom: 'megastructure concourse mix; stations', promenade: { night: 0, early: 0.02, morning: 0.04, afternoon: 0.03, peak: 0.05, evening: 0.03, late: 0.01 }, src: '[S]; plus the S1 loads, arriving by the station banks (>= 2 per station [P])' },
     },
   },
-  residents: { src: 'plan plots + standards.buildings.bands [P]; [S] flat sizes', tripsPerHour: RES_TRIPS, grossPerHomeM2: K.homeM2, perHome: K.perHome, efficiency: K.efficiency, builtShare: 0.7, rule: 'residents = rect area x builtShare x storeys (mode; mixed uses mode - podium) x efficiency / grossPerHome x perHome' },
+  residents: { src: 'plan plots + standards.buildings.bands and caps [P]; [S] flat sizes', tripsPerHour: RES_TRIPS, grossPerHomeM2: K.homeM2, perHome: K.perHome, efficiency: K.efficiency, builtShare: 0.7, rule: 'residents = plot area x builtShare x storeys x efficiency / grossPerHome x perHome; storeys = the mode of the band the world generator draws from (a play-street cap in standards.buildings.caps replaces the use band, brief 066; mixed uses mode - podium)' },
   events: {
-    src: 'plan hiring-hall hours [5,14]; trade hours [P]; [S] surge numbers',
-    list: [
-      { id: 'docks-shift', area: 'docks', atHours: [6, 14, 22], windowS: 1200, surge: 2.0, who: 'port and industrial workers; hiring-hall crowd at 5 (plan "a crowd at 5")', src: 'plan hiring-hall hours; shift length 8 h [S]' },
-      { id: 'lantern-open', area: 'lantern', atHours: [17, 20], windowS: 1800, surge: 1.5, who: 'cocktail lounges open 17, jazz club and dance hall 20, queues form', src: 'plan trade hours' },
-      { id: 'cinema-out', area: 'crescent', atHours: [14, 17, 20, 23], windowS: 600, surge: 1.4, who: 'cinema lets out [S]', src: 'plan cinema hours [12,24]' },
-    ],
+    src: 'by what an area trades (plan standards.frontage.mix), never by name: a shift change where a hiring hall trades, opening time where nightlife trades (the trades\' opening hours [P]), the cinema letting out; [S] surge numbers',
+    list: events,
   },
   character: {
     src: 'rule: score = sum over the area street mix of share x open(hour) x draw(category, band), lobbies excluded; lively >= 0.45, steady >= 0.2, else quiet [S]. Evaluated at mid-band.',

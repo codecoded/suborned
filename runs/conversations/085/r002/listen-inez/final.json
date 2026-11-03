@@ -1,0 +1,64 @@
+{
+  "id": "listen-inez",
+  "title": "Listen to Inez",
+  "kind": "learn",
+  "picked": 2,
+  "why": "Take 2 has the most life: the door comes first, Inez hides behind the debt, and that excuse fails. \"He said nothing. You just did.\" is the best line in any take, and it is the moment she gives herself away. The debt and affair as lever and need match [c407d23e4f6647fe2f4315a1] and [96030c4c4a1a18523a3fdbbb].",
+  "changes": [
+    "Cut what the sheet doesn't give: the count of six looks and the clockwork collector. Milena's rebuttal is now her own debt, \"I owe them too\", which also shows both women owe the Bureau.",
+    "Milena now says only \"that guard\" and Inez blurts the name Okafor herself. This makes \"You just did\" literally true and shows clearly who Okafor is.",
+    "Replaced the \"I count things\" and \"What's it paying?\" lines with \"You jump at everything\", so Inez being nervous by nature is stated by someone with a reason to say it.",
+    "Replaced the closing question with \"Then stop looking. You can't afford it.\" It is shorter, sounds like Milena, and implies no threat or bargain. Waiting tables and the terrace now place Inez at this café."
+  ],
+  "beats": [
+    {
+      "speaker": "Milena",
+      "line": "You've been looking at the Office door all shift, Inez."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who else has noticed? I've got the terrace to see to."
+    },
+    {
+      "speaker": "Milena",
+      "line": "You jump at everything. Nobody watches a door for nothing."
+    },
+    {
+      "speaker": "Inez",
+      "line": "It's the Bureau, that's all. Waiting tables here, I can't keep up."
+    },
+    {
+      "speaker": "Milena",
+      "line": "I owe them too. I don't keep looking at that guard."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Did Okafor say something? Who else has he told?"
+    },
+    {
+      "speaker": "Milena",
+      "line": "He said nothing. You just did."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Yes, I'm seeing him. If the Office hears, it costs us both."
+    },
+    {
+      "speaker": "Milena",
+      "line": "Then stop looking. You can't afford it."
+    },
+    {
+      "speaker": "Scout",
+      "line": "Bureau loan, behind, could be cleared. Okafor, Office door, could be used."
+    }
+  ],
+  "learned": [
+    "Debt: Bureau loan, and she's behind.",
+    "Secret: seeing Okafor, the door guard."
+  ],
+  "opens": [
+    "Help: clear her Bureau loan.",
+    "Pressure: threaten to expose the affair."
+  ],
+  "faults": []
+}

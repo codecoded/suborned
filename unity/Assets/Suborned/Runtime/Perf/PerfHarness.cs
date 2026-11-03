@@ -72,14 +72,26 @@ namespace Suborned.Perf
             {
                 plan = JsonUtility.FromJson<PerfPlan>(File.ReadAllText(planPath));
                 if (plan?.stops == null || plan.stops.Length == 0) throw new InvalidDataException($"Perf: no stops in {planPath}");
-                cam = Camera.main ? Camera.main : throw new InvalidOperationException("Perf: no main camera (cameras/play)");
-                if (!cam.TryGetComponent(out shadows)) throw new InvalidOperationException("Perf: the play camera has no TacticalShadows");
-                if (!cam.TryGetComponent(out fade)) throw new InvalidOperationException("Perf: the play camera has no ArchitectureFade");
+                if (string.IsNullOrEmpty(plan.camera))
+                {
+                    cam = Camera.main ? Camera.main : throw new InvalidOperationException("Perf: no main camera (cameras/play)");
+                    if (!cam.TryGetComponent(out shadows)) throw new InvalidOperationException("Perf: the play camera has no TacticalShadows");
+                    if (!cam.TryGetComponent(out fade)) throw new InvalidOperationException("Perf: the play camera has no ArchitectureFade");
+                }
+                else
+                {
+                    // brief 075 Perf A/B: a named camera without the play rig (the old-built town's study camera), posed orthographically by Place
+                    var go = GameObject.Find(plan.camera) ?? throw new InvalidOperationException($"Perf: no camera `{plan.camera}` in this scene");
+                    cam = go.TryGetComponent<Camera>(out var c) ? c : throw new InvalidOperationException($"Perf: `{plan.camera}` has no Camera");
+                    foreach (var other in FindObjectsByType<Camera>(FindObjectsInactive.Exclude)) if (other != cam && other.targetTexture == null) other.enabled = false;
+                    cam.enabled = true; cam.orthographic = true; cam.nearClipPlane = 0.3f; cam.useOcclusionCulling = false;
+                    cam.TryGetComponent(out shadows); cam.TryGetComponent(out fade);
+                }
                 var stamp = FindAnyObjectByType<WorldStamp>();
                 report.content = plan.content; report.fingerprint = plan.fingerprint; report.exportSha256 = plan.exportSha256; report.source = plan.source;
                 report.sceneExportSha256 = stamp ? stamp.exportSha256 : "no WorldStamp";
                 report.pitch = plan.pitch; report.yaw = plan.yaw;
-                if (!stamp || stamp.exportSha256 != plan.exportSha256)
+                if (stamp ? stamp.exportSha256 != plan.exportSha256 : plan.exportSha256 != PerfPlan.NoStamp) // the old-built town has no WorldStamp: its plan says so
                     throw new InvalidDataException($"Perf: plan resolved on export {plan.exportSha256}, this player's scene is {report.sceneExportSha256}");
                 report.sceneFingerprint = plan.sceneFingerprint; report.roots = plan.roots; report.stripped = plan.stripped;
                 report.people = FindObjectsByType<Suborned.People.PersonRecord>(FindObjectsInactive.Include).Length;
@@ -96,8 +108,8 @@ namespace Suborned.Perf
                 if (report.machineStart.busy) Debug.LogWarning("Perf: MACHINE BUSY, this run is not a reference measure: " + string.Join("; ", report.machineStart.warnings));
                 var proxies = new PerfProxies(); // the scene's baked shadow proxies (ShadowProxy), as built on or off
                 report.proxyRenderers = proxies.Count; report.proxyTriangles = proxies.Triangles; report.proxiesAsBuilt = proxies.BuiltOn;
-                switches = new PerfSwitches(cam, shadows, fade, proxies);
-                report.ssaoAsBuilt = switches.SsaoAsBuilt;
+                switches = new PerfSwitches(cam, shadows, fade, proxies, FindAnyObjectByType<EveryFace>(FindObjectsInactive.Include));
+                report.ssaoAsBuilt = switches.SsaoAsBuilt; report.switchesAsBuilt = switches.AsBuilt075;
                 nan = new PerfNaN(cam, plan.width, plan.height);
                 drawer = new PerfDrawer();
                 float longest = 0f;
@@ -254,7 +266,7 @@ namespace Suborned.Perf
             return stop.IsPath && stop.speed > 0f ? stop.path[^1].along / stop.speed : plan.passes[s.pass].recordSeconds;
         }
 
-        void Park(PerfStop s) { if (s.IsPath) Along(s, 0f); else Place(s.focus, s.standOff, s.zoom); }
+        void Park(PerfStop s) { if (s.IsPath) Along(s, 0f); else Place(s.focus, s.standOff, s.zoom, s.yaw); }
 
         /// <summary>The focus `d` metres along a pan's path (samples carry their stand-off, resolved in the Editor).</summary>
         void Along(PerfStop s, float d)
@@ -263,17 +275,17 @@ namespace Suborned.Perf
             int i = 0;
             while (i + 2 < p.Length && p[i + 1].along <= d) i++;
             float span = Mathf.Max(p[i + 1].along - p[i].along, 1e-4f), k = Mathf.Clamp01((d - p[i].along) / span);
-            Place(Vector3.Lerp(p[i].focus, p[i + 1].focus, k), Mathf.Lerp(p[i].standOff, p[i + 1].standOff, k), s.zoom);
+            Place(Vector3.Lerp(p[i].focus, p[i + 1].focus, k), Mathf.Lerp(p[i].standOff, p[i + 1].standOff, k), s.zoom, s.yaw);
         }
 
-        void Place(Vector3 focus, float standOff, float zoom)
+        void Place(Vector3 focus, float standOff, float zoom, float yaw = -1f)
         {
-            var rot = Quaternion.Euler(plan.pitch, plan.yaw, 0f);
+            var rot = Quaternion.Euler(plan.pitch, yaw >= 0f ? yaw : plan.yaw, 0f);
             cam.transform.SetPositionAndRotation(focus - rot * Vector3.forward * standOff, rot);
             cam.orthographicSize = zoom;
             cam.farClipPlane = standOff + plan.farMargin;
-            shadows.focusDepth = standOff;
-            fade.focus = focus;
+            if (shadows) shadows.focusDepth = standOff;
+            if (fade) fade.focus = focus;
         }
 
         void End(float seconds)

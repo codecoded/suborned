@@ -3,7 +3,8 @@
 // project (Release), plays every scenario headless through it, and copies into the Unity project:
 //   unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll   the DLL the CLI ran (same bytes, checked)
 //   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json, handover.provisional.json, handover.takedown.json, handover.rounds.json (the inputs it ran on),
-//                                                         headless.json (every scenario's outcome, checks and checkpoint hashes), engine.json
+//                                                         headless.json (every scenario's outcome, checks and checkpoint hashes), engine.json; and the host's own content, never an engine input:
+//                                                         text.json (the mission's words), handover.seats.json (who sits where), cues.json (which sound plays on which event; Chime, brief 059), handover.listen-partners.json (who a Listen's person talks to, from mission.json)
 // Unity's Suborned/Sim/Run Scenarios plays the same scenarios with the same DLL and inputs and must give the same hashes (§11).
 // The inputs are validated by bun first, with the schemas of the same commit (Redline E1: Engine.FromTexts lets unknown keys through, and a
 // bad text can throw out of Step() or overflow the stack): the rulebook and people rules parse with their zod schemas and every rulebook ref
@@ -15,7 +16,8 @@
 // the DLL's informational version, so a build made before a commit differs from one made after it in those bytes only)
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { join } from 'node:path';
+import { join, posix, resolve } from 'node:path';
+import { CLIP_ROOT, CUES, CUES_SCHEMA, judgeCues } from './cues';
 
 const root = join(import.meta.dir, '..', '..');
 const argv = process.argv.slice(2);
@@ -122,7 +124,9 @@ if (argv.includes('--routes')) {
 }
 
 // 4. into Unity
-const plugin = join(root, 'unity/Assets/Suborned/Sim/Plugins'), stream = join(root, 'unity/Assets/StreamingAssets/sim');
+// SUBORNED_SIM_UNITY_OUT: a scratch folder standing in for unity/Assets (a trial run of this step that must not touch the project; nothing else sets it)
+const assets = process.env.SUBORNED_SIM_UNITY_OUT ? resolve(process.env.SUBORNED_SIM_UNITY_OUT) : join(root, 'unity', 'Assets');
+const plugin = join(assets, 'Suborned/Sim/Plugins'), stream = join(assets, 'StreamingAssets/sim');
 mkdirSync(plugin, { recursive: true }); mkdirSync(stream, { recursive: true });
 cpSync(dll, join(plugin, 'Suborned.Sim.dll'));
 const inputs: Record<string, string> = {};
@@ -140,10 +144,14 @@ let text = 'absent (the host shows its placeholders)';
   if (body && schema) {
     const dir = join(work, 'text'); mkdirSync(join(dir, 'contracts/missions/handover'), { recursive: true });
     writeFileSync(join(dir, TEXT_SCHEMA), schema);
-    // the schema imports the people rules and the rulebook ref from the same source tree
-    for (const dep of ['contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.ref.ts', 'contracts/rules/rulebook.schema.ts']) {
-      const b = at(dep); if (!b) { console.error(`${TEXT_SCHEMA} needs ${dep}, which is missing`); process.exit(1); }
-      mkdirSync(join(dir, dep, '..'), { recursive: true }); writeFileSync(join(dir, dep), b);
+    // what the schema imports, and what they import, from the same source tree: followed from its relative imports, not a hand list (a new import, book.schema.ts in 0.2.230, broke the hand list)
+    for (const todo: [string, Buffer][] = [[TEXT_SCHEMA, schema]], seen = new Set([TEXT_SCHEMA]); todo.length;) {
+      const [from, src] = todo.pop()!;
+      for (const [, spec] of src.toString('utf8').matchAll(/\bfrom\s+['"](\.{1,2}\/[^'"]+)['"]/g)) {
+        const dep = posix.join(posix.dirname(from), spec!); if (seen.has(dep)) continue; seen.add(dep);
+        const b = at(dep); if (!b) { console.error(`${from} imports ${dep}, which is missing`); process.exit(1); }
+        mkdirSync(join(dir, dep, '..'), { recursive: true }); writeFileSync(join(dir, dep), b); todo.push([dep, b]);
+      }
     }
     const { TextFile } = await import(join(dir, TEXT_SCHEMA));
     const r = TextFile.safeParse(JSON.parse(body.toString('utf8')));
@@ -167,7 +175,39 @@ let seats = 'absent (nobody is drawn seated)';
     seats = `handover.seats.json ${sha(body).slice(0, 12)} (${Object.keys(j.seated).length} people, ${Object.keys(j.tables).length} tables; view only, unhashed)`;
   } else rmSync(join(stream, 'handover.seats.json'), { force: true });
 }
-const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, range, text, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
+// 4d. who a Listen's person talks to (mission.json listenPartners, brief 085): view-only host content for HostViews.Listen, like the seats: never an engine input, never hashed. Same source as the inputs.
+const MISSION = 'contracts/missions/handover/mission.json';
+let partners = 'absent (a Listen has no one step out)';
+{
+  const body = tree ? (existsSync(join(root, MISSION)) ? readFileSync(join(root, MISSION), 'utf8') : null)
+    : (sh(['git', 'cat-file', '-e', `HEAD:${MISSION}`]).code === 0 ? need(sh(['git', 'show', `HEAD:${MISSION}`]), `git show ${MISSION}`) : null);
+  const list = body ? JSON.parse(body).listenPartners : undefined;
+  if (list !== undefined) {
+    if (!Array.isArray(list) || list.some(p => typeof p?.role !== 'string' || typeof p?.name !== 'string' || typeof p?.from !== 'string')) { console.error(`${MISSION} listenPartners: each needs a role, a name and a from (its schema: contracts/missions/mission.schema.ts)`); process.exit(1); }
+    writeFileSync(join(stream, 'handover.listen-partners.json'), JSON.stringify({ schema: 'suborned.view.listen-partners/1', partners: list }, null, 1) + '\n');
+    partners = `handover.listen-partners.json (${list.length}; view only, unhashed)`;
+  } else rmSync(join(stream, 'handover.listen-partners.json'), { force: true });
+}
+// 4d. the audio cues (Chime, suborned.audio-cues/1, contracts/audio/cues.json; Splice, briefs/067/splice.md item 2): which clip plays on which log code, at what volume, on which
+// bus. Host content like the text and the seats: HostAudio.cs reads StreamingAssets/sim/cues.json first, then the repo's contracts/ folder, then the values copied into its
+// code, so a build that does not ship the file plays the code's copy on any Mac but this one. From the same source as the inputs (the commit, or the tree with --tree),
+// judged by its own zod schema, nesting, its buses and the clips it names being in the Unity project (tools/sim/cues.ts); absent, the host's defaults stand and any stale copy is removed.
+let cues = 'absent (the host plays the cue values copied into its code)';
+{
+  const at = (rel: string) => tree ? (existsSync(join(root, rel)) ? readFileSync(join(root, rel)) : null)
+    : (sh(['git', 'cat-file', '-e', `HEAD:${rel}`]).code === 0 ? Buffer.from(need(sh(['git', 'show', `HEAD:${rel}`]), `git show ${rel}`)) : null);
+  const body = at(CUES), schema = at(CUES_SCHEMA);
+  if (body && schema) {
+    const dir = join(work, 'cues'); mkdirSync(join(dir, 'contracts/audio'), { recursive: true });
+    writeFileSync(join(dir, CUES_SCHEMA), schema); // imports only zod, which resolves from the repo's node_modules above out/
+    const { Cues } = await import(join(dir, CUES_SCHEMA));
+    const j = judgeCues(body.toString('utf8'), Cues, join(root, CLIP_ROOT), MAX_DEPTH);
+    if (!j.ok) { console.error(`${CUES} is not fit to ship:\n  ${j.problems.join('\n  ')}`); process.exit(1); }
+    writeFileSync(join(stream, 'cues.json'), body);
+    cues = `cues.json ${sha(body).slice(0, 12)} (suborned.audio-cues/1 parses; ${j.cues} cues, ${j.loops} loops, ${j.clips.length} clips in the Unity project)`;
+  } else rmSync(join(stream, 'cues.json'), { force: true });
+}
+const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, range, text, cues, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
 writeFileSync(join(stream, 'engine.json'), JSON.stringify(engine, null, 1) + '\n');
 writeFileSync(join(stream, 'headless.json'), JSON.stringify({ schema: 'suborned.sim.headless/1', engine: { commit, dllSha256: dllSha, inputs, range }, scenarios, routes, range: rangePlays }, null, 1) + '\n');
 
@@ -178,5 +218,9 @@ console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scen
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
 console.log(`mission text: ${text}`);
 console.log(`seats: ${seats}`);
+// the sound pack's cues (briefs/087/cues.json, until Chime moves them to contracts/audio): view only, unhashed, for HostAudio.Pack; the fields the player reads
+{ const c = JSON.parse(readFileSync(join(root, 'briefs/087/cues.json'), 'utf8')); const body = JSON.stringify({ schema: c.schema, buses: c.buses, spatial: c.spatial, cues: c.cues.map((q: any) => ({ id: q.id, file: q.file, mix_group: q.mix_group, voices_max: q.voices_max, cooldown_s: q.cooldown_s, loop: q.loop, spatial: q.spatial })) }, null, 1) + '\n'; writeFileSync(join(stream, 'sound.json'), body); console.log(`sound pack: ${c.cues.length} cues`); }
+console.log(`listen partners: ${partners}`);
+console.log(`audio cues: ${cues}`);
 console.log(`→ ${plugin.replace(root + '/', '')}/Suborned.Sim.dll, ${stream.replace(root + '/', '')}/ (engine.json, headless.json, ${Object.keys(INPUTS).length} inputs)`);
 process.exit(bad.length ? 1 : 0);

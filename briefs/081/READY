@@ -1,0 +1,7 @@
+081 sim view · Splice · 2026-10-30
+Page: briefs/081/simview.html (open by double-click; no server; offline). Rebuild: bun run simview (through the guard; about 5 s).
+Evidence: 12/12 final hashes match (11 routes against record c046, engine 0.36.0; CAR-BLAST against its own checkpoints). The dump plays each script again untouched and exits 1 if a checkpoint moved. bun test tools/simview: 4 pass. bun run typecheck: clean. Page driven over CDP in headless Chrome (follow, scrub, zoom, orbit, buttons, run picker, compare): no exceptions.
+Added: sim/cli/Dump.cs + the `dump` case and usage line in sim/cli/Program.cs (read-only; no rule, route or rulebook change); tools/simview/; package.json script simview; briefs/081/analyze.ts.
+Seeds: none yet. The page says so; a run's key is {script, seed} with seed null until brief 080.
+Note for Waymark: sim/cli source is in engineHash, so a replay check of c046 shows "drift engine source" until the next record. Not a failure.
+Next owner: Aster, to show Sky.

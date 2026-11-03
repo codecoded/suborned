@@ -1,0 +1,202 @@
+{
+ "note": "Brief 069, Sky 2026-10-27: 'our enforcer's feet are oddly placed'. Diagnosis and the rule fit.json rest.stance (keepOutward, lib.stance_deg). Unity numbers: out/scratch/forma/unityprobe/Assets/Editor/FeetPlay.cs, front on, foot IK off; m.",
+ "bind": {
+  "enforcer_v1_H": {
+   "heightM": 1.874,
+   "hipJointW": 0.228,
+   "meshW_atHipJoints": 1.417,
+   "hipJoint_over_meshW": 0.161,
+   "skinW_atHipJoints": 0.417,
+   "Left": {
+    "soleLenM": 0.314,
+    "ankleAtFrac": 0.282,
+    "ballAtFrac": 0.709,
+    "widestAtFrac": 0.65,
+    "ankleHeightM": 0.071,
+    "ankleSideOffsetM": -0.008,
+    "bootAxisYawDeg": 4.5,
+    "boneYawDeg": 1.8,
+    "soleCentreX": 0.162,
+    "ankleX": 0.15,
+    "hipX": 0.114,
+    "kneeX": 0.132,
+    "shinCentreX_atKnee": 0.134
+   },
+   "Right": {
+    "soleLenM": 0.315,
+    "ankleAtFrac": 0.276,
+    "ballAtFrac": 0.702,
+    "widestAtFrac": 0.65,
+    "ankleHeightM": 0.071,
+    "ankleSideOffsetM": 0.011,
+    "bootAxisYawDeg": -3.2,
+    "boneYawDeg": -1.8,
+    "soleCentreX": -0.165,
+    "ankleX": -0.15,
+    "hipX": -0.114,
+    "kneeX": -0.132,
+    "shinCentreX_atKnee": -0.116
+   }
+  },
+  "fixer_v7_H": {
+   "heightM": 1.803,
+   "hipJointW": 0.2,
+   "meshW_atHipJoints": 1.193,
+   "hipJoint_over_meshW": 0.168,
+   "skinW_atHipJoints": 0.356,
+   "Left": {
+    "soleLenM": 0.248,
+    "ankleAtFrac": 0.211,
+    "ballAtFrac": 0.689,
+    "widestAtFrac": 0.55,
+    "ankleHeightM": 0.069,
+    "ankleSideOffsetM": -0.009,
+    "bootAxisYawDeg": 0.4,
+    "boneYawDeg": 3.3,
+    "soleCentreX": 0.089,
+    "ankleX": 0.079,
+    "hipX": 0.1,
+    "kneeX": 0.089,
+    "shinCentreX_atKnee": 0.091
+   },
+   "Right": {
+    "soleLenM": 0.249,
+    "ankleAtFrac": 0.213,
+    "ballAtFrac": 0.687,
+    "widestAtFrac": 0.6,
+    "ankleHeightM": 0.069,
+    "ankleSideOffsetM": 0.007,
+    "bootAxisYawDeg": -1.2,
+    "boneYawDeg": -3.3,
+    "soleCentreX": -0.087,
+    "ankleX": -0.079,
+    "hipX": -0.1,
+    "kneeX": -0.089,
+    "shinCentreX_atKnee": -0.085
+   }
+  },
+  "e2e_guard_H": {
+   "heightM": 1.694,
+   "hipJointW": 0.191,
+   "meshW_atHipJoints": 1.059,
+   "hipJoint_over_meshW": 0.18,
+   "skinW_atHipJoints": 0.329,
+   "Left": {
+    "soleLenM": 0.251,
+    "ankleAtFrac": 0.154,
+    "ballAtFrac": 0.593,
+    "widestAtFrac": 0.6,
+    "ankleHeightM": 0.065,
+    "ankleSideOffsetM": -0.006,
+    "bootAxisYawDeg": 5.1,
+    "boneYawDeg": 3.5,
+    "soleCentreX": 0.098,
+    "ankleX": 0.082,
+    "hipX": 0.095,
+    "kneeX": 0.089,
+    "shinCentreX_atKnee": 0.073
+   },
+   "Right": {
+    "soleLenM": 0.253,
+    "ankleAtFrac": 0.154,
+    "ballAtFrac": 0.59,
+    "widestAtFrac": 0.6,
+    "ankleHeightM": 0.065,
+    "ankleSideOffsetM": 0.009,
+    "bootAxisYawDeg": -4.3,
+    "boneYawDeg": -3.5,
+    "soleCentreX": -0.099,
+    "ankleX": -0.082,
+    "hipX": -0.095,
+    "kneeX": -0.089,
+    "shinCentreX_atKnee": -0.084
+   }
+  }
+ },
+ "restSpreadDeg_meanOfLegs_outwardPositive": {
+  "enforcer_v1": 2.26,
+  "fixer_v7": -1.44,
+  "e2e_coat": -1.45,
+  "e2e_dress": -1.41,
+  "e2e_flamingo": -2.79,
+  "e2e_guard": -0.98
+ },
+ "walkFrontOn": {
+  "walk|fixer_v7_H": {
+   "ankleSepMean": 0.141,
+   "ankleSepPlantedL": 0.146,
+   "bootGapMin": 0.034,
+   "bootGapMean": 0.065,
+   "framesBootsOverlapFront": 0,
+   "frames": 35,
+   "yawPlantedL": -0.5,
+   "yawPlantedR": 11.4
+  },
+  "walk|enforcer_before_H": {
+   "ankleSepMean": 0.16,
+   "ankleSepPlantedL": 0.166,
+   "bootGapMin": 0.037,
+   "bootGapMean": 0.054,
+   "framesBootsOverlapFront": 0,
+   "frames": 35,
+   "yawPlantedL": -0.3,
+   "yawPlantedR": 11.1
+  },
+  "walk|enforcer_v1_H": {
+   "ankleSepMean": 0.208,
+   "ankleSepPlantedL": 0.214,
+   "bootGapMin": 0.077,
+   "bootGapMean": 0.103,
+   "framesBootsOverlapFront": 0,
+   "frames": 35,
+   "yawPlantedL": 1.6,
+   "yawPlantedR": 9.1
+  },
+  "ac_walk_loop|fixer_v7_H": {
+   "ankleSepMean": 0.159,
+   "ankleSepPlantedL": 0.164,
+   "bootGapMin": 0.027,
+   "bootGapMean": 0.102,
+   "framesBootsOverlapFront": 0,
+   "frames": 155,
+   "yawPlantedL": -29.6,
+   "yawPlantedR": 23.5
+  },
+  "ac_walk_loop|enforcer_before_H": {
+   "ankleSepMean": 0.18,
+   "ankleSepPlantedL": 0.184,
+   "bootGapMin": -0.017,
+   "bootGapMean": 0.057,
+   "framesBootsOverlapFront": 14,
+   "frames": 155,
+   "yawPlantedL": -28.8,
+   "yawPlantedR": 23.8
+  },
+  "ac_walk_loop|enforcer_v1_H": {
+   "ankleSepMean": 0.219,
+   "ankleSepPlantedL": 0.223,
+   "bootGapMin": 0.022,
+   "bootGapMean": 0.098,
+   "framesBootsOverlapFront": 0,
+   "frames": 155,
+   "yawPlantedL": -27.9,
+   "yawPlantedR": 23.3
+  }
+ },
+ "sourceWalk_Standard_Walk_c9ccc2e9": {
+  "plantedAnkleFromHipsM": {
+   "Left": 0.012,
+   "Right": -0.03
+  },
+  "plantedToeOutDeg_vsHips": {
+   "Left": 0.9,
+   "Right": 13.0
+  },
+  "hipsYawMeanDeg": 3.9
+ },
+ "determinism": {
+  "enforcer": "two rebuilds 11/11 identical; vs the main build 11/11 (main also has manifest.json)",
+  "fixer": "rebuild vs main: every file identical (main also has manifest.json)",
+  "e2e": "rebuild vs main: every FBX, avatarT, meta, texture identical; the four figure reports differ only by the looseRules.coatBlend field added before this change (the main e2e reports predate it)"
+ }
+}

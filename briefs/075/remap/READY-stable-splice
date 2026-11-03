@@ -1,0 +1,7 @@
+Splice, brief 075 stable zone + Datum's Skyport/reach asks, 2026-10-29. Not committed.
+- Zone ids: street layer numbers Handover-zone items on their own count (<kind>-z<n>); road finish, kerb returns, tram rails likewise (gen/street/kit.ts zoneMint).
+- Zone kit picks: zone items choose first, seeded by place; pinned to the pre-S2 pieces by contracts/world/harbour-district.zone-kit.json (bun run world:pin-zone; 92 pins); world rule ZK-1.
+- Test: tools/world/zone-stable.test.ts (extra gate outside the zone; plan without S2): zone street, pieces, crossings, takedown byte for byte.
+- Zone vs pre-S2 build: 340/340 items, same places and pieces (ids aside). sim site = HEAD = c043 (ea0217ca, walkCells 2439). Takedown: ids only (phone-booth-302→z57, -369→z97, dock-165→z1, mast-164→z0).
+- N-S station furniture in the line's frame (transit.ts); RCH-1 enforced from plan 0.5.2; caisson steps (gen/caissonsteps.ts, 6 × 0.17 m, both piers).
+- world ×2 d9262e4f…, plan 157 PASS, overlay 162 PASS, cover --check 0, missions:check handover --inputs tree SHIPS, typecheck clean, bun run test 4 red (none from this round).

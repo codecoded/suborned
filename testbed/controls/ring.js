@@ -72,6 +72,10 @@ export function ringPointer(e, down) {
   const t = e.target.closest?.('[data-w]'), v = t ? t.dataset.w : null;
   if (!down) { const nv = v === null ? -1 : v === 'dots' ? 'dots' : v[0] === 'r' ? v : +v; if (nv !== r.hover) { r.hover = nv; draw(); } return true; }
   if (v === 'dots') { r.dots = !r.dots; draw(); return true; }
+  if (v !== null && e.pointerType === 'touch') { // a finger has no hover: the first tap on a wedge lights it and shows its price, the second takes it (the main way, already priced on the plate, is taken at once)
+    const now = v[0] === 'r' ? v : +v, lit = r.hover === -1 ? 0 : r.hover;
+    if (now !== lit) { r.hover = now; draw(); return true; }
+  }
   if (v !== null) { onTake(v[0] === 'r' ? r.rest[+v.slice(1)] : r.shown[+v], { shift: e.shiftKey, alt: e.altKey }); return true; }
   if (e.button === 2 && r.style === 'busy') { onTake(r.shown[r.lit]); return true; }
   return false;
@@ -79,7 +83,7 @@ export function ringPointer(e, down) {
 export function placeRing(project) {
   const r = G.ring; if (!r) return;
   const p = project(r.ent.g.position.x, r.ent.h * 0.55, r.ent.g.position.z); if (!p) return;
-  const x = Math.max(160, Math.min(innerWidth - 160, p.x)), y = Math.max(160, Math.min(innerHeight - 160, p.y));
+  const mx = Math.min(innerWidth / 2, innerWidth < 500 ? 185 : 160), x = Math.max(mx, Math.min(innerWidth - mx, p.x)), y = Math.max(160, Math.min(innerHeight - 160, p.y)); // upright phone: the price plate is wider than the ring
   el.style.transform = `translate(${Math.round(x - C)}px,${Math.round(y - C)}px)`;
   const pl = el.querySelector('.plate1'); if (pl) pl.classList.toggle('up', y > innerHeight - 260);
 }

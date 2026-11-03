@@ -20,7 +20,7 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         /// <summary>The cases that read the round itself (they have nothing to compare with the round off).</summary>
-        public static readonly HashSet<string> PlaysTheRound = new HashSet<string>(StringComparer.Ordinal) { "N130", "N131", "N132", "N133", "N134", "N135", "N136", "N178", "N179", "N180" };
+        public static readonly HashSet<string> PlaysTheRound = new HashSet<string>(StringComparer.Ordinal) { "N130", "N131", "N132", "N133", "N134", "N135", "N136", "N178", "N179", "N180", "CLOSE-VERDICT", "BOARD-REACH", "GUARD-LEAVES", "SHOT-INTAKE", "CARD-COMING", "SEED-REPLAY", "SEED-DIFFER", "SEED-NEUTRAL", "SEED-FIXED", "SEED-READS", "SEED-FAIR", "PACE-CLOCK", "SHOT-SUM", "SHOT-STREAK" }; // brief 080: these play their own games on the run's inputs
         static string PhaseOf(Game g) => g.PersonPose(g.Inez)?.phase ?? "";
         static Start KnowingRoutine() { var s = new Start(); s.Known["waitress"] = new List<string> { "routine" }; return s; }
         static Start KnowingSecret() { var s = new Start(); s.Known["waitress"] = new List<string> { "secret" }; return s; }
@@ -59,20 +59,20 @@ namespace Suborned.Sim
                 r.Is(g.Inez.KNeed, "the Listen landed: her need is known");
             }, KnowingRoutine());
 
-            Add("N131", "—", "The chain hold (brief 022, rounds.holds and linger): the Scout listens to Inez at 0:20 (her routine known from the briefing); the Fixer's Help is given at the tick the Listen lands. One hold from 0:20 to the Help's landing plus 3 s: she stands still the whole way, though her round would have taken her to table 3 at 0:34; the round clock stopped, so she goes out 14 s after the hold (her clock was at 0:20).", r =>
+            Add("N131", "—", "The chain hold (brief 022, rounds.holds and linger): the Scout listens to Inez at 0:20 (her routine known from the briefing); the Fixer's Help is given at the tick the Listen lands. One hold from the Listen's start to the Help's landing plus 3 s: she stands still the whole way, though her round would have taken her to table 3 at 0:34; the round clock stopped, so she goes out what was left of it after the hold.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "beside-inez"), r.Send(Fixer, "d:Courtyard")));
                 r.To(T(20));
                 var a = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); r.Is(a.ok, $"Listen at 0:20 ({a.why})");
-                int from = g.Tick; r.Done(Scout);
+                r.Is(r.Until(() => r.Op(Scout).Busy != null, T(60)), "the Scout takes a spot and the Listen starts (engine 0.39.0: the hold starts with it, not with the order)"); int from = g.Tick; r.Done(Scout);
                 a = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "turn", Target = Inez, Approach = "help" }); r.Is(a.ok, $"Help at the Listen's landing ({a.why})");
                 int lands = r.Op(Fixer).BusyEnd;
                 bool still = true; while (g.Tick < lands + T(g.R.RoundsLingerS)) { if (PhaseOf(g) != "held") still = false; g.Step(); }
                 r.Is(still, $"held from {Report.Clock(from)} to {Report.Clock(lands)} + 3 s, through 0:34 when her round was due out");
                 int back = g.Tick;
                 r.Eq(PhaseOf(g), "at post", "the hold over, she stands her post");
-                r.Is(r.Until(() => PhaseOf(g) == "to table", T(30)) && Math.Abs(g.Tick - back - T(14)) <= 1, $"her round goes on where it stopped: out {(g.Tick - back) / Game.Hz} s later (14 s: her clock stood at 0:20)");
+                r.Is(r.Until(() => PhaseOf(g) == "to table", T(30)) && Math.Abs(g.Tick - back - (T(34) - from)) <= 1, $"her round goes on where it stopped: out {(g.Tick - back) / Game.Hz} s later ({(T(34) - from) / Game.Hz} s: her clock stood at {Report.Clock(from)}, her round due out at 0:34)");
             }, KnowingRoutine());
 
             Add("N132", "—", "The call from mid-walk (brief 022, the summons): Inez turned, the Fixer calls at 0:36, 2 s into her walk to table 3. She turns back and walks to her post; the guard walks the route he always walked to her post and stops 1.2 m short of it, facing her (his walk 1.2 m shorter than to the post); from his arrival they stand together until he turns to go, plus 2 s; then her round resumes at the start of its next rest.", r =>
@@ -83,7 +83,7 @@ namespace Suborned.Sim
                 r.Do(Fixer, "call", Inez);
                 g.Step(); r.Eq(PhaseOf(g), "to post", "the call: she walks back to her post");
                 int arrive = g.LureTick + g.VisitWalkTicks;
-                var st0 = g.S.Rounds!.GuardStops[0]; int cut = (g.S.Rounds.GuardStopWalkCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed, full = (g.S.Rounds.GuardWalkCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed;
+                var st0 = g.S.Rounds!.GuardStops[0]; int cut = (g.S.Rounds.GuardStopWalkCm * 10 + g.R.PeopleWalk - 1) / g.R.PeopleWalk, full = (g.S.Rounds.GuardWalkCm * 10 + g.R.PeopleWalk - 1) / g.R.PeopleWalk; // engine 0.34.0 (M067-B1): the summoned guard walks at the city's pace (crowd.walk), not the cell's
                 r.Is(Math.Abs(g.VisitWalkTicks - cut) <= 3 && g.VisitWalkTicks < full + T(1), $"his walk is to his stop at her side: {g.VisitWalkTicks / Game.Hz} s (to her post it was {full / Game.Hz} s)");
                 r.To(arrive + 1);
                 var gp = g.GuardPose()!.Value; var post = g.S.Stand(g.Inez.Place);
@@ -131,7 +131,10 @@ namespace Suborned.Sim
                 r.To(g.LureTick + g.VisitWalkTicks + 1);
                 var gp = g.GuardPose()!.Value;
                 r.Is(G.Within(r.Op(Scout).Pos, stops[0], 30), "the Scout is on the first stop");
-                r.Is(G.Within(gp.pos, stops[1], 5), $"he takes the second stop {stops[1]} (at {gp.pos})");
+                // engine 0.30.0 (Pulse's re-bake on the face-margin grid): the file now holds stops every 15° (90°, 75°, 60°, 45° ...), the next three within
+                // a metre of the first; he takes the first in the file clear of the Scout by partners-clear-cm, (-883, -3003) on her right (was stops[1], (-953, -2807))
+                var clear = stops.FirstOrDefault(q => G.Dist(q, r.Op(Scout).Pos) >= g.R.PartnersClearCm);
+                r.Is(G.Within(gp.pos, clear, 5) && clear != stops[0], $"he takes the first stop clear of the Scout, {clear} (at {gp.pos})");
                 r.Is(G.Dist(gp.pos, r.Op(Scout).Pos) >= g.R.PartnersClearCm, "a metre or more from the Scout");
             }, Turned(Inez));
 

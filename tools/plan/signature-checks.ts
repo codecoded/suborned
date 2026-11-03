@@ -48,7 +48,7 @@ export function signatureChecks(c: WCtx): Check[] {
   if (portals.length) {
     const bad: string[] = [];
     for (const p of portals) {
-      const line = Number(String(p.line).startsWith('S1') ? 0 : 0), corridor: Rect = [p.rect[0], p.rect[1], line - p.half, line + p.half];
+      const line = p.y, corridor: Rect = [p.rect[0], p.rect[1], line - p.half, line + p.half];
       for (const s of solids) {
         if (s.base >= p.ceiling - TOL || s.top <= p.z[0] + TOL) continue; // clear of the opening's height band [sill, ceiling)
         if (areaIn(s.ring, corridor) > 0.5) bad.push(`${s.id} stands in ${p.id}'s opening (z ${f1(Math.max(s.base, p.z[0]))}–${f1(Math.min(s.top, p.ceiling))})`);
@@ -61,23 +61,34 @@ export function signatureChecks(c: WCtx): Check[] {
   // SK-1 one dominant tip (SpaceHQ), every other tip at or under rivalMax, at or under the harbour icon within `within` of the quay
   if (sk?.dominant) {
     const bad: string[] = [], quayX = Math.min(...plan.quay.flat().map(p => p[0]));
-    type Tip = { id: string; at: V; tip: number };
+    type Tip = { id: string; at: V; tip: number; base?: number };
     const tips: Tip[] = [], ctr = (r: V[]): V => [r.reduce((s, q) => s + q[0], 0) / r.length, r.reduce((s, q) => s + q[1], 0) / r.length];
     for (const s of w.signatures) if (s.kind !== 'station' && s.kind !== 'skybridge' && s.kind !== 'portal') tips.push({ id: s.id, at: s.kit ? s.kit.at : [0, 0], tip: s.tip });
-    for (const l of w.landmarks) { const a = l.kit ? adoptedBy(l.kit.id) : undefined; tips.push({ id: l.id, at: l.centre, tip: l.base + (a && l.kit ? a.size[1] * l.kit.scale[1] + (l.id.endsWith('liner-berth') ? l.height : 0) : l.height) }); }
+    for (const l of w.landmarks) { const a = l.kit ? adoptedBy(l.kit.id) : undefined; tips.push({ id: l.id, at: l.centre, base: l.base, tip: l.base + (a && l.kit ? a.size[1] * l.kit.scale[1] + (l.id.endsWith('liner-berth') ? l.height : 0) : l.height) }); }
     for (const b of gen.blds) { const r = w.roofs.find(x => x.building === b.id); tips.push({ id: b.id, at: ctr(b.ring.p), tip: b.z + (r?.crown ? (adoptedBy(r.crown.id)?.size[1] ?? 0) * r.crown.scale[1] : 0) }); }
     for (const m of w.megastructures) { const top = Math.max(...m.parts.map(p => p.base + p.height), ...m.prims.map(p => p.base + p.size[2])); tips.push({ id: m.id, at: ctr(m.parts[0]?.ring as V[] ?? [[0, 0]]), tip: top }); }
     const dom = tips.find(t => t.id === `signature/${sk.dominant.id}`);
     if (!dom) bad.push(`dominant ${sk.dominant.id} is not in the world`);
     else {
       if (Math.abs(dom.tip - 0.18 - sk.dominant.tip) > TIP_TOL) bad.push(`${sk.dominant.id} tip ${f1(dom.tip - 0.18)} vs ${sk.dominant.tip}`);
+      // standards.skyline.vista { id, tip } (brief 075 golden vista 2): the one landmark that may pass rivalMax, held ≤ vista.tip above its own
+      // ground (the piece stands on the landmark base, 0.2, as SpaceHQ's 0.18) and under the dominant tip; every other tip as before
+      const vista = sk.vista as { id: string; tip: number } | undefined, vistaId = vista ? `landmark/${vista.id}` : undefined;
+      if (vista && !tips.some(t => t.id === vistaId)) bad.push(`vista ${vista.id} is not in the world`);
+      if (vista && !(vista.tip < sk.dominant.tip)) bad.push(`vista ${vista.id} tip ${vista.tip} not under the dominant ${sk.dominant.tip}`);
       for (const t of tips) {
         if (t === dom) continue;
-        if (t.tip > sk.rivalMax + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} over rivalMax ${sk.rivalMax}`);
-        if (t.at[0] >= quayX - sk.harbour.within && t.tip > sk.harbour.tip + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} within ${sk.harbour.within} m of the quay, over ${sk.harbour.tip}`);
+        if (vista && t.id === vistaId) {
+          const h = t.tip - (t.base ?? 0);
+          if (h > vista.tip + TIP_TOL) bad.push(`${t.id} tip ${f1(h)} over the vista tip ${vista.tip}`);
+          if (h >= sk.dominant.tip || t.tip >= dom.tip) bad.push(`${t.id} tip ${f1(t.tip)} not under the dominant ${sk.dominant.id} ${f1(dom.tip)}`);
+        } else if (t.tip > sk.rivalMax + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} over rivalMax ${sk.rivalMax}`);
+        // standards.skyline.harbour.exceptions [{ id, tip }] (brief 075 remap): a named landmark held to its own tip in the band, every other tip to harbour.tip
+        const hx = (sk.harbour.exceptions as { id: string; tip: number }[] | undefined)?.find(e => `landmark/${e.id}` === t.id), htip = hx ? hx.tip : sk.harbour.tip;
+        if (t.at[0] >= quayX - sk.harbour.within && t.tip > htip + TIP_TOL) bad.push(`${t.id} tip ${f1(t.tip)} within ${sk.harbour.within} m of the quay, over ${htip}`);
       }
     }
-    out.push(rule('SK-1', G, `One dominant tip (${sk.dominant.id} ${sk.dominant.tip}); every other tip ≤ rivalMax ${sk.rivalMax}, and ≤ ${sk.harbour.tip} within ${sk.harbour.within} m of the quay`, tips.length, bad, 'all', 'standards.skyline · brief 007 · failing example: LinerDock as built (205.1 m) on the liner berth'));
+    out.push(rule('SK-1', G, `One dominant tip (${sk.dominant.id} ${sk.dominant.tip}); every other tip ≤ rivalMax ${sk.rivalMax}${sk.vista ? ` (but ${sk.vista.id} ≤ ${sk.vista.tip}, under the dominant)` : ''}, and ≤ ${sk.harbour.tip} within ${sk.harbour.within} m of the quay${sk.harbour.exceptions?.length ? ` (but ${sk.harbour.exceptions.map((e: { id: string; tip: number }) => `${e.id} ≤ ${e.tip}`).join(', ')})` : ''}`, tips.length, bad, 'all', 'standards.skyline · brief 007 · failing examples: LinerDock as built (205.1 m) on the liner berth; world-rules.test.ts (a second landmark at 210, crown-vista at 252)'));
   }
 
   // SK-2 every tower site and signature names a crown type; within 150 m no two crowns of one type (matched pairs excepted)

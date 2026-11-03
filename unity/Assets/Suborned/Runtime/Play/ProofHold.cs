@@ -80,9 +80,9 @@ namespace Suborned.Play
             string probe = h.ProbeAt(Sp(h, izw)); string offer = HudToolkit.PillWords;
             yield return Shoot(dir, "hold-act-offer", log);
             int n0 = g.Orders.Count; yield return Left(h, izw, 0f); yield return new WaitForSecondsRealtime(0.5f);
-            var click = OrdersSince(h, n0); string pendClick = h.PendingOf(1).verb;
-            bool clickOk = click.Count > 0 && click.TrueForAll(o => o.StartsWith("fixer:move")) && pendClick.Length == 0 && h.ThingWalks > 0;
-            parts.Add($"\"click\": {{\"ok\": {B(clickOk)}, \"orders\": \"{string.Join(",", click)}\", \"pending\": \"{pendClick}\", \"probe\": \"{J(probe)}\", \"offer\": \"{J(offer)}\"}}"); ok &= clickOk;
+            var click = OrdersSince(h, n0); string pendClick = h.PendingOf(1).verb; bool clickRing = h.Ring != null; if (clickRing) h.CloseRing(); yield return Frames(2);
+            bool clickOk = click.Count == 0 && pendClick.Length == 0 && clickRing; // item 33 (Sky 2026-10-24): a click on a thing opens its ring, nothing given
+            parts.Add($"\"click\": {{\"ok\": {B(clickOk)}, \"ring\": {B(clickRing)}, \"orders\": \"{string.Join(",", click)}\", \"pending\": \"{pendClick}\", \"probe\": \"{J(probe)}\", \"offer\": \"{J(offer)}\"}}"); ok &= clickOk;
             log.Add($"holdActs click: {(clickOk ? "ok" : "FAILED")}: [{string.Join(",", click)}] pending '{pendClick}'; offer '{offer}'; probe {probe}");
             // the early release (0.28 s: the charge shows, then the button comes up)
             int c0 = h.HoldCancels; n0 = g.Orders.Count; yield return Left(h, izw, 0.28f); yield return Frames(3);
@@ -119,8 +119,8 @@ namespace Suborned.Play
             string latchWords = HudToolkit.PillWords, latchState = HudToolkit.PillState; float walked = (iz.position - startPos).magnitude; var under = h.ProbeAt(Sp(h, pressW));
             Btn(Sp(h, pressW)); yield return new WaitForSecondsRealtime(0.4f); var latch = OrdersSince(h, n0); string latchPend = h.PendingOf(1).verb;
             bool latchOk = latchState == "ready" && latchWords.StartsWith("Let go ·") && (latchPend.Length > 0 || latch.Exists(o => o.StartsWith("fixer:") && !o.StartsWith("fixer:cancel"))) && (h.PendingTarget(1) == "waitress" || latch.Exists(o => o.StartsWith("fixer:") && o.Contains("waitress")));
-            float ks = Mathf.Max(1f, Mathf.Round(Screen.height / 1080f)); int tc0 = h.HoldTravelCancels; n0 = g.Orders.Count; // 120 kit px (the cancel is at 80) h.Select(OpId.Scout, false); yield return null;
-            { var sp = Aim(h, pressW = iz.position + Vector3.up); yield return Frames(2); Btn(sp, left: true); yield return new WaitForSecondsRealtime(0.15f); HandoverHost.PointerWorld = null; for (int s2 = 1; s2 <= 8; s2++) { Btn(sp + new Vector2(15f * ks * s2, 0f), left: true); yield return null; } yield return new WaitForSecondsRealtime(0.4f); HandoverHost.PointerWorld = null; Btn(sp + new Vector2(120f * ks, 0f)); yield return Frames(4); }
+            float ks = Mathf.Max(1f, Mathf.Round(Screen.height / 1080f)); int tc0 = h.HoldTravelCancels; n0 = g.Orders.Count; /* 120 kit px (the cancel is at 80) */ h.Select(OpId.Scout, false); yield return null;
+            { var sp = Aim(h, pressW = iz.position + Vector3.up); yield return Frames(2); Btn(sp, left: true); yield return new WaitForSecondsRealtime(0.28f); /* brief 083: before the pill shows (0.2 s) travel is a pan */ HandoverHost.PointerWorld = null; for (int s2 = 1; s2 <= 8; s2++) { Btn(sp + new Vector2(15f * ks * s2, 0f), left: true); yield return null; } yield return new WaitForSecondsRealtime(0.4f); HandoverHost.PointerWorld = null; Btn(sp + new Vector2(120f * ks, 0f)); yield return Frames(4); }
             var dragged = OrdersSince(h, n0); bool travelOk = h.HoldTravelCancels == tc0 + 1 && !dragged.Exists(o => o.StartsWith("scout:watch") || o.StartsWith("scout:move"));
             parts.Add($"\"holdLatch\": {{\"ok\": {B(latchOk && travelOk)}, \"walkedM\": {F(walked)}, \"ready\": \"{J(latchWords)}\", \"orders\": \"{string.Join(",", latch)}\", \"pending\": \"{latchPend}\", \"underPointerAtRelease\": \"{J(under)}\", \"travelCancel\": {B(travelOk)}, \"travelOrders\": \"{string.Join(",", dragged)}\"}}"); ok &= latchOk && travelOk;
             log.Add($"holdActs latch: {(latchOk && travelOk ? "ok" : "FAILED")}: Inez walked {F(walked)} m during the hold; '{latchWords}'; [{string.Join(",", latch)}] pending '{latchPend}'; 120 px drag cancels {travelOk} [{string.Join(",", dragged)}]");
@@ -143,6 +143,7 @@ namespace Suborned.Play
             // a double click on the ground runs (the whole cell, in formation: their destination rings)
             h.SelectAll(); yield return null; var me = h.Views.Find("op/scout").position; Vector3 gw = me + new Vector3(4f, 0f, 3f); bool found = false;
             foreach (var off in new[] { new Vector3(4f, 0, 3f), new Vector3(-4f, 0, 3f), new Vector3(4f, 0, -3f), new Vector3(-4f, 0, -3f), new Vector3(6f, 0, 0) }) { var q = h.frame.Engine(me + off); if (g.S.Grid.Free(q)) { gw = me + off; found = true; break; } }
+            h.LookAt(gw); yield return Frames(2); // brief 079: on screen first: at play zoom 10 the spot lay under the minimap, whose press pans the view (a player can't click the ground there)
             n0 = g.Orders.Count;
             { var sp = Aim(h, gw); yield return Frames(2); Btn(sp, left: true); yield return null; Btn(sp); yield return Frames(2); Btn(sp, left: true); yield return null; Btn(sp); yield return Frames(3); }
             var dbl = OrdersSince(h, n0); bool runs = dbl.Exists(o => o.Contains(":move:run")); int movers = dbl.Select(o => o.Split(':')[0]).Distinct().Count();
@@ -219,6 +220,27 @@ namespace Suborned.Play
                 log.Add($"holdActs tp keeps {kind}: {(one ? "ok" : "FAILED")}: given {given}, trailing {trailing}, driven {driven}, working {working}, running {op.Running}, moved {F(tpMoved)} cm, samples/cease {samples}, landed {landed}{(afterW.Length > 0 ? ", W: " + afterW : "")}");
                 keepOk &= one; if (h.Driving) h.DriveLetGoToMap(); yield return null;
             }
+            // 4b · Sky's walk-off (2026-10-25): a movement key held over a swap never walks the agent taken. The Fixer driven with W held, F1 takes
+            // the Scout on her Listen with W still down: no drive sample or cancel for her, the Listen still under way, the held key ignored; W let
+            // go and pressed again then takes her stick
+            {
+                h.Begin(); h.IntelOpen = false; h.StartClock(); yield return null; g = h.Game; h.SetPaused(false);
+                h.Issue(new Order { Op = "scout", Do = "watch", Target = "waitress" }); int lim = g.Tick + 1500;
+                while (g.Tick < lim && !g.PersonByRole("waitress").KRoutine) h.RunTo(g.Tick + 5);
+                h.RunTo(g.Tick + 5); bool given = h.Issue(new Order { Op = "scout", Do = "listen", Target = "waitress" });
+                h.Select(OpId.Fixer, false); yield return null; h.DriveToggle(); yield return Frames(3);
+                Keys(Key.W); yield return new WaitForSecondsRealtime(0.4f);
+                int ign0 = h.DriveKeysIgnored, sn0 = g.Orders.Count; Keys(Key.W, Key.F1); yield return null; Keys(Key.W); yield return new WaitForSecondsRealtime(0.8f);
+                var sop = g.Ops[0]; bool working = sop.Busy?.Do == "listen" || sop.Act?.Do == "listen"; int scoutOrders = 0;
+                for (int i = sn0; i < g.Orders.Count; i++) if (g.Orders[i].order.Op == "scout" && g.Orders[i].order.Do is "drive" or "move" or "cancel" && !g.Orders[i].order.Release) scoutOrders++;
+                bool swapped = h.DriveAgent == 0, ignored = h.DriveKeysIgnored > ign0, latched = h.DriveKeyLatched;
+                Keys(); yield return Frames(3); Keys(Key.W); yield return new WaitForSecondsRealtime(0.15f); Keys(); yield return Frames(3); /* brief 083: on an act the first press asks */ Keys(Key.W); yield return new WaitForSecondsRealtime(0.4f); Keys(); yield return Frames(3);
+                bool retaken = !h.DriveTrailing && g.DrivePoseOf(OpId.Scout).Driven;
+                bool swapOk = given && swapped && working && scoutOrders == 0 && ignored && latched && retaken;
+                parts.Add($"\"tpSwapHeldKey\": {{\"ok\": {B(swapOk)}, \"given\": {B(given)}, \"swapped\": {B(swapped)}, \"listenKept\": {B(working)}, \"scoutOrders\": {scoutOrders}, \"ignored\": {B(ignored)}, \"latched\": {B(latched)}, \"repressTakes\": {B(retaken)}}}"); ok &= swapOk;
+                log.Add($"holdActs tp swap with a held key: {(swapOk ? "ok" : "FAILED")}: given {given}, swapped {swapped}, listen kept {working}, scout orders {scoutOrders}, ignored {ignored}, latched {latched}, re-press takes {retaken}");
+                if (h.Driving) h.DriveLetGoToMap(); yield return null;
+            }
             parts.Add($"\"tpKeeps\": {{\"ok\": {B(keepOk)}, {string.Join(", ", keeps)}}}"); ok &= keepOk;
             HandoverHost.PointerWorld = null; h.controls.planTogether = keepPlan; h.Begin(); Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
@@ -265,7 +287,7 @@ namespace Suborned.Play
                 h.LookAt(hw.Value); yield return Frames(2); var pa = hw.Value + Vector3.up * 1.0f; HandoverHost.ChargeScale = 10f; var psp = Aim(h, pa); yield return Frames(3); // centred on the target: the pill clear of the range panel (Glyph 0.2.65)
                 Btn(psp, right: true); yield return new WaitForSecondsRealtime(1.2f); log.Add($"fire charge picture: {HudToolkit.PillState} '{HudToolkit.PillWords}'"); h.SetPaused(true); yield return Shoot(dir, "hold-fire-charge", log); h.SetPaused(false); Btn(Sp(h, pa)); yield return Frames(3); HandoverHost.ChargeScale = 1f; // 0.2 s × 10: about 60 % at 1.2 s
                 h.SetPaused(false); Btn(Sp(h, pa), right: true); yield return new WaitForSecondsRealtime(0.55f); log.Add($"fire ready picture: {HudToolkit.PillState} '{HudToolkit.PillWords}'"); h.SetPaused(true); yield return Shoot(dir, "hold-fire-ready", log); h.SetPaused(false); Btn(Sp(h, pa)); yield return Frames(3);
-                h.SetPaused(false); Btn(Sp(h, pa), right: true); yield return new WaitForSecondsRealtime(0.6f); Btn(Sp(h, pa)); float t2 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - t2 < 3f && !HudToolkit.PillWords.StartsWith("Firing at")) yield return null;
+                h.SetPaused(false); Btn(Sp(h, pa), right: true); yield return new WaitForSecondsRealtime(0.6f); Btn(Sp(h, pa)); float t2 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - t2 < 3f && HudToolkit.PillState != "fire") yield return null; // the fire pill (brief 049 row 4: disc and seconds, no "Firing at")
                 log.Add($"fire picture: '{HudToolkit.PillWords}'"); h.SetPaused(true); yield return Shoot(dir, "hold-fire-firing", log); h.SetPaused(false);
             }
             log.Add($"holdRange right hold (commit on release): {(fireOk ? "ok" : "FAILED")}: drawn {drawn0}→{drawnNow}; before release [{string.Join(",", during)}] '{fullWords}' ({fullState}); release [{string.Join(",", after)}] lasting {lasting}; words {string.Join(" | ", words)}");
@@ -274,9 +296,15 @@ namespace Suborned.Play
             bool byOk = false; string byOrders = ""; string ringHover = "", ringOurs = ""; bool hoverOk = false, oursSeen = false;
             if (bs != null && h.Views.BystanderKey(g, bs.Id) is string bk && h.Views.Find(bk) is Transform bt)
             {
+                // Glyph's 0.2.94 review #7: a passer-by wears the hover ring only while a selected agent has a weapon drawn (049 round 1): draw first
+                ProofRings.DrawAll(h, new[] { (int)OpId.Enforcer }); bool drewFirst = g.Ops[(int)OpId.Enforcer].Gun.Drawn;
                 h.LookAt(bt.position); yield return Frames(2); var bw = bt.position + Vector3.up * 1.0f; var bsp = Aim(h, bw); yield return Frames(3);
+                // Glyph's 0.2.97 review #8: at 2160 the rings were read while the draw's 1 s bar still ran (the hover offer comes after it): keep the
+                // pointer on the passer-by until the hover ring is up (or 3 s), then read and shoot
+                float hw0 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - hw0 < 3f && !h.TargetRings.Any(r => r.Id == bs.Id && r.Hover)) { bsp = Aim(h, bw); yield return null; }
+                float hoverWait = Time.realtimeSinceStartup - hw0;
                 // Glyph 0.2.79 #2 (brief 049): a passer-by under the cursor wears the cream hover ring
-                ringHover = ProofRings.RingsNow(h); hoverOk = h.TargetRings.Any(r => r.Id == bs.Id && r.Hover && r.Side == HandoverHost.RingSide.Civilian);
+                ringHover = (drewFirst ? "drawn;" : "not drawn;") + $"waited {hoverWait:0.00} s;" + ProofRings.RingsNow(h); hoverOk = h.TargetRings.Any(r => r.Id == bs.Id && r.Hover && r.Side == HandoverHost.RingSide.Civilian);
                 yield return Shoot(dir, "ring-hover-passerby", log); Aim(h, bw); yield return Frames(2);
                 n0 = g.Orders.Count; Btn(bsp, right: true); yield return new WaitForSecondsRealtime(0.7f); Btn(Sp(h, bw)); yield return Frames(3);
                 // ... and, once the Enforcer aims at it, the cell's four cream ticks on its cream ring (a non-hostile)
@@ -323,19 +351,29 @@ namespace Suborned.Play
             log.Add($"holdRange focus: {(focusOk ? "ok" : "FAILED")}: fight on {fightOn}; [{string.Join(",", focus)}]");
             int ufK = -1; { float tu = Time.realtimeSinceStartup; while (ufK < 0 && Time.realtimeSinceStartup - tu < 8f) { for (int k = 0; k < 4 && ufK < 0; k++) if (h.UnderFireNow[k].Count > 0) ufK = k; if (ufK < 0) yield return null; } }
             string ufFace = ufK >= 0 ? h.FaceOf(ufK).ToString() : "", ufBy = ufK >= 0 ? string.Join(",", h.UnderFireNow[ufK].Select(x => x.By)) : "";
+            // brief 078: why each shooter fires is read while the fire is on, not after the picture's pause, when the spell may have ended (a red under load and in two of three runs on 0.2.146 and 0.2.147, never a game fault)
+            string ufWhy = ""; if (ufK >= 0) { float tw = Time.realtimeSinceStartup; while (h.FireWhyNow[ufK].Count == 0 && Time.realtimeSinceStartup - tw < 2f) yield return null; ufWhy = string.Join(",", h.FireWhyNow[ufK].Select(x => x.by + ":" + x.main)); }
             if (ufK >= 0) { yield return Frames(2); ufFace = h.FaceOf(ufK).ToString(); h.SetPaused(true); HandoverHost.PointerWorld = null; Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.08f)); yield return Frames(2); yield return Shoot(dir, "hold-under-fire", log); h.SetPaused(false); }
             bool ufOk = ufK >= 0 && ufFace == "UnderFire" && ufBy.Length > 0;
-            string ufWhy = ufK >= 0 ? string.Join(",", h.FireWhyNow[ufK].Select(x => x.by + ":" + x.main)) : ""; ufOk &= ufWhy.Length > 0; // engine 0.25.0: why each shooter fires (data)
+            ufOk &= ufWhy.Length > 0; // engine 0.25.0: why each shooter fires (data)
             parts.Add($"\"underFire\": {{\"ok\": {B(ufOk)}, \"agent\": {ufK}, \"by\": \"{ufBy}\", \"face\": \"{ufFace}\", \"why\": \"{J(ufWhy)}\", \"drawnBefore\": {B(ufK >= 0 && g.Ops[ufK].Gun.Drawn)}}}"); ok &= ufOk;
             log.Add($"holdRange under fire: {(ufOk ? "ok" : "FAILED")}: agent {ufK} shot at by [{ufBy}], face {ufFace}");
-            bool wf0 = g.WeaponsFree; n0 = g.Orders.Count; Keys(Key.G); yield return null; Keys(); yield return Frames(3); bool wf1 = g.WeaponsFree; string freeWord = h.Status;
-            h.SetPaused(true); yield return Shoot(dir, "hold-free-toggle", log); h.SetPaused(false);
-            Keys(Key.G); yield return null; Keys(); yield return Frames(3); bool wf2 = g.WeaponsFree; var freeOrders = OrdersSince(h, n0);
-            h.SelectAll(); yield return null; n0 = g.Orders.Count; Keys(Key.X); yield return null; Keys(); yield return Frames(3); var xs = OrdersSince(h, n0);
-            int stood = Enumerable.Range(0, 4).Count(k => g.StandDownOf((OpId)k) >= 0);
-            bool freeOk = wf0 && !wf1 && wf2 && freeOrders.Count(o => o.StartsWith("cell:free")) == 2 && freeWord == "Return fire only" && (!g.FreeFightOn || xs.Exists(o => o.EndsWith(":cease")) && stood > 0);
-            parts.Add($"\"weaponsFree\": {{\"ok\": {B(freeOk)}, \"states\": \"{wf0},{wf1},{wf2}\", \"orders\": \"{string.Join(",", freeOrders)}\", \"word\": \"{J(freeWord)}\", \"x\": \"{string.Join(",", xs)}\", \"stoodDown\": {stood}, \"fightOnAtX\": {B(g.FreeFightOn)}}}"); ok &= freeOk;
-            log.Add($"holdRange weapons free: {(freeOk ? "ok" : "FAILED")}: {wf0}→{wf1}→{wf2} [{string.Join(",", freeOrders)}] '{freeWord}'; X [{string.Join(",", xs)}] stood down {stood}");
+            // 3c · one input (engine 0.35, brief 039; GDD v0.30.1 §06/§10): weapons free is always on and has no toggle; G is walk/run, X and V
+            // give nothing to the fight (no cease, stance, free or panic ever sent: the engine refuses them as retired), F holsters the drawn
+            // selection and that ends every fire order; no agent has a move (weapons.moves.on false: Mark, Talk down, Steam, Covering fire never offered)
+            bool wf0 = g.WeaponsFree; n0 = g.Orders.Count; h.SelectAll(); yield return null;
+            Keys(Key.G); yield return null; Keys(); yield return Frames(2); Keys(Key.X); yield return null; Keys(); yield return Frames(2); Keys(Key.V); yield return null; Keys(); yield return Frames(3);
+            bool wf1 = g.WeaponsFree; var gxv = OrdersSince(h, n0);
+            h.SetPaused(true); yield return Shoot(dir, "hold-one-input", log); h.SetPaused(false);
+            int drawnBefore = Enumerable.Range(0, 4).Count(k => g.Ops[k].Gun.Drawn && g.Ops[k].Gun.HolsterAt < 0); n0 = g.Orders.Count;
+            Keys(Key.F); yield return null; Keys(); yield return Frames(3); h.RunTo(g.Tick + 8); var fo = OrdersSince(h, n0);
+            int ordersAfter = Enumerable.Range(0, 4).Count(k => g.Ops[k].Gun.Order.Length > 0); int drawnAfter = Enumerable.Range(0, 4).Count(k => g.Ops[k].Gun.Drawn && g.Ops[k].Gun.HolsterAt < 0);
+            bool retiredSent = false; for (int i = 0; i < g.Orders.Count; i++) if (g.Orders[i].order.Do is "cease" or "stance" or "free" or "panic") retiredSent = true;
+            var moves = Enumerable.Range(0, 4).Select(k => g.MoveOf((OpId)k).Verb).Where(v => v.Length > 0).ToList();
+            bool freeOk = g.OneInputOn && wf0 && wf1 && !gxv.Exists(o => o.Contains(":cease") || o.Contains(":stance") || o.Contains(":free") || o.Contains(":panic")) && !retiredSent
+                && (drawnBefore == 0 || fo.Exists(o => o.Contains(":holster")) && ordersAfter == 0 && drawnAfter == 0) && moves.Count == 0;
+            parts.Add($"\"oneInput\": {{\"ok\": {B(freeOk)}, \"weaponsFree\": \"{wf0},{wf1}\", \"gxv\": \"{string.Join(",", gxv)}\", \"f\": \"{string.Join(",", fo)}\", \"drawn\": \"{drawnBefore}->{drawnAfter}\", \"fireOrdersAfterF\": {ordersAfter}, \"retiredSent\": {B(retiredSent)}, \"moves\": \"{string.Join(",", moves)}\"}}"); ok &= freeOk;
+            log.Add($"holdRange one input: {(freeOk ? "ok" : "FAILED")}: weapons free {wf0}→{wf1}; G/X/V [{string.Join(",", gxv)}]; F [{string.Join(",", fo)}] drawn {drawnBefore}→{drawnAfter}, fire orders after F {ordersAfter}; retired sent {retiredSent}; moves [{string.Join(",", moves)}]");
             // 4 · the Tech's portrait dragged onto an officer: a lock (a lasting fire order), the world at ¼ speed while dragging and 0.5 s after
             yield return Fresh(h); g = h.Game; h.Select(OpId.Scout, false); h.SetPaused(false);
             hw = Hostile(h); hid = HostileId(h); var ps = HudToolkit.PortraitScreen(2); bool slow = false; var lockOrders = new List<string>(); int tickA = 0, tickB = 0; float realA = 0, realB = 0;
@@ -387,7 +425,7 @@ namespace Suborned.Play
             // on the range's car (QF-ALL's target: it takes the four of them for seconds; no police, so nobody is shot first)
             HandoverHost.PointerWorld = null; h.ClearHover(); h.rangeLayout = "open"; h.Begin(); yield return null; yield return null; h.StartClock(); h.SetPaused(true); if (h.View) h.View.orthographicSize = 14f; g = h.Game;
             h.Issue(new Order { Do = "spawn", Target = "car", To = "car", Count = 1 }); h.RunTo(g.Tick + 1); h.SelectAll();
-            hid = g.RangeCars().Count > 0 ? g.RangeCars()[0].Id : ""; // "car:range-1" hw = hid.Length > 0 ? h.DrawnAt(hid) : null;
+            hid = g.RangeCars().Count > 0 ? g.RangeCars()[0].Id : ""; /* "car:range-1" */ hw = hid.Length > 0 ? h.DrawnAt(hid) : null;
             var allFire = new List<string>(); var allCease = new List<string>(); var fired = new HashSet<int>(); string allHold = ""; string techM = ""; double techD = 0; bool targetDown = false;
             if (hw.HasValue && (g.PosOf(hid) ?? g.CarAt(hid)) is Pt op1)
             {

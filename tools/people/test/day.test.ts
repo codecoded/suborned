@@ -54,9 +54,11 @@ describe('the day, split out of the expander', () => {
     // re-pinned 2026-10-19 (door option b, cause "door-b" in drift.json): the Records Office's public door moved to the wing's west face, so the walks from the office (and the café seats the lunch hour shares) differ; was ed8704178887d70149d27806b6f0d7eb54798689ca38d9be68a39024b4ab6703
     // re-pinned 2026-10-19 (brief 023, Pulse's leave stagger, cause "leave-stagger" in drift.json): people who work inside linger 0..8 min after their shift before they leave; was e06ec33e83151d3c876db5aefd8d5b6e815879216c46b656e62bd27169b2ac3b
     // re-pinned 2026-10-19 (brief 023, Sky: add pavement; cause "Splice, 2026-10-19, brief 023 (Sky: add pavement ..." in people/drift.json): a built plot blocks walking only behind its building line, so ten people's walks to a stop are a minute shorter; was 4da93f1ba0e67e7fa700e9689adb06260ea1f15eccc76e4819e5405777210af2
-    expect(sha256(JSON.stringify(expand({ ...r013, needs: undefined, rules: legacyRules(w.rules) }).people.persons))).toBe('b32c52df6cf3bbf8a009d2351659dacc89f579e348cc8ea5ec05a788124e75b7');
-    expect(sha256(JSON.stringify(bare(r013)))).toBe('aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830');
-    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830');
+    // re-pinned 2026-10-28 (brief 075 remap, Pulse): the plan is the old town (Datum, v0.5.x): the Records stop is gone, the scope's nearest tram stop is T1/rocket, so the commutes, their walks and the kiosk change; life.json regenerated from that plan; no people rule or expansion code changed; was b32c52df6cf3bbf8a009d2351659dacc89f579e348cc8ea5ec05a788124e75b7 (legacy) and aab7c77774f5be01000bf4630ff4190d318bdb8db0b616212834dff9d741d830
+    expect(sha256(JSON.stringify(expand({ ...r013, needs: undefined, rules: legacyRules(w.rules) }).people.persons))).toBe('06965b87ecb7d6cf86a320040e59aa5de1d5c4854b8fe9d55680b23175492f36');
+    // re-pinned 2026-11-02 (brief 089, Pulse, declared in drift.json): names from the real lists (people.rules.json names.lists): every person's name and their new sex, age and origin fields; nothing else; was a8131d03e8d1ecc13fdc731b86ab7b76c4e5e67d9bb9890062f127af0f8e47c8 (under legacyRules the bytes are as they were); re-pinned again the same day (brief 089 follow-up): a person's country fits the heritage their figure shows; was bd3cca85f5b646894662f9123c51bd5816c80e21855b7a332f51db284683111a
+    expect(sha256(JSON.stringify(bare(r013)))).toBe('61c4cb925ac2510f1e634ae245e8fe5d2e358d4a6f34d1510e82b2d564b68f7f');
+    expect(sha256(JSON.stringify(r013Gen.people.persons.map(({ needRecord: _a, secretRecord: _b, ...p }) => p)))).toBe('61c4cb925ac2510f1e634ae245e8fe5d2e358d4a6f34d1510e82b2d564b68f7f');
   });
   test('a hop of STEP_OFF m or less costs no minute; a longer one is the walk graph\'s', () => {
     const at = (id: string) => w.scope.places.find(p => p.id === id)!.at as V;
@@ -141,8 +143,10 @@ describe('the Handover fix', () => {
     expect(c.detail).toMatch(/councillor: none of the 11 who fit .* has a routine that reaches Meet driver by 6:10/);
   });
 
-  test('one guard at the public door every minute from 17:20 to 17:35: the day\'s until 17:30, the watch\'s from 17:30', () => {
-    const at = (t: number) => by(fixGen.people, p => p.work?.role === 'guard' && p.work.place === 'office-entrance' && p.work.post === 'door' && stopAt(p, t)?.place === 'office-entrance' && stopAt(p, t)?.doing === 'work').map(p => p.id);
+  test('one guard at the public door every minute from 17:20 to 17:35: the day\'s until 17:30, the watch\'s from 17:30 (beside the door: the cast guard holds it through the mission, brief 067 L)', () => {
+    // at the door: on it, or at a waiting point beside it (a post one cast person holds through the mission is never taken: its relief stands beside it for her shift)
+    const here = (place: string | undefined) => place === 'office-entrance' || w.scope.places.find(x => x.id === place)?.beside === 'office-entrance';
+    const at = (t: number) => by(fixGen.people, p => p.work?.role === 'guard' && here(p.work.place) && p.work.post === 'door' && here(stopAt(p, t)?.place) && stopAt(p, t)?.doing === 'work' && (t >= day(17, 30) || stopAt(p, t)!.place === 'office-entrance')).map(p => p.id);
     for (let t = day(17, 20); t <= day(17, 35); t++) expect(at(t), hm(t)).toHaveLength(1);
     expect(at(day(17, 29))[0]).not.toBe(at(day(17, 30))[0]);
     const out = by(fixGen.people, p => p.id === at(day(17, 29))[0])[0]!, inn = by(fixGen.people, p => p.id === at(day(17, 30))[0])[0]!;
@@ -164,7 +168,7 @@ describe('the Handover fix', () => {
   test('Vale: arrives by official car, works inside at the official entrance, is in the car at the bay at 17:30, then leaves the sheet; never at a table or on the tram', () => {
     const [vale] = role(fixGen.people, 'councillor');
     expect(role(fixGen.people, 'councillor')).toHaveLength(1);
-    expect(vale!.name.endsWith(' Vale')).toBe(true);
+    expect(vale!.name).toBe('Uros Popovic'); // brief 089: the councillor's pinned name
     expect(vale!.routine.variant).toBe('official-car');
     expect(vale!.home).toEqual({ plot: 'beyond', place: 'beyond' });
     expect(vale!.work!.place).toBe('official-entrance');

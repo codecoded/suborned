@@ -113,3 +113,19 @@ briefs/047/fix
 briefs/052/keyframes
 briefs/052/shots
 briefs/052/audio
+
+# Brief 075 remap step 2: the old DecoKit art copied for the old builders (never commit; Splice and Vela decide the
+# permanent mechanism), their proof scene and its bake, and the old builders' capture folder (DecoKitData.CaptureDir)
+unity/Assets/Suborned/OldTownArt/
+unity/Assets/Suborned/OldTownArt.meta
+unity/Assets/Scenes/OldTownProof.unity
+unity/Assets/Scenes/OldTownProof.unity.meta
+unity/Assets/Scenes/OldTownProof/
+unity/Assets/Scenes/OldTownProof.meta
+# the swap (OldTownSwap.Build): the old-built town with ours in the Handover zone, at each height setting, and their bakes
+unity/Assets/Scenes/OldTown.unity
+unity/Assets/Scenes/OldTown.unity.meta
+unity/Assets/Scenes/OldTown/
+unity/Assets/Scenes/OldTown.meta
+unity/Assets/Scenes/OldTown-heights-*
+unity/Scratch/

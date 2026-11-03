@@ -22,7 +22,7 @@ namespace Suborned.Play
 
         public void ResumeFromMenu() { if (!MenuOpen) return; MenuOpen = false; Paused = pausedBeforeMenu; }
 
-        public void RestartFromMenu() { MenuOpen = false; Begin(); }
+        public void RestartFromMenu() { MenuOpen = false; BeginSameSeed(); } // brief 080: the same street; New game rolls a new one (HostSeed)
 
         /// <summary>Brief 051: the pause menu's Quit to menu: the run is saved at its last tick (as Quit does), the clock stays stopped, and the main menu
         /// comes up over it (Continue returns to it).</summary>
@@ -41,7 +41,7 @@ namespace Suborned.Play
         public void ContinueFrom(string path)
         {
             continueScript = path; Begin();
-            if (Continued) { ShowBriefing = false; Status = "Continued."; }
+            if (Continued) { ShowBriefing = false; BriefCamLand(); Status = "Continued."; }
         }
         Suborned.Sim.Game ContinueGame()
         {
@@ -72,6 +72,7 @@ namespace Suborned.Play
         /// <summary>The menu's keys, before anything else in Update: Esc resumes. True while the menu is up (the frame stops there).</summary>
         bool MenuKeys(Keyboard kb)
         {
+            if (BookKeys(kb)) return true; // brief 088: the book, the same kind of stop (HostBook)
             if (!MenuOpen) return false;
             ClearHover();
             if (kb != null && kb.escapeKey.wasPressedThisFrame && Time.frameCount != menuOpenedFrame) ResumeFromMenu();

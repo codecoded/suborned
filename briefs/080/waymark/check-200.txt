@@ -1,0 +1,165 @@
+· playing 19 scripts and contact variations on the engine at the working tree
+· 7 plans × 200 seeds
+· saved runs
+· windows
+· checking the engine's scenarios the fail lines name: K3-CELL-DOWN
+ok    MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 23/23
+        19 pending: route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable, route-b-board, route-b-thin, route-g-board, route-g-fast, route-g-fast-board, route-g-kill, route-g-kill-board, loud-fight, fail-district-seals, fail-entry-seen-camera, loud-left-downed, loud-left-standing, careless-reporter-not-stopped, careless-g-disable, careless-thin-all
+ok    MC-1  ≥ 2 quiet routes win (no shot before the final fight), counted by route: 3 (A, B, G)
+        route-a (route A) wins at 4:39.6, 4 T
+        route-b (route B) wins at 6:29.7, 8 T
+        route-g (route G) wins at 5:15.8, 6 T
+ok    MC-2  The loud route exists, wins, and costs more T than every quiet win (variants too): loud 31+4 T vs quiet route-a 4, route-b 8, route-g 6+4 (mission+campaign+cases at 3 T)
+        loud: success, 31 T, 1 shots before the fight, A 3
+ok    MC-3  Every §07 fail is reached by a played script: 8/8
+        Vale killed: fail-vale-dead
+        Vale leaves in his car: fail-vale-leaves, an adaptive plan across seeds
+        rivals reach Vale: fail-rivals-reach-vale, fight-safe-rivals-reach-vale, fight-safe-unguarded, an adaptive plan across seeds
+        district seals: an adaptive plan across seeds
+        Enforcer down before Vale is in the car: fail-enforcer-down, fight-loud-enforcer-down, fight-loud-wait-square, an adaptive plan across seeds
+        the cell down (every op down): scenario K3-CELL-DOWN
+        entry seen by guard: fail-entry-seen-guard
+        entry seen by live camera: fail-take-seen-camera, an adaptive plan across seeds
+        pending (not played): route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable, route-b-board, route-b-thin, route-g-board, route-g-fast, route-g-fast-board, route-g-kill, route-g-kill-board, loud-fight, fail-district-seals, fail-entry-seen-camera, loud-left-downed, loud-left-standing, careless-reporter-not-stopped, careless-g-disable, careless-thin-all
+ok    MC-4  No single contact is essential: without each, a quiet route still wins (a contact that leaves < 2 quiet routes is named): without waitress: B, G; without driver: A, G
+        waitress (Inez (route A: she calls the guard away)): route A depends on it
+        driver (the official driver (route B: he moves the pickup to the service lane)): route B depends on it
+ok    MC-5  The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event: route A 2:00 early, route B 1:23 early, route G 1:25 early
+        route A (route-a): Vale secured at 2:49.8, 2:00 before 4:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 4:39.6, 2:50 before the mission's 7:30 close
+        every planned step can slip 30 s and still win
+        route B (route-b): Vale secured at 6:06.7, 1:23 before 7:30 rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)
+        at the getaway car 6:29.7, 1:00 before the mission's 7:30 close
+        every planned step can slip 0 s and still win
+        route G (route-g): Vale secured at 3:24.2, 1:25 before 4:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 5:15.8, 2:14 before the mission's 7:30 close
+        every planned step can slip 30 s and still win
+ok    MC-6  The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2): route-a 4:39.6 vs loud 5:05.9: 26.3 s faster
+        route-a (quiet) 4:39.6
+        route-g (quiet) 5:15.8
+        route-b (quiet) 6:29.7
+        loud (loud) 5:05.9
+ok    MC-7  Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 (or above its careful twin's) and dearer in total Trail than its careful twin: 5/5
+        careless-takedown-seen-camera: fails: entry-seen-camera
+        careless-takedown-seen-crowd: fails: vale-leaves
+        careless-body-found: fails: enforcer-down
+        careless-guard-left-door-held: fails: vale-leaves
+        careless-enforcer-watches-guard: fails: enforcer-down
+ok    MC-8  Takedown routes are viable with a real time cost: ≥ 1 quiet route that takes someone down wins at Alert ≤ 1, each spending Enforcer time on it: route-b 6:29.7, 6 s of takedown, route-g 5:15.8, 6 s of takedown
+        route-b (route B): success at 6:29.7, 8 T, A 1, $30,000 left, takedown work 6 s
+        route-g (route G): success at 5:15.8, 6+4 T, A 1, $100,000 left, takedown work 6 s
+ok    MC-9  Turning people stays competitive: no takedown win is at once as fast and as cheap in total Trail as every turning win: 2 takedown wins, none dominant over 2 turning wins
+        route-b (6:29.7, 8 T): faster route-a
+        cheaper route-a
+        route-g (5:15.8, 10 T): faster route-a
+        cheaper route-a, route-b
+ok    MC-10  Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no seal clock: quiet 4-10 T, A ≤ 1, Standing ≥ 3; loud 35-35 T, A ≥ 3, Standing ≤ 0
+        loud 31+4 T, A 3, Standing 0, seal clock
+FAIL  MC-11  No stop holds the car: every ambush spot and police stand of each of the 2 stands lies beyond fight-hold 8 m of its car and outside its exit lane, every reference win's car was free when it left, and no played script logs a hold that did not come for the car (car.held.answer, or car.held.post at a post the mission places): 18/18 posts clear (nearest 10.6 m); 4/4 reference wins free at Go; 9/16 holds by bodies that came for the car
+        route-a: blocker out 15.0 s before Go
+        route-b: blocker out 0.1 s before Go
+        route-g: blocker out 16.6 s before Go
+        loud: blocker out 7.6 s before Go
+        route-b: rival-1 holds the car by standing at or walking to his post at 6:12.1 (car.held.post, NOT FOR THE CAR)
+        route-b: rival-3 holds the car by standing at or walking to his post at 6:20.1 (car.held.post, NOT FOR THE CAR)
+        route-b: rival-2 holds the car by standing at or walking to his post at 6:20.6 (car.held.post, NOT FOR THE CAR)
+        loud: rival-4 holds the car by standing at or walking to his post at 4:37 (car.held.post, NOT FOR THE CAR)
+        loud: rival-2 holds the car by standing at or walking to his post at 4:41.4 (car.held.post, NOT FOR THE CAR)
+        loud: rival-1 holds the car by standing at or walking to his post at 4:51.5 (car.held.post, NOT FOR THE CAR)
+        loud: rival-3 holds the car by standing at or walking to his post at 4:42.6 (car.held.post, NOT FOR THE CAR)
+ok    MC-12  Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin: 3/3 quiet scripts unreported; 1/1 loiter twins dearer
+        careless-scout-idles-pickup: reported at 2:20.1, success at A 2 against route-b's success at A 1
+ok    MC-13  Every stand's loud-wait twin is held: a loud run whose cell waits in the car while the Enforcer brings Vale out never wins; with Vale aboard its Go is refused car-held: 2/2 stands held
+        square: fight-loud-wait-square held (lost before Vale is aboard: failure enforcer-down at 4:11.8, loud fight)
+        service-drive: fight-loud-wait-yard held (Go refused car-held at 6:29.4 with Vale aboard: withdrawn at 6:29.5, loud fight)
+ok    MC-14  The fight always comes: every win Goes at or after blocker.out (variations too): 5/5 wins Go after blocker.out
+        the closest Go to blocker.out: 0.1 s after it
+ok    MC-15  No reference route reaches crew-wiped (the rival crew destroyed, the fight over unfought): 4/4 reference scripts
+        none
+ok    R-1  no crash: every play gave its line: 1400 plays, 0 errors
+        
+ok    R-2  no stall: every play reaches a verdict by the close: 0 plays reach the close with no verdict
+        
+ok    R-3  every fail names its cause (fail code and culprit): 541/541
+        
+ok    R-4  every order shows its price: each verb given has its line on the card (text.json less.price), each Listen and Turn had its quote when given: 18/18 verbs, 0 unquoted acts
+        
+ok    R-5  a saved run replays exactly from seed + orders (a win and a fail of each plan; the bands' own run gives the same hash): 12/12
+        
+ok    R-6  unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace: 5/5
+        
+FAIL  R-7  no reference window under 30 s at a person's pace: each step 30 s late loses at most 10 points of wins: 10/11
+        quiet-b take: 92 % → 75 %
+ok    B-1 quiet-a  prepared quiet wins ≥ 90 %: 99.5%
+        
+ok    B-1 quiet-b  prepared quiet wins ≥ 80 %: 91.5%
+        
+ok    B-1 quiet-g  prepared quiet wins ≥ 75 %: 76%
+        
+ok    B-2 thin-quiet  thin quiet wins 60-90 %: 87.5%
+        
+ok    B-3 careless  careless wins ≤ 30 %: 0%
+        
+ok    B-4 prepared-loud  prepared loud wins 50-75 %: only wins whose final fight was loud: 60%
+        
+ok    B-5 unprepared-loud  unprepared loud wins ≤ 20 %: 0%
+        
+ok    B-6  prepared loud clearly above unprepared (≥ 40 points): 60 % against 0 %
+        
+ok    B-7 quiet-a  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 16 s, p95 36 s
+        
+FAIL  B-7 quiet-b  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 11 s, p95 24 s
+        
+ok    B-7 quiet-g  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 27 s, p95 69 s
+        
+ok    B-7 thin-quiet  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 15 s, p95 26 s
+        
+ok    B-8 prepared-loud  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 10 s, p95 30 s, worst 38 s
+        
+ok    B-8 quiet-a  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 14 s, p95 21 s, worst 30 s
+        
+FAIL  B-8 quiet-b  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 56 s, p95 74 s, worst 83 s
+        
+FAIL  B-8 quiet-g  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 36 s, p95 106 s, worst 122 s
+        
+ok    B-9 quiet-a  agents down per win ≤ 0.5, prepared: 0.08
+        
+ok    B-9 quiet-b  agents down per win ≤ 0.5, prepared: 0.06
+        
+ok    B-9 quiet-g  agents down per win ≤ 0.5, prepared: 0.32
+        
+ok    B-10 prepared-loud  agents down per win ≤ 1.5, loud: 0.44
+        
+ok    B-10 unprepared-loud  agents down per win ≤ 1.5, loud: no win
+        
+ok    B-11 prepared-loud  variety: middle half of fight lengths spans ≥ 10 s: 16-30 s
+        
+ok    B-11 quiet-a  variety: middle half of fight lengths spans ≥ 10 s: 12-24 s
+        
+FAIL  B-11 quiet-b  variety: middle half of fight lengths spans ≥ 10 s: 9-15 s
+        
+ok    B-11 quiet-g  variety: middle half of fight lengths spans ≥ 10 s: 24-44 s
+        
+FAIL  B-11 thin-quiet  variety: middle half of fight lengths spans ≥ 10 s: 11-18 s
+        
+ok    B-12  at least one prepared quiet route wins on every seed: 200/200
+        
+ok    B-13  loud's Trail at least 3× quiet's in 95 % of the loud wins: 118/120 loud wins ≥ 27 T (3 × quiet's dearest median 9 T); loud median 35 T
+        
+ok    B-14  nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling): Enforcer: 0 of 85 falls under 7 s, fastest 10.4 s; others: 0 of 293 under 5 s, fastest 6 s
+        
+
+| plan | style | wins | fails | loud | fight med (p25-p75, p95) | end | HP lost | down/win | T | A | Standing | Heat | idle med/p95 | reported |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| careless | careless | 0 % | entry-seen-camera 200 | 0 % (0 won) | 0 s (0-0, 0) | 0:00 | 0 | 0 | 0 | 0 | 0 | 0 | 14/46 s | 199 |
+| prepared-loud | prepared-loud | 75 % | sealed 34, enforcer-down 13, rivals-reach-vale 1, closed-in 2 | 84 % (120 won) | 20 s (16-30, 123) | 5:11 | 12 | 0.44 | 32 | 3 | 0 | 32 | 10/30 s | 4 |
+| quiet-a | prepared-quiet | 99.5 % | rivals-reach-vale 1 | 0 % (0 won) | 16 s (12-24, 36) | 4:39 | 2 | 0.08 | 4 | 0 | 3 | 4 | 14/21 s | 0 |
+| quiet-b | prepared-quiet | 91.5 % | rivals-reach-vale 14, closed-in 3 | 0 % (0 won) | 11 s (9-15, 24) | 6:29 | 6 | 0.06 | 8 | 1 | 3 | 8 | 56/74 s | 0 |
+| quiet-g | prepared-quiet | 76 % | closed-in 15, rivals-reach-vale 29, sealed 3, vale-leaves 1 | 0 % (0 won) | 27 s (24-44, 69) | 5:15 | 7 | 0.32 | 9 | 1 | 3 | 9 | 36/106 s | 1 |
+| thin-quiet | thin-quiet | 87.5 % | rivals-reach-vale 23, vale-leaves 1, entry-seen-camera 1 | 0 % (0 won) | 15 s (11-18, 26) | 4:02 | 8 | 0.03 | 17 | 0 | 2 | 17 | 16/52 s | 10 |
+| unprepared-loud | unprepared-loud | 0 % | entry-seen-camera 192, sealed 8 | 0 % (0 won) | 4 s (2-8, 46) | 0:00 | 0 | 0 | 0 | 0 | 0 | 0 | 5/29 s | 10 |
+
+slack route-a: every planned step can slip 30 s (0:00 30 s, 0:00 30 s, 0:00 30 s)
+slack route-b: every planned step can slip 0 s (0:00 30 s, 0:00 30 s, 0:00 30 s, 0:00 0 s, 0:00 30 s)
+slack route-g: every planned step can slip 30 s (0:00 30 s, 0:00 30 s, 0:00 30 s)
+HOLDS handover: 26 plays on engine tree in 42.8 s; report out/missions/handover/check.html

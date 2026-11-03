@@ -1,0 +1,58 @@
+{
+  "id": "pay-driver",
+  "title": "Pay the driver",
+  "kind": "turn",
+  "picked": 2,
+  "why": "Take 2 has the most life: Zhou's distrust of vague money drives the terms, and the closing read-back makes the job plain. The rules fix keeps that shape and no longer promises Vale is removed from the car.",
+  "changes": [
+    "Beat 6, as the review directed: now \"That'll do nicely. Leave the back seat to us.\" The decided Take happens inside the car, so the line no longer says Vale comes out [97f56ffa9d3e5a5394af33cc].",
+    "Beat 7, as the review directed: now \"And I don't look round. Anyone watching this bay, I'll send off.\" Zhou no longer stands apart from a Take that ends with the car lent [97f56ffa9d3e5a5394af33cc][8fe3905df72fdcaf7a03f275].",
+    "Facts correction still open, as I can't edit the sheet here. Owner must replace \"Getting Vale out of the back seat... Zhou doesn't want to see it\" with: the Take happens inside the car, nothing to see, and it ends with the Enforcer at the wheel.",
+    "Build mismatch, not resolved here: built today, the Take ends with Vale still to be carried to the cell's car [8fe3905df72fdcaf7a03f275]. Both new lines stay true either way, but neither promises the lent car. All other beats, learned and opens are unchanged."
+  ],
+  "beats": [
+    {
+      "speaker": "Zhou",
+      "line": "Not on the Councillor's bonnet. Last envelope said \"nothing much\", and lied."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "This one won't. We hear it's been a lean month."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "It has. What for? I drive the Councillor home at the chime."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Not tonight. Take him round to the service bay, and wait."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "East yard. This buys a couple of minutes, then I drive on."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "That'll do nicely. Leave the back seat to us."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "And I don't look round. Anyone watching this bay, I'll send off."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "The envelope's yours, then. You haven't asked who we are."
+    },
+    {
+      "speaker": "Zhou",
+      "line": "Can't repeat what I don't know. Chime, service bay, couple of minutes."
+    }
+  ],
+  "learned": [
+    "Zhou's paid: Vale's car waits briefly."
+  ],
+  "opens": [
+    "Be at the service bay"
+  ],
+  "faults": []
+}

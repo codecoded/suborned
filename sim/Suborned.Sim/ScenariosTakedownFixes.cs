@@ -42,25 +42,34 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // as c022's route G-kill (2026-10-19, the door on the west face: the loop at 0:16.6, the watch at 0:46.2; were 0:13.6 and 0:35.5)
+                    Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // as c022's route G-kill (2026-10-19, the door on the west face: the loop at 0:16.6, the watch at 0:46.2; were 0:13.6 and 0:35.5)
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
-                    MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), Mv(1920, Enf, "d:Getaway bay"));
+                    MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), MvTo(1920, Enf, new Pt(2400, -6000))); // brief 059: he waits with Vale south of the square, beyond the posted three's reach (at the getaway bay, with no final fight, they fire on the Vale holder)
                 const string Clerk = "p-records-office-09";
+                // engine 0.29.0 (brief 054 §9.1): under the people cone the clerks stepping out of the door after the chime face away from the body on
+                // the landing; they find it by the near sense (an open body within people-near-body-cm, any facing), as they did with 0.27.0's all-round sight
                 r.Is(r.Until(() => g.Reps.Exists(x => x.By == Clerk && x.Phase == "check"), T(340) - g.Tick), "the Idealist clerk finds the body after the chime and walks to look");
                 var check = g.Reps.FirstOrDefault(x => x.By == Clerk && x.Phase == "check"); if (check == null) return;
+                if (g.R.PeopleCone) r.Eq(Report.Clock(g.Tick), "5:30.1", "the clerks find him at 5:30.1, the body behind them (the near sense)");
                 // Sky merged call 4 (moved here from N65 on 2026-10-19: the leave stagger sends no Mercenary past N65's body): quiet at Alert 0, a
                 // Mercenary who finds a body reports it once Alert is 2 or more; here the entrance camera's report has Alert at 2 before the chime
                 r.Is(g.Alert >= g.R.MercenaryAlert && g.Reps.Exists(x => x.P != null && x.P.Temperament == "mercenary" && x.Kind == "down" && x.Phase == "walk"), "a Mercenary who finds it now reports it: quiet at Alert 0, he reports once Alert is 2 or more (Sky merged call 4)");
                 r.To(check.PhaseUntil);
+                r.Eq(Report.Clock(g.Tick), "5:34.1", "his check ends at 5:34.1");
                 r.Is(g.FailCode != "engine-error", $"no engine error when the check ends ({Report.Clock(g.Tick)}){(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.Is(check.Phase == "stopped" && g.Reps.Exists(x => x.By == Clerk && x.Kind == "dead" && x.Phase == "walk" && x.Seq > check.Seq), "his check is done: he walks to the phone with a dead body (a new report, stepped the same tick)");
+                SealOrigin(r);
+                static void SealOrigin(Run r)
+                {
+                var g = r.G;
                 r.Until(() => g.Over, T(60));
                 r.Eq(g.FailCode, "sealed", "sealed, the fixture's failure");
-                r.Eq(g.Tick, T(376), "at 6:16 (the dial's seal: no final fight, brief 018; 6:12 before 2026-10-19: the unit's walk to the post on the west face confirms him 4 s later)");
+                r.Eq(g.Tick, T(379) + 2, "at 6:19.2 (the dial's seal: no final fight, brief 018; 6:12 before 2026-10-19: the unit's walk to the post on the west face confirms him 4 s later; engine 0.33.1: the unit walks round Vale's car, 0.5 s; engine 0.34.0, brief 067 L: guard 74 walking past the door radios the body at 3:47.1 and the unit, which no longer trades shots with the Enforcer on its way, confirms him at 3:54.2, 2.7 s later than 3:51.5)");
                 var fc = CauseIs(r, "sealed", "sealed", false, "", "", Enf); // the fail camera (ScenariosFailCause.cs): no single culprit; the report the confirmation sealed on
                 var o = fc?.Origin;
                 r.Is(o != null && o.Because == "confirmed" && o.Report.StartsWith("report:dead:", StringComparison.Ordinal) && o.Reporter?.Id == "camera:entrance" && o.Confirmer != null && o.Confirmer.Placed, $"the origin: the entrance camera's report of the dead guard, confirmed by a unit (got {o?.Report}, {o?.Because}, {o?.Reporter}, {o?.Confirmer})");
-            }, new Start { FinalFight = false });
+                }
+            }, new Start { FinalFight = false, ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N69", "—", "A takedown under the live entrance camera (Waymark §6): route G without the Loop. The camera is a watcher like any other: it records the act, its watcher reads the screen at the next scan and the report lands 3 s later (Alert 3, a takedown seen); nothing fails at the act or when he is out. At this level Alert 3 locks the Office doors: the Enter is refused, and the response comes by the dial. (The old guard-down rule is kept only for a guard shot: his missed mark calls the response, as gunfire's own rule.)", r =>
             {
@@ -93,6 +102,10 @@ namespace Suborned.Sim
                 r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 int mark = g.NextMarkOf(g.GuardP, g.Tick); r.To(mark + 1);
                 r.To(r.SendTo(Enf, BesideGuard));
+                // engine 0.34.0 (M067-B1): at the cell's 1.8 m/s he is beside the guard 1.1 s sooner, 0.3 s before the desk's scan of the entrance
+                // screen (2:34.6), which would read the takedown at once and land it before he is out; he lets that scan pass, so the next read is
+                // a period later, as on 0.33.1 (the fixture's point: the Enter fails on the camera's live view, before its report lands)
+                while (!g.Over && g.CutNoticedAt("entrance") <= g.Tick + T(g.R.KoS + 1)) g.Step();
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 var a = ActOn(r, GuardId);
                 var rep = g.Reps.Single(x => x.Act == a.Id && x.By == "camera:entrance");
@@ -104,20 +117,28 @@ namespace Suborned.Sim
                 r.Is(rep.Phase == "watcher" && !a.Landed, "the takedown's report never landed: it was not the takedown that failed");
             });
 
-            Add("N70", "—", "One incident, one dispatch (Aster 2026-10-16; Waymark §6: six dispatches in 0.1 s): the guard knocked out after 5:30 in front of the clerks streaming out after the chime. Many report it, one incident; the first report to land dispatches the response; a later report that raises the incident's Alert tops the same dispatch up to the new Alert's counts (from the destinations the first set); every other later report lands (logged) and sends nothing.", r =>
+            Add("N70", "—", "One incident, one dispatch (Aster 2026-10-16; Waymark §6: six dispatches in 0.1 s): clerk 27 knocked out at the public door at 6:30 in front of the group leaving behind her (engine 0.28.0: the clerks streaming out at the chime have their backs to the guard's post). Many report it, one incident; the first report to land dispatches the response; a later report that raises the incident's Alert tops the same dispatch up to the new Alert's counts (from the destinations the first set); every other later report lands (logged) and sends nothing.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, Forecourt) /* c025 (brief 031): waits out of sight */));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.To(T(286)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
-                r.To(r.SendTo(Enf, BesideGuard));
-                r.Takedown("guard", "knockout");
-                var a = ActOn(r, GuardId);
+                // engine 0.28.0 (brief 054 §3.2: a civilian sees by their cone): the clerks streaming out after the chime walk away from the door with
+                // their backs to the guard's post, so the many witnesses are the 6:30 group leaving by the public door in file: clerk 27 is taken
+                // down at the door with the group behind her, facing her (out/scratch/keel/b056/probe: 7 would see it, 6 Loyal or Idealist)
+                const string Victim = "p-records-office-27";
+                var v = WalkerById(r, Victim);
+                r.To(T(380)); r.To(MeetFromBehind(r, v, T(390)));
+                if (!r.Is(r.Until(() => g.CrowdPos(v) is Pt vp && G.Within(vp, r.Op(Enf).Pos, g.R.TakedownReachCm), T(20)), $"clerk 27 walks into reach ({Report.Clock(g.Tick)})")) return;
+                r.Takedown(Victim, "knockout");
+                var a = ActOn(r, Victim);
                 var reps = g.Reps.Where(x => x.Act == a.Id && x.Phase != "stopped").ToList();
                 r.Is(reps.Count >= 3, $"{reps.Count} reports of the one takedown on their way");
-                int first = reps.Min(x => x.LandAt), last = Math.Min(reps.Max(x => x.LandAt), first + T(g.DialNow.ReinforceS) - 1);
-                r.To(first);
-                r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches"), 1, "the first report dispatches");
+                // engine 0.28.0: the door guard sees it at the door and engages (Alert 2 at sight, his alarm lands at once): that is the first landing
+                int t0 = g.Tick, first = reps.Min(x => x.LandAt), last = Math.Min(reps.Max(x => x.LandAt), first + T(g.DialNow.ReinforceS) - 1);
+                int Disp() => g.Log.Count(l => l.Code == "alarm.dispatches" && l.Tick >= t0);
+                r.Is(r.Until(() => Disp() > 0, first - g.Tick + 1), "the first landing dispatches");
+                r.Eq(Disp(), 1, "once");
                 var dests = g.AlarmDestinations.ToList();
                 int steps = 0, quiet = 0; bool unitsOnlyOnStep = true;
                 while (g.Tick < last && !g.Over)
@@ -125,30 +146,30 @@ namespace Suborned.Sim
                     int alert = g.Alert, units = g.Units.Count, landed = g.Reps.Count(x => x.Act == a.Id && x.Phase == "landed");
                     g.Step();
                     int now = g.Reps.Count(x => x.Act == a.Id && x.Phase == "landed");
-                    if (g.Alert > alert) steps++;
+                    if (g.Alert > alert) { steps++; quiet += Math.Max(0, now - landed - 1); } // reports landing in the tick of a step: one raised it, the rest landed quiet (engine 0.28.0: the group reports together)
                     else { if (now > landed) quiet += now - landed; if (g.Units.Count != units) unitsOnlyOnStep = false; }
                 }
                 r.Is(quiet >= 2, $"{quiet} later reports landed without raising the Alert");
                 r.Is(unitsOnlyOnStep, "they sent no unit (units come only with an Alert step)");
-                r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches"), 1 + steps, $"one dispatch, topped up {steps} time(s) by an Alert step, never once a report");
+                r.Eq(Disp(), 1 + steps, $"one dispatch, topped up {steps} time(s) by an Alert step, never once a report");
                 r.Eq(g.Alert, 3, "Alert 3 (a takedown seen)");
                 r.Is(g.Units.Count(u => u.Robot) <= Math.Max(g.DialNow.A1Robots, g.DialNow.A2Robots) && g.Units.Count(u => !u.Robot && !u.Cordon && !u.Legacy) <= g.DialNow.A2Units * g.R.ResponseOfficers, "the dial's counts, never a second set");
                 r.Is(g.AlarmDestinations.SequenceEqual(dests), "the destinations stand as the first report set them");
                 r.Eq(g.Reported, 1, "one reported incident");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
-            Add("N71", "—", "A later report at the same Alert sends nothing (one incident, one dispatch): route G-KO, the guard knocked out unseen after his 2:30 mark and left at the post. His 4:00 mark lands (Alert 1: the level's robots); guard 74 finds him and radios it: a knockout stays Alert 1, so his report lands and the robots out stay out, with no second dispatch. A later report that raises the Alert tops the same dispatch up to the new level's counts (N62: the dead guard's report, Alert 1 to 2). His report is the body found, so its scene unit comes (rev 4, N74): that is the lockdown, not a dispatch.", r =>
+            Add("N71", "—", "A later report at the same Alert sends nothing (one incident, one dispatch): route G-KO, the guard knocked out unseen after his 2:30 mark and left at the post. Engine 0.34.0 (brief 067 L): guard 74, walking past the door to her post, finds him first (about 3:40): Alert 1, the one dispatch (the level's robots, and the found body's scene unit). The unit brings him round before his 4:00 mark, which he makes; to 4:30 the same knockout's later words (his statement, the mark) send nothing: no second dispatch, no robot sent twice, the destinations stand. (0.33.1: his 4:00 mark landed first and guard 74 found him later.)", r =>
             {
                 var g = r.G;
                 GuardQuiet(r);
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 r.SendTo(Enf, BesideDoor);
-                r.To(T(240));
                 var a = ActOn(r, GuardId);
-                r.Is(a.MarkMissed && g.Alert == 1, "the 4:00 mark lands: Alert 1");
+                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Phase == "landed"), T(240) - g.Tick), $"a passer-by's report of the body lands first ({Report.Clock(g.Tick)}: guard 74 on her way past the door)");
+                r.Is(g.Alert == 1 && g.Log.Count(l => l.Code == "alarm.dispatches") == 1, "Alert 1, one dispatch");
                 int robots = g.Units.Count(u => u.Robot); var dests = g.AlarmDestinations.ToList();
-                r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches"), 1, "one dispatch");
-                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Phase == "landed"), T(60)), "a passer-by's report of the body lands");
+                r.To(T(270));
+                r.Is(!a.MarkMissed, "brought round by the scene unit, he makes his 4:00 mark");
                 r.Eq(g.Alert, 1, "a knockout stays Alert 1");
                 r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches"), 1, "no second dispatch");
                 r.Eq(g.Units.Count(u => u.Robot), robots, "no robot sent twice");
@@ -180,7 +201,7 @@ namespace Suborned.Sim
                 r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals");
                 r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
-                r.To(T(g.S.ValeAtCar));
+                r.To(T(g.ClockValeAtCar));
                 var w74 = WalkerById(r, "p-records-office-74");
                 r.Is(g.CrowdPos(w74) is Pt p74 && G.Within(p74, g.ValePos()!.Value, g.R.WitnessRangeCm), "guard 74 stands within witness range of Vale at his car");
                 int trail = g.Trail, standing = g.Standing;
@@ -200,23 +221,23 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "alarm.dispatches") && g.SecurityArrives == land + T(g.DialNow.DispatchS), "the response: the unit the level's dispatch after the landing");
                 r.Is(!a.ActTrail && g.Trail == trail + g.R.WitnessTrail, "no assault Trail: the Take keeps its own");
                 r.Eq(g.Acts.Count(x => x.Take), 1, "one Take, one incident");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N74", "—", "A found body holds the scene (Motive rev 4 R4.1; Sky 2026-10-16): the guard knocked out unseen at his post; the card says that, found here, he would hold the Office door. The Tech lets the loop go, so the entrance camera reads him at its next scan: a body found. A unit of officers comes at Alert 1 (no robot reach for officers; not one of the dial's units) and holds the Office door, which he lies at: Enter is refused (door-held) from its arrival, through its check and 60 s sweep, until it stands down; the Alert stays 1 (a knockout), and at Alert 1 the sweep opens no stash.", r =>
             {
                 var g = r.G;
-                GuardQuiet(r);
+                GuardQuiet(r, resplice: false); // Loop v2: the loop runs out at 3:40, before his 4:00 mark (it was the Tech letting the held loop go)
                 var q = g.QuoteTakedown("guard", "knockout");
                 r.Is(q.HoldsDoors.Contains(g.EnterDoor) && q.HoldS == g.R.CheckS + g.R.SearchS && q.PoliceInS > 0, $"the card: found here, he holds {string.Join(", ", q.HoldsDoors)} ~{q.HoldS} s; a unit in ~{q.PoliceInS} s");
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 var a = ActOn(r, GuardId);
                 r.SendTo(Enf, BesideDoor);
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "cancel" }).ok && !g.LoopOn, "the Tech lets the loop go: the camera is live");
+                r.Is(r.Until(() => !g.LoopOn, T(180)), $"Loop v2 (engine 0.31.0): the loop runs out ({Report.Clock(g.Tick)}): the camera is live"); // it was the Tech letting the held loop go
                 r.Is(r.Until(() => a.Landed, T(30)), "the camera reads him: a report of a body lands");
                 r.Eq(g.Alert, 1, "a knockout: Alert 1");
                 r.Is(g.SceneHolds.Count == 1 && g.SceneHolds[0].Doors.Contains(g.EnterDoor) && !g.SceneHolds[0].Doors.Contains(g.ExitDoor), $"the scene holds the doors in its sight: {string.Join(", ", g.SceneHolds[0].Doors)} (the service door is round the corner)");
                 var unit = g.Units.FirstOrDefault(u => !u.Robot && u.Act == a.Id && u.Scene);
-                r.Is(unit != null && unit.Launch == g.Tick + T(g.DialNow.DispatchS), "a unit of officers is sent at Alert 1, the level's dispatch after the landing");
+                r.Is(unit != null && unit.Launch >= g.Tick - T(60) && unit.Launch <= g.Tick + T(g.DialNow.DispatchS), "a unit of officers is sent at Alert 1, the level's dispatch after the first landing (brief 080: a clerk's report may land first)");
                 if (unit == null) return;
                 r.Is(!g.DoorHeld(g.EnterDoor), "not held until it arrives");
                 r.Is(r.Until(() => unit.St == "check", T(120)), "it arrives");
@@ -242,7 +263,7 @@ namespace Suborned.Sim
                 r.Is(g.SceneHolds.Count == 0 && !g.Units.Exists(u => !u.Robot), "no scene held, no officers: nobody found a body");
             });
 
-            Add("N75", "—", "No exit through a held door (rev 4 R4.1): the guard killed unseen after his 2:30 mark (dead, he never walks back to his door) and laid at the Office's service door; guard 74, walking the lane from 4:04, finds him and radios it; with the patrol rerouted again, the Enforcer goes in. The unit holds the service door from its arrival. The Enter under way (68 s at Alert 2) finishes, and the Enforcer comes out with Vale by the public door, which is not held.", r =>
+            Add("N75", "—", "No exit through a held door (rev 4 R4.1): the guard killed unseen after his 2:30 mark (dead, he never walks back to his door) and laid at the Office's service door; the service door held from 4:30 (a start fixture since brief 055: guard 74, who found him walking the lane from 4:04, now walks the forecourt); with the patrol rerouted again, the Enforcer goes in. The unit holds the service door from its arrival. The Enter under way (68 s at Alert 2) finishes, and the Enforcer comes out with Vale by the public door, which is not held.", r =>
             {
                 var g = r.G;
                 GuardQuiet(r);
@@ -251,18 +272,21 @@ namespace Suborned.Sim
                 r.To(r.SendTo(Enf, ServiceDoor)); r.Body(Enf, "drop"); r.Done(Enf);
                 var a = ActOn(r, GuardId);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                r.Is(r.Until(() => g.SceneHolds.Count > 0, T(150)), "the body by the service door is found (guard 74, walking the lane)");
+                // brief 055 (engine 0.27.0): nobody's routine passes the east yard before the clerks leave at 5:40 now (guard 74 leaves the café by the
+                // forecourt), so the body is not found in time; the service door's hold is the start's fixture (as N85), from 4:30, when the scene's unit
+                // held it before. The rule under test is the same: a held door is no way out.
+                r.To(Math.Max(g.Tick, T(260))); r.Do(Tech, "loop", "entrance"); r.Done(Tech); // Loop v2 (engine 0.31.0): re-spliced before GuardQuiet's runs out at 4:45, so the camera stays blind over the Enter (+1 T)
+                r.To(Math.Max(g.Tick, T(270)));
+                r.Is(g.DoorHeld(g.ExitDoor) && !g.DoorHeld(g.EnterDoor), "the service door is held, not the public door");
                 r.To(Math.Max(g.Tick, g.PatrolAwayUntil)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); // the patrol away again for the Enter
                 r.Do(Enf, "enter");
-                r.Is(g.SceneHolds.Count > 0 && g.SceneHolds[0].Doors.Contains(g.ExitDoor) && !g.SceneHolds[0].Doors.Contains(g.EnterDoor), "its scene holds the service door, not the public door");
-                r.Is(r.Until(() => g.DoorHeld(g.ExitDoor), T(60)), "the unit arrives and holds it");
-                r.Is(r.Op(Enf).Inside, "the Enforcer is still inside");
+                r.Is(r.Op(Enf).Inside, "the Enforcer is inside");
                 r.Done(Enf);
                 r.Eq(g.Vale, ValeAt.WithEnforcer, "the Enter under way finishes");
                 r.Is(G.Within(r.Op(Enf).Pos, r.Stand(g.S.GuardPost), 100) && g.Log.Exists(l => l.Code == "enter.out" && l.Text.Contains("public door")), "out by the public door, not through the held service door");
-            });
+            }, new Start { Holds = { ("office-service-door", 270, 420) } });
 
-            Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storeroom and holds 3 bodies (takedown.stash.doorHolds), the Dumpster 1 (its site entry). Two guards knocked out unseen in the lane: both go through the service door; the Dumpster, holding one, refuses a second.", r =>
+Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storeroom and holds 3 bodies (takedown.stash.doorHolds), the Dumpster 1 (its site entry). Two guards knocked out unseen: the door guard after his 2:30 mark and guard 74 on her walk to the official entrance, just before she reaches the public door (engine 0.34.0, brief 067 L: she walks it at 3:47 now; at 4:10 she is in front of the pickup camera, guard 29 and the driver); the Dumpster, holding one, refuses the second, and the service door takes him.", r =>
             {
                 var g = r.G;
                 r.Is(g.S.Stashes.All(s => g.HoldsOf(s) == (s.Kind == "door" ? 3 : 1)), "every service door holds 3, the Dumpster 1");
@@ -272,14 +296,14 @@ namespace Suborned.Sim
                 r.To(r.SendTo(Enf, Dumpster)); r.Body(Enf, "stash", DumpsterId); r.Done(Enf);
                 r.Is(g.BodyById("guard")!.Stash == DumpsterId, "the guard is in the Dumpster");
                 var w = WalkerById(r, "p-records-office-74");
-                r.To(MeetFromBehind(r, w, T(250)));
+                r.To(MeetFromBehind(r, w, T(222))); // engine 0.34.0 (brief 067 L, A): she walks past the public door at 3:47 now, so he meets her before it, under the loop and the reroute (at 4:10 she is in front of the pickup camera, guard 29 and the driver, and the yard patrol back on its sweep sees the carry)
                 r.Is(r.Until(() => g.CrowdPos(w) is Pt p && G.Within(p, r.Op(Enf).Pos, g.R.TakedownReachCm), T(30)), "guard 74 walks into reach");
                 r.Takedown("p-records-office-74", "knockout"); r.Done(Enf);
                 r.Body(Enf, "carry", "p-records-office-74"); r.Done(Enf);
                 r.To(r.SendTo(Enf, Dumpster));
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "stash", Target = DumpsterId }).code, "stash-full", "the Dumpster holds one");
                 r.To(r.SendTo(Enf, ServiceDoor)); r.Body(Enf, "stash", ServiceDoorId); r.Done(Enf);
-                r.Is(g.BodyById("p-records-office-74")!.Stash == ServiceDoorId, "the service door takes him");
+                r.Is(g.BodyById("p-records-office-74")?.Stash == ServiceDoorId, "the service door takes him");
             });
 
             Add("N77", "—", "Route B under rev 4 (Motive R4.2; Sky 2026-10-16), Waymark's route-b orders: the Take at Vale's own car with its driver turned happens inside the car, off-screen: no witness window, though the clerks fill the lane at 6:10; the turned driver is the act's accomplice, never its witness. The escort to the getaway car (by the lane's south end, as the route walks it) is seen only by Vale's kin, or by anyone within 3 m who sees the grip: nobody. 7:39, 3 T (the Pay is private since Sky 2026-10-16; 4 T before), Alert 0.", r =>
@@ -287,23 +311,27 @@ namespace Suborned.Sim
                 var g = r.G;
                 // c025 (Waymark 2026-10-21, engine 0.14.1; brief 031): route-b re-pinned: the Scout watches the driver from the SW corner and tips the
                 // rivals from (8600, -3400), 2.8 m outside the pickup cone; the three's posts by the car within 15 m of the ambush
-                Orders(r, Mv(0, Enf, "d:Service lane"), MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), Act(620, Scout, "watch", Driver),
+                // engine 0.34.0 (brief 067 A; Motive's rb-rr): the patrol sweeps the service yard and reports the Enforcer loitering at 'Service lane' from
+                // 0:00 (1:53): he waits at his start and comes at 5:50, and the Tech reroutes the patrol from the cabinet at 5:00 (lands 5:45, away to
+                // 7:40), then runs to the car for the drive round
+                Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true },
+                    MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), /* engine 0.28.0: the driver's Watch (0:62) dropped: no Watch to give on him, brief 054 §2.1 */
                     Mv(760, Fixer, "d:Boarding pavilion"), Mv(820, Scout, "d:Meet driver"), new Order { Tick = 820, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(838, Scout, "listen", Driver),
-                    MvTo(1258, Scout, new Pt(8600, -3400)), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals"), MvTo(2340, Scout, new Pt(1175, -4825)), MvTo(2340, Tech, new Pt(675, -4625)));
-                r.To(T(370));
-                r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the lane, its driver turned");
+                    MvTo(1270, Scout, TipPt), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals") /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it; brief 059: the tip at the rival car where it parks */, MvTo(2340, Scout, new Pt(1175, -4825)), Act(3000, Tech, "reroute", "patrol"), new Order { Tick = 3460, Op = Tech, Do = "move", Point = new Pt(675, -4625), Run = true }, Mv(3500, Enf, "d:Service lane"));
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: Vale gets in at 6:13 and is driven round
+                r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the service bay, its driver turned");
                 int near = 0; var vp = g.ValePos()!.Value; foreach (var w in g.Walkers) if (g.CrowdPos(w) is Pt p && G.Within(p, vp, g.R.WitnessRangeCm)) near++;
                 // the lane is not empty: someone stands within witness range of the car, so a Take outside it would be seen (Waymark 2026-10-19:
                 // three clerks at 6:10 on this tree; the check asks for one, since the crowd's own pace moves who is there)
                 r.Is(near >= 1, $"{near} people within witness range of the car");
-                Orders(r, Act(3700, Enf, "take"));
-                r.Done(Enf);
+                int there = DriveRound(r); // brief 059 (Sky 1a): the getaway car round behind Vale's
+                r.Do(Enf, "take"); int done = r.Op(Enf).BusyEnd; r.To(done - 1);
                 r.Is(!g.Acts.Exists(x => x.Take), "inside the car: nobody saw a Take, the driver no witness");
                 r.Eq(g.Alert, 0, "Alert 0");
-                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4470, "cell", "panic"), Mv(4570, Enf, "d:Getaway bay"), Act(4699, Enf, "board", "car"), Act(4739, "cell", "go")); // c025: Board (with Vale, 4 s) and Go
-                r.Is(!g.Acts.Exists(x => x.Take), "the escort: no kin of Vale near, nobody within 3 m of the grip");
-                r.Eq(g.Result, Outcome.Success, "route B wins");
-                r.Eq((g.Tick, g.Trail, g.Alert), (4739, 3, 0), "at 7:53.9 (Waymark's c025 route-b, 2026-10-21, engine 0.14.1), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
+                r.To(Math.Max(there, done));
+                r.FightItOut(120, Scout, Fixer, Tech); r.Extract();
+                r.Line(!g.Acts.Exists(x => x.Take), $"the escort (3.5 m) unseen: nobody within 3 m of the grip (brief 059: at 7:07 the clerks leaving by the service door stand within 3 m of it: {string.Join(", ", g.Acts.Where(x => x.Take).SelectMany(x => x.Noticed))}; Waymark times the carry)");
+                r.Line(g.Result == Outcome.Success, $"route B wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}; Waymark re-composes route B on engine 0.32.0)");
             });
 
             Add("N78", "—", "The escort seen (rev 4 R4.2): Vale taken inside his car in the lane (the driver turned), then walked straight at a clerk standing in the lane: within 3 m she sees the grip. A carry seen: +1 witness Trail and one step toward Menace at sight; her report lands at Alert 2. Workmate is not kin (rev 4): Vale's workmates further off see two men walking.", r =>
@@ -311,16 +339,17 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
-                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
-                r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60));
+                int trail = g.Trail, standing = g.Standing; // brief 059: before the Take lands (the clerks leaving by the service door may see the grip at once)
+                r.Do(Enf, "take"); r.Done(Enf); // brief 059: in his car in the service bay
                 // the nearest person on the street now who is no accomplice, and walk Vale to her
                 Walker? near = null; long bd = long.MaxValue; var at = r.Op(Enf).Pos;
                 foreach (var w in g.Walkers) if (w.P != g.Driver && g.CrowdPos(w) is Pt p && g.S.Grid.Free(p)) { long d = G.D2(p, at); if (d < bd) { bd = d; near = w; } }
                 r.Is(near != null, "someone is on the street");
                 if (near == null) return;
-                int trail = g.Trail, standing = g.Standing;
                 for (int k = 0; k < 40 && !g.Acts.Exists(x => x.Take); k++) { if (g.CrowdPos(near) is Pt p) r.SendTo(Enf, g.S.Grid.NearestFree(p) ?? p); r.Wait(5); }
                 var a = g.Acts.FirstOrDefault(x => x.Take);
                 r.Is(a != null && a.Noticed.Contains(near.P.Id), $"{near.P.Id}, within 3 m, sees the grip");

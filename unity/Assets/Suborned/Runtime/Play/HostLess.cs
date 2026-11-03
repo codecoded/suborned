@@ -40,10 +40,10 @@ namespace Suborned.Play
         /// <summary>The badge a beat leads with, by the log code or scene it came from (Glyph §6).</summary>
         static (string path, bool tinted) BeatBadge(string code) => code switch
         {
-            "rivals.arrive" or "rivals-arrive" => ("badges/signal_rival", false),
+            "rivals.arrive" or "rivals-arrive" or "rivals.coming" or "rivals-coming" or "rivals.drop" or "rivals-drop" => ("badges/signal_rival", false), // brief 059: the car turning in, the drop, the park
             "call" => ("badges/npc_waitress", false),
             "vale.exits" => ("badges/npc_councillor", false),
-            "car.blocks" => ("badges/signal_camera", false),
+            "car.blocked" => ("icons/singles/car", true), // brief 059 K5: Vale's car stops short (car.blocks is retired with the driver's Call)
             "report" or "report.landed" => ("icons/singles/call", true),
             "security.called" or "fight.loud" => ("badges/signal_police", false),
             "alarm.dispatches/robots" => ("badges/signal_guard", false),
@@ -97,7 +97,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- speech bubbles
 
-        public sealed class Bubble { public string Speaker = "", Text = ""; public float Born; }
+        public sealed class Bubble { public string Speaker = "", Text = ""; public float Born, Life = 3f; public int Tick; public bool Inset; }
         /// <summary>Lines spoken this run that may show as bubbles (the HUD shows the live ones whose speaker is in view).</summary>
         public readonly List<Bubble> Bubbles = new();
         bool arriveSaying;
@@ -105,7 +105,8 @@ namespace Suborned.Play
         void PushBubble(string speaker, string text)
         {
             if (arriveSaying || string.IsNullOrEmpty(speaker) || string.IsNullOrEmpty(text) || speaker is "crowd" or "watcher" or "cell") return;
-            Bubbles.Add(new Bubble { Speaker = speaker, Text = text, Born = Time.unscaledTime });
+            var bub = new Bubble { Speaker = speaker, Text = text, Born = Time.unscaledTime, Life = Text?.BubbleS ?? 3f, Tick = Game?.Tick ?? 0, Inset = GuardOnACall(speaker) };
+            Bubbles.Add(bub); if (bub.Inset) SpeechInset(bub); // brief 085: the guard's lines on any Call, off screen, in a docked inset (HostConvo.Street)
             while (Bubbles.Count > 12) Bubbles.RemoveAt(0);
         }
 
@@ -125,9 +126,10 @@ namespace Suborned.Play
         /// <summary>Where a speaker's bubble sits: over their head while their view is on the street, else nowhere (the beat speaks for them).</summary>
         public Vector3? BubbleWorld(Bubble b)
         {
+            if (b.Speaker == "milena" && Game != null && views?.ListenPartnerHead() is Vector3 lph) return lph; if (b.Speaker == "milena" && Game != null) return frame.World(Game.S.At(Game.S.GuardCafe)) + Vector3.up * 2.1f; // brief 085: a voice through the café door, with no figure
             string key = b.Speaker switch
             {
-                "scout" or "fixer" or "tech" or "enforcer" => "op/" + b.Speaker, "rivals" => "rivals/0", "security" => "security/0", "patrol" => "patrol",
+                "scout" or "fixer" or "tech" or "enforcer" => "op/" + b.Speaker, "rivals" => views?.RivalAnchorKey() ?? "car/rivals", "security" => "security/0", "patrol" => "patrol",
                 "waitress" or "driver" or "guard" or "councillor" => b.Speaker, _ => null,
             };
             if (key == null || views == null) return null;
@@ -162,7 +164,7 @@ namespace Suborned.Play
         public static string PopIcon(string code) => code switch
         {
             "too-far" or "out-of-range" or "needs-reach" or "no-place" or "unwalkable" or "no-walk" or "no-way" => "icons/singles/s_moving",
-            _ when code.StartsWith("stand-") => "icons/singles/s_moving",
+            _ when code.StartsWith("stand-") && code != "stand-shut" => "icons/singles/s_moving",
             "needs-routine" => "icons/singles/watch",
             "needs-need" or "needs-temperament" or "no-leverage" => "icons/singles/listen",
             "only-scout" => "portraits/cameo_scout_normal", "only-fixer" => "portraits/cameo_fixer_normal", "only-tech" => "portraits/cameo_tech_normal", "only-enforcer" => "portraits/cameo_enforcer_normal",
@@ -173,6 +175,10 @@ namespace Suborned.Play
             "carry-vale" or "already-carrying" or "carry-names-downed" or "carry-self" or "not-down" or "no-body" or "already-carried" or "body-stashed" or "not-carrying" or "stash-full" or "body-dead"
                 or "already-restrained" or "keeps-vale" or "run-carrying-vale" or "run-carrying-downed" or "other-carries" or "no-room" => "icons/singles/s_carrying",
             "doors-locked" or "door-held" => "icons/singles/lock",
+            // Glyph 2026-10-26 §5 (Drive's refusals): the fixable hold is the lock; the fight that has started is the car struck through
+            "drive-held" => "icons/singles/lock", "drive-fight" => "icons/singles/car#struck", "drive-busy" or "stand-shut" => "icons/singles/p_time",
+            "drive-no-driver" or "drive-here" or "driver-brings-vale" => "icons/singles/car", "unknown-stand" => "badges/mark_no", "car-not-parked" => "icons/singles/p_time", // brief 059 K3: the Take round the back
+            "car-no-driver" => "icons/singles/car", // engine 0.34.0 (M067-K3 c): Go with only the downed aboard
             "hints-on" or "hints-off" => "icons/singles/p_unknown",
             _ => "badges/mark_no",
         };
@@ -180,16 +186,49 @@ namespace Suborned.Play
         /// <summary>A refusal's pop: the code's short form with {m} {usd} {tick} filled (as the long line), else the host's own short.</summary>
         string ShortOf(Order o, Answer a)
         {
-            var s = Text?.ShortLock(a.code, TargetKindOf(o.Target));
+            var s = Text?.ShortLock(a.code, LockVariant(a, TargetKindOf(o.Target))) ?? HostShort(a.code);
             if (s == null) return null;
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
-            string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
+            string tick = a.tick >= 0 ? LockTick(a.code, a.tick) : "?";
             s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick).Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
             // Sky, route B: too early for Take says when Vale comes to his car (the briefing's timeline mark)
             if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
             return s;
         }
+
+        /// <summary>The host's own short for an engine refusal Fable's text does not word yet (a pop is never the engine's sentence); null for the rest.
+        /// Engine 0.34.0: car-no-driver (Go with only the downed aboard: Motive M067-K3 c).</summary>
+        static string HostShort(string code) => code switch { "car-no-driver" => "No driver aboard", _ => null };
+
+        /// <summary>A port of text.schema.ts `lockVariant` (engine 0.33.0, Fable): car-held with the rival car among its holders (Answer.ids) is
+        /// worded by `rival-car` when the engine sends its first rider's step-out tick, `rival-car-driving` when it sends none (-1: the car still
+        /// driving in); any other answer keeps the caller's (the target's kind: "machine", or null for the person case).</summary>
+        static string LockVariant(Answer a, string targetKind)
+        {
+            if (a.code != "car-held" || string.IsNullOrEmpty(a.ids)) return targetKind;
+            foreach (var id in a.ids.Split(',')) if (id.Trim() == "car:rivals") return a.tick >= 0 ? "rival-car" : "rival-car-driving";
+            return targetKind;
+        }
+        /// <summary>{tick} in a lock's words (text.schema.ts tickAs): the mission clock ("6:13"), or for a lock marked `tickAs: left` the seconds
+        /// still to wait from now ("18 s": ceil, never below 0), as ctx.left says it.</summary>
+        string LockTick(string code, int tick)
+        {
+            if (Game != null && Text?.LockByCode(code ?? "") is PlayText.LockText l && l.TickAs == "left") return $"{Math.Max(0, (tick - Game.Tick + Game.Hz - 1) / Game.Hz)} s";
+            return MissionClock(tick);
+        }
+        /// <summary>The getaway car's holder chip when the rival car holds it (engine 0.33.0, Fable's fillLockShort): "Rivals coming · 18 s" with
+        /// the step-out tick, "Rivals coming" while it still drives in; "" when the rival car holds nothing. Asked once a tick.</summary>
+        public string RivalsHoldShort()
+        {
+            var g = Game; if (g == null || g.Range) return "";
+            if (rivalsHoldTick == g.Tick && rivalsHoldOrders == g.Orders.Count) return rivalsHold;
+            rivalsHoldTick = g.Tick; rivalsHoldOrders = g.Orders.Count; rivalsHold = "";
+            var a = GoLock(); if (a.code != "car-held" || !(a.ids ?? "").Contains("car:rivals")) return rivalsHold;
+            rivalsHold = ShortOf(new Order { Op = Op.Name(Agent), Do = "go" }, a) ?? (a.tick >= 0 ? $"{Math.Max(0, (a.tick - g.Tick + Game.Hz - 1) / Game.Hz)} s" : "");
+            return rivalsHold;
+        }
+        int rivalsHoldTick = -1, rivalsHoldOrders = -1; string rivalsHold = "";
 
         /// <summary>Fable 019's `byTarget` key for an order's target: "machine" for a camera (by its id or "camera:" key), the patrol robot or a
         /// response robot; else null (the base line, the person case).</summary>
@@ -207,7 +246,7 @@ namespace Suborned.Play
             string s = Text != null && Text.Pops.TryGetValue(key, out var p) ? p : Text?.ShortLock(key) ?? key;
             if (fill != null) s = s.Replace("{op}", fill).Replace("{m}", fill);
             s = s.Replace("{m}", "?");
-            Pop(s, screen, world, kind, 2f, PopIcon(key), longLine);
+            popCode = key; Pop(s, screen, world, kind, 2f, PopIcon(key), longLine);
         }
 
         /// <summary>Where the camera opens a run (block cm; Aster/Waymark 2026-10-16): Unity x -170.5, z -227.5.</summary>
@@ -273,6 +312,9 @@ namespace Suborned.Play
         public sealed class MoveParts
         {
             public int WalkS = -1, RunS = -1, CarryS = -1; public string Eye = "", Alert = "", Refused = ""; public bool RunFree;
+            /// <summary>Engine 0.31.0 (brief 054 §3.5, Fable's price `eye`): the passers-by who would keep the runner's face (MoveQuote.RunRememberedBy:
+            /// Alert 2 or more, a quiet run); the card's eye mark carries their number. 0 none.</summary>
+            public int Remembers;
             /// <summary>The move preview (Glyph, "Move preview", variant A): where the ring sits, its state (safe, seen, unk, alert), the seeing
             /// watcher's kind (camera, guard, rivals: the ring's colour), the stretches of the route inside each known watcher's sight (the glow,
             /// world points with the watcher's kind), and the unwatched watchers on the route (a faint "?" over each).</summary>
@@ -281,6 +323,9 @@ namespace Suborned.Play
             /// <summary>Brief 027 B5 (lab, cover snap): the move ends on a cover point instead of the cursor's ground. At is moved to the point;
             /// SnapFrom keeps the cursor's ground for the tether; SnapId names the point (its mark lights). Null / "" when it doesn't snap.</summary>
             public Vector3? SnapFrom; public string SnapId = "";
+            /// <summary>Engine 0.35 (Glyph b-final, "when cover marks show"): the snapped end flanks the focus's cover (Game.PreviewMoveSnap: the focus
+            /// holds a cover that no longer counts from that end): where that cover's kneel point is, for one struck shield disc. Null when not.</summary>
+            public Vector3? FlankAt;
         }
 
         /// <summary>The ring's state and the route's glow for a walk from agent k to `to` (the engine's card-only SeenAt per route sample; read-only).</summary>
@@ -292,7 +337,7 @@ namespace Suborned.Play
             mp.State = whole == null || whole.Seen == "no" ? "safe" : whole.Seen == "?" ? "unk" : carrying ? "alert" : "seen";
             if (whole != null) foreach (var w in whole.MaybeSeenBy) if (WatcherAt(w) is Vector3 wp) mp.Unwatched.Add(wp + Vector3.up * 3f);
             if (whole == null || whole.SeenBy.Count == 0) return;
-            var route = g.S.Grid.Route(g.Ops[k].Pos, to); if (route == null) return;
+            var route = MoveRoute(g.Ops[k].Pos, to); if (route == null) return; // engine 0.33.1: round the standing cars
             var pts = new List<Pt>(); for (int i = 1; i < route.Length; i++) { Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 60); for (int j = 0; j < n; j++) pts.Add(G.Lerp(a, c, j, n)); } pts.Add(route[^1]);
             string prev = ""; Pt from = pts[0];
             for (int i = 0; i < pts.Count; i++)
@@ -312,14 +357,14 @@ namespace Suborned.Play
                 case "camera": { var c = g.S.Cameras.Find(x => "camera:" + x.Id == id); return c == null ? null : frame.World(c.At) + Vector3.up * 0.6f; }
                 case "guard": return g.GuardPose() is var gp && gp.HasValue ? frame.World(gp.Value.pos) : null;
                 case "patrol": return g.PatrolPose() is var pp && pp.HasValue ? frame.World(pp.Value.pos) : null;
-                case "rivals": return g.RivalsPose() is var rp && rp.HasValue ? frame.World(rp.Value.pos) : null;
+                case "rivals": return g.PosOf(id) is Pt rp ? frame.World(rp) : null; // brief 059 K8: each member is a watcher (RivalsPose is the migration shim)
             }
             return null;
         }
         public MoveParts MoveNow { get; private set; }
 
         /// <summary>The crosshair chip: the target's badge, down in n s, hits as a fraction, Trail per hit; never: the refusal.</summary>
-        public sealed class AimParts { public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ /** Keel 0.15 §8.8: the gait the chance is read at (walk, run, run-away; "" standing) and the seconds to down on arrival (-1 none) */ public string Gait = ""; public int ArriveS = -1; }
+        public sealed class AimParts { /** brief 080: the sheet's chance, -1 none */ public int Pct = -1; public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ /** Keel 0.15 §8.8: the gait the chance is read at (walk, run, run-away; "" standing) and the seconds to down on arrival (-1 none) */ public string Gait = ""; public int ArriveS = -1; }
         public AimParts AimNow { get; private set; }
 
         /// <summary>A watcher-or-not eye for a SeenQuote: "shut" nobody, "open" a known watcher sees it, "unk" an unknown one could.</summary>

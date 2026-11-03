@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>073 · atmosphere prototypes in motion</title>
+<style>
+body{font:15px/1.45 -apple-system,Helvetica,sans-serif;background:#17302f;color:#f7f4ec;margin:0;padding:24px 32px;max-width:1500px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:18px;margin:34px 0 6px;border-top:1px solid #2f5552;padding-top:18px}
+p,li{color:#d8e6e2}small{color:#b0cdc7}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+figure{margin:0}video{width:100%;background:#0b1615;border:1px solid #2f5552}
+figcaption{font-size:13px;color:#b0cdc7;margin-top:4px}
+table{border-collapse:collapse;font-size:13.5px;margin:8px 0}td,th{border:1px solid #2f5552;padding:4px 8px;text-align:left;vertical-align:top}th{background:#0b1615}
+.v{color:#60e0ea}.w{color:#f0a020}
+</style></head><body>
+<h1>Brief 073 · atmosphere prototypes in motion (scratch, Glint, 2026-10-28)</h1>
+<p>Throwaway spike, off by default (unity/Assets/Suborned/Scratch/Print073). Nothing shipped changed: grade, style contract, GDD, scenes and play camera are as they were.
+All clips were rendered offscreen in batchmode, frame by frame at a fixed 1/30 s step, 1920 × 1080, through the game's HDR capture path, then encoded to H.264 (CRF 14) with ffmpeg. The crowd is hidden. Water, the fountain and the crossing heads hold still, because edit-mode time doesn't run.</p>
+<p><b>The A/B clips are split down the middle: left half today, right half the look.</b> The full-frame clips are linked under each one (<code>video/raw/</code>).</p>
+<ul>
+<li><b>tp</b>, 30 s: a <i>scratch</i> third-person presentation camera. It's not a play change; the camera rule holds. The camera is perspective, 55°, far clip 350 m (the follow tier's haze and grade), 3.6 m behind the Scout and 2.3 m up. She walks (her own walk clip) the last 45 m of a walk-grid path from the café square (Plaza west) across Apron Road to the Records Office approach, at 1.6 m/s.</li>
+<li><b>play</b>, 18 s: play zoom (ortho 14 at 38°). It holds, then eases a pan from the cell's opening view to the Office front at yaw 30, then eases a quarter turn to yaw 120. The fight-lab signal frame (red cone, turquoise line and ghost, violet and amber lines) sits at the Office front.</li>
+</ul>
+
+<h2>Shimmer verdict</h2>
+<p><b class="w">The screen-anchored grain and halftone don't hold in motion.</b> They don't crawl among themselves: they're perfectly still on the screen. The problem is that the city slides and turns under a still dot screen, which reads as a dirty window or screen door in front of the game. It's the most visible thing in every print and comic clip whenever the camera moves, and it disappears the moment the camera stops.
+Measured during the pan (the share of each frame's change that the world's own motion doesn't explain, normalised by the raw frame difference; centre 1024 × 512, full resolution):</p>
+<table><tr><th>clip</th><th>unexplained change</th><th>vs today</th><th>read</th></tr>
+<tr><td>today (off)</td><td>0.205</td><td>1.0×</td><td>baseline (sub-pixel resampling)</td></tr>
+<tr><td>vintage print, screen-anchored</td><td>1.074</td><td class="w">5.2×</td><td>the pattern is most of what changes: screen door</td></tr>
+<tr><td>vintage print, ground-anchored (<code>default@ground</code>)</td><td>0.327</td><td>1.6×</td><td>locks to the ground on a pan; the leftover is the 1.3 px grain octave aliasing and the depth ink lines stepping</td></tr>
+<tr><td>comic ink</td><td>1.007</td><td class="w">4.9×</td><td>screen dots plus ink lines that crawl on window mullions and far facades; the cel bands boil on the paving texture</td></tr>
+<tr><td>pastel haze</td><td>0.234</td><td class="v">1.14×</td><td>holds: only a faint grain</td></tr>
+<tr><td>gouache</td><td>0.250</td><td class="v">1.22×</td><td>mostly holds; the Kuwahara patches flicker a little on fine texture</td></tr></table>
+<p>The quick fix I tried: <b>ground-anchored</b> patterns, which take the screen offset of a world point, cost nothing and need no depth. They lock the paper and dots to the world on a pan (the A/B below has screen on the left and ground on the right). They only remove translation: on a Q/E turn the pattern doesn't rotate with the city, and in third person (perspective) there's no single offset, so tp stays screen-fixed. A real round would need the grain at 2 px or more, or a mip-mapped baked tile so it doesn't alias when it moves. It would also need either world- or triplanar-mapped paper in the materials, or accepting the print finish as a still and screenshot look only. My read: <b>the print's grade and matte finish travel well; its paper and dot screen don't, at play.</b></p>
+
+<h2>1 · Vintage print (lead), preset <code>default</code></h2>
+<p><small>Redline (Air, est.): as prototyped +0.4–0.7 ms (subtle) to +0.6–1.1 ms (default, strong; the ink brings back the depth texture). The cheap production way (grade in the LUT, matte chrome and glass in the materials, one paper and halftone pass, no ink) is 0 to +0.35 ms.</small></p>
+<div class="row">
+<figure><video src="video/ab-default-tp.mp4" controls preload="metadata" loop muted></video><figcaption>tp, today | print. Full frame: <a href="video/raw/default-tp.mp4">print</a> · <a href="video/raw/off-tp.mp4">today</a>. The ink lines from depth pile up on distant facades in perspective, and the dot screen sits in front of the walk.</figcaption></figure>
+<figure><video src="video/ab-default-play.mp4" controls preload="metadata" loop muted></video><figcaption>play, today | print. Full frame: <a href="video/raw/default-play.mp4">print</a> · <a href="video/raw/off-play.mp4">today</a>. Screen door on the pan and the turn.</figcaption></figure>
+<figure><video src="video/ab-default-screen-vs-ground-play.mp4" controls preload="metadata" loop muted></video><figcaption>play, print screen-anchored | print ground-anchored. Full frame: <a href="video/raw/default-ground-play.mp4">ground</a>. The ground version moves with the city on the pan, a little sparkle in the grain; on the turn it slides.</figcaption></figure>
+<figure><video src="video/ab-default-night.mp4" controls preload="metadata" loop muted></video><figcaption>play at night, today | print. Full frame: <a href="video/raw/default-night.mp4">print</a> · <a href="video/raw/off-night.mp4">today</a>. <i>Round 2, superseded by the night clips below (this one ran without the strip light and with the heads still).</i> The ink-to-paper fade lifts the teal-black base to a foggy teal, and the specular cap flattens the lamp heads' glow (the pools stay).</figcaption></figure>
+</div>
+
+<h2>2 · Comic-book ink, preset <code>comic</code></h2>
+<p><small>Redline (Air, est.): depth-only outlines +0.6–1.1 ms. Clean lines from normals or hulls are +1.5–3.5 ms and bring the depth texture back. Without city outlines it's +0.2–0.4 ms, which is no longer comic.</small></p>
+<div class="row">
+<figure><video src="video/ab-comic-tp.mp4" controls preload="metadata" loop muted></video><figcaption>tp, today | comic. <a href="video/raw/comic-tp.mp4">Full frame</a>. Depth lines, 4 cel bands, a colour dot screen, saturation ×1.3. The far street turns into line noise.</figcaption></figure>
+<figure><video src="video/ab-comic-play.mp4" controls preload="metadata" loop muted></video><figcaption>play, today | comic. <a href="video/raw/comic-play.mp4">Full frame</a>. Reads as comic at play zoom when still; the lines and dots crawl in motion.</figcaption></figure>
+</div>
+
+<h2>3 · Pastel haze, preset <code>haze</code></h2>
+<p><small>Redline (Air, est.): −0.3 to +0.05 ms done properly (the existing fog, the LUT, quarter-res bloom). As prototyped here it runs through the print passes (cap plus grade pass, about the subtle preset's +0.4–0.7), which a real round wouldn't need.</small></p>
+<div class="row">
+<figure><video src="video/ab-haze-tp.mp4" controls preload="metadata" loop muted></video><figcaption>tp, today | haze. <a href="video/raw/haze-tp.mp4">Full frame</a>. Lifted lilac blacks, a softer palette, a wider warm bloom, a peach haze toward the top of the frame. Steady in motion. Pushed pale on purpose: the accents lose some punch.</figcaption></figure>
+<figure><video src="video/ab-haze-play.mp4" controls preload="metadata" loop muted></video><figcaption>play, today | haze. <a href="video/raw/haze-play.mp4">Full frame</a>.</figcaption></figure>
+</div>
+
+<h2>4 · Matte gouache, preset <code>gouache</code></h2>
+<p><small>Redline (Air, est.): a painterly filter +1.5–4 ms (over budget); done in the materials and the LUT 0 to +0.35 ms. This one is a smoothed 4-sector Kuwahara, radius 4 px at 1080 (100 taps), plus a matte grade and a paper wash.</small></p>
+<div class="row">
+<figure><video src="video/ab-gouache-tp.mp4" controls preload="metadata" loop muted></video><figcaption>tp, today | gouache. <a href="video/raw/gouache-tp.mp4">Full frame</a>. Flat painted patches, kept edges; the fine paving and the Scout's trim smear.</figcaption></figure>
+<figure><video src="video/ab-gouache-play.mp4" controls preload="metadata" loop muted></video><figcaption>play, today | gouache. <a href="video/raw/gouache-play.mp4">Full frame</a>. <span class="w">It erases the crossing dots and the crossing head's icon at play zoom.</span></figcaption></figure>
+</div>
+
+
+<h2>Evening and night (round 3, Sky: "also evening / night time")</h2>
+<p>Same A/B split (left today, right the look), 1080p H.264, offscreen batchmode. The phase is set through the game's own day/night system: evening is <code>LightPhase.SetEvening</code> held at full Dusk (the lens.json evening sun, ambient, sky and grade), night is <code>LightPhase.Set(true)</code> with the night floor and the lamp cap at the camera focus. Edit mode doesn't run the per-frame parts, so the recorder steps them by hand every frame, plus one step and a warm grab after every switch: the evening grade (AtmosphereLens), RoadLight (kerb strip, lit windows, people fill) and every crossing head (its phase colours; the heads now run their cycle on the clip clock, so walk, clearing and stop all show). The round 2 night clip ran without RoadLight and with the heads still, so it is superseded by these.</p>
+<p><b>+stencil</b>, new in this round: cones, the crossing heads and their dot rows, and the lamp fixtures' emissive materials (DK_Lamp, the café and pavilion opals, the table lamps) are tagged with stencil bit 64 after the transparents, and every print pass (cap, paint, print) copies those pixels through untouched. All evening and night clips use it. Two comparison clips show it off against on.</p>
+<table><tr><th>clip</th><th>dark half, mean (today → look)</th><th>fine noise in the darks</th><th>pixels above 235 (today → look)</th></tr>
+<tr><td>print, play night</td><td>#001f28 → #053036</td><td class="w">×1.72</td><td class="w">0.04 % → 0.00 %</td></tr>
+<tr><td>print, tp night</td><td>#00171f → #05292e</td><td class="w">×1.48</td><td>0.12 % → 0.01 %</td></tr>
+<tr><td>print, play evening</td><td>#81756a → #887a67</td><td class="w">×1.94</td><td>0.41 % → 0.01 %</td></tr>
+<tr><td>haze, play night</td><td class="w">#001f28 → #556a74</td><td>×0.79</td><td>0.04 % → 0.03 %</td></tr>
+<tr><td>haze, tp night</td><td class="w">#00171f → #455a65</td><td>×0.84</td><td>unchanged</td></tr>
+<tr><td>comic, play night</td><td class="w">#001f28 → #00151a</td><td class="w">×1.95</td><td>unchanged</td></tr>
+<tr><td>comic, tp night</td><td class="w">#00171f → #000203</td><td>×0.82</td><td>unchanged</td></tr>
+<tr><td>comic, play evening</td><td>#81756a → #807162</td><td class="w">×2.16</td><td>0.41 % → 3.51 %</td></tr>
+<tr><td>gouache, play night</td><td>#001f28 → #042f37</td><td class="v">×0.60</td><td>0.04 % → 0.00 %</td></tr>
+<tr><td>gouache, tp night</td><td>#00171f → #04282f</td><td class="v">×0.62</td><td>0.12 % → 0.01 %</td></tr></table>
+<p><small>Sampled every 30th frame at 960 × 540: the mean colour of the darker half of the frame, the mean |pixel − 3 × 3 blur| in that half (grain and dot screen show here), the share of pixels above 235. Data: <code>briefs/073/proto/night-evening-metrics.json</code>.</small></p>
+<h3>Vintage print (default), evening and night</h3>
+<div class="row">
+<figure><video src="video/ab-default-tp-evening.mp4" controls preload="metadata" loop muted></video><figcaption>tp, evening, today | default +stencil. Holds at dusk: warm, matte, the heads keep their state colour. The grain and dots sit on the sunset sky and paving (darks ×1.3). Full frame: <a href="video/raw/default+stencil-tp-evening.mp4">look</a> · <a href="video/raw/off-tp-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-default-play-evening.mp4" controls preload="metadata" loop muted></video><figcaption>play, evening, today | default +stencil. Reads well still; the dot screen is the most visible thing on the shaded paving (darks ×1.9) and it's a screen door on the pan. Full frame: <a href="video/raw/default+stencil-play-evening.mp4">look</a> · <a href="video/raw/off-play-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-default-tp-night.mp4" controls preload="metadata" loop muted></video><figcaption>tp, night, today | default +stencil. The teal-black base lifts to a foggy teal (#00171f → #05292e) and the grain shows in the dark street; signals and lit windows read. Full frame: <a href="video/raw/default+stencil-tp-night.mp4">look</a> · <a href="video/raw/off-tp-night.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-default-play-night.mp4" controls preload="metadata" loop muted></video><figcaption>play, night, today | default +stencil. The base lifts (#001f28 → #053036), the dot screen crawls over the dark paving (×1.7), and the lamp hot spots lose their bloom; the heads, dots and signal lines stay clean. Full frame: <a href="video/raw/default+stencil-play-night.mp4">look</a> · <a href="video/raw/off-play-night.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-default-play-night-nostencil-vs-stencil.mp4" controls preload="metadata" loop muted></video><figcaption>play night, print without the stencil | with it. The crossing heads and the in-road dots keep their full red and lose the dot screen with it; nothing else changes. Full frame: <a href="video/raw/default-play-night.mp4">no stencil</a> · <a href="video/raw/default+stencil-play-night.mp4">stencil</a>.</figcaption></figure>
+<figure><video src="video/ab-default-tp-evening-nostencil-vs-stencil.mp4" controls preload="metadata" loop muted></video><figcaption>tp evening, print without | with the stencil. The head's face and beam stay crisp and saturated; without it they get faded and dotted. Full frame: <a href="video/raw/default-tp-evening.mp4">no stencil</a> · <a href="video/raw/default+stencil-tp-evening.mp4">stencil</a>.</figcaption></figure>
+<figure><video src="video/ab-default-ground-play-night.mp4" controls preload="metadata" loop muted></video><figcaption>play night, today | print ground-anchored +stencil. Same lift and cap; the dot screen moves with the ground on the pan, so it no longer reads as a screen door at night, only as texture in the dark paving. Full frame: <a href="video/raw/default-ground+stencil-play-night.mp4">ground</a>.</figcaption></figure>
+</div>
+<h3>Pastel haze, evening and night</h3>
+<div class="row">
+<figure><video src="video/ab-haze-tp-evening.mp4" controls preload="metadata" loop muted></video><figcaption>tp, evening, today | haze +stencil. Washed out: the dusk becomes a pale lilac fog, the sunset loses its colour (dark half #5b584d → #928d89). Full frame: <a href="video/raw/haze+stencil-tp-evening.mp4">look</a> · <a href="video/raw/off-tp-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-haze-play-evening.mp4" controls preload="metadata" loop muted></video><figcaption>play, evening, today | haze +stencil. Milky, low contrast; the accents and the dusk warmth drain away; signals still read on the signal layer, the heads by the stencil. Full frame: <a href="video/raw/haze+stencil-play-evening.mp4">look</a> · <a href="video/raw/off-play-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-haze-tp-night.mp4" controls preload="metadata" loop muted></video><figcaption>tp, night, today | haze +stencil. Breaks the night: the top-of-frame haze and the lilac ink turn the street grey-blue (#00171f → #455a65). Not a night. Full frame: <a href="video/raw/haze+stencil-tp-night.mp4">look</a> · <a href="video/raw/off-tp-night.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-haze-play-night.mp4" controls preload="metadata" loop muted></video><figcaption>play, night, today | haze +stencil. Breaks the night: a grey veil over the whole block (#001f28 → #556a74); lamp pools are gone into the fog. The heads stay red by the stencil. Full frame: <a href="video/raw/haze+stencil-play-night.mp4">look</a> · <a href="video/raw/off-play-night.mp4">today</a>.</figcaption></figure>
+</div>
+<h3>Comic ink, evening and night</h3>
+<div class="row">
+<figure><video src="video/ab-comic-tp-evening.mp4" controls preload="metadata" loop muted></video><figcaption>tp, evening, today | comic +stencil. Strong graphic dusk; the cel bands turn the shadow-map dither on the paving into blotches, and the far street is line noise. Full frame: <a href="video/raw/comic+stencil-tp-evening.mp4">look</a> · <a href="video/raw/off-tp-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-comic-play-evening.mp4" controls preload="metadata" loop muted></video><figcaption>play, evening, today | comic +stencil. The cel bands boil on the paving in motion (darks ×2.2) and ink plus dots crawl on the pan; brightest pixels up (3.5 % over 235). Full frame: <a href="video/raw/comic+stencil-play-evening.mp4">look</a> · <a href="video/raw/off-play-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-comic-tp-night.mp4" controls preload="metadata" loop muted></video><figcaption>tp, night, today | comic +stencil. Crushes the night to black (#000203): the Scout is a silhouette, the teal is gone; the lamp pools read as flat discs. Full frame: <a href="video/raw/comic+stencil-tp-night.mp4">look</a> · <a href="video/raw/off-tp-night.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-comic-play-night.mp4" controls preload="metadata" loop muted></video><figcaption>play, night, today | comic +stencil. Near-black base (#00151a) with hard cel shadows; the noise doubles in the darks (×1.95). Signals and heads survive. Full frame: <a href="video/raw/comic+stencil-play-night.mp4">look</a> · <a href="video/raw/off-play-night.mp4">today</a>.</figcaption></figure>
+</div>
+<h3>Matte gouache, evening and night</h3>
+<div class="row">
+<figure><video src="video/ab-gouache-tp-evening.mp4" controls preload="metadata" loop muted></video><figcaption>tp, evening, today | gouache +stencil. Soft and painterly at dusk, steady in motion; fine texture smears but the head and its beam stay crisp with the stencil. Full frame: <a href="video/raw/gouache+stencil-tp-evening.mp4">look</a> · <a href="video/raw/off-tp-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-gouache-play-evening.mp4" controls preload="metadata" loop muted></video><figcaption>play, evening, today | gouache +stencil. Steady, matte, calm; with the stencil the crossing dots and the head's icon now survive (they were erased by day without it). Full frame: <a href="video/raw/gouache+stencil-play-evening.mp4">look</a> · <a href="video/raw/off-play-evening.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-gouache-tp-night.mp4" controls preload="metadata" loop muted></video><figcaption>tp, night, today | gouache +stencil. Lifts like the print (#00171f → #04282f) but with no grain: the darks get quieter, not noisier (×0.6). Full frame: <a href="video/raw/gouache+stencil-tp-night.mp4">look</a> · <a href="video/raw/off-tp-night.mp4">today</a>.</figcaption></figure>
+<figure><video src="video/ab-gouache-play-night.mp4" controls preload="metadata" loop muted></video><figcaption>play, night, today | gouache +stencil. Lifted teal (#001f28 → #042f37), lamp hot spots capped, but calm and steady; heads and dots intact by the stencil. Full frame: <a href="video/raw/gouache+stencil-play-night.mp4">look</a> · <a href="video/raw/off-play-night.mp4">today</a>.</figcaption></figure>
+</div>
+<h3>Night and evening findings</h3>
+<ul>
+<li><b>Highlight cap.</b> The print and gouache take almost every pixel above 235 away at evening and night. The DK_Lamp fixture band itself is protected by the stencil and keeps its level. The glow you lose under each plaza lamp at play zoom is mostly the lamp spot's hot spot on the banner and pole just below the head and its bloom, not a fixture. The stencil can't save it, because that's lit geometry, not an emissive. The cap belongs in the materials (chrome and glass), not in screen space.</li>
+<li><b>Grain and dots in the dark.</b> The print adds ×1.5–1.9 fine noise in the darks and comic adds ×2, which you can see as a crawling dot screen on the night paving. Haze and gouache lower it.</li>
+<li><b>Signals.</b> The signal layer (turquoise line and ghost, violet, amber) is untouched in every clip. With the stencil, the crossing heads and in-road dots keep their own state colours under every look and every phase, including gouache, which erased them by day. The cone keeps its red.</li>
+<li><b>Night base.</b> The print and gouache lift the teal-black base by about 13 levels to a foggy teal. Haze turns it grey-blue, which breaks the night. Comic crushes it to black, which loses the teal.</li>
+</ul>
+<h2>Exclusions (signals, crossing heads, cones, lamps)</h2>
+<ul>
+<li><b>Signal layer</b> (our turquoise line and ghost, the rival violet and guard amber lines): drawn after every look by SignalsFeature, untouched in every clip, day and night.</li>
+<li><b>Cones</b> are world objects in the main pass, so every look grades them. The print fades the red fan toward salmon and puts the dot screen over it. Comic saturates it and keeps it. Haze washes it to pink. Gouache keeps the colour but softens the edge.</li>
+<li><b>Crossing heads and crossing dots</b> are world objects too. The print keeps them legible but fainter. Haze washes the head's icon faint. Comic inks them and keeps them. <span class="w">Gouache wipes the in-road dots and turns the head into a blob</span> (the Kuwahara removes anything a few pixels wide). The hold ("the crossing heads keep their own colours under every light") fails under haze and gouache and is weakened under the print.</li>
+<li><b>Night lamps</b>: under the print the pools survive, but the screen-space specular cap clips the glowing fixture heads and their bloom, and the fade lifts the dark base. That breaks "a dark teal-black base, many small lamp pools each beside a glowing fixture".</li>
+<li>The fix for all of the above: a stencil bit on cones, crossing heads, crossing dots and lamp fixtures that the post passes skip, plus the cap moved into the materials (not screen space). Redline costs the stencil at about 0.</li>
+</ul>
+
+<h2>Frame cost measured on the Studio (editor, not the Air)</h2>
+<p><small>The mean synced grab per frame (render, blit, ReadPixels at 1080p) from one pass of each clip. The Studio is main-thread bound and these vary by a few ms run to run (the print's play figure came out <i>below</i> today's), so read them as "small", not as deltas. The Air figures are Redline's estimates above.</small></p>
+<table><tr><th></th><th>today</th><th>print</th><th>haze</th><th>comic</th><th>gouache</th><th>print, ground</th></tr>
+<tr><td>tp (perspective)</td><td>17.9 ms</td><td>20.3</td><td>20.4</td><td>20.8</td><td>21.4</td><td></td></tr>
+<tr><td>play (ortho)</td><td>12.8</td><td>12.4</td><td>12.0</td><td>12.4</td><td>13.7</td><td>11.4</td></tr>
+<tr><td>night play</td><td>11.1</td><td>11.9</td><td></td><td></td><td></td><td></td></tr></table>
+<p><small>Round 3 (evening and night): <code>bun run guard &lt;Unity&gt; -batchmode -quit -projectPath unity -executeMethod Suborned.Scratch.Print073Video.Cli -looks off,default+stencil,haze+stencil,comic+stencil,gouache+stencil -clips tp-evening,tp-night,play-evening,play-night -out briefs/073/video/raw</code> (about 9 minutes). Rerun: <code>bun run guard &lt;Unity 6000.6.2f1&gt; -batchmode -quit -projectPath unity -executeMethod Suborned.Scratch.Print073Video.Cli -looks off,default,haze,comic,gouache -clips tp,play -out briefs/073/video/raw -logFile …</code> (about 3 minutes for five looks; <code>-clips night</code>; <code>-looks default@ground</code>; <code>-probe</code> for the anchor sign). The A/B splits come from ffmpeg crop and hstack.</small></p>
+</body></html>

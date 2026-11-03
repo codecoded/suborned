@@ -1,0 +1,114 @@
+{
+ "job": "yes-or-no",
+ "what": "A yes or a no with a visible cause.",
+ "excerpts": [
+  {
+   "id": "milverton-coat",
+   "source": "return-holmes",
+   "where": "Charles Augustus Milverton",
+   "text": "It is purely a matter of business. If you think that it is in the best interests of your client that these letters should be placed in the hands of the Earl, then you would indeed be foolish to pay so large a sum of money to regain them.” He rose and seized his astrakhan coat.\nHolmes was grey with anger and mortification.\n“Wait a little,” he said. “You go too fast. We should certainly make every effort to avoid scandal in so delicate a matter.”\nMilverton relapsed into his chair.\n“I was sure that you would see it in that light,” he purred.",
+   "moves": [
+    {
+     "at": "It is purely a matter of business.",
+     "move": "He drops the threat and treats the refusal as sensible. He accepts the no, which is the danger."
+    },
+    {
+     "at": "He rose and seized his astrakhan coat.",
+     "move": "The cause of the yes is a coat. He reaches for it, and the bluff is over."
+    },
+    {
+     "at": "“Wait a little,” he said. “You go too fast.",
+     "move": "The yes begins as a complaint about the speed. Nobody says \"I give in\"."
+    },
+    {
+     "at": "Milverton relapsed into his chair.",
+     "move": "He sits back down. The other has now paid, in the sight of a witness."
+    },
+    {
+     "at": "I was sure that you would see it in that light",
+     "move": "A polite phrase, which rubs it in. He takes the win without gloating aloud."
+    }
+   ]
+  },
+  {
+   "id": "jig-then-ill-do-it",
+   "source": "men-without-women-pg",
+   "where": "Hills Like White Elephants",
+   "text": "“And if I do it you’ll be happy and things will be like they were and you’ll love me?”\n“I love you now. You know I love you.”\n“I know. But if I do it, then it will be nice again if I say things are like white elephants, and you’ll like it?”\n“I’ll love it. I love it now but I just can’t think about it. You know how I get when I worry.”\n“If I do it you won’t ever worry?”\n“I won’t worry about that because it’s perfectly simple.”\n“Then I’ll do it. Because I don’t care about me.”\n“What do you mean?”\n“I don’t care about me.”",
+   "moves": [
+    {
+     "at": "And if I do it you’ll be happy",
+     "move": "She makes him say the terms, one at a time. She is checking the bargain, and it is an awful bargain."
+    },
+    {
+     "at": "I love you now. You know I love you.",
+     "move": "He answers the love, which she did not really ask about. He dodges the terms."
+    },
+    {
+     "at": "I won’t worry about that because it’s perfectly simple.",
+     "move": "His third \"simple\". He has given no reason, and the repeat is the reason she gives up."
+    },
+    {
+     "at": "Then I’ll do it. Because I don’t care about me.",
+     "move": "The yes has its cause in the same breath, and the cause condemns him."
+    },
+    {
+     "at": "“What do you mean?”",
+     "move": "He notices too late. The person who won is the one who is now confused."
+    }
+   ]
+  },
+  {
+   "id": "spade-no",
+   "source": "maltese-falcon",
+   "where": "Chapter 20",
+   "text": "She put a hand on his hand on her shoulder. “Don’t help me then,” she whispered, “but don’t hurt me. Let me go away now.”\n“No,” he said. “I’m sunk if I haven’t got you to hand over to the police when they come. That’s the only thing that can keep me from going down with the others.”",
+   "moves": [
+    {
+     "at": "“Don’t help me then,”",
+     "move": "She gives up the big ask and makes a smaller one. A real negotiation under real fear."
+    },
+    {
+     "at": "Let me go away now.",
+     "move": "The want, stated plainly at last."
+    },
+    {
+     "at": "“No,” he said.",
+     "move": "The word on its own, first."
+    },
+    {
+     "at": "I’m sunk if I haven’t got you",
+     "move": "The cause is his own skin. He does not say he doesn't love her. He explains his position, which is colder."
+    }
+   ]
+  },
+  {
+   "id": "elizabeth-no-promise",
+   "source": "pride-prejudice",
+   "where": "Chapter 56",
+   "text": "“Tell me, once for all, are you engaged to him?”\nThough Elizabeth would not, for the mere purpose of obliging Lady Catherine, have answered this question, she could not but say, after a moment’s deliberation,--\n“I am not.”\nLady Catherine seemed pleased.\n“And will you promise me never to enter into such an engagement?”\n“I will make no promise of the kind.”",
+   "moves": [
+    {
+     "at": "Tell me, once for all",
+     "move": "A direct question from a person used to answers. The narration tells us she was going to refuse, and answers only because it costs her nothing."
+    },
+    {
+     "at": "“I am not.”",
+     "move": "A true answer, given when truth is the stronger move. Plain speech can be the blow."
+    },
+    {
+     "at": "Lady Catherine seemed pleased.",
+     "move": "One reaction, then she reaches for more than she should."
+    },
+    {
+     "at": "And will you promise me never",
+     "move": "She overreaches. The no has its cause here: the demand went one step too far."
+    },
+    {
+     "at": "I will make no promise of the kind.",
+     "move": "The no copies the exact word she was asked for. No reason offered, no anger."
+    }
+   ]
+  }
+ ]
+}

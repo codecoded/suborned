@@ -1,0 +1,11 @@
+$ bun tools/game/playing.ts bash -c "for n in w031 w032; do cd out/scratch/redline/simperf/\$n/sim/cli && dotnet build -c Release -v q -nologo 2>&1 | grep -E ' error |rror\\(s\\)'; done; for r in route-a loud-fight; do for n in w031 w032; do cd out/scratch/redline/simperf/\$n && echo \"## \$n \$r\" && dotnet sim/cli/bin/Release/net10.0/suborned-sim.dll tickprof contracts/missions/handover/routes/\$r.json 10 2>&1 | sed -n '3p'; done; done"
+    0 Error(s)
+    0 Error(s)
+## w031 route-a
+  Grid.Route: 88 calls a play, 13.02 ms a play (18%), 148 us a call; of it string-pull 2.70 ms (196 LineFree a route, raw path 76 cells), null routes 0; Grid.Nearest(pred): 0 calls, 0.00 ms a play
+## w032 route-a
+  Grid.Route: 140 calls a play, 20.48 ms a play (23%), 146 us a call; of it string-pull 3.42 ms (134 LineFree a route, raw path 69 cells), null routes 0; Grid.Nearest(pred): 16 calls, 7.51 ms a play
+## w031 loud-fight
+  Grid.Route: 448 calls a play, 26.40 ms a play (28%), 59 us a call; of it string-pull 5.33 ms (74 LineFree a route, raw path 54 cells), null routes 0; Grid.Nearest(pred): 14 calls, 2.51 ms a play
+## w032 loud-fight
+  Grid.Route: 582 calls a play, 25.60 ms a play (28%), 44 us a call; of it string-pull 5.99 ms (80 LineFree a route, raw path 51 cells), null routes 0; Grid.Nearest(pred): 8 calls, 2.53 ms a play

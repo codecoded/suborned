@@ -1,0 +1,151 @@
+diff -ru -x bin -x obj a/sim/Suborned.Sim/GameAi.cs b/sim/Suborned.Sim/GameAi.cs
+--- a/sim/Suborned.Sim/GameAi.cs	2026-10-26 08:08:12
++++ b/sim/Suborned.Sim/GameAi.cs	2026-10-26 08:47:03
+@@ -202,8 +202,13 @@
+                     else g.NoFoeSince = -1;
+                     break;
+                 case "hold":
+-                    if (foes.Count > 0) g.St = "engage";
++                    if (foes.Count > 0) { g.St = "engage"; g.NoFoeSince = -1; }
+                     else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { g.St = "advance"; Advance(h); }
++                    else if ((ProbeSq & 4) != 0 && !IsHolder(h) && IsRival(h.Id) && !moving && FightBranch == "safe" && !((ProbeSq & 32) != 0 && g.Cover.Length > 0)) // bit 32: a rival at cover keeps it
++                    {
++                        if (g.NoFoeSince < 0) g.NoFoeSince = Tick;
++                        else if (Tick - g.NoFoeSince >= T(R.EngageLapseS)) { g.NoFoeSince = -1; AdvanceOnOp(h, pos); }
++                    }
+                     break;
+                 case "break":
+                     if (G.Within(pos, h.BreakTo ?? S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
+@@ -226,7 +231,7 @@
+             }
+             if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
+             {
+-                var c = SelectCover(pos, Car, at, R.SeekRivalCm);
++                var c = (ProbeSq & 1) != 0 ? SelectCoverOut(pos, Car, at, R.SeekRivalCm) : SelectCover(pos, Car, at, R.SeekRivalCm);
+                 if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
+             }
+             AimAt(g, t, false);
+@@ -248,9 +253,23 @@
+             var g = h.Gun; var pos = h.Pos(Tick);
+             if (IsHolder(h)) { MoveTo(h, h.Home); return; }
+             Pt foe = !Enforcer.Inside && !Enforcer.Down ? Enforcer.Pos : Car;
+-            var c = SelectCover(pos, Car, foe, R.SeekRivalCm);
++            var c = (ProbeSq & 8) != 0 ? SelectCoverOut(pos, Car, foe, R.SeekRivalCm) : SelectCover(pos, Car, foe, R.SeekRivalCm);
+             if (c != null) { TakeCover(g, c); MoveTo(h, c.At); return; }
+             MoveTo(h, StopPoint(pos, Car, g.W!.EffCm));
++        }
++
++        /// <summary>Motive 067 probe bit 4: a rival with no foe in reach for ai.engageLapse advances on the nearest operative standing on the street
++        /// (cover toward the car that shields it from him, else its stop point of him), not on the car's point.</summary>
++        void AdvanceOnOp(Hostile h, Pt pos)
++        {
++            var g = h.Gun; Op? best = null; long bd = long.MaxValue;
++            foreach (var o in Ops) { if (o.Down || o.Inside || o.InCar) continue; if (!(R.Intent.FinalEvery || Provoked(h.Id, o) || (o.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer))) continue; long d = G.D2(pos, o.Pos); if (d < bd) { bd = d; best = o; } } // only an operative it has cause to fire on
++            if (best == null) return;
++            var c = (ProbeSq & 8) != 0 ? SelectCoverOut(pos, Car, best.Pos, R.SeekRivalCm) : SelectCover(pos, Car, best.Pos, R.SeekRivalCm);
++            Note("probe.advance", $"{h.Id} has had nobody in reach for {R.EngageLapseS} s: it advances on the {Sim.Op.Name(best.Id)}{(c != null ? " to " + c.Id : "")}.");
++            g.St = "advance";
++            if (c != null && c.At != pos) { TakeCover(g, c); MoveTo(h, c.At); return; }
++            MoveTo(h, StopPoint(pos, best.Pos, g.W!.EffCm));
+         }
+ 
+         /// <summary>The guard as the cell's ally (Pulse §3.4): he runs to his post (or the cover the data give within ai.seek.ally of it) and
+diff -ru -x bin -x obj a/sim/Suborned.Sim/GameCrew.cs b/sim/Suborned.Sim/GameCrew.cs
+--- a/sim/Suborned.Sim/GameCrew.cs	2026-10-26 07:57:10
++++ b/sim/Suborned.Sim/GameCrew.cs	2026-10-26 08:37:14
+@@ -215,7 +215,7 @@
+         void StartWalk(CrewMember m, Pt from, Pt to, string goal, int speed)
+         {
+             var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+-            var route = Walk.Route(a, b) ?? new[] { a, b };
++            var route = (goal == "spot" ? RouteRoundHold(a, b) : null) ?? Walk.Route(a, b) ?? new[] { a, b };
+             m.Walk = new Path(route); m.WalkStart = Tick; m.Speed = Math.Max(1, speed); m.Goal = goal; m.Mode = CrewMode.Walking; m.ModeTick = Tick; m.Disp = null;
+             if (m.Walk.Length == 0) ArriveWalk(m);
+         }
+@@ -582,7 +582,7 @@
+         void MoveToFight(Hostile h, Pt to)
+         {
+             var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+-            var route = Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
++            var route = RouteRoundHold(a, b) ?? Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
+             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; if (h.Run.Length == 0) h.Run = null;
+         }
+         /// <summary>F6: a rider steps out at the fight's stand (or a member still on foot when the fight takes him): his body joins the fight, walking
+diff -ru -x bin -x obj a/sim/Suborned.Sim/GameFight.cs b/sim/Suborned.Sim/GameFight.cs
+--- a/sim/Suborned.Sim/GameFight.cs	2026-10-26 08:08:12
++++ b/sim/Suborned.Sim/GameFight.cs	2026-10-26 08:40:08
+@@ -108,7 +108,7 @@
+             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
+             if (ProbeK3 && Vale == ValeAt.Car && Array.TrueForAll(Ops, o => o.Down)) { Fail("cell-down", "The whole cell is down."); return; } // probe 067 K3b
+             var e = Enforcer; var car = Car;
+-            if (ProbeK3 && FightBranch == "safe" && Vale == ValeAt.Car && !Array.Exists(Ops, o => !o.Down && !o.InCar && !o.Inside)) // probe 067 K3a: nobody standing outside the car
++            if (ProbeK3 && FightBranch == "safe" && Vale == ValeAt.Car && !Array.Exists(Ops, o => !o.Down && !o.InCar && !o.Inside) && (!ProbeK3Held || CarHeld())) // probe 067 K3a: nobody standing outside the car
+                 foreach (var h in Hostiles)
+                 {
+                     if (!IsRival(h.Id) || !h.Present || h.Down || h.Blocker || h.Gun.St == "break" || h.Gun.St == "gone") continue;
+diff -ru -x bin -x obj a/sim/Suborned.Sim/GameKite.cs b/sim/Suborned.Sim/GameKite.cs
+--- a/sim/Suborned.Sim/GameKite.cs	2026-10-26 07:57:10
++++ b/sim/Suborned.Sim/GameKite.cs	2026-10-26 08:37:14
+@@ -181,8 +181,8 @@
+             if (h == null || Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
+             if (h.Blocker) return; // Motive M059-B2 (engine 0.33.0; GDD §06): a rival blocker keeps its lane and answers only from it, as the police blocker does
+             g.StepAt = Tick;
+-            var dest = KiteHide(g, pos, sp, Car, out var c);
+-            if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter
++            var dest = (ProbeSq & 1) != 0 ? KiteHideOut(g, pos, sp, Car, out var c) : KiteHide(g, pos, sp, Car, out c);
++            if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos && !((ProbeSq & 1) != 0 && HoldsCar(sp2))) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter
+             if (!dest.HasValue) return;
+             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(c != null ? $"out of the line to {c.Id}" : "out of the line")}.");
+             g.KiteLast = Tick;
+@@ -287,6 +287,14 @@
+             c = SelectCover(pos, objective, sp, R.SeekRivalCm);
+             if (c != null) return c.At;
+             return Walk.Nearest(pos, q => !Sees(q, sp), KiteBlindCm);
++        }
++
++        /// <summary>Motive 067 probe bit 1: KiteHide with the hold and the lane left out (cover and blind point).</summary>
++        Pt? KiteHideOut(Gun g, Pt pos, Pt sp, Pt objective, out CoverPoint? c)
++        {
++            c = SelectCoverOut(pos, objective, sp, R.SeekRivalCm);
++            if (c != null) return c.At;
++            return Walk.Nearest(pos, q => !Sees(q, sp) && !HoldsCar(q), KiteBlindCm);
+         }
+ 
+         /// <summary>The walk from `pos` to `dest` on the grid, cut at `remCm` of walk (the chase budget left); null if there is none.</summary>
+diff -ru -x bin -x obj a/sim/Suborned.Sim/ProbeEnv.cs b/sim/Suborned.Sim/ProbeEnv.cs
+--- a/sim/Suborned.Sim/ProbeEnv.cs	2026-10-26 08:08:12
++++ b/sim/Suborned.Sim/ProbeEnv.cs	2026-10-26 08:40:08
+@@ -1,5 +1,6 @@
+ // Motive brief 067 probe (scratch only, never sim/): environment switches. Every switch unset = engine 0.33.1.
+ using System;
++using System.Collections.Generic;
+ using System.Globalization;
+ namespace Suborned.Sim
+ {
+@@ -8,7 +9,25 @@
+         static string PEnv(string k) => Environment.GetEnvironmentVariable(k) ?? "";
+         static int PEnvInt(string k, int d) => PEnv(k).Length > 0 ? int.Parse(PEnv(k), CultureInfo.InvariantCulture) : d;
+         static readonly int ProbeRunClock = PEnvInt("PROBE_RUNCLOCK", 0);
+-        static readonly bool ProbeK3 = PEnv("PROBE_K3") == "1";
++        static readonly bool ProbeK3 = PEnv("PROBE_K3") == "1" || PEnv("PROBE_K3") == "2";
++        /// <summary>Motive 067 square probe: PROBE_K3=2, K3 (a) only while the car is held (hiding in a HELD car loses; a free car waits for Go).</summary>
++        static readonly bool ProbeK3Held = PEnv("PROBE_K3") == "2";
++        /// <summary>Motive 067 square probe: PROBE_SQ bits. 1 = a rival's answer to fire (step out of a line, cover step) never ends in the hold or
++        /// lane; 2 = a walk to a post goes round the hold; 4 = a rival holding with no foe in reach for ai.engageLapse advances on the nearest op;
++        /// 8 = an advance's cover is never in the hold.</summary>
++        static readonly int ProbeSq = PEnvInt("PROBE_SQ", 0);
++        HashSet<string> TakenOrHold() { var t = Taken(); foreach (var c in LiveCover) if (HoldsCar(c.At)) t.Add(c.Id); return t; }
++        CoverPoint? SelectCoverOut(Pt me, Pt objective, Pt? foe, int seekCm) =>
++            LiveCover.Count == 0 ? null : CoverRules.Select(LiveCover, me, objective, foe, TakenOrHold(), seekCm, Tick / Hz, R.PointBlankCm, R.CoverQPartial, R.CoverRetreatCm, R.CoverStepCloserCm);
++        bool[] HoldMask()
++        {
++            var w = Walk; var g = w.Grid; int n = g.Nx * g.Ny; var m = new bool[n]; if (w.Mask != null) Array.Copy(w.Mask, m, n);
++            var car = Car; int r = R.HoldCm; int i0 = Math.Max(0, g.CI(car.X - r)), i1 = Math.Min(g.Nx - 1, g.CI(car.X + r)), j0 = Math.Max(0, g.CJ(car.Y - r)), j1 = Math.Min(g.Ny - 1, g.CJ(car.Y + r));
++            for (int i = i0; i <= i1; i++) for (int j = j0; j <= j1; j++) if (G.Within(g.Centre(i, j), car, r)) m[i * g.Ny + j] = true;
++            return m;
++        }
++        /// <summary>The walk from a to b round the car's hold (bit 2), or null (then the plain walk).</summary>
++        Pt[]? RouteRoundHold(Pt a, Pt b) { if ((ProbeSq & 2) == 0 || G.Within(a, Car, R.HoldCm) || G.Within(b, Car, R.HoldCm)) return null; var r = Walk.Grid.Route(a, b, HoldMask()); return r != null && r.Length >= 2 ? r : null; }
+         readonly System.Collections.Generic.HashSet<string> probeCarPress = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal); Pt probeCarTo;
+     }
+ }

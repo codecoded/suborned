@@ -24,7 +24,7 @@ namespace Suborned.World.Review
             ("vending", new[] { "VendingMachine_Cola", "VendingMachine_Snack", "Automat" }),
             ("signage", new[] { "Marquee_Cinema", "BladeSign", "Billboard_Pylon_A", "Billboard_Wall_A", "NeonStar_Wall", "AdColumn", "SandwichBoard", "InfoLightbox" }),
             ("plant", new[] { "CoconutPalm", "FanPalm", "Cypress", "FlowerBed", "Planter_Urn", "PottedTopiary", "TopiaryCone", "TubPalm" }),
-            ("street", new[] { "SignalOrb", "Streetlamp", "Bench", "PhoneBooth", "BusShelter", "TicketMachine", "Hydrant", "StreetClock", "PneumaticPost", "DrainGrate", "ManholeCover", "BikeRack", "Tile_Tactile", "Tile_Terrazzo" }),
+            ("street", new[] { "SignalLens", "Streetlamp", "Bench", "PhoneBooth", "BusShelter", "TicketMachine", "Hydrant", "StreetClock", "PneumaticPost", "DrainGrate", "ManholeCover", "BikeRack", "Tile_Tactile", "Tile_Terrazzo" }),
         };
 
         [MenuItem("Suborned/Render/Close-ups (New Round)")]
@@ -144,17 +144,17 @@ namespace Suborned.World.Review
             log.AppendLine($"  robot faces: {face?.Screens} screens, {idle.Heads} head parts; mood at {mood:0.0} s");
         }
 
-        /// <summary>The kerb and gutter at eye height: along a crossing's kerb (the signal orb nearest the block), looking down the street.</summary>
+        /// <summary>The kerb and gutter at eye height: along a crossing's kerb (the signal head nearest the block), looking down the street.</summary>
         static void Kerb(RenderSession s, Camera cam, Transform root, string file, System.Text.StringBuilder log)
         {
-            var orb = root.GetComponentsInChildren<Transform>(true).Where(t => t.name.StartsWith("DK_SignalOrb") || t.name.StartsWith("DK_SignalEye")).OrderBy(t => (t.position - Block).sqrMagnitude).FirstOrDefault();
-            if (!orb) { log.AppendLine("kerb: no signal orb to stand at"); return; }
+            var orb = root.GetComponentsInChildren<Suborned.Play.SignalHead>(true).Select(h => h.transform).OrderBy(t => (t.position - Block).sqrMagnitude).FirstOrDefault(); // brief 061: the SignalLens heads (CrossingKit puts a SignalHead on each)
+            if (!orb) { log.AppendLine("kerb: no signal head to stand at"); return; }
             var f = orb.forward; f.y = 0f; f.Normalize(); var side = Vector3.Cross(Vector3.up, f);
             cam.fieldOfView = 50f;
             cam.transform.position = orb.position + side * 3f - f * 1.5f + Vector3.up * (1.6f - orb.position.y + 0.18f);
             cam.transform.LookAt(orb.position - side * 6f + Vector3.up * 0.2f);
             Save(s, cam, file);
-            log.AppendLine($"kerb: at the signal orb {orb.name} {orb.position}");
+            log.AppendLine($"kerb: at the signal head {orb.parent?.name ?? orb.name} {orb.position}");
         }
     }
 }

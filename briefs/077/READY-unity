@@ -1,0 +1,36 @@
+077 the testbed planting in Unity, for Sky · Latch (Opus 5.5) · 2026-10-30
+
+What's there
+- Kit materials and textures, for Splice: out/decokit-077/Materials and Textures. `bun run kit --catalogue --extra out/decokit-077` picks them up by GUID.
+  Materials: DK_Leaf_TB and DK_Petal_TB (DecoKit/Lit Cutaway Leaf, _DK_VERTEX_COLOR _DK_TWO_SIDED _METALLICSPECGLOSSMAP _NORMALMAP, cull off), DK_Soil_TB (DecoKit/Lit Cutaway, _METALLICSPECGLOSSMAP _NORMALMAP, cull back, ShadowCaster disabled in the .mat) and DK_Opal_TB (DecoKit/Lit Cutaway, #fffdf0, smoothness 0.75, emission #fff1d2 x 0.06). The lamp's chrome is the kit's DK_Chrome.
+  Textures, each with its .meta: botanical-atlas-v2.png, botanical-normal-v2.png, botanical-mask-v2.png (derived), soil-base.png, soil-normal.png, soil-mask.png (derived).
+  GUIDs = md5("suborned.kit077/" + file), deterministic. The probe uses its own copies (other GUIDs), so there's no duplicate GUID when the kit copy lands.
+  Note for the commit: the .mats reference DK_LitCutawayLeaf.shader by its .meta GUID, so commit that .meta with it (it's untracked today).
+- unity/Assets/Suborned/Editor/OldTown/Swap/PlantingSwap077.cs: Mats, Capture.
+- Probe (git-ignored): unity/Assets/Scenes/probe-planting077.unity + probe-planting077/. It's the swap with every dome-family placement in the Handover zone replaced, by day:
+  12 PlanterRun_4 and 4 PlanterArc rebuilds, CafeTerrace / RecordsTower / CafeUpper_3 rebuilds with their *_Planting companions, 4 GlobeLamp_TB, and the 5 CivicBedPlanting at their beds (hedge and 92 tufts out).
+  Baked domes out by exact world-triangle match (72,592 of 72,755; the rest are tuft bits inside the hedge rings, which went with the hedge, and 2 leaf triangles on one island). The rebuilt stonework lands on the dome's (runs 60/60, arcs 1,226-1,232/1,232).
+  LODGroups take the rows' screens, lodSize 4 where set, KitLods' cull, and soil shadows off. Every piece draws its gameplay level at play zoom.
+- briefs/077/unity/index.html (self-contained, today | testbed, 10 views), numbers.json, make_index.py. Captures are local in briefs/077/unity/captures (20 PNG).
+
+Counts (After072's estimate, play look, before -> after)
+  cafe-square y030  SetPass 54 -> 58, draws 698 -> 753, shadow draws 1125 -> 1206, tris 714,814 -> 726,415
+  cafe-square y210  SetPass 54 -> 58, draws 601 -> 659, shadow draws 842 -> 928,  tris 717,522 -> 738,079
+  office-front y030 SetPass 47 -> 51, draws 378 -> 402, shadow draws 434 -> 453,  tris 566,562 -> 612,077
+  office-front y210 SetPass 48 -> 52, draws 295 -> 319, shadow draws 311 -> 332,  tris 562,070 -> 607,585
+  These are estimates; the counters read 0 offscreen. Redline measures on the Air.
+
+Not done
+- Night: the lamps' light hasn't come from Glint, so it's day only.
+
+For adoption (KitLods, Latch)
+- Build L1-L3 from the rows, honour lodSize, set it AFTER LODGroup.SetLODs (which resets the size), and apply objects[].shadows.
+- The play-zoom guard fails civic groups whose L1 switches nearer than 36 m. These rows do that by design, so it needs a planting exemption.
+- Batching: the domes were merged into the civic batches; the rebuilds are LODGroup instances (+24 to +58 draws at the stops). Redline decides from the Air numbers.
+
+Commands (run, exit 0)
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.OldTown.Editor.Swap.PlantingSwap077.Mats
+  bun briefs/075/oldbuild/swap/tools/unityrun.ts <log> -- -executeMethod Suborned.OldTown.Editor.Swap.PlantingSwap077.Capture
+  python3 -I briefs/077/unity/make_index.py
+
+Next: Splice re-runs the catalogue with the materials; Sky judges the capture; Glint gives the lamp light (then night); Latch does KitLods for adoption; Redline measures on the Air.

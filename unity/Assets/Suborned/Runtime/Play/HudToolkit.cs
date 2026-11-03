@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -28,6 +29,22 @@ namespace Suborned.Play
             var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));
             return live.root.panel.Pick(p) != null;
         }
+        /// <summary>The bot's probe (BotRun.Human): the screen point (origin bottom left) of the open action panel's row `row` (the sheet's row, else the
+        /// card), null when the kit draws no such row on screen (the IMGUI view, or a row scrolled out). Read-only.</summary>
+        public static Vector2? PanelRowScreen(int row)
+        {
+            if (!Active || live.root?.panel == null || row < 0) return null;
+            VisualElement el = null;
+            foreach (var u in live.rows) if (u.Index == row && u.Root != null && u.Root.resolvedStyle.display != DisplayStyle.None && u.Root.worldBound.width > 1f) { el = u.Root; break; }
+            if (el == null) foreach (var c in live.actCards) if (c.Index == row && c.Root != null && c.Root.resolvedStyle.display != DisplayStyle.None && c.Root.worldBound.width > 1f) { el = c.Root; break; }
+            if (el == null) return null;
+            for (var x = el; x != null; x = x.parent) if (x.resolvedStyle.display == DisplayStyle.None || x.resolvedStyle.visibility == Visibility.Hidden) return null;
+            var pn = live.root.panel; Vector2 a = RuntimePanelUtils.ScreenToPanel(pn, Vector2.zero), b = RuntimePanelUtils.ScreenToPanel(pn, new Vector2(100f, 100f));
+            if (Mathf.Abs(b.x - a.x) < 1e-3f || Mathf.Abs(b.y - a.y) < 1e-3f) return null;
+            var c0 = el.worldBound.center; float sx = (c0.x - a.x) * 100f / (b.x - a.x), sy = (c0.y - a.y) * 100f / (b.y - a.y); // panel to screen (origin top left)
+            var sp = new Vector2(sx, Screen.height - sy);
+            return sp.x >= 0f && sp.y >= 0f && sp.x <= Screen.width && sp.y <= Screen.height ? sp : null;
+        }
         /// <summary>The proof's probe: the kit element on top at a screen point (its name, else its classes, else its parent's), "" none.</summary>
         public static string PickedName(Vector2 screen)
         {
@@ -35,6 +52,21 @@ namespace Suborned.Play
             var e = live.root.panel.Pick(RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y)));
             for (var x = e; x != null; x = x.parent) { var n = string.IsNullOrEmpty(x.name) ? string.Join(".", x.GetClasses()) : x.name; if (n.Length > 0) return n + (x == e ? "" : " (parent of a " + e.GetType().Name + ")"); }
             return e?.GetType().Name ?? "";
+        }
+        /// <summary>Probe (Glyph's 0.2.94 review #12, the stray cream line right of the door's next-step chip): every shown element whose box holds the
+        /// panel point, smallest first, as "name/classes WxH@x,y opacity" (one line, at most `max`); a painter line shows only as the full-screen layers.</summary>
+        public static string ElementsAt(Vector2 panel, int max = 8)
+        {
+            if (!Active || live.root?.panel == null) return "";
+            var hits = new List<(float area, string s)>();
+            void Walk(VisualElement e, float op)
+            {
+                if (e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.visibility == Visibility.Hidden) return; op *= e.resolvedStyle.opacity; if (op < 0.02f) return;
+                var b = e.worldBound; if (b.Contains(panel)) { var n = string.IsNullOrEmpty(e.name) ? string.Join(".", e.GetClasses()) : e.name; var pn = e.parent == null ? "" : string.IsNullOrEmpty(e.parent.name) ? string.Join(".", e.parent.GetClasses()) : e.parent.name; hits.Add((b.width * b.height, $"{(n.Length > 0 ? n : e.GetType().Name)}<{pn}> {b.width:0}x{b.height:0}@{b.x:0},{b.y:0} a{op:0.00}")); }
+                foreach (var c in e.Children()) Walk(c, op);
+            }
+            Walk(live.root, 1f); hits.Sort((a, b) => a.area.CompareTo(b.area));
+            return string.Join(" | ", hits.Take(max).Select(h => h.s));
         }
         /// <summary>The proof's click-through check (Sky on 0.2.34): the centre of every piece that takes clicks and is on top there now, in screen
         /// pixels (origin bottom left), each with its name or class, one per 8 px; at most `max`.</summary>
@@ -119,7 +151,7 @@ namespace Suborned.Play
         static Label BuildLine(VisualElement parent, bool corner)
         {
             var l = L(parent, "briefing-small"); l.text = BuildStamp.Line; l.style.fontSize = 10; l.style.color = new Color(0.69f, 0.8f, 0.78f, 0.55f);
-            if (corner) { l.style.position = Position.Absolute; l.style.right = 44; l.style.bottom = 16; } // clear of the card's corner screw and inside its rim (Glyph 0.2.85: it sat on the rim)
+            if (corner) { l.style.position = Position.Absolute; l.style.left = 44; l.style.bottom = 12; } // bottom left, under the key line, clear of the corner screws and the Begin button (Glyph 0.2.85: it sat on the rim; 0.2.94 #11: on the right it touched Begin and the screw)
             else l.style.marginTop = 18;
             return l;
         }
@@ -137,11 +169,27 @@ namespace Suborned.Play
         public static readonly bool KeyLegends = false;
         /// <summary>Hover, in style (Sky: no white outlines): the panel's tint lifts a little; at rest it sits slightly lower.</summary>
         static void Lift(VisualElement e, bool hover) { var c = hover ? Color.white : new Color(0.93f, 0.93f, 0.93f); if (e.style.unityBackgroundImageTintColor.value != c) e.style.unityBackgroundImageTintColor = c; }
+        /// <summary>The roster's selected ring (Glyph's 0.2.99 review 7): portrait_ring_inner's profile in the token colour (accent.live, #60e0ea).</summary>
+        static void SelRing(Painter2D p, Rect r)
+        {
+            var c = r.center; float R = Mathf.Min(r.width, r.height) / 2f; var live = LookLive;
+            for (int i = 0; i < 6; i++) { p.strokeColor = new Color(live.r, live.g, live.b, 0.33f * (1f - i / 6f)); p.lineWidth = 1f; p.BeginPath(); p.Arc(c, R - 4.5f - i, new Angle(0), new Angle(360, AngleUnit.Degree)); p.Stroke(); }
+            p.strokeColor = live; p.lineWidth = 3.5f; p.BeginPath(); p.Arc(c, R - 1.75f, new Angle(0), new Angle(360, AngleUnit.Degree)); p.Stroke();
+            p.strokeColor = new Color(Cream.r, Cream.g, Cream.b, 0.92f); p.lineWidth = 0.6f; p.BeginPath(); p.Arc(c, R - 3.8f, new Angle(0), new Angle(360, AngleUnit.Degree)); p.Stroke();
+        }
         static readonly Color Cream = new(0.969f, 0.957f, 0.925f), Ink = new(0.09f, 0.188f, 0.184f), TurqLight = new(0.376f, 0.878f, 0.918f), Grey = new(0.478f, 0.549f, 0.541f), DeepTeal = new(0.122f, 0.424f, 0.404f);
 
         // ---------------------------------------------------------------- the pieces (rects from layout.json, px at 1920 x 1080)
 
         VisualElement pill, objective, column, ticker, feed, verbPlate, tooltip;
+        VisualElement closeBar;
+        /// <summary>Brief 080: Vale has been missed (Game.CloseWarnedAt): the kit's amber draining underline (the window marker's) under the clock, down to the close.</summary>
+        void CloseUnderline()
+        {
+            var g = host.Game; bool on = g != null && g.CloseWarnedAt >= 0 && !m.Ended && g.ClockOver * Suborned.Sim.Game.Hz > g.CloseWarnedAt; Show(closeBar, on); if (!on) return;
+            float total = g.ClockOver * Suborned.Sim.Game.Hz - g.CloseWarnedAt, left = g.ClockOver * Suborned.Sim.Game.Hz - g.Tick;
+            closeBar.style.width = Length.Percent(Mathf.Clamp01(left / total) * 100f);
+        }
         Label clock, nextLabel, nextTime, cash, trail, state, objText, objTail, tickerText, barCount, barKeys, tipTitle, tipBody, tipKey;
         readonly VisualElement[] lamps = new VisualElement[3];
         VisualElement tickerChip, barChevron, barPill;
@@ -191,7 +239,7 @@ namespace Suborned.Play
         // step 3: the hint, the chips at the cursor, the going-loud card, the briefing, the end card, the history
         VisualElement chipSeenIcon; Label chipSeen; readonly List<VisualElement> unknownMarks = new();
         VisualElement hint, toast, chip, chipPrice, chipIcon, chipMark, loud, loudRing, brief, end, endDetail, history, historyRows; Label hintBody, hintKey, toastText, chipText, chipUsd, chipTime, chipTrail, chipAlert;
-        readonly VisualElement[] briefPhase = new VisualElement[2];
+        readonly VisualElement[] briefPhase = new VisualElement[2]; readonly FrontEnd.LightWord[] briefPhaseW = new FrontEnd.LightWord[2];
         Label briefHeat; int briefHeatTurns; Label loudTitle, loudSub, loudHold, briefTitle, briefSub, briefObjective, briefTarget, briefWin, briefLose, briefClose, briefPurse, briefAlert, briefArms, briefBeginKey, endTitle, endLine, endReplayKey;
         readonly List<Label> loudRows = new(), endLines = new(); readonly List<VisualElement> loudDots = new(); readonly (Label title, Label body)[] briefWays = new (Label, Label)[2];
         readonly List<VisualElement> filterChips = new(); bool endDetailOpen; Label intelCount; readonly IntelUi[] intelRows = new IntelUi[4];
@@ -210,7 +258,7 @@ namespace Suborned.Play
             // the status pill (status_pill): top right 14, 12; height 44; padding from the content rect
             pill = E(root, "s-pill_status", pick: true); pill.style.position = Position.Absolute; pill.style.right = 14; pill.style.top = 14; pill.style.height = 44;
             pill.style.flexDirection = FlexDirection.Row; pill.style.alignItems = Align.Center; pill.style.paddingLeft = 24; pill.style.paddingRight = 24; // clear of the pill's end caps, the same each side
-            clock = L(pill, "clock"); Sep(pill);
+            var clockBox = new VisualElement { pickingMode = PickingMode.Ignore }; pill.Add(clockBox); clock = L(clockBox, "clock"); /* brief 085: the bar was the label's child, and a label with a child stops measuring its text (0 wide: the next icon sat on the clock) */ closeBar = new VisualElement { pickingMode = PickingMode.Ignore }; closeBar.style.position = Position.Absolute; closeBar.style.left = 0; closeBar.style.bottom = -3; closeBar.style.height = 2.5f; closeBar.style.backgroundColor = Amber; closeBar.style.display = DisplayStyle.None; clockBox.Add(closeBar); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "nextevent", TurqLight); nextLabel = L(pill, "pill-label"); nextTime = L(pill, "pill-value"); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "p_cash", Cream); cash = L(pill, "pill-value"); Sep(pill);
             Icon(E(pill, null, w: 17, h: 17), "p_trail", Cream); trail = L(pill, "pill-value"); Sep(pill);
@@ -443,13 +491,13 @@ namespace Suborned.Play
                 w.Portrait.RemoveFromHierarchy(); clip.Add(w.Portrait); w.Portrait.style.left = 0; w.Portrait.style.top = 0; w.Portrait.style.width = 2 * rad; w.Portrait.style.height = 2 * rad;
                 w.Clip = clip; w.Index = i; w.Next = E(clip, null, 0, 0, 2 * rad, 2 * rad); Show(w.Next, false); // brief 033: the next face fades in over the last (0.15 s)
                 E(clip, "s-portrait_scrim", 0, 2 * rad - 16, 2 * rad, 16);
-                w.RingSel = E(clip, "s-portrait_ring_inner", 0, 0, 2 * rad, 2 * rad); // Glyph round 2: the selected agent's ring, inside the photo circle (layers: photo, scrim, ring, pips)
+                w.RingSel = P(clip, 0, 0, 2 * rad, 2 * rad, (p, rr) => SelRing(p, rr)); // Glyph round 2: the selected agent's ring, inside the photo circle (layers: photo, scrim, ring, pips); Glyph's 0.2.99 review 7: drawn in --turquoise-light (the kit sprite portrait_ring_inner's band measured #1eb9c6-#36c8d3), its profile kept: a 3.5 px band, a cream hairline inside it, a glow fading inward
                 w.Pips = E(clip, null, 0, 2 * rad - 14, 2 * rad, 8); w.Pips.style.flexDirection = FlexDirection.Row; w.Pips.style.justifyContent = Justify.Center; // raised 2 px to clear the ring's band
                 w.RingBusy = E(frame, null, 0, 0, 0, 0); // busy is the timer chip; never drawn
                 w.Arm = E(frame, "s-disc_dark_24", c0.x - 38, c0.y + 15, 20, 20, pick: true); /* brief 033 (Glyph's slots): the sidearm mark bottom left; the armed verb takes the bottom right */ Round(w.Arm, 10); Border(w.Arm, 1.6f, Color.clear); // Glyph fight r1 #5: 3 px in, 2 px up, clear of the selection ring; the top right stays free for 018's in-car badge
                 w.GunIcon = E(w.Arm, null, 2.4f, 2.4f, 12, 12); Icon(w.GunIcon, "fire", Cream); var wk = w; w.StanceIn = P(w.Arm, 2.4f, 2.4f, 12, 12, (p, r) => StanceGlyph(p, new Vector2(6, 6), 5f, wk.Index >= 0 && host.Game != null ? host.Game.Ops[wk.Index].Gun.Stance : "return", Cream)); // brief 030: a stance other than return shows inside the mark // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
                 // brief 030 §5: the mark toggles that one agent's weapon (F does the selection); a watcher's warning shows its seconds beside it
-                int ka = i; w.Arm.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.DrawOrHolsterAgent(ka); e.StopPropagation(); } }); w.Arm.RegisterCallback<PointerEnterEvent>(_ => { fanAgent = ka; fanArm = true; }); w.Arm.RegisterCallback<PointerLeaveEvent>(_ => { fanArm = false; fanLeft = Time.unscaledTime; }); // brief 030: hovering the drawn mark opens the stance fan
+                int ka = i; w.Arm.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.DrawOrHolsterAgent(ka); e.StopPropagation(); } }); w.Arm.RegisterCallback<PointerEnterEvent>(_ => { if (host.OneInput) return; fanAgent = ka; fanArm = true; }); /* engine 0.35: no stance fan (one input) */ w.Arm.RegisterCallback<PointerLeaveEvent>(_ => { fanArm = false; fanLeft = Time.unscaledTime; }); // brief 030: hovering the drawn mark opens the stance fan
                 var wl = L(w.Arm, "keycap"); wl.name = "warn"; wl.style.position = Position.Absolute; wl.style.left = -12; wl.style.top = 1; wl.style.color = Amber; wl.style.fontSize = 12; Show(wl, false);
                 w.Car = E(frame, null, c0.x + 13, c0.y - 34, 22, 22); Round(w.Car, 11); Border(w.Car, 1.6f, Color.clear); E(w.Car, null, 4, 4, 14, 14).name = "g"; P(w.Car, 3, 3, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; Show(w.Car, false);
                 w.Rim = E(frame, null, c0.x - BezelR - 2, c0.y - BezelR - 2, 2 * BezelR + 4, 2 * BezelR + 4); Round(w.Rim, BezelR + 2); Border(w.Rim, 2f, Cream); Show(w.Rim, false); // the hover rim (brief 018 §6.6: the left-behind flag's line on hover)
@@ -509,7 +557,7 @@ namespace Suborned.Play
             for (int k = 0; k < 24; k++) { float a = Mathf.PI / 2 - k * Mathf.PI * 2 / 24; var dt = E(loudRing, null, 22 + 17 * Mathf.Cos(a) - 2, 22 - 17 * Mathf.Sin(a) - 2, 4, 4); Round(dt, 2); loudDots.Add(dt); }
             loudHold = L(hold, "loud-hold"); loudHold.style.marginLeft = 12; loudHold.style.whiteSpace = WhiteSpace.Normal; loudHold.style.flexShrink = 1;
             // the briefing (briefing_card): 700 x 548, top centre +40, y 150
-            brief = E(root, "s-panel_dark_modal", 0, 150, 700, float.NaN, pick: true); brief.style.paddingLeft = 30; brief.style.paddingRight = 30; brief.style.paddingTop = 24; brief.style.paddingBottom = 24;
+            brief = E(root, "s-panel_dark_modal", 0, 150, 700, float.NaN, pick: true); brief.style.paddingLeft = 30; brief.style.paddingRight = 30; brief.style.paddingTop = 24; brief.style.paddingBottom = 34; // 34: room for the build line under the footer
             var btab = E(brief, "s-panel_tab_small"); btab.style.width = 170; btab.style.height = 28; var btl = L(btab, "hint-tab"); btl.text = "MISSION BRIEFING"; btl.style.flexGrow = 1; btl.style.unityTextAlign = TextAnchor.MiddleCenter;
             var bt = E(brief); bt.style.flexDirection = FlexDirection.Row; bt.style.alignItems = Align.FlexEnd; bt.style.marginTop = 8;
             briefTitle = L(bt, "briefing-title"); briefSub = L(bt, "briefing-sub"); briefSub.style.marginLeft = 14; briefSub.style.marginBottom = 4;
@@ -519,18 +567,20 @@ namespace Suborned.Play
             Label Box(string mark, string label, float left) { var bx = E(wl); bx.style.flexGrow = 1; bx.style.flexBasis = 0; bx.style.minHeight = 94; bx.style.marginLeft = left; bx.style.backgroundColor = new Color(0.094f, 0.235f, 0.227f); Round(bx, 8); bx.style.paddingLeft = 12; bx.style.paddingRight = 12; bx.style.paddingTop = 10; var h = E(bx); h.style.flexDirection = FlexDirection.Row; Bg(E(h, null, w: 15, h: 15), "badges/" + mark); var sl = L(h, "section-label"); sl.text = label; sl.style.marginLeft = 8; var b = L(bx, "briefing-small"); b.style.whiteSpace = WhiteSpace.Normal; b.style.marginTop = 4; return b; }
             briefWin = Box("mark_ok", "YOU WIN", 0); briefLose = Box("mark_no", "YOU LOSE", 10);
             var facts = E(brief); facts.style.flexDirection = FlexDirection.Row; facts.style.marginTop = 12;
-            Label Fact(string icon) { var f = E(facts); f.style.flexDirection = FlexDirection.Row; f.style.alignItems = Align.Center; f.style.marginRight = 22; Icon(E(f, null, w: 14, h: 14), icon, Cream); var l = L(f, "briefing-fact"); l.style.marginLeft = 6; return l; }
+            Label Fact(string icon) { var f = E(facts); f.style.flexDirection = FlexDirection.Row; f.style.alignItems = Align.Center; f.style.marginRight = 22; Icon(E(f, null, w: 14, h: 14), icon, Cream); var l = L(f, "briefing-fact"); l.style.marginLeft = 6; if (Tok.fontSpec != null && TypeFont(Tok.fontSpec.body.file) is Font rf) { l.style.unityFontDefinition = FontDefinition.FromFont(rf); l.style.unityFontStyleAndWeight = FontStyle.Normal; } return l; } // Glyph's 0.2.94 review #11: the stat row in the body face (Jost Regular), not SemiBold
             briefClose = Fact("p_time"); briefPurse = Fact("p_cash"); briefAlert = Fact("p_alert");
             briefHeat = Fact("eye_open"); // brief 031 (Glyph §7): the cell's notoriety, a watcher's eye with 0 to 3 turns, then Fable's word
             P(briefHeat.parent, 0, 0, 14, 14, (p, r) => { for (int k = 0; k < briefHeatTurns; k++) { float a = -60f - k * 30f; var c = new Vector2(7, 7); var d = new Vector2(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad)); p.strokeColor = TurqLight; p.lineWidth = 1.6f; p.BeginPath(); p.MoveTo(c + d * 8.5f); p.LineTo(c + d * 11f); p.Stroke(); } }).name = "turns";
             briefArms = Fact("fire");
             { // brief 026 round 2 (Sky: a night Handover): Day / Night, look only; the chosen one lit
                 var ph = E(facts); ph.style.flexDirection = FlexDirection.Row; ph.style.marginLeft = StyleKeyword.Auto; facts.style.alignItems = Align.Center; // on the facts row, right: the footer is the key line and Begin
+                // Glyph's 0.2.97 review #5: the light line's tab words (no cream plates): the chosen one at full cream with the 2 px live line under it
+                var LL = FrontEnd.LS;
                 for (int i = 0; i < 2; i++)
                 {
-                    bool night = i == 1; var b = E(ph, "s-btn_text_normal btn_text", w: 76, h: 34, pick: true); b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; if (i == 1) b.style.marginLeft = 6;
-                    b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.SetNight(night); e.StopPropagation(); } });
-                    var lb = L(b, "button-label"); lb.text = night ? "Night" : "Day"; briefPhase[i] = b;
+                    bool night = i == 1; var w = FrontEnd.Word(ph, night ? "Night" : "Day", LL.type.tab, float.NaN, 34, 0f, 0f, 0f, 29f, false, false);
+                    if (i == 1) w.Root.style.marginLeft = 22;
+                    FrontEnd.Hook(w, null, () => host.SetNight(night)); briefPhase[i] = w.Root; briefPhaseW[i] = w;
                 }
             }
             var ways = E(brief); ways.style.flexDirection = FlexDirection.Row; ways.style.marginTop = 12;
@@ -543,9 +593,9 @@ namespace Suborned.Play
                 KeyCap(kr, host.controls.Label(PlayAction.TurnLeft)); KeyCap(kr, host.controls.Label(PlayAction.TurnRight)); kr[0].style.marginLeft = 0; Show(kr, KeyLegends); // brief 049 row 29: no key legend (the H13 hint teaches Q/E)
                 var kl = L(kr, "briefing-small"); kl.text = "turn the view."; kl.style.color = new Color(0.69f, 0.8f, 0.78f); kl.style.marginLeft = 8;
             }
-            var begin = E(foot, "s-btn_text_normal btn_text", w: 190, h: 40, pick: true); begin.style.flexDirection = FlexDirection.Row; begin.style.alignItems = Align.Center; begin.style.justifyContent = Justify.Center;
-            begin.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.StartClock(); e.StopPropagation(); } });
-            var bl = L(begin, "button-label"); bl.text = "Begin"; briefBeginKey = L(null, "keycap"); /* Sky: no key hint on a button (keys are taught by the hints at first use); Space still begins */
+            // Glyph's 0.2.97 review #5: Begin is the light line's word (no cream plate): always the focused action (Space begins), so its marker and line show
+            var beginW = FrontEnd.Word(foot, "Begin", FrontEnd.LS.type.wordSmall, float.NaN, 40, 30f, 22f, 0f, 33f, true, false); beginW.Root.style.flexShrink = 0; beginW.Root.style.marginLeft = 16;
+            FrontEnd.Hook(beginW, null, () => host.StartClock()); beginW.Focused = true; FrontEnd.PaintWord(beginW); briefBeginKey = L(null, "keycap"); /* Sky: no key hint on a button (keys are taught by the hints at first use); Space still begins */
             BuildLine(brief, corner: true); // Sky 2026-10-19: which build this is, quiet, in the card's corner (BuildStamp)
             // the end card (debrief_card): 560 wide, top centre +40, y 160; Debrief opens the numbers, Replay plays again
             end = E(root, "s-panel_dark_modal", 0, 160, 560, float.NaN, pick: true); end.style.paddingLeft = EndCardPad; end.style.paddingRight = EndCardPad; end.style.paddingTop = 24; end.style.paddingBottom = 38; // Glyph round 2: bottom matches top
@@ -556,13 +606,13 @@ namespace Suborned.Play
             VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 10; b.style.marginRight = 10; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
             Btn("Debrief", () => endDetailOpen = !endDetailOpen);
             showAgain = Btn("Show me", () => host.FailCamStart()); // the fail camera again (Sky on the Air: "Show me again" ran past its pill) // the fail camera again (HostFailCam)
-            var rp = Btn("Replay", () => host.Begin()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
+            var rp = Btn("Replay", () => host.BeginSameSeed()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
             // the history (history_panel): above the feed bar; filters, Read all, the rows (the wheel scrolls them)
             history = E(root, "s-panel_dark", pick: true); history.style.position = Position.Absolute; history.style.right = 14; history.style.bottom = 14 + 32 + 6; history.style.width = 384;
             history.style.paddingLeft = 28; history.style.paddingRight = 28; history.style.paddingTop = 14; history.style.paddingBottom = 12; // clear of the frame's corner screws
             var hh = E(history); hh.name = "head"; hh.style.flexDirection = FlexDirection.Row; hh.style.alignItems = Align.Center; var ht = L(hh, "section-label"); ht.text = "SCENES · HISTORY"; ht.style.flexGrow = 1;
             history.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0 && !host.FeedHistoryOpen) { host.FeedHistoryOpen = true; e.StopPropagation(); } }); // Sky 2026-10-18: collapsed, a click on the panel expands it (L too)
-            var ra = E(hh, "s-pill_white", pick: true); ra.style.height = 20; var ral = L(ra, "feed-filter"); ral.text = "Read all"; ral.style.paddingLeft = 8; ral.style.paddingRight = 8; ral.style.unityTextAlign = TextAnchor.MiddleCenter;
+            var ra = E(hh, "s-plate_dark", pick: true); ra.style.height = 22; ra.style.unitySliceScale = 0.37f; var ral = L(ra, "feed-filter"); ral.text = "Read all"; ral.style.paddingLeft = 10; ral.style.paddingRight = 10; ral.style.unityTextAlign = TextAnchor.MiddleCenter; ral.style.color = Cream; // Glyph's 0.2.104 review #7: the kit plate with cream words, not a bright white pill
             ra.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ReadAll(); e.StopPropagation(); } });
             var fr = E(history); fr.name = "filters"; fr.style.flexDirection = FlexDirection.Row; fr.style.flexWrap = Wrap.Wrap; fr.style.marginTop = 8;
             foreach (var (key, label) in new[] { ("all", "All"), ("learned", "Learned"), ("turned", "Turned"), ("city", "City"), ("warnings", "Warnings") })
@@ -614,8 +664,10 @@ namespace Suborned.Play
                 failMarks = new VisualElement { pickingMode = PickingMode.Ignore }; failMarks.style.position = Position.Absolute; failMarks.style.left = 0; failMarks.style.top = 0; failMarks.style.right = 0; failMarks.style.bottom = 0;
                 failMarks.generateVisualContent += FailMarksPaint; root.Add(failMarks); failMarks.SendToBack(); Show(failMarks, false);
                 failLoc = E(root, "s-disc_dark_24", 0, 0, 28, 28); Border(failLoc, 2f, new Color(0.878f, 0.227f, 0.184f)); failLocIcon = E(failLoc, null, 5, 5, 18, 18); Icon(failLocIcon, "eye_open", new Color(0.878f, 0.227f, 0.184f)); manifest.Add((failLoc, "image", () => "culprit locator")); Show(failLoc, false);
-                failChip = E(root, "s-plate_dark", 14, 14, float.NaN, 30); failChip.style.flexDirection = FlexDirection.Row; failChip.style.alignItems = Align.Center; failChip.style.paddingLeft = 12; failChip.style.paddingRight = 12;
-                var fcl = L(failChip, "verb-name"); fcl.name = "t"; fcl.style.fontSize = 12; manifest.Add((failChip, "image", () => "replay chip")); Show(failChip, false);
+                /* Glyph 0.2.117 #1: the kit's plate at the unlock pills' size and slice (a fat unsliced rim read as a web pill), the time icon, Jost Bold 12.5 */
+                failChip = PlateDark(root, UnlH, UnlScale); failChip.style.position = Position.Absolute; failChip.style.left = 14; failChip.style.top = 14; failChip.style.paddingLeft = 9; failChip.style.paddingRight = 10;
+                var fci = E(failChip, null, w: 12, h: 12); fci.style.flexShrink = 0; Icon(fci, "p_time", Cream);
+                var fcl = Words(failChip, 12.5f); fcl.name = "t"; fcl.style.marginLeft = 5; manifest.Add((failChip, "image", () => "replay chip")); Show(failChip, false);
             }
             bool f = host.FailCamOn;
             if (showAgain != null) Show(showAgain, !f && host.FailCamAvailable && m.Ended); EndButtonsFit();
@@ -647,9 +699,11 @@ namespace Suborned.Play
                 for (int i = 0; i <= 40; i++) { float a = i * Mathf.PI * 2f / 40f; var v = oq + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (i == 0) p.MoveTo(v); else p.LineTo(v); }
                 p.Stroke();
             }
-            if (host.FailShot && Proj(host.FailShooterAt, out var sq) && Proj(ow + Vector3.up * 1.3f, out var hq))
+            if (host.FailShot)
             {
-                // Glyph 022 (N125): the shot itself, a tracer from the shooter's chest to the operative's, flashing once every 0.7 s
+                // Glyph 022 (N125): the shot itself, a tracer from the shooter's chest to the operative's, flashing once every 0.7 s; Glyph r123
+                // §2: only at the deciding moment (FailAtMoment, the 1.2 s hold), never over the whole replay
+                if (!host.FailAtMoment || !Proj(host.FailShooterAt, out var sq) || !Proj(ow + Vector3.up * 1.3f, out var hq)) return;
                 float ph = (Time.unscaledTime % 0.7f) / 0.7f, a = ph < 0.4f ? 1f : 0.8f; // a steady line that flashes: any still frame shows it
                 var dv = (hq - sq).normalized; var a0 = sq + dv * 6f; var b0 = hq - dv * 4f;
                 p.lineCap = LineCap.Round;
@@ -757,17 +811,18 @@ namespace Suborned.Play
                 var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.LoudAt); float lh2 = loud.resolvedStyle.height; if (float.IsNaN(lh2)) lh2 = 268;
                 loud.style.left = Mathf.Clamp(p.x + 24, 14, W - 430 - 14); loud.style.top = Mathf.Max(14, p.y - lh2 - 16);
             }
-            // the briefing
-            Show(brief, m.BriefingOpen && m.BriefTitle.Length > 0);
-            if (m.BriefingOpen && m.BriefTitle.Length > 0)
+            // the briefing: brief 062 B (Briefing.cs) on the street replaces the card; the old card stays built but hidden (BriefOnStreet off brings it back)
+            if (BriefOnStreet) { Show(brief, false); BriefingFrame(); Entrance(); }
+            else Show(brief, m.BriefingOpen && m.BriefTitle.Length > 0);
+            if (!BriefOnStreet && m.BriefingOpen && m.BriefTitle.Length > 0)
             {
                 brief.style.left = (W - 700) / 2 + 40;
                 Text(briefTitle, m.BriefTitle); Text(briefSub, m.BriefSub); Text(briefObjective, m.BriefObjective); Text(briefTarget, m.BriefSituation);
                 Text(briefWin, m.BriefWin); Text(briefLose, string.Join(" · ", m.BriefFails));
-                Text(briefClose, m.BriefClock.Contains("8:30") ? "Closes 8:30" : m.BriefClock); Text(briefPurse, m.Cash.Length > 0 ? "Purse " + m.Cash : m.BriefPurse); Text(briefAlert, $"Alert {m.Alert} of 3"); Text(briefArms, "Cell armed");
+                Text(briefClose, host.Text != null ? "Closes " + host.Text.Close : m.BriefClock); Text(briefPurse, m.Cash.Length > 0 ? "Purse " + m.Cash : m.BriefPurse); Text(briefAlert, $"Alert {m.Alert} of 3"); Text(briefArms, "Cell armed");
                 for (int i = 0; i < 2; i++) { bool has = i < m.BriefWays.Count; Show(briefWays[i].title.parent, has); if (has) { Text(briefWays[i].title, $"Approach {(char)('A' + i)}: {m.BriefWays[i].title}"); Text(briefWays[i].body, m.BriefWays[i].body); } }
                 Text(briefBeginKey, m.BeginKey);
-                for (int i = 0; i < 2; i++) if (briefPhase[i] != null) { bool on = (i == 1) == host.NightLook; briefPhase[i].style.opacity = on ? 1f : 0.8f; Border(briefPhase[i], on ? 2f : 0f, TurqLight); }
+                for (int i = 0; i < 2; i++) if (briefPhaseW[i] is { } pw) { bool on = (i == 1) == host.NightLook; if (pw.Focused != on) { pw.Focused = on; FrontEnd.PaintWord(pw); } } // the chosen one: full cream and the line (the tab grammar)
             }
             // the end card
             Show(end, m.Ended);
@@ -855,7 +910,7 @@ namespace Suborned.Play
                             if (speech) { feedSpeech = t; feedTitle = null; } // one line: the speaker and their words
                             else
                             {
-                                if (card.Lines.Count > 0) { var ln = card.Lines[card.Lines.Count - 1]; var sl = L(col, "history-row-result", ellipsis: true); sl.name = "speech"; sl.text = $"{ln.Name}: {ln.Text}"; sl.style.whiteSpace = WhiteSpace.NoWrap; BodyText(sl); sl.style.marginTop = 2; sl.style.flexShrink = 0; feedSpeech = sl; } else feedSpeech = null;
+                                if (card.Lines.Count > 0) { var ln = card.Lines[card.Lines.Count - 1]; var sl = L(col, "history-row-result", ellipsis: true); sl.name = "speech"; sl.text = $"{ln.Name}: {ln.Text}"; sl.style.whiteSpace = WhiteSpace.Normal; /* brief 085: a whole line, on two rows if it needs them (the budget's speech) */ BodyText(sl); sl.style.marginTop = 2; sl.style.flexShrink = 0; feedSpeech = sl; } else feedSpeech = null;
                                 feedTitle = t;
                             }
                             if (card.Lines.Count > 1) { var more = L(top, "feed-clock"); more.text = $"+{card.Lines.Count - 1}"; more.style.marginRight = 8; more.style.flexShrink = 0; more.PlaceBehind(ck); }
@@ -992,19 +1047,20 @@ namespace Suborned.Play
             if (want != on) { on = want; Show(root, on); }
             if (!on) return;
             GroundBegin(); // brief 046: this frame's ground marks (HudToolkit.Ground)
+            CrispScale(); // Glyph N6 (0.2.125): before the cutaway and the fail camera return, so they draw at the play panel's scale (a 1080 capture inside a 2880 x 1864 run kept scale 2: the cutaway's bar, bubble and Skip at 2x)
             if (FailCamHud()) return; // the fail camera: its caption alone
             if (ConvoHud()) return; // brief 032: the conversation scene: its bubble, dots, bars and Skip, the pill (HudToolkit.Live)
-            m.Frame(host); CrispScale();
+            m.Frame(host);
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
             // the pill
-            Text(clock, Stress ? "8:30" : m.Clock); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, Stress ? "8:30" : m.NextTime); Text(cash, m.Cash); Text(trail, Stress ? "12" : m.Trail.Replace("T ", ""));
+            Text(clock, Stress ? "7:30" : m.Clock); CloseUnderline(); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, Stress ? "7:30" : m.NextTime); Text(cash, m.Cash); Text(trail, Stress ? "12" : m.Trail.Replace("T ", ""));
             for (int i = 0; i < 3; i++) lamps[i].style.backgroundColor = i < m.Alert ? new Color(1f, 0.988f, 0.94f) : new Color(0.039f, 0.11f, 0.118f);
             Text(state, m.State.Contains("PAUSE") ? "PAUSED" : m.State);
             Text(objText, m.Objective); Text(objTail, m.ObjectiveTail.Replace(' ', '\u00A0')); // UI Toolkit trims a label's leading spaces: "car· closes"
             // the objective never changes in a mission: up for 20 s after the briefing closes (B brings it back), or while the pill is hovered, or pinned
             if (briefWas && !m.BriefingOpen) objUntil = Time.unscaledTime + ObjectiveS; briefWas = m.BriefingOpen;
-            bool objOn = m.BriefingOpen || ObjPinned || pillHover || objHover || Time.unscaledTime < objUntil;
+            bool objOn = m.BriefingOpen && !BriefOnStreet || !m.BriefingOpen && (ObjPinned || pillHover || objHover || Time.unscaledTime < objUntil); /* brief 062 B: the goal line comes up with play, not over the briefing */
             Show(objective, objOn); intel.style.top = objOn ? 108 : 62;
             // Intel: the strip, and when open a row for each person the cell knows something of (a secret and a lover tie only once known)
             Text(intelCount, $"{m.IntelKnown} people known"); Icon(intelChevron, m.IntelOpen ? "chev_up" : "chev_down", Cream);
@@ -1063,7 +1119,7 @@ namespace Suborned.Play
                 Border(st.Root, s.Selected ? 1.8f : 0f, s.Selected ? TurqLight : Color.clear); // selected: the turquoise inner line only
                 Text(st.Role, s.Name.ToUpperInvariant()); Text(st.State, "·  " + s.StateTag);
                 foreach (var cls in new[] { "t-slot-state-ready", "t-slot-state-busy", "t-slot-state-hurt", "t-slot-state-down" }) Class(st.State, cls, cls == "t-slot-state-" + (s.StateTag is "RUNNING" or "CARRYING" ? "busy" : s.StateTag.ToLowerInvariant()));
-                Show(st.Stance, m.Fight && s.Armed); if (m.Fight && s.Armed) Bg(st.Stance, $"badges/stance_{(s.Stance == "H" ? "hold" : s.Stance == "A" ? "free" : "return")}");
+                Show(st.Stance, m.Fight && s.Armed && !host.OneInput); if (m.Fight && s.Armed) Bg(st.Stance, $"badges/stance_{(s.Stance == "H" ? "hold" : s.Stance == "A" ? "free" : "return")}");
                 bool busy = s.Busy && !s.Down && !s.Compact;
                 Show(st.Icon, busy); if (busy) Icon(st.Icon, s.Icon, Cream);
                 Show(st.Action, busy); Text(st.Action, s.Label);
@@ -1091,7 +1147,7 @@ namespace Suborned.Play
             {
                 var t = m.Ticker; float a = t == null ? 0f : Mathf.Clamp01((5f - m.TickerAge) / 1f);
                 Show(ticker, a > 0.01f); ticker.style.opacity = a;
-                if (t != null && a > 0.01f) { Text(tickerText, t.Text); Bg(tickerChip, $"portraits/cameo_{t.Speaker}_normal"); }
+                if (t != null && a > 0.01f) { Text(tickerText, t.Text); Bg(tickerChip, HasFace(t.Speaker) ? FaceOf(t.Speaker) : $"portraits/cameo_{t.Speaker}_normal"); } // brief 062: a cast face for the waitress, driver, councillor
             }
             Feed();
             PanelFrame(); Step3Frame(); TakedownFrame();
@@ -1109,25 +1165,30 @@ namespace Suborned.Play
             // the chip by the plot scope while the follow view is on (Glyph r2): what is on, and its key (T leaves it)
             if (followChip == null)
             {
-                followChip = E(root, "s-plate_dark", 0, 0, float.NaN, 30); followChip.style.top = StyleKeyword.Auto; followChip.style.left = 14 + 212 + 14; // review 12: 14 px clear of the scope (8 read as touching) followChip.style.bottom = 14 + (132 - 30) / 2f;
-                followChip.style.flexDirection = FlexDirection.Row; followChip.style.alignItems = Align.Center; followChip.style.paddingLeft = 12; followChip.style.paddingRight = 10;
-                var fl = L(followChip, "verb-name"); followLabel = fl; fl.text = "Follow view"; fl.style.fontSize = 12; if (KeyLegends) KeyCap(followChip, host.controls.Label(PlayAction.FollowView)); // no key legends (Sky): the word only
+                // Glyph's 0.2.94 review #8: the kit's plate at the pill's 38 px (slice 0.43), anchored under the roster column where the Squad button
+                // stands in the overhead view (it hides in the follow view), the word centred in the plate's window
+                followChip = PlateDark(root, 38f, 0.43f); followChip.style.position = Position.Absolute; followChip.style.left = ColX; followChip.style.top = ColY + ColH * RosterScale + 8;
+                followChip.style.justifyContent = Justify.Center; followChip.style.paddingLeft = 16; followChip.style.paddingRight = 16; followChip.style.minWidth = 86;
+                var fl = Words(followChip, 13.5f); followLabel = fl; fl.text = "Follow view"; fl.style.unityTextAlign = TextAnchor.MiddleCenter; fl.style.marginTop = 0; fl.style.marginBottom = 0; fl.style.paddingTop = 0; fl.style.paddingBottom = 0; if (KeyLegends) KeyCap(followChip, host.controls.Label(PlayAction.FollowView)); // no key legends (Sky): the word only
                 manifest.Add((followChip, "image", () => "follow view chip")); Show(followChip, false);
             }
-            Show(followChip, f && !m.Ended && (host.Exploring || host.Driving)); // brief 049 row 25: no "Follow view" word (a test mode); Exploring and Let go stay
-            if (f) Text(followLabel, host.Exploring ? "Exploring" : host.Driving ? "Let go" : "Follow view"); // brief 025 (Fable: "Let go: T")
+            Show(followChip, f && !m.Ended && host.Exploring); // brief 049 row 25: no "Follow view" word (a test mode). Brief 083 (Sky on 0.2.159: "I saw a Let Go label where squad is - no idea what that means - did nothing when I clicked on it"): this plate was that label, a word with no click. Driving, the slot is the real Back to map button (HudToolkit.Hold); only the lab's Exploring keeps a word here
+            if (f) Text(followLabel, host.Exploring ? "Exploring" : "Follow view");
             // a plain ground ring under the followed agent, drawn in the view's own perspective (the one world mark the follow view keeps)
             followRing.Clear();
             if (f && host.FollowAgent >= 0 && host.Views?.Find("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)host.FollowAgent)) is Transform ft && ft.gameObject.activeSelf)
                 GroundRing(ft.position, 0.55f, Cream, 2f, false, 0.5f); // brief 046: on the ground, depth-tested: the agent's legs stand in front of it
-            ActMarkFrame(); TargetRingsDraw(); GroundFlush(); // Sky 2026-10-21: the hover marker says what a right click does (HudToolkit.ActMark), in both views
+            ActMarkFrame(); TargetRingsDraw(); ConesDraw(); RerouteDraw(); RivalsDraw(); DriveDraw(); CueGround(); GroundFlush(); /* brief 059: the rivals, the stands, Vale's car round the back */ // Sky 2026-10-21: the hover marker says what a right click does (HudToolkit.ActMark), in both views
+            marks.style.opacity = host.MarksFade; // brief 067 G3 (Glyph): nothing over the street during the glide back to the map; the marks fade back in over 0.2 s once the map view stands
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {
-                bool keep = c == world || c == actBadge || c == fireLayer || c == vpill || c == vpillTail; // brief 041: the pill in both views foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                bool keep = c == world || c == actBadge || c == actMarkRoot || c == fireLayer || c == vpill || c == vpillTail; /* brief 041: the pill in both views */ foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }
+        /// <summary>The proof reads it: the old word plate in the Squad slot is up.</summary>
+        public static bool FollowChipShown => live?.followChip != null && live.followChip.resolvedStyle.display != DisplayStyle.None;
         bool followHid; VisualElement followChip; Label followLabel; readonly List<Vector2> followRing = new();
 
         /// <summary>Where the roster, the strips, the verb plate and the ticker sit for the dock (Glyph's dock rules, layout.json `docks`).
@@ -1186,7 +1247,7 @@ namespace Suborned.Play
         {
             var feed = m.Feed; int live = 0; foreach (var c in feed) if (c.Live) live++;
             Text(barCount, m.Unread > 0 ? $"{m.Unread} new" : live > 0 ? $"{live} live" : "0 new");
-            Show(barKeys, KeyLegends); if (KeyLegends) Text(barKeys, $"{m.AckKey} ack · {m.HistoryKey} history"); // no key legends (Sky) Icon(barChevron, m.HistoryOpen ? "chev_down" : "chev_up", Cream);
+            Show(barKeys, KeyLegends); if (KeyLegends) Text(barKeys, $"{m.AckKey} ack · {m.HistoryKey} history"); /* no key legends (Sky) */ Icon(barChevron, m.HistoryOpen ? "chev_down" : "chev_up", Cream);
             Show(more, feed.Count > 3 && !m.HistoryOpen); Text(more, $"+{feed.Count - 3} more");
             // cards: newest on top (the column reverses: the first child after the bar sits nearest it), three at most; folded but the newest; in a fight all fold
             for (int i = 0; i < 3; i++)
@@ -1213,7 +1274,7 @@ namespace Suborned.Play
                         var l = card.Lines[r]; bool cell = l.Speaker is "scout" or "fixer" or "tech" or "enforcer";
                         Text(name, l.Name); Class(name, "t-feed-name-cell", cell); Class(name, "t-feed-name", !cell);
                         Text(text, l.Text); Class(text, "t-feed-line-npc", !cell); Class(text, "t-feed-line", cell);
-                        Bg(chip, cell ? $"portraits/cameo_{l.Speaker}_normal" : SpeakerBadge(l.Speaker));
+                        Bg(chip, cell ? $"portraits/cameo_{l.Speaker}_normal" : HasFace(l.Speaker) ? FaceOf(l.Speaker) : SpeakerBadge(l.Speaker)); // brief 062: the waitress, driver and councillor speak with their painted faces; the name and line classes stay the NPC's
                     }
                     Show(c.Typing, card.Revealed < card.Lines.Count);
                 }

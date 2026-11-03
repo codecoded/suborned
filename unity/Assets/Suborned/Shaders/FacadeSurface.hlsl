@@ -1,8 +1,18 @@
 // Facade surface classes from the vertex colour: R = ambient occlusion, A = 1 - class/8.
 // 0 matte (material default) · 1 limestone (ashlar courses + grain) · 2 enamel (gloss, tile grid) · 3 glass (reflective)
 // 4 chrome (metal) · 5 neon (emissive) · 6 brass/gold (warm metal)
+// B = the builder's surface-detail layer override ((layer + 0.5) / 8; 255 = the class default), brief 072-F.
 #ifndef SUBORNED_FACADE_SURFACE
 #define SUBORNED_FACADE_SURFACE
+
+// brief 072-F (Vela's design, briefs/072/texture/design.md): one shared tiled detail array, colourless (R albedo x2 about 128, G height,
+// B smoothness offset about 128). Layers: 0 render, 1 limestone, 2 enamel, 3 metal, 4 roof, 5 panel; metres per repeat below [S].
+TEXTURE2D_ARRAY(_SurfaceDetail); SAMPLER(sampler_SurfaceDetail);
+static const float kSurfaceTile[6] = { 3.0, 2.0, 1.0, 0.5, 1.5, 2.0 };
+#ifndef SUBORNED_SURFACE_DETAIL_OFF
+#define SUBORNED_SURFACE_DETAIL_OFF
+float _SubornedSurfaceDetailOff;   // global (LookLab, the perf harness's surfaceDetail A/B): 1 = skip the surface detail; unset = 0 = as built
+#endif
 
 float FcHash(float2 p) { p = frac(p * float2(123.34, 456.21)); p += dot(p, p + 45.32); return frac(p.x * p.y); }
 float FcNoise(float2 p)
@@ -41,11 +51,10 @@ void FacadeSurface(float3 p, float3 n, half4 col, inout SurfaceData s, inout flo
         float joint = 1 - smoothstep(jw, jw + max(px, 0.004) * 1.5, d);
         float fadeFar = 1 - smoothstep(0.15, 0.5, px);
         float tone = FcHash(floor(g)) - 0.5;
-        float grain = FcNoise(uv * 9.0) * 0.6 + FcNoise(uv * 31.0) * 0.4 - 0.5;
-        float fine = 1 - smoothstep(0.03, 0.12, px);
-        s.albedo *= 1 + tone * 0.07 * fadeFar + grain * 0.07 * fine;
+        // the grain is the surface-detail sample below (layer 1 limestone), which replaced two value-noise octaves (072-F)
+        s.albedo *= 1 + tone * 0.07 * fadeFar;
         s.albedo *= 1 - 0.11 * joint * fadeFar;
-        height = (-joint * 0.012 * fadeFar + grain * 0.004 * fine);
+        height = -joint * 0.012 * fadeFar;
         s.smoothness = 0.14;
     }
     else if (cls == 2)
@@ -91,6 +100,23 @@ void FacadeSurface(float3 p, float3 n, half4 col, inout SurfaceData s, inout flo
     else if (cls == 4) { s.metallic = 1.0; s.smoothness = 0.82; s.albedo *= 0.95; }
     else if (cls == 6) { s.metallic = 1.0; s.smoothness = 0.7; }
     else if (cls == 5) { s.emission = s.albedo * 1.7; s.albedo *= 0.5; s.smoothness = 0.5; }
+
+    // surface detail (072-F): glass (3) and neon (5) take none. The class is per triangle, not per 2x2 quad, so at a class edge (bands are 5-15 px
+    // at zoom 14) a quad mixes lanes and tiles: the derivatives are taken here, outside any branch, from the wall-plane UV in metres, and the
+    // array is sampled with them scaled by the lane's own tile (Redline phase 2 D1: the right mip on every band edge, at the same cost).
+    // _SubornedSurfaceDetailOff (a global, 0 unless the perf A/B or the lab sets it; LookLab) skips the sample: keyword-free.
+    float2 uvDx = ddx(uv), uvDy = ddy(uv);
+    if (cls != 3 && cls != 5 && _SubornedSurfaceDetailOff < 0.5)
+    {
+        int lay = cls == 1 ? 1 : (cls == 2 ? 2 : (cls == 4 || cls == 6 ? 3 : (n.y > 0.7 ? 4 : 0)));
+        if (col.b < 0.99) lay = clamp((int)floor(col.b * 8.0), 0, 5);   // the builder's override (QuadKit panel walls, FabricKit cloth)
+        float k = cls == 4 ? 0.35 : 1.0;
+        float t = kSurfaceTile[lay];
+        float4 d = SAMPLE_TEXTURE2D_ARRAY_GRAD(_SurfaceDetail, sampler_SurfaceDetail, uv / t, lay, uvDx / t, uvDy / t);
+        s.albedo *= lerp(1.0, 2.0 * d.r, k);
+        height += (d.g - 0.5) * 0.008 * k;
+        s.smoothness = saturate(s.smoothness + (d.b - 0.5) * 0.5 * k);
+    }
 }
 
 float3 FacadeBumpNormal(float3 p, float3 n, float h)

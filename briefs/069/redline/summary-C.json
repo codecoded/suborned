@@ -1,0 +1,241 @@
+{
+ "C/base0": {
+  "runs": 5,
+  "levers": {
+   "count": 0,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 0,
+   "skinnedMeshRenderers": 0,
+   "distinctMaterials": 0,
+   "maxBonesPerSmr": 0,
+   "transformsPerPersonBeforeOptimize": 0,
+   "trisLOD0Sum": 0,
+   "trisOtherLODsSum": 0,
+   "visibleSmrsByLod": {}
+  },
+  "frame": {
+   "median": 0.709,
+   "min": 0.7,
+   "max": 1.154,
+   "p95": 2.611
+  },
+  "cpuMain": {
+   "median": 0.412,
+   "min": 0.356,
+   "max": 0.632,
+   "p95": 0.808
+  },
+  "cpuRender": {
+   "median": 0.318,
+   "min": 0.298,
+   "max": 0.378,
+   "p95": 0.417
+  },
+  "gpu": {
+   "median": 1.426,
+   "min": 1.375,
+   "max": 3.172,
+   "p95": 3.545
+  }
+ },
+ "C/new60": {
+  "runs": 5,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 0.906,
+   "min": 0.805,
+   "max": 1.327,
+   "p95": 2.076
+  },
+  "cpuMain": {
+   "median": 0.899,
+   "min": 0.799,
+   "max": 1.197,
+   "p95": 1.428
+  },
+  "cpuRender": {
+   "median": 0.367,
+   "min": 0.349,
+   "max": 0.444,
+   "p95": 0.472
+  },
+  "gpu": {
+   "median": 1.14,
+   "min": 0.935,
+   "max": 2.998,
+   "p95": 3.111
+  }
+ },
+ "C/new60opt": {
+  "runs": 5,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": true,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 0,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 0.911,
+   "min": 0.788,
+   "max": 1.204,
+   "p95": 2.417
+  },
+  "cpuMain": {
+   "median": 0.902,
+   "min": 0.752,
+   "max": 1.074,
+   "p95": 1.462
+  },
+  "cpuRender": {
+   "median": 0.389,
+   "min": 0.353,
+   "max": 0.423,
+   "p95": 0.504
+  },
+  "gpu": {
+   "median": 1.265,
+   "min": 1.211,
+   "max": 2.751,
+   "p95": 3.747
+  }
+ },
+ "C/newnf60": {
+  "runs": 5,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 22,
+   "transformsPerPersonBeforeOptimize": 26,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1.11,
+   "min": 0.853,
+   "max": 1.242,
+   "p95": 2.178
+  },
+  "cpuMain": {
+   "median": 0.944,
+   "min": 0.802,
+   "max": 1.087,
+   "p95": 1.389
+  },
+  "cpuRender": {
+   "median": 0.387,
+   "min": 0.368,
+   "max": 0.423,
+   "p95": 0.484
+  },
+  "gpu": {
+   "median": 1.763,
+   "min": 1.033,
+   "max": 2.815,
+   "p95": 3.395
+  }
+ },
+ "C/old60": {
+  "runs": 5,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 23,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 0.827,
+   "min": 0.736,
+   "max": 1.204,
+   "p95": 1.983
+  },
+  "cpuMain": {
+   "median": 0.796,
+   "min": 0.703,
+   "max": 1.041,
+   "p95": 1.284
+  },
+  "cpuRender": {
+   "median": 0.358,
+   "min": 0.349,
+   "max": 0.416,
+   "p95": 0.469
+  },
+  "gpu": {
+   "median": 1.274,
+   "min": 1.191,
+   "max": 2.532,
+   "p95": 3.11
+  }
+ }
+}

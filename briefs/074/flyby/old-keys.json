@@ -1,0 +1,2532 @@
+{
+  "schema": "suborned.flyby-keys/1",
+  "source": {
+    "project": "out/old-world/unity (rendered from copy out/scratch/latch/oldworld/unity)",
+    "script": "Assets/TheSuborned/Editor/DecoKit/DecoKitFlyby.cs",
+    "executeMethod": "TheSuborned.Editor.DecoKit.DecoKitMenu.Flyby",
+    "scene": "Assets/TheSuborned/Scenes/DecoKitStreet.unity",
+    "camera_object": "DK street study camera",
+    "editor": "6000.6.2f1"
+  },
+  "frame": "old-world Unity world space, metres, +y up; the boulevard runs along +z near x=0 (z -60 -> 150), circus centre (0, 0, 206) (DecoKitCityPlan.Circus, the orrery monument), the parade runs +x along z~206 to the skyport tower at (170, -2, 206), water at y -2 (DecoKitCityPlan.Skyport), then the sea lies to +x. Heights are above the old street (y=0).",
+  "camera": {
+    "fov_vertical_deg": 58,
+    "far_clip_m": 2500,
+    "render": "1920x1080, supersample 2 (rendered 3840x2160, downsampled), 30 fps",
+    "shadow_distance_m": "clamp(eye_y * 8, 120, 1200)"
+  },
+  "interpolation": "Hermite through keys with finite-difference (non-uniform Catmull-Rom) velocities, zero velocity at first and last key. The eye is splined; the view DIRECTION (normalised look_at - eye per key) is splined, not the look-at point; up = world +y; no roll.",
+  "duration_s": 62,
+  "path_length_m": 622.7,
+  "mean_speed_mps": 10.04,
+  "keys": [
+    {
+      "t": 0,
+      "eye": [
+        2,
+        6,
+        -60
+      ],
+      "eye_height_m": 6,
+      "look_at": [
+        0,
+        8,
+        60
+      ],
+      "note": "boulevard start",
+      "speed_mps": 0.2,
+      "view_dir": [
+        -0.0167,
+        0.0167,
+        0.9997
+      ],
+      "yaw_deg": -0.95,
+      "pitch_deg": 0.95
+    },
+    {
+      "t": 8,
+      "eye": [
+        2,
+        9,
+        60
+      ],
+      "eye_height_m": 9,
+      "look_at": [
+        0,
+        10,
+        180
+      ],
+      "note": "boulevard",
+      "speed_mps": 13.18,
+      "view_dir": [
+        -0.0167,
+        0.0083,
+        0.9998
+      ],
+      "yaw_deg": -0.95,
+      "pitch_deg": 0.48
+    },
+    {
+      "t": 16,
+      "eye": [
+        3,
+        12,
+        150
+      ],
+      "eye_height_m": 12,
+      "look_at": [
+        0,
+        14,
+        206
+      ],
+      "note": "approaching the circus",
+      "speed_mps": 9.64,
+      "view_dir": [
+        -0.0535,
+        0.0356,
+        0.9979
+      ],
+      "yaw_deg": -3.07,
+      "pitch_deg": 2.04
+    },
+    {
+      "t": 21,
+      "eye": [
+        12,
+        15,
+        185
+      ],
+      "eye_height_m": 15,
+      "look_at": [
+        5,
+        18,
+        215
+      ],
+      "note": "past the orrery on its east side",
+      "speed_mps": 7.02,
+      "view_dir": [
+        -0.2262,
+        0.0969,
+        0.9693
+      ],
+      "yaw_deg": -13.13,
+      "pitch_deg": 5.56
+    },
+    {
+      "t": 25,
+      "eye": [
+        22,
+        17,
+        210
+      ],
+      "eye_height_m": 17,
+      "look_at": [
+        60,
+        18,
+        232
+      ],
+      "note": "banking right as the orrery slides out of frame",
+      "speed_mps": 4.76,
+      "view_dir": [
+        0.8652,
+        0.0228,
+        0.5009
+      ],
+      "yaw_deg": 59.93,
+      "pitch_deg": 1.3
+    },
+    {
+      "t": 29,
+      "eye": [
+        42,
+        20,
+        208
+      ],
+      "eye_height_m": 20,
+      "look_at": [
+        170,
+        40,
+        206
+      ],
+      "note": "down the parade to the skyport",
+      "speed_mps": 5.83,
+      "view_dir": [
+        0.9879,
+        0.1544,
+        -0.0154
+      ],
+      "yaw_deg": 90.9,
+      "pitch_deg": 8.88
+    },
+    {
+      "t": 38,
+      "eye": [
+        96,
+        32,
+        204
+      ],
+      "eye_height_m": 32,
+      "look_at": [
+        170,
+        55,
+        206
+      ],
+      "note": "parade, climbing",
+      "speed_mps": 7.15,
+      "view_dir": [
+        0.9546,
+        0.2967,
+        0.0258
+      ],
+      "yaw_deg": 88.45,
+      "pitch_deg": 17.26
+    },
+    {
+      "t": 44,
+      "eye": [
+        128,
+        62,
+        160
+      ],
+      "eye_height_m": 62,
+      "look_at": [
+        170,
+        60,
+        206
+      ],
+      "note": "~60 m off the skyport tower: discs stay in frame",
+      "speed_mps": 11,
+      "view_dir": [
+        0.6739,
+        -0.0321,
+        0.7381
+      ],
+      "yaw_deg": 42.4,
+      "pitch_deg": -1.84
+    },
+    {
+      "t": 50,
+      "eye": [
+        190,
+        70,
+        120
+      ],
+      "eye_height_m": 70,
+      "look_at": [
+        150,
+        55,
+        206
+      ],
+      "note": "round the tower's sea side",
+      "speed_mps": 10.22,
+      "view_dir": [
+        -0.4166,
+        -0.1562,
+        0.8956
+      ],
+      "yaw_deg": -24.94,
+      "pitch_deg": -8.99
+    },
+    {
+      "t": 56,
+      "eye": [
+        250,
+        60,
+        150
+      ],
+      "eye_height_m": 60,
+      "look_at": [
+        60,
+        45,
+        215
+      ],
+      "note": "turning back to the city",
+      "speed_mps": 10.99,
+      "view_dir": [
+        -0.9435,
+        -0.0745,
+        0.3228
+      ],
+      "yaw_deg": -71.11,
+      "pitch_deg": -4.27
+    },
+    {
+      "t": 62,
+      "eye": [
+        300,
+        55,
+        190
+      ],
+      "eye_height_m": 55,
+      "look_at": [
+        0,
+        50,
+        215
+      ],
+      "note": "out to sea, skyline across the water",
+      "speed_mps": 0.18,
+      "view_dir": [
+        -0.9964,
+        -0.0166,
+        0.083
+      ],
+      "yaw_deg": -85.24,
+      "pitch_deg": -0.95
+    }
+  ],
+  "samples_every_0_5s": [
+    {
+      "t": 0,
+      "eye": [
+        2,
+        6,
+        -60
+      ],
+      "eye_height_m": 6,
+      "speed_mps": 0.2,
+      "view_dir": [
+        -0.0167,
+        0.0167,
+        0.9997
+      ],
+      "yaw_deg": -0.95,
+      "pitch_deg": 0.95
+    },
+    {
+      "t": 0.5,
+      "eye": [
+        1.998,
+        6.023,
+        -59.037
+      ],
+      "eye_height_m": 6.02,
+      "speed_mps": 3.79,
+      "view_dir": [
+        -0.0166,
+        0.0165,
+        0.9997
+      ],
+      "yaw_deg": -0.95,
+      "pitch_deg": 0.95
+    },
+    {
+      "t": 1,
+      "eye": [
+        1.993,
+        6.088,
+        -56.279
+      ],
+      "eye_height_m": 6.09,
+      "speed_mps": 7.18,
+      "view_dir": [
+        -0.0164,
+        0.0162,
+        0.9997
+      ],
+      "yaw_deg": -0.94,
+      "pitch_deg": 0.93
+    },
+    {
+      "t": 1.5,
+      "eye": [
+        1.986,
+        6.191,
+        -51.925
+      ],
+      "eye_height_m": 6.19,
+      "speed_mps": 10.18,
+      "view_dir": [
+        -0.0161,
+        0.0156,
+        0.9997
+      ],
+      "yaw_deg": -0.92,
+      "pitch_deg": 0.9
+    },
+    {
+      "t": 2,
+      "eye": [
+        1.977,
+        6.328,
+        -46.172
+      ],
+      "eye_height_m": 6.33,
+      "speed_mps": 12.78,
+      "view_dir": [
+        -0.0158,
+        0.0149,
+        0.9998
+      ],
+      "yaw_deg": -0.91,
+      "pitch_deg": 0.85
+    },
+    {
+      "t": 2.5,
+      "eye": [
+        1.966,
+        6.494,
+        -39.218
+      ],
+      "eye_height_m": 6.49,
+      "speed_mps": 14.98,
+      "view_dir": [
+        -0.0154,
+        0.0141,
+        0.9998
+      ],
+      "yaw_deg": -0.88,
+      "pitch_deg": 0.81
+    },
+    {
+      "t": 3,
+      "eye": [
+        1.956,
+        6.686,
+        -31.26
+      ],
+      "eye_height_m": 6.69,
+      "speed_mps": 16.79,
+      "view_dir": [
+        -0.015,
+        0.0132,
+        0.9998
+      ],
+      "yaw_deg": -0.86,
+      "pitch_deg": 0.76
+    },
+    {
+      "t": 3.5,
+      "eye": [
+        1.946,
+        6.897,
+        -22.496
+      ],
+      "eye_height_m": 6.9,
+      "speed_mps": 18.21,
+      "view_dir": [
+        -0.0147,
+        0.0123,
+        0.9998
+      ],
+      "yaw_deg": -0.84,
+      "pitch_deg": 0.7
+    },
+    {
+      "t": 4,
+      "eye": [
+        1.938,
+        7.125,
+        -13.125
+      ],
+      "eye_height_m": 7.13,
+      "speed_mps": 19.22,
+      "view_dir": [
+        -0.0144,
+        0.0113,
+        0.9998
+      ],
+      "yaw_deg": -0.82,
+      "pitch_deg": 0.65
+    },
+    {
+      "t": 4.5,
+      "eye": [
+        1.931,
+        7.365,
+        -3.344
+      ],
+      "eye_height_m": 7.36,
+      "speed_mps": 19.85,
+      "view_dir": [
+        -0.0141,
+        0.0104,
+        0.9998
+      ],
+      "yaw_deg": -0.81,
+      "pitch_deg": 0.6
+    },
+    {
+      "t": 5,
+      "eye": [
+        1.927,
+        7.611,
+        6.65
+      ],
+      "eye_height_m": 7.61,
+      "speed_mps": 20.07,
+      "view_dir": [
+        -0.014,
+        0.0096,
+        0.9999
+      ],
+      "yaw_deg": -0.8,
+      "pitch_deg": 0.55
+    },
+    {
+      "t": 5.5,
+      "eye": [
+        1.926,
+        7.861,
+        16.659
+      ],
+      "eye_height_m": 7.86,
+      "speed_mps": 19.91,
+      "view_dir": [
+        -0.0139,
+        0.0089,
+        0.9999
+      ],
+      "yaw_deg": -0.8,
+      "pitch_deg": 0.51
+    },
+    {
+      "t": 6,
+      "eye": [
+        1.93,
+        8.109,
+        26.484
+      ],
+      "eye_height_m": 8.11,
+      "speed_mps": 19.34,
+      "view_dir": [
+        -0.0141,
+        0.0083,
+        0.9999
+      ],
+      "yaw_deg": -0.81,
+      "pitch_deg": 0.48
+    },
+    {
+      "t": 6.5,
+      "eye": [
+        1.938,
+        8.352,
+        35.929
+      ],
+      "eye_height_m": 8.35,
+      "speed_mps": 18.38,
+      "view_dir": [
+        -0.0144,
+        0.0079,
+        0.9999
+      ],
+      "yaw_deg": -0.82,
+      "pitch_deg": 0.45
+    },
+    {
+      "t": 7,
+      "eye": [
+        1.952,
+        8.584,
+        44.795
+      ],
+      "eye_height_m": 8.58,
+      "speed_mps": 17.03,
+      "view_dir": [
+        -0.0149,
+        0.0078,
+        0.9999
+      ],
+      "yaw_deg": -0.85,
+      "pitch_deg": 0.45
+    },
+    {
+      "t": 7.5,
+      "eye": [
+        1.973,
+        8.802,
+        52.885
+      ],
+      "eye_height_m": 8.8,
+      "speed_mps": 15.28,
+      "view_dir": [
+        -0.0157,
+        0.0079,
+        0.9998
+      ],
+      "yaw_deg": -0.9,
+      "pitch_deg": 0.45
+    },
+    {
+      "t": 8,
+      "eye": [
+        2,
+        9,
+        60
+      ],
+      "eye_height_m": 9,
+      "speed_mps": 13.18,
+      "view_dir": [
+        -0.0167,
+        0.0083,
+        0.9998
+      ],
+      "yaw_deg": -0.95,
+      "pitch_deg": 0.48
+    },
+    {
+      "t": 8.5,
+      "eye": [
+        2.016,
+        9.185,
+        66.497
+      ],
+      "eye_height_m": 9.18,
+      "speed_mps": 12.87,
+      "view_dir": [
+        -0.0176,
+        0.009,
+        0.9998
+      ],
+      "yaw_deg": -1.01,
+      "pitch_deg": 0.51
+    },
+    {
+      "t": 9,
+      "eye": [
+        2.007,
+        9.366,
+        72.864
+      ],
+      "eye_height_m": 9.37,
+      "speed_mps": 12.61,
+      "view_dir": [
+        -0.0182,
+        0.0097,
+        0.9998
+      ],
+      "yaw_deg": -1.05,
+      "pitch_deg": 0.55
+    },
+    {
+      "t": 9.5,
+      "eye": [
+        1.978,
+        9.543,
+        79.105
+      ],
+      "eye_height_m": 9.54,
+      "speed_mps": 12.36,
+      "view_dir": [
+        -0.0186,
+        0.0105,
+        0.9998
+      ],
+      "yaw_deg": -1.07,
+      "pitch_deg": 0.6
+    },
+    {
+      "t": 10,
+      "eye": [
+        1.938,
+        9.718,
+        85.222
+      ],
+      "eye_height_m": 9.72,
+      "speed_mps": 12.12,
+      "view_dir": [
+        -0.0189,
+        0.0114,
+        0.9998
+      ],
+      "yaw_deg": -1.09,
+      "pitch_deg": 0.65
+    },
+    {
+      "t": 10.5,
+      "eye": [
+        1.893,
+        9.891,
+        91.219
+      ],
+      "eye_height_m": 9.89,
+      "speed_mps": 11.88,
+      "view_dir": [
+        -0.0192,
+        0.0124,
+        0.9997
+      ],
+      "yaw_deg": -1.1,
+      "pitch_deg": 0.71
+    },
+    {
+      "t": 11,
+      "eye": [
+        1.849,
+        10.064,
+        97.097
+      ],
+      "eye_height_m": 10.06,
+      "speed_mps": 11.65,
+      "view_dir": [
+        -0.0197,
+        0.0136,
+        0.9997
+      ],
+      "yaw_deg": -1.13,
+      "pitch_deg": 0.78
+    },
+    {
+      "t": 11.5,
+      "eye": [
+        1.813,
+        10.238,
+        102.859
+      ],
+      "eye_height_m": 10.24,
+      "speed_mps": 11.42,
+      "view_dir": [
+        -0.0203,
+        0.0149,
+        0.9997
+      ],
+      "yaw_deg": -1.16,
+      "pitch_deg": 0.85
+    },
+    {
+      "t": 12,
+      "eye": [
+        1.793,
+        10.413,
+        108.51
+      ],
+      "eye_height_m": 10.41,
+      "speed_mps": 11.2,
+      "view_dir": [
+        -0.0212,
+        0.0163,
+        0.9996
+      ],
+      "yaw_deg": -1.22,
+      "pitch_deg": 0.94
+    },
+    {
+      "t": 12.5,
+      "eye": [
+        1.795,
+        10.592,
+        114.05
+      ],
+      "eye_height_m": 10.59,
+      "speed_mps": 10.98,
+      "view_dir": [
+        -0.0226,
+        0.018,
+        0.9996
+      ],
+      "yaw_deg": -1.29,
+      "pitch_deg": 1.03
+    },
+    {
+      "t": 13,
+      "eye": [
+        1.826,
+        10.774,
+        119.484
+      ],
+      "eye_height_m": 10.77,
+      "speed_mps": 10.77,
+      "view_dir": [
+        -0.0245,
+        0.0198,
+        0.9995
+      ],
+      "yaw_deg": -1.4,
+      "pitch_deg": 1.14
+    },
+    {
+      "t": 13.5,
+      "eye": [
+        1.893,
+        10.96,
+        124.814
+      ],
+      "eye_height_m": 10.96,
+      "speed_mps": 10.57,
+      "view_dir": [
+        -0.0271,
+        0.0219,
+        0.9994
+      ],
+      "yaw_deg": -1.55,
+      "pitch_deg": 1.25
+    },
+    {
+      "t": 14,
+      "eye": [
+        2.002,
+        11.153,
+        130.042
+      ],
+      "eye_height_m": 11.15,
+      "speed_mps": 10.37,
+      "view_dir": [
+        -0.0304,
+        0.0241,
+        0.9992
+      ],
+      "yaw_deg": -1.74,
+      "pitch_deg": 1.38
+    },
+    {
+      "t": 14.5,
+      "eye": [
+        2.16,
+        11.352,
+        135.172
+      ],
+      "eye_height_m": 11.35,
+      "speed_mps": 10.18,
+      "view_dir": [
+        -0.0346,
+        0.0266,
+        0.999
+      ],
+      "yaw_deg": -1.98,
+      "pitch_deg": 1.52
+    },
+    {
+      "t": 15,
+      "eye": [
+        2.375,
+        11.559,
+        140.207
+      ],
+      "eye_height_m": 11.56,
+      "speed_mps": 10,
+      "view_dir": [
+        -0.0398,
+        0.0293,
+        0.9988
+      ],
+      "yaw_deg": -2.28,
+      "pitch_deg": 1.68
+    },
+    {
+      "t": 15.5,
+      "eye": [
+        2.653,
+        11.774,
+        145.148
+      ],
+      "eye_height_m": 11.77,
+      "speed_mps": 9.82,
+      "view_dir": [
+        -0.046,
+        0.0324,
+        0.9984
+      ],
+      "yaw_deg": -2.64,
+      "pitch_deg": 1.85
+    },
+    {
+      "t": 16,
+      "eye": [
+        3,
+        12,
+        150
+      ],
+      "eye_height_m": 12,
+      "speed_mps": 9.64,
+      "view_dir": [
+        -0.0535,
+        0.0356,
+        0.9979
+      ],
+      "yaw_deg": -3.07,
+      "pitch_deg": 2.04
+    },
+    {
+      "t": 16.5,
+      "eye": [
+        3.469,
+        12.246,
+        154.574
+      ],
+      "eye_height_m": 12.25,
+      "speed_mps": 8.79,
+      "view_dir": [
+        -0.0693,
+        0.0401,
+        0.9968
+      ],
+      "yaw_deg": -3.98,
+      "pitch_deg": 2.3
+    },
+    {
+      "t": 17,
+      "eye": [
+        4.091,
+        12.518,
+        158.727
+      ],
+      "eye_height_m": 12.52,
+      "speed_mps": 8.07,
+      "view_dir": [
+        -0.0973,
+        0.0462,
+        0.9942
+      ],
+      "yaw_deg": -5.59,
+      "pitch_deg": 2.65
+    },
+    {
+      "t": 17.5,
+      "eye": [
+        4.844,
+        12.812,
+        162.527
+      ],
+      "eye_height_m": 12.81,
+      "speed_mps": 7.5,
+      "view_dir": [
+        -0.1324,
+        0.0534,
+        0.9898
+      ],
+      "yaw_deg": -7.62,
+      "pitch_deg": 3.06
+    },
+    {
+      "t": 18,
+      "eye": [
+        5.709,
+        13.122,
+        166.043
+      ],
+      "eye_height_m": 13.12,
+      "speed_mps": 7.06,
+      "view_dir": [
+        -0.1698,
+        0.061,
+        0.9836
+      ],
+      "yaw_deg": -9.8,
+      "pitch_deg": 3.5
+    },
+    {
+      "t": 18.5,
+      "eye": [
+        6.661,
+        13.441,
+        169.343
+      ],
+      "eye_height_m": 13.44,
+      "speed_mps": 6.76,
+      "view_dir": [
+        -0.2052,
+        0.0686,
+        0.9763
+      ],
+      "yaw_deg": -11.87,
+      "pitch_deg": 3.93
+    },
+    {
+      "t": 19,
+      "eye": [
+        7.681,
+        13.766,
+        172.495
+      ],
+      "eye_height_m": 13.77,
+      "speed_mps": 6.58,
+      "view_dir": [
+        -0.2348,
+        0.0758,
+        0.9691
+      ],
+      "yaw_deg": -13.62,
+      "pitch_deg": 4.35
+    },
+    {
+      "t": 19.5,
+      "eye": [
+        8.747,
+        14.089,
+        175.569
+      ],
+      "eye_height_m": 14.09,
+      "speed_mps": 6.52,
+      "view_dir": [
+        -0.2552,
+        0.0824,
+        0.9634
+      ],
+      "yaw_deg": -14.84,
+      "pitch_deg": 4.73
+    },
+    {
+      "t": 20,
+      "eye": [
+        9.836,
+        14.406,
+        178.632
+      ],
+      "eye_height_m": 14.41,
+      "speed_mps": 6.57,
+      "view_dir": [
+        -0.2633,
+        0.0883,
+        0.9607
+      ],
+      "yaw_deg": -15.33,
+      "pitch_deg": 5.06
+    },
+    {
+      "t": 20.5,
+      "eye": [
+        10.928,
+        14.712,
+        181.753
+      ],
+      "eye_height_m": 14.71,
+      "speed_mps": 6.73,
+      "view_dir": [
+        -0.2554,
+        0.0932,
+        0.9623
+      ],
+      "yaw_deg": -14.87,
+      "pitch_deg": 5.35
+    },
+    {
+      "t": 21,
+      "eye": [
+        12,
+        15,
+        185
+      ],
+      "eye_height_m": 15,
+      "speed_mps": 7.02,
+      "view_dir": [
+        -0.2262,
+        0.0969,
+        0.9693
+      ],
+      "yaw_deg": -13.13,
+      "pitch_deg": 5.56
+    },
+    {
+      "t": 21.5,
+      "eye": [
+        13.033,
+        15.264,
+        188.469
+      ],
+      "eye_height_m": 15.26,
+      "speed_mps": 7.46,
+      "view_dir": [
+        -0.1561,
+        0.0976,
+        0.9829
+      ],
+      "yaw_deg": -9.03,
+      "pitch_deg": 5.6
+    },
+    {
+      "t": 22,
+      "eye": [
+        14.047,
+        15.508,
+        192.117
+      ],
+      "eye_height_m": 15.51,
+      "speed_mps": 7.67,
+      "view_dir": [
+        -0.0299,
+        0.0932,
+        0.9952
+      ],
+      "yaw_deg": -1.72,
+      "pitch_deg": 5.35
+    },
+    {
+      "t": 22.5,
+      "eye": [
+        15.083,
+        15.739,
+        195.806
+      ],
+      "eye_height_m": 15.74,
+      "speed_mps": 7.64,
+      "view_dir": [
+        0.1488,
+        0.083,
+        0.9854
+      ],
+      "yaw_deg": 8.59,
+      "pitch_deg": 4.76
+    },
+    {
+      "t": 23,
+      "eye": [
+        16.181,
+        15.965,
+        199.396
+      ],
+      "eye_height_m": 15.97,
+      "speed_mps": 7.37,
+      "view_dir": [
+        0.357,
+        0.0673,
+        0.9317
+      ],
+      "yaw_deg": 20.97,
+      "pitch_deg": 3.86
+    },
+    {
+      "t": 23.5,
+      "eye": [
+        17.381,
+        16.196,
+        202.749
+      ],
+      "eye_height_m": 16.2,
+      "speed_mps": 6.88,
+      "view_dir": [
+        0.5532,
+        0.0492,
+        0.8316
+      ],
+      "yaw_deg": 33.63,
+      "pitch_deg": 2.82
+    },
+    {
+      "t": 24,
+      "eye": [
+        18.724,
+        16.44,
+        205.727
+      ],
+      "eye_height_m": 16.44,
+      "speed_mps": 6.21,
+      "view_dir": [
+        0.7042,
+        0.0337,
+        0.7092
+      ],
+      "yaw_deg": 44.79,
+      "pitch_deg": 1.93
+    },
+    {
+      "t": 24.5,
+      "eye": [
+        20.25,
+        16.705,
+        208.19
+      ],
+      "eye_height_m": 16.71,
+      "speed_mps": 5.44,
+      "view_dir": [
+        0.8044,
+        0.0243,
+        0.5936
+      ],
+      "yaw_deg": 53.57,
+      "pitch_deg": 1.39
+    },
+    {
+      "t": 25,
+      "eye": [
+        22,
+        17,
+        210
+      ],
+      "eye_height_m": 17,
+      "speed_mps": 4.76,
+      "view_dir": [
+        0.8652,
+        0.0228,
+        0.5009
+      ],
+      "yaw_deg": 59.93,
+      "pitch_deg": 1.3
+    },
+    {
+      "t": 25.5,
+      "eye": [
+        23.984,
+        17.305,
+        211.04
+      ],
+      "eye_height_m": 17.31,
+      "speed_mps": 4.43,
+      "view_dir": [
+        0.9056,
+        0.0293,
+        0.4231
+      ],
+      "yaw_deg": 64.96,
+      "pitch_deg": 1.68
+    },
+    {
+      "t": 26,
+      "eye": [
+        26.167,
+        17.604,
+        211.391
+      ],
+      "eye_height_m": 17.6,
+      "speed_mps": 4.59,
+      "view_dir": [
+        0.9372,
+        0.042,
+        0.3463
+      ],
+      "yaw_deg": 69.72,
+      "pitch_deg": 2.41
+    },
+    {
+      "t": 26.5,
+      "eye": [
+        28.524,
+        17.91,
+        211.214
+      ],
+      "eye_height_m": 17.91,
+      "speed_mps": 4.97,
+      "view_dir": [
+        0.961,
+        0.0594,
+        0.27
+      ],
+      "yaw_deg": 74.31,
+      "pitch_deg": 3.4
+    },
+    {
+      "t": 27,
+      "eye": [
+        31.029,
+        18.236,
+        210.668
+      ],
+      "eye_height_m": 18.24,
+      "speed_mps": 5.36,
+      "view_dir": [
+        0.9775,
+        0.0799,
+        0.1952
+      ],
+      "yaw_deg": 78.71,
+      "pitch_deg": 4.58
+    },
+    {
+      "t": 27.5,
+      "eye": [
+        33.655,
+        18.594,
+        209.914
+      ],
+      "eye_height_m": 18.59,
+      "speed_mps": 5.64,
+      "view_dir": [
+        0.987,
+        0.1017,
+        0.1246
+      ],
+      "yaw_deg": 82.8,
+      "pitch_deg": 5.84
+    },
+    {
+      "t": 28,
+      "eye": [
+        36.376,
+        18.999,
+        209.111
+      ],
+      "eye_height_m": 19,
+      "speed_mps": 5.8,
+      "view_dir": [
+        0.9904,
+        0.1229,
+        0.0625
+      ],
+      "yaw_deg": 86.39,
+      "pitch_deg": 7.06
+    },
+    {
+      "t": 28.5,
+      "eye": [
+        39.167,
+        19.464,
+        208.42
+      ],
+      "eye_height_m": 19.46,
+      "speed_mps": 5.84,
+      "view_dir": [
+        0.9899,
+        0.1413,
+        0.014
+      ],
+      "yaw_deg": 89.19,
+      "pitch_deg": 8.12
+    },
+    {
+      "t": 29,
+      "eye": [
+        42,
+        20,
+        208
+      ],
+      "eye_height_m": 20,
+      "speed_mps": 5.83,
+      "view_dir": [
+        0.9879,
+        0.1544,
+        -0.0154
+      ],
+      "yaw_deg": 90.9,
+      "pitch_deg": 8.88
+    },
+    {
+      "t": 29.5,
+      "eye": [
+        44.87,
+        20.548,
+        207.842
+      ],
+      "eye_height_m": 20.55,
+      "speed_mps": 5.88,
+      "view_dir": [
+        0.9858,
+        0.1645,
+        -0.0325
+      ],
+      "yaw_deg": 91.89,
+      "pitch_deg": 9.47
+    },
+    {
+      "t": 30,
+      "eye": [
+        47.783,
+        21.047,
+        207.814
+      ],
+      "eye_height_m": 21.05,
+      "speed_mps": 5.94,
+      "view_dir": [
+        0.9834,
+        0.1752,
+        -0.0473
+      ],
+      "yaw_deg": 92.76,
+      "pitch_deg": 10.09
+    },
+    {
+      "t": 30.5,
+      "eye": [
+        50.735,
+        21.507,
+        207.89
+      ],
+      "eye_height_m": 21.51,
+      "speed_mps": 6.01,
+      "view_dir": [
+        0.9807,
+        0.1863,
+        -0.0599
+      ],
+      "yaw_deg": 93.5,
+      "pitch_deg": 10.74
+    },
+    {
+      "t": 31,
+      "eye": [
+        53.72,
+        21.943,
+        208.043
+      ],
+      "eye_height_m": 21.94,
+      "speed_mps": 6.07,
+      "view_dir": [
+        0.9777,
+        0.1978,
+        -0.0703
+      ],
+      "yaw_deg": 94.11,
+      "pitch_deg": 11.41
+    },
+    {
+      "t": 31.5,
+      "eye": [
+        56.733,
+        22.364,
+        208.249
+      ],
+      "eye_height_m": 22.36,
+      "speed_mps": 6.12,
+      "view_dir": [
+        0.9747,
+        0.2093,
+        -0.0784
+      ],
+      "yaw_deg": 94.6,
+      "pitch_deg": 12.08
+    },
+    {
+      "t": 32,
+      "eye": [
+        59.768,
+        22.783,
+        208.481
+      ],
+      "eye_height_m": 22.78,
+      "speed_mps": 6.17,
+      "view_dir": [
+        0.9717,
+        0.2207,
+        -0.0843
+      ],
+      "yaw_deg": 94.96,
+      "pitch_deg": 12.75
+    },
+    {
+      "t": 32.5,
+      "eye": [
+        62.82,
+        23.212,
+        208.714
+      ],
+      "eye_height_m": 23.21,
+      "speed_mps": 6.2,
+      "view_dir": [
+        0.9688,
+        0.2319,
+        -0.088
+      ],
+      "yaw_deg": 95.19,
+      "pitch_deg": 13.41
+    },
+    {
+      "t": 33,
+      "eye": [
+        65.884,
+        23.663,
+        208.923
+      ],
+      "eye_height_m": 23.66,
+      "speed_mps": 6.22,
+      "view_dir": [
+        0.966,
+        0.2427,
+        -0.0895
+      ],
+      "yaw_deg": 95.3,
+      "pitch_deg": 14.04
+    },
+    {
+      "t": 33.5,
+      "eye": [
+        68.954,
+        24.148,
+        209.081
+      ],
+      "eye_height_m": 24.15,
+      "speed_mps": 6.23,
+      "view_dir": [
+        0.9634,
+        0.2529,
+        -0.0888
+      ],
+      "yaw_deg": 95.27,
+      "pitch_deg": 14.65
+    },
+    {
+      "t": 34,
+      "eye": [
+        72.025,
+        24.679,
+        209.163
+      ],
+      "eye_height_m": 24.68,
+      "speed_mps": 6.24,
+      "view_dir": [
+        0.9611,
+        0.2626,
+        -0.0859
+      ],
+      "yaw_deg": 95.11,
+      "pitch_deg": 15.22
+    },
+    {
+      "t": 34.5,
+      "eye": [
+        75.093,
+        25.267,
+        209.143
+      ],
+      "eye_height_m": 25.27,
+      "speed_mps": 6.25,
+      "view_dir": [
+        0.9591,
+        0.2714,
+        -0.0808
+      ],
+      "yaw_deg": 94.81,
+      "pitch_deg": 15.75
+    },
+    {
+      "t": 35,
+      "eye": [
+        78.15,
+        25.925,
+        208.996
+      ],
+      "eye_height_m": 25.92,
+      "speed_mps": 6.27,
+      "view_dir": [
+        0.9574,
+        0.2792,
+        -0.0733
+      ],
+      "yaw_deg": 94.38,
+      "pitch_deg": 16.22
+    },
+    {
+      "t": 35.5,
+      "eye": [
+        81.193,
+        26.664,
+        208.696
+      ],
+      "eye_height_m": 26.66,
+      "speed_mps": 6.31,
+      "view_dir": [
+        0.9561,
+        0.286,
+        -0.0635
+      ],
+      "yaw_deg": 93.8,
+      "pitch_deg": 16.62
+    },
+    {
+      "t": 36,
+      "eye": [
+        84.216,
+        27.497,
+        208.217
+      ],
+      "eye_height_m": 27.5,
+      "speed_mps": 6.38,
+      "view_dir": [
+        0.9552,
+        0.2915,
+        -0.0511
+      ],
+      "yaw_deg": 93.06,
+      "pitch_deg": 16.95
+    },
+    {
+      "t": 36.5,
+      "eye": [
+        87.214,
+        28.435,
+        207.533
+      ],
+      "eye_height_m": 28.43,
+      "speed_mps": 6.49,
+      "view_dir": [
+        0.9546,
+        0.2955,
+        -0.0362
+      ],
+      "yaw_deg": 92.17,
+      "pitch_deg": 17.19
+    },
+    {
+      "t": 37,
+      "eye": [
+        90.18,
+        29.49,
+        206.62
+      ],
+      "eye_height_m": 29.49,
+      "speed_mps": 6.64,
+      "view_dir": [
+        0.9544,
+        0.2979,
+        -0.0186
+      ],
+      "yaw_deg": 91.11,
+      "pitch_deg": 17.33
+    },
+    {
+      "t": 37.5,
+      "eye": [
+        93.111,
+        30.675,
+        205.451
+      ],
+      "eye_height_m": 30.67,
+      "speed_mps": 6.85,
+      "view_dir": [
+        0.9544,
+        0.2984,
+        0.002
+      ],
+      "yaw_deg": 89.88,
+      "pitch_deg": 17.36
+    },
+    {
+      "t": 38,
+      "eye": [
+        96,
+        32,
+        204
+      ],
+      "eye_height_m": 32,
+      "speed_mps": 7.15,
+      "view_dir": [
+        0.9546,
+        0.2967,
+        0.0258
+      ],
+      "yaw_deg": 88.45,
+      "pitch_deg": 17.26
+    },
+    {
+      "t": 38.5,
+      "eye": [
+        98.739,
+        33.646,
+        202.057
+      ],
+      "eye_height_m": 33.65,
+      "speed_mps": 7.89,
+      "view_dir": [
+        0.9553,
+        0.2897,
+        0.0588
+      ],
+      "yaw_deg": 86.48,
+      "pitch_deg": 16.84
+    },
+    {
+      "t": 39,
+      "eye": [
+        101.264,
+        35.727,
+        199.491
+      ],
+      "eye_height_m": 35.73,
+      "speed_mps": 8.76,
+      "view_dir": [
+        0.9557,
+        0.2749,
+        0.1056
+      ],
+      "yaw_deg": 83.69,
+      "pitch_deg": 15.95
+    },
+    {
+      "t": 39.5,
+      "eye": [
+        103.634,
+        38.159,
+        196.394
+      ],
+      "eye_height_m": 38.16,
+      "speed_mps": 9.61,
+      "view_dir": [
+        0.9535,
+        0.253,
+        0.164
+      ],
+      "yaw_deg": 80.24,
+      "pitch_deg": 14.65
+    },
+    {
+      "t": 40,
+      "eye": [
+        105.911,
+        40.859,
+        192.859
+      ],
+      "eye_height_m": 40.86,
+      "speed_mps": 10.35,
+      "view_dir": [
+        0.9466,
+        0.2249,
+        0.2309
+      ],
+      "yaw_deg": 76.29,
+      "pitch_deg": 13
+    },
+    {
+      "t": 40.5,
+      "eye": [
+        108.155,
+        43.742,
+        188.98
+      ],
+      "eye_height_m": 43.74,
+      "speed_mps": 10.93,
+      "view_dir": [
+        0.9334,
+        0.1921,
+        0.3031
+      ],
+      "yaw_deg": 72.01,
+      "pitch_deg": 11.08
+    },
+    {
+      "t": 41,
+      "eye": [
+        110.425,
+        46.725,
+        184.85
+      ],
+      "eye_height_m": 46.73,
+      "speed_mps": 11.35,
+      "view_dir": [
+        0.9129,
+        0.1562,
+        0.3771
+      ],
+      "yaw_deg": 67.56,
+      "pitch_deg": 8.99
+    },
+    {
+      "t": 41.5,
+      "eye": [
+        112.783,
+        49.723,
+        180.561
+      ],
+      "eye_height_m": 49.72,
+      "speed_mps": 11.58,
+      "view_dir": [
+        0.8852,
+        0.119,
+        0.4498
+      ],
+      "yaw_deg": 63.06,
+      "pitch_deg": 6.83
+    },
+    {
+      "t": 42,
+      "eye": [
+        115.289,
+        52.652,
+        176.207
+      ],
+      "eye_height_m": 52.65,
+      "speed_mps": 11.65,
+      "view_dir": [
+        0.851,
+        0.0823,
+        0.5187
+      ],
+      "yaw_deg": 58.64,
+      "pitch_deg": 4.72
+    },
+    {
+      "t": 42.5,
+      "eye": [
+        118.003,
+        55.428,
+        171.881
+      ],
+      "eye_height_m": 55.43,
+      "speed_mps": 11.58,
+      "view_dir": [
+        0.8117,
+        0.0478,
+        0.5822
+      ],
+      "yaw_deg": 54.35,
+      "pitch_deg": 2.74
+    },
+    {
+      "t": 43,
+      "eye": [
+        120.986,
+        57.968,
+        167.676
+      ],
+      "eye_height_m": 57.97,
+      "speed_mps": 11.4,
+      "view_dir": [
+        0.7684,
+        0.0167,
+        0.6397
+      ],
+      "yaw_deg": 50.22,
+      "pitch_deg": 0.96
+    },
+    {
+      "t": 43.5,
+      "eye": [
+        124.298,
+        60.186,
+        163.684
+      ],
+      "eye_height_m": 60.19,
+      "speed_mps": 11.17,
+      "view_dir": [
+        0.7224,
+        -0.0102,
+        0.6914
+      ],
+      "yaw_deg": 46.25,
+      "pitch_deg": -0.58
+    },
+    {
+      "t": 44,
+      "eye": [
+        128,
+        62,
+        160
+      ],
+      "eye_height_m": 62,
+      "speed_mps": 11,
+      "view_dir": [
+        0.6739,
+        -0.0321,
+        0.7381
+      ],
+      "yaw_deg": 42.4,
+      "pitch_deg": -1.84
+    },
+    {
+      "t": 44.5,
+      "eye": [
+        132.123,
+        63.494,
+        156.304
+      ],
+      "eye_height_m": 63.49,
+      "speed_mps": 11.94,
+      "view_dir": [
+        0.6184,
+        -0.051,
+        0.7842
+      ],
+      "yaw_deg": 38.26,
+      "pitch_deg": -2.92
+    },
+    {
+      "t": 45,
+      "eye": [
+        136.62,
+        64.815,
+        152.292
+      ],
+      "eye_height_m": 64.81,
+      "speed_mps": 12.71,
+      "view_dir": [
+        0.5504,
+        -0.0693,
+        0.832
+      ],
+      "yaw_deg": 33.49,
+      "pitch_deg": -3.97
+    },
+    {
+      "t": 45.5,
+      "eye": [
+        141.438,
+        65.969,
+        148.078
+      ],
+      "eye_height_m": 65.97,
+      "speed_mps": 13.27,
+      "view_dir": [
+        0.4692,
+        -0.0868,
+        0.8788
+      ],
+      "yaw_deg": 28.1,
+      "pitch_deg": -4.98
+    },
+    {
+      "t": 46,
+      "eye": [
+        146.519,
+        66.963,
+        143.778
+      ],
+      "eye_height_m": 66.96,
+      "speed_mps": 13.62,
+      "view_dir": [
+        0.375,
+        -0.1033,
+        0.9213
+      ],
+      "yaw_deg": 22.15,
+      "pitch_deg": -5.93
+    },
+    {
+      "t": 46.5,
+      "eye": [
+        151.808,
+        67.804,
+        139.505
+      ],
+      "eye_height_m": 67.8,
+      "speed_mps": 13.75,
+      "view_dir": [
+        0.2698,
+        -0.1181,
+        0.9557
+      ],
+      "yaw_deg": 15.76,
+      "pitch_deg": -6.78
+    },
+    {
+      "t": 47,
+      "eye": [
+        157.25,
+        68.5,
+        135.375
+      ],
+      "eye_height_m": 68.5,
+      "speed_mps": 13.68,
+      "view_dir": [
+        0.1572,
+        -0.1307,
+        0.9789
+      ],
+      "yaw_deg": 9.12,
+      "pitch_deg": -7.51
+    },
+    {
+      "t": 47.5,
+      "eye": [
+        162.789,
+        69.057,
+        131.502
+      ],
+      "eye_height_m": 69.06,
+      "speed_mps": 13.42,
+      "view_dir": [
+        0.0423,
+        -0.1407,
+        0.9891
+      ],
+      "yaw_deg": 2.45,
+      "pitch_deg": -8.09
+    },
+    {
+      "t": 48,
+      "eye": [
+        168.37,
+        69.481,
+        128
+      ],
+      "eye_height_m": 69.48,
+      "speed_mps": 12.97,
+      "view_dir": [
+        -0.0697,
+        -0.148,
+        0.9865
+      ],
+      "yaw_deg": -4.04,
+      "pitch_deg": -8.51
+    },
+    {
+      "t": 48.5,
+      "eye": [
+        173.938,
+        69.781,
+        124.984
+      ],
+      "eye_height_m": 69.78,
+      "speed_mps": 12.37,
+      "view_dir": [
+        -0.1739,
+        -0.1527,
+        0.9729
+      ],
+      "yaw_deg": -10.14,
+      "pitch_deg": -8.78
+    },
+    {
+      "t": 49,
+      "eye": [
+        179.435,
+        69.963,
+        122.569
+      ],
+      "eye_height_m": 69.96,
+      "speed_mps": 11.66,
+      "view_dir": [
+        -0.2673,
+        -0.1552,
+        0.951
+      ],
+      "yaw_deg": -15.7,
+      "pitch_deg": -8.93
+    },
+    {
+      "t": 49.5,
+      "eye": [
+        184.808,
+        70.034,
+        120.87
+      ],
+      "eye_height_m": 70.03,
+      "speed_mps": 10.9,
+      "view_dir": [
+        -0.3483,
+        -0.1562,
+        0.9243
+      ],
+      "yaw_deg": -20.65,
+      "pitch_deg": -8.98
+    },
+    {
+      "t": 50,
+      "eye": [
+        190,
+        70,
+        120
+      ],
+      "eye_height_m": 70,
+      "speed_mps": 10.22,
+      "view_dir": [
+        -0.4166,
+        -0.1562,
+        0.8956
+      ],
+      "yaw_deg": -24.94,
+      "pitch_deg": -8.99
+    },
+    {
+      "t": 50.5,
+      "eye": [
+        195.102,
+        69.781,
+        120.017
+      ],
+      "eye_height_m": 69.78,
+      "speed_mps": 10.3,
+      "view_dir": [
+        -0.4775,
+        -0.1552,
+        0.8648
+      ],
+      "yaw_deg": -28.91,
+      "pitch_deg": -8.93
+    },
+    {
+      "t": 51,
+      "eye": [
+        200.231,
+        69.317,
+        120.833
+      ],
+      "eye_height_m": 69.32,
+      "speed_mps": 10.61,
+      "view_dir": [
+        -0.5368,
+        -0.1526,
+        0.8298
+      ],
+      "yaw_deg": -32.9,
+      "pitch_deg": -8.78
+    },
+    {
+      "t": 51.5,
+      "eye": [
+        205.375,
+        68.648,
+        122.344
+      ],
+      "eye_height_m": 68.65,
+      "speed_mps": 11.02,
+      "view_dir": [
+        -0.5947,
+        -0.1486,
+        0.7901
+      ],
+      "yaw_deg": -36.97,
+      "pitch_deg": -8.55
+    },
+    {
+      "t": 52,
+      "eye": [
+        210.519,
+        67.815,
+        124.444
+      ],
+      "eye_height_m": 67.81,
+      "speed_mps": 11.45,
+      "view_dir": [
+        -0.6508,
+        -0.1432,
+        0.7456
+      ],
+      "yaw_deg": -41.12,
+      "pitch_deg": -8.23
+    },
+    {
+      "t": 52.5,
+      "eye": [
+        215.648,
+        66.856,
+        127.031
+      ],
+      "eye_height_m": 66.86,
+      "speed_mps": 11.84,
+      "view_dir": [
+        -0.7046,
+        -0.1364,
+        0.6963
+      ],
+      "yaw_deg": -45.34,
+      "pitch_deg": -7.84
+    },
+    {
+      "t": 53,
+      "eye": [
+        220.75,
+        65.813,
+        130
+      ],
+      "eye_height_m": 65.81,
+      "speed_mps": 12.13,
+      "view_dir": [
+        -0.7552,
+        -0.1285,
+        0.6428
+      ],
+      "yaw_deg": -49.6,
+      "pitch_deg": -7.38
+    },
+    {
+      "t": 53.5,
+      "eye": [
+        225.81,
+        64.724,
+        133.247
+      ],
+      "eye_height_m": 64.72,
+      "speed_mps": 12.29,
+      "view_dir": [
+        -0.8014,
+        -0.1196,
+        0.586
+      ],
+      "yaw_deg": -53.82,
+      "pitch_deg": -6.87
+    },
+    {
+      "t": 54,
+      "eye": [
+        230.815,
+        63.63,
+        136.667
+      ],
+      "eye_height_m": 63.63,
+      "speed_mps": 12.32,
+      "view_dir": [
+        -0.8423,
+        -0.11,
+        0.5277
+      ],
+      "yaw_deg": -57.94,
+      "pitch_deg": -6.32
+    },
+    {
+      "t": 54.5,
+      "eye": [
+        235.75,
+        62.57,
+        140.156
+      ],
+      "eye_height_m": 62.57,
+      "speed_mps": 12.2,
+      "view_dir": [
+        -0.8771,
+        -0.1002,
+        0.4697
+      ],
+      "yaw_deg": -61.83,
+      "pitch_deg": -5.75
+    },
+    {
+      "t": 55,
+      "eye": [
+        240.602,
+        61.586,
+        143.611
+      ],
+      "eye_height_m": 61.59,
+      "speed_mps": 11.92,
+      "view_dir": [
+        -0.9054,
+        -0.0907,
+        0.4147
+      ],
+      "yaw_deg": -65.39,
+      "pitch_deg": -5.2
+    },
+    {
+      "t": 55.5,
+      "eye": [
+        245.356,
+        60.716,
+        146.927
+      ],
+      "eye_height_m": 60.72,
+      "speed_mps": 11.5,
+      "view_dir": [
+        -0.9274,
+        -0.082,
+        0.3649
+      ],
+      "yaw_deg": -68.52,
+      "pitch_deg": -4.7
+    },
+    {
+      "t": 56,
+      "eye": [
+        250,
+        60,
+        150
+      ],
+      "eye_height_m": 60,
+      "speed_mps": 10.99,
+      "view_dir": [
+        -0.9435,
+        -0.0745,
+        0.3228
+      ],
+      "yaw_deg": -71.11,
+      "pitch_deg": -4.27
+    },
+    {
+      "t": 56.5,
+      "eye": [
+        254.835,
+        59.376,
+        153.238
+      ],
+      "eye_height_m": 59.38,
+      "speed_mps": 12.41,
+      "view_dir": [
+        -0.9556,
+        -0.0678,
+        0.2868
+      ],
+      "yaw_deg": -73.29,
+      "pitch_deg": -3.89
+    },
+    {
+      "t": 57,
+      "eye": [
+        260.069,
+        58.762,
+        157.014
+      ],
+      "eye_height_m": 58.76,
+      "speed_mps": 13.46,
+      "view_dir": [
+        -0.9653,
+        -0.0611,
+        0.2539
+      ],
+      "yaw_deg": -75.26,
+      "pitch_deg": -3.5
+    },
+    {
+      "t": 57.5,
+      "eye": [
+        265.547,
+        58.164,
+        161.172
+      ],
+      "eye_height_m": 58.16,
+      "speed_mps": 14.08,
+      "view_dir": [
+        -0.9731,
+        -0.0545,
+        0.2237
+      ],
+      "yaw_deg": -77.05,
+      "pitch_deg": -3.13
+    },
+    {
+      "t": 58,
+      "eye": [
+        271.111,
+        57.593,
+        165.556
+      ],
+      "eye_height_m": 57.59,
+      "speed_mps": 14.27,
+      "view_dir": [
+        -0.9794,
+        -0.0481,
+        0.1963
+      ],
+      "yaw_deg": -78.67,
+      "pitch_deg": -2.76
+    },
+    {
+      "t": 58.5,
+      "eye": [
+        276.606,
+        57.056,
+        170.009
+      ],
+      "eye_height_m": 57.06,
+      "speed_mps": 14.03,
+      "view_dir": [
+        -0.9843,
+        -0.042,
+        0.1715
+      ],
+      "yaw_deg": -80.12,
+      "pitch_deg": -2.4
+    },
+    {
+      "t": 59,
+      "eye": [
+        281.875,
+        56.563,
+        174.375
+      ],
+      "eye_height_m": 56.56,
+      "speed_mps": 13.34,
+      "view_dir": [
+        -0.9881,
+        -0.0362,
+        0.1494
+      ],
+      "yaw_deg": -81.4,
+      "pitch_deg": -2.07
+    },
+    {
+      "t": 59.5,
+      "eye": [
+        286.762,
+        56.121,
+        178.498
+      ],
+      "eye_height_m": 56.12,
+      "speed_mps": 12.22,
+      "view_dir": [
+        -0.991,
+        -0.0308,
+        0.1301
+      ],
+      "yaw_deg": -82.52,
+      "pitch_deg": -1.77
+    },
+    {
+      "t": 60,
+      "eye": [
+        291.111,
+        55.741,
+        182.222
+      ],
+      "eye_height_m": 55.74,
+      "speed_mps": 10.66,
+      "view_dir": [
+        -0.9932,
+        -0.0262,
+        0.1138
+      ],
+      "yaw_deg": -83.46,
+      "pitch_deg": -1.5
+    },
+    {
+      "t": 60.5,
+      "eye": [
+        294.766,
+        55.43,
+        185.391
+      ],
+      "eye_height_m": 55.43,
+      "speed_mps": 8.65,
+      "view_dir": [
+        -0.9947,
+        -0.0222,
+        0.1007
+      ],
+      "yaw_deg": -84.22,
+      "pitch_deg": -1.27
+    },
+    {
+      "t": 61,
+      "eye": [
+        297.569,
+        55.197,
+        187.847
+      ],
+      "eye_height_m": 55.2,
+      "speed_mps": 6.21,
+      "view_dir": [
+        -0.9957,
+        -0.0192,
+        0.0911
+      ],
+      "yaw_deg": -84.77,
+      "pitch_deg": -1.1
+    },
+    {
+      "t": 61.5,
+      "eye": [
+        299.366,
+        55.051,
+        189.436
+      ],
+      "eye_height_m": 55.05,
+      "speed_mps": 3.33,
+      "view_dir": [
+        -0.9962,
+        -0.0173,
+        0.0851
+      ],
+      "yaw_deg": -85.12,
+      "pitch_deg": -0.99
+    },
+    {
+      "t": 62,
+      "eye": [
+        300,
+        55,
+        190
+      ],
+      "eye_height_m": 55,
+      "speed_mps": 0.18,
+      "view_dir": [
+        -0.9964,
+        -0.0166,
+        0.083
+      ],
+      "yaw_deg": -85.24,
+      "pitch_deg": -0.95
+    }
+  ],
+  "time_of_day_and_light": {
+    "note": "Baked into the saved DecoKitStreet scene; values read from the scene at render time by a scratch dump script (LatchFlybyDump.cs, copy only). Built by DecoKitStreetDemo.Build: sun travel -dkSunDir default (0.5,-0.7,0.5), DecoKitSky.Apply(\"Street\", ...), exponential fog default 0.0005. Animated: SkyTraffic aircars, RocketFlight rockets, RobotIdle robots posed per frame at t.",
+    "camera": {
+      "name": "DK street study camera",
+      "fov_flyby": 58,
+      "near": 0.05,
+      "far_flyby": 2500,
+      "hdr": true
+    },
+    "directional_lights": [
+      {
+        "name": "Sun",
+        "forward_travel": [
+          0.50252,
+          -0.70353,
+          0.50252
+        ],
+        "euler": [
+          44.71063,
+          45,
+          0
+        ],
+        "sun_elevation_deg": 44.71063,
+        "sun_azimuth_deg_from_+z_toward_+x": -135,
+        "color": [
+          1,
+          0.93,
+          0.8,
+          1
+        ],
+        "intensity": 3,
+        "use_color_temperature": false,
+        "color_temperature": 6570,
+        "shadows": "Soft",
+        "shadow_strength": 1,
+        "is_render_settings_sun": true
+      }
+    ],
+    "render_settings": {
+      "ambient_mode": "Trilight",
+      "ambient_sky": [
+        0.70837,
+        0.72873,
+        0.76111,
+        1
+      ],
+      "ambient_equator": [
+        0.75478,
+        0.72203,
+        0.67263,
+        1
+      ],
+      "ambient_ground": [
+        0.79774,
+        0.73536,
+        0.64217,
+        1
+      ],
+      "ambient_intensity": 1,
+      "reflection_intensity": 1,
+      "fog": true,
+      "fog_mode": "Exponential",
+      "fog_density": 0.0005,
+      "fog_color_srgb": [
+        1.15857,
+        1.07619,
+        0.91558,
+        1.5
+      ],
+      "skybox": "DK_Sky_Street",
+      "skybox_exposure": null
+    },
+    "volumes": [
+      {
+        "name": "DK grade",
+        "global": true,
+        "weight": 1,
+        "profile": "DK_StreetGrade",
+        "overrides": {
+          "Tonemapping": {
+            "mode": "ACES",
+            "neutralHDRRangeReductionMode": "BT2390",
+            "acesPreset": "ACES1000Nits",
+            "hueShiftAmount": "0",
+            "detectPaperWhite": "False",
+            "paperWhite": "300",
+            "detectBrightnessLimits": "True",
+            "minNits": "0.005",
+            "maxNits": "1000"
+          },
+          "Bloom": {
+            "skipIterations": "1",
+            "threshold": "0.8",
+            "intensity": "0.6",
+            "scatter": "0.85",
+            "clamp": "65472",
+            "tint": "RGBA(1.000, 0.960, 0.900, 1.000)",
+            "highQualityFiltering": "False",
+            "filter": "Gaussian",
+            "downscale": "Half",
+            "maxIterations": "6",
+            "dirtTexture": "null",
+            "dirtIntensity": "0"
+          },
+          "ColorAdjustments": {
+            "postExposure": "-0.8",
+            "contrast": "10",
+            "colorFilter": "RGBA(1.000, 1.000, 1.000, 1.000)",
+            "hueShift": "0",
+            "saturation": "25"
+          },
+          "DepthOfField": {
+            "mode": "Gaussian",
+            "gaussianStart": "300",
+            "gaussianEnd": "1800",
+            "gaussianMaxRadius": "1.2",
+            "highQualitySampling": "True",
+            "focusDistance": "10",
+            "aperture": "5.6",
+            "focalLength": "50",
+            "bladeCount": "5",
+            "bladeCurvature": "1",
+            "bladeRotation": "0"
+          }
+        }
+      }
+    ]
+  }
+}

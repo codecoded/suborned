@@ -1,0 +1,4861 @@
+{
+ "schema": "suborned.plan-patch/1",
+ "plan": "contracts/world/harbour-district.plan.json",
+ "planVersion": "0.5.3",
+ "built": "briefs/075/oldbuild/swap/built.json",
+ "note": "Proposed by the plan-match check (tools/world/oldmatch) from the mismatches outside the Handover zone: the old-built world wins there (Sky 2026-10-29). Datum applies or rejects each op in the plan; nothing here edits the plan. Zone mismatches are hard failures, listed, never patched.",
+ "tolerance": {
+  "footprint": 0.5,
+  "kerb": 0.5,
+  "entrance": 1,
+  "level": 0.001,
+  "door": 1,
+  "step": 0.25,
+  "probe": 0.5,
+  "far": 40,
+  "ground": 1
+ },
+ "ops": [
+  {
+   "op": "set",
+   "path": "blocks[id=boulevard-west].rect",
+   "owner": "datum",
+   "from": [
+    -46,
+    -18,
+    -244,
+    -204
+   ],
+   "to": [
+    -46,
+    -18,
+    -245.63,
+    -202.37
+   ],
+   "why": "footprints differ by up to 1.63 m; to = the box of the old-built footprints standing in it (17); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0427",
+    "M0428"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=east-wall-n].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    30,
+    140
+   ],
+   "to": [
+    11.99,
+    48,
+    16.62,
+    144.42
+   ],
+   "why": "footprints differ by up to 12.1 m; to = the box of the old-built footprints standing in it (41); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0214",
+    "M0219",
+    "M0318",
+    "M0325",
+    "M0335",
+    "M0424"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=east-wall-s].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    -234.5,
+    -152.5
+   ],
+   "to": [
+    18,
+    46,
+    -242,
+    -146.37
+   ],
+   "why": "footprints differ by up to 7.537 m; to = the box of the old-built footprints standing in it (32); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0290",
+    "M0349",
+    "M0350"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=east-wall/a].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    -122,
+    -72
+   ],
+   "to": [
+    18,
+    46,
+    -128,
+    -70.37
+   ],
+   "why": "footprints differ by up to 6.325 m; to = the box of the old-built footprints standing in it (18); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0320",
+    "M0431",
+    "M0436"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=east-wall/b].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    -66,
+    -30
+   ],
+   "to": [
+    11.99,
+    46,
+    -67.63,
+    -16.62
+   ],
+   "why": "footprints differ by up to 12.1 m; to = the box of the old-built footprints standing in it (15); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0213",
+    "M0218",
+    "M0337",
+    "M0369",
+    "M0430"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=lamplight-east].rect",
+   "owner": "datum",
+   "from": [
+    -46,
+    -18,
+    -126,
+    -30
+   ],
+   "to": [
+    -46,
+    -11.99,
+    -126,
+    -16.62
+   ],
+   "why": "footprints differ by up to 13.875 m; to = the box of the old-built footprints standing in it (35); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0183",
+    "M0212",
+    "M0217",
+    "M0336",
+    "M0368"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=lamplight-west].rect",
+   "owner": "datum",
+   "from": [
+    -323,
+    -265,
+    -123,
+    -17
+   ],
+   "to": [
+    -303.32,
+    -257.44,
+    -43.53,
+    -22.17
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0029",
+    "M0031",
+    "M0033",
+    "M0036",
+    "M0205",
+    "M0233",
+    "M0262",
+    "M0280",
+    "M0286",
+    "M0303",
+    "M0304",
+    "M0342",
+    "M0351"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=lantern-south]",
+   "owner": "datum",
+   "from": [
+    -180,
+    -68,
+    -542.5,
+    -502.5
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0047",
+    "M0048",
+    "M0049",
+    "M0050",
+    "M0077",
+    "M0110",
+    "M0445",
+    "M0446"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=lantern-west].rect",
+   "owner": "datum",
+   "from": [
+    -323,
+    -199,
+    -545,
+    -427
+   ],
+   "to": [
+    -296.75,
+    -185.38,
+    -539.86,
+    -427.44
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (7); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0044",
+    "M0045",
+    "M0046",
+    "M0075",
+    "M0085",
+    "M0087",
+    "M0116",
+    "M0121",
+    "M0127",
+    "M0128",
+    "M0139",
+    "M0141",
+    "M0163",
+    "M0164",
+    "M0196",
+    "M0204",
+    "M0216",
+    "M0249",
+    "M0250",
+    "M0261",
+    "M0264",
+    "M0298",
+    "M0299",
+    "M0300",
+    "M0301",
+    "M0302",
+    "M0352",
+    "M0353",
+    "M0405",
+    "M0406"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=n1].rect",
+   "owner": "datum",
+   "from": [
+    -46,
+    -18,
+    -306,
+    -260
+   ],
+   "to": [
+    -50,
+    -18,
+    -303.63,
+    -260.37
+   ],
+   "why": "footprints differ by up to 14 m; to = the box of the old-built footprints standing in it (14); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0178",
+    "M0191",
+    "M0192",
+    "M0312",
+    "M0313",
+    "M0334",
+    "M0373",
+    "M0374",
+    "M0380",
+    "M0385",
+    "M0417",
+    "M0418",
+    "M0422"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=n2].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    -304.5,
+    -264.5
+   ],
+   "to": [
+    18,
+    46,
+    -303.63,
+    -260.37
+   ],
+   "why": "footprints differ by up to 4.13 m; to = the box of the old-built footprints standing in it (16); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0371",
+    "M0408",
+    "M0409",
+    "M0413",
+    "M0414",
+    "M0452"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=ss1]",
+   "owner": "datum",
+   "from": [
+    -46,
+    -18,
+    -393,
+    -359
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0082",
+    "M0348"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=ss2].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    -459.5,
+    -419.5
+   ],
+   "to": [
+    16,
+    36,
+    -451.63,
+    -418
+   ],
+   "why": "footprints differ by up to 13.875 m; to = the box of the old-built footprints standing in it (7); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0187",
+    "M0208",
+    "M0242",
+    "M0252",
+    "M0289"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=ss3].rect",
+   "owner": "datum",
+   "from": [
+    -46,
+    -18,
+    -545,
+    -427
+   ],
+   "to": [
+    -36,
+    -16,
+    -503.63,
+    -424
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (15); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0057",
+    "M0181",
+    "M0184",
+    "M0239",
+    "M0240",
+    "M0244",
+    "M0245",
+    "M0246",
+    "M0288",
+    "M0396"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=ss4].rect",
+   "owner": "datum",
+   "from": [
+    18,
+    46,
+    -542.5,
+    -484.5
+   ],
+   "to": [
+    16,
+    36,
+    -503.63,
+    -482
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (5); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0058",
+    "M0186",
+    "M0188",
+    "M0247",
+    "M0381"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=terrace-s].rect",
+   "owner": "datum",
+   "from": [
+    -138,
+    -110,
+    -107.5,
+    -19.5
+   ],
+   "to": [
+    -124,
+    -110,
+    -108,
+    -18
+   ],
+   "why": "footprints differ by up to 14 m; to = the box of the old-built footprints standing in it (15); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0176",
+    "M0177",
+    "M0310",
+    "M0311"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-e1]",
+   "owner": "datum",
+   "from": [
+    -403,
+    -357,
+    -548,
+    -436
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0027",
+    "M0068",
+    "M0072",
+    "M0086",
+    "M0108",
+    "M0146",
+    "M0223",
+    "M0305",
+    "M0314",
+    "M0315",
+    "M0443"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=west-row-e2].rect",
+   "owner": "datum",
+   "from": [
+    -403,
+    -357,
+    -428,
+    -316
+   ],
+   "to": [
+    -371.45,
+    -349.97,
+    -390.69,
+    -369.21
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0014",
+    "M0016",
+    "M0028",
+    "M0065",
+    "M0067",
+    "M0071",
+    "M0103",
+    "M0114",
+    "M0295",
+    "M0308",
+    "M0309",
+    "M0321",
+    "M0322"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-e3]",
+   "owner": "datum",
+   "from": [
+    -403,
+    -357,
+    -308,
+    -196
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0013",
+    "M0020",
+    "M0024",
+    "M0080",
+    "M0083",
+    "M0095",
+    "M0340",
+    "M0341"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-e4]",
+   "owner": "datum",
+   "from": [
+    -403,
+    -357,
+    -188,
+    -130
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0015",
+    "M0017",
+    "M0018",
+    "M0021",
+    "M0025"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-e5]",
+   "owner": "datum",
+   "from": [
+    -403,
+    -357,
+    -122,
+    -64
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0019",
+    "M0022",
+    "M0023",
+    "M0026",
+    "M0117"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-w1]",
+   "owner": "datum",
+   "from": [
+    -456.5,
+    -428.5,
+    -548,
+    -436
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0008",
+    "M0231",
+    "M0401",
+    "M0402",
+    "M0403",
+    "M0404"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-w2]",
+   "owner": "datum",
+   "from": [
+    -456.5,
+    -428.5,
+    -428,
+    -316
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0009",
+    "M0090",
+    "M0450",
+    "M0451"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-w3]",
+   "owner": "datum",
+   "from": [
+    -456.5,
+    -428.5,
+    -308,
+    -196
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0005"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "blocks[id=west-row-w4]",
+   "owner": "datum",
+   "from": [
+    -456.5,
+    -428.5,
+    -188,
+    -130
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0073"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=west-row-w5].rect",
+   "owner": "datum",
+   "from": [
+    -456.5,
+    -428.5,
+    -117,
+    -17
+   ],
+   "to": [
+    -443.44,
+    -422.45,
+    -40.83,
+    -19.84
+   ],
+   "why": "footprints differ by up to 26.645 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0102",
+    "M0153",
+    "M0179",
+    "M0236",
+    "M0367",
+    "M0382",
+    "M0383",
+    "M0384",
+    "M0399",
+    "M0400"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "blocks[id=west-wall-n].rect",
+   "owner": "datum",
+   "from": [
+    -46,
+    -18,
+    30,
+    140
+   ],
+   "to": [
+    -48,
+    -11.99,
+    16.62,
+    144.42
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (41); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0056",
+    "M0317"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=boulevard-west].rect",
+   "owner": "datum",
+   "from": [
+    -54,
+    -10,
+    -258,
+    -192
+   ],
+   "to": [
+    -46,
+    -18,
+    -245.63,
+    -192
+   ],
+   "why": "footprints differ by up to 9.17 m; to = the box of the old-built footprints standing in it (19); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0253",
+    "M0426",
+    "M0429"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=crown-forecourt].rect",
+   "owner": "datum",
+   "from": [
+    -54,
+    48,
+    144,
+    178.12
+   ],
+   "to": [
+    -66.52,
+    66.38,
+    139.76,
+    192.24
+   ],
+   "why": "footprints differ by up to 35.679 m; to = the box of the old-built footprints standing in it (2); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0076",
+    "M0126",
+    "M0293",
+    "M0356"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=east-wall-n].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    9,
+    144
+   ],
+   "to": [
+    11.99,
+    51.45,
+    4.94,
+    144.42
+   ],
+   "why": "footprints differ by up to 5.937 m; to = the box of the old-built footprints standing in it (45); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0331",
+    "M0347",
+    "M0378",
+    "M0388",
+    "M0389",
+    "M0391",
+    "M0425"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=east-wall-s].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    -246,
+    -146
+   ],
+   "to": [
+    18,
+    46,
+    -243.63,
+    -146.37
+   ],
+   "why": "footprints differ by up to 9.13 m; to = the box of the old-built footprints standing in it (34); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0254",
+    "M0255",
+    "M0291",
+    "M0323",
+    "M0324",
+    "M0365"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=east-wall].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    -130,
+    -9
+   ],
+   "to": [
+    11.99,
+    51.45,
+    -129.92,
+    -4.94
+   ],
+   "why": "footprints differ by up to 7.92 m; to = the box of the old-built footprints standing in it (39); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0270",
+    "M0281",
+    "M0326",
+    "M0327",
+    "M0330",
+    "M0346",
+    "M0379",
+    "M0387",
+    "M0432",
+    "M0433",
+    "M0434",
+    "M0435"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "plots[id=garden-row-east]",
+   "owner": "datum",
+   "from": [
+    -126,
+    -66,
+    -261,
+    -204
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0225",
+    "M0226"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "plots[id=gardens-s]",
+   "owner": "datum",
+   "from": [
+    -110,
+    -54,
+    -114,
+    -9
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0088"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=lamplight-south-e].rect",
+   "owner": "datum",
+   "from": [
+    -156,
+    -10,
+    -192,
+    -126
+   ],
+   "to": [
+    -46,
+    -18,
+    -192,
+    -114
+   ],
+   "why": "footprints differ by up to 22.125 m; to = the box of the old-built footprints standing in it (23); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0119",
+    "M0140",
+    "M0142",
+    "M0143",
+    "M0169",
+    "M0182",
+    "M0185",
+    "M0215",
+    "M0221",
+    "M0222",
+    "M0237",
+    "M0269",
+    "M0276",
+    "M0277",
+    "M0278",
+    "M0394",
+    "M0395"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=lamplight-south-w].rect",
+   "owner": "datum",
+   "from": [
+    -328,
+    -164,
+    -192,
+    -126
+   ],
+   "to": [
+    -289.88,
+    -266.65,
+    -189.97,
+    -148.94
+   ],
+   "why": "footprints differ by up to 36.975 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0069",
+    "M0131",
+    "M0132",
+    "M0133",
+    "M0152",
+    "M0157",
+    "M0158",
+    "M0224",
+    "M0234",
+    "M0235",
+    "M0272",
+    "M0273",
+    "M0275",
+    "M0366",
+    "M0392",
+    "M0393",
+    "M0415"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=lamplight-west].rect",
+   "owner": "datum",
+   "from": [
+    -328,
+    -256,
+    -126,
+    -9
+   ],
+   "to": [
+    -303.32,
+    -257.44,
+    -43.53,
+    -22.17
+   ],
+   "why": "footprints differ by up to 7.56 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0287"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=lantern-court].rect",
+   "owner": "datum",
+   "from": [
+    -180,
+    -66,
+    -484,
+    -419
+   ],
+   "to": [
+    -144.48,
+    -61,
+    -491.04,
+    -417.39
+   ],
+   "why": "footprints differ by up to 29.087 m; to = the box of the old-built footprints standing in it (27); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0091",
+    "M0092",
+    "M0093",
+    "M0094",
+    "M0096",
+    "M0097",
+    "M0098",
+    "M0099",
+    "M0106",
+    "M0107",
+    "M0109",
+    "M0112",
+    "M0113",
+    "M0130",
+    "M0137",
+    "M0144",
+    "M0149",
+    "M0180",
+    "M0190",
+    "M0194",
+    "M0220",
+    "M0230",
+    "M0238",
+    "M0251",
+    "M0260",
+    "M0292",
+    "M0319",
+    "M0363",
+    "M0390",
+    "M0398",
+    "M0423",
+    "M0444",
+    "M0447"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=n2].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    -306,
+    -258
+   ],
+   "to": [
+    18,
+    46,
+    -303.63,
+    -260.37
+   ],
+   "why": "footprints differ by up to 4.13 m; to = the box of the old-built footprints standing in it (16); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0370",
+    "M0372",
+    "M0410"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=orbit-gardens].rect",
+   "owner": "datum",
+   "from": [
+    -180,
+    -66,
+    -401,
+    -322
+   ],
+   "to": [
+    -146.79,
+    -53.57,
+    -411.21,
+    -320.37
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (17); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0052",
+    "M0064",
+    "M0070",
+    "M0074",
+    "M0078",
+    "M0079",
+    "M0081",
+    "M0084",
+    "M0105",
+    "M0111",
+    "M0129",
+    "M0145"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=orbit-square-e].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    -356,
+    -306
+   ],
+   "to": [
+    46,
+    54,
+    -357.63,
+    -320.37
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (2); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0059"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=orbit-square-w].rect",
+   "owner": "datum",
+   "from": [
+    -54,
+    -10,
+    -356,
+    -306
+   ],
+   "to": [
+    -58,
+    -50,
+    -357.63,
+    -320.37
+   ],
+   "why": "footprints differ by up to 26.696 m; to = the box of the old-built footprints standing in it (2); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0101"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=pylon-row-east].rect",
+   "owner": "datum",
+   "from": [
+    -114,
+    -66,
+    -310,
+    -274
+   ],
+   "to": [
+    -68,
+    -62,
+    -302,
+    -288
+   ],
+   "why": "footprints differ by up to 11.375 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0227",
+    "M0265"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=rocket-west].rect",
+   "owner": "datum",
+   "from": [
+    -328,
+    -192,
+    -401,
+    -192
+   ],
+   "to": [
+    -298.02,
+    -251.89,
+    -328.33,
+    -217.72
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (5); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0030",
+    "M0032",
+    "M0041",
+    "M0066",
+    "M0100",
+    "M0115",
+    "M0118",
+    "M0123",
+    "M0125",
+    "M0136",
+    "M0156",
+    "M0166",
+    "M0168",
+    "M0171",
+    "M0174",
+    "M0175",
+    "M0228",
+    "M0229",
+    "M0257",
+    "M0258",
+    "M0259",
+    "M0266",
+    "M0267",
+    "M0268",
+    "M0271",
+    "M0274",
+    "M0294",
+    "M0306",
+    "M0307",
+    "M0362",
+    "M0421",
+    "M0442",
+    "M0448",
+    "M0449"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=ss2].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    -466,
+    -419
+   ],
+   "to": [
+    8,
+    36,
+    -451.63,
+    -418
+   ],
+   "why": "footprints differ by up to 1.625 m; to = the box of the old-built footprints standing in it (12); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0441"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=ss3].rect",
+   "owner": "datum",
+   "from": [
+    -54,
+    -10,
+    -548,
+    -419
+   ],
+   "to": [
+    -36,
+    -8,
+    -503.63,
+    -418
+   ],
+   "why": "footprints differ by up to 3 m; to = the box of the old-built footprints standing in it (25); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0397",
+    "M0437",
+    "M0438",
+    "M0439"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=ss4].rect",
+   "owner": "datum",
+   "from": [
+    10,
+    48,
+    -548,
+    -478
+   ],
+   "to": [
+    8,
+    36,
+    -503.63,
+    -476
+   ],
+   "why": "footprints differ by up to 1.625 m; to = the box of the old-built footprints standing in it (10); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0440"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=west-row-e1].rect",
+   "owner": "datum",
+   "from": [
+    -410,
+    -352,
+    -548,
+    -436
+   ],
+   "to": [
+    -363.77,
+    -342.17,
+    -515.99,
+    -494.39
+   ],
+   "why": "footprints differ by up to 5.08 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0355"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=west-row-e2].rect",
+   "owner": "datum",
+   "from": [
+    -410,
+    -352,
+    -428,
+    -316
+   ],
+   "to": [
+    -418.33,
+    -349.97,
+    -390.69,
+    -368.36
+   ],
+   "why": "footprints differ by up to 5.771 m; to = the box of the old-built footprints standing in it (2); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0338",
+    "M0339"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=west-row-e3].rect",
+   "owner": "datum",
+   "from": [
+    -410,
+    -352,
+    -308,
+    -196
+   ],
+   "to": [
+    -418.88,
+    -397.28,
+    -251.75,
+    -230.15
+   ],
+   "why": "footprints differ by up to 5.14 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0354",
+    "M0358",
+    "M0359"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "plots[id=west-row-w3]",
+   "owner": "datum",
+   "from": [
+    -460,
+    -422,
+    -308,
+    -196
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0407"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=west-row-w5].rect",
+   "owner": "datum",
+   "from": [
+    -460,
+    -422,
+    -122,
+    -9
+   ],
+   "to": [
+    -443.44,
+    -411.45,
+    -115.97,
+    -19.84
+   ],
+   "why": "footprints differ by up to 5.925 m; to = the box of the old-built footprints standing in it (3); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0332",
+    "M0333"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=west-terraces].rect",
+   "owner": "datum",
+   "from": [
+    -244,
+    -164,
+    -114,
+    -45
+   ],
+   "to": [
+    -234.47,
+    -184.76,
+    -112.21,
+    -90.99
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (1); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0051",
+    "M0159",
+    "M0256",
+    "M0360",
+    "M0361",
+    "M0364"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=west-wall-n].rect",
+   "owner": "datum",
+   "from": [
+    -54,
+    -10,
+    9,
+    144
+   ],
+   "to": [
+    -51.45,
+    -11.99,
+    4.94,
+    144.42
+   ],
+   "why": "footprints differ by up to 14.225 m; to = the box of the old-built footprints standing in it (45); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0173",
+    "M0329",
+    "M0345",
+    "M0377"
+   ]
+  },
+  {
+   "op": "set",
+   "path": "plots[id=western-park-n].rect",
+   "owner": "datum",
+   "from": [
+    -460,
+    -352,
+    9,
+    268
+   ],
+   "to": [
+    -445.44,
+    -399.21,
+    27.1,
+    272.39
+   ],
+   "why": "footprints differ by up to 40 m; to = the box of the old-built footprints standing in it (6); re-lay runs and the plot rect to suit",
+   "evidence": [
+    "M0003",
+    "M0004",
+    "M0006",
+    "M0007",
+    "M0010",
+    "M0011",
+    "M0012"
+   ]
+  },
+  {
+   "op": "remove",
+   "path": "plots[id=western-park-s]",
+   "owner": "datum",
+   "from": [
+    -410,
+    -352,
+    -60,
+    -9
+   ],
+   "why": "the old-built scene has no building on this block or plot",
+   "evidence": [
+    "M0120"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/sphere",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0053"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/disc-west",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0055"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "signature/space-hq",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0089"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/skylon",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0135"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/disc-east",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0297"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/monument",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0376"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/skylon",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0416"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "landmark/skylon",
+   "owner": "datum",
+   "why": "our footprint has no old-built counterpart within 0.5 m (not on a plan block: a landmark, megastructure or signature)",
+   "evidence": [
+    "M0419"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -13.9,
+     13.9,
+     -13.9,
+     13.9
+    ],
+    "from": "CircusMonument@0,0",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of CircusMonument@0,0)",
+   "evidence": [
+    "M0343",
+    "M0344"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -431.27,
+     -185.38,
+     -532.35,
+     -217.41
+    ],
+    "from": "CityMass_-1_-1",
+    "footprints": 9,
+    "kind": "domestic"
+   },
+   "why": "old-built building(s) on no plan block or plot (9 footprint(s) of CityMass_-1_-1)",
+   "evidence": [
+    "M0154",
+    "M0155",
+    "M0170",
+    "M0197",
+    "M0200",
+    "M0201",
+    "M0202",
+    "M0203",
+    "M0248",
+    "M0296",
+    "M0375"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -432.29,
+     -251.76,
+     -115.97,
+     62.42
+    ],
+    "from": "CityMass_-1_0",
+    "footprints": 6,
+    "kind": "domestic"
+   },
+   "why": "old-built building(s) on no plan block or plot (6 footprint(s) of CityMass_-1_0)",
+   "evidence": [
+    "M0034",
+    "M0035",
+    "M0037",
+    "M0038",
+    "M0039",
+    "M0042",
+    "M0198",
+    "M0199"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     21.48,
+     66.38,
+     143.76,
+     192.24
+    ],
+    "from": "DiscTower@44,166",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of DiscTower@44,166)",
+   "evidence": [
+    "M0243"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     236,
+     304,
+     -172,
+     -104
+    ],
+    "from": "LinerDock@270,-138",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of LinerDock@270,-138)",
+   "evidence": [
+    "M0063"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -19.25,
+     19.25,
+     38.18,
+     49.82
+    ],
+    "from": "ParabolicArch@0,44",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of ParabolicArch@0,44)",
+   "evidence": [
+    "M0147",
+    "M0148"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     43.75,
+     72.25,
+     159.94,
+     228.06
+    ],
+    "from": "Skylon@58,194",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of Skylon@58,194)",
+   "evidence": [
+    "M0134",
+    "M0411",
+    "M0412"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     140.96,
+     196.07,
+     -33.39,
+     18.88
+    ],
+    "from": "Skyport_Tower@170,0",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of Skyport_Tower@170,0)",
+   "evidence": [
+    "M0062"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -275.52,
+     15.52,
+     -20.31,
+     268.31
+    ],
+    "from": "SphereStation@-130,124",
+    "footprints": 1,
+    "kind": "landmark"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of SphereStation@-130,124)",
+   "evidence": [
+    "M0040",
+    "M0043",
+    "M0054"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -124,
+     -110,
+     -120,
+     6
+    ],
+    "from": "run22",
+    "footprints": 3,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (3 footprint(s) of run22)",
+   "evidence": [
+    "M0124",
+    "M0162",
+    "M0209"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     27.98,
+     51.45,
+     4.94,
+     29.68
+    ],
+    "from": "run23",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run23)",
+   "evidence": [
+    "M0285"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     27.98,
+     51.45,
+     -29.68,
+     -4.94
+    ],
+    "from": "run24",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run24)",
+   "evidence": [
+    "M0284"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -51.45,
+     -27.98,
+     4.94,
+     29.68
+    ],
+    "from": "run25",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run25)",
+   "evidence": [
+    "M0283"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -51.45,
+     -11.99,
+     -48.02,
+     -4.94
+    ],
+    "from": "run26",
+    "footprints": 3,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (3 footprint(s) of run26)",
+   "evidence": [
+    "M0282",
+    "M0328",
+    "M0386"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -62,
+     -56,
+     -276,
+     -262
+    ],
+    "from": "run29",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run29)",
+   "evidence": [
+    "M0172"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -62,
+     -56,
+     -302,
+     -288
+    ],
+    "from": "run30",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run30)",
+   "evidence": [
+    "M0195"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -64,
+     -58,
+     -336,
+     -322
+    ],
+    "from": "run41",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run41)",
+   "evidence": [
+    "M0122"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     66,
+     74,
+     -357.63,
+     -348
+    ],
+    "from": "run43",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run43)",
+   "evidence": [
+    "M0061"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     60,
+     66,
+     -336,
+     -322
+    ],
+    "from": "run45",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run45)",
+   "evidence": [
+    "M0104"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     54,
+     60,
+     -356,
+     -342
+    ],
+    "from": "run46",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run46)",
+   "evidence": [
+    "M0060"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -75.78,
+     -46.23,
+     -406,
+     -376.29
+    ],
+    "from": "run51",
+    "footprints": 2,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (2 footprint(s) of run51)",
+   "evidence": [
+    "M0150",
+    "M0189",
+    "M0211"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -131.8,
+     -105.77,
+     -491.04,
+     -458.87
+    ],
+    "from": "run55",
+    "footprints": 2,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (2 footprint(s) of run55)",
+   "evidence": [
+    "M0206",
+    "M0279"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -114.87,
+     -93.89,
+     -439.87,
+     -417.39
+    ],
+    "from": "run56",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run56)",
+   "evidence": [
+    "M0420"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -140.21,
+     -108.71,
+     -408.63,
+     -379.54
+    ],
+    "from": "run61",
+    "footprints": 2,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (2 footprint(s) of run61)",
+   "evidence": [
+    "M0160",
+    "M0161"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -22,
+     -8,
+     -424,
+     -418
+    ],
+    "from": "run63",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run63)",
+   "evidence": [
+    "M0193"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     28,
+     36,
+     -412,
+     -402.37
+    ],
+    "from": "run67",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run67)",
+   "evidence": [
+    "M0151"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     8,
+     16,
+     -412,
+     -402.37
+    ],
+    "from": "run68",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run68)",
+   "evidence": [
+    "M0138"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     16,
+     22,
+     -418,
+     -404
+    ],
+    "from": "run69",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run69)",
+   "evidence": [
+    "M0167"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -16,
+     -8,
+     -503.63,
+     -494
+    ],
+    "from": "run71",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run71)",
+   "evidence": [
+    "M0241"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     28,
+     36,
+     -476,
+     -466.37
+    ],
+    "from": "run75",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run75)",
+   "evidence": [
+    "M0207"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     8,
+     16,
+     -476,
+     -466.37
+    ],
+    "from": "run76",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run76)",
+   "evidence": [
+    "M0165"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     16,
+     22,
+     -482,
+     -468
+    ],
+    "from": "run77",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run77)",
+   "evidence": [
+    "M0263"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -61,
+     -53,
+     -503.63,
+     -494
+    ],
+    "from": "run79",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run79)",
+   "evidence": [
+    "M0232"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -81,
+     -67,
+     -494,
+     -488
+    ],
+    "from": "run80",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run80)",
+   "evidence": [
+    "M0210"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -67,
+     -61,
+     -482,
+     -468
+    ],
+    "from": "run81",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run81)",
+   "evidence": [
+    "M0357"
+   ]
+  },
+  {
+   "op": "add",
+   "path": "plots",
+   "owner": "datum",
+   "to": {
+    "rect": [
+     -67,
+     -61,
+     -502,
+     -488
+    ],
+    "from": "run82",
+    "footprints": 1,
+    "kind": "commercial"
+   },
+   "why": "old-built building(s) on no plan block or plot (1 footprint(s) of run82)",
+   "evidence": [
+    "M0316"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "circus",
+   "owner": "datum",
+   "why": "kerb lines differ by up to 40 m over 757.5 m",
+   "evidence": [
+    "M0454",
+    "M0672",
+    "M0673",
+    "M0674",
+    "M0675",
+    "M0676",
+    "M0677",
+    "M0678",
+    "M0681",
+    "M0682",
+    "M0683",
+    "M0684",
+    "M0685",
+    "M0686",
+    "M0687",
+    "M0688",
+    "M0689",
+    "M0690",
+    "M0691",
+    "M0692",
+    "M0693",
+    "M0694",
+    "M0695",
+    "M0696",
+    "M0697",
+    "M0698",
+    "M0699",
+    "M0700",
+    "M0701",
+    "M0702",
+    "M0703",
+    "M0704",
+    "M0705",
+    "M0706",
+    "M0707",
+    "M0708",
+    "M0709",
+    "M0710",
+    "M0711",
+    "M0712",
+    "M0713",
+    "M0714",
+    "M0729",
+    "M0730"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=apollo-way]",
+   "owner": "datum",
+   "from": {
+    "w": 12,
+    "path": [
+     "h_apollo",
+     "a_terrace"
+    ]
+   },
+   "why": "kerb lines differ by up to 28 m over 198.75 m",
+   "evidence": [
+    "M0461",
+    "M0462",
+    "M0519",
+    "M0563",
+    "M0620",
+    "M0621",
+    "M0661",
+    "M0662",
+    "M0737"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=apron-road]",
+   "owner": "datum",
+   "from": {
+    "w": 12,
+    "path": [
+     "r_apron_w",
+     "r_pylon_s",
+     "r_apron_e"
+    ]
+   },
+   "to": {
+    "w": 12,
+    "shift": 4,
+    "left": 10,
+    "right": 2,
+    "segments": 20
+   },
+   "why": "kerb lines differ by up to 4 m over 51.75 m",
+   "evidence": [
+    "M0657",
+    "M0658",
+    "M0659",
+    "M0754"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=boulevard]",
+   "owner": "datum",
+   "from": {
+    "w": 20,
+    "path": [
+     "off_seagates",
+     "h_apollo",
+     "m_boulevard",
+     "b_sunset",
+     "b_market",
+     "c_s"
+    ]
+   },
+   "to": {
+    "w": 16,
+    "shift": 0,
+    "left": 8,
+    "right": 8,
+    "segments": 400
+   },
+   "why": "kerb lines differ by up to 36 m over 1531.5 m",
+   "evidence": [
+    "M0455",
+    "M0456",
+    "M0459",
+    "M0460",
+    "M0538",
+    "M0541",
+    "M0542",
+    "M0605",
+    "M0606",
+    "M0607",
+    "M0608",
+    "M0609",
+    "M0610",
+    "M0611",
+    "M0612",
+    "M0613",
+    "M0614",
+    "M0615",
+    "M0616",
+    "M0617",
+    "M0618",
+    "M0619",
+    "M0632",
+    "M0633",
+    "M0634",
+    "M0643",
+    "M0644",
+    "M0645",
+    "M0660",
+    "M0722",
+    "M0731",
+    "M0732",
+    "M0734",
+    "M0735",
+    "M0736",
+    "M0738",
+    "M0739",
+    "M0740",
+    "M0742",
+    "M0746"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=crown-avenue]",
+   "owner": "datum",
+   "from": {
+    "w": 20,
+    "path": [
+     "c_n",
+     "n_avenue"
+    ]
+   },
+   "to": {
+    "w": 16,
+    "shift": 0,
+    "left": 8,
+    "right": 8,
+    "segments": 104
+   },
+   "why": "kerb lines differ by up to 40 m over 365.75 m",
+   "evidence": [
+    "M0453",
+    "M0733",
+    "M0741"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=harbour-market]",
+   "owner": "datum",
+   "from": {
+    "w": 16,
+    "path": [
+     "b_market",
+     "m_terrace"
+    ]
+   },
+   "to": {
+    "w": 16,
+    "shift": 0,
+    "left": 8,
+    "right": 8,
+    "segments": 36
+   },
+   "why": "kerb lines differ by up to 8 m over 14.75 m",
+   "evidence": [
+    "M0572"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=lantern-lane]",
+   "owner": "datum",
+   "from": {
+    "w": 12,
+    "path": [
+     "g_rocket",
+     "e_sw",
+     "e_se",
+     "g_satellite"
+    ]
+   },
+   "why": "kerb lines differ by up to 26.831 m over 672.75 m",
+   "evidence": [
+    "M0463",
+    "M0465",
+    "M0466",
+    "M0470",
+    "M0471",
+    "M0472",
+    "M0478",
+    "M0479",
+    "M0482",
+    "M0483",
+    "M0484",
+    "M0489",
+    "M0490",
+    "M0494",
+    "M0497",
+    "M0498",
+    "M0502",
+    "M0513",
+    "M0521",
+    "M0528",
+    "M0532",
+    "M0534",
+    "M0535",
+    "M0536",
+    "M0540",
+    "M0548",
+    "M0556",
+    "M0557",
+    "M0564",
+    "M0565",
+    "M0577",
+    "M0579",
+    "M0591",
+    "M0592",
+    "M0595",
+    "M0596",
+    "M0597",
+    "M0598",
+    "M0624",
+    "M0625",
+    "M0630",
+    "M0631",
+    "M0638",
+    "M0639",
+    "M0642",
+    "M0648",
+    "M0653",
+    "M0655",
+    "M0665",
+    "M0721",
+    "M0728",
+    "M0752"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=market-street]",
+   "owner": "datum",
+   "from": {
+    "w": 18,
+    "path": [
+     "w_market",
+     "g_rocket",
+     "g_satellite",
+     "m_boulevard"
+    ]
+   },
+   "to": {
+    "w": 25.959,
+    "shift": -2.98,
+    "left": 10,
+    "right": 15.959,
+    "segments": 28
+   },
+   "why": "kerb lines differ by up to 32.466 m over 611.25 m",
+   "evidence": [
+    "M0457",
+    "M0464",
+    "M0467",
+    "M0468",
+    "M0473",
+    "M0474",
+    "M0476",
+    "M0480",
+    "M0481",
+    "M0492",
+    "M0493",
+    "M0495",
+    "M0496",
+    "M0503",
+    "M0504",
+    "M0505",
+    "M0506",
+    "M0507",
+    "M0508",
+    "M0512",
+    "M0514",
+    "M0516",
+    "M0517",
+    "M0518",
+    "M0520",
+    "M0522",
+    "M0525",
+    "M0526",
+    "M0527",
+    "M0529",
+    "M0530",
+    "M0533",
+    "M0539",
+    "M0545",
+    "M0546",
+    "M0547",
+    "M0549",
+    "M0550",
+    "M0552",
+    "M0553",
+    "M0555",
+    "M0558",
+    "M0559",
+    "M0561",
+    "M0562",
+    "M0566",
+    "M0573",
+    "M0574",
+    "M0576",
+    "M0580",
+    "M0581",
+    "M0582",
+    "M0583",
+    "M0585",
+    "M0586",
+    "M0588",
+    "M0589",
+    "M0590",
+    "M0593",
+    "M0594",
+    "M0604",
+    "M0626",
+    "M0635",
+    "M0640",
+    "M0647",
+    "M0649",
+    "M0651",
+    "M0652",
+    "M0654",
+    "M0663",
+    "M0664",
+    "M0667",
+    "M0668",
+    "M0671",
+    "M0715",
+    "M0716",
+    "M0718",
+    "M0719",
+    "M0723",
+    "M0724",
+    "M0726",
+    "M0727",
+    "M0743",
+    "M0744",
+    "M0747",
+    "M0748",
+    "M0749",
+    "M0750",
+    "M0751",
+    "M0753",
+    "M0755",
+    "M0756",
+    "M0757",
+    "M0758",
+    "M0760",
+    "M0761"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=orbit-walk]",
+   "owner": "datum",
+   "from": {
+    "w": 13,
+    "path": [
+     "r_orbit_w",
+     "r_garden_s",
+     "r_pylon_n",
+     "r_orbit_e"
+    ]
+   },
+   "why": "kerb lines differ by up to 16 m over 70.5 m",
+   "evidence": [
+    "M0510",
+    "M0515",
+    "M0679",
+    "M0680"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=satellite-street]",
+   "owner": "datum",
+   "from": {
+    "w": 12,
+    "path": [
+     "g_satellite",
+     "r_apron_e",
+     "r_orbit_e",
+     "r_north_e"
+    ]
+   },
+   "why": "kerb lines differ by up to 31.665 m over 809 m",
+   "evidence": [
+    "M0458",
+    "M0469",
+    "M0477",
+    "M0485",
+    "M0486",
+    "M0487",
+    "M0488",
+    "M0491",
+    "M0499",
+    "M0501",
+    "M0509",
+    "M0511",
+    "M0523",
+    "M0524",
+    "M0531",
+    "M0537",
+    "M0543",
+    "M0544",
+    "M0551",
+    "M0554",
+    "M0560",
+    "M0567",
+    "M0568",
+    "M0569",
+    "M0570",
+    "M0571",
+    "M0575",
+    "M0578",
+    "M0584",
+    "M0587",
+    "M0599",
+    "M0600",
+    "M0601",
+    "M0602",
+    "M0603",
+    "M0623",
+    "M0627",
+    "M0628",
+    "M0629",
+    "M0636",
+    "M0637",
+    "M0641",
+    "M0646",
+    "M0650",
+    "M0656",
+    "M0666",
+    "M0669",
+    "M0670",
+    "M0717",
+    "M0720",
+    "M0725",
+    "M0745",
+    "M0759"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=starline-street]",
+   "owner": "datum",
+   "from": {
+    "w": 12,
+    "path": [
+     "r_north_w",
+     "r_garden_n",
+     "r_north_e"
+    ]
+   },
+   "why": "kerb lines differ by up to 24 m over 41.25 m",
+   "evidence": [
+    "M0475",
+    "M0500"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "roads[id=sunset-east]",
+   "owner": "datum",
+   "from": {
+    "w": 12,
+    "path": [
+     "b_sunset",
+     "s_terrace"
+    ]
+   },
+   "to": {
+    "w": 12,
+    "shift": 0,
+    "left": 6,
+    "right": 6,
+    "segments": 36
+   },
+   "why": "kerb lines differ by up to 6 m over 10.75 m",
+   "evidence": [
+    "M0622"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=ss1]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 36.222 m",
+   "evidence": [
+    "M0762",
+    "M0871",
+    "M0885",
+    "M0891",
+    "M0906",
+    "M0910",
+    "M0919",
+    "M0936",
+    "M1053",
+    "M1054"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=crown-forecourt]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 36.169 m",
+   "evidence": [
+    "M0763",
+    "M0764",
+    "M0766",
+    "M0769",
+    "M0777",
+    "M0778",
+    "M0965"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=lamplight-east]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 36 m",
+   "evidence": [
+    "M0765"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=lamplight-south-e]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 33.759 m",
+   "evidence": [
+    "M0767",
+    "M0776",
+    "M0781"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=lantern-court]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 32.47 m",
+   "evidence": [
+    "M0768",
+    "M0772",
+    "M0799",
+    "M0806",
+    "M0808",
+    "M0812",
+    "M0816",
+    "M0826",
+    "M0838",
+    "M0839",
+    "M0851",
+    "M0858",
+    "M0861",
+    "M0864",
+    "M0875",
+    "M0886",
+    "M0892",
+    "M0901",
+    "M0925",
+    "M0928",
+    "M0946",
+    "M0953",
+    "M0955",
+    "M0980",
+    "M0985",
+    "M0988",
+    "M0991",
+    "M0997",
+    "M1004",
+    "M1005",
+    "M1006",
+    "M1032",
+    "M1033",
+    "M1034",
+    "M1043",
+    "M1044",
+    "M1051",
+    "M1058",
+    "M1060"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=gardens-s]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 29.258 m",
+   "evidence": [
+    "M0770"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=orbit-gardens]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 29 m",
+   "evidence": [
+    "M0771",
+    "M0773",
+    "M0774",
+    "M0775",
+    "M0779",
+    "M0798",
+    "M0800",
+    "M0804",
+    "M0805",
+    "M0813",
+    "M0815",
+    "M0822",
+    "M0829",
+    "M0831",
+    "M0857",
+    "M0863",
+    "M0884",
+    "M0887",
+    "M0888",
+    "M0890",
+    "M0894",
+    "M0899",
+    "M0908",
+    "M0918",
+    "M0920",
+    "M0952",
+    "M0954",
+    "M0966",
+    "M0979",
+    "M1031",
+    "M1059"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=starline-green]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 22.856 m",
+   "evidence": [
+    "M0780",
+    "M0942",
+    "M1055",
+    "M1056"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=boulevard-west]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 22.216 m",
+   "evidence": [
+    "M0782",
+    "M0790",
+    "M0817"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=n1]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 22 m",
+   "evidence": [
+    "M0783",
+    "M0786",
+    "M0791",
+    "M0792"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss3]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 21.875 m",
+   "evidence": [
+    "M0784",
+    "M0785",
+    "M0788",
+    "M0820",
+    "M0821"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=boulevard-west]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 21.875 m",
+   "evidence": [
+    "M0787",
+    "M0789",
+    "M0810",
+    "M0872",
+    "M0922",
+    "M1011"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "pavements",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 19.012 m",
+   "evidence": [
+    "M0793",
+    "M0807",
+    "M0811",
+    "M0824",
+    "M0827",
+    "M0833",
+    "M0836",
+    "M0837",
+    "M0841",
+    "M0843",
+    "M0844",
+    "M0845",
+    "M0846",
+    "M0847",
+    "M0848",
+    "M0849",
+    "M0850",
+    "M0854",
+    "M0855",
+    "M0856",
+    "M0860",
+    "M0866",
+    "M0876",
+    "M0877",
+    "M0878",
+    "M0879",
+    "M0880",
+    "M0883",
+    "M0889",
+    "M0893",
+    "M0896",
+    "M0897",
+    "M0898",
+    "M0900",
+    "M0902",
+    "M0903",
+    "M0907",
+    "M0909",
+    "M0913",
+    "M0914",
+    "M0915",
+    "M0916",
+    "M0917",
+    "M0926",
+    "M0930",
+    "M0931",
+    "M0932",
+    "M0933",
+    "M0943",
+    "M0944",
+    "M0945",
+    "M0947",
+    "M0948",
+    "M0956",
+    "M0964",
+    "M0967",
+    "M0968",
+    "M0969",
+    "M0972",
+    "M0973",
+    "M0974",
+    "M0975",
+    "M0976",
+    "M0977",
+    "M0978",
+    "M0981",
+    "M0987",
+    "M0990",
+    "M0999",
+    "M1000",
+    "M1001",
+    "M1002",
+    "M1007",
+    "M1012",
+    "M1013",
+    "M1014",
+    "M1015",
+    "M1039",
+    "M1046",
+    "M1047"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss4]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 18.875 m",
+   "evidence": [
+    "M0794",
+    "M0834"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=n2]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 18.875 m",
+   "evidence": [
+    "M0795",
+    "M1016",
+    "M1023",
+    "M1028"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=east-wall]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 18.875 m",
+   "evidence": [
+    "M0796",
+    "M0797",
+    "M0818",
+    "M0819",
+    "M0873",
+    "M0950",
+    "M0984",
+    "M0996",
+    "M1003",
+    "M1018",
+    "M1038",
+    "M1041",
+    "M1049"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=garden-row-east]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 18 m",
+   "evidence": [
+    "M0801",
+    "M0802",
+    "M0803",
+    "M0992",
+    "M0995",
+    "M1052"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss2]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 16.875 m",
+   "evidence": [
+    "M0809",
+    "M0832",
+    "M0835"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=pylon-row-east]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 16 m",
+   "evidence": [
+    "M0814",
+    "M0869",
+    "M0929",
+    "M0970",
+    "M0971",
+    "M0986",
+    "M0989",
+    "M0998",
+    "M1008",
+    "M1009",
+    "M1030",
+    "M1057"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=ss4]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 14 m",
+   "evidence": [
+    "M0823",
+    "M0828",
+    "M0941"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=east-wall-n]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 13.875 m",
+   "evidence": [
+    "M0825",
+    "M0905",
+    "M0951",
+    "M0983",
+    "M1042",
+    "M1045",
+    "M1050"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=ss2]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 12.207 m",
+   "evidence": [
+    "M0830",
+    "M0961",
+    "M1019",
+    "M1020",
+    "M1036"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=lantern-south]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 10 m",
+   "evidence": [
+    "M0840",
+    "M0868"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=lantern-south]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 9.625 m",
+   "evidence": [
+    "M0842",
+    "M0862",
+    "M0924",
+    "M0927"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=n1]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 8.875 m",
+   "evidence": [
+    "M0852",
+    "M0853",
+    "M0938",
+    "M1010"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss1]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 8.6 m",
+   "evidence": [
+    "M0859",
+    "M0865",
+    "M0882"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=west-wall-n]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 8.024 m",
+   "evidence": [
+    "M0867",
+    "M0881",
+    "M0949",
+    "M0982",
+    "M1040",
+    "M1048"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=orbit-square-w]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 8 m",
+   "evidence": [
+    "M0870",
+    "M0911",
+    "M0921",
+    "M0937"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=ss3]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 7.963 m",
+   "evidence": [
+    "M0874",
+    "M0895",
+    "M0912",
+    "M0934",
+    "M0935",
+    "M0939",
+    "M0940",
+    "M0957",
+    "M0958",
+    "M0959",
+    "M0960",
+    "M0962",
+    "M0963",
+    "M0993",
+    "M0994",
+    "M1035"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=orbit-square-e]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 6.247 m",
+   "evidence": [
+    "M0904",
+    "M0923",
+    "M1021",
+    "M1027"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=east-wall-s]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 2 m",
+   "evidence": [
+    "M1017",
+    "M1024",
+    "M1025",
+    "M1029",
+    "M1037"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=n2]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 2 m",
+   "evidence": [
+    "M1022"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=east-wall/a]",
+   "owner": "datum",
+   "why": "the kerb-side edge (pavement and buildings) differs by up to 2 m",
+   "evidence": [
+    "M1026"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=orbit-gardens].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -137.41,
+      -388.18
+     ],
+     [
+      -122.09,
+      -385.48
+     ],
+     [
+      -110.46,
+      -398.5
+     ],
+     [
+      -82.44,
+      -386.38
+     ],
+     [
+      -79,
+      -381.47
+     ],
+     [
+      -78,
+      -345
+     ],
+     [
+      -67,
+      -356
+     ],
+     [
+      -67,
+      -322
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1062",
+    "M1065",
+    "M1066",
+    "M1076",
+    "M1078",
+    "M1079",
+    "M1080",
+    "M1081"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=lantern-court].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -127.76,
+      -451.1
+     ],
+     [
+      -127.02,
+      -479.69
+     ],
+     [
+      -108.26,
+      -472.07
+     ],
+     [
+      -98.67,
+      -428.74
+     ],
+     [
+      -97.94,
+      -457.33
+     ],
+     [
+      -94.5,
+      -452.41
+     ],
+     [
+      -81,
+      -472
+     ]
+    ],
+    "planOnly": [
+     [
+      -151.2,
+      -478.2
+     ],
+     [
+      -148.2,
+      -476.4
+     ],
+     [
+      -100.2,
+      -478.2
+     ],
+     [
+      -100.2,
+      -476.4
+     ],
+     [
+      -72,
+      -478.2
+     ],
+     [
+      -88.2,
+      -476.4
+     ],
+     [
+      -88.2,
+      -478.2
+     ],
+     [
+      -121.2,
+      -476.4
+     ],
+     [
+      -137.7,
+      -478.2
+     ],
+     [
+      -137.7,
+      -476.4
+     ],
+     [
+      -76.2,
+      -476.4
+     ],
+     [
+      -122.7,
+      -478.2
+     ],
+     [
+      -127.2,
+      -476.4
+     ],
+     [
+      -79.2,
+      -478.2
+     ],
+     [
+      -110.7,
+      -478.2
+     ],
+     [
+      -112.2,
+      -476.4
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1063",
+    "M1064",
+    "M1072",
+    "M1073",
+    "M1074",
+    "M1075",
+    "M1077",
+    "M1178",
+    "M1185",
+    "M1198",
+    "M1207",
+    "M1208",
+    "M1218",
+    "M1220",
+    "M1224",
+    "M1234",
+    "M1235",
+    "M1239",
+    "M1252",
+    "M1260",
+    "M1266",
+    "M1268",
+    "M1269"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=gardens-s].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -110,
+      -111
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1067"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=terrace-s].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -110,
+      -87
+     ],
+     [
+      -110,
+      -45
+     ],
+     [
+      -110,
+      -21
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1068",
+    "M1069",
+    "M1070"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "entrances",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -110,
+      3
+     ],
+     [
+      -64,
+      -468
+     ],
+     [
+      -63.68,
+      -378.77
+     ],
+     [
+      -59,
+      -302
+     ],
+     [
+      -56.07,
+      -397.53
+     ],
+     [
+      -31.7,
+      -14.53
+     ],
+     [
+      -8,
+      -491
+     ],
+     [
+      -8,
+      -485
+     ],
+     [
+      -8,
+      -472
+     ],
+     [
+      -8,
+      -446
+     ],
+     [
+      -8,
+      -421
+     ],
+     [
+      8,
+      -498
+     ],
+     [
+      8,
+      -485
+     ],
+     [
+      8,
+      -479
+     ],
+     [
+      8,
+      -439
+     ],
+     [
+      8,
+      -421
+     ],
+     [
+      8,
+      -408
+     ],
+     [
+      19,
+      -468
+     ],
+     [
+      19,
+      -404
+     ],
+     [
+      57,
+      -356
+     ],
+     [
+      57,
+      -322
+     ],
+     [
+      63,
+      -356
+     ],
+     [
+      63,
+      -322
+     ],
+     [
+      74,
+      -333
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1071",
+    "M1082",
+    "M1083",
+    "M1084",
+    "M1085",
+    "M1105",
+    "M1114",
+    "M1115",
+    "M1116",
+    "M1117",
+    "M1118",
+    "M1119",
+    "M1120",
+    "M1121",
+    "M1122",
+    "M1123",
+    "M1124",
+    "M1129",
+    "M1130",
+    "M1159",
+    "M1160",
+    "M1161",
+    "M1162",
+    "M1163"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=ss3].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -53,
+      -498
+     ],
+     [
+      -53,
+      -485
+     ],
+     [
+      -53,
+      -479
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1086",
+    "M1087",
+    "M1088"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=orbit-square-w].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -50,
+      -345
+     ],
+     [
+      -50,
+      -339
+     ],
+     [
+      -50,
+      -326
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1089",
+    "M1090",
+    "M1091"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=west-wall-n].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -48,
+      137
+     ],
+     [
+      -24.96,
+      24.35
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1092",
+    "M1109"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=n1].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -47,
+      -262
+     ]
+    ],
+    "planOnly": [
+     [
+      -46.7,
+      -280
+     ],
+     [
+      -46.7,
+      -272
+     ],
+     [
+      -46.7,
+      -295.5
+     ],
+     [
+      -24.5,
+      -306.7
+     ],
+     [
+      -39,
+      -306.7
+     ],
+     [
+      -29,
+      -306.7
+     ],
+     [
+      -46.7,
+      -264.5
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1093",
+    "M1177",
+    "M1199",
+    "M1228",
+    "M1229",
+    "M1244",
+    "M1250",
+    "M1264"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=lamplight-south-e].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -46,
+      -177
+     ],
+     [
+      -18,
+      -189
+     ]
+    ],
+    "planOnly": [
+     [
+      -80,
+      -186.2
+     ],
+     [
+      -75.5,
+      -131.8
+     ],
+     [
+      -83,
+      -131.8
+     ],
+     [
+      -72.5,
+      -186.2
+     ],
+     [
+      -66.5,
+      -131.8
+     ],
+     [
+      -65,
+      -186.2
+     ],
+     [
+      -59.5,
+      -131.8
+     ],
+     [
+      -59,
+      -186.2
+     ],
+     [
+      -30,
+      -131.8
+     ],
+     [
+      -36,
+      -131.8
+     ],
+     [
+      -54.5,
+      -186.2
+     ],
+     [
+      -25.5,
+      -186.2
+     ],
+     [
+      -40,
+      -186.2
+     ],
+     [
+      -51,
+      -131.8
+     ],
+     [
+      -22.5,
+      -131.8
+     ],
+     [
+      -50,
+      -186.2
+     ],
+     [
+      -42,
+      -131.8
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1094",
+    "M1111",
+    "M1165",
+    "M1166",
+    "M1167",
+    "M1169",
+    "M1175",
+    "M1176",
+    "M1184",
+    "M1186",
+    "M1191",
+    "M1197",
+    "M1210",
+    "M1215",
+    "M1225",
+    "M1238",
+    "M1240",
+    "M1247",
+    "M1248"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=lamplight-east].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -46,
+      -51
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1095"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=west-wall-n].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -46,
+      51
+     ],
+     [
+      -46,
+      63
+     ],
+     [
+      -46,
+      99
+     ],
+     [
+      -46,
+      111
+     ],
+     [
+      -35,
+      140
+     ],
+     [
+      -18,
+      39.02
+     ],
+     [
+      -18,
+      51.02
+     ]
+    ],
+    "planOnly": [
+     [
+      -24,
+      140.7
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1096",
+    "M1097",
+    "M1098",
+    "M1099",
+    "M1104",
+    "M1112",
+    "M1113",
+    "M1245"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss3].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -36,
+      -491
+     ],
+     [
+      -36,
+      -433
+     ],
+     [
+      -25,
+      -450
+     ],
+     [
+      -19,
+      -468
+     ]
+    ],
+    "planOnly": [
+     [
+      -46.7,
+      -508.5
+     ],
+     [
+      -46.7,
+      -461.5
+     ],
+     [
+      -25,
+      -426.3
+     ],
+     [
+      -17.3,
+      -434.5
+     ],
+     [
+      -17.3,
+      -492
+     ],
+     [
+      -17.3,
+      -480
+     ],
+     [
+      -17.3,
+      -484.5
+     ],
+     [
+      -17.3,
+      -509.5
+     ],
+     [
+      -46.7,
+      -468.5
+     ],
+     [
+      -46.7,
+      -483
+     ],
+     [
+      -46.7,
+      -474
+     ],
+     [
+      -46.7,
+      -499.5
+     ],
+     [
+      -46.7,
+      -492
+     ],
+     [
+      -17.3,
+      -462
+     ],
+     [
+      -17.3,
+      -444.5
+     ],
+     [
+      -17.3,
+      -471
+     ],
+     [
+      -17.3,
+      -453
+     ],
+     [
+      -39,
+      -426.3
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1100",
+    "M1101",
+    "M1108",
+    "M1110",
+    "M1192",
+    "M1193",
+    "M1195",
+    "M1201",
+    "M1203",
+    "M1204",
+    "M1205",
+    "M1216",
+    "M1221",
+    "M1226",
+    "M1227",
+    "M1230",
+    "M1231",
+    "M1233",
+    "M1236",
+    "M1257",
+    "M1258",
+    "M1261"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=boulevard-west].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      -35,
+      -244
+     ],
+     [
+      -35,
+      -204
+     ],
+     [
+      -29,
+      -244
+     ],
+     [
+      -29,
+      -204
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1102",
+    "M1103",
+    "M1106",
+    "M1107"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=east-wall-n].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      18,
+      45.02
+     ],
+     [
+      18,
+      57.02
+     ],
+     [
+      18,
+      63.02
+     ],
+     [
+      29,
+      140
+     ],
+     [
+      35,
+      140
+     ],
+     [
+      46,
+      32
+     ],
+     [
+      46,
+      75
+     ],
+     [
+      46,
+      87
+     ],
+     [
+      46,
+      129
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1125",
+    "M1126",
+    "M1127",
+    "M1137",
+    "M1142",
+    "M1154",
+    "M1155",
+    "M1156",
+    "M1157"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss4].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      19,
+      -502
+     ]
+    ],
+    "planOnly": [
+     [
+      20.5,
+      -483.8
+     ],
+     [
+      17.3,
+      -511.5
+     ],
+     [
+      27.5,
+      -483.8
+     ],
+     [
+      43,
+      -483.8
+     ],
+     [
+      17.3,
+      -496.5
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1128",
+    "M1190",
+    "M1200",
+    "M1211",
+    "M1222",
+    "M1237"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=east-wall].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      24.96,
+      -24.35
+     ],
+     [
+      29,
+      -128
+     ],
+     [
+      35,
+      -128
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1131",
+    "M1136",
+    "M1141"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=east-wall-n].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      24.96,
+      24.35
+     ],
+     [
+      48,
+      137
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1132",
+    "M1158"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss2].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      25,
+      -450
+     ],
+     [
+      36,
+      -446
+     ]
+    ],
+    "planOnly": [
+     [
+      42,
+      -460.2
+     ],
+     [
+      35,
+      -460.2
+     ],
+     [
+      17.3,
+      -422.5
+     ],
+     [
+      17.3,
+      -433
+     ],
+     [
+      29.5,
+      -460.2
+     ],
+     [
+      22.5,
+      -460.2
+     ],
+     [
+      17.3,
+      -442.5
+     ],
+     [
+      17.3,
+      -452
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1133",
+    "M1143",
+    "M1187",
+    "M1194",
+    "M1202",
+    "M1206",
+    "M1209",
+    "M1213",
+    "M1217",
+    "M1263"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=n2].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      29,
+      -302
+     ],
+     [
+      46,
+      -266
+     ]
+    ],
+    "planOnly": [
+     [
+      43.5,
+      -305.2
+     ],
+     [
+      25,
+      -305.2
+     ],
+     [
+      41.5,
+      -263.8
+     ],
+     [
+      36.5,
+      -305.2
+     ],
+     [
+      20.5,
+      -263.8
+     ],
+     [
+      27.5,
+      -263.8
+     ],
+     [
+      34.5,
+      -263.8
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1134",
+    "M1147",
+    "M1219",
+    "M1243",
+    "M1246",
+    "M1256",
+    "M1259",
+    "M1265",
+    "M1267"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=east-wall-s].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      29,
+      -242
+     ],
+     [
+      35,
+      -242
+     ],
+     [
+      35,
+      -148
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1135",
+    "M1139",
+    "M1140"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=n2].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      35,
+      -262
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1138"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=orbit-square-e].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      46,
+      -352
+     ],
+     [
+      46,
+      -339
+     ],
+     [
+      46,
+      -333
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1144",
+    "M1145",
+    "M1146"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=east-wall-s].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      46,
+      -225
+     ],
+     [
+      46,
+      -189
+     ],
+     [
+      46,
+      -177
+     ]
+    ],
+    "planOnly": [
+     [
+      35,
+      -235.2
+     ],
+     [
+      22.5,
+      -235.2
+     ],
+     [
+      42,
+      -235.2
+     ],
+     [
+      27.5,
+      -151.8
+     ],
+     [
+      36,
+      -151.8
+     ],
+     [
+      43,
+      -151.8
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1148",
+    "M1149",
+    "M1150",
+    "M1223",
+    "M1241",
+    "M1249",
+    "M1254",
+    "M1255",
+    "M1262"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=east-wall/a].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      46,
+      -111
+     ],
+     [
+      46,
+      -81
+     ]
+    ],
+    "planOnly": [
+     [
+      35,
+      -122.7
+     ],
+     [
+      22.5,
+      -122.7
+     ],
+     [
+      42,
+      -122.7
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1151",
+    "M1152",
+    "M1242",
+    "M1251",
+    "M1253"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=east-wall/b].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [
+     [
+      46,
+      -57
+     ]
+    ],
+    "planOnly": []
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1153"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=garden-row-east].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [],
+    "planOnly": [
+     [
+      -81.5,
+      -209.8
+     ],
+     [
+      -71.8,
+      -225
+     ],
+     [
+      -71.8,
+      -216.5
+     ],
+     [
+      -71.8,
+      -232
+     ],
+     [
+      -71.8,
+      -245.5
+     ],
+     [
+      -83,
+      -255.2
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1164",
+    "M1170",
+    "M1171",
+    "M1172",
+    "M1179",
+    "M1183"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=ss1].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [],
+    "planOnly": [
+     [
+      -22.5,
+      -358.3
+     ],
+     [
+      -29.5,
+      -358.3
+     ],
+     [
+      -46.7,
+      -374.5
+     ],
+     [
+      -39,
+      -393.7
+     ],
+     [
+      -39,
+      -358.3
+     ],
+     [
+      -46.7,
+      -362
+     ],
+     [
+      -46.7,
+      -385.5
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1168",
+    "M1174",
+    "M1182",
+    "M1188",
+    "M1189",
+    "M1196",
+    "M1212"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "plots[id=pylon-row-east].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [],
+    "planOnly": [
+     [
+      -83,
+      -279.8
+     ],
+     [
+      -71.8,
+      -287
+     ],
+     [
+      -80,
+      -304.2
+     ],
+     [
+      -71.8,
+      -297.5
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1173",
+    "M1180",
+    "M1181",
+    "M1214"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "blocks[id=lantern-south].runs",
+   "owner": "datum",
+   "to": {
+    "builtOnly": [],
+    "planOnly": [
+     [
+      -86,
+      -501.8
+     ]
+    ]
+   },
+   "why": "doors differ (the old frontage places them; our frontage follows the runs)",
+   "evidence": [
+    "M1232"
+   ]
+  }
+ ],
+ "builderFixes": [
+  {
+   "op": "review",
+   "path": "old/promenade",
+   "owner": "latch",
+   "why": "level: built level old/promenade (z -0.85) is not a plan level (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M0001"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "street",
+   "owner": "latch",
+   "why": "level: built z -0.002 walk 0.15, plan z 0 walk 0.18 (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M0002"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "2661 pavements (first pave/Pave_Flags_0#1)",
+   "owner": "latch",
+   "why": "pavement-top: top 0.15, ours 0.18 (2661 pavements) (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M1061"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "bank/S1/crown-circus/l/mezzanine",
+   "owner": "latch",
+   "why": "deck: plan-only (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M1270"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "station/S1/crown-circus/l",
+   "owner": "latch",
+   "why": "deck: plan-only (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M1271"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "station/S1/crown-circus/r",
+   "owner": "latch",
+   "why": "deck: plan-only (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M1272"
+   ]
+  },
+  {
+   "op": "review",
+   "path": "bank/S1/crown-circus/r/mezzanine",
+   "owner": "latch",
+   "why": "deck: plan-only (levels, decks and pavement tops are our network, kept as planned)",
+   "evidence": [
+    "M1273"
+   ]
+  }
+ ],
+ "zoneFailures": []
+}

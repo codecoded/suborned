@@ -1,0 +1,129 @@
+{
+  "takes": [
+    {
+      "situation": "She denies everything; he accepts her no and starts for the Office.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "You have three tables waiting, and Okafor's on the Office door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who? Terrace is full, the soup's gone, you'll want to wait inside."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "When I telephone, you call Okafor off his door. About a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "You've got the wrong girl, I don't call anybody, there's table six."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Quite all right. We'll walk your two names across to the Office."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Wait. One minute?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "One minute, and we'll have you back at table six."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Don't you say we. Stand still, I want that face. Coming, six."
+        }
+      ],
+      "learned": [
+        "Resentful. She knows the Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She takes him for the Bureau, and her relief gives her away.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "If you're the Bureau, my card's stamped, here, and I've got tables."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Put that card away. You'll call Okafor over when I telephone."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's the loan, it's only the loan, nobody's ever seen us—"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You said us. The Office will read that tonight, by the tube."
+        },
+        {
+          "speaker": "Inez",
+          "line": "How long?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "One minute at your side, and he's back on the Office door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "And the tube stays empty. I'd know you anywhere now, you know."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I know. Table two is waving."
+        }
+      ],
+      "learned": [
+        "Afraid. She knows the Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She seats him like a customer and makes him say the price.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "You're in my door, terrace is a wait, one or two?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "One, and you'll be kind enough to call Okafor when I telephone."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Say I'm run off my feet, say I can't, what then?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Then the Office gets a letter about you and Okafor by morning."
+        },
+        {
+          "speaker": "Inez",
+          "line": "From who, you won't sign it, nobody reads a letter from—"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "The Office stamps unsigned letters too. He leaves his door one minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "One call, one minute, no letter, I've got your face. Anything else?"
+        }
+      ],
+      "learned": [
+        "Resentful, afraid. Knows the Fixer's face."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

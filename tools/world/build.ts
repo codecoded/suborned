@@ -1,6 +1,7 @@
 // plan → world (suborned.world/1). Everything geometric comes from tools/plan (derive, placements, civic); this file only
 // turns it into the export's shapes and picks heights from standards. Numbers the plan does not hold yet are in PROV, each
 // with the standard it is waiting for.
+import { caissonSteps } from './gen/caissonsteps';
 import { type V, centroid, dist, norm, polyline, rectPoly, segDist, sub } from '../plan/geom';
 import type { Derived, Plan } from '../plan/plan';
 import { type Civic, toPlanFn } from '../plan/civic';
@@ -9,13 +10,25 @@ import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, 
 import { FLAT_FOOT, LAND, ctxOf, rng } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
-import { adoptedBy, landmarkKit } from './gen/kitrefs';
+import { adopted, adoptedBy, catalogued, gatewayRef, kitPosters, landmarkKit } from './gen/kitrefs';
+import { liveriesOf } from './gen/livery';
+import { postersOf } from './gen/billboards';
+import { FACE_KIT, dressFields } from './gen/faces';
 import { horizonOf } from './gen/horizon';
 import { civicPorterGap, civicRobots } from './gen/street/capstone-civic';
 import { WATER_LEVEL } from './gen/signatures';
 import { dressCivic, dressingOf, footOf } from './civic/dress';
 import { seededYaw } from './civic/cafe';
-import { look } from './civic/look';
+import { drawnPiece, look, withSwaps } from './civic/look';
+import { attachPieces, takesNoGround } from './civic/attach';
+import { civicRoofs } from './civic/roof';
+import { finishSet } from '../plan/finish-set';
+import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
+import { footwaysOf } from './gen/street/footway';
+import { newTramLog, parkedTrams, tramGround } from './gen/street/tramstreet';
+import { skyTrack } from './gen/street/skytrack';
+import { walkBlock } from '../plan/street-zones';
+import { CIVIC, assignColourways, civicHost, hostOf, oldStreetFamilies, piecesAt } from './gen/colourways';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
 export const PROV = {
@@ -41,7 +54,7 @@ const ring = (poly: V[]) => poly.map(rv);
 /** The look keys of the carriageway and its kerb cap (standards.streetscape.roads.finish; brief 028 Road, Sky 2026-10-22 "can try"): a road's surface is `keys[byClass[its class]].surface`, the circus ring's
  *  is its gyratory road's, a kerbed bay's is its road's (finish.also), the kerb's is `finish.kerb.surface`. A plan without the finish standard (a pinned plan) keeps the old city's `asphalt` and `kerb`. */
 export function roadSurfaces(plan: Plan): { of: (cls: string) => string; kerb: string; keyed: boolean } {
-  const fin = (plan.standards as any).streetscape?.roads?.finish, keys = fin?.keys ?? {}, by = fin?.byClass ?? {};
+  const fin = (plan.standards as any).streetscape?.roads?.finish, keys = fin?.keys ?? {}, by = fin ? finishSet((plan.standards as any).streetscape.roads).byClass : {}; // brief 055 road test: the finish set (default enamel) picks the class -> key table
   const of = (cls: string): string => { const k = keys[by[cls]]; if (fin && !k?.surface) throw new Error(`finish: class ${cls} names ${JSON.stringify(by[cls])}, which has no surface key (standards.streetscape.roads.finish.keys)`); return k?.surface ?? 'asphalt'; };
   return { of, kerb: fin?.kerb?.surface ?? 'kerb', keyed: !!fin };
 }
@@ -52,17 +65,17 @@ function ground(plan: Plan, d: Derived, civ: Civic): World['ground'] {
   const c = plan.circus;
   // a kerbed bay takes its road's finish (finish.also); the others (the service bay off its drive) keep the pavement's
   const kerbedBay = new Map<string, string>(((plan.standards as any).streetscape?.roads?.kerbs?.bays?.kerbed ?? []).map((k: { bay: string; road: string }) => [k.bay, k.road]));
-  const quayX = Math.min(...plan.quay.flat().map(p => p[0]));
+  const nctx = ctxOf(plan, d, civ, PROV.pavement), quayX = Math.min(...plan.quay.flat().map(p => p[0])), rounded = new Map(baysOf(ctxOf(plan, d, civ, PROV.pavement)).map(b => [b.id, b.ring]));
   const flats: Flat[] = [
     { id: 'ground/land', surface: 'pavement', ring: rectPoly([plan.sheet.x[0], quayX, plan.sheet.y[0], plan.sheet.y[1]]), level: PROV.ground },
     ...plan.beyond.map((b, i): Flat => ({ id: `ground/beyond-${i}`, surface: 'beyond', ring: ring(b), level: PROV.beyond })),
-    ...civ.bays.map((b): Flat => ({ id: `civic/bay/${b.id}`, surface: kerbedBay.has(b.id) ? fin.of(d.roads.find(r => r.id === kerbedBay.get(b.id))?.class ?? 'access') : 'bay', ring: ring(b.poly), level: PROV.foot })),
+    ...civ.bays.map((b): Flat => ({ id: `civic/bay/${b.id}`, surface: kerbedBay.has(b.id) ? fin.of(d.roads.find(r => r.id === kerbedBay.get(b.id))?.class ?? 'access') : 'bay', ring: ring(rounded.get(b.id) ?? b.poly), level: PROV.foot })), // brief 028: a kerbed bay's back corners are rounded (its ring stays convex: the slab is cut round it)
   ];
   const circus: Circus = { id: 'circus/crown', surface: fin.of(d.roads.find(r => r.gyratory)?.class ?? 'district'), islandSurface: 'circus/island', centre: rv(c.c), radius: c.ring[1], islandRadius: c.ring[0], level: 0, islandHeight: PROV.pavement };
   return {
     roads: d.roads.filter(r => !r.gyratory).map(wide), // the gyratory is the circus ring
     foot: plan.foot.map((f): Road => ({ id: `foot/${f.id}`, surface: 'foot', kerbSurface: 'kerb', line: f.pts.map(rv), width: f.w, level: PROV.foot, kerbWidth: 0, kerbHeight: 0 })),
-    medians: d.zones.filter(z => z.kind === 'median').map((z, i): Mass => ({ id: `median/${i}`, surface: 'median', ring: ring(z.poly!), base: 0, height: PROV.pavement })),
+    medians: d.zones.filter(z => z.kind === 'median').map((z, i): Mass => ({ id: `median/${i}`, surface: 'median', ring: ring(noseRing(nctx, i, z.poly!)), base: 0, height: PROV.pavement })), // brief 028: a median's ends are bullnoses (kerbReturn.nose)
     circuses: [circus],
     water: plan.water.map((w, i): Flat => ({ id: `water/${i}`, surface: 'water', ring: ring(w), level: PROV.water })),
     quays: plan.quay.map((q, i): Mass => ({ id: `quay/${i}`, surface: 'quay', ring: ring(q), base: PROV.quayBase, height: r3(PROV.pavement - PROV.quayBase) })),
@@ -81,13 +94,31 @@ export function transit(plan: Plan, d: Derived): World['transit'] {
     spacing: p.double ? sstd.beamCentres : 0, capDepth: p.double ? PROV.beam.cap : 0,
   }));
   const sides = (mode: 'tram' | 'sky') => modeOf(plan).find(m => m[0] === mode)![1].flatMap(line => placements(plan, d, line, mode).items.map(s => ({ line, s })));
+  // brief 028 round 2 (Splice's proposal to Datum, not on by default): `streetscape.kerbReturn.platform` = a radius in m rounds the two corners of a tram platform's far (street) side; the track side stays straight for boarding. The plan says "Tram platforms keep square ends"; the key is Datum's to set.
+  const platEnds = Number((plan.standards as any).streetscape?.kerbReturn?.platform ?? 0);
+  const roundFar = (q: V[], R: number): V[] => {
+    const out: V[] = [q[0]!, q[1]!];
+    for (const i of [2, 3]) {
+      const p = q[i]!, pa = q[i - 1]!, pb = q[(i + 1) % 4]!, ua = norm(sub(pa, p)), ub = norm(sub(pb, p)), r = Math.min(R, dist(p, pa) / 2, dist(p, pb) / 2);
+      const t1: V = [p[0] + ua[0] * r, p[1] + ua[1] * r], t2: V = [p[0] + ub[0] * r, p[1] + ub[1] * r], c: V = [p[0] + (ua[0] + ub[0]) * r, p[1] + (ua[1] + ub[1]) * r], a0 = Math.atan2(t1[1] - c[1], t1[0] - c[0]);
+      let da = Math.atan2(t2[1] - c[1], t2[0] - c[0]) - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+      for (let k = 0; k <= 8; k++) out.push([c[0] + r * Math.cos(a0 + da * k / 8), c[1] + r * Math.sin(a0 + da * k / 8)]);
+    }
+    return out;
+  };
   const platform = (id: string, s: ReturnType<typeof sides>[number]['s'], side: 1 | -1, off: number, w: number, len: number, base: number, h: number): Mass => {
     const smp = s.path.samples.reduce((b, x) => (dist(x.p, s.at) < dist(b.p, s.at) ? x : b)), u = smp.dir, n: V = [-u[1] * side, u[0] * side];
     const c: V = [smp.p[0] + n[0] * off, smp.p[1] + n[1] * off], a: V = [u[0] * len / 2, u[1] * len / 2], b: V = [n[0] * w / 2, n[1] * w / 2];
-    return { id, surface: 'platform', ring: ring([[c[0] - a[0] - b[0], c[1] - a[1] - b[1]], [c[0] + a[0] - b[0], c[1] + a[1] - b[1]], [c[0] + a[0] + b[0], c[1] + a[1] + b[1]], [c[0] - a[0] + b[0], c[1] - a[1] + b[1]]]), base: r3(base), height: r3(h) };
+    const quad: V[] = [[c[0] - a[0] - b[0], c[1] - a[1] - b[1]], [c[0] + a[0] - b[0], c[1] + a[1] - b[1]], [c[0] + a[0] + b[0], c[1] + a[1] + b[1]], [c[0] - a[0] + b[0], c[1] - a[1] + b[1]]];
+    return { id, surface: 'platform', ring: ring(platEnds > 0 && id.startsWith('stop/') ? roundFar(quad, platEnds) : quad), base: r3(base), height: r3(h) };
   };
-  const stops = sides('tram').flatMap(({ line, s }) => ([1, -1] as const).map(side =>
-    platform(`stop/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, tstd.trackCentres / 2 + PROV.track.width / 2 + PROV.platform.tram.width / 2 + 0.5, PROV.platform.tram.width, s.length ?? tstd.platform, 0, PROV.platform.tram.height)));
+  // brief 075 (the 1950s tram street): a stop on a tram street (streetscape.sections.tramStreet.<class>.roads names the road it fronts) is a boarding island at the section's island span (3.2-6.2 m off the road line: track 1.8 + tramStop.edge 1.4, 3.0 wide); a plan without the section keeps the provisional offset
+  const islandOf = (road: string | undefined): [number, number] | undefined => { const ts = (plan.standards as any).streetscape?.sections?.tramStreet; for (const k of ['district', 'primary']) { const c = ts?.[k]; if (road && c?.roads?.includes(road) && Array.isArray(c.island?.span)) return c.island.span as [number, number]; } return undefined; };
+  const stops = sides('tram').flatMap(({ line, s }) => ([1, -1] as const).map(side => {
+    const isl = islandOf((line.stops?.find(x => x.id === s.id) as { fronts?: string } | undefined)?.fronts);
+    const off = isl ? (isl[0] + isl[1]) / 2 : tstd.trackCentres / 2 + PROV.track.width / 2 + PROV.platform.tram.width / 2 + 0.5, w = isl ? isl[1] - isl[0] : PROV.platform.tram.width;
+    return platform(`stop/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, off, w, s.length ?? tstd.platform, 0, PROV.platform.tram.height);
+  }));
   const edge = sstd.beamCentres / 2 + PROV.beam.width / 2, sw = PROV.platform.sky.width;
   const stations = sides('sky').flatMap(({ line, s }) => ([1, -1] as const).map(side =>
     platform(`station/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, edge + sw / 2, sw, s.length ?? PROV.platform.sky.length, sstd.height - lv.structureDepth.deck, lv.structureDepth.deck)));
@@ -221,8 +252,9 @@ export function civicClearance(civic: Mass[]): string[] {
     for (const o of civic) {
       if (o === m || o.base > m.base + 1.2 || o.base + o.height < m.base + 0.05) continue; // only what stands in the same body of air
       if (o.kit && o.id === `${m.id}/lamp`) continue; // the table lamp stands on its own set (brief 026)
-      if (o.kit && look.overhead.includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
-      if (o.kit && look.frame.includes(o.kit.id)) continue; // the terrace's box is open ground inside its wall: the tables and palms belong there
+      if (o.kit && withSwaps(look.overhead).includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
+      if (o.kit && withSwaps(look.frame).includes(o.kit.id)) continue; // the terrace's box is open ground inside its wall: the tables and palms belong there
+      if (takesNoGround(o)) continue; // brief 077: a companion's planting takes no ground (it sits in its stonework's troughs)
       const ring = o.kit && person.has(o.kit.id) ? foot(o) : o.ring;
       if (pieces.indexOf(o) >= 0 && pieces.indexOf(o) < pieces.indexOf(m)) continue; // each pair once
       if (overlap(f, ring)) out.push(`${m.id} (${m.kit!.id} x1) overlaps ${o.id}`);
@@ -247,8 +279,26 @@ function landmarks(plan: Plan): Landmark[] {
     const m: Landmark = l.caisson
       ? { id, surface: 'landmark', shape: 'cylinder', centre: rv(l.c), radius: l.caisson.r, base: PROV.quayBase, height: r3(l.caisson.deck - PROV.quayBase) }
       : { id, surface: 'landmark', shape: l.id === 'sphere' ? 'sphere' : 'cylinder', centre: rv(l.c), radius: l.r, base: PROV.pavement, height: top };
-    return landmarkKit(m, l); // the plan's disc (its r) and height (its top); the kit piece is scaled to fit them
+    const gw = gatewayRef(l.gateway as { kit?: string; c?: V; yaw?: unknown } | undefined, Math.PI / 2); // the landmark's arch (crown-vista: the Crown Avenue arch), placed as the pier's is
+    return { ...landmarkKit(m, l), ...(gw ? { gateway: gw } : {}) }; // the plan's disc (its r) and height (its top); the kit piece is scaled to fit them
   });
+}
+
+/** Redline's combine block of a facade's building: the plot of a plot building (`bld/<plot>/<k>`), the site of a tower complex. */
+const plotOf = (b: string) => (b.startsWith('bld/') ? b.split('/')[1]! : b);
+
+/** Brief 072 (Sky 2026-10-27, "yes"): the Records Office as one landmark piece, RecordsTower, once adopted. It stands on the landmark building (standards.buildings.playStreets.landmark,
+ *  the civic block's office) as Vela built it (tools/decokit/records_tower.py): pivot at the centre of the wing polygon's box (block (64, -30)), front (+Z) toward the public entrance (the
+ *  block's west, plan yaw = block yaw 0 + 90°). The wings mass carries it; the two tower masses stay as data (`hidden`: ids, footprints and clearance) and draw nothing. Not adopted: the office
+ *  stays as it is. The block (civic-block.json, C-0) is unchanged. */
+export function recordsTower(plan: Plan, civic: Mass[]): Mass[] {
+  const a = adoptedBy(drawnPiece(FACE_KIT.landmark, x => !!adoptedBy(x))), id = `civic/${(plan.standards.buildings as any).playStreets?.landmark ?? 'civic-office'}`, office = civic.find(m => m.id === id);
+  if (!a || !office) return civic;
+  const towers = civic.filter(m => m.id.startsWith(`${id}/tower-`)), xs = office.ring.map(p => p[0]), ys = office.ring.map(p => p[1]);
+  const c: V = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2], door = civic.find(m => m.id === 'civic/office-public-entrance');
+  const e = door ? centroid(door.ring) : c, n = Math.hypot(e[0] - c[0], e[1] - c[1]) > 0.5 ? norm(sub(e, c)) : [0, -1] as V;
+  const yaw = r4(Math.atan2(n[1], n[0]) - Math.PI / 2);
+  return civic.map(m => (m === office ? { ...m, source: 'kit' as const, kit: { id: a.id, scale: [1, 1, 1] as [number, number, number], yaw, at: rv(c), base: office.base } } : towers.includes(m) ? { ...m, hidden: true as const } : m));
 }
 
 function gates(plan: Plan, d: Derived): Mass[] {
@@ -263,23 +313,53 @@ function gates(plan: Plan, d: Derived): Mass[] {
 }
 
 export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen: Generated } {
-  const g = ground(plan, d, civ), t = transit(plan, d), gen = generate(ctxOf(plan, d, civ, PROV.pavement), t.stops, t.stations);
+  const g = ground(plan, d, civ), t = transit(plan, d), gctx = ctxOf(plan, d, civ, PROV.pavement), gen = generate(gctx, t.stops, t.stations);
   g.plots = gen.slabs;
+  // brief 028 (Sky 2026-10-24, rounded pavement corners): the slab no longer covers the corner a kerb return cuts, so the carriageway is laid there: one flat per convex return, the road's finish of the minor road's class, at the carriageway's level
+  const fin = roadSurfaces(plan);
+  for (const r of returnsOf(gctx)) if (r.convex && !r.nose) g.flats.push({ id: `ground/return/${r.id}`, surface: fin.of(r.cls), ring: fillRing(r).map(rv), level: r.level ? PROV.foot : 0 });
+  // brief 028 round 2 (Glyph 0.2.112, junction NE): two roads that meet end to end at a bend have square ends; the outside of the turn is a square no road ribbon covers: the carriageway is laid to the outside kerb arc
+  for (const r of returnsOf(gctx)) if (r.hole) g.flats.push({ id: `ground/return/${r.id}/hole`, surface: fin.of(r.cls), ring: r.hole.map(rv), level: 0 });
+  // brief 061 (Sky 2026-10-25, lane mouths as a continuous footway): at each gate the pavement runs on across the lane's mouth at kerb height: the table is a flat at the pavement top (floor for the walk and the audits), the ramp, lip and bands are the footway's own (ground.footways)
+  const fw = footwaysOf(gctx, { road: fin.of, kerb: fin.kerb });
+  if (fw.length) { g.footways = fw; for (const f of fw) g.flats.push({ id: f.table.id, surface: f.table.surface, ring: f.table.ring, level: f.level }); }
+  for (const l of gen.roadFinish?.lawn ?? []) g.flats.push({ id: `reservation/${l.id}`, surface: 'median', ring: l.ring.map(rv), level: 0.02 }); // brief 028 (Vela): the tram reservation's lawn track, kerb face to kerb face, under the rails (level 0.04) and over the carriageway (0)
   if (gen.groundPieces?.length) g.pieces = gen.groundPieces; // brief 026: flat ground pieces (kerb, flags, pits, drains, manholes, tactile, terrazzo)
-  const civicM = civicMasses(civ, toPlanFn(plan.civic));
+  // brief 075 (the 1950s tram street, tramstreet.ts): setts under the tram lanes and the flat crossing's square (flats), the rails flush in them (ground pieces), the kerbside bays and palm islands, the overhead; the parked trams are dressing, never sim data
+  const tlog = gen.tram?.log ?? newTramLog(), tg = tramGround(gctx, tlog, PROV.foot);
+  if (tg) { g.flats.push(...tg.flats); g.pieces = [...(g.pieces ?? []), ...tg.rails]; }
+  // brief 075 remap (gen/oldtown/ground.ts): the old town's ground: the lawns' borders, Orbit Gardens' paths, basin and canal, the harbour's terrace, steps, promenade and coping
+  if (gen.oldGround) { g.flats.push(...gen.oldGround.flats); g.water.push(...gen.oldGround.water); g.quays.push(...gen.oldGround.raised); }
+  { const st = caissonSteps(plan, PROV.pavement); g.quays.push(...st.masses); if (st.log.flights.length) gen.caissonSteps = st.log; } // brief 075 remap: steps where a pier's walk climbs on to a caisson's deck (gen/caissonsteps.ts)
+  if (gen.tram) { if (gen.tram.bays.length) g.kerbside = gen.tram.bays; if (gen.tram.islands.length) g.islands = gen.tram.islands; }
+  const trams = tg ? parkedTrams(gctx, tlog, PROV.foot) : [];
+  // brief 075 roll-out (the sky track to the old profile, skytrack.ts): the old pylon stacks at the plan's pylons and the beam sweep data
+  const st = skyTrack(plan, d, { ground: g, transit: t }, ring => walkBlock(gctx as never, [...ring, ...ring.map((p, i) => { const q = ring[(i + 1) % ring.length]!; return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2] as V; })], 'skyrail'));
+  if (st) { t.skyTrack = st.track; gen.skyTrack = st.log; for (const r of t.skyRail) { r.width = st.track.beam.width; r.capDepth = 0; } } // the old beam is 1.2 wide (Vela, 'Roll-out: sky track'); the heads are the kit's, so the ribbon fallback draws no procedural cross-head
+  if (gen.tram) gen.tram.log = tlog; else if (tg) gen.tram = { bays: [], islands: [], log: tlog };
+  const civicM = attachPieces(recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)))); // brief 077: the companions' planting and the arcs' globe lamps (civic-look.json attach)
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
+  // brief 074 (Sky 2026-10-28, "Do building colors"): each building's colourway (a facade.json wall family) on every mass and facade piece of it; the civic block's are `civic`
+  const cw = assignColourways(gen.blds.map(b => ({ id: b.id, area: b.area, ring: b.ring.p })), gen.frontages, oldStreetFamilies(gctx, gen.blds), piecesAt(gen.facades)); // brief 075 old palette: the old ensembles (colourways.ts ensembleOf) // brief 075: the old high street's families on the old-street roads (oldstreet.ts)
+  gen.colourways = cw.log;
+  for (const m of gen.buildings) { const c = cw.of.get(hostOf(m.id)); if (c) m.colourway = c; }
+  for (const f of gen.facades) { const c = cw.of.get(f.building); if (c) f.colourway = c; }
+  const civicW = civicM.map(m => (civicHost(m.id) ? { ...m, colourway: CIVIC } : m));
   const sq = d.plots.find(p => p.civic === 'square')!;
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped } } : {}),
-    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicM, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
+    ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades.map(f => dressFields(f, catalogued(f.kit.id), plotOf)), frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped, served: gen.crossingLog.coverage.served } } : {}),
+    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicW, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
+  if (trams.length) w.dressing = { trams };
+  const liveries = liveriesOf(w, catalogued, adopted()); // brief 075-C: landmark livery, after every kit ref is placed
+  const posters = postersOf(w, kitPosters()); // brief 075-F: the ad each board shows (Vela's posters), after every kit ref is placed
   const counts = {
     ground: g.roads.length + g.foot.length + g.medians.length + g.circuses.length + g.water.length + g.quays.length + g.flats.length + g.plots.length,
     transit: t.tram.length + t.skyRail.length + t.stops.length + t.stations.length,
     buildings: w.buildings.length, roofs: w.roofs.length, skins: w.skins.length, fabric: w.fabric.awnings.length + w.fabric.banners.length + w.fabric.flags.length, facades: w.facades.length, frontages: w.frontages.length, connectors: w.connectors.length, street: w.street.length,
     levels: w.levels.length, ...(w.crossings ? { crossings: w.crossings.length } : {}), decks: gen.decks.length, megastructures: w.megastructures.length, civic: w.civic.length, landmarks: w.landmarks.length, gates: w.gates.length, signatures: w.signatures.length, horizon: w.horizon.pieces.length,
   };
-  return { world: { ...w, counts }, gen };
+  return { world: { ...w, liveries, ...(posters ? { posters } : {}), counts }, gen };
 }

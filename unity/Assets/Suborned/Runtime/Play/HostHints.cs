@@ -23,7 +23,13 @@ namespace Suborned.Play
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
-        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", H13Door, "H17" };
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", H13Door, "H17", "H21", "H22" };
+        /// <summary>Fable's control tips (brief 067; Glyph D5 and F9): H21 "Holster to stop firing: press F." (one input; "Cease fire: press X." before) at the first lasting fire order, H22 "Scroll to
+        /// switch." the first time two or more things are under the cursor. Each shows at once (no 8 s idle wait), over any hint, rings nothing,
+        /// once a run: spent when the HUD has shown and folded its line (or its moment passed before it showed), retired for good when the input
+        /// is used (a Cease, a step through the stack). Its line shows in play, not only under Alt (it rings nothing: the line is the hint).</summary>
+        public static readonly HashSet<string> TipHints = new() { "H21", "H22" };
+        bool tipSeen; int tipStepsAt, tipCeaseAt;
         static HashSet<string> learned;
         static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
         static void Learn(string id)
@@ -40,7 +46,7 @@ namespace Suborned.Play
         public float ToastUntil { get; private set; }
         bool runSeenPending, runSeenShown;
 
-        void ResetHints() { hintsDone.Clear(); HintNow = null; hintOrdersAt = 0; lastOrderTick = 0; Toast = null; runSeenPending = runSeenShown = false; }
+        void ResetHints() { hintsDone.Clear(); HintNow = null; hintOrdersAt = 0; lastOrderTick = 0; Toast = null; runSeenPending = runSeenShown = false; tipSeen = false; tipStepsAt = 0; tipCeaseAt = 0; }
 
         /// <summary>An order was taken (the player's): the idle clock restarts, and a pending toast shows.</summary>
         void OrderTaken()
@@ -57,6 +63,24 @@ namespace Suborned.Play
         {
             if (Text == null || Game.Over || Game.Tick % 5 != 0) return;
             if (!HintsOn) { HintNow = null; return; }
+            // Fable's tips (brief 067): one on show runs its own course (TipHints); else the first whose moment has come cuts in at once
+            if (HintNow != null && TipHints.Contains(HintNow.Id))
+            {
+                if (Gone(HintNow.Id)) { hintsDone.Add(HintNow.Id); Learn(HintNow.Id); HintNow = null; } // the input used: retired for good
+                else if (HintLineShowing) tipSeen = true;
+                else if (tipSeen || TipOver(HintNow.Id)) { hintsDone.Add(HintNow.Id); HintNow = null; } // shown and folded, or its moment passed: spent for the run
+                return;
+            }
+            if (!ShowBriefing)
+            {
+                var knownTips = Learned();
+                foreach (var h in Text.Hints2)
+                {
+                    if (!TipHints.Contains(h.Id) || hintsDone.Contains(h.Id) || knownTips.Contains(h.Id) || h.Line.Length == 0) continue;
+                    if (!Trigger(h.Id, out var tr, out var tp)) continue;
+                    HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = tr, Portrait = tp }; hintOrdersAt = Game.Orders.Count; tipSeen = false; tipStepsAt = StackSteps; tipCeaseAt = CeaseKeys; return;
+                }
+            }
             // GDD v0.24 (H13's door cause): the first time the public door is the next step and a wall hides it, the turn hint cuts in at
             // once, over any hint and without the idle wait; it is spent only by the door standing in clear view (DoorViewFrame)
             if (!ShowBriefing && HintNow is not { Id: "H13", Cause: "door" } && Trigger("H13", out var dr, out var dp) && trigCause == "door" && Text.Hints2.Find(x => x.Id == "H13") is { } h13)
@@ -66,7 +90,7 @@ namespace Suborned.Play
                 var learnedNow = Learned();
                 foreach (var h in Text.Hints2)
                 {
-                    if (h.Priority >= 0) break; if (hintsDone.Contains(h.Id) || learnedNow.Contains(h.Id) || h.Line.Length == 0) continue;
+                    if (h.Priority >= 0) break; if (TipHints.Contains(h.Id) || hintsDone.Contains(h.Id) || learnedNow.Contains(h.Id) || h.Line.Length == 0) continue;
                     if (!Trigger(h.Id, out var r2, out var p2)) continue;
                     HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = r2, Portrait = p2, Who = trigWho }; hintOrdersAt = Game.Orders.Count; return;
                 }
@@ -82,6 +106,7 @@ namespace Suborned.Play
             var known = Learned();
             foreach (var h in Text.Hints2)
             {
+                if (TipHints.Contains(h.Id)) continue; // the tips cut in above, never after the idle wait
                 if (h.Id != "H13" && (hintsDone.Contains(h.Id) || known.Contains(h.Id)) || h.Line.Length == 0) continue; // H13: each cause keeps its own spent state (Trigger)
                 if (!Trigger(h.Id, out var ring, out var portrait)) continue;
                 HintNow = new HintShown { Id = h.Id, Line = h.Id == "H13" && trigCause == "door" && h.DoorLine.Length > 0 ? h.DoorLine : h.Line, Ring = ring, Portrait = portrait, Who = trigWho, Cause = h.Id == "H13" ? trigCause : "" }; hintOrdersAt = Game.Orders.Count;
@@ -99,6 +124,15 @@ namespace Suborned.Play
 
         static readonly string[] Roles = { "waitress", "driver", "guard", "councillor" };
         Vector3? At(string viewKey) { var t = views.Find(viewKey); return t && t.gameObject.activeSelf ? t.position : (Vector3?)null; }
+
+        /// <summary>Engine 0.34.0 (brief 067 A): whether the patrol's sweep ever sees the public door on this site (Game.PatrolWatchesEntry, false on
+        /// the yard sweep); read once a game (it is the site's and the rulebook's, not the clock's). H7 needs it.</summary>
+        bool PatrolSeesDoor(Suborned.Sim.Game g)
+        {
+            if (!ReferenceEquals(patrolDoorGame, g)) { patrolDoorGame = g; patrolDoor = true; Guard("patrol watches entry", () => patrolDoor = g.PatrolWatchesEntry); }
+            return patrolDoor;
+        }
+        Suborned.Sim.Game patrolDoorGame; bool patrolDoor = true;
 
         /// <summary>Motive's trigger for a hint, from the engine's state, with what it rings.</summary>
         bool Trigger(string id, out Vector3? ring, out int portrait)
@@ -132,7 +166,7 @@ namespace Suborned.Play
                     if (g.LoopOn || g.Tick < 45 * Game.Hz || doing[(int)OpId.Tech].Busy) return false;
                     ring = At("marker/cabinet"); return true;
                 case "H5":
-                    foreach (var r in new[] { "waitress", "driver" })
+                    foreach (var r in new[] { "waitress" }) // brief 059 (Motive M059-6.1): the driver's Call is retired; only Inez is called
                         if (g.PersonByRole(r).Turned && !Given(o => o.Do == "call" && o.Target == r)) { ring = At(r); trigWho = r; return true; }
                     return false;
                 case "H6":
@@ -140,6 +174,7 @@ namespace Suborned.Play
                     return false;
                 case "H7":
                     {
+                        if (!PatrolSeesDoor(g)) return false; // engine 0.34.0 (brief 067 A): the patrol sweeps the service yard and never sees the public door on this site
                         var en = g.Ops[(int)OpId.Enforcer]; var pp = g.PatrolPose(); var door = g.S.At(g.S.GuardPost);
                         if (en.Inside || pp == null || g.PatrolDown || g.PatrolAwayUntil > g.Tick) return false;
                         if (!G.Within(en.Pos, door, 1000) || !G.Within(pp.Value.pos, door, 2000)) return false;
@@ -147,11 +182,11 @@ namespace Suborned.Play
                     }
                 case "H8":
                     if (g.Tick < 190 * Game.Hz || !g.RivalsPresent || g.Vale == ValeAt.WithEnforcer) return false;
-                    if (Given(o => o.Target == "rivals")) return false;
-                    ring = At("rivals/0"); return true;
+                    if (Given(o => o.Target is "rivals" or "car:rivals") || !MisleadOpen()) return false; // brief 059 F3: the tip is given at the parked car, its wheelman aboard
+                    ring = At("car/rivals"); return true;
                 case "H9":
                     {
-                        if (g.Tick < 240 * Game.Hz) return false;
+                        if (g.Tick < 180 * Game.Hz) return false; // brief 080: 3:00, a minute earlier with the shift (Vale out 4:50, last turn 4:40)
                         foreach (var r in Roles) if (g.PersonByRole(r).Turned) return false;
                         if (Given(o => o.Do == "enter")) return false;
                         var d = g.PersonByRole("driver"); if (d.KRoutine || d.KNeed || d.KTemperament) return false;
@@ -160,10 +195,13 @@ namespace Suborned.Play
                 case "H10":
                     {
                         if (g.Vale != ValeAt.WithEnforcer) return false;
-                        var car = g.S.At(g.S.GetawayCar);
+                        var car = g.GetawayCarPos(); // brief 059 K6: wherever the car stands
                         for (int k = 0; k < 3; k++) { var op = g.Ops[k]; if (op.Gun.W != null && !op.Down && !op.Inside && G.Within(op.Pos, car, 1500)) return false; }
                         ring = At("car/getaway"); return true;
                     }
+                case "H20": // brief 059 §1.4 (Fable's H20; Glyph's shut-stand mark clears on the same tick): Vale's car parked round the back, ours still at the square with someone aboard, no Drive given
+                    if (!g.Driver.Turned || g.Driver.Down || !g.ValeCarParked || g.GetawayDriving || g.CurStand != g.S.Stands[0] || !g.AnyInCar || Given(o => o.Do == "drive-car")) return false;
+                    ring = At("car/getaway"); return true;
                 case "H12": // Sky 2026-10-16: the first long walk teaches the run toggle (G, or the chip's pace glyph)
                     for (int k = 0; k < 4; k++)
                     {
@@ -179,9 +217,9 @@ namespace Suborned.Play
                 case "H15": // out with Vale, not boarded yet (before H10; brief 018: Board replaces Extract)
                     if (!BoardAvailable || Given(o => o.Do == "board" && o.Op == "enforcer")) return false;
                     ring = At("car/getaway"); portrait = (int)OpId.Enforcer; return true;
-                case "H16": // route B: the driver turned, Vale at his car, not taken
-                    if (!g.PersonByRole("driver").Turned || g.Vale != ValeAt.Pickup) return false;
-                    ring = At("councillor"); portrait = (int)OpId.Enforcer; return true;
+                case "H16": // route B (brief 059 K3): the driver turned, Vale's car parked round the back with him in it, not taken: the Take is from the back seat
+                    if (!g.PersonByRole("driver").Turned || !g.ValeCarParked || g.Vale != ValeAt.InCar) return false;
+                    ring = At("car/official"); portrait = (int)OpId.Enforcer; return true;
                 case "H17": // Sky 2026-10-18: a fight is on and an armed agent other than the Enforcer has not fired yet: everyone armed can fire
                     {
                         if (!g.FightOn || HoldOn && !FightOnNow) return false; // brief 041: the right click focuses only while the engine's fight is on (FreeFightOn); the first shot is the right hold
@@ -208,6 +246,10 @@ namespace Suborned.Play
                     if (!AttnHint(out ring, out portrait)) return false;
                     foreach (var (w, view, st, op) in Cues()) if (st >= 1) { trigWho = op; break; } // rings nothing: the watcher's own cue shows it
                     return true;
+                case "H21": // Fable 067 (Glyph D5; Sky on 0.2.122: "I wasn't sure whether to be pressing just X or hold RMB"): a lasting fire order stands and X was never used this run; rings nothing (the lock reticle shows it)
+                    return OneInput ? AnyFireOrder() : AnyFireOrder() && CeaseKeys == 0; // engine 0.35 one input (Fable 0.35.2): "Holster to stop firing: press F." at the first fire order; a holster ends the order, so the trigger stops holding
+                case "H22": // Fable 067 (Glyph F9): two or more things under the cursor (the stack tab is up) and no step yet this run; rings nothing (the tab and the dashed rings show it)
+                    return HoverStackCount >= 2 && StackSteps == 0;
                 case "H11": // brief 018 §6.6: anyone a Go would leave captured (a downed one not carried rings first, else the first standing one)
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
                     foreach (var (name, fate, why) in LeftBehindNow()) // brief 018: anyone not in the car stays behind (LeftBehind); a downed one not carried is the warning's ring
@@ -241,10 +283,19 @@ namespace Suborned.Play
                 case "H14": return Given(o => o.Do == "enter", from);
                 case "H15": return Given(o => o.Do == "board" && o.Op == "enforcer", from);
                 case "H18": return Given(o => o.Do == "go", from) || Game.Over;
-                case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.Pickup;
+                case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.InCar;
+                case "H20": return Given(o => o.Do == "drive-car", from) || g.CurStand != g.S.Stands[0];
                 case "H19": { foreach (var c in Cues()) if (c.stage >= 1) return false; return true; } // the agent moved on or out of sight, and the watcher cooled
+                case "H21": return OneInput ? Given(o => o.Do == "holster", from) : CeaseKeys > tipCeaseAt; // one input: a Holster given (F); else X pressed (a Cease fire order sent): never the host's own cease when a new order replaces a fire
+                case "H22": return StackSteps > tipStepsAt; // a step with the wheel, Z or Tab
             }
             return false;
         }
+
+        /// <summary>A tip whose moment passed before the HUD could show it (the objective line held the slot): H21 once no lasting fire order
+        /// stands, H22 once the cursor left the stack.</summary>
+        bool TipOver(string id) => id switch { "H21" => !AnyFireOrder(), "H22" => HoverStackCount < 2, _ => true };
+        /// <summary>Some agent holds a lasting fire order now (the engine's Gun.Order).</summary>
+        bool AnyFireOrder() { for (int k = 0; k < 4; k++) if (Game.Ops[k].Gun.Order.Length > 0) return true; return false; }
     }
 }

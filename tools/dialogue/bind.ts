@@ -1,4 +1,4 @@
-// Binding the Handover's four roles to generated people (brief 012): the lines of the person cast as Inez, the driver, the door guard and Vale become
+// Binding the Handover's four roles to generated people (brief 012): the lines of the person cast as Inez, the driver, the door guard and Popovic become
 // text.json `dialogue` entries for the speakers waitress, driver, guard and councillor, so the generator can be held to the hand-written text
 // (compareToReference) and the host could read generated lines through the lookup it already has. The Handover's own moments (the guard lured, a car at a camera)
 // stay in text.json. Nothing here edits text.json.

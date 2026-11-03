@@ -1,0 +1,17 @@
+{
+  "faults": [
+    {
+      "scene": "call-inez-pressure",
+      "line": "Okafor: \"It's only a door. All right, I'm off it.\"",
+      "problem": "\"I'm off it\" describes something being done now while the shot shows him standing idle with his feet planted, which the sheet's \"What the player sees\" rules out.",
+      "fix": "Make it a promise rather than a live action: \"It's only a door. All right, I'm coming.\""
+    },
+    {
+      "scene": "call-inez-pressure",
+      "line": "opens: \"Enforcer can still Enter the Office.\"",
+      "problem": "The card has no limit, but the door is only empty until Okafor gets back to it, so a player could read it as an entry that stays open [d8719fcc42e7edb421793dc5].",
+      "fix": "Tie it to the window: \"While the door's empty, the Enforcer can Enter the Office.\""
+    }
+  ],
+  "notes": "No other faults in this scene. Inez's call, her warning and Okafor running back match §07 [d8719fcc42e7edb421793dc5]. For Aster, not changed here:\n1. Sheet conflict: the sheet requires Okafor to say he's running back \"now\", but also bars lines about something being done now, and the shot shows him idle. \"I'm running back to it, now\" follows the specific instruction, so I did not list it as a fault. It needs a ruling on which instruction wins.\n2. Sheet logic: Okafor speaks on the Office door's handset, yet he has to step off the door and stay on the line. The scene inherits this from the sheet. It needs a ruling, or acceptance as colour.\n3. Decided, not built: the shorter window after Pressure is tagged [D] in §07, and Motive still owes its numbers. Until it is built, the build plays what is built today, so \"door's empty less\" may not be true in play. Check this before the scene ships.\n4. Not checked: the supplied passages don't give the full requirements for Enter the Office, so I checked the opens line only against the door window."
+}

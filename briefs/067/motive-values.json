@@ -1,0 +1,298 @@
+{
+ "brief": "067 B (pace and punishment, Sky playing 0.2.122) and Keel's four open items from engine 0.33.1",
+ "author": "Motive",
+ "date": "2026-10-26",
+ "gdd": "v0.25.0 §03 all ops, §05 running and attention, §06 modifiers, orders, getaway and cost, §07 timings and fail; text proposed in briefs/067/motive.md §4",
+ "engine": "suborned.sim/0.33.1 at d4361806, played in a scratch copy (out/scratch/motive/067/tree, tree2) with briefs/067/motive/engine-probe.patch: environment switches only. With every switch unset the probe reproduces Keel's briefs/059/keel/missions-check-0.33.1.txt (route-a 4:59.7 5 T, route-a-board 4:27.9, loud enforcer-down 12 T, route-g-kill 6:11.7, careless-scout-idles-pickup rivals-reach-vale 6:39.5).",
+ "howToRead": "values: rulebook ids, old -> new, each [S] and proposed: true until Sky plays it; Keel lands them as written (path names are Keel's). rules: what must be true, for Keel's rulebook text and scenarios; Pulse owns how bodies move where a rule needs a walk. keep: rules read and kept, with the number that argues for them. Times m:ss.s on the mission clock; T is the mission's Trail.",
+ "values": [
+  {
+   "id": "op-speed-cm-s",
+   "path": "cell.speed",
+   "old": 140,
+   "new": 180,
+   "unit": "cm-per-s",
+   "tag": "S",
+   "proposed": true,
+   "src": "Sky playing 0.2.122 (brief 067 item 6: \"Players move pretty slowly\"); Motive briefs/067/motive.md §1",
+   "reason": "The cell walks with purpose, brisker than the city's stroll (1.4 m/s, people-walk-cm-s): 1.8 m/s is a brisk walk (6.5 km/h), still a walk on screen, faster than the rivals (1.6) and slower than the response unit's run (2.2). Legs shorten by 22 %: the service lane to the getaway bay (65.0 m) 46.4 s -> 36.1 s. Only the cell reads it after the split (M067-B1): an operative's walk and carry of Vale or a body (the Enforcer), and every preview of the cell's walk (the approach card, the move quote, the fire walk-in, the carry sight, the cancel's time left). Measured (results/ens-*.tsv, cand-final-w180.txt): at 1.6 every plan that wins today still wins as composed (start delays 0-3 s 7/7, each operative 0-2 s 8/8); at 1.8 board and go gets easier (route-a-pressure-board 0/8 -> 6/8, route-g-kill-board 0/8 -> 8/8 with the hold at (2000, -6500)) and five fight plans need re-composing (Waymark, 'recompose' below); with them the mission check holds MC-1 (A, B, G), MC-2, MC-5, MC-6 (122.6 s), MC-10, MC-11, MC-12 and fails only MC-7 on careless-g-disable. Fallback if Sky wants no plan changes: 160 (run 320, untrained carry 80), every plan holds unchanged.",
+   "was": "the operatives walk at the world's one walking pace (life.json pedestrians.walkSpeed)",
+   "fallback": 160
+  },
+  {
+   "id": "people-walk-cm-s",
+   "path": "Keel's (a new value; e.g. crowd.walk)",
+   "old": null,
+   "new": 140,
+   "unit": "cm-per-s",
+   "tag": "S",
+   "proposed": true,
+   "src": "life.json pedestrians.walkSpeed 1.4 m/s [S]; contracts/people/routines.rules.json rounds.pace; Motive briefs/067/motive.md §1.2 (M067-B1)",
+   "reason": "The city's walking pace, split from the cell's so a faster cell changes nothing the city does: the summoned partner's walk (Inez's call: the guard walks 58 s, stays 60 s, walks back, the window unchanged), the rounds bake's pace (routines.rules.json rounds.pace.of becomes values.people-walk-cm-s; no rebake, it stays 140), a reporter or teller walking to a phone and the report's land time, a witness walking to a body, the crowd walking back from shelter (on the Handover and the range). Engine 0.33.1 reads cell.speed in all of these (opSpeed); that is the coupling to cut."
+  },
+  {
+   "id": "op-run-speed-cm-s",
+   "path": "cell.runSpeed",
+   "old": 280,
+   "new": 360,
+   "unit": "cm-per-s",
+   "tag": "S",
+   "proposed": true,
+   "src": "Sky 2026-10-15 (run at twice the walk, briefs/011/motive-fights.md Q2); brief 067 item 6",
+   "reason": "Twice the walk, as before, so the chip reads half the time. Faster than the crowd's flight (2.6), the posted rivals running after a Driven car (2.8) and the response unit (2.2): the police's threat stays cones, guns and the seal, never a foot race (Vale can't run). Measured on 0.33.1 (planters in): no fight-lab kite row wins with it (results/fight-lab-today.txt). On engine 0.34.0's bare square one today row does, heavy: L3:tight-enfgo-carfree-runkite 3:54.2, 30 T, A 2, Standing 2 -> -1, the Tech down and captured, 61 % lost, failing only 6.4.8a (officer-1 and officer-2 hold police-1 and police-2, 17.7 and 19.4 m from the car, beyond their 15 m ring: today's police don't contest the walk, Sky 2026-10-20, tuning.md §7.8). At 320 and at 280 it loses (enforcer-down 3:05.7, 3:03.7). Kept at 360: a heavy loud win by a 0.3 m-margin perfect player is inside tuning.md §10.3 (briefs/067/motive-flips.md §4).",
+   "fallback": 320
+  },
+  {
+   "id": "carry-untrained-cm-s",
+   "path": "takedown.carry.untrained",
+   "old": 70,
+   "new": 90,
+   "unit": "cm-per-s",
+   "tag": "S",
+   "proposed": true,
+   "src": "Aster; briefs/013/motive-takedowns.md §4.1; brief 067 item 6",
+   "reason": "The Scout, the Fixer and the Tech carry a body at half the cell's walk (0.9 of 1.8), as before at 0.7 of 1.4; the Enforcer carries at the walk.",
+   "fallback": 80
+  },
+  {
+   "id": "run-alert",
+   "path": "cell.runAlert",
+   "old": 1,
+   "new": "retired",
+   "unit": "alert",
+   "tag": "S",
+   "proposed": true,
+   "src": "Sky playing 0.2.122 (\"Running shouldn't be that badly punished\"); brief 067 routing B (\"running seen and suspicious but not an Alert on its own\"); Motive briefs/067/motive.md §1.3 (M067-B2)",
+   "reason": "A run is never a found fault on its own: it is seen (a sighting) and suspicious (the watcher's attention clock, attention.run). Measured: route A's Alert 1 came only from runs (the shift guard Astrid Tanaka sees the Scout at 0:02.8 and the Fixer at 0:03.7, the door guard the Enforcer at 2:52.6); without it route A ends at Alert 0 and no other reference route moves (results/ens-r0c2.tsv). Sky's 0.2.122 session: 0 runs in 316 orders (0 of 30 moves, 0 of 266 driven samples), against 266 of 1,338 moves (19.9 %) in his 56 sessions of Oct 15-23 (briefs/060/qa/human-measures.json): the run's Alert is the likely reason he walked, at 1.4 m/s."
+  },
+  {
+   "id": "mod-running",
+   "path": "weapons.mod.running",
+   "old": 250,
+   "new": 375,
+   "unit": "per-mille",
+   "tag": "S",
+   "proposed": true,
+   "src": "Sky 2026-10-21 (build 0.2.19: fire on the move), Motive briefs/027/motive/tuning.md §8.3; brief 067 routing B (\"a lighter running modifier\")",
+   "reason": "A run toward or across fires at three-eighths: the ladder stays stand 1000 > walk 500 > run 375 > run away 125, so firing on the run is allowed and never the best way to fight. Untrained at the effective ring 140 -> 211 per mille (about 1 in 5 instead of 1 in 7); trained 187 -> 281. Measured: on the fight lab's today matrix (43 rows) 375 and 500 move no outcome (circle-kite 30 -> 28 T; charge 49 -> 49/53 T); no loud row or kite becomes a win, at the old pace or the new (results/fight-lab-today.txt, on 0.33.1). On 0.34.0, 250 and 375 give the same result on the three today rows measured (the kite win, P-A, L3; motive-flips.md §4): the one kite win is the run speed's and the police posts', not this modifier's. mod-running-away 125 and mod-target-running 850 stay."
+  }
+ ],
+ "rules": [
+  {
+   "id": "M067-B1",
+   "kind": "rule",
+   "key": "the walk split (cell.speed is the cell's; people-walk-cm-s the city's)",
+   "value": "The cell walks at cell.speed (1.8 m/s); everyone the engine walks itself walks at people-walk-cm-s (1.4 m/s): the summoned partner, reporters and tellers walking to a phone, a witness walking to a body, the crowd walking back from shelter. The rounds bake's paceCmPerS is checked against people-walk-cm-s. Runs keep their own paces (cell.runSpeed for the cell, crowd.run for a fleeing person, rivals-follow-cm-s for the posted three).",
+   "tag": "S",
+   "reason": "Without the split a faster cell walks the city faster too: Inez's call window would shrink (58 s -> 45 s each way), reports would land sooner and the rounds file would need a rebake. The probe's PROBE_OPWALK is this split (the cell's pace only).",
+   "checks": "PACE-SPLIT: an operative's 18 m walk takes 10.0 s; route A's call logs 'walks over to her (58 s)' as on 0.33.1; a knockout's reporter lands its report at the same tick as on 0.33.1; handover.rounds.json loads unchanged."
+  },
+  {
+   "id": "M067-B2",
+   "kind": "rule",
+   "key": "attention.run (new) and cell.runAlert (retired)",
+   "value": "A run is seen and suspicious, never an Alert on its own. A security watcher that keeps an attention clock (a live camera, the door guard not the cell's ally, the patrol, the response's officers and robots), with a running operative in its sight (its sight for the clock: the live cone, and for a person also attention.near), lifts its clock on that operative to the band's noticed mark at the run's first tick in its sight, and adds 1 s a second while the run stays in its sight, as standing still does; the stages, the wary mark and the report are attention's own (a report lands as a loiterer's: a found fault, Alert to at least alert-inquiry, no Trail, a sighting, the dial's Alert-1 response). Out of its sight, or walking, the clock drains as today. A run that is loud, under fire, or at Alert 2 and above (cell.run's free cases) adds nothing. Security staff who keep no clock (the shift guards on the street, StaffSees) and anyone in witness range who would remember a run today still remember it (memory saw-runner: a sighting, no T, no Alert, no Standing); the guard who saw a runner still no longer fights at your side. From Alert 2 ordinary people who see a run in their cone remember the face, as built (Sky's 054 call, kept). run.seen stays in the log as the sighting, without 'a found fault'.",
+   "tag": "S",
+   "reason": "Readable: the first tick a watcher sees a run, its cue shows noticed (the lens, the face, the head), so the player learns that running is seen without an Alert to learn it from. Proportional: one pass costs the noticed cue; a run held in sight makes the watcher wary after (wary - noticed) s (12 s at Heat 0, 9 s infamous) and reports it after (report - noticed) s (37 s at Heat 0, 15 s infamous). Measured (results/run-camera.txt): the Scout running 16 legs across the entrance camera's view: today Alert 1 at the first sight (0:20.9); with the rule noticed at 0:16.3, wary at 0:28.2, reported 0:53.2, landed 0:57.6 (Alert 1). No quiet reference route gains a report (MC-12 13/13 at every candidate).",
+   "checks": "RUN-NOTICED: the run-camera script (results/run-camera.txt) logs attention.noticed on the run's first tick in sight and no Alert; wary 12.0 s of run in sight later (Heat 0); reported 37 s later; on landing Alert 1. RUN-NOT-ALERT: route A ends at Alert 0 (0.33.1: 1); its run.seen lines stay. RUN-FREE: at Alert 2 a run moves no clock."
+  },
+  {
+   "id": "M067-K1",
+   "kind": "confirm",
+   "key": "cancel.driveCar drives-on; refusal car-driving (engine 0.33.1)",
+   "value": "Confirmed as the rule [S]: a Drive under way is no cancel; the car drives on to the stand it was given and stops only at a stand. Its riders are busy until it stands (any order refused agent-busy, a cancel car-driving), so nobody steps out of a moving car. Go during a Drive is taken and is a withdrawal: a Drive never carries Vale (drive-fight: refused once the final fight has started).",
+   "tag": "S",
+   "reason": "A stand is the only place the car's rules exist (its exit lane, ambush spots, police stands, cover); a car stopped on the road would be a stand with none of them (unknown = reject). The order shows its price before commit (the stand and its seconds: 28.4 s from the square to the service drive), and the HUD shows the stand and the seconds left while it drives, so the commitment is read before it is made. A re-target mid-drive (turn back) is not worth its rules: readable > rich.",
+   "gdd": "§06 Drive: add 'A Drive under way runs to its stand: it can't be stopped, and nobody gets out until the car stands.'"
+  },
+  {
+   "id": "M067-K2",
+   "kind": "accept",
+   "key": "car.footprint: car-clear-cm 50, car-reach-cm 100 (engine 0.33.1)",
+   "value": "Accepted as Keel built them [S]: a walker's centre keeps 50 cm off a standing car's body (473 x 182 cm on its heading); 'at the car' (Board, and a rival reaching Vale in the getaway car) is within 1 m of the body. The 6 m guard ring of 'rivals reach Vale' (cell.reach) stays measured from the car's point.",
+   "tag": "S",
+   "reason": "50 cm is one walk cell, so the first free ring round a standing car is always 'at it' (the band 50-100 cm is one full cell wide) and a string-pulled walk still passes the body about a shoulder clear: Sky's 'walking through cars' is gone and no side of a car loses its Board. The building clearance (65 cm, plan body.r) would leave a 35 cm band, narrower than a cell, with gaps where no free cell is at the car. The 1 m reach covers about 8.9 m2 outside the clearance against the 7 m2 the old 1.5 m circle round the centre held (Keel's reason), so 'rivals reach Vale' is no easier. Every number in this file is measured on 0.33.1, so with these two values.",
+   "gdd": "§06 Board: 'by any op within 1 m of the car's body'; rivals reach Vale: 'a rival within 1 m of the car's body'."
+  },
+  {
+   "id": "M067-K3",
+   "kind": "rule",
+   "key": "the end of a fight the cell can no longer fight (BAL-YARD-AT-WILL: the Enforcer downed in the car with Vale at 7:30.0, the run idle to 8:30)",
+   "value": "(a) Hiding in a held car loses [S]: in the safe fight, with Vale in the getaway car, the car held (a holder stands: Game.CarHolders not empty) and no operative standing outside it (every one down, or every standing one in the car), the rivals up and not broken, the blocker excepted (he keeps his lane), walk to the car, firing as they walk; the first within car-reach of its body takes Vale (fail rivals-reach-vale, as today). An operative standing outside again stops it: they go back to cover (how they walk, there and back, is Pulse's, as the press for the Vale holder; the probe models the walk there only). (b) The cell down [S]: once every operative is down (in the car or not), the mission fails at once (fail cell-down: 'The whole cell is down'), the fail camera on the last to fall. (c) Go needs a driver [S]: Go is taken only with a standing operative in the car; with only the downed aboard it is refused (car-no-driver: 'nobody aboard can drive'); any standing operative may still give it, from anywhere, once one is aboard. No new timer: the safe fight still ends by the cell's acts, (a), (b), Withdraw, or (loud) the seal.",
+   "tag": "S",
+   "reason": "GDD §06 makes the Enforcer 'any op' once Vale is in the car and says hiding in a held car loses; the engine had no way to lose that way: the rivals hold cover, the downed Enforcer can't be shot dead, the Tech in the car is no foe under ai.intent.final agent, and Go stays refused (car-held: rival-3). Measured on the probe (results/yard-at-will-0.33.1.txt, yard-at-will-k3.txt): 0.33.1 ends None at 8:30.0 (the script's end); with (a)-(c) the Scout falls at 7:38.3, rival-1 and rival-2 go for the car at 7:38.4 and rival-1 reaches it at 7:46.5: rivals-reach-vale. On every script of HEAD's route set and of the candidate set, (a)-(c) move no outcome; route-a-board's final hash moves at its Go tick (2675), where the three's boards land, the rivals' walk starts and Go is taken in one tick (read the condition after the tick's orders, and no hash moves).",
+   "checks": "BAL-YARD-AT-WILL: fails rivals-reach-vale (probe 7:46.5), the rivals' walk logged when the last operative outside goes down (7:38.3). K3-CELL-DOWN: every operative down with Vale in the car: fail cell-down that tick. K3-DRIVER: Go with only the downed Enforcer and Vale aboard is refused car-no-driver; the Scout boards (1 s) and Go is taken. Text for Fable: cell-down (fail), car-no-driver (refusal), the rivals' walk to the car (log).",
+   "amended": "2026-10-26, briefs/067/motive-square.md §4: (a) applies only while the car is held. A free car with the cell aboard waits for Go, and the rivals don't walk to it. As first given (no 'held'), route-a-board on round 1's square lost 0/8: the whole cell boarded a free car (rival-4 at 8.9 m), the walk began the tick Vale boarded (4:15.5) and put rival-4 inside the hold before the plan's Go a second later. With 'held' (probe PROBE_K3=2) and M067-SQ1/SQ2 it wins 8/8. BAL-YARD-AT-WILL is a held car (rival-3), so it still fails rivals-reach-vale (7:43.0 on round 1's site, the same with or without 'held')."
+  },
+  {
+   "id": "M067-K4",
+   "kind": "ruling",
+   "key": "loud Trail 12 (ai.intent.final agent) against 14 (every), FinalIntent F15_ROUTES",
+   "value": "Both are §06's rule, applied the same way. The 2 T between them is one down: under every, rival-1 falls at 4:18.3 (+2 T down:rival-1) before the Enforcer does; under agent the hostiles do not fire on the operatives who did nothing, the fight runs differently and rival-1 is still up at 4:26.4. The ledger is otherwise identical: loop 1, reroute 1, the guard 2 + 2 + 2, rival-1 2 + 2. The game's number is agent's (the rulebook's, provisional, Sky 'sounds right'): 12 on the failing c037 loud scripts. The re-composed loud (loud-x4, the reference loud win) costs 27 T under both. Keel's test shape (Trail under agent <= under every) is the right one.",
+   "tag": "S",
+   "reason": "The mismatch is in the GDD text, not between the two runs: §06 'cost' says +2 T per person hit and +2 T if they go down, 'a dropped guard = 4 T'; the rulebook also charges gunfire-trail +2 T once per shooting (the first shot at each target, hit or miss: Motive's fights addendum Q1, Sky-approved 2026-10-15), so the engine's dropped guard is 6 T (gunfire:guard 2, hit:guard 2, down:guard 2).",
+   "gdd": "§06 cost: '+2 T once per shooting (the first shot at each target, hit or miss), +2 T per person hit (once), +2 T more if they go down (a dropped guard = 6 T)'; §02 Trail: 'people shot at or hit by gunfire'."
+  },
+  {
+   "id": "M067-SQ1",
+   "kind": "rule",
+   "owner": "Pulse (the motion) -> Keel (lands it)",
+   "key": "the hold is entered only on purpose (fight.hold; ai answers to fire; the walk to a post)",
+   "value": "In the final fight a hostile's answer to fire never ends inside the getaway car's hold (fight-hold-m of the car) or on its exit lane: a rival's step out of a shooter's line (the shielding cover, else the nearest free spot within 8 m with no line to him), a rival's step to cover while engaged, a police body's cover or close. If no spot outside serves, it stays where it stands. A walk to a post goes round the hold (the route with the hold's ground closed), unless the post or the walker is already inside it. Exceptions: the blocker (his lane is the road: he comes for the car) and the rivals walking to a held car with nobody outside (M067-K3 a). An advance on the car or on an operative may enter the hold: that is coming for the car, and it holds.",
+   "tag": "S",
+   "reason": "MC-11's own principle: only a hostile that comes for the car holds it. Without the planters, rival-4 (the late car's man) walks from the rival car to ambush-4 straight past the car (7.3 m at 4:15.0) after the whole cell has boarded a free car, and holds it; with K3 (a) the rivals then take Vale. route-a-board 8/8 -> 0/8 on round 1's square; with this rule (walk round the hold, probe bit 2) and K3 (a) on a held car, 8/8. Answers to fire (bit 1) measured no outcome in this set, but my tree067 run had a kite step end in the hold (motive.md §3): it is the same principle, kept as a guard.",
+   "checks": "SQ1-WALK: on round 1's site, route-a-board: rival-4's walk to ambush-4 keeps 8.9 m or more from the car; the car is free at Go; success 4:15.5. SQ1-STEP: a rival shot at from the car's side whose nearest blind spot lies inside the hold steps to the nearest one outside it (or stands). MC-11 clause 3 (Waymark): no car.held.answer or car.held.post in any played script."
+  },
+  {
+   "id": "M067-SQ2",
+   "kind": "rule",
+   "owner": "Pulse (the motion) -> Keel (lands it)",
+   "key": "the safe fight can't stall (ai: hold -> advance)",
+   "value": "In the final fight a rival with no foe in his effective reach for ai-engage-lapse-s (1 s, today's value: 'a body that has lost every foe from reach and sight stays stopped 1 s before it advances again') advances again, from hold as from engage: on the nearest operative standing on the street that he has cause to fire on (the Vale holder counts), to the cover that shields him from that operative, else to his stop point of that operative (ai-stop-reach-pct of his effective reach), not of the car's point. No new value. Police and the blocker hold their posts as built.",
+   "tag": "S",
+   "reason": "A rival in hold never advanced again, and an advance without cover stopped at 90 % of 15 m from the car's point, while the cell stands round the car: on round 1's square the last rivals held 14.6-17.6 m out (15.3 m from the nearest operative, just past the pistol's 15 m) from 4:23 to the end, with 2 of 5 down, so the crew never broke and fight.over never came. The planters were their cover to advance to. ra-h3 0/8 -> 8/8 (over 4:22.9, win 4:37.3-4:41.2), route-g-kill (rgk-h3) 0/8 -> 8/8 (5:56.9-5:58.9; it never won at 1.8 before). Keeping a rival at cover where he stands (only the open ones advance) brings rgk-h3's stall back.",
+   "checks": "SQ2-NO-STALL: on round 1's site, ra-h3 reaches fight.over (probe 4:22.9) and wins; a rival left in the open with nobody in reach logs his advance 1 s later; one at cover with a foe in reach keeps firing from it."
+  }
+ ],
+ "keep": [
+  {
+   "rule": "Sky's 054 call: from Alert 2 a civilian who sees a run in their cone remembers the face",
+   "number": "0 T, 0 Alert, 0 Standing; a sighting for the investigation only",
+   "why": "It costs nothing in the mission and feeds the campaign's leads (the investigators [L]); at Alert 2 the search is already on."
+  },
+  {
+   "rule": "attention marks by Heat (unknown 8/20/45 s ... infamous 3/12/18 s)",
+   "number": "MC-12 13/13 quiet scripts unreported at every pace tried; the loiter twins still reported (careless-scout-idles-pickup 2:33.8 at 1.4, 2:32.2 at 1.8)",
+   "why": "Standing still is what the clock counts, and a faster walk does not change a 20 s Watch; Sky's two reports in 0.2.122 came from Watching in the patrol's sight for 45 s."
+  },
+  {
+   "rule": "Watch reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m)",
+   "number": "unchanged",
+   "why": "The split cell's cost (T12) is the point of the opening recce."
+  },
+  {
+   "rule": "entry seen by the guard, a live camera or the patrol fails the mission",
+   "number": "fail",
+   "why": "The core stealth line, priced on the ring before commit ('who would see it')."
+  },
+  {
+   "rule": "a Disable is an incident (Alert 1, the dial's response to the camera)",
+   "number": "+2 T, Alert 1",
+   "why": "Priced before commit; in Sky's session it sent the patrol off its sweep (1:21.6), which is the city answering, not a hidden rule."
+  },
+  {
+   "rule": "gunfire Alert 2 at once; violence seen by a civilian Alert 3 (doors lock)",
+   "number": "loud 27 T, Alert 2, Standing -1 against quiet 3-7 T, Alert <= 1, Standing >= 2 (MC-10 at every pace)",
+   "why": "Loud is the last resort."
+  },
+  {
+   "rule": "the Enforcer holding Vale is the rivals' target after their own shooter",
+   "number": "6 health; two rivals at the effective ring (562 per mille every 1.5 s) down him in about 8 s; the board-and-go walk from the 20 m spring is 14.3 s + 4 s Board at 1.4 m/s, 11.1 s + 4 s at 1.8",
+   "why": "The faster walk is the softening for this batch; the rest belongs to the fight proposal (brief 067 M: Board carrying 4 s, Vale's holder and cover)."
+  },
+  {
+   "rule": "a guard who saw a runner no longer fights at your side",
+   "number": "route A's guard sees the Enforcer's run at 2:52 at every pace",
+   "why": "Consistent with 'seen'; it is the run's one lasting price below Alert 2."
+  },
+  {
+   "rule": "the 2:00 loop, the call window, Listen 42 s, Help and Pay 50 s, Enter 38 s",
+   "number": "route A secures Vale 2:56-2:57 before 5:50 at every pace",
+   "why": "Acts set route A's pace; a faster walk already leaves more slack, and faster acts would only add waiting for the windows."
+  }
+ ],
+ "evidence": {
+  "probe": "bun run guard zsh briefs/067/motive/mkengine.sh (the scratch tree at d4361806 + engine-probe.patch); switches PROBE_OPWALK=<cm/s> (M067-B1, the cell's walk only), PROBE_RUNCLOCK=2 (M067-B2), PROBE_K3=1 (M067-K3 a-c)",
+  "missionCheck": "bun run guard zsh briefs/067/motive/cand.sh <tag> \"<value=n ...>\" [ENV=...] -> briefs/067/motive/results/cand-<tag>.txt; table: python3 -I briefs/067/motive/table.py base w180",
+  "ensembles": "bun run guard zsh briefs/067/motive/ens-all.sh (start delays 0-3 s) and ens-op.sh (each operative's own delay, 0-2 s) -> results/ens-<tag>.tsv, ens-op-<tag>.tsv; table: python3 -I briefs/067/motive/enstable.py <tags>",
+  "fightLab": "dotnet <probe>/suborned-sim.dll fight-lab --presets today --rulebook <variant> -> results/fight-lab-today.txt",
+  "sky": "results/sky0122-replay-0.31.txt (Sky's 0.2.122 session replayed on its engine 0.31.0: identical, Failure enforcer-down at 8:10.5)"
+ },
+ "recompose": {
+  "owner": "Waymark (c038, on the engine with these values)",
+  "plans": "briefs/067/motive/plans/ (each is a c037 or 059 plan with one change; the 059 focus-fire plans are briefs/059/motive/balance/probe-plans/)",
+  "items": [
+   {
+    "route": "route-a, route-a-disable",
+    "plan": "ra-h3, rad-h3",
+    "change": "the Enforcer holds Vale at (2000, -6500): 20.4 m from the car, >= 20.8 m from every ambush spot (beyond the pistol max 16 m), so the cell's fire springs the ambush",
+    "why": "at 1.8 the cell springs the ambush 9 s earlier (4:01.4 against 4:10.6), the blocker is picked from the crew on foot, and the late car's rival-4 walks past the old hold (2400, -6000), 15.9 m from ambush-1, and shoots the Enforcer down",
+    "result": "8/8 at 1.4, 1.6 and 1.8 (each operative 0-2 s late)"
+   },
+   {
+    "route": "route-b, route-b-board, careless-reporter-not-stopped, careless-scout-idles-pickup",
+    "plan": "rb-st, rbb-st, crns-st, csip-st",
+    "change": "the Scout's first lock 0.5 s after the Fixer's (after: fixer-l1, gap 0.5)",
+    "why": "at 1.8 the Scout needs no walk-in to her line, so both first shots land at 7:25.0; rival-1 answers the Fixer, who already carries rival-3's fire, and he goes down; the plans' Go waits for nobody captured",
+    "result": "rb-st and rbb-st 8/8 at every pace; the two twins compose again (careless-scout-idles-pickup reported at 2:32.2)"
+   },
+   {
+    "route": "route-g-kill-board",
+    "plan": "rgkb-h3",
+    "change": "the hold at (2000, -6500)",
+    "why": "board and go from the far hold",
+    "result": "8/8 at 1.8 (0/8 at 1.4)"
+   },
+   {
+    "route": "route-g-kill",
+    "plan": "-",
+    "change": "none found: keep the board variant or drop the fight-it-out",
+    "why": "at 1.8 two rivals step out of the Fixer's line behind the café's wall arc; with 2 of 4 down the crew never breaks, fight.over never comes and the plan waits; the car is free from 5:17.3",
+    "result": "0/8 at 1.8 (rgk-h3 too)"
+   },
+   {
+    "route": "careless-g-disable",
+    "plan": "-",
+    "change": "re-time so the guard's 4:00 mark comes before Go, or accept",
+    "why": "at 1.8 the cell is gone at 3:59.6, 0.4 s before the mark, so the Disable is the only incident: Alert 1, 7 T against route G's 6 (MC-7's one failing line)",
+    "result": "-"
+   },
+   {
+    "route": "route-b, route-b-board, careless-reporter-not-stopped, careless-scout-idles-pickup (with the patrol in the yard, item A)",
+    "plan": "rb-rr, rbb-rr, crns-rr, csip-rr",
+    "change": "the -st plans plus: the Tech reroutes the patrol from the cabinet at 5:00 (lands 5:45, away to 7:40), then runs to the car; the Enforcer waits at the square until 5:50",
+    "why": "the yard sweep sees 'Service lane' 63 % of each round: as composed the Enforcer waiting there from 0:00 is reported at 1:53.4, the Scout and Fixer in the yard at 7:12, and the patrol fires in the yard fight (9 T, Alert 2); a rerouted patrol never breaks to gunfire (WakePatrol)",
+    "result": "route-b 7:32.2, 4 T, A 0; route-b-board 7:35.4, 4 T (results/cand-patrolA-w180rr.txt)"
+   },
+   {
+    "route": "fail-entry-seen-patrol",
+    "plan": "-",
+    "change": "reach it with an alarm that walks the patrol to the front (patrol.alarm), or drop 'patrol' from §07's entry fail (Sky)",
+    "why": "with the sweep in the yard the robot never sees the public door, sweeping or rerouted: MC-3 7/8",
+    "result": "-"
+   }
+  ]
+ },
+ "checks": {
+  "missionCheck": "results/cand-final-w180.txt: all six values, the re-compositions under the reference ids: MC-1 3 (A, B, G), MC-2 loud 27+3 T, MC-3 8/8, MC-4, MC-5 (A 2:57, B 1:07, G 4:17), MC-6 122.6 s, MC-8 5 takedown wins, MC-9, MC-10, MC-11 11/11, MC-12 13/13 and 1/1 hold; MC-7 6/7 (careless-g-disable), MC-0 26/39 (the manifest's expectations, and c038's loud variants and route-a-pressure). At 1.4 with the same plans: results/cand-final-base.txt (MC-5 fails there: route-g-fast loses).",
+  "keel": [
+   "PACE-SPLIT",
+   "RUN-NOTICED",
+   "RUN-NOT-ALERT",
+   "RUN-FREE",
+   "BAL-YARD-AT-WILL (fails rivals-reach-vale)",
+   "K3-CELL-DOWN",
+   "K3-DRIVER"
+  ]
+ },
+ "patrol": {
+  "item": "A (Vantage, mission.json points in the working tree at 06:29; Splice's export)",
+  "measured": "the move alone on HEAD's site (briefs/067/motive/mksite.py: the sweep (61.25, -7.25)-(76.25, -7.25) facing the wing's east face [0, -100], the reroute at (46.25, -9.25) facing [-100, 0]): results/cand-patrolA-base.txt, cand-patrolA-w180.txt (the plans as composed), cand-patrolA-w180rr.txt (route B rerouted); and the working tree's full site A+J+K+L: cand-tree067-w180rr.txt, cand-tree067-base.txt",
+  "front": "route A and route G unchanged (route-a-board 4:15.5, ra-h3 4:56.8, route-g 3:59.6, route-g-fast 3:00, same T); their Reroute no longer buys anything at the door",
+  "back": "route B needs the Reroute (+1 T) and the Enforcer's arrival after it lands: then 7:32.2, 4 T, A 0, and MC-1, 2, 4, 5, 6, 8-12 hold; MC-3 fails (entry seen by patrol unreachable), MC-7 as before",
+  "splice": "tools/sim/site.ts hard-codes patrol.facing [0, 100] (east, away from the Office) and rerouteFacing [0, -100]; Vantage's points need [0, -100] and [-100, 0]",
+  "fullSite": "with K's planters gone, route-a-board's cell is aboard at 4:15.5 and Go is refused to 5:16 (car-held: rival-4, whose kite step out of the Tech's line ended inside the 8 m hold); K3 (a) turns it into rivals-reach-vale; the square's board-and-go plans need re-composing on the final site (Waymark), and a kite step should not end inside the getaway car's hold (Vantage, Pulse)"
+ },
+ "amendments": [
+  {
+   "date": "2026-10-26",
+   "doc": "briefs/067/motive-square.md",
+   "what": "M067-K3 (a) on a held car only; new M067-SQ1 (the hold is entered only on purpose) and M067-SQ2 (no stall); the square needs no new cover"
+  },
+  {
+   "date": "2026-10-26",
+   "doc": "briefs/067/motive-flips.md",
+   "what": "engine 0.34.0's outcome flips judged: no value moves. op-run-speed-cm-s and mod-running reasons corrected (their fight-lab measurements were on 0.33.1's planted square; on 0.34.0 one today kite row wins heavy)"
+  }
+ ]
+}

@@ -29,8 +29,18 @@ describe('the committed block', () => {
     expect(block.dressing).toEqual(adjust.dressing);
     expect(adjust.pending.ops).toEqual([]); // each op moved out of pending, its reason kept
     expect(block.adjustments.applied.filter((a: any) => ['towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'dressing'].includes(a.op)).map((a: any) => a.op))
-      .toEqual(['towerFootprint', 'towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'remove', 'addEntrance', 'addEntrance', 'moveEntrance', 'moveEntrance', 'remove', 'remove', 'dressing']);
+      .toEqual(['towerFootprint', 'towerFootprint', 'moveEntrance', 'addEntrance', 'remove', 'remove', 'addEntrance', 'addEntrance', 'moveEntrance', 'moveEntrance', 'remove', 'remove', 'remove', 'dressing']);
     expect(block.adjustments.applied.every((a: any) => a.reason.length > 20)).toBe(true);
+  });
+
+  test('does not carry the steward monument (nav solid foreground-civic-robot): the adjust file removes it, Sky, 2026-10-26, briefs/067 J, "a butler robot fixed to the north of the Records building: it needs to go"', () => {
+    const op = adjust.adjustments.find((a: any) => a.op === 'remove' && a.id === 'foreground-civic-robot');
+    expect(op?.reason).toContain('There\'s a butler robot fixed to the north of the Records building: it needs to go.'); // Sky's words, in the op's reason
+    expect(block.adjustments.applied).toContainEqual(op); // and the block records that it was applied
+    expect(block.structures.map((s: any) => s.id)).not.toContain('foreground-civic-robot');
+    expect(block.structures.some((s: any) => s.category === 'civic-monument')).toBe(false);
+    expect(footprints(civic(plan.civic, block)).length).toBe(4); // the buildings and their towers, as before: nothing else of the block is a footprint
+    expect(civic(plan.civic, block).solidIds).not.toContain('foreground-civic-robot'); // so the walk, the cover and the sim's sight blockers never see the spot
   });
 
   test('is the block the adjust file makes (run bun run block after editing it)', () => {
@@ -72,6 +82,15 @@ describe.skipIf(!sources)('bun tools/plan/block.ts --adjust (needs the Oct 9 sou
     const { adjustments: x, ...made } = r.out(), { adjustments: y, ...had } = block;
     expect(made).toEqual(had);
     expect(x.applied).toEqual(y.applied);
+  });
+
+  test('the steward monument\'s removal is the adjust file\'s, not the code\'s: without the op the block carries the Oct 9 monument (a cylinder of r 0.76 about (25.4, -19), 2.22 m), with it the committed block does not', () => {
+    const r = run(a => { a.adjustments = a.adjustments.filter((o: any) => !(o.op === 'remove' && o.id === 'foreground-civic-robot')); });
+    expect(r.code).toBe(0);
+    const m = r.out().structures.find((s: any) => s.id === 'foreground-civic-robot');
+    expect(m).toMatchObject({ name: 'Civic steward monument', category: 'civic-monument', z: 0, height: 2.22 });
+    expect(m.polygon.length).toBe(16);
+    expect(block.structures.some((s: any) => s.id === 'foreground-civic-robot')).toBe(false);
   });
 
   test('towerFootprint for a missing tower, moveEntrance of a missing entrance, remove of a missing item and a duplicate addEntrance each stop the build', () => {

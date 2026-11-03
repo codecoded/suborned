@@ -59,7 +59,7 @@ namespace Suborned.Sim
                 var g = r.G; var off = new Start { FightLabOn = false }; off.LabPips = false;
                 r.Eq(off.Canonical(), new Start().Canonical(), "the today preset adds nothing to the start state");
                 r.Is(g.Lab && g.HealthScale == 10, "the lab is on, health ×10");
-                r.Eq((r.Op(Enf).Gun.Max, r.Op(Scout).Gun.Max, g.GuardGun.Max, g.PatrolGun.Max), (60, 40, 30, 40), "health ×10: Enforcer 60, an op 40, the guard 30, the patrol 40");
+                r.Eq((r.Op(Enf).Gun.Max, r.Op(Scout).Gun.Max, g.GuardGun.Max, g.PatrolGun.Max), (g.R.HealthEnforcer * 10, g.R.HealthOp * 10, g.R.HealthGuard * 10, g.R.HealthPatrol * 10), $"health ×10 of weapons.health: Enforcer {g.R.HealthEnforcer * 10}, an op {g.R.HealthOp * 10}, the guard 30, the patrol 40 (brief 039: the floor, ops 5, Enforcer 8)");
                 r.Eq((r.Op(Scout).Gun.W!.Id, r.Op(Fixer).Gun.W!.Id, r.Op(Tech).Gun.W!.Id, r.Op(Enf).Gun.W!.Id), ("sidearm", "sidearm", "sidearm", "carbine"), "the Handover issue: three sidearms and the carbine");
                 r.Eq((g.GuardGun.W!.Id, g.PatrolGun.W!.Id, g.DrawT, g.AimNewT), ("sidearm", "sidearm", g.R.Lab!.DrawTicks, g.R.Lab.AimNewTicks), "everyone else carries the lab sidearm; draw and aim are the lab's");
                 r.Eq(g.ChargeOf(OpId.Enforcer), 100, "a full charge bar");
@@ -106,15 +106,23 @@ namespace Suborned.Sim
                 var g = r.G;
                 RouteA(r, reroute: true); Support(r); ToAmbush(r);
                 int firedAt = -1; string first = "";
-                if (r.Until(() => { var t = g.Combatants().FirstOrDefault(id => id.StartsWith("rival-", StringComparison.Ordinal)); return t != null && g.PosOf(t).HasValue && g.PreviewFire(OpId.Scout, t).Refused.Length == 0; }, T(30)))
-                { first = g.Combatants().First(id => id.StartsWith("rival-", StringComparison.Ordinal)); r.Fire(Scout, first); firedAt = g.Tick; }
+                // brief 059: the crew's bodies post by the greedy rule (rival-1 at ambush-3): the Scout takes the nearest rival he can fire on now
+                string Pick() => g.Combatants().Where(id => id.StartsWith("rival-", StringComparison.Ordinal) && g.PosOf(id).HasValue && g.PreviewFire(OpId.Scout, id).Refused.Length == 0).OrderBy(id => G.D2(g.PosOf(id)!.Value, r.Op(Scout).Pos)).ThenBy(id => id, StringComparer.Ordinal).FirstOrDefault() ?? "";
+                if (r.Until(() => Pick().Length > 0, T(30)))
+                { first = Pick(); r.Fire(Scout, first); firedAt = g.Tick; }
                 r.Until(() => g.GunOf(first)?.Down == true || g.FightOverTick != Never, T(60));
                 r.Is(g.GunOf(first)?.Down == true, $"{first} goes down");
                 int downAt = g.Tick; r.Wait(T(3));
                 r.Eq(r.Op(Scout).Gun.Stance, "free", "then free: back to at will");
+                // engine 0.33.0 (M059-B1): the crew fights from where it stands, so the next rival may be a few seconds out of the Scout's line.
+                // Engine 0.34.0: up to 60 s (was 15): the cell at 1.8 m/s stands where none of the rest is in his line for 15 s, and the rivals
+                // left with nobody in reach advance on the Enforcer (M067-SQ2) and take Vale (5:33.6) before one comes into it
+                r.Until(() => r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first) || g.FightOverTick != Never || g.Over, T(60));
                 bool firedOn = r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first);
                 bool newOrder = g.Orders.Exists(o => o.order.Op == Scout && o.order.Do == "fire" && o.order.Tick > firedAt);
-                r.Is(!newOrder && (firedOn || g.FightOverTick != Never), "the Scout fights on with no new order (or the fight is over)");
+                // engine 0.33.1: with the walks round the cars the rest of the crew takes other cover, out of the Scout's reach, and the run ends
+                // (rivals-reach-vale, 5:39.5) before one comes into it: the fight is over with the run, and he was given no new order
+                r.Is(!newOrder && (firedOn || g.FightOverTick != Never || g.Over), $"the Scout fights on with no new order (or the fight is over{(g.Over ? $": the run ends {g.FailCode} at {Report.Clock(g.Tick)}" : "")})");
             }, LabStart());
 
             Add("N144", "—", "Brief 027 P6 (EXPERIMENTAL fire.close): a fire order out of range walks the grid into the effective ring with a clear line, then fires; it neither lapses nor is refused. Brief 030 (weapons.close, Sky 2026-10-20): today the same order walks in too (it was refused out-of-range).", r =>
@@ -138,7 +146,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 var cw = r.Op(Enf).Gun.W!; int tc = cw.TargetCharge, own = cw.Charge, max = g.Labr!.ChargeMax, paid = max - 3 * tc; // the rulebook's (Motive tunes them)
                 var fv = g.PreviewVolley(OpId.Enforcer, GuardR, 3);
                 r.Eq((fv.Refused, fv.ChargeCost, fv.ChargeLeft), ("", 3 * tc, paid), $"three targeted carbine shots cost {3 * tc} of {max}");
@@ -160,7 +168,7 @@ namespace Suborned.Sim
             Add("N146", "—", "Brief 027 P10 (EXPERIMENTAL police warning): the guard sees the Scout draw before any shot and gives 2 s. Holstered in time: Alert 1, no engagement, no drawn-seen; drawn again and held: today's drawn-seen (Alert 2, he engages).", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 var post = g.PosOf(GuardR)!.Value; Pt? spot = null;
                 for (int dx = -800; dx <= 800 && spot == null; dx += 100) for (int dy = -800; dy <= 800 && spot == null; dy += 100)
                 { var q = new Pt(post.X + dx, post.Y + dy); if (g.S.Grid.Free(q) && G.D2(q, post) >= 300L * 300 && g.GuardWatching(q) && !g.PatrolWatching(q) && !g.CameraWatching("pickup", q)) spot = q; }
@@ -194,9 +202,11 @@ namespace Suborned.Sim
                 r.Do(Scout, "draw"); r.Eq(r.Op(Scout).Gun.Stance, "free", "drawn means at will");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "return" }).code, "stance-unknown", "return is no stance with two");
                 r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "hold" }).ok, "hold is");
-                var today = Twin(g, new Start());
+                var today = Twin(g, new Start { OneInput = false }); // brief 039: today's stances are the controls before one input
                 today.Issue(new Order { Tick = 0, Op = Scout, Do = "draw" });
-                r.Is(today.OpOf(OpId.Scout).Gun.Stance == "return" && today.Issue(new Order { Tick = 0, Op = Scout, Do = "stance", Stance = "return" }).ok, "today: a draw is return, and return is taken");
+                r.Is(today.OpOf(OpId.Scout).Gun.Stance == "return" && today.Issue(new Order { Tick = 0, Op = Scout, Do = "stance", Stance = "return" }).ok, "today before one input: a draw is return, and return is taken");
+                var one = Twin(g, new Start()); one.Issue(new Order { Tick = 0, Op = Scout, Do = "draw" });
+                r.Eq(one.Issue(new Order { Tick = 0, Op = Scout, Do = "stance", Stance = "return" }).code, "unknown-verb", "today with one input (brief 039): the stance order is retired");
                 r.Is(g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "panic" }).ok, "with the lab, panic is taken outside a fight");
                 r.Wait(1);
             }, LabStart(s => s.LabStances = "two")); // stances two is a lab option; the lab's own is three since tuning.md §13.4 (engine 0.18.0)
@@ -286,8 +296,9 @@ namespace Suborned.Sim
                 r.Is(g.PreviewSnap(OpId.Fixer, click)?.Id == c.Id, "and is free to snap to again");
                 // a named place (a mission point, a person's) never snaps, drawn or not: Suture F8, d:Meet driver lies by the official car's cv-008
                 var md = g.S.Stand("d:Meet driver"); var mdc = g.S.Cover.Where(Ok).OrderBy(x => G.D2(md, x.At)).First();
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Meet driver" }).ok && r.Op(Scout).Walk?.End == md && g.CoverOf(OpId.Scout) == "",
-                     $"the drawn Scout's move to d:Meet driver ends there ({mdc.Id} is {G.Dist(md, mdc.At)} cm off; a click there would {(g.PreviewSnap(OpId.Scout, md) != null ? "snap" : "not snap")})");
+                var mdb = g.Walk.RouteBeside(r.Op(Scout).Pos, md);
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Meet driver" }).ok && G.Within(r.Op(Scout).Walk!.End, mdb![mdb.Length - 1], g.R.BodyClearCm * 6) && g.CoverOf(OpId.Scout) == "",
+                     $"the drawn Scout's move to d:Meet driver ends there, or beside Vale's car where it covers the point (engine 0.33.1), holding no cover ({mdc.Id} is {G.Dist(md, mdc.At)} cm off; a click there would {(g.PreviewSnap(OpId.Scout, md) != null ? "snap" : "not snap")})");
             }, LabStart());
 
             Add("N151", "—", "Brief 027 B5 mid-volley (EXPERIMENTAL coverSnap): a snap given during a volley is walked like any move: the agent fires the rest of its volley on the way at walking pips, keeps its shots, and has no cover until it stands; the walk into range (close) never snaps.", r =>
@@ -368,7 +379,7 @@ namespace Suborned.Sim
                 case "P-B": Prepared(r, routes["route-b-board"], 4470); break;
                 default: throw new ArgumentException($"no run {id}");
             }
-            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.S.Over)) + T(1));
+            if (!g.Over) g.RunTo(Math.Max(g.Tick, T(g.ClockOver)) + T(1));
             g.Finish();
             return r;
         }
@@ -442,10 +453,12 @@ namespace Suborned.Sim
             FightToCar(r);
         }
 
-        /// <summary>L3: route G-fast's timing, but at 2:03.6 the Enforcer shoots the guard at his mark instead of the knockout; then Enter.</summary>
+        /// <summary>L3: route G-fast's timing, but where its Enforcer takes the guard down he shoots him instead; then Enter. Brief 059 (Aster): the
+        /// shot is tied to the route's own takedown order (GuardTakedownTick), not a fixed tick, so a retimed route (Waymark's 0.31 retimes moved it
+        /// from 2:03.6 to 1:30.5) never replays past the knockout and reads "not loud".</summary>
         static void LoudGuardShot(Run r, string routeG)
         {
-            var g = r.G; Replay(r, routeG, 1236);
+            var g = r.G; Replay(r, routeG, GuardTakedownTick(routeG));
             if (g.Over) return;
             g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = GuardR });
             DrawAll(r);
@@ -514,6 +527,12 @@ namespace Suborned.Sim
         }
 
         /// <summary>A script's orders before `beforeTick`, each at its tick (refused ones too: they are the player's).</summary>
+        /// <summary>The tick of the route's first takedown order on the guard (L3's shot replaces it); the script without one is rejected.</summary>
+        internal static int GuardTakedownTick(string scriptText)
+        {
+            foreach (var o in Suborned.Sim.Script.Parse(scriptText).Orders) if (o.Do == "takedown" && o.Target == GuardR) return o.Tick;
+            throw new FormatException("L3's route has no takedown on the guard to replace with a shot");
+        }
         static void Replay(Run r, string scriptText, int beforeTick)
         {
             var s = Suborned.Sim.Script.Parse(scriptText); var g = r.G;
@@ -665,7 +684,7 @@ namespace Suborned.Sim
         {
             var rl = new Run(Engine.New(i, Level(1))); var g = rl.G;
             rl.To(Max(rl.Send(Tech, "cabinet"), rl.SendTo(Enf, BesideDoor)));
-            rl.Do(Tech, "loop", "entrance"); rl.Done(Tech); rl.Do(Tech, "reroute", "patrol"); rl.Done(Tech);
+            rl.Do(Tech, "reroute", "patrol"); rl.Done(Tech); rl.Do(Tech, "loop", "entrance"); rl.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) rl.To(mark + 1);
             rl.Fire(Enf, GuardR);
             var rs = new Run(Engine.New(i)); RouteA(rs, reroute: true);

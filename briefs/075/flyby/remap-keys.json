@@ -1,0 +1,163 @@
+{
+ "schema": "suborned.flyby-keys/1",
+ "note": "Brief 075 remap (Latch, 2026-10-28): the old DecoKit reel flight (briefs/074/flyby/old-keys.json, 11 keys, look_at) carried into the remapped plan by plan y = old z - 206 (Datum: the plan is now the old town in the old frame). Same times, heights and view; Flyby074 reads eye/look. s4 and earlier reels flew briefs/074/flyby/new-keys.json, which no longer follows the old route through this plan.",
+ "source": "briefs/074/flyby/old-keys.json",
+ "fov": 58,
+ "fps": 30,
+ "keys": [
+  {
+   "t": 0,
+   "name": "boulevard start",
+   "eye": [
+    2,
+    6,
+    -266
+   ],
+   "look": [
+    0,
+    8,
+    -146
+   ]
+  },
+  {
+   "t": 8,
+   "name": "boulevard",
+   "eye": [
+    2,
+    9,
+    -146
+   ],
+   "look": [
+    0,
+    10,
+    -26
+   ]
+  },
+  {
+   "t": 16,
+   "name": "approaching the circus",
+   "eye": [
+    3,
+    12,
+    -56
+   ],
+   "look": [
+    0,
+    14,
+    0
+   ]
+  },
+  {
+   "t": 21,
+   "name": "past the orrery on its east side",
+   "eye": [
+    12,
+    15,
+    -21
+   ],
+   "look": [
+    5,
+    18,
+    9
+   ]
+  },
+  {
+   "t": 25,
+   "name": "banking right as the orrery slides out of frame",
+   "eye": [
+    22,
+    17,
+    4
+   ],
+   "look": [
+    60,
+    18,
+    26
+   ]
+  },
+  {
+   "t": 29,
+   "name": "down the parade to the skyport",
+   "eye": [
+    42,
+    20,
+    2
+   ],
+   "look": [
+    170,
+    40,
+    0
+   ]
+  },
+  {
+   "t": 38,
+   "name": "parade, climbing",
+   "eye": [
+    96,
+    32,
+    -2
+   ],
+   "look": [
+    170,
+    55,
+    0
+   ]
+  },
+  {
+   "t": 44,
+   "name": "~60 m off the skyport tower: discs stay in frame",
+   "eye": [
+    128,
+    62,
+    -46
+   ],
+   "look": [
+    170,
+    60,
+    0
+   ]
+  },
+  {
+   "t": 50,
+   "name": "round the tower's sea side",
+   "eye": [
+    190,
+    70,
+    -86
+   ],
+   "look": [
+    150,
+    55,
+    0
+   ]
+  },
+  {
+   "t": 56,
+   "name": "turning back to the city",
+   "eye": [
+    250,
+    60,
+    -56
+   ],
+   "look": [
+    60,
+    45,
+    9
+   ]
+  },
+  {
+   "t": 62,
+   "name": "out to sea, skyline across the water",
+   "eye": [
+    300,
+    55,
+    -16
+   ],
+   "look": [
+    0,
+    50,
+    9
+   ]
+  }
+ ]
+}

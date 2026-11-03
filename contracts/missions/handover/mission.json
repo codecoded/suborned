@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission/3",
  "id": "handover",
- "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). suborned.mission/3 (2026-10-15, Waymark; brief 010 D) adds roles: the people the mission needs by role (employer, position or role, mission point, shift window), never by person; the overlay casts each from the generated people and pins one by id (rule M-2). The cell's start re-sited 2026-10-16 (Waymark; brief 014, Sky playing the Handover: \"you can't see them! That's a very bad start\"): the four stood in a 1.2 m line at (1.168..4.768, -49.666), on the kerb strip of Rocket Lane, where bld/rocket-west/19 stands between them and the play camera (V-1: 6 % of a figure seen). They now stand loosely by the getaway car, as people waiting at the square's boarding pavilion would, inside the keep-clear zone the block keeps for them (crew-line-getaway): Fixer (-0.2, -46.6), Tech (1.2, -44.6), Scout (-1.6, -44.3), Enforcer (2.7, -47.6), 2.4-3.4 m from each neighbour. Each is 100 % seen at the play camera (zoom 14, 38 degrees, yaw 30), out from under the pavilion's canopy, on a free cell of the engine's walk grid, 23 m or more from every watcher's fan at 0:00 and 5.9 m or more from any person's place (P-16). GDD section 07's 0:00 entry says so since v0.23.0 (the timeline's first entry takes its words); the Enforcer stands nearest the car. Walks (tools/plan/walk-fine.ts): Scout to beside Inez 25.0 to 18.6 m, Fixer to the cafe door 26.4 to 23.2 m, Tech to the cabinet 39.6 to 36.0 m, Enforcer to the Office approach 49.3 to 50.9 m. The opening view centres on block (-2.5, -40.5): briefs/014/waymark-start.png. Re-sited 2026-10-19 (Sky's door option (b), then the service door on the east face; brief 023, Vantage moved the points, Waymark the prose): the public door, landing, steps and forecourt turn onto the wing's west face, over Rocket Lane, seen at the opening yaw 30. Office entrance (51.75, -30) to (64, -41.25); Office approach (48.6, -30) to (64, -44.4); the entrance camera (49.5, -41.5) to (53, -44.5); patrol-a and patrol-b (40.75, -34 and -14) to (68, -44.8) and (52, -44.8); the cabinet point (23.9, -17) to (46.5, -44.5); patrol-reroute (20, -58) to (19.2, -47); South walkway (26.6, -17) to (26.6, -23); Service lane (62.5, -43.2) to (62.5, -16.8), by the service door on the east face (yaw 210); the turned driver's car stands in serviceBay beside it (new point service-bay, (63.75, -15.0), yaw 210), not on 'Service lane'. No offset moves: the guard's summoned walk grows from 63.7 to 79.8 m (the unguarded door 2:31.2 to 2:54.0 from the call; windows.front-door) and the escort from 'Service lane' to 'Getaway bay' from 54.8 to 64.6 m on the engine's grid (timeline 8:30). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts.",
+ "note": "The Handover mission layer, moved out of the world: destinations and crew (block frame, from the old handover-block.json, suborned.block/2), the plan routes (getaway, official), and the rules that read them (C-3 mission points land on a plot or street, M-1 routes reach their end, W-1 walk origins from standards.walking.from). The world holds none of it. Input to brief 003. Run: bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts. suborned.mission/2 (2026-10-14) adds the schedule the world's life rules held until Pulse regenerated them: status, clock, timeline, events, stands. Re-sited 2026-10-14 (Waymark; brief 008 B2, Vantage): the Records Office doors now stand on its tower faces, so four door points follow them. Office entrance (54.65, -30.5) to (51.75, -30), on the public landing 0.75 m up six steps; Office approach (52, -30.5) to (48.6, -30), at the foot of those steps; Official entrance and Meet Vale (73.25, -31) to (76.25, -30), the flush official door under the canopy. 'Steps' is renamed 'Terrace gate' (the café door is flush, there are no steps; the point has not moved). The door points equal the civic block's entrances: tools/missions/handover/moves.test.ts. Nothing else is re-sited and nothing is re-timed: every schedule entry is a clock offset from GDD §07 and names no leg and no walking pace, so none follows from a length that changed. Every time is a mission-clock offset; GDD §07 is the authority for the timeline. The removed originals, verbatim: git show 15af5dd:contracts/world/harbour-district.life.json (clock.mission, clock.anchors, events.list[0], traffic.rules[3], generator.civicEmployers[0].shiftEnd, transit.schedule). suborned.mission/3 (2026-10-15, Waymark; brief 010 D) adds roles: the people the mission needs by role (employer, position or role, mission point, shift window), never by person; the overlay casts each from the generated people and pins one by id (rule M-2). The cell's start re-sited 2026-10-16 (Waymark; brief 014, Sky playing the Handover: \"you can't see them! That's a very bad start\"): the four stood in a 1.2 m line at (1.168..4.768, -49.666), on the kerb strip of Rocket Lane, where bld/rocket-west/19 stands between them and the play camera (V-1: 6 % of a figure seen). They now stand loosely by the getaway car, as people waiting at the square's boarding pavilion would, inside the keep-clear zone the block keeps for them (crew-line-getaway): Fixer (-0.2, -46.6), Tech (1.2, -44.6), Scout (-1.6, -44.3), Enforcer (2.7, -47.6), 2.4-3.4 m from each neighbour. Each is 100 % seen at the play camera (zoom 14, 38 degrees, yaw 30), out from under the pavilion's canopy, on a free cell of the engine's walk grid, 23 m or more from every watcher's fan at 0:00 and 5.9 m or more from any person's place (P-16). GDD section 07's 0:00 entry says so since v0.23.0 (the timeline's first entry takes its words); the Enforcer stands nearest the car. Walks (tools/plan/walk-fine.ts): Scout to beside Inez 25.0 to 18.6 m, Fixer to the cafe door 26.4 to 23.2 m, Tech to the cabinet 39.6 to 36.0 m, Enforcer to the Office approach 49.3 to 50.9 m. The opening view centres on block (-2.5, -40.5): briefs/014/waymark-start.png. Re-sited 2026-10-19 (Sky's door option (b), then the service door on the east face; brief 023, Vantage moved the points, Waymark the prose): the public door, landing, steps and forecourt turn onto the wing's west face, over Rocket Lane, seen at the opening yaw 30. Office entrance (51.75, -30) to (64, -41.25); Office approach (48.6, -30) to (64, -44.4); the entrance camera (49.5, -41.5) to (53, -44.5); patrol-a and patrol-b (40.75, -34 and -14) to (68, -44.8) and (52, -44.8); the cabinet point (23.9, -17) to (46.5, -44.5); patrol-reroute (20, -58) to (19.2, -47); South walkway (26.6, -17) to (26.6, -23); Service lane (62.5, -43.2) to (62.5, -16.8), by the service door on the east face (yaw 210); the turned driver's car stands in serviceBay beside it (new point service-bay, (63.75, -15.0), yaw 210), not on 'Service lane'. No offset moves: the guard's summoned walk grows from 63.7 to 79.8 m (the unguarded door 2:31.2 to 2:54.0 from the call; windows.front-door) and the escort from 'Service lane' to 'Getaway bay' from 54.8 to 64.6 m on the engine's grid (timeline 8:30). Schema: contracts/missions/mission.schema.ts. Test: tools/missions/handover/mission.test.ts. Re-sited 2026-10-26 (Vantage, brief 067, Sky playing 0.2.122): the patrol's sweep leaves the Office front for the service yard on the east face, patrol-a (67.75, -46.25) to (61.25, -7.25), patrol-b (54.25, -43.25) to (76.25, -7.25), patrol-reroute (19.2, -47) to (46.25, -9.25), played at yaw 210 (the points say why; the site's patrol facing turns from east to west, tools/sim/site.ts); ambush-5 (14, -36) to (-3.25, -34.75), when the two freestanding planter runs that covered it and ambush-1 and -3 left the square (civic-block.adjust.json planterRuns.removed); and two destinations step off the ground of Vale's car parked at the pickup (engine 0.33.1: cars block the walk; rulebook car.footprint, car-clear-cm 50, Keel): 'Meet driver' (78.1, -33.7) to (78.1, -34.2), 0.84 m behind the car's tail (was 0.34 m, inside its 0.5 m clearance), still in officeBay; 'Boarding pavilion' (78.3, -31), in the middle of the car, to (76.75, -34.25), on the pavement at the car's tail (so its on and floor keys go), 1.35 m from the driver, so the Fixer's walk to it ends where it is sent and his turn of the driver is in reach; the name stays (routes and scenarios read d:Boarding pavilion). block-spot stays (see it). No offset moves.",
  "status": {
   "state": "preserved",
   "adjustable": ["timings", "placements"],
@@ -10,10 +10,10 @@
  "clock": {
   "unit": "m:ss",
   "scale": "1 mission s = 1 day s (life.clock.scale): day time = startsAt + offset. This is the only day time in the file.",
-  "startsAt": "17:24:30",
+  "startsAt": "17:25:30",
   "provisional": false,
   "band": "peak",
-  "src": "Sky's ruling 2026-10-15 (clock.ruling): the 5:30 handover chime is the Records Office's real shift end, life.generator.civicEmployers[0].shiftEnd 17:30, so 0:00 = 17:30 less 5:30. GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
+  "src": "Sky's ruling 2026-10-15 (clock.ruling): the handover chime is the Records Office's real shift end, life.generator.civicEmployers[0].shiftEnd 17:30, so 0:00 = 17:30 less the chime; Sky 2026-10-30 (brief 080, pacing.html) brings the chime to 4:30: 0:00 = 17:25:30, and the whole city's routines come with it, the rivals' timetable excepted. GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
   "transit": "17:24:30 = 62670 s, 30 s past a multiple of 120, 180 and 240 (62640 s). With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line left its first stop 30 s before mission 0:00; the next forward departures are 1:30 (S1), 2:30 (T1) and 3:30 (T2). Under the old 17:00 start every line left at 0:00 (removed life.transit.schedule: '17:00 = 61200 s is a multiple of 120, 180 and 240').",
   "ruling": {
    "by": "Sky",
@@ -25,50 +25,63 @@
  "timeline": [
   {
    "at": "0:00",
-   "what": "Vale inside; routines run; the cell stands loosely by the getaway car at the square's boarding pavilion, in view, and the camera opens on them",
+   "what": "Popovic inside; routines run; the cell stands loosely by the getaway car at the square's boarding pavilion, in view, and the camera opens on them",
    "src": "GDD §07 (v0.23.0)",
    "note": "Reworded 2026-10-17 (Waymark) to GDD v0.23.0 §07's words, which take in the cell's start re-sited on 2026-10-16 (brief 014; see the file's note); the offset is unchanged. Was 'Vale inside; routines run; cell at getaway car' (§07 to v0.22.0); before that the removed anchor 'Vale inside; routines run'. §07's next entry, 'the Office guards check in at 1:00, 2:30, 4:00 and 5:30 (shift end)', is a routine with no single offset, not a timeline entry: the engine reads the marks from the cast guard's post in sim/data/handover.people.json and the rulebook's check-in-period-s (90 s); the status pill does not show them (a watched guard's clock pip does, GDD §10); tools/missions/handover/mission.test.ts checks §07's marks against that data."
   },
   {
-   "at": "3:10",
-   "what": "rival car parks near pickup",
-   "src": "GDD §07"
+   "at": "2:35",
+   "what": "the rival car turns in from Orbit Walk",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "The engine computes the car's entry back from the 3:10 park (rulebook rivals: the drop stop and the two drives at car.pace on the drive grid), so the park stays exactly 3:10 and this entry is §07's rounding of it (engine 0.32.0: 2:35.6). Nobody of the crew is on the map before it."
   },
   {
-   "at": "5:30",
+   "at": "2:46",
+   "what": "it drops three by the cell's car, who post round it",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "The drop stop at rival-drop (engine 0.32.0: 2:46.4); the three step out rivals.step apart and walk to the first rivals.posted spots of the getaway car's stand."
+  },
+  {
+   "at": "3:10",
+   "what": "the rival car parks across from Popovic's car; its lookout watches the official bay",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "The park at rival-park (90.5, -31), Apron Road's south kerb (Vantage, brief 059 §5); the lookout steps out rivals.out later and posts at rival-lookout. Read by tools/sim/site.ts as schedule.rivalsArrive (/rival car parks/)."
+  },
+  {
+   "at": "4:30",
    "what": "handover chime",
    "src": "GDD §07",
    "note": "Removed anchor: 'handover chime: Records Office shift ends, guard leaves the door routine' (src 'GDD §07, §05 guard routine'). §07 lists the chime only; its brief has Vale leave 'at shift handover'. Since Sky's ruling (clock.ruling) the chime is the Office's 17:30 shift end. 'guard leaves the door routine' is in neither §07 nor §05 (§05: 'guard on door routine (café stop pre-shift)'): the old data's reading, kept here, not a rule."
   },
   {
-   "at": "5:40",
-   "what": "last chance to turn driver",
-   "src": "GDD §07"
+   "at": "4:40",
+   "what": "last chance to turn the driver",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)"
   },
   {
-   "at": "5:50",
-   "what": "Vale exits north (service lane if driver turned)",
-   "src": "GDD §07",
-   "note": "Removed anchor: 'Vale exits north'; the service-lane branch is §07's and was missing. 'north' is the top-down test's compass: as sited in the plan the official entrance, canopy and bay are on the Records Office's south face (destinations Official entrance and Official drop-off, plan y -303 to -310, Apron Road) and the public front faced north to the square until 2026-10-19, when Sky's door option (b) turned the public door onto the wing's west face, over the forecourt and Rocket Lane (brief 023). The service-lane branch: the turned driver's car stands in serviceBay in the Office's east service yard (point service-bay, (63.75, -15.0), nose in facing -x), and Vale's stop is 'Service lane' (62.5, -16.8), by the service door on the east face since Sky's choice of 2026-10-19 (brief 023; it stood on the west side, (62.5, -43.2), then for a day by the new public door, (70.5, -43.2)): he walks from the official entrance to 'Service lane' (24.2 m, 17.3 s on the engine's grid), inside the 20 s from 5:50 to 6:10, then about 2 m to the car. The offsets are not re-timed."
+   "at": "4:50",
+   "what": "Popovic comes out of the official door",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "Brief 059 K1: he always walks to his car at the official bay (the service-lane walk is retired: a turned driver drives him round). Read by tools/sim/site.ts as schedule.valeExits (/Vale comes out/)."
   },
   {
-   "at": "6:10",
-   "what": "Vale at car",
-   "src": "GDD §07",
-   "note": "Not in the removed anchors (Pulse, life.json v0.2.0 review, flag F10); added from §07."
+   "at": "5:10",
+   "what": "Popovic at his car, in by 5:13: his own driver drives him away (over); a turned driver drives him round to the service bay (5:25) and waits there",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "Brief 059 K1, K2: 6:10 is schedule.valeAtCar (/Vale at his car/); he gets in car.pickup.valeIn (3 s) later. Unturned, the driver drives him away and the mission fails vale-leaves (Sky 3a); turned, the drive round on the drive grid at car.pace parks in the service bay at about 6:26 (engine 0.32.0: 6:25.9)."
   },
   {
-   "at": "8:30",
-   "what": "rivals take Vale or car leaves = over",
-   "src": "GDD §07; Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
-   "note": "Retimed with the world (CLAUDE.md: the Handover's timings may move): route B cannot take Vale before he reaches the service lane at 6:10, and the take (38 s, §07) and the 54 m walk to the getaway bay (39 s) left it 33 s before 8:00; at 8:30 it had 1:03, inside the 8-12 min mission rule (§01). Since the service door moved to the Office's east face (Sky, 2026-10-19, brief 023) the escort from 'Service lane' to 'Getaway bay' is 64.6 m on the engine's grid (46.2 s; Vantage's fine walk 63.9 m), so the take and the walk end at 7:34 and 8:30 leaves 56 s; the close stays (Waymark, brief 023: the Take itself, which MC-5 times, still lands 1:42 before it). Route A and the loud route finish long before either close. GDD §07's schedule reads 8:30 since v0.23.0 (it read 8:00 to v0.22.0). The close ends the take, not a carry already under way (Waymark's ruling, 2026-10-15): if the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open), and it wins only when Vale reaches the getaway car; the final fight and the seal bound the carry."
+   "at": "7:30",
+   "what": "the turned driver gives up and drives Popovic on (over)",
+   "src": "GDD §07 (v0.25.0; brief 059 K4); Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
+   "note": "The close (schedule.over, read by tools/sim/site.ts as /\\(over\\)$/). Brief 059 K4: with no Take begun by then the turned driver drives Vale on and the mission fails vale-leaves; a Take begun before it holds him until it ends. If the Enforcer holds Vale at 8:30 the run goes on (horizon.open) and wins only when Vale reaches the getaway car."
   }
  ],
  "events": [
   {
    "id": "records-handover",
    "area": "records",
-   "at": "5:30",
+   "at": "4:30",
    "windowS": 300,
    "surge": 1.8,
    "who": "Records Office staff leave by the front and service doors toward T1/records and the Circus",
@@ -92,13 +105,13 @@
    "position": "server",
    "at": "Café door",
    "near": 4,
-   "shift": { "from": "0:00", "to": "8:30" },
+   "shift": { "from": "0:00", "to": "7:30" },
    "need": "debt",
    "approach": "help",
    "secret": "affair",
    "tiedTo": [{ "kind": "lover", "role": "guard", "cast": true }],
    "src": "GDD §07 cast: Inez (café waitress, in debt); Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door (Motive briefs/011/motive-lovers.md: the lover tie, the affair secret, the summons), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
-   "note": "In place at the café entrance from 0:00 to the 8:30 close (17:24:30-17:33:00; Sky 2026-10-15 extends her window with the close): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
+   "note": "In place at the café entrance from 0:00 to the 7:30 close (17:25:30-17:33:00; Sky 2026-10-15 extends her window with the close): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
   },
   {
    "id": "driver",
@@ -106,7 +119,7 @@
    "employer": "records-office",
    "role": "official-driver",
    "at": "Meet driver",
-   "shift": { "from": "0:00", "to": "5:30" },
+   "shift": { "from": "0:00", "to": "4:30" },
    "need": "cash",
    "approach": "help",
    "tiedTo": [{ "kind": "workmate", "role": "councillor", "cast": true }],
@@ -121,22 +134,33 @@
    "role": "guard",
    "at": "Office entrance",
    "near": 4,
-   "shift": { "from": "1:52", "to": "5:30" },
+   "shift": { "from": "1:52", "to": "4:30" },
    "regularOf": "cafe",
    "tiedTo": [{ "kind": "regular", "role": "waitress" }],
    "alone": true,
    "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; fail 'entry seen by guard'; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3; Suture 2026-10-15 §3",
-   "note": "The entry window (windows front-door): from 1:52, the earliest call (prep A: Watch and Listen 1:02 since Sky's Watch 20 s, then Help, people.rules.json approaches.help.timeS 50 s; it was 2:24 on Watch 52 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
+   "note": "The entry window (windows front-door): from 1:52 (the earliest call is 1:25 since brief 080 pacing, Watch and Listen 0:50 then Help 35 s; the guard's cast shift stays 1:52 until the people are re-cast), the earliest call as it was (prep A: Watch and Listen 1:02 since Sky's Watch 20 s, then Help, people.rules.json approaches.help.timeS 50 s; it was 2:24 on Watch 52 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
   },
   {
    "id": "councillor",
    "what": "Councillor Vale: a councillor inside the Records Office until the chime, who then leaves for the official bay",
    "employer": "records-office",
    "role": "councillor",
-   "shift": { "from": "0:00", "to": "5:30" },
-   "leavesTo": { "at": "Meet driver", "by": "6:10" },
+   "shift": { "from": "0:00", "to": "4:30" },
+   "leavesTo": { "at": "Meet driver", "by": "5:10" },
    "src": "GDD §07 cast: Councillor Vale; schedule 0:00 Vale inside, 5:50 Vale exits north (service lane if driver turned), 6:10 Vale at car; brief 010 D; Suture 2026-10-15 §3",
    "note": "On shift, inside, to the chime (5:30 = 17:30, his shift end). leavesTo: his routine's next stop is the official bay, begun by 6:10 (17:30:40; routines are whole minutes, so by 17:31). The service-lane branch is the turned driver's change to the pickup, not the routine's. Vale is a pinned name part (people.rules.json names.pinned)."
+  }
+ ],
+ "listenPartners": [
+  {
+   "role": "waitress",
+   "employer": "cafe",
+   "position": "server",
+   "name": "Milena Rask",
+   "from": "Café door",
+   "src": "brief 085, briefs/085/motive/discreet-listen.md §1-2 (Sky's \"have Inez walk near scout and talk to another NPC\")",
+   "note": "Who Inez talks to while the Scout listens: Milena Rask, a server on shift inside the café (out 0) all mission, so the agreed scene's lines stand. View only: the engine does not know her, so the view draws her stepping out of the door, standing with Inez for the Listen and going back in. She can't be clicked, shot or block a cone, and she goes in if a fight starts. Nothing here reaches the site or the sim's hashes. Who else may be a partner when a mission names none: someone tied to the person on the street, then someone of the same job on shift at the same place, then a handset (voice only)."
   }
  ],
  "windows": [
@@ -147,7 +171,7 @@
    "role": "guard",
    "rule": "summon",
    "walk": { "from": "Office entrance", "to": "Café door" },
-   "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
+   "gdd": "the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window",
    "src": "GDD §07 route A; Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door; rulebook summon (Motive briefs/011/motive-lovers.md §1.3): stay lover-stay-s, walk at most summon-walk-max-s, on the walk grid at walking pace",
    "note": "Read from the rules since the lovers canon (Waymark 2026-10-15): the guard is Inez's lover and her call summons him; how long he stays and how far he will walk are the rulebook's summon values, and his walk is the grid's (§07 says 30 s), so the window follows the world and the rules, never a number written here. Since the public door moved onto the wing's west face (Sky's door option (b), 2026-10-19, brief 023) he walks from the forecourt round the Office's north-west corner and across the square: 79.8 m to his stop at her side (the rounds file's guard.stops[0].walkCm 7978; 80.3 m door to door on the engine's grid), 57.0 s each way at 1.4 m/s, inside the summons' 90 s (summon-walk-max-s). The engine measures the unguarded door at 2:54.0 from the call (57 s out, 60 s at the café, 57 s back; Waymark, scratch play of route-a-pressure on engine 0.8.1: call 1:44.5, at the café 2:41.5, leaves 3:41.5, back 4:38.5), against 2:31.2 in c021. The beats hold: the Enforcer enters seconds after the call and is out by the service door long before the guard is back; on route A as recorded (call 2:49.5) he would be back at 5:43.5, after his 5:30 shift end, which only lengthens a window the route no longer needs. History: Measured by the engine (Waymark, c021, engine 0.8.1, brief 022 §7.1): he stops at her free side, the first of the rounds file's guard.stops with nobody within rounds.clear (partners-clear-cm 100 cm) at the call; on every recorded route with a call that is the first, 45 degrees ahead on her left (63.7 m from his post, 45.5 s at 1.4 m/s, 45.6 s in whole ticks each way), and the unguarded door runs 2:31.2 from the call (60 s at the café), against 2:30.6 at 0.8.0's stop 1.2 m straight in front of her and 2:32.4 without rounds. tools/missions/handover/mission.test.ts measures the walk and checks it against the summons' limit."
   }
@@ -173,19 +197,19 @@
   {
    "route": "A",
    "what": "the Scout has watched and listened to Inez: her routine, need and temperament known",
-   "at": "1:02",
+   "at": "0:50",
    "from": ["watch-s", "listen-s"],
-   "gdd": "listens to Inez (1:34)",
-   "src": "GDD §07 route A; rulebook values watch-s 20 (Sky 2026-10-15) and listen-s 42",
+   "gdd": "listens to Inez (0:50)",
+   "src": "GDD §07 route A; rulebook values watch-s 20 (Sky 2026-10-15) and listen-s 30 (Sky 2026-10-30, brief 080 pacing)",
    "note": "Retimed with Sky's Watch ruling (20 s, was 52): Watch then Listen is 1:02 of the Scout's time, not 1:34; the walk to her is the route's own. GDD §07 text owed. The guard's entry window opens when the Fixer's Help can first land after it (roles.guard)."
   },
   {
    "route": "B",
    "what": "the Scout has watched and listened to the driver: his need (cash) known",
-   "at": "1:02",
+   "at": "0:50",
    "from": ["watch-s", "listen-s"],
    "gdd": "driver needs cash (48 s)",
-   "src": "GDD §07 route B; rulebook values watch-s 20 and listen-s 42; Sky 2026-10-15: only Listen reveals a need",
+   "src": "GDD §07 route B; rulebook values watch-s 20 and listen-s 30 (brief 080 pacing); Sky 2026-10-15: only Listen reveals a need",
    "note": "Retimed: the need now comes from Listen (Sky's ruling), after Watch, so 20 + 42 s of the Scout's time; §07's 48 s was a Watch alone. GDD §07 text owed."
   }
  ],
@@ -194,127 +218,303 @@
    "id": "cabinet",
    "at": [46.5, -44.5],
    "src": "civic-block.json structures civic-control-cabinet (x 44.55-45.45, y -45.34 to -43.66; moved with the public door 2026-10-19, civic-block.adjust.json, Vantage, brief 023, Sky's door option (b)); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",
-   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, at the office plot's north-west corner, 17.8 m from the public door and 6.5 m behind the entrance camera's pole, outside every cone (the camera's, the door guard's and the patrol's sweep along y -44.8, which ends at x 52, 5.5 m short of it). Was in the square 28 m from the old north door (moved 2026-10-19 with the door, Sky's option (b)). The point stands 1.05 m off its south face (x 45.45), centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell."
+   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, at the office plot's north-west corner, 17.8 m from the public door and 6.5 m behind the entrance camera's pole, outside every cone (the camera's and the door guard's; the patrol's sweep, which ended at x 54.2, 7.7 m short of it, facing east, away from it, has swept the service yard on the east face since 2026-10-26, brief 067, so the Tech reroutes it from here without seeing it). Was in the square 28 m from the old north door (moved 2026-10-19 with the door, Sky's option (b)). The point stands 1.05 m off its south face (x 45.45), centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell.",
+   "level": "street"
   },
   {
    "id": "beside-inez",
    "at": [-8.2, -29.0],
    "src": "Keel",
-   "reason": "Listen needs the Scout within 3 m of Inez (rulebook listen-reach-m [B]); the Courtyard point is 3.5 m from the café door, so this stands 2.1 m from her, between the café palms."
+   "reason": "Listen needs the Scout within 3 m of Inez (rulebook listen-reach-m [B]); the Courtyard point is 3.5 m from the café door, so this stands 2.1 m from her, between the café palms.",
+   "level": "street"
   },
   {
    "id": "rival-park",
-   "at": [84.0, -31.0],
-   "src": "GDD §07: 3:10 rival car parks near pickup",
-   "reason": "on Apron Road, 5.8 m south of the official car in the official bay."
+   "at": [90.5, -31.0],
+   "src": "GDD §07: 3:10 rival car parks near pickup; re-sited 2026-10-25 from (84.0, -31.0) (brief 059 §5, Vantage; Sky's answer 2a: the rival crew drives in, drops a team and parks)",
+   "reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 12.3 m south of Vale's car in the official bay (78.2, -31.0), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round).",
+   "level": "street",
+   "on": "apron-road",
+   "floor": -0.18
   },
   {
    "id": "rival-entry",
    "at": [36.0, 10.0],
    "src": "GDD §05 rivals: own schedule; the top-down test: the rivals enter from the east street",
-   "reason": "the middle east street (block x 30–42 open to the east), the nearest street mouth to the Office on the east side."
+   "reason": "the middle east street (block x 30–42 open to the east), the nearest street mouth to the Office on the east side.",
+   "level": "street",
+   "on": "orbit-walk",
+   "floor": -0.18
   },
   {
    "id": "security-entry",
    "at": [-46.0, -32.0],
    "src": "GDD §07 final fight, loud: police from west street",
-   "reason": "§07's \"west street\" is the top-down test's compass. The real block is built on its west side (y < −62); its one street on the café and getaway side is the north street (block x < −38, y −36 to −28), so the response unit enters there."
+   "reason": "§07's \"west street\" is the top-down test's compass. The real block is built on its west side (y < −62); its one street on the café and getaway side is the north street (block x < −38, y −36 to −28), so the response unit enters there.",
+   "level": "street",
+   "on": "garden-walk",
+   "floor": -0.18
   },
   {
    "id": "patrol-a",
-   "at": [68.0, -44.8],
-   "src": "the top-down test: the patrol sweeps 11 units in front of the public door, from 4 to one side of it to 16 to the other",
-   "reason": "the sweep's south end: the patrol walks the forecourt's outer edge (y -44.8, 3.55 m out from the public door on the wing's west face and 1 m out from the foot of its steps), from by the entrance camera's pole (patrol-b, x 52, 12 m north of the door axis x 64) to here, 4 m south of the axis and 1.4 m short of the service door (69.4, -41.1); it crosses the Office approach both ways each round. Moved 2026-10-19 with the door (Sky's option (b); Vantage, brief 023), was (40.75, -34) in front of the old north door: the top-down test's sweep in front of the door, shortened to the forecourt between the camera pole and the service door."
+   "at": [61.25, -7.25],
+   "src": "Sky 2026-10-26 (brief 067 A, playing 0.2.122: 'moving the patrol robot would be quite a big improvement', 'maybe to the side of the service entrance'): the sweep leaves the Office front for the service yard on the wing's east face; placed by Vantage. Still the top-down test's sweep (a straight line in front of the door it guards, facing the door), as the forecourt's was",
+   "reason": "the sweep's north end, in the open yard 11.65 m out from the service door (62.5, -18.9), opposite it (x 61.25 against the door's 62.5), with serviceBay and the low bed civic-office-west between. The patrol walks the straight line (Game.SweepPos) from here to patrol-b (76.25, -7.25), 15 m along the yard parallel to the wing's east face (y -19.5), and faces that face (west: site patrol.facing [0, -100], tools/sim/site.ts, the building it guards), so its cone (patrol-depth-m 24, 2 m + 0.65 of the depth either side) holds the service door, 'Service lane', serviceBay, the service drive and the yard getaway stand. The period is unchanged (100 s), and the windows are the forecourt's: 'Service lane' is in the cone 0-31 s and 69-100 s of each round (63 %; the public door was 0-29 s and 71-100 s), the service door 73 %, Vale's rear door (rival-vale-door) 77 %, the yard stand service-drive 93 %, the yard's neck by the Dumpster (58.25, -17.25), where every walk into the yard from the north passes, 37 %, and nothing at the front ('Office entrance', 'Office approach', the cabinet: 0 %). Behind it (east of y -7.25) and north of the neck the cell waits unseen; its 30 m gunfire break (patrol-break-m) takes in the whole yard, so the yard fight wakes it unless the Tech has rerouted it. Measured with the engine's own cone and eye (InSweepCone, EyeSees at mount-patrol-cm, no crowd) on a scratch copy of engine 0.33.1 (out/scratch/vantage/067, VantageProbe.cs). On a cell centre of the walk grid (Site.Stand is the point itself), 2.9 m from the bed and 3.0 m from its tufts (G-1d: body 0.65 m + 0.05 m), 1.12 m from svc-ambush-2. V-1 at yaw 210, the heading the yard is played at: 100 % (also 100 % at 30, 120 and 300). Was (67.75, -46.25), the forecourt's south end (Pulse 2026-10-24, after Vantage 2026-10-19 and the top-down test's (40.75, -34)).",
+   "yaw": 210,
+   "level": "street"
   },
   {
    "id": "patrol-b",
-   "at": [52.0, -44.8],
+   "at": [76.25, -7.25],
    "src": "as patrol-a",
-   "reason": "the sweep's north end, by the entrance camera's pole (53, -44.5), 12.5 m from the public door. Moved 2026-10-19 with the door (was (40.75, -14))."
+   "reason": "the sweep's south end, 3.75 m in from Apron Road's kerb (x 80): 10.4 m from the yard stand service-drive (69.35, -15.0), which the line passes at 7.75 m, 1.33 m clear of svc-ambush-1 (77.35, -8.0), 3.2 m from the police post and 4.5 m from the call box on the kerb strip; on a cell centre of the walk grid (see patrol-a). The line between the ends keeps 6.25 m off the service drive and 2.9 m off the bed, so no car, Vale walk or carry crosses it, and it stays out of the neck by the Dumpster that the escort from 'Service lane', the response unit and the yard police walk through. The sweep is 15 m long (the forecourt's was 14.2). V-1 at yaw 210: 100 % (30 100 %, 120 0 %, 300 100 %); the sweep's ground, a figure every metre, 100 % at 210. Was (54.25, -43.25), short of the entrance camera's pole.",
+   "yaw": 210,
+   "level": "street"
   },
   {
    "id": "patrol-reroute",
-   "at": [19.2, -47.0],
-   "src": "the top-down test: a rerouted patrol waits at the far corner from the door",
-   "reason": "the square's south-east edge by Rocket Lane, on the pavement off the carriageway (was (20, -58), on the road), 45 m up the street from the public door, which faces Rocket Lane: far from the door and the service door, so the entry and the carry-out go unseen by it while it stands here. 10.8 m from the getaway bay on the way the carry comes in, and 1.6 m from guard-ally. Moved 2026-10-19 (Vantage, brief 023; the common fix of briefs/011/vantage/study.ts, then tuned). Seen at the play camera (V-1), so it no longer declares itself hidden."
+   "at": [46.25, -9.25],
+   "src": "the top-down test: a rerouted patrol waits at the far corner from the door; re-sited with the sweep (brief 067 A, Vantage 2026-10-26)",
+   "reason": "the office plot's north edge by Orbit Walk (kerb x 44), 2.25 m in on the pavement, round the corner of the yard from the service door: off every walk the back way uses (the escort from 'Service lane' to the square passes 13.8 m away, the response unit's walk into the yard 7.5 m) and about 10 m from the rival car's way down Orbit Walk. From any point of the sweep the false orders' walk out and back (cell.reroute.walk at patrol-chase-cm-s, 85 cm/s, on the walk grid) takes 41-66 s of reroute-away-s 115 s, so the robot always reaches it and waits 49-74 s before it walks back onto its sweep (the engine's PlanRerouteWalk, measured on the scratch probe). It faces north (site patrol.rerouteFacing [-100, 0], away from the yard). A free cell of the walk grid with nothing solid within 6 m. V-1 at yaw 210: 100 % (also 100 % at 30, 120, 300). Was (19.2, -47.0), the square's south-east edge: from the yard sweep the walk there and back is 121-141 m, 142-166 s, so the robot would turn back short of it and wander across the square.",
+   "yaw": 210,
+   "level": "street"
   },
   {
    "id": "service-bay",
    "at": [63.75, -15.0],
    "src": "GDD §07 route B: the turned driver moves the pickup to the service lane; civic-block.json serviceBay in the Office's east service yard (Sky 2026-10-19, the service door on the east face; Vantage, brief 023); plan frame (-145.0, -293.75)",
    "reason": "where the turned driver's car stands for the service-lane pickup: in serviceBay, nose in, facing -x (north, back toward the yard's closed end), 2.3 m from 'Service lane' (62.5, -16.8), where Vale comes out by the service door and walks about 2 m to the car. It replaces 'Service lane' as the car's stand; Vale's stop stays 'Service lane'. The car reaches it from Apron Road by the yard's reserved vehicle way (y -16.5..-13.5), which becomes a drive when Splice's world and Keel's engine 0.8.2 let cars cross the pavement there. The facing is a reason, not a field: the mission schema has no heading for a car, so the engine takes it from the bay.",
-   "yaw": 210
+   "yaw": 210,
+   "level": "street",
+   "on": "serviceBay",
+   "floor": -0.18
   },
   {
    "id": "block-spot",
    "at": [77.25, -33.75],
    "src": "GDD §07 route B: driver blocks pickup camera 2:30",
-   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, 78.2, -31) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed."
+   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, 78.2, -31) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed. Retired in play since brief 059 (the driver's camera block is gone: Game BlockedFrom stays INF, no car drives here). It lies 0.4 m behind the tail corner of Vale's car parked at the pickup, on the car's ground (car-clear-cm 50; Keel's car.footprint probe, engine 0.33.1). Not moved (Vantage, brief 067 L, 2026-10-26): tools/sim/site.ts (car.block, and blockFacing, the heading Vale's car keeps in the bay) and Site.cs (CarBlock) still read it, and the scenarios N57 and N57b send the Enforcer 3 m off it, so moving it would move them; Keel and Splice retire it (the heading from the bay itself, the scenarios' wait as its own point), then this entry goes.",
+   "level": "street",
+   "on": "officeBay",
+   "floor": -0.18
   },
   {
    "id": "ambush-1",
    "at": [21.75, -44.25],
-   "src": "GDD §07 safe: rivals ambush extraction; cover: Vantage's planter run run-sq-south (contracts/world/civic-block.cover.json)",
-   "reason": "Moved 2026-10-15 (Waymark) from (20, -56) on rocket-lane, the road, where nothing shields it from the car: onto the square behind run-sq-south's first planter, 13.8 m from the getaway car, the planter between them. The five ambush spots stand 12-18 m round the car with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe)."
+   "src": "GDD §07 safe: rivals ambush extraction; its cover was Vantage's planter run run-sq-south, removed 2026-10-26 (brief 067 K, Sky's 'odd planters'; civic-block.adjust.json planterRuns.removed)",
+   "reason": "Moved 2026-10-15 (Waymark) from (20, -56) on rocket-lane, the road, where nothing shields it from the car: onto the square behind run-sq-south's first planter, 13.8 m from the getaway car, the planter between them. The five ambush spots stand 12-18 m round the car with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe): the three dropped at rival-drop post at the stand's first three spots (ambush-1, -2, -3, by the shortest walk), the lookout at the 4th and the wheelman at the 5th (GameCrew.cs SpotFor). Since run-sq-south went (2026-10-26) it lurks in the open: nothing on the square's south-west quarter shields a post from the car (the car stands on the square's own kerb, so the kerb runs lie along the line of fire), and the spot is kept where the dropped rival walks to (14.5 m from rival-drop), for Motive to re-measure the square's safe fight with it uncovered.",
+   "level": "street"
   },
   {
    "id": "ambush-2",
    "at": [-5.75, -37.75],
    "src": "GDD §07 safe: rivals ambush extraction; cover: the café's west wall arc (contracts/world/civic-block.cover.json)",
-   "reason": "Moved 2026-10-15 (Waymark) from (-4, -58) on rocket-lane: behind the café terrace's west wall arc, 17.7 m from the car, the wall between them."
+   "reason": "Moved 2026-10-15 (Waymark) from (-4, -58) on rocket-lane: behind the café terrace's west wall arc, 17.7 m from the car, the wall between them.",
+   "level": "street"
   },
   {
    "id": "ambush-3",
    "at": [22, -42],
    "src": "GDD §07 safe: rivals ambush extraction",
-   "reason": "as ambush-1, beside Vantage's planter run run-sq-south."
+   "reason": "as ambush-1, beside Vantage's planter run run-sq-south until 2026-10-26; in the open since it went (brief 067 K).",
+   "level": "street"
   },
   {
    "id": "ambush-4",
    "at": [-6, -44],
    "src": "GDD §07 safe: rivals ambush extraction",
-   "reason": "as ambush-1; by the café's west wall arc."
+   "reason": "as ambush-1; by the café's west wall arc.",
+   "level": "street"
   },
   {
    "id": "ambush-5",
-   "at": [14, -36],
-   "src": "GDD §07 safe: rivals ambush extraction",
-   "reason": "as ambush-1; by run-sq-west."
+   "at": [-3.25, -34.75],
+   "src": "GDD §07 safe: rivals ambush extraction; re-sited 2026-10-26 by Vantage (brief 067 K) when run-sq-west, its cover, was removed (Sky's 'odd planters')",
+   "reason": "The wheelman's spot in the square's safe fight (the stand's 5th; GameCrew.cs SpotFor): he walks to it from the rival car's stop, rival-drop (34, -38), when the car pulls up for the fight. Was (14, -36) by run-sq-west on the fountain court's edge; with that planter gone nothing there shields it from the car, and the square's safe fight would keep cover for 2 of its 5 hostile posts (ambush-2, ambush-4), under CV-2's half (tools/cover). Here, outside the front-west corner of the café's terrace wall, 3.9 m from ambush-2, the wall's car-facing point cv-032 (q 589, 2.7 m) is within hostileReach 6 m, so CV-2 holds at 3 of 5. 17.9 m from the getaway car (8.5, -48.2) with a clear line to it at eye height (the engine's Site.Sight), outside fight-hold 8 m and the exit lane (MC-11). His walk from rival-drop is 38.4 m on the grid (20.1 m to the old spot) and keeps 12.4 m from the car; spots tried by the wall's south arc, (-7.25, -46.75) and round it, put that walk 4.7 m past the car, where he reached Vale in the board-and-go (route-g-board, scratch probe on engine 0.33.1), or lost the car behind the boarding pavilion's west pier. 1.5 m from the terrace pot top-terrace-w, 5.8 m from 'Terrace gate'; a free cell of the walk grid. V-1 at yaw 30: 100 %.",
+   "level": "street"
   },
   {
    "id": "police-1",
    "at": [-7.75, -41.25],
    "src": "GDD §07 loud: police from the north street, 2-4 officers; cover: the café's west wall arc (contracts/world/civic-block.cover.json)",
-   "reason": "Moved 2026-10-15 (Waymark) from (-4, -50), on the open square with no shelter (no free spot for a planter there: the getaway keep-clear zone and the terrace wall): to the café's west wall arc, the first cover on the officers' way in from the north street, 17.7 m from the car. The four stops stand between the north street (the response unit's entry) and the getaway car; the officers take the first n (fight.loud)."
+   "reason": "Moved 2026-10-15 (Waymark) from (-4, -50), on the open square with no shelter (no free spot for a planter there: the getaway keep-clear zone and the terrace wall): to the café's west wall arc, the first cover on the officers' way in from the north street, 17.7 m from the car. The four stops stand between the north street (the response unit's entry) and the getaway car; the officers take the first n (fight.loud).",
+   "level": "street"
   },
   {
    "id": "police-2",
    "at": [-10.25, -43.25],
    "src": "GDD §07 loud: police from the north street, 2-4 officers; cover: the café's west wall arc (contracts/world/civic-block.cover.json)",
-   "reason": "Moved 2026-10-15 (Waymark) from (-8, -56) on rocket-lane: to the west end of the same wall arc, 19.4 m from the car."
+   "reason": "Moved 2026-10-15 (Waymark) from (-8, -56) on rocket-lane: to the west end of the same wall arc, 19.4 m from the car.",
+   "level": "street"
   },
   {
    "id": "police-3",
    "at": [-2, -42],
    "src": "GDD §07 loud: police from the north street, 2-4 officers",
-   "reason": "as police-1."
+   "reason": "as police-1.",
+   "level": "street"
   },
   {
    "id": "police-4",
    "at": [-10, -46],
    "src": "GDD §07 loud: police from the north street, 2-4 officers",
-   "reason": "as police-1."
+   "reason": "as police-1.",
+   "level": "street"
   },
   {
    "id": "guard-ally",
    "at": [18, -46],
    "src": "GDD §07 safe: the guard (never saw you) fights them",
-   "reason": "on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots."
+   "reason": "on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots.",
+   "level": "street"
+  },
+  {
+   "id": "service-drive",
+   "at": [69.35, -15.0],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: the second getaway stand, on the Office's service drive behind Vale's car",
+   "reason": "The getaway car's stand on the service drive (civic-block.json drives service-drive, x 67..80, y -16.5..-13.5), nose out toward Apron Road (facing +x, south; the mission schema has no heading for a car, so it is stated here, as service-bay's is). Behind Vale's car, which stands nose in at service-bay (63.75, -15.0) in serviceBay (x 60.5..67): brief 059 §1.4 puts it 1 m behind; this centre is 2.35 m past the bay's mouth (x 67) and 5.6 m from Vale's car's. The carry from Vale's back door to this car's is about 3.5 m (brief 059 §1.4). The drive is one car wide: on it before Vale's car, it blocks his way in (K5). Exit: Apron Road east (+y), away from the rival car at rival-park. V-1 at yaw 210, the heading the yard is played at: 30 100 %, 120 0 %, 210 100 %, 300 100 %. A free cell of the walk grid as well as the drive grid. The stand id is service-drive, the same string as the civic block's drive it stands on (a different list: drives[], not places).",
+   "yaw": 210,
+   "level": "street",
+   "on": "service-drive",
+   "floor": -0.18
+  },
+  {
+   "id": "svc-ambush-1",
+   "at": [77.35, -8.0],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25 at (57.25, -17.75); moved by Vantage 2026-10-26 to Motive's M059-B4 [S] spot (briefs/059/motive/balance-rulings.json), ambush spot 1 at the service-drive stand, MC-11",
+   "reason": "The yard's east side by Apron Road, 0.65 m in from the kerb strip where police-post-2 (79, -10) and call-box-6 (79.15, -2) stand, facing the drive's mouth. M059-B4: route B's carry from Vale's rear door gets 3 s of slack for the cell's locks (route-b-board slip 3 s; 0 s at (57.25, -17.75)), because this spot's man becomes the stand's blocker and walks to the road instead of shooting into the carry. 10.6 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and inside fight-block-far 13 m; 15.6 m from rival-vale-door (64.55, -16.9) and 17.3 m from 'Service lane' (62.5, -16.8), off the service door's line; a clear line to the car and the door at eye height. Outside the stand's exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). The shortest walk of the yard's spots to the blocker's open post (86, -5): 9.16 m on the engine's grid (5.7 s at 1.6 m/s; svc-ambush-5 11.5 m, svc-ambush-4 14.5 m); M059-4.4(c) asks 8 m, but every spot tried at 6.8-8.4 m loses route B (the blocker posts sooner and fires standing, 562 against 281 per mille walking, and downs the Fixer at 7:31.5), so the spot keeps the 9.16 m (Vantage 2026-10-26, brief 059). No cover point stands in the yard (the site's cover has none there; the police post and call box are not cover in tools/cover), so this is an open position, like the other four yard spots. Pavement, floor 0, a free cell of the engine's walk grid. V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 0 %, 210 100 %, 300 100 % seen past architecture. Read through Splice's site export (getaway.stands[]); the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-2",
+   "at": [60.25, -6.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 2 at the service-drive stand, MC-11",
+   "reason": "The yard's north-east, the low bed civic-office-west (0.52 m) between it and the car. 12.3 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-3",
+   "at": [63.25, -4.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 3 at the service-drive stand, MC-11",
+   "reason": "The open yard east of the bed, facing the car's flank. 12.4 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-4",
+   "at": [71.75, -2.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 4 at the service-drive stand, MC-11",
+   "reason": "The open yard east of the car, 8 m in from Apron Road's kerb. 12.5 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 0 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-5",
+   "at": [76.75, 1.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 5 at the service-drive stand, MC-11",
+   "reason": "The yard's south-east by Apron Road, 3.25 m in from the kerb, off the strip where the generator lays kerb furniture (call box, police post; they move with brief 061's crossings). 17.9 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 0 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-1",
+   "at": [54.25, -19.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 1 at the service-drive stand, MC-11",
+   "reason": "At the Office's north-east corner (55.5, -19.5), the wall beside it: the police come from the north street round the Office's north side (security-entry), so their stands face the car from that side. 15.7 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-2",
+   "at": [55.75, -14.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 2 at the service-drive stand, MC-11",
+   "reason": "The yard's north edge, in line with the drive. 13.6 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-3",
+   "at": [52.25, -15.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 3 at the service-drive stand, MC-11",
+   "reason": "Behind police stand 2, toward Orbit Walk, the way the police come in. 17.1 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-4",
+   "at": [53.25, -11.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 4 at the service-drive stand, MC-11",
+   "reason": "The yard's north edge, 4 m east of police stand 3. 16.5 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "rival-drop",
+   "at": [34, -38],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: 2:46.5 the rival car stops by the square and drops three (§2.2)",
+   "reason": "Orbit Walk's north lane (centreline x 37.5, w 13: this is 3.5 m north of it, 3 m off the square's kerb x 31): P1 to P3 get out (rivals-drop-s 8 s) and walk to ambush-1 (14.5 m), ambush-3 (13.7 m) and ambush-2 (54.5 m) round the cell's car (brief 059 §2.2). V-1 at yaw 30, the heading the square is played at: 30 100 %, 120 83 %, 210 100 %, 300 100 %. A free cell of the walk grid. Not read by the engine yet (K7, K10 rivals.car.drop).",
+   "level": "street",
+   "on": "orbit-walk",
+   "floor": -0.18
+  },
+  {
+   "id": "rival-lookout",
+   "at": [94, -27],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: 3:15 the lookout gets out and posts on the far pavement facing the official door (§2.2)",
+   "reason": "Apron Road's far (south) pavement, 2 m in from its kerb (x 92) on the orbit-gardens plot, 5.3 m from the parked rival car at rival-park's re-site (90.5, -31), facing across the road to the official door (76.25, -30; 18.0 m) and the official drop-off (78.2, -31; 16.3 m). V-1 at yaw 30 (the official bay's heading): 30 100 %, 120 100 %, 210 100 %, 300 100 %. A free cell of the walk grid. Not read by the engine yet (K8, K10 rivals.posts.lookout).",
+   "level": "street"
+  },
+  {
+   "id": "rival-car-entry",
+   "at": [37.5, 15.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: 2:35.4 the rival car turns in from Orbit Walk at the window's east edge (§2.2)",
+   "reason": "Orbit Walk's centreline at the walk grid's east edge (its last cells, y 15.5..16): where the car comes into the window from the Sea Gates side, 5.75 m past Pylon Row's centreline (y 10). It drives west to rival-drop (55.4 m). V-1 at yaw 30 (the opening heading): 30 100 %, 120 100 %, 210 0 %, 300 0 %. A free cell of the walk grid. Not read by the engine yet (K7, K10 rivals.car.entry).",
+   "level": "street",
+   "on": "orbit-walk",
+   "floor": -0.18
+  },
+  {
+   "id": "rival-lookout-exit",
+   "at": [94, 15.75],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F4; rival-routine.values.json points.new); placed by Vantage 2026-10-25: a warned lookout leaves the map here",
+   "reason": "Apron Road's far (south) pavement at the walk grid's east edge (its last cells, y 15.5..16, as rival-car-entry on Orbit Walk), on the same pavement as rival-lookout (94, -27), 42.75 m east of it: after his word with the turned driver the lookout walks off east, away from the yard and the square, and is gone for good (off the roster, not in the fight). V-1 at yaw 30 (the opening heading, as rival-lookout): 30 100 %, 120 100 %, 210 0 %, 300 100 %. A free cell of the walk grid (the committed site and today's in-memory build); its nearest blocked cell is the grid's edge, 0.5 m east. Not read by the engine yet (Keel, rivals.posts.lookoutExit).",
+   "level": "street"
+  },
+  {
+   "id": "rival-tail",
+   "at": [90.5, -17],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F2, §7; rival-routine.values.json points.new); placed by Vantage 2026-10-25: the rival car stops here when it follows Vale's car, and it is the service-drive stand's rival stop",
+   "reason": "Apron Road's eastbound (south) lane at the south kerb (x 92), nose east (+y; the mission schema has no heading for a car, so it is stated here), abreast of the service drive's mouth (y -16.5..-13.5): 14.0 m on along its own lane from rival-park (90.5, -31), so the car never crosses the westbound lane. The wheelman steps out here and walks to rival-vale-door; at the yard fight the riders still aboard step out here. Kept out of the yard stand's exit lane: the lane starts at the stand's foot on Apron Road's centreline (86, -15) and runs 30 m east with square ends, 12 m wide (x 80..92); this point stands 2.0 m short of its start, so the engine's lane test (Site.InExitLane) never holds it, and the car's body (the sedan's footprint 1.82 x 4.73 m, nose +2.45 m) reaches only 0.45 m past the start line along the kerb (x 89.59..91.41), leaving the westbound lane and 3.6 m of the eastbound free beside it: the cell's car turning left out of the drive sweeps no nearer than about 4 m to it. 21.2 m from the service-drive stand. V-1 at yaw 210, the heading the yard is played at: 30 100 %, 120 100 %, 210 100 %, 300 100 %. A free cell of the walk grid (2.0 m from the nearest blocked cell). Not read by the engine yet (Keel, rivals.car.tail and the service-drive stand's rival stop in Splice's getaway.stands[]).",
+   "yaw": 210,
+   "level": "street",
+   "on": "apron-road",
+   "floor": -0.18
+  },
+  {
+   "id": "rival-vale-door",
+   "at": [64.55, -16.9],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F2; rival-routine.values.json points.new); placed by Vantage 2026-10-25: where the wheelman walks to when the rivals tail Vale's car",
+   "reason": "The yard side of Vale's car in serviceBay: the car's centre at service-bay (63.75, -15.0) + (0.8, -1.9) m, beside its rear door on the service door's side, 2.05 m from 'Service lane' (62.5, -16.8), where Vale comes out. W walks here from rival-tail (25.7 m on the grid, 16.1 s) and is Posted, so the engine's yard case of RivalReachesVale reads him. 5.2 m from the service-drive stand (69.35, -15.0): inside fight-hold 8 m, by design of the routine (he stands at Vale's car, not at a post; his fight spot is the stand's fifth ambush spot, svc-ambush-5). V-1 at yaw 210, the heading the yard is played at (as service-bay and 'Service lane'): 30 0 %, 120 0 %, 210 100 %, 300 100 %. A free cell of the walk grid (2.5 m from the nearest blocked cell). Not read by the engine yet (Keel, rivals.posts.valeDoor).",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "rival-front-stop",
+   "at": [63.75, -50.25],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F5; rival-routine.values.json points.new); placed by Vantage 2026-10-25: where the rival car stops when gunfire draws the crew to the Office front",
+   "reason": "Rocket Lane's carriageway (y -62..-50) at its east (Office-side) kerb, 0.25 m in from it (a sedan 1.82 m wide centred here overhangs the kerb by 0.66 m; the engine stands a car on its place or the nearest drivable cell, Site.CarStand), abreast of the Office approach (64, -44.4), 5.9 m from it: the nearest road cell of d:Office approach, written down so the choice is not a tie. The riders step out and walk to the Office approach and its offsets (6.0 m); the wheelman stays aboard. The east kerb is the northbound lane under the plan's right-hand traffic: a car from rival-park comes up Rocket Lane (-x) and stops on its own side; one from rival-car-entry comes down it (+x, the spec's facing) and stops in the oncoming lane. The heading is the engine's, from the route it rides (the schema has none for a point). V-1 at yaw 210, the heading the Records Office front is played at: 30 0 %, 120 0 %, 210 100 %, 300 0 %. At the opening heading Rocket Lane abreast of the Office reads 0 % for every road cell from x 56 to 72 (y -58 to -51), so no nearby cell would read at 30; the crew it brings stands at the Office approach, which is seen at 30. A free cell of the walk grid. Not read by the engine yet (Keel, rivals.car.front).",
+   "yaw": 210,
+   "level": "street",
+   "on": "rocket-lane",
+   "floor": -0.18
   }
  ],
  "cameras": [
   {
    "id": "entrance",
+   "kind": "pole-camera",
    "at": [53.0, -44.5],
    "looksAt": "Office entrance",
    "reachM": 22,
@@ -324,6 +524,7 @@
   },
   {
    "id": "pickup",
+   "kind": "pole-camera",
    "at": [74.0, -40.0],
    "looksAt": "Official drop-off",
    "reachM": 18,
@@ -336,131 +537,164 @@
   {
    "name": "Courtyard",
    "at": [-6.8, -29],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Café door",
    "at": [-10.3, -29],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Behind café",
    "at": [-23.4, -35],
    "surface": "ground",
-   "hidden": "the Scout's seat, unwatched on purpose: behind the café, out of the street's and the cameras' view, so nobody sees who is watching the door."
+   "hidden": "the Scout's seat, unwatched on purpose: behind the café, out of the street's and the cameras' view, so nobody sees who is watching the door.",
+   "level": "street"
   },
   {
    "name": "West side",
    "at": [-11.4, -43],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "East side",
    "at": [-11.4, -15],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Terrace gate",
    "at": [-3.6, -29],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Between tables",
    "at": [-7.1, -35.45],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Under parasol",
    "at": [-8.1, -23.7],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Fountain",
    "at": [11, -30],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Plaza east",
    "at": [6.5, -25.5],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Plaza west",
    "at": [6.5, -34.5],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Getaway bay",
    "at": [8.5, -48.2],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street",
+   "on": "squareBay",
+   "floor": -0.18
   },
   {
    "name": "Official drop-off",
    "at": [78.2, -31],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street",
+   "on": "officeBay",
+   "floor": -0.18
   },
   {
    "name": "Service lane",
    "at": [62.5, -16.8],
    "surface": "ground",
-   "yaw": 210
+   "yaw": 210,
+   "level": "street"
   },
   {
    "name": "South walkway",
    "at": [26.6, -23],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Office approach",
    "at": [64, -44.4],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Boarding pavilion",
-   "at": [78.3, -31],
-   "surface": "ground"
+   "at": [76.75, -34.25],
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Office entrance",
    "at": [64, -41.25],
-   "surface": "office-public"
+   "surface": "office-public",
+   "level": "street",
+   "on": "office-public-landing",
+   "floor": 0.75
   },
   {
    "name": "Official entrance",
    "at": [76.25, -30],
-   "surface": "office-official"
+   "surface": "office-official",
+   "level": "street"
   },
   {
    "name": "Meet Vale",
    "at": [76.25, -30],
-   "surface": "office-official"
+   "surface": "office-official",
+   "level": "street"
   },
   {
    "name": "Meet driver",
-   "at": [78.1, -33.7],
-   "surface": "ground"
+   "at": [78.1, -34.2],
+   "surface": "ground",
+   "level": "street",
+   "on": "officeBay",
+   "floor": -0.18
   }
  ],
  "crew": [
   {
    "name": "Fixer",
    "at": [-0.2, -46.6],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Tech",
    "at": [1.2, -44.6],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Scout",
    "at": [-1.6, -44.3],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   },
   {
    "name": "Enforcer",
    "at": [2.7, -47.6],
-   "surface": "ground"
+   "surface": "ground",
+   "level": "street"
   }
  ],
  "routes": [
@@ -484,6 +718,29 @@
     "r_pylon_s"
    ],
    "toName": "the official bay"
+  },
+  {
+   "id": "getaway-service",
+   "name": "Getaway from the service drive: Apron Road east",
+   "from": "r_apron_w",
+   "to": [
+    "r_apron_e"
+   ],
+   "toName": "Apron Road east of the service drive"
+  },
+  {
+   "id": "rivals",
+   "name": "Rival crew car: from the Sea Gates by Orbit Walk and Rocket Lane to Apron Road",
+   "from": "off_seagates",
+   "via": [
+    "r_orbit_e",
+    "r_orbit_w",
+    "r_apron_w"
+   ],
+   "to": [
+    "r_pylon_s"
+   ],
+   "toName": "the rival car's park on Apron Road"
   }
  ]
 }

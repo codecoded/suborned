@@ -69,6 +69,7 @@ const CAUSES: Record<string, string> = {
   'player-copies': 'agents copy the whole built player into their scratch tree to run it (out/latch-0266/app, out/redline/048/app, sim-unity players); each copy is 0.5-1.5 GB and stays.',
   'unity-caches': 'out/old-world/unity is a whole copy of the old Unity project including its Library import cache (7.3 GB).',
   'repo-copies': 'a materialised copy of the tree (briefs/, tools/, runs/ ...) made for a base-versus-tree check (out/keel038/mcbase, 5.5 GB, mostly briefs/ screenshots).',
+  'qa-runs': 'bun run qa writes one folder a pass (report, rows, the exemplars\' scripts: about 2 to 5 MB); nightly that is 30 a month. The last 5 passes stay (qaKeep), a KEEP file holds one.',
   'engine-pins': 'one engine build per checked commit (3-8 MB each); small, rebuilt from git on demand.',
   'scratch': 'agent working folders out/<agent><brief>, per-brief probe folders and model-generation runs: every round adds a folder, nothing removes one.',
   'unity-logs': 'unity/Logs/Editor.log reached 963 MB on Oct 20 (one RobotIdle.Yaw exception thrown 1 M times in play mode); Editor-prev.log is another 97 MB.',

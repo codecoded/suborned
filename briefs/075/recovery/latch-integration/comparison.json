@@ -1,0 +1,159 @@
+{
+  "status": "PROVISIONAL; G-3a59>58 BLOCKED; no performance acceptance",
+  "checks": {
+    "foliage_exact_three_placements": true,
+    "foliage_changes_only_selected_renderers_and_logged_batches": true,
+    "foliage_original_trough_and_trunk_geometry_retained": true,
+    "foliage_two_baked_placements_gain_renderers": true,
+    "foliage_colliders_exact": true,
+    "foliage_transforms_exact": true,
+    "foliage_nav_exact": true,
+    "paving_colliders_exact": true,
+    "paving_nav_exact": true,
+    "paving_ground_geometry_unchanged_in_zone": true,
+    "paving_ground_geometry_unchanged_outside": true,
+    "paving_kit_geometry_unchanged": true,
+    "paving_outside_materials_unchanged": true,
+    "world_walk_sim_plan_catalogue_and_candidate_sources_unchanged": true
+  },
+  "foliageChangedRenderers": [
+    {
+      "path": "HarbourDistrict/civic/civic/cyp-office-e/DK_Cypress_Play",
+      "fields": [
+        "mesh",
+        "geometry"
+      ],
+      "beforeTriangles": 5004,
+      "afterTriangles": 5004,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Bloom_Coral@-3,-5#-10,-20",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 180,
+      "afterTriangles": 150,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Bloom_Cream@-3,-5#-10,-20",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 165,
+      "afterTriangles": 150,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Bloom_Flamingo@-3,-4#-12,-14",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 90,
+      "afterTriangles": 0,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Bloom_Peach@-3,-4#-12,-14",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 90,
+      "afterTriangles": 0,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Leaf_Civic@-3,-4#-12,-14",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 432,
+      "afterTriangles": 200,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Leaf_Civic@-3,-5#-10,-20",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 300,
+      "afterTriangles": 250,
+      "nonFoliageEqual": true
+    },
+    {
+      "path": "batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-14",
+      "fields": [
+        "mesh",
+        "triangles",
+        "geometry"
+      ],
+      "beforeTriangles": 432,
+      "afterTriangles": 232,
+      "nonFoliageEqual": true
+    }
+  ],
+  "unexpectedPaths": [
+    "HarbourDistrict/civic/civic/civic-office-north/tuft-0",
+    "HarbourDistrict/civic/civic/run-west-cafe/1"
+  ],
+  "counts": {
+    "before": {
+      "meshTrianglesAllLODsIncludingInactive": 26623507,
+      "materialSlotsAllLODs": 95101,
+      "shadowCastingRendererCount": 12148,
+      "alphaClippedRendererCount": 3217,
+      "rendererCount": 16734
+    },
+    "paving": {
+      "meshTrianglesAllLODsIncludingInactive": 26623507,
+      "materialSlotsAllLODs": 95101,
+      "shadowCastingRendererCount": 12148,
+      "alphaClippedRendererCount": 3217,
+      "rendererCount": 16734
+    },
+    "foliage": {
+      "meshTrianglesAllLODsIncludingInactive": 26634298,
+      "materialSlotsAllLODs": 95111,
+      "shadowCastingRendererCount": 12150,
+      "alphaClippedRendererCount": 3219,
+      "rendererCount": 16736
+    }
+  },
+  "nav": [
+    "50e591f9c282c28c5516479b221381570ececedea863018259f452026c7bb741",
+    "50e591f9c282c28c5516479b221381570ececedea863018259f452026c7bb741",
+    "50e591f9c282c28c5516479b221381570ececedea863018259f452026c7bb741"
+  ],
+  "pavingTransformDifferences": [
+    "batches/crossing-parts/probe-oldtown-ours-crosslight@-1,-1|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-oldtown-ours-crosslight@-1,-7|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-oldtown-ours-crosslight@-5,-7|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-oldtown-ours-crosslight@-6,-3|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-oldtown-ours-crosslight@-6,1|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-recovery075-before-crosslight@-1,-1|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-recovery075-before-crosslight@-1,-7|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-recovery075-before-crosslight@-5,-7|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-recovery075-before-crosslight@-6,-3|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/crossing-parts/probe-recovery075-before-crosslight@-6,1|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/ground/DK_Pave_Flags@-3,-4|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/ground/DK_Pave_Flags@-3,-5|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/ground/DK_Terrazzo_Ivory@-3,-4|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "batches/ground/DK_Terrazzo_Ivory@-3,-5|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "source/civic-restyle baseline-restyle.json sha256 3a3bf1fbce4141c7b9a43adee06da3e94f3f01da9028e94b34359e69af8a505b|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True",
+    "source/civic-restyle civic-restyle.json sha256 63a72863faf117804bf507d464f0c5f87d505c6457061bfe42c14a49ecf50918|0,0,0|(0.0000000, 0.0000000, 0.0000000, 1.0000000)|100000,100000,100000|True"
+  ],
+  "inputChanges": []
+}

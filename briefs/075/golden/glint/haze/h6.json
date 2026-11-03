@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.haze/2",
+ "note": "Glint, brief 048 'Old city atmosphere' (2026-10-22; Sky: 'try the atmosphere'). Distance haze by camera tier, LOOK ONLY (no rule, sight or replay reads it). Tiers (DistanceHaze.TierOf): play = the orthographic play camera (zoom 14 at 38 degrees) and every overlay camera: NO FOG, so the play area stays crisp and the signals draw as built. follow = a perspective camera with far <= followFarMax (third person, conversation and fail cutaways): LINEAR, clear to 90 m, the haze colour at the 350 m far clip (0 percent at 80 m, 23 at 150, 62 at 250, 81 at 300, 100 at 350); the exp2 this file held before (17 percent at 80 m, 47 at 150) greyed the enamel accents by 100 m, the old city had 4 and 7 percent. long = a perspective camera with a longer far plane (flyby, free fly): the old city's exponential 0.0005 (4 percent at 80 m, 22 at 500, 39 at 1 km, 63 at 2 km, 78 at 3 km), so the horizon rings 1.4 to 8 km stay visible. colour (#f4e3c3, was #ecd9b4: measured in the game frame the old value rendered #dbcdb0 to #d2c2a0, S 0.20 to 0.25, V 0.85, the ACES tonemap and the grade darkening it about 7 percent, a dun band; this renders about #e4d8bf, 15 to 20 percent less saturated and 4 to 5 percent lighter) = the one haze value for fog and the sky horizon by day (AtmosphereLens gives the sky the same); light.json light.haze holds the same hex for a scene rebuild. At night the scene's own fog colour (night.haze) is kept. follow.end is the far clip: HostFollow.followFar must equal it (DistanceHaze.FarClip). Modes: linear (start, end) | exp2 (farClip, reach: density = sqrt(-ln(1 - reach)) / farClip) | exp (density). Unknown schema or mode, or out-of-range values, are rejected with an error and the scene keeps its fog. Not built, on purpose: a height term (haze lying low so tower tops stand clear) needs a depth pass per frame.",
+ "colour": "#f4e3c3",
+ "longNote": "Glint 2026-10-23 (Glyph review of 0.2.94: the flyby haze reads as ochre dust, no blue sky). long.colour and long.gain: the long tier's own haze (fog and sky horizon), a paler peach cream (#f1e5cc, S 0.15) with a LINEAR gain of 1.3, the old city's fog pushed slightly past 1 so the tonemap bleaches it toward cream and bloom catches it. Measured on 0.2.94 the shared #f4e3c3 rendered #dccdb0 (V 0.86, S 0.20 to 0.25) over the whole far plain: dull, saturated, dark. Follow keeps #f4e3c3 (reads right). Density stays 0.0005 (the old city's). Night: the scene's own fog colour is kept, so neither value applies. gain 0 or 1 = none; if fogColor is clamped by the pipeline the gain does nothing and the long tier renders as before.",
+ "follow": {
+  "mode": "linear",
+  "start": 90,
+  "end": 350
+ },
+ "long": {
+  "colour": "#ebdbba",
+  "gain": 1,
+  "mode": "exp",
+  "density": 0.0003
+ },
+ "r075": "Glint 075-A (2026-10-28): the long tier is the old reel's fog whole: exponential 0.0005 (DecoKitSky.Apply's default), colour the old sky's horizon haze sRGB (246, 229, 195) = #f6e5c3 times the old sky gain 1.5 in linear (the old RenderSettings.fogColor (1.159, 1.076, 0.916, 1.5) is horizon.gamma), times 0.6 for our sun (light.json sun.exposureMatch: 0.9 x linear #f6e5c3 = linear #ebdbba, gain 1); was #fad9bd x 1.2 at 0.0006. The follow tier is unchanged (the old reel had no near view; linear 90 to 350 m keeps the enamel accents).",
+ "longNote2": "Glint 2026-10-24 (Glyph, 0.2.99: the horizon band is sand yellow). The far plain was the sea material's own baked haze (#f4e3c3, no gain: it rendered #d9cbaf, S 0.19) against a sky horizon of #f1e5cc x 1.3 (rendered #dddbce, S 0.07): two colours. Water.shader now takes _AtmHaze, so fog and far shore end on the sky's horizon colour. Haze colour peach-cream #fad9bd (hue 27, was 40), gain 1.2 (was 1.3: less bleach, so it keeps some colour), density 0.0006 (was 0.0005) so the sea has converged before 4 km.",
+ "evening": {
+  "colour": "#f3c6a2",
+  "longColour": "#f8c7a8",
+  "longGain": 1.15,
+  "longDensity": 0.0007,
+  "followStart": 70
+ },
+ "eveningNote": "Glint 2026-10-24 (the evening phase, lens.json evening; LightPhase.Dusk 0 day .. 1 evening). The haze warms from cream (#f4e3c3, long #fad9bd) to a peach-apricot (#f3c6a2, long #f8c7a8: hue 27 to 30, S 0.33, still a light colour, V 0.95) so far towers go peach, not brown; the long tier's gain eases to 1.15 and its density to 0.0007 (the low sun lights more air); the follow haze begins at 70 m (day 90) so the Boulevard's far end warms sooner. The sky horizon takes the same colour. 0 or empty = the day's. Night: the scene's own fog colour, as by day.",
+ "followFarMax": 900,
+ "orthographic": false,
+ "overlays": false
+}

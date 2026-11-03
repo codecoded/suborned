@@ -1,0 +1,174 @@
+{
+  "before-build.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [
+      "World: kit built 383 prefabs: 324 LODGroups (330 LOD levels beyond LOD0; a cull level on each: 164 small pieces below 1% of the screen or half their commander-view height, the rest below 0.4%; 135 cull-only, 196 levels below their cull dropped); colliders stripped 181 (concave mesh 52, convex mesh 0, box 129, other 0); LOD slots the LOD0 does not list 26 (DecoCorner_10, DecoEnd_10, PortholeBay_3, PortholeBay_4, PortholeBay_7, PottedTopiary_Play), all mapped; 50 switched by distance class (kit.json lodClasses, follow view 55\u00b0); removed from the sources: 5 old LODGroups, 0 missing nested prefabs, 0 missing scripts; robot faces rigged 10",
+      "World: view street skipped: no shopfronts on `harbour-lane`",
+      "World: view deck skipped: `mega/market-deck/market` not in this build",
+      "World: view close-lamp skipped: no `lamp` within 3 m of (-111, -204.6) in this build",
+      "World: view close-palms skipped: no `tree` within 3 m of (-124.8, -250.5) in this build",
+      "World: view top-lamp skipped: no `lamp` within 3 m of (-111, -204.6) in this build",
+      "World: view docks skipped: `mega/market-deck` not in this build",
+      "World: play-zoom guard: 4 groups outside the facade layers switch to L1 nearer than 36 m (drawn below L0 at the widest play zoom): street/DK_FanPalm x4 from 34.1 m",
+      "World: play-zoom guard: 2585 LOD groups checked; nearest L1 switch on the building layers 45.0 m (DK_Roof_Planter) >= 36 m; 4 groups outside the facade layers switch nearer (warned above)"
+    ],
+    "normalExit": true
+  },
+  "before-manifest.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "before-restyle-manifest.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "before-shots.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "bounds-proof-all.log": {
+    "compileErrors": [],
+    "exceptions": [
+      "InvalidDataException: Recovery075: some imported render meshes escape original production envelopes; see bounds-proof.json"
+    ],
+    "worldWarningMessages": [],
+    "normalExit": false
+  },
+  "bounds-proof.log": {
+    "compileErrors": [],
+    "exceptions": [
+      "InvalidDataException: Recovery075 imported bounds escape civic/civic-office-north/tuft-1"
+    ],
+    "worldWarningMessages": [],
+    "normalExit": false
+  },
+  "foliage-apply.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [
+      "Main Object Name 'civic/DK_Bloom_Coral@-3,-5#-11,-20(Clone)' does not match filename 'batch_d5be6fdaa28e3aecc2aa0c21e2c17cff57a2080b521b63cb3341fce58451f689'",
+      "Main Object Name 'civic/DK_Bloom_Flamingo@-3,-5#-10,-20(Clone)' does not match filename 'batch_eaab935187d0f1b794c46f4448acc61605879e3a7a53e092f65c0a6e831e2b7b'",
+      "Main Object Name 'civic/DK_Leaf_CivicDark@-3,-4#-12,-14(Clone)' does not match filename 'batch_3968f0a4fcd4d14fc25030fb982ec4626ffd2fea74f799c2ada556a37b44e352'",
+      "Main Object Name 'civic/DK_Bloom_Cream@-3,-5#-10,-20(Clone)' does not match filename 'batch_a533b7c0887b033cbe53db296d6490231f29f420010a79e416b73742098e02d5'",
+      "Main Object Name 'civic/DK_Leaf_Civic@-3,-4#-12,-14(Clone)' does not match filename 'batch_94fa2032f96c9694bf8ac0a6efcc9573cb4b388f680e66d4a2b697ed6137cefa'",
+      "Main Object Name 'civic/DK_Leaf_Civic@-3,-5#-10,-20(Clone)' does not match filename 'batch_eefb948d69409d943d0506f2e5383b800845fe5e6d54dc77b8be4987bc721c70'",
+      "Main Object Name 'BedTuft_A_Recovery075_foliage_only' does not match filename 'civic_civic-dropoff-west_tuft-0'",
+      "Main Object Name 'civic/DK_Bloom_Peach@-3,-5#-11,-20(Clone)' does not match filename 'batch_009ecbbc3711a7b26f6d72b22018d0ac88f9d4d791ebd701bec41251112eb56b'",
+      "Main Object Name 'civic/DK_Bloom_Peach@-3,-5#-10,-20(Clone)' does not match filename 'batch_cf054378a9c4af80088fd7e595e1e3568ff4755bd8839b9ff88a68bab4f97dd5'",
+      "Main Object Name 'BedTuft_B_Recovery075_foliage_only' does not match filename 'civic_civic-office-north_tuft-1'",
+      "Main Object Name 'PlanterRun_4_B_Recovery075_foliage_only' does not match filename 'civic_run-west-cafe_1'",
+      "Main Object Name 'BedTuft_A_Recovery075_foliage_only' does not match filename 'civic_civic-office-north_tuft-0'",
+      "Main Object Name 'BedTuft_B_Recovery075_foliage_only' does not match filename 'civic_civic-dropoff-west_tuft-1'",
+      "Main Object Name 'civic/DK_Leaf_Civic@-3,-5#-11,-20(Clone)' does not match filename 'batch_40c810366b0101166712130289619ec851663ce49b26b7daadd0f850b692fcf9'",
+      "Main Object Name 'civic/DK_Bloom_Peach@-3,-4#-12,-14(Clone)' does not match filename 'batch_893836f520e79696dafbd15fe415ca10ced7534666e181e99ab1ef3f6acf7f9a'",
+      "Main Object Name 'civic/DK_Bloom_Cream@-3,-5#-11,-20(Clone)' does not match filename 'batch_5253710edea63dc4a52bfe72ddeeecf6b7269aeb539d1646fc6e0a71d1cf1430'",
+      "Main Object Name 'civic/DK_Bloom_Flamingo@-3,-5#-11,-20(Clone)' does not match filename 'batch_ef78b7494758c1fd8d284e4f7c355005e27f42298db505c4c108940955341625'",
+      "Main Object Name 'civic/DK_Leaf_CivicDark@-3,-5#-10,-20(Clone)' does not match filename 'batch_d92a8adb17e40c69ec5d004d7191193667b27e84a7f2ca42ef206932574324db'",
+      "Main Object Name 'civic/DK_Bloom_Flamingo@-3,-4#-12,-14(Clone)' does not match filename 'batch_3118b3201bf3ef0617a8bba80295a579e940638191854f794abd82f1b50220d7'",
+      "Main Object Name 'civic/DK_Bloom_Coral@-3,-5#-10,-20(Clone)' does not match filename 'batch_fbd00f1bd0d82c9cee77afee2716bdf8b7d0ef4ebcd75211d77fbdc6ae2334bb'",
+      "Main Object Name 'civic/DK_Leaf_CivicDark@-3,-5#-11,-20(Clone)' does not match filename 'batch_ec67143287a20c3db1259eae3c1ede35c01bf5966f155a373cf09a7690394b92'"
+    ],
+    "normalExit": true
+  },
+  "foliage-manifest.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "foliage-restyle-manifest.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "foliage-shots.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "foliage3-apply.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "foliage4-apply.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "import.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "paving-build.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [
+      "World: kit built 383 prefabs: 324 LODGroups (330 LOD levels beyond LOD0; a cull level on each: 164 small pieces below 1% of the screen or half their commander-view height, the rest below 0.4%; 135 cull-only, 196 levels below their cull dropped); colliders stripped 181 (concave mesh 52, convex mesh 0, box 129, other 0); LOD slots the LOD0 does not list 26 (DecoCorner_10, DecoEnd_10, PortholeBay_3, PortholeBay_4, PortholeBay_7, PottedTopiary_Play), all mapped; 50 switched by distance class (kit.json lodClasses, follow view 55\u00b0); removed from the sources: 5 old LODGroups, 0 missing nested prefabs, 0 missing scripts; robot faces rigged 10",
+      "World: view street skipped: no shopfronts on `harbour-lane`",
+      "World: view deck skipped: `mega/market-deck/market` not in this build",
+      "World: view close-lamp skipped: no `lamp` within 3 m of (-111, -204.6) in this build",
+      "World: view close-palms skipped: no `tree` within 3 m of (-124.8, -250.5) in this build",
+      "World: view top-lamp skipped: no `lamp` within 3 m of (-111, -204.6) in this build",
+      "World: view docks skipped: `mega/market-deck` not in this build",
+      "World: play-zoom guard: 4 groups outside the facade layers switch to L1 nearer than 36 m (drawn below L0 at the widest play zoom): street/DK_FanPalm x4 from 34.1 m",
+      "World: play-zoom guard: 2585 LOD groups checked; nearest L1 switch on the building layers 45.0 m (DK_Roof_Planter) >= 36 m; 4 groups outside the facade layers switch nearer (warned above)"
+    ],
+    "normalExit": true
+  },
+  "paving-manifest.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "paving-restyle-manifest.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "paving-shots.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "swap-build.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "swap-shots.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "swap-station-detail.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  },
+  "swap-verify.log": {
+    "compileErrors": [],
+    "exceptions": [],
+    "worldWarningMessages": [],
+    "normalExit": true
+  }
+}

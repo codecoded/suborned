@@ -1,0 +1,31 @@
+{
+ "schema":"latch.tram-bed-audit/3",
+ "scene":"Assets/Scenes/probe-recovery075-tramcorrected.unity",
+ "export":"1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+ "rule":"every 1 m along each tram track of ours (both lines of a double track), at the centre and 0.6 m either side; on our bed = a tile of ours covers the sample; level = another face within 0.8 mm of the tile top; over = another face 0.8 mm to 25 cm over it; level, no bed = off our bed, two renderers' faces within 0.8 mm at the top",
+ "ourTiles":1584,
+ "footprintContract":"actual transformed source domain before; shared lossless source polygon after; no fixed length or scale assumption",
+ "samples":9462,
+ "onBed":9462,
+ "offBed":0,
+ "level":18,
+ "over":156,
+ "levelNoBed":0,
+ "expectedTramUndersideSampleEntries":156,
+ "groundOverSampleEntries":0,
+ "renderersRead":355,
+ "editorReadDespiteRuntimeFlag":43,
+ "proxyPolicy":"no bounds proxies counted as faces; failed mesh reads remain coverage warnings",
+ "offBedAt":[],
+ "unreadable":0,
+ "unreadableNames":[],
+ "byTrack":{"tram/T1/loop":{"samples":606,"onBed":606,"level":1,"over":0,"levelNoBed":0},"tram/T1/trunk":{"samples":8856,"onBed":8856,"level":17,"over":156,"levelNoBed":0}},
+ "levelBySource":[
+ {"source":"Ours (Handover zone + network, our pipeline) / DK_LightDotRow [probe-oldtown-ours-crossdots]","samples":13,"at":[[-341.8,-127.7],[-341.2,-127.7],[-338.8,-127.7],[-338.2,-127.7],[-341.8,-193.7],[-341.2,-193.7]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-1,-7 [probe-oldtown-ours-crosslight]","samples":3,"at":[[-3,-390.3],[-1.9,-386.7],[-2.5,-386.7]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-6,1 [probe-oldtown-ours-crosslight]","samples":1,"at":[[-337.6,109.3]]},
+ {"source":"Ours (Handover zone + network, our pipeline) / probe-oldtown-ours-crosslight@-6,-3 [probe-oldtown-ours-crosslight]","samples":1,"at":[[-337.6,-187.7]]}],
+ "overBySource":[
+ {"source":"Network (our routes, old pieces) / Tram [DK_Iron]","samples":234,"at":[[-341.8,134.3],[-342.4,133.3],[-342.4,133.3],[-341.8,133.3],[-341.8,133.3],[-341.2,133.3]]}],
+ "levelNoBedBySource":[]
+}

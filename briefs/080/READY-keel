@@ -1,0 +1,15 @@
+080 engine 0.37.0 · Keel · 2026-10-30
+Patch: briefs/080/keel/engine-0.37.0.patch, on 6fb1c951 (uncommitted, in out/scratch/keel/wt080). Apply when no build is running, then: bun run people (out/people's mission hash), bun run test.
+Built: per-game seed and character streams; seeded start; rolled shots on the stat sheet; Sky's pacing (Vale out 4:50, close 7:30, talk about 30% shorter); brief 081's findings.
+Evidence: suborned-sim check 369/369; dotnet test 2685/2685; bun tools/sim/unity.ts --tree passes; numbers in briefs/080/keel/*.txt.
+Not green until their owners act: missions:check MC-0/2/3 (route scripts on old ticks: Waymark); brief.json, text.json, briefing stills on old marks and enforcer.warning's words (Waymark, Fable); GDD §01 §06 §07 (Aster); simview's hash test until the next record.
+Next owner: Aster (merge, GDD version), then Waymark and Suture (seed-band checks, `suborned-sim batch --seeds N`), Latch (host), Motive (tuning).
+
+Round 2 (Waymark's bands; same worktree, patch refreshed; Adaptive.cs's one-line clear: stays in Waymark's patch; the rulebook diff carries whatever Motive had tuned at that moment):
+weapons.sheet.intake (v:sheet-intake-ticks 13, 1.3 s between hits on one agent): B-14 now ok. Motive: a value you may tune; under 12 breaks 5 s for 5 HP.
+QuoteTakedown.Coming + Game.ComingToSee: who arrives within the act. Latch shows it on the card; Take's chip can call ComingToSee(at, 38, "carry").
+DP1's fixture must be re-recorded after the last value change: suborned-sim drive-session.
+
+Round 3 (Motive's rulings; patch refreshed, DP1 re-recorded): spacing stays within Board's reach; fight.close (close.warning at 6:30, closed-in at 7:30 with why); crowd.staffDirect (a guard leaving her post walks at the city's walk). R-2 passes. Fable: words for closed-in and close.warning. Waymark: close.warning into Adaptive's VisibleLog if a plan should read it. Re-record DP1 after any further value change.
+
+Round 4 (Sky: firing on police with city people within 30 m costs 2 Standing): v:fight-standing-security on fight.public's security outcome; unheard stays 0. Patch refreshed, DP1 re-recorded. Slice done; Aster merges.

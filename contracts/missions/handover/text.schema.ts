@@ -4,7 +4,7 @@
 // What is in the file:
 //   briefing   the brief card, objective, win, each fail in plain words, clock and close, purse, two hints, the objective tracker,
 //              the timeline as the status pill words it, one line per agent
-//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view), H14–H16 (the end steps: Enter, Extract, Take at the pickup) and H17 (the fight hint: right click a hostile to fire), the first-run toasts, the going-loud card's words
+//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view), H14–H16 (the end steps: Enter, Extract, Take at the pickup) and H17 (the fight hint: hold right click on a hostile to fire; controls trial 2026-10-24: a left click on a thing opens its ring, a left hold does the best way, a right tap does nothing), the first-run toasts, the going-loud card's words
 //   targets    each thing the cell can right click, in tiers of knowledge: `about` is what the cell was TOLD at the start (always shown);
 //              `watched` what a Scout Watch teaches (a person's routine, a camera's or the patrol's sight), `routine` the patrol's rounds,
 //              `heard` what a Scout Listen teaches (need, temperament); a tier shows only once the cell has learned it (GDD §04)
@@ -26,33 +26,50 @@
 //              timeline mark, `fate` and `beat` on a card, `beat` on a scene, and the `less` block (the one-line price grammar, the feed, the
 //              objective line, the end card's one line, pops that are not locks, cancel costs in a few words, the Alt words for the outcome marks)
 //
+//   pending    briefs 058, 059 (GDD v0.25.0): words for engine changes that are approved but not built (locks, cards, events, dialogue, actions, hints, price
+//              fields, a Watch on the rival crew), each with its brief and a `guess` flag for any code the brief did not name; the host reads none of it, and an
+//              entry moves to its live section when Keel lands the code (the live locks and cards must equal the engine's codes)
+//              Empty since the 059 port (engine 0.32.0, 2026-10-26): the Drive (`drive-car`, its two stands, `ride`), the Watch on the rival crew
+//              (`rivals` in WATCHED), the driver's tail fact, H16 and H20 are live. A stand's text key is `stand-<site getaway.stands id>`.
+//
 // Rules the checker (text.test.ts) holds: every line ≤ 80 characters; a spoken line 1–12 words; no one named but the cast; no
 // modern speech; no strong profanity; every engine verb, refusal and fail has text; every reply the rulebook can produce has a line
 // for each Handover role and each temperament the role allows; every line naming Halcyon is marked pending.
 import { z } from 'zod';
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
 import { fnv1a32 } from '../../rules/rulebook.ref.ts';
-
+import { CaptureClip, Conversations } from './conversations.schema.ts';
+import { Book } from './book.schema.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
-/** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. */
-export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', 'patrol'] as const;
+/** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. `rivals` (brief 059, engine 0.32.0): the parked rival car teaches the crew's timetable. */
+export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'patrol', 'rivals'] as const;
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
-export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
-  'board', 'go', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
+export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',
+  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field',
+  'mark', 'talk-down', 'steam', 'covering-fire'] as const; // brief 039 (engine 0.35.0): one move each (Keel's draft words in text.json, Fable to confirm); parked from engine 0.35.1 (MOVE_VERBS)
+/** Engine 0.35.1 (Sky 2026-10-26): the four moves are out of play (rulebook weapons.moves.on false; their orders are refused unknown-verb). Their words stay, each
+ *  marked `parked` with the reason (PARKED), so turning the switch back on needs no new copy. While parked the host offers none of them (the engine refuses each unknown-verb). */
+export const MOVE_VERBS = ['mark', 'talk-down', 'steam', 'covering-fire'] as const;
+export const PARKED = 'parked: moves off, Sky 2026-10-26';
+const Parked = z.string().startsWith(PARKED).optional().describe('engine 0.35.1: the word is unused while the four moves are off (weapons.moves.on false); kept for when Sky takes them up');
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
 export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
-/** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
+/** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb.
+ *  `step-target` (brief 067, Glyph F9) is the tip H22 "Scroll to switch": stepping through the things under the cursor is a control, not an order, either. */
 /** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
-export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'extract'] as const;
+export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'step-target', 'extract'] as const;
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
-/** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. */
-export const FAILS = ['abduction-seen-camera', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard', 'entry-seen-patrol',
+/** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. `cell-down` (engine 0.34.0, brief 067): every operative is down. */
+export const FAILS = ['abduction-seen-camera', 'cell-down', 'closed-in', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
   'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
-export const NAMED = ['Inez', 'Vale'] as const; // the only people the words may name (people.rules names.pinned); others by role
+/** Fail codes the engine keeps only for rulebooks pinned before a change; live text words none of them. `entry-seen-patrol` (engine 0.34.2, Sky 2026-10-26,
+ *  GDD v0.28.0 section 07): the patrol seeing the Enter is a report (log entry.seen, entry.reported, entry.stopped), no fail. */
+export const RETIRED_FAILS = ['entry-seen-patrol'] as const;
+export const NAMED = ['Inez', 'Popovic'] as const; // the only people the words may name (people.rules names.pinned); others by role
 /** Speakers only a scene has: the people around the target (the café's owner, a customer, an Office clerk). */
 export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;
 export const SCENE_SPEAKERS = [...SPEAKERS, ...SCENE_ONLY] as const;
@@ -63,7 +80,7 @@ export const SHORT_MAX = 24;
 export const BEAT_MAX = 24;
 /** brief 014: the price line's fields, in the order the line shows them (canonical). `learns` = the icons of what a Watch or Listen teaches;
  *  `pace` = a carry's walking pace; `mark` = the outcome mark (works, refuse, half, unknown). */
-export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'alert', 'eye', 'learns', 'pace', 'mark'] as const;
+export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'door', 'alert', 'lasts', 'eye', 'learns', 'pace', 'mark'] as const;
 
 const clock = z.string().regex(/^\d{1,2}:[0-5]\d$/);
 const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
@@ -78,10 +95,11 @@ const Temperament = z.enum(TEMPERAMENTS);
 
 export const Action = z.strictObject({
   label: z.string().min(1).max(24).describe('the row label in the panel and on the verb plate'),
+  parked: Parked,
   by: z.array(z.enum(AGENTS)).min(1).describe('the agents who can give it'),
   engine: z.strictObject({ do: code, approach: code.optional() }).describe('the engine order it becomes (Order.Do, Order.Approach)'),
   does: Line.describe('one plain line: what it does and what it costs'),
-  withTarget: Line.optional().describe('the row or card label once a target is chosen, e.g. "Listen to {target}"; {target} is names.targets[key]. Absent = the verb takes no target'),
+  withTarget: Line.optional().describe('the row, card and hold-pill label once a target is chosen, e.g. "Listen to {target}", "Fire at {target}", "Ask {target}"; {target} is names.targets[key]. A verb that needs a preposition carries it here (the pill once ran the label and the name together, "Listen the guard": Suture 2026-10-26; text.test.ts sorts every verb with a target into direct or with its preposition). Absent = the verb takes no target'),
   then: Line.optional().describe('the queued clause after a walk, e.g. "listens to {target}": "{agent} walks to {target}, then {then}"'),
   onTarget: z.record(z.string(), Line).optional().describe('the same verb on one target (a target key from `targets`), when the plain line can say more'),
   onTargetBy: z.partialRecord(z.enum(AGENTS), z.record(z.string(), Line)).optional()
@@ -90,19 +108,23 @@ export const Action = z.strictObject({
     .describe('brief 013: an order with a choice (Order.How: takedown knockout or kill): the panel row for each way and its price in words'),
 });
 
+/** The wording a lock can have besides its base line (Lock.byTarget). */
+export const LOCK_VARIANTS = ['machine', 'rival-car', 'rival-car-driving'] as const;
 export const Lock = z.strictObject({
+  parked: Parked,
   line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
   short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
   verbs: z.array(z.union([Verb, z.enum(CONTROL_VERBS), z.literal('*')])).min(1).describe('the verbs that can return it'),
-  byTarget: z.partialRecord(z.enum(['machine']), z.strictObject({ line: Line, short: Short() })).optional()
-    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table)'),
+  byTarget: z.partialRecord(z.enum(LOCK_VARIANTS), z.strictObject({ line: Line, short: Short() })).optional()
+    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table). Engine 0.33.0 (brief 059): `rival-car` and `rival-car-driving` are car-held when `car:rivals` is among Answer.ids (the rival car still carries a member): the first when the engine sends a step-out `tick`, the second when it sends none (-1: the car is still driving). `fillLock` and `fillLockShort` pick them'),
+  tickAs: z.enum(['clock', 'left']).optional().describe('how {tick} is filled: `clock` (default) is the mission clock as ctx.clock says it ("3:03"); `left` is the time still to wait, as ctx.left says it ("18 s"), for a tick that is a moment to count down to (car-held: the rival crew\'s first step-out)'),
 });
 
 /** What an agent is doing now (sim Game.ActivityOf): the roster and verb plate words. `{who}` is the activity's target. */
 export const Activity = z.strictObject({
   idle: Line, down: Line, walking: Line, running: Line, drawing: Line, holstering: Line, firing: Line,
   holding: z.strictObject({ loop: Line, carry: Line, take: Line }),
-  acting: z.strictObject({ board: Line, watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
+  acting: z.strictObject({ board: Line, 'drive-car': Line.describe('the one who drives the getaway car to another bay (brief 059)'), ride: Line.describe('everyone else in the car while it drives'), watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, disable: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
     takedown: Line, drop: Line, stash: Line, restrain: Line, body: Line.describe('any other work with a body (the rulebook cancel verb `body`: lift, drop, stash or tie)') }),
 });
 
@@ -163,12 +185,12 @@ export const CARD_FATES = ['beat', 'icon', 'alt', 'debrief'] as const;
 /** brief 014: where a piece of text goes. speech = a person talking, in the world; beat = a one-line feed beat; icon = an icon, number, ring or mark in the street (Glyph draws it); alt = full detail on hold (Alt) and in the history key; debrief = after the run; cut = not shown; label = a name or a word or two the HUD needs as it is. */
 export const FATES = ['speech', 'beat', 'icon', 'alt', 'debrief', 'cut', 'label'] as const;
 /** Where an in-sight card looks (brief 013): the engine position the sight check uses. The log carries no position; the host reads it from the game. */
-export const CARD_AT = ['victim', 'stash', 'reporter', 'scene', 'person', 'guard', 'unit', 'door', 'patrol'] as const;
+export const CARD_AT = ['victim', 'stash', 'reporter', 'scene', 'person', 'guard', 'unit', 'door', 'patrol', 'rival-car', 'rival-lookout', 'vale-car'] as const;
 export const Card = z.strictObject({
   kind: z.enum(CARD_KINDS),
   title: z.string().min(1).max(40),
-  sight: z.enum(['in-sight']).optional().describe('the cell hears of it only if an agent is within 13 m with a clear line (as a city scene)'),
-  at: z.enum(CARD_AT).optional().describe('with `sight`: the place the check looks at: victim (the downed person), stash (the bin or door), reporter (who is making the report), scene (where the report sent the response), person (who is acting), guard, unit (the response member), door (the Office door), patrol'),
+  sight: z.enum(['in-sight', 'always']).optional().describe('in-sight: the cell hears of it only if an agent is within 13 m with a clear line (as a city scene). always (brief 067, Aster from Sky on 0.2.122): the cell hears of it wherever it stands, as the chime scene is heard anywhere: the rival car turning in off Orbit Walk is a horn and tyres, never seen, so its 2:35 beat shows always. No `sight` = the cell\'s own acts and the city\'s answers to an Alert, which need none'),
+  at: z.enum(CARD_AT).optional().describe('with `sight`: the place the check looks at (in-sight), or only the place the card points at, a click or N shows it (always): victim (the downed person), stash (the bin or door), reporter (who is making the report), scene (where the report sent the response), person (who is acting), guard, unit (the response member), door (the Office door), patrol, rival-car (the rival car, brief 059), rival-lookout (the rival lookout), vale-car (the car Vale rides in)'),
   needs: z.enum(['routine']).optional().describe('the card shows only once the cell holds the routine of the person it is about (a completed Watch); until then the city\'s answer (report.landed) speaks alone'),
   result: z.union([Line, z.record(code, Line)]).optional(),
   pick: z.string().optional().describe('when `result` is a record: the engine state that chooses the key'),
@@ -186,6 +208,7 @@ export const Debrief = z.strictObject({
   investigation: z.strictObject({ little: Line, early: Line, active: Line, activeBecause: Line }),
   causes: z.record(code, Line).describe('Debrief.InvestigationCause (and the engine\'s named-witness:<role>, whose {who} is the role as names.targets says it)'),
   fight: z.strictObject({ loud: Line, safe: Line }),
+  fightWhy: z.record(code, Line).describe('engine 0.33.0 (brief 059): one clause for each id the debrief\'s finalFight.why can carry (sim FightWhy.Add), each a plain sentence that follows the Final fight line on the end card and in the history'),
   kept: Line,
   route: z.record(code, Line),
   assets: z.record(code, Line),
@@ -222,6 +245,7 @@ export const Entry = z.strictObject({
   temperament: Temperament.optional(),
   about: z.enum([...PEOPLE, ...WATCHED]).optional().describe('read: whom or what the Scout is reading (a person, a camera or the patrol)'),
   pending: z.string().optional().describe('the line waits on a decision; the host ships the `unnamed` alternative until it is made'),
+  parked: Parked,
   lines: z.array(z.string().min(1).max(MAX_LINE).regex(/^[^\n<>]+$/)).min(2).max(4),
 });
 export type Entry = z.infer<typeof Entry>;
@@ -235,7 +259,7 @@ export const Less = z.strictObject({
   price: z.strictObject({
     rule: z.string().min(1),
     order: z.array(PriceField).describe('the canonical field order; each verb\'s list below is a subsequence of it'),
-    fields: z.record(PriceField, z.strictObject({ shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
+    fields: z.record(PriceField, z.strictObject({ text: Short().optional().describe('the field\'s words, where it has no icon'), shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
     verbs: z.record(Verb, z.array(PriceField).min(1)).describe('the fields each verb\'s one-line price shows, in order; `name` first, always'),
     examples: z.record(code, z.string().min(1).max(60)).describe('worked lines with the engine\'s numbers from the play screenshots; `\u{1F441}` is the eye mark, `\u25B2` the Alert mark'),
   }),
@@ -255,17 +279,58 @@ export const Less = z.strictObject({
     steps: z.array(z.strictObject({ key: z.enum(['take', 'bring', 'carry', 'go']), when: z.string().min(1).describe('the game state in which the host shows this line as the goal') })).min(3)
       .describe('the goal line in order: take, then bring, then carry; each `key` names the line above, `when` is the state the host reads (Latch builds the trigger)'),
   }),
-  briefing: z.strictObject({ rule: z.string().min(1), goal: Short(32) }),
+  briefing: z.strictObject({
+    rule: z.string().min(1), goal: Short(40).refine((x) => x.replace(/[[\]]/g, '').length <= 32, 'at most 32 characters as drawn: the brackets around a ringed noun are colour, not characters (text.test.ts plain)'),
+    begin: Short(12).describe('brief 062: the light-line item that starts the mission (always focused; Space begins)'),
+    target: Short(12).describe('brief 062: the header of the file card (brief 070: the page\'s Target head); `fact` and `office` (the street overlay\'s file-card fact and Office tag) are retired with it'),
+    ways: z.record(code, Short(16)).describe('brief 062: the name of each way in on the two way cards, by the mission\'s way id (front-door, pickup)'),
+  }),
   end: z.strictObject({
     rule: z.string().min(1),
     win: Short(), withdraw: Short(),
     fail: z.record(code, Short()).describe('one line per fail code (the headline); the full sentence is briefing.fails, shown in the debrief'),
   }),
   pop: z.record(code, Short()).describe('refusals and notices the host builds itself (not engine codes): one pop each'),
+  why: z.record(code, Short(16)).describe('engine 0.33.0 (brief 059, Keel 0.25.0 FireWhyOf): the one or two words of why a hostile fires on an agent, by the engine\'s fire cause (Game.FireCauseOrder: range, final, fired, vale, violence, crewmate, drawn, face, seen). The under-fire cue shows the main cause beside its icon; Alt lists them all'),
   cancel: z.record(code, Short(20)).describe('what a cancel costs, in a few words, by the same ids as cancelCosts; a costly one tints the cancel mark'),
   alt: z.strictObject({
     rule: z.string().min(1),
     outcome: z.record(code, Line).describe('the outcome marks in words, for Alt: ok works, worse works one step worse, no refuses, half not yet, unk unknown until the Scout learns who they are'),
+    mood: z.strictObject({ friendly: Line, uneasy: Line, scared: Line }).describe('brief 054 (rulebook mood.shift): what each mood does to the prices, for Alt on the mood disc over a person: which approaches come easier or harder. Ask never moves'),
+  }),
+  mood: z.strictObject({
+    rule: z.string().min(1),
+    word: z.strictObject({ friendly: Short(10), uneasy: Short(10), scared: Short(10) }).describe('the mood as one lowercase word, for {mood} in a footer; the done chip\'s capitalised form is done.gain.mood-<mood>'),
+    lever: z.strictObject({ pay: Short(10), help: Short(10), pressure: Short(10) }).describe('the approach as one lowercase word, for {lever} in a footer'),
+    likely: Short(10).describe('the word on the dashed tick of the price pill (Quote.Likely)'),
+    hurt: Short(10).describe('the word after {lever} in footerHurt (Quote.Hurt)'),
+    footer: Short(44).describe('item 23 (brief 054 section 7): the Watch card\'s footer when the mood favours an approach (Quote.Likely): {who} {mood} {lever}'),
+    footerHurt: Short(44).describe('the footer when the mood hurts an approach and favours none (Quote.Hurt): {who} {mood} {lever}'),
+    footerBare: Short(44).describe('the footer when the mood moves no price: {who} {mood}'),
+  }).describe('brief 054 (the Watch teaches a mood): the words of the Watch card\'s footer and the price pill\'s tag. Neutral says nothing, so a Watch that taught nothing has no footer'),
+  sealed: z.strictObject({
+    rule: z.string().min(1),
+    line: z.strictObject({ held: Line, ready: Line, empty: Line, unknown: Line }).describe('brief 057 section 4: the fail card\'s sub-line when the district seals, by FailCause.Car (held, ready, empty), and `unknown` when the engine gave none; {holders} is names.holders as holdersPhrase says it'),
+    tip: z.strictObject({ held: Short(36), ready: Short(36), empty: Short(36) }).describe('what to do next time, by FailCause.Car; at most six words, the fail camera\'s tip form'),
+    story: z.strictObject({ held: Line, ready: Line }).describe('the debrief\'s extra route line after "Vale reached the getaway car.", by FailCause.Car; none when the car was empty'),
+  }),
+  closedIn: z.strictObject({
+    rule: z.string().min(1),
+    line: z.strictObject({ 'no-driver': Line, 'car-held': Line, 'on-foot': Line, 'no-go': Line }).describe('brief 080 (engine 0.37.0): the fail card\'s sub-line for closed-in, by FailCause.Why; {by} as less.failcam.by'),
+  }),
+  odds: z.strictObject({
+    rule: z.string().min(1),
+    chip: Short(32).describe('brief 080: the fire preview\'s chip: {pct} the hit chance, {s} rough seconds to down'),
+    chipBare: Short(12).describe('the chip with no estimate of the time to down: {pct}'),
+    sum: Line.describe('Alt: the sum behind the chance: {pct} {aim} {range} {cover} {move}, the last three signed'),
+    limits: Line.describe('Alt: the limits of a chance (rulebook sheet-min, sheet-max)'),
+    streak: z.strictObject({ head: Short(40), hits: Line, misses: Line }).describe('the streak note, said openly (Sky on design.html, decision 2); rulebook sheet-streak-hits, -misses, -floor'),
+  }),
+  takedown: z.strictObject({
+    rule: z.string().min(1),
+    coming: Line.describe('brief 080 (TakedownQuote.Coming): the card\'s row for who will arrive and notice before the act ends: {list} of `item`s'),
+    item: Short(36).describe('one person coming: {who} {s} {verb}'),
+    short: Short(24).describe('one person coming, at rest: {who} {s}'),
   }),
   fates: z.record(z.string(), z.enum(FATES)).describe('every player-facing group of this file by its path, with where it goes (the inventory in briefs/014/fable-less.md, as data)'),
   hint: z.strictObject({
@@ -273,7 +338,7 @@ export const Less = z.strictObject({
     showSeconds: z.number().int().min(2).max(10),
     returnSeconds: z.number().int().min(5),
     maxShows: z.number().int().min(1).max(3),
-    firstAct: Short().describe('brief 030: the goal line\'s first-time hint, shown until the player\'s first right click'),
+    firstAct: Short().describe('brief 030: the goal line\'s first-time hint, shown until the player\'s first click on a thing (the click that opens its ring; controls trial 2026-10-24)'),
   }),
   go: z.strictObject({
     rule: z.string().min(1),
@@ -283,6 +348,7 @@ export const Less = z.strictObject({
     seen: Short().describe('the Go card\'s extra price when a security body would see the car leave'),
     flag: Short().describe('the roster flag on every agent not in the car while the Go card is open'),
     fate: z.record(code, Line).describe('Alt on a name\'s fate glyph, by the engine\'s fate (captured, walked); {who} is the agent'),
+    noVale: Line.describe('brief 067 (Glyph C5): the Alt line of the Go wedge while Vale is not aboard, the ring\'s last, never lit way (a struck Vale cameo, taken with the 0.5 s hold, no other word): Go then withdraws the cell'),
   }),
   failcam: z.strictObject({
     rule: z.string().min(1),
@@ -301,12 +367,15 @@ export const Less = z.strictObject({
     rule: z.string().min(1),
     plate: z.record(code, Short(12)).describe('brief 043: the portrait plate\'s word after a landing, by the engine\'s outcome (turned, kept, not-yet, refused, suspicious) or done, or cancelled; at most two words'),
     gain: z.record(code, Short(16)).describe('brief 043: the gain chip\'s new words, one icon-plus-label fact each; a Watch or Listen\'s facts are less.intel; {s} is seconds'),
-    close: z.record(code, Short(16)).describe('brief 043: the pop when a window ends, by the marker\'s kind (guard, camera, patrol, rivals)'),
+    close: z.record(code, Short(16)).describe('brief 043: the pop when a window ends, by the marker\'s kind (guard, camera, patrol, rivals, and disable: the desk\'s report landing)'),
     cancel: z.strictObject({
-      tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36),
+      tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36), again: Short(24), againKey: Short(24), cantStop: Short(24), already: Short(24),
       cost: z.record(code, Short(16)).describe('the cost word by the engine\'s cancel cost; a cancel cost with no entry is free'),
     }).describe('brief 043: the warning before a cancelling order and the pop after it; {verb} the ring label, {cost} one of cost, {s} seconds spent'),
     fire: z.record(code, Short(12)).describe('engine 0.26.0 (Game.FireQuery): the portrait plate\'s two words when a squad fire order skips this agent, by the refusal code; no punctuation, a name may keep its capital (has Vale)'),
+    run: z.strictObject({ noticed: Line, unknown: Line }).describe('engine 0.34.0 (brief 067, Motive M067-B2): the Alt chip of a run on the ground, which says who would notice it and no longer an Alert (a run is noticed, never an Alert on its own): `noticed` follows "run 6 s · " with {who} the watchers as the host names them ("the guard, a guard"), `unknown` stands for a watcher the Scout has not learned (the "?" of rulebook sight.unknown). The host reads less.done.run.noticed (RunNoticedWords)'),
+    board: z.record(code, Short(12)).describe('brief 067 (Glyph C4): the same chip for a squad Board that skips this agent, by the refusal code a Board can meet (the host\'s BoardLock and the engine\'s Board); an agent already in the car is skipped silently, so `in-car` has no entry'),
+    focus: z.strictObject({ aiming: Short(12), 'walking-in': Short(12), 'no-line': Short(12), 'out-of-reach': Short(12) }).describe('engine 0.35 (one input, the sticky focus; GDD section 10): the plate under a focus that waits, two lowercase words by the engine\'s FocusOf state; firing shows none. The host reads less.done.focus.<state> (HostHoldStatus.FocusWhy)'),
     walk: z.strictObject({
       plate: Short(16).describe('the plate while an agent walks to act: {who} from `who`'),
       line: Short(36).describe('the pill and Alt while walking to act: {target} is names.targets, {verb} the ring label'),
@@ -315,6 +384,28 @@ export const Less = z.strictObject({
   }),
 });
 export type Less = z.infer<typeof Less>;
+// ---------------------------------------------------------------- pending: words drafted ahead of the engine (briefs 058, 059; GDD v0.25.0)
+/** Every entry says whether its code, key or trigger is a `guess` (the brief did not name it; Keel confirms or renames) and the `brief` it comes from. */
+const Meta = { guess: z.boolean().describe('true = the code, key or trigger is the writer\'s guess, not named by the brief; the engine\'s owner confirms or renames it'), brief: z.string().min(1) };
+export const Pending = z.strictObject({
+  rule: z.string().min(1),
+  locks: z.record(code, z.strictObject({ line: Line, short: Short(), verbs: z.array(z.string().regex(/^[a-z][a-z-]*$|^\*$/)).min(1), supersedes: z.boolean().optional().describe('true = replaces the live lock of the same code when the engine lands'), ...Meta }))
+    .describe('refusal codes the engine does not give yet (or gives with new numbers). The live `locks` must equal the engine\'s codes (a test), so these wait here until Keel lands the code; then the entry moves to `locks` unchanged'),
+  cards: z.record(z.string().regex(/^[a-z][a-z0-9.-]*$/), Card.omit({ at: true }).extend({ at: z.string().optional().describe('where the sight check looks; a value outside CARD_AT is a new place the host must learn'), replaces: z.boolean().optional().describe('true = replaces the live card of the same code'), ...Meta }))
+    .describe('feed cards for log codes the engine does not write yet; they move to `cards.items` when Keel logs the code (the live test: every card is for a code the engine logs)'),
+  events: z.record(code, EventDef.extend(Meta)).describe('events (situations that can speak) for the same new log codes'),
+  dialogue: z.array(Entry.extend(Meta)).describe('lines for the pending events, and new outcomes of live events (loop-ends ran-out)'),
+  actions: z.record(z.string().regex(/^[a-z][a-z-]*$/), Action.extend(Meta)).describe('verbs the engine does not have yet; `engine.do` is a guess unless the entry says otherwise'),
+  activity: z.record(z.string(), Line).describe('roster words by activity path (acting.disable)'),
+  price: z.strictObject({
+    fields: z.record(code, z.strictObject({ shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
+    verbs: z.record(code, z.array(z.string()).min(1)),
+    examples: z.record(code, z.string().min(1).max(60)),
+  }).describe('price-line fields, verbs and worked lines the grammar of `less.price` does not have yet'),
+  targets: z.record(code, Target.partial().extend(Meta)).describe('things the cell can pick that the plan does not have yet, and tiers a live target gains (a Watch on the rival crew)'),
+  hints: z.record(z.string().regex(/^H\d+$/), Hint.omit({ verb: true }).extend({ verb: z.string().min(1), replaces: z.boolean().optional(), ...Meta })),
+});
+export type Pending = z.infer<typeof Pending>;
 
 /** The nouns a hint or objective line marks in [brackets]. */
 export const marked = (s: string): string[] => [...s.matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]!);
@@ -355,12 +446,28 @@ export const TextFile = z.strictObject({
     heat: z.strictObject({ unknown: Short(16), noticed: Short(16), wanted: Short(16), infamous: Short(16) }).describe('brief 031: the briefing card\'s word for the cell\'s Heat band (engine HeatBand), from how quickly watchers notice: unknown, noticed, wanted, infamous'),
     timeline: z.array(z.strictObject({ at: clock, label: Line, short: Short(16).describe('brief 014: the mark in a word or two (the pill shows its icon and time; the word is on Alt)'), known: z.boolean().describe('false = the pill shows "?" until it happens') })),
     cell: z.record(z.enum(AGENTS), Line),
+    page: z.strictObject({
+      rule: z.string().min(1),
+      target: Line.describe('the line under the target\'s one fact on the file card'),
+      ways: z.record(code, z.strictObject({ when: Short(16).describe('the plate beside the way\'s name: when it works'), line: Line.describe('the way\'s second sentence, after its hint') })),
+      ending: Line.describe('the line under the getaway car\'s still: both ways end there'),
+      captions: z.record(code, Short(40)).optional().describe('brief 070 (Glyph N11): a still\'s caption by its pin\'s place (stills.json pins[].place, less any "d:"), where the target\'s name alone would not say where; a pin without one takes targets.<key>.name'),
+      clock: z.array(clock).min(1).describe('the stations the page\'s clock shows, in order; each a briefing.timeline mark, worded by its label'),
+      stations: z.record(clock, Short(24)).optional().describe('brief 070 (Glyph R1 on 0.2.133): a clock station worded for the page, keyed by its m:ss, where briefing.timeline\'s label (play\'s, kept whole and true) is too long for the page; other stations take the timeline label'),
+      cell: z.record(z.enum(AGENTS), Line).describe('one line under each face, about this mission'),
+      heads: z.strictObject({
+        ways: z.record(z.string().regex(/^[1-9]$/), Short(16)).describe('the head over the ways in, keyed by how many ways the mission has (brief.json ways.length): "Two ways in"; the host picks the key, so the count comes from the data'),
+        where: Short(16).describe('the head over the plan of the block'),
+        clock: Short(16).describe('the head over the clock\'s stations'),
+        heat: Short(12).describe('the label beside the cell\'s Heat word (briefing.heat)'),
+      }).describe('brief 070 (Latch on 0.2.130: the page showed no heads): the page\'s section heads, Glyph\'s mock; the Target head is less.briefing.target'),
+    }).describe('brief 070: the briefing as a full-screen page (Glyph\'s mock), modal until Begin; outside play'),
   }),
   targets: z.record(z.string(), Target),
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
   goingLoud: z.strictObject({ captured: Line, fails: z.record(code, Line).describe('the hold card\'s line when the shot would fail the mission, by fail code (vale-dead, driver-shot, getaway-lost): what dies, then "The mission fails."') }).describe('lines on the going-loud card beyond its numbers'),
-  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the right-click ring (label, at most 8 characters)'),
+  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the action ring (opened by a left click on a thing) (label, at most 8 characters)'),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),
@@ -371,8 +478,10 @@ export const TextFile = z.strictObject({
   silentStates: z.record(z.string(), z.string()).describe('hostile AI states (Gun.St) that speak no line of `ai-state`, with the reason'),
   silentLogs: z.record(z.string(), z.string()).describe('engine log codes (or prefixes ending in .) that speak no line, with the reason'),
   dialogue: z.array(Entry).min(1),
-  scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1) }),
+  scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1), conversations: Conversations.optional().describe('brief 085: conversations.schema.ts'), clip: CaptureClip.optional().describe('brief 085: the capture clip\'s plate') }),
+  book: Book.describe('brief 088: the book\'s own words (book.schema.ts)'),
   less: Less.describe('brief 014 (less reading): the short forms and grammar the HUD reads at rest; the long lines above are the Alt and debrief text'),
+  pending: Pending.optional().describe('briefs 058 and 059: words for engine changes that are approved but not built; nothing here is read by the host until its entry moves to its live place'),
 });
 export type TextFile = z.infer<typeof TextFile>;
 
@@ -400,14 +509,13 @@ export function cardResult(t: Pick<TextFile, 'cards'>, code: string, variant?: s
   const r = t.cards.items[code]?.result;
   return typeof r === 'string' || r === undefined ? r : variant === undefined ? undefined : r[variant];
 }
-
 // ---------------------------------------------------------------- the reference lookups (Latch ports these; the checker runs them)
 
 /** What the engine sends with a refusal (sim Answer): -1 = none. */
 export type Answer = { code: string; m?: number; cm?: number; usd?: number; tick?: number; /** brief 018: the ids a refusal names, comma-joined (car-held: its holders, in id order) */ ids?: string };
 
-/** The role of an engine id (rival-1 → rival; security-1 and officer-1 → officer; robot-1 → robot; patrol; guard); anything else is `other`. */
-export const roleOfId = (id: string): string => (/^rivals?(-\d+)?$/.test(id) ? 'rival' : /^(officer|security)(-\d+)?$/.test(id) ? 'officer' : /^robot(-\d+)?$/.test(id) ? 'robot' : id === 'patrol' ? 'patrol' : id === 'guard' ? 'guard' : 'other');
+/** The role of an engine id (rival-1 and car:rivals (engine 0.33.0: the rival car, which holds the car while a member rides in it) → rival; security-1 and officer-1 → officer; robot-1 → robot; patrol; guard); anything else is `other`. */
+export const roleOfId = (id: string): string => (/^rivals?(-\d+)?$/.test(id) || id === 'car:rivals' ? 'rival' : /^(officer|security)(-\d+)?$/.test(id) ? 'officer' : /^robot(-\d+)?$/.test(id) ? 'robot' : id === 'patrol' ? 'patrol' : id === 'guard' ? 'guard' : 'other');
 /** What holds the car, in words, for `{holders}` in a refusal: "a rival", "2 robots", "police", "patrol", or "3 hostiles" when the roles differ. `ids` is Answer.ids. */
 export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
   const list = ids.split(',').map((x) => x.trim()).filter(Boolean);
@@ -418,19 +526,32 @@ export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
   if (!w) return h['mixed']!.many.replace('{n}', String(list.length));
   return list.length === 1 ? w.one : w.many.replace('{n}', String(list.length));
 }
-/** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss.
- *  {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission clock. Unknown code = undefined. */
-export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string; variant?: 'machine' } = {}): string | undefined {
+/** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss, `left` turns a tick still to come
+ *  into the time to wait ("18 s"; used for a lock marked `tickAs: left`). {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission
+ *  clock, or the time left. Engine 0.33.0: car-held with `car:rivals` among the ids is worded by `rival-car` (tick known) or `rival-car-driving` (tick -1), not the base line. Unknown code = undefined. */
+export type LockCtx = { who?: string; op?: string; clock?: (tick: number) => string; left?: (tick: number) => string; variant?: (typeof LOCK_VARIANTS)[number] };
+/** The variant a lock answer is worded by: the caller's, else the rival car's when the car is among the holders. */
+export function lockVariant(a: Answer, ctx: LockCtx = {}): (typeof LOCK_VARIANTS)[number] | undefined {
+  if (ctx.variant) return ctx.variant;
+  if (a.code !== 'car-held' || !(a.ids ?? '').split(',').map((x) => x.trim()).includes('car:rivals')) return undefined;
+  return a.tick !== undefined && a.tick >= 0 ? 'rival-car' : 'rival-car-driving';
+}
+function fillLockWith(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: LockCtx, field: 'line' | 'short'): string | undefined {
   const l = t.locks[a.code];
   if (!l) return undefined;
-  const line = (ctx.variant && l.byTarget?.[ctx.variant]?.line) || l.line;
+  const v = lockVariant(a, ctx);
+  const text = (v && l.byTarget?.[v]?.[field]) || l[field];
   const m = a.m !== undefined && a.m >= 0 ? a.m : a.cm !== undefined && a.cm >= 0 ? Math.round(a.cm / 100) : undefined;
-  return line
+  const stamp = l.tickAs === 'left' && ctx.left ? ctx.left : ctx.clock ?? String;
+  return text
     .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
     .replace(/\{m\}/g, m === undefined ? '?' : String(m))
     .replace(/\{usd\}/g, a.usd !== undefined && a.usd >= 0 ? '$' + a.usd.toLocaleString('en-US') : '?')
-    .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? (ctx.clock ?? String)(a.tick) : '?');
+    .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? stamp(a.tick) : '?');
 }
+export const fillLock = (t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: LockCtx = {}): string | undefined => fillLockWith(t, a, ctx, 'line');
+/** The pop at the click for the same answer: the lock's `short`, with the same variant and numbers (the chip beside the car reads it too). */
+export const fillLockShort = (t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: LockCtx = {}): string | undefined => fillLockWith(t, a, ctx, 'short');
 
 export type Query = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string };
 

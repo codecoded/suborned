@@ -1,0 +1,584 @@
+{
+  "status": "blocked",
+  "worldSha256": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+  "rules": [
+    {
+      "id": "G-1a",
+      "count": 1,
+      "unit": "people",
+      "example": "cast:guard at 64.0,-41.3: host 0.18 m, drawn 0.93 m"
+    },
+    {
+      "id": "G-1b",
+      "count": 6,
+      "unit": "routes",
+      "example": "guard: d:Office entrance to d:Caf\u00e9 door: 7 cells, worst 0.75 m"
+    },
+    {
+      "id": "G-1d",
+      "count": 0,
+      "unit": "stretches",
+      "example": "none"
+    },
+    {
+      "id": "G-1c",
+      "count": 729,
+      "unit": "cells",
+      "example": "civic/office-public-entrance: 36 cells, worst 0.75 m"
+    },
+    {
+      "id": "G-2a",
+      "count": 0,
+      "unit": "cells",
+      "example": "none"
+    },
+    {
+      "id": "G-2b",
+      "count": 118,
+      "unit": "cells",
+      "example": "atom-fountain: 89 cells blocked, nothing drawn"
+    },
+    {
+      "id": "G-2c",
+      "count": 2,
+      "unit": "cells",
+      "example": "civic/cafe-palm-1: 2 cells"
+    },
+    {
+      "id": "G-3a",
+      "count": 59,
+      "unit": "objects",
+      "example": "street:phone-booth: 9 objects, 61.75 m\u00b2"
+    },
+    {
+      "id": "G-3b",
+      "count": 1,
+      "unit": "occluders",
+      "example": "plot-04: 84 % walled"
+    },
+    {
+      "id": "K-1",
+      "count": 0,
+      "unit": "pieces",
+      "example": "none"
+    }
+  ],
+  "ratchetCounts": {
+    "G-1a": 1,
+    "G-1b": 6,
+    "G-1d": 0,
+    "G-1c": 729,
+    "G-2a": 0,
+    "G-2b": 118,
+    "G-2c": 2,
+    "G-3a": 58,
+    "G-3b": 1,
+    "K-1": 0
+  },
+  "headSummaryWorld": {
+    "sha256": "4ff817c2384c27f035b484d97ec3de62489789e189fd3d3aaa4d146e68bf4a47",
+    "stale": false
+  },
+  "headSummaryRules": [
+    {
+      "id": "G-1a",
+      "count": 1,
+      "unit": "people",
+      "example": "cast:guard at 64.0,-41.3: host 0.18 m, drawn 0.93 m"
+    },
+    {
+      "id": "G-1b",
+      "count": 6,
+      "unit": "routes",
+      "example": "guard: d:Office entrance to d:Caf\u00e9 door: 7 cells, worst 0.75 m"
+    },
+    {
+      "id": "G-1d",
+      "count": 0,
+      "unit": "stretches",
+      "example": "none"
+    },
+    {
+      "id": "G-1c",
+      "count": 729,
+      "unit": "cells",
+      "example": "civic/office-public-entrance: 36 cells, worst 0.75 m"
+    },
+    {
+      "id": "G-2a",
+      "count": 0,
+      "unit": "cells",
+      "example": "none"
+    },
+    {
+      "id": "G-2b",
+      "count": 118,
+      "unit": "cells",
+      "example": "atom-fountain: 89 cells blocked, nothing drawn"
+    },
+    {
+      "id": "G-2c",
+      "count": 2,
+      "unit": "cells",
+      "example": "civic/cafe-palm-1: 2 cells"
+    },
+    {
+      "id": "G-3a",
+      "count": 58,
+      "unit": "objects",
+      "example": "street:phone-booth: 9 objects, 61.75 m\u00b2"
+    },
+    {
+      "id": "G-3b",
+      "count": 1,
+      "unit": "occluders",
+      "example": "plot-04: 84 % walled"
+    },
+    {
+      "id": "K-1",
+      "count": 0,
+      "unit": "pieces",
+      "example": "none"
+    }
+  ],
+  "drawnEyeGroups": [
+    {
+      "id": "street:phone-booth",
+      "kind": "phone-booth",
+      "instances": 9,
+      "count": 247,
+      "area": 61.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        111.38,
+        -63.37
+      ],
+      "bbox": [
+        -25.62,
+        -63.37,
+        111.38,
+        5.13
+      ]
+    },
+    {
+      "id": "street:tree",
+      "kind": "tree",
+      "instances": 24,
+      "count": 91,
+      "area": 22.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        48.13,
+        -63.62
+      ],
+      "bbox": [
+        -39.37,
+        -63.62,
+        111.88,
+        13.13
+      ]
+    },
+    {
+      "id": "street:lamp",
+      "kind": "lamp",
+      "instances": 4,
+      "count": 18,
+      "area": 4.5,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        90.13,
+        -62.87
+      ],
+      "bbox": [
+        0.88,
+        -62.87,
+        90.13,
+        4.88
+      ]
+    },
+    {
+      "id": "street:planter-bed",
+      "kind": "planter-bed",
+      "instances": 3,
+      "count": 11,
+      "area": 2.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -47.37,
+        -27.37
+      ],
+      "bbox": [
+        -47.62,
+        -27.37,
+        -16.37,
+        9.13
+      ]
+    },
+    {
+      "id": "civic/atom-fountain",
+      "kind": "AtomFountain_Testbed",
+      "instances": 1,
+      "count": 10,
+      "area": 2.5,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        5.13,
+        -31.62
+      ],
+      "bbox": [
+        5.13,
+        -31.62,
+        7.63,
+        -28.87
+      ]
+    },
+    {
+      "id": "civic/cafe-palm-2",
+      "kind": "PottedPalm_Small",
+      "instances": 1,
+      "count": 9,
+      "area": 2.25,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -8.87,
+        -41.87
+      ],
+      "bbox": [
+        -9.37,
+        -41.87,
+        -8.62,
+        -40.87
+      ]
+    },
+    {
+      "id": "civic/cafe-palm-5",
+      "kind": "PottedPalm_Small",
+      "instances": 1,
+      "count": 9,
+      "area": 2.25,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -16.87,
+        -15.87
+      ],
+      "bbox": [
+        -17.62,
+        -15.87,
+        -16.87,
+        -14.87
+      ]
+    },
+    {
+      "id": "civic/cafe-palm-4",
+      "kind": "PottedPalm_Small",
+      "instances": 1,
+      "count": 8,
+      "area": 2,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -17.12,
+        -43.12
+      ],
+      "bbox": [
+        -17.62,
+        -43.12,
+        -16.87,
+        -42.12
+      ]
+    },
+    {
+      "id": "street:civic-robot-dock",
+      "kind": "civic-robot-dock",
+      "instances": 1,
+      "count": 8,
+      "area": 2,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -18.12,
+        -17.37
+      ],
+      "bbox": [
+        -18.87,
+        -17.37,
+        -18.12,
+        -17.12
+      ]
+    },
+    {
+      "id": "civic/cafe-palm-3",
+      "kind": "PottedPalm_Small",
+      "instances": 1,
+      "count": 8,
+      "area": 2,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -8.87,
+        -17.12
+      ],
+      "bbox": [
+        -9.37,
+        -17.12,
+        -8.62,
+        -16.12
+      ]
+    },
+    {
+      "id": "civic/cafe-palm-0",
+      "kind": "PottedPalm_Small",
+      "instances": 1,
+      "count": 6,
+      "area": 1.5,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -9.62,
+        -31.62
+      ],
+      "bbox": [
+        -9.62,
+        -31.62,
+        -9.37,
+        -30.62
+      ]
+    },
+    {
+      "id": "civic/cafe-palm-1",
+      "kind": "PottedPalm_Small",
+      "instances": 1,
+      "count": 6,
+      "area": 1.5,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -9.37,
+        -27.37
+      ],
+      "bbox": [
+        -9.62,
+        -27.37,
+        -9.37,
+        -26.37
+      ]
+    },
+    {
+      "id": "street:info-lightbox",
+      "kind": "info-lightbox",
+      "instances": 1,
+      "count": 4,
+      "area": 1,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        109.38,
+        -49.37
+      ],
+      "bbox": [
+        109.13,
+        -49.37,
+        109.38,
+        -49.12
+      ]
+    },
+    {
+      "id": "street:mast-camera",
+      "kind": "mast-camera",
+      "instances": 1,
+      "count": 4,
+      "area": 1,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -18.37,
+        -15.62
+      ],
+      "bbox": [
+        -18.62,
+        -15.62,
+        -18.37,
+        -15.37
+      ]
+    },
+    {
+      "id": "civic/lamp-fore-w",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        69.13,
+        -47.12
+      ],
+      "bbox": [
+        69.13,
+        -47.12,
+        69.38,
+        -46.87
+      ]
+    },
+    {
+      "id": "civic/lamp-fore-e",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        58.88,
+        -47.12
+      ],
+      "bbox": [
+        58.63,
+        -47.12,
+        58.88,
+        -46.87
+      ]
+    },
+    {
+      "id": "civic/lamp-terrace-w",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -3.62,
+        -42.62
+      ],
+      "bbox": [
+        -3.87,
+        -42.62,
+        -3.62,
+        -42.37
+      ]
+    },
+    {
+      "id": "civic/lamp-court-w",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        14.88,
+        -41.12
+      ],
+      "bbox": [
+        14.63,
+        -41.12,
+        14.88,
+        -40.87
+      ]
+    },
+    {
+      "id": "civic/lamp-cross-sq-e",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        28.13,
+        -24.87
+      ],
+      "bbox": [
+        27.63,
+        -24.87,
+        28.13,
+        -24.62
+      ]
+    },
+    {
+      "id": "civic/lamp-court-e",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        14.63,
+        -19.12
+      ],
+      "bbox": [
+        14.63,
+        -19.12,
+        14.88,
+        -18.87
+      ]
+    },
+    {
+      "id": "civic/lamp-terrace-e",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 3,
+      "area": 0.75,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -3.62,
+        -15.62
+      ],
+      "bbox": [
+        -3.87,
+        -15.62,
+        -3.62,
+        -15.37
+      ]
+    },
+    {
+      "id": "civic/lamp-cross-sq-w",
+      "kind": "PlazaSphereLamp_Play",
+      "instances": 1,
+      "count": 2,
+      "area": 0.5,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        27.88,
+        -35.37
+      ],
+      "bbox": [
+        27.88,
+        -35.37,
+        28.13,
+        -35.12
+      ]
+    },
+    {
+      "id": "street:service-robot",
+      "kind": "service-robot",
+      "instances": 1,
+      "count": 1,
+      "area": 0.25,
+      "max": 0,
+      "mean": 0,
+      "worst": [
+        -43.12,
+        -41.62
+      ],
+      "bbox": [
+        -43.12,
+        -41.62,
+        -43.12,
+        -41.62
+      ]
+    }
+  ],
+  "requiredOwner": "Aster to assign Keel/Splice source investigation; no sim/data or ratchet changes authorized here"
+}

@@ -1,0 +1,7 @@
+$ bun tools/game/playing.ts bun test "--parallel=8" "--timeout=60000" tools/sim contracts/rules
+bun test v1.4.3 (c6da4a4d3) 8x PARALLEL
+
+ 123 pass
+ 0 fail
+ 3127 expect() calls
+Ran 123 tests across 7 files. [17.35s]

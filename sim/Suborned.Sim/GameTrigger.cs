@@ -62,7 +62,7 @@ namespace Suborned.Sim
             if (!g.Drawn || g.HolsterAt >= 0) return No("not-drawn", "no weapon drawn");
             if (op.Busy != null) return No("agent-busy", $"{o.Op} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("fire-carrying", "carrying, the operative doesn't fire");
-            if (CarriesVale(op)) return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him (brief 018)");
+            if (CarriesVale(op)) return No("fire-carrying-vale", $"walking {ValeName}, the Enforcer doesn't fire: the others cover him (brief 018)");
             string t = FireTarget(op, o.Target);
             if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
@@ -197,7 +197,7 @@ namespace Suborned.Sim
             s.Target = t;
             if (t.Length == 0) return s;
             var at = PosOf(t); var tg = GunOf(t);
-            bool line = at.HasValue && tg != null && !tg.Down && G.Within(op.Pos, at.Value, g.W.MaxCm) && Sees(op.Pos, at.Value);
+            bool line = at.HasValue && tg != null && !tg.Down && G.Within(op.Pos, at.Value, g.W.MaxCm) && SeesId(op.Pos, t, at.Value);
             s.Hollow = !line && (s.Mode == "follow" || s.Mode == "follow-held" || s.Mode == "lock");
             s.Firing = fires && line && Ready(g) && op.Busy == null && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !CarriesVale(op);
             return s;

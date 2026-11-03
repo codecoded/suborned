@@ -8,6 +8,7 @@ towers on it, so these roofs are left flat inside the coping (no plant, skylight
   StreamEnd_2 / _3 / _3W      skyline.py's run end
   StreamCorner_2 / _3         facades.py's quarter-round corner with its fin and mast
   PortholeBay_3, BalconyBay_3 facades.py's variety bays
+  PortholeBay_3L / _4L        the porthole bay with its fin under the coping, for the play streets (brief 066)
 """
 
 import math
@@ -31,3 +32,7 @@ asset("StreamBay_3W", "Facades", bevel=0.0)(stream_bay(3, "Render_White"))
 asset("StreamEnd_3W", "Facades", bevel=0.0)(stream_end(3, "Render_White"))
 asset("PortholeBay_3", "Facades", bevel=0.0)(porthole_bay(3, roof=False))
 asset("BalconyBay_3", "Facades", bevel=0.0)(balcony_bay(3, roof=False))
+# brief 066 (Vela): the play streets stand at 3 and 4 storeys under the height cap, so their porthole bay keeps its teal fin under the coping (PortholeBay_3 and _4
+# carry it 2.4 m over the roof line with chrome rings and a beacon, as the tall city's do); same storeys, skin and portholes
+for _n in (3, 4):
+    asset(f"PortholeBay_{_n}L", "Facades", bevel=0.0)(porthole_bay(_n, roof=False, low=True))

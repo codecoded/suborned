@@ -114,13 +114,21 @@ export const first = (t: Table, fit: (place: string) => Fit | undefined) => { co
 export const LEAVE = { maxMin: 8 };
 export const lingerOf = (id: string, v: Row['routines'][number]): number => { if (v.commute === 'car') return 0; const q = rng(`${id}/leave`); return Math.min(q.int(0, LEAVE.maxMin), q.int(0, LEAVE.maxMin)); };
 
-export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: number }, work: string, home: string, v: Row['routines'][number], linger = 0): Cycle {
+/** A relief's waiting point (brief 067 L; Keel and Suture: four guards on one point at the official door, a relief on the door guard's own post). A post is one person's: whoever comes on
+ *  to a civic door or official entrance walks to a standing point beside it and is there for the last minute before her shift (the walk may end up to the crowd pace's share early, and
+ *  she waits at its end, so on the post she would stand with the person she relieves), then steps on to the post as the shift begins. The walk is timed to the post as it always was, so
+ *  every other stop of her day is where it was: the minute at the point is the last minute of the walk, and P-1 holds a walk into it to one minute less. `held`: the post is a cast person's
+ *  through the mission (the Handover plays the door guard by his role past his shift's end), so she never steps on: she stands at the point for her whole shift. */
+export type Wait = { place: string; held: boolean };
+
+export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: number }, work: string, home: string, v: Row['routines'][number], linger = 0, wait?: Wait): Cycle {
   const { scope, walk } = c, at = (id: string): V => scope.places.find(p => p.id === id)!.at as V;
   const w = (a: string, b: string) => (a === b ? 0 : stepMin(walk, at(a), at(b)));
   const tramStop = scope.stops.find(s => s.mode === 'tram')?.place;
   const origin = v.commute === 'car' && u.bay ? u.bay : v.commute === 'tram' && tramStop ? tramStop : home;
   const a = shift.from, b = shift.to > shift.from ? shift.to : shift.to + DAY, len = b - a, m = r.int(v.leaveBeforeMin[0]!, v.leaveBeforeMin[1]!);
   const ms = a + Math.floor(len / 2) + r.int(-20, 20);
+  const spot = wait?.held ? wait.place : work; // where the shift is stood: a post held by someone else is never taken
   let meal0 = v.meal, mealAt: Table | undefined;
   if (meal0 === 'square' && scope.tables.length) mealAt = r.pick(scope.tables); else if (meal0 === 'square') meal0 = 'on-site';
   const eveningAt = v.evening === 'square' && scope.tables.length ? r.pick(scope.tables) : undefined;
@@ -129,31 +137,32 @@ export function workerCycle(c: Ctx, r: Rng, u: Unit, shift: { from: number; to: 
   return (pick = first) => {
     const segs: Seg[] = [];
     // a stop at the café before the shift: the seat's walk to work sets when it starts
-    let arrive = a, preSeg: Seg | undefined, firstPlace = work;
+    let arrive = a, preSeg: Seg | undefined, firstPlace = spot;
     if (pre) {
-      const s = pick(pre, p => { const t = w(p, work); return p === work ? undefined : { from: a - t - 15, to: a - t }; });
+      const s = pick(pre, p => { const t = w(p, spot); return p === spot ? undefined : { from: a - t - 15, to: a - t }; });
       if (s) { preSeg = { place: s.place, doing: 'pre-shift', from: s.from, to: s.to }; firstPlace = s.place; arrive = s.from; }
     }
     const leave = arrive - w(origin, firstPlace) - m;
     const tram = origin !== home;
     if (tram) segs.push({ place: origin, doing: 'commute', from: leave - 2, to: leave }); // off the sheet until 2 min before
     if (preSeg) segs.push(preSeg);
+    if (wait && !wait.held) segs.push({ place: wait.place, doing: 'work', from: a - 1, to: a }); // the relief's minute beside the post; at the shift's start she steps on to it
     // work, with a meal in the middle of a long shift
     let meal = meal0;
     if (meal !== 'none' && len >= 240) {
       if (meal === 'square') {
-        const s = pick(mealAt!, p => { const q = w(work, p); return ms + MEAL + 2 * q + 5 > b ? undefined : { from: ms + q, to: ms + q + MEAL, q }; });
-        if (s) segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: s.place, doing: 'meal', from: s.from, to: s.to }, { place: work, doing: 'work', from: ms + MEAL + 2 * s.q!, to: b + linger });
+        const s = pick(mealAt!, p => { const q = w(spot, p); return ms + MEAL + 2 * q + 5 > b ? undefined : { from: ms + q, to: ms + q + MEAL, q }; });
+        if (s) segs.push({ place: spot, doing: 'work', from: a, to: ms }, { place: s.place, doing: 'meal', from: s.from, to: s.to }, { place: spot, doing: 'work', from: ms + MEAL + 2 * s.q!, to: b + linger });
         else if (ms + MEAL + 5 > b) meal = 'none';
-        else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b + linger }); // no free seat: lunch is eaten on site
+        else segs.push({ place: spot, doing: 'work', from: a, to: ms }, { place: spot, doing: 'meal', from: ms, to: ms + MEAL }, { place: spot, doing: 'work', from: ms + MEAL, to: b + linger }); // no free seat: lunch is eaten on site
       } else if (ms + MEAL + 5 > b) meal = 'none';
-      else segs.push({ place: work, doing: 'work', from: a, to: ms }, { place: work, doing: 'meal', from: ms, to: ms + MEAL }, { place: work, doing: 'work', from: ms + MEAL, to: b + linger });
+      else segs.push({ place: spot, doing: 'work', from: a, to: ms }, { place: spot, doing: 'meal', from: ms, to: ms + MEAL }, { place: spot, doing: 'work', from: ms + MEAL, to: b + linger });
     } else meal = 'none';
-    if (meal === 'none') segs.push({ place: work, doing: 'work', from: a, to: b + linger });
+    if (meal === 'none') segs.push({ place: spot, doing: 'work', from: a, to: b + linger });
     // the evening, then home (after the linger: a person who stays a few minutes past the chime leaves, and walks, that much later)
-    let t = b + linger, here = work;
+    let t = b + linger, here = spot;
     if (eveningAt) {
-      const s = pick(eveningAt, p => { const tq = w(work, p); return { from: t + tq, to: t + tq + 45 }; });
+      const s = pick(eveningAt, p => { const tq = w(spot, p); return { from: t + tq, to: t + tq + 45 }; });
       if (s) { segs.push({ place: s.place, doing: 'evening', from: s.from, to: s.to }); t = s.to; here = s.place; }
     }
     const back = t + w(here, origin);

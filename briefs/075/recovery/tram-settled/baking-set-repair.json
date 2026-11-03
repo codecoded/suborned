@@ -1,0 +1,8 @@
+{
+  "path": "unity/Assets/Scenes/probe-recovery075-swap/probe-recovery075-swap Baking Set.asset",
+  "observedSha256": "2ed360dd3ecf540dbe7e03434bbd3b96fca119aff2f2b58bce2127ac1cb4eb8a",
+  "restoredSha256": "9227ec02610a50ff2316d957acbef985909867a60199fcf7e270c660a1bb5ebb",
+  "pin": "9227ec02610a50ff2316d957acbef985909867a60199fcf7e270c660a1bb5ebb",
+  "reconstructionTemplate": "unity/Assets/Scenes/OldTownProof/OldTownProof Baking Set.asset",
+  "method": "Normalized sibling-generated baking-set name/scene GUID; entire resulting file must match initial SHA256 before restoration"
+}

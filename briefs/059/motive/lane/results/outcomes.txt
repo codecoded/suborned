@@ -1,0 +1,27 @@
+# Motive 2026-10-26: probe outcomes (bun out/scratch/motive/059c/probe.ts <plan>; R + svc-ambush-1 (77.35, -8.0)); TAG yl0 = the exported lane (A), yl2 = the lane from the car, drive part at 3 m (B); h = PROBE_BLKHOLD=1. rbb-ff: Scout+Fixer lock rival-1 > rival-2; ylA: both lock the blocker rival-3 > rival-1 (board and go); ylB: Scout locks the blocker, Fixer rival-1 > rival-2; ylF: = rbb-ff3, the Tech steps out and all three lock rival-1 > rival-2.
+yl0        apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+yl0        gfy-1: success at 3:07.4 T 2 A 1 St 2 gun 0 | spring 2:14.5 blocker.out 3:03.5 over - break - vale-in 2:22.5
+yl0        loud-yard: failure enforcer-down at 7:42.5 T 11 A 2 St 1 gun 7 | spring - blocker.out 7:31.0 over - break - vale-in - [PARTIAL: step 20 (fixer fire officer-2): not taken between 4430 and 5100]
+yl0        rb-ff: success at 7:32.2 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+yl0        rbb-ff: success at 7:36.0 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+yl0        ylA: failure rivals-reach-vale at 7:33.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 17 (scout fire rival-1): not taken between 4430 and 5100]
+yl0        ylB: failure rivals-reach-vale at 7:33.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 17 (scout fire rival-2): not taken between 4430 and 5100]
+yl0        ylF: success at 7:31.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:28.0 over 7:28.1 break 7:28.0 vale-in 7:31.0
+yl0h       apy-1: success at 3:08.5 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:04.6 over - break - vale-in 2:32.0
+yl0h       rbb-ff: success at 7:36.0 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+yl0h       ylA: failure rivals-reach-vale at 7:33.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 17 (scout fire rival-1): not taken between 4430 and 5100]
+yl0h       ylB: failure rivals-reach-vale at 7:33.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 17 (scout fire rival-2): not taken between 4430 and 5100]
+yl0h       ylF: success at 7:31.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:28.0 over 7:28.1 break 7:28.0 vale-in 7:31.0
+yl2        apy-1: success at 3:00.3 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 2:56.4 over - break - vale-in 2:32.0
+yl2        gfy-1: success at 3:00.3 T 2 A 1 St 2 gun 0 | spring 2:14.5 blocker.out 2:56.4 over - break - vale-in 2:22.5
+yl2        loud-yard: failure enforcer-down at 7:42.5 T 11 A 2 St 1 gun 7 | spring - blocker.out 7:31.0 over - break - vale-in - [PARTIAL: step 20 (fixer fire officer-2): not taken between 4430 and 5100]
+yl2        rb-ff: success at 7:32.2 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+yl2        rbb-ff: success at 7:36.0 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+yl2        ylA: success at 7:31.9 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out 7:28.0 over - break - vale-in 7:31.0
+yl2        ylB: success at 7:34.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:31.0 over 7:31.1 break 7:31.0 vale-in 7:31.0
+yl2        ylF: success at 7:31.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:28.0 over 7:28.1 break 7:28.0 vale-in 7:31.0
+yl2h       apy-1: success at 3:00.3 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 2:56.4 over - break - vale-in 2:32.0
+yl2h       rbb-ff: success at 7:36.0 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+yl2h       ylA: success at 7:31.9 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out 7:28.0 over - break - vale-in 7:31.0
+yl2h       ylB: success at 7:34.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:31.0 over 7:31.1 break 7:31.0 vale-in 7:31.0
+yl2h       ylF: success at 7:31.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:28.0 over 7:28.1 break 7:28.0 vale-in 7:31.0

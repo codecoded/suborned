@@ -1,0 +1,189 @@
+{
+ "Tram/old": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Vehicles/DK_Tram.fbx",
+  "tris": 36644,
+  "size": [
+   2.691,
+   11.376,
+   4.92
+  ]
+ },
+ "Tram/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Vehicles/DK_Tram.fbx",
+  "tris": 36644,
+  "size": [
+   2.691,
+   11.376,
+   4.92
+  ]
+ },
+ "Tram/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Vehicles/DK_Tram_L1.fbx",
+  "tris": 9145,
+  "size": [
+   2.693,
+   11.376,
+   4.918
+  ]
+ },
+ "Tram/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Vehicles/DK_Tram_L2.fbx",
+  "tris": 2142,
+  "size": [
+   2.685,
+   11.369,
+   4.939
+  ]
+ },
+ "Tile_TramRail/old": {
+  "file": "~/Projects/the-suborned/game/Assets/TheSuborned/Art/DecoKit/Models/Ground/DK_Tile_TramRail.fbx",
+  "tris": 3140,
+  "size": [
+   2.0,
+   2.0,
+   0.15
+  ]
+ },
+ "Tile_TramRail/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Ground/DK_Tile_TramRail.fbx",
+  "tris": 3140,
+  "size": [
+   2.0,
+   2.0,
+   0.15
+  ]
+ },
+ "Tile_TramRail/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Ground/DK_Tile_TramRail_L1.fbx",
+  "tris": 784,
+  "size": [
+   2.0,
+   1.999,
+   0.15
+  ]
+ },
+ "Tile_TramRail/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Ground/DK_Tile_TramRail_L2.fbx",
+  "tris": 120,
+  "size": [
+   2.0,
+   2.0,
+   0.15
+  ]
+ },
+ "Tile_TramRail_12m/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Ground/DK_Tile_TramRail_12m.fbx",
+  "tris": 9540,
+  "size": [
+   12.0,
+   2.0,
+   0.15
+  ]
+ },
+ "Tile_TramRail_12m/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Ground/DK_Tile_TramRail_12m_L1.fbx",
+  "tris": 2384,
+  "size": [
+   12.0,
+   1.999,
+   0.149
+  ]
+ },
+ "Tile_TramRail_12m/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Ground/DK_Tile_TramRail_12m_L2.fbx",
+  "tris": 360,
+  "size": [
+   12.0,
+   2.0,
+   0.15
+  ]
+ },
+ "TicketKiosk/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Structures/DK_TicketKiosk.fbx",
+  "tris": 21342,
+  "size": [
+   2.001,
+   1.501,
+   2.7
+  ]
+ },
+ "TicketKiosk/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Structures/DK_TicketKiosk_L1.fbx",
+  "tris": 5335,
+  "size": [
+   2.002,
+   1.5,
+   2.7
+  ]
+ },
+ "TicketKiosk/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Structures/DK_TicketKiosk_L2.fbx",
+  "tris": 1266,
+  "size": [
+   1.999,
+   1.495,
+   2.702
+  ]
+ },
+ "TimetableColumn/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Furnish/DK_TimetableColumn.fbx",
+  "tris": 3302,
+  "size": [
+   0.8,
+   0.4,
+   2.6
+  ]
+ },
+ "TimetableColumn/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Furnish/DK_TimetableColumn_L1.fbx",
+  "tris": 825,
+  "size": [
+   0.798,
+   0.399,
+   2.603
+  ]
+ },
+ "TimetableColumn/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Furnish/DK_TimetableColumn_L2.fbx",
+  "tris": 197,
+  "size": [
+   0.779,
+   0.431,
+   2.609
+  ]
+ },
+ "StreamCornerStack_Top/L0": {
+  "file": "~/Projects/suborned/out/decokit/Models/Facades/DK_StreamCornerStack_Top.fbx",
+  "tris": 3806,
+  "size": [
+   8.45,
+   8.45,
+   12.21
+  ]
+ },
+ "StreamCornerStack_Top/L1": {
+  "file": "~/Projects/suborned/out/decokit/Models/Facades/DK_StreamCornerStack_Top_L1.fbx",
+  "tris": 770,
+  "size": [
+   8.45,
+   8.45,
+   12.21
+  ]
+ },
+ "StreamCornerStack_Top/L2": {
+  "file": "~/Projects/suborned/out/decokit/Models/Facades/DK_StreamCornerStack_Top_L2.fbx",
+  "tris": 342,
+  "size": [
+   8.45,
+   8.45,
+   12.21
+  ]
+ },
+ "vignette/tram": {
+  "size": [
+   11.376,
+   2.691,
+   4.92
+  ]
+ }
+}

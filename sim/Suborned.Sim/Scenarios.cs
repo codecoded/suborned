@@ -42,7 +42,7 @@ namespace Suborned.Sim
             if (coverSeekAt.TryGetValue(name, out var at) && G.Tick < at) return false;
             coverSeekAt[name] = G.Tick + Game.T(3);
             int sec = G.Tick / Game.Hz; CoverMark? best = null; int bestN = 0;
-            bool valeOut = G.Vale == ValeAt.WithEnforcer || G.Vale == ValeAt.Car; var en = G.OpOf(OpId.Enforcer); var holder = G.Vale == ValeAt.Car || en.Inside ? G.S.At(G.S.GetawayCar) : en.Pos;
+            bool valeOut = G.Vale == ValeAt.WithEnforcer || G.Vale == ValeAt.Car; var en = G.OpOf(OpId.Enforcer); var holder = G.Vale == ValeAt.Car || en.Inside ? G.GetawayCarPos() : en.Pos;
             var foes = new List<Pt>(); foreach (var id in ts) { var p = G.PosOf(id); if (p.HasValue && G.GunOf(id) is Gun fg && !fg.Down) foes.Add(p.Value); }
             foreach (var m in G.CoverMarks(e.Id))
             {
@@ -105,10 +105,10 @@ namespace Suborned.Sim
             Is(ok, $"{op} can {(run ? "run" : "walk")} to {place}{(ok ? "" : ": " + why)}");
             return Arrival(op);
         }
-        public int SendTo(string op, Pt at)
+        public int SendTo(string op, Pt at, bool run = false)
         {
-            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "move", Point = at });
-            Is(ok, $"{op} can walk to {at}{(ok ? "" : ": " + why)}");
+            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "move", Point = at, Run = run });
+            Is(ok, $"{op} can {(run ? "run" : "walk")} to {at}{(ok ? "" : ": " + why)}");
             return Arrival(op);
         }
         public int Arrival(string op)
@@ -170,7 +170,7 @@ namespace Suborned.Sim
                         if (Focus) { var hg = G.GunOf(id)!; bool onHolder = G.Vale == ValeAt.WithEnforcer && hg.Target == "enforcer" && hg.Fired; bool blocker = G.Hostiles.Exists(h => h.Id == id && h.Blocker); k = onHolder ? 0 : blocker ? 1 : 2; } // §7.11.3 (b)
                         if (k < rank || (k == rank && d < bd)) { rank = k; bd = d; near = id; np = at.Value; }
                     }
-                    if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.S.Stand(G.S.GetawayCar) }); continue; }
+                    if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.GetawaySeat }); continue; }
                     if (name == "enforcer" && G.Vale == ValeAt.WithEnforcer) { if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } // brief 018: walking Vale he doesn't fire; he holds back while the others fight
                     bool line = G.S.Sight(e.Pos, np, G.R.Eye);
                     bool inEff = line && bd <= (long)(w.EffCm - 200) * (w.EffCm - 200);
@@ -200,7 +200,7 @@ namespace Suborned.Sim
         {
             var ids = new List<string>(); foreach (var s in G.SecGuns) ids.Add(s.Id);
             if (G.PatrolChasing && !G.PatrolDown) ids.Add("patrol");
-            if (G.RivalsDrawn && G.RivalsPresent) ids.Add("rivals");
+            if (G.RivalsDrawn) foreach (var m in G.Crew) if (!m.Fight && !m.Gun.Down && m.OnFoot) ids.Add(m.Id); // brief 059: the drawn crew, member by member
             return ids;
         }
         /// <summary>Hold posts and fire on the city's gunmen once they come into effective reach (or fire on the operative).</summary>
@@ -214,7 +214,7 @@ namespace Suborned.Sim
         {
             Func<bool> free = all ? () => !G.CarHeld() && G.FightOverTick != int.MaxValue / 4 : () => !G.CarHeld();
             var ops = new List<string> { "enforcer" }; ops.AddRange(with);
-            int end = G.Tick + Game.T(limitS); var car = G.S.At(G.S.GetawayCar);
+            int end = G.Tick + Game.T(limitS); var car = G.GetawayCarPos();
             while (!G.Over && G.Tick < end)
             {
                 Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; },
@@ -222,24 +222,25 @@ namespace Suborned.Sim
                 if (G.Over || G.Tick >= end) return;
                 // the fight is over: the engine ends the fire orders still open on the broken crew (rulebook fight.over, Motive 2026-10-19),
                 // so the helper calls nothing off (the cease it gave here before 0.8.2 is gone; N95 holds without it)
-                if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm))
+                if (!G.AtGetaway(Op("enforcer").Pos)) // engine 0.33.1: at the car is car.footprint.reach of its body
                 {
-                    int at = SendTo("enforcer", G.S.Stand(G.S.GetawayCar));
+                    int at = SendTo("enforcer", G.GetawaySeat);
                     while (!G.Over && G.Tick < at && free()) G.Step();
+                    if (at <= G.Tick && !G.Over) G.Step(); // no walk (already as near as the walk goes): time still runs, so the loop ends
                 }
-                if (free() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
+                if (free() && G.AtGetaway(Op("enforcer").Pos)) return;
             }
         }
         /// <summary>The getaway (brief 018): each named operative walks to the car if it isn't at it and boards (the Enforcer first, carrying
         /// Vale), then Go once the car is free. Checks each order was taken; returns Go's answer. Anyone not named stays out (left behind).</summary>
         public Answer GetAway(params string[] ops)
         {
-            var car = G.S.At(G.S.GetawayCar);
+            var car = G.GetawayCarPos();
             foreach (var name in ops)
             {
                 if (G.Over) break;
                 var o = Op(name); if (o.Down || o.InCar) continue;
-                if (!G.Within(o.Pos, car, G.R.AtReachCm)) { int at = SendTo(name, G.S.Stand(G.S.GetawayCar)); while (!G.Over && G.Tick < at) G.Step(); }
+                if (!G.AtGetaway(o.Pos)) { int at = SendTo(name, G.GetawaySeat); while (!G.Over && G.Tick < at) G.Step(); }
                 if (G.Over) break;
                 Do(name, "board", "car"); Done(name); if (!G.Over) G.Step();
             }
@@ -270,14 +271,32 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         static List<Scenario>? all;
-        public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); } return all; } }
+        public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); foreach (var s in all) { if (Array.IndexOf(CountedShots, s.Id) >= 0) s.Start.Pre080 = true; if (Array.IndexOf(OldClockTicks, s.Id) >= 0) s.Start.OldClock = true; } } return all; } }
+        /// <summary>Brief 080: the scenarios whose subject is another rule (a Trail price, a carry, a fail's cause, a rival walking to a car nobody guards) and that need a shot to
+        /// land on a known tick: they play the counted shot (Start.Pre080), as the fights' mechanics keep Pre039. Rolled shots have their own: SEED-*. Keep this short: a new
+        /// scenario reads its shots, or fires until down, rather than joining it.</summary>
+        /// <summary>Brief 080 pacing: the scenarios written to the old clock's ticks and to the crowd's old stops (Vale out 5:50, a clerk at 5:30): their subject is another rule, so they play the old clock
+        /// (Start.OldClock) until Waymark retimes them. PACE-* reads the new clock; a new scenario reads g.S's schedule, never a tick.</summary>
+        static readonly string[] OldClockTicks = { "N113", "N185", "BAL-YARD-AT-WILL", "BAL-YARD-FOCUS-LATE", "S02", "S09", "S20", "S21", "N11", "N11b", "N18", "N19b", "N33", "N42", "N47", "N49", "N50", "N53", "N55", "N56", "N65", "N57", "N68", "N69", "N70", "N71", "N74", "N74b", "N75", "N77", "N78", "N81", "N82", "N84", "N85", "N95", "N98", "N99", "N101", "N114", "S9-AFTER", "N120", "N121", "N122", "N128", "ND-1", "P59-B", "P59-UNTURNED", "P59-TAIL", "P59-TIP", "P59-FRONT", "CREW-FREE", "BAL-YARD-NEVER-DRAWN", "K3-BACK", "K3-UNDRAWN", "POST-BESIDE" };
+        static readonly string[] CountedShots = { "S03", "S06", "S09", "N34", "N44", "N113", "S9-CROWD", "N127", "FW-VALE", "K3-DRIVER", "BAL-LOUD-BREAK", "N176", "F12-ROT", "F8-O11", "B-PIN", "LF-WALK", "F8-O7", "F8-O10", "RK-BY-SHOT", "LF-RUN", "F8-O8", "F8-O4", "F8-O3", "RK-LINES-TODAY", "RK-LINES", "N11", "N18", "N74", "N95", "N114", "S9-AFTER", "BAL-YARD-AT-WILL", "BAL-YARD-FOCUS-LATE" };
         public static Scenario? Find(string id) { foreach (var s in All) if (string.Equals(s.Id, id, StringComparison.OrdinalIgnoreCase)) return s; return null; }
-        public static Run Run(Engine.Inputs i, Scenario s)
+        public static Run Run(Engine.Inputs i, Scenario s) => Bounded(() =>
         {
             var r = new Run(Engine.New(i, s.Start)) { Inputs = i };
             s.Body(r);
             r.G.Finish();
             return r;
+        });
+        /// <summary>Engine 0.34.0 (brief 067: S10 spun for ever once the patrol's sweep left the public door): the most Step calls any game a
+        /// scenario (or an order script in the CLI) makes answers, a finished run's included: 100 minutes of mission clock, about 12 times the
+        /// longest run any scenario makes today (5,101 calls, BAL-YARD-FOCUS; `suborned-sim check` prints the most used) and 11 times a script
+        /// played to the 8:30 close; a spin past a run's end reaches it in milliseconds, a run that never ends in seconds.</summary>
+        public const int StepLimit = 60_000;
+        /// <summary>Run f with every game made on this thread bounded by `limit` Step calls (Game.HarnessStepLimit), as before once f ends.</summary>
+        public static T Bounded<T>(Func<T> f, int limit = StepLimit)
+        {
+            int was = Game.HarnessStepLimit; Game.HarnessStepLimit = limit;
+            try { return f(); } finally { Game.HarnessStepLimit = was; }
         }
         static Scenario Add(string id, string proto, string intent, Action<Run> body, Start? start = null)
         {

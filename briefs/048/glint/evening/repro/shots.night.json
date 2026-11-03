@@ -1,0 +1,6 @@
+{ "schema": "suborned.shots/1", "defaults": { "hud": true },
+  "shots": [
+    { "name": "start-overhead-night", "tick": 0 },
+    { "name": "cafe-front-night", "script": "route-a-board", "tick": 600, "focus": "waitress", "yaw": 0 },
+    { "name": "office-front-night", "script": "route-a-board", "tick": 1200, "focus": "camera/entrance", "yaw": 2 }
+  ] }

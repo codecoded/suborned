@@ -1,0 +1,23 @@
+{
+  "command": [
+    "bun",
+    "tools/game/playing.ts",
+    "unity",
+    "run",
+    "/Users/sky/Projects/suborned/unity",
+    "--timeout",
+    "590",
+    "--log-file",
+    "/Users/sky/Projects/suborned/out/scratch/latch/tram-corrected/prior-localized.log",
+    "--no-tail",
+    "--format",
+    "json",
+    "--",
+    "-executeMethod",
+    "Suborned.OldTown.Editor.Swap.SwapTramCoverage.DiagnosePrior",
+    "-nographics"
+  ],
+  "exit": 6,
+  "seconds": 16.871963262557983,
+  "restoredExactBytes": []
+}

@@ -52,6 +52,8 @@ namespace Suborned.Sim
         public bool Armed; public string IfAware = "";     // "struggle" or "fight" (an armed target who sees it coming)
         public SeenQuote Seen = new SeenQuote();           // watchers: true answer if known, "?" if not (rulebook sight.unknown)
         public readonly List<(string id, string name, string verb, int landS)> People = new List<(string, string, string, int)>(); // within witness range now: verb "?" until the temperament is known
+        /// <summary>Brief 080: not in range now, but on their routine they would see it before the act ends: id, name, verb, in how many seconds. A fair price: the card warns of them as of those in range.</summary>
+        public readonly List<(string id, string name, string verb, int inS)> Coming = new List<(string, string, string, int)>();
         public int AlertIfSeen, AlertIfFound, TrailIfFound, TrailIfMissing; public bool MenaceIfFound;
         public int PoliceInS = -1;                         // a body found here now by staff: the response on the scene in ~n s (rev 4: a unit comes at any Alert)
         public readonly List<string> HoldsDoors = new List<string>(); // rev 4 R4.1: the entrances a found body here would hold (Enter refused, no exit)
@@ -104,7 +106,10 @@ namespace Suborned.Sim
         }
         bool IsKin(Person a, Person victim) { foreach (var k in TiesBetween(a, victim)) if (R.KinTies.Contains(k)) return true; return false; }
         public Body? BodyOf(Person p) { foreach (var b in Bodies) if (b.P == p) return b; return null; }
-        public Body? BodyById(string idOrRole) { var p = PersonById(idOrRole); return p == null ? null : BodyOf(p); }
+        public Body? BodyById(string idOrRole) { var p = TakedownPerson(idOrRole); return p == null ? null : BodyOf(p); }
+        /// <summary>A person the takedown and the body orders name: anyone PersonById finds, or (engine 0.33.0, Motive M059-3.1) a member of the
+        /// rival crew by id. Only these verbs read the crew's persons; every other verb names the crew as before.</summary>
+        Person? TakedownPerson(string idOrRole) => PersonById(idOrRole) ?? (IsCrewId(idOrRole) ? CrewOf(idOrRole)!.P : null);
         /// <summary>Where a body is now: with its carrier, in its stash, or where it lies.</summary>
         public Pt BodyPos(Body b) => b.Carrier.HasValue ? OpOf(b.Carrier.Value).Pos : b.At;
         TdAct ActOf(Body b) => Acts[b.Act];
@@ -123,6 +128,7 @@ namespace Suborned.Sim
         /// Armed: carries a weapon (the door guard).</summary>
         (bool aware, bool armed) Awareness(Person p, Pt at)
         {
+            if (CrewOfPerson(p) is CrewMember cm) return CrewAwareness(cm); // engine 0.33.0: a member of the crew, by his own cone (GameCrewBodies.cs)
             var e = Enforcer; bool armed = p == GuardP && GuardGun.W != null && !GuardAlly;
             bool aware = IsStaff(p) && e.Running && (e.Walk != null || e.DriveMoved) && G.Within(e.Pos, at, witnessRange); // brief 025: a driven run is a run; engine 0.22.0: only security staff hear it (Sky 2026-10-22)
             if (!aware && p == GuardP) aware = GuardWatching(e.Pos, false);
@@ -130,7 +136,8 @@ namespace Suborned.Sim
             // Motive rev 3 §1.3: a person who witnessed one of the cell's acts (a takedown, a carry, a drawn weapon) stays aware of the
             // Enforcer for the rest of the mission (until Pulse gives a stop its facing)
             if (!aware) foreach (var m in p.Memory) if (m.Act == "saw-takedown" || m.Act == "saw-carry" || m.Act == "saw-weapon-drawn") { aware = true; break; }
-            if (!aware) { var f = FacingOf(p); if (f.HasValue && G.InCone(at, f.Value, R.FacingReachCm, R.FacingHalfCm, 0, e.Pos) && Sees(at, e.Pos)) aware = true; }
+            if (!aware && R.PeopleCone && !IsStaff(p)) { if (InPeopleCone(p, at, e.Pos) && Sees(at, e.Pos)) aware = true; } // brief 054 §3.3: a civilian target by the people cone
+            else if (!aware) { var f = FacingOf(p); if (f.HasValue && G.InCone(at, f.Value, R.FacingReachCm, R.FacingHalfCm, 0, e.Pos) && Sees(at, e.Pos)) aware = true; }
             return (aware, armed);
         }
         /// <summary>The way a person faces now, if the engine knows it: a walker on the move, the way they walk; else none.</summary>
@@ -140,28 +147,40 @@ namespace Suborned.Sim
             if (w.St.Length > 0)
             {
                 if (w.Run != null && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking") && Tick >= w.RunStart)
-                { long mm = (long)(Tick - w.RunStart) * (w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : opSpeed); if (mm < w.Run.Length) return w.Run.Heading(mm); }
+                { long mm = (long)(Tick - w.RunStart) * (w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : peopleWalk); if (mm < w.Run.Length) return w.Run.Heading(mm); }
+                // brief 054 §3.3 (cone): the startled face what startled them
+                if (stopFace != null && w.St == "startled" && lastShooterFor.TryGetValue(w.P.Id, out var src)) { var d = src - w.At; if (d != new Pt(0, 0)) return d; }
                 return null;
             }
+            return RoutineFacing(w, Tick);
+        }
+        /// <summary>The way the routine has a person of the crowd facing at a tick (their leg, the stop's facing); a read for a card too.</summary>
+        Pt? RoutineFacing(Walker w, int tick)
+        {
             var c = People2!;
             for (int i = 0; i + 1 < w.Place.Length; i++)
-                if (Tick >= w.To[i] && Tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
+                if (tick >= w.To[i] && tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
                 {
-                    var path = CrowdPath(w.Place[i], w.Place[i + 1]); int span = w.From[i + 1] - w.To[i];
-                    return span <= 0 ? (Pt?)null : path.Heading(LegMm(w, path, Tick - w.To[i], span));
+                    var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]); int span = w.From[i + 1] - w.To[i];
+                    if (span <= 0) return null;
+                    long lm = LegMm(w, path, tick - w.To[i], span, LeavesPost(w, i));
+                    if (stopFace != null && lm >= path.Length && StopFace(w.Place[i + 1]) is Pt sf) return sf; // brief 054 §3.3: early at the leg's end, waiting
+                    return path.Heading(lm);
                 }
+            // brief 054 §3.3 (cone): at a stop on the street, the stop's facing
+            if (stopFace != null) for (int i = 0; i < w.Place.Length; i++) if (Tick >= w.From[i] && Tick < w.To[i] && w.Out[i]) return StopFace(w.Place[i]);
             return null;
         }
 
         string Takedown(Op op, Order o)
         {
             if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer takes people down (§03; brief 013)");
-            if (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking) return No("carry-vale", "the Enforcer is carrying Vale");
+            if (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking) return No("carry-vale", $"the Enforcer is carrying {ValeName}");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("already-carrying", "already carrying");
             if (o.How != "knockout" && o.How != "kill") return No("takedown-how", "a takedown is a knockout or a kill");
-            var p = PersonById(o.Target);
+            var p = TakedownPerson(o.Target);
             if (p == null) return No("target-unknown", $"'{o.Target}' is no one here (unknown = reject)");
-            if (p == ValeP && o.How == "knockout") return No("takedown-vale", "Vale is taken, not knocked out: use Take");
+            if (p == ValeP && o.How == "knockout") return No("takedown-vale", $"{Cap(ValeName)} is taken, not knocked out: use Take");
             var at = PosOfPerson(p);
             if (!at.HasValue) return p.Down ? No("person-down", $"{o.Target} is down") : No("person-away", $"{o.Target} is not out on the street");
             if (!G.Within(op.Pos, at.Value, R.TakedownReachCm)) return No("too-far", $"stand within {R.TakedownReachCm} cm of {o.Target}", cm: R.TakedownReachCm);
@@ -186,6 +205,7 @@ namespace Suborned.Sim
         void TakedownFails(Op op, Person p, Pt at)
         {
             Note("takedown.fails", $"{Who(p)} sees the Enforcer coming and draws: the takedown fails.");
+            if (CrewOfPerson(p) is CrewMember cm) { cm.Avenge.Add(Sim.Op.Name(op.Id)); return; } // engine 0.33.0: a rival draws and fires on him (foe crewmate); he raises no alarm (rivals don't report)
             markedFoes.Add("enforcer"); KnowFace("enforcer"); // engine 0.19.0 (ai.intent face)
             var pose = GuardPose();
             if (pose.HasValue && pose.Value.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.Value.pos; heldFacing = pose.Value.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; }
@@ -198,9 +218,10 @@ namespace Suborned.Sim
         void Seize(Person p, Pt at)
         {
             p.Down = true;
+            if (CrewOfPerson(p) is CrewMember cm) { CrewSeized(cm, at); return; } // engine 0.33.0 (GameCrewBodies.cs)
             var w = WalkerOf(p); if (w != null) { w.St = ""; w.Run = null; w.Pace = 0; }
             if (p == GuardP) { GuardDown = true; GuardEngaged = false; GuardHeld = false; }
-            if (p == Driver) carStoppedAt = CarPos();
+            if (p == Driver) StopOfficial(CarPos());
             foreach (var r in Reps) if (r.P == p && r.LandAt > Tick) r.Phase = "stopped";
         }
         static string Who(Person p) => p.Role.Length > 0 ? p.Role : p.Id;
@@ -216,7 +237,7 @@ namespace Suborned.Sim
             {
                 b.WakeAt = INF;
                 Chain.Add("killed:" + Who(p)); Note("takedown.dead", $"{Who(p)} is dead. The body lies where it fell.");
-                if (p == ValeP) { Vale = ValeAt.Dead; Fail("vale-dead", "Vale is dead. The live capture objective has failed.", () => With(Because("killed", true, Locate(Sim.Op.Name(op.Id), "killed", b.At), Locate("councillor", "victim", null, b.At)), Sim.Op.Name(op.Id))); }
+                if (p == ValeP) { Vale = ValeAt.Dead; Fail("vale-dead", $"{Cap(ValeName)} is dead. The live capture objective has failed.", () => With(Because("killed", true, Locate(Sim.Op.Name(op.Id), "killed", b.At), Locate("councillor", "victim", null, b.At)), Sim.Op.Name(op.Id))); }
             }
             else
             {
@@ -313,7 +334,7 @@ namespace Suborned.Sim
             foreach (var (p, wp) in OnTheStreet())
             {
                 if (p == a.P || a.Noticed.Contains(p.Id) || Accomplice(a, p)) continue; // rev 4: an accomplice is never a witness
-                if (!G.Within(wp, at, witnessRange) || !Sees(wp, at)) continue;
+                if (!Notices(p, wp, at, what == "act" ? "takedown" : what)) continue; // brief 054 §3.2: act (a takedown, the Take's struggle), carry, body
                 if (dry) return true;
                 a.Noticed.Add(p.Id);
                 PersonNotices(a, p, wp, what, b);
@@ -432,6 +453,10 @@ namespace Suborned.Sim
 
         /// <summary>A scream (Pulse §2.1 shout): heard within witness.scream with no line. A hearer with a line within witness range has
         /// seen it already; the rest hold heard-alarm (a lead: place and time).</summary>
+        /// <summary>What a hearer of a scream turns to see: the act while it lasts, the body carried, else the body.</summary>
+        string ShoutWhat(TdAct a) { var b = BodyOfAct(a); return b == null ? "act" : b.Seizing ? "act" : b.Carrier.HasValue ? "carry" : "body"; }
+        Body? ShoutBody(TdAct a) => BodyOfAct(a);
+        Body? BodyOfAct(TdAct a) { foreach (var b in Bodies) if (ActOf(b) == a) return b; return null; }
         void Shout(TdAct a, Pt at, Person by)
         {
             Note("witness.scream", $"{Who(by)} screams.");
@@ -439,6 +464,8 @@ namespace Suborned.Sim
             {
                 if (p == by || p == a.P || a.Noticed.Contains(p.Id) || a.Heard.Contains(p.Id)) continue;
                 if (!G.Within(wp, at, R.ScreamCm)) continue;
+                // brief 054 §3.2: a hearer within witness range on a clear line turns and sees what is there (cone only; around saw it already)
+                if (R.PeopleCone && !Accomplice(a, p) && Notices(p, wp, at, "scream")) { a.Noticed.Add(p.Id); PersonNotices(a, p, wp, ShoutWhat(a), ShoutBody(a)); if (Over) return; continue; }
                 a.Heard.Add(p.Id); Remember(p, "heard-alarm", "", false);
             }
         }
@@ -451,7 +478,7 @@ namespace Suborned.Sim
             if (what == "body") RoundsEnd("body-found"); // brief 022
             if (w.StartsWith("camera:", StringComparison.Ordinal))
             {
-                int phase = (int)(Streams.Fnv1a32(w) % (uint)T(R.CameraScanS)), period = T(R.CameraScanS);
+                int period = T(R.CameraScanS), phase = ScanPhase(w, period);
                 int next = Tick + ((phase - Tick % period) % period + period) % period;
                 AddRep(a, kind, w, null, ActAt(a, b), next + T(R.PostCallS), "watcher");
                 Note("witness.camera", $"The {w.Substring(7)} camera records it; its watcher reads the screen at {Sim.Report.Clock(next)}.");
@@ -469,7 +496,7 @@ namespace Suborned.Sim
         {
             string actor = what == "carry" && b != null && b.Carrier.HasValue ? Sim.Op.Name(b.Carrier.Value) : "enforcer";
             markedFoes.Add(actor); KnowFace(actor); // engine 0.19.0 (ai.intent face)
-            Note("takedown.seen", $"The {w.Replace("camera:", "")} sees {(what == "carry" ? "a body carried" : a.Take ? "Vale taken" : "the takedown")}: Alert {Math.Max(Alert, R.DrawSeenSecurity)}.");
+            Note("takedown.seen", $"The {w.Replace("camera:", "")} sees {(what == "carry" ? "a body carried" : a.Take ? $"{ValeName} taken" : "the takedown")}: Alert {Math.Max(Alert, R.DrawSeenSecurity)}.");
             if (w == "guard" && !GuardDown)
             {
                 var pose = GuardPose(); if (pose.HasValue && pose.Value.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.Value.pos; heldFacing = pose.Value.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; }
@@ -499,16 +526,16 @@ namespace Suborned.Sim
             var pts = new List<(string, Pt)>();
             foreach (var (id, at, kind) in S.Refuges) if (kind == "door") pts.Add((id, at));
             foreach (var cb in S.CallBoxes) pts.Add(cb);
-            var a = S.Grid.NearestFree(from) ?? from;
+            var a = Walk.NearestFree(from) ?? from;
             // nearest by the straight line first: a walk is never shorter than it, so once the next point's line is longer than the best
             // walk found nothing after it can win (the same choice as walking to every point, at a few A* instead of one a point)
             var order = new List<(long line, string id, Pt at, Pt b)>();
-            foreach (var (id, at) in pts) { var b0 = S.Grid.NearestFree(at) ?? at; order.Add((G.Isqrt(G.D2(a, b0)) * 10, id, at, b0)); }
+            foreach (var (id, at) in pts) { var b0 = Walk.NearestFree(at) ?? at; order.Add((G.Isqrt(G.D2(a, b0)) * 10, id, at, b0)); }
             order.Sort((x, y) => x.line != y.line ? x.line.CompareTo(y.line) : string.CompareOrdinal(x.id, y.id));
             foreach (var (line, id, at, b) in order)
             {
                 if (best != null && line > best.Value.path.Length + 1000) break; // 1 m of slack for the integer rounding of both lengths
-                var route = S.Grid.Route(a, b);
+                var route = Walk.Route(a, b);
                 var path = route == null ? null : new Path(route.Length >= 2 ? route : new[] { a, b });
                 if (path == null) continue;
                 if (best == null || path.Length < best.Value.path.Length || (path.Length == best.Value.path.Length && string.CompareOrdinal(id, best.Value.id) < 0)) best = (id, at, path);
@@ -527,13 +554,13 @@ namespace Suborned.Sim
             if (mode == "radio") { AddRep(a, kind, p.Id, p, ActAt(a, b), Tick + react + T(R.PostCallS), "radio"); Note("report.started", $"{Who(p)} radios it in."); return; }
             if (mode == "check" && b != null)
             {
-                var to = BodyPos(b); var path = RouteOf(from, to); int speed = opSpeed;
+                var to = BodyPos(b); var path = RouteOf(from, to); int speed = peopleWalk;
                 int arrive = Tick + react + (int)((Math.Max(0, path.Length - near * 10L) + speed - 1) / speed);
                 if (w != null) { w.St = "checking"; w.At = from; w.Run = path; w.RunStart = Tick + react; w.Pace = speed; }
                 var r = new Rep { Seq = repSeq++, Act = a.Id, Kind = "down", By = p.Id, P = p, W = w, Place = to, Sev = SevOf("down"), LandAt = INF, Phase = "check", PhaseUntil = arrive + T(R.BodyCheckS) };
                 Reps.Add(r); Note("report.started", $"{Who(p)} goes to look."); return;
             }
-            WalkToPhone(a, p, w, kind, from, mode == "run" ? R.CrowdRunSpeed : opSpeed, Tick + react, ActAt(a, b), "");
+            WalkToPhone(a, p, w, kind, from, mode == "run" ? R.CrowdRunSpeed : peopleWalk, Tick + react, ActAt(a, b), "");
         }
         void WalkToPhone(TdAct a, Person p, Walker? w, string kind, Pt from, int pace, int start, Pt place, string stash)
         {
@@ -543,7 +570,7 @@ namespace Suborned.Sim
             if (w != null && rp != null) { w.St = "reporting"; w.At = from; w.Run = rp.Value.path; w.RunStart = start; w.Pace = pace; w.Refuge = rp.Value.id; }
             AddRep(a, kind, p.Id, p, place, land, "walk", stash);
             if (kind == "tell") Note("witness.to-phone", $"{Who(p)} walks to {(rp?.id ?? "a phone")} to tell someone (calls {Sim.Report.Clock(land)}).");
-            else Note("report.started", $"{Who(p)} {(pace > opSpeed ? "runs" : "walks")} to {(rp?.id ?? "a phone")} to report it (lands {Sim.Report.Clock(land)}).");
+            else Note("report.started", $"{Who(p)} {(pace > peopleWalk ? "runs" : "walks")} to {(rp?.id ?? "a phone")} to report it (lands {Sim.Report.Clock(land)}).");
         }
 
         /// <summary>One tick of the reports: a reporter taken down or carried drops his report; a checker who reaches the body learns its
@@ -573,7 +600,7 @@ namespace Suborned.Sim
                     string kind = there && b!.Dead ? "dead" : "down";
                     var from = PosOfWalkerNow(r.W) ?? r.Place;
                     r.Phase = "stopped"; // the check is done: the report walks on as a new one (it keeps its place in the cap)
-                    WalkToPhone(Acts[r.Act], r.P!, r.W, kind, from, opSpeed, Tick, r.Place, "");
+                    WalkToPhone(Acts[r.Act], r.P!, r.W, kind, from, peopleWalk, Tick, r.Place, "");
                     continue;
                 }
                 if (r.Phase == "walk" && r.W != null && r.W.St == "reporting" && r.W.Run != null && Tick >= r.W.RunStart && (long)(Tick - r.W.RunStart) * r.W.Pace >= r.W.Run.Length)
@@ -659,7 +686,7 @@ namespace Suborned.Sim
             {
                 var qw = WalkerOf(q); var qp = PosOfPerson(q);
                 if (indoors) AddRep(a, "down", q.Id, q, a.Scene, Tick + T(R.CallS) + T(R.CallS), "radio"); // hears the call, then calls the desk
-                else if (qp.HasValue) WalkToPhone(a, q, qw, "down", qp.Value, opSpeed, Tick + T(R.WitnessReactS), a.Scene, "");
+                else if (qp.HasValue) WalkToPhone(a, q, qw, "down", qp.Value, peopleWalk, Tick + T(R.WitnessReactS), a.Scene, "");
             }
             return true;
         }
@@ -692,7 +719,7 @@ namespace Suborned.Sim
             if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts) || a.Told.Contains(p.Id) || (IsCellPerson(p) && !IsKin(p, a.P))) return;
             if (TieToTell(a, ts, from, true).q == null) return; // nobody indoors to call either
             if (fled && w != null) { AddRep(a, "tell", p.Id, p, from, INF, "flee"); return; }
-            WalkToPhone(a, p, w, "tell", from, opSpeed, Tick + T(R.WitnessReactS), from, "");
+            WalkToPhone(a, p, w, "tell", from, peopleWalk, Tick + T(R.WitnessReactS), from, "");
         }
         /// <summary>Is `at` at a phone: within near of a report point (a staffed door, a call box)?</summary>
         bool AtPhone(Pt at)
@@ -714,7 +741,7 @@ namespace Suborned.Sim
 
         /// <summary>A Take at Vale's own car with its driver turned happens inside the car (Sky, rev 4): an interior, off-screen (§01), with
         /// no witness window and nothing for the pickup camera to see; onlookers see a councillor get into his official car.</summary>
-        public bool TakeInCar => Driver.Turned && !Driver.Down;
+        public bool TakeInCar => Driver.Turned && !Driver.Down && PickupService; // brief 059 K3: in his car round the back (service bay, or the drive's mouth), parked
         /// <summary>An accomplice of the act is never its witness (rev 4 R4.2, the first row, ahead of kin): a person turned to enable this
         /// very act. For the Take (and the escort that is its tail), the driver turned to move the pickup or blind its camera.</summary>
         bool Accomplice(TdAct a, Person p) => a.Take && p == Driver && Driver.Turned;
@@ -769,7 +796,8 @@ namespace Suborned.Sim
             foreach (var (p, wp) in OnTheStreet())
             {
                 if (p == a.P || a.Noticed.Contains(p.Id) || Accomplice(a, p)) continue;
-                if (!(G.Within(wp, at, near) || (G.Within(wp, at, witnessRange) && IsKin(p, a.P))) || !Sees(wp, at)) continue;
+                if (R.PeopleCone ? !(IsKin(p, a.P) ? Notices(p, wp, at, "carry") : G.Within(wp, at, near) && Notices(p, wp, at, "escort")) // brief 054 §3.2: kin in their cone at any Alert, anyone within near by the escort row
+                    : (!(G.Within(wp, at, near) || (G.Within(wp, at, witnessRange) && IsKin(p, a.P))) || !Sees(wp, at))) continue;
                 if (dry) return true;
                 a.Noticed.Add(p.Id);
                 PersonNotices(a, p, wp, "carry", null);
@@ -786,9 +814,10 @@ namespace Suborned.Sim
             {
                 if (Over) return;
                 var a = ActOf(b);
-                if (b.Seizing) { ScanAct(a, BodyPos(b), "act", b); continue; } // the act is seen at any tick of it
+                if (b.Seizing) { ScanAct(a, BodyPos(b), "act", b); if (CrewOfPerson(b.P) is CrewMember sm) CrewSeesTakedown(sm); continue; } // the act is seen at any tick of it; engine 0.33.0: a crewmate who sees it fires (M059-S1.6)
                 if (b.Carrier.HasValue) { ScanAct(a, BodyPos(b), "carry", b); continue; }
                 if (b.FreeAt >= 0 && Tick >= b.FreeAt && b.Restrained) { b.Restrained = false; b.FreeAt = -1; Note("restrain.freed", $"{Who(b.P)} is untied."); }
+                if (b.Restrained && b.FreeAt < 0 && b.Open && !b.Carrier.HasValue && CrewOfPerson(b.P) is CrewMember fm) CrewFrees(b, fm); // engine 0.33.0 (M059-3.4)
                 if (!b.Dead && Tick >= b.WakeAt && b.P.Down)
                 {
                     if (b.Restrained) { } // awake, tied: waits for a finder
@@ -807,6 +836,7 @@ namespace Suborned.Sim
         {
             var a = ActOf(b); var p = b.P; var at = BodyPos(b);
             Bodies.Remove(b); p.Down = false; a.Woke = true;
+            if (CrewOfPerson(p) is CrewMember cm) { CrewWakes(cm, at, brought); return; } // engine 0.33.0 (Motive M059-3.4): no report, no statement; he rejoins his crew
             p.Sc[Rules.Fear] = R.Clamp(Rules.Fear, p.Sc[Rules.Fear] + 1); if (a.Aware) p.Sc[Rules.Resentment] = R.Clamp(Rules.Resentment, p.Sc[Rules.Resentment] + 1);
             if (p == GuardP) { GuardDown = false; GuardHeld = true; heldPos = at; heldFacing = S.GuardFacing; heldPhase = "woken"; GuardAwayUntil = INF; guardBackAt = Tick + T(R.StaggerS) + (brought ? 0 : T(R.PostCallS)); } // he radios, then walks back to his post
             if (p == Driver) carStoppedAt = null;
@@ -817,9 +847,9 @@ namespace Suborned.Sim
             if (IsCellPerson(p)) return; // a contact who owes the cell says nothing (Pulse §5)
             int start = Tick + T(R.StaggerS);
             if (IsStaff(p)) { AddRep(a, "woken", p.Id, p, at, start + T(R.PostCallS), "radio"); return; }
-            var rp = ReportPoint(at); int walk = rp == null ? 0 : (int)((rp.Value.path.Length + opSpeed - 1) / opSpeed);
+            var rp = ReportPoint(at); int walk = rp == null ? 0 : (int)((rp.Value.path.Length + peopleWalk - 1) / peopleWalk);
             AddRep(a, "woken", p.Id, p, at, start + walk + T(R.CallS), "walk");
-            if (w != null && rp != null) { w.Run = rp.Value.path; w.Pace = opSpeed; w.Refuge = rp.Value.id; w.RunStart = start; }
+            if (w != null && rp != null) { w.Run = rp.Value.path; w.Pace = peopleWalk; w.Refuge = rp.Value.id; w.RunStart = start; }
         }
 
         /// <summary>A hidden, awake, untied victim calls out (Motive §3.3): heard within witness.scream with no line; a hearer who would report
@@ -834,7 +864,7 @@ namespace Suborned.Sim
                 a.Noticed.Add(p.Id); Remember(p, "heard-alarm", "", false);
                 string verb = Decide(a, p, "body");
                 if (verb == "radio") AddRep(a, "noise", p.Id, p, at, Tick + T(R.WitnessReactS) + T(R.PostCallS), "radio", b.Stash);
-                else if (verb == "report" || verb == "check") WalkToPhone(a, p, WalkerOf(p), "noise", wp, opSpeed, Tick + T(R.WitnessReactS), at, b.Stash);
+                else if (verb == "report" || verb == "check") WalkToPhone(a, p, WalkerOf(p), "noise", wp, peopleWalk, Tick + T(R.WitnessReactS), at, b.Stash);
             }
         }
 
@@ -843,7 +873,7 @@ namespace Suborned.Sim
         void ServiceRound(Body b)
         {
             var s = StashById(b.Stash); if (s == null || s.Kind != "container") return;
-            int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);
+            int period = T(R.ServicePeriodS), phase = ScanPhase(s.Id, period);
             if ((Tick - phase) % period != 0) return;
             var a = ActOf(b);
             if (a.Noticed.Contains("round:" + s.Id)) return;
@@ -860,15 +890,15 @@ namespace Suborned.Sim
         public TakedownQuote QuoteTakedown(string target, string how)
         {
             var q = new TakedownQuote();
-            var p = PersonById(target); var e = Enforcer;
+            var p = TakedownPerson(target); var e = Enforcer; bool rival = CrewOfPerson(p!) != null;
             if (p == null) { q.Refused = "no one here"; q.RefusedCode = "target-unknown"; return q; }
-            if (p == ValeP && how == "knockout") { q.Refused = "Vale is taken, not knocked out: use Take"; q.RefusedCode = "takedown-vale"; }
+            if (p == ValeP && how == "knockout") { q.Refused = $"{Cap(ValeName)} is taken, not knocked out: use Take"; q.RefusedCode = "takedown-vale"; }
             var at = PosOfPerson(p);
             if (!at.HasValue) { q.Refused = p.Down ? "down" : "not on the street"; q.RefusedCode = p.Down ? "person-down" : "person-away"; return q; }
             bool kill = how == "kill";
             var (aware, armed) = Awareness(p, at.Value);
-            q.Armed = p == GuardP;
-            bool known = p != GuardP || (Known("guard")?.Sight ?? false);
+            q.Armed = p == GuardP || rival; // engine 0.33.0: a rival carries his pistol
+            bool known = (p != GuardP || (Known("guard")?.Sight ?? false)); // a rival's cone is on the street to see
             q.Aware = known ? (aware ? "yes" : "no") : "?";
             q.IfAware = q.Armed ? "fight" : "struggle";
             q.S = (kill ? R.KillS : R.KoS) + (aware && known && !armed ? R.StruggleS : 0);
@@ -876,18 +906,19 @@ namespace Suborned.Sim
             var probe = new TdAct { P = p, Kill = kill };
             foreach (var (w, wp) in OnTheStreet())
             {
-                if (w == p || !G.Within(wp, at.Value, witnessRange) || !Sees(wp, at.Value)) continue;
+                if (w == p || !Notices(w, wp, at.Value, "takedown")) continue;
                 string verb = VerbShown(probe, w, "act");
                 int land = -1;
                 if (verb == "radio") land = R.WitnessReactS + R.PostCallS;
                 else if (verb == "report") { var rp = ReportPoint(wp); land = R.WitnessReactS + R.CallS + (rp == null ? 0 : (int)((rp.Value.path.Length / R.CrowdRunSpeed + 9) / 10)); }
                 q.People.Add((w.Id, w.Name, verb, land));
             }
+            foreach (var (w, inS) in ComingToSee(at.Value, q.S, "takedown", p)) q.Coming.Add((w.Id, w.Name, VerbShown(probe, w, "act"), inS));
             q.AlertIfSeen = Math.Max(Alert, R.AlertSeen);
             q.AlertIfFound = Math.Max(Alert, kill ? R.AlertDead : Math.Min(R.AlertDown, R.KoAlertMax));
             q.TrailIfFound = R.HitTrail + R.DownTrail + (kill ? R.KillTrail : 0); q.MenaceIfFound = kill;
-            q.TrailIfMissing = kill ? R.MissingTrail : R.HitTrail + R.DownTrail;
-            q.IfNeverFound = kill ? "missing" : "comes-home";
+            q.TrailIfMissing = rival ? 0 : kill ? R.MissingTrail : R.HitTrail + R.DownTrail;
+            q.IfNeverFound = rival ? "" : kill ? "missing" : "comes-home"; // engine 0.33.0 (Motive M059-3.2): a rival never found costs nothing and is never missed
             if (!kill) q.WakesAt = Tick + T((kill ? R.KillS : R.KoS) + R.WakeS);
             if (IsStaff(p) && p.KRoutine) q.NextMark = NextMarkOf(p, Tick);
             if (kill && People2 != null && People2.Ties.TryGetValue(p.Id, out var ts)) foreach (var (k, _) in ts) if (R.CloseTies.Contains(k)) q.Ties++;
@@ -897,7 +928,7 @@ namespace Suborned.Sim
             {
                 int landS = R.WitnessReactS + R.PostCallS;
                 var origin = alertThen >= 2 && SecurityArrives == INF ? S.Stand(S.SecEntry) : OriginOf(at.Value, S.Posts);
-                var route = S.Grid.Route(S.Grid.NearestFree(origin) ?? origin, S.Grid.NearestFree(at.Value) ?? at.Value);
+                var route = Walk.Route(Walk.NearestFree(origin) ?? origin, Walk.NearestFree(at.Value) ?? at.Value);
                 int walkS = route == null ? 0 : (int)((new Path(route).Length + secSpeed * Hz - 1) / (secSpeed * Hz));
                 q.PoliceInS = landS + lv.DispatchS + walkS;
             }

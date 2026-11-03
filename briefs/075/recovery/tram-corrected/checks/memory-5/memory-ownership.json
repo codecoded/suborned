@@ -1,0 +1,27 @@
+{
+ "status":"read-only saved candidate check; no overlap accepted",
+ "tilePlanarFaces":156392,
+ "signalTriangles":7400,
+ "coplanarPositiveAreaPairs":16,
+ "coplanarIntersectionAreaM2":5.2274845074850754E-07,
+ "largestIntersectionM2":1.380903995596541E-07,
+ "examples":[["DK_LightDotRow_2",1.1634983820834957E-07,[-12.7195539,22.5170231]],["DK_LightDotRow_2",2.3283064365265202E-10,[-21.3154545,-407.2804]],["DK_LightDotRow_2",2.954038791358365E-09,[-21.3154545,-407.2804]],["DK_LightDotRow_2",7.4214767664226252E-10,[-21.1614819,-407.25]],["DK_LightDotRow_2",7.3050614446376185E-09,[17.0112247,-18.1225586]],["DK_LightDotRow_2",8.7311491369354078E-11,[17.0112247,-18.1225586]],["DK_LightDotRow_2",1.0186340659901265E-09,[17.6096859,-18.8744411]],["DK_LightDotRow_2",3.7594872992485762E-08,[14.85853,-21.0551815]],["DK_LightDotRow_2",6.4625055529129755E-08,[14.85853,-21.0551815]],["DK_LightDotRow_2",1.380903995596541E-07,[14.85853,-21.0551815]],["DK_LightDotRow_2",6.9048837758483821E-08,[14.8777609,-21.1201477]],["DK_LightDotRow_2",5.059733458733927E-08,[14.8777609,-21.1201477]],["DK_LightDotRow_2",2.080598539386003E-09,[14.8048315,-21.1124725]],["DK_LightDotRow_2",1.9230355974303735E-08,[-15.1011248,19.7731533]],["DK_LightDotRow_2",7.770722731977545E-09,[-15.6410646,20.5903111]],["DK_LightDotRow_2",5.0204107537476E-09,[-15.6410646,20.5903111]]],
+ "largestOverlaps":[
+ {"area":1.380903995596541E-07,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-370#0","tileY":0.005,"point":[14.9506912,-21.1278229]},
+ {"area":1.1634983820834957E-07,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-412#0","tileY":0.005,"point":[-12.79646,22.5393524]},
+ {"area":6.9048837758483821E-08,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-370#0","tileY":0.005,"point":[14.9506912,-21.1278229]},
+ {"area":6.4625055529129755E-08,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-370#0","tileY":0.005,"point":[14.9506912,-21.1278229]},
+ {"area":5.059733458733927E-08,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-370#0","tileY":0.005,"point":[14.9506912,-21.1278229]},
+ {"area":3.7594872992485762E-08,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-370#0","tileY":0.005,"point":[14.9506912,-21.1278229]},
+ {"area":1.9230355974303735E-08,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-414#0","tileY":0.005,"point":[-15.1651812,19.7760315]},
+ {"area":7.770722731977545E-09,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-414#0","tileY":0.005,"point":[-15.71646,20.6103516]},
+ {"area":7.3050614446376185E-09,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-372#0","tileY":0.005,"point":[17.0415058,-18.1475677]},
+ {"area":5.0204107537476E-09,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-414#0","tileY":0.005,"point":[-15.71646,20.6103516]},
+ {"area":2.954038791358365E-09,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-128#0","tileY":0.005,"point":[-21.2907963,-407.261536]},
+ {"area":2.080598539386003E-09,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-370#0","tileY":0.005,"point":[14.9105062,-21.2018127]},
+ {"area":1.0186340659901265E-09,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-372#0","tileY":0.005,"point":[17.67069,-18.92482]},
+ {"area":7.4214767664226252E-10,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-128#0","tileY":0.005,"point":[-21.17222,-407.172241]},
+ {"area":2.3283064365265202E-10,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Ivory","tileMesh":"ground/tram/rail-128#0","tileY":0.005,"point":[-21.2907963,-407.261536]},
+ {"area":8.7311491369354078E-11,"signalMesh":"DK_LightDotRow_2","signalMaterial":"probe-oldtown-ours-crossdots","signalY":0.005,"tileMaterial":"DK_Tile_Grey","tileMesh":"ground/tram/rail-372#0","tileY":0.005,"point":[17.0415058,-18.1475677]}],
+ "arithmetic":"double planar triangle intersection of actual float world vertices; heights within 1 micrometre; pair area >1e-12m2 recorded, no bounds proxy or audit filtering"
+}

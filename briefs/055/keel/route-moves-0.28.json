@@ -1,0 +1,1186 @@
+{
+ "schema": "keel.route-moves/1",
+ "engine": "suborned.sim/0.28.0",
+ "before": "suborned.sim/0.27.0 (mission check from the baseline copy)",
+ "how": "bun tools/missions/check/cli.ts handover --engine tree --inputs tree, the tree as scripted; then compose + check in out/scratch/keel/b056/rootCompose (a scratch copy: the tree routes are Waymark's)",
+ "moves": [
+  {
+   "route": "careless-body-found",
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2495,
+    "trail": 2,
+    "alert": 2,
+    "standing": 1,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2498,
+    "trail": 2,
+    "alert": 2,
+    "standing": 1,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2498,
+    "trail": 2,
+    "alert": 2,
+    "standing": 1,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "careless-enforcer-watches-guard",
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2152,
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2152,
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2152,
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "enforcer watch guard: already-watched (the Scout watched him first; brief 054 \u00a72.1)"
+  },
+  {
+   "route": "careless-guard-left-door-held",
+   "before": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "careless-reporter-not-stopped",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4796,
+    "trail": 3,
+    "alert": 2,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 3,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 3
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 3,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 3
+   },
+   "compose": "scout watch driver: nothing-to-see"
+  },
+  {
+   "route": "careless-scout-idles-pickup",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4796,
+    "trail": 3,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 2
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 2
+   },
+   "compose": "scout watch driver: nothing-to-see"
+  },
+  {
+   "route": "careless-takedown-seen-camera",
+   "before": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "careless-takedown-seen-crowd",
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 4139,
+    "trail": 8,
+    "alert": 3,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3924,
+    "trail": 7,
+    "alert": 3,
+    "standing": 1,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3924,
+    "trail": 7,
+    "alert": 3,
+    "standing": 1,
+    "rejected": 1
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-district-seals",
+   "before": {
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 9,
+    "alert": 2,
+    "standing": -1,
+    "rejected": 1
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-enforcer-down",
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1067,
+    "trail": 12,
+    "alert": 2,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1000,
+    "trail": 12,
+    "alert": 2,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1000,
+    "trail": 12,
+    "alert": 2,
+    "standing": null,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-entry-seen-camera",
+   "before": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-entry-seen-guard",
+   "before": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-entry-seen-patrol",
+   "before": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-rivals-reach-vale",
+   "before": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-take-seen-camera",
+   "before": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-vale-dead",
+   "before": {
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "standing": null,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fail-vale-leaves",
+   "before": {
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fight-loud-enforcer-down",
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2417,
+    "trail": 8,
+    "alert": 2,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2486,
+    "trail": 8,
+    "alert": 2,
+    "standing": null,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2485,
+    "trail": 8,
+    "alert": 2,
+    "standing": null,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "fight-safe-rivals-reach-vale",
+   "before": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4490,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "loud",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3096,
+    "trail": 14,
+    "alert": 2,
+    "standing": -2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1817,
+    "trail": 14,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3101,
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "loud-fast",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3096,
+    "trail": 14,
+    "alert": 2,
+    "standing": -2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1817,
+    "trail": 14,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3101,
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "loud-fight",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3124,
+    "trail": 13,
+    "alert": 2,
+    "standing": -2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1817,
+    "trail": 14,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3129,
+    "trail": 12,
+    "alert": 2,
+    "standing": -1,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "loud-left-downed",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3126,
+    "trail": 14,
+    "alert": 2,
+    "standing": -2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1817,
+    "trail": 14,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3131,
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "loud-left-standing",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3126,
+    "trail": 14,
+    "alert": 2,
+    "standing": -2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1817,
+    "trail": 14,
+    "alert": 2,
+    "standing": null,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3131,
+    "trail": 13,
+    "alert": 2,
+    "standing": -1,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-a",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2889,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2751,
+    "trail": 5,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-a-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2676,
+    "trail": 5,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2675,
+    "trail": 5,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 2
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2679,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-a-pressure",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2407,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2199,
+    "trail": 7,
+    "alert": 1,
+    "standing": 1,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2513,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-a-pressure-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2179,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2123,
+    "trail": 7,
+    "alert": 1,
+    "standing": 1,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2123,
+    "trail": 7,
+    "alert": 1,
+    "standing": 1,
+    "rejected": 1
+   },
+   "compose": "scout board car not taken (drawn walk)"
+  },
+  {
+   "route": "route-b",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4795,
+    "trail": 3,
+    "alert": 0,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 3,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 3,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "compose": "scout watch driver: nothing-to-see (brief 054 \u00a72.1); Waymark drops it"
+  },
+  {
+   "route": "route-b-block",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4795,
+    "trail": 4,
+    "alert": 0,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4662,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "compose": "scout watch driver: nothing-to-see"
+  },
+  {
+   "route": "route-b-block-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 4,
+    "alert": 0,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4601,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4601,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "compose": "scout watch driver: nothing-to-see"
+  },
+  {
+   "route": "route-b-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 3,
+    "alert": 0,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4601,
+    "trail": 3,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4601,
+    "trail": 3,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 2
+   },
+   "compose": "scout watch driver: nothing-to-see"
+  },
+  {
+   "route": "route-g",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2740,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2532,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-g-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2512,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2456,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2456,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "scout board car not taken (drawn walk)"
+  },
+  {
+   "route": "route-g-fast",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2556,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2348,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2662,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-g-fast-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2272,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "now_composed_in_scratch": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2272,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "rejected": 1
+   },
+   "compose": "scout board car not taken (drawn walk)"
+  },
+  {
+   "route": "route-g-kill",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3610,
+    "trail": 2,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 3,
+    "alert": 2,
+    "standing": 1,
+    "rejected": 6
+   },
+   "now_composed_in_scratch": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3717,
+    "trail": 2,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "compose": "composed"
+  },
+  {
+   "route": "route-g-kill-board",
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3382,
+    "trail": 2,
+    "alert": 1,
+    "standing": 3,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 3382,
+    "trail": 3,
+    "alert": 2,
+    "standing": 1,
+    "rejected": 5
+   },
+   "now_composed_in_scratch": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 3382,
+    "trail": 3,
+    "alert": 2,
+    "standing": 1,
+    "rejected": 5
+   },
+   "compose": "scout board car not taken (drawn walk)"
+  },
+  {
+   "route": "withdraw",
+   "before": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_as_scripted": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 0
+   },
+   "now_composed_in_scratch": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "standing": 2,
+    "rejected": 0
+   },
+   "compose": "composed"
+  }
+ ]
+}

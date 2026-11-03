@@ -187,6 +187,14 @@ Shader "DecoKit/Lit Cutaway"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
+            // Brief 028 enamel fix (Glint): a per-material scale on the environment reflection, 1 - _ClearCoatMask (a field a plain Lit material never reads; 0 = unchanged,
+            // so every material but the road's own is as it was). tools/decokit/unity_mats.py ENV_SCALE writes it. Forward pass only: EnvironmentBRDF is the one place the
+            // indirect specular meets the surface, and it takes the diffuse GI with it untouched.
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/BRDF.hlsl"
+            half3 DKEnvironmentBRDF(BRDFData brdfData, half3 indirectDiffuse, half3 indirectSpecular, half fresnelTerm)
+            { return EnvironmentBRDF(brdfData, indirectDiffuse, indirectSpecular * (1.0h - _ClearCoatMask), fresnelTerm); }
+            #define EnvironmentBRDF DKEnvironmentBRDF
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_FORWARD
@@ -333,6 +341,7 @@ Shader "DecoKit/Lit Cutaway"
             // -------------------------------------
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/GBufferOutputFormat.hlsl"
             ENDHLSL
@@ -436,6 +445,7 @@ Shader "DecoKit/Lit Cutaway"
             // -------------------------------------
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_DEPTH_NORMALS

@@ -1,0 +1,207 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "move",
+   "to": "beside-inez",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Courtyard",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "tick": 90,
+   "op": "scout",
+   "do": "watch",
+   "target": "waitress"
+  },
+  {
+   "tick": 290,
+   "op": "scout",
+   "do": "listen",
+   "target": "waitress"
+  },
+  {
+   "tick": 710,
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "help"
+  },
+  {
+   "tick": 850,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 1050,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ]
+  },
+  {
+   "tick": 1210,
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "help"
+  },
+  {
+   "tick": 1710,
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress"
+  },
+  {
+   "tick": 1710,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "run": true
+  },
+  {
+   "tick": 1710,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1025,
+    -4625
+   ]
+  },
+  {
+   "tick": 1710,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ]
+  },
+  {
+   "tick": 1729,
+   "op": "enforcer",
+   "do": "enter"
+  },
+  {
+   "tick": 1729,
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ]
+  },
+  {
+   "tick": 2109,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    2400,
+    -6000
+   ]
+  },
+  {
+   "tick": 2414,
+   "op": "scout",
+   "do": "draw"
+  },
+  {
+   "tick": 2414,
+   "op": "fixer",
+   "do": "draw"
+  },
+  {
+   "tick": 2414,
+   "op": "tech",
+   "do": "draw"
+  },
+  {
+   "tick": 2414,
+   "op": "enforcer",
+   "do": "draw"
+  },
+  {
+   "tick": 2414,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 2515,
+   "op": "enforcer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 2515,
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 2515,
+   "op": "scout",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 2515,
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 2515,
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 2516,
+   "op": "fixer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 2516,
+   "op": "tech",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 2555,
+   "op": "cell",
+   "do": "go"
+  }
+ ],
+ "until": 5100,
+ "note": "Composed by tools/sim/fixtures059.ts from contracts/missions/handover/routes/plans/route-a-board.plan.json on the working tree's engine: SQ1-WALK (M067-SQ1): route A, board and go: the whole cell boards a free car and Go is taken; the late car's man walks to his spot round the hold. Re-compose when the engine moves."
+}

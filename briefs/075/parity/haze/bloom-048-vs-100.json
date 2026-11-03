@@ -1,0 +1,37 @@
+{
+ "schema": "glint.bloom075/1",
+ "frame": "golden boulevard, briefs/075/flyby/remap-keys.json t 10, 3840x2160 lanczos to 1920x1080, runtime lens + haze, Long tier",
+ "variants": {
+  "b100": "lens.json as shipped (bloomLong 1.0 / 0.6 / 0.85)",
+  "b048": "the same with bloomLong.threshold 0.48, in memory (out/scratch/glint/075bloom/lens-b048.json)"
+ },
+ "stats": {
+  "b100": {
+   "satMean": 100.1,
+   "lumaMedian": 117.4,
+   "p5": 38.2,
+   "p95": 207.4,
+   "clipped_pct": 0.04,
+   "leftThirdMedian": 125.9,
+   "rightThirdMedian": 80.5
+  },
+  "b048": {
+   "satMean": 92.0,
+   "lumaMedian": 139.6,
+   "p5": 45.1,
+   "p95": 220.1,
+   "clipped_pct": 0.07,
+   "leftThirdMedian": 148.6,
+   "rightThirdMedian": 88.8
+  },
+  "old": {
+   "satMean": 111.2,
+   "lumaMedian": 111.9,
+   "p5": 42.7,
+   "p95": 205.5,
+   "clipped_pct": 0.07,
+   "leftThirdMedian": 85.9,
+   "rightThirdMedian": 126.3
+  }
+ }
+}

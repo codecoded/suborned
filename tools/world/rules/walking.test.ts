@@ -14,20 +14,20 @@ const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.pa
 const plan: Plan = read('contracts/world/harbour-district.plan.json'), block = read(plan.civic.block), base = (() => { const civ = civic(plan.civic, block); return { civ, ...generated(plan, derive(plan), civ) }; })();
 const w5 = (p: Plan = plan, civ = base.civ) => { const d = derive(p); return extraRules(ctxOf(p, d, civ, { w: structuredClone(base.w), gen: base.gen })).find(c => c.id === 'W-5'); };
 
-test('W-5 passes on the live block: 500-odd walks between the doors, the Handover points and the landings, with every narrow place inside the standard\'s exceptions', () => {
+test('W-5 passes on the live block: 380-odd walks between the doors, the Handover points and the landings, with every narrow place inside the standard\'s exceptions', () => {
   const r = w5()!;
   expect(r.ok, r.detail).toBe(true);
   expect(r.value).toMatch(/^(\d+)\/\1$/); // every walk measured passes
-  expect(Number(r.value!.split('/')[0])).toBeGreaterThan(450);
-  expect(r.detail).toMatch(/^\d+ walks between 3\d points; \d+ narrow places inside the standard's exceptions/);
+  expect(Number(r.value!.split('/')[0])).toBeGreaterThan(350); // 500-odd until the civic block dropped six of its nine crossings (2026-10-25, brief 061): their six landings are no walk points now
+  expect(r.detail).toMatch(/^\d+ walks between 29 points; \d+ narrow places inside the standard's exceptions/); // 29 since 2026-10-26: 'Boarding pavilion' left 'Official drop-off' (brief 067 L), see the next test
 });
 
 test('the points the walks run between: the three doors and the two service doors, the Handover points that are not doors, the crossing landings the dressing names; the seating area is the café terrace until the block says', () => {
   const ctx = ctxOf(plan, derive(plan), base.civ, { w: base.w, gen: base.gen });
   const pts = blockPoints(ctx);
-  expect(pts.length).toBe(34); // 32 and the two service doors (brief 013)
+  expect(pts.length).toBe(29); // 26 and the two service doors (brief 013) make 28, and 'Boarding pavilion' is a point of its own since Vantage moved it to the pavement at the pickup car's tail (76.75, -34.25; brief 067 L, 2026-10-26): at (78.3, -31) it lay 0.1 m from 'Official drop-off' and was that point (blockPoints merges points within 0.3 m); 32 and 34 before the civic block dropped six of its nine crossings (brief 061)
   for (const door of [...base.civ.entrances, ...base.civ.serviceDoors]) expect(pts.some(p => p.name === door.name)).toBe(true);
-  expect(pts.filter(p => /^landing /.test(p.name)).length).toBe(9);
+  expect(pts.filter(p => /^landing /.test(p.name)).length).toBe(3); // x-orbit-axis-n and -s, x-starline-e
   expect(seatingAreas(ctx)).toHaveLength(1); // cafe-terrace
   const none = ctxOf(plan, derive(plan), { ...base.civ, dressing: { ...(base.civ.dressing as object), seating: ['no-such-zone'] } } as never, { w: base.w, gen: base.gen });
   expect(seatingAreas(none)).toEqual([]);

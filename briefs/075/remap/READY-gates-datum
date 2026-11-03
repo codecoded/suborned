@@ -1,0 +1,8 @@
+brief 075 remap, gate towers + arch text (Datum, 2026-10-28)
+plan contracts/world/harbour-district.plan.json sha256 9a9669160b971d640623b99a1e70e5f8996d56fed4f53c903d66134bdb7a996f
+landmarks disc-west / disc-east: top 108 -> 156.6, scale 0.69 -> 1 (kit DiscTower x 1, tip 156.8)
+standards.skyline.harbour.exceptions [disc-west 156.8, disc-east 156.8] + exceptionsWhy; SK-1 reads it (tools/plan/signature-checks.ts)
+landmarks[disc-west].gateway text restated for (0, 44): frontage zone |x| 13.5-18 at y 41-47 (Splice)
+transcriber tools/plan/oldtown/transcribe.ts updated to emit the same
+bun tools/plan/cli.ts exit 0 · --overlay tools/missions/handover/overlay.ts exit 0 · bun run world exit 0, landmarks 7/0 kit/procedural, DiscTower x 1 both
+GDD §10 harbour note: next GDD version (Aster)

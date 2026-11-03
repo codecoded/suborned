@@ -1,0 +1,26 @@
+--- a/tools/world/gen/kerbreturn.ts
++++ b/tools/world/gen/kerbreturn.ts
+@@ -17,6 +17,7 @@
+ import type { Ctx } from './common';
+ import { kindOf, idOf, plotRing } from './edges';
+ import { areaOf } from './geo';
++import { isFootwayCorner } from './street/footway';
+ 
+ export type KerbReturnStd = { byClass: Record<string, number>; concave: number; bay: number; /** the civic block's corners, and the corners across the road that hold its crossings' partner landings (plan: kerbReturn.civic) */ civic: number; /** the outside of a bend is concentric with its inside return (plan kerbReturn.bend.outer: 'concentric'); false: square */ bendOuter?: boolean; /** every median end is a bullnose (plan kerbReturn.nose) */ nose?: boolean; /** a crossing landing's near edge stands this far past a convex return's tangent point (plan: kerbReturn.landings.clear) */ clear: number; off?: boolean };
+ export const KERB_RETURN_DEFAULT: KerbReturnStd = { byClass: { primary: 6, district: 8, access: 6 }, concave: 2.0, bay: 1.4, civic: 2.0, clear: 3 }; // standards.streetscape.kerbReturn, Datum 2026-10-24; a plan without the key takes these
+@@ -214,6 +215,7 @@
+         const roadQ = ends.filter(({ e1, e2 }) => road(add(P, mul(norm(add(e1, e2)), 0.6))));
+         if (free.length !== 1 || roadQ.length !== 3) continue;
+         if (have.some(h => dist(h.at, P) < 0.3)) continue;
++        if (isFootwayCorner(ctx as Pick<Ctx, 'plan' | 'd' | 'S'>, [A.id, B.id], P)) continue; // brief 061: a gate's lane mouth corner is no junction box corner either
+         const { e1, e2 } = free[0]!, alpha = Math.acos(Math.max(-1, Math.min(1, dot(e1, e2)))), cls = RANK[A.class]! <= RANK[B.class]! ? A.class : B.class, R = std.byClass[cls]; if (!(R > 0)) continue;
+         const t = R / Math.tan(alpha / 2), c = add(P, mul(norm(add(e1, e2)), R / Math.sin(alpha / 2)));
+         const n1 = norm(sub([0, 0], sub(e2, mul(e1, dot(e1, e2))))), n2 = norm(sub([0, 0], sub(e1, mul(e2, dot(e1, e2)))));
+@@ -243,6 +245,7 @@
+       const want: (Want | undefined)[] = vs.map((v, i): Want | undefined => {
+         const cin = ring.c[(i + n - 1) % n]!, cout = ring.c[i]!;
+         if (!ROADS.includes(kindOf(cin)) || !ROADS.includes(kindOf(cout))) return undefined;
++        if (isFootwayCorner(ctx as Ctx, [idOf(cin), idOf(cout)], v)) return undefined; // brief 061: a gate's lane mouth is a continuous footway (street/footway.ts): its two corners stay square, the pavement runs on across
+         const prev = vs[(i + n - 1) % n]!, next = vs[(i + 1) % n]!, u1 = norm(sub(v, prev)), u2 = norm(sub(next, v));
+         const cr = u1[0] * u2[1] - u1[1] * u2[0], dt = u1[0] * u2[0] + u1[1] * u2[1], theta = Math.abs(Math.atan2(cr, dt));
+         if (theta < 0.35 || theta > 2.6) return undefined; // a straight run split by a class change (0 degrees), or a hairpin

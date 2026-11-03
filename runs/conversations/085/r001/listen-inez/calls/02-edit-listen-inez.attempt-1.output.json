@@ -1,0 +1,60 @@
+{
+  "picked": 3,
+  "why": "Take 3 has the most life: Inez fears the wrong letter and gives herself away, so her nerves drive the reveal. Each line now answers the one before. Facts checked against the sheet and [e1dd761142af169bfd1cc0d3]. The Bureau notice and \"Mine came yesterday\" aren't on the sheet; both are colour and grant no power, person or deadline.",
+  "changes": [
+    "Rebuilt the opening: Milena names the notice and that she owes too, removing the offer to read it and shortening the path to Inez's tell.",
+    "Inez no longer blurts out the affair. Milena's jab about the tube and the Office door now provokes her question, giving Milena's noticing a job and making 'You just did' land.",
+    "Made debt and nerves clear: 'My tips can't keep up with this loan, that's all' is her deflection, and Milena says she jumps at every tube. Trimmed lines to two sentences at most.",
+    "Cleared the Scout's line of 'usable' and the waitress recap, leaving two parallel fragments with no verdict, and gave the opens lines Help's and Pressure's real effects from [96030c4c4a1a18523a3fdbbb]."
+  ],
+  "beats": [
+    {
+      "speaker": "Milena",
+      "line": "Another Bureau notice, Inez. Mine came yesterday."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Only the Bureau, not the Office? Who else has seen it?"
+    },
+    {
+      "speaker": "Milena",
+      "line": "Just me. Why would the Office write to a waitress?"
+    },
+    {
+      "speaker": "Inez",
+      "line": "It wouldn't. My tips can't keep up with this loan, that's all."
+    },
+    {
+      "speaker": "Milena",
+      "line": "You jump at every tube and stare at the Office door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Has someone said something? About Okafor?"
+    },
+    {
+      "speaker": "Milena",
+      "line": "You just did. So you're seeing the guard on that door."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Please, take my tips. If the Office hears, it costs us both."
+    },
+    {
+      "speaker": "Milena",
+      "line": "I hadn't named a price. I'll take them."
+    },
+    {
+      "speaker": "Scout",
+      "line": "Bureau loan, behind: could be cleared. Okafor, Office door: could be used."
+    }
+  ],
+  "learned": [
+    "Inez: behind on her Bureau loan",
+    "Inez: secretly seeing Okafor, the guard"
+  ],
+  "opens": [
+    "Help: clear her Bureau loan",
+    "Pressure: threaten to expose the affair"
+  ]
+}

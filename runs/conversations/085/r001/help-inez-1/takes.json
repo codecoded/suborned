@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "Mid-service with hot plates: he hands her a stamped card in her name, and she asks what she owes.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "I've got plates. Why's that card in my name?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Look at the stamp. We've paid part of your Bureau loan."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I don't know you. Who's been asking about me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nobody who'll trouble you. Put it away, the terrace can see."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Table four's waiting. What do I owe you for this?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing tonight. There's a small favour, later, once the rest is paid."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll keep it. But I can't do anything for you, not yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Then we'll wait. I'll be back with the rest."
+        }
+      ],
+      "learned": [
+        "Inez took it; not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    },
+    {
+      "situation": "She thinks a tube slip is a Bureau error and threatens to return it; she has the last word.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "You've read that slip three times. It's no mistake."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I don't know you. How do you know what that says?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We paid it. Part of your Bureau loan, this evening."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's been asking about me? I'll send it back up the tube."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Send it back and you owe the lot again. Why do that?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "Because nobody pays for nothing. What would I have to do?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "A small favour, nothing that hurts anyone. I'll bring the rest first."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Bring it, then. I'll keep this, but I can't do anything yet."
+        }
+      ],
+      "learned": [
+        "Inez took it; not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    },
+    {
+      "situation": "She tries to repay him from her tips, then says yes too fast and takes it back.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Here, tonight's tips. I'll pay you back a little every week."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Keep your tips. We paid part of your Bureau loan, and gladly."
+        },
+        {
+          "speaker": "Inez",
+          "line": "The Bureau's collector said 'Balance reduced, madam.' I don't know you people."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "No, but we know you. Late shifts, one bad loan."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who's been asking? Was it somebody on my terrace?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Never mind who. There'll be a small favour, later on."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Thank you, yes, whatever it is. No, wait, I can't, not yet."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Say yes when you mean it. I'll be back with the rest."
+        }
+      ],
+      "learned": [
+        "Inez took it; not ready yet."
+      ],
+      "opens": [
+        "Help again"
+      ]
+    }
+  ]
+}

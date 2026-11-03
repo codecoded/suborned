@@ -107,6 +107,7 @@ namespace Suborned.Play
             GUILayout.Label($"<b>{(host.Following ? "Follow view" : "Overhead view")}</b>  yaw {host.Yaw:0}°  zoom {(cam ? cam.orthographicSize : 0):0.0}  scroll {host.LastScroll:0.###}", Rich);
             if (!host.Driving && GUILayout.Button(host.Following ? "Back to the overhead view" : "Follow view only (no control)")) host.FollowToggle();
             FightSection(); // brief 027: the fight playground
+            CuesSection(); // brief 084
 
             Head("Overhead");
             float z = cam ? cam.orthographicSize : o.zoom; float nz = Slider("zoom (half-height, m)", z, Mathf.Min(o.zoomMin, 1f), Mathf.Max(o.zoomMax, z), "0.0");
@@ -136,6 +137,17 @@ namespace Suborned.Play
             changed |= Edit(ref f.smoothing, Slider("smoothing (s)", f.smoothing, 0f, 1f, "0.00"));
 
             DriveSection();
+
+            // brief 072 (Redline phase 2 F1, 072-F): look switches for Glint, live, nothing saved
+            Head("Look (072)");
+            if (LookLab.ModuleCount > 0)
+            {
+                bool l0 = LookLab.ModuleShadowsFromLods, nl0 = GUILayout.Toggle(l0, " module shadows from L0 (off: the L2 proxies, as built)");
+                if (nl0 != l0) LookLab.SetModuleShadows(nl0);
+            }
+            else GUILayout.Label("no every-face module proxies in this scene", Small);
+            bool sd = LookLab.SurfaceDetail, nsd = GUILayout.Toggle(sd, " surface detail (072-F textures)");
+            if (nsd != sd) LookLab.SetSurfaceDetail(nsd);
 
             Head("Wheel and trackpad");
             changed |= Edit(ref w.proportional, GUILayout.Toggle(w.proportional, " proportional wheel (trackpad)"));
@@ -169,6 +181,9 @@ namespace Suborned.Play
 
         /// <summary>Brief 027 (EXPERIMENTAL): the fight playground. Preset (today, lab: its start part applies from a restart) and checkpoint
         /// (restart there); the fight mode and the freeze switches apply live.</summary>
+        /// <summary>Brief 084: the fight cues' switches and values (off in the Handover until thrown here).</summary>
+        void CuesSection() { Head("Fight cues"); FightCuesPanel.Body(host.rangeMode, Vector2.zero, scale); }
+
         void FightSection()
         {
             var fl = host.Fights; var g = host.Game;

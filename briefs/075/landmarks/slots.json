@@ -1,0 +1,331 @@
+{
+ "SphereStation": {
+  "fbx": "Models/Landmarks/DK_SphereStation.fbx",
+  "livery": {
+   "DK_Steel_Ivory": "vermilion",
+   "DK_Hull_Ivory": "brick"
+  },
+  "area": {
+   "DK_Hull_Ivory": {
+    "faces": 1984,
+    "m2": 45376.8
+   },
+   "DK_Steel_Ivory": {
+    "faces": 7033,
+    "m2": 23670.4
+   },
+   "DK_Limestone_Tex": {
+    "faces": 133,
+    "m2": 3554.0
+   },
+   "DK_Window_Tower": {
+    "faces": 104,
+    "m2": 2950.0
+   },
+   "DK_Chrome": {
+    "faces": 24,
+    "m2": 8.6
+   }
+  }
+ },
+ "Skyport_Tower~legacy": {
+  "fbx": "Models/Skyport/DK_Skyport_Tower.fbx",
+  "livery": {
+   "DK_Steel_Ivory": "vermilion"
+  },
+  "area": {
+   "DK_Limestone_Tex": {
+    "faces": 492,
+    "m2": 7088.7
+   },
+   "DK_Window_Tower": {
+    "faces": 665,
+    "m2": 5404.7
+   },
+   "DK_Hull_Ivory": {
+    "faces": 2531,
+    "m2": 4794.2
+   },
+   "DK_Steel_Ivory": {
+    "faces": 3345,
+    "m2": 3832.3
+   },
+   "DK_Glass": {
+    "faces": 36,
+    "m2": 1764.7
+   },
+   "DK_Tile_Teal": {
+    "faces": 168,
+    "m2": 1626.5
+   },
+   "DK_Chrome": {
+    "faces": 4002,
+    "m2": 1401.6
+   },
+   "DK_Concrete": {
+    "faces": 209,
+    "m2": 1097.4
+   },
+   "DK_Enamel_Ivory": {
+    "faces": 704,
+    "m2": 946.8
+   },
+   "DK_Iron": {
+    "faces": 636,
+    "m2": 518.7
+   },
+   "DK_Enamel_Teal": {
+    "faces": 578,
+    "m2": 351.0
+   },
+   "DK_Enamel_Mustard": {
+    "faces": 354,
+    "m2": 239.3
+   },
+   "DK_Gold": {
+    "faces": 488,
+    "m2": 210.6
+   },
+   "DK_Lamp": {
+    "faces": 1338,
+    "m2": 170.4
+   },
+   "DK_Rubber": {
+    "faces": 180,
+    "m2": 88.1
+   },
+   "DK_Enamel_Coral": {
+    "faces": 220,
+    "m2": 77.8
+   },
+   "DK_Signal_Red": {
+    "faces": 538,
+    "m2": 8.9
+   },
+   "DK_Signal_Amber": {
+    "faces": 228,
+    "m2": 4.8
+   }
+  }
+ },
+ "Skyport_Tower": {
+  "fbx": "Models/Skyport/DK_Skyport_Tower.fbx",
+  "livery": {
+   "DK_Steel_Ivory": "vermilion"
+  },
+  "area": {
+   "DK_Limestone_Tex": {
+    "faces": 492,
+    "m2": 7111.9
+   },
+   "DK_Window_Tower": {
+    "faces": 665,
+    "m2": 5422.3
+   },
+   "DK_Hull_Ivory": {
+    "faces": 2531,
+    "m2": 4794.2
+   },
+   "DK_Steel_Ivory": {
+    "faces": 3345,
+    "m2": 3832.3
+   },
+   "DK_Glass": {
+    "faces": 36,
+    "m2": 1764.7
+   },
+   "DK_Tile_Teal": {
+    "faces": 168,
+    "m2": 1626.5
+   },
+   "DK_Chrome": {
+    "faces": 4002,
+    "m2": 1401.6
+   },
+   "DK_Concrete": {
+    "faces": 209,
+    "m2": 1097.4
+   },
+   "DK_Enamel_Ivory": {
+    "faces": 704,
+    "m2": 946.8
+   },
+   "DK_Iron": {
+    "faces": 636,
+    "m2": 518.7
+   },
+   "DK_Enamel_Teal": {
+    "faces": 578,
+    "m2": 351.0
+   },
+   "DK_Enamel_Mustard": {
+    "faces": 354,
+    "m2": 239.3
+   },
+   "DK_Crown_Gold": {
+    "faces": 488,
+    "m2": 210.6
+   },
+   "DK_Lamp": {
+    "faces": 1338,
+    "m2": 170.4
+   },
+   "DK_Rubber": {
+    "faces": 180,
+    "m2": 88.1
+   },
+   "DK_Enamel_Coral": {
+    "faces": 220,
+    "m2": 77.8
+   },
+   "DK_Beacon_Rose": {
+    "faces": 538,
+    "m2": 8.9
+   },
+   "DK_Signal_Amber": {
+    "faces": 228,
+    "m2": 4.8
+   }
+  }
+ },
+ "Skyport_Tower_Portal": {
+  "fbx": "Models/Skyport/DK_Skyport_Tower_Portal.fbx",
+  "livery": {
+   "DK_Steel_Ivory": "vermilion"
+  },
+  "area": {
+   "DK_Limestone_Tex": {
+    "faces": 318,
+    "m2": 11400.6
+   },
+   "DK_Hull_Ivory": {
+    "faces": 2531,
+    "m2": 4598.0
+   },
+   "DK_Window_Tower": {
+    "faces": 659,
+    "m2": 3839.8
+   },
+   "DK_Steel_Ivory": {
+    "faces": 3285,
+    "m2": 3173.1
+   },
+   "DK_Enamel_Teal": {
+    "faces": 162,
+    "m2": 1744.3
+   },
+   "DK_Tile_Teal": {
+    "faces": 168,
+    "m2": 1626.5
+   },
+   "DK_Chrome": {
+    "faces": 3462,
+    "m2": 947.5
+   },
+   "DK_Glass": {
+    "faces": 36,
+    "m2": 847.9
+   },
+   "DK_Enamel_Ivory": {
+    "faces": 576,
+    "m2": 766.5
+   },
+   "DK_Crown_Gold": {
+    "faces": 344,
+    "m2": 441.8
+   },
+   "DK_Iron": {
+    "faces": 140,
+    "m2": 297.0
+   },
+   "DK_Enamel_Mustard": {
+    "faces": 354,
+    "m2": 239.3
+   },
+   "DK_Lamp": {
+    "faces": 1032,
+    "m2": 158.2
+   },
+   "DK_Enamel_Coral": {
+    "faces": 208,
+    "m2": 71.9
+   },
+   "DK_Beacon_Rose": {
+    "faces": 488,
+    "m2": 7.5
+   },
+   "DK_Signal_Amber": {
+    "faces": 228,
+    "m2": 4.8
+   }
+  }
+ },
+ "SpaceHQ_Portal": {
+  "fbx": "Models/Landmarks/DK_SpaceHQ_Portal.fbx",
+  "livery": {
+   "DK_Crown_Gold": "gold"
+  },
+  "area": {
+   "DK_Limestone_Tex": {
+    "faces": 5484,
+    "m2": 122902.0
+   },
+   "DK_Window_Teal": {
+    "faces": 1144,
+    "m2": 23390.5
+   },
+   "DK_Terrazzo_Ivory": {
+    "faces": 512,
+    "m2": 12258.4
+   },
+   "DK_Crown_Gold": {
+    "faces": 13922,
+    "m2": 11210.8
+   },
+   "DK_Chrome": {
+    "faces": 4388,
+    "m2": 8095.7
+   },
+   "DK_Enamel_Turquoise": {
+    "faces": 2344,
+    "m2": 4359.8
+   },
+   "DK_Enamel_Mint": {
+    "faces": 420,
+    "m2": 4017.2
+   },
+   "DK_Enamel_Ivory": {
+    "faces": 12,
+    "m2": 354.2
+   },
+   "DK_Enamel_Teal": {
+    "faces": 12,
+    "m2": 320.7
+   },
+   "DK_Window_Tower": {
+    "faces": 192,
+    "m2": 278.3
+   },
+   "DK_Enamel_Coral17": {
+    "faces": 708,
+    "m2": 223.8
+   },
+   "DK_Lamp_Deco": {
+    "faces": 3680,
+    "m2": 156.5
+   },
+   "DK_Enamel_Sunshine": {
+    "faces": 508,
+    "m2": 106.2
+   },
+   "DK_Enamel_Flamingo": {
+    "faces": 126,
+    "m2": 10.5
+   },
+   "DK_Beacon_Rose": {
+    "faces": 128,
+    "m2": 9.9
+   }
+  }
+ }
+}

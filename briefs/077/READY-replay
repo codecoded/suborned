@@ -1,0 +1,55 @@
+077 replay, steps 3-5 of briefs/077/READY-keel §6 · Keel (Opus 5.5) · 2026-10-30
+Status: done. Behaviour moves in one route script, careless-body-found, and only in its final tick. Its outcome holds.
+Everything else is unchanged and needs only the new inputs stamp. Nothing was re-recorded and nothing committed. Waymark has steps 6-7.
+
+Inputs
+- Before: 3589379819785711743. Step 0, out/scratch/077-replay/before.json, recorded on the pre-adoption tree.
+- After: 2065879346478928577. The tree after Splice's adoption (briefs/077/READY-adopt); only sim/data/handover.site.json is modified in sim/.
+
+Step 3: rounds
+- `bun run rounds` (meetings 0; servers p-cafe-14).
+- sim/data/handover.rounds.json is byte-identical (cmp against the copy taken first, out/scratch/077-replay/rounds.before.json).
+  As predicted: only beside-inez <-> police-4 moved among the routes, and no round leg uses it.
+
+Step 4: tests and engine check
+- `bun run typecheck`: clean.
+- `bun run guard bun run test tools/sim tools/routines tools/geometry tools/missions tools/cover`: 214 pass, 0 fail.
+- `bun run guard bun run sim check`: 357/360 ok. Log: out/scratch/077-replay/check.log.
+  None of the 3 failures comes from 077:
+  - N67 throws "site has no camera 'mast-314'".
+  - N110 throws a NullReferenceException.
+  Both threw identically in before.json, which was recorded on the pre-adoption tree. They're pre-existing. The mast's street id is now records-square/mast-camera-z0 in handover.takedown.json, so the scenario's hard-coded "mast-314" no longer matches. That's not this change; it's for Keel and Waymark separately.
+  - DP1 fails "the same start state and inputs (else re-record: suborned-sim drive-session)". Its record pins the start hash, which carries the inputs hash. Its behaviour is identical (below): a stamp, not a behaviour change.
+
+Step 5: behaviour across the input edit
+- `bun run guard bun run sim hashes --start-text 3589379819785711743 > out/scratch/077-replay/after.json` (the JSON line only; stderr goes to after.err).
+- Against before.json: 405 entries (360 scenarios and 45 route scripts in contracts/missions/handover/routes and briefs/011/motive-fights).
+  404 are identical: every checkpoint and the result.
+  1 differs: contracts/missions/handover/routes/careless-body-found.json.
+- careless-body-found:
+  - Checkpoints 1-22 are identical. Only the closing checkpoint at tick 2123 (3:32.3) differs.
+  - The result is the same: Failure, enforcer-down at 2123, shot by rival-1 at 3 m. The log, ledger, cause and culprits are identical. `play --json` was diffed on both trees.
+  - Why: at tick 2105 (3:30.5) police officer-2 starts his run back to his post from (-1025,-4215).
+    - Before: waypoints (-1375,-4475), (-1375,-4725), home (-162,-4768); 18,997 cm.
+    - After: waypoints (-1375,-4525), (-1375,-4725), home (-144,-4768); 18,992 cm.
+    - He walks through the opening that the re-measured café terrace frees (CafeTerrace -> CafeTerrace_TB, stone-only volumes; the 4 cells in READY-keel §4). His home point sits 18 cm east on the new route.
+    - The fight ends 1.8 s later, so the run changes only his position (state field Hostiles[officer-2]) in the final state hash.
+    - Nothing else in the game state differs, tick by tick, from 2100 to 2123. This was checked by a full reflection dump of the Game on both trees: out/scratch/keel/077/cbfprobe, before.all / after.all.
+  - This is the kind of change READY-keel §7 predicted: the final fight, by the police posts.
+- Pinned scripts outside the hashes folders were played on both trees with one shared start text (out/scratch/keel/077/cbfprobe, CP=1; cp.before / cp.after). Every checkpoint and result is identical:
+  - sim/Suborned.Sim/Fixtures: bal-loud-x4, bal-rb-ff, bal-rbb-ff, drive-session, sq-ra-h3, sq-ra-h3-pin, sq-route-a-board;
+  - briefs/027/checkpoints: cp-loud, cp-safe;
+  - briefs/045/runs: sky-0.2.58-session1, session2;
+  - briefs/057: n185-go-held.
+  The probe also reproduced the careless-body-found difference independently, at 2123 only.
+  The pre-adoption tree was a detached worktree of HEAD (its sim/data/handover.site.json === HEAD's, the step-0 state). It has been removed.
+
+For Waymark (steps 6-7)
+- Behaviour changed (re-record checkpoints, same outcome): careless-body-found. Its closing checkpoint moves for officer-2's last 1.8 s run past the café terrace.
+- Inputs stamp only, behaviour identical: every other route script in contracts/missions/handover/routes and briefs/011/motive-fights; all 360 scenarios; and the 12 pinned scripts above.
+  - DP1: re-stamp drive-session.script.json with `bun run sim drive-session`. It writes the same samples and only the start hash moves.
+  - cp-loud and cp-safe: fight-lab re-writes them.
+- missions:check plays route variations that hashes doesn't cover. Step 6's `missions:check handover --engine tree --inputs tree` must still say SHIPS before `missions:rerecord`.
+- Not 077: N67 and N110 throw on both trees (the mast camera id). Raise them separately.
+
+Files: this note only. Scratch: out/scratch/077-replay/{after.json, after.raw, after.err, check.log, rounds.before.json, site.head.json}, out/scratch/keel/077/{cbfprobe/, before.all, after.all, cp.before, cp.after, a.j, b.j}.

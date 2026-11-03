@@ -34,7 +34,7 @@ public class ClosingHashTests
         {
             var o = list[k];
             if (o.Tick > until) break;
-            while (g.Tick < o.Tick && !g.Over) { g.Step(); if (g.Tick - saved >= Game.T(5)) Save(); }
+            while (g.Tick < o.Tick && !g.Over) { g.Step(); if (g.Tick - saved >= Game.T(5) && g.Tick != o.Tick) Save(); } // engine 0.33.1: never before an order of this tick is given (it is saved after it, as Engine.Play ends there); S20 and S21 board at a 5 s mark
             if (g.Over && g.Tick != o.Tick) break;
             if (g.Tick == o.Tick) g.Issue(o);
             if (k + 1 == list.Count || list[k + 1].Tick != o.Tick) Save();
@@ -89,9 +89,12 @@ public class ClosingHashTests
     public void LateFightAtEveryOrderTick(string file)
     {
         var sc = Script.Parse(File.ReadAllText(Path.Combine(Root, file)));
+        if (file == LoudFight) sc.Start.Seed = 3; // brief 080: seed 0's fixed opening never reaches the fight
+        else { sc.Start.Pre080 = true; sc.Start.OldClock = true; } // Sky's session, recorded on the old shots and clock
         var played = Engine.Play(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
         var (_, _, fight) = Live(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
-        Assert.True(fight.Count >= (file == LoudFight ? 20 : 1), $"{file}: a fight is open at {fight.Count} saves"); // session 1 was recorded on 0.2.58's engine: today it meets fewer
+        Assert.True(fight.Count >= (file == LoudFight ? 15 : 1), $"{file}: a fight is open at {fight.Count} saves"); // session 1 was recorded on 0.2.58's engine: today it meets fewer;
+        // engine 0.32.0 (brief 059): loud-fight's drawn crew is four guns on foot and downs the Enforcer at 4:26.4 (it was a success at 5:12.8), 16 saves with a fight open (was 20+)
         Check(Repo.Inputs, sc.Start, sc.Orders, sc.Until, played, file, everyFight: true);
     }
 
@@ -99,6 +102,7 @@ public class ClosingHashTests
     public void CostsUnderOneMillisecond()
     {
         var sc = Script.Parse(File.ReadAllText(Path.Combine(Root, Session1)));
+        sc.Start.Pre080 = true; sc.Start.OldClock = true; // Sky's session, recorded on the old shots and clock
         var (_, _, fight) = Live(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
         Assert.True(fight.Count > 0 && fight[^1].tick >= Game.T(400), "Sky's session 1 has a fight open late (after 6:40)");
         int at = fight[^1].tick; // the run's last save with a fight open: the dear case (the very last tick is over, a lookup)

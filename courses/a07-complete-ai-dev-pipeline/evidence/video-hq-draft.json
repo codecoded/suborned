@@ -1,0 +1,48 @@
+{
+  "video": "TheSuborned-A07-supporting-evidence-4K.mp4",
+  "sha256": "b46457526cfaa4f5d9067264c30f8b7eb801a5945a20ae34091f0beb8dea4f16",
+  "seconds": 85.0,
+  "resolution": [
+    3840,
+    2160
+  ],
+  "fps": 20,
+  "crf": 16,
+  "gameplay_source": "1920x1080 at 20 fps; full-frame upscale and labelled detail replay",
+  "type": "Annotated supporting evidence; historical generation and actual offline export results, not a primary execution recording",
+  "model_calls_during_video_preparation": 0,
+  "game_build": "0.2.232",
+  "public_video_url": null,
+  "chapters": [
+    {
+      "start": 0,
+      "image": "000-overview.png"
+    },
+    {
+      "start": 9,
+      "image": "001-generation.png"
+    },
+    {
+      "start": 20,
+      "image": "002-export.png"
+    },
+    {
+      "start": 33,
+      "image": "003-sprites.png"
+    },
+    {
+      "start": 44,
+      "image": "004-integration.png"
+    },
+    {
+      "start": 57,
+      "image": "005-costs.png"
+    },
+    {
+      "start": 75.0,
+      "image": "126-evidence.png"
+    }
+  ],
+  "role": "local supporting draft; not uploaded; primary demonstration selection supersedes portrait focus",
+  "quality_status": "3840x2160/20fps metadata verified; upload held while primary scope is corrected"
+}

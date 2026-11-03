@@ -31,7 +31,7 @@ namespace Suborned.World.Play
             Debug.Log($"FrontEnd: boot scene written ({ScenePath}); active scene kept: {keep}");
         }
 
-        /// <summary>contracts/missions/*/brief.json into StreamingAssets/missions/&lt;mission&gt;/brief.json (this build only, as the camera presets).</summary>
+        /// <summary>contracts/missions/*/brief.json (and mission.json, brief 062 B) into StreamingAssets/missions/&lt;mission&gt;/ (this build only, as the camera presets).</summary>
         public static void CopyBriefs()
         {
             var src = Path.Combine(HarbourWorldBuilder.RepoRoot, "contracts", "missions"); if (!Directory.Exists(src)) return;
@@ -40,6 +40,7 @@ namespace Suborned.World.Play
             {
                 var f = Path.Combine(dir, "brief.json"); if (!File.Exists(f)) continue;
                 var to = Path.Combine(dst, Path.GetFileName(dir)); Directory.CreateDirectory(to); File.Copy(f, Path.Combine(to, "brief.json"), true); n++;
+                var mf = Path.Combine(dir, "mission.json"); if (File.Exists(mf)) File.Copy(mf, Path.Combine(to, "mission.json"), true); // brief 062 B: the briefing reads the roles, windows, timeline and brief from it (BriefScreen)
             }
             if (n > 0) AssetDatabase.ImportAsset(Missions, ImportAssetOptions.ImportRecursive | ImportAssetOptions.ForceSynchronousImport);
             Debug.Log($"FrontEnd: {n} mission brief(s) into {Missions}");

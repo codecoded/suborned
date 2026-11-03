@@ -1,0 +1,6 @@
+s1-gate    apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+s1-gate    apy-leak: success at 3:03.5 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0 captured scout,fixer
+s1-nogate  apy-leak: success at 2:32.0 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out - over - break - vale-in 2:32.0 captured scout,fixer
+s1-nogate  apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+s1-nolate  apy-1: NOT COMPOSED apy-1 step 21 (scout move): not taken between 1480 and 5100
+s1-nolate  apy-leak: NOT COMPOSED apy-leak step 21 (cell go): not taken between 1480 and 5100

@@ -1,0 +1,50 @@
+{
+  "id": "help-inez-1",
+  "title": "Help Inez, first visit",
+  "kind": "turn",
+  "picked": 3,
+  "why": "Take 3 has the one real collision: she tries to undo the payment and learns she can't. It shows her giving way fast, and \"It doesn't come back\" gives him steel under the warmth. Take 2's \"I'll do it\" contradicts not yet willing, and take 1 spends its opening on a Bureau mix-up. Gratitude and a second visit hold to the sheet [c407d23e4f6647fe2f4315a1, 45693d30fd1b1f7849a897e8].",
+  "changes": [
+    "Opened on the Fixer's plain statement of the payment, so the player knows at once what happened and that it's real. Inez's opener only repeated it.",
+    "Cut his recital of her name and debt. Her denial now goes straight to 'send it back', and she drops it as soon as he answers, with no further argument.",
+    "Moved 'Who's been asking about me?' into the cost line, since it's her stated fear. Moved 'the terrace' into her line about being seen. Dropped 'I've tables' as decoration.",
+    "Replaced 'I'll keep it' with thanks, because the money can't come back and the sheet gives gratitude. Ended on 'We can wait', which is warm with an edge and makes coming back the next step without making it the only one."
+  ],
+  "beats": [
+    {
+      "speaker": "Fixer",
+      "line": "I've paid part of your Bureau loan, Miss Nikolaou."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Wrong girl, mister. Have it sent back before the terrace sees."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "It's stamped at the Bureau now. It doesn't come back."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Who's been asking about me? What's it going to cost?"
+    },
+    {
+      "speaker": "Fixer",
+      "line": "Nothing today. Later, one small thing that hurts nobody."
+    },
+    {
+      "speaker": "Inez",
+      "line": "Thank you, then. But I can't do anything for it yet."
+    },
+    {
+      "speaker": "Fixer",
+      "line": "We can wait. I'll be back with the rest."
+    }
+  ],
+  "learned": [
+    "Inez took it. Not ready yet."
+  ],
+  "opens": [
+    "Help again"
+  ],
+  "faults": []
+}

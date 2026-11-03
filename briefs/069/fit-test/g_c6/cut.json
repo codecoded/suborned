@@ -1,0 +1,41 @@
+{
+ "fit": "c6",
+ "labels": {
+  "coat": 9182,
+  "hat": 1520,
+  "hair": 1724
+ },
+ "pieces": {
+  "coat": {
+   "srcFaces": 14297,
+   "tris": 2590,
+   "seconds": 3.47,
+   "srcVerts": 9182,
+   "tucked": 27
+  },
+  "hat": {
+   "srcFaces": 2395,
+   "tris": 1200,
+   "seconds": 0.66,
+   "srcVerts": 1520
+  },
+  "hair": {
+   "srcFaces": 2324,
+   "tris": 899,
+   "seconds": 0.72,
+   "srcVerts": 1724
+  },
+  "suit": {
+   "wrapped": 2545,
+   "verts": 6378,
+   "pctWrapped": 39.9,
+   "tris": 7311,
+   "seconds": 51.22
+  }
+ },
+ "seconds": {
+  "body": 0.72,
+  "classify": 0.13,
+  "pieces": 56.07
+ }
+}

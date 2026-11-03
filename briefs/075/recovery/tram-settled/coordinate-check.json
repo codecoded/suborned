@@ -1,0 +1,42 @@
+{
+  "floatWorldRoundtripMaximumDomainOvershootM": 6.103515625e-05,
+  "cornerReproductionsExceedingGuard": 160,
+  "firstExample": {
+    "id": "ground/tram/rail-11#0",
+    "roundtrip": [
+      -0.999969482421875,
+      0.0,
+      -1.000030517578125,
+      1.0
+    ],
+    "worldMatrix": [
+      [
+        0.9659256935119629,
+        0.0,
+        0.2588196396827698,
+        -358.0639953613281
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.004999999888241291
+      ],
+      [
+        -0.2588196396827698,
+        0.0,
+        0.9659256935119629,
+        486.8869934082031
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "sourceBounds": "FBX x,z exactly [-1,1]; decoded in fbx-source.json",
+  "fix": "Use product of local hierarchy TRS matrices; never inverse(world)*world to recover source-domain coordinates. Domain/width bounds are unchanged.",
+  "limit": "Independent float32 reproduction confirms the cancellation mechanism, not a substitute for rerunning the corrected implementation inside Unity."
+}

@@ -1,0 +1,2846 @@
+{
+  "status": "review-only direct reuse; no production adoption",
+  "sources": {
+    "out/world/harbour-district.world.json": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+    "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_B.fbx": "c2b8f23498f5376cd1f0dd49790b4e6d565bb1b841bc55f0fbdd87473199d069",
+    "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_B.fbx.meta": "6d4f431fd6394ab7907d4a1e6b5407f7f0f7c82c92fa2bfde6c3188e9c72134d",
+    "unity/Assets/Suborned/Kit/Materials/DK_Limestone.mat": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+    "unity/Assets/Suborned/Kit/Textures/surface_limestone_detail_v1.png": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+    "unity/Assets/Suborned/Kit/Textures/surface_limestone_detail_v1_normal.png": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+    "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Civic.mat": "29f5e32e22f13592ba8c74c8b39c4a264e9980bef45c3ec0239cdb6ef053bc5a",
+    "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Peach.mat": "61821c524b99dd1cf0f06186cc6571defebd73ae3e341a01c7239ddb41838b61",
+    "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Flamingo.mat": "b3f152d1701d3a35f389a0f8f11c6991a61735b3c002f49d332fe56917eea163",
+    "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CivicDark.mat": "b4dfe6ffb8680c331d6807901ef6e4cc763d25aba9c05c1a07a895f8ac854f1d",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx": "77dfd48e9ef1a857ffb008e509a7235e8d7ba2949b661f655f05968e059617c4",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx.meta": "5c86ce317def239e1d2023ba2f73ff93109f56ad12f508cfd087d4c2c27687f0",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat": "d23454c4372c0b952ed6805133306fbf557a6d38efe0c795cfadeea79d196e50",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat": "690137331e971d8d3fe268f796008f16e3dd500107ac27cab8afb2d958451afe",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/shrub_leaves_v1_alpha.png": "22b8fc29d29f4902bb07879db3443dd01d79aeddb86b226b91ea0cfd3dcc3c9f",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Flower_Coral.mat": "2ae278c681543e4e66a26c132cfae213a8e735982a3ad8ec53821232614573fa",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/flower_cluster_coral_v1_alpha.png": "dd075b6b73b5e99d191df64812f88e1d9cd4f6e6dac10921004970951e1d1197",
+    "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_A.fbx": "7ea6912a80d347adf511fc8ba42265b8fa7866d8aaabc65b3128dbc1af0fb4ee",
+    "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_A.fbx.meta": "2f4a2cd1db3459a614e5c942bb609d6d8a8bac8bd6152cabf0d249090cca8b61",
+    "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Coral.mat": "4a7d8c6d48e6ba6a0f2c9730e7bf41143948774f38b233cdf50cffb9c7d53529",
+    "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Cream.mat": "1784aec84eb56f7446ef39d3550265e8581b3529006324d886302e176b9824b8",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx": "857103fb43ccaf9710bf590f5bde28187e2b0239ef3f8bfb0fd887051b32aec1",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx.meta": "e82c8d059e467130f352ab46c4de0908b0725b4dc618728c16bacbfc5f167adb",
+    "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small.fbx": "68e9780a172f6bf2016f5b28b685dbcb0c9c3ffed032f5c9252308dfb1b83b62",
+    "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small.fbx.meta": "b1a019df5f76d8641cfb3ab6a98a8bbe55b74f098d32dc4c37134ac7cf889c53",
+    "unity/Assets/Suborned/Kit/Materials/DK_Chrome.mat": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+    "unity/Assets/Suborned/Kit/Textures/surface_metal_detail_v1.png": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+    "unity/Assets/Suborned/Kit/Textures/surface_metal_detail_v1_normal.png": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+    "unity/Assets/Suborned/Kit/Materials/DK_Gold.mat": "700e14d5125b3d1cc3e941c92b1b15a477f18c16698616922fad1b017310c750",
+    "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Mustard.mat": "28eb1166e8c65047f8e7de230a19adc549df0203437328ad5194b02429791827",
+    "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1.png": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+    "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1_normal.png": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+    "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Coral.mat": "73bfa1fb760fa4b7c1a617ec4400cd8c5143edc88904644dba643c9973a82b6f",
+    "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+    "unity/Assets/Suborned/Kit/Materials/DK_Soil.mat": "5538ee0fb2d56b7ed65c427ba82a0332700b32e611680a04c16c87250a3a3983",
+    "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+    "unity/Assets/Suborned/Kit/Materials/DK_Petiole.mat": "07daec3aa61a4386413136ca12dd6321a36008abadc220e96e045c4da53803e9",
+    "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFan.mat": "4ee9a1a469aa4516beba32da63e704962fec1dadd1a21a0af844abe9522c612c",
+    "unity/Assets/Suborned/Kit/Textures/palm_frond_fan_v1_alpha.png": "68f5ac83572f972b340abc03ccaa01bded1dbbf3ed909090a25df23c9adda257",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx": "31c5c6c4432a6566d332515b891a92f43fdccefac0509cf9f2436ebb29b850a3",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx.meta": "5e444f6c57c5607fb02572e87843cb3a5073326fa0a1a2712389f80b19e8ca46",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat": "d360adec544f7d2974e190241d37299908d6ace244e52371b541135b2833f191",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Gold.mat": "a48ba7fb26f95f4407f5c150c64157755369113e9ae53e2b939a9dc46d1b9cec",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Mustard.mat": "24007331c1e5142e18ad61cba3efad456562e4df808ee98ad7ea082c8a4216c9",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Coral.mat": "bb2318ad93d97fc766cba51f9f71ba930ef80e3ee472aaee1ecb2a6b025f1527",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat": "4d84efe57a9108f71d970d578e39fa62544c27fee8dd0e4291ae350979693cb8",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat": "1463baf0ce6cc8eb6cc1c1614e2969fea83ac9e3da101a550cf7fefc12213854",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Petiole.mat": "ebb8e6f29d17410046bdb8a750dfbd7b08deff8bfc4262c95a088160ab0ec7d3",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat": "8b624a73f5b5d8d62c8e7d3f2e1d9dfafebe8c02eaf7484c1319cdbd9a8ccc26",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/palm_frond_fan_v1_alpha.png": "68f5ac83572f972b340abc03ccaa01bded1dbbf3ed909090a25df23c9adda257",
+    "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Seafoam.mat": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedFern.fbx": "fbb057706ad1272ca1c1250c9d8dbcd144cecd2cdc81150128593456dc498b67",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedFern.fbx.meta": "9a32fde1544701567b415f7452dd8cf1f6def74aa6d3121fd8b74f104b6db83f",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Seafoam.mat": "0c337608d0306f8383a657f498af5612d4ca2fc3818d492923395a8279bb9f15",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat": "1c2d715d237530ddd3046c36a8aa7935b10546c6f34fe3d096151409609f64c9",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/palm_frond_feather_v1_alpha.png": "bfbb6061810ecb0a917c44bbdf4c07980a04eeb128939e68833e90f3d45416eb",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_PottedTopiary.fbx": "9a5cd8d31eeec665bfb7dfb025601e2829c3888a6287e890194ef3c5824fe6fc",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_PottedTopiary.fbx.meta": "13c94513269be6cf20a7f149a324adcaa4ff5becc6d09dcd894e601085ab7b5c",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Teal.mat": "37b3d5b11c2384d756ebbbb23c1246850408078e3ba0b9df716bfa61a02be9e9",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat": "1c074fd72efa2f01ab06ddc4f4440fd4f19773038aec0d42d88977f91746a347",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat": "e1c1370436ef55ae25383a4c1f4d7213b2afa084e0bc7abc1a2d05a191c589ac",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/cypress_foliage_v1_alpha.png": "b0af29a7978ee0052902b2126d873fbf879aebcec3b5fe2a2e189e88f8ca9280",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat": "34e433c925983828e2bc1c2810bc1d1b5c6ad1e0a13f56ee9fe95737db99ccd6",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_TopiaryCone.fbx": "39ecc392ab23152d40438033268aacc0bb643894b736fb30bb22e02d574ff96b",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_TopiaryCone.fbx.meta": "849d98d220af2034dfb12fdb86c6fc9187d009dcd2fd5b67b6eafa8ba96068f2",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_Cypress.fbx": "5563b1a3f4956bf8c760e84266995ebcfd4342aaf02a1cdb4e7299abc8569e1d",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_Cypress.fbx.meta": "4035532038442ed9aad15bf5cb181b60a07718c66c1551900bd5a05a9c76147b",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FanPalm.fbx": "7b81e5b97781cc14c09a48f89356918e770895f4bbfe9e3b737a878d3b0333a3",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FanPalm.fbx.meta": "a9dd5e2ce1ef66b4b3a3aba840676e0c6904a13b455248e6a0416c32023fbdb7",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_CoconutPalm.fbx": "176c68fb316683a4241813afb6941f131972eb1969809bc15587c536b6461ef0",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_CoconutPalm.fbx.meta": "5473a48026599bb0388ed9635309ee53d6b5bc82155f98ee26a0fee7a33abc8d",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Palm.mat": "32c8e050a21f6f7ce46ca6f2c8c749159683caeada433abedb02ba20876a24e0",
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Coconut.mat": "e71895f662486ee6825391fc9ba7130ba1a416d7578068517422592bdb1cc881"
+  },
+  "materials": {
+    "unity/Assets/Suborned/Kit/DK_Limestone": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Limestone.mat",
+      "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_limestone_detail_v1.png",
+          "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_limestone_detail_v1_normal.png",
+          "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.7991027521032726,
+        0.7304607490035068,
+        0.5906189032552241,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Leaf_Civic": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Civic.mat",
+      "sha256": "29f5e32e22f13592ba8c74c8b39c4a264e9980bef45c3ec0239cdb6ef053bc5a",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.1441284748928144,
+        0.32777812505060366,
+        0.10702310685441681,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Bloom_Peach": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Peach.mat",
+      "sha256": "61821c524b99dd1cf0f06186cc6571defebd73ae3e341a01c7239ddb41838b61",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.9734452811771658,
+        0.5520113999350122,
+        0.41254260816148874,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Bloom_Flamingo": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Flamingo.mat",
+      "sha256": "b3f152d1701d3a35f389a0f8f11c6991a61735b3c002f49d332fe56917eea163",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.806952214373775,
+        0.11697067541303321,
+        0.3231432460381096,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Leaf_CivicDark": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CivicDark.mat",
+      "sha256": "b4dfe6ffb8680c331d6807901ef6e4cc763d25aba9c05c1a07a895f8ac854f1d",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.061246052482251,
+        0.1912016793422798,
+        0.07227185771482435,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_CoreShrub": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat",
+      "sha256": "d23454c4372c0b952ed6805133306fbf557a6d38efe0c795cfadeea79d196e50",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.015996294724486798,
+        0.026241225095812275,
+        0.008568125840227323,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_Shrub": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat",
+      "sha256": "690137331e971d8d3fe268f796008f16e3dd500107ac27cab8afb2d958451afe",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/shrub_leaves_v1_alpha.png",
+          "sha256": "22b8fc29d29f4902bb07879db3443dd01d79aeddb86b226b91ea0cfd3dcc3c9f",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/shrub_leaves_v1_alpha.png",
+          "sha256": "22b8fc29d29f4902bb07879db3443dd01d79aeddb86b226b91ea0cfd3dcc3c9f",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Flower_Coral": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Flower_Coral.mat",
+      "sha256": "2ae278c681543e4e66a26c132cfae213a8e735982a3ad8ec53821232614573fa",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/flower_cluster_coral_v1_alpha.png",
+          "sha256": "dd075b6b73b5e99d191df64812f88e1d9cd4f6e6dac10921004970951e1d1197",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/flower_cluster_coral_v1_alpha.png",
+          "sha256": "dd075b6b73b5e99d191df64812f88e1d9cd4f6e6dac10921004970951e1d1197",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Bloom_Coral": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Coral.mat",
+      "sha256": "4a7d8c6d48e6ba6a0f2c9730e7bf41143948774f38b233cdf50cffb9c7d53529",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.9734453035716221,
+        0.33245152930706434,
+        0.23074008834389714,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Bloom_Cream": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Cream.mat",
+      "sha256": "1784aec84eb56f7446ef39d3550265e8581b3529006324d886302e176b9824b8",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.9215818511736398,
+        0.8307698819789556,
+        0.5972017860522808,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Chrome": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Chrome.mat",
+      "sha256": "5dc81d1880e4d910fc4c88d842a770af3852644101b32a32c2adc37b5326e7f9",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_metal_detail_v1.png",
+          "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_metal_detail_v1_normal.png",
+          "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.8468732424405193,
+        0.8468732424405193,
+        0.8468732424405193,
+        1.0
+      ],
+      "metallic": 1.0,
+      "smoothness": 0.95,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Gold": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Gold.mat",
+      "sha256": "700e14d5125b3d1cc3e941c92b1b15a477f18c16698616922fad1b017310c750",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_metal_detail_v1.png",
+          "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_metal_detail_v1_normal.png",
+          "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.672443181729193,
+        0.42326769591902547,
+        0.12213877523877852,
+        1.0
+      ],
+      "metallic": 0.6,
+      "smoothness": 0.6,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Enamel_Mustard": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Mustard.mat",
+      "sha256": "28eb1166e8c65047f8e7de230a19adc549df0203437328ad5194b02429791827",
+      "shaderGuid": "206122040e60d470e92cddeccf1aacf6",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1.png",
+          "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1_normal.png",
+          "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.8549926012035515,
+        0.39157247852415583,
+        0.02624122237499424,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Enamel_Coral": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Coral.mat",
+      "sha256": "73bfa1fb760fa4b7c1a617ec4400cd8c5143edc88904644dba643c9973a82b6f",
+      "shaderGuid": "206122040e60d470e92cddeccf1aacf6",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1.png",
+          "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1_normal.png",
+          "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.7454042621516298,
+        0.17788841647238957,
+        0.11697067541303321,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Enamel_Ivory": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat",
+      "sha256": "86fbae6bdcee94c8d92b60eabf67561c9e19ee7b2196606e5461a682aefa50f0",
+      "shaderGuid": "206122040e60d470e92cddeccf1aacf6",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1.png",
+          "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1_normal.png",
+          "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.8631572093604803,
+        0.806952214373775,
+        0.672443181729193,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Soil": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Soil.mat",
+      "sha256": "5538ee0fb2d56b7ed65c427ba82a0332700b32e611680a04c16c87250a3a3983",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_limestone_detail_v1.png",
+          "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_limestone_detail_v1_normal.png",
+          "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+          "scale": [
+            0.5,
+            0.5
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.043735029616316395,
+        0.02518685973153821,
+        0.015996294724486798,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Bark_Fibre": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat",
+      "sha256": "21bd24ec218c5d5a7f27ed24f2b72373c6e7b36d07321d829cf7ecaeb85e9951",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.11443538050258935,
+        0.07036010195609571,
+        0.039546234192423375,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Petiole": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Petiole.mat",
+      "sha256": "07daec3aa61a4386413136ca12dd6321a36008abadc220e96e045c4da53803e9",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {},
+      "baseColor": [
+        0.21223076138703303,
+        0.19461782820960513,
+        0.05126946152807598,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Leaf_PalmFan": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFan.mat",
+      "sha256": "4ee9a1a469aa4516beba32da63e704962fec1dadd1a21a0af844abe9522c612c",
+      "shaderGuid": "2529b42165e1d45a8bcfb0013bb5aba3",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/palm_frond_fan_v1_alpha.png",
+          "sha256": "68f5ac83572f972b340abc03ccaa01bded1dbbf3ed909090a25df23c9adda257",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/Kit/Textures/palm_frond_fan_v1_alpha.png",
+          "sha256": "68f5ac83572f972b340abc03ccaa01bded1dbbf3ed909090a25df23c9adda257",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Chrome": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat",
+      "sha256": "d360adec544f7d2974e190241d37299908d6ace244e52371b541135b2833f191",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.8468732424405193,
+        0.8468732424405193,
+        0.8468732424405193,
+        1.0
+      ],
+      "metallic": 1.0,
+      "smoothness": 0.95,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Gold": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Gold.mat",
+      "sha256": "a48ba7fb26f95f4407f5c150c64157755369113e9ae53e2b939a9dc46d1b9cec",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.672443181729193,
+        0.42326769591902547,
+        0.12213877523877852,
+        1.0
+      ],
+      "metallic": 1.0,
+      "smoothness": 0.7,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Enamel_Mustard": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Mustard.mat",
+      "sha256": "24007331c1e5142e18ad61cba3efad456562e4df808ee98ad7ea082c8a4216c9",
+      "shaderGuid": "daa729f856d160b6847192c7304dec72",
+      "textures": {},
+      "baseColor": [
+        0.8549926219655982,
+        0.39157250485486444,
+        0.026241225095812275,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Enamel_Coral": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Coral.mat",
+      "sha256": "bb2318ad93d97fc766cba51f9f71ba930ef80e3ee472aaee1ecb2a6b025f1527",
+      "shaderGuid": "daa729f856d160b6847192c7304dec72",
+      "textures": {},
+      "baseColor": [
+        0.7454042621516298,
+        0.17788841647238957,
+        0.11697067541303321,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Enamel_Ivory": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat",
+      "sha256": "4d84efe57a9108f71d970d578e39fa62544c27fee8dd0e4291ae350979693cb8",
+      "shaderGuid": "daa729f856d160b6847192c7304dec72",
+      "textures": {},
+      "baseColor": [
+        0.8631572093604803,
+        0.806952214373775,
+        0.672443181729193,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Soil": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat",
+      "sha256": "1463baf0ce6cc8eb6cc1c1614e2969fea83ac9e3da101a550cf7fefc12213854",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.043735029616316395,
+        0.02518685973153821,
+        0.015996294724486798,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Bark_Fibre": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat",
+      "sha256": "047de3fadd34734fac63f49befc6d5890ce99c9e6ddff29ef74f55de3bb48b89",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.11443538050258935,
+        0.07036010195609571,
+        0.039546234192423375,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Petiole": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Petiole.mat",
+      "sha256": "ebb8e6f29d17410046bdb8a750dfbd7b08deff8bfc4262c95a088160ab0ec7d3",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.21223076138703303,
+        0.19461782820960513,
+        0.05126946152807598,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_PalmFan": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat",
+      "sha256": "8b624a73f5b5d8d62c8e7d3f2e1d9dfafebe8c02eaf7484c1319cdbd9a8ccc26",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/palm_frond_fan_v1_alpha.png",
+          "sha256": "68f5ac83572f972b340abc03ccaa01bded1dbbf3ed909090a25df23c9adda257",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/palm_frond_fan_v1_alpha.png",
+          "sha256": "68f5ac83572f972b340abc03ccaa01bded1dbbf3ed909090a25df23c9adda257",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/Kit/DK_Enamel_Seafoam": {
+      "path": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Seafoam.mat",
+      "sha256": "431d3e1a26bf85a6fb1c16687e95c486dc6851f9b84849b854e78b694c45b736",
+      "shaderGuid": "206122040e60d470e92cddeccf1aacf6",
+      "textures": {
+        "_DetailAlbedoMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1.png",
+          "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        },
+        "_DetailNormalMap": {
+          "path": "unity/Assets/Suborned/Kit/Textures/surface_enamel_detail_v1_normal.png",
+          "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.16826940539450883,
+        0.46207702638035825,
+        0.3864294850192367,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Enamel_Seafoam": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Seafoam.mat",
+      "sha256": "0c337608d0306f8383a657f498af5612d4ca2fc3818d492923395a8279bb9f15",
+      "shaderGuid": "daa729f856d160b6847192c7304dec72",
+      "textures": {},
+      "baseColor": [
+        0.16826940539450883,
+        0.46207702638035825,
+        0.3864294850192367,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_PalmFeather": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat",
+      "sha256": "1c2d715d237530ddd3046c36a8aa7935b10546c6f34fe3d096151409609f64c9",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/palm_frond_feather_v1_alpha.png",
+          "sha256": "bfbb6061810ecb0a917c44bbdf4c07980a04eeb128939e68833e90f3d45416eb",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/palm_frond_feather_v1_alpha.png",
+          "sha256": "bfbb6061810ecb0a917c44bbdf4c07980a04eeb128939e68833e90f3d45416eb",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Enamel_Teal": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Teal.mat",
+      "sha256": "37b3d5b11c2384d756ebbbb23c1246850408078e3ba0b9df716bfa61a02be9e9",
+      "shaderGuid": "daa729f856d160b6847192c7304dec72",
+      "textures": {},
+      "baseColor": [
+        0.01370208352203149,
+        0.14995979600439957,
+        0.13563333062877542,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.68,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_CoreConifer": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat",
+      "sha256": "1c074fd72efa2f01ab06ddc4f4440fd4f19773038aec0d42d88977f91746a347",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.015996294724486798,
+        0.039546234192423375,
+        0.023153368112206904,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_CypressOlive": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat",
+      "sha256": "e1c1370436ef55ae25383a4c1f4d7213b2afa084e0bc7abc1a2d05a191c589ac",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/cypress_foliage_v1_alpha.png",
+          "sha256": "b0af29a7978ee0052902b2126d873fbf879aebcec3b5fe2a2e189e88f8ca9280",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/cypress_foliage_v1_alpha.png",
+          "sha256": "b0af29a7978ee0052902b2126d873fbf879aebcec3b5fe2a2e189e88f8ca9280",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        0.8549926219655982,
+        0.8713671809431471,
+        0.36130680786291225,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Leaf_Cypress": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat",
+      "sha256": "34e433c925983828e2bc1c2810bc1d1b5c6ad1e0a13f56ee9fe95737db99ccd6",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {
+        "_BaseMap": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/cypress_foliage_v1_alpha.png",
+          "sha256": "b0af29a7978ee0052902b2126d873fbf879aebcec3b5fe2a2e189e88f8ca9280",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "dimensions": [
+            1024,
+            1024
+          ]
+        },
+        "_MainTex": {
+          "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Textures/cypress_foliage_v1_alpha.png",
+          "sha256": "b0af29a7978ee0052902b2126d873fbf879aebcec3b5fe2a2e189e88f8ca9280",
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "offset": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "baseColor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.15,
+      "alphaClip": 1.0,
+      "cutoff": 0.5,
+      "cull": 0.0,
+      "alphaToMask": 1.0,
+      "environmentReflections": 0.0,
+      "specularHighlights": 0.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Bark_Palm": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Palm.mat",
+      "sha256": "32c8e050a21f6f7ce46ca6f2c8c749159683caeada433abedb02ba20876a24e0",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.26225068061762996,
+        0.19806931851919055,
+        0.12213877523877852,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    },
+    "unity/Assets/Suborned/OldTownArt/DecoKit/DK_Coconut": {
+      "path": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Coconut.mat",
+      "sha256": "e71895f662486ee6825391fc9ba7130ba1a416d7578068517422592bdb1cc881",
+      "shaderGuid": "92902edf0ab892fb40f51a8701887fed",
+      "textures": {},
+      "baseColor": [
+        0.20507873780643335,
+        0.1559264644621582,
+        0.034339807245568774,
+        1.0
+      ],
+      "metallic": 0.0,
+      "smoothness": 0.25,
+      "alphaClip": 0.0,
+      "cutoff": 0.5,
+      "cull": 2.0,
+      "alphaToMask": 0.0,
+      "environmentReflections": 1.0,
+      "specularHighlights": 1.0
+    }
+  },
+  "placements": [
+    {
+      "id": "civic/run-west-cafe/1",
+      "world": {
+        "id": "civic/run-west-cafe/1",
+        "surface": "trim",
+        "ring": [
+          [
+            -179.84,
+            -220.349
+          ],
+          [
+            -179.84,
+            -224.651
+          ],
+          [
+            -179.16,
+            -224.651
+          ],
+          [
+            -179.16,
+            -220.349
+          ]
+        ],
+        "base": 0.18,
+        "height": 1.062,
+        "source": "kit",
+        "kit": {
+          "id": "PlanterRun_4_B",
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "yaw": -1.5708,
+          "at": [
+            -179.5,
+            -222.5
+          ],
+          "base": 0.18
+        }
+      },
+      "sourceAsset": "unity/Assets/Suborned/OldTownArt/DecoKit",
+      "reuseAsset": "FlowerBed",
+      "uniformScale": 0.75,
+      "instances": 2,
+      "sourceSlots": [
+        "DK_Leaf_CoreShrub",
+        "DK_Leaf_Shrub",
+        "DK_Flower_Coral"
+      ],
+      "sourceFBX": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx",
+      "baseline": {
+        "triangles": 672,
+        "bounds": [
+          [
+            -2.1376352310180664,
+            -0.3399999439716339,
+            -2.3781838720537962e-08
+          ],
+          [
+            2.1635351181030273,
+            0.34000006318092346,
+            1.0615774393081665
+          ]
+        ],
+        "slotTriangles": {
+          "0": 60,
+          "1": 232,
+          "2": 90,
+          "3": 90,
+          "4": 200
+        }
+      },
+      "replacementParts": [
+        {
+          "name": "PlanterRun_4_B_retained_container",
+          "location": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 60,
+          "bounds": [
+            [
+              -2.0,
+              -0.3399999439716339,
+              -2.3781838720537962e-08
+            ],
+            [
+              2.0,
+              0.34000006318092346,
+              0.6549999713897705
+            ]
+          ],
+          "slotTriangles": {
+            "0": 60,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0
+          },
+          "worldBoundsConservative": [
+            [
+              -179.84000729037953,
+              0.17999997621816127,
+              -224.50000124887646
+            ],
+            [
+              -179.15999259041118,
+              0.8349999713897704,
+              -220.49999875112397
+            ]
+          ]
+        },
+        {
+          "name": "FlowerBed_intact_0",
+          "location": [
+            -1.0,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.75,
+            0.75,
+            0.75
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2718,
+          "bounds": [
+            [
+              -1.7449891567230225,
+              -0.2306879162788391,
+              0.5797664523124695
+            ],
+            [
+              -0.259527325630188,
+              0.23236995935440063,
+              0.9257464408874512
+            ]
+          ],
+          "slotTriangles": {
+            "0": 158,
+            "1": 1440,
+            "2": 1120
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73069432598035,
+              0.7597664523124694,
+              -224.2449900102538
+            ],
+            [
+              -179.26763099394427,
+              1.105746440887451,
+              -222.7595264782644
+            ]
+          ]
+        },
+        {
+          "name": "FlowerBed_intact_1",
+          "location": [
+            1.0,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.75,
+            0.75,
+            0.75
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2718,
+          "bounds": [
+            [
+              0.25501078367233276,
+              -0.2306879162788391,
+              0.5797664523124695
+            ],
+            [
+              1.740472674369812,
+              0.23236995935440063,
+              0.9257464408874512
+            ]
+          ],
+          "slotTriangles": {
+            "0": 158,
+            "1": 1440,
+            "2": 1120
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73068697957035,
+              0.7597664523124694,
+              -222.24499006987193
+            ],
+            [
+              -179.26762364753407,
+              1.105746440887451,
+              -220.7595264782779
+            ]
+          ]
+        }
+      ],
+      "localCoordinates": "Blender metres, +Z up; FBX export basis used by civic evidence: Unity (-x,z,y), then Unity yaw=-world.kit.yaw",
+      "retainedCurrentSlots": [
+        0
+      ],
+      "baselineWorldBoundsConservative": [
+        [
+          -179.84000779594197,
+          0.17999997621816127,
+          -224.63763647989362
+        ],
+        [
+          -179.15999198971315,
+          1.2415774393081664,
+          -220.33646363302205
+        ]
+      ],
+      "replacementTriangles": 5496,
+      "triangleDelta": 4824
+    },
+    {
+      "id": "civic/run-west-cafe/0",
+      "world": {
+        "id": "civic/run-west-cafe/0",
+        "surface": "trim",
+        "ring": [
+          [
+            -179.84,
+            -216.315
+          ],
+          [
+            -179.84,
+            -220.685
+          ],
+          [
+            -179.16,
+            -220.685
+          ],
+          [
+            -179.16,
+            -216.315
+          ]
+        ],
+        "base": 0.18,
+        "height": 1.12,
+        "source": "kit",
+        "kit": {
+          "id": "PlanterRun_4_A",
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "yaw": -1.5708,
+          "at": [
+            -179.5,
+            -218.5
+          ],
+          "base": 0.18
+        }
+      },
+      "sourceAsset": "unity/Assets/Suborned/OldTownArt/DecoKit",
+      "reuseAsset": "ShrubMound",
+      "uniformScale": 0.48,
+      "instances": 7,
+      "sourceSlots": [
+        "DK_Leaf_CoreShrub",
+        "DK_Leaf_Shrub"
+      ],
+      "sourceFBX": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx",
+      "baseline": {
+        "triangles": 732,
+        "bounds": [
+          [
+            -2.189413547515869,
+            -0.3399999439716339,
+            -2.3781838720537962e-08
+          ],
+          [
+            2.179849863052368,
+            0.34000006318092346,
+            1.1201403141021729
+          ]
+        ],
+        "slotTriangles": {
+          "0": 60,
+          "1": 232,
+          "2": 105,
+          "3": 135,
+          "4": 200
+        }
+      },
+      "replacementParts": [
+        {
+          "name": "PlanterRun_4_A_retained_container",
+          "location": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 60,
+          "bounds": [
+            [
+              -2.0,
+              -0.3399999439716339,
+              -2.3781838720537962e-08
+            ],
+            [
+              2.0,
+              0.34000006318092346,
+              0.6549999713897705
+            ]
+          ],
+          "slotTriangles": {
+            "0": 60,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0
+          },
+          "worldBoundsConservative": [
+            [
+              -179.84000729037953,
+              0.17999997621816127,
+              -220.50000124887646
+            ],
+            [
+              -179.15999259041118,
+              0.8349999713897704,
+              -216.49999875112397
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_0",
+          "location": [
+            -1.559999942779541,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              -1.7801393270492554,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              -1.3229941129684448,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73559899348712,
+              0.7957548427581786,
+              -220.28014020250808
+            ],
+            [
+              -179.26166509277033,
+              1.1744663047790527,
+              -219.82299324758011
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_1",
+          "location": [
+            -1.0399999618530273,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              -1.2601393461227417,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              -0.8029941320419312,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73559708342054,
+              0.7957548427581786,
+              -219.7601402215851
+            ],
+            [
+              -179.26166318270376,
+              1.1744663047790527,
+              -219.3029932666571
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_2",
+          "location": [
+            -0.5199999809265137,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              -0.740139365196228,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              -0.2829941511154175,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73559517335397,
+              0.7957548427581786,
+              -219.24014024066207
+            ],
+            [
+              -179.26166127263718,
+              1.1744663047790527,
+              -218.7829932857341
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_3",
+          "location": [
+            0.0,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              -0.22013939917087555,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              0.237005814909935,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73559326328743,
+              0.7957548427581786,
+              -218.72014027464024
+            ],
+            [
+              -179.26165936257064,
+              1.1744663047790527,
+              -218.26299331971225
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_4",
+          "location": [
+            0.5199999809265137,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              0.2998605966567993,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              0.7570058107376099,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.7355913532208,
+              0.7957548427581786,
+              -218.20014027881606
+            ],
+            [
+              -179.261657452504,
+              1.1744663047790527,
+              -217.7429933238881
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_5",
+          "location": [
+            1.0399999618530273,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              0.819860577583313,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              1.2770057916641235,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.7355894431542,
+              0.7957548427581786,
+              -217.68014029789308
+            ],
+            [
+              -179.2616555424374,
+              1.1744663047790527,
+              -217.22299334296508
+            ]
+          ]
+        },
+        {
+          "name": "ShrubMound_intact_6",
+          "location": [
+            1.559999942779541,
+            0.0,
+            0.6449999809265137
+          ],
+          "scale": [
+            0.47999998927116394,
+            0.47999998927116394,
+            0.47999998927116394
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 2526,
+          "bounds": [
+            [
+              1.3398605585098267,
+              -0.23559245467185974,
+              0.6157548427581787
+            ],
+            [
+              1.7970057725906372,
+              0.23833976686000824,
+              0.9944663047790527
+            ]
+          ],
+          "slotTriangles": {
+            "0": 222,
+            "1": 2304
+          },
+          "worldBoundsConservative": [
+            [
+              -179.73558753308762,
+              0.7957548427581786,
+              -217.16014031697006
+            ],
+            [
+              -179.26165363237084,
+              1.1744663047790527,
+              -216.7029933620421
+            ]
+          ]
+        }
+      ],
+      "localCoordinates": "Blender metres, +Z up; FBX export basis used by civic evidence: Unity (-x,z,y), then Unity yaw=-world.kit.yaw",
+      "retainedCurrentSlots": [
+        0
+      ],
+      "baselineWorldBoundsConservative": [
+        [
+          -179.84000798613434,
+          0.17999997621816127,
+          -220.68941479639105
+        ],
+        [
+          -179.15999192978575,
+          1.3001403141021728,
+          -216.3201488880728
+        ]
+      ],
+      "replacementTriangles": 17742,
+      "triangleDelta": 17010
+    },
+    {
+      "id": "civic/cafe-palm-0",
+      "world": {
+        "id": "civic/cafe-palm-0",
+        "surface": "park",
+        "ring": [
+          [
+            -161.1,
+            -220.8
+          ],
+          [
+            -160.928,
+            -220.766
+          ],
+          [
+            -160.782,
+            -220.668
+          ],
+          [
+            -160.684,
+            -220.522
+          ],
+          [
+            -160.65,
+            -220.35
+          ],
+          [
+            -160.684,
+            -220.178
+          ],
+          [
+            -160.782,
+            -220.032
+          ],
+          [
+            -160.928,
+            -219.934
+          ],
+          [
+            -161.1,
+            -219.9
+          ],
+          [
+            -161.272,
+            -219.934
+          ],
+          [
+            -161.418,
+            -220.032
+          ],
+          [
+            -161.516,
+            -220.178
+          ],
+          [
+            -161.55,
+            -220.35
+          ],
+          [
+            -161.516,
+            -220.522
+          ],
+          [
+            -161.418,
+            -220.668
+          ],
+          [
+            -161.272,
+            -220.766
+          ]
+        ],
+        "base": 0.18,
+        "height": 1.6,
+        "source": "kit",
+        "kit": {
+          "id": "PottedPalm_Small",
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "yaw": 1.77,
+          "at": [
+            -161.1,
+            -220.35
+          ],
+          "base": 0.18
+        },
+        "materials": {
+          "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
+          "DK_Enamel_Coral": "DK_Enamel_Ivory"
+        }
+      },
+      "sourceAsset": "unity/Assets/Suborned/OldTownArt/DecoKit",
+      "reuseAsset": "PottedPalm_Small",
+      "uniformScale": 1,
+      "instances": 1,
+      "sourceSlots": [
+        "DK_Chrome",
+        "DK_Gold",
+        "DK_Enamel_Mustard",
+        "DK_Enamel_Coral",
+        "DK_Enamel_Ivory",
+        "DK_Soil",
+        "DK_Bark_Fibre",
+        "DK_Petiole",
+        "DK_Leaf_PalmFan"
+      ],
+      "sourceFBX": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx",
+      "baseline": {
+        "triangles": 2396,
+        "bounds": [
+          [
+            -0.7414331436157227,
+            -0.8149818181991577,
+            -1.094719515037923e-08
+          ],
+          [
+            0.7747354507446289,
+            0.8362222909927368,
+            1.7205605506896973
+          ]
+        ],
+        "slotTriangles": {
+          "0": 120,
+          "1": 180,
+          "2": 216,
+          "3": 144,
+          "4": 240,
+          "5": 22,
+          "6": 386,
+          "7": 576,
+          "8": 512
+        }
+      },
+      "replacementParts": [
+        {
+          "name": "existing_palm_pot_trunk",
+          "location": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1308,
+          "bounds": [
+            [
+              -0.27366402745246887,
+              -0.31141459941864014,
+              -1.094719515037923e-08
+            ],
+            [
+              0.27366402745246887,
+              0.2520000636577606,
+              1.0099999904632568
+            ]
+          ],
+          "slotTriangles": {
+            "0": 120,
+            "1": 180,
+            "2": 216,
+            "3": 144,
+            "4": 240,
+            "5": 22,
+            "6": 386,
+            "7": 0,
+            "8": 0
+          },
+          "worldBoundsConservative": [
+            [
+              -161.4011716795352,
+              0.17999998905280484,
+              -220.6681201709093
+            ],
+            [
+              -160.74058873847264,
+              1.1899999904632568,
+              -220.02012235703842
+            ]
+          ]
+        },
+        {
+          "name": "old_original_palm_petiole_fan",
+          "location": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "rotationEuler": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "triangles": 1088,
+          "bounds": [
+            [
+              -0.7414331436157227,
+              -0.8149818181991577,
+              0.9105453491210938
+            ],
+            [
+              0.7747354507446289,
+              0.8362222909927368,
+              1.7205605506896973
+            ]
+          ],
+          "slotTriangles": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 576,
+            "8": 512
+          },
+          "worldBoundsConservative": [
+            [
+              -162.06640688022398,
+              1.0905453491210937,
+              -221.27489368667062
+            ],
+            [
+              -160.1478233969404,
+              1.9005605506896972,
+              -219.4619533017603
+            ]
+          ]
+        }
+      ],
+      "localCoordinates": "Blender metres, +Z up; FBX export basis used by civic evidence: Unity (-x,z,y), then Unity yaw=-world.kit.yaw",
+      "retainedCurrentSlots": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "reusedSourceSlots": [
+        7,
+        8
+      ],
+      "baselineWorldBoundsConservative": [
+        [
+          -162.06640688022398,
+          0.17999998905280484,
+          -221.27489368667062
+        ],
+        [
+          -160.1478233969404,
+          1.9005605506896972,
+          -219.4619533017603
+        ]
+      ],
+      "replacementTriangles": 2396,
+      "triangleDelta": 0
+    }
+  ],
+  "renders": [
+    {
+      "file": "PlanterRun_4_B-current-close-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-direct-oldtown-close-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-current-play-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-direct-oldtown-play-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-current-close-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-direct-oldtown-close-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-current-play-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_B-direct-oldtown-play-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-current-close-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-direct-oldtown-close-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-current-play-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-direct-oldtown-play-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-current-close-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-direct-oldtown-close-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 5.0,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-current-play-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PlanterRun_4_A-direct-oldtown-play-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-current-close-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 2.700000047683716,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-direct-oldtown-close-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 2.700000047683716,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-current-play-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-direct-oldtown-play-y30.png",
+      "yaw": 30,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-current-close-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 2.700000047683716,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-direct-oldtown-close-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 2.700000047683716,
+      "pixels": [
+        1200,
+        800
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-current-play-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "PottedPalm_Small-direct-oldtown-play-y210.png",
+      "yaw": 210,
+      "pitch": 38,
+      "horizontalOrthoScale": 49.77777862548828,
+      "pixels": [
+        1920,
+        1080
+      ]
+    }
+  ],
+  "shaderLimits": [
+    "Cycles Principled approximates URP Lit/Complex Lit BRDF; Unity AlphaToMask MSAA coverage, reflection probes, grade and generated runtime LOD selection are not reproduced. Full source-resolution images, original UVs, white/tinted BaseColor, cutoff and two-sided semantics are mapped explicitly."
+  ],
+  "fbxMaterialBindings": {
+    "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_B.fbx": [
+      {
+        "slotName": "DK_Bloom_Flamingo",
+        "materialGUID": "22c952fd582d2bf32b8bb62475d846e6",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Flamingo.mat"
+      },
+      {
+        "slotName": "DK_Bloom_Peach",
+        "materialGUID": "cd625c6b9b45e2cd5c37da5a67aeadad",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Peach.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Civic",
+        "materialGUID": "b2c818b16ad52167dfb1c198f65d7077",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Civic.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CivicDark",
+        "materialGUID": "72c3bbff545b245ff38380c3693cd3d6",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CivicDark.mat"
+      },
+      {
+        "slotName": "DK_Limestone",
+        "materialGUID": "8b3e72f43ee83481b80693ec9e9cf339",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Limestone.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx": [
+      {
+        "slotName": "DK_Flower_Coral",
+        "materialGUID": "65f10738bc12a73e17d454785d89c36c",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Flower_Coral.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CoreShrub",
+        "materialGUID": "de6d3a3621ee263b731210f987c73135",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Shrub",
+        "materialGUID": "00b375d66a47c774cf48bcca018dc153",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat"
+      }
+    ],
+    "unity/Assets/Suborned/Kit/Models/Plaza/DK_PlanterRun_4_A.fbx": [
+      {
+        "slotName": "DK_Bloom_Coral",
+        "materialGUID": "2e03eeb1a0fadfa53edb58a263d8dfc6",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Coral.mat"
+      },
+      {
+        "slotName": "DK_Bloom_Cream",
+        "materialGUID": "2602021c6374cdc21b7621ff6c20c8df",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Bloom_Cream.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Civic",
+        "materialGUID": "b2c818b16ad52167dfb1c198f65d7077",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_Civic.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CivicDark",
+        "materialGUID": "72c3bbff545b245ff38380c3693cd3d6",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_CivicDark.mat"
+      },
+      {
+        "slotName": "DK_Limestone",
+        "materialGUID": "8b3e72f43ee83481b80693ec9e9cf339",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Limestone.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx": [
+      {
+        "slotName": "DK_Leaf_CoreShrub",
+        "materialGUID": "de6d3a3621ee263b731210f987c73135",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Shrub",
+        "materialGUID": "00b375d66a47c774cf48bcca018dc153",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Shrub.mat"
+      }
+    ],
+    "unity/Assets/Suborned/Kit/Models/Furnish/DK_PottedPalm_Small.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "c427369f4465e40e0a25bede970ca10e",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Chrome",
+        "materialGUID": "84e6355532c454e489532548ceff36d9",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Chrome.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Coral",
+        "materialGUID": "bf53c01b12caf48c7be9d54417e6e041",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Coral.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Ivory",
+        "materialGUID": "64640579724534984b23132ffe739728",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Ivory.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Mustard",
+        "materialGUID": "a6b46152eb8fb48d38b638043e9e26bf",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Enamel_Mustard.mat"
+      },
+      {
+        "slotName": "DK_Gold",
+        "materialGUID": "974c95b4109de4548b40ff870f0690c1",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Gold.mat"
+      },
+      {
+        "slotName": "DK_Leaf_PalmFan",
+        "materialGUID": "02be44eb4636349b8b5c6630a3a14dfd",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Leaf_PalmFan.mat"
+      },
+      {
+        "slotName": "DK_Petiole",
+        "materialGUID": "8741f2419dce64f36a1580a2d31c345c",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Petiole.mat"
+      },
+      {
+        "slotName": "DK_Soil",
+        "materialGUID": "ce6403af7f97749d6ae712fb500ddbfd",
+        "materialPath": "unity/Assets/Suborned/Kit/Materials/DK_Soil.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "97eb5423dc29b76865d28f49ff11af82",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Chrome",
+        "materialGUID": "d81667205cc687f7cca56e4bb10189d0",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Coral",
+        "materialGUID": "611aefb8b88f28ae83f8762de87692da",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Coral.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Ivory",
+        "materialGUID": "21bfd800dbccb9b446eec88962c38b39",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Mustard",
+        "materialGUID": "e3b6bae13ab05095bf9e0d40fcb8d4c3",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Mustard.mat"
+      },
+      {
+        "slotName": "DK_Gold",
+        "materialGUID": "58c12bb1daea5492f410176ca6a82fa3",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Gold.mat"
+      },
+      {
+        "slotName": "DK_Leaf_PalmFan",
+        "materialGUID": "40dd112d69d363e59739351679e8cbce",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat"
+      },
+      {
+        "slotName": "DK_Petiole",
+        "materialGUID": "7bda20f016fc1623bc9bde2e27892235",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Petiole.mat"
+      },
+      {
+        "slotName": "DK_Soil",
+        "materialGUID": "9f60a03de69837f1f9f04de89b9fa814",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedFern.fbx": [
+      {
+        "slotName": "DK_Chrome",
+        "materialGUID": "d81667205cc687f7cca56e4bb10189d0",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Ivory",
+        "materialGUID": "21bfd800dbccb9b446eec88962c38b39",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Seafoam",
+        "materialGUID": "11c71e18db95dd447ac3af938f52ecd9",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Seafoam.mat"
+      },
+      {
+        "slotName": "DK_Gold",
+        "materialGUID": "58c12bb1daea5492f410176ca6a82fa3",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Gold.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CoreShrub",
+        "materialGUID": "de6d3a3621ee263b731210f987c73135",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreShrub.mat"
+      },
+      {
+        "slotName": "DK_Leaf_PalmFeather",
+        "materialGUID": "2b810a82cdad69140cc0778873a03b1b",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat"
+      },
+      {
+        "slotName": "DK_Soil",
+        "materialGUID": "9f60a03de69837f1f9f04de89b9fa814",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_PottedTopiary.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "97eb5423dc29b76865d28f49ff11af82",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Chrome",
+        "materialGUID": "d81667205cc687f7cca56e4bb10189d0",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Chrome.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Ivory",
+        "materialGUID": "21bfd800dbccb9b446eec88962c38b39",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Ivory.mat"
+      },
+      {
+        "slotName": "DK_Enamel_Teal",
+        "materialGUID": "ddf3b9f7f2ced5b1953542f8ffdc4f4d",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Enamel_Teal.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CoreConifer",
+        "materialGUID": "8329195e593e131ae7915aa98faf81dc",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Cypress",
+        "materialGUID": "b9c7248e0c2fd22629f029415c213c10",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CypressOlive",
+        "materialGUID": "0bb624593066cf93c20cee6282510a64",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat"
+      },
+      {
+        "slotName": "DK_Soil",
+        "materialGUID": "9f60a03de69837f1f9f04de89b9fa814",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Soil.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_TopiaryCone.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "97eb5423dc29b76865d28f49ff11af82",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CoreConifer",
+        "materialGUID": "8329195e593e131ae7915aa98faf81dc",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Cypress",
+        "materialGUID": "b9c7248e0c2fd22629f029415c213c10",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CypressOlive",
+        "materialGUID": "0bb624593066cf93c20cee6282510a64",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_Cypress.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "97eb5423dc29b76865d28f49ff11af82",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CoreConifer",
+        "materialGUID": "8329195e593e131ae7915aa98faf81dc",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CoreConifer.mat"
+      },
+      {
+        "slotName": "DK_Leaf_Cypress",
+        "materialGUID": "b9c7248e0c2fd22629f029415c213c10",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_Cypress.mat"
+      },
+      {
+        "slotName": "DK_Leaf_CypressOlive",
+        "materialGUID": "0bb624593066cf93c20cee6282510a64",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_CypressOlive.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FanPalm.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "97eb5423dc29b76865d28f49ff11af82",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Leaf_PalmFan",
+        "materialGUID": "40dd112d69d363e59739351679e8cbce",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFan.mat"
+      },
+      {
+        "slotName": "DK_Petiole",
+        "materialGUID": "7bda20f016fc1623bc9bde2e27892235",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Petiole.mat"
+      }
+    ],
+    "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_CoconutPalm.fbx": [
+      {
+        "slotName": "DK_Bark_Fibre",
+        "materialGUID": "97eb5423dc29b76865d28f49ff11af82",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Fibre.mat"
+      },
+      {
+        "slotName": "DK_Bark_Palm",
+        "materialGUID": "2d781834469fecdbffd7fdd10fe9e2bb",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Bark_Palm.mat"
+      },
+      {
+        "slotName": "DK_Coconut",
+        "materialGUID": "d124838a717dc2308286d18e836de09f",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Coconut.mat"
+      },
+      {
+        "slotName": "DK_Leaf_PalmFeather",
+        "materialGUID": "2b810a82cdad69140cc0778873a03b1b",
+        "materialPath": "unity/Assets/Suborned/OldTownArt/DecoKit/Materials/DK_Leaf_PalmFeather.mat"
+      }
+    ]
+  },
+  "sourceGallery": [
+    {
+      "asset": "ShrubMound",
+      "file": "source-ShrubMound.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_ShrubMound.fbx"
+    },
+    {
+      "asset": "FlowerBed",
+      "file": "source-FlowerBed.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FlowerBed.fbx"
+    },
+    {
+      "asset": "PottedFern",
+      "file": "source-PottedFern.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedFern.fbx"
+    },
+    {
+      "asset": "PottedPalm_Small",
+      "file": "source-PottedPalm_Small.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Furnish/DK_PottedPalm_Small.fbx"
+    },
+    {
+      "asset": "PottedTopiary",
+      "file": "source-PottedTopiary.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_PottedTopiary.fbx"
+    },
+    {
+      "asset": "TopiaryCone",
+      "file": "source-TopiaryCone.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_TopiaryCone.fbx"
+    },
+    {
+      "asset": "Cypress",
+      "file": "source-Cypress.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_Cypress.fbx"
+    },
+    {
+      "asset": "FanPalm",
+      "file": "source-FanPalm.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_FanPalm.fbx"
+    },
+    {
+      "asset": "CoconutPalm",
+      "file": "source-CoconutPalm.png",
+      "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Plants/DK_CoconutPalm.fbx"
+    }
+  ],
+  "scriptSha256": "b3abbcd58e0118db2b0d625235611c49f4030928998840b4b26a19dba21380ee"
+}

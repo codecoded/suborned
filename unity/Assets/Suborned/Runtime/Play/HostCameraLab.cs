@@ -5,7 +5,7 @@ namespace Suborned.Play
 {
     /// <summary>Brief 025 item 1 (Sky 2026-10-19: "I think the camera angle needs work - would love a debug on this to try various options"): the
     /// camera's playground values, one preset at a time (CamPreset), set live from the camera lab (CameraLab, P). View only: the engine, the
-    /// orders and the replays never see the camera. Nothing here is a design decision; the built-in preset is today's view (zoom 14 at 38°, yaw
+    /// orders and the replays never see the camera. Nothing here is a design decision; the built-in preset is today's view (zoom 10 at 38°, yaw
     /// 30 in quarter steps, orthographic; the follow view as it was).</summary>
     [Serializable]
     public sealed class CamPreset
@@ -13,7 +13,7 @@ namespace Suborned.Play
         public string name = "Built-in";
         [Serializable] public sealed class Overhead
         {
-            public float zoom = 14f, zoomMin = 12.5f, zoomMax = 18.5f; // the visible half-height (m) at the focus: orthographic size, or the perspective distance that shows as much
+            public float zoom = 10f, zoomMin = 8f, zoomMax = 18.5f; // brief 079 (Sky 2026-10-30: play zoom 10; the wheel goes in to 8, out to 18.5 for planning); the visible half-height (m) at the focus: orthographic size, or the perspective distance that shows as much
             public float pitch = 38f;
             public bool freeYaw = false;     // Alt + middle-drag rests where it is left (off: snaps to the nearest quarter)
             public bool perspective = false;
@@ -60,7 +60,7 @@ namespace Suborned.Play
         {
             var o = Cam.overhead; var f = Cam.follow;
             zoomMin = Mathf.Max(0.5f, Mathf.Min(o.zoomMin, o.zoomMax)); zoomMax = Mathf.Max(zoomMin, o.zoomMax);
-            followFov = f.fov; followDistance = Mathf.Clamp(f.distance * FollowDistanceFactor, f.distanceMin, f.distanceMax); // brief 051: Options, Camera, Camera distance (Close 0.75, Default 1, Far 1.4 of the preset's) followMin = Mathf.Min(f.distanceMin, f.distanceMax); followMax = Mathf.Max(f.distanceMin, f.distanceMax);
+            followFov = f.fov; followDistance = Mathf.Clamp(f.distance * FollowDistanceFactor, f.distanceMin, f.distanceMax); /* brief 051: Options, Camera, Camera distance (Close 0.75, Default 1, Far 1.4 of the preset's) */ followMin = Mathf.Min(f.distanceMin, f.distanceMax); followMax = Mathf.Max(f.distanceMin, f.distanceMax);
             followHeight = f.height; followRise = f.rise; followAhead = f.lookAhead; followLookHeight = f.lookHeight; followSmooth = Mathf.Max(0f, f.smoothing);
             if (!cam) return;
             if (zoomToo) cam.orthographicSize = Mathf.Clamp(o.zoom, zoomMin, zoomMax); else cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, zoomMin, zoomMax);

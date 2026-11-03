@@ -84,7 +84,7 @@ namespace Suborned.Play
             var ch = plan.Choice;
             switch (ch.Act)
             {
-                case ContextRank.Act.Default: DoRow(plan.Row(ch.Pick), t, screen, plan.Pn.World, "right"); return;
+                case ContextRank.Act.Default: DoWay(plan.Row(ch.Pick), t, screen, plan.Pn.World, "right"); return;
                 case ContextRank.Act.Ring: OpenRing(plan, screen, false); return;
                 case ContextRank.Act.Lock: LockPop(plan.Row(ch.Pick), screen, plan.Pn.World); return;
                 case ContextRank.Act.Hint:
@@ -109,7 +109,7 @@ namespace Suborned.Play
             if (r == null) return;
             if (r.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime;
             var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}";
-            Pop(Text?.ShortLock(r.Lock.code) is string ? ShortOf(r.I.Order, r.Lock) ?? full : full, at, world, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full);
+            popCode = r.Lock.code ?? ""; Pop(Text?.ShortLock(r.Lock.code) is string ? ShortOf(r.I.Order, r.Lock) ?? full : full, at, world, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full);
         }
 
         // ---------------------------------------------------------------- the ring
@@ -119,11 +119,14 @@ namespace Suborned.Play
         {
             public int Way = -1; public PanelRow Row; public readonly List<OpId> By = new(); public string Word = "", Icon = "";
             public string Named = "";
-            public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1; // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
+            public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1;
+            /// <summary>Brief 057: Shut = a way shown shut (Go while the car is held: struck, dim, never taken; its pill shows the lock and the holders);
+            /// Focus = the way moves something the ring is not on (Reroute: the patrol), shown in the world on hover; Obj = that thing's cameo badge.</summary>
+            public bool Shut, Focus, ObjStruck; public string Obj = "", Holders = "", ShutText = "", ShutIcon = "p_time"; /* ShutText: a shut Loop's end (m:ss), shown after its lock; brief 067 E: any shut way's short lock (ShutIcon "" then) */ // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
         }
         public sealed class RingState
         {
-            public ContextPlan Plan; public Vector2 Gui, Screen; public float OpenedAt; public bool Sticky, ByE, FromHold, Always; public int Hover = -1, Lit = -1;
+            public ContextPlan Plan; public Vector2 Gui, Screen; public float OpenedAt; public bool Sticky, ByE, FromHold, Always, ByClick; public int Hover = -1, Lit = -1; /** ByClick: opened by a left click (item 33): a double click's second press in its middle keeps it */
             public Vector2 PointerAtOpen; public readonly List<RingSeg> Segs = new();
             /// <summary>A harmful wedge's hold under way (HostAim.RingHoldFrame): which wedge, since when, by what input (left, right, E); Ctrl: Ctrl + right's Fire.</summary>
             public int HoldSeg = -1; public float HoldStart = -1f; public string HoldSrc = ""; public bool HoldCtrl;
@@ -136,8 +139,8 @@ namespace Suborned.Play
             get
             {
                 var rs = Ring; if (rs == null || Game == null) return null; int i = rs.Hover >= 0 ? rs.Hover : rs.Lit;
-                if (i < 0 || i >= rs.Segs.Count) return null; var s = rs.Segs[i]; if (s.More || s.Named.Length == 0 || s.Row?.I?.Order is not Order o || o.Target.Length == 0) return null;
-                bool cam = o.Do == "loop" || Game.S.Cameras.Exists(c => c.Id == o.Target);
+                if (i < 0 || i >= rs.Segs.Count) return null; var s = rs.Segs[i]; if (s.More || s.Named.Length == 0 && !s.Focus || s.Row?.I?.Order is not Order o || o.Target.Length == 0) return null; // brief 057 §2: Reroute shows the patrol
+                bool cam = o.Do is "loop" or "disable" || Game.S.Cameras.Exists(c => c.Id == o.Target);
                 return cam ? ("camera/" + o.Target, "camera:" + o.Target) : (o.Target, Game.WatcherKind(o.Target).Length > 0 ? o.Target : "");
             }
         }
@@ -155,15 +158,25 @@ namespace Suborned.Play
             if (plan == null) return;
             var rs = new RingState { Plan = plan, OpenedAt = Time.unscaledTime, ByE = byE };
             var ch = plan.Choice; bool drawn = AnyDrawn();
+            // brief 067 E2 (Glyph; Suture's 0.2.122 findings §2, Sky: "there are times I couldn't perform action on Inez"): with no calm way open
+            // for the selection, its locked calm ways are the ring's first wedges, shut (struck, dim, the short lock), at most five, the best-ranked
+            // at 12 o'clock; the open violent ways follow, last and dashed, keeping at least one slot. The open ring is never widened
+            bool calmOpen = ch.Order.Exists(w => plan.Row(w)?.I?.Order is Order co && !ContextRank.Violent(new ContextRank.Way { Do = co.Do }));
+            if (!calmOpen)
+            {
+                var shut = ShutCalmSegs(plan); int cap = RingMaxWays - (ch.Order.Count > 0 ? 1 : 0); // Glyph 067 Rev 2 E2: up to the ring's five ways (the open violent ways keep at least one slot)
+                for (int i = 0; i < shut.Count && i < cap; i++) rs.Segs.Add(shut[i]);
+            }
             foreach (var w in ch.Order)
             {
                 if (rs.Segs.Count >= RingMaxWays) break;
                 var r = plan.Row(w); var o = r.I.Order;
                 var s = new RingSeg { Way = w, Row = r, Word = RingWord(r.I), Icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""), Violent = o.Do is "takedown" or "fire" };
-                s.By.AddRange(plan.Givers[w]);
+                s.By.AddRange(o.Do == "fire" ? FireFaces(o, plan.Givers[w]) : plan.Givers[w]); // a Fire wedge shows who it will reach (HostSquad)
                 s.Draws = o.Do == "fire" && !drawn; // the draw is in the price (brief 030 §5): the pill's "draws 0.6 s" (DrawS)
                 s.Harmful = Harmful(o, plan.T, drawn); // brief 038 §4.3: never lit, never taken by the second click
                 s.HoldWedge = HoldOn ? o.Do == "fire" : o.Do == "takedown" && o.How == "kill" || o.Do == "fire" && !Combatant(plan.T); // brief 041 (Sky): Kill and Knock out are on a click in the ring; only Fire is held // brief 024 rule 2, brief 038 §4.3: Kill and Fire on a non-combatant take the 0.5 s hold
+                if (o.Do == "go" && r.I.Outcome == "withdraw") { s.Harmful = true; s.HoldWedge = true; s.Obj = "badges/npc_councillor"; s.ObjStruck = true; } // brief 067 C5b (Glyph Rev 2, Aster 2026-10-26): Go before Vale ends the attempt: last (ContextRank tier 9), never lit, a struck Vale cameo, the 0.5 s hold; no dashed outline and no loud mark (those are the violent ways')
                 s.Key = r.Key >= 0 && Selected[(int)r.By] ? r.Key : -1;
                 rs.Segs.Add(s);
             }
@@ -173,14 +186,30 @@ namespace Suborned.Play
             {
                 if (rs.Segs.FindAll(x => x.Word == s.Word).Count < 2 || s.Row?.I == null) continue;
                 var it = s.Row.I; string tn = it.Order?.Target ?? "";
-                s.Named = it.Label.Length > 0 && it.Label != s.Word ? it.Label : tn.Length > 0 ? $"{s.Word} {(it.Order?.Do == "loop" ? CameraName(tn) : Name(tn))}" : s.Word;
+                s.Named = it.Label.Length > 0 && it.Label != s.Word ? it.Label : tn.Length > 0 ? $"{s.Word} {(it.Order?.Do is "loop" or "disable" ? CameraName(tn) : Name(tn))}" : s.Word;
             }
             foreach (var s in rs.Segs) if (s.Named.Length > 0) s.Word = s.Named;
-            rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason
+            // brief 057 §2: a way whose object is not what the ring is open on wears that object's cameo after its word (Reroute: the patrol;
+            // Loop from the cabinet: the camera; Call: the guard or the driver's car); Reroute names the patrol for the focus marks
+            foreach (var s in rs.Segs)
+            {
+                var o2 = s.Row?.I?.Order; if (o2 == null) continue;
+                if (o2.Do == "reroute") { s.Obj = "badges/npc_patrol_face"; /* Glyph, brief 057 §5: the face in the cameo's own ring, no amber on the pill */ s.Focus = true; }
+                else if (o2.Do is "loop" or "disable" && plan.T?.Kind == "cabinet") s.Obj = "badges/signal_camera";
+                else if (o2.Do == "call") s.Obj = o2.Target == "driver" ? "icon:car" : "badges/signal_guard";
+            }
+            // brief 057 §4.2: Go while the car is held shows shut (struck, dim), its pill the lock and one badge a holder; a press says why and pulses them
+            if (plan.Pn.Rows.Find(r => r.I?.Order?.Do == "go" && !r.Available && r.Lock.code == "car-held") is PanelRow gr && !rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "go") && rs.Segs.Count < RingMaxWays)
+                rs.Segs.Insert(0, new RingSeg { Way = -1, Row = gr, Word = RingWord(gr.I), Icon = "car", Shut = true, Holders = gr.Lock.ids ?? "" });
+            // engine 0.31.0 (brief 058 §2, Glyph 058 §1): one loop at a time: the Tech's Loop on another camera while one runs shows shut (struck,
+            // dim), its pill the lock and the time the running loop ends; a press says why (loop-holds)
+            if (plan.T?.Kind == "camera" && plan.Pn.Rows.Find(r => r.I?.Order?.Do == "loop" && !r.Available && r.Lock.code == "loop-holds") is PanelRow lr && !rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "loop") && rs.Segs.Count < RingMaxWays)
+                rs.Segs.Insert(0, new RingSeg { Way = -1, Row = lr, Word = RingWord(lr.I), Icon = "loop", Shut = true, ShutText = lr.Lock.tick >= 0 ? MissionClock(lr.Lock.tick) : "" });
+            if (plan.T?.Kind != "camera" || rs.Segs.Count == 0) rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason (Glyph 058 §1: a camera's ring is its ways alone: Loop · Disable · Fire, or Fire as the whole ring)
             rs.Lit = ch.Act == ContextRank.Act.Ring || ch.Act == ContextRank.Act.Default ? Math.Max(0, rs.Segs.FindIndex(x => x.Way == ch.Pick)) : controls.quickAction ? 0 : -1; // ring by default: nothing ranked (a passer-by's takedowns), nothing lit
             if (rs.Segs.Count == 1) rs.Lit = 0;
             if (Picked >= 0) { int ai = rs.Segs.FindIndex(x => x.Key == Picked && x.By.Contains(Agent)); if (ai >= 0) rs.Lit = ai; } // brief 030 (no plate): the ring opens on the armed verb's wedge
-            if (rs.Lit >= 0 && rs.Lit < rs.Segs.Count && rs.Segs[rs.Lit].Harmful) rs.Lit = -1; // brief 038: a harmful way is never lit (the second click takes nothing)
+            if (rs.Lit >= 0 && rs.Lit < rs.Segs.Count && (rs.Segs[rs.Lit].Harmful || rs.Segs[rs.Lit].Shut)) rs.Lit = -1; // brief 038: a harmful way is never lit (the second click takes nothing)
             // never off screen: it slides in to fit (the pills reach ~230 px past the wedges)
             float k = KitScale, mx = (RingOuter + 250f) * k, my = (RingOuter + 40f) * k;
             var c = new Vector2(Mathf.Clamp(screen.x, Mathf.Min(mx, Screen.width / 2f), Mathf.Max(Screen.width - mx, Screen.width / 2f)), Mathf.Clamp(screen.y, Mathf.Min(my, Screen.height / 2f), Mathf.Max(Screen.height - my, Screen.height / 2f)));
@@ -188,6 +217,38 @@ namespace Suborned.Play
             rs.PointerAtOpen = UnityEngine.InputSystem.Mouse.current?.position.ReadValue() ?? screen;
             if (Panel != null) ClosePanel();
             Ring = rs; Status = $"{OneWord(plan.T)}: choose";
+        }
+
+        /// <summary>Brief 067 E2 (Glyph): the shut wedges of the selection's locked calm ways: one a verb, target and lock code (the agents who have it
+        /// merged: their cameos), Ask, Pay, Help and Pressure under one lock merged into one Turn wedge (two or more; a lone approach keeps its
+        /// word), ranked by ContextRank.Compare. Go held keeps its holders (and the rivals' countdown), the one-loop Loop its end (as the 057 and
+        /// 058 inserts did); every other way prints its short lock after the lock (ShortOf: {tick} {m} {usd} filled).</summary>
+        List<RingSeg> ShutCalmSegs(ContextPlan plan)
+        {
+            var groups = new List<(string key, List<PanelRow> rows)>();
+            if (plan?.Pn == null) return new List<RingSeg>();
+            foreach (var r in plan.Pn.Rows)
+            {
+                if (r.Available || r.I?.Order is not Order o || ContextRank.Violent(new ContextRank.Way { Do = o.Do })) continue;
+                string key = (o.Do == "turn" ? "turn" : o.Do + "|" + o.Approach) + "|" + o.Target + "|" + o.How + "|" + (r.Lock.code ?? "");
+                int gi = groups.FindIndex(g => g.key == key); if (gi < 0) groups.Add((key, new List<PanelRow> { r })); else groups[gi].rows.Add(r);
+            }
+            var segs = new List<(RingSeg seg, ContextRank.Way way)>();
+            foreach (var (key, rows) in groups)
+            {
+                var rep = rows.Find(x => x.By == Agent) ?? rows[0]; var o = rep.I.Order;
+                bool turnGroup = o.Do == "turn" && rows.ConvertAll(x => x.I.Order.Approach).FindAll(a => a != null).Count > 1 && new HashSet<string>(rows.ConvertAll(x => x.I.Order.Approach ?? "")).Count > 1;
+                string word = turnGroup ? (Text != null && Text.Actions.TryGetValue("ring-turn", out var rt) && rt.Label.Length > 0 ? rt.Label : "Turn") : RingWord(rep.I);
+                string icon = turnGroup ? "turn_person" : rep.I.Lead.Length > 0 ? rep.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, "");
+                var sg = new RingSeg { Way = -1, Row = rep, Word = word, Icon = icon, Shut = true };
+                foreach (var x in rows) if (!sg.By.Contains(x.By)) sg.By.Add(x.By);
+                if (rep.Lock.code == "car-held") { sg.Icon = "car"; sg.Holders = rep.Lock.ids ?? ""; } // brief 057 §4.2: the holders' badges (and the rivals' countdown) say it
+                else if (rep.Lock.code == "loop-holds") { sg.Icon = "loop"; sg.ShutText = rep.Lock.tick >= 0 ? MissionClock(rep.Lock.tick) : ""; } // brief 058 §1: when the running loop ends
+                else { sg.ShutText = ShortOf(o, rep.Lock) ?? rep.Reason; sg.ShutIcon = ""; }
+                segs.Add((sg, new ContextRank.Way { Do = o.Do, Approach = o.Approach ?? "", How = o.How ?? "", Outcome = rep.I.Outcome ?? "", Available = false, Mine = sg.By.Contains(Agent), Usd = ContextRank.Num(rep.I.Usd), Trail = ContextRank.Num(rep.I.Trail), Orders = rep.I.Orders, Index = plan.Pn.Rows.IndexOf(rep) }));
+            }
+            segs.Sort((a, b) => ContextRank.Compare(a.way, b.way));
+            return segs.ConvertAll(x => x.seg);
         }
 
         /// <summary>Brief 038 §4.3 (Glyph): a way never lit and never taken blind: Pressure, Kill, Fire on anyone not a combatant, any Fire with the
@@ -204,7 +265,7 @@ namespace Suborned.Play
             if (Text != null && Text.Actions.TryGetValue("ring-" + key, out var a) && a.Label.Length > 0) return a.Label;
             return key switch
             {
-                "takedown" => o.How == "kill" ? "Kill" : "Knockout", "restrain" => "Tie", "stash" => "Hide", "drop" => "Drop", "mislead" => "Tip",
+                "takedown" => o.How == "kill" ? "Kill" : "Knockout", "restrain" => "Tie", "stash" => "Hide", "drop" => "Drop", "mislead" => "Tip", "drive-car" => "Drive", // brief 067 C: the car's own Drive wedge (text.json has no ring-drive-car)
                 "act" => "Enter", _ => key.Length > 0 ? char.ToUpperInvariant(key[0]) + key[1..] : "",
             };
         }
@@ -224,7 +285,7 @@ namespace Suborned.Play
         /// <summary>Brief 030 (no plate): the stance fan on a portrait's sidearm mark: that one agent's stance (hold, return, free), an engine order as V gives.</summary>
         public void SetStanceAgent(int k, string stance)
         {
-            if (Game == null || k < 0 || k > 3 || Loud != null || !ModalGate.AllowsClicks(Modal) || Array.IndexOf(Stances, stance) < 0) return;
+            if (Game == null || k < 0 || k > 3 || Loud != null || !ModalGate.AllowsClicks(Modal) || Array.IndexOf(Stances, stance) < 0 || OneInput) return; // engine 0.35: no stances
             var at = frame.World(Game.Ops[k].Pos);
             if (!Armed(k)) { PopKey("unarmed", null, at, Feedback.Info, "Unarmed."); return; }
             if (Game.Ops[k].Gun.Stance == stance) return;
@@ -240,7 +301,27 @@ namespace Suborned.Play
             return best;
         }
 
-        public void CloseRing() { if (Ring != null) { Ring = null; views?.ShowPath(null); } }
+        public void CloseRing() { if (Ring != null) { Ring = null; views?.ShowPath(null); PreviewWalk = null; } }
+
+        /// <summary>Suture's bot triage (0.2.115): an open ring was never rechecked, so a wedge whose giver went down (carried, inside, in the car) a
+        /// second before the click still looked open. Each frame the open ring's givers are checked; when one is no longer able the ring is built
+        /// again on the same thing at the same place (the panel never offers an unable agent, so the way re-ranks to another giver or goes), its
+        /// state kept (sticky, by click, by hold). Counted for checks.</summary>
+        public int RingRebuilds { get; private set; }
+        void RingGiversFrame()
+        {
+            var rs = Ring; if (rs == null || Game == null || rs.Plan?.T == null) return;
+            bool stale = false;
+            foreach (var sg in rs.Segs) { if (sg.More || sg.Shut) continue; foreach (var k in sg.By) if (!Able((int)k)) { stale = true; break; } if (stale) break; }
+            // the 0.2.117 bot row (Q-OFFER no-target x2): a Fire wedge on a camera or car another agent has just shot out; the ring is built again (Locked then shows the engine's no-target)
+            if (!stale && Time.frameCount % 5 == 0) foreach (var sg in rs.Segs) { var fo = sg.Row?.I?.Order; if (sg.More || sg.Shut || fo?.Do != "fire" || sg.Row?.Available != true || !(fo.Target.StartsWith("camera:") || fo.Target.StartsWith("car:"))) continue; if (NoFireTarget(sg.Row.By, fo.Target)) { stale = true; break; } }
+            if (!stale) return;
+            ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(rs.Plan.T, rs.Screen)) || plan == null) { CloseRing(); return; }
+            var keep = (rs.Sticky, rs.Always, rs.ByClick, rs.FromHold, rs.ByE, rs.PointerAtOpen, rs.OpenedAt);
+            OpenRing(plan, rs.Screen, keep.ByE); RingRebuilds++;
+            var nr = Ring; if (nr == null) return;
+            (nr.Sticky, nr.Always, nr.ByClick, nr.FromHold) = (keep.Sticky, keep.Always, keep.ByClick, keep.FromHold); nr.PointerAtOpen = keep.PointerAtOpen; nr.OpenedAt = keep.OpenedAt;
+        }
 
         /// <summary>The wedge under a screen point, -1 in the dead zone or off the ring's reach.</summary>
         int RingSegAt(Vector2 screen)
@@ -256,17 +337,34 @@ namespace Suborned.Play
         void RingTake(int seg)
         {
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
-            var s = rs.Segs[seg]; var plan = rs.Plan; var at = rs.Screen; CloseRing();
+            var s = rs.Segs[seg]; var plan = rs.Plan; var at = rs.Screen; SideTake(s, plan?.T); CloseRing();
             if (s.More) { OpenPanel(plan.T, at); return; }
             if (HoldOn && s.Way >= 0) { HoldGive(plan, s.Way, plan.T, at, ringRun, "left"); return; } // brief 041: Shift on a wedge runs there
-            DoRow(s.Row, plan.T, at, plan.Pn.World, "left");
+            DoWay(s.Row, plan.T, at, plan.Pn.World, "left");
+        }
+
+        /// <summary>Proofs: the open ring's first wedge giving `verb` (on `target` when given) taken as a left click on it takes it; false when none.</summary>
+        public bool RingTakeScripted(string verb, string target = null)
+        {
+            var rs = Ring; if (rs == null) return false;
+            for (int i = 0; i < rs.Segs.Count; i++) { var o = rs.Segs[i].Row?.I?.Order; if (o != null && o.Do == verb && (target == null || o.Target == target)) { RingTakeTry(i, "left"); return true; } }
+            return false;
+        }
+        /// <summary>Proofs: the open ring's wedges, "~" before a shut one ("Turn (Alarm up)"), "..." the panel.</summary>
+        public string RingWords => Ring == null ? "" : string.Join(" | ", Ring.Segs.ConvertAll(x => x.More ? "..." : (x.Shut ? "~" : "") + x.Word + (x.Shut && x.ShutText.Length > 0 ? " (" + x.ShutText + ")" : "") + (x.Violent ? " [dashed]" : "")));
+        /// <summary>Proofs: the screen point of the open ring's first wedge giving `verb` (on `target`), for the pointer to rest on; null when none.</summary>
+        public Vector2? RingWedgeScreen(string verb, string target = null)
+        {
+            var rs = Ring; if (rs == null) return null;
+            for (int i = 0; i < rs.Segs.Count; i++) { var o = rs.Segs[i].Row?.I?.Order; if (o != null && o.Do == verb && (target == null || o.Target == target)) return WedgeScreen(rs, i); }
+            return null;
         }
 
         /// <summary>Shift+1–4 inside the ring: the selected agent's way on that action slot.</summary>
         void RingKey(int slot)
         {
             var rs = Ring; if (rs == null) return;
-            for (int i = 0; i < rs.Segs.Count; i++) if (rs.Segs[i].Key == slot) { RingTake(i); return; }
+            for (int i = 0; i < rs.Segs.Count; i++) if (rs.Segs[i].Key == slot) { if (!RingKeyFire(rs, i)) RingTake(i); return; }
             var plan = rs.Plan; // not one of the five shown: the agent's row in the plan
             for (int w = 0; w < plan.Rep.Count; w++) { var r = plan.Row(w); if (r.By == Agent && r.Key == slot) { CloseRing(); DoRow(r, plan.T, rs.Screen, plan.Pn.World, "left"); return; } }
             PopKey("nothing-here", null, plan.Pn.World, Feedback.Info, $"Nothing for the {AgentNames[(int)Agent]} there.");
@@ -297,6 +395,7 @@ namespace Suborned.Play
                     if (rs.Always || Time.unscaledTime - rs.OpenedAt < RingStickyS && (p - rs.PointerAtOpen).magnitude < RingMovePx * KitScale) { rs.Sticky = true; return true; }
                     CloseRing(); return true;
                 }
+                if (mouse.leftButton.wasPressedThisFrame && rs.ByClick && middle && Time.unscaledTime - rs.OpenedAt < controls.doubleSeconds) return true; // item 33: the second click of a double click on the target keeps its ring (nothing taken)
                 if (mouse.leftButton.wasPressedThisFrame) { if (rs.Hover >= 0) RingTakeTry(rs.Hover, "left"); else if (rs.Always && middle) RingTakeTry(rs.Lit, "left"); else CloseRing(); return true; }
                 if (mouse.rightButton.wasPressedThisFrame)
                 {
@@ -402,23 +501,36 @@ namespace Suborned.Play
         void PointerRightOn(Target t, Vector2 screen)
         {
             bool ctrl = controls.Held(Keyboard.current, PlayAction.Force);
-            if (t.Kind == "person" && t.Key == "councillor") { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (t.Kind == "person" && t.Key == "councillor") { PopKey("never-vale", screen, TargetWorld(t), Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (ShotAt(t, ctrl, out var id, out var force)) { if (Panel != null) ClosePanel(); FireSelected(id, force, screen, "E"); }
         }
 
         void RingPath(PanelRow rw)
         {
             if (Ring == null || !Ring.Plan.Pn.World.HasValue) return; var op = Game.Ops[(int)rw.By];
-            Pt[] route = null; Guard("path", () => { var aw = ActPlace(rw.By, rw.I.Order, Ring.Plan.T); route = aw == null ? null : Game.S.Grid.Route(op.Pos, aw.To); });
+            Pt[] route = null; Guard("path", () => { var aw = ActPlace(rw.By, rw.I.Order, Ring.Plan.T); route = aw == null ? null : MoveRoute(op.Pos, aw.To); }); // engine 0.33.1: round the standing cars
+            PreviewWalk = route; // brief 067 F rule 5: the lit wedge's walk names the cones it crosses
             var pts = new List<Vector3>(); if (route != null) foreach (var q in route) pts.Add(frame.World(q) + Vector3.up * 0.08f);
             views.ShowPath(pts.Count > 1 ? pts : null);
         }
 
         /// <summary>What the cursor shows over the hovered thing: "aim" (a press fires), "ring" (other ways are one hold away), else "".</summary>
+        Pt noWalkCell = new(int.MinValue, 0); bool noWalkWas;
+        /// <summary>The ground under the pointer has no walkable cell within 3 m (Playable's rule for a walk), cached per 1 m cell.</summary>
+        bool NoWalkUnder()
+        {
+            if (!cam || !frame.Ground(cam.ScreenPointToRay(lastHover), out var w)) return false;
+            var at = frame.Engine(w); var cell = new Pt(at.X / 100 * 100, at.Y / 100 * 100); if (cell == noWalkCell) return noWalkWas;
+            noWalkCell = cell; var g = CarWalk; if (g.Free(at)) return noWalkWas = false; // engine 0.33.1: a standing car's ground is not walkable
+            var nf = g.NearestFree(at); return noWalkWas = !nf.HasValue || G.Dist(nf.Value, at) > 300;
+        }
+
         public string CursorKind
         {
             get
             {
+                if (PointerHeld) return ""; // Glyph's N4: no pointer badge over the briefing or the glide
+                if (Ring == null && Panel == null && Hover == null && Game != null && Array.IndexOf(Selected, true) >= 0 && NoWalkUnder()) return "nowalk"; // Suture's bot pass: ground the engine can't walk shows before the click (every preset: the hold preset has no move chip)
                 if (Ring != null || Hover == null || Panel != null || Game == null || TargetMode) return "";
                 if (IsFire(Hover) && (controls.quickAction || PressFires(Hover) || PickedId == "fire")) return "aim";
                 return HoverIntent != null && HoverIntent.More ? "ring" : "";

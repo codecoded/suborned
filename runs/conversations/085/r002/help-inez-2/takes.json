@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "The Fixer brings the news; she's thankful at once, works out what he knows, and gives more than he asks.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "Your Bureau loan's paid. That clockwork collector won't call on you again."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I could cry, but not on this terrace. What do I do?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "When I telephone, call Okafor off the Office door. He'll come."
+        },
+        {
+          "speaker": "Inez",
+          "line": "So you know about us. What happens to him if he comes?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing, if this goes right. A few minutes, he never sees us."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll say I've news that can't go on the line. He'll stay."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Say that, and nothing of us. You're with us now, Miss Nikolaou."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I see every face on that square. Trouble, and I'll warn you."
+        }
+      ],
+      "learned": [
+        "Loan paid. Inez is with us."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "The Bureau's notice reached her first, so she speaks first, agrees before hearing the ask, and ends talking unprompted.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "A Bureau notice came by tube: paid in full. Was that you?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "That was us. The loan's gone, and you owe the Bureau nothing."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Bless you. Whatever you want, I'll do it, only not out here."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "You stay here. When I telephone, call Okafor off the Office door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Nobody knows he'd leave that door for me. What happens to him?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "If this goes right, nothing. A few minutes, he never sees us."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll say I've news, not for the line. Nothing about you."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'm with you, then. I'll warn you if trouble crosses that square."
+        }
+      ],
+      "learned": [
+        "Loan paid. Inez will warn us."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She wants their talk to pass as a stranger's question; he says it all at once, and her thanks come last.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Ask where to get a form stamped. People look, on this terrace."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Your Bureau loan's paid. When I telephone, call Okafor off his door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Why ask me, unless you know about us? What happens to him?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Nothing, if this goes right. He walks back and never sees us."
+        },
+        {
+          "speaker": "Inez",
+          "line": "He'd leave the Office door for news too private for the line."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Say that, and not a word of us. It's a few minutes."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I watch that square anyway. Thank you, I'll warn you of trouble."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Then you're with us, Miss Nikolaou. Wait for my telephone."
+        }
+      ],
+      "learned": [
+        "Loan paid. Inez calls Okafor over."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

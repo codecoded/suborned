@@ -10,7 +10,7 @@ import { ctxOf, generated } from '../../plan/world-ctx';
 import { LAMP, civicClearance } from '../build';
 import { type Dressing, dressingOf, footOf, placementKinds } from '../civic/dress';
 import { look } from '../civic/look';
-import { adoptedBy } from '../gen/kitrefs';
+import { adoptedBy, catalogued } from '../gen/kitrefs';
 import { landingsOf } from '../gen/street/crossings';
 import { adoptedRule, budgetRule, civicDressRules, civicTris, drawnApart, handoverPoints, namedPieces, overrideProblems, paletteRule } from './civic-dress';
 
@@ -65,7 +65,12 @@ describe('civic dressing: what is placed', () => {
   });
   test('the parasols, the frontages, the shelter and the cypresses take the architecture fade; lamps, bollards and planters do not', () => {
     const faded = new Set(base.w.civic.filter(m => m.fade).map(m => m.kit!.id));
-    expect([...faded].sort()).toEqual([...look.fade].sort());
+    const spare = new Set(Object.values(look.upper ?? {}).flat().map(id => look.swaps[id] ?? id).filter(id => !faded.has(id))); // brief 066: the café's body piece of the other storey count is listed, never placed
+    // brief 077: a faded piece is drawn as its swap (CafeUpper_3 -> CafeUpper_3_TB), and its planting companion fades with it
+    const fadeDrawn = look.fade.map(id => look.swaps[id] ?? id).filter(id => !spare.has(id));
+    expect([...faded].filter(id => !/_Planting$/.test(id)).sort()).toEqual(fadeDrawn.sort());
+    expect([...faded].filter(id => /_Planting$/.test(id))).toEqual(['CafeUpper_3_Planting']);
+    expect(spare.size).toBe(1);
     expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(7);
   });
   test('crossings: nine civic landings are built, each paired across the carriageway; x-apron-w and the two left out stay dropped', () => {
@@ -85,10 +90,10 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
   test('the terrace goes with the café bay: same pivot, yaw and ground; the bay keeps the fade, the terrace does not', () => {
     const bay = civicMass(base.w, 'civic/cafe/ground'), terrace = civicMass(base.w, 'civic/cafe/terrace');
     expect({ ...terrace.kit!, id: 'CafeBay_v2' }).toEqual(bay.kit!);
-    expect([terrace.kit!.id, bay.kit!.id]).toEqual(['CafeTerrace', 'CafeBay_v2']);
+    expect([terrace.kit!.id, bay.kit!.id]).toEqual(['CafeTerrace_TB', 'CafeBay_v2']); // brief 077: the block's CafeTerrace drawn as its testbed rebuild
     const room = civicMass(base.w, 'civic/cafe/interior'); expect({ ...room.kit!, id: 'CafeBay_v2' }).toEqual(bay.kit!); expect(room.fade).toBe(true); // the room and its walls fade with the bay
     expect(bay.fade).toBe(true); expect(terrace.fade).toBeUndefined();
-    expect(terrace.height).toBeCloseTo(adoptedBy('CafeTerrace')!.size[1], 3);
+    expect(terrace.height).toBeCloseTo(catalogued('CafeTerrace')!.size[1], 3); // brief 077: the swap keeps the footprint and height of the piece it stands in for
   });
   test('the terrace box takes in the wall the block measured, and the tables and palms inside it are not overlaps', () => {
     const wall = (dr.pieces.find(p => p.piece === 'CafeBay') as unknown as { solids: { polygon: V[] }[] }).solids.flatMap(s => s.polygon).map(toPlan), ring = civicMass(base.w, 'civic/cafe/terrace').ring;
@@ -98,34 +103,16 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
     expect(inPoly(table.kit!.at, ring)).toBe(true);
     expect(civicClearance(base.w.civic)).toEqual([]);
   });
-  test('five beds: a kerb and a hedge each, 92 tufts in Vela\'s counts, 8,305 triangles (the two beds either side of the old north door went with it, 2026-10-19: 171 and 15,390 before)', () => {
+  test('five beds at bed level (brief 077, adopted 2026-10-30): a kerb and one CivicBedPlanting each, no hedge, no tufts', () => {
     expect(beds.map(m => m.id).sort()).toEqual(['dropoff-west', 'facade-southeast', 'facade-southwest', 'office-north', 'office-west'].map(s => `civic/civic-${s}`));
-    expect(hedges.map(m => m.id)).toEqual(beds.map(m => `${m.id}/hedge`).sort());
-    expect(tufts).toHaveLength(92);
-    const per = Object.fromEntries(beds.map(b => [b.id.replace('civic/civic-', ''), tufts.filter(t => t.id.startsWith(`${b.id}/`)).length]));
-    expect(per).toEqual({ 'dropoff-west': 17, 'facade-southeast': 13, 'facade-southwest': 12, 'office-north': 16, 'office-west': 34 });
-    expect(tufts.reduce((n, t) => n + adoptedBy(t.kit!.id)!.tris, 0)).toBe(8305);
-    expect(base.w.civic.some(m => m.surface === 'park' && !m.kit)).toBe(false); // none left as a plain prism
-  });
-  test('kerb to mass height, hedge a rise on top, tufts on the hedge top less the drop; everything lies inside the bed\'s own ring', () => {
+    expect(hedges).toEqual([]); expect(tufts).toEqual([]);
     for (const b of beds) {
-      const h = hedges.find(m => m.id === `${b.id}/hedge`)!, own = tufts.filter(t => t.id.startsWith(`${b.id}/`));
-      expect(b.height).toBeCloseTo(0.52, 3);
-      expect([h.base, h.height]).toEqual([+(b.base + b.height).toFixed(3), look.beds.hedge.rise]);
-      expect(h.ring.every(p => inPoly(p, b.ring))).toBe(true);
-      for (const t of own) { expect(t.kit!.base).toBeCloseTo(h.base + h.height - look.beds.tufts.drop, 3); expect(t.ring.every(p => inPoly(p, b.ring))).toBe(true); }
+      const own = base.w.civic.filter(m => m.id.startsWith(`${b.id}/`));
+      expect(own.map(m => [m.id, m.kit?.id])).toEqual([[`${b.id}/planting`, `CivicBedPlanting_${b.id.replace('civic/civic-', '')}`]]);
+      expect(b.height).toBeCloseTo(0.52, 3); expect(own[0]!.kit!.base).toBeCloseTo(b.base + b.height + 0.003, 3);
     }
-  });
-  test('variant = (station + bed index) mod 3 over both rows, so neighbours differ; the yaw is the same on every run', () => {
-    const order = beds.map(b => b.id).sort();
-    for (const [bi, id] of order.entries()) {
-      const own = tufts.filter(t => t.id.startsWith(`${id}/`));
-      own.forEach((t, i) => expect(t.kit!.id).toBe(look.beds.tufts.pieces[(i + bi) % 3]));
-      own.slice(1).forEach((t, i) => expect(t.kit!.id).not.toBe(own[i]!.kit!.id));
-    }
-    expect(new Set(tufts.map(t => t.kit!.yaw)).size).toBeGreaterThan(80);
-    const again = generated(plan, d, civ).w.civic.filter(m => /\/tuft-\d+$/.test(m.id));
-    expect(again.map(t => t.kit!.yaw)).toEqual(tufts.map(t => t.kit!.yaw));
+    expect(base.w.civic.some(m => m.surface === 'park' && !m.kit)).toBe(false); // none left as a plain prism
+    expect(generated(plan, d, civ).w.civic.filter(m => m.id.endsWith('/planting')).map(m => m.kit)).toEqual(base.w.civic.filter(m => m.id.endsWith('/planting')).map(m => m.kit)); // the same every run
   });
   test('the civic masses draw the override table of civic-look.json and no other mass replaces a material; the pool its own water, the planters the brass bead', () => {
     const drawn = Object.fromEntries(base.w.civic.filter(m => m.materials).map(m => [m.id, m.materials]));
@@ -133,11 +120,12 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
     expect(civicMass(base.w, 'civic/atom-fountain').materials).toBeUndefined(); // brief 028: AtomFountain_Testbed draws its own materials
     const planters = ['north-east', 'north-west', 'south-west', 'south-east'].map(c => `civic/fountain-garden-${c}`);
     // DK_Accent_Gold is brass #99784D in the kit now, the same colour as DK_Brass_Civic: the slot swap is kept (it is in the export, and Latch builds from it), not needed for the colour
-    for (const id of planters) expect(civicMass(base.w, id).materials).toMatchObject({ DK_Accent_Gold: 'DK_Brass_Civic', DK_Faience_Teal: 'DK_Enamel_Seafoam', DK_Leaf_CoreShrub: 'DK_Leaf_CivicDark' });
-    expect(planters.map(id => civicMass(base.w, id).materials!.DK_Flower_Coral)).toEqual(['DK_Flower_CoralSoft', 'DK_Flower_Flamingo', 'DK_Flower_CoralSoft', 'DK_Flower_Flamingo']);
-    expect(civicMass(base.w, 'civic/foreground-civic-robot').materials).toEqual({ DK_Signal_Amber: 'DK_Glow_Seafoam', DK_Face_Amber: 'DK_Face_Teal', DK_RobotEnamel_Coral: 'DK_Enamel_Coral17' });
+    // brief 077: PlanterArc_TB keeps the stone slots' overrides; the dome leaf and flower slots went with the dome planting
+    for (const id of planters) expect(civicMass(base.w, id).materials).toEqual({ DK_Accent_Gold: 'DK_Brass_Civic', DK_Faience_Teal: 'DK_Enamel_Seafoam' });
+    expect(base.w.civic.some(m => m.id === 'civic/foreground-civic-robot')).toBe(false); // the steward robot left the block (civic-block.adjust.json `remove`, 2026-10-26, Sky: briefs/067 J) and its override row left the look with it
+    expect(Object.keys(look.materials)).not.toContain('civic/foreground-civic-robot');
     expect(adoptedBy('AtomFountain')!.materials).toContain('DK_Water');
-    expect(adoptedBy('PlanterArc')!.materials).toContain('DK_Accent_Gold');
+    expect(adoptedBy('PlanterArc_TB')!.materials).toContain('DK_Accent_Gold'); // brief 077: drawn as its testbed rebuild
   });
   test('every material a civic mass takes is held by the palette and carried by the kit (a swap target with no file would import pink)', () => {
     const kit = JSON.parse(readFileSync(resolve(root, 'contracts/world/kit.json'), 'utf8')) as { assets: { status: string; files: { path: string }[] }[] };
@@ -148,10 +136,10 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
 });
 
 describe('CD-1 keep-clear and Handover points', () => {
-  test('the live world passes all four', () => {
+  test('the live world passes all five (CD-5, brief 077: the bed-level beds)', () => {
     const r = rules();
     expect(Object.values(r).filter(c => !c.ok).map(c => `${c.id} ${c.detail}`)).toEqual([]);
-    expect(Object.keys(r)).toEqual(['CD-1', 'CD-2', 'CD-3', 'CD-4']);
+    expect(Object.keys(r)).toEqual(['CD-1', 'CD-2', 'CD-3', 'CD-4', 'CD-5']);
   });
   test('table 2\'s parasol stands over "Under parasol" and passes: the canopy is overhead', () => {
     const under = handoverPoints(toPlan).find(h => h.name === 'Under parasol')!, par = civicMass(base.w, 'civic/cafe-table-2/parasol');
@@ -172,19 +160,17 @@ describe('CD-1 keep-clear and Handover points', () => {
     expect(rules(w => moveTo(civicMass(w, 'civic/band/forecourt-bar.0'), [64, -42.5]))['CD-1']!.detail).toContain('office-public-steps');
     expect(rules(w => moveTo(civicMass(w, 'civic/band/spine-inner.0'), [2.1, -25.6]))['CD-1']!.detail).toContain('fountain-garden');
   });
-  test('crossings (brief 009): a stud or a signal halo on a Handover point fails; the orb overhead, the dot rows and the arcs flush with the paving pass', () => {
+  test('crossings (brief 009, 061): a signal halo on a Handover point fails; the head overhead and the dot rows flush with the paving pass', () => {
     const at = (kind: string) => base.w.street.find(s => s.kind === kind)!;
     const near = (p: V) => handoverPoints(toPlan).sort((a, b) => Math.hypot(a.p[0] - p[0], a.p[1] - p[1]) - Math.hypot(b.p[0] - p[0], b.p[1] - p[1]))[0]!;
     const onPoint = (w: World, id: string) => { const s = w.street.find(q => q.id === id)!, h = near(s.at); s.at = h.p; if (s.signal) s.signal.halo.at = h.p; return h.name; };
-    const stud = at('crossing-stud'), orb = at('signal-orb'), bar = at('crossing-dots'), arc = at('crossing-arc');
+    const orb = at('signal-orb'), bar = at('crossing-dots');
     let name = '';
-    const a = rules(w => { name = onPoint(w, stud.id); });
-    expect(a['CD-1']!.ok).toBe(false); expect(a['CD-1']!.detail).toContain(`${stud.id} (crossing stud) is 0.00 m from '${name}'`);
     const b = rules(w => { name = onPoint(w, orb.id); });
     expect(b['CD-1']!.ok).toBe(false); expect(b['CD-1']!.detail).toContain(`${orb.id} (signal halo) is 0.00 m from '${name}'`);
-    const c = rules(w => { for (const id of [bar.id, arc.id]) { const s = w.street.find(q => q.id === id)!; s.at = near(s.at).p; } }); // flat lights and inlay: exempt, as flat inlay is
+    const c = rules(w => { const s = w.street.find(q => q.id === bar.id)!; s.at = near(s.at).p; }); // flat lights: exempt, as flat inlay is
     expect(c['CD-1']!.ok).toBe(true);
-    const d = rules(w => { const s = w.street.find(q => q.id === orb.id)!; s.at = near(s.at).p; }); // the orb hovers overhead: only its halo (left where it was) counts
+    const d = rules(w => { const s = w.street.find(q => q.id === orb.id)!; s.at = near(s.at).p; }); // the head hovers overhead: only its halo (left where it was) counts
     expect(d['CD-1']!.ok).toBe(true);
   });
   test('passes: flat inlay under a Handover point (spine-north under "Courtyard")', () => {
@@ -214,8 +200,8 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
   test('CD-3 counts the LOD0 triangles of the new pieces as placed (the tufts and the terrace among them), and fails over the budget', () => {
     const n = civicTris(base.w.civic);
     expect(n).toBeGreaterThan(80000); expect(n).toBeLessThanOrEqual(look.budget.lod0Tris);
-    expect(n - civicTris(base.w.civic.filter(m => !/\/tuft-\d+$/.test(m.id)))).toBe(8305);
-    expect(civicTris(base.w.civic.filter(m => m.id !== 'civic/cafe/terrace'))).toBe(n - 3372);
+    expect(base.w.civic.some(m => /\/tuft-\d+$/.test(m.id))).toBe(false); // brief 077: the beds are bed level
+    expect(civicTris(base.w.civic.filter(m => m.id !== 'civic/cafe/terrace'))).toBe(n - adoptedBy('CafeTerrace_TB')!.tris);
     expect(budgetRule(base.w.civic).ok).toBe(true);
     expect(budgetRule(base.w.civic, n - 1).ok).toBe(false);
   });
@@ -238,3 +224,41 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
     expect(look.pieces.filter(p => !used.has(p) && !/^PlanterRun_(2|Corner|End)/.test(p))).toEqual([]);
   });
 });
+
+// Brief 077 (Sky 2026-10-30): the five civic beds at bed level. Their rings are the testbed's beds moved whole, so each fits its piece's outline vertex for vertex
+// under 1 mm; with the CivicBed pieces adopted (a pinned catalogue here: nothing is adopted in kit.json yet) each bed is its one piece, soil 3 mm above the kerb top.
+describe('civic dressing: bed-level beds (brief 077)', () => {
+  const { mkdtempSync, writeFileSync } = require('node:fs') as typeof import('node:fs');
+  const { tmpdir } = require('node:os') as typeof import('node:os');
+  const { withKit } = require('../gen/kitrefs') as typeof import('../gen/kitrefs');
+  const { bedLevelOf, dressBeds, fitRigid } = require('../civic/beds') as typeof import('../civic/beds');
+  const { bedLevelRule } = require('./civic-dress') as typeof import('./civic-dress');
+  const level = look.beds.level!, kerbs = base.w.civic.filter(m => m.surface === look.beds.kerb.surface);
+  test('civic-look.json names the five beds, each with its CivicBed piece; every ring fits its outline vertex for vertex under 1 mm', () => {
+    expect(Object.keys(level.beds).sort()).toEqual(kerbs.map(m => m.id).sort());
+    for (const m of kerbs) { const f = fitRigid(level.beds[m.id]!.outline, m.ring)!; expect(f.err).toBeLessThan(level.tol); expect(level.beds[m.id]!.piece).toBe(`CivicBedPlanting_${m.id.replace('civic/civic-', '')}`); }
+    expect(level.soilProud).toBe(0.003);
+  });
+  test('all five stand at their pivot (the ring centroid) at yaw 0 (Vela rev 2 builds every bed vertex i to vertex i; rev 1 built facade-southwest half-turned and it fitted at pi)', () => {
+    const yaw = Object.fromEntries(kerbs.map(m => [m.id.replace('civic/civic-', ''), Math.round(fitRigid(level.beds[m.id]!.outline, m.ring)!.yaw * 1000) / 1000]));
+    expect(Object.fromEntries(Object.entries(yaw).map(([k, v]) => [k, Math.abs(v) < 0.001 ? 0 : Math.abs(Math.abs(v) - Math.PI) < 0.001 ? 'pi' : v]))).toEqual({ 'dropoff-west': 0, 'facade-southeast': 0, 'facade-southwest': 0, 'office-north': 0, 'office-west': 0 });
+  });
+  test('adopted (2026-10-30): every bed is planted by its piece and CD-5 passes 5/5 at bed level', () => {
+    expect(bedLevelOf(base.w.civic).map(l => [l.bed, l.planted])).toEqual(kerbs.map(m => [m.id, true]).sort());
+    const c = rules()['CD-5']!; expect(c.ok).toBe(true); expect(c.value).toBe('5/5'); expect(c.detail).toBe('5/5 at bed level');
+  });
+  test('with the five adopted: one piece each at the fitted pivot and yaw, its soil 3 mm above the kerb top, no hedge, no tufts; CD-5 passes 5/5 at bed level', () => {
+    const kit = read('contracts/world/kit.json'), file = resolve(mkdtempSync(resolve(tmpdir(), 'cd5-')), 'kit.json');
+    for (const id of Object.values(level.beds).map(b => b.piece)) kit.assets.push({ id, category: 'Plaza', size: [4, 1.36, 3], pivot: 'footprint-centre-ground', front: '+Z', tris: 0, materials: [], status: 'adopted', tags: { use: [] }, files: [] });
+    writeFileSync(file, JSON.stringify(kit));
+    const parks = kerbs.map(m => ({ ...m, surface: 'park' }));
+    const out = withKit(file, () => dressBeds(parks));
+    for (const m of kerbs) {
+      const own = out.filter(x => x.id.startsWith(`${m.id}/`)), f = fitRigid(level.beds[m.id]!.outline, m.ring)!;
+      expect(own.map(x => x.id)).toEqual([`${m.id}/planting`]);
+      expect(own[0]!.kit).toEqual({ id: level.beds[m.id]!.piece, scale: [1, 1, 1], yaw: f.yaw, at: f.at, base: +(m.base + m.height + 0.003).toFixed(3) });
+    }
+    const c = withKit(file, () => bedLevelRule(out)); expect(c.ok).toBe(true); expect(c.detail).toBe('5/5 at bed level');
+  });
+});
+

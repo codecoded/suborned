@@ -1,0 +1,163 @@
+{
+  "takes": [
+    {
+      "situation": "Milena offers cash for Inez's terrace tables; Inez, broke, refuses, and the refusal gives her away.",
+      "beats": [
+        {
+          "speaker": "Milena",
+          "line": "Swap me the terrace. You get half my tips."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Mind, that plate's hot. No, I'm fine out here."
+        },
+        {
+          "speaker": "Milena",
+          "line": "Your Bureau card's two stamps short. Mine's one. Take the money."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I know I can't keep up the loan. Not the terrace."
+        },
+        {
+          "speaker": "Milena",
+          "line": "You jump at every bell, then you refuse money?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "Table six wants their bill. Who's that behind you?"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Nobody. You wait tables and watch one door. Okafor's, at the Office."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Lower your voice. Yes. I'm seeing Okafor."
+        },
+        {
+          "speaker": "Milena",
+          "line": "If the Office hears, that costs you both. So, the terrace?"
+        },
+        {
+          "speaker": "Scout",
+          "line": "Bureau loan, behind. Okafor, secret. Two ways: clear it, or use Okafor."
+        }
+      ],
+      "learned": [
+        "Inez owes a Bureau loan",
+        "Her lover is the door guard"
+      ],
+      "opens": [
+        "Help: clear her Bureau loan",
+        "Pressure: threaten to tell her secret"
+      ]
+    },
+    {
+      "situation": "Inez asks Milena for money; Milena wants security, names Okafor, and Inez's panic confirms it.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Careful, that cup's full. Milena, can you spare me anything?"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Spare what? I owe the Bureau too. What do I get?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "Their clockwork collector came again. \"So pleased to call, madam.\""
+        },
+        {
+          "speaker": "Milena",
+          "line": "You're always looking over your shoulder. What can you put up?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'm a waitress. I can't keep up the Bureau loan."
+        },
+        {
+          "speaker": "Milena",
+          "line": "Borrow from Okafor, on the Office door. You look often enough."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who told you? Has anyone been asking at the Office?"
+        },
+        {
+          "speaker": "Milena",
+          "line": "Nobody. You just did. So you're seeing Okafor."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Please. If the Office hears, it costs us both."
+        },
+        {
+          "speaker": "Scout",
+          "line": "Owes the Bureau. Sees Okafor. Two ways: clear it, or use Okafor."
+        }
+      ],
+      "learned": [
+        "Inez owes a Bureau loan",
+        "Her lover is the door guard"
+      ],
+      "opens": [
+        "Help: clear her Bureau loan",
+        "Pressure: threaten to tell her secret"
+      ]
+    },
+    {
+      "situation": "A stamped Bureau notice arrives by tube; Inez assumes the Office has found out, and Milena hunts for the money angle.",
+      "beats": [
+        {
+          "speaker": "Scout",
+          "line": "Next table. One at the door, one inside. Tube just thumped in."
+        },
+        {
+          "speaker": "Milena",
+          "line": "You always jump. It's just a tube, stamped with your name."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Whose stamp? Is it the Office? Did somebody say something?"
+        },
+        {
+          "speaker": "Milena",
+          "line": "The Bureau, your loan. Why would the Office write to you?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "Mind the bowl, it's full. No reason. Give that here."
+        },
+        {
+          "speaker": "Milena",
+          "line": "Says you're behind again. And you've watched Okafor's door all shift."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I can't keep up on waitress tips. Keep your voice down."
+        },
+        {
+          "speaker": "Milena",
+          "line": "Is Okafor helping you pay? I owe the Bureau too."
+        },
+        {
+          "speaker": "Inez",
+          "line": "No. I'm seeing Okafor. If the Office hears, it costs us both."
+        },
+        {
+          "speaker": "Scout",
+          "line": "Bureau debt. Okafor, in secret. Two ways: clear it, or use Okafor."
+        }
+      ],
+      "learned": [
+        "Inez owes a Bureau loan",
+        "Her lover is the door guard"
+      ],
+      "opens": [
+        "Help: clear her Bureau loan",
+        "Pressure: threaten to tell her secret"
+      ]
+    }
+  ]
+}

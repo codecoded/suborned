@@ -25,6 +25,7 @@ export const VERDICT_FILES = [
   'tools/world/civic/cafe.ts', // where the world draws the café sets: seats.ts places the chairs from it
   'tools/missions/handover/visibility.ts', 'tools/missions/sight.ts', // the overlay's sight rules (Vantage): visibility.ts draws the world's masses, so the world generator is part of what a people verdict reaches (below)
   'tools/kit/fit.ts',
+  'tools/names/ban.ts', // brief 089: the people's names skip the ban list through Splice's matcher (tools/people/names.ts)
 ];
 export const peopleFiles = (base: string = root): string[] => [
   ...ts(base, 'tools/people'), ...ts(base, 'tools/plan'), ...ts(base, 'contracts/people'), ...ts(base, 'tools/world/gen'), ...ts(base, 'tools/world/civic'), 'tools/world/build.ts', ...VERDICT_FILES,

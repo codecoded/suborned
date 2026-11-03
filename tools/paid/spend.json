@@ -22,14 +22,54 @@
    "usd": 3.30951
   },
   "2026-10-23": {
-   "calls": 161,
+   "calls": 173,
    "usd": 55.10232
+  },
+  "2026-10-24": {
+   "calls": 19,
+   "usd": 0.35277
+  },
+  "2026-10-25": {
+   "calls": 13,
+   "usd": 3.75
+  },
+  "2026-10-26": {
+   "calls": 18,
+   "usd": 0.0
+  },
+  "2026-10-27": {
+   "calls": 50,
+   "usd": 5.5
+  },
+  "2026-10-28": {
+   "calls": 44,
+   "usd": 0.0
+  },
+  "2026-10-31": {
+   "calls": 1,
+   "usd": 0.0
+  },
+  "2026-11-01": {
+   "calls": 134,
+   "usd": 3.33165
+  },
+  "2026-11-02": {
+   "calls": 188,
+   "usd": 0.80156
   }
  },
  "by_model": {
+  "alibaba:qwen@3-tts-1.7b-voicedesign": {
+   "calls": 28,
+   "usd": 0.0177
+  },
   "bfl:5@1": {
    "calls": 1,
    "usd": 0.045
+  },
+  "bytedance:seed-audio@1.0": {
+   "calls": 86,
+   "usd": 1.29125
   },
   "bytedance:seedance@2.0": {
    "calls": 20,
@@ -40,12 +80,20 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 4,
+   "calls": 151,
    "usd": 0.0
+  },
+  "fishaudio:s2.1@pro": {
+   "calls": 28,
+   "usd": 0.01761
   },
   "google:4@2": {
    "calls": 1,
    "usd": 0.138
+  },
+  "inworld:tts@1.5-max": {
+   "calls": 85,
+   "usd": 0.23045
   },
   "minimax:4@1": {
    "calls": 31,
@@ -55,17 +103,37 @@
    "calls": 7,
    "usd": 5.59
   },
+  "minimax:h3@fast": {
+   "calls": 5,
+   "usd": 2.4
+  },
   "minimax:music@2.6": {
-   "calls": 1,
-   "usd": 0.15
+   "calls": 5,
+   "usd": 0.6
+  },
+  "mirelo:1@1": {
+   "calls": 46,
+   "usd": 1.72
   },
   "openai:gpt-image@2": {
-   "calls": 1,
-   "usd": 0.01918
+   "calls": 10,
+   "usd": 0.37195
+  },
+  "runware:ace-step@v1.5-xl-base": {
+   "calls": 27,
+   "usd": 0.4062
+  },
+  "tencent:hunyuan-3d@3.1-pro": {
+   "calls": 9,
+   "usd": 4.05
+  },
+  "tripo:v3.1@0": {
+   "calls": 5,
+   "usd": 2.8
   }
  },
- "calls": 236,
- "failed": 2,
+ "calls": 715,
+ "failed": 26,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -269,6 +337,35 @@
    "used": 18,
    "used_usd": 1.8297
   },
+  "051-frontend": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-23": {
+     "calls": 8,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 8,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "menu-concepts": {
+     "calls": 8,
+     "usd": 0.0
+    }
+   },
+   "calls": 8,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 8,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "052-teaser": {
    "blocked": 6,
    "by_day": {
@@ -343,6 +440,708 @@
    "used": 29,
    "used_usd": 22.26026
   },
+  "055-road": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-23": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "road-options": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "calls": 4,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 4,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "061-crossings": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-24": {
+     "calls": 6,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 6,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 6,
+     "usd": 0.0
+    }
+   },
+   "calls": 6,
+   "cost_per_used": null,
+   "failed": 6,
+   "ok": 0,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "062-briefing": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-24": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "faces": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "calls": 2,
+   "cost_per_used": null,
+   "failed": 2,
+   "ok": 0,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "063-portraits": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-24": {
+     "calls": 11,
+     "usd": 0.35277
+    },
+    "2026-10-25": {
+     "calls": 5,
+     "usd": 1.35
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 5,
+     "usd": 0.0
+    },
+    "openai:gpt-image@2": {
+     "calls": 9,
+     "usd": 0.35277
+    },
+    "tencent:hunyuan-3d@3.1-pro": {
+     "calls": 2,
+     "usd": 1.35
+    }
+   },
+   "by_pass": {
+    "concepts": {
+     "budget_usd": 2.0,
+     "calls": 9,
+     "usd": 0.35277
+    },
+    "probe": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "vale-model": {
+     "budget_usd": 3.0,
+     "calls": 2,
+     "usd": 1.35
+    },
+    "vale-sheet": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "calls": 16,
+   "cost_per_used": 0.1548,
+   "failed": 2,
+   "ok": 14,
+   "total_usd": 1.70277,
+   "unknown_cost_calls": 0,
+   "used": 11,
+   "used_usd": 1.70277
+  },
+  "065-capture-pip": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-25": {
+     "calls": 8,
+     "usd": 2.4
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 3,
+     "usd": 0.0
+    },
+    "minimax:h3@fast": {
+     "calls": 5,
+     "usd": 2.4
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 5.0,
+     "calls": 8,
+     "usd": 2.4
+    }
+   },
+   "calls": 8,
+   "cost_per_used": null,
+   "failed": 2,
+   "ok": 6,
+   "total_usd": 2.4,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "067-rival-car": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-26": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "067-rival-look": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-26": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "069-e2e": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 7,
+     "usd": 2.7
+    }
+   },
+   "by_model": {
+    "tencent:hunyuan-3d@3.1-pro": {
+     "calls": 7,
+     "usd": 2.7
+    }
+   },
+   "by_pass": {
+    "meshes": {
+     "budget_usd": 5.4,
+     "calls": 7,
+     "usd": 2.7
+    }
+   },
+   "calls": 7,
+   "cost_per_used": 0.675,
+   "failed": 3,
+   "ok": 4,
+   "total_usd": 2.7,
+   "unknown_cost_calls": 0,
+   "used": 4,
+   "used_usd": 2.7
+  },
+  "069-enforcer": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 8,
+     "usd": 1.2
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 6,
+     "usd": 0.0
+    },
+    "tripo:v3.1@0": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_pass": {
+    "intake": {
+     "calls": 6,
+     "usd": 0.0
+    },
+    "mesh30k": {
+     "budget_usd": 1.2,
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "calls": 8,
+   "cost_per_used": 0.6,
+   "failed": 0,
+   "ok": 8,
+   "total_usd": 1.2,
+   "unknown_cost_calls": 0,
+   "used": 2,
+   "used_usd": 1.2
+  },
+  "069-fixer": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_model": {
+    "tripo:v3.1@0": {
+     "calls": 2,
+     "usd": 1.2
+    }
+   },
+   "by_pass": {
+    "mesh": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.6
+    },
+    "mesh30k": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.6
+    }
+   },
+   "calls": 2,
+   "cost_per_used": 0.6,
+   "failed": 0,
+   "ok": 2,
+   "total_usd": 1.2,
+   "unknown_cost_calls": 0,
+   "used": 2,
+   "used_usd": 1.2
+  },
+  "069-intake": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-26": {
+     "calls": 16,
+     "usd": 0.0
+    },
+    "2026-10-27": {
+     "calls": 23,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 39,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "fixer": {
+     "calls": 17,
+     "usd": 0.0
+    },
+    "noman": {
+     "calls": 4,
+     "usd": 0.0
+    },
+    "r1": {
+     "calls": 8,
+     "usd": 0.0
+    },
+    "r2": {
+     "calls": 8,
+     "usd": 0.0
+    },
+    "sky1": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "calls": 39,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 39,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "069-props": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-27": {
+     "calls": 10,
+     "usd": 0.4
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 9,
+     "usd": 0.0
+    },
+    "tripo:v3.1@0": {
+     "calls": 1,
+     "usd": 0.4
+    }
+   },
+   "by_pass": {
+    "guard-pistol": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "pistol": {
+     "calls": 7,
+     "usd": 0.0
+    },
+    "pistol-mesh": {
+     "budget_usd": 1.0,
+     "calls": 1,
+     "usd": 0.4
+    }
+   },
+   "calls": 10,
+   "cost_per_used": 0.4,
+   "failed": 3,
+   "ok": 7,
+   "total_usd": 0.4,
+   "unknown_cost_calls": 0,
+   "used": 1,
+   "used_usd": 0.4
+  },
+  "073-atmosphere": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-28": {
+     "calls": 31,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 31,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 20,
+     "usd": 0.0
+    },
+    "2": {
+     "calls": 8,
+     "usd": 0.0
+    },
+    "3": {
+     "calls": 3,
+     "usd": 0.0
+    }
+   },
+   "calls": 31,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 31,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "075-posters": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-28": {
+     "calls": 13,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 13,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "ads1": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "ads2": {
+     "calls": 12,
+     "usd": 0.0
+    }
+   },
+   "calls": 13,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 13,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "085-book": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-02": {
+     "calls": 18,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 18,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "look1": {
+     "calls": 4,
+     "usd": 0.0
+    },
+    "look2": {
+     "calls": 4,
+     "usd": 0.0
+    },
+    "look3": {
+     "calls": 9,
+     "usd": 0.0
+    },
+    "plate": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 18,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 18,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "085-convo-ui": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-31": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "mock": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "087-music": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-01": {
+     "calls": 14,
+     "usd": 0.3825
+    },
+    "2026-11-02": {
+     "calls": 17,
+     "usd": 0.4737
+    }
+   },
+   "by_model": {
+    "minimax:music@2.6": {
+     "calls": 4,
+     "usd": 0.45
+    },
+    "runware:ace-step@v1.5-xl-base": {
+     "calls": 27,
+     "usd": 0.4062
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 2.0,
+     "calls": 15,
+     "usd": 0.5325
+    },
+    "2": {
+     "budget_usd": 5.0,
+     "calls": 16,
+     "usd": 0.3237
+    }
+   },
+   "calls": 31,
+   "cost_per_used": null,
+   "failed": 4,
+   "ok": 27,
+   "total_usd": 0.8562,
+   "unknown_cost_calls": 3,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "087-sound": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-01": {
+     "calls": 120,
+     "usd": 2.94915
+    },
+    "2026-11-02": {
+     "calls": 12,
+     "usd": 0.0621
+    }
+   },
+   "by_model": {
+    "bytedance:seed-audio@1.0": {
+     "calls": 86,
+     "usd": 1.29125
+    },
+    "mirelo:1@1": {
+     "calls": 46,
+     "usd": 1.72
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 3.0,
+     "calls": 46,
+     "usd": 1.72
+    },
+    "2": {
+     "budget_usd": 1.0,
+     "calls": 4,
+     "usd": 0.07242
+    },
+    "3": {
+     "budget_usd": 3.0,
+     "calls": 53,
+     "usd": 0.86917
+    },
+    "4": {
+     "budget_usd": 1.5,
+     "calls": 29,
+     "usd": 0.34967
+    }
+   },
+   "calls": 132,
+   "cost_per_used": null,
+   "failed": 2,
+   "ok": 130,
+   "total_usd": 3.01125,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "090-voices": {
+   "blocked": 0,
+   "by_day": {
+    "2026-11-02": {
+     "calls": 141,
+     "usd": 0.26576
+    }
+   },
+   "by_model": {
+    "alibaba:qwen@3-tts-1.7b-voicedesign": {
+     "calls": 28,
+     "usd": 0.0177
+    },
+    "fishaudio:s2.1@pro": {
+     "calls": 28,
+     "usd": 0.01761
+    },
+    "inworld:tts@1.5-max": {
+     "calls": 85,
+     "usd": 0.23045
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 5.0,
+     "calls": 141,
+     "usd": 0.26576
+    }
+   },
+   "calls": 141,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 141,
+   "total_usd": 0.26576,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "900-codexcheck": {
    "blocked": 0,
    "by_day": {
@@ -378,6 +1177,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 62.32156,
- "used": 52
+ "total_usd": 76.05754,
+ "used": 72
 }

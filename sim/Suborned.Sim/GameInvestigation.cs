@@ -49,6 +49,18 @@ namespace Suborned.Sim
     public static class Streams
     {
         public static uint Fnv1a32(string key) { unchecked { uint h = 0x811c9dc5; foreach (var c in key) { h ^= c; h *= 0x01000193; } return h; } }
+        /// <summary>Brief 080: the n-th output (n from 1) of the Mulberry stream with this key: mulberry32 steps its state by a constant, so any draw can be
+        /// read by its index with no state kept. A read of the odds never calls it; a character's index moves only when it draws.</summary>
+        public static uint Nth(uint key, int n)
+        {
+            unchecked
+            {
+                uint s = key == 0 ? 1u : key; s += 0x6d2b79f5u * (uint)n; uint t = s;
+                t = (t ^ (t >> 15)) * (t | 1);
+                t ^= t + (t ^ (t >> 7)) * (t | 61);
+                return t ^ (t >> 14);
+            }
+        }
         public sealed class Mulberry
         {
             uint s;
@@ -88,10 +100,11 @@ namespace Suborned.Sim
             if (witnesses != null) i.Witnesses.AddRange(witnesses);
             Incidents.Add(i); return i;
         }
-        List<(Person p, Pt at)> WitnessesWithPos(Pt at, Person? except)
+        /// <summary>Brief 054 §3.2: who notices `act` at `at` now, with where they stand (the notice rule; around: within reach on a line).</summary>
+        List<(Person p, Pt at)> WitnessesWithPos(Pt at, Person? except, string act)
         {
             var seen = new List<(Person, Pt)>();
-            foreach (var (p, wp) in OnTheStreet()) { if (p == except) continue; if (G.Within(wp, at, witnessRange) && Sees(wp, at)) seen.Add((p, wp)); }
+            foreach (var (p, wp) in OnTheStreet()) { if (p == except) continue; if (Notices(p, wp, at, act)) seen.Add((p, wp)); }
             return seen;
         }
 
@@ -217,7 +230,14 @@ namespace Suborned.Sim
         {
             var o = new List<(Person, Pt)>();
             foreach (var p in People) { var pp = PersonPos(p); if (pp.HasValue && G.Within(pp.Value, at, witnessRange) && Sees(pp.Value, at)) o.Add((p, pp.Value)); }
-            if (People2 != null && Start.Crowd) foreach (var w in Walkers) { var wp = CrowdPos(w, t); if (wp.HasValue && G.Within(wp.Value, at, witnessRange) && Sees(wp.Value, at)) o.Add((w.P, wp.Value)); }
+            // brief 054 §3.5: a walker had a sightline at tick t by the notice rule: security all round, a civilian by the cone they faced then
+            // (FacingAt: their routine at t; a lead is a sighting of the cell, read as the always row)
+            if (People2 != null && Start.Crowd) foreach (var w in Walkers)
+                {
+                    var wp = CrowdPos(w, t); if (!wp.HasValue || !G.Within(wp.Value, at, witnessRange) || !Sees(wp.Value, at)) continue;
+                    if (R.PeopleCone && !IsStaff(w.P) && !(FacingAt(w, t) is Pt f && G.InCone(wp.Value, f, R.PeopleReachCm, R.PeopleHalfCm, 0, at))) continue;
+                    o.Add((w.P, wp.Value));
+                }
             return o;
         }
 
@@ -230,7 +250,7 @@ namespace Suborned.Sim
             Person C(Person p)
             {
                 if (copies.TryGetValue(p, out var c)) return c;
-                c = new Person { Role = p.Role, Id = p.Id, Name = p.Name, Temperament = p.Temperament, Need = p.Need, Job = p.Job, Turned = p.Turned, NeedMet = p.NeedMet, Down = p.Down, KRoutine = p.KRoutine, KNeed = p.KNeed, KTemperament = p.KTemperament, Place = p.Place, Suspected = p.Suspected, Record = p.Record, Size = p.Size, Holder = p.Holder };
+                c = new Person { Role = p.Role, Id = p.Id, Name = p.Name, Temperament = p.Temperament, Need = p.Need, Job = p.Job, Turned = p.Turned, NeedMet = p.NeedMet, Down = p.Down, KRoutine = p.KRoutine, KNeed = p.KNeed, KTemperament = p.KTemperament, Place = p.Place, Suspected = p.Suspected, Record = p.Record, Size = p.Size, Holder = p.Holder, KMood = p.KMood };
                 Array.Copy(p.Sc, c.Sc, 4); c.Memory.AddRange(p.Memory); foreach (var a in p.KnownRefused) c.KnownRefused.Add(a);
                 copies[p] = c; return c;
             }
@@ -374,11 +394,12 @@ namespace Suborned.Sim
         /// gives a statement; ties grieve or worry; the block hardens; the cases set the district's next level. On copies, as the rest.</summary>
         void Takedowns(Between b, Func<Person, Person> C, Dictionary<string, Person> byId, Action<string, Person, string> line, Func<int, string> fmt)
         {
-            if (!Acts.Exists(x => !x.Take)) { b.NextLevel = S.SecurityLevel; return; } // a Take seen is an incident, never a body
+            if (!Acts.Exists(x => !x.Take && !(CrewOfPerson(x.P) != null && (!x.Kill || !x.Confirmed)))) { b.NextLevel = S.SecurityLevel; return; } // a Take seen is an incident, never a body; engine 0.33.0: nor a rival's takedown unless a found killing
             var found = new List<TdAct>(); var missing = new List<TdAct>();
             foreach (var a in Acts)
             {
                 if (a.Take) continue;
+                if (CrewOfPerson(a.P) != null && (!a.Kill || !a.Confirmed)) continue; // engine 0.33.0 (Motive M059-3.2, 3.4): a rival never found costs nothing and is never missed; he gives no statement
                 var body = BodyOf(a.P);
                 string where = a.Scene.ToString();
                 if (a.Kill)

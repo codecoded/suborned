@@ -144,10 +144,10 @@ def _tree_pit(i):
 
 
 for _i in range(4):
-    asset(f"Pave_Flags_{_i}", "Ground", bevel=0.0)(_pave(_i))
+    asset(f"Pave_Flags_{_i}", "Ground", bevel=0.0, floor="seat")(_pave(_i))  # brief 055 K-1: a flat piece lies at its pivot (z 0), the world sets the height
 for _i in range(2):
     asset(f"Kerb_Granite_{_i}", "Ground", bevel=0.003)(_kerb(_i))
 for _i in range(4):
     asset(f"Kerb_GraniteCorner_{_i}", "Ground", bevel=0.003)(_corner(_i))
-    asset(f"TreePit_Flags_{_i}", "Ground", bevel=0.0)(_tree_pit(_i))
+    asset(f"TreePit_Flags_{_i}", "Ground", bevel=0.0, floor="seat")(_tree_pit(_i))  # brief 055 K-1: the pit's foot (the mulch) on the pivot
 asset("Kerb_GraniteNose", "Ground", bevel=0.003)(_nose)

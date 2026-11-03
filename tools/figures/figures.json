@@ -666,7 +666,7 @@
    "id": "driver",
    "role": "driver",
    "kind": "transfer",
-   "label": "Official driver: commuter D2 with the coral uniform turned mint",
+   "label": "Official driver: commuter D2 with the coral uniform turned mint (skin kept: the head faces by mask, other skin by hue; brief 063)",
    "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
    "noMetal": true,
    "source": "Citizens3D/citizens/commuters_D2__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); coral turned mint",
@@ -697,7 +697,16 @@
     "minVal": 0.3,
     "shift": 145,
     "sat": 0.55,
-    "val": 1.0
+    "val": 1.0,
+    "keep": [
+     {
+      "mask": "masks/driver_head.png"
+     },
+     {
+      "box": [0.0, 0.0, 1.0, 1.0],
+      "hueAbove": 11
+     }
+    ]
    },
    "smoothness": 0.2
   },
@@ -705,10 +714,45 @@
    "id": "councillor",
    "role": "councillor",
    "kind": "transfer",
-   "label": "Councillor Vale stand-in: commuter D4 with the navy trousers turned camel (a warm tone, so a carried Vale separates from the Enforcer's black at play zoom)",
+   "label": "Councillor Vale C (cropped grey hair, round chrome spectacles, grey moustache, ivory tunic-jacket, ink collar band, black shoulder disc, black gloves): a real model, not the D4 stand-in (brief 063, 2026-10-25)",
    "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
    "noMetal": true,
-   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); navy turned camel",
+   "source": "Citizens3D/citizens/vale_C__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro from the front cut-out of the Codex model sheet of the picked Vale C plate; skinned from the C1 Meshy rig)",
+   "provenance": [
+    "citizens/vale_C__hunyuan_pro.glb",
+    "model_sheets/vale_C__front.png",
+    "model_sheets/vale_C__sheet3view.png"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/vale_C__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "matSmoothness": 0.05,
+   "noNormal": true,
+   "torsoWebs": true
+  },
+  {
+   "id": "rival",
+   "role": "rival",
+   "kind": "transfer",
+   "label": "Rival crew A (the Velvet Set): Commuter D4's bomber in mid-violet velvet, deep-violet ribbing and tunic, ivory trousers, pearl boots, dark hair; bare head, no cap, no gold",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); recoloured here: mid-violet velvet jacket, deep-violet ribbing and tunic, ivory trousers, pearl boots, dark brown hair",
    "provenance": [
     "citizens/commuters_D4__hunyuan_pro.glb"
    ],
@@ -729,16 +773,10 @@
      "tex": 512
     }
    ],
-   "tint": {
-    "from": 220,
-    "width": 30,
-    "minSat": 0.3,
-    "shift": -188,
-    "sat": 0.75,
-    "val": 2.2
-   },
    "smoothness": 0.2,
-   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
+   "matSmoothness": 0.05,
+   "noNormal": true,
+   "notes": "brief 067 (W1): replaces the dark violet Worker D5 (hard hat, amber trim, median V 0.27). Concept: paid/067-rival-look/codex/rival_lineup_1.png (Codex, $0). Masks: tools/figures/masks/d4_*.png (zmask.py, per texel from the mesh).",
    "repair": [
     {
      "op": "flatten",
@@ -752,28 +790,166 @@
      ],
      "to": 0.72,
      "k": 0.4
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": [
+      0.478,
+      0.345,
+      0.722
+     ],
+     "keep": 0.75,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/d4_head.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.12,
+      0.5
+     ],
+     "to": [
+      0.294,
+      0.208,
+      0.471
+     ],
+     "keep": 0.8,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/d4_head.png"
+      },
+      {
+       "mask": "masks/d4_legs.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.3
+     ],
+     "val": [
+      0.0,
+      0.28
+     ],
+     "to": [
+      0.663,
+      0.659,
+      0.706
+     ],
+     "keep": 0.5,
+     "only": [
+      {
+       "mask": "masks/d4_boots.png"
+      }
+     ]
     }
    ],
-   "matSmoothness": 0.05,
-   "noNormal": true,
-   "torsoWebs": true
+   "tint": [
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": -170,
+     "sat": 0.09,
+     "val": 2.7,
+     "keep": [
+      {
+       "mask": "masks/d4_legs.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": 55,
+     "sat": 0.6,
+     "val": 1.4,
+     "keep": [
+      {
+       "mask": "masks/d4_legs.png"
+      }
+     ]
+    },
+    {
+     "from": 44,
+     "width": 16,
+     "minSat": 0.18,
+     "shift": -12,
+     "sat": 1.0,
+     "val": 0.55,
+     "keep": [
+      {
+       "mask": "masks/d4_hair.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 28,
+     "width": 14,
+     "minSat": 0.3,
+     "minVal": 0.3,
+     "maxVal": 0.36,
+     "shift": 0,
+     "sat": 1.0,
+     "val": 0.8
+    }
+   ]
   },
   {
-   "id": "rival",
+   "id": "rival_b",
    "role": "rival",
    "kind": "transfer",
-   "label": "Rival crew: worker D5 with the yellow jacket turned dark violet",
+   "label": "Rival crew B: Commuter D4's bomber in deep violet (violet_set #6b4f8f), plum ribbing and tunic, pale grey trousers, platinum hair; bare head, no cap, no gold",
    "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
    "noMetal": true,
-   "source": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb (50k, decimated here to 4500 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); yellow turned dark violet",
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); recoloured here: deep-violet jacket (the art bible violet_set), plum ribbing, pale grey trousers, platinum hair",
    "provenance": [
-    "citizens/workers_D5__hunyuan_pro.glb"
+    "citizens/commuters_D4__hunyuan_pro.glb"
    ],
    "lods": [
     {
-     "src": "Citizens3D/citizens/workers_D5__hunyuan_pro.glb",
-     "tex": 1024,
-     "decimateTo": 4500
+     "src": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
     },
     {
      "from": 0,
@@ -781,15 +957,534 @@
      "tex": 512
     }
    ],
-   "tint": {
-    "from": 48,
-    "width": 22,
-    "minSat": 0.45,
-    "shift": 235,
-    "sat": 0.8,
-    "val": 0.38
-   },
-   "smoothness": 0.2
+   "smoothness": 0.2,
+   "matSmoothness": 0.05,
+   "noNormal": true,
+   "notes": "brief 067 (W1): the second colourway of the crew: the darkest jacket, pale grey legs, silver hair.",
+   "repair": [
+    {
+     "op": "flatten",
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": 0.72,
+     "k": 0.4
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": [
+      0.42,
+      0.31,
+      0.561
+     ],
+     "keep": 0.75,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/d4_head.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.12,
+      0.5
+     ],
+     "to": [
+      0.263,
+      0.188,
+      0.42
+     ],
+     "keep": 0.8,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/d4_head.png"
+      },
+      {
+       "mask": "masks/d4_legs.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.3
+     ],
+     "val": [
+      0.0,
+      0.28
+     ],
+     "to": [
+      0.604,
+      0.604,
+      0.651
+     ],
+     "keep": 0.5,
+     "only": [
+      {
+       "mask": "masks/d4_boots.png"
+      }
+     ]
+    }
+   ],
+   "tint": [
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": 15,
+     "sat": 0.06,
+     "val": 2.6,
+     "keep": [
+      {
+       "mask": "masks/d4_legs.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": 60,
+     "sat": 0.55,
+     "val": 1.25,
+     "keep": [
+      {
+       "mask": "masks/d4_legs.png"
+      }
+     ]
+    },
+    {
+     "from": 44,
+     "width": 16,
+     "minSat": 0.18,
+     "shift": 0,
+     "sat": 0.12,
+     "val": 1.9,
+     "keep": [
+      {
+       "mask": "masks/d4_hair.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 28,
+     "width": 14,
+     "minSat": 0.3,
+     "minVal": 0.3,
+     "maxVal": 0.36,
+     "shift": 0,
+     "sat": 1.0,
+     "val": 0.8
+    }
+   ]
+  },
+  {
+   "id": "rival_c",
+   "role": "rival",
+   "kind": "transfer",
+   "label": "Rival crew C: Commuter D4's bomber in lavender-violet velvet, mid-violet ribbing and tunic, pearl trousers, auburn hair; bare head, no cap, no gold",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); recoloured here: lavender-violet jacket, mid-violet ribbing, pearl trousers, auburn hair",
+   "provenance": [
+    "citizens/commuters_D4__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "matSmoothness": 0.05,
+   "noNormal": true,
+   "notes": "brief 067 (W1): the third colourway of the crew: the lightest jacket, auburn hair.",
+   "repair": [
+    {
+     "op": "flatten",
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": 0.72,
+     "k": 0.4
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      1.0
+     ],
+     "to": [
+      0.647,
+      0.545,
+      0.847
+     ],
+     "keep": 0.75,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/d4_head.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.12,
+      0.5
+     ],
+     "to": [
+      0.42,
+      0.31,
+      0.604
+     ],
+     "keep": 0.8,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/d4_head.png"
+      },
+      {
+       "mask": "masks/d4_legs.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.3
+     ],
+     "val": [
+      0.0,
+      0.28
+     ],
+     "to": [
+      0.706,
+      0.698,
+      0.737
+     ],
+     "keep": 0.5,
+     "only": [
+      {
+       "mask": "masks/d4_boots.png"
+      }
+     ]
+    }
+   ],
+   "tint": [
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": -165,
+     "sat": 0.07,
+     "val": 2.8,
+     "keep": [
+      {
+       "mask": "masks/d4_legs.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": 52,
+     "sat": 0.55,
+     "val": 1.65,
+     "keep": [
+      {
+       "mask": "masks/d4_legs.png"
+      }
+     ]
+    },
+    {
+     "from": 44,
+     "width": 16,
+     "minSat": 0.18,
+     "shift": -22,
+     "sat": 1.4,
+     "val": 1.0,
+     "keep": [
+      {
+       "mask": "masks/d4_hair.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 28,
+     "width": 14,
+     "minSat": 0.3,
+     "minVal": 0.3,
+     "maxVal": 0.36,
+     "shift": 0,
+     "sat": 1.0,
+     "val": 0.8
+    }
+   ]
+  },
+  {
+   "id": "rival_d",
+   "role": "rival",
+   "kind": "transfer",
+   "label": "Rival crew D: Commuter C6's hooded jacket in violet velvet, deep-violet lining, pale dress, pearl boots; the crew's woman; the hood is up, no cap, no gold",
+   "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
+   "noMetal": true,
+   "source": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb (50k, decimated here to 8000, 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); recoloured here: violet hooded jacket, deep-violet lining and skirt hem, white dress, pearl boots",
+   "provenance": [
+    "bakeoff/commuters_C6__hunyuan_pro.glb"
+   ],
+   "lods": [
+    {
+     "src": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb",
+     "tex": 2048,
+     "decimateTo": 8000
+    },
+    {
+     "from": 0,
+     "tris": 3000,
+     "tex": 1024
+    },
+    {
+     "from": 0,
+     "tris": 1500,
+     "tex": 512
+    }
+   ],
+   "smoothness": 0.2,
+   "notes": "brief 067 (W1): a fourth look for the crew, a woman, so the three posted are not three of one build; hood and jacket violet, the dress stays pale. Masks: tools/figures/masks/c6_*.png (zmask.py, per texel from the mesh).",
+   "repair": [
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      32
+     ],
+     "sat": [
+      0.1,
+      0.3
+     ],
+     "val": [
+      0.8,
+      1.0
+     ],
+     "to": [
+      0.9,
+      0.88,
+      0.84
+     ],
+     "keep": 0.4,
+     "boxes": [
+      [
+       0.723,
+       0.044,
+       0.796,
+       0.098
+      ],
+      [
+       0.903,
+       0.256,
+       0.977,
+       0.342
+      ]
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.5,
+      0.86
+     ],
+     "to": [
+      0.541,
+      0.408,
+      0.769
+     ],
+     "keep": 0.75,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/c6_face.png"
+      },
+      {
+       "mask": "masks/c6_boots.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.16
+     ],
+     "val": [
+      0.12,
+      0.5
+     ],
+     "to": [
+      0.31,
+      0.227,
+      0.502
+     ],
+     "keep": 0.8,
+     "exact": true,
+     "protect": [
+      {
+       "mask": "masks/c6_face.png"
+      },
+      {
+       "mask": "masks/c6_boots.png"
+      }
+     ]
+    },
+    {
+     "op": "recolour",
+     "hue": [
+      0,
+      360
+     ],
+     "sat": [
+      0.0,
+      0.2
+     ],
+     "val": [
+      0.55,
+      1.0
+     ],
+     "to": [
+      0.706,
+      0.698,
+      0.737
+     ],
+     "keep": 0.5,
+     "only": [
+      {
+       "mask": "masks/c6_boots.png"
+      }
+     ]
+    }
+   ],
+   "tint": [
+    {
+     "from": 215,
+     "width": 40,
+     "minSat": 0.3,
+     "shift": 55,
+     "sat": 1.5,
+     "val": 1.7
+    },
+    {
+     "from": 15,
+     "width": 32,
+     "minSat": 0.28,
+     "minVal": 0.25,
+     "shift": 262,
+     "sat": 0.8,
+     "val": 1.0,
+     "keep": [
+      {
+       "mask": "masks/c6_dress.png",
+       "invert": true
+      }
+     ]
+    },
+    {
+     "from": 28,
+     "width": 14,
+     "minSat": 0.3,
+     "minVal": 0.3,
+     "maxVal": 0.36,
+     "shift": 0,
+     "sat": 1.0,
+     "val": 0.8
+    }
+   ]
   }
  ]
 }

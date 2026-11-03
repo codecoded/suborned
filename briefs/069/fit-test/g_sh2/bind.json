@@ -1,0 +1,15 @@
+{
+ "suit": {
+  "mhclo": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fit-test/g/sh2/pieces/sh2_suit.mhclo",
+  "seconds": 21.43,
+  "png": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fit-test/g/sh2/pieces/sh2_suit.png"
+ },
+ "hat": {
+  "rigid": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fit-test/g/sh2/pieces/sh2_hat_rigid.npz",
+  "png": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fit-test/g/sh2/pieces/sh2_hat.png"
+ },
+ "hair": {
+  "rigid": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fit-test/g/sh2/pieces/sh2_hair_rigid.npz",
+  "png": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/fit-test/g/sh2/pieces/sh2_hair.png"
+ }
+}

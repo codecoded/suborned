@@ -35,9 +35,11 @@ public class SightTests
             {
                 var p = new Pt(f.At.X + x, f.At.Y + y);
                 var polys = new List<Pt[]> { f.Points }; polys.AddRange(f.More); polys.RemoveAll(q => q.Length < 3); // a mast: a polygon a head
-                bool truth = g.InSight(w, p, crowd), drawn = polys.Exists(q => G.InPoly(p, q));
+                // brief 055 §7 (engine 0.28.0): a point is drawn in sight when it is in a polygon and in no shadow (a solid seen over or under)
+                bool truth = g.InSight(w, p, crowd), drawn = polys.Exists(q => G.InPoly(p, q)) && !f.Shadows.Any(q => G.InPoly(p, q));
                 if (truth) inside++;
-                if (truth != drawn && (polys.Count == 0 || polys.Min(q => EdgeDist(p, q)) > Tol)) bad.Add($"{w} at tick {g.Tick}: {p} engine {(truth ? "sees" : "doesn't")}, fan {(drawn ? "in" : "out")}");
+                var edges = new List<Pt[]>(polys); edges.AddRange(f.Shadows);
+                if (truth != drawn && (edges.Count == 0 || edges.Min(q => EdgeDist(p, q)) > Tol)) bad.Add($"{w} at tick {g.Tick}: {p} engine {(truth ? "sees" : "doesn't")}, fan {(drawn ? "in" : "out")}");
             }
         Assert.True(inside > 0, $"{w}: the engine sees nothing around it");
         return bad;
@@ -55,7 +57,7 @@ public class SightTests
     public void TheFanIsTheEnginesSightAtTheStart()
     {
         var g = Engine.New(Repo.Inputs); AllAgree(g);
-        Assert.Equal(new[] { "camera:entrance", "camera:pickup", "camera:mast-314", "guard", "patrol" }, g.WatcherIds().Where(w => g.ConeFan(w) != null)); // brief 013: the world's Records Square mast
+        Assert.Equal(new[] { "camera:entrance", "camera:pickup", "camera:mast-z0", "guard", "patrol" }, g.WatcherIds().Where(w => g.ConeFan(w) != null)); // brief 013: the world's Records Square mast
     }
 
     [Theory]
@@ -72,7 +74,9 @@ public class SightTests
         var g = Engine.New(Repo.Inputs); g.RunTo(300);
         AllAgree(g, crowd: true);
         // somewhere a person stands in a watcher's sight, and the crowd fan is not the walls' fan
-        Assert.Contains(g.WatcherIds(), w => g.ConeFan(w, true) is Fan f && f.Stop.Contains("crowd"));
+        // brief 055 §7 (engine 0.28.0): an eye below a person's head top is cut by them (a crowd stop); an eye over it (a lens, the guard on the
+        // landing) sees past them but for a short stretch: a shadow the walls' fan has not
+        Assert.Contains(g.WatcherIds(), w => g.ConeFan(w, true) is Fan f && (f.Stop.Contains("crowd") || f.Shadows.Length > (g.ConeFan(w, false)?.Shadows.Length ?? 0)));
     }
 
     [Fact]
@@ -133,7 +137,7 @@ public class SightTests
         // route A's orders, played with no watcher known and with every watcher's sight told: the same run, but for the knowledge itself
         var played = Scenarios.Run(Repo.Inputs, Scenarios.Find("N11")!).G;
         var orders = played.Orders.Select(o => o.order).ToList();
-        var told = new Start();
+        var told = new Start { Pre080 = played.Start.Pre080, OldClock = played.Start.OldClock };
         foreach (var kv in played.Start.Known) told.Known[kv.Key] = new List<string>(kv.Value);
         foreach (var kv in played.Start.Temperament) told.Temperament[kv.Key] = kv.Value;
         told.Turned.AddRange(played.Start.Turned); told.Cash = played.Start.Cash; told.Arms = played.Start.Arms; told.FinalFight = played.Start.FinalFight; told.Crowd = played.Start.Crowd;

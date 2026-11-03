@@ -1,0 +1,97 @@
+{
+ "schema": "suborned.mission.adaptive/1",
+ "mission": "handover",
+ "id": "hand-street",
+ "style": "probe",
+ "pace": "human",
+ "note": "Pulse probe: draws on the three as they post round the car, and keeps shooting the nearest.",
+ "rules": [
+  {
+   "id": "d-s",
+   "op": "scout",
+   "do": "draw",
+   "when": [
+    "sincelog:rivals.drop:12"
+   ],
+   "react": "expected"
+  },
+  {
+   "id": "d-f",
+   "op": "fixer",
+   "do": "draw",
+   "with": "d-s"
+  },
+  {
+   "id": "d-t",
+   "op": "tech",
+   "do": "draw",
+   "with": "d-s"
+  },
+  {
+   "id": "d-e",
+   "op": "enforcer",
+   "do": "draw",
+   "with": "d-s"
+  },
+  {
+   "id": "nf-scout",
+   "op": "scout",
+   "do": "fire",
+   "target": "$nearest:scout",
+   "when": [
+    "hostiles>=:1",
+    "since:d-s:1"
+   ],
+   "retry": 2,
+   "repeat": 4,
+   "tries": 200,
+   "interrupt": false,
+   "why": "stands and shoots whoever is nearest, again and again"
+  },
+  {
+   "id": "nf-fixer",
+   "op": "fixer",
+   "do": "fire",
+   "target": "$nearest:fixer",
+   "when": [
+    "hostiles>=:1",
+    "since:d-s:1"
+   ],
+   "retry": 2,
+   "repeat": 4,
+   "tries": 200,
+   "interrupt": false,
+   "why": "stands and shoots whoever is nearest, again and again"
+  },
+  {
+   "id": "nf-tech",
+   "op": "tech",
+   "do": "fire",
+   "target": "$nearest:tech",
+   "when": [
+    "hostiles>=:1",
+    "since:d-s:1"
+   ],
+   "retry": 2,
+   "repeat": 4,
+   "tries": 200,
+   "interrupt": false,
+   "why": "stands and shoots whoever is nearest, again and again"
+  },
+  {
+   "id": "nf-enforcer",
+   "op": "enforcer",
+   "do": "fire",
+   "target": "$nearest:enforcer",
+   "when": [
+    "hostiles>=:1",
+    "since:d-s:1"
+   ],
+   "retry": 2,
+   "repeat": 4,
+   "tries": 200,
+   "interrupt": false,
+   "why": "stands and shoots whoever is nearest, again and again"
+  }
+ ]
+}

@@ -8,11 +8,12 @@
 // faces (brief 008 B2, Vantage), so the four door points in MOVED follow them; 2026-10-19 (Sky, door option b) the public door is on the wing's west face and the service door on its east face (Splice: MOVED and PLACES re-pinned; Waymark owns the file's words); 'Steps' is 'Terrace gate' (the café door is
 // flush, there are no steps; the point has not moved). No time moved: the schedule is GDD §07's clock offsets and names no
 // leg and no walking pace, so none follows from a length that changed.
+// Re-pinned 2026-10-26 (Splice, briefs/067/vantage.md L): 'Meet driver' and 'Boarding pavilion' off the pickup car's ground (the two last rows of MOVED).
 // Any other change still fails: PLACES pins the bytes as they are, and undoing MOVED and RENAMED must give back WAS, the
 // bytes moved out of the world, so a further change has to be declared here before it passes.
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
 import { createHash } from 'node:crypto';
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Mission, offsetS } from '../../../contracts/missions/mission.schema';
 import { check } from '../../plan/checks';
@@ -30,13 +31,16 @@ setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../../..'), FILE = 'contracts/missions/handover/mission.json';
 const text = (p: string) => Bun.file(resolve(root, p)).text();
 const raw = await text(FILE), mission = Mission.parse(JSON.parse(raw));
-/** Destinations, crew and routes as written: the file from `"destinations"` to its end, without `yaw` and `hidden`. Those two say how a
- *  point is shown (the heading it is played at, a hiding place's reason; GDD §10 v0.24, Sky's pick (h), 2026-10-18), not where it stands,
- *  so adding them moves no place and recorded runs keep their pinned places. Each is dropped with the comma it put on the line before. */
-const places = (s: string) => s.slice(s.indexOf('\n "destinations": [')).replace(/,\n {3}"(?:yaw|hidden)": (?:\d+|"(?:[^"\\]|\\.)*")(?=\n)/g, '');
+/** Destinations, crew and routes as written: the file from `"destinations"` to its end, without `yaw`, `hidden`, `level`, `on` and `floor`. The first two say how a
+ *  point is shown (the heading it is played at, a hiding place's reason; GDD §10 v0.24, Sky's pick (h), 2026-10-18), the last three the level and floor it stands on
+ *  (brief 055, Datum: data for what the block already draws there), not where on the ground it stands, so adding them moves no place and recorded runs keep their
+ *  pinned places. They close an object; each run of them is dropped with the comma it put on the line before. */
+/** Routes added since WAS (brief 059, Splice 2026-10-25): the service-drive stand's exit and the rival car's way in. A new route moves no place a recorded run pinned, so the lock is taken without them, as it is without the level and floor keys. */
+const ADDED_ROUTES = ['getaway-service', 'rivals'];
+const places = (s: string) => ADDED_ROUTES.reduce((t, id) => t.replace(new RegExp(`,\\n  \\{\\n   "id": "${id}",[\\s\\S]*?\\n  \\}(?=,\\n  \\{|\\n \\])`), ''), s.slice(s.indexOf('\n "destinations": ['))).replace(/(?:,\n {3}"(?:yaw|hidden|level|on|floor)": (?:-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"))+(?=\n)/g, '');
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
-const PLACES = '4f9fbebf0ee133e8a0dba471cf8ced9887cd56137ce02eec280f741d5b4ef39c'; // sha256 of places() now: WAS with MOVED and RENAMED applied
+const PLACES = '63af1d5f7ff52e2858fdf6ba91237222f0462196ae6d18cba06aa134ef000e13'; // sha256 of places() now: WAS with MOVED and RENAMED applied
 /** Every point re-sited since WAS: name, from, to (block frame, m). */
 const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   // door option b (Sky 2026-10-19; Vantage, brief 023): the public door and forecourt moved from tower-public's north face onto the Office wing's west face, onto Rocket Lane
@@ -53,6 +57,10 @@ const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   ['Tech', [2.368, -49.666], [1.2, -44.6]],
   ['Scout', [3.568, -49.666], [-1.6, -44.3]],
   ['Enforcer', [4.768, -49.666], [2.7, -47.6]],
+  // brief 067 L (Vantage 2026-10-26, Keel's ask; Splice re-pinned): engine 0.33.1 parks Vale's car at the pickup with its footprint (1.82 x 4.73 m, car-clear-cm 50), so it blocks x 76.79-79.61, y -33.865 to -28.135;
+  // the two points that stood on that ground move off it, both still in officeBay and 100 % seen (V-1). The names stay: routes and scenarios read them (briefs/067/vantage.md L)
+  ['Meet driver', [78.1, -33.7], [78.1, -34.2]], // 0.84 m off the parked car's tail corner (it was 0.34 m)
+  ['Boarding pavilion', [78.3, -31], [76.75, -34.25]], // from the middle of the car to the pavement at its tail, 1.35 m from the driver; a free cell now (it loses its `on` and `floor` keys, which PLACES leaves out)
 ];
 /** Every point renamed since WAS, in place: from, to. */
 const RENAMED: [from: string, to: string][] = [['Steps', 'Terrace gate']];
@@ -86,7 +94,9 @@ describe('handover mission file', () => {
     expect(broken(m => { delete m.roles[2].at; })).toBe(false); // alone, and nowhere
     // the engine's points and cameras (brief 011 B, Suture O-6): mission content, read into the site by tools/sim/site.ts
     expect(mission.points!.map(p => p.id)).toEqual(['cabinet', 'beside-inez', 'rival-park', 'rival-entry', 'security-entry', 'patrol-a', 'patrol-b', 'patrol-reroute', 'service-bay', 'block-spot',
-      'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally']); // the final fight's posts since engine 0.4.0; service-bay, the turned driver's car in the east yard's serviceBay (2026-10-19, brief 023)
+      'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally',
+      'service-drive', 'svc-ambush-1', 'svc-ambush-2', 'svc-ambush-3', 'svc-ambush-4', 'svc-ambush-5', 'svc-police-1', 'svc-police-2', 'svc-police-3', 'svc-police-4',
+      'rival-drop', 'rival-lookout', 'rival-car-entry', 'rival-lookout-exit', 'rival-tail', 'rival-vale-door', 'rival-front-stop']); // the final fight's posts since engine 0.4.0; service-bay, the turned driver's car in the east yard's serviceBay (2026-10-19, brief 023); brief 059 (Vantage 2026-10-25): the yard getaway stand with its own posts, and the rival car's drop, lookout and entry; then Pulse's rival routine's lookout exit, tail stop (the yard stand's rival stop), the wheelman's place at Vale's car and the drawn crew's stop at the Office front
     expect(mission.arms?.sidearms).toBe(3); // GDD §07 Arms 3
     expect(mission.rivals?.public).toBe('menace'); // briefs/014/motive-standing.md rule 4: the Handover's rivals are feared (fight.public)
     expect(mission.cameras!.map(c => `${c.id}>${c.looksAt}`)).toEqual(['entrance>Office entrance', 'pickup>Official drop-off']);
@@ -126,21 +136,22 @@ describe('handover mission file', () => {
     let i = stops.findIndex(([, from, to]) => from <= 0 && to > 0), j = i;
     while (i > 0 && stops[i - 1]![0] === stops[i]![0] && stops[i - 1]![2] === stops[i]![1]) i--;
     while (j + 1 < stops.length && stops[j + 1]![0] === stops[j]![0] && stops[j + 1]![1] === stops[j]![2]) j++;
-    const from = stops[i]![1], end = stops[j]![2], engine: number[] = [];
+    // his marks keep their anchor, site.schedule.guardMark, when the shift comes forward (sim GameResponse.PostOf; brief 080 pacing)
+    const post = stops[i]![1], end = stops[j]![2], from = post - (((post - site.schedule.guardMark) % period) + period) % period, engine: number[] = [];
     for (let k = Math.ceil(-from / period); from + k * period <= end; k++) engine.push(from + k * period);
     if (engine.at(-1) !== end) engine.push(end);
     expect(stops[i]![0]).toBe('office-entrance'); // his door
-    expect(marks).toEqual(engine); // 1:00, 2:30, 4:00, 5:30
+    expect(marks).toEqual(engine); // 1:00, 2:30, 4:00, then 4:30, the shift's end
     expect(end).toBe(offsetS(mission.timeline.find(e => e.what === 'handover chime')!.at)); // (shift end) is the chime
-    expect(mission.events.map(e => [e.id, e.at, e.windowS, e.surge])).toEqual([['records-handover', '5:30', 300, 1.8]]); // the chime's crowd
+    expect(mission.events.map(e => [e.id, e.at, e.windowS, e.surge])).toEqual([['records-handover', '4:30', 300, 1.8]]); // the chime's crowd
   });
 
   test('the day start is Sky\'s ruling: the 5:30 chime is the Office\'s 17:30 shift end; timings and placements stay adjustable', async () => {
-    expect(mission.clock).toMatchObject({ startsAt: '17:24:30', provisional: false, band: 'peak', ruling: { by: 'Sky', on: '2026-10-15', was: '17:00' } });
+    expect(mission.clock).toMatchObject({ startsAt: '17:25:30', provisional: false, band: 'peak', ruling: { by: 'Sky', on: '2026-10-15', was: '17:00' } });
     expect(mission.clock.contradiction).toBeUndefined(); // the ruling settled it
     const life = JSON.parse(await text('contracts/world/harbour-district.life.json'));
     const chime = mission.timeline.find(e => e.what === 'handover chime')!.at, [h, mi, se] = mission.clock.startsAt.split(':').map(Number);
-    expect(h! * 3600 + mi! * 60 + se! + offsetS(chime)).toBe(17.5 * 3600); // 17:24:30 + 5:30 = 17:30
+    expect(h! * 3600 + mi! * 60 + se! + offsetS(chime)).toBe(17.5 * 3600); // 17:25:30 + 5:30 = 17:30
     const units = ((await people()) as unknown as { units: { id: string; shifts: { from: number; to: number }[] }[] }).units;
     expect(units.find(u => u.id === 'records-office')!.shifts.map(x => x.to)).toEqual([17.5 * 60]); // the Office's one shift ends at 17:30
     const band = life.clock.bands.find((b: any) => b.id === mission.clock.band); expect(h! >= band.from && h! < band.to).toBe(true);
@@ -152,7 +163,7 @@ describe('handover mission file', () => {
     expect(win).toMatchObject({ rule: 'summon', walk: { from: 'Office entrance', to: 'Café door' } });
     expect(Object.keys(win)).not.toContain('stayS'); // no number the rules hold is restated
     const sr = summonRules();
-    expect([sr.stayS, sr.walkMaxS, sr.paceCmS]).toEqual([60, 90, 140]); // rulebook summon: stay 60 s, at most 90 s away; cell.speed 1.4 m/s
+    expect([sr.stayS, sr.walkMaxS, sr.paceCmS]).toEqual([60, 90, 140]); // rulebook summon: stay 60 s, at most 90 s away; the city's walk 1.4 m/s (crowd.walk; cell.speed before engine 0.34.0)
     const walkS = engineWalkS(win.walk.from, win.walk.to); // the engine's grid walk: the one number (Keel, Aster 2026-10-15)
     if (Bun.which('dotnet')) { expect(walkS).toBeGreaterThan(40); expect(walkS!).toBeLessThanOrEqual(sr.walkMaxS!); } // about 46 s: within the summons' reach
     const gdd = readdirSync(resolve(root, 'GDD')).find(f => /^the-suborned-agent-gdd-v.*\.md$/.test(f))!;
@@ -161,9 +172,9 @@ describe('handover mission file', () => {
     // the entry window: the earliest call (prep A: Watch and Listen by the rulebook, then Help's timeS) to the chime, when the outgoing guard's shift ends
     const guard = mission.roles.find(r => r.id === win.role)!, rules = JSON.parse(await text('contracts/people/people.rules.json')), book = JSON.parse(await text('contracts/rules/rulebook.json'));
     const prepA = mission.prep!.find(p => p.route === 'A')!;
-    expect(offsetS(prepA.at)).toBe(prepA.from.reduce((a, k) => a + book.values[k].v, 0)); // Watch 20 + Listen 42 = 1:02
+    expect(offsetS(prepA.at)).toBe(prepA.from.reduce((a, k) => a + book.values[k].v, 0)); // Watch 20 + Listen 30 = 0:50 (brief 080 pacing)
     expect(routeA).toContain(prepA.gdd); // §07's figure, verbatim, beside the restated one (text owed)
-    expect(offsetS(guard.shift.from)).toBe(offsetS(prepA.at) + rules.approaches.help.timeS);
+    expect(offsetS(guard.shift.from)).toBeGreaterThanOrEqual(offsetS(prepA.at) + rules.approaches.help.timeS); // brief 080: talk got shorter, so the earliest call (1:25) comes before the cast shift (1:52), which moves when the people are re-cast (Pulse)
     expect(guard.shift.to).toBe(mission.timeline.find(e => e.what === 'handover chime')!.at);
   });
 
@@ -219,6 +230,24 @@ const play = (p: PeopleIn) => met(p, {
   'p-records-office-01': both(waitTo(1053), tie('workmate', 'p-records-office-61')),
 });
 
+describe('handover listen partner (brief 085, view only)', () => {
+  const people = JSON.parse(readFileSync(resolve(import.meta.dir, '../../../sim/data/handover.people.json'), 'utf8')).people as { id: string; name: string; job: string; stops: [string, number, number, number][] }[];
+  const inez = mission.listenPartners!.find(p => p.role === 'waitress')!, named = people.filter(p => p.name === inez.name && p.id.startsWith(`p-${inez.employer}-`) && p.job === inez.position), milena = named[0]!;
+  test('Inez talks to Milena: a server like her, indoors at the café door for the whole mission, so the view can bring her out', () => {
+    expect(named.map(p => p.id)).toEqual(['p-cafe-12']); // name and post pick one person: the mission holds no person id
+    const close = offsetS('7:30'), during = milena.stops.filter(([, from, to]) => from < close && to > 0);
+    expect(during.length).toBeGreaterThan(0);
+    for (const [place, , , out] of during) expect([place, out]).toEqual(['cafe-entrance', 0]);
+    expect(during[0]![1]).toBeLessThanOrEqual(0); expect(during.at(-1)![2]).toBeGreaterThanOrEqual(close);
+  });
+  test('the schema rejects a partner for a role or a door the mission does not name', () => {
+    const bad = (edit: (p: { role: string; from: string }) => void) => { const m = JSON.parse(raw); edit(m.listenPartners[0]); return Mission.safeParse(m).success; };
+    expect(bad(() => {})).toBe(true);
+    expect(bad(p => { p.role = 'doorman'; })).toBe(false);
+    expect(bad(p => { p.from = 'Nowhere'; })).toBe(false);
+  });
+});
+
 describe('handover roles', () => {
   const setup = async () => {
     const plan: Plan = JSON.parse(await text('contracts/world/harbour-district.plan.json')), block = JSON.parse(await text(plan.civic.block));
@@ -239,13 +268,13 @@ describe('handover roles', () => {
     ]);
     expect(broken(m => { m.roles[0].approach = 'bribe'; })).toBe(false); // an approach not in the rules' four
     // there when the mission needs them (Sky 2026-10-15): Inez all mission, the guard in route A's entry window, the driver and Vale to the chime
-    expect(mission.roles.map(r => `${r.id} ${r.shift.from}-${r.shift.to}`)).toEqual(['waitress 0:00-8:30', 'driver 0:00-5:30', 'guard 1:52-5:30', 'councillor 0:00-5:30']);
+    expect(mission.roles.map(r => `${r.id} ${r.shift.from}-${r.shift.to}`)).toEqual(['waitress 0:00-7:30', 'driver 0:00-4:30', 'guard 1:52-4:30', 'councillor 0:00-4:30']);
     // the static playability conditions M-2 reads (Suture 2026-10-15 §3)
     expect(mission.roles.map(r => [r.id, r.tiedTo ?? null, r.leavesTo ?? null, r.waitsFor ?? null, r.alone ?? null])).toEqual([
       ['waitress', [{ kind: 'lover', role: 'guard', cast: true }], null, null, null], // Sky: Inez and the door guard are lovers; her call summons him
       ['driver', [{ kind: 'workmate', role: 'councillor', cast: true }], null, 'councillor', null],
       ['guard', [{ kind: 'regular', role: 'waitress' }], null, null, true],
-      ['councillor', null, { at: 'Meet driver', by: '6:10' }, null, null],
+      ['councillor', null, { at: 'Meet driver', by: '5:10' }, null, null],
     ]);
     expect(mission.roles.find(r => r.id === 'waitress')!.secret).toBe('affair'); // the affair is her secret; her need stays debt, Help the reference
     expect(mission.roles.every(r => !r.pin)).toBe(true); // nothing pinned until a cast passes M-2
@@ -264,10 +293,10 @@ describe('handover roles', () => {
     expect(lines.map(l => l.replace(/:.*?(has|·)/, ' $1').replace(/: p-.*?( ·|$)/g, '$1'))).toEqual([ // every role fails: the stand-in has no lovers either
       'waitress has secret affair',
       'driver has a workmate tie to a councillor of records-office who can be cast as councillor',
-      'guard has a regular tie to a server of cafe in place for waitress in this window · and at most one guard of records-office at Office entrance in 1:52-5:30: 6 at 17:26:22 (p-records-office-15, p-records-office-29, p-records-office-30, p-records-office-36, p-records-office-57, p-records-office-67)',
-      'councillor has a routine that reaches Meet driver by 6:10 (17:30:40)',
+      'guard has a regular tie to a server of cafe in place for waitress in this window · and at most one guard of records-office at Office entrance in 1:52-4:30: 6 at 17:27:22 (p-records-office-15, p-records-office-29, p-records-office-30, p-records-office-36, p-records-office-57, p-records-office-67)',
+      'councillor has a routine that reaches Meet driver by 5:10 (17:30:40)',
     ]);
-    expect(lines[3]).toContain('p-records-office-61 t1-records@17:34'); // Vale takes the tram home, never the official car
+    expect(lines[3]).toContain('p-records-office-61 t1-rocket@17:34'); // Vale takes the tram home, never the official car (t1-rocket: the stand-in's stop since the 075 remap's tram stops)
   });
 
   test('every role is cast, pinned by id, deterministically; the pinned names land on the pinned people', async () => {
@@ -281,7 +310,7 @@ describe('handover roles', () => {
     expect(c.value).toBe(mission.roles.map(r => `${r.id} ${STANDIN_PINS[r.id]}`).join(', '));
     const name = (id: string) => s.p.persons.find(p => p.id === id)!.name;
     expect(name(STANDIN_PINS.waitress!)).toStartWith('Inez '); // people.rules.json names.pinned: Inez is the waitress the mission casts
-    expect(name(STANDIN_PINS.councillor!)).toEndWith(' Vale');
+    expect(name(STANDIN_PINS.councillor!)).toBe('Uros Popovic'); // brief 089
   });
 
   test('the promoted cast (r016) passes M-2 and pins the people the engine plays', async () => {
@@ -292,7 +321,8 @@ describe('handover roles', () => {
     const site = JSON.parse(await text('sim/data/handover.site.json')).cast; // Keel's engine plays the same people (sim:site, M-2)
     expect(Object.fromEntries(mission.roles.map(r => [r.id, site[r.id].id]))).toEqual(PINS);
     expect(site.waitress.name).toStartWith('Inez '); // people.rules.json names.pinned
-    expect(site.councillor.name).toEndWith(' Vale');
+    expect(site.councillor.name).toBe('Uros Popovic'); // brief 089: the councillor's pinned name
+    expect([site.guard.name, site.driver.name]).toEqual(['Arthur Reilly', 'Aleksander Lukac']);
     expect([site.waitress.temperament, site.waitress.lover, site.guard.lover]).toEqual(['fearful', 'guard', 'waitress']); // r016: a Fearful Inez takes Help ×2 (route A)
   });
 
@@ -312,16 +342,16 @@ describe('handover roles', () => {
     delete m.roles[1].tiedTo; delete m.roles[1].waitsFor; // the need alone: p-records-office-46 is not Vale's driver
     expect(m2(s, m, p)).toMatchObject({ ok: true, value: expect.stringContaining('driver p-records-office-46') });
     m.roles[1].need = 'housing';
-    expect(one(m)).toEqual(['driver: none of the 4 who fit (official-driver of records-office on shift 0:00-5:30 at Meet driver) has need housing: p-records-office-01 cash, p-records-office-39 cash, p-records-office-46 advancement, p-records-office-64 papers']);
+    expect(one(m)).toEqual(['driver: none of the 4 who fit (official-driver of records-office on shift 0:00-4:30 at Meet driver) has need housing: p-records-office-01 cash, p-records-office-39 cash, p-records-office-46 advancement, p-records-office-64 papers']);
     // Q4: the wrong temperament still works (a Mercenary helped), a refusal fails: an Idealist refuses Pay
     m = JSON.parse(raw); m.roles[0].approach = 'pay';
     const idealists = met(p, Object.fromEntries(['p-cafe-11', 'p-cafe-12', 'p-cafe-14', 'p-cafe-15', 'p-cafe-16'].map(id => [id, (x: any) => { x.need = 'debt'; x.temperament = 'idealist'; }])));
-    expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-8:30 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
+    expect(one(m, idealists)).toEqual(['waitress: none of the 5 who fit (server of cafe on shift 0:00-7:30 at Café door) has a temperament that does not refuse pay: p-cafe-11 idealist, p-cafe-12 idealist, p-cafe-14 idealist, p-cafe-15 idealist, p-cafe-16 idealist']);
     expect(m2(s, JSON.parse(raw), idealists).ok).toBe(true); // Help is refused by no temperament
     expect(one(m, met(idealists, { 'p-cafe-11': x => { x.temperament = 'shy'; } }))[0]).toContain('p-cafe-11 shy (unknown)'); // unknown = reject
     // §05, §08: the guard is a regular of the café only by a regular tie to its staff (one definition with P-6 and the review): a pre-shift stop alone is not enough; a tie restores one
     const noStop = met(p, Object.fromEntries(GUARDS.map(id => [id, (x: any) => { x.routine.stops = x.routine.stops.filter((t: any) => t.doing !== 'pre-shift'); x.ties = (x.ties ?? []).filter((t: any) => !t.with.startsWith('p-cafe')); }])));
-    expect(one(JSON.parse(raw), noStop)).toEqual(['waitress: none of the 1 who fit (server of cafe on shift 0:00-8:30 at Café door) has a lover tie to a guard of records-office who can be cast as guard: p-cafe-11 p-records-office-15', 'guard: none of the 1 who fit (guard of records-office on shift 1:52-5:30 at Office entrance) has a regular tie to the staff of cafe: p-records-office-15 none']); // the one guard on the door
+    expect(one(JSON.parse(raw), noStop)).toEqual(['waitress: none of the 1 who fit (server of cafe on shift 0:00-7:30 at Café door) has a lover tie to a guard of records-office who can be cast as guard: p-cafe-11 p-records-office-15', 'guard: none of the 1 who fit (guard of records-office on shift 1:52-4:30 at Office entrance) has a regular tie to the staff of cafe: p-records-office-15 none']); // the one guard on the door
     const tied = met(noStop, { 'p-records-office-15': tie('regular', 'p-cafe-11') });
     expect(m2(s, JSON.parse(raw), tied)).toMatchObject({ ok: true, value: expect.stringContaining('guard p-records-office-15') });
     const workmate = met(noStop, { 'p-records-office-15': x => { x.ties = [{ kind: 'workmate', with: 'p-cafe-11' }]; } }); // only a regular tie counts
@@ -341,17 +371,17 @@ describe('handover roles', () => {
     expect(m2(s, m, p).ok).toBe(true);
     // alone: a second guard back on the door in the entry window
     const two = met(p, { 'p-records-office-29': x => { x.routine.stops.find(t => t.place === 'beyond' && t.to === 1050)!.place = 'office-entrance'; } });
-    expect(why(two, 'guard')).toBe('guard: p-records-office-15 cast, but at most one guard of records-office at Office entrance in 1:52-5:30: 2 at 17:26:22 (p-records-office-15, p-records-office-29)');
+    expect(why(two, 'guard')).toBe('guard: p-records-office-15 cast, but at most one guard of records-office at Office entrance in 1:52-4:30: 2 at 17:27:22 (p-records-office-15, p-records-office-29)');
     // the guard's regular tie: to a server off shift then fails; to another server of Inez's shift passes (Inez or her shift)
     const morning = met(p, { 'p-records-office-15': x => { x.ties = x.ties!.filter(t => t.with !== 'p-cafe-11'); x.ties.push({ kind: 'regular', with: 'p-cafe-02' }); } });
-    expect(why(morning, 'guard')).toStartWith('guard: none of the 1 who fit (guard of records-office on shift 1:52-5:30 at Office entrance) has a regular tie to a server of cafe in place for waitress in this window: p-records-office-15 p-cafe-04+p-cafe-02');
+    expect(why(morning, 'guard')).toStartWith('guard: none of the 1 who fit (guard of records-office on shift 1:52-4:30 at Office entrance) has a regular tie to a server of cafe in place for waitress in this window: p-records-office-15 p-cafe-04+p-cafe-02');
     expect(m2(s, m, met(morning, { 'p-records-office-15': tie('regular', 'p-cafe-12') })).ok).toBe(true);
     // in place throughout: Inez away from the door for a minute in the mission falls to the next server by id
     const away = met(p, { 'p-cafe-11': x => { const w = x.routine.stops.find(t => t.place === 'cafe-entrance' && t.from <= 1045 && 1045 < t.to)!; x.routine.stops.push({ ...w, from: 1047, to: w.to }, { place: 'cafe-table-0', doing: 'meal', from: 1046, to: 1047 }); w.to = 1046; x.routine.stops.sort((a, b) => a.from - b.from); } });
     expect(m2(s, m, away).value).toStartWith('waitress -,'); // no other server of her shift is the guard's lover, so nobody can call him off the door
     // leavesTo: Vale at the bay a minute late (17:32 > 17:30:40, rounded up to 17:31)
     const late = met(p, { 'p-records-office-61': x => { x.routine.stops.find(t => t.place === 'office-bay')!.from = 1052; } });
-    expect(why(late, 'councillor')).toContain('has a routine that reaches Meet driver by 6:10 (17:30:40): p-records-office-61 office-bay@17:32');
+    expect(why(late, 'councillor')).toContain('has a routine that reaches Meet driver by 5:10 (17:30:40): p-records-office-61 office-bay@17:32');
     // waitsFor: the driver leaves the bay as Vale arrives
     const gone = met(p, { 'p-records-office-01': x => { x.routine.stops.find(t => t.place === 'office-bay' && t.to === 1053)!.to = 1051; } });
     expect(why(gone, 'driver')).toBe('driver: p-records-office-01 cast, but waits at Meet driver for councillor p-records-office-61, who arrives 17:31: p-records-office-01 leaves 17:31');
@@ -363,14 +393,14 @@ describe('handover roles', () => {
     expect(m2(s, m, other)).toMatchObject({ ok: true, value: 'waitress p-cafe-11, driver p-records-office-01, guard p-records-office-15, councillor p-records-office-65' });
     // and with no councillor tied to a driver who can be cast, the driver names it
     const untied = met(p, { 'p-records-office-01': x => { x.ties = x.ties!.filter(t => t.kind !== 'workmate'); } });
-    expect(why(untied, 'driver')).toBe('driver: none of the 2 who fit (official-driver of records-office on shift 0:00-5:30 at Meet driver) has a workmate tie to a councillor of records-office who can be cast as councillor: p-records-office-01 none, p-records-office-39 p-records-office-23+p-records-office-30');
+    expect(why(untied, 'driver')).toBe('driver: none of the 2 who fit (official-driver of records-office on shift 0:00-4:30 at Meet driver) has a workmate tie to a councillor of records-office who can be cast as councillor: p-records-office-01 none, p-records-office-39 p-records-office-23+p-records-office-30');
   });
 
   test('a pin that no longer fits fails, and so does a missing people file', async () => {
     const debt = (x: PeopleIn['persons'][number]) => { x.need = 'debt'; };
     const s = { ...(await setup()) }; s.p = met(play(s.p), { 'p-cafe-11': debt, 'p-cafe-14': both(debt, tie('lover', 'p-records-office-15'), x => { x.secret = 'affair'; }), 'p-records-office-15': tie('lover', 'p-cafe-14') }); const m = JSON.parse(raw);
     m.roles[0].pin = 'p-cafe-02'; // a server on the morning shift, gone by 17:00
-    expect(m2(s, m).detail).toContain('waitress: pinned p-cafe-02 is no longer a server of cafe on shift 0:00-8:30 at Café door');
+    expect(m2(s, m).detail).toContain('waitress: pinned p-cafe-02 is no longer a server of cafe on shift 0:00-7:30 at Café door');
     m.roles[0].pin = 'p-cafe-14';
     expect(m2(s, m)).toMatchObject({ ok: true, value: expect.stringContaining('waitress p-cafe-14') }); // a pin that fits wins over the tie-break
     const other = { ...s.plan, version: '0.0.0-test' };
@@ -396,7 +426,7 @@ describe('handover roles', () => {
     expect(cast(pair, summon())).toEqual(['waitress: p-cafe-11 cast, but a lover summons to guard: the rulebook has no summon-walk-max-s']);
     expect(cast(pair, { play: true })[0]).toContain('no summons rule given');
     // no pair: M-2 fails loudly, naming the role and the tie
-    expect(cast(met(play(s.p), { 'p-cafe-11': x => { x.ties = x.ties!.filter(t => t.kind !== 'lover'); } }), summon(90))[0]).toStartWith('waitress: none of the 1 who fit (server of cafe on shift 0:00-8:30 at Café door) has a lover tie to a guard of records-office who can be cast as guard');
+    expect(cast(met(play(s.p), { 'p-cafe-11': x => { x.ties = x.ties!.filter(t => t.kind !== 'lover'); } }), summon(90))[0]).toStartWith('waitress: none of the 1 who fit (server of cafe on shift 0:00-7:30 at Café door) has a lover tie to a guard of records-office who can be cast as guard');
   });
 });
 

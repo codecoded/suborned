@@ -1,0 +1,48 @@
+{
+ "schema": "suborned.audio-cues/1",
+ "note": "Chime (audio designer), brief 059, 2026-10-26. rivals-coming is muted (volume 0, was 0.85) on Sky's word, 2026-10-26: \"just turn it off for now - I'll do a proper audio pass later\" (the foghorn); the cue still fires, so proofs that read CuesPlayed are unchanged. The one place the game reads for which sound plays on which event. Clips are in unity/Assets/Suborned/Resources/Audio/ (made by tools/audio/synth.ts; their hashes are in clips.json). A cue is keyed by a sim log code; a loop by what the car does. Unity: Resources.Load<AudioClip>(clip); there is no AudioMixer asset yet, so `buses` are named gain groups the host multiplies (db) until Latch makes a mixer from them.",
+ "buses": {
+  "master": { "db": 0 },
+  "cues": { "parent": "master", "db": 0, "note": "timing and consequence cues: the clock's sounds, always 2D, never ducked" },
+  "vehicles": { "parent": "master", "db": -3, "note": "cars on the street; 3D, heard by distance from the camera's ground focus" }
+ },
+ "family": {
+  "note": "One cue per meaning, kept apart by register, timbre and length so no two are mistaken for each other. Reserved rows have no clip yet.",
+  "rows": [
+   { "id": "rivals-coming", "meaning": "the rival car turns in: they are here", "register": "low 90-600 Hz, buzzy brass, two falling tones (D3 then B2) over a tyre swish", "length": "1.6 s", "status": "made" },
+   { "id": "handover-chime", "meaning": "5:30 shift end", "register": "mid-high 600-2500 Hz, bell partials, major, long ring", "length": "2-3 s", "status": "reserved" },
+   { "id": "watcher-noticed", "meaning": "a watcher has noticed an agent", "register": "high 2.5-4 kHz, one dry ping, no tail", "length": "under 0.15 s", "status": "reserved" }
+  ]
+ },
+ "cues": [
+  {
+   "id": "rivals-coming",
+   "on": { "log": "rivals.coming", "at": "2:35 on the Handover; also the drawn entry (racing for the gunfire) and the late entry (F5, F6), same code, same cue" },
+   "clip": "Audio/rivals_coming",
+   "bus": "cues",
+   "volume": 0,
+   "pitch": 1,
+   "spatial": { "blend": 0, "pan": "optional: stereo pan toward the side of the screen the car enters from (Orbit Walk), pan = clamp(dot(cameraRight, entry - cameraFocus) / 40 m, -0.6, 0.6); no distance fade", "reason": "a clock cue is heard wherever the camera is; the pan says which way to look" },
+   "priority": 40,
+   "voices": { "max": 1, "cooldownS": 5 },
+   "playsWhile": "once, on the tick the rivals.coming log line appears, at any game speed; it is a clock cue, so it is not heard again in a replay's scrub unless the host replays the tick",
+   "doesNotPlayOn": ["rivals.back", "rivals.follows", "rivals.late", "rivals.drawn-stop", "rivals.drop", "rivals.arrive"]
+  }
+ ],
+ "loops": [
+  {
+   "id": "rival-car-engine",
+   "follows": "car:rivals (the pose from Game.RivalCarPose(), world position and heading)",
+   "clip": "Audio/rival_car_engine",
+   "bus": "vehicles",
+   "volume": 0.55,
+   "loop": true,
+   "spatial": { "blend": 1, "rolloff": "logarithmic", "minDistanceM": 10, "maxDistanceM": 120, "dopplerLevel": 0.5, "listener": "the camera's ground focus point (the look-at point on the street), not the camera, which sits high above it" },
+   "priority": 90,
+   "playsWhile": "the car is moving: its pose changed more than 0.05 m/s between frames (car.pace: 5 m/s on a carriageway, 2 m/s on a drive or in a bay). It starts on the rivals.coming tick, stops when the pose stops or is null (parked, dropping, off the map)",
+   "gain": { "movingSpeedMps": [0.5, 5], "volumeScale": [0.5, 1], "pitch": [0.82, 1.0], "note": "volume scale and pitch rise linearly with the measured speed between those bounds; at the yard pace (2 m/s) it runs about 0.65 volume and 0.88 pitch" },
+   "fade": { "inS": 0.25, "outS": 0.6 },
+   "restart": "randomise the start offset on each play so it does not always start on the same beat; the same clip serves any later move (rivals.follows, rivals.back, the fight stand)"
+  }
+ ]
+}

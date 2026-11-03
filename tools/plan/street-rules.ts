@@ -3,11 +3,13 @@
 import { ctxOf as genCtx } from '../world/gen/common';
 import { kindOf, plotRing } from '../world/gen/edges';
 import { landingsOf } from '../world/gen/street/crossings';
+import { THEME_BY_NAME } from '../world/gen/roofline';
 import type { Check } from './checks';
 import { type V, lineToPoly } from './geom';
 import { type Spot, indexes, spotsOf, walkBlock } from './street-geo';
 import { FLAT, quayBlock } from './street-zones';
 import { speciesOf } from './trees';
+import { sectionOf } from './sections';
 import { type WCtx, TOL, bb, f1, ringGap, rule } from './world-ctx';
 
 const G = 'Streetscape';
@@ -56,7 +58,7 @@ export function streetRules(c: WCtx): Check[] {
 
   // SF-12 every tram stop platform and every station side has its whole transit kit
   const twin = S.catalogue['phone-booth']?.twin as { variant: string; counts: number } | undefined, worth = (x: Spot) => twin && x.s.kind === 'phone-booth' && x.s.variant === twin.variant ? twin.counts : 1; // brief 026: a twin booth serves a pair
-  const bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)).length : spots.filter(x => x.s.kind === kind && test(x.s.edge)).reduce((a, x) => a + worth(x), 0); // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
+  const cov = (S.crossings?.coverage as { rules?: { stops?: { ends?: number }; banks?: boolean } } | undefined)?.rules, bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)).length : spots.filter(x => x.s.kind === kind && test(x.s.edge)).reduce((a, x) => a + worth(x), 0); // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
   const need = (label: string, kind: string, test: (e: string) => boolean, n: number) => { const got = by(kind, test); if (got < n) bad12.push(`${label}: ${got} ${kind} (needs ${n})`); };
   const stops = w.transit.stops;
   for (const m of stops) for (const [kind, n] of [['tram-shelter', 1], ['bench', 2], ['ticket-machine', 1], ['timetable-column', 1], ['bin', 1], ['bollard', 2], ['pole-camera', 1]] as const) need(m.id, kind, e => e === m.id, n);
@@ -65,7 +67,7 @@ export function streetRules(c: WCtx): Check[] {
     units++;
     const onPrimary = [...ix.roads.nearest(s.at, 30)].some(([id, dl]) => d.roads.find(r => r.id === id)?.class === 'primary' && dl < d.roads.find(r => r.id === id)!.w);
     const mine = (e: string) => e.startsWith(`stop/${l.id}/${s.id}/`);
-    need(`${l.id}/${s.id} stop`, 'crossing', mine, 2);
+    need(`${l.id}/${s.id} stop`, 'crossing', mine, cov?.stops?.ends ?? 2); // brief 061: a stop's crossing is at one platform end (coverage.rules.stops.ends)
     if (!onPrimary) { // the pavement kit; a primary's narrow kerb zone may skip it (SF-6)
       need(`${l.id}/${s.id} stop`, 'kiosk-tickets', mine, 1); need(`${l.id}/${s.id} stop`, 'newsstand', mine, 1); need(`${l.id}/${s.id} stop`, 'phone-booth', mine, 2);
       if (String(s.interchange ?? '').startsWith('S1')) need(`${l.id}/${s.id} interchange`, 'public-clock', mine, 1);
@@ -75,7 +77,7 @@ export function streetRules(c: WCtx): Check[] {
     units++;
     for (const side of ['l', 'r']) {
       const bank = `bank/${l.id}/${s.id}/${side}`, label = `${l.id}/${s.id}/${side} bank`, mine = (e: string) => e === bank;
-      for (const [kind, n] of [['station-entrance', 1], ['newsstand', 1], ['phone-booth', 2], ['crossing', 1]] as const) need(label, kind, mine, n);
+      for (const [kind, n] of [['station-entrance', 1], ['newsstand', 1], ['phone-booth', 2], ['crossing', cov?.banks === false ? 0 : 1]] as const) need(label, kind, mine, n); // brief 061: coverage.rules.banks false: no patch at the stair foot
       const ids = w.connectors.filter(k => k.id.startsWith(`${bank}/`)).map(k => k.id.slice(bank.length + 1));
       for (const part of ['tower', 'run-a', 'run-b', 'lift']) if (!ids.includes(part)) bad12.push(`${label}: no ${part}`);
     }
@@ -114,7 +116,18 @@ export function streetRules(c: WCtx): Check[] {
   const bad15: string[] = [], kit = c.B.roofs.kit.programmes as Record<string, { minRoof: [number, number]; setback?: number }>, over: Record<string, number> = { 'observation-saucer': 3, 'crane-gantry': 1 };
   for (const r of w.roofs) {
     if (r.form === 'terrace') continue;
-    const k = kit[r.programme], [mw, md] = k?.minRoof ?? [0, 0], [W, D] = r.size;
+    // brief 075 remap: a `roofline` roof (tools/world/gen/roofline.ts, the old DecoKitRoofline) fits plot by plot: each plot inside the roof rect and big enough for its theme (RL-2)
+    if (r.programme === 'roofline') {
+      const [W, D] = r.size, cs = Math.cos(r.yaw), sn = Math.sin(r.yaw);
+      if (!r.plots) { bad15.push(`${r.id}: a roofline roof with no plots`); continue; }
+      for (const pl of r.plots) {
+        const t = THEME_BY_NAME.get(pl.theme), u = (pl.c[0] - r.c[0]) * cs + (pl.c[1] - r.c[1]) * sn, v = -(pl.c[0] - r.c[0]) * sn + (pl.c[1] - r.c[1]) * cs;
+        if (!t) bad15.push(`${pl.id}: unknown theme ${pl.theme}`);
+        else if (pl.size[0] < t.minL - TOL || pl.size[1] < t.minD - TOL) bad15.push(`${pl.id} ${pl.theme} on ${f1(pl.size[0])} × ${f1(pl.size[1])} (needs ${t.minL} × ${t.minD})`);
+        if (Math.abs(u) + pl.size[0] / 2 > W / 2 + TOL || Math.abs(v) + pl.size[1] / 2 > D / 2 + TOL) bad15.push(`${pl.id} reaches past its roof`);
+      }
+    }
+    const k = r.programme === 'roofline' ? { minRoof: [0, 0] } : kit[r.programme], [mw, md] = k?.minRoof ?? [0, 0], [W, D] = r.size;
     if (!k) { bad15.push(`${r.id}: unknown programme ${r.programme}`); continue; }
     if (!((W >= mw - TOL && D >= md - TOL) || (W >= md - TOL && D >= mw - TOL))) bad15.push(`${r.id} ${r.programme} on ${f1(W)} × ${f1(D)} (minRoof ${mw} × ${md})`);
     const ext = over[r.programme] ?? 0, cs = Math.cos(r.yaw), sn = Math.sin(r.yaw);
@@ -125,14 +138,14 @@ export function streetRules(c: WCtx): Check[] {
       if (Math.abs(rel[0]) + hx > W / 2 + ext + TOL || Math.abs(rel[1]) + hy > D / 2 + ext + TOL) { bad15.push(`${p.id} reaches past the ${r.programme} roof's setback`); break; }
     }
   }
-  out.push(rule('SF-15', G, 'Every roof gets a programme whose minRoof fits it; roof items keep their setback from the parapet', w.roofs.length, bad15, 'all', 'standards.buildings.roofs.kit · streetscape.rules SF-15'));
+  out.push(rule('SF-15', G, 'Every roof gets a programme whose minRoof fits it; roof items keep their setback from the parapet', w.roofs.length, bad15, 'all', 'standards.buildings.roofs.kit · streetscape.rules SF-15 · brief 075 remap roofline RL-1..RL-4 (tools/world/gen/roofline.ts; a plot under its theme\'s size fails: street-rules.test.ts)'));
 
   // SF-16 spill depth never exceeds the street section's frontage zone (and the placement's spill depth)
   const bad16: string[] = [], roadBy = new Map(d.roads.map(r => [r.id, r]));
   for (const f of w.frontages) {
     if (f.level !== 'street') continue;
-    const r = roadBy.get(f.street), foot = plan.foot.find(x => x.id === f.street), sec = r ? S.sections[r.class] : foot?.kind === 'mall' ? S.sections.mall : null;
-    const zone = r ? ((r.class === 'access' && S.trees.avenues.access.avenue.includes(f.area) ? sec.avenue?.frontage : null) ?? sec.frontage) : foot?.kind === 'mall' ? sec?.frontage : S.sections.walk.edgeBand; // a walk's or the quay's spill stays in its edge band
+    const r = roadBy.get(f.street), foot = plan.foot.find(x => x.id === f.street), sec: any = r ? sectionOf(S.sections, plan, r.class, r.id) : foot?.kind === 'mall' ? S.sections.mall : null;
+    const zone = r ? ((r.class === 'access' && !sec.own && S.trees.avenues.access.avenue.includes(f.area) ? sec.avenue?.frontage : null) ?? sec.frontage) : foot?.kind === 'mall' ? sec?.frontage : S.sections.walk.edgeBand; // a walk's or the quay's spill stays in its edge band
     if (f.spill.depth > Math.min(F.placement.spill.depth, zone ?? 0) + TOL) bad16.push(`${f.id}: spill ${f.spill.depth} m > frontage zone ${zone ?? 0} m`);
   }
   out.push(rule('SF-16', G, 'Frontage spill depth ≤ the street section\'s frontage zone', w.frontages.filter(f => f.level === 'street').length, bad16, 'all', 'streetscape.sections · frontage.placement.spill'));

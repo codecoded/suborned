@@ -1,0 +1,140 @@
+{
+ "between_different_people_refs": {
+  "mean": 0.961,
+  "max": 0.988,
+  "max_pair": [
+   "larthi",
+   "milena"
+  ]
+ },
+ "sets": {
+  "shout_arthur_clone": {
+   "n": 12,
+   "within_mean": 0.983,
+   "within_min": 0.969,
+   "to_own_ref_mean": 0.982,
+   "to_own_ref_min": 0.97,
+   "nearest_ref_is_own": "12/12"
+  },
+  "shout_arthur_design": {
+   "n": 12,
+   "within_mean": 0.965,
+   "within_min": 0.934,
+   "to_own_ref_mean": 0.951,
+   "to_own_ref_min": 0.927,
+   "nearest_ref_is_own": "0/12"
+  },
+  "shout_larthi_clone": {
+   "n": 6,
+   "within_mean": 0.981,
+   "within_min": 0.974,
+   "to_own_ref_mean": 0.978,
+   "to_own_ref_min": 0.968,
+   "nearest_ref_is_own": "6/6"
+  },
+  "shout_larthi_design": {
+   "n": 6,
+   "within_mean": 0.962,
+   "within_min": 0.94,
+   "to_own_ref_mean": 0.958,
+   "to_own_ref_min": 0.941,
+   "nearest_ref_is_own": "0/6"
+  },
+  "shout_arruns_clone": {
+   "n": 3,
+   "within_mean": 0.993,
+   "within_min": 0.992,
+   "to_own_ref_mean": 0.97,
+   "to_own_ref_min": 0.969,
+   "nearest_ref_is_own": "3/3"
+  },
+  "shout_arruns_design": {
+   "n": 3,
+   "within_mean": 0.974,
+   "within_min": 0.972,
+   "to_own_ref_mean": 0.943,
+   "to_own_ref_min": 0.931,
+   "nearest_ref_is_own": "0/3"
+  },
+  "shout_police_clone": {
+   "n": 3,
+   "within_mean": 0.992,
+   "within_min": 0.991,
+   "to_own_ref_mean": 0.986,
+   "to_own_ref_min": 0.984,
+   "nearest_ref_is_own": "3/3"
+  },
+  "shout_police_design": {
+   "n": 3,
+   "within_mean": 0.974,
+   "within_min": 0.966,
+   "to_own_ref_mean": 0.945,
+   "to_own_ref_min": 0.943,
+   "nearest_ref_is_own": "0/3"
+  },
+  "shout_rival_clone": {
+   "n": 3,
+   "within_mean": 0.991,
+   "within_min": 0.99,
+   "to_own_ref_mean": 0.98,
+   "to_own_ref_min": 0.977,
+   "nearest_ref_is_own": "3/3"
+  },
+  "shout_rival_design": {
+   "n": 3,
+   "within_mean": 0.977,
+   "within_min": 0.974,
+   "to_own_ref_mean": 0.95,
+   "to_own_ref_min": 0.949,
+   "nearest_ref_is_own": "2/3"
+  },
+  "shout_watcher_clone": {
+   "n": 3,
+   "within_mean": 0.991,
+   "within_min": 0.99,
+   "to_own_ref_mean": 0.978,
+   "to_own_ref_min": 0.977,
+   "nearest_ref_is_own": "3/3"
+  },
+  "shout_watcher_design": {
+   "n": 3,
+   "within_mean": 0.973,
+   "within_min": 0.968,
+   "to_own_ref_mean": 0.938,
+   "to_own_ref_min": 0.931,
+   "nearest_ref_is_own": "0/3"
+  },
+  "con_inez_clone": {
+   "n": 10,
+   "within_mean": 0.987,
+   "within_min": 0.981,
+   "to_own_ref_mean": 0.987,
+   "to_own_ref_min": 0.983,
+   "nearest_ref_is_own": "10/10"
+  },
+  "con_inez_design": {
+   "n": 10,
+   "within_mean": 0.975,
+   "within_min": 0.961,
+   "to_own_ref_mean": 0.978,
+   "to_own_ref_min": 0.969,
+   "nearest_ref_is_own": "9/10"
+  },
+  "con_arthur_clone": {
+   "n": 10,
+   "within_mean": 0.985,
+   "within_min": 0.977,
+   "to_own_ref_mean": 0.985,
+   "to_own_ref_min": 0.979,
+   "nearest_ref_is_own": "10/10"
+  },
+  "con_arthur_design": {
+   "n": 10,
+   "within_mean": 0.959,
+   "within_min": 0.939,
+   "to_own_ref_mean": 0.967,
+   "to_own_ref_min": 0.956,
+   "nearest_ref_is_own": "1/10"
+  }
+ }
+}

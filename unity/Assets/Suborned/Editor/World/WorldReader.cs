@@ -43,6 +43,13 @@ namespace Suborned.World
                 Kerb = J.Poly(x, "kerb"), KerbWidth = J.F(x, "kerbWidth"), KerbHeight = J.F(x, "kerbHeight"),
             }); // optional (present when the civic block states drives)
             w.Ground.Pieces = Each(g, "pieces", StreetItem); // brief 026: optional
+            w.Ground.Footways = Each(g, "footways", Footway); // brief 061: optional (present when the plan carries streetscape.continuousFootway)
+            w.Ground.Kerbside = Each(g, "kerbside", x => new KerbBayDto
+            {
+                Id = Id(x), Kind = J.S(x, "kind") is "parallel" or "angle" or "loading" ? J.S(x, "kind") : throw new InvalidDataException($"World: kerb bay {Id(x)}: kind `{J.S(x, "kind")}` (parallel | angle | loading)"),
+                Road = J.S(x, "road") ?? throw new InvalidDataException($"World: kerb bay {Id(x)} has no road"), Ring = J.Poly(x, "ring"), Yaw = J.F(x, "yaw"), Level = J.F(x, "level"),
+            }); // brief 075: optional
+            w.Ground.Islands = Each(g, "islands", Mass); // brief 075: optional
 
             var t = J.Get(o, "transit");
             w.Transit.Tram = Each(t, "tram", x => new TrackDto
@@ -55,14 +62,44 @@ namespace Suborned.World
                 Height = J.F(x, "height"), Width = J.F(x, "width"), Depth = J.F(x, "depth"), PylonSize = J.F(x, "pylonSize"), Ground = J.F(x, "ground"), Spacing = J.F(x, "spacing"), CapDepth = J.F(x, "capDepth"),
             });
 
+            if (J.Get(t, "skyTrack") is { } st) // brief 075 roll-out: the old sky track (the sweep and the pylon stacks)
+            {
+                var bm = J.Get(st, "beam") ?? throw new InvalidDataException("World: transit.skyTrack has no beam");
+                var stripe = J.A(bm, "stripe");
+                w.Transit.SkyTrack = new SkyTrackDto
+                {
+                    Piece = J.S(bm, "piece"), Width = J.F(bm, "width"), Depth = J.F(bm, "depth"), Fillet = J.F(bm, "fillet"),
+                    StripeLo = (float)(double)stripe[0], StripeHi = (float)(double)stripe[1], StripeProud = J.F(bm, "stripeProud"), UPerMetre = J.F(bm, "uPerMetre"),
+                    Beams = Each(bm, "beams", x => new SkyBeamDto { Id = Id(x), Line = J.Poly(x, "line"), Top = J.F(x, "top") }),
+                    Pylons = Each(st, "pylons", x =>
+                    {
+                        var p = new SkyPylonDto { Id = Id(x), At = J.P(x, "at"), Yaw = J.F(x, "yaw"), Ground = J.F(x, "ground") };
+                        if (J.Get(x, "foot") is { } f) { p.Foot = Kit(f); p.FootZ = J.F(f, "z"); }
+                        var sh = J.Get(x, "shaft") ?? throw new InvalidDataException($"World: sky pylon {p.Id} has no shaft"); p.Shaft = Kit(sh); p.ShaftZ = J.F(sh, "z");
+                        var hd = J.Get(x, "head") ?? throw new InvalidDataException($"World: sky pylon {p.Id} has no head"); p.Head = Kit(hd); p.HeadZ = J.F(hd, "z");
+                        return p;
+                    }),
+                };
+            }
             w.Transit.Stops = Each(t, "stops", Mass);
             w.Transit.Stations = Each(t, "stations", Mass);
+            if (J.Get(t, "wires") is { } wires) // brief 075: the overhead; the contact and span lines are data (their pieces are what draws)
+                w.Transit.Wires = Each(wires, "pieces", x => new WirePieceDto
+                {
+                    Id = Id(x), Kind = J.S(x, "kind") is "contact" or "span" or "hanger" or "rosette" ? J.S(x, "kind") : throw new InvalidDataException($"World: wire piece {Id(x)}: kind `{J.S(x, "kind")}` (contact | span | hanger | rosette)"),
+                    Kit = Kit(J.Get(x, "kit")) ?? throw new InvalidDataException($"World: wire piece {Id(x)} has no kit"), Z = J.F(x, "z"),
+                });
+            if (J.Get(o, "dressing") is { } dressing) // brief 075: presentation only
+                w.Trams = Each(dressing, "trams", x => new ParkedTramDto
+                {
+                    Id = Id(x), Line = J.S(x, "line"), Stop = J.S(x, "stop"), Kit = Kit(J.Get(x, "kit")) ?? throw new InvalidDataException($"World: parked tram {Id(x)} has no kit"), Z = J.F(x, "z"),
+                });
 
             w.Buildings = Each(o, "buildings", Mass);
             w.Roofs = Each(o, "roofs", x => new RoofDto
             {
                 Id = Id(x), Building = J.S(x, "building"), Programme = J.S(x, "programme"), Surface = J.S(x, "surface"), Form = J.S(x, "form"), Z = J.F(x, "z"), Parapet = J.F(x, "parapet"), Yaw = J.F(x, "yaw"),
-                Centre = J.P(x, "c"), Size = J.P(x, "size"), Parts = Each(x, "parts", Prim), Kit = Kit(J.Get(x, "kit")), Crown = Kit(J.Get(x, "crown")),
+                Centre = J.P(x, "c"), Size = J.P(x, "size"), Parts = Each(x, "parts", Prim), Kit = Kit(J.Get(x, "kit")), Crown = Kit(J.Get(x, "crown")), Kits = Each(x, "kits", Kit), // brief 075 remap: the roofline pieces
             });
             w.Frontages = Each(o, "frontages", Frontage);
             w.Connectors = Each(o, "connectors", c => new ConnectorDto
@@ -98,6 +135,7 @@ namespace Suborned.World
                 {
                     Id = Id(c), Kind = J.S(c, "kind"), Road = J.S(c, "road"), Control = J.S(c, "control"), Items = Strs(c, "items"),
                     Line = J.Poly(c, "line"), Width = J.F(c, "width"), Refuges = Each(c, "refuges", J.Poly),
+                    Cycle = J.Get(c, "cycle") is { } cy ? new SignalCycleDto { Walk = (int)J.F(cy, "walk"), Clearing = (int)J.F(cy, "clearing"), Stop = (int)J.F(cy, "stop"), Arrive = (int)J.F(cy, "arrive"), Offset = (int)J.F(cy, "offset") } : null, // brief 061: absent = the export's state stands
                 });
             w.Levels = Each(o, "levels", l => new LevelDto
             {
@@ -117,18 +155,23 @@ namespace Suborned.World
             });
             if (J.Get(o, "takedown") is { } td)
                 w.Entrances = Each(td, "entrances", x => new EntranceDto { Id = Id(x), Building = J.S(x, "building"), Name = J.S(x, "name"), Kind = J.S(x, "kind"), At = J.P(x, "at"), Z = J.F(x, "z") });
-            w.Megastructures = Each(o, "megastructures", m => new MegaDto { Id = Id(m), Parts = Each(m, "parts", Mass), Prims = Each(m, "prims", Prim), Gateway = Kit(J.Get(m, "gateway")) });
+            w.Megastructures = Each(o, "megastructures", m => new MegaDto { Id = Id(m), Kind = J.S(m, "kind"), Parts = Each(m, "parts", Mass), Prims = Each(m, "prims", Prim), Gateway = Kit(J.Get(m, "gateway")) });
             // Splice (18:0x export): a mass with `hidden: true` is data only (the two PavilionPier_Square supports the walk grid keeps); nothing draws it
             var civic = Each(o, "civic", Mass); w.HiddenCivic = civic.Count(m => J.Get(m.Raw, "hidden") is true); w.Civic = civic.Where(m => !(J.Get(m.Raw, "hidden") is true)).ToList();
             w.Landmarks = Each(o, "landmarks", l => new LandmarkDto
             {
-                Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit),
+                Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit), Gateway = Kit(J.Get(l, "gateway")), // brief 075: the landmark's gateway arch
             });
             w.Gates = Each(o, "gates", Mass);
+            w.Liveries = J.Get(o, "liveries"); // brief 075-C
+            w.Posters = J.Get(o, "posters"); // brief 075-F1
             w.Facades = Each(o, "facades", f => new FacadeDto
             {
                 Id = Id(f), Building = J.S(f, "building"), Form = J.S(f, "form"), Storeys = (int)J.F(f, "storeys"), Edge = (int)J.F(f, "edge"),
                 Kit = Kit(J.Get(f, "kit")) ?? throw new InvalidDataException($"World: facade {Id(f)} has no kit"), Base = J.F(f, "base"), A = J.P(f, "a"), B = J.P(f, "b"),
+                Family = J.S(f, "family"), Casts = J.S(f, "casts"), Colourway = J.S(f, "colourway"),
+                Column = J.Get(f, "column") is { } col ? J.S(col, "id") : null, ColumnStoreys = J.Get(f, "column") is { } col2 ? (int)J.F(col2, "storeys") : 0,
+                LodClass = J.Get(f, "lod") is { } lod ? J.S(lod, "class") : null,
             });
             w.Signatures = Each(o, "signatures", x => new SignatureDto
             {
@@ -202,7 +245,7 @@ namespace Suborned.World
         static MassDto Mass(object m) => new()
         {
             Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"), Kit = Kit(J.Get(m, "kit")),
-            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string, Raw = m,
+            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string, Colourway = J.S(m, "colourway"), Raw = m,
             Materials = J.Get(m, "materials") is Dictionary<string, object> slots ? slots.ToDictionary(kv => kv.Key, kv => (string)kv.Value) : null,
         };
 
@@ -234,11 +277,31 @@ namespace Suborned.World
             };
         }
 
+        /// <summary>A continuous footway (brief 061, world.schema.ts Footway); every part required (unknown = reject).</summary>
+        static FootwayDto Footway(object x)
+        {
+            var fr = Req(x, "frame"); var table = Req(x, "table"); var ramp = Req(x, "ramp"); var lip = Req(x, "lip");
+            var f = new FootwayDto
+            {
+                Id = Id(x), Gate = J.S(x, "gate"), Lane = J.S(x, "lane"), Road = J.S(x, "road"), Level = J.F(x, "level"), Half = J.F(x, "half"), Depth = J.F(x, "depth"),
+                Origin = J.P(fr, "origin"), Along = J.P(fr, "along"), Into = J.P(fr, "into"),
+                TableId = J.S(table, "id") ?? throw new InvalidDataException($"World: {Id(x)}: table without its flat id"), Table = J.Poly(table, "ring"), TableSurface = J.S(table, "surface"),
+                Ramp = J.Poly(ramp, "ring"), RampRun = J.F(ramp, "run"), RampRise = J.F(ramp, "rise"), RampSurface = J.S(ramp, "surface"),
+                Lip = J.Poly(lip, "ring"), LipD = J.F(lip, "d"), LipDrop = J.F(lip, "drop"), LipSurface = J.S(lip, "surface"),
+                Posts = J.Poly(x, "posts"),
+            };
+            foreach (var b in Each(x, "bands", b => (J.Poly(b, "ring"), J.F(b, "level"), J.S(b, "surface")))) f.Bands.Add(b);
+            if (f.Half <= 0f || f.Depth <= 0f || f.LipD <= 0f || f.RampRun <= 0f || f.LipD >= f.Depth) throw new InvalidDataException($"World: {f.Id}: footway sizes out of order (half {f.Half}, lip {f.LipD}, depth {f.Depth}, run {f.RampRun})");
+            return f;
+        }
+
         static StreetItemDto StreetItem(object s)
         {
             var st = J.Get(s, "staffed"); var h = st != null ? J.Get(st, "hours") : null; var hl = h as List<object>;
+            var halo = J.Get(s, "signal") is { } sgh ? J.Get(sgh, "halo") : null;
             return new StreetItemDto
             {
+                HasHalo = halo != null, HaloAt = halo != null ? J.P(halo, "at") : default, HaloZ = halo != null ? J.F(halo, "z") : 0f, HaloR = halo != null ? J.F(halo, "r") : 0f,
                 Id = Id(s), Kind = J.S(s, "kind"), Surface = J.S(s, "surface"), Edge = J.S(s, "edge"), Sight = J.S(s, "sight"), Variant = J.S(s, "variant"), At = J.P(s, "at"), Z = J.F(s, "z"), Yaw = J.F(s, "yaw"), Size = V3(s, "size"),
                 Staffed = st != null, Trade = st != null ? J.S(st, "trade") : null, Occupation = st != null ? J.S(st, "occupation") : null, HoursService = h is string, HoursFrom = hl != null ? (float)(double)hl[0] : 0, HoursTo = hl != null ? (float)(double)hl[1] : 0,
                 Source = J.S(s, "source"), Kit = Kit(J.Get(s, "kit")),
@@ -254,6 +317,7 @@ namespace Suborned.World
             if (J.Get(k, "yaw") is double y) r.Yaw = (float)y;
             if (J.Get(k, "at") != null) r.At = J.P(k, "at");
             if (J.Get(k, "base") is double b) r.Base = (float)b; // signs only; other placed refs stand on their element
+            if (J.Get(k, "z") is double z) r.Z = (float)z; // brief 075 remap: roofs[].kits[] carry their own pivot height
             return r;
         }
 

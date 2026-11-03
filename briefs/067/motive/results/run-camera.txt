@@ -1,0 +1,19 @@
+# probe 067: the Scout runs 16 legs across the entrance camera's view. base = 0.33.1 as committed; w180 = walk 180, run 360, run-alert 0, PROBE_RUNCLOCK=2
+== base
+run-camera.script.json: None at 2:00.0  cash 100000  trail 0  alert 1  shots 0
+  0:20.9  run.seen                     The entrance camera sees the scout running: a found fault. Alert 1.
+  0:30.6  attention.noticed            the camera entrance notices the scout standing still in its sight.
+  0:42.6  attention.wary               the camera entrance is wary of the scout for the rest of the mission.
+  1:07.6  attention.reporting          the camera entrance reports the scout loitering (lands 1:17.6).
+  1:17.6  attention.landed             the camera entrance's report lands: the scout loitering. Alert 1.
+  1:17.6  alarm.dispatches             The desk sends the response (level 2, watchful): 1 robot, 0 units, on the street 1:27.6.
+  1:21.6  patrol.alarm                 The patrol leaves its sweep for the alarm.
+== w180
+run-camera.script.json: None at 2:00.0  cash 100000  trail 0  alert 1  shots 0
+  0:16.3  run.seen                     The entrance camera sees the scout running: a found fault. Alert 0.
+  0:16.3  attention.noticed            the camera entrance notices the scout standing still in its sight.
+  0:28.2  attention.wary               the camera entrance is wary of the scout for the rest of the mission.
+  0:53.2  attention.reporting          the camera entrance reports the scout loitering (lands 0:57.6).
+  0:57.6  attention.landed             the camera entrance's report lands: the scout loitering. Alert 1.
+  0:57.6  alarm.dispatches             The desk sends the response (level 2, watchful): 1 robot, 0 units, on the street 1:07.6.
+  1:01.6  patrol.alarm                 The patrol leaves its sweep for the alarm.

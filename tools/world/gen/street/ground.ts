@@ -4,12 +4,13 @@ import { type V, lineDist } from '../../../plan/geom';
 import { roadAt } from '../../../plan/street-zones';
 import type { Ctx } from '../common';
 import { pointInRing } from '../geo';
+import { inCut } from '../kerbreturn';
 
 /** The carriageway's level: roads are drawn at 0 (build.ts), a pavement top is ctx.pav above it. */
 export const ROAD_Z = 0;
 
 /** True if p lies on a carriageway (within half a road's width of its centre line). */
-export const onRoad = (ctx: Ctx, p: V): boolean => { const r = roadAt(ctx, p, ''); return !!r && r.dk < -0.01; };
+export const onRoad = (ctx: Ctx, p: V): boolean => { const r = roadAt(ctx, p, ''); return (!!r && r.dk < -0.01) || inCut(ctx, p); }; // brief 028: the corner a kerb return cuts is carriageway now
 
 /** The level of the surface under p: a carriageway, else the pavement top. */
 export const levelAt = (ctx: Ctx, p: V): number => (onRoad(ctx, p) ? ROAD_Z : ctx.pav);

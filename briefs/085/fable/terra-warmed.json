@@ -1,0 +1,400 @@
+{
+ "note": "Fable by hand, 2026-11-01: Terra's seven scenes (briefs/085/terra/scenes.json) warmed with the smallest changes, as a test of draft-then-warm. Not in text.json. changed: true marks a line that differs from Terra's, with terra holding the original. view: the beat fields that would survive. Cards as text.json.",
+ "scenes": [
+  {
+   "id": "listen-inez",
+   "beats": [
+    {
+     "speaker": "Inez",
+     "line": "The Bureau wants another payment. I can't keep up.",
+     "changed": true,
+     "terra": "Inez: The Bureau wants another payment tomorrow. I can't keep up."
+    },
+    {
+     "speaker": "Milena",
+     "line": "I owe them too. Have you told Okafor?",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "He knows. We meet after his shift.",
+     "changed": false
+    },
+    {
+     "speaker": "Milena",
+     "line": "You're seeing him, then.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "Yes. If the Office hears, we'll both lose our jobs.",
+     "changed": false
+    },
+    {
+     "speaker": "Milena",
+     "line": "Then we keep it between us. Have you eaten today?",
+     "changed": true,
+     "terra": "Milena: Then we keep it between us."
+    },
+    {
+     "speaker": "Scout",
+     "line": "Clear her loan. Use Okafor.",
+     "changed": false
+    }
+   ],
+   "learned": [
+    "Debt: Bureau loan, and she's behind.",
+    "Secret: seeing Okafor, the door guard."
+   ],
+   "opens": [
+    "Help: clear her Bureau loan.",
+    "Pressure: threaten to expose the affair."
+   ]
+  },
+  {
+   "id": "help-inez-1",
+   "beats": [
+    {
+     "speaker": "Fixer",
+     "line": "Miss Nikolaou, we paid part of your Bureau loan.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "You paid it? Not so loud. I don't even know you.",
+     "changed": true,
+     "terra": "Inez: You paid it? I don't even know you."
+    },
+    {
+     "speaker": "Fixer",
+     "line": "No need to worry. We'll bring the rest.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "Why would you do that?",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "We may ask one small thing later. It won't hurt anyone.",
+     "changed": true,
+     "terra": "Fixer: We may ask one small thing later."
+    },
+    {
+     "speaker": "Inez",
+     "line": "Thank you, but I can't promise anything.",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "You don't have to promise anything today. You've enough on.",
+     "changed": true,
+     "terra": "Fixer: You don't have to promise anything today."
+    },
+    {
+     "speaker": "Inez",
+     "line": "All right. Thank you.",
+     "changed": false
+    }
+   ],
+   "learned": [
+    "Inez took it. Not ready yet."
+   ],
+   "opens": [
+    "Help again"
+   ]
+  },
+  {
+   "id": "help-inez-2",
+   "beats": [
+    {
+     "speaker": "Fixer",
+     "line": "Miss Nikolaou, we paid the rest of your loan.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "You did bring it. Thank you. What do I do?",
+     "changed": true,
+     "terra": "Inez: Thank you. What do you want me to do?",
+     "view": {
+      "lean": "did"
+     }
+    },
+    {
+     "speaker": "Fixer",
+     "line": "When I telephone, call Okafor over from his door.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "You know about us. What happens to him?",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "Easy, now. Nothing, if it goes right. He never sees us.",
+     "changed": true,
+     "terra": "Fixer: Nothing, if it goes right. He never sees us."
+    },
+    {
+     "speaker": "Inez",
+     "line": "Why would he leave his post?",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "Say you have something to tell him, not by telephone.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "All right. I'll do it.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "If I see trouble on the square, I'll warn you.",
+     "changed": false
+    }
+   ],
+   "learned": [
+    "Loan paid. Inez is with us."
+   ],
+   "opens": [
+    "Call Inez"
+   ]
+  },
+  {
+   "id": "call-inez",
+   "beats": [
+    {
+     "speaker": "Fixer",
+     "line": "Miss Nikolaou, it's time.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "All right.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "How's your shift, love?",
+     "changed": true,
+     "terra": "Inez: How's your shift, love.",
+     "view": {
+      "holdBefore": 1.2
+     }
+    },
+    {
+     "speaker": "Okafor",
+     "line": "Quiet. I've the door till shift's end. Good to hear you.",
+     "changed": true,
+     "terra": "Okafor: Quiet. I've got the door till shift's end."
+    },
+    {
+     "speaker": "Inez",
+     "line": "I have something to tell you, not by telephone.",
+     "changed": false
+    },
+    {
+     "speaker": "Okafor",
+     "line": "For you, I'll come over.",
+     "changed": true,
+     "terra": "Okafor: It's you. I'll come over.",
+     "view": {
+      "lean": "you"
+     }
+    },
+    {
+     "speaker": "Okafor",
+     "line": "I'm glad of the excuse. I'm on my way.",
+     "changed": true,
+     "terra": "Okafor: I'm glad I'll see you.",
+     "view": {
+      "holdAfter": 1.5,
+      "holdOn": "waitress"
+     }
+    }
+   ],
+   "learned": [
+    "Door empty a few minutes"
+   ],
+   "opens": [
+    "Camera blind? Then enter the Office."
+   ]
+  },
+  {
+   "id": "pressure-inez",
+   "beats": [
+    {
+     "speaker": "Fixer",
+     "line": "Miss Nikolaou, the Office could learn about you and Okafor.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "Who told you? Please. We'd both lose our jobs.",
+     "changed": true,
+     "terra": "Inez: Please. We would both lose our jobs."
+    },
+    {
+     "speaker": "Fixer",
+     "line": "We know. I'm sorry. Get your breath.",
+     "changed": true,
+     "terra": "Fixer: We know. I am sorry."
+    },
+    {
+     "speaker": "Inez",
+     "line": "What do you want?",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "When I telephone, call Okafor away from his door.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "All right. I hate this.",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "I know. We'll be quick. See to your tables.",
+     "changed": true,
+     "terra": "Fixer: I know."
+    },
+    {
+     "speaker": "Inez",
+     "line": "Leave him out of it as much as you can.",
+     "changed": false
+    }
+   ],
+   "learned": [
+    "Threatened, she agreed; knows Fixer's face."
+   ],
+   "opens": [
+    "Call Inez"
+   ]
+  },
+  {
+   "id": "call-inez-pressure",
+   "beats": [
+    {
+     "speaker": "Fixer",
+     "line": "Miss Nikolaou, it's time. Not a word of us to him.",
+     "changed": true,
+     "terra": "Fixer: Miss Nikolaou, it's time."
+    },
+    {
+     "speaker": "Inez",
+     "line": "All right.",
+     "changed": false
+    },
+    {
+     "speaker": "Inez",
+     "line": "It's me, love. I have something to tell you. Not by telephone.",
+     "changed": true,
+     "terra": "Inez: Okafor, I have something to tell you. Not by telephone."
+    },
+    {
+     "speaker": "Okafor",
+     "line": "You sound tired. I have the door.",
+     "changed": true,
+     "terra": "Okafor: I have the door."
+    },
+    {
+     "speaker": "Inez",
+     "line": "Please. I need to tell you in person.",
+     "changed": false
+    },
+    {
+     "speaker": "Okafor",
+     "line": "All right. I'm coming.",
+     "changed": false
+    }
+   ],
+   "street": [
+    {
+     "speaker": "Inez",
+     "line": "Someone knows about us. They looked suspicious.",
+     "changed": false
+    },
+    {
+     "speaker": "Okafor",
+     "line": "My door's standing empty. I have to go.",
+     "changed": false
+    }
+   ],
+   "learned": [
+    "She'll warn him when he arrives."
+   ],
+   "opens": [
+    "Door 1:40. Camera blind? Then enter."
+   ]
+  },
+  {
+   "id": "pay-driver",
+   "beats": [
+    {
+     "speaker": "Zhou",
+     "line": "You've paid, and it's been a lean month. Spell out the job.",
+     "changed": true,
+     "terra": "Zhou: It's been a lean month. Spell out the job."
+    },
+    {
+     "speaker": "Fixer",
+     "line": "At the chime, the Councillor gets in.",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "Drive to the service bay, east yard, round the back.",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "Wait a couple of minutes, then drive on.",
+     "changed": true,
+     "terra": "The Fixer: Wait two minutes, then drive on."
+    },
+    {
+     "speaker": "Zhou",
+     "line": "Not home.",
+     "changed": false
+    },
+    {
+     "speaker": "Fixer",
+     "line": "Not home.",
+     "changed": false
+    },
+    {
+     "speaker": "Zhou",
+     "line": "I'll send off anyone watching the bay.",
+     "changed": false
+    },
+    {
+     "speaker": "Zhou",
+     "line": "I won't look, and I won't ask who you people are.",
+     "changed": true,
+     "terra": "Zhou: I won't look at what happens."
+    },
+    {
+     "speaker": "Fixer",
+     "line": "We appreciate that, Zhou. You've had a hard month.",
+     "changed": true,
+     "terra": "The Fixer: We appreciate that."
+    }
+   ],
+   "learned": [
+    "Zhou waits a couple of minutes."
+   ],
+   "opens": [
+    "Be at the service bay"
+   ]
+  }
+ ]
+}

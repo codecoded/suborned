@@ -1,0 +1,18 @@
+{
+ "state": "briefing",
+ "elements": [
+  {"kind": "hud", "x": 64, "y": 58, "w": 349, "h": 22, "text": ""},
+  {"kind": "hud", "x": 64, "y": 88, "w": 349, "h": 50, "text": "Vale has a file on you."},
+  {"kind": "hud", "x": 64, "y": 138, "w": 349, "h": 28, "text": "Take him alive before it reaches Security."},
+  {"kind": "image", "x": 1296, "y": 40, "w": 560, "h": 82, "text": "briefing clock"},
+  {"kind": "image", "x": 1448, "y": 132, "w": 408, "h": 478, "text": "target file card"},
+  {"kind": "hud", "x": 1472, "y": 494, "w": 181, "h": 41, "text": "Councillor Vale"},
+  {"kind": "image", "x": 1448, "y": 640, "w": 408, "h": 112, "text": "way Front door"},
+  {"kind": "image", "x": 1448, "y": 768, "w": 408, "h": 112, "text": "way Pickup"},
+  {"kind": "hud", "x": 2155, "y": 1706, "w": 125, "h": 30, "text": "Records Office"},
+  {"kind": "image", "x": 64, "y": 932, "w": 62, "h": 62, "text": "cell faces"},
+  {"kind": "hud", "x": 446, "y": 946, "w": 115, "h": 34, "text": "$100,000"},
+  {"kind": "hud", "x": 1506, "y": 991, "w": 43, "h": 34, "text": "Day Night"},
+  {"kind": "hud", "x": 1703, "y": 982, "w": 153, "h": 52, "text": "Begin"}
+ ]
+}

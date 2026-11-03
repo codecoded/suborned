@@ -36,11 +36,11 @@ namespace Suborned.Play
             {
                 case TpIn.ETap: return s == TpState.RingOpen ? TpDo.TakeLit : TpDo.Act;
                 case TpIn.EHold: return s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act; // brief 041 (Double click): no hold opens a ring; a held E acts as a tap on release
-                case TpIn.LeftTap: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Act;
+                case TpIn.LeftTap: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Ring; // item 33 (Sky 2026-10-24): a left click on the prompted target opens its ring
                 case TpIn.LeftHold: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act;
                 case TpIn.LeftDrag: return s == TpState.Aiming ? TpDo.Fire : TpDo.Orbit;
                 case TpIn.LeftAiming: return s == TpState.Aiming ? TpDo.Fire : TpDo.Nothing; // no hidden hip fire
-                case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : s == TpState.RingOpen ? TpDo.CloseRing : TpDo.RingAtTarget;
+                case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : TpDo.Nothing; // item 33: a right tap does nothing, as on the map (Sky 2026-11-02: "same"); the right button is for firing: its hold aims
                 case TpIn.RightHold: return s is TpState.RingOpen or TpState.CarryingVale ? TpDo.Nothing : TpDo.Aim; // walking Vale, the Enforcer doesn't fire
                 case TpIn.MiddleDrag: return TpDo.Look;
             }
@@ -153,6 +153,7 @@ namespace Suborned.Play
                 {
                     lTapPending = false;
                     if (lRing) { var rs = Ring; if (rs == null) return true; int s = (p - rs.PointerAtOpen).magnitude > RingDeadPx * KitScale ? RingSegAt(p) : -1; if (s >= 0) RingTakeTry(s, "release"); else { rs.Sticky = true; rs.Always = true; } return true; }
+                    if (TpResolve(TpIn.LeftTap, TpNow) == TpDo.Ring) { TpRing(lTapTarget, false); if (Ring != null) { Ring.Sticky = true; Ring.Always = false; Ring.ByClick = true; } return true; } // item 33: the click's ring, nothing taken
                     if (TpResolve(TpIn.LeftTap, TpNow) == TpDo.Act)
                     {
                         if (!controls.DoubleClick) TpAct(lTapTarget, "click");
@@ -259,7 +260,8 @@ namespace Suborned.Play
             switch (t.Kind)
             {
                 case "hostile": case "unit": return t.Key;
-                case "patrol": case "rivals": case "security": return t.Kind;
+                case "patrol": case "security": return t.Kind;
+                case "rivals": return t.Key; // brief 059: a member by his id, the rival car as car:rivals
                 case "camera": return "camera:" + t.Key;
                 case "car": return "car:" + t.Key;
                 case "person": if (t.Key == "guard") return "guard"; force = true; return t.Key;
@@ -274,7 +276,7 @@ namespace Suborned.Play
         void FirePress(Vector2 p)
         {
             var at = AimAt != null ? TargetWorld(AimAt) : null;
-            if (AimAt != null && AimAt.Kind == "person" && AimAt.Key == "councillor") { PopKey("never-vale", p, at, Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (AimAt != null && AimAt.Kind == "person" && AimAt.Key == "councillor") { PopKey("never-vale", p, at, Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (AimId.Length == 0) { PopKey("nothing-there", p, null, Feedback.Info); return; }
             if (!Drawn(dAgent) && Game.Ops[dAgent].Gun.DrawReady <= Game.Tick && Loud == null) { PopKey("not-drawn", p, at, Feedback.Info); return; }
             LoudCard c = null; if (!Guard("loud", () => c = Game.GoingLoud(FireOrder(AimId, aimForce)))) return;
@@ -289,7 +291,7 @@ namespace Suborned.Play
         {
             if (dAgent < 0) return;
             DriveTakeBack(); // Sky after 0.2.56: a trailed agent (T kept its work) is taken by the player's own trigger: the trigger is the driven agent's
-            if (Game.Ops[dAgent].Gun.Order.Length > 0) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)dAgent), Do = "cease" })); // brief 024: the player's trigger replaces a standing fire order (T alone keeps it)
+            if (Game.Ops[dAgent].Gun.Order.Length > 0 && !OneInput) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)dAgent), Do = "cease" })); // brief 024: the player's trigger replaces a standing fire order (T alone keeps it)
             var o = new Order { Op = Op.Name((OpId)dAgent), Do = "trigger", On = true, Target = id, Force = force };
             bool ok = Issue(o, screen, DrawnAt(id));
             FireLogAdd($"trigger\t{o.Op}\ton\t{id}\t{(ok ? "taken" : "refused")}");
@@ -376,7 +378,7 @@ namespace Suborned.Play
             if (t == null || !cam) { PopKey("nothing-here", null, views.DrivePos, Feedback.Info); return; }
             var w = TargetWorld(t) ?? views.DrivePos; var sp = cam.WorldToScreenPoint(w + Vector3.up); var screen = new Vector2(sp.x, sp.y);
             if (t.Kind == "op") { ActContext(t, screen); return; }
-            if (t.Kind == "person" && t.Key == "councillor" && IsFire(t)) { PopKey("never-vale", screen, w, Feedback.Refused, "never fire on Vale: the mission fails"); return; }
+            if (t.Kind == "person" && t.Key == "councillor" && IsFire(t)) { PopKey("never-vale", screen, w, Feedback.Refused, $"never fire on {ValeWord}: the mission fails"); return; }
             if (Picked >= 0) { ActContext(t, screen); return; } // an armed verb (Shift+1-4) is the deliberate path: it acts (a harmful one still goes through the ring)
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, screen)) || plan == null) return;
             var ch = plan.Choice;
@@ -385,7 +387,7 @@ namespace Suborned.Play
                 case ContextRank.Act.Default:
                     {
                         var r = plan.Row(ch.Pick);
-                        if (r?.I?.Order != null && !Harmful(r.I.Order, t, AnyDrawn())) { FireLogAdd($"act\t{source}\t{r.I.Order.Do}:{r.I.Order.Approach}\t{t.Kind}/{t.Key}"); DoRow(r, t, screen, plan.Pn.World, source == "E" ? "E" : "left"); return; }
+                        if (r?.I?.Order != null && !Harmful(r.I.Order, t, AnyDrawn())) { FireLogAdd($"act\t{source}\t{r.I.Order.Do}:{r.I.Order.Approach}\t{t.Kind}/{t.Key}"); DoWay(r, t, screen, plan.Pn.World, source == "E" ? "E" : "left"); return; }
                         break;
                     }
                 case ContextRank.Act.Lock: LockPop(plan.Row(ch.Pick), screen, plan.Pn.World); return;
@@ -402,10 +404,23 @@ namespace Suborned.Play
         void RingTakeTry(int seg, string src)
         {
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
+            if (rs.Segs[seg].Shut) // brief 057 §4.2: a shut Go says why and pulses the holders; brief 058: a shut Loop its end; brief 067 E2 (Glyph): any shut way pops its short lock with the lock's own icon at the wedge (Alt: the long line), and the ring closes; nothing taken
+            {
+                var sr = rs.Segs[seg].Row; var at = WedgeScreen(rs, seg);
+                if (sr != null) { if (sr.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime; var full = sr.Unlock.Length > 0 ? sr.Unlock : LockLine(sr.I.Order, sr.Lock) ?? sr.Reason; popCode = sr.Lock.code ?? ""; Pop(ShortOf(sr.I.Order, sr.Lock) ?? sr.Reason, at, null, Feedback.Refused, 2f, PopIcon(sr.Lock.code ?? ""), full); }
+                SideTake(rs.Segs[seg], rs.Plan?.T); CloseRing(); return;
+            }
             if (!rs.Segs[seg].HoldWedge) { RingTake(seg); return; }
             rs.Sticky = true; rs.Always = true; rs.FromHold = false;
             if (src == "release") { Status = "Hold to take it"; return; }
             if (rs.HoldSeg != seg) { rs.HoldSeg = seg; rs.HoldStart = Time.unscaledTime; rs.HoldSrc = src; }
+        }
+
+        /// <summary>Brief 067 E2: a wedge's middle on the screen (RingSegAt's geometry: 0 at 12 o'clock, clockwise, between the inner and outer radius).</summary>
+        static Vector2 WedgeScreen(RingState rs, int i)
+        {
+            int n = Mathf.Max(1, rs.Segs.Count); float r = (RingInner + RingOuter) * 0.5f * KitScale, a = i * 360f / n * Mathf.Deg2Rad;
+            return rs.Screen + new Vector2(Mathf.Sin(a) * r, Mathf.Cos(a) * r);
         }
 
         /// <summary>Per frame with a ring open: the harmful wedge's hold fills while its input is held over it; full, it takes (the going-loud card's
@@ -449,12 +464,13 @@ namespace Suborned.Play
         void CommanderHoldFireFrame(UnityEngine.InputSystem.Mouse mouse)
         {
             if (!holdFireOn || mouse == null) return;
+            if (OneInput) { holdFireOn = false; holdFireAgents.Clear(); return; } // engine 0.35: no cease (a focus stands until down, a new focus, an act or F)
             if (mouse.rightButton.isPressed || Loud != null) return;
             holdFireOn = false; var list = new List<Order>();
             foreach (var k in holdFireAgents) if (Armed(k) && Drawn(k) && Game.Ops[k].Gun.Order.Length > 0) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
             holdFireAgents.Clear(); if (list.Count > 0) Send(list, null, SelectedWorld());
         }
-        void CommanderHoldFireBegin() { if (!controls.commanderHoldFire || Driving) return; holdFireOn = true; holdFireAgents.Clear(); for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) holdFireAgents.Add(k); }
+        void CommanderHoldFireBegin() { if (!controls.commanderHoldFire || Driving || OneInput) return; holdFireOn = true; holdFireAgents.Clear(); for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) holdFireAgents.Add(k); }
 
         // ---------------------------------------------------------------- the follow setting (Keel's logged follow order)
 
@@ -481,6 +497,16 @@ namespace Suborned.Play
         /// seen; live causes first, else the first ones). The cue's look waits for Glyph's lab and Sky's pick (brief 046).</summary>
         public readonly List<(string by, string main)>[] FireWhyNow = { new(), new(), new(), new() };
         readonly int[] fireWhyTick = { -1, -1, -1, -1 };
+        /// <summary>Engine 0.33.0 (Fable's less.why): the under-fire cue's words for agent k: its main cause (the strongest shooter's), one to three
+        /// words; with `all` (Alt) every cause on it, strongest first, joined; "" when nobody shoots at it. The main cause's code too (its icon).</summary>
+        public (string cause, string words) UnderFireWords(int k, bool all)
+        {
+            if (k < 0 || k > 3) return ("", ""); var fw = FireWhyNow[k]; if (fw.Count == 0) return ("", "");
+            string W(string c) => Text != null && Text.WhyWords.TryGetValue(c, out var w) && w.Length > 0 ? w : c;
+            if (!all) return (fw[0].main, W(fw[0].main));
+            var seen = new List<string>(); foreach (var (_, main) in fw) if (main.Length > 0 && !seen.Contains(main)) seen.Add(main);
+            return (fw[0].main, string.Join(" · ", seen.ConvertAll(W)));
+        }
         /// <summary>Not firing (the struct's default carries null strings).</summary>
         public static readonly FireState NoFire = new() { Mode = "", Target = "", Lead = "", NextShot = -1 };
         /// <summary>When each agent's fire last stopped (unscaled s) and on what: the line reads "Stopped" for 1 s.</summary>
@@ -528,6 +554,9 @@ namespace Suborned.Play
             if (Time.unscaledTime - FireStoppedAt[k] < StoppedS) return ("Stopped", "", true, Drawn(k));
             return ("", "", false, false);
         }
+
+        /// <summary>The seconds to down (or disabled) on agent k's fire line, as FireLine priced it this tick; -1 none.</summary>
+        public int FireLineDownS(int k) => k is >= 0 and < 4 && FireNow[k].Firing ? lineDown[k] : -1;
 
         /// <summary>A fire target's name in the line: a car by the text's car names ("Vale's car"), else the usual name.</summary>
         string FireName(string id) => id.StartsWith("car:") ? Text?.TargetName("car-" + id[4..], "the car") ?? "the car"

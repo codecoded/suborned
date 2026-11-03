@@ -109,6 +109,7 @@ namespace Suborned.World
         /// colour and smoothness, a grazing colour of the water mixed 55% toward the fog (haze) colour, and the haze it fades into.</summary>
         Material Water(object e)
         {
+            if (Light("ocean") is { } ocean) return Ocean(ocean, Colour(Entry("fog")), Light("spaceSky"));
             var shader = Shader.Find("Suborned/Water") ?? throw new InvalidDataException("World: shader Suborned/Water not found (Assets/Suborned/Shaders)");
             var c = Colour(e); var haze = Colour(Entry("fog"));
             var m = new Material(shader) { name = "water", enableInstancing = true };
@@ -117,6 +118,37 @@ namespace Suborned.World
             m.SetColor("_Haze", haze);
             m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0.6f);
             m.SetFloat("_FadeFrom", 1e7f); m.SetFloat("_FadeTo", 2e7f); // no fade until the horizon sets it
+            return m;
+        }
+
+        /// <summary>Brief 075-A (Glint): the old reel's sea (Suborned/DK Ocean, a port of DecoKit/Ocean) from light.json `ocean`: the old
+        /// DecoKitHarbour.Ocean values (wave sheet, body and scatter colours as sRGB, sky lift and Fresnel cap, waves, slope fade, glitter, F0).
+        /// Same material name and fade inputs as Suborned/Water, so SeaFade and the district water work unchanged. Missing key = reject.</summary>
+        public static Material Ocean(object o, Color haze, object space)
+        {
+            var shader = Shader.Find(J.S(o, "shader")) ?? throw new InvalidDataException($"World: light.json ocean.shader `{J.S(o, "shader")}` not found");
+            var m = new Material(shader) { name = "water", enableInstancing = true };
+            var sheet = J.S(o, "waveTex");
+            var tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(sheet) ?? throw new InvalidDataException($"World: light.json ocean.waveTex {sheet} missing");
+            m.SetTexture("_WaveTex", tex);
+            Vector4 V(string k) { var a = J.A(o, k) ?? throw new InvalidDataException($"World: light.json ocean.{k} missing"); var v = Vector4.zero; for (int i = 0; i < a.Count && i < 4; i++) v[i] = (float)(double)a[i]; return v; }
+            Color C(string k) { var v = V(k); return new Color(v.x, v.y, v.z, 1f); } // as DecoKitHarbour set them: SetColor with the sRGB triple
+            m.SetColor("_Deep", C("deep")); m.SetColor("_Scatter", C("scatter"));
+            m.SetVector("_Sky", V("sky")); m.SetVector("_Waves", V("waves")); m.SetVector("_Wind", V("wind"));
+            m.SetVector("_Fade", V("fade")); m.SetVector("_Sun", V("sun")); m.SetFloat("_F0", J.F(o, "f0"));
+            m.SetColor("_Haze", haze);
+            m.SetFloat("_FadeFrom", 1e7f); m.SetFloat("_FadeTo", 2e7f); // no fade until the horizon sets it
+            // by day the sea mirrors the old sky's air (the old scene's default reflection was its skybox; ours is the street-canyon cube chrome needs):
+            // the spaceSky colours set the same way as on the sky material, so Unity's colour conversion gives the shader the same values
+            if (space != null && J.Get(space, "colours") is Dictionary<string, object> cs && J.Get(space, "vectors") is Dictionary<string, object> vs && J.Get(space, "floats") is Dictionary<string, object> fs)
+            {
+                Color SC(string k) { var a = J.A(cs, k); return new Color((float)(double)a[0], (float)(double)a[1], (float)(double)a[2], (float)(double)a[3]); }
+                var au = J.A(vs, "_Aureole");
+                m.SetColor("_SkyZenith", SC("_Zenith")); m.SetColor("_SkyMid", SC("_Mid")); m.SetColor("_SkyHorizon", SC("_Horizon")); m.SetColor("_SkySun", SC("_SunColor"));
+                m.SetVector("_SkyShape", new Vector4(J.F(fs, "_MidHeight"), J.F(fs, "_HazeHeight"), 0f, 0f));
+                m.SetVector("_SkyAureole", new Vector4((float)(double)au[0], (float)(double)au[1], (float)(double)au[2], (float)(double)au[3]));
+                m.SetFloat("_SkyOn", 1f);
+            }
             return m;
         }
 
@@ -141,6 +173,24 @@ namespace Suborned.World
         /// surface key with the buildings on them, so the textured ground sheet is keyed apart), else the surface itself.</summary>
         public bool Has(string surface) => J.Get(Entry("surfaces"), surface) != null;
 
+        /// <summary>Brief 075 civic restyle (CivicRestyle): a surface added in memory, a kit material laid `tile` metres a repeat (box: walls take
+        /// their own face's metres, not the plan's), never written to look.json. A key look.json already has is rejected.</summary>
+        public void AddSurface(string key, string material, float tile, bool box)
+        {
+            var s = J.O(Entry("surfaces"));
+            if (s.TryGetValue(key, out var had))
+            {
+                if (J.S(had, "material") == material && J.Get(had, "tile") is double t && Mathf.Approximately((float)t, tile) && (J.S(had, "uv") == "box") == box) return;
+                throw new InvalidDataException($"World: surface `{key}` is already in look.json");
+            }
+            var e = new Dictionary<string, object> { ["material"] = material, ["tile"] = (double)tile, ["value"] = 1.0 };
+            if (box) e["uv"] = "box";
+            s[key] = e;
+        }
+
+        /// <summary>A surface whose texture is laid box-wise (AddSurface's `box`): tops on plan, walls along their face and up.</summary>
+        public bool UvBox(string surface) => J.S(Surface(surface), "uv") == "box";
+
         public string Ground(string surface) => surface != null && J.Get(Entry("surfaces"), "ground/" + surface) != null ? "ground/" + surface : surface;
 
         public float SeededPeriod(string surface)
@@ -148,6 +198,55 @@ namespace Suborned.World
             if (J.Get(Surface(surface), "seed") is not true) return 0f;
             var m = Mat(surface); var sc = m.HasProperty("_BaseMap") ? m.GetTextureScale("_BaseMap") : Vector2.one;
             return sc.x > 0f ? 1f / sc.x : 0f;
+        }
+
+        public const string KitTextures = "Assets/Suborned/Kit/Textures";
+
+        /// <summary>Brief 072-F: a builder colour surface takes the kit detail pair of its kind (look.json `detail` → `details`: Vela's
+        /// surface_&lt;kind&gt;_detail_v1 albedo x2 and normal) in URP Lit's own detail slots with _DETAIL_MULX2: texture, not palette (the
+        /// base colour is untouched), and no new material. The meshes get box-projected UVs in metres at bake (BoxUv), so the slot's scale is
+        /// 1 / the pair's tile. Unknown pair or missing texture = reject.</summary>
+        void Detail(Material m, string surface, string pair)
+        {
+            var d = J.Get(Entry("details"), pair) ?? throw new InvalidDataException($"World: surface `{surface}`: detail `{pair}` not in look.json details");
+            Texture2D Tex(string key)
+            {
+                var name = J.S(d, key);
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>($"{KitTextures}/{name}.png")
+                    ?? throw new InvalidDataException($"World: surface `{surface}`: detail texture {name} missing in {KitTextures} (run `bun run kit`)");
+            }
+            float tile = J.F(d, "tile"), bump = J.F(d, "bump");
+            var scale = Vector2.one / Mathf.Max(0.01f, tile);
+            m.SetTexture("_DetailAlbedoMap", Tex("albedo")); m.SetTextureScale("_DetailAlbedoMap", scale);
+            m.SetTexture("_DetailNormalMap", Tex("normal")); m.SetTextureScale("_DetailNormalMap", scale);
+            m.SetFloat("_DetailAlbedoMapScale", 1f); m.SetFloat("_DetailNormalMapScale", bump);
+            // the DecoKit cutaway shader (without _DK_CUT it is URP Lit's own passes): its detail path reads the global surface-detail switch
+            // (DK_SurfaceDetail.hlsl, LookLab; Redline phase 2, 4.3), which URP Lit cannot. Same properties, same keywords; the
+            // [_DETAIL_MULX2] variant is the kit rows' own, so no new variant (a tagged batch took this shader anyway, FadeTags).
+            var cutaway = Shader.Find("DecoKit/Lit Cutaway") ?? throw new InvalidDataException("World: shader DecoKit/Lit Cutaway not found (Assets/Suborned/Shaders/DecoKit)");
+            m.shader = cutaway;
+            m.EnableKeyword("_DETAIL_MULX2");
+        }
+
+        /// <summary>A builder colour material carrying a detail pair (072-F): not a kit asset, _DETAIL_MULX2 on. Its meshes need UVs in
+        /// metres and tangents (BoxUv).</summary>
+        public static bool NeedsBoxUv(Material m) =>
+            m && m.IsKeywordEnabled("_DETAIL_MULX2") && !UnityEditor.AssetDatabase.Contains(m);
+
+        /// <summary>Box-projected UVs in world metres from each vertex's normal (the dominant axis picks the plane: walls run along their
+        /// face and up, tops lie on plan), then tangents, so a detail pair tiles at its real size on meshes the builder drew without UVs.</summary>
+        public static void BoxUv(Mesh mesh)
+        {
+            var v = mesh.vertices; var n = mesh.normals; var uv = new Vector2[v.Length];
+            for (int i = 0; i < v.Length; i++)
+            {
+                var a = new Vector3(Mathf.Abs(n[i].x), Mathf.Abs(n[i].y), Mathf.Abs(n[i].z));
+                uv[i] = a.y >= a.x && a.y >= a.z ? new Vector2(v[i].x, v[i].z)
+                      : a.x >= a.z ? new Vector2(v[i].z * Mathf.Sign(n[i].x), v[i].y)
+                      : new Vector2(-v[i].x * Mathf.Sign(n[i].z), v[i].y);
+            }
+            mesh.uv = uv;
+            mesh.RecalculateTangents();
         }
 
         public Material Mat(string surface)
@@ -164,6 +263,7 @@ namespace Suborned.World
             m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0f);
             m.SetFloat("_Metallic", J.Get(e, "metallic") is double mt ? (float)mt : 0f);
             if (J.Get(e, "alpha") is double al) Transparent(m, (float)al); // glazing (the Parade gallery canopies)
+            else if (J.Get(e, "detail") is string pair) Detail(m, surface, pair);
             cache[surface] = m;
             return m;
         }

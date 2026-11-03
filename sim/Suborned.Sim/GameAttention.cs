@@ -4,7 +4,8 @@
 //  · every security watcher on the street (a live camera, the door guard, the patrol robot, the response's officers and robots) keeps one
 //    clock per operative; civilians and rivals keep none;
 //  · in its sight, standing still, idle or Watching: +1 tick a tick; in sight in any other act: held; moving or out of sight: -1, to 0, or
-//    to the wary mark once wary;
+//    to the wary mark once wary; running in its sight (engine 0.34.0, attention.run; not loud, below Alert 2): up to the notice mark at
+//    once, then +1 tick a tick, as standing still;
 //  · in sight: a machine by its cone only (L2); a person (the guard, the officers) also within attention.near on a clear line, the posted
 //    guard included (for the clock only);
 //  · the marks are the Heat band's (Heat at the start: Start.Heat, else the site's mission start.heat, else 0): noticed (a warning), wary
@@ -60,7 +61,7 @@ namespace Suborned.Sim
             return AttnPerson(w) && G.Within(s.At, op.Pos, R.AttnNearCm) && Sees(s.At, op.Pos) && !CrowdBlocks(s.At, op.Pos);
         }
         /// <summary>Is the operative in an act other than a Watch (the clock holds): busy, carrying a body or an operative, holding Vale.</summary>
-        bool AttnInAct(Op op) => (op.Busy != null && op.Busy.Do != "watch") || op.CarryBody.Length > 0 || op.Carrying.HasValue
+        bool AttnInAct(Op op) => ListenWaiting(op) || (op.Busy != null && op.Busy.Do != "watch") || op.CarryBody.Length > 0 || op.Carrying.HasValue
             || (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking));
 
         /// <summary>Once a tick (brief 031 §2): every security watcher's clock on every operative, its stages, and the reports it makes.</summary>
@@ -84,8 +85,10 @@ namespace Suborned.Sim
                     if (row == null) { if (!seen) continue; attn[w] = row = new AttnRow(); }
                     bool moving = op.Walk != null || (op.Driven && op.DriveMoved);
                     int c = row.C[k];
+                    bool run = seen && moving && op.Running && R.AttnRun && !RunFree(op); // engine 0.34.0 (attention.run): a run in its sight, not loud, below Alert 2
                     if (seen && AttnInAct(op)) { } // an act holds it (L1): the act's own seen-rules apply
                     else if (seen && !moving) c++;
+                    else if (run) c = Math.Max(c, nT) + 1; // engine 0.34.0 (brief 067, Motive M067-B2): the clock jumps to the notice mark on the run's first tick in sight, then counts each tick of it as standing still
                     else c = Math.Max(row.Wary[k] ? wT : 0, c - 1);
                     row.C[k] = c;
                     if (c >= wT) row.Wary[k] = true;
@@ -93,7 +96,7 @@ namespace Suborned.Sim
                     if (st > row.Noted[k])
                     {
                         string who = Sim.Op.Name(op.Id), by = w.Replace("camera:", "the camera ");
-                        if (row.Noted[k] < 1) Note("attention.noticed", $"{by} notices the {who} standing still in its sight.");
+                        if (row.Noted[k] < 1) Note("attention.noticed", run ? $"{by} notices the {who} running in its sight." : $"{by} notices the {who} standing still in its sight.");
                         if (st >= 2 && row.Noted[k] < 2) Note("attention.wary", $"{by} is wary of the {who} for the rest of the mission.");
                         row.Noted[k] = st;
                     }
@@ -101,7 +104,7 @@ namespace Suborned.Sim
                     {
                         row.Reported[k] = true;
                         int land;
-                        if (WatcherKind(w) == "camera") { int period = T(R.AttnScanS), phase = (int)(Streams.Fnv1a32(w) % (uint)period); land = Tick + ((phase - Tick % period) % period + period) % period + T(R.AttnCallS); }
+                        if (WatcherKind(w) == "camera") { int period = T(R.AttnScanS), phase = ScanPhase(w, period); land = Tick + ((phase - Tick % period) % period + period) % period + T(R.AttnCallS); }
                         else land = Tick + T(R.AttnCallS);
                         attnReps.Add(new AttnRep { W = w, Op = k, From = Tick, LandAt = land, At = op.Pos });
                         Note("attention.reporting", $"{w.Replace("camera:", "the camera ")} reports the {Sim.Op.Name(op.Id)} loitering (lands {Sim.Report.Clock(land)}).");
@@ -110,6 +113,7 @@ namespace Suborned.Sim
                 if (seenMask != 0) attnSeen[w] = seenMask;
             }
             AttentionReports();
+            if (!Over) EntryReports(); // engine 0.34.2: the patrol's report of an Enter (GameEntrySeen.cs)
         }
 
         /// <summary>Whether the watcher that made a report is down or gone before it lands (a camera's report is on its tape: it lands).</summary>

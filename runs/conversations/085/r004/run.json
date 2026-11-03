@@ -1,0 +1,138 @@
+{
+  "run": "r004",
+  "brief": "085",
+  "note": "Proposal for Sky to read; nothing here reaches text.json or the game.",
+  "corpusHash": "3836c9caed3320e1e1a14d6c0f7647322f364e38b9054a7a17abb7d1571c4864",
+  "git": "f5e16c07f7fc26410dbd461d1dd3d88df1000f8c",
+  "inputs": {
+    "sim/data/handover.people.json": "5b38499783a6a9395122d4387132f3f6bc56b649584dfb331def541b499dcc59",
+    "contracts/missions/handover/text.json": "ec2f90b0b5392b7ab434935a42b142d7a1e8e147f58d0a034ffbdf9fb2d5bfc0",
+    "briefs/085/fable/writer.md": "74c09a86611377f8f5611e96196a80b96db2b52c52a2b4ff375f184a2b506d38",
+    "briefs/085/fable/editor.md": "d3fce2d49b5090e1c966443d067b89f4b12cd88ba29626207f17a80349c20c6c",
+    "briefs/085/fable/approved.json": "80836c64072d0957b4d3a70a57eb48ebf0709038eb1184b19a0f2988b44aeea8"
+  },
+  "calls": [
+    {
+      "id": "01-write-help-inez-1",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 152,
+      "costUsd": 0.39499249999999997,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-help-inez-1",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 76,
+      "costUsd": 0.24830720000000003,
+      "hits": 8
+    },
+    {
+      "id": "01-write-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 204,
+      "costUsd": 0.5014488,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 83,
+      "costUsd": 0.3019978,
+      "hits": 8
+    },
+    {
+      "id": "01-write-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 233,
+      "costUsd": 0.528608,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 104,
+      "costUsd": 0.26836480000000007,
+      "hits": 8
+    },
+    {
+      "id": "03-fix-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 10,
+      "costUsd": 0.0887818,
+      "hits": 8
+    },
+    {
+      "id": "01-write-call-inez-pressure",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 179,
+      "costUsd": 0.4182349,
+      "hits": 8
+    },
+    {
+      "id": "02-edit-call-inez-pressure",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 116,
+      "costUsd": 0.2922891,
+      "hits": 8
+    },
+    {
+      "id": "01-review-fit",
+      "role": "systems-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 104,
+      "costUsd": 0.3989857,
+      "hits": 8
+    },
+    {
+      "id": "11-review-fix-help-inez-1",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 6,
+      "costUsd": 0.0770811,
+      "hits": 8
+    },
+    {
+      "id": "11-review-fix-pressure-inez",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 13,
+      "costUsd": 0.101974,
+      "hits": 8
+    },
+    {
+      "id": "11-review-fix-pay-driver",
+      "role": "dialogue-designer",
+      "model": "claude-opus-5-5",
+      "status": "accepted",
+      "seconds": 38,
+      "costUsd": 0.1434704,
+      "hits": 8
+    }
+  ],
+  "callCount": 13,
+  "wallSeconds": 727,
+  "modelSeconds": 1318,
+  "faults": [],
+  "reviewFaults": 7
+}

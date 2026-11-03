@@ -1,7 +1,11 @@
 // suborned-sim: the engine headless (brief 011 A).
 //   play <scenario id | script.json> [--json]   play a scenario (S01…S28, N8…) or an order script; print outcome, log, checksums
-//   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
+//   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f] [--timeout s]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
 //   batch --serve                               the same as a server: lines `tag<TAB>replay|noreplay<TAB>path` on stdin, `tag<TAB>json` out as each finishes (tools/missions/check/engine.ts)
+//   play <script.json> --seed n                 brief 080: the same on that seed (the script's record is dropped); `batch --seeds n` for many
+//   spread <dir | scripts> --seeds n [--seed-from k] [--retry-go] [--json f]   brief 080: per script: wins and fails by cause, fight length, HP, Trail, and when runs diverge from seed 0
+//   check [ids] [--no-replay] [--timeout s]     every scenario (or the named): failed checks and a bit-for-bit replay, in one process on every core
+//   dump <script.json> <out.json> [--crowd-step n] [--no-fans]   a script played with every tick read out, for the look tool (bun run simview; brief 081, sim/cli/Dump.cs)
 //   list                                        the scenarios
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
@@ -10,6 +14,7 @@
 //   drive-session [out]                         record the driven session the DP1 scenario replays (brief 025; Fixtures/drive-session.script.json)
 //   range list|play|script|hashes               brief 029's fight range on its own site (sim/cli/Range.cs)
 //   codes                                       every refusal code an order can get (Fable's text.json locks read these)
+//   facts                                       the site's facts a mission check reads, as JSON: patrolWatchesEntry (MC-3's needs, brief 067)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 //   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
 //   hashes [--start-text <t>] [--legacy-start]  every scenario's and route script's checkpoint hashes as JSON; --legacy-start leaves a fixed
@@ -59,9 +64,13 @@ static class Program
                         Console.WriteLine(Script.Write(Scenarios.Run(inputs, sc).G, inputs.Hash)); return 0;
                     }
                 case "batch": return BatchCli.Run(inputs, root, args); // brief 042: many scripts, one process, every core
-                case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
+                case "check": return CheckCli.Run(inputs, args); // brief 059 (Keel): every scenario, its checks and its replay, on every core
+                case "play": { int sd = Array.IndexOf(args, "--seed"); return Play(inputs, root, (args.Length > 1 ? args[1] : throw new ArgumentException("play what?")) + (sd > 0 ? "#seed=" + args[sd + 1] : ""), json); } // brief 080
+                case "spread": return SpreadCli.Run(inputs, root, args); // brief 080: how far runs spread across seeds
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
+                case "dump": return DumpCli.Run(inputs, root, args); // brief 081: read-only, exits 1 if the reads moved a checkpoint
                 case "probe": Probe.Run(inputs); return 0;
+                case "cars": Probe.Cars(inputs); return 0; // engine 0.33.1 (car.footprint): the cars standing at the start, what lies on their ground, which routine legs cross it
                 case "range": return RangeCli.Run(root, args); // brief 029: the fight range, on its own inputs
                 case "fight-lab": return FightLabCli.Run(inputs, root, args); // brief 027 §6.5: the balance matrix (briefs/027/keel/fight-lab.json)
                 case "drive-session": return DriveSession.Record(inputs, root, args.Length > 1 ? args[1] : null); // brief 025: record DP1's session
@@ -74,10 +83,17 @@ static class Program
                     Console.WriteLine(Hashes(inputs, root, k > 0 ? args[k + 1] : null)); return 0;
                 }
                 case "codes": { var w = new JWriter().Arr(); foreach (var c in Answer.Codes) w.Str(c); Console.WriteLine(w.EndArr().ToString()); return 0; }
+                case "facts": // engine 0.34.0 (Motive briefs/067/motive-square.md §5.3): the site's facts a mission check reads (Waymark's MC-3 needs)
+                {
+                    var g = Engine.New(inputs);
+                    Console.WriteLine(new JWriter().Obj().Prop("engine", Engine.Version).Prop("inputs", inputs.Hash.ToString(CultureInfo.InvariantCulture))
+                        .Prop("patrolWatchesEntry", g.PatrolWatchesEntry).Prop("sweepSecondsOnEntry", g.SweepSecondsOnEntry).Prop("sweepPeriodS", g.R.PatrolPeriodS).EndObj().ToString());
+                    return 0;
+                }
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
         }
-        catch (Exception e) { Console.Error.WriteLine(e.Message); return 1; }
+        catch (Exception e) { Console.Error.WriteLine(Environment.GetEnvironmentVariable("SUBORNED_SIM_TRACE") == "1" ? e.ToString() : e.Message); return 1; } // SUBORNED_SIM_TRACE=1: the stack too
     }
 
     static int Play(Engine.Inputs inputs, string root, string what, bool json)
@@ -103,9 +119,14 @@ static class Program
         string st = startText ?? i.Hash.ToString(CultureInfo.InvariantCulture);
         var w = new JWriter().Obj().Prop("inputs", i.Hash.ToString(CultureInfo.InvariantCulture)).Prop("startText", st);
         void put(string id, Game g) { w.OpenArr(id); foreach (var (t, h) in g.Checkpoints) w.Str(t.ToString(CultureInfo.InvariantCulture) + ":" + Hash.Hex(h)); w.Str("result:" + g.Result + ":" + g.FailCode); w.EndArr(); }
+        int was = Game.HarnessStepLimit; Game.HarnessStepLimit = Scenarios.StepLimit; // engine 0.34.0: every game here bounded, as in check and batch
+        try
+        {
         foreach (var sc in Scenarios.All)
         {
-            var r = new Run(new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd)); sc.Body(r); r.G.Finish(); put(sc.Id, r.G);
+            var r = new Run(new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd));
+            try { sc.Body(r); } catch (Exception e) when (e is InvalidOperationException || e is FormatException || e is NullReferenceException || e is RunawayException) { w.OpenArr(sc.Id); w.Str("threw:" + e.GetType().Name + ": " + e.Message); w.EndArr(); continue; } // brief 055: a body that throws under another start text is a move, not the end of the list
+            r.G.Finish(); put(sc.Id, r.G);
         }
         var files = new List<string>();
         foreach (var d in new[] { "contracts/missions/handover/routes", "briefs/011/motive-fights" })
@@ -123,6 +144,8 @@ static class Program
             g.RunTo(until); g.Finish();
             put(System.IO.Path.GetRelativePath(root, f), g);
         }
+        }
+        finally { Game.HarnessStepLimit = was; }
         return w.EndObj().ToString();
     }
 

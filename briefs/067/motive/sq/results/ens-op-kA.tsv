@@ -1,0 +1,66 @@
+# ens op-kA · RB=op-run-speed-cm-s=360 run-alert=0 carry-untrained-cm-s=90 mod-running=375 · PROBE_OPWALK=180 PROBE_RUNCLOCK=2 PROBE_K3=1
+plan	k	outcome	fail	end	T	A	St	vale-in	spring	composed
+ra-h3	5	none		8:30.0	5	0	2	-	4:02.3	no: step 20 (enforcer move): not taken between 2121 and 5100
+ra-h3	2	none		8:30.0	5	0	2	-	4:02.3	no: step 20 (enforcer move): not taken between 2121 and 5100
+ra-h3	0	none		8:30.0	5	0	2	-	4:01.1	no: step 20 (enforcer move): not taken between 2109 and 5100
+ra-h3	4	none		8:30.0	5	0	2	-	4:01.4	no: step 20 (enforcer move): not taken between 2112 and 5100
+ra-h3	1	none		8:30.0	5	0	2	-	4:01.5	no: step 20 (enforcer move): not taken between 2113 and 5100
+ra-h3	3	none		8:30.0	5	0	2	-	4:01.3	no: step 20 (enforcer move): not taken between 2111 and 5100
+route-a-board	0	success		4:15.5	5	0	2	4:15.5	4:01.4	yes
+route-a-board	1	success		4:15.9	5	0	2	4:15.9	4:01.8	yes
+route-a-board	2	success		4:16.7	5	0	2	4:16.7	4:02.6	yes
+route-a-board	3	success		4:15.7	5	0	2	4:15.7	4:01.6	yes
+ra-h3	7	none		8:30.0	5	0	2	-	4:02.8	no: step 20 (enforcer move): not taken between 2126 and 5100
+ra-h3	6	none		8:30.0	5	0	2	-	4:01.3	no: step 20 (enforcer move): not taken between 2111 and 5100
+route-a-board	4	success		4:15.8	5	0	2	4:15.8	4:01.7	yes
+route-a-board	5	success		4:16.7	5	0	2	4:16.7	4:02.6	yes
+route-a-board	6	success		4:15.7	5	0	2	4:15.7	4:01.6	yes
+route-a-board	7	success		4:17.2	5	0	2	4:17.2	4:03.1	yes
+route-a-pressure-board	1	success		3:11.5	7	0	1	3:09.0	2:54.9	yes
+route-a-pressure-board	0	success		3:10.7	7	0	1	3:08.6	2:54.5	yes
+route-a-pressure-board	3	success		3:13.2	7	0	1	3:08.8	2:54.7	yes
+route-a-pressure-board	4	success		3:11.3	7	0	1	3:08.9	2:54.8	yes
+route-a-pressure-board	2	success		3:11.5	7	0	1	3:09.8	2:55.7	yes
+route-a-pressure-board	5	success		3:11.5	7	0	1	3:09.8	2:55.7	yes
+route-a-pressure-board	6	success		3:13.2	7	0	1	3:08.8	2:54.7	yes
+route-a-pressure-board	7	success		3:11.3	7	0	1	3:10.3	2:56.2	yes
+route-g	1	success		3:59.6	6	1	3	3:59.6	3:45.5	yes
+route-g	0	success		3:59.6	6	1	3	3:59.6	3:45.5	yes
+route-g	2	success		4:00.8	6	1	3	4:00.8	3:46.7	yes
+route-g	3	success		4:01.1	6	1	3	4:01.1	3:47.0	yes
+route-g	4	success		4:01.6	6	1	3	4:01.6	3:47.5	yes
+route-g	5	success		4:01.0	6	1	3	4:01.0	3:46.9	yes
+route-g	6	success		4:00.7	6	1	3	4:00.7	3:46.6	yes
+route-g	7	success		4:00.5	6	1	3	4:00.5	3:46.4	yes
+route-g-fast-board	0	failure	rivals-reach-vale	3:23.7	6	1	2	2:55.3	2:41.2	no: step 25 (fixer move): not taken between 1713 and 5100
+route-g-fast-board	1	failure	rivals-reach-vale	3:23.7	6	1	2	2:55.6	2:41.5	no: step 25 (fixer move): not taken between 1716 and 5100
+route-g-fast-board	2	failure	rivals-reach-vale	3:23.7	6	1	2	2:55.7	2:41.6	no: step 25 (fixer move): not taken between 1717 and 5100
+route-g-fast-board	3	failure	rivals-reach-vale	3:23.7	6	1	2	2:55.4	2:41.3	no: step 25 (fixer move): not taken between 1714 and 5100
+route-g-fast-board	4	failure	rivals-reach-vale	3:23.7	6	1	2	2:56.2	2:42.1	no: step 25 (fixer move): not taken between 1722 and 5100
+route-g-fast-board	5	failure	rivals-reach-vale	3:23.7	6	1	2	2:55.4	2:41.3	no: step 25 (fixer move): not taken between 1714 and 5100
+rgk-h3	0	none		8:30.0	2	1	2	-	5:12.2	no: step 19 (enforcer move): not taken between 2820 and 5100
+rgk-h3	1	none		8:30.0	2	1	2	-	5:12.2	no: step 19 (enforcer move): not taken between 2820 and 5100
+route-g-fast-board	7	success		3:05.1	6	1	2	2:57.1	2:43.0	yes
+rgk-h3	2	none		8:30.0	2	1	2	-	5:13.4	no: step 19 (enforcer move): not taken between 2832 and 5100
+route-g-fast-board	6	failure	rivals-reach-vale	3:23.7	6	1	2	2:55.7	2:41.6	no: step 25 (fixer move): not taken between 1717 and 5100
+rgk-h3	3	none		8:30.0	2	1	2	-	5:13.7	no: step 19 (enforcer move): not taken between 2835 and 5100
+rgk-h3	4	none		8:30.0	2	1	2	-	5:14.2	no: step 19 (enforcer move): not taken between 2840 and 5100
+rgk-h3	5	none		8:30.0	2	1	2	-	5:13.6	no: step 19 (enforcer move): not taken between 2834 and 5100
+rgk-h3	6	none		8:30.0	2	1	2	-	5:13.3	no: step 19 (enforcer move): not taken between 2831 and 5100
+rgkb-h3	0	success		5:26.2	2	1	2	5:26.2	5:12.2	yes
+rgkb-h3	1	success		5:26.2	2	1	2	5:26.2	5:12.2	yes
+rgkb-h3	2	success		5:27.4	2	1	2	5:27.4	5:13.4	yes
+rgk-h3	7	none		8:30.0	2	1	2	-	5:13.1	no: step 19 (enforcer move): not taken between 2829 and 5100
+rgkb-h3	3	success		5:27.7	2	1	2	5:27.7	5:13.7	yes
+rgkb-h3	4	success		5:28.2	2	1	2	5:28.2	5:14.2	yes
+rgkb-h3	5	success		5:27.6	2	1	2	5:27.6	5:13.6	yes
+rgkb-h3	6	success		5:27.3	2	1	2	5:27.3	5:13.3	yes
+rgkb-h3	7	success		5:27.1	2	1	2	5:27.1	5:13.1	yes
+loud-x4	0	success		5:01.9	27	2	-1	5:00.8	-	yes
+loud-x4	1	success		5:01.9	27	2	-1	5:00.8	-	yes
+loud-x4	2	success		5:03.1	27	2	-1	5:02.0	-	yes
+loud-x4	3	success		5:03.4	27	2	-1	5:02.3	-	yes
+loud-x4	4	success		5:03.9	27	2	-1	5:02.8	-	yes
+loud-x4	5	success		5:03.3	27	2	-1	5:02.2	-	yes
+loud-x4	6	success		5:03.0	27	2	-1	5:01.9	-	yes
+loud-x4	7	success		5:02.8	27	2	-1	5:01.7	-	yes

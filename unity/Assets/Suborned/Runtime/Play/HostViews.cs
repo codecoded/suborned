@@ -32,13 +32,13 @@ namespace Suborned.Play
             Person("waitress", Family("server"), shape: Shape("server")); Person("driver", Family("official-driver"), shape: Shape("official-driver"));
             Person("guard", Family("guard"), shape: Shape("guard")); Person("councillor", Family("councillor"));
             Person("patrol", host.securityColour);
-            for (int i = 0; i < 3; i++) Person("rivals/" + i, host.rivalBodyColour);
             for (int i = 0; i < 2; i++) Person("security/" + i, host.securityColour);
             Box("car/official", new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true);
             Box("car/getaway", new Vector3(1.8f, 1.4f, 4.6f), host.getawayColour, true);
             if (Visual("patrol", host.patrolRobot) is Transform pr) { if (things["patrol"].t.Find("head")?.GetComponent<MeshRenderer>() is MeshRenderer ph) ph.enabled = false; carModels["patrol"] = pr; } // the patrol is Vela's PatrolRobot (brief 031: its head is the attention face), facing where it goes
             if (Visual("car/official", host.sedanOfficial) is Transform so) carModels["car/official"] = so; // brief 020: Vela's sedans; the boxes stay the click targets
             if (Visual("car/getaway", host.sedanGetaway) is Transform sg) carModels["car/getaway"] = sg;
+            RivalViewsInit(); // brief 059 K8: the five and their car (HostViews.Rivals)
             if (!g.Range) Marker("door", frame.World(s.At(s.GuardPost)) + Vector3.up * 1.2f, new Vector3(2.4f, 2.4f, 2.4f)); // brief 029: the range has no door, cabinet or cameras to draw
             if (s.HasPlace("cabinet")) Marker("cabinet", frame.World(s.At("cabinet")) + Vector3.up * 0.7f, new Vector3(1.4f, 1.4f, 1.4f));
             foreach (var c in g.Range ? new List<Suborned.Sim.Camera>() : s.Cameras)
@@ -47,6 +47,7 @@ namespace Suborned.Play
                 var pole = Part(root, "camera/" + c.Id, cylinder, Lit(host.carColour), at + Vector3.up * 1.6f, new Vector3(0.25f, 1.6f, 0.25f));
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
+                if (!c.World && host.cctvPole) KitPole(c, pole); // brief 055: Vela's CCTVPole at the plan's 5.5 m mount
                 CamHeadFor(c, at); // brief 031: the lens that shows the camera's attention
             }
             // brief 013: the stashes (a bin, a service door) are click targets: a box round each, named stash/<id>
@@ -86,18 +87,6 @@ namespace Suborned.Play
             var lr = go.AddComponent<LineRenderer>(); lr.sharedMaterial = m; lr.useWorldSpace = true; lr.widthMultiplier = width; lr.positionCount = 0;
             lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; lr.receiveShadows = false; lr.enabled = false;
             return lr;
-        }
-
-        /// <summary>A shot in flight, drawn by the HUD in screen pixels (Glyph fight r2): a 2 px line on a 1 px dark underlay, a small muzzle
-        /// flash, the cell's cream with a turquoise glow, rivals violet, guards and police amber. It lives ShotLife, shorter than any fire cadence,
-        /// so it never reads as a tether.</summary>
-        public sealed class ShotLine { public Vector3 From, To; public string Side = ""; public float Born; }
-        public readonly List<ShotLine> ShotLines = new();
-        public const float ShotLife = 0.1f;
-        public void Tracer(Vector3 from, Vector3 to, string side)
-        {
-            ShotLines.Add(new ShotLine { From = from, To = to, Side = side, Born = Time.unscaledTime });
-            while (ShotLines.Count > 16) ShotLines.RemoveAt(0);
         }
 
         /// <summary>The weapon's effective range round agent k when its weapon is drawn and it is selected (radius in m; 0 hides).</summary>
@@ -149,41 +138,43 @@ namespace Suborned.Play
             if (g.Range)
             {   // brief 029 (Keel): the fight range draws the cell and the spawned hostiles only; the Handover's cast, guard, patrol, Vale, cars and
                 // cameras are the site format's required keys parked in the wings, and are never drawn
-                foreach (var k in new[] { "waitress", "driver", "guard", "councillor", "patrol", "car/official", "car/getaway" }) Set(k, null);
-                for (int i = 0; i < 3; i++) Set("rivals/" + i, null); for (int i = 0; i < 2; i++) Set("security/" + i, null);
+                foreach (var k in new[] { "waitress", "driver", "guard", "councillor", "patrol", "car/official", "car/getaway", "car/rivals" }) Set(k, null);
+                foreach (var k in RivalKeys) Set(k, null); for (int i = 0; i < 2; i++) Set("security/" + i, null);
                 faces.Clear(); phases.Clear();
                 var gone = new HashSet<string>(); foreach (var rh in g.RangeHostiles()) if (rh.Gone) gone.Add(rh.Id);
                 for (int i = 0; i < MaxHostiles; i++)
                 {
                     var h = i < g.Hostiles.Count ? g.Hostiles[i] : null; bool show = h != null && h.Present && !gone.Contains(h.Id);
                     Set(hostileKeys[i], show ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down);
-                    if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
+                    if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"); } // Forma 067: each member his own look
                 }
                 RangeCars(g); RangeBystanders(g); // engine 0.18: the range's cars and bystanders
                 return;
             }
-            Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
-            Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car ? null : g.ValePos(), g.ValeP.Down);
+            var dpos = g.DriverPos(); bool driverIn = dpos.HasValue && !g.Driver.Down && dpos.Value == g.CarPos() && !(g.Vale == ValeAt.Office || g.Vale == ValeAt.Leaving); // brief 059 K1, K2: at the wheel (Vale in the back), never a figure standing in the car
+            Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", driverIn || g.DriverAboard ? null : dpos, g.Driver.Down); // brief 081: DriverAboard, never a figure at the car's centre
+            Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car || g.Vale == ValeAt.InCar || g.Vale == ValeAt.Taking && g.TakeInCar ? null : g.ValePos(), g.ValeP.Down); // brief 059 K1: in the back of his car (and taken from it) he is in the car, not on the street
             // brief 022: Inez's round gives her facing (to her table, to the guard when they stand together), the guard's pose his
             faces.Clear();
             phases.Clear();
             if (g.PersonPose(g.Inez) is { } ip) { if (ip.facing.X != 0 || ip.facing.Y != 0) faces["waitress"] = frame.Dir(ip.facing); phases["waitress"] = ip.phase; if (ip.phase == "together") phases["guard"] = "together"; } // he stands with her: both talk
             if (g.GuardPose() is { } gp && (gp.facing.X != 0 || gp.facing.Y != 0)) faces["guard"] = frame.Dir(gp.facing);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
-            var rp = g.RivalsPose();
-            for (int i = 0; i < 3; i++) Set("rivals/" + i, rp.HasValue ? rp.Value.pos + new Pt(i == 1 ? 90 : 0, i == 2 ? 90 : 0) : (Pt?)null);
+            RivalViews(g); // brief 059 K8: one view per member and one for the car, from RivalPoses (the three followers at one point are gone)
             var sp = g.SecurityPose();
-            for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? sp.Value.pos + new Pt(0, i * 90) : (Pt?)null);
+            for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? (i == 0 ? sp.Value.pos : Follower(g, "security", sp.Value.pos, i, new Pt(0, i * 90))) : (Pt?)null);
+            if (!sp.HasValue) trails.Remove("security");
             Set("car/official", g.Vale == ValeAt.Car && g.Result != Outcome.Success ? (Pt?)null : g.CarPos());
-            Set("car/getaway", s.At(s.GetawayCar));
+            Set("car/getaway", g.GetawayCarPos()); // brief 059 K6: its stand, or along its Drive
             // the crowd: people the engine puts on one point are spread for the eye only (HostCrowdSpread: hash-seeded spots 0.7 m apart, a
             // loose column when walking, drawn up to a wall when standing; the engine is not told)
             Spread(g);
             for (int i = 0; i < g.Walkers.Count; i++)
             {
-                if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
-                Set(crowdKeys[i], GiveWay(g, SpreadAt(i)));
+                if (ListenOwns(crowdKeys[i])) continue; /* brief 085: a Listen's partner, drawn by the view alone */ if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
+                Set(crowdKeys[i], GiveWay(g, SpreadAt(i), i));
                 if (SpreadFace(i) is { } sf) faces[crowdKeys[i]] = sf;
+                else if (StillFacing(g, i) is { } ef) faces[crowdKeys[i]] = ef; // engine 0.34.0 (Pulse 067 L): one standing alone faces the way the engine reads him (Game.FacingNow: the Office's door guards face out, toward the kerb), so the figure and its cone agree
                 // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
                 // refuge at the crowd's run speed and is off the street while sheltered (the engine gives no position), so the square empties
                 var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
@@ -196,8 +187,9 @@ namespace Suborned.Play
             for (int i = 0; i < MaxHostiles; i++)
             {
                 var h = i < g.Hostiles.Count ? g.Hostiles[i] : null;
+                if (h != null && IsCrewId(h.Id)) { Set(hostileKeys[i], null); continue; } // brief 059 (059 §2 point 1): a crew member's fight body is drawn by his own view (RivalViews), never popped onto a fresh one
                 Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
-                if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
+                if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"); } // Forma 067: each member his own look
             }
         }
 
@@ -222,8 +214,11 @@ namespace Suborned.Play
 
         /// <summary>The crowd gives way to the people the cell knows (Inez, the door guard, the driver, Vale) for the eye only, so the known person
         /// draws on top of a cluster: a passer-by standing between the camera and one (up to 3 m in front, where a 1.75 m figure overlaps them at
-        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.</summary>
-        Pt GiveWay(Game g, Pt p)
+        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.
+        /// Suture's Q-SOLID give-way (0.2.122, briefs/060 "0.2.122 bot rows" cause B): on the cast's own point the side is the walker's hash (never
+        /// always the camera's right), and a pushed point is kept only on free ground (the engine's walk grid); else the mirror side, else 1 m behind
+        /// the cast person, else the engine's point (the relief guard on the door guard's post was pushed into the Office face).</summary>
+        Pt GiveWay(Game g, Pt p, int walker)
         {
             var cam = host.View; Vector2 f = Vector2.up, r = Vector2.right;
             if (cam)
@@ -236,9 +231,16 @@ namespace Suborned.Play
                 if (!cp.HasValue) continue;
                 var d = new Vector2(p.X - cp.Value.X, p.Y - cp.Value.Y);
                 float front = -Vector2.Dot(d, f), side = Vector2.Dot(d, r);
+                var d0 = d;
                 if (front > -40f && front < 300f && Mathf.Abs(side) < 70f) { side = side >= 0 ? 70f : -70f; d = -f * front + r * side; }
-                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * 70f : d.normalized * 70f;
-                p = new Pt(cp.Value.X + Mathf.RoundToInt(d.x), cp.Value.Y + Mathf.RoundToInt(d.y));
+                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * (walker >= 0 && walker < idHash.Length && (idHash[walker] & 1) != 0 ? -70f : 70f) : d.normalized * 70f;
+                if (d == d0) continue; // not in the way: the point stands
+                var c = cp.Value; Pt At(Vector2 v) => new Pt(c.X + Mathf.RoundToInt(v.x), c.Y + Mathf.RoundToInt(v.y));
+                var grid = host.CarWalk; var pushed = At(d); // engine 0.33.1 (Keel's addendum): the free test sees the standing cars
+                if (grid.Free(pushed)) { p = pushed; continue; }
+                var mirror = At(d - 2f * r * Vector2.Dot(d, r)); if (grid.Free(mirror)) { p = mirror; continue; }
+                var behind = At(f * 100f); if (grid.Free(behind)) { p = behind; continue; }
+                GiveWayKept++; // none free: the engine's point
             }
             return p;
         }
@@ -262,19 +264,46 @@ namespace Suborned.Play
                 if (!things.ContainsKey(key))
                 {
                     var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
-                    Person(key, Family(job), shape: Shape(job)); Dress(key, PersonFigure(p));
+                    if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, RivalFigure(p.Id)); } // engine 0.33.0: a rival taken down is a body like anyone's, in his own clothes (Forma 067: his own look)
+                    else { Person(key, Family(job), shape: Shape(job)); Dress(key, BodyFigure(p)); }
                 }
                 bool down = p.Down || b.Seizing;
                 if (down) // the person's own view hides; the body draws
                 {
                     if (CastKeys.TryGetValue(p.Role, out var ck)) Set(ck, null);
                     else if (walkerIndex.TryGetValue(p, out var wi)) Set(crowdKeys[wi], null);
+                    else if (IsCrewId(p.Id)) Set(p.Id, null);
                 }
                 if (!down || !b.Open) { Set(key, null); continue; }
                 if (b.Seizing) { Set(key, b.At, false); continue; }                  // the struggle: still on their feet
                 if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); carriers[key] = OpKeys[(int)b.Carrier.Value]; continue; } // over the carrier's shoulder
                 Set(key, b.At, true, Radius);                                            // where they fell, or were put down
             }
+        }
+
+        /// <summary>Engine 0.34.0 (Game.FacingNow): crowd person i's facing as the engine reads it, while the view stands still this tick (a walker
+        /// faces where it walks, and the spread's knots face their middle: SpreadFace first); null when moving or the engine gives none.</summary>
+        Vector3? StillFacing(Game g, int i)
+        {
+            if (!things.TryGetValue(crowdKeys[i], out var th)) return null; var d = th.to - th.from; d.y = 0f; if (d.sqrMagnitude > 1e-4f) return null;
+            Pt? f = null; try { f = g.FacingNow(g.Walkers[i].P.Id); } catch (System.Exception) { return null; }
+            return f is Pt p && (p.X != 0 || p.Y != 0) ? frame.Dir(p) : null;
+        }
+
+        /// <summary>Pulse 067 (briefs/067/pulse.md §1.3): a body wears the figure its person was drawn in: a walker's is DressCrowd's (re-picked when
+        /// walkers who set out together drew the same), not the plain pick, so nobody changes clothes when knocked out (16 of the 126 did); the
+        /// cast and anyone not drawn yet take the plain pick.</summary>
+        string BodyFigure(Person p) => walkerIndex.TryGetValue(p, out var bw) && bw < crowdKeys.Length && figs.TryGetValue(crowdKeys[bw], out var wf) ? wf.id : PersonFigure(p);
+        /// <summary>For the proofs (Pulse 067): the walkers whose body would change figure under the plain pick (DressCrowd re-picked them), and how
+        /// many bodies drawn now wear another figure than their walker did (0 since the fix).</summary>
+        public (int repicked, int bodiesChanged) BodyFigureCheck()
+        {
+            var g = host.Game; int re = 0, changed = 0; if (g == null) return (0, 0);
+            if (walkerIndex.Count == 0) for (int i = 0; i < g.Walkers.Count; i++) walkerIndex[g.Walkers[i].P] = i;
+            for (int i = 0; i < g.Walkers.Count && i < crowdKeys.Length; i++) if (figs.TryGetValue(crowdKeys[i], out var wf) && PersonFigure(g.Walkers[i].P) != wf.id) re++;
+            foreach (var b in g.Bodies)
+                if (walkerIndex.TryGetValue(b.P, out var bi) && bi < crowdKeys.Length && figs.TryGetValue(crowdKeys[bi], out var w) && figs.TryGetValue("body/" + KeyOf(b.P), out var bf) && bf.id != w.id) changed++;
+            return (re, changed);
         }
 
         static readonly Color RobotColour = new(0.78f, 0.8f, 0.82f);
@@ -294,15 +323,14 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- engine 0.18: the fight range's cars and bystanders
 
         readonly HashSet<string> rangeCarKeys = new(), carsSeen = new();
-        readonly Dictionary<string, string> rangeCarLook = new();
         public readonly HashSet<string> BystanderStartled = new();
         int bystanderViews;
         const int MaxBystanders = 40;
         static MaterialPropertyBlock carMpb;
 
         /// <summary>Each car the range spawned (Game.RangeCars): Vela's sedan on its slot, long side across the firing line (the engine's nose
-        /// +y); scorched while it burns, charred once it blows (the wreck stays until a car is spawned on its slot). Smoke, flame and the blast
-        /// ring are the HUD's (HudToolkit.CarFx), as for the Handover's cars.</summary>
+        /// +y); scorched while it burns, charred once it blows (the wreck stays until a car is spawned on its slot). Smoke, flame, the blast and
+        /// the char are the car effects' (brief 078, HostCarFx / CarFxPool), as for the Handover's cars; the blast ring stays the HUD's.</summary>
         void RangeCars(Game g)
         {
             carsSeen.Clear();
@@ -316,10 +344,18 @@ namespace Suborned.Play
                     rangeCarKeys.Add(key);
                 }
                 Set(key, c.At);
-                string look = c.State is "wrecked" ? "wrecked" : c.State == "burning" ? "burning" : "ok";
-                if (!rangeCarLook.TryGetValue(key, out var was) || was != look) { rangeCarLook[key] = look; Scorch(key, look == "wrecked" ? 0.16f : look == "burning" ? 0.5f : 1f); }
+                // brief 078: the paint's char is the car effects' (HostCarFx: CarTint, on the mission clock), as for the Handover's cars
             }
             foreach (var key in rangeCarKeys) if (!carsSeen.Contains(key)) Set(key, null);
+        }
+
+        readonly Dictionary<string, float> carTint = new();
+        /// <summary>Brief 078: a car view's paint darkened to `k` (1 = as built), written only when it changes (HostCarFx, each frame).</summary>
+        public void CarTint(string key, float k)
+        {
+            if (!things.ContainsKey(key)) return; k = Mathf.Clamp01(k);
+            float was = carTint.TryGetValue(key, out var w) ? w : 1f; if (Mathf.Abs(was - k) < 0.01f && (k < 1f || was >= 1f)) return;
+            carTint[key] = k; Scorch(key, k);
         }
 
         /// <summary>A car's paint darkened by `k` (1 = as built): every renderer under its view, by a property block (shared materials untouched).</summary>
@@ -387,22 +423,39 @@ namespace Suborned.Play
 
         /// <summary>Brief 025 (take control): the driven agent's view key, drawn from the host's controller (position, facing, ground speed), not
         /// from the engine's eased 10 Hz pose, so input feels immediate. Null when nobody is driven.</summary>
-        public string DriveKey; public Vector3 DrivePos; public float DriveYaw, DriveSpeed;
+        public string DriveKey; public Vector3 DrivePos; public float DriveYaw, DriveSpeed; float driveY; string driveKeyWas;
         /// <summary>Every shooter's target this frame (view key → the target's drawn position) and who fired within 0.4 s: the figure, robot or
         /// vehicle turns to face it, whatever it is (Sky 2026-10-20: "anything shooting at a target - must turn to face it").</summary>
         public readonly Dictionary<string, Vector3> Aim = new(); public readonly HashSet<string> FiredNow = new();
 
         /// <summary>Per frame: eases positions, draws the cones and the selection rings.</summary>
+        /// <summary>For checks (ProofLevels): the most a figure was lifted onto the floor at its own place since the last reset (m): how far the plain ease would have sunk it.</summary>
+        public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
-            float now = Time.unscaledTime;
-            ShotLines.RemoveAll(x => now - x.Born > ShotLife);
+            GetawayLeaving(); // brief 079: the car that left drives away (HostViews.Leaving)
+            FallenSilhouettes();
             foreach (var kv in things)
             {
                 var (t, from, to, shown) = kv.Value;
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
-                if (shown && kv.Key == DriveKey) t.position = DrivePos; // the controller's (brief 025)
-                else if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/")) t.position = Vector3.Lerp(from, to, alpha);
+                if (shown && kv.Key == DriveKey)
+                {   // the controller's (brief 025); brief 055: the floor comes in 0.25 m cells (a stair steps about 0.1 m a cell), so its height eases over ~0.1 s
+                    float k = 1f - Mathf.Exp(-Time.unscaledDeltaTime / 0.05f); driveY = driveKeyWas == DriveKey && Mathf.Abs(DrivePos.y - driveY) < 1.5f ? Mathf.Lerp(driveY, DrivePos.y, k) : DrivePos.y; driveKeyWas = DriveKey;
+                    t.position = new Vector3(DrivePos.x, driveY, DrivePos.z);
+                }
+                else if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/"))
+                {
+                    var p = Vector3.Lerp(from, to, alpha);
+                    // Splice on ProofLevels (0.2.113): eased straight between two ticks, a figure climbing a stair (0.15-0.25 m a cell) cuts under the
+                    // tread ahead for part of the tick; a figure is never drawn under the floor at its own place (the climb snaps up; a descent eases)
+                    if (from.y != to.y && figs.ContainsKey(kv.Key) && !(lifted.TryGetValue(kv.Key, out var lf) && lf > 0.01f))
+                    {
+                        var b = frame.ToBlock(new Vector2(p.x, p.z)); float floor = frame.Height(b.x, b.y);
+                        if (floor > p.y && floor - p.y < 0.5f) { FeetRaisedMax = Mathf.Max(FeetRaisedMax, floor - p.y); p.y = floor; }
+                    }
+                    t.position = p;
+                }
             }
             var g = host.Game;
             Untangle();
@@ -443,7 +496,8 @@ namespace Suborned.Play
         {
             foreach (var kv in things)
             {
-                var k = kv.Key; if (!(k.StartsWith("hostile/") || k.StartsWith("unit/") || k.StartsWith("rivals/") || k.StartsWith("security/") || k == "patrol")) continue;
+                var k = kv.Key; if (!(k.StartsWith("hostile/") || k.StartsWith("unit/") || IsCrewId(k) || k.StartsWith("security/") || k == "patrol")) continue;
+                if (lifted.ContainsKey(k)) continue; // brief 079: a fallen hostile needs no cut (the second half of the fight's patch through the café, open on his body to the end card)
                 var (t, _, _, shown) = kv.Value; if (shown && t.gameObject.activeInHierarchy) yield return t.position;
             }
         }
@@ -455,6 +509,7 @@ namespace Suborned.Play
             var w = frame.World(at.Value) + Vector3.up * lift;
             if (down) lifted[key] = lift; else lifted.Remove(key); // brief 020: a figure lies (or rides a shoulder) instead of the capsule laid flat
             bool wasShown = x.shown;
+            if (wasShown && key == "patrol" && (w - x.to).magnitude > 2.5f) wasShown = false; // brief 057 §2: a jump (the engine's reroute before it walks one) snaps, never a 40 m slide in a tick
             things[key] = (x.t, wasShown ? x.to : w, w, true);
             if (down) x.t.localRotation = Quaternion.Euler(90f, 0f, 0f); else if (x.t.localRotation != Quaternion.identity) x.t.localRotation = Quaternion.identity; // down: laid flat
         }
@@ -495,44 +550,88 @@ namespace Suborned.Play
             things[key] = (t, Vector3.zero, Vector3.zero, false);
         }
 
+        // ---------------------------------------------------------------- group followers (Suture's bot triage, 0.2.115)
+
+        readonly Dictionary<string, List<Pt>> trails = new();
+        /// <summary>For checks: followers drawn this build that had to be moved onto free ground.</summary>
+        public static int FollowerSnaps;
+        /// <summary>Crowd points GiveWay left on the engine's point because no pushed side was free ground (Suture's Q-SOLID cause B).</summary>
+        public static int GiveWayKept;
+
+        /// <summary>Follower `idx` of a group whose leader the engine places at `lead`: on the leader's recent path 0.9 m x idx back while it walks
+        /// (the path is free ground: the engine walked it), else `offset` beside it; then on a free walk cell (the nearest free cell within 2 m),
+        /// else on the leader. View only.</summary>
+        Pt Follower(Game g, string group, Pt lead, int idx, Pt offset)
+        {
+            if (!trails.TryGetValue(group, out var tr)) trails[group] = tr = new List<Pt>();
+            if (tr.Count == 0 || G.Dist(tr[^1], lead) >= 10) { tr.Add(lead); if (tr.Count > 64) tr.RemoveAt(0); }
+            long want = 90L * idx; Pt at = lead + offset; long run = 0; bool onPath = false;
+            for (int k = tr.Count - 1; k > 0; k--)
+            {
+                long seg = G.Dist(tr[k], tr[k - 1]); if (seg <= 0) continue;
+                if (run + seg >= want) { long t = want - run; at = new Pt(tr[k].X + (int)((tr[k - 1].X - tr[k].X) * t / seg), tr[k].Y + (int)((tr[k - 1].Y - tr[k].Y) * t / seg)); onPath = true; break; }
+                run += seg;
+            }
+            if (onPath && G.Dist(lead, tr[^1]) > 300) onPath = false; // the leader jumped (a respawn): the old trail is not its path
+            if (!onPath) at = lead + offset;
+            var grid = g.S.Grid; if (grid.Free(at)) return at;
+            FollowerSnaps++; var nf = grid.NearestFree(at);
+            return nf.HasValue && G.Dist(nf.Value, at) <= 200 ? nf.Value : lead;
+        }
+
         // ---------------------------------------------------------------- sight fans (the Scout's skill)
 
         sealed class FanDraw
         {
-            public GameObject Go; public Mesh Fill, Rim; public MeshRenderer FillR, RimR; public Fan For; public bool Live; public string Kind = "";
-            public readonly LineRenderer[] Scan = new LineRenderer[3]; public float A0, A1; public Vector3 Hub; public readonly List<Vector3> Ring = new();
+            public GameObject Go; public Mesh Fill, Rim, Under, RimS; public MeshRenderer FillR, RimR, UnderR, RimSR; public Fan For; public bool Live, Looped; public string Kind = "", Watcher = "";
+            /// <summary>Redline 064 #2: each fill vertex's place from the lens to the far edge (0..1), so a fade rewrites colours only; Rim is the rest rim, RimS the strong.</summary>
+            public readonly List<float> FillT = new();
+            public Vector3 Hub; public readonly List<Vector3> Ring = new();
+            /// <summary>Brief 057 §3: how strong it draws now (0 rest .. 1 strong), eased toward Want; the strength the meshes were last built at.</summary>
+            public float Strength = -1f, Want, BuiltAt = -9f; public float Reach = 1f; public int Seen;
         }
-        readonly List<FanDraw> fans = new();
+        readonly Dictionary<string, FanDraw> fanBy = new(); readonly HashSet<string> fanSeen = new();
         readonly Dictionary<(Color, float), Material> fanMats = new();
-        readonly List<Vector3> verts = new(); readonly List<int> tris = new();
-        const float FillAlpha = 0.38f, RimW = 0.085f, FillY = 0.05f, RimY = 0.07f; // Glyph techwatch r2 C: the rim 2 px or more at play zoom where it runs across the view (0.085 m x 38.6 px/m x sin 38), the fill a little up, so a cone under a ghosted tower's dither still reads
+        readonly Dictionary<Color, Material> fillMats = new();
+        readonly List<Vector3> verts = new(); readonly List<int> tris = new(); readonly List<Color> cols = new();
+        // brief 057 §3 (Sky 2026-10-24: "once watched its cone now permanently appears but we need to make it softer, kinda dominates"): two strengths
+        // of one cone. Rest: fill 13 % at the lens fading to 1 % at the far edge, rim 0.05 m at 55 %. Strong (hovered, named, an agent in or near
+        // it, a path through it, Alert 2, the watcher noticing): fill 34 % fading to 14 %, rim 0.085 m at 100 %. In over 0.25 s, out over 0.6 s.
+        const float RestHub = 0.13f, RestFar = 0.01f, StrongHub = 0.34f, StrongFar = 0.14f, RestRimW = 0.05f, RestRimA = 0.55f, StrongRimW = 0.085f, InS = 0.25f, OutS = 0.6f;
+        const float RimW = 0.085f, FillY = 0.05f, RimY = 0.07f; // Glyph techwatch r2 C: the rim 2 px or more at play zoom where it runs across the view (0.085 m x 38.6 px/m x sin 38), the fill a little up, so a cone under a ghosted tower's dither still reads
+        float rimW = RimW;
         static readonly Color Grey = new(0.55f, 0.55f, 0.55f);
+        /// <summary>The proof reads it: each drawn fan's watcher and strength now ("camera:entrance=0.00").</summary>
+        /// <summary>The proof reads it: the watchers whose drawn fan is looped (hollow, dashed all round).</summary>
+        public string LoopedFans { get { var l = new List<string>(); foreach (var kv in fanBy) if (kv.Value.Go.activeSelf && kv.Value.Looped) l.Add(kv.Key); return string.Join(" ", l); } }
+        public string FanStrengths { get { var l = new List<string>(); foreach (var kv in fanBy) l.Add($"{kv.Key}={(kv.Value.Go.activeSelf ? kv.Value.Strength : 0f):0.00}"); return string.Join(" ", l); } } // brief 067 F: a cone gone from the street (0, hidden) still lists at 0
 
-        /// <summary>The fans to draw this frame (the host's choice: the focused watcher's, or every learned one while Alt is held); the rest hide.
-        /// Each mesh is rebuilt only when the engine hands back a different Fan (its cache keeps one per pose) or its Live flag flips.</summary>
-        public void ShowFans(IReadOnlyList<Fan> list)
+        /// <summary>The fans to draw this frame (every learned one at rest, the ones that matter strong); the rest hide. Each mesh is rebuilt
+        /// when the engine hands back a different Fan (its cache keeps one per pose), its Live flag flips, or its strength moves.</summary>
+        public void ShowFans(IReadOnlyList<Fan> list, IReadOnlyList<bool> strong = null)
         {
-            int n = list?.Count ?? 0;
+            var seen = fanSeen; seen.Clear(); int n = list?.Count ?? 0; float dt = Time.unscaledDeltaTime; // Redline 064 #2: one set, reused
             for (int i = 0; i < n; i++)
             {
-                var f = list[i]; if (fans.Count <= i) fans.Add(NewFan(i));
-                var d = fans[i];
-                if (!d.Go.activeSelf) d.Go.SetActive(true);
-                if (!ReferenceEquals(d.For, f) || d.Live != f.Live) Build(d, f);
-                Scan(d);
+                var f = list[i]; string key = f.Watcher.Length > 0 ? f.Watcher : "fan/" + i;
+                if (CameraDead(f.Watcher) || FightCues.Blind && !f.Live) continue; // brief 084: the hollow cone's instead (HudToolkit.CuesBlind) // Glyph 058 §2: a camera cut or shot out has no cone (its dead disc stays)
+                if (!seen.Add(key)) continue;
+                if (!fanBy.TryGetValue(key, out var d)) fanBy[key] = d = NewFan(key);
+                d.Want = strong == null ? 1f : i < strong.Count && strong[i] ? 1f : 0f;
+                // brief 067 F3 (Glyph): no rest strength: a cone that stops mattering leaves the street (out over 0.6 s), one that starts comes in over 0.25 s
+                if (!d.Go.activeSelf) { if (d.Want <= 0f) continue; d.Go.SetActive(true); d.Strength = 0f; d.For = null; }
+                d.Strength = Mathf.MoveTowards(d.Strength, d.Want, dt / (d.Want > d.Strength ? InS : OutS));
+                if (d.Strength <= 0f && d.Want <= 0f) { d.Go.SetActive(false); d.For = null; continue; }
+                if (!ReferenceEquals(d.For, f) || d.Live != f.Live || d.Looped != LoopedFan(f)) Build(d, f);
+                else if (Mathf.Abs(d.Strength - d.BuiltAt) > 0.02f || (d.Strength == d.Want && d.BuiltAt != d.Strength)) Restrength(d);
             }
-            for (int i = n; i < fans.Count; i++) if (fans[i].Go.activeSelf) { fans[i].Go.SetActive(false); fans[i].For = null; }
+            foreach (var kv in fanBy) if (!seen.Contains(kv.Key) && kv.Value.Go.activeSelf) { kv.Value.Go.SetActive(false); kv.Value.For = null; }
         }
 
-        FanDraw NewFan(int i)
+        FanDraw NewFan(string key)
         {
-            var d = new FanDraw { Go = new GameObject("fan/" + i) }; d.Go.transform.SetParent(root, false);
-            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim");
-            for (int k = 0; k < 3; k++)
-            {
-                var lr = d.Scan[k] = NewLine("scan" + k, select, k == 0 ? RimW * 0.8f : RimW * 1.6f); lr.transform.SetParent(d.Go.transform, false);
-                lr.alignment = LineAlignment.TransformZ; lr.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            }
+            var d = new FanDraw { Go = new GameObject("fan/" + key), Watcher = key }; d.Go.transform.SetParent(root, false);
+            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim"); (d.RimS, d.RimSR) = MeshPart(d.Go.transform, "rim-strong"); (d.Under, d.UnderR) = MeshPart(d.Go.transform, "shadow-edge"); // engine 0.28: the ink under a shadow cut's rim
             return d;
         }
 
@@ -550,21 +649,50 @@ namespace Suborned.Play
         {
             if (fanMats.TryGetValue((c, alpha), out var m)) return m;
             m = host.SignalMat(new Color(c.r, c.g, c.b, alpha), alpha < 1f); if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f); // Glint 2026-10-23: no fog on a signal
+            if (m.HasProperty("_OffsetFactor")) { m.SetFloat("_OffsetFactor", -2f); m.SetFloat("_OffsetUnits", -2f); } // Aster 2026-10-23 (Glint's 150 m control): the flat fan wins its depth ties with kerbs and paving (0.64 -> 0.75 in view); no cost
             return fanMats[(c, alpha)] = m;
+        }
+        /// <summary>Brief 057 §3: the fill's material: transparent, its alpha from the mesh's vertex colour (SignalUnlit _VertexAlpha), so the fill
+        /// fades from the lens to the far edge.</summary>
+        Material FillMat(Color c)
+        {
+            if (fillMats.TryGetValue(c, out var m)) return m;
+            m = FanMat(c, 0.999f); m = new Material(m) { name = "signal-fill" }; if (m.HasProperty("_VertexAlpha")) m.SetFloat("_VertexAlpha", 1f);
+            return fillMats[c] = m;
         }
 
         Color KindColour(string kind) => kind switch { "guard" => host.guardColour, "rivals" => host.rivalColour, _ => host.coneColour }; // §10: cones red, guard amber, rivals violet
 
+        /// <summary>Glyph 058 §2 (board 02): the camera the running loop plays on: its cone draws recorded, not live: still red, hollow, dashed all round.</summary>
+        bool LoopedFan(Fan f) { var g = host.Game; return g != null && !f.Live && g.LoopOn && f.Watcher == "camera:" + g.LoopCam; }
+        bool CameraDead(string watcher) { var g = host.Game; if (g == null || !watcher.StartsWith("camera:", System.StringComparison.Ordinal)) return false; try { return g.CameraDeadAs(watcher[7..]).Length > 0; } catch { return false; } }
+        const float LoopRimW = 0.05f, LoopRimA = 0.5f, LoopDashOn = 0.13f, LoopDashOff = 0.10f;
+
         void Build(FanDraw d, Fan f)
         {
-            d.For = f; d.Live = f.Live; d.Kind = f.Kind;
-            var c = f.Live ? KindColour(f.Kind) : Grey;
-            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
-            Mat(d.FillR, FanMat(c, FillAlpha)); Mat(d.RimR, FanMat(c, 1f));
-            d.Scan[0].sharedMaterial = FanMat(c, 1f); d.Scan[1].sharedMaterial = FanMat(c, 0.45f); d.Scan[2].sharedMaterial = FanMat(c, 0.22f);
+            d.For = f; d.Live = f.Live; d.Kind = f.Kind; d.Looped = LoopedFan(f);
             var pts = f.Points; int n = pts.Length;
             d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));
-            d.Hub = frame.World(f.At);
+            d.Hub = frame.World(f.At); d.Reach = 1f; foreach (var r in d.Ring) d.Reach = Mathf.Max(d.Reach, Flat(r - d.Hub).magnitude);
+            Geometry(d); ApplyStrength(d);
+        }
+
+        /// <summary>A strength step. Redline 064 #2: colours and which rim shows only; the clipped geometry stays (PerfLegacy rebuilds it all, as
+        /// the round did, for the perf probe).</summary>
+        void Restrength(FanDraw d)
+        {
+            if (d.For == null) return;
+            if (HandoverHost.PerfLegacy) Geometry(d);
+            ApplyStrength(d);
+        }
+
+        /// <summary>The fan's meshes from its polygons, once a pose: the fill (shadows cut out; each vertex's place from the lens kept for its
+        /// alpha), the rest rim and the strong rim (their widths), the shadow cuts' ink.</summary>
+        /// <summary>The perf probe reads it: fan geometry builds since the last read.</summary>
+        public static int FanGeometries;
+        void Geometry(FanDraw d)
+        {
+            var f = d.For; if (f == null) return; FanGeometries++;
             // a mast (brief 013): one polygon a head; heads 2 and 3 are the fan's More, drawn the same way from the same pole
             var polys = new List<(List<Vector3> ring, string[] stop)> { (d.Ring, f.Stop) };
             for (int h = 0; h < f.More.Length; h++) { var r2 = new List<Vector3>(); foreach (var q in f.More[h]) r2.Add(frame.World(q)); polys.Add((r2, h < f.MoreStop.Length ? f.MoreStop[h] : System.Array.Empty<string>())); }
@@ -577,82 +705,80 @@ namespace Suborned.Play
                 for (int i = 0; i < m; i++) verts.Add(ring[i] + Vector3.up * FillY);
                 for (int i = 0; i < m; i++) { tris.Add(b0); tris.Add(b0 + 1 + i); tris.Add(b0 + 1 + (i + 1) % m); }
             }
+            ShadowsOf(f); CutFill(); // engine 0.28 (hud29 securityFan.shadows): Fan.Shadows cut out of the fill
+            d.FillT.Clear(); foreach (var v in verts) d.FillT.Add(Mathf.Clamp01(Flat(v - d.Hub).magnitude / d.Reach));
             d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
-            // the rim: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue
-            verts.Clear(); tris.Clear(); float dash = 0f;
-            foreach (var (ring, stop) in polys) { n = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && n >= 3) Hatch(ring); }
-            d.Rim.Clear(); d.Rim.SetVertices(verts); d.Rim.SetTriangles(tris, 0); d.Rim.RecalculateBounds();
-            n = d.Ring.Count;
-            ScanEdges(d, f, n);
+            var c = f.Live || d.Looped ? KindColour(f.Kind) : Grey;
+            // the rims: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue; rest and strong widths
+            for (int pass = 0; pass < 2; pass++)
+            {
+                rimW = d.Looped ? LoopRimW : pass == 0 ? RestRimW : StrongRimW;
+                verts.Clear(); tris.Clear(); float dash = 0f;
+                foreach (var (ring, stop) in polys) { int m = ring.Count; if (d.Looped) { LoopRim(ring, ref dash); continue; } RimOf(d, f, ring, stop, ref dash); if (!f.Live && m >= 3) Hatch(ring); }
+                ShadowRims(polys, c, d); // each cut gets a thin rim of the fan's colour over ink-deep (the ink in its own mesh)
+                var mesh = pass == 0 ? d.Rim : d.RimS; mesh.Clear(); mesh.SetVertices(verts); mesh.SetTriangles(tris, 0); mesh.RecalculateBounds();
+            }
+            rimW = RimW; d.BuiltAt = -9f;
+        }
+
+        /// <summary>The fan at its strength now: the fill's vertex alphas (rest 13 % to 1 %, strong 34 % to 14 %, lerped) and the rest or the strong
+        /// rim (the switch at half way, as the rim's two materials were).</summary>
+        void ApplyStrength(FanDraw d)
+        {
+            var f = d.For; if (f == null) return; float s = Mathf.Clamp01(d.Strength < 0f ? 1f : d.Strength); d.BuiltAt = s;
+            var c = f.Live || d.Looped ? KindColour(f.Kind) : Grey;
+            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
+            // brief 067 F3 (Glyph): one look, the strong one, faded by the strength (0 is not drawn): fill 34 % to 14 % by distance, the strong rim
+            // (its alpha in tenths, so a fade uses at most ten materials a colour); the rest rim is retired
+            float aHub = StrongHub * s, aFar = StrongFar * s;
+            if (d.Looped) { aHub = 0f; aFar = 0f; } // looped: hollow (no fill), the rim at 50 % whatever its strength
+            cols.Clear(); foreach (var t in d.FillT) cols.Add(new Color(1f, 1f, 1f, Mathf.Lerp(aHub, aFar, t)));
+            if (cols.Count == d.Fill.vertexCount) d.Fill.SetColors(cols);
+            float rimA = Mathf.Max(0.1f, Mathf.Round((d.Looped ? LoopRimA : 1f) * s * 10f) / 10f);
+            Mat(d.FillR, FillMat(c)); Mat(d.RimSR, FanMat(c, rimA));
+            if (d.RimR.enabled) d.RimR.enabled = false; bool on = s > 0.01f; if (d.RimSR.enabled != on) d.RimSR.enabled = on;
+        }
+
+        /// <summary>Glyph 058 §2: a looped cone's rim, dashed all round (0.13 m on, 0.10 m off: 5 px on, 4 off at play zoom), the phase carried.</summary>
+        void LoopRim(List<Vector3> ring, ref float dash)
+        {
+            int n = ring.Count; float period = LoopDashOn + LoopDashOff;
+            for (int i = 0; i < n && n >= 3; i++)
+            {
+                Vector3 a = ring[i] + Vector3.up * RimY, b = ring[(i + 1) % n] + Vector3.up * RimY; float len = Vector3.Distance(a, b); if (len < 1e-4f) continue;
+                for (float t = -dash; t < len; t += period) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + LoopDashOn); if (s1 > s0) QuadCut(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), rimW); }
+                dash = (dash + len) % period;
+            }
         }
 
         void RimOf(FanDraw d, Fan f, List<Vector3> Ring, string[] Stop, ref float dash)
         {
-            int n = Ring.Count;
+            int n = Ring.Count; float w = rimW;
             for (int i = 0; i < n && n >= 3; i++)
             {
                 int j = (i + 1) % n; Vector3 a = Ring[i] + Vector3.up * RimY, b = Ring[j] + Vector3.up * RimY;
                 bool far = Stop.Length == n && Stop[i] == "reach" && Stop[j] == "reach";
-                if (!far) { Quad(a, b, RimW); continue; }
+                if (!far) { QuadCut(a, b, w); continue; }
                 var outward = Flat((a + b) * 0.5f - d.Hub).normalized;
                 float len = Vector3.Distance(a, b);
                 switch (f.Kind)
                 {
                     case "guard":   // chevrons marching the way he faces, on a crisp rim (Glyph 020: the hairline left a flat amber wash)
-                        Quad(a, b, RimW);
-                        for (; dash < len; dash += 0.7f) Chevron(Vector3.Lerp(a, b, dash / len), outward, 0.32f);
+                        QuadCut(a, b, w);
+                        for (; dash < len; dash += 0.7f) if (!InShadow(Vector3.Lerp(a, b, dash / len))) Chevron(Vector3.Lerp(a, b, dash / len), outward, 0.32f, w);
                         dash -= len; break;
                     case "rivals":  // diamond ticks
-                        Quad(a, b, RimW * 0.5f);
-                        for (; dash < len; dash += 0.8f) Diamond(Vector3.Lerp(a, b, dash / len), outward, 0.3f);
+                        QuadCut(a, b, w * 0.5f);
+                        for (; dash < len; dash += 0.8f) if (!InShadow(Vector3.Lerp(a, b, dash / len))) Diamond(Vector3.Lerp(a, b, dash / len), outward, 0.3f);
                         dash -= len; break;
                     default:        // camera, patrol, officers: a dashed far edge (0.4 m on, 0.3 m off), the phase carried along the arc
-                        for (float t = -dash; t < len; t += 0.7f) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + 0.4f); if (s1 > s0) Quad(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), RimW); }
+                        for (float t = -dash; t < len; t += 0.7f) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + 0.4f); if (s1 > s0) QuadCut(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), w); }
                         dash = (dash + len) % 0.7f; break;
                 }
             }
         }
-
-        /// <summary>The camera's scan sweeps between its outermost reach points (head 1's).</summary>
-        void ScanEdges(FanDraw d, Fan f, int n)
-        {
-            d.A0 = d.A1 = 0f;
-            if (f.Kind is "camera" or "guard" && n >= 3) // brief 020 (Glyph): the guard's cone sweeps as the camera's does
-            {
-                var fwd = Flat(frame.Dir(f.Facing)); float lo = float.MaxValue, hi = float.MinValue;
-                for (int i = 0; i < n; i++) if (f.Stop.Length == n && f.Stop[i] == "reach") { float a = Vector3.SignedAngle(fwd, Flat(d.Ring[i] - d.Hub), Vector3.up); lo = Mathf.Min(lo, a); hi = Mathf.Max(hi, a); }
-                if (lo < hi) { d.A0 = lo; d.A1 = hi; }
-            }
-        }
-
-        /// <summary>The camera's scan edge and its two fading ghosts: from the lens to where the fan ends along a sweeping bearing.</summary>
-        void Scan(FanDraw d)
-        {
-            bool on = d.Kind is "camera" or "guard" && d.Live && d.A1 > d.A0;
-            for (int k = 0; k < 3; k++)
-            {
-                var lr = d.Scan[k];
-                if (!on) { if (lr.enabled) lr.enabled = false; continue; }
-                float t = Time.unscaledTime * 0.9f - k * 0.18f, s = 0.5f + 0.5f * Mathf.Sin(t);
-                var fwd = Flat(frame.Dir(d.For.Facing)); var dir = Quaternion.AngleAxis(Mathf.Lerp(d.A0, d.A1, s), Vector3.up) * fwd;
-                if (!Exit(d, dir, out var end)) { lr.enabled = false; continue; }
-                lr.positionCount = 2; lr.SetPosition(0, d.Hub + Vector3.up * (RimY + 0.005f)); lr.SetPosition(1, end + Vector3.up * (RimY + 0.005f)); lr.enabled = true;
-            }
-        }
-
-        /// <summary>Where a ray from the watcher leaves its fan (the farthest crossing of the polygon's edges, on the ground plane).</summary>
-        static bool Exit(FanDraw d, Vector3 dir, out Vector3 end)
-        {
-            float best = -1f; end = d.Hub; var o = new Vector2(d.Hub.x, d.Hub.z); var r = new Vector2(dir.x, dir.z); int n = d.Ring.Count;
-            for (int i = 0; i < n; i++)
-            {
-                var a = new Vector2(d.Ring[i].x, d.Ring[i].z); var b = new Vector2(d.Ring[(i + 1) % n].x, d.Ring[(i + 1) % n].z); var e = b - a;
-                float den = r.x * e.y - r.y * e.x; if (Mathf.Abs(den) < 1e-6f) continue;
-                var w = a - o; float t = (w.x * e.y - w.y * e.x) / den, u = (w.x * r.y - w.y * r.x) / den;
-                if (t > 0.05f && u >= 0f && u <= 1f && t > best) { best = t; end = Vector3.Lerp(d.Ring[i], d.Ring[(i + 1) % n], u); }
-            }
-            return best > 0f;
-        }
+        // brief 057 §3: the sweeping scan line (brief 020's Scan, ScanEdges and its three line renderers) is gone: a fixed camera does not pan,
+        // and the desk's 20 s scan already shows as the "reported" tag's draining underline
 
         static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
 
@@ -689,10 +815,10 @@ namespace Suborned.Play
             tris.Add(k); tris.Add(k + 1); tris.Add(k + 2); tris.Add(k); tris.Add(k + 2); tris.Add(k + 3);
         }
 
-        void Chevron(Vector3 p, Vector3 o, float s)
+        void Chevron(Vector3 p, Vector3 o, float s, float w = RimW)
         {
             var side = Vector3.Cross(Vector3.up, o) * (s * 0.6f); var tip = p + o * (s * 0.5f); var back = p - o * (s * 0.3f);
-            Quad(back + side, tip, RimW); Quad(back - side, tip, RimW);
+            Quad(back + side, tip, w); Quad(back - side, tip, w);
         }
 
         void Diamond(Vector3 p, Vector3 o, float s)

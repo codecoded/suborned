@@ -1,0 +1,167 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a "d4361806" --b tree
+· engines ready (2.8 s); playing 41 routes on A and 41 on B
+A = d4361806c675    B = the working tree    (= means the value did not move)
+route                            outcome            fail                   end              Trail    Alert  health lost
+careless-body-found              =                  =                      3:32.3 → 3:29.4  6 → 8    =      =
+    first log line apart (line 8):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:44.5  attention.noticed  guard notices the scout standing still in its sight.
+careless-enforcer-watches-guard  =                  =                      =                =        =      =
+    first log line apart (line 13):
+      A  1:38.1  attention.noticed  guard notices the enforcer standing still in its sight.
+      B  1:36.2  attention.noticed  guard notices the enforcer standing still in its sight.
+careless-g-disable               =                  =                      4:11.7 → 3:57.5  =        =      50 % → 44 %
+    first log line apart (line 15):
+      A  1:49.6  attention.noticed  patrol notices the enforcer standing still in its sight.
+      B  2:20.0  order.move  enforcer heads for (6520,-4110).
+careless-guard-left-door-held    =                  =                      =                =        =      =
+    first log line apart (line 44):
+      A  3:29.1  rivals.post  rival-3 takes his post round our car.
+      B  3:28.8  rivals.post  rival-3 takes his post round our car.
+careless-loop-runs-out           =                  =                      =                =        1 → 0  =
+    first log line apart (line 6):
+      A  0:02.8  run.seen  The guard Astrid Tanaka sees the scout running: a found fault. Alert 1.
+      B  0:02.2  run.seen  The guard Astrid Tanaka sees the scout running.
+careless-reporter-not-stopped    =                  =                      =                =        2 → 1  =
+    first log line apart (line 8):
+      A  1:02.9  order.turn  fixer turn driver (50 s)
+      B  1:02.4  order.turn  fixer turn driver (50 s)
+careless-scout-idles-pickup      =                  =                      =                =        =      =
+    first log line apart (line 8):
+      A  1:02.9  order.turn  fixer turn driver (50 s)
+      B  1:02.4  order.turn  fixer turn driver (50 s)
+careless-takedown-seen-camera    =                  =                      =                =        =      =
+    first log line apart (line 6):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:44.5  attention.noticed  the camera entrance notices the scout standing still in its sight.
+careless-takedown-seen-crowd     =                  =                      =                =        =      =
+    first log line apart (line 6):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:44.5  attention.noticed  the camera entrance notices the scout standing still in its sight.
+fail-district-seals              =                  =                      =                =        =      11 % → 0 %
+    first log line apart (line 5):
+      A  0:57.6  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+      B  0:46.6  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-enforcer-down               =                  =                      1:46.7 → 1:40.6  12 → 6   =      =
+    first log line apart (line 4):
+      A  0:37.4  round.ends  gunfire: Inez Nikolaou walks back to her post and stays there.
+      B  0:35.5  round.ends  alert-2: Inez Nikolaou walks back to her post and stays there.
+fail-entry-seen-camera           =                  =                      =                =        =      =
+    first log line apart (line 11):
+      A  2:18.9  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+      B  2:07.9  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-entry-seen-guard            =                  =                      =                =        =      =
+    first log line apart (line 21):
+      A  3:07.1  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+      B  3:05.8  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-entry-seen-patrol           failure → none     entry-seen-patrol → -  4:40.4 → 8:30.0  4 → 5    0 → 1  0 % → 16 %
+    first log line apart (line 22):
+      A  3:29.1  rivals.post  rival-3 takes his post round our car.
+      B  3:28.8  rivals.post  rival-3 takes his post round our car.
+fail-rivals-reach-vale           =                  =                      =                =        =      =
+    first log line apart (line 5):
+      A  1:10.4  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  0:54.9  attention.noticed  the camera pickup notices the fixer standing still in its sight.
+fail-take-seen-camera            =                  =                      =                =        =      =
+    first log line apart (line 4):
+      A  1:09.2  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+      B  0:53.8  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+fail-vale-dead                   =                  =                      =                8 → 7    =      =
+    first log line apart (line 3):
+      A  1:09.2  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+      B  0:53.8  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+fail-vale-leaves                 =                  =                      =                =        =      =
+    first log line apart (line 3):
+      A  2:35.6  rivals.coming  A rival car turns in off Orbit Walk. It is after Vale too.
+      B  2:27.3  attention.noticed  patrol notices the scout standing still in its sight.
+fight-loud-enforcer-down         =                  =                      2:59.0 → 3:18.8  8 → 9    =      =
+    first log line apart (line 39):
+      A  2:18.2  crowd.sheltered  1 reach shelter.
+      B  2:17.4  crowd.sheltered  1 reach shelter.
+fight-safe-rivals-reach-vale     =                  =                      =                =        =      =
+    first log line apart (line 5):
+      A  1:10.4  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  0:54.9  attention.noticed  the camera pickup notices the fixer standing still in its sight.
+loud                             =                  =                      4:26.4 → 4:25.7  12 → 14  =      =
+    first log line apart (line 41):
+      A  3:27.7  crowd.sheltered  1 reach shelter.
+      B  3:26.9  crowd.sheltered  1 reach shelter.
+loud-fast                        =                  =                      4:26.4 → 4:25.7  12 → 14  =      =
+    first log line apart (line 41):
+      A  3:27.7  crowd.sheltered  1 reach shelter.
+      B  3:26.9  crowd.sheltered  1 reach shelter.
+loud-fight                       =                  =                      4:26.4 → 4:25.7  12 → 14  =      =
+    first log line apart (line 41):
+      A  3:27.7  crowd.sheltered  1 reach shelter.
+      B  3:26.9  crowd.sheltered  1 reach shelter.
+loud-left-downed                 =                  =                      4:26.4 → 4:25.7  12 → 14  =      =
+    first log line apart (line 41):
+      A  3:27.7  crowd.sheltered  1 reach shelter.
+      B  3:26.9  crowd.sheltered  1 reach shelter.
+loud-left-standing               =                  =                      4:26.4 → 4:25.7  12 → 14  =      =
+    first log line apart (line 41):
+      A  3:27.7  crowd.sheltered  1 reach shelter.
+      B  3:26.9  crowd.sheltered  1 reach shelter.
+route-a                          =                  =                      =                =        1 → 0  =
+    first log line apart (line 6):
+      A  0:02.8  run.seen  The guard Astrid Tanaka sees the scout running: a found fault. Alert 1.
+      B  0:02.2  run.seen  The guard Astrid Tanaka sees the scout running.
+route-a-board                    =                  =                      =                =        1 → 0  22 % → 55 %
+    first log line apart (line 6):
+      A  0:02.8  run.seen  The guard Astrid Tanaka sees the scout running: a found fault. Alert 1.
+      B  0:02.2  run.seen  The guard Astrid Tanaka sees the scout running.
+route-a-disable                  =                  =                      =                =        =      =
+    first log line apart (line 6):
+      A  0:02.8  run.seen  The guard Astrid Tanaka sees the scout running: a found fault. Alert 1.
+      B  0:02.2  run.seen  The guard Astrid Tanaka sees the scout running.
+route-a-pressure                 failure → success  rivals-reach-vale → -  3:20.1 → 3:53.7  =        1 → 0  66 % → 72 %
+    first log line apart (line 6):
+      A  0:02.8  run.seen  The guard Astrid Tanaka sees the scout running: a found fault. Alert 1.
+      B  0:02.2  run.seen  The guard Astrid Tanaka sees the scout running.
+route-a-pressure-board           =                  =                      3:11.7 → 3:07.9  =        1 → 0  44 % → 38 %
+    first log line apart (line 6):
+      A  0:02.8  run.seen  The guard Astrid Tanaka sees the scout running: a found fault. Alert 1.
+      B  0:02.2  run.seen  The guard Astrid Tanaka sees the scout running.
+route-b                          =                  =                      =                =        0 → 1  =
+    first log line apart (line 8):
+      A  1:02.9  order.turn  fixer turn driver (50 s)
+      B  1:02.4  order.turn  fixer turn driver (50 s)
+route-b-block                    =                  =                      =                =        0 → 1  =
+    first log line apart (line 8):
+      A  1:02.9  order.turn  fixer turn driver (50 s)
+      B  1:02.4  order.turn  fixer turn driver (50 s)
+route-b-block-board              =                  =                      =                =        0 → 1  =
+    first log line apart (line 8):
+      A  1:02.9  order.turn  fixer turn driver (50 s)
+      B  1:02.4  order.turn  fixer turn driver (50 s)
+route-b-board                    =                  =                      =                =        0 → 1  =
+    first log line apart (line 8):
+      A  1:02.9  order.turn  fixer turn driver (50 s)
+      B  1:02.4  order.turn  fixer turn driver (50 s)
+route-g                          =                  =                      4:11.7 → 3:57.5  =        =      50 % → 44 %
+    first log line apart (line 35):
+      A  3:47.6  report.confirmed  police-1 confirms guard: out.
+      B  3:42.1  witness.react  p-records-office-74 finds a body: radio.
+route-g-board                    =                  =                      4:05.7 → 3:57.5  =        =      44 % → 38 %
+    first log line apart (line 35):
+      A  3:47.6  report.confirmed  police-1 confirms guard: out.
+      B  3:42.1  witness.react  p-records-office-74 finds a body: radio.
+route-g-fast                     failure → success  rivals-reach-vale → -  3:11.1 → 3:44.2  =        =      =
+    first log line apart (line 30):
+      A  2:46.4  rivals.late  The rival car pulls up for the fight. The rest of the crew get out.
+      B  2:45.0  fight.ambush  The rival crew springs its ambush at the getaway car.
+route-g-fast-board               =                  =                      3:05.2 → 3:10.7  2 → 6    =      38 % → 50 %
+    first log line apart (line 30):
+      A  2:46.4  rivals.late  The rival car pulls up for the fight. The rest of the crew get out.
+      B  2:45.0  fight.ambush  The rival crew springs its ambush at the getaway car.
+route-g-kill                     success → failure  - → rivals-reach-vale  6:11.7 → 5:26.0  =        =      27 % → 55 %
+    first log line apart (line 29):
+      A  3:29.1  rivals.post  rival-3 takes his post round our car.
+      B  3:25.8  run.seen  The guard Astrid Tanaka sees the enforcer running.
+route-g-kill-board               =                  =                      5:30.2 → 5:25.5  =        =      44 % → 50 %
+    first log line apart (line 29):
+      A  3:29.1  rivals.post  rival-3 takes his post round our car.
+      B  3:25.8  run.seen  The guard Astrid Tanaka sees the enforcer running.
+
+41 routes: 40 moved, 1 unchanged
+(8.3 s)

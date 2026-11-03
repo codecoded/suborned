@@ -1,0 +1,230 @@
+{
+ "schema": "suborned.mission.adaptive/1",
+ "mission": "handover",
+ "style": "probe",
+ "pace": "human",
+ "id": "hand-street-loud",
+ "note": "Pulse probe: the three shot at the car first, then the Enforcer loud to the door and out by the service drive.",
+ "rules": [
+  {
+   "id": "t-cab",
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "id": "loop",
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "when": [
+    "t>=:2:20",
+    "free:tech"
+   ],
+   "after": [
+    "t-cab"
+   ],
+   "retry": 2
+  },
+  {
+   "id": "e-wait",
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ],
+   "run": true
+  },
+  {
+   "id": "sg",
+   "op": "enforcer",
+   "do": "fire",
+   "target": "guard",
+   "when": [
+    "log:loop.on",
+    "free:enforcer"
+   ],
+   "retry": 2
+  },
+  {
+   "id": "door2",
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "run": true,
+   "when": [
+    "log:guard.down"
+   ],
+   "interrupt": true,
+   "retry": 2
+  },
+  {
+   "id": "ds",
+   "op": "scout",
+   "do": "draw",
+   "when": [
+    "log:rivals.drop"
+   ],
+   "react": "expected"
+  },
+  {
+   "id": "df",
+   "op": "fixer",
+   "do": "draw",
+   "with": "ds"
+  },
+  {
+   "id": "nf-scout",
+   "op": "scout",
+   "do": "fire",
+   "target": "$nearest:scout",
+   "when": [
+    "hostiles>=:1",
+    "since:ds:1"
+   ],
+   "retry": 2,
+   "repeat": 4,
+   "tries": 200
+  },
+  {
+   "id": "nf-fixer",
+   "op": "fixer",
+   "do": "fire",
+   "target": "$nearest:fixer",
+   "when": [
+    "hostiles>=:1",
+    "since:ds:1"
+   ],
+   "retry": 2,
+   "repeat": 4,
+   "tries": 200
+  },
+  {
+   "id": "board",
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "log:enter.out",
+    "near:enforcer:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "s-c",
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": [
+    "log:enter.out",
+    "log:blocker.out"
+   ],
+   "run": true,
+   "interrupt": true,
+   "retry": 1
+  },
+  {
+   "id": "f-c",
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": [
+    "log:enter.out",
+    "log:blocker.out"
+   ],
+   "run": true,
+   "interrupt": true,
+   "retry": 1
+  },
+  {
+   "id": "t-c",
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": [
+    "log:enter.out"
+   ],
+   "run": true,
+   "interrupt": true,
+   "retry": 1
+  },
+  {
+   "id": "s-in",
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "fin:s-c",
+    "near:scout:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "f-in",
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "fin:f-c",
+    "near:fixer:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "t-in",
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "fin:t-c",
+    "near:tech:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "go",
+   "op": "cell",
+   "do": "go",
+   "when": [
+    "since:board:5",
+    "fin:s-in",
+    "fin:f-in",
+    "fin:t-in"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "go2",
+   "op": "cell",
+   "do": "go",
+   "when": [
+    "log:blocker.out",
+    "since:board:6"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "enter",
+   "op": "enforcer",
+   "do": "enter",
+   "when": [
+    "done:door2",
+    "free:enforcer"
+   ],
+   "retry": 2
+  },
+  {
+   "id": "to-car",
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": [
+    "log:enter.out"
+   ],
+   "retry": 2,
+   "interrupt": true
+  }
+ ]
+}

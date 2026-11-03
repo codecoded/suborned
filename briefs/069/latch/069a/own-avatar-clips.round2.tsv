@@ -1,0 +1,69 @@
+clip	who	thighL	thighR	kneeL	kneeR
+walk	its own skeleton	-0.843	2.748	-0.006	0.023
+walk	source raw (Generic)	-0.933	3.075	-0.007	0.026
+walk	c6	-0.18	2.085	-0.001	0.017
+walk	waitress	-0.012	2.065	0	0.017
+carried_drape	its own skeleton	34.261	-11.006	0.281	-0.095
+carried_drape	source raw (Generic)	34.829	-9.868	0.285	-0.085
+carried_drape	c6	35.841	-12.244	0.28	-0.102
+carried_drape	waitress	34.936	-11.301	0.273	-0.095
+carry_shoulder	its own skeleton	-1.257	2.645	-0.01	0.022
+carry_shoulder	source raw (Generic)	-0.975	3.114	-0.007	0.026
+carry_shoulder	c6	-0.811	2.056	-0.007	0.017
+carry_shoulder	waitress	-0.663	2.061	-0.005	0.017
+carry_shoulder_idle	its own skeleton	13.086	-2.073	0.106	-0.018
+carry_shoulder_idle	source raw (Generic)	12.999	-2.005	0.106	-0.017
+carry_shoulder_idle	c6	15.555	-3.764	0.122	-0.032
+carry_shoulder_idle	waitress	15.675	-3.847	0.123	-0.033
+serve	its own skeleton	13.086	-2.073	0.106	-0.018
+serve	source raw (Generic)	12.999	-2.005	0.106	-0.017
+serve	c6	15.555	-3.764	0.122	-0.032
+serve	waitress	15.675	-3.847	0.123	-0.033
+serve_walk	its own skeleton	1.924	5.572	0.014	0.044
+serve_walk	source raw (Generic)	2.251	6.164	0.018	0.049
+serve_walk	c6	2.968	3.942	0.022	0.031
+serve_walk	waitress	2.994	3.948	0.023	0.032
+sit	its own skeleton	102.49	113.6	0.11	0.073
+sit	source raw (Generic)	102.965	113.542	0.11	0.073
+sit	c6	94.562	115.242	0.134	0.044
+sit	waitress	94.342	115.589	0.134	0.043
+sit_alt	its own skeleton	103.083	113.328	0.109	0.076
+sit_alt	source raw (Generic)	103.07	112.951	0.109	0.076
+sit_alt	c6	95.224	115.462	0.133	0.046
+sit_alt	waitress	94.974	115.749	0.133	0.045
+sit_talk	its own skeleton	103.15	114.482	0.115	0.072
+sit_talk	source raw (Generic)	102.574	114.333	0.115	0.072
+sit_talk	c6	94.543	114.993	0.139	0.042
+sit_talk	waitress	94.284	114.933	0.139	0.041
+stand_to_sit	its own skeleton	6.403	17.991	0.05	0.048
+stand_to_sit	source raw (Generic)	6.363	18.089	0.05	0.047
+stand_to_sit	c6	7.267	12.26	0.056	0.023
+stand_to_sit	waitress	7.311	11.553	0.057	0.022
+sit_to_stand	its own skeleton	19.527	20.951	0.066	0.069
+sit_to_stand	source raw (Generic)	19.205	20.96	0.065	0.07
+sit_to_stand	c6	22.509	12.677	0.083	0.044
+sit_to_stand	waitress	23.172	11.576	0.086	0.042
+run_lean	its own skeleton	5.947	5.418	0.051	0.047
+run_lean	source raw (Generic)	6.187	13.153	0.052	0.111
+run_lean	c6	6.748	5.288	0.055	0.042
+run_lean	waitress	7.353	5.004	0.06	0.04
+cover_pin	its own skeleton	126.794	4.59	0.061	0.039
+cover_pin	source raw (Generic)	126.719	4.441	0.06	0.038
+cover_pin	c6	81.792	5.9	0.09	0.05
+cover_pin	waitress	79.448	6.051	0.092	0.052
+cover_fire	its own skeleton	19.619	24.069	0.13	0.186
+cover_fire	source raw (Generic)	19.691	24.04	0.13	0.186
+cover_fire	c6	21.425	23.029	0.14	0.174
+cover_fire	waitress	20.983	23.668	0.137	0.179
+flinch_add	its own skeleton	126.707	4.643	0.061	0.04
+flinch_add	source raw (Generic)	126.676	4.656	0.061	0.04
+flinch_add	c6	115.825	5.02	0.088	0.042
+flinch_add	waitress	114.6	4.931	0.09	0.041
+kick_add	its own skeleton	16.144	18.627	0.126	0.158
+kick_add	source raw (Generic)	16.187	18.649	0.127	0.158
+kick_add	c6	17.679	17.872	0.135	0.148
+kick_add	waitress	17.612	17.998	0.135	0.15
+pin_peek_add	its own skeleton	126.764	4.675	0.061	0.04
+pin_peek_add	source raw (Generic)	126.676	4.656	0.061	0.04
+pin_peek_add	c6	120.274	4.678	0.087	0.039
+pin_peek_add	waitress	119.756	4.555	0.089	0.038

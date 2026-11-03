@@ -70,14 +70,14 @@ namespace Suborned.Play
             // 4 · an act out of reach: the engine walks her in (DriveWalking); W takes the stick back at once
             h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "guard" }); yield return new WaitForSecondsRealtime(0.6f);
             bool walking = h.DriveWalking && g.Ops[0].Walk != null;
-            Keys(Key.W); yield return new WaitForSecondsRealtime(0.5f); Keys(); yield return new WaitForSecondsRealtime(0.3f);
+            Keys(Key.W); yield return new WaitForSecondsRealtime(0.2f); Keys(); yield return new WaitForSecondsRealtime(0.2f); /* brief 083: on an act the first press asks */ Keys(Key.W); yield return new WaitForSecondsRealtime(0.5f); Keys(); yield return new WaitForSecondsRealtime(0.3f);
             bool back = h.Driving && !h.DriveWalking && g.DrivePoseOf(OpId.Scout).Driven && g.Ops[0].Walk == null && h.PendingOf(0).verb.Length == 0;
             parts.Add($"\"engineWalk\": {B(walking)}, \"wTookBack\": {B(back)}"); ok &= back; // walking may be false when the Watch needs no walk; the take back is the check
             // 5 · the engine ends the drive (a move order as the engine takes it): the ground view stays; W takes control again
             var p0 = g.Ops[0].Pos; Pt? mv = null; foreach (var (dx, dy) in new[] { (300, 0), (-300, 0), (0, 300), (0, -300), (500, 500), (-500, -500) }) { var q = new Pt(p0.X + dx, p0.Y + dy); if (g.S.Grid.Free(q) && g.S.Grid.Route(p0, q) != null) { mv = q; break; } }
             bool moveOk = mv.HasValue && h.Issue(new Order { Op = "scout", Do = "move", Point = mv.Value }); parts.Add($"\"engineMove\": {B(moveOk)}");
             yield return new WaitForSecondsRealtime(0.4f);
-            bool lost = !h.Driving && h.Following && h.DriveResumable;
+            bool lost = h.Following; // brief 083: the ground view stays and takes the agent back by itself (no follow view with WASD dead)
             yield return HoldW(h, 1f, m, seen); float w3 = m[0];
             bool again = h.Driving && g.DrivePoseOf(OpId.Scout).Driven;
             parts.Add($"\"engineEnded\": {B(lost)}, \"wRetook\": {B(again)}, \"w3m\": {F(w3)}"); ok &= again;
@@ -286,7 +286,7 @@ namespace Suborned.Play
         /// the Input System's mouse, so the host reads them as it reads the hand.</summary>
         public static IEnumerator DblClick(HandoverHost h, string dir, List<string> log, string[] json)
         {
-            var rows = new List<string>(); bool ok = true; HandoverHost.PointerOverride = null;
+            var rows = new List<string>(); bool ok = true; HandoverHost.PointerOverride = null; bool keepPlan = h.controls.planTogether; h.controls.planTogether = false; // the hold preset queues orders given while paused: these clicks must give theirs
             foreach (var (key, who) in new[] { ("guard", OpId.Scout), ("waitress", OpId.Fixer), ("camera/entrance", OpId.Tech), ("ground", OpId.Scout) })
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; yield return null;
@@ -312,27 +312,38 @@ namespace Suborned.Play
                 bool ringAfterDouble = h.Ring != null; var pend = h.PendingOf((int)who).verb; if (h.Ring != null) h.CloseRing();
                 bool rowOk;
                 if (key == "ground") rowOk = singleOrders.Count >= 1 && singleOrders.TrueForAll(o => o == "move") && dblOrders.Exists(o => o == "move:run") && selKey.Length == 0;
-                else rowOk = !singleOrders.Exists(o => o != "drive") && (selKey.Length > 0 || ringAfterSingle) && (h.DoubleActs > d0 && (dblOrders.Count > 0 || pend.Length > 0) || ringAfterDouble);
+                else rowOk = !singleOrders.Exists(o => o != "drive") && ringAfterSingle && !dblOrders.Exists(o => o != "drive") && ringAfterDouble; // item 33 (Sky 2026-10-24): a left click on a thing opens its ring (nothing taken); a double click keeps it open, nothing taken
                 ok &= rowOk;
                 rows.Add($"{{\"target\": \"{key}\", \"agent\": \"{Suborned.Sim.Op.Name(who)}\", \"single\": \"{string.Join(",", singleOrders)}\", \"selected\": \"{J(selKey)}\", \"ringAfterSingle\": {B(ringAfterSingle)}, \"pill\": \"{J(pill)}\", \"double\": \"{string.Join(",", dblOrders)}\", \"pending\": \"{pend}\", \"ringAfterDouble\": {B(ringAfterDouble)}, \"probe\": \"{J(probe)}\", \"ok\": {B(rowOk)}}}");
                 log.Add($"dblClick {key} ({Suborned.Sim.Op.Name(who)}): {(rowOk ? "ok" : "FAILED")}: single gave [{string.Join(",", singleOrders)}] selected '{selKey}' ring {ringAfterSingle}, pill '{pill}'; double gave [{string.Join(",", dblOrders)}] pending '{pend}' ring {ringAfterDouble}; probe: {probe}");
             }
-            // the right tap opens the ring on Inez; the right hold opens nothing
+            // item 33: on Inez (the Enforcer selected): a left click opens the ring; a right tap does nothing (no ring, no order); a right hold
+            // fires (its charge is a fire charge, and its release gives the fire order or the going-loud card)
             {
-                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; h.Select(OpId.Scout, false);
-                var v = h.Views.Find("guard"); bool tapRing = false, holdRing = true; int holdOrders = -1;
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; h.Select(OpId.Enforcer, false);
+                var v = h.Views.Find("waitress"); bool leftRing = false, tapRing = true, chargeFire = false, fired = false; int tapOrders = -1;
                 if (v)
                 {
                     h.LookAt(v.position); yield return null; yield return null; var w = h.View.WorldToScreenPoint(v.position + Vector3.up); var sp = new Vector2(w.x, w.y);
                     MouseAt(sp, false); for (int i = 0; i < 3; i++) yield return null; log.Add("dblClick right probe: " + h.ProbeAt(sp));
-                    yield return RightAt(sp, 0f); tapRing = h.Ring != null; h.CloseRing(); yield return null;
-                    int n0 = h.Game.Orders.Count; yield return RightAt(sp, 0.45f); holdRing = h.Ring != null; holdOrders = h.Game.Orders.Count - n0; h.CloseRing();
+                    yield return Click(sp); yield return new WaitForSecondsRealtime(0.3f); leftRing = h.Ring != null; h.CloseRing(); yield return null;
+                    int n0 = h.Game.Orders.Count; yield return RightAt(sp, 0f); yield return new WaitForSecondsRealtime(0.2f); tapRing = h.Ring != null; tapOrders = h.Game.Orders.Count - n0; h.CloseRing(); yield return null;
+                    if (Mouse.current is Mouse m)
+                    {
+                        int n1 = h.Game.Orders.Count;
+                        InputSystem.QueueStateEvent(m, new MouseState { position = sp }.WithButton(MouseButton.Right, true)); yield return null;
+                        yield return new WaitForSecondsRealtime(0.32f); chargeFire = h.Charge is { Fire: true };
+                        yield return new WaitForSecondsRealtime(0.25f);
+                        InputSystem.QueueStateEvent(m, new MouseState { position = sp }); yield return null; yield return null; yield return new WaitForSecondsRealtime(0.15f);
+                        for (int i = n1; i < h.Game.Orders.Count; i++) if (h.Game.Orders[i].order.Do == "fire") fired = true;
+                        fired |= h.Loud != null; h.SetLoudNull(); h.CloseRing();
+                    }
                 }
-                bool rOk = tapRing && !holdRing && holdOrders == 0; ok &= rOk;
-                rows.Add($"{{\"target\": \"right on guard\", \"tapOpensRing\": {B(tapRing)}, \"holdOpensRing\": {B(holdRing)}, \"holdOrders\": {holdOrders}, \"ok\": {B(rOk)}}}");
-                log.Add($"dblClick right: {(rOk ? "ok" : "FAILED")}: a tap opens the ring {tapRing}; a 0.45 s hold opens it {holdRing}, orders {holdOrders}");
+                bool rOk = leftRing && !tapRing && tapOrders == 0 && chargeFire && fired; ok &= rOk;
+                rows.Add($"{{\"target\": \"Inez, the Enforcer\", \"leftClickRing\": {B(leftRing)}, \"rightTapRing\": {B(tapRing)}, \"rightTapOrders\": {tapOrders}, \"rightHoldCharge\": {B(chargeFire)}, \"rightHoldFires\": {B(fired)}, \"ok\": {B(rOk)}}}");
+                log.Add($"dblClick right: {(rOk ? "ok" : "FAILED")}: left click ring {leftRing}; right tap ring {tapRing}, orders {tapOrders}; right hold charge fire {chargeFire}, fired (order or going-loud card) {fired}");
             }
-            h.Begin(); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false);
+            h.Begin(); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false); h.controls.planTogether = keepPlan;
             json[0] = $"{{\"ok\": {B(ok)}, \"rows\": [{string.Join(", ", rows)}]}}";
         }
 

@@ -114,6 +114,15 @@ export function holds(rb: Rulebook, people: PeopleRules, c: Cond, x: Ctx, ev?: E
       return cmp(s.scales[c.scale as keyof Scales], c.op, b);
     }
     case 'trail': return (x.trail ?? 0) >= num(rb, people, c.atLeast);
+    case 'orders-base': { // brief 054 §4.2 (engine 0.28.0): a Help's orders from the lines that hold, before a ready step (lines taking orders away left out)
+      if (!ev) throw new Error('orders-base outside an event');
+      const n = (ev.price ?? []).reduce((acc, l, i) => {
+        const o = l.orders ? num(rb, people, l.orders) : i === 0 ? 1 : 0;
+        if (o < 0 || (l.when ?? []).some((w) => w.k === 'orders-base') || !(l.when ?? []).every((w) => holds(rb, people, w, x, ev))) return acc;
+        return acc + o;
+      }, 0) || 1;
+      return (c.above === undefined || n > num(rb, people, c.above)) && (c.atMost === undefined || n <= num(rb, people, c.atMost));
+    }
     default: break;
   }
   const g = x.given?.[c.k];
@@ -162,7 +171,7 @@ function priceLines(rb: Rulebook, people: PeopleRules, ev: Event, x: Ctx): Omit<
   const truthOf = (q: QuoteLine, i: number) => (ev.price![i]!.when ?? []).every((c) => holds(rb, people, c, x, ev));
   const sum = (pick: (q: QuoteLine, i: number) => boolean) => lines.reduce((a, q, i) => (pick(q, i) ? { usd: a.usd + q.usd, s: a.s + q.s, trail: a.trail + q.trail } : a), { usd: 0, s: 0, trail: 0 });
   const perOrder = sum(truthOf);
-  const worst = sum((q, i) => truthOf(q, i) || q.holds === '?');
+  const worst = { ...sum((q, i) => truthOf(q, i) || q.holds === '?'), usd: sum((q, i) => (q.holds === '?' ? q.usd > 0 : truthOf(q, i))).usd }; // brief 085: a '?' line that would lower the price doesn't lower the cash asked
   const orders = lines.reduce((n, q, i) => n + (truthOf(q, i) ? q.orders : 0), 0) || 1;
   return { lines, perOrder, worst, orders };
 }

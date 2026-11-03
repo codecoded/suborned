@@ -9,10 +9,11 @@ namespace Suborned.Play
     /// <summary>Brief 024 "Firing" (Sky 2026-10-21: "it's not clear I was firing at the agent (or that it was 'on')"; mockup tabs 4 and 5,
     /// briefs/024/action-controls/): firing is visible whatever the control model, drawn as light on the HUD (outside the post grade), every mark
     /// read from the engine's own fire state (HandoverHost.FireNow, Keel's FireStateOf), so it starts and stops in the frame the engine does.
-    ///  · the tracer: a dashed line marching from the muzzle to the target while the agent fires; thick for the driven agent, thin for an agent
-    ///    returning fire; a muzzle flash and a hit spark per shot (the engine's shot log); hostile fire a solid streak (shape, not colour);
+    ///  · per shot (the engine's shot log): a muzzle flash at the shooter's gun and a hit spark (or a miss puff) on the target. No line runs from a
+    ///    shooter to its target, lasting or per shot (Sky 2026-10-26: "Simplify the visuals, it's way too crowded. Just having the agent facing who
+    ///    they're shooting should be enough to not need those lines everywhere"): the shooter faces its target (HandoverHost.AimTargets);
     ///  · the firing mark over the agent (the gun with rays), the return mark (the gun with a back arrow), the hollow follow mark;
-    ///  · one line: "Firing at the guard · down in 3 s · held · X stop", then "Stopped" for 1 s;
+    ///  · one line: the gun disc, the downed mark and the seconds ("45 s"; brief 049 row 4), then "Stopped" for 1 s;
     ///  · while aiming: the reticle with its band ticks (wider when the odds drop), the 0.5 s hold's ring, the 8 m follow ring on the ground;
     ///  · the third person key strip and the prompt's key caps (E, and the mouse when a left click acts);
     ///  · cars: smoke when disabled, flame while burning, the blast ring when one explodes (shapes only, no text).</summary>
@@ -34,8 +35,8 @@ namespace Suborned.Play
             return null;
         }
 
-        Paint fireLayer; readonly List<Action<Painter2D>> firePaints = new();
-        VisualElement fireLine, fireIcon, fireHeldIcon, fireCapX, fireCapLmb; Label fireHead, fireDown, fireHeld, fireStop;
+        Paint fireLayer; readonly List<Action<Painter2D>> firePaints = new(); readonly List<Rect> fireDiscs = new();
+        VisualElement fireLine, fireIcon, fireDownIcon, fireHeldIcon, fireCapX, fireCapLmb; const float FireDisc = 32f; Label fireHead, fireDown, fireHeld, fireStop;
         bool fireBuilt;
         static readonly Color FlameA = new(1f, 0.62f, 0.18f), FlameB = new(1f, 0.86f, 0.42f), Smoke = new(0.42f, 0.45f, 0.45f);
 
@@ -44,17 +45,20 @@ namespace Suborned.Play
             fireBuilt = true;
             fireLayer = P(marks, 0, 0, 0, 0, (p, r) => { foreach (var f in firePaints) f(p); });
             fireLayer.style.left = 0; fireLayer.style.top = 0; fireLayer.style.right = 0; fireLayer.style.bottom = 0; fireLayer.style.width = StyleKeyword.Auto; fireLayer.style.height = StyleKeyword.Auto;
-            // the line: [gun] Firing at the guard · down in 3 s · [mouse] held · [X] stop
-            fireLine = E(root, "s-plate_dark", 0, 0, float.NaN, 38); fireLine.style.flexDirection = FlexDirection.Row; fireLine.style.alignItems = Align.Center; fireLine.style.paddingLeft = 18; fireLine.style.paddingRight = 18; // clear of the plate's rounded caps (the layout audit's 4 px)
+            // the line (brief 049 row 4; Glyph's 0.2.94 review #3: no sentence): [gun disc] [downed] 45 s; "Stopped" for 1 s after
+            fireLine = E(root, "s-plate_dark", 0, 0, float.NaN, 38); fireLine.style.flexDirection = FlexDirection.Row; fireLine.style.alignItems = Align.Center; fireLine.style.paddingLeft = 6; fireLine.style.paddingRight = 16; // the disc sits in the plate's rounded cap; the words clear of the other cap (the layout audit's 4 px)
             fireLine.pickingMode = PickingMode.Ignore;
-            fireCapLmb = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireCapLmb.style.position = Position.Relative; fireCapLmb.style.left = StyleKeyword.Auto; fireCapLmb.style.top = StyleKeyword.Auto; fireCapLmb.style.marginRight = 6;
-            fireIcon = E(fireLine, null, w: 16, h: 16); fireIcon.style.marginRight = 6; // 11 px inside a 38 px plate: the audit's rim plus 4 px Icon(fireIcon, "fire", TurqLight);
-            fireHead = L(fireLine, "verb-name"); fireHead.style.fontSize = 14f;
-            fireDown = L(fireLine, "verb-name"); fireDown.style.fontSize = 13f; fireDown.style.marginLeft = 14;
-            fireHeldIcon = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireHeldIcon.style.position = Position.Relative; fireHeldIcon.style.left = StyleKeyword.Auto; fireHeldIcon.style.top = StyleKeyword.Auto; fireHeldIcon.style.marginLeft = 14;
-            fireHeld = L(fireLine, "verb-name"); fireHeld.style.fontSize = 13f; fireHeld.style.marginLeft = 4; fireHeld.text = "held";
+            fireCapLmb = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireCapLmb.style.position = Position.Relative; fireCapLmb.style.left = StyleKeyword.Auto; fireCapLmb.style.top = StyleKeyword.Auto; fireCapLmb.style.marginRight = 6; Show(fireCapLmb, false);
+            // the kit's light disc (harm and fire: disc_light_24, ink icon), 32 px box = 24 px drawn, inside the 38 px plate
+            fireIcon = E(fireLine, null, w: FireDisc, h: FireDisc); fireIcon.style.flexShrink = 0; Bg(fireIcon, "markers/disc_light_24", Color.white);
+            Icon(E(fireIcon, null, (FireDisc - 14f) / 2f, (FireDisc - 14f) / 2f, 14f, 14f), "fire", Col(Tok.type.card, Ink));
+            fireDownIcon = E(fireLine, null, w: 14, h: 14); fireDownIcon.style.flexShrink = 0; fireDownIcon.style.marginLeft = 8; Icon(fireDownIcon, "s_downed", Cream);
+            fireHead = L(fireLine, "verb-name"); fireHead.style.fontSize = 14f; fireHead.style.marginLeft = 5;
+            fireDown = L(fireLine, "verb-name"); fireDown.style.fontSize = 13f; fireDown.style.marginLeft = 10; Show(fireDown, false);
+            fireHeldIcon = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireHeldIcon.style.position = Position.Relative; fireHeldIcon.style.left = StyleKeyword.Auto; fireHeldIcon.style.top = StyleKeyword.Auto; fireHeldIcon.style.marginLeft = 14; Show(fireHeldIcon, false);
+            fireHeld = L(fireLine, "verb-name"); fireHeld.style.fontSize = 13f; fireHeld.style.marginLeft = 4; fireHeld.text = "held"; Show(fireHeld, false);
             fireCapX = E(fireLine); fireCapX.style.flexDirection = FlexDirection.Row; fireCapX.style.alignItems = Align.Center; fireCapX.style.marginLeft = 10; KeyCap(fireCapX, host.controls.Label(PlayAction.Cease));
-            fireStop = L(fireCapX, "verb-name"); fireStop.style.fontSize = 13f; fireStop.style.marginLeft = 4; fireStop.text = "stop";
+            fireStop = L(fireCapX, "verb-name"); fireStop.style.fontSize = 13f; fireStop.style.marginLeft = 4; fireStop.text = "stop"; Show(fireCapX, false);
             manifest.Add((fireLine, "image", () => "fire line: who, how long, the stop key"));
             Show(fireLine, false);
             // Sky's rule (a key legend means the controls are wrong; Glyph's 0.2.65 review 8, Aster 2026-10-22 "make sure no key legend survives
@@ -90,11 +94,14 @@ namespace Suborned.Play
         {
             if (marks == null || host?.Game == null) return;
             if (!fireBuilt) BuildFire();
-            firePaints.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
+            firePaints.Clear(); fireDiscs.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
             var cam = host.View;
-            if (live && cam) { Tracers(now); ShotFx(now); FireMarks(now); Reticle(now); CarFx(now); }
-            fireLayer.MarkDirtyRepaint(); if (fireLayer.parent.IndexOf(fireLayer) != fireLayer.parent.childCount - 1) fireLayer.BringToFront();
+            if (live && cam) { if (FightCues.Hot) CueShotFx(now); else ShotFx(now); if (!host.OneInput) FireMarks(now); Reticle(now); CarFx(now); } // engine 0.35 (Glyph b-final, cut): no firing discs over the shooters: they face him and fire // Sky 2026-10-26: no tracers (the facing says who shoots whom)
+            CuesFrame(live && cam, now, W, H); /* brief 084 */
+            fireLayer.MarkDirtyRepaint(); // its place in the marks (above every mark but the speech and the pops): StepAside
+            RivalsForCarMarks(live && cam && !host.Following); // Glyph r123 §3: the car disc over each rival walking for the held car
             FireLineFrame(W, H, live);
+            StepAside(H); // Glyph r123 F2: bubbles win; the fire pill, the clocks and the holders' plates step aside
             if (host.Aiming) Show(chip2, false);
             PortraitFire(live);
         }
@@ -139,61 +146,41 @@ namespace Suborned.Play
             p.MoveTo(c + new Vector2(14, -6)); p.LineTo(c + new Vector2(18, -9)); p.MoveTo(c + new Vector2(15, -1)); p.LineTo(c + new Vector2(19.5f, -1)); p.MoveTo(c + new Vector2(14, 4)); p.LineTo(c + new Vector2(18, 7)); p.Stroke();
         }
 
-        Vector3 Muzzle(int k)
-        {
-            var key = "op/" + Op.Name((OpId)k); var t = host.Views?.Find(key); var at = t ? t.position : host.frame.World(host.Game.Ops[k].Pos);
-            float yaw = host.Views != null && host.Views.FigureYaw(key) is float y ? y : 0f; var fwd = Quaternion.Euler(0f, yaw, 0f) * Vector3.forward;
-            return at + Vector3.up * 1.32f + fwd * 0.42f;
-        }
-
-        /// <summary>The cell's tracers: from each firing agent's muzzle to its target, dashes marching toward the target; cut the frame the engine stops.</summary>
-        void Tracers(float now)
-        {
-            var g = host.Game; int driven = host.DriveAgent;
-            for (int k = 0; k < 4; k++)
-            {
-                var fs = host.FireNow[k]; if (!fs.Firing || string.IsNullOrEmpty(fs.Target)) continue;
-                if (host.DrawnAt(fs.Target) is not Vector3 tw) continue;
-                if (!Proj(Muzzle(k), out var a) || !Proj(tw + Vector3.up * 1.2f, out var b)) continue;
-                // brief 049 (Glyph): one quiet line only while a shot is being fired: a cream dashed line (9 on, 5 off, marching) over an
-                // ink-deep underlay at 35 %; the driven agent 1.5 px, an agent returning fire 1 px; no glow, no turquoise pass, no text
-                bool thin = fs.Mode == "return"; float core = thin ? 1f : 1.5f, under = 3.4f, dash = 9f, gap = 5f;
-                float phase = Mathf.Repeat(now * 60f, dash + gap);
-                firePaints.Add(pp =>
-                {
-                    var d = b - a; float len = d.magnitude; if (len < 4f) return; var u = d / len; pp.lineCap = LineCap.Butt;
-                    for (int pass = 0; pass < 2; pass++)
-                    {
-                        pp.strokeColor = pass == 0 ? new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.35f) : Cream;
-                        pp.lineWidth = pass == 0 ? under : core;
-                        pp.BeginPath();
-                        for (float s = phase - (dash + gap); s < len; s += dash + gap) { float s0 = Mathf.Max(0f, s), s1 = Mathf.Min(len, s + dash); if (s1 <= s0) continue; pp.MoveTo(a + u * s0); pp.LineTo(a + u * s1); }
-                        pp.Stroke();
-                    }
-                });
-            }
-        }
-
-        /// <summary>Per shot (the engine's shot log): the muzzle flash, a hit spark or a miss puff; in the follow view also the hostiles' solid streaks
-        /// (the overhead view draws those in ShotMarks).</summary>
+        /// <summary>Per shot (the engine's shot log): the muzzle flash at the shooter's gun, a hit spark on the target or a miss puff where the shot
+        /// lands; the same in both views. Sky 2026-10-26: no streak or tracer from the shooter to the target (the cell's lasting dashed tracer, the
+        /// overhead view's per-shot lines and the follow view's hostile streaks are gone); the flash, the shooter's facing and the spark say it.
+        /// ShotFlashes: the frames a muzzle flash was drawn in so far (the proof reads it).</summary>
+        public static int ShotFlashes { get; private set; }
+        /// <summary>The frames a hostile's (anyone not the cell's) muzzle flash was drawn in so far (Glyph r123 G1: the proof reads it).</summary>
+        public static int ShotFlashesHostile { get; private set; }
+        const float MissShowS = 0.45f; // brief 080: a miss stays longer than a hit's spark, so a roll reads at play zoom
         void ShotFx(float now)
         {
             foreach (var s in host.ShotFx)
             {
-                float age = now - s.born; if (age > 0.25f) continue;
+                float age = now - s.born; if (age > MissShowS) continue;
                 bool cell = s.side == "cell";
-                if (!Proj(s.from, out var a) || !Proj(s.to, out var b)) continue;
-                var d = (b - a); var u = d.sqrMagnitude > 1f ? d.normalized : Vector2.right; var n = new Vector2(-u.y, u.x);
-                if (age < 0.09f) firePaints.Add(pp =>
-                {   // the muzzle flash: a four-point star on an ink underlay, the length of the barrel's direction
+                // Glyph r123 G1 (the follow view's 0 flashes): the flash needs only the shooter on screen; its way is the shot's own, taken 0.5 m
+                // along it when the target is off the view (behind the third-person camera); the spark needs the target
+                if (!Proj(s.from, out var a)) continue; bool toOn = Proj(s.to, out var b);
+                var wd = s.to - s.from; Vector2 d = toOn ? b - a : wd.sqrMagnitude > 1e-4f && Proj(s.from + wd.normalized * 0.5f, out var ah) ? ah - a : Vector2.right;
+                var u = d.sqrMagnitude > 1f ? d.normalized : Vector2.right; var n = new Vector2(-u.y, u.x);
+                if (age < 0.09f) { ShotFlashes++; if (!cell) ShotFlashesHostile++; firePaints.Add(pp =>
+                {   // the muzzle flash: a four-point star on an ink underlay, its long point the way the barrel faces (toward the target)
                     float r = cell ? 9f : 7f;
                     void Star(Color c, float rr) { pp.fillColor = c; pp.BeginPath(); pp.MoveTo(a + u * rr * 1.8f); pp.LineTo(a + n * rr * 0.4f); pp.LineTo(a + n * rr); pp.LineTo(a - u * rr * 0.4f); pp.LineTo(a - n * rr); pp.LineTo(a - n * rr * 0.4f); pp.ClosePath(); pp.Fill(); }
                     Star(new Color(Ink.r, Ink.g, Ink.b, 0.6f), r + 2f); Star(new Color(1f, 0.97f, 0.86f), r);
-                });
-                if (!cell && host.Following && age < 0.14f) firePaints.Add(pp => { pp.lineCap = LineCap.Round; pp.strokeColor = new Color(Ink.r, Ink.g, Ink.b, 0.6f); pp.lineWidth = 4.5f; pp.BeginPath(); pp.MoveTo(a); pp.LineTo(b); pp.Stroke(); pp.strokeColor = s.side == "rival" ? Violet : Amber; pp.lineWidth = 2.4f; pp.BeginPath(); pp.MoveTo(a); pp.LineTo(b); pp.Stroke(); });
-                if (age < 0.2f) firePaints.Add(pp =>
+                }); }
+                if (age < MissShowS && toOn && !s.hit && !s.covered) { var wideFrom = a; var wideTo = b; float wideT = age / MissShowS; firePaints.Add(pp =>
+                {   // brief 080 (hit rolls: a miss must read): the tracer that goes wide, on its way past the target to the puff, fading from the gun
+                    pp.lineCap = LineCap.Round;
+                    var tail = Vector2.Lerp(wideFrom, wideTo, wideT * 0.8f);
+                    pp.strokeColor = new Color(Ink.r, Ink.g, Ink.b, 0.5f * (1 - wideT)); pp.lineWidth = 3.6f; pp.BeginPath(); pp.MoveTo(tail); pp.LineTo(wideTo); pp.Stroke();
+                    pp.strokeColor = new Color(1f, 0.97f, 0.86f, 0.95f * (1 - wideT)); pp.lineWidth = 1.6f; pp.BeginPath(); pp.MoveTo(tail); pp.LineTo(wideTo); pp.Stroke();
+                }); }
+                if (age < (s.hit || s.covered ? 0.2f : MissShowS) && toOn) firePaints.Add(pp =>
                 {
-                    float t = age / 0.2f;
+                    float t = age / (s.hit || s.covered ? 0.2f : MissShowS);
                     if (s.hit)
                     {   // the hit spark: six rays bursting out and fading
                         pp.lineCap = LineCap.Round;
@@ -204,7 +191,20 @@ namespace Suborned.Play
                             pp.strokeColor = new Color(1f, 0.95f, 0.75f, 1 - t); pp.lineWidth = 2.2f; pp.BeginPath(); pp.MoveTo(b + dir * r0); pp.LineTo(b + dir * r1); pp.Stroke();
                         }
                     }
-                    else { pp.strokeColor = new Color(Cream.r, Cream.g, Cream.b, 0.8f * (1 - t)); pp.lineWidth = 1.6f; pp.BeginPath(); pp.Arc(b, 3f + 7f * t, Deg(0), Deg(360)); pp.Stroke(); } // a miss: a small puff where it lands
+                    else if (s.covered)
+                    {   // engine 0.35 (ShotEvent.Covered; GDD §10 "a round cover takes chips the prop"): five stone chips flying off the prop, no ring
+                        pp.lineCap = LineCap.Round;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            float ang = (i * 72f + 40f + (s.born * 997f % 30f)) * Mathf.Deg2Rad; var dir = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang) - 0.6f); var q = b + dir * (4f + 14f * t) + new Vector2(0, 10f * t * t);
+                            pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.55f * (1 - t)); pp.BeginPath(); pp.Arc(q, 2.4f, Deg(0), Deg(360)); pp.Fill();
+                            pp.fillColor = new Color(Cream.r, Cream.g, Cream.b, 1 - t); pp.BeginPath(); pp.Arc(q, 1.5f, Deg(0), Deg(360)); pp.Fill();
+                        }
+                    }
+                    else
+                    {   // a miss (Glyph b-final, cut: the miss ring): a dust puff on the paving past him, three soft filled blobs spreading and fading
+                        for (int i = 0; i < 3; i++) { var q = b + new Vector2((i - 1) * (3f + 5f * t), -2f * t - (i == 1 ? 2f : 0f)); pp.fillColor = new Color(Smoke.r, Smoke.g, Smoke.b, 0.55f * (1 - t)); pp.BeginPath(); pp.Arc(q, 3.5f + 8f * t, Deg(0), Deg(360)); pp.Fill(); }
+                    }
                 });
             }
         }
@@ -223,6 +223,7 @@ namespace Suborned.Play
                 var t = host.Views?.Find("op/" + Op.Name((OpId)k)); if (!t || !t.gameObject.activeInHierarchy) continue;
                 if (!Proj(t.position + Vector3.up * 2.25f, out var c)) continue;
                 bool ret = fs.Mode == "return", hollow = fs.Hollow || !fs.Firing, mine = k == driven, locked = fs.Mode == "lock";
+                fireDiscs.Add(new Rect(c.x - 13f, c.y - 13f, 26f, 26f)); // StepAside: plates keep off the discs
                 firePaints.Add(pp =>
                 {
                     float r = 12f;
@@ -280,7 +281,8 @@ namespace Suborned.Play
         }
 
         /// <summary>The cars as targets (engine 0.16, Game.CarOf): smoke rising while disabled, flame while burning, the blast ring expanding to the
-        /// rulebook's blast radius when one explodes, then a smudge of smoke. Shapes only.</summary>
+        /// rulebook's blast radius when one explodes, then a smudge of smoke. Shapes only. Brief 078: a car the world's rig draws (HostCarFx) keeps
+        /// only the blast ring here; the smoke, flame and flash are the rig's.</summary>
         void CarFx(float now)
         {
             var g = host.Game;
@@ -289,21 +291,24 @@ namespace Suborned.Play
                 Game.CarTarget c = null; try { c = g.CarOf(id); } catch { }
                 if (c == null || c.DisabledAt < 0 && c.BurningAt < 0 && !c.Blown) continue;
                 var vt = host.Views?.Find("car/" + id.Substring(4)); Vector3 at = vt && vt.gameObject.activeInHierarchy ? vt.position : host.frame.World(g.CarAt(id) ?? c.At);
-                bool burning = c.BurningAt >= 0 && !c.Blown;
-                if (c.Blown && host.CarBlownAt.TryGetValue(id, out var bt))
+                bool burning = c.BurningAt >= 0 && !c.Blown, inWorld = host.CarFxDrawn(id); // brief 078: the world's rig draws smoke, flame and flash
+                if (c.Blown && (inWorld || host.CarBlownAt.ContainsKey(id)))
                 {
-                    float age = now - bt, rad = g.R.CarBlastCm / 100f;
-                    if (age < 0.9f)
+                    // the blast ring stays (readable > rich: it is the rulebook's blast reach, who the blast hits), on the mission clock, so a
+                    // pause holds it and a replay draws it at the same time as the world's fireball
+                    float age = host.CarFxClock >= 0f ? host.CarFxClock - c.BlastAt / (float)Game.Hz : now - host.CarBlownAt[id], rad = g.R.CarBlastCm / 100f;
+                    if (age >= 0f && age < 0.9f)
                     {   // the blast ring: from the car out to the blast radius in 0.6 s, then fading
                         float t = Mathf.Clamp01(age / 0.6f), rr = Mathf.Lerp(0.8f, rad, 1f - (1f - t) * (1f - t)), al = age < 0.6f ? 1f : 1f - (age - 0.6f) / 0.3f;
                         var ring = new List<Vector2>(); bool ok = true;
                         for (int i = 0; i <= 48 && ok; i++) { float a = i * Mathf.PI * 2f / 48f; if (Proj(at + new Vector3(Mathf.Cos(a) * rr, 0.1f, Mathf.Sin(a) * rr), out var q)) ring.Add(q); else ok = false; }
                         if (ok) firePaints.Add(pp => { for (int pass = 0; pass < 2; pass++) { pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.5f * al) : new Color(FlameB.r, FlameB.g, FlameB.b, al); pp.lineWidth = pass == 0 ? 7f : 4f; pp.BeginPath(); pp.MoveTo(ring[0]); for (int i = 1; i < ring.Count; i++) pp.LineTo(ring[i]); pp.Stroke(); } });
-                        if (age < 0.35f && Proj(at + Vector3.up * 1f, out var fc)) { float ft = age / 0.35f; firePaints.Add(pp => { pp.fillColor = new Color(1f, 0.95f, 0.8f, 1f - ft); pp.BeginPath(); pp.Arc(fc, 18f + 40f * ft, Deg(0), Deg(360)); pp.Fill(); }); } // the flash
+                        if (!inWorld && age >= 0f && age < 0.35f && Proj(at + Vector3.up * 1f, out var fc)) { float ft = age / 0.35f; firePaints.Add(pp => { pp.fillColor = new Color(1f, 0.95f, 0.8f, 1f - ft); pp.BeginPath(); pp.Arc(fc, 18f + 40f * ft, Deg(0), Deg(360)); pp.Fill(); }); } // the flash
                     }
-                    Puffs(at, now, 3, 0.7f); // the wreck smokes
+                    if (!inWorld) Puffs(at, now, 3, 0.7f); // the wreck smokes
                     continue;
                 }
+                if (inWorld) continue; // brief 078: the rig's smoke and flames; the flat shapes only stand in for a car with no rig (the pool's cap)
                 if (burning) { Flames(at, now); Puffs(at, now, 4, 1f); }
                 else Puffs(at, now, 3, 0.75f); // disabled: smoke from the bonnet
             }
@@ -339,31 +344,26 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The one fire line, at the target (the reticle while aiming): who and how long, "held" while the trigger is down, the stop key;
-        /// "Stopped" for 1 s after the fire ends. While aiming and not firing: the reticle's chip (the left button, Fire, down in n s).</summary>
+        /// <summary>The one fire line, at the target (the reticle while aiming): the gun disc, the downed mark and the seconds to down ("45 s");
+        /// "Stopped" for 1 s after the fire ends. While aiming and not firing: the reticle's chip (the same disc and seconds).</summary>
         void FireLineFrame(float W, float H, bool live)
         {
             int k = host.FireLineAgent; bool show = false;
             if (live && k >= 0)
             {
                 var (head, down, stopped, drawn) = host.FireLine(k);
-                if (host.controls.HoldActs) { if (host.FireStatus() != null) head = ""; else if (head.Length > 0 && !stopped) { head = host.FireWords(k); down = ""; } } // brief 041: the pill's words; the pill itself when a hold or a lock is on
+                if (host.controls.HoldActs && host.FireStatus() != null) head = ""; // brief 041: the pill says it when a hold or a lock is on
                 bool aimChip = head.Length == 0 && host.Aiming && host.AimId.Length > 0 && !(host.controls.HoldActs && host.FireHold != null);
+                if (host.OneInput && !host.Aiming) head = ""; // Glyph G1 (0.2.135): under one input the fire line is off the street (it sat on the focus's lock disc and pips); the time to down rides on the shooter's portrait chip (HostHoldStatus.PlateWords); the cursor's own chip while aiming stays
                 if (head.Length > 0 || aimChip)
                 {
                     show = true;
-                    bool trig = host.Driving && k == host.DriveAgent && host.TriggerDown;
-                    if (aimChip)
-                    {
-                        Text(fireHead, host.AimHolding ? "Hold to fire" : "Fire"); Text(fireDown, host.AimDownS >= 0 ? $"{(host.AimPreview?.DownIs == "disabled" ? "disabled" : "down")} in {host.AimDownS} s" : host.AimPreview?.Line == false ? "no line" : "");
-                        Show(fireCapLmb, false); Show(fireIcon, true); Show(fireHeldIcon, false); Show(fireHeld, false); Show(fireCapX, false); // no key caps (no legends)
-                    }
-                    else
-                    {
-                        Text(fireHead, head); Text(fireDown, stopped ? (drawn ? "gun drawn" : "") : down);
-                        Show(fireCapLmb, false); Show(fireIcon, !stopped); Show(fireHeldIcon, false); Show(fireHeld, false); Show(fireCapX, false); // no key caps (no legends)
-                    }
-                    Show(fireDown, fireDown.text.Length > 0);
+                    // brief 049 row 4 (Glyph's 0.2.94 review #3): the gun disc and the number, never a sentence: [gun] [downed] 45 s; "Stopped"
+                    int secs = aimChip ? host.AimDownS : stopped ? -1 : host.FireLineDownS(k);
+                    string word = stopped ? "Stopped" : secs >= 0 ? $"{secs} s" : aimChip && host.AimPreview?.Line == false ? "no line" : "";
+                    if (aimChip && secs >= 0 && HandoverHost.OddsOf(host.AimPreview, host.Game) is int aimPct && aimPct >= 0) word = $"{host.OddsBareLine(aimPct)} · {word}"; // brief 080: the odds on the reticle's chip
+                    Text(fireHead, word); Show(fireHead, word.Length > 0);
+                    Show(fireIcon, !stopped); Show(fireDownIcon, secs >= 0);
                     // where: above the target (the reticle while aiming), else above the agent
                     Vector2 at;
                     var fs = host.FireNow[k]; string tgt = fs.Firing ? fs.Target : host.FireStoppedOn[k];

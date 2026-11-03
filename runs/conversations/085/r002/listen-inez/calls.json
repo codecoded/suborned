@@ -1,0 +1,483 @@
+[
+  {
+    "id": "01-write-listen-inez",
+    "objective": "write-listen-inez",
+    "role": "dialogue-designer",
+    "provider": "claude",
+    "model": "claude-opus-5-5",
+    "modelsUsed": [
+      "claude-haiku-5-5",
+      "claude-opus-5-5"
+    ],
+    "tools": [
+      "StructuredOutput"
+    ],
+    "cliVersion": "2.1.316",
+    "card": {
+      "source": ".claude/agents/dialogue-designer.md",
+      "sourceHash": "cb0d1d020fa77b74280d0964c4a63b16560a7121a140677cb37935ce70016e67",
+      "file": "runs/conversations/085/r002/listen-inez/calls/01-write-listen-inez.card.md"
+    },
+    "brief": {
+      "source": "briefs/085/fable/writer.md",
+      "sourceHash": "691b31616dae8522e8bb989c29143c7a7bcbb60bf499f071d7ab7a2a72c5b70f"
+    },
+    "promptSha256": "1a666d3d2a9d9637357c71d5b81e6b80dc3a47449267d3198fd61bf33fd88d70",
+    "schemaSha256": "2e7d8034e4e743948fecd07d8bde0c1c46cfc03fac5d14d64ae0a0e7b981edd6",
+    "effort": "high",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": 0.36344740000000003,
+    "attempt": 1,
+    "seconds": 153,
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 6532,
+      "cache_read_input_tokens": 4594,
+      "output_tokens": 15477,
+      "output_tokens_details": {
+        "thinking_tokens": 13925
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 6532,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 15477,
+          "cache_read_input_tokens": 4594,
+          "cache_creation_input_tokens": 6532,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 6532
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "retrieval": {
+      "query": "Inez door guard lovers debt affair Help Pressure secret ‖ Fearful temperament hesitates Listen reveals need secret ‖ world records paper calls voice orderly city fears disorder ‖ conversation scene overheard Listen",
+      "queries": [
+        "Inez door guard lovers debt affair Help Pressure secret",
+        "Fearful temperament hesitates Listen reveals need secret",
+        "world records paper calls voice orderly city fears disorder",
+        "conversation scene overheard Listen"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3405775617864607,
+          "key": "c353f76d058dde5e260596c9",
+          "kind": "gdd-agent",
+          "lineEnd": 86,
+          "lineStart": 86,
+          "section": "§04 PEOPLE › preview",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§04 PEOPLE › preview\npreview: an order always shows its price; whether it will work shows as \"?\" until Listen reveals the temperament. After a Watch the mood marks the approach it favours as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay \"?\".",
+          "version": "v0.33.0",
+          "score": 0.059035409035409034,
+          "signals": [
+            "semantic:2",
+            "keyword:2",
+            "semantic:4",
+            "keyword:4"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 2.8163397312164307,
+          "key": "971d2573fec5d5f32ab61610",
+          "kind": "gdd-human",
+          "lineEnd": 348,
+          "lineStart": 344,
+          "section": "Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec",
+          "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+          "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+          "text": "Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec\nAn approach that doesn't suit someone's temperament still works, one step worse : one more Help, or a higher price (Keel sets the numbers). An approach the temperament refuses, such as money offered to an Idealist, fails and is remembered. Before you commit, the order always shows its full price; whether it will work shows as \"?\" until Listen reveals the temperament. Finding out is what turns a gamble into a plan.\nMood: what a Watch reads. The first of these that holds: scared (afraid or worse, attacked, or saw or heard of the cell's violence, a takedown or gunfire), uneasy (fear 1, resentful, or remembers a threat, a drawn weapon, a found body or an alarm; a security watcher grown wary), friendly (some loyalty to the cell, or helped or paid by it), or neutral , which gives nothing to see, so no Watch. Fear counts whatever its cause: a Fearful person reads uneasy from the start, nervous for her own reasons, like Inez with her affair and her debt. A Watch remembers the mood it saw, not a live feed. Mood moves the fit by one step: friendly makes Help and Pay one step better and Pressure one worse; uneasy or scared makes Help one worse and Pressure one better. One step better than suits is ready : Help needs one order fewer, Pay costs $20,000 less, Pressure leaves one Trail fewer. Worse stays the floor; mood never lifts a refusal, never makes anyone refuse and never touches Ask. After a Watch, the approach the mood favours shows as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay \"?\". Spec",
+          "version": "v0.33.0",
+          "score": 0.04643206256109482,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.293546241906508,
+          "key": "96030c4c4a1a18523a3fdbbb",
+          "kind": "gdd-agent",
+          "lineEnd": 225,
+          "lineStart": 225,
+          "section": "§07 HANDOVER › the capstone",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§07 HANDOVER › the capstone\nthe capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).",
+          "version": "v0.33.0",
+          "score": 0.04622110501800164,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+          "distance": 0.4106805148923548,
+          "key": "7f89ccc5ec83f6e40f1fef0f",
+          "kind": "people-rules",
+          "lineEnd": 0,
+          "lineStart": 0,
+          "section": "people rules › talker",
+          "source": "contracts/people/people.rules.json",
+          "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+          "text": "people rules › talker\n{\"left\":[\"fear\",\"resentment\"],\"op\":\">\",\"right\":[\"bravery\",\"loyalty\"]}; facts given: fixer-face, enforcer-face, cell-car, place-time, cell-face, contact",
+          "version": "suborned.people.rules/1",
+          "score": 0.04570067826806669,
+          "signals": [
+            "semantic:2",
+            "semantic:3",
+            "semantic:4"
+          ]
+        },
+        {
+          "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+          "distance": 0.3517546057701111,
+          "key": "b751d6ccbbc84f9d117eb45c",
+          "kind": "people-rules",
+          "lineEnd": 0,
+          "lineStart": 0,
+          "section": "people rules › readBy",
+          "source": "contracts/people/people.rules.json",
+          "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+          "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nsecret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+          "version": "suborned.people.rules/1",
+          "score": 0.04551728464771943,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.337981899856441,
+          "key": "725585804cfa5ce38ad68436",
+          "kind": "gdd-agent",
+          "lineEnd": 84,
+          "lineStart": 84,
+          "section": "§04 PEOPLE › scales",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§04 PEOPLE › scales\nscales [S]: every number reads as a word: bravery informant·helper·accomplice·fighter (0–3) · resentment compliant·resentful·informer (0–2) · fear calm·uneasy·afraid·terrified (0–3) · loyalty none·obliged·trusting·sworn (0–3). Loyalty in the talker test = loyalty to the cell, 0 at start; loyalty to an employer or the civic order is the Loyal temperament. Start: everyone 0, except Idealist bravery 1 (helper), Fearful fear 1 (talks when questioned until helped) and the founding cell (§03).",
+          "version": "v0.33.0",
+          "score": 0.04525954525954526,
+          "signals": [
+            "semantic:2",
+            "keyword:2",
+            "semantic:3"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2863117285781056,
+          "key": "5a29be8544e336060f678471",
+          "kind": "gdd-human",
+          "lineEnd": 296,
+          "lineStart": 283,
+          "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone",
+          "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+          "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+          "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Four ways to turn someone\nApproach (Inez, training) | Requires | Cash | Time | Trail | What it leaves |\nAsk cold | Nothing | $0 | 20 s | +1 | A refusal that is remembered. Later offers cost +$10,000 and +1 Trail. |\nPay | A Watch first, where one is offered (20 s, any agent) | $70,000 | 35 s | +2 | A traceable payment. The relationship stays neutral. |\nHelp (clear her debt) | Need known (Listen, 30 s) | $40,000 | 35 s | +1 | Gratitude. Her bravery can grow. |\nPressure (threaten) | Need known | $0 | 25 s | +3 | Fear. Her resentment grows, and she can identify the Fixer. |\nBuilt The approach prices are proven in play; the Watch time is a starting value. Paying Inez plus turning the driver costs $110,000 against a $100,000 purse. Helping her plus turning the driver costs $80,000. So finding things out is what pays for a second route.\nTurning is private. A conversation is private: asking, paying, helping and listening have no witnesses, so onlookers learn nothing, there is no witness Trail, no change in Standing, no incident and nothing passed along. The approach keeps its own price: a payment is still traceable money, and a Loyal person still reports an approach. Pressure is different: security see a threat at any Alert, and ordinary people from Alert 2 (§05); it is remembered and passed on. A conversation never counts as loitering (§05). Spec",
+          "version": "v0.33.0",
+          "score": 0.04524358791145228,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "keyword:4"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.435685396194458,
+          "key": "c6464f74f3570d36178e9264",
+          "kind": "gdd-human",
+          "lineEnd": 789,
+          "lineStart": 781,
+          "section": "Read the street at a glance › Audio is part of the clock",
+          "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+          "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+          "text": "Read the street at a glance › Audio is part of the clock\nRoutines you can hear: a bell, the café door, the handover chime at 4:30.\nSecurity warns before it acts: a surveillance click at the edge of each sweep, a change in the patrol's sound when it breaks route, and a cue when a watcher notices an agent.\nAlert adds layers to the music. A fight brings in the whole score. Contacts confirm calls aloud.\nEach weapon has its own voice, so you can hear who is firing, and police dispatch sounds from where the police come in, so you hear where they come from.",
+          "version": "v0.33.0",
+          "score": 0.043916969772983816,
+          "signals": [
+            "semantic:3",
+            "keyword:3",
+            "semantic:4"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/conversations/085/r002/listen-inez/calls/01-write-listen-inez.prompt.txt",
+    "outputFile": "runs/conversations/085/r002/listen-inez/calls/01-write-listen-inez.attempt-1.output.json",
+    "eventsFile": "runs/conversations/085/r002/listen-inez/calls/01-write-listen-inez.attempt-1.events.jsonl",
+    "stderrFile": "runs/conversations/085/r002/listen-inez/calls/01-write-listen-inez.attempt-1.stderr.txt"
+  },
+  {
+    "id": "02-edit-listen-inez",
+    "objective": "edit-listen-inez",
+    "role": "dialogue-designer",
+    "provider": "claude",
+    "model": "claude-opus-5-5",
+    "modelsUsed": [
+      "claude-haiku-5-5",
+      "claude-opus-5-5"
+    ],
+    "tools": [
+      "StructuredOutput"
+    ],
+    "cliVersion": "2.1.316",
+    "card": {
+      "source": ".claude/agents/dialogue-designer.md",
+      "sourceHash": "cb0d1d020fa77b74280d0964c4a63b16560a7121a140677cb37935ce70016e67",
+      "file": "runs/conversations/085/r002/listen-inez/calls/02-edit-listen-inez.card.md"
+    },
+    "brief": {
+      "source": "briefs/085/fable/editor.md",
+      "sourceHash": "560cfce769ce8ec4ddd3cbc9cfa94201cb978cf9f00412eeb67c45d17259197f"
+    },
+    "promptSha256": "ddd91245b7bf0ab49149c7658213e89586a5be5a5e8cd3e7531432921351cbe1",
+    "schemaSha256": "615ad5e90cb92c2e68f0062d074ab901d3d0bcdc403167a9a549284b105c7a79",
+    "effort": "high",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": 0.2113422,
+    "attempt": 1,
+    "seconds": 72,
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 7539,
+      "cache_read_input_tokens": 4587,
+      "output_tokens": 7464,
+      "output_tokens_details": {
+        "thinking_tokens": 6507
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 7539,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 7464,
+          "cache_read_input_tokens": 4587,
+          "cache_creation_input_tokens": 7539,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 7539
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "retrieval": {
+      "query": "Inez door guard lovers debt affair Help Pressure secret ‖ Fearful temperament hesitates Listen reveals need secret",
+      "queries": [
+        "Inez door guard lovers debt affair Help Pressure secret",
+        "Fearful temperament hesitates Listen reveals need secret"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "64aeea6f98869bb73228f1db219c490d3863f90740095faaaf79950124d0d5d1",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 2.8163397312164307,
+          "key": "971d2573fec5d5f32ab61610",
+          "kind": "gdd-human",
+          "lineEnd": 348,
+          "lineStart": 344,
+          "section": "Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec",
+          "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+          "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+          "text": "Knowledge makes consent cheap. Reputation decides who says yes. › The wrong approach, and what you can see first Spec\nAn approach that doesn't suit someone's temperament still works, one step worse : one more Help, or a higher price (Keel sets the numbers). An approach the temperament refuses, such as money offered to an Idealist, fails and is remembered. Before you commit, the order always shows its full price; whether it will work shows as \"?\" until Listen reveals the temperament. Finding out is what turns a gamble into a plan.\nMood: what a Watch reads. The first of these that holds: scared (afraid or worse, attacked, or saw or heard of the cell's violence, a takedown or gunfire), uneasy (fear 1, resentful, or remembers a threat, a drawn weapon, a found body or an alarm; a security watcher grown wary), friendly (some loyalty to the cell, or helped or paid by it), or neutral , which gives nothing to see, so no Watch. Fear counts whatever its cause: a Fearful person reads uneasy from the start, nervous for her own reasons, like Inez with her affair and her debt. A Watch remembers the mood it saw, not a live feed. Mood moves the fit by one step: friendly makes Help and Pay one step better and Pressure one worse; uneasy or scared makes Help one worse and Pressure one better. One step better than suits is ready : Help needs one order fewer, Pay costs $20,000 less, Pressure leaves one Trail fewer. Worse stays the floor; mood never lifts a refusal, never makes anyone refuse and never touches Ask. After a Watch, the approach the mood favours shows as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay \"?\". Spec",
+          "version": "v0.33.0",
+          "score": 0.04643206256109482,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.293546241906508,
+          "key": "96030c4c4a1a18523a3fdbbb",
+          "kind": "gdd-agent",
+          "lineEnd": 225,
+          "lineStart": 225,
+          "section": "§07 HANDOVER › the capstone",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§07 HANDOVER › the capstone\nthe capstone: the call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).",
+          "version": "v0.33.0",
+          "score": 0.04622110501800164,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+          "distance": 0.3517546057701111,
+          "key": "b751d6ccbbc84f9d117eb45c",
+          "kind": "people-rules",
+          "lineEnd": 0,
+          "lineStart": 0,
+          "section": "people rules › readBy",
+          "source": "contracts/people/people.rules.json",
+          "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+          "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nsecret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+          "version": "suborned.people.rules/1",
+          "score": 0.04551728464771943,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.33416362608454264,
+          "key": "c407d23e4f6647fe2f4315a1",
+          "kind": "gdd-agent",
+          "lineEnd": 71,
+          "lineStart": 66,
+          "section": "§04 PEOPLE › approaches",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§04 PEOPLE › approaches\napproaches (Inez, training) [B]:\n| approach | requires | $ | time | T | leaves |\n| Ask cold | — | 0 | 20 s | +1 | remembered refusal: later offers +$10,000, +1 T |\n| Pay | a Watch first, where one is offered (20 s [S], any agent) | 70,000 | 35 s | +2 | traceable payment; neutral |\n| Help (clear debt) | need known (Listen 30 s) | 40,000 | 35 s | +1 | gratitude; bravery can grow |\n| Pressure | need known | 0 | 25 s | +3 | fear; resentment grows; can identify Fixer |",
+          "version": "v0.33.0",
+          "score": 0.04324839247439867,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+          "distance": 0.25852298736572266,
+          "key": "45693d30fd1b1f7849a897e8",
+          "kind": "people-rules",
+          "lineEnd": 0,
+          "lineStart": 0,
+          "section": "people rules › temperament fearful",
+          "source": "contracts/people/people.rules.json",
+          "sourceHash": "38f1cfeb2f5fb875f72b488396ec5748fc574db3b18b4607ae11b03b3aa94bb7",
+          "text": "people rules › temperament fearful\nFearful: responds to pressure; refuses nothing; reports an approach: false; start {\"bravery\":0,\"resentment\":0,\"fear\":1,\"loyalty\":0}\nHero: hesitates; needs Help ×2. Menace: folds free.",
+          "version": "suborned.people.rules/1",
+          "score": 0.03278688524590164,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.3042081594467163,
+          "key": "e1dd761142af169bfd1cc0d3",
+          "kind": "gdd-human",
+          "lineEnd": 581,
+          "lineStart": 570,
+          "section": "Handover (2/2)",
+          "source": "GDD/the-suborned-gdd-v0.33.0-2026-10-30.html",
+          "sourceHash": "83f2fb4873401a08adf018d07463744b1fdf78045209b778c7293afdf02d94b5",
+          "text": "Handover\nThe heart of it: Inez and the guard are lovers. His café stop before his shift is to see her. Inez works the café's terrace tables on her rounds (§04). The call that pulls the guard off his door is Inez's, made because the cell helped, paid or pressured her: he comes to her side and they stand together. Her debt is her need, which Help clears; the affair is her secret, which Pressure threatens to expose.\nThe places. The café and its terrace face Records Square. The Office's public door, its landing, steps and forecourt are on the west face of its wing, over Rocket Lane, in view from the opening camera, with the entrance camera's pole at the forecourt's north end and the Tech's control cabinet behind it. The service door is round the back on the east face, onto the service yard: the back way, out of sight of the public door, the camera and the guard's cone. The patrol robot sweeps a line across the yard beside the door, and the Tech's Reroute takes it away. The official entrance and Vale's car are on the south face, on Apron Road. A turned driver brings Vale round in his car to the east yard's service bay, by the service drive. The getaway car stands at the square's boarding pavilion; its second stand is on the service drive, nose out, behind Vale's car, where a car boxes Vale's car in.",
+          "version": "v0.33.0",
+          "score": 0.03200204813108039,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3405775617864607,
+          "key": "c353f76d058dde5e260596c9",
+          "kind": "gdd-agent",
+          "lineEnd": 86,
+          "lineStart": 86,
+          "section": "§04 PEOPLE › preview",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§04 PEOPLE › preview\npreview: an order always shows its price; whether it will work shows as \"?\" until Listen reveals the temperament. After a Watch the mood marks the approach it favours as likely (a dashed ✓) and the one it hurts with a dashed ½; amounts the temperament decides stay \"?\".",
+          "version": "v0.33.0",
+          "score": 0.03125763125763126,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.37130725383758545,
+          "key": "0da7863d1208451a4ca04a92",
+          "kind": "gdd-agent",
+          "lineEnd": 80,
+          "lineStart": 74,
+          "section": "§04 PEOPLE › temperament",
+          "source": "GDD/the-suborned-agent-gdd-v0.33.0-2026-10-30.md",
+          "sourceHash": "875931fe278a04976ff4e1413c240156675d1851864b72f1c51f644872a1aa9b",
+          "text": "§04 PEOPLE › temperament\ntemperament [S]:\n| type | responds to | Hero | Menace |\n| Idealist | Help; refuses bribes | volunteers free; bravery fast | refuses; may report |\n| Mercenary | Pay | overcharges | discount; sells you to highest bidder |\n| Fearful | Pressure | hesitates; needs Help ×2 | folds free |\n| Loyal (institution) | trust over time | turns after repeated Help | reports any approach |\nHero and Menace campaigns turn different halves of the city = replay value.",
+          "version": "v0.33.0",
+          "score": 0.030621785881252923,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/conversations/085/r002/listen-inez/calls/02-edit-listen-inez.prompt.txt",
+    "outputFile": "runs/conversations/085/r002/listen-inez/calls/02-edit-listen-inez.attempt-1.output.json",
+    "eventsFile": "runs/conversations/085/r002/listen-inez/calls/02-edit-listen-inez.attempt-1.events.jsonl",
+    "stderrFile": "runs/conversations/085/r002/listen-inez/calls/02-edit-listen-inez.attempt-1.stderr.txt"
+  }
+]

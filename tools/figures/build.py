@@ -8,6 +8,7 @@ import sys, os, json, hashlib, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from figlib import *
 import unitymeta as um
+import avatar as av
 import numpy as np
 
 STORE = os.path.expanduser(os.environ.get('SUBORNED_STORE', '~/Projects/the-suborned-store')) + '/source-art'
@@ -81,17 +82,23 @@ def opaque(img):
 
 
 def write_tex(rel_dir, base, img, size, kind, out_root, tint=None, lift=0.0, repair=None):
-    """Copy or rescale `img` to People/<rel_dir>/<base>.<ext> (+.meta); big opaque PNG albedo and normal maps become JPEG q90. Returns (path relative to People, size)."""
+    """Copy or rescale an image (+.meta). Normal sources stay lossless: copy
+    unchanged bytes, or use PNG when resizing. Only colour maps use JPEG q90.
+    Existing JPEG normal sources are copied as-is, never recompressed at full size.
+    Returns (path relative to People, size)."""
     w = img.size[0]; sz = min(size or w, w)
     srcext = ext_of(img)
-    heavy = sz >= 1024 and kind in ('albedo', 'normal') and (srcext == 'png' or len(image_bytes(img)) > 1_200_000) and opaque(img)   # re-encode as JPEG q90
+    heavy = sz >= 1024 and kind == 'albedo' and (srcext == 'png' or len(image_bytes(img)) > 1_200_000) and opaque(img)   # re-encode colour only
     raw = sz == w and tint is None and not heavy and not lift and not repair
-    ext = srcext if raw else ('jpg' if (kind in ('albedo', 'normal') and (heavy or srcext == 'jpg' or opaque(img))) else 'png')
+    ext = srcext if raw else ('jpg' if (kind == 'albedo' and (heavy or srcext == 'jpg' or opaque(img))) else 'png')
     rel = f'{rel_dir}/{base}.{ext}'; dst = os.path.join(out_root, rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     if raw: open(dst, 'wb').write(image_bytes(img))
     else:
         c = img.copy()
+        # A file-backed copy can be lazy. Load its pixels before changing the
+        # filepath, otherwise Blender tries to read the not-yet-written output.
+        _ = c.pixels[0]
         if sz != w: c.scale(sz, sz)
         for r in (repair or []): repair_albedo(c, r)
         for t in ([] if tint is None else tint if isinstance(tint, list) else [tint]): apply_tint(c, t)
@@ -119,11 +126,20 @@ def _box(a, r):
     return (c[n:, n:] - c[:-n, n:] - c[n:, :-n] + c[:-n, :-n]) / (n * n)
 
 
+def uv_mask(path, w, h):
+    """A white-on-black map in the figure's UV space (tools/figures/keepmask.py, zmask.py: made from the mesh) as a bool array [h, w] in the image's own row order (bottom row first),
+    resized to this albedo. {"mask": path, "invert": true} reads it the other way round."""
+    mi = bpy.data.images.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), path)); mi.colorspace_settings.name = 'Non-Color'; mi.scale(w, h)
+    mp = np.empty(w * h * 4, dtype=np.float32); mi.pixels.foreach_get(mp); bpy.data.images.remove(mi)
+    return (mp.reshape(h, w, 4)[..., 0] > 0.5)
+
+
 def repair_albedo(img, op):
     """Fix a generator's baked-in defect in an sRGB albedo (Glint, briefs/020/figures-render.md items 3 and 4; sizes are for a 1024 map and scale with it).
     spots: dark specks inside a colour field (hue window `hue`, `minSat`, `minVal`): a pixel below `dark` value whose neighbourhood (radius `r`) is at least
     `field` that colour is painted over with the field's local mean (normalised convolution, mask grown by `grow`).
-    recolour: pixels inside a hue / saturation / value window are set to `to` (sRGB) keeping their light and dark by `keep` (0 = flat, 1 = as it was)."""
+    recolour: pixels inside a hue / saturation / value window are set to `to` (sRGB) keeping their light and dark by `keep` (0 = flat, 1 = as it was); `exact` keeps the thinnest lines; `protect` / `only` are lists of UV masks
+    ({"mask": "masks/x.png", "invert": bool}, made from the mesh by zmask.py) the recolour never touches / is limited to (brief 067)."""
     w, h = img.size; k = w / 1024.0
     px = np.empty(w * h * 4, dtype=np.float32); img.pixels.foreach_get(px); px = px.reshape(h, w, 4)
     hd, sa, va = _hsv(px.reshape(-1, 4)); hd, sa, va = hd.reshape(h, w), sa.reshape(h, w), va.reshape(h, w)
@@ -151,7 +167,11 @@ def repair_albedo(img, op):
     elif op['op'] == 'recolour':
         h0, h1 = op['hue']; s0, s1 = op['sat']; v0, v1 = op['val']
         sel = (hd >= h0) & (hd <= h1) & (sa >= s0) & (sa <= s1) & (va >= v0) & (va <= v1)
-        sel = _box(sel.astype(np.float32), 1) > 0.5
+        if not op.get('exact'): sel = _box(sel.astype(np.float32), 1) > 0.5    # `exact`: every pixel in the window, thin lines included (a zip, a seam); the default drops specks
+        for k in op.get('protect', []):   # UV regions the recolour never touches: {"mask": "masks/x.png"} (white = protected); {"mask": ..., "invert": true} protects the black
+            m_ = uv_mask(k['mask'], w, h); sel &= (m_ if k.get('invert') else ~m_)
+        for k in op.get('only', []):   # UV regions it is limited to: {"mask": "masks/x.png"} (white = where it works); {"mask": ..., "invert": true} works on the black
+            m_ = uv_mask(k['mask'], w, h); sel &= (~m_ if k.get('invert') else m_)
         if op.get('boxes'):   # only inside these atlas rectangles ([x0, y0, x1, y1] as shares of the map, origin top left): a hue window alone also takes pale skin elsewhere
             inside = np.zeros((h, w), dtype=bool)
             for x0, y0, x1, y1 in op['boxes']:
@@ -184,6 +204,24 @@ def apply_tint(img, t):
     hdeg = hh * 60.0; s_ = np.where(mx > 1e-6, d / np.maximum(mx, 1e-6), 0); v_ = mx
     dh = np.abs((hdeg - t.get('from', 0) + 180) % 360 - 180)
     sel = (dh <= t.get('width', 30)) & (s_ >= t.get('minSat', 0.2)) & (s_ <= t.get('maxSat', 1.0)) & (v_ >= t.get('minVal', 0.0)) & (v_ <= t.get('maxVal', 1.0))
+    if t.get('keep'):
+        # keep: regions of the map (fractions of its width and height, origin top-left as an image viewer shows it) where the tint never applies, for skin that
+        # shares the garment's hue (brief 063: the driver's lips, nose and hands went mint). {"mask": "masks/x.png"} protects the white pixels of a map in UV space (the best: atlases are fragmented); {"ellipse": [cx, cy, rx, ry]} protects every pixel inside it;
+        # {"box": [x0, y0, x1, y1], "hueAbove": deg} protects the pixels in the box whose hue is above `hueAbove` (skin is more orange than coral).
+        idx = np.arange(w * h); xf = (idx % w + 0.5) / w; yf = 1.0 - (idx // w + 0.5) / h
+        hs = ((hdeg + 180.0) % 360.0) - 180.0
+        for k in t['keep']:
+            if 'mask' in k:
+                # a white-on-black map in the figure's UV space (tools/figures/keepmask.py makes it from the mesh); resized to this albedo
+                mi = bpy.data.images.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), k['mask'])); mi.scale(w, h)
+                mp = np.empty(w * h * 4, dtype=np.float32); mi.pixels.foreach_get(mp); bpy.data.images.remove(mi)
+                inside = (mp.reshape(-1, 4)[:, 0] > 0.5)
+                sel &= (inside if k.get('invert') else ~inside)
+            elif 'ellipse' in k:
+                cx, cy, rx, ry = k['ellipse']; sel &= ~((((xf - cx) / rx) ** 2 + ((yf - cy) / ry) ** 2) <= 1.0)
+            elif 'box' in k:
+                x0, y0, x1, y1 = k['box']; inbox = (xf >= x0) & (xf <= x1) & (yf >= y0) & (yf <= y1)
+                sel &= ~(inbox & (hs > k.get('hueAbove', -999.0)))
     hdeg = np.where(sel, (hdeg + t.get('shift', 0)) % 360, hdeg)
     s_ = np.where(sel, np.clip(s_ * t.get('sat', 1.0), 0, 1), s_); v_ = np.where(sel, np.clip(v_ * t.get('val', 1.0), 0, 1), v_)
     H = hdeg / 60.0; i = np.floor(H).astype(int) % 6; f = H - np.floor(H)
@@ -420,10 +458,14 @@ def build_figure(spec, out_root, manifest_rows):
                              add_leaf_bones=False, bake_anim=False, axis_forward='-Z', axis_up='Y', apply_unit_scale=True,
                              apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False, primary_bone_axis='Y', secondary_bone_axis='X',
                              armature_nodetype='NULL', mesh_smooth_type='FACE', use_tspace=True, path_mode='STRIP', embed_textures=False)
-    open(fbx + '.meta', 'w').write(um.model_meta(fbx_rel, ext_mats))
+    # brief 069 (the bow legs, Latch's leftfoot.md round 2): Unity's own avatar for this file with neutral legs (each leg straight down, each foot along
+    # the hips' facing at this body's own flat-foot pitch, the toe level), written with auto-mapping off so it sticks (tools/figures/avatar.py)
+    av_human, av_nodes, av_pitch = av.neutral_avatar(fbx, f'{fid}(Clone)', None)
+    av_h, av_s = av.human_description(av_human, av_nodes)
+    open(fbx + '.meta', 'w').write(um.model_meta(fbx_rel, ext_mats, avatar={'human': av_h, 'skeleton': av_s, 'source': None}))
     mn2, mx2 = world_bounds([objs[0]])
     row = {'id': fid, 'role': spec['role'], 'label': spec.get('label', fid), 'standIn': True, 'fbx': fbx_rel, 'sha256': sha(open(fbx, 'rb').read()),
-           'rig': {'type': 'humanoid', 'bones': len(arm0.data.bones), 'names': 'mixamo'}, 'heightM': round(mx2.z - mn2.z, 3),
+           'rig': {'type': 'humanoid', 'bones': len(arm0.data.bones), 'names': 'mixamo', 'avatar': {'neutralLegs': True, 'footPitchDeg': round(av_pitch, 3), 'humanBones': len(av_human)}}, 'heightM': round(mx2.z - mn2.z, 3),
            'lods': [{'name': o.name, 'tris': tris(o), 'tex': lods[i]['tex'], 'source': lods[i].get('src') or f"decimated from LOD{lods[i]['from']}"} for i, o in enumerate(objs)],
            'materials': list(mat_rows.values()), 'source': spec.get('source'), 'provenance': provenance(spec.get('provenance', [])), 'notes': spec.get('notes', '')}
     manifest_rows.append(row)
@@ -441,4 +483,5 @@ def main():
     json.dump(rows, open(os.path.join(out_root, f'.rows.{"_".join(only) or "all"}.json'), 'w'), indent=1)
 
 
-main()
+if __name__ == '__main__':
+    main()

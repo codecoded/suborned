@@ -1,0 +1,9 @@
+075 street section (Datum, 2026-10-28)
+plan: contracts/world/harbour-district.plan.json sha256 377599bba8a7be5473b43f5f674405ce95d56dbb8a1a7fc427d836fe7e76d72c (version kept 0.4.0; notes.history 2026-10-28 street section)
+rule: standards.streetscape.sections.tramStreet (tracks flush in setts in the centre lanes +-1.8, mixed traffic, no median/reservation/lawn, boarding islands, span wires)
+roads: boulevard w 28 + reservation 10 -> w 20 (tram 3.6 / traffic 3.6 / parking 2.8 a side, pavement 8, wall to wall 36); 7 fronting plots 4 m out
+       sunset-way, comet-row, harbour-road: median 4 removed, w 24 kept (tram 3.6 / traffic 3.6 / kerbside 4.8 angle bays + palm islands [S]); T2 to the centre lanes, stops 6 m in, corners R 25 (radiusRunning 50 -> 25)
+       crown-road unchanged (median kept; T2 off-sheet stub on its north half)
+checks: bun tools/plan/cli.ts exit 0; --overlay tools/missions/handover/overlay.ts exit 0, V-1 64/65, C-0 pass, M-1 667/1064/126/1473 m; bun run typecheck 0
+code touched (for Splice to review): tools/world/gen/street/transit.ts (circus dock siting), tools/plan/checks.ts (tram crossings list)
+next: Splice (generator: setts, islands, kerbside bays, span wires; re-pin 21 fixture tests), Pulse (T2 run times +-1 s), notes: briefs/075/notes.md "Street section"

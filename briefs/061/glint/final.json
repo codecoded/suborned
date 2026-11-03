@@ -1,0 +1,98 @@
+{
+ "walk": {
+  "day": {
+   "trim": "#53ffb3",
+   "level": 1.3,
+   "dE": 0.36,
+   "dE_pm10": 1.73,
+   "out": [
+    "#57e7b2"
+   ],
+   "peak": 1.3
+  },
+  "evening": {
+   "trim": "#39ffc6",
+   "level": 1.15,
+   "dE": 0.25,
+   "dE_pm10": 1.75,
+   "out": [
+    "#52e6b0"
+   ],
+   "peak": 1.15
+  },
+  "night": {
+   "trim": "#00ffa9",
+   "level": 1.15,
+   "dE": 0.83,
+   "dE_pm10": 1.98,
+   "out": [
+    "#5fe4af"
+   ],
+   "peak": 1.15
+  }
+ },
+ "clearing": {
+  "day": {
+   "trim": "#ff8c00",
+   "level": 1.9,
+   "dE": 1.23,
+   "dE_pm10": 2.79,
+   "out": [
+    "#ffb400"
+   ],
+   "peak": 1.9
+  },
+  "evening": {
+   "trim": "#ff8b06",
+   "level": 1.9,
+   "dE": 1.23,
+   "dE_pm10": 2.82,
+   "out": [
+    "#ffb400"
+   ],
+   "peak": 1.9
+  },
+  "night": {
+   "trim": "#ff8800",
+   "level": 1.75,
+   "dE": 1.45,
+   "dE_pm10": 3.12,
+   "out": [
+    "#fcb200"
+   ],
+   "peak": 1.75
+  }
+ },
+ "stop": {
+  "day": {
+   "trim": "#ff5a59",
+   "level": 1.15,
+   "dE": 0.56,
+   "dE_pm10": 2.3,
+   "out": [
+    "#f5422e"
+   ],
+   "peak": 1.15
+  },
+  "evening": {
+   "trim": "#ff6766",
+   "level": 0.9,
+   "dE": 0.26,
+   "dE_pm10": 2.49,
+   "out": [
+    "#f1422d"
+   ],
+   "peak": 0.9
+  },
+  "night": {
+   "trim": "#ff4b46",
+   "level": 1.2,
+   "dE": 0.38,
+   "dE_pm10": 2.34,
+   "out": [
+    "#f3442e"
+   ],
+   "peak": 1.2
+  }
+ }
+}

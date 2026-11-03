@@ -1,7 +1,7 @@
 {
  "schema": "suborned.world/2",
  "source": "harbour-district v0.2.0 (2026-10-12)",
- "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json.",
+ "note": "Trimmed example of suborned.world/2: the first element of each generated list (plus a kit facade bay and corner, a crowned roof, a civic kit piece, the horizon sea sector, land and two banks and three horizon pieces, one procedural skin (three faces and its fin: grammar §2a colour life), one balcony awning, banner and Parade flag, a dressed stair tower and the Skyport leg lift and stem tube, the three landmarks, a kit roof and a kit lamp, and the Skyport Tower with its gateway), the civic stash container, a police post and a call box (brief 013: `stash`, and the whole `takedown` section as exported), for the schema in world.schema.ts. Written from out/world by Splice; the full export is out/world/<plan id>.world.json. Brief 075 (the tram street): ground.kerbside and ground.islands and dressing.trams, the first of each, from the export (Splice 2026-10-28). No transit.wires: no overhead wires (Sky 2026-10-28; world rule TS-W0).",
  "view": {
   "yaw": 30,
   "pitch": 38,
@@ -119,6 +119,208 @@
     "base": 0,
     "height": 0.18
    }
+  ],
+  "footways": [
+   {
+    "id": "footway/rocket-gate",
+    "gate": "rocket-gate",
+    "lane": "rocket-lane",
+    "road": "market-street",
+    "level": 0.18,
+    "frame": {
+     "origin": [
+      -186,
+      -401
+     ],
+     "along": [
+      1,
+      0
+     ],
+     "into": [
+      0,
+      1
+     ]
+    },
+    "half": 6,
+    "depth": 6,
+    "table": {
+     "id": "ground/footway/rocket-gate/table",
+     "ring": [
+      [
+       -192,
+       -401
+      ],
+      [
+       -180,
+       -401
+      ],
+      [
+       -180,
+       -395
+      ],
+      [
+       -192,
+       -395
+      ]
+     ],
+     "surface": "residential"
+    },
+    "ramp": {
+     "ring": [
+      [
+       -192,
+       -395
+      ],
+      [
+       -180,
+       -395
+      ],
+      [
+       -180,
+       -392.6
+      ],
+      [
+       -192,
+       -392.6
+      ]
+     ],
+     "run": 2.4,
+     "rise": 0.18,
+     "surface": "road-enamel"
+    },
+    "lip": {
+     "ring": [
+      [
+       -192,
+       -401
+      ],
+      [
+       -180,
+       -401
+      ],
+      [
+       -180,
+       -400.62
+      ],
+      [
+       -192,
+       -400.62
+      ]
+     ],
+     "d": 0.38,
+     "drop": 0.18,
+     "surface": "kerb"
+    },
+    "bands": [
+     {
+      "ring": [
+       [
+        -192,
+        -392.6
+       ],
+       [
+        -180,
+        -392.6
+       ],
+       [
+        -180,
+        -392.44
+       ],
+       [
+        -192,
+        -392.44
+       ]
+      ],
+      "level": 0,
+      "surface": "kerb"
+     },
+     {
+      "ring": [
+       [
+        -192,
+        -400.62
+       ],
+       [
+        -180,
+        -400.62
+       ],
+       [
+        -180,
+        -400.46
+       ],
+       [
+        -192,
+        -400.46
+       ]
+      ],
+      "level": 0.18,
+      "surface": "kerb"
+     }
+    ],
+    "posts": [
+     [
+      -192.6,
+      -395
+     ],
+     [
+      -179.4,
+      -395
+     ]
+    ]
+   }
+  ],
+  "kerbside": [
+   {
+    "id": "ground/kerbside/sunset-way/0",
+    "kind": "angle",
+    "road": "sunset-way",
+    "ring": [
+     [
+      -330.474,
+      -209.757
+     ],
+     [
+      -328.074,
+      -205.6
+     ],
+     [
+      -330.326,
+      -204.3
+     ],
+     [
+      -332.726,
+      -208.457
+     ]
+    ],
+    "yaw": 1.0472,
+    "level": 0
+   }
+  ],
+  "islands": [
+   {
+    "id": "ground/island/sunset-way/0",
+    "surface": "pavement",
+    "ring": [
+     [
+      -328,
+      -202
+     ],
+     [
+      -328,
+      -204
+     ],
+     [
+      -332.8,
+      -204
+     ],
+     [
+      -332.8,
+      -202
+     ]
+    ],
+    "base": 0,
+    "height": 0.18
+   }
   ]
  },
  "transit": {
@@ -185,6 +387,29 @@
     ],
     "base": 22.8,
     "height": 1.2
+   }
+  ]
+ },
+ "dressing": {
+  "trams": [
+   {
+    "id": "dressing/tram/T1/circus",
+    "line": "T1",
+    "stop": "circus",
+    "kit": {
+     "id": "Tram",
+     "scale": [
+      1,
+      1,
+      1
+     ],
+     "yaw": 0,
+     "at": [
+      1.8,
+      -72.108
+     ]
+    },
+    "z": 0.02
    }
   ]
  },
@@ -2068,7 +2293,7 @@
     ]
    ],
    "width": 4,
-   "control": "zebra",
+   "control": "signal",
    "refuges": [
     [
      [
@@ -2088,24 +2313,32 @@
       -407
      ]
     ]
-   ]
+   ],
+   "cycle": {
+    "walk": 6,
+    "clearing": 13,
+    "stop": 27,
+    "arrive": 3,
+    "offset": 17
+   }
   }
  ],
  "crossingRules": {
   "sites": {
-   "arm": 12,
-   "island": 8,
-   "mall": 2,
-   "mid": 3
+   "island": 4,
+   "foot": 4,
+   "crossroads": 6,
+   "junction": 1,
+   "civic": 1,
+   "stops": 10
   },
-  "twins": [
-   "market-street at -175,-401: a twin across a side road's mouth (22 m from the crossing it keeps)"
-  ],
+  "twins": [],
   "moved": [
-   "street/circus/tree-2596"
+   "street/circus/tree-2496"
   ],
-  "left": [
-   "arm/crown-road/nw/after: no free spot for the landing at kerb b (-320, 268) (nor within 4 m either way)"
+  "left": [],
+  "served": [
+   "foot/garden-walk/circus-road/axis: street/gardens-forecourt-e/e2/crossing-728"
   ]
  },
  "levels": [
@@ -2808,6 +3041,83 @@
    }
   }
  ],
+ "liveries": {
+  "colours": {
+   "brick": {
+    "hex": "#9C2E2B"
+   },
+   "vermilion": {
+    "hex": "#B8432E"
+   },
+   "gold": {
+    "hex": "#F2C14E",
+    "metallic": 1,
+    "smoothness": 0.45
+   }
+  },
+  "placed": [
+   {
+    "host": "landmark/sphere",
+    "ref": "kit",
+    "piece": "SphereStation",
+    "slots": {
+     "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion",
+     "DK_Hull_Ivory": "DK_Hull_Ivory__brick"
+    }
+   },
+   {
+    "host": "signature/space-hq",
+    "ref": "kit",
+    "piece": "SpaceHQ_Portal",
+    "slots": {
+     "DK_Crown_Gold": "DK_Crown_Gold__gold"
+    }
+   },
+   {
+    "host": "mega/skyport-tower",
+    "ref": "use",
+    "piece": "Skyport_Tower_Portal",
+    "slots": {
+     "DK_Steel_Ivory": "DK_Steel_Ivory__vermilion"
+    }
+   }
+  ]
+ },
+ "posters": {
+  "placed": [
+   {
+    "host": "bld/avenue-court/27/roof",
+    "piece": "Billboard_Rooftop_B",
+    "key": "cruise",
+    "slots": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__cruise"
+    }
+   },
+   {
+    "host": "street/foot/crown-parade/billboard-pylon-2065",
+    "piece": "Billboard_Pylon_A",
+    "key": "luna",
+    "back": "suds",
+    "slots": {
+     "DK_Billboard_Ads_Lit": "DK_Billboard_Ads_Lit__luna"
+    }
+   },
+   {
+    "host": "street/avenue-court/e17/advertising-column-2080",
+    "piece": "AdColumn",
+    "key": "A",
+    "slots": {}
+   },
+   {
+    "host": "street/avenue-court/e0/advertising-column-2082",
+    "piece": "AdColumn",
+    "key": "B",
+    "slots": {
+     "DK_Billboard_Ads": "DK_Billboard_Ads__sheetB"
+    }
+   }
+  ]
+ },
  "gates": [
   {
    "id": "gate/rocket-gate",

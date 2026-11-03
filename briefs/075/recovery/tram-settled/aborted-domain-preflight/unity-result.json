@@ -1,0 +1,17 @@
+{
+  "exit": 6,
+  "seconds": 20.90147829055786,
+  "settingsBytesRestored": [],
+  "errors": [
+    "[Swap] tram bed audit: 9462 samples on 2 tracks, 9456 on our bed (1584 tiles), 6 off it; level with our bed 18, over it 748, level off the bed 0 -> /Users/sky/Projects/suborned/briefs/075/recovery/tram-settled/audit-before.json",
+    "InvalidOperationException: tram mesh outside original 2m source domain",
+    "  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)",
+    "Rethrow as TargetInvocationException: Exception has been thrown by the target of an invocation.",
+    "UnityEngine.StackTraceUtility:ExtractStringFromExceptionInternal(Object, String&, String&) (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:50)",
+    "UnityEngine.DebugLogHandler:Internal_LogException_Injected(Exception, IntPtr)",
+    "UnityEngine.DebugLogHandler:Internal_LogException(Exception, Object)",
+    "UnityEngine.DebugLogHandler:LogException(Exception, Object)",
+    "UnityEngine.Logger:LogException(Exception, Object)",
+    "UnityEngine.Debug:LogException(Exception)"
+  ]
+}

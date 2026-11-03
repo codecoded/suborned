@@ -1,0 +1,122 @@
+{
+ "still": "/Users/sky/Projects/suborned/paid/069-intake/codex/r2_t7_cafe.png",
+ "base": "silhouette_f.png",
+ "verdict": {
+  "pass": true,
+  "fails": [],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 0.0,
+   "arm_screenLeft": 45.5,
+   "arm_screenRight": 45.5,
+   "armGapRows": 0.9,
+   "legGapRows": 0.739,
+   "feetSpacingH": 0.1188,
+   "feetSpacingH_base": 0.1248,
+   "legSplayDeg": -0.5,
+   "footLengthH": 0.159,
+   "footYawDegEst": [
+    3.6,
+    2.8
+   ],
+   "backgroundFlatness": 1.1
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 173,
+   "bottom": 821,
+   "heightPx": 648,
+   "left": 37,
+   "right": 506,
+   "touchesEdge": false,
+   "armGapRows": 0.9,
+   "armDownFromHorizontal": {
+    "screenLeft": 45.5,
+    "screenRight": 45.5
+   },
+   "legGapRows": 0.739,
+   "feetSpacingH": 0.1188,
+   "footWidthH": 0.061,
+   "legSplayDeg": -0.5,
+   "footOutwardH": [
+    0.005,
+    0.0039
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 172,
+   "bottom": 820,
+   "heightPx": 648,
+   "left": 173,
+   "right": 315,
+   "touchesEdge": false,
+   "footLengthH": 0.159,
+   "x0": 512
+  },
+  "back": {
+   "top": 173,
+   "bottom": 821,
+   "heightPx": 648,
+   "left": 4,
+   "right": 474,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 51,
+   "right": 459,
+   "touchesEdge": false,
+   "armGapRows": 0.964,
+   "armDownFromHorizontal": {
+    "screenLeft": 45.2,
+    "screenRight": 45.2
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1248,
+   "footWidthH": 0.0439,
+   "legSplayDeg": 0.7,
+   "footOutwardH": [
+    -0.0018,
+    -0.0018
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 192,
+   "right": 284,
+   "touchesEdge": false,
+   "footLengthH": 0.1103,
+   "x0": 512
+  },
+  "back": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 51,
+   "right": 459,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "footYawDeg": 12.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0,
+  "legSplayDeg": 4.0,
+  "feetSpacingHLoose": 0.06
+ }
+}

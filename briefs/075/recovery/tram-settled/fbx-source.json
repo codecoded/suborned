@@ -1,0 +1,206 @@
+{
+  "source": "unity/Assets/Suborned/OldTownArt/DecoKit/Models/Ground/DK_Tile_TramRail.fbx",
+  "version": 7400,
+  "records": [
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "UpAxis",
+        "int",
+        "Integer",
+        "",
+        1
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "UpAxisSign",
+        "int",
+        "Integer",
+        "",
+        1
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "FrontAxis",
+        "int",
+        "Integer",
+        "",
+        2
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "FrontAxisSign",
+        "int",
+        "Integer",
+        "",
+        1
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "CoordAxis",
+        "int",
+        "Integer",
+        "",
+        0
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "CoordAxisSign",
+        "int",
+        "Integer",
+        "",
+        1
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "OriginalUpAxis",
+        "int",
+        "Integer",
+        "",
+        -1
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "OriginalUpAxisSign",
+        "int",
+        "Integer",
+        "",
+        1
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "UnitScaleFactor",
+        "double",
+        "Number",
+        "",
+        100.0
+      ]
+    },
+    {
+      "node": "/GlobalSettings/Properties70",
+      "property": [
+        "OriginalUnitScaleFactor",
+        "double",
+        "Number",
+        "",
+        100.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "AxisLen",
+        "double",
+        "Number",
+        "",
+        10.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "GeometricTranslation",
+        "Vector3D",
+        "Vector",
+        "",
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "GeometricRotation",
+        "Vector3D",
+        "Vector",
+        "",
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "GeometricScaling",
+        "Vector3D",
+        "Vector",
+        "",
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "Lcl Translation",
+        "Lcl Translation",
+        "",
+        "A",
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "Lcl Rotation",
+        "Lcl Rotation",
+        "",
+        "A",
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "node": "/Definitions/ObjectType/PropertyTemplate/Properties70",
+      "property": [
+        "Lcl Scaling",
+        "Lcl Scaling",
+        "",
+        "A",
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "node": "/Objects/Geometry",
+      "vertices": 1688,
+      "bounds": [
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -0.15000005066394806,
+          4.3645822955795666e-08
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ]
+    }
+  ]
+}

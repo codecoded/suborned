@@ -39,6 +39,7 @@ namespace Suborned.World
         }
 
         static Vector3 W(Vector2 p, float y) => new(p.x, y, p.y);
+        static float LineDist(Vector2 p, Vector2[] l) { float best = float.MaxValue; for (int i = 1; i < l.Length; i++) { var a = l[i - 1]; var ab = l[i] - a; float t = ab.sqrMagnitude < 1e-8f ? 0f : Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude); best = Mathf.Min(best, (a + ab * t - p).magnitude); } return best; }
 
         /// <summary>A strip along `edge` (the contact line, v = 0) to `far` (v = 1), point for point.</summary>
         static void Strip(string kind, Vector2[] edge, Vector2[] far, float y, bool closed)
@@ -88,14 +89,26 @@ namespace Suborned.World
                 Strip("foot", Outset(ring, footFrom), Outset(ring, footFrom + footW), m.Base + Lift, true); Feet++;
             }
             // kerb feet: on the carriageway, from its edge inward
-            foreach (var r in world.Ground.Roads)
+            // Vela and Splice (0.2.116): along exactly the kerb runs Layers.Ground built (Layers.KerbFeet), from the carriageway edge (half a kerb in from
+            // the kerb's centre line) kerbW inward, toward the road's line. Before, both full edges of every road: across every junction (the X seam) and
+            // over the rounded returns' fills (the L-shaped step). The returns' arcs get none until the export carries them (Splice)
+            foreach (var (centre, roadLine, level, kw) in Layers.KerbFeet)
             {
-                if (r.KerbHeight <= 0.02f) continue;
-                var line = Poly.CleanLine(r.Line); if (line.Length < 2) continue;
-                var (l, rr) = Poly.Ribbon(line, r.Width, false);
-                var (li, ri) = Poly.Ribbon(line, Mathf.Max(0.1f, r.Width - 2f * kerbW), false);
-                Strip("kerb", l, li, r.Level + Lift, false);
-                Strip("kerb", rr, ri, r.Level + Lift, false);
+                int n = centre.Length; if (n < 2 || roadLine.Length < 2) continue;
+                var edge = new Vector2[n]; var far = new Vector2[n];
+                var nm = new Vector2[n];
+                for (int i = 0; i < n; i++)
+                {   // the left normal at each vertex: the mean of its two segments', mitred as Poly.Ribbon clamps (cos >= 0.34)
+                    Vector2 dPrev = centre[i] - centre[Mathf.Max(0, i - 1)], dNext = centre[Mathf.Min(n - 1, i + 1)] - centre[i];
+                    Vector2 lPrev = dPrev.sqrMagnitude < 1e-10f ? Vector2.zero : new Vector2(-dPrev.y, dPrev.x).normalized, lNext = dNext.sqrMagnitude < 1e-10f ? Vector2.zero : new Vector2(-dNext.y, dNext.x).normalized;
+                    Vector2 m = lPrev + lNext, one = lPrev != Vector2.zero ? lPrev : lNext;
+                    if (m.sqrMagnitude > 1e-6f) { m.Normalize(); m /= Mathf.Max(Vector2.Dot(m, one), 0.34f); } else m = one;
+                    nm[i] = m;
+                }
+                // which side is the road: the side whose offset at the run's middle lies nearer the road's line
+                int mid = n / 2; float dl = LineDist(centre[mid] + nm[mid] * kw, roadLine), dr = LineDist(centre[mid] - nm[mid] * kw, roadLine); float inward = dl < dr ? 1f : -1f;
+                for (int i = 0; i < n; i++) { edge[i] = centre[i] + nm[i] * inward * (kw * 0.5f); far[i] = edge[i] + nm[i] * inward * kerbW; }
+                Strip("kerb", edge, far, level + Lift, false);
             }
             // standing street pieces: a blob under each kit instance that stands on the ground
             var street = root.Find("street");
@@ -103,6 +116,7 @@ namespace Suborned.World
                 foreach (var t in street.GetComponentsInChildren<Transform>(true))
                 {
                     if (!PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject)) continue;
+                    if (t.GetComponent<Suborned.Play.SignalHead>()) continue; // brief 061: a signal head hovers; the ground under it is its own light (halo disc, clock ring), never shaded over
                     var rs = KitLods.Lod0(t.gameObject).ToArray(); if (rs.Length == 0) continue;
                     var b = rs[0].bounds; foreach (var x in rs) b.Encapsulate(x.bounds);
                     if (b.size.y < 0.3f || b.min.y > t.position.y + 0.4f) continue; // flat inlays, hanging baskets

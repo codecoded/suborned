@@ -1,0 +1,21 @@
+[
+ {"id":"cafe_bell","s":2,"takes":1,"prompt":"A single small brass shop-door bell on a spring, one bright jingle as a cafe door opens, then quiet. Isolated, close, dry, no music, no voices."},
+ {"id":"cafe_door","s":2,"takes":1,"prompt":"A light cafe door with a chrome handle opening and swinging shut on a soft pneumatic closer, a gentle latch click at the end. Isolated, no bell, no music, no voices."},
+ {"id":"handover_chime","s":5,"takes":1,"prompt":"A public building's electric shift-end chime: three soft struck brass tubular bell notes, unhurried, warm, ringing over a city square with a long natural decay. No melody beyond three notes, no music bed, no voices."},
+ {"id":"camera_click","s":1,"takes":1,"prompt":"A single small dry mechanical click and tiny servo stop of a brass closed-circuit camera reaching the end of its pan. Very short, isolated, no reverb, no voices."},
+ {"id":"patrol_loop","s":10,"takes":1,"prompt":"A clockwork patrol robot walking steadily at an even pace: soft rhythmic metal footfalls, gentle electric hum and tiny gear ticking, calm and regular. Continuous, no voices, no music, no alarms."},
+ {"id":"patrol_break","s":10,"takes":1,"prompt":"A clockwork robot speeding up with urgency: faster heavy metal footfalls, a tense rising electric hum and hard ratcheting gears. Continuous, no voices, no music, no siren."},
+ {"id":"patrol_sting","s":2,"takes":1,"prompt":"A heavy mechanical relay clunk followed by a short electric motor spinning up, a machine switching mode. Isolated, no voices, no music, no beep."},
+ {"id":"police_siren","s":6,"takes":1,"prompt":"A distant 1950s hand-cranked mechanical police siren slowly rising and falling as a vehicle approaches from far away down a city street, slight echo off buildings. No voices, no music, no modern electronic wail."},
+ {"id":"fire_pistol","s":2,"takes":1,"prompt":"A single sharp small pistol gunshot outdoors, crisp high crack with a short slap echo off stone buildings. One shot only, no voices, no music, no laser."},
+ {"id":"fire_carbine","s":2,"takes":1,"prompt":"A single powerful carbine rifle gunshot outdoors, deep heavy boom with a long low tail off city buildings. One shot only, no voices, no music, no laser."},
+ {"id":"fire_police","s":2,"takes":1,"prompt":"A single old revolver gunshot outdoors, round woody bang, mid-range, short city echo. One shot only, no voices, no music, no laser."},
+ {"id":"fire_rival","s":2,"takes":1,"prompt":"A single loud snub-nosed handgun shot outdoors, harsh rough bark with a metallic edge, dry. One shot only, no voices, no music, no laser."},
+ {"id":"fire_robot","s":2,"takes":1,"prompt":"A single shot from a machine-mounted pneumatic bolt gun: a hard compressed-air thump with a metal clack of the mechanism cycling. One shot only, no voices, no music, no laser, no beep."},
+ {"id":"miss","s":1,"takes":1,"prompt":"A single bullet striking stone pavement nearby: a short dusty stone chip with a small ricochet zip. One impact, no gunshot, no voices, no music."},
+ {"id":"down_body","s":2,"takes":1,"prompt":"A person collapsing onto stone pavement: a heavy soft body thud with cloth rustle. One fall, no voice, no scream, no music."},
+ {"id":"down_robot","s":2,"takes":1,"prompt":"A heavy metal robot falling over onto stone pavement: a loud metal crash with loose parts clattering and a dying electric whir. One fall, no voices, no music."},
+ {"id":"cut_soft","s":1,"takes":1,"prompt":"A very soft quick pneumatic air puff, like a tube message capsule arriving gently. Short, quiet, isolated, no beep, no voices, no music."},
+ {"id":"room_tone","s":10,"takes":1,"prompt":"Quiet still room tone of a small empty office: faint low electric hum, very soft air, nothing happening. Steady and even, no footsteps, no voices, no music, no clock ticks."},
+ {"id":"street_bed","s":10,"takes":1,"prompt":"Warm calm daytime city plaza ambience, distant soft traffic hum, far-off murmur of a crowd with no clear words, a light breeze, faint electric tram hum in the distance. Steady and even with no sudden events, no horns, no music, no birds."}
+]

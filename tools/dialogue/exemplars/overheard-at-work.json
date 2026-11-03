@@ -1,0 +1,86 @@
+{
+ "job": "overheard-at-work",
+ "what": "People talking while they do a job, overheard. The useful fact is a by-product of the work.",
+ "excerpts": [
+  {
+   "id": "carriers-inn-yard",
+   "source": "henry4-1",
+   "where": "Act 2, scene 1",
+   "text": "SECOND CARRIER. Peas and beans are as dank here as a dog, and that is the next way to give poor jades the bots. This house is turned upside down since Robin ostler died.\nFIRST CARRIER. Poor fellow never joyed since the price of oats rose, it was the death of him.\nSECOND CARRIER. I think this be the most villainous house in all London road for fleas. I am stung like a tench.\nFIRST CARRIER. Like a tench! By the Mass, there is ne’er a king christen could be better bit than I have been since the first cock.\nSECOND CARRIER. Why, they will allow us ne’er a jordan, and then we leak in your chimney, and your chamber-lye breeds fleas like a loach.\nFIRST CARRIER. What, ostler! Come away and be hanged, come away.\nSECOND CARRIER. I have a gammon of bacon and two razes of ginger, to be delivered as far as Charing Cross.\nFIRST CARRIER. God’s body! The turkeys in my pannier are quite starved.—What, ostler!",
+   "moves": [
+    {
+     "at": "Peas and beans are as dank",
+     "move": "Opens on a complaint about the materials of the job, mid-thought. Nobody greets anybody."
+    },
+    {
+     "at": "This house is turned upside down since Robin ostler died",
+     "move": "A real event arrives as a grumble about service. The listener learns it because it inconveniences the speaker."
+    },
+    {
+     "at": "never joyed since the price of oats rose",
+     "move": "The other worker answers with money, not grief. A death gets a price."
+    },
+    {
+     "at": "I have a gammon of bacon and two razes of ginger",
+     "move": "Each is on his own track: states his load and his destination, not a reply. The errand tells us the road and the hour without anyone briefing anyone."
+    },
+    {
+     "at": "quite starved.—What, ostler!",
+     "move": "The talk is cut by the work: he shouts for the man who is late. Scenes can stop because the job needs someone."
+    }
+   ]
+  },
+  {
+   "id": "lunch-counter-dinner",
+   "source": "men-without-women-pg",
+   "where": "The Killers, opening",
+   "text": "“I’ll have a roast pork tenderloin with apple sauce and mashed potatoes,” the first man said.\n“It isn’t ready yet.”\n“What the hell do you put it on the card for?”\n“That’s the dinner,” George explained. “You can get that at six o’clock.”\nGeorge looked at the clock on the wall behind the counter.\n“It’s five o’clock.”\n“The clock says twenty minutes past five,” the second man said.\n“It’s twenty minutes fast.”\n“Oh, to hell with the clock,” the first man said. “What have you got to eat?”\n“I can give you any kind of sandwiches,” George said. “You can have ham and eggs, bacon and eggs, liver and bacon, or a steak.”\n“Give me chicken croquettes with green peas and cream sauce and mashed potatoes.”\n“That’s the dinner.”\n“Everything we want’s the dinner, eh? That’s the way you work it.”\n“I can give you ham and eggs, bacon and eggs, liver——”",
+   "moves": [
+    {
+     "at": "“It isn’t ready yet.”",
+     "move": "He answers from his job and adds nothing. Working people have a procedure to stand behind."
+    },
+    {
+     "at": "“That’s the dinner,” George explained.",
+     "move": "A rule of the house stated flat, with its time. Plain information is natural here, because a customer forces it."
+    },
+    {
+     "at": "“It’s twenty minutes fast.”",
+     "move": "A small true detail of the place, offered as a correction. It builds the world and shows who is paying attention."
+    },
+    {
+     "at": "Everything we want’s the dinner, eh?",
+     "move": "Menace through a complaint about the menu. Neither side names the real subject."
+    },
+    {
+     "at": "bacon and eggs, liver——”",
+     "move": "He goes back to the list he has already said, and is cut off mid-word. Repeating the routine is how a frightened worker keeps going."
+    }
+   ]
+  },
+  {
+   "id": "kitchen-preserves",
+   "source": "glaspell-plays",
+   "where": "Trifles",
+   "text": "MRS PETERS: (to the other woman) Oh, her fruit; it did freeze, (to the LAWYER) She worried about that when it turned so cold. She said the fire'd go out and her jars would break.\nSHERIFF: Well, can you beat the women! Held for murder and worryin' about her preserves.\nCOUNTY ATTORNEY: I guess before we're through she may have something more serious than preserves to worry about.\nHALE: Well, women are used to worrying over trifles.",
+   "moves": [
+    {
+     "at": "Oh, her fruit; it did freeze",
+     "move": "She notices what her own work would make her notice. The men have walked past it."
+    },
+    {
+     "at": "She said the fire'd go out and her jars would break.",
+     "move": "A plain report of a small domestic worry. The player can hold it next to what they know, so it means more than it says."
+    },
+    {
+     "at": "Held for murder and worryin' about her preserves.",
+     "move": "Someone in the room dismisses the very thing that matters. The clue survives because nobody with power rates it."
+    },
+    {
+     "at": "Well, women are used to worrying over trifles.",
+     "move": "A throwaway generalisation closes the exchange. Nobody is answered; the talk just moves on past them."
+    }
+   ]
+  }
+ ]
+}

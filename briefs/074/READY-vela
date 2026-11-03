@@ -1,0 +1,8 @@
+074-B Vela: ready (2026-10-28)
+mapping: contracts/world/kit.json `colourways` (schema suborned.colourways/1; type KitColourways in contracts/world/kit.schema.ts)
+  materials[base][family] -> material name in Assets/Suborned/Kit/Materials (e.g. materials.DK_Limestone_Tex.lilac = DK_Limestone_Tex__lilac)
+  bases (slots): DK_Limestone_Tex wall, DK_Render_White wall, DK_Enamel_Seafoam band, DK_Enamel_Teal fascia, DK_Stone_Dark plinth
+  families: cream peach mint sky sand ivory blush powder butter lilac apricot seagreen; keep (no swap): base, civic
+  60 .mat (+ .meta) copied by `bun run kit`; each differs from its base only in m_Name, _BaseColor, _Color (same shader, keywords, textures)
+  generator copy: out/decokit/Data/colourways.json (adds derivation + neutral-sheet report)
+note: DK_Limestone_Tex now samples wall_panel_neutral_v1.png (replaces facade_panel_v1.png, same guid for the .mat) with a cream tint; the base reads as before

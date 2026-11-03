@@ -1,0 +1,1 @@
+draft passes: bun tools/plan/cli.ts contracts/world/harbour-district.oldtown.plan.json exit 0 (143 PASS); --overlay exit 0 (148 PASS, V-1 64/65, C-0, M-1). Sheet: briefs/075/remap/sheet.html

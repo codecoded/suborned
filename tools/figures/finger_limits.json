@@ -1,0 +1,75 @@
+{
+ "note": "Latch's grip layer (2026-10-27): the drawn states' grip runs on Humanoid finger muscles (the optimised figure has no finger transforms), and Unity's default finger limits (Stretched 1: -50..50, 2 and 3: -45..45, Thumb 1 -20..20) cap the grip (Middle 1 at 36 of 66 degrees, Little 1 and 2 at 33 and 22 of 90 and 100, Thumb 1 not at all). Written for finger-boned figures only (fingers.skeletons) into the _avatarT meta's human rows (useDefaultValues off), which the figure's avatar takes by Latch's rule: min/max per muscle axis in degrees, x twist (unused on fingers), y spread, z stretched (curl is the negative side). The defaults are kept for spread and the open side; the curl side is widened past the grip's largest angle plus the rest's own curl. Humanoid muscles are normalised by the avatar's limits on both sides of a retarget (the clip's avatar encodes, the figure's decodes), so the same table goes into the clips' reference avatar (tools/figures/clips.py, clips.json avatar) and every finger-boned figure: a finger angle then plays the same on any figure.",
+ "Finger Proximal": {
+  "min": [
+   0,
+   -20,
+   -120
+  ],
+  "max": [
+   0,
+   20,
+   50
+  ]
+ },
+ "Finger Intermediate": {
+  "min": [
+   0,
+   0,
+   -120
+  ],
+  "max": [
+   0,
+   0,
+   45
+  ]
+ },
+ "Finger Distal": {
+  "min": [
+   0,
+   0,
+   -100
+  ],
+  "max": [
+   0,
+   0,
+   45
+  ]
+ },
+ "Thumb Proximal": {
+  "min": [
+   0,
+   -45,
+   -60
+  ],
+  "max": [
+   0,
+   45,
+   30
+  ]
+ },
+ "Thumb Intermediate": {
+  "min": [
+   0,
+   0,
+   -80
+  ],
+  "max": [
+   0,
+   0,
+   35
+  ]
+ },
+ "Thumb Distal": {
+  "min": [
+   0,
+   0,
+   -80
+  ],
+  "max": [
+   0,
+   0,
+   35
+  ]
+ }
+}

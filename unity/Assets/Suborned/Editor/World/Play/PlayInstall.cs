@@ -51,7 +51,7 @@ namespace Suborned.World.Play
         }
 
         /// <summary>Replaces the `play` root of the open scene. Throws on anything unknown.</summary>
-        public static HandoverHost Install(WorldDto world)
+        public static HandoverHost Install(WorldDto world, float worldZ = 0f)
         {
             if (Root() is { } old) Object.DestroyImmediate(old);
             var go = new GameObject(RootName);
@@ -62,7 +62,11 @@ namespace Suborned.World.Play
             var f = host.frame;
             f.origin = J.P(b2p, "origin"); f.axisX = J.P(b2p, "x"); f.axisY = J.P(b2p, "y");
             f.x0 = -52f; f.y0 = -66f; f.cell = 1f; f.nx = 164; f.ny = 82; // the site window (tools/sim/site.ts WINDOW), block metres
-            f.heights = Heights(world, f);
+            // brief 055 step 1 (Sky: "need to work on the levels"): people stand on the floor that is drawn: Splice's walk file (`bun run
+            // geometry`: 0.25 m cells, the ground layers plus every kit piece's walkable top) in place of the 1 m slab bake; the bake stays only
+            // as the fallback when the file is missing (and says so)
+            if (!WalkFloor(f)) f.heights = Heights(world, f);
+            f.origin.y += worldZ; host.worldZ = worldZ; // the old town stands the plan 206 m up Unity z (OldTownSwap.DZ); after the walk file, whose frame is the plan's
             Dress(host);
             MeasureDoor(host);
             EditorSceneManager.MarkSceneDirty(go.scene);
@@ -112,8 +116,12 @@ namespace Suborned.World.Play
             host.jobs = jobBlocks.Keys.ToArray(); host.jobColours = jobBlocks.Values.Select(Block).ToArray();
             host.figures = People.FigureBuild.Library(); // brief 020: the stand-in figures, when installed (else capsules)
             GameObject Kit(string path) => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/" + path); // brief 020: kit models (bun run kit), else the boxes
-            host.sedanOfficial = Kit("Vehicles/DK_Sedan_Official.fbx"); host.sedanGetaway = Kit("Vehicles/DK_Sedan_Getaway.fbx"); host.robotPorter = Kit("Robots/DK_RobotPorter_Play.fbx"); host.patrolRobot = Kit("Robots/DK_PatrolRobot.fbx") ?? throw new FileNotFoundException("Play: Kit/Models/Robots/DK_PatrolRobot.fbx missing (run `bun run kit`)"); // brief 031: the patrol robot is Vela's PatrolRobot (adopted), its head the attention face (M_RobotFace); was the lighter butler
+            host.sedanOfficial = Kit("Vehicles/DK_Sedan_Official.fbx"); host.sedanGetaway = Kit("Vehicles/DK_Sedan_Getaway.fbx");
+            host.sedanRival = Kit("Vehicles/DK_Sedan_Rival.fbx"); if (!host.sedanRival) Debug.LogWarning("Play: Kit/Models/Vehicles/DK_Sedan_Rival.fbx missing (run `bun run kit`): the rival car is its box"); // brief 067 L: Vela's Sedan_Rival (adopted 2026-10-26)
+            host.robotPorter = Kit("Robots/DK_RobotPorter_Play.fbx"); host.patrolRobot = Kit("Robots/DK_PatrolRobot.fbx") ?? throw new FileNotFoundException("Play: Kit/Models/Robots/DK_PatrolRobot.fbx missing (run `bun run kit`)"); // brief 031: the patrol robot is Vela's PatrolRobot (adopted), its head the attention face (M_RobotFace); was the lighter butler
+            host.cctvPole = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Prefabs/Signals/DK_CCTVPole.prefab") ?? throw new FileNotFoundException("Play: Kit/Prefabs/Signals/DK_CCTVPole.prefab missing (run `bun run kit`)"); // brief 055: the mission poles at the plan's 5.5 m mount
             host.robotRigs = RobotKit.Table; host.robotGlyphs = RobotKit.Glyphs; // brief 026: the patrol and response robots' live faces (view only)
+            host.carFx = CarFxBuild.Ensure(); // brief 078: the cars' smoke, fire and blast (Generated/Fx/CarFx.prefab)
             host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
         }
 
@@ -166,6 +174,36 @@ namespace Suborned.World.Play
             return m;
         }
 
+        public static string WalkPath => Path.Combine(HarbourWorldBuilder.RepoRoot, "out/world/harbour-district.walk.json");
+        /// <summary>The export being built: batchmode's `-world` when given (a pinned export, brief 072), else the generated one.</summary>
+        public static string ExportPath => HarbourWorldBuilder.Arg("-world", Path.Combine(HarbourWorldBuilder.RepoRoot, "out/world/harbour-district.world.json"));
+
+        /// <summary>Brief 055 step 1: the host's ground from `out/world/harbour-district.walk.json` (`suborned.walk/1`, Splice's `bun run geometry`):
+        /// block frame, the site window, `cell` m cells (0.25), `floor` int16 LE cm base64 at i * ny + j (i along block x, j along y), the same
+        /// indexing SiteFrame.Height reads. The file must be made from this export (its `world` sha256); a stale one is rejected (regenerate it with
+        /// `bun run geometry` after `bun run world`). False when the file is missing: the slab bake stands in.</summary>
+        static bool WalkFloor(SiteFrame f)
+        {
+            if (!File.Exists(WalkPath)) { Debug.LogWarning($"Play: no walk file at {WalkPath} (run `bun run geometry`): the host bakes the plot slabs (1 m), and people stand at 0.18 m on every landing"); return false; }
+            var w = Json.Parse(File.ReadAllText(WalkPath));
+            if (J.S(w, "schema") != "suborned.walk/1") throw new InvalidDataException($"Play: {WalkPath}: schema {J.S(w, "schema")} (suborned.walk/1 expected)");
+            string want = J.S(w, "world"); if (File.Exists(ExportPath))
+            {
+                using var sha = System.Security.Cryptography.SHA256.Create(); var have = System.BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(ExportPath))).Replace("-", "").ToLowerInvariant();
+                if (have != want) throw new InvalidDataException($"Play: the walk file was made from world {want[..Mathf.Min(12, want.Length)]}, the export is {have[..12]}: run `bun run geometry` after `bun run world`");
+            }
+            var win = J.Get(w, "window"); float cell = J.F(w, "cell"); int nx = (int)J.F(w, "nx"), ny = (int)J.F(w, "ny");
+            var fr = J.Get(w, "frame"); var o = J.P(fr, "origin"); var ax = J.P(fr, "x"); var ay = J.P(fr, "y");
+            if ((o - f.origin).sqrMagnitude > 1e-6f || (ax - f.axisX).sqrMagnitude > 1e-6f || (ay - f.axisY).sqrMagnitude > 1e-6f) throw new InvalidDataException($"Play: the walk file's frame {o} {ax} {ay} is not the plan's block frame {f.origin} {f.axisX} {f.axisY}");
+            var bytes = System.Convert.FromBase64String(J.S(w, "floor")); if (bytes.Length != nx * ny * 2) throw new InvalidDataException($"Play: walk floor is {bytes.Length} bytes, {nx}x{ny} cells want {nx * ny * 2}");
+            var h = new float[nx * ny]; for (int k = 0; k < h.Length; k++) h[k] = (short)(bytes[2 * k] | bytes[2 * k + 1] << 8) / 100f;
+            f.x0 = J.F(win, "x0"); f.y0 = J.F(win, "y0"); f.cell = cell; f.nx = nx; f.ny = ny; f.heights = h;
+            // Suture's bot triage: the walk file's kind per cell (2, 4 solid) beside the heights, so the player's checks judge against what is drawn
+            var kb = J.S(w, "kind"); f.kinds = string.IsNullOrEmpty(kb) ? System.Array.Empty<byte>() : System.Convert.FromBase64String(kb); if (f.kinds.Length != nx * ny) f.kinds = System.Array.Empty<byte>();
+            Debug.Log($"Play: ground from the walk file ({nx}x{ny} at {cell} m, world {want[..Mathf.Min(12, want.Length)]}; floor {h.Min():F2} to {h.Max():F2} m)");
+            return true;
+        }
+
         /// <summary>Pavement height per 1 m cell: the highest plot slab under the cell centre with its top below 1 m (PeopleLayer's Ground.Height);
         /// a drive and the bay it reaches at their own level (the slab is cut round them).</summary>
         static float[] Heights(WorldDto w, SiteFrame f)
@@ -178,7 +216,8 @@ namespace Suborned.World.Play
                     slabs.Add((p.Ring, new Rect(x0, y0, p.Ring.Max(v => v.x) - x0, p.Ring.Max(v => v.y) - y0), p.Base + p.Height));
                 }
             var cuts = new List<(Vector2[] ring, float level)>();
-            foreach (var d in w.Ground.Drives) { cuts.Add((d.Ring, d.Level)); if (w.Ground.Flats.Find(x => x.Id == d.To) is { } bay) cuts.Add((bay.Ring, bay.Level)); }
+            foreach (var d in w.Ground.Drives) cuts.Add((d.Ring, d.Level));
+            foreach (var fl in w.Ground.Flats) if (Layers.IsBay(fl.Id)) cuts.Add((fl.Ring, fl.Level)); // brief 055: every bay is sunk, a drive or not (Layers.Ground)
             var h = new float[f.nx * f.ny];
             for (int i = 0; i < f.nx; i++)
                 for (int j = 0; j < f.ny; j++)

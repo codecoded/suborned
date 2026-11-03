@@ -1,11 +1,12 @@
 // Facade wave 2 (brief 007 B): kit bays, ends and corners on the street faces of generated buildings, by storeys, use and corner.
 // A building takes ONE bay piece for its whole frontage (chosen from the adopted bays that fit H(n), seeded by id), with the matching
 // corner / end pieces of its storey code. Adjacent buildings never carry the same bay piece (neighbour contrast); if no contrasting piece
-// fits, the building keeps its procedural facade. A piece is placed only where its body stands inside the building ring.
+// fits, the building keeps its procedural facade. A piece is placed only where its body stands inside the building ring (within FIT).
 // Frame (tools/decokit, facades.py): the bay is 6 m wide (x), its body 14 m deep behind the facade plane and a canopy (size z − 14) in front;
 // the piece's front (+Z) faces yaw + 90°, so +X runs clockwise along the outside of a CCW ring (against the ring's direction).
-// A corner (8 × 8 m cell, quarter round) takes the head of the edge entering a convex 90° vertex and the tail of the one leaving it;
-// an end (6 m front, return on −X) closes the head of an edge whose next face is a party wall or court.
+// A corner (8 × 8 m cell, quarter round) takes the head of the edge entering a convex 90° vertex and the tail of the one leaving it, fronting the leaving
+// face; an end (6 m front, its rounded return on kit +X) closes the tail of an edge whose face before is a party wall or court (brief 075-E: the old
+// pieces' frame, stream.ts KIT_X; brief 007 had both the other way round). A building's bay class is drawn with the old street's recipe (stream.ts RECIPE).
 import type { Facade } from '../../../contracts/world/world.schema';
 import type { KitAsset } from '../../../contracts/world/kit.schema';
 import { type V, cross, dist, dot, norm, sub } from '../../plan/geom';
@@ -13,17 +14,25 @@ import { type Ctx, r3, r4, rng } from './common';
 import { adopted } from './kitrefs';
 import { type Ring, edgeN, pointInRing } from './geo';
 import { isStreetClass } from './grammar';
+import { END_SIDE, JUNCTION, classOf, cornerPlace, endPlace, recipePick } from './stream';
+import { OLD_STREET, isOldRoad } from './oldstreet';
 
 /** What the generator knows of a building before its masses are built. */
-export type FacadeBld = { id: string; use: string; n: number; ring: Ring };
+export type FacadeBld = { id: string; use: string; n: number; ring: Ring; /** in a play-street area (standards.buildings.playStreets): storey-true pieces only */ play?: boolean; /** a street-level hotel tenancy (brief 075-F1b): only then CornerTower_12, whose blade sign reads HOTEL */ hotel?: boolean };
 export type FacadeOut = { facades: Facade[]; kitFaced: Set<string>; metres: Map<string, { street: number; kit: number }>; why: Map<string, string> };
 
 const BODY = 14, BAY = 6, CELL = 8; // m: body depth, bay width, corner cell (kit frame)
+const FIT = 0.02; // m: a body corner tested this far inside its back and sides (a corner at a 45° slant then stands under 0.03 out; K-6 allows 0.05)
 const TOL = 0.08, MIN_SY = 0.9, CORNER_SPARE = 0.3; // CORNER_SPARE: a face takes a corner cell when it is at least the cell plus this long (the 9 m faces cornerKeep leaves at a corner) // height tolerance against H(n); the pieces' own tags.scale range is read from the kit
 /** The bay height each storey code was built to (the end and corner pieces stand to their code's bay height, their masts and piers aside). */
 const CODE: Record<string, number> = { '2': 12.9, '3': 16.3, '4': 19.7, '6': 26.5, '9': 36.7, '10': 43.6 };
 
-type Piece = { a: KitAsset; form: 'bay' | 'end' | 'corner'; code: string; body: number; canopy: number };
+type Piece = { a: KitAsset; form: 'bay' | 'end' | 'corner'; code: string; body: number; canopy: number; /** the body to its coping: the stone box the storeys stand in, without the fin, the folded roof or the mast over it */ coping: number };
+/** The coping of a DecoKit frontage of storey code c: skyline.py's ground floor (5.0) + c floors of 3.4 + the 0.95 parapet + its 0.15 cap (16.3 at 3, 19.7 at 4). */
+const copingOf = (code: string): number => CODE[code] ?? 6.1 + 3.4 * Number(code);
+/** The play streets' own pieces (PortholeBay_3L, _4L): built for the height cap, placed nowhere else. */
+const LOW = /^PortholeBay_\d+L$/;
+const COPING_TOL = 0.4; // m: a bay whose top is within this of its coping stands nothing over its roof line
 const codeOf = (id: string): string => (/^(Stream|Deco)(Bay|End|Corner)_(\d+)/.exec(id)?.[3]) ?? '';
 
 /** The adopted facade pieces, grouped: bays (any family), ends and corners by storey code. */
@@ -33,7 +42,7 @@ function catalogue(): { bays: Piece[]; ends: Map<string, Piece[]>; corners: Map<
     const form = a.tags.form; if (!form || !(a.tags.use.includes('facade') || a.tags.use.includes('skyline'))) continue;
     if (a.id.startsWith('CornerTower')) continue; // 67 m junction landmark: it stands at no plot building (see report)
     const bay = /Bay_/.test(a.id), code = bay && !/^(Stream|Deco)Bay_/.test(a.id) ? /_(\d+)/.exec(a.id)![1]! : codeOf(a.id); // Porthole/Balcony/Arcade bays: their own height decides
-    const piece: Piece = { a, form, code, body: form === 'bay' ? a.size[1] : CODE[codeOf(a.id)] ?? a.size[1], canopy: form === 'corner' ? a.size[0] - CELL : a.size[2] - BODY };
+    const piece: Piece = { a, form, code, body: form === 'bay' ? a.size[1] : CODE[codeOf(a.id)] ?? a.size[1], canopy: form === 'corner' ? a.size[0] - CELL : a.size[2] - BODY, coping: code ? copingOf(code) : a.size[1] };
     if (form === 'bay') bays.push(piece);
     else { const m = form === 'end' ? ends : corners, k = codeOf(a.id); if (k) (m.get(k) ?? m.set(k, []).get(k)!).push(piece); }
   }
@@ -57,32 +66,45 @@ export function adjacent(a: Ring, b: Ring): boolean {
 
 const turn = (t0: V, t1: V) => ({ left: cross(t0, t1) > 0, square: Math.abs(dot(t0, t1)) < 0.26 });
 
-export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: (id: string) => string[]): FacadeOut {
+export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: (id: string) => string[], /** brief 075: the tower sites' footprints and storeys (neighbours an old-street end must not round off toward) */ towers: { ring: V[]; n: number }[] = []): FacadeOut {
   const { bays, ends, corners } = catalogue(), B = ctx.B, H = (n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown;
   const why = new Map<string, string>(), facades: Facade[] = [], kitFaced = new Set<string>(), metres = new Map<string, { street: number; kit: number }>(), chosen = new Map<string, string>();
   const yawOf = (n: V) => r4(Math.atan2(n[1], n[0]) - Math.PI / 2);
+  // brief 075-E: CornerTower_12 (the old Cap.Tower: 2 in the old street) at one street-junction corner per plot, on a building of JUNCTION.towerMin storeys or more
+  // outside the play streets, at the corner code's scale; once adopted
+  const tower = adopted().find(a => a.id === JUNCTION.tower), towered = new Set<string>();
   for (const b of blds) {
     const p = b.ring.p, c = b.ring.c, N = p.length, h = H(b.n), street = c.map(isStreetClass);
     const edgeLen = (i: number) => dist(p[i]!, p[(i + 1) % N]!);
     metres.set(b.id, { street: p.reduce((s, _, i) => s + (street[i] ? edgeLen(i) : 0), 0), kit: 0 });
     if (b.n < 2 || b.n > 11 || !street.some(Boolean)) { why.set(b.id, b.n < 2 || b.n > 11 ? `storeys ${b.n}` : 'no street face'); continue; }
     // a piece's scale: height from H(n) within TOL, width at least the height scale times the squash tag
+    // Play streets (brief 066, Vela): at 3 and 4 storeys every floor line reads at play zoom, so a bay carries the building's own storey code (a 4-storey piece squashed
+    // onto 3 storeys, or a 3-storey porthole or arcade bay stretched onto 4, stood a floor more or less beside its neighbours), and its top is its coping: nothing of it
+    // stands over the roof line (the porthole bays' fin and beacon, the arcade's folded roof and mast do, so the play streets take PortholeBay_3L / _4L and no arcade).
     const scaleOf = (x: Piece): [number, number, number] | null => {
       const [lo, hi] = x.a.tags.scale, sy = Math.min(hi, Math.max(lo, MIN_SY, h / x.body));
       if (Math.abs(sy * x.body - h) > TOL * h) return null;
       return [r3(Math.min(hi, Math.max(sy * x.a.tags.squash, sy))), r3(sy), r3(sy)];
     };
-    const fit = bays.map(x => ({ x, k: scaleOf(x) })).filter((o): o is { x: Piece; k: [number, number, number] } => !!o.k);
+    const storeyTrue = (x: Piece) => x.code === String(b.n) && Math.abs(x.a.size[1] - x.coping) <= COPING_TOL;
+    // brief 075 (golden view, oldstreet.ts): a building fronting an old-street road takes the old walls' class family only (streamline)
+    const old = c.some(isOldRoad), fit = bays.filter(x => (b.play ? storeyTrue(x) : !LOW.test(x.a.id)) && (!old || OLD_STREET.frontage.classes.includes(classOf(x.a.id) ?? ''))).map(x => ({ x, k: scaleOf(x) })).filter((o): o is { x: Piece; k: [number, number, number] } => !!o.k);
     if (!fit.length) { why.set(b.id, `no bay fits H(${b.n})`); continue; }
     const taken = new Set(near(b.id).map(id => chosen.get(id)).filter((x): x is string => !!x));
     const fresh = fit.filter(o => !taken.has(o.x.a.id));
     if (!fresh.length) { why.set(b.id, 'no contrasting bay'); continue; } // no contrasting piece: this frontage stays procedural
-    const pick = fresh[Math.floor(rng(`facade/${b.id}`).f() * fresh.length)]!, bay = pick.x, k = pick.k;
-    const code = Object.keys(CODE).filter(q => ends.has(q) || corners.has(q)).sort((x, y) => Math.abs(h / CODE[x]! - 1) - Math.abs(h / CODE[y]! - 1))[0] ?? ''; // the end and corner code whose bay height is nearest H(n)
+    // brief 075-E: the class drawn with the old street's recipe weights (stream.ts RECIPE: streamline the majority, porthole, balcony, deco and arcade bays for rhythm)
+    const pick = recipePick(fresh, o => classOf(o.x.a.id) ?? 'S', rng(`facade/${b.id}`).f()), bay = pick.x, k = pick.k;
+    const code = b.play ? String(b.n) : Object.keys(CODE).filter(q => ends.has(q) || corners.has(q)).sort((x, y) => Math.abs(h / CODE[x]! - 1) - Math.abs(h / CODE[y]! - 1))[0] ?? ''; // the end and corner code whose bay height is nearest H(n); the building's own in the play streets
     const endP = (ends.get(code) ?? []).find(e => e.a.id.endsWith('W') === bay.a.id.endsWith('W')) ?? (ends.get(code) ?? [])[0];
     const cornP = (corners.get(code) ?? [])[0], kc = cornP ? scaleOf(cornP) : null, ke = endP ? scaleOf(endP) : null;
     const inside = (q: V) => pointInRing(q, p);
-    const rect = (v: V, t: V, nrm: V, w: number, d: number): boolean => [[0.3, 0.3], [w - 0.3, 0.3], [w - 0.3, d - 0.3], [0.3, d - 0.3]].every(([s, e]) => inside([v[0] + t[0] * s! - nrm[0] * e!, v[1] + t[1] * s! - nrm[1] * e!]));
+    // the body w × d behind the wall from v along t: its back and sides within FIT of the ring (K-6, brief 072: a body 0.3 m short of its sides and back let a
+    // bay's back corner stand up to 0.43 m out through a slanted side wall), its front corners 0.3 m behind the wall line
+    // brief 075: and no ring vertex inside the body (a concave notch, such as an old crescent's back cut out of the plot, can stand between the four corners)
+    const rect = (v: V, t: V, nrm: V, w: number, d: number): boolean => [[FIT, 0.3], [w - FIT, 0.3], [w - FIT, d - FIT], [FIT, d - FIT]].every(([s, e]) => inside([v[0] + t[0] * s! - nrm[0] * e!, v[1] + t[1] * s! - nrm[1] * e!]))
+      && !p.some(q => { const s = (q[0] - v[0]) * t[0] + (q[1] - v[1]) * t[1], e = -((q[0] - v[0]) * nrm[0] + (q[1] - v[1]) * nrm[1]); return s > FIT && s < w - FIT && e > 0.3 && e < d - FIT; });
     // vertices: a corner where two street faces meet at a convex right angle with room for the cell on both
     const cornerAt: (boolean)[] = p.map((v, i) => {
       if (!kc || !cornP) return false;
@@ -93,10 +115,24 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     });
     // two corners on one face need room for both cells; else the face's head keeps its corner only if the tail has none
     for (let e = 0; e < N; e++) if (cornerAt[e] && cornerAt[(e + 1) % N] && edgeLen(e) < 2 * CELL * kc![1] + CORNER_SPARE) cornerAt[(e + 1) % N] = false;
+    const plotId = b.id.split('/')[1] ?? b.id, towerV = tower && kc && !b.play && b.hotel && b.n >= JUNCTION.towerMin && !towered.has(plotId) && tower.tags.scale[0] <= kc[1] + 1e-6 && kc[1] <= tower.tags.scale[1] + 1e-6 ? cornerAt.indexOf(true) : -1;
     const endAt = (i: number): boolean => { // head of edge e: next face is a party wall or court, square, convex
       if (!ke) return false;
       const e = (i + N - 1) % N, v = p[i]!, t0 = norm(sub(v, p[e]!)), t1 = norm(sub(p[(i + 1) % N]!, v)), tn = turn(t0, t1);
       return street[e] && !street[i] && tn.left && tn.square && edgeLen(e) >= BAY * ke[1] + 3;
+    };
+    // brief 075-E: the tail of edge e (vertex e): the face before is a party wall or court, square, convex: where an unmirrored end closes a run (stream.ts END_SIDE)
+    const endAtTail = (e: number): boolean => {
+      if (!ke) return false;
+      const q = (e + N - 1) % N, v = p[e]!, t0 = norm(sub(v, p[q]!)), t1 = norm(sub(p[(e + 1) % N]!, v)), tn = turn(t0, t1);
+      return street[e] && !street[q] && tn.left && tn.square && edgeLen(e) >= BAY * ke[1] + 3 && (!isOldRoad(c[e]!) || tallerAt(e));
+    };
+    // brief 075 (old DecoKitFrontage.Bays): on an old-street face a run rounds off only toward a lower neighbour (h > neighbour + 1) or where no building stands beyond
+    // its tail (a lane, a court), never at every party wall: the neighbour is the building standing 1 m past the tail along the wall line, 2 m behind it
+    const tallerAt = (e: number): boolean => {
+      const v = p[e]!, t = norm(sub(p[(e + 1) % N]!, v)), nrm = edgeN(v, p[(e + 1) % N]!), q: V = [v[0] - t[0] - nrm[0] * 2, v[1] - t[1] - nrm[1] * 2];
+      const o = blds.find(x => x.id !== b.id && pointInRing(q, x.ring.p)) ?? towers.find(x => pointInRing(q, x.ring));
+      return !o || h > H(o.n) + 1;
     };
     const lay = (cornerAt: boolean[]) => {
       let kitM = 0, placed = 0;
@@ -105,21 +141,28 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
       for (let e = 0; e < N; e++) {
         if (!street[e]) continue;
         const a = p[e]!, z = p[(e + 1) % N]!, L = edgeLen(e), t = norm(sub(z, a)), nrm = edgeN(a, z), head = (e + 1) % N;
-        const tailCorner = cornerAt[e], headCorner = cornerAt[head], headEnd = !headCorner && endAt(head) && L - (tailCorner ? CELL * kc![1] : 0) >= BAY * ke![1] + 3;
-        const r0 = tailCorner ? CELL * kc![1] : 0, r1 = headCorner ? CELL * kc![1] : headEnd ? BAY * ke![1] : 0;
+        const tailCorner = cornerAt[e], headCorner = cornerAt[head];
+        const headEnd = END_SIDE === 'head' && !headCorner && endAt(head) && L - (tailCorner ? CELL * kc![1] : 0) >= BAY * ke![1] + 3;
+        const tailEnd = END_SIDE === 'tail' && !tailCorner && endAtTail(e) && L - (headCorner ? CELL * kc![1] : 0) >= BAY * ke![1] + 3;
+        const r0 = tailCorner ? CELL * kc![1] : tailEnd ? BAY * ke![1] : 0, r1 = headCorner ? CELL * kc![1] : headEnd ? BAY * ke![1] : 0;
         const at = (s: number): V => [a[0] + t[0] * s, a[1] + t[1] * s];
-        if (headCorner && cornP) { // corner centre: from the vertex back along the edge and inward; the cell is 8 × 8 under the canopy ring
-          const v = z, off = (CELL / 2 - cornP.canopy / 2) * kc![1];
-          push({ building: b.id, form: 'corner', storeys: b.n, kit: { id: cornP.a.id, scale: kc!, yaw: yawOf(nrm), at: [r3(v[0] - (t[0] + nrm[0]) * off), r3(v[1] - (t[1] + nrm[1]) * off)] as V }, base: r3(pav), a: at(L - r1).map(r3) as V, b: r3v(v), edge: e });
+        if (headCorner && cornP) { // the 8 × 8 cell at the vertex under the canopy ring; the frame (front = the leaving face, stream.ts KIT_X) from stream.ts
+          const v = z, piece = head === towerV ? tower! : cornP.a, cp = cornerPlace(v, nrm, edgeN(v, p[(head + 1) % N]!), piece, kc![1]);
+          push({ building: b.id, form: 'corner', storeys: b.n, kit: { id: piece.id, scale: kc!, yaw: cp.yaw, at: r3v(cp.at) }, base: r3(pav), a: at(L - r1).map(r3) as V, b: r3v(v), edge: e });
           kitM += r1; placed++;
         }
-        if (headEnd && endP) { // the return on −X is the piece's head end; its footprint centre sits canopy/2 toward the vertex from the 6 m facade centre
-          const sc = ke![1], fc = at(L - (BAY / 2) * sc), shift = (endP.canopy / 2) * sc, off = (endP.a.size[2] / 2 - endP.canopy) * sc;
-          const c: V = [fc[0] + t[0] * shift - nrm[0] * off, fc[1] + t[1] * shift - nrm[1] * off];
-          if (rect(at(L - BAY * sc), t, nrm, BAY * sc, BODY * sc)) { push({ building: b.id, form: 'end', storeys: b.n, kit: { id: endP.a.id, scale: ke!, yaw: yawOf(nrm), at: r3v(c) }, base: r3(pav), a: r3v(at(L - BAY * sc)), b: r3v(z), edge: e }); kitM += BAY * sc; placed++; }
+        if (headEnd && endP) { // the return closes the head (KIT_X 1): the front runs back from the vertex
+          const sc = ke![1], ep = endPlace(z, [-t[0], -t[1]], nrm, endP.a, sc);
+          if (rect(at(L - BAY * sc), t, nrm, BAY * sc, BODY * sc)) { push({ building: b.id, form: 'end', storeys: b.n, kit: { id: endP.a.id, scale: ke!, yaw: ep.yaw, at: r3v(ep.at) }, base: r3(pav), a: r3v(at(L - BAY * sc)), b: r3v(z), edge: e }); kitM += BAY * sc; placed++; }
+        }
+        if (tailEnd && endP) { // brief 075-E: the return closes the tail (KIT_X -1, no mirror): the front runs on from the vertex
+          const sc = ke![1], ep = endPlace(a, t, nrm, endP.a, sc);
+          if (rect(a, t, nrm, BAY * sc, BODY * sc)) { push({ building: b.id, form: 'end', storeys: b.n, kit: { id: endP.a.id, scale: ke!, yaw: ep.yaw, at: r3v(ep.at) }, base: r3(pav), a: r3v(a), b: r3v(at(BAY * sc)), edge: e }); kitM += BAY * sc; placed++; }
         }
         // the run of bays between the reserved ends: tile it with k bays of width BAY × x, x within the piece's scale range and at least its squash share of the height scale
-        const R = L - r0 - r1, [lo, hi] = bay.a.tags.scale, wmin = BAY * Math.max(lo, k[1] * bay.a.tags.squash), wmax = BAY * hi;
+        // brief 075 (oldstreet.ts frontage.squash): on an old-street face a bay may stand a little narrower than its height scale (the old runs' rhythm: our H(9) 38.4 against the old
+        // S9's 36.7 asks 6.28 m, which leaves the plan's 6 m-bay buildings a procedural gap), so the run closes on whole bays
+        const oldFace = isOldRoad(c[e]!), R = L - r0 - r1, [lo, hi] = bay.a.tags.scale, wmin = BAY * Math.max(lo, k[1] * (oldFace ? Math.min(bay.a.tags.squash, OLD_STREET.frontage.squash) : bay.a.tags.squash)), wmax = BAY * hi;
         if (R < wmin - 1e-6) continue;
         let s0 = r0, count: number, stride: number;
         const kMin = Math.ceil(R / wmax - 1e-9), kMax = Math.floor(R / wmin + 1e-9);
@@ -142,6 +185,7 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     if (!out.some(f => f.form === 'bay') && cornerAt.some(Boolean)) ({ out, kitM, placed } = lay(cornerAt.map(() => false)));
     if (!placed || !out.some(f => f.form === 'bay')) { why.set(b.id, `no bay body fits inside the ring (${bay.a.id}, depth ${r3(BODY * k[2])} m)`); continue; } // corner or end alone is no facade
     facades.push(...out); kitFaced.add(b.id); chosen.set(b.id, bay.a.id);
+    if (towerV >= 0 && out.some(f => f.kit.id === JUNCTION.tower)) towered.add(plotId);
     metres.get(b.id)!.kit = Math.min(metres.get(b.id)!.street, kitM);
   }
   return { facades, kitFaced, metres, why };

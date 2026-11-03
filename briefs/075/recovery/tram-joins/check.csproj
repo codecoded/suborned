@@ -1,0 +1,7 @@
+<Project>
+<PropertyGroup><BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)../../../../out/scratch/latch/tram-joins/obj/</BaseIntermediateOutputPath></PropertyGroup>
+<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
+<PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><DefineConstants>UNITY_EDITOR</DefineConstants><LangVersion>9.0</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputPath>../../../../out/scratch/latch/tram-joins/bin/</OutputPath><TreatWarningsAsErrors>true</TreatWarningsAsErrors></PropertyGroup>
+<ItemGroup><Compile Include="../../../../unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramJoin.cs"/><Compile Include="Check.cs"/></ItemGroup>
+<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/>
+</Project>

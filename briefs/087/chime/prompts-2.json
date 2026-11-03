@@ -1,0 +1,9 @@
+[
+ {"id":"fire_police","s":2,"takes":2,"prompt":"A single old revolver gunshot outdoors, round woody bang, mid-range, short city echo. One shot only, no voices, no music, no laser."},
+ {"id":"fire_robot","s":2,"takes":2,"prompt":"A single shot from a machine-mounted pneumatic bolt gun: a hard compressed-air thump with a metal clack of the mechanism cycling. One shot only, no voices, no music, no laser, no beep."},
+ {"id":"cut_soft","s":1,"takes":2,"prompt":"A very soft quick pneumatic air puff, like a tube message capsule arriving gently. Short, quiet, isolated, no beep, no voices, no music."},
+ {"id":"room_tone","s":10,"takes":2,"prompt":"Quiet still room tone of a small empty office: faint low electric hum, very soft air, nothing happening. Steady and even, no footsteps, no voices, no music, no clock ticks."},
+ {"id":"street_bed","s":10,"takes":4,"prompt":"Warm calm daytime city plaza ambience, distant soft traffic hum, far-off murmur of a crowd with no clear words, a light breeze, faint electric tram hum in the distance. Steady and even with no sudden events, no horns, no music, no birds."},
+ {"id":"cafe_door","s":2,"base":10,"takes":1,"prompt":"A light cafe door with a chrome handle opening and swinging shut on a soft pneumatic closer, a gentle latch click at the end. Isolated, no bell, no music, no voices."},
+ {"id":"patrol_break","s":10,"base":10,"takes":1,"prompt":"A clockwork robot speeding up with urgency: faster heavy metal footfalls, a tense rising electric hum and hard ratcheting gears. Continuous, no voices, no music, no siren."}
+]

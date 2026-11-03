@@ -6,7 +6,9 @@
 //   _AtmHaze        rgb the haze colour (linear), a 1: replaces _Horizon and _Below, so the sky horizon is the fog's colour (haze.json)
 //   _AtmSkyZenith / _AtmSkyMid   rgb, a 1: replace _Zenith / _Mid (the old teal; a 0 keeps the scene's cobalt)
 //   _AtmSkyShape    x hazeHeight (> 0 turns the new shape on), y aureole strength, z aureole power, w haze lift toward the sun
-//   _AtmSkyExtra    x broad lobe strength, y broad lobe power
+//   _AtmSkyExtra    x broad lobe strength, y broad lobe power, z peach cast on the blue-to-haze blend (Glint 2026-10-24; 0 = none)
+//   _AtmSunDir      xyz the direction to the sun, w 1: replaces _SunDir (the evening phase, Glint 2026-10-24: the sun is low and west; w 0 = the scene's own)
+//   _AtmSunCol      rgb the sun glow colour, w 1: replaces _SunColour (evening: a deeper orange glare)
 //   _AtmFarBand     the baked far-city strip (equirect, RGB ratio to the horizon haze, A cover), _AtmFarBandRange x/y min/max elevation (radians),
 //                   z gain, w opacity (0 = no band: nothing is sampled)
 // The new shape is the old city's DK_SpaceSky: haze weight exp(-sin(elevation) / hazeHeight) over the sky body, the haze brightening toward the
@@ -41,7 +43,7 @@ Shader "Suborned/SkyGradient"
                 float _MidHeight, _Curve;
             CBUFFER_END
             // globals set by AtmosphereLens (zero when it is absent or the camera is not in a perspective tier)
-            float4 _AtmHaze, _AtmSkyZenith, _AtmSkyMid, _AtmSkyShape, _AtmSkyExtra, _AtmFarBandRange;
+            float4 _AtmHaze, _AtmSkyZenith, _AtmSkyMid, _AtmSkyShape, _AtmSkyExtra, _AtmFarBandRange, _AtmSunDir, _AtmSunCol;
             TEXTURE2D(_AtmFarBand); SAMPLER(sampler_AtmFarBand);
             struct A { float4 pos : POSITION; };
             struct V { float4 pos : SV_POSITION; float3 dir : TEXCOORD0; };
@@ -50,7 +52,8 @@ Shader "Suborned/SkyGradient"
             {
                 float3 d = normalize(v.dir);
                 float y = d.y;
-                float3 sun = normalize(_SunDir.xyz);
+                float3 sun = _AtmSunDir.w > 0.5 ? normalize(_AtmSunDir.xyz) : normalize(_SunDir.xyz);
+                half3 sunCol = _AtmSunCol.w > 0.5 ? (half3)_AtmSunCol.rgb : _SunColour.rgb;
                 float g = saturate(dot(d, sun));
                 bool hazeOn = _AtmHaze.a > 0.5;
                 bool shapeOn = _AtmSkyShape.x > 0;
@@ -67,7 +70,10 @@ Shader "Suborned/SkyGradient"
                         // the old city's air: sky body (mid to zenith), the horizon haze over it by exp(-h / hazeHeight), the haze lifted toward the sun
                         half3 body = lerp(mid, zenith, z);
                         half3 lifted = horizon * (1 + _AtmSkyShape.w * pow(g, 6));
-                        c = lerp(body, lifted, exp(-y / _AtmSkyShape.x));
+                        float w = exp(-y / _AtmSkyShape.x);
+                        c = lerp(body, lifted, w);
+                        // the blend of a blue and a cream passes through grey (S 0); a peach multiplier on its middle (zero at both ends: the sky body and the horizon stay as they are)
+                        c *= lerp(1.0, half3(1.12, 0.96, 0.80), saturate(_AtmSkyExtra.z) * 4.0 * w * (1.0 - w));
                     }
                     else
                     {
@@ -81,7 +87,7 @@ Shader "Suborned/SkyGradient"
                     ? _AtmSkyShape.y * pow(g, _AtmSkyShape.z) + _AtmSkyExtra.x * pow(g, _AtmSkyExtra.y)
                     : pow(g, _Glow.x) * _Glow.y + pow(g, _Glow.x * 8) * _Glow.y;
                 float disc = smoothstep(0.9995, 0.9999, g) * _Glow.z;
-                c += _SunColour.rgb * (glow * (y >= 0 ? 1.0 : 0.5) + disc);
+                c += sunCol * (glow * (y >= 0 ? 1.0 : 0.5) + disc);
                 if (_AtmFarBandRange.w > 0)
                 {
                     // the baked far-city band: painted as a ratio to the horizon haze, so it takes the haze of its own azimuth (lifted toward the sun)

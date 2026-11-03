@@ -8,7 +8,9 @@
   "out/decokit-008/measured.json": "76e9bd4314712f503f6a687d7b091af90604657e37a37a990c88a5c3b1ab01fb",
   "out/decokit-008/civic-beds.json": "a25f7437d54d9a975e37760ed7b467c71ddac2e367a1a03eae8f823d45661db6",
   "out/decokit-008/civic-overrides.json": "7f906f363782813ac1723a536af0317593efc1d86b97e9ff6f556f0034bb477f",
-  "out/decokit-brass/brass-family.json": "0189443f07256620d5a5ce534d04efa62aea91f6864e84354d5112ec3c7900d1"
+  "out/decokit-brass/brass-family.json": "0189443f07256620d5a5ce534d04efa62aea91f6864e84354d5112ec3c7900d1",
+  "testbed-art/cafe-plants/plaza-garden.bin.gz": "feeb10b6038ea97dd0540d55c8f264a8a56c8f0525c9b168d6f0d3a8040aea24",
+  "out/decokit-077/decokit_manifest.json": "fd87acf77fc3a817c3ac981ca1494286c445b3f3caa48bfe6444193be141c3c9"
  },
  "pieces": [
   "BollardSphere",
@@ -59,7 +61,24 @@
   "CafeBay": "CafeBay_v2",
   "RobotButler": "RobotButler_Play",
   "Parasol_Stripe": "Parasol_Testbed",
-  "AtomFountain": "AtomFountain_Testbed"
+  "AtomFountain": "AtomFountain_Testbed",
+  "CafeTerrace": "CafeTerrace_TB",
+  "CafeUpper_3": "CafeUpper_3_TB",
+  "CafeUpper_4": "CafeUpper_4_TB",
+  "PlanterArc": "PlanterArc_TB",
+  "PlanterRun_2_A": "PlanterRun_2_A_TB",
+  "PlanterRun_2_B": "PlanterRun_2_B_TB",
+  "PlanterRun_2_C": "PlanterRun_2_C_TB",
+  "PlanterRun_4_A": "PlanterRun_4_A_TB",
+  "PlanterRun_4_B": "PlanterRun_4_B_TB",
+  "PlanterRun_4_C": "PlanterRun_4_C_TB",
+  "PlanterRun_Corner_A": "PlanterRun_Corner_A_TB",
+  "PlanterRun_Corner_B": "PlanterRun_Corner_B_TB",
+  "PlanterRun_Corner_C": "PlanterRun_Corner_C_TB",
+  "PlanterRun_End_A": "PlanterRun_End_A_TB",
+  "PlanterRun_End_B": "PlanterRun_End_B_TB",
+  "PlanterRun_End_C": "PlanterRun_End_C_TB",
+  "RecordsTower": "RecordsTower_TB"
  },
  "grounded": [
   "BoardingPavilion_TB_Square"
@@ -79,6 +98,12 @@
    "top": 4.7
   }
  },
+ "upper": {
+  "CafeBay_v2": [
+   "CafeUpper_3",
+   "CafeUpper_4"
+  ]
+ },
  "overhead": [
   "Parasol_Stripe",
   "Parasol_Testbed"
@@ -90,7 +115,9 @@
   "RecordsEntrance",
   "RecordsEntrance_Official",
   "BoardingPavilion_TB_Square",
-  "CafeInterior_Testbed"
+  "CafeInterior_Testbed",
+  "CafeUpper_3",
+  "CafeUpper_4"
  ],
  "companions": {
   "CafeBay_v2": [
@@ -102,8 +129,8 @@
   "CafeTerrace"
  ],
  "budget": {
-  "lod0Tris": 330000,
-  "note": "brief 026 (Splice, 2026-10-20): raised from 110000 to the 211,311 the restored original pieces cost (CafeSet_Tulip 3,984, PlazaSphereLamp 7,932, Cypress 5,004, PottedTopiary 4,720; Sky: old detail back). A performance call for Redline to confirm against 60 fps; lower it when the pieces get cheaper. Raised again to 260,000 (236,449 with the testbed cafe: CafeInterior_Testbed 18.7k, CafeSet_Testbed 3.6k a set, Parasol_Testbed 3.0k): Sky's rule, any compression goes through him, so the budget goes up with a note, no model is reduced; Redline to measure on the Air. Raised to 330,000 for the testbed bay (BoardingPavilion_TB_Square 28.8k) and fountain (AtomFountain_Testbed 41.9k), both at full detail (brief 028): the budget goes up with a note, no model is reduced."
+  "lod0Tris": 370000,
+  "note": "brief 026 (Splice, 2026-10-20): raised from 110000 to the 211,311 the restored original pieces cost (CafeSet_Tulip 3,984, PlazaSphereLamp 7,932, Cypress 5,004, PottedTopiary 4,720; Sky: old detail back). A performance call for Redline to confirm against 60 fps; lower it when the pieces get cheaper. Raised again to 260,000 (236,449 with the testbed cafe: CafeInterior_Testbed 18.7k, CafeSet_Testbed 3.6k a set, Parasol_Testbed 3.0k): Sky's rule, any compression goes through him, so the budget goes up with a note, no model is reduced; Redline to measure on the Air. Raised to 330,000 for the testbed bay (BoardingPavilion_TB_Square 28.8k) and fountain (AtomFountain_Testbed 41.9k), both at full detail (brief 028): the budget goes up with a note, no model is reduced. Raised to 370,000 for brief 077's testbed planting (Sky's yes on the Unity capture, 2026-10-30): the rebuilt troughs, the terrace and the arcs count at their inspection level (LOD0, 359,323 in the block); at play zoom each draws its gameplay level (+77,034 play-zoom triangles for the whole family, Vela's count; Redline measures on the Air). No model is reduced."
  },
  "slab": {
   "material": "DK_Pave_Civic",
@@ -145,33 +172,20 @@
   "civic/civic-service-cabinet-1": {
    "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
   },
-  "civic/foreground-civic-robot": {
-   "DK_Signal_Amber": "DK_Glow_Seafoam",
-   "DK_Face_Amber": "DK_Face_Teal",
-   "DK_RobotEnamel_Coral": "DK_Enamel_Coral17"
-  },
   "civic/fountain-garden-north-east": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_CoralSoft",
    "DK_Accent_Gold": "DK_Brass_Civic"
   },
   "civic/fountain-garden-north-west": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_Flamingo",
    "DK_Accent_Gold": "DK_Brass_Civic"
   },
   "civic/fountain-garden-south-east": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_Flamingo",
    "DK_Accent_Gold": "DK_Brass_Civic"
   },
   "civic/fountain-garden-south-west": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
-   "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
-   "DK_Flower_Coral": "DK_Flower_CoralSoft",
    "DK_Accent_Gold": "DK_Brass_Civic"
   }
  },
@@ -205,7 +219,623 @@
     }
    ]
   },
-  "source": "out/decokit-008/civic-beds.json (Vela, 14 Oct): the recipe, constants as there; the tuft yaw is seeded from the mass id with the generator rng, not Vela's PRNG"
+  "source": "out/decokit-008/civic-beds.json (Vela, 14 Oct): the recipe, constants as there; the tuft yaw is seeded from the mass id with the generator rng, not Vela's PRNG",
+  "level": {
+   "soilProud": 0.003,
+   "tol": 0.001,
+   "beds": {
+    "civic/civic-facade-southwest": {
+     "piece": "CivicBedPlanting_facade-southwest",
+     "outline": [
+      [
+       1.6597,
+       -0.4935
+      ],
+      [
+       -1.0694,
+       1.3618
+      ],
+      [
+       -1.1918,
+       1.4234
+      ],
+      [
+       -1.326,
+       1.4512
+      ],
+      [
+       -1.4628,
+       1.4434
+      ],
+      [
+       -1.5929,
+       1.4004
+      ],
+      [
+       -1.7075,
+       1.3251
+      ],
+      [
+       -1.7987,
+       1.2228
+      ],
+      [
+       -1.8603,
+       1.1004
+      ],
+      [
+       -1.8881,
+       0.9662
+      ],
+      [
+       -1.8802,
+       0.8294
+      ],
+      [
+       -1.8372,
+       0.6992
+      ],
+      [
+       -1.762,
+       0.5847
+      ],
+      [
+       -1.6597,
+       0.4935
+      ],
+      [
+       1.0694,
+       -1.3618
+      ],
+      [
+       1.1918,
+       -1.4234
+      ],
+      [
+       1.326,
+       -1.4512
+      ],
+      [
+       1.4628,
+       -1.4434
+      ],
+      [
+       1.5929,
+       -1.4004
+      ],
+      [
+       1.7075,
+       -1.3251
+      ],
+      [
+       1.7987,
+       -1.2228
+      ],
+      [
+       1.8603,
+       -1.1004
+      ],
+      [
+       1.8881,
+       -0.9662
+      ],
+      [
+       1.8802,
+       -0.8294
+      ],
+      [
+       1.8372,
+       -0.6992
+      ],
+      [
+       1.762,
+       -0.5847
+      ]
+     ]
+    },
+    "civic/civic-facade-southeast": {
+     "piece": "CivicBedPlanting_facade-southeast",
+     "outline": [
+      [
+       1.0211,
+       1.457
+      ],
+      [
+       -1.6649,
+       -0.6275
+      ],
+      [
+       -1.7613,
+       -0.725
+      ],
+      [
+       -1.8291,
+       -0.844
+      ],
+      [
+       -1.8639,
+       -0.9766
+      ],
+      [
+       -1.8631,
+       -1.1137
+      ],
+      [
+       -1.8269,
+       -1.2459
+      ],
+      [
+       -1.7577,
+       -1.3642
+      ],
+      [
+       -1.6603,
+       -1.4605
+      ],
+      [
+       -1.5412,
+       -1.5284
+      ],
+      [
+       -1.4087,
+       -1.5632
+      ],
+      [
+       -1.2716,
+       -1.5624
+      ],
+      [
+       -1.1394,
+       -1.5262
+      ],
+      [
+       -1.0211,
+       -1.457
+      ],
+      [
+       1.6649,
+       0.6275
+      ],
+      [
+       1.7613,
+       0.725
+      ],
+      [
+       1.8291,
+       0.844
+      ],
+      [
+       1.8639,
+       0.9766
+      ],
+      [
+       1.8631,
+       1.1137
+      ],
+      [
+       1.8269,
+       1.2459
+      ],
+      [
+       1.7577,
+       1.3642
+      ],
+      [
+       1.6603,
+       1.4605
+      ],
+      [
+       1.5412,
+       1.5284
+      ],
+      [
+       1.4087,
+       1.5632
+      ],
+      [
+       1.2716,
+       1.5624
+      ],
+      [
+       1.1394,
+       1.5262
+      ]
+     ]
+    },
+    "civic/civic-office-west": {
+     "piece": "CivicBedPlanting_office-west",
+     "outline": [
+      [
+       0.9498,
+       -4.8362
+      ],
+      [
+       0.9498,
+       1.9638
+      ],
+      [
+       0.9205,
+       2.4313
+      ],
+      [
+       0.8332,
+       2.8915
+      ],
+      [
+       0.561,
+       3.9573
+      ],
+      [
+       0.4882,
+       4.1391
+      ],
+      [
+       0.3709,
+       4.2958
+      ],
+      [
+       0.217,
+       4.4168
+      ],
+      [
+       0.037,
+       4.4939
+      ],
+      [
+       -0.1568,
+       4.5217
+      ],
+      [
+       -0.3512,
+       4.4985
+      ],
+      [
+       -0.533,
+       4.4257
+      ],
+      [
+       -0.6897,
+       4.3083
+      ],
+      [
+       -0.8107,
+       4.1544
+      ],
+      [
+       -0.8878,
+       3.9744
+      ],
+      [
+       -0.9156,
+       3.7806
+      ],
+      [
+       -0.8923,
+       3.5862
+      ],
+      [
+       -0.6202,
+       2.5204
+      ],
+      [
+       -0.5678,
+       2.2443
+      ],
+      [
+       -0.5502,
+       1.9638
+      ],
+      [
+       -0.5502,
+       -4.8362
+      ],
+      [
+       -0.5246,
+       -5.0304
+      ],
+      [
+       -0.4497,
+       -5.2112
+      ],
+      [
+       -0.3305,
+       -5.3666
+      ],
+      [
+       -0.1752,
+       -5.4858
+      ],
+      [
+       0.0057,
+       -5.5607
+      ],
+      [
+       0.1998,
+       -5.5862
+      ],
+      [
+       0.394,
+       -5.5607
+      ],
+      [
+       0.5748,
+       -5.4857
+      ],
+      [
+       0.7302,
+       -5.3666
+      ],
+      [
+       0.8494,
+       -5.2112
+      ],
+      [
+       0.9243,
+       -5.0303
+      ]
+     ]
+    },
+    "civic/civic-office-north": {
+     "piece": "CivicBedPlanting_office-north",
+     "outline": [
+      [
+       1.8272,
+       0.5352
+      ],
+      [
+       -1.6477,
+       0.954
+      ],
+      [
+       -1.8434,
+       0.9519
+      ],
+      [
+       -2.032,
+       0.8992
+      ],
+      [
+       -2.2005,
+       0.7994
+      ],
+      [
+       -2.3374,
+       0.6595
+      ],
+      [
+       -2.4334,
+       0.4889
+      ],
+      [
+       -2.482,
+       0.2992
+      ],
+      [
+       -2.4799,
+       0.1034
+      ],
+      [
+       -2.4272,
+       -0.0851
+      ],
+      [
+       -2.3274,
+       -0.2536
+      ],
+      [
+       -2.1875,
+       -0.3905
+      ],
+      [
+       -2.0168,
+       -0.4866
+      ],
+      [
+       -1.8272,
+       -0.5352
+      ],
+      [
+       1.6477,
+       -0.954
+      ],
+      [
+       1.8434,
+       -0.9519
+      ],
+      [
+       2.032,
+       -0.8992
+      ],
+      [
+       2.2005,
+       -0.7994
+      ],
+      [
+       2.3374,
+       -0.6595
+      ],
+      [
+       2.4334,
+       -0.4889
+      ],
+      [
+       2.482,
+       -0.2992
+      ],
+      [
+       2.4799,
+       -0.1034
+      ],
+      [
+       2.4272,
+       0.0851
+      ],
+      [
+       2.3274,
+       0.2536
+      ],
+      [
+       2.1875,
+       0.3905
+      ],
+      [
+       2.0168,
+       0.4866
+      ]
+     ]
+    },
+    "civic/civic-dropoff-west": {
+     "piece": "CivicBedPlanting_dropoff-west",
+     "outline": [
+      [
+       -1.1257,
+       -1.1364
+      ],
+      [
+       -0.7484,
+       -1.2479
+      ],
+      [
+       -0.36,
+       -1.3116
+      ],
+      [
+       0.0332,
+       -1.3263
+      ],
+      [
+       0.4252,
+       -1.292
+      ],
+      [
+       0.8098,
+       -1.209
+      ],
+      [
+       1.1811,
+       -1.0787
+      ],
+      [
+       1.4175,
+       -0.9399
+      ],
+      [
+       1.6099,
+       -0.7446
+      ],
+      [
+       1.7452,
+       -0.5063
+      ],
+      [
+       1.8142,
+       -0.241
+      ],
+      [
+       1.8122,
+       0.0331
+      ],
+      [
+       1.7393,
+       0.2973
+      ],
+      [
+       1.6005,
+       0.5337
+      ],
+      [
+       1.4053,
+       0.7261
+      ],
+      [
+       1.1669,
+       0.8614
+      ],
+      [
+       0.9016,
+       0.9304
+      ],
+      [
+       0.6275,
+       0.9284
+      ],
+      [
+       0.3633,
+       0.8556
+      ],
+      [
+       0.2395,
+       0.8121
+      ],
+      [
+       0.1113,
+       0.7845
+      ],
+      [
+       -0.0193,
+       0.773
+      ],
+      [
+       -0.1504,
+       0.7779
+      ],
+      [
+       -0.2798,
+       0.7991
+      ],
+      [
+       -0.4056,
+       0.8363
+      ],
+      [
+       -0.6732,
+       0.8959
+      ],
+      [
+       -0.947,
+       0.8842
+      ],
+      [
+       -1.2085,
+       0.802
+      ],
+      [
+       -1.4398,
+       0.655
+      ],
+      [
+       -1.6252,
+       0.453
+      ],
+      [
+       -1.752,
+       0.21
+      ],
+      [
+       -1.8116,
+       -0.0575
+      ],
+      [
+       -1.7999,
+       -0.3314
+      ],
+      [
+       -1.7177,
+       -0.5929
+      ],
+      [
+       -1.5706,
+       -0.8242
+      ],
+      [
+       -1.3687,
+       -1.0096
+      ]
+     ]
+    }
+   },
+   "source": "testbed-art/cafe-plants/plaza-garden.bin.gz (sha256 feeb10b6038ea97dd0540d55c8f264a8a56c8f0525c9b168d6f0d3a8040aea24): the key's civic flowerBedRun beds, each moved into its piece's plan frame by the motion Vela built it with (out/decokit/troughs077/domes077.manifest.json sha256 69b7478f7bf31af89ed4fb5745ad9c3492c2409d39edd8e3c5bb3e21cecc2487: civicBeds, finals.place; pieces out/decokit-077/decokit_manifest.json sha256 fd87acf77fc3a817c3ac981ca1494286c445b3f3caa48bfe6444193be141c3c9); bun tools/world/civic/bed-level-import.ts --write; brief 077, Sky 2026-10-30. soilProud: the soil sits 3 mm above the kerb top (Vela, briefs/077/domes/metrics.json bedtuft.proposal_for_splice); tol: the rigid fit's largest vertex error, m"
+  }
  },
  "bands": {
   "frame": "block frame of contracts/world/civic-block.json: x south, y east, metres; angles from +x toward +y = the piece's yaw about +Z; arcs are quarter turns sweeping local +X to +Y, pivot at the arc centre",
@@ -614,7 +1244,7 @@
   "materials": [
    {
     "material": "DK_Accent_Gold",
-    "unlit": "#99784D",
+    "unlit": "#C29A55",
     "used_by": [
      "OceanLiner",
      "PlanterArc"
@@ -644,7 +1274,7 @@
    },
    {
     "material": "DK_Bloom_Coral",
-    "unlit": "#FC9C84",
+    "unlit": "#F28A70",
     "used_by": [
      "PlanterRun_2_A",
      "PlanterRun_4_A",
@@ -684,7 +1314,7 @@
    },
    {
     "material": "DK_Bloom_Peach",
-    "unlit": "#FCC4AC",
+    "unlit": "#F8B898",
     "used_by": [
      "PlanterRun_2_B",
      "PlanterRun_2_C",
@@ -700,7 +1330,7 @@
    },
    {
     "material": "DK_Brass_Civic",
-    "unlit": "#99784D",
+    "unlit": "#C29A55",
     "used_by": [
      "BoardingPavilion_Square_v2",
      "CafeBay",
@@ -880,7 +1510,7 @@
    },
    {
     "material": "DK_Cloth_CoralSoft",
-    "unlit": "#FC9C84",
+    "unlit": "#F28A70",
     "used_by": [
      "PlazaSphereLamp_Play",
      "CafeBay_v2"
@@ -1093,15 +1723,6 @@
     ]
    },
    {
-    "material": "DK_GlassDark",
-    "unlit": "#35585A",
-    "used_by": [
-     "CafeBay",
-     "RecordsEntrance",
-     "RecordsEntrance_Official"
-    ]
-   },
-   {
     "material": "DK_Glass_Clear",
     "unlit": "#B3D9DE",
     "used_by": [
@@ -1118,6 +1739,15 @@
     ]
    },
    {
+    "material": "DK_GlassDark",
+    "unlit": "#35585A",
+    "used_by": [
+     "CafeBay",
+     "RecordsEntrance",
+     "RecordsEntrance_Official"
+    ]
+   },
+   {
     "material": "DK_Glow_Seafoam",
     "unlit": "#3FC9A0",
     "used_by": [
@@ -1126,7 +1756,7 @@
    },
    {
     "material": "DK_Gold",
-    "unlit": "#99784D",
+    "unlit": "#D6AE62",
     "used_by": [
      "AdColumn",
      "ArcadeBay_3",
@@ -1163,7 +1793,7 @@
    },
    {
     "material": "DK_Gold17",
-    "unlit": "#AD866F",
+    "unlit": "#D6B676",
     "used_by": [
      "AtomFountain",
      "ParadeGate_Block",
@@ -1299,6 +1929,35 @@
     ]
    },
    {
+    "material": "DK_Leaf_TB",
+    "unlit": "#D7DFCF",
+    "used_by": [
+     "CafeTerrace_Planting",
+     "CafeUpper_3_Planting",
+     "CafeUpper_4_Planting",
+     "CivicBedPlanting_dropoff-west",
+     "CivicBedPlanting_facade-southeast",
+     "CivicBedPlanting_facade-southwest",
+     "CivicBedPlanting_office-north",
+     "CivicBedPlanting_office-west",
+     "PlanterArc_TB",
+     "PlanterRun_2_A_TB",
+     "PlanterRun_2_B_TB",
+     "PlanterRun_2_C_TB",
+     "PlanterRun_4_A_TB",
+     "PlanterRun_4_B_TB",
+     "PlanterRun_4_C_TB",
+     "PlanterRun_Corner_A_TB",
+     "PlanterRun_Corner_B_TB",
+     "PlanterRun_Corner_C_TB",
+     "PlanterRun_End_A_TB",
+     "PlanterRun_End_B_TB",
+     "PlanterRun_End_C_TB",
+     "RecordsTower_Planting"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
+   },
+   {
     "material": "DK_Limestone",
     "unlit": "#E7DECA",
     "used_by": [
@@ -1324,6 +1983,14 @@
     ]
    },
    {
+    "material": "DK_Opal_TB",
+    "unlit": "#FFFEF8",
+    "used_by": [
+     "GlobeLamp_TB"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
+   },
+   {
     "material": "DK_Pave_Civic",
     "unlit": "#E4DACA",
     "used_by": [
@@ -1343,6 +2010,34 @@
     "used_by": [
      "BoardingPavilion_TB_Square"
     ]
+   },
+   {
+    "material": "DK_Petal_TB",
+    "unlit": "#FFFFFF",
+    "used_by": [
+     "CafeTerrace_Planting",
+     "CafeUpper_3_Planting",
+     "CafeUpper_4_Planting",
+     "CivicBedPlanting_dropoff-west",
+     "CivicBedPlanting_facade-southeast",
+     "CivicBedPlanting_facade-southwest",
+     "CivicBedPlanting_office-north",
+     "CivicBedPlanting_office-west",
+     "PlanterArc_TB",
+     "PlanterRun_2_A_TB",
+     "PlanterRun_2_B_TB",
+     "PlanterRun_2_C_TB",
+     "PlanterRun_4_A_TB",
+     "PlanterRun_4_B_TB",
+     "PlanterRun_4_C_TB",
+     "PlanterRun_Corner_A_TB",
+     "PlanterRun_Corner_B_TB",
+     "PlanterRun_Corner_C_TB",
+     "PlanterRun_End_A_TB",
+     "PlanterRun_End_B_TB",
+     "RecordsTower_Planting"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
    },
    {
     "material": "DK_Petiole",
@@ -1366,6 +2061,35 @@
     ]
    },
    {
+    "material": "DK_Soil_TB",
+    "unlit": "#FFFFFF",
+    "used_by": [
+     "CafeTerrace_Planting",
+     "CafeUpper_3_Planting",
+     "CafeUpper_4_Planting",
+     "CivicBedPlanting_dropoff-west",
+     "CivicBedPlanting_facade-southeast",
+     "CivicBedPlanting_facade-southwest",
+     "CivicBedPlanting_office-north",
+     "CivicBedPlanting_office-west",
+     "PlanterArc_TB",
+     "PlanterRun_2_A_TB",
+     "PlanterRun_2_B_TB",
+     "PlanterRun_2_C_TB",
+     "PlanterRun_4_A_TB",
+     "PlanterRun_4_B_TB",
+     "PlanterRun_4_C_TB",
+     "PlanterRun_Corner_A_TB",
+     "PlanterRun_Corner_B_TB",
+     "PlanterRun_Corner_C_TB",
+     "PlanterRun_End_A_TB",
+     "PlanterRun_End_B_TB",
+     "PlanterRun_End_C_TB",
+     "RecordsTower_Planting"
+    ],
+    "provisional": "brief 077 (Splice): the .mat _BaseColor (out/decokit-077/Materials), not a measured unlit read; Glint to set"
+   },
+   {
     "material": "DK_Steel",
     "unlit": "#A9ABAE",
     "used_by": [
@@ -1382,7 +2106,7 @@
   ]
  },
  "roles": {
-  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity).",
+  "decision": "Sky, 14 Oct: seafoam and deep teal are the kit enamels; coral, flamingo and peach (contract accents) are for banners and flowers; gold is hairline, frame and bead only; the full-height gold fins come off. 14 Oct (first Unity build, against the paintings): ivory stone fields, seafoam bands, deep teal an accent of 0.3 m or less never a field, fascia, cap or band; the hairline gold is the painted brass #99784D, not the world gold #D0C848 (yellow-green in Unity). 072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'): the hairline is brass-gold #C29A55 and may be a band up to 15 cm; deep teal is also the Records Office's storey band (up to 0.9 m, never a field); glass dark teal to blue-teal; the signal-gate reasons are history.",
   "roles": {
    "stone": {
     "materials": [
@@ -1426,9 +2150,9 @@
     "hex": [
      "#1F6C67"
     ],
-    "rule": "an accent of 0.3 m or less: the caf\u00e9 blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
+    "rule": "storey bands, fascia lines and reveals up to 0.9 m; never a whole field. The Records Office's storey band (5.0 to 5.9 m, RecordsTower) is DecoKit's deep teal, as the old DecoKit civic office (072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'), Q1b 'yep'); the sign body, lamp sleeve, cushions and the 8 cm window reveal stay",
     "painting": "the paintings use it only as thin edge lines and the sign blades",
-    "use": "sign body, cushions, lamp sleeve, window reveal"
+    "use": "the Office storey band, sign body, cushions, lamp sleeve, window reveal"
    },
    "metal": {
     "materials": [
@@ -1444,19 +2168,19 @@
      "DK_Brass_Civic"
     ],
     "hex": [
-     "#99784D"
+     "#C29A55"
     ],
     "facade_swatch": {
-     "gold": "#99784D",
-     "paletteOverride.gold_trim": "#99784D"
+     "gold": "#C29A55",
+     "paletteOverride.gold_trim": "#C29A55"
     },
     "old": {
      "material": "DK_Accent_Gold",
      "hex": "#D0C848"
     },
-    "rule": "only as a bead, frame, mullion or line of 3 to 7 cm; never a panel, fin, fascia or band; at most 6% of any elevation's area. #99784D is dE2000 21.3 from the guard colour: a gold of this hue that is any lighter than L 52 falls inside the gate, so this dark brass is the gold",
+    "rule": "bead, frame, mullion, line or band up to 15 cm; at most 12% of an elevation; never a large panel. Brass-gold #C29A55 (072-G (Sky, 27 Oct: 'yep, more, more reds / blues allowed as well'); DK_Gold is DecoKit's #D6AE62, DK_Gold17 #D6B676). Was dark brass #99784D, held there only by the signal-colour gate dropped on 2026-10-16",
     "painting": "gp-entrance: the door posts, #99784D in the shade of the marquee (lit brass is lighter; the unlit palette gate reads this value)",
-    "use": "glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid"
+    "use": "glazing frames, door frames, fascia lines, marquee edge, banner rods, window grid, the Office band's hairlines"
    },
    "banner": {
     "materials": [
@@ -1477,7 +2201,7 @@
      "material": "DK_Banner_Comet + DK_Fabric_Banner",
      "hex": "#048A7C (texture field)"
     },
-    "rule": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Never a red-orange: DK_Fabric_Coral #E07560 (dE 12.0 from the cones colour) and DK_Blind_Coral #E58A6E (17.3) stay off this block; the contract accents are 21.7 or more",
+    "rule": "entrance banners: seafoam field, ivory comet (banner_comet_seafoam_v1.png, derive008.py); lamp pennants: seafoam and the contract coral. Coral, flamingo, peach and red-orange are all allowed (the signal-colour gate that kept DK_Fabric_Coral off this block was dropped on 2026-10-16); the block keeps seafoam to follow the paintings",
     "painting": "gp-entrance: the pier banners, ivory comet on a teal field (#406464 as painted; seafoam here because the shaded Unity faces multiply it by about 0.18 in linear light)"
    },
    "flowers": {
@@ -1544,7 +2268,7 @@
     "hex": [
      "#35585A"
     ],
-    "rule": "clear dark teal, no blue curtain wall (facade.json glass_clear)",
+    "rule": "dark teal to blue-teal with sky reflections (facade.json glass_clear #2C6478; the kit film DK_GlassDark glaze #3F7A8E); no curtain wall",
     "painting": "records-office: dark glazing",
     "use": "glass"
    },
@@ -1555,7 +2279,7 @@
     "hex": [
      "#FFF1C4"
     ],
-    "rule": "DK_Lamp #FFE2A6 is dE 19.3 from the guard colour: the civic pieces use Lamp_Deco (24.6)"
+    "rule": "DK_Lamp_Deco #FFF1C4, the paler lamp, chosen for the civic pieces' colour (the old reason, a distance from the guard colour, is gone since 2026-10-16)"
    }
   },
   "parts": {
@@ -1621,6 +2345,14 @@
    },
    "paving": {
     "stone": "DK_Pave_Civic slabs on the plot surfaces of the square, the caf\u00e9 terrace and the office apron (world-space UVs, 4 m tile, like DK_Asphalt_Fine)"
+   },
+   "RecordsTower": {
+    "stone": "wing, pilasters, towers, crowns (DK_Limestone, DK_Enamel_Ivory)",
+    "band": "pilaster flutes, parapet band, tower fins, crown ring (seafoam)",
+    "deep": "the storey band 5.0 to 5.9 m round the wing and both towers (DK_Enamel_Teal), the service door",
+    "hairline": "the band's two hairlines, parapet and crown lines, pilaster caps (brass-gold)",
+    "glass": "the giant order's glazing, stair slots, rotunda (DK_GlassDark)",
+    "metal": "mullions, rotunda ribs, spheres (chrome)"
    }
   },
   "pool_water": {
@@ -1713,6 +2445,63 @@
   "BoardingPavilion_TB_Square": [
    "civic/square-pavilion-support-0",
    "civic/square-pavilion-support-1"
+  ]
+ },
+ "attach": {
+  "CafeTerrace_TB": [
+   {
+    "piece": "CafeTerrace_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 0.678,
+    "as": "planting"
+   }
+  ],
+  "RecordsTower_TB": [
+   {
+    "piece": "RecordsTower_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 14.758,
+    "as": "planting"
+   }
+  ],
+  "CafeUpper_3_TB": [
+   {
+    "piece": "CafeUpper_3_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 8.808,
+    "as": "planting"
+   }
+  ],
+  "CafeUpper_4_TB": [
+   {
+    "piece": "CafeUpper_4_Planting",
+    "at": [
+     0,
+     0
+    ],
+    "dy": 12.408,
+    "as": "planting"
+   }
+  ],
+  "PlanterArc_TB": [
+   {
+    "piece": "GlobeLamp_TB",
+    "at": [
+     1.0151,
+     0.5416
+    ],
+    "dy": 0.465,
+    "as": "lamp"
+   }
   ]
  }
 }

@@ -1,0 +1,65 @@
+077 adoption: the testbed planting · Splice (Opus 5.5) · 2026-10-30
+Sky's yes to the Unity capture (briefs/077/unity/index.html). Keel's replay plan (briefs/077/READY-keel §6): step 0 done by Waymark/Suture before any change (out/scratch/077-replay/before.json, inputs 3589379819785711743); steps 1-2 here. No commits.
+
+World sha256 (out/world/harbour-district.world.json)
+- before: 1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5
+- after:  b4c862677d812b39f8f3c61a836c7abb46631584fdeffbd3f9e70d0471932c7f
+
+What changed in the world (only `civic` and `counts`)
+- 19 existing masses change only kit.id: 12 planter-run modules -> PlanterRun_4_A/B/C_TB, civic/cafe/terrace -> CafeTerrace_TB, civic/cafe -> CafeUpper_3_TB, civic/civic-office -> RecordsTower_TB, the four fountain-garden beds -> PlanterArc_TB.
+  - Same pivot, yaw, base, ring and height. A swapped piece keeps the old piece's footprint and height (Sky: same ids, footprints and frames), so cover, occlusion and the keep-clear rules see the ground as before.
+  - The fountain gardens also drop their override of DK_Leaf_CoreShrub and DK_Flower_Coral: PlanterArc_TB doesn't draw those dome slots. The stone overrides (DK_Faience_Teal, DK_Accent_Gold) stay.
+- 97 removed: the 92 BedTuft stations and the 5 bed hedges.
+- 12 added:
+  - 5 x `<bed>/planting` (CivicBedPlanting_<bed>, yaw 0, soil 3 mm above the kerb top);
+  - civic/cafe/terrace/planting (CafeTerrace_Planting), civic/cafe/planting (CafeUpper_3_Planting, fades with the café), civic/civic-office/planting (RecordsTower_Planting), each at its stonework's transform;
+  - 4 x civic/fountain-garden-*/lamp (GlobeLamp_TB at kit (1.0151, 0.5416), 0.465 m above the arc's pivot, Vela's recorded offset). Vantage's sign-off on the lamps is implied by Sky's yes on the capture (Aster, 2026-10-30).
+- The street layer and every other layer are byte-identical. The café's waiter robot keeps its spot: a companion's planting takes no ground (attach.ts takesNoGround, used by capstone-civic.ts and civicClearance).
+
+Files (Splice)
+- contracts/world/kit.json, via `bun run kit --catalogue --extra out/decokit-077`:
+  - 27 adopted. 20 rejected: the 17 dome ids and BedTuft_A/B/C. Status was set by the brief (out/scratch/splice/adopt077-status.ts).
+  - Latch's 4 materials and 6 textures are listed, including the regenerated botanical-mask-v2.png (60e8924e...) and DK_Opal_TB.mat (1676a5be...).
+  - lodAtPlay: true on the 26 rows with LODs; GlobeLamp_TB has none.
+  - Against HEAD no existing entry changed except status.
+- contracts/world/kit.schema.ts: KitAsset.lodAtPlay. tools/kit/extra.ts passes it through, set by a row's own lodAtPlay, else true for a row with LODs.
+- contracts/world/civic-look.json, via `bun tools/world/civic/adopt077-import.ts --write`:
+  - swaps: 17 old -> _TB.
+  - attach: the 4 companions and the arc lamp. dy is measured from the meshes (loadBounds).
+  - 4 palette entries marked `provisional`: the .mat _BaseColor, for Glint to set.
+  - 8 obsolete overrides dropped.
+  - CD-3 budget 330,000 -> 370,000, with a note: the LOD0 count is 359,323 because the rebuilds count at their inspection level. That follows the brief 026/028 precedent: no model is reduced, and Redline measures on the Air.
+- Generator:
+  - tools/world/civic/look.ts: drawnPiece, withSwaps, the `attach` type.
+  - tools/world/civic/dress.ts: put() draws the swap and keeps the old footprint and height. CafeUpper is swap-aware. fade and keep-clear kinds include swaps.
+  - tools/world/build.ts: the RecordsTower swap; attachPieces after recordsTower; withSwaps for overhead and frame; civicClearance skips planting.
+  - tools/world/civic/attach.ts (new); tools/world/gen/street/capstone-civic.ts.
+  - tools/world/rules/civic-dress.ts: CD-2 checks a rejected name as its swap and names the tufts only while some bed isn't at bed level. CD-3 and CD-4 count swaps. CD-5 fails an empty bed (no piece and no adopted tuft).
+- Tests moved to the adopted state: civic-dress, beds (the tuft recipe now runs on a pinned tuft-adopting catalogue, plus a new empty-bed test), dress048, faces (+ fixture), wave2, kit, extra.
+- sim/data/handover.site.json, via `bun run sim:site --solid-digest`.
+
+Site diff (step 2, Keel's expected diff; nothing else moved)
+- Only `grid` moved:
+  - grid.rows: 4 cells '#' -> '.' (78,42 82,39 85,46 90,52);
+  - grid.drawn.walkCells 2439 -> 2435; grid.drawn.digest "solid";
+  - grid.collide bd405cc8c7de0921422b8be350e0923c18a5853d60dbdbdf4704648ca08e3d48 -> fc49104d6d75bae4a3b947b81cf0ba13d9faf3af8ec5ec6c6d95e34f7395167f.
+- occluders 298 -> 298 and sightOccluders 301 -> 301; no place, stand, camera, cover, getaway or fight key moved.
+- handover.site.json sha256 ea0217ca... -> 1d3eb751.... handover.people.json, handover.takedown.json, provisional, rounds and the range sites are byte-identical.
+
+Checks (exit codes; logs in out/scratch/splice/adopt/)
+- bun run collide: 0 (0 re-measured). collide --check: 0.
+- bun run plan: 0, 0 FAIL (CD-1..CD-5 pass; CD-3 359,323 <= 370,000).
+- Handover overlay: 0, 0 FAIL.
+- bun run world: 0.
+- bun run cover: 0, only from.kit moved. bun run cover --check: 0.
+- bun run geometry --check: 1. That's G-3a 59 > ratchet 58, as before this round. Every geometry count (G-1a..K-1) is identical to the counts before adoption, so G-3a stays 59.
+- bun run typecheck: 0.
+- bun run sim:site --solid-digest: 0.
+- Tests (tools/world, kit, sim, geometry, cover, missions, plan, collide): 899 pass, 8 fail. The 8 are the same plan, overlap, oldmatch and BG/pavement failures as before 077, and none reads these pieces.
+- bun run kit (copy into unity/Assets/Suborned/Kit): 0. 390 adopted, 198 files copied (79.0 MB), 75 stale files pruned: the dome pieces' FBXs, their L1/L2 and the dome-only materials (DK_Leaf_Civic, DK_Leaf_CivicDark, DK_Bloom_*, DK_GroundCover).
+
+Notes for Latch (the rebuild)
+- The _TB FBXs carry the old internal object names (e.g. DK_PlanterRun_4_A inside DK_PlanterRun_4_A_TB.fbx). The catalogue's objects[] uses those names.
+- unity/Assets/Suborned/Editor/OldTown/Swap/PlantingSwap077.cs (the review probe) loads the dome prefabs by their old ids, which are now rejected and pruned.
+
+Next owners: Keel step 3 (bun run rounds), step 4 (sim check etc.); Suture/Waymark steps 5-7 (after.json against before.json, missions:check, re-record). Latch: rebuild from the copied kit. Glint: the four provisional palette colours.

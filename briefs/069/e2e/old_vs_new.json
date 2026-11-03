@@ -1,0 +1,139 @@
+{
+ "rows": {
+  "old sh2": {
+   "pitSt": 3.3,
+   "pitStMean": 1.8227142857142857,
+   "pitFl": 10.285714285714286,
+   "fl": 225.0,
+   "flMean": 112.28571428571429,
+   "st": 1.02,
+   "hem": 0.0,
+   "at": 196.0,
+   "restAT": 6,
+   "restHem": 0
+  },
+  "old c6": {
+   "pitSt": 1.747,
+   "pitStMean": 1.0331428571428571,
+   "pitFl": 29.142857142857142,
+   "fl": 495.0,
+   "flMean": 274.2857142857143,
+   "st": 1.318,
+   "hem": 222.0,
+   "at": 493.0,
+   "restAT": 50,
+   "restHem": 51
+  },
+  "old d6": {
+   "pitSt": 1.687,
+   "pitStMean": 0.8664285714285714,
+   "pitFl": 31.857142857142858,
+   "fl": 351.0,
+   "flMean": 202.85714285714286,
+   "st": 0.979,
+   "hem": 477.0,
+   "at": 216.0,
+   "restAT": 33,
+   "restHem": 66
+  },
+  "old c1": {
+   "pitSt": 2.639,
+   "pitStMean": 1.611,
+   "pitFl": 14.571428571428571,
+   "fl": 260.0,
+   "flMean": 216.14285714285714,
+   "st": 1.093,
+   "hem": 166.0,
+   "at": 944.0,
+   "restAT": 199,
+   "restHem": 44
+  },
+  "old guard": {
+   "pitSt": 2.461,
+   "pitStMean": 1.4722857142857144,
+   "pitFl": 43.42857142857143,
+   "fl": 210.0,
+   "flMean": 107.0,
+   "st": 1.303,
+   "hem": 0.0,
+   "at": 364.0,
+   "restAT": 19,
+   "restHem": 0
+  },
+  "new e2e_coat": {
+   "pitSt": 2.118,
+   "pitStMean": 1.2099999999999997,
+   "pitFl": 20.142857142857142,
+   "fl": 334.0,
+   "flMean": 199.85714285714286,
+   "st": 1.596,
+   "hem": 38.0,
+   "at": 149.0,
+   "restAT": 3,
+   "restHem": 11
+  },
+  "new e2e_dress": {
+   "pitSt": 2.091,
+   "pitStMean": 1.1829999999999998,
+   "pitFl": 18.142857142857142,
+   "fl": 210.0,
+   "flMean": 124.85714285714286,
+   "st": 0.887,
+   "hem": 5.0,
+   "at": 129.0,
+   "restAT": 11,
+   "restHem": 0
+  },
+  "new e2e_guard": {
+   "pitSt": 1.608,
+   "pitStMean": 0.9355714285714285,
+   "pitFl": 19.0,
+   "fl": 262.0,
+   "flMean": 143.0,
+   "st": 1.049,
+   "hem": 0.0,
+   "at": 110.0,
+   "restAT": 13,
+   "restHem": 0
+  },
+  "new e2e_flamingo": {
+   "pitSt": 1.871,
+   "pitStMean": 1.202,
+   "pitFl": 21.0,
+   "fl": 223.0,
+   "flMean": 132.0,
+   "st": 1.104,
+   "hem": 4.0,
+   "at": 99.0,
+   "restAT": 14,
+   "restHem": 0
+  }
+ },
+ "median": {
+  "old": {
+   "pitSt": 2.46,
+   "pitStMean": 1.47,
+   "pitFl": 29.14,
+   "fl": 260.0,
+   "flMean": 202.86,
+   "st": 1.09,
+   "hem": 166.0,
+   "at": 364.0,
+   "restAT": 33.0,
+   "restHem": 44.0
+  },
+  "new": {
+   "pitSt": 1.98,
+   "pitStMean": 1.19,
+   "pitFl": 19.57,
+   "fl": 242.5,
+   "flMean": 137.5,
+   "st": 1.08,
+   "hem": 4.5,
+   "at": 119.5,
+   "restAT": 12.0,
+   "restHem": 0.0
+  }
+ },
+ "note": "A pipeline on both (T rest, LOD0 12k, no speck cut), seven clips, 24 frames each; old = the fit test's five generations (no pose prompt), new = the four intake-A-pose generations. Measured before the model fixes of 2026-10-27; the final models are not yet animated."
+}

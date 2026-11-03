@@ -11,6 +11,7 @@
 //    F14-FOCUS     a focus is a lock: lasting, it never walks in; the order round-trips
 //    F14-UNDER     the under-fire read: who, since when; a holstered agent fired on is never drawn
 //    F12-ROT-WF    F12-ROT under weapons free: the officer still keeps one target (§12.2)
+//    F-ON-ONCE     engine 0.35.2 (Fable): the fight-on line once per fight: fire.free-on never twice without a fire.free-off between
 //    HI-SCOUT      the Enforcer goes loud; the holstered Scout in their sight is never fired on
 //    HI-SCOUT-ACT  the same, but the Scout draws in their sight: he is
 //    HI-FACE       a drop-it warning heeded (+1 T) makes the Scout's face known: at Alert 2 the police fire on him holstered
@@ -75,7 +76,7 @@ namespace Suborned.Sim
                 r.Eq(flips, 0, "it changed target only when the one in hand was down");
             });
 
-            AddRange("F14-X", "today", "lane", "§14.1: cease (X) stands the agent down from weapons free until it is shot at", r =>
+            AddRange("F14-X", "pre039", "lane", "§14.1: cease (X) stands the agent down from weapons free until it is shot at", r =>
             {
                 var g = r.G; F8Setup(r, 1, 1400); var f = r.Op("fixer");
                 r.Is(FireOn(r, "enforcer", "officer-1").ok, "the opening order");
@@ -90,7 +91,7 @@ namespace Suborned.Sim
                 else r.Is(off.Down, "the officer fell to the others first");
             });
 
-            var offStart = RangePreset("today"); offStart.WeaponsFree = false;
+            var offStart = RangePreset("pre039"); offStart.WeaponsFree = false; // brief 039: the fight before B (its stances, lapse and ends; unpinned chances)
             range!.Add(new Scenario { Id = "F14-OFF", Proto = "brief 029", Layout = "lane", Start = offStart, Intent = "§14.1: weapons free off, a drawn agent nobody fires on holds its fire (0.18.0's return; the BASE gate proves the bytes: briefs/027/keel)", Body = r =>
             {
                 var g = r.G; r.Is(!g.WeaponsFree, "weapons free is off at the start");
@@ -132,7 +133,7 @@ namespace Suborned.Sim
                 r.Line(clear == 56 && DownOf(r) == 0 && lost * 100 / max == 44, $"Motive §14.1: clear 5.6 s, 0 down, 44 % (got {(clear / 10.0):0.0} s, {DownOf(r)} down, {lost * 100 / max} %)");
             });
 
-            AddRange("F14-REPLAY", "today", "lane", "§14.4: weapons free toggled mid-fight (off, then on) and an X replay hash-identical from the start and the orders", r =>
+            AddRange("F14-REPLAY", "pre039", "lane", "§14.4: weapons free toggled mid-fight (off, then on) and an X replay hash-identical from the start and the orders", r =>
             {
                 r.Wait(1);
                 var b = PlayRangeBody(r.Inputs!, r.G.Start, rb =>
@@ -238,6 +239,27 @@ namespace Suborned.Sim
                 throw new InvalidOperationException("no post in the guard's cone beside the Office approach");
             }
 
+            // engine 0.35.2 (Fable briefs/039/fable-fight-on.md; log only): the fight-on line once per fight. 0.35.1 logged fire.free-on again after
+            // each lull in the final fight under one input (no fire.free-off there since Motive's ruling 1): 16 repeats over 11 routes
+            Add("F-ON-ONCE", "039", "Engine 0.35.2 (Fable, briefs/039/fable-fight-on.md; log only): under one input fire.free-on and fire.free-off alternate in the log, fire.free-on never twice without a fire.free-off between, on the loud fixture (bal-loud-x4: fights before the final one, then the final fight with its lulls) and the four quiet ones; every route script is held to the same in the xunit FightOnOnceTests.", r =>
+            {
+                static string Seq(Game g) => string.Join(" ", g.Log.Where(l => l.Code == "fire.free-on" || l.Code == "fire.free-off").Select(l => (l.Code == "fire.free-on" ? "on " : "off ") + Report.Clock(l.Tick)));
+                static int Repeats(Game g) { int n = 0; bool on = false; foreach (var l in g.Log) { if (l.Code == "fire.free-on") { if (on) n++; on = true; } else if (l.Code == "fire.free-off") on = false; } return n; }
+                static bool OffAfterOn(Game g) { bool on = false; foreach (var l in g.Log) { if (l.Code == "fire.free-on") on = true; else if (l.Code == "fire.free-off") { if (!on) return false; on = false; } } return true; }
+                void One(Run x, string fx)
+                {
+                    if (!PlayFixture(x, fx)) return;
+                    var g = x.G;
+                    x.Is(g.OneInputOn, $"{fx}: one input");
+                    x.Is(g.Log.Exists(l => l.Code == "fire.free-on"), $"{fx}: a fight comes on ({Seq(g)})");
+                    x.Eq(Repeats(g), 0, $"{fx}: no fight-on line twice without a fight-off between ({Seq(g)})");
+                    x.Is(OffAfterOn(g), $"{fx}: every fight-off follows a fight-on");
+                }
+                One(r, "bal-loud-x4");
+                if (r.Inputs == null) return;
+                foreach (var fx in new[] { "sq-ra-h3", "sq-route-a-board", "bal-rb-ff", "bal-rbb-ff" }) { var b = Alt(r, r.Inputs); One(b, fx); foreach (var c in b.Checks) r.Is(c.ok, $"[{fx}] " + c.what); }
+            });
+
             Add("HI-SCOUT", "—", "Sky 2026-10-21 (hostile-initiative.md answer 2): the Enforcer goes in wild; the holstered Scout in the hostiles' sight is never fired on", r =>
             {
                 var g = r.G; Loud(r, ScoutPost(r)); int t0 = g.Tick; bool seen = false;
@@ -279,7 +301,7 @@ namespace Suborned.Sim
 
             Add("HI-A3", "—", "Sky 2026-10-21 (answer 2): Alert 3 is not anyone in a cone: at lockdown (a seen takedown reported), an officer or robot that has the unknown, holstered Scout in its sight does not fire on him", r =>
             {
-                var g = r.G; TerraceTakedown(r); r.Done(Enf); r.Send(Enf, "crew:enforcer"); // his face will be on the report: he leaves the block
+                var g = r.G; TerraceTakedown(r); r.Done(Enf); r.Send(Enf, "d:South walkway"); // his face will be on the report: he leaves the block (brief 055: by the south walkway, was crew:enforcer: the units now cross the square by its south side and pass the getaway car)
                 r.Is(r.Until(() => g.Alert >= 3, T(60)), "the report lands: Alert 3");
                 r.Is(r.Until(() => g.Units.Exists(u => !u.Legacy && !u.Gun.Down && u.OnStreet(g.Tick)) || g.Over, T(60)), "the response's units are on the street");
                 var unit = g.Units.First(u => !u.Legacy && !u.Gun.Down && u.OnStreet(g.Tick)); int t0 = g.Tick; bool seen = false;
@@ -313,20 +335,22 @@ namespace Suborned.Sim
             Add("HI-RIVALS", "—", "Sky's answer 3: the crew watches the street from its arrival; calm, it fires on the drawn Enforcer in its cone and never on the holstered Scout beside him; a fight it starts costs the cell no Standing", r =>
             {
                 var g = r.G;
-                r.To(r.SendTo(Enf, new Pt(8600, -3400)));
-                r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), $"the rival crew is here at {Report.Clock(g.Tick)}");
-                var park = g.S.Stand(g.S.RivalsPark);
-                var e = Beside(r, park) ?? park; var sc = Beside(r, e) ?? e;
+                // brief 059: the crew is five people; rival-2 posts at ambush-1 by our car at 2:59, facing it: the Enforcer and the Scout stand 6 m in front of him
+                r.Is(r.Until(() => g.Crew[1].Mode == CrewMode.Posted, T(200)), $"the rival crew is here (rival-2 posted) at {Report.Clock(g.Tick)}");
+                var post = g.MemberPos(g.Crew[1], g.Tick); var face = g.Crew[1].Base; long fl = Math.Max(1, G.Isqrt((long)face.X * face.X + (long)face.Y * face.Y));
+                var front = new Pt(post.X + (int)(face.X * 600L / fl), post.Y + (int)(face.Y * 600L / fl));
+                var e = g.S.Grid.NearestFree(front) ?? front; var sc = Beside(r, e) ?? e;
                 r.To(Math.Max(r.SendTo(Enf, e), r.SendTo(Scout, sc)));
+                r.Until(() => g.MemberWatching(g.Crew[1], r.Op(Enf).Pos) && g.MemberWatching(g.Crew[1], r.Op(Scout).Pos), T(45)); // his beats turn him: wait for the watch beat
                 r.Is(g.RivalsStreetWatching(r.Op(Enf).Pos) && g.RivalsStreetWatching(r.Op(Scout).Pos), "both stand in the crew's cone");
-                r.Is(g.SeesNow("rivals", r.Op(Enf).Pos), "and the host's cone shows it (the Scout's skill: learned at arrival)");
+                r.Is(g.SeesNow("rival-2", r.Op(Enf).Pos), "and the host's cone shows it (the Scout's skill: learned at arrival)");
                 r.Wait(T(5));
                 r.Eq(r.Shots().Count, 0, "holstered, nobody is fired on");
                 r.Do(Enf, "draw");
-                r.Is(r.Until(() => r.Shots().Exists(x => x.by == "rivals") || g.Over, T(6)), "the crew fires on the drawn Enforcer");
-                r.Is(r.Shots().First().by == "rivals" && r.Shots().First().target == Enf, "the first shot is theirs, at him");
+                r.Is(r.Until(() => r.Shots().Exists(x => x.by.StartsWith("rival-", StringComparison.Ordinal)) || g.Over, T(6)), "the crew fires on the drawn Enforcer");
+                r.Is(r.Shots().First().by.StartsWith("rival-", StringComparison.Ordinal) && r.Shots().First().target == Enf, "the first shot is theirs, at him");
                 r.Wait(T(8));
-                r.Eq(ShotsAt(r, Scout).Count(x => x.by == "rivals"), 0, "never at the holstered Scout");
+                r.Eq(ShotsAt(r, Scout).Count(x => x.by.StartsWith("rival-", StringComparison.Ordinal)), 0, "never at the holstered Scout");
                 r.Is(!FightMoves(g).Exists(m => m.delta < 0), "a fight the rivals start costs no Standing");
                 var fight = g.OpenFight ?? g.Fights.LastOrDefault();
                 r.Is(fight != null && fight.RivalsFirst == "rivals", "the fight's first shot is the rivals' (fight.public: fired first is the cell's only)");

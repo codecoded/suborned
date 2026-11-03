@@ -1,0 +1,27 @@
+[
+ {
+  "name": "v-h0",
+  "haze": "briefs/075/golden/glint/haze/h0.json",
+  "play": true
+ },
+ {
+  "name": "v-h1",
+  "haze": "briefs/075/golden/glint/haze/h1.json",
+  "play": false
+ },
+ {
+  "name": "v-h2",
+  "haze": "briefs/075/golden/glint/haze/h2.json",
+  "play": false
+ },
+ {
+  "name": "v-h3",
+  "haze": "briefs/075/golden/glint/haze/h3.json",
+  "play": false
+ },
+ {
+  "name": "v-h4",
+  "haze": "briefs/075/golden/glint/haze/h4.json",
+  "play": false
+ }
+]

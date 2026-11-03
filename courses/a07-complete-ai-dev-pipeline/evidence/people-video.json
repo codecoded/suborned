@@ -1,0 +1,106 @@
+{
+  "video": "out/scratch/a07/people-run/TheSuborned-A07-People-Pipeline-4K.mp4",
+  "sha256": "b96fefdf35ed2595d737308cd176f24d35fdc192eda8789d4f3f1c89e092d86e",
+  "resolution": [
+    3840,
+    2160
+  ],
+  "fps": 20,
+  "chapters": [
+    {
+      "start": 0,
+      "name": "Production path"
+    },
+    {
+      "start": 8,
+      "name": "Original generation evidence"
+    },
+    {
+      "start": 18,
+      "name": "Recorded pipeline execution"
+    },
+    {
+      "start": 36.26,
+      "name": "Generated people following the cafe routines"
+    },
+    {
+      "start": 42.26,
+      "name": "The social route in the game"
+    },
+    {
+      "start": 50.26,
+      "name": "Inez calls Arthur away: a relationship changes the route"
+    },
+    {
+      "start": 56.26,
+      "name": "Street-level view / The built world and kit provide the setting"
+    },
+    {
+      "start": 61.26,
+      "name": "Recorded result and costs"
+    },
+    {
+      "start": 68.14,
+      "name": "Cost and optimisation"
+    },
+    {
+      "start": 80.14,
+      "name": "Scope and architectural reflection"
+    },
+    {
+      "start": 91.14,
+      "name": "Links and remaining playable gate"
+    }
+  ],
+  "terminal_source": {
+    "command": [
+      "bun",
+      "courses/a07-complete-ai-dev-pipeline/people-run.ts",
+      "run"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 55.70523325004615,
+    "video": "out/scratch/a07/people-run/people-terminal-4K.mp4",
+    "cast": "out/scratch/a07/people-run/people-run.cast",
+    "kind": "Live terminal-output recording rendered during command execution, not a GUI desktop screen recording",
+    "resolution": [
+      3840,
+      2160
+    ],
+    "fps": 10
+  },
+  "edit": "Explanatory graphics; actual CLI at original speed; engine loading/saving wait removed; actual player frames from this run; final result held 4 seconds for readability",
+  "model_calls_this_run": 0,
+  "fresh_unity_compilation": false,
+  "gameplay_source": "1920x1080 at 20 fps, upscaled; local current-plan people variant in retained 0.2.232 binary",
+  "youtube_url": "https://youtu.be/725LKDmVNQ8",
+  "upload": {
+    "file": "out/scratch/a07/people-run/TheSuborned-A07-People-Pipeline-4K-upload.mp4",
+    "sha256": "624f52f5ac0776070bf69f248f196215bd6265c7a0d3161a7d4d27111a96c616",
+    "bytes": 35745988,
+    "encoding": "H.264 CRF 19, medium preset; 3840x2160 at 20 fps"
+  },
+  "seconds": 95.1,
+  "youtube_channel": "CodeCoded / @codecoded",
+  "visibility": "unlisted",
+  "checks": "No issues found",
+  "signed_out_playback_verified": true,
+  "youtube_qualities_observed": [
+    "2160p",
+    "1440p",
+    "1080p",
+    "720p"
+  ],
+  "youtube_playback_observed": {
+    "signed_out": true,
+    "channel": "https://www.youtube.com/@codecoded",
+    "unlisted": true,
+    "duration": 95.121,
+    "readyState": 4,
+    "playing": true,
+    "selected_quality": "hd2160",
+    "decoded_width": 3840,
+    "decoded_height": 2160,
+    "current_time_seconds": 21.844293
+  }
+}

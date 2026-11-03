@@ -1,0 +1,137 @@
+{
+  "takes": [
+    {
+      "situation": "Plain and quick: she gives way, gets him off the door, then tells him.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Inez. Call Okafor, and remember what stays between us."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Yes, I remember. I've tables waiting, so I'll call now."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It's me, love. Have they stamped your shift card yet?"
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Not till the change. What's the matter, ringing the door?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "I've something to tell you that can't wait. Not on the line."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then it's bad. All right, I'm off the door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Someone knows about us, love. Whoever it was looked suspicious to me."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Then I'm running back to my door, now. See to your tables."
+        }
+      ],
+      "learned": [
+        "She told him: door's empty less."
+      ],
+      "opens": [
+        "Enforcer can still Enter the Office."
+      ]
+    },
+    {
+      "situation": "Okafor wants to finish his shift, so she has to push him off the door.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "We're ready, Inez. Telephone Okafor, just as we agreed."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Yes, I'm calling. Another Bureau notice this shift, and the terrace full."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Long shift, love? I've something to tell you that can't wait."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Long enough, Inez. Say it now, I've a door to stand."
+        },
+        {
+          "speaker": "Inez",
+          "line": "It can't be said on the line, love. Please."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "That's not your voice. All right, I'm off the door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Listen, love. Someone knows about us, and they looked suspicious to me."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "That's my door empty, then. I'm running back to it, now."
+        }
+      ],
+      "learned": [
+        "She told him: door's empty less."
+      ],
+      "opens": [
+        "Enforcer can still Enter the Office."
+      ]
+    },
+    {
+      "situation": "The Fixer checks she'll keep quiet; Okafor asks who, and she refuses to say.",
+      "beats": [
+        {
+          "speaker": "Fixer",
+          "line": "It's time, Inez. We did say we'd telephone."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Who else is on this line? Yes, I'll call Okafor now."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Only us. Okafor hears what we agreed, and nothing else."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Long shift, love? I've news that can't wait, not on this line."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Tubes rattling behind me all shift. All right, I'm off the door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Someone knows about us, love."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Who? What did they say to you?"
+        },
+        {
+          "speaker": "Inez",
+          "line": "I won't say who. They threatened me, and they looked suspicious."
+        },
+        {
+          "speaker": "Okafor",
+          "line": "Say no more on the line. I'm running back, now."
+        }
+      ],
+      "learned": [
+        "She told him: door's empty less."
+      ],
+      "opens": [
+        "Enforcer can still Enter the Office."
+      ]
+    }
+  ]
+}

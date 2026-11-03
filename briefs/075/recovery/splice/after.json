@@ -1,0 +1,45 @@
+{
+  "capturedAt": "2026-10-29T12:11:21.237086+00:00",
+  "files": {
+    "contracts/world/harbour-district.plan.json": "fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2",
+    "contracts/world/kit.json": "fc4d65941a095caf091b18578c398aeb1dd8be376a090ece8fb35f89aadfff8b",
+    "out/world/harbour-district.world.json": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+    "out/world/harbour-district.walk.json": "f3eafbccaac6309e35af89c447445573a03af72af3aa26d84fd52da27cf44cea",
+    "briefs/055/geometry.summary.json": "001c2622bb8a6be2561c1bc243fed7bd69e0aea9700d935f1a317976cb298c3f",
+    "out/geometry/geometry.json": "5075245cea273afbac8873df9130a3495a15cf67df83fb54e9bdae4aa735ce4f",
+    "out/geometry/report.html": "bfaf4459ba0dd87c0adcf9fb1c5656750d7f23b4edf31cc3626c32e121e7a0b6"
+  },
+  "simData": {
+    "sim/data/handover.people.json": "104afde7ec4e43138fd3cee79070cd942cffa7423e9c4942fe901e1cd64ab3f3",
+    "sim/data/handover.provisional.json": "1f01ce6907c9644d627932f6dd1b6ba16d14fd7926a60145db20ab28ca4635e2",
+    "sim/data/handover.rounds.json": "c8c884e7dd6d11e78e0a03997cbb7e118d526290d2eeba79eb19f48f99596b56",
+    "sim/data/handover.site.json": "ea0217ca7cf25aa3c0b50d45f0584d77b944a870599d4d97e5d35f1662028fa0",
+    "sim/data/handover.takedown.json": "01f09fb753371cf155385aca2b0ef36de64833c663216445859a4a2a44478034",
+    "sim/data/range-dense.site.json": "8f806f32efbfdb197b81be567384b4c053734cf69b4247171be09fc1506b7a7f",
+    "sim/data/range-lane.site.json": "9673082e78ee3697cbc92306edb612835f80160f49e88e42534db1dc77b987cc",
+    "sim/data/range.site.json": "b5332531e7ad8c4f8f45a11ed1dc7ec752c97c705bd3afced995a64f3efa2698"
+  },
+  "simUnchangedDuringRecovery": true,
+  "simDifferentFromHead": [],
+  "existingOutputsAndInputsPreserved": true,
+  "checks": [
+    {
+      "command": "bun run guard --wait-timeout 0 bun run geometry --check",
+      "exitCode": 1,
+      "result": "9 rules pass; G-3a 59 > ratchet 58",
+      "log": "geometry-check.log"
+    },
+    {
+      "command": "bun run guard --wait-timeout 0 bun run test tools/geometry tools/game/walkfile.test.ts",
+      "exitCode": 0,
+      "result": "14 pass, 0 fail; 38 assertions; 4.89 s",
+      "log": "focused-tests.log"
+    },
+    {
+      "command": "bun run guard --wait-timeout 0 bun briefs/075/recovery/splice/check-walk.ts",
+      "exitCode": 0,
+      "result": "in-memory generation matches existing walk byte-for-byte; fresh world hash, payload sizes, counts and frame pass; no unmeasured kit ids",
+      "log": "walk-check.log"
+    }
+  ]
+}

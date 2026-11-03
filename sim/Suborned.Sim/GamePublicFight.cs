@@ -66,7 +66,7 @@ namespace Suborned.Sim
             {
                 if (!f.Rivals.Contains(by)) f.Rivals.Add(by);
                 if (f.RivalsFirst.Length == 0) f.RivalsFirst = "rivals";
-                if (by == "rivals") f.CrewBroken = -1; // back and firing: not broken
+                if ((by == "rivals" || (IsCrewId(by) && !IsFightHostile(by))) && f.CrewBroken != Tick) f.CrewBroken = -1; // back and firing: not broken (engine 0.36.0: a shot in the tick he broke is no coming back; "since" starts after it)
             }
         }
 
@@ -154,6 +154,7 @@ namespace Suborned.Sim
                 }
                 var h = HostileOf(id);
                 if (h != null && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone") return false;
+                if (h == null && CrewOf(id) is CrewMember cm && !cm.Gun.Down && f.CrewBroken < 0 && !(cm.Mode == CrewMode.Aboard || cm.Mode == CrewMode.Gone)) return false; // brief 059: a member of the street crew still up and not driven off
                 judged++;
             }
             return judged > 0;

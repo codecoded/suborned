@@ -80,6 +80,9 @@ namespace Suborned.Sim
                     var g = r.G; const string C = "car:official"; int k = g.HealthScale;
                     var car = g.CarAt(C)!.Value;
                     var spot = SpotFor(r, r.Op(Scout).Pos, car, 800, 1200); if (!r.Is(spot.HasValue, "a spot 8–12 m from the official car with a line")) return;
+                    // engine 0.30.0: with Pulse's 2026-10-24 sweep (patrol-a (67.75, -46.25)) the patrol sees the Scout at her spot and downs her before the lab's
+                    // car burns (healthScale): the Tech reroutes it first, so its false orders cover the shooting
+                    if (lab) { r.To(r.Send(Tech, "cabinet", run: true)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); }
                     r.To(r.SendTo(Scout, spot!.Value));
                     if (drawn) { r.Do(Scout, "draw"); r.Wait(g.DrawT + 1); }
                     r.Is(g.CarOf(C) == null, "not yet shot: the car has no record (the preview reads a fresh one)");
@@ -95,16 +98,17 @@ namespace Suborned.Sim
                     r.Is(r.Fire(Scout, C), "fire on the official car taken");
                     if (!r.Is(r.Until(() => g.CarDisabled(C) || g.Over, T(120)) && g.CarDisabled(C), "it is disabled")) return;
                     var cv = g.CarOf(C)!; var at = r.Shots().Where(x => x.by == Scout && x.target == C).ToList();
-                    r.Eq(at.Count, pv.ShotsToDown, "the run disabled it in the chip's shots");
+                    if (!g.Rolled) r.Eq(at.Count, pv.ShotsToDown, "the run disabled it in the chip's shots"); // brief 080: rolled, the chip's shots are a run of average luck
                     r.Eq(at.Count(x => x.hit), pv.HitsToDown, "with the chip's hits");
-                    r.Eq(cv.DisabledAt - t0, pv.TicksToDown, $"at the chip's time ({(pv.TicksToDown + Game.Hz - 1) / Game.Hz} s)");
+                    if (!g.Rolled) r.Eq(cv.DisabledAt - t0, pv.TicksToDown, $"at the chip's time ({(pv.TicksToDown + Game.Hz - 1) / Game.Hz} s)");
+                    else r.Eq(cv.DisabledAt - t0, first + (at.Count - 1) * w.Every, "at the weapon's cadence, by the shots it took");
                     var pb = g.PreviewFire(OpId.Scout, C);
                     r.Eq((pb.DownIs, pb.HitsToDown), ("burns", (cv.Gun.Health + pb.Damage - 1) / pb.Damage), "disabled: the chip counts on to burning (health to 0)");
                     int t1 = g.Tick, n0 = at.Count;
                     if (!r.Is(r.Until(() => g.CarBurning(C) || g.Over, T(120)) && g.CarBurning(C), "it burns")) return;
                     var more = r.Shots().Where(x => x.by == Scout && x.target == C).Count() - n0;
-                    r.Eq(more, pb.ShotsToDown, "it burns in the chip's shots");
-                    r.Eq(cv.BurningAt - t1, pb.TicksToDown, "at the chip's time");
+                    if (!g.Rolled) { r.Eq(more, pb.ShotsToDown, "it burns in the chip's shots"); r.Eq(cv.BurningAt - t1, pb.TicksToDown, "at the chip's time"); }
+                    else r.Is(more >= pb.HitsToDown, $"it burns: {more} shots for {pb.HitsToDown} hits");
                 }, lab ? LabStart() : null);
             }
 
@@ -112,7 +116,7 @@ namespace Suborned.Sim
             {
                 var g = r.G; var car = g.CarAt("car:official")!.Value;
                 var far = SpotFor(r, r.Op(Enf).Pos, car, 1000, 1300); if (!r.Is(far.HasValue, "a spot 10–13 m from the official car")) return;
-                r.To(Math.Max(r.SendTo(Enf, far!.Value), T(g.S.ValeAtCar) + 1));
+                r.To(Math.Max(r.SendTo(Enf, far!.Value), T(g.ClockValeAtCar) + 1));
                 r.Is(g.Vale == ValeAt.Pickup, "Vale is at the official car");
                 var card = g.GoingLoud(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = "car:official" });
                 r.Eq((card.Fails, card.Hold), ("vale-dead", true), "the card: vale-dead, the hold");
@@ -122,7 +126,7 @@ namespace Suborned.Sim
                 var vp = g.ValePos(); r.Is(vp.HasValue && vp.Value != g.CarPos(), "Vale is out beside it");
                 r.Until(() => g.Over, T(40));
                 r.Eq(g.FailCode, "vale-dead", "the blast kills Vale: vale-dead");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("CAR-GETAWAY", "—", "§10.7: the getaway car disabled fails the mission getaway-lost (the card says so first; the cause is the wrecked car)", r =>
             {

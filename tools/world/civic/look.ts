@@ -19,6 +19,8 @@ export type Look = {
   place: Record<string, string>;
   /** A piece that is a building's ground storey: the building above starts at `top` m. */
   ground: Record<string, { building: string; top: number }>;
+  /** brief 066: a ground-storey piece → the pieces that may draw the building's body above it, one per storey count (the one whose height is the body's is placed). */
+  upper?: Record<string, string[]>;
   /** Pieces whose body is overhead (a parasol's canopy, 2.07 m clear): over a table or a Handover point is allowed, only the pole stands on the ground. */
   overhead: string[];
   /** Pieces the play camera's architecture fade may thin (they stand between the camera and a person). */
@@ -37,7 +39,14 @@ export type Look = {
     hedge: { surface: string; material: string; inset: number; rise: number };
     tufts: { pieces: string[]; drop: number; rows: { inset: number; step: number; minFromRing?: number }[] };
     source: string;
+    /** Brief 077 (Sky 2026-10-30): beds planted at bed level, one composition each, keyed by the bed's export id: the piece and the bed's outline in the piece's own
+     *  plan frame (fitted rigidly onto the bed's ring to place it, within `tol` m). The soil sits `soilProud` m above the kerb top. Absent in a look a run pinned before. */
+    level?: { soilProud: number; tol: number; beds: Record<string, { piece: string; outline: V[] }>; source: string };
   };
+  /** Brief 077: pieces placed with a drawn piece, in its frame: the drawn piece's id → each attached piece, its pivot at kit (x, z) `at` from the parent's (scaled, turned
+   *  by its yaw), its lowest point `dy` m above the parent's lowest point (scaled), the mass id the parent's id plus `/as`. The companions' planting (at [0, 0]) and the
+   *  globe lamp in each PlanterArc_TB's frame. Absent in a look a run pinned before. */
+  attach?: Record<string, { piece: string; at: [number, number]; dy: number; as: string }[]>;
   budget: { lod0Tris: number };
   slab: { material: string; tile_m: number; surfaces: string[]; note: string };
   bands: { frame: string; pieces: Band[] };
@@ -60,3 +69,8 @@ export function withLook<T>(file: string | undefined, fn: () => T): T {
   swap(JSON.parse(readFileSync(file, 'utf8')) as Look);
   try { return fn(); } finally { swap(saved); }
 }
+
+/** Brief 077: the piece the world draws for `id`: its swap (civic-look.json `swaps`) when that is adopted, else `id`. `adopted` is the catalogue check (kitrefs adoptedBy). */
+export const drawnPiece = (id: string, adopted: (x: string) => boolean): string => { const s = look.swaps[id]; return s && adopted(s) ? s : id; };
+/** Brief 077: `ids` with each one's swap beside it (a list keyed by the piece drawn: fade, frame, overhead, the keep-clear kinds, the brief 008 pieces), so the swapped piece keeps the old one's role. */
+export const withSwaps = (ids: readonly string[]): string[] => [...new Set(ids.flatMap(i => (look.swaps[i] ? [i, look.swaps[i]!] : [i])))];

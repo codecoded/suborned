@@ -1,0 +1,33 @@
+{
+ "fit": "sh2",
+ "labels": {
+  "hair": 248,
+  "hat": 843
+ },
+ "pieces": {
+  "hat": {
+   "srcFaces": 1151,
+   "tris": 1151,
+   "seconds": 0.1,
+   "srcVerts": 843
+  },
+  "hair": {
+   "srcFaces": 305,
+   "tris": 305,
+   "seconds": 0.06,
+   "srcVerts": 248
+  },
+  "suit": {
+   "wrapped": 2364,
+   "verts": 6322,
+   "pctWrapped": 37.4,
+   "tris": 10544,
+   "seconds": 49.84
+  }
+ },
+ "seconds": {
+  "body": 0.67,
+  "classify": 0.07,
+  "pieces": 50.0
+ }
+}

@@ -7,7 +7,7 @@
 //  · called: the summons; she walks back to her post the way she came, waits, stands together with him from his arrival to his turn plus
 //    rounds.part, and the round resumes at the start of its next rest
 //  · ended: at the first of rounds.ends she walks back and stands her post for the rest of the mission
-// Every reader of her position (reach, witnesses, sight, the summons' lover-within) reads PersonPos, which is the round's.
+// Every reader of her position (reach, witnesses, sight, the summons) reads PersonPos, which is the round's.
 using System;
 using System.Collections.Generic;
 
@@ -34,8 +34,8 @@ namespace Suborned.Sim
             var ru = n["rules"]; ru.Only("file", "sha256", "paceCmPerS", "lingerS", "closeCm", "clearCm", "partS", "settleS", "stayS", "chanceStayS");
             d.LingerS = ru["lingerS"].Int(); d.CloseCm = ru["closeCm"].Int(); d.ClearCm = ru["clearCm"].Int(); d.PartS = ru["partS"].Int(); d.StayS = ru["stayS"].Int(); d.PaceCmPerS = ru["paceCmPerS"].Int();
             // the baked numbers are the rulebook's (Motive confirms them there): a file baked from other numbers is rejected
-            if (d.LingerS != r.RoundsLingerS || d.CloseCm != r.PartnersCloseCm || d.ClearCm != r.PartnersClearCm || d.PartS != r.PartnersPartS || d.StayS != r.SummonStayS || d.PaceCmPerS != r.CellSpeed)
-                throw new FormatException("rounds.rules (lingerS, closeCm, clearCm, partS, stayS, paceCmPerS) are not the rulebook's rounds.linger, rounds.close, rounds.clear, rounds.part, summon.stay and cell.speed: rebake (bun run rounds)");
+            if (d.LingerS != r.RoundsLingerS || d.CloseCm != r.PartnersCloseCm || d.ClearCm != r.PartnersClearCm || d.PartS != r.PartnersPartS || d.StayS != r.SummonStayS || d.PaceCmPerS != r.PeopleWalk) // engine 0.34.0 (brief 067, M067-B1): the city's walk (crowd.walk), not the cell's
+                throw new FormatException("rounds.rules (lingerS, closeCm, clearCm, partS, stayS, paceCmPerS) are not the rulebook's rounds.linger, rounds.close, rounds.clear, rounds.part, summon.stay and crowd.walk: rebake (bun run rounds)");
             if (n["meetings"].Items.Count > 0) throw new FormatException("rounds.meetings: chance meetings are not played yet (brief 022 §2.6): unknown = reject");
             foreach (var kv in n["servers"].Entries)
             {
@@ -134,7 +134,7 @@ namespace Suborned.Sim
         {
             var sv = ServerOf(p); if (sv == null || !R.RoundHolds.Contains(verb)) return;
             var ev = EvOf(sv); var me = RoundPoseAt(sv, ev, Tick).Pos;
-            var f = op.Pos - me; if (f == new Pt(0, 0)) f = sv.Face;
+            var f = op.Pos - me; if (f == new Pt(0, 0) || (verb == "listen" && R.ListenSpotOn)) f = sv.Face; // engine 0.39.0: a discreet Listen: she keeps her own facing
             ev.Holds.Add(new RoundEvents.Hold { From = Tick, To = landsAt, Face = f, By = op.Id }); ev.Version++;
         }
         /// <summary>An operative's order ends early (cancelled, or the operative down): a hold it made ends now (its linger still follows).</summary>

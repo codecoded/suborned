@@ -97,7 +97,7 @@ namespace Suborned.Play
             bool frozen = live && host.Frozen;
             if (frozen && !flWasFrozen) flFrozenAt = Time.unscaledTime; flWasFrozen = frozen;
             // the portraits keep today's pips without the lab; with it, segment bars (and the charge) replace them
-            for (int i = 0; i < 4; i++) foreach (var w in new[] { colWins[i], rowWins[i] }) if (w?.Pips != null) w.Pips.style.visibility = FlOn ? Visibility.Hidden : Visibility.Visible;
+            for (int i = 0; i < 4; i++) foreach (var w in new[] { colWins[i], rowWins[i] }) if (w?.Pips != null) w.Pips.style.visibility = FlOn ? Visibility.Hidden : StyleKeyword.Null; /* Glyph's 0.2.113 #2: inherit, never force Visible (the fail replay hides the roster and the pips stayed) */
             Show(flPill, frozen); Show(flGo, frozen && look.ladder); foreach (var q in flQueue) Show(q.root, frozen && look.ladder);
             int badges = 0, walks = 0, kites = 0;
             Show(flCoinRing, live && host.AimNow is { Lab: true }); flCoinBand = host.AimNow?.Band ?? ""; flCoinRing.MarkDirtyRepaint();
@@ -273,7 +273,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 var (r, act, coin, text, dash, walk, walkS, exp, expN) = flQueue[k]; Show(walk, false); Show(walkS, false); Show(exp, false); Show(expN, false); var qp = flQPips[k]; qp.Clear(); Show(flQPipEl[k], false);
-                float x = !left ? 14 : k == a ? SelectedChipX(plateX, folded && PlateOn) : plateX; // brief 030 (no plate): the ladder docks beside the portraits r.style.left = x; r.style.top = WinMid(k) - ChipH / 2; lastY = WinMid(k) + ChipH / 2; lastX = plateX;
+                float x = !left ? 14 : k == a ? SelectedChipX(plateX, folded && PlateOn) : plateX; /* brief 030 (no plate): the ladder docks beside the portraits */ r.style.left = x; r.style.top = WinMid(k) - ChipH / 2; lastY = WinMid(k) + ChipH / 2; lastX = plateX;
                 var q = host.Queued[k]; int shots = host.VolleyShots[k]; string tgt = shots > 0 ? host.VolleyTarget[k] : q?.Target ?? "";
                 bool empty = q == null && shots <= 0; Show(dash, empty); r.EnableInClassList("s-plate_dark", !empty);
                 bool armed = g.Ops[k].Gun.W != null && !g.Ops[k].Down;

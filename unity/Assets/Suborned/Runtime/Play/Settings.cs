@@ -21,12 +21,12 @@ namespace Suborned.Play
         public List<BindingS> bindings = new();
 
         [Serializable] public sealed class DisplayS { public string windowMode = "borderless"; public int width, height; public int renderScale = 100; public string quality = "balanced"; public bool vsync = true; public int frameCap = 60; public int hudScale = 100; }
-        [Serializable] public sealed class AudioS { public int master = 80, music = 60, effects = 80, voices = 90; }
+        [Serializable] public sealed class AudioS { public int master = 80, music = 60, effects = 80, voices = 90, ambience = 60; }
         [Serializable] public sealed class CameraS { public float panSpeed = 18f; public bool edgePan; public float orbitSensitivity = 1f; public bool invertOrbit, trackpadOrbit; public string thirdPersonDistance = "default"; public bool settle = true; }
         [Serializable]
         public sealed class GameplayS
         {
-            public int clickScheme = (int)ControlPreset.HoldActs; public bool planTogether = true; public bool hints = true; public int defaultSpeed = 1; public int conversations = (int)ConversationScenes.FirstTime;
+            public int clickScheme = (int)ControlPreset.HoldActs; public bool planTogether = true; public bool hints = true; public int defaultSpeed = 1; public int conversations = (int)ConversationScenes.FirstEachScene;
             public bool followLock; public bool commanderHoldFire; public bool actionPlate; public bool quickAction; public bool clickActs = true; public int aimMode; public bool tpRightFires = true;
         }
         /// <summary>One changed binding: the action's name, its keys (Key names; keys[0] the primary), its mods.</summary>

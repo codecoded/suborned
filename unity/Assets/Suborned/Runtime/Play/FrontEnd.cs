@@ -19,7 +19,7 @@ namespace Suborned.Play
     /// Sizes are ref px at 1080p (the panel scales with the screen height); all type is Jost (Medium for titles and buttons, Regular-Tab for the rest).</summary>
     public sealed partial class FrontEnd : MonoBehaviour
     {
-        public const string BootScene = "FrontEnd", GameScene = "HarbourDistrict";
+        public const string BootScene = "FrontEnd", GameScene = "OldTown"; // Sky 2026-10-30: "I want to be playing the old town"
         public static FrontEnd Live { get; private set; }
         /// <summary>A front-end screen has the keys and the clicks (the host's Update stops after its housekeeping).</summary>
         public static bool Covers => Live != null && Live.screen != Screen.None;
@@ -33,12 +33,39 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- boot
 
+        /// <summary>Brief 056 (Splice): how long the district takes to load, one line in Player.log per load: `Load: cold|warm HarbourDistrict sync|async, scene active
+        /// 3.21 s, first frame 3.30 s (engine up 1.9 s before)`. Cold is the first load in this process, warm a later one (Quit to menu, the fight range back);
+        /// the machine's file cache is its own state (`purge` needs root). A Stopwatch and two events: telemetry only, nothing the sim, a replay or a shot reads.</summary>
+        public static class LoadClock
+        {
+            static bool seen, pending, async; static long t0; static double engine, active;
+            public static void Begin(bool isAsync)
+            {
+                if (pending) return;
+                pending = true; async = isAsync; t0 = System.Diagnostics.Stopwatch.GetTimestamp(); engine = Time.realtimeSinceStartupAsDouble;
+                SceneManager.sceneLoaded += Loaded;
+            }
+            static double Since() => (System.Diagnostics.Stopwatch.GetTimestamp() - t0) / (double)System.Diagnostics.Stopwatch.Frequency;
+            static void Loaded(Scene s, LoadSceneMode m)
+            {
+                if (s.name != GameScene) return;
+                SceneManager.sceneLoaded -= Loaded; active = Since();
+                UnityEngine.Rendering.RenderPipelineManager.endContextRendering += Drawn;
+            }
+            static void Drawn(UnityEngine.Rendering.ScriptableRenderContext c, List<Camera> cams)
+            {
+                UnityEngine.Rendering.RenderPipelineManager.endContextRendering -= Drawn;
+                Debug.Log($"Load: {(seen ? "warm" : "cold")} {GameScene} {(async ? "async" : "sync")}, scene active {active:0.00} s, first frame {Since():0.00} s (engine up {engine:0.0} s before)");
+                seen = true; pending = false;
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
         {
             if (SceneManager.GetActiveScene().name != BootScene) return;
             bool shots = GameBoot.ArgValue("-frontEndShots") != null;
-            if (GameBoot.Automation && !shots) { SceneManager.LoadScene(GameScene); return; } // a proof or batch row: straight to play, as before the front end
+            if (GameBoot.Automation && !shots) { LoadClock.Begin(false); SceneManager.LoadScene(GameScene); return; } // a proof or batch row: straight to play, as before the front end
             var fe = Ensure(); Settings.Current.ApplyDisplay(); fe.StartCoroutine(fe.LoadGame());
         }
 
@@ -59,7 +86,7 @@ namespace Suborned.Play
         [Serializable] public sealed class TitleS { public Rect01 rect = new(); public float maxScale = 1.25f; public TitleLine[] lines = Array.Empty<TitleLine>(); public Rule rule = new(); public ShadowS shadow = new(); }
         [Serializable] public sealed class ImageS { public string name = "loading_bg"; public float[] focus = { 0.5f, 0.5f }; public PushIn pushIn = new(); }
         [Serializable] public sealed class PushIn { public float scale, seconds = 24; }
-        [Serializable] public sealed class Scrim { public string edge = "bottom", color = "#0b1615", curve = "smoothstep"; public float heightFrac = 0.3f, alphaAtEdge = 0.5f, holdFrac; }
+        [Serializable] public sealed class Scrim { public string edge = "bottom", color = "#0b1615", curve = "smoothstep"; public float heightFrac = 0.3f, alphaAtEdge = 0.5f, holdFrac, holdRef; }
         [Serializable] public sealed class ColA { public string color = "#0b1615"; public float alpha = 1, widthRef = 1, seconds = 1.6f; }
         [Serializable] public sealed class BarS { public float leftRef = 64, rightRef = 64, bottomRef = 66, heightRef = 5, radiusRef = 2.5f; public ColA track = new(), rim = new(), fill = new(), cap = new(), shimmer = new(); }
         [Serializable] public sealed class PercentS { public bool enabled = true; public float sizeRef = 14.5f; public string color = "#f7f4ec"; }
@@ -91,7 +118,7 @@ namespace Suborned.Play
         [Serializable] public sealed class BriefS { public float[] imageFocus = { 1f, 0.5f }; public ColumnS column = new(); public HeadRule headRule = new(); public BriefButton button = new(); }
         [Serializable] public sealed class ScrimSets { public Scrim[] menu = Array.Empty<Scrim>(), panel = Array.Empty<Scrim>(), brief = Array.Empty<Scrim>(); }
         [Serializable] public sealed class TimingF { public float screenFadeSeconds = 0.3f, buttonStaggerSeconds = 0.05f, buttonRiseRef = 6, menuFadeInAfterLoading = 0.4f, pageSwitchSeconds = 0.12f; }
-        [Serializable] public sealed class FrontData { public string schema = ""; public Colors colors = new(); public Types type = new(); public ScrimSets scrims = new(); public ButtonS button = new(); public MenuS menu = new(); public PanelS panel = new(); public ControlsS controls = new(); public ControlsPageS controlsPage = new(); public PauseS pause = new(); public BriefS brief = new(); public TimingF timing = new(); }
+        [Serializable] public sealed class FrontData { public string schema = ""; public Colors colors = new(); public Types type = new(); public ScrimSets scrims = new(); public ButtonS button = new(); public MenuS menu = new(); public PanelS panel = new(); public ControlsS controls = new(); public ControlsPageS controlsPage = new(); public PauseS pause = new(); public BriefS brief = new(); public TimingF timing = new(); public LightS lightline = new(); }
 
         /// <summary>The mission's brief (contracts/missions/&lt;mission&gt;/brief.json, Fable's words, `suborned.mission-brief/2`; StreamingAssets/missions/
         /// &lt;mission&gt;/brief.json in the build): three variants, `pick` the one shown (Sky picks later), each a hook, handler lines, a dossier
@@ -122,7 +149,7 @@ namespace Suborned.Play
             l.style.marginLeft = l.style.marginRight = l.style.marginTop = l.style.marginBottom = 0; l.style.paddingLeft = l.style.paddingRight = l.style.paddingTop = l.style.paddingBottom = 0;
             SetText(l, t, text);
         }
-        Texture2D picture;
+        Texture2D picture, glass;
         public static PanelSettings SharedPanel { get; private set; }
 
         static T Json<T>(string resource) where T : new()
@@ -156,6 +183,7 @@ namespace Suborned.Play
             L = Json<LoadingData>("Loading/loading"); F = Json<FrontData>("Loading/frontend"); brief = LoadBrief();
             picture = Resources.Load<Texture2D>("Loading/" + (string.IsNullOrEmpty(L.image.name) ? "loading_bg" : L.image.name));
             if (!picture) Debug.LogError("FrontEnd: the picture Resources/Loading/" + L.image.name + " is missing");
+            glass = BakeGlass(picture, F.lightline.sheet.glassBlurRef); // light line: the sheet's smoked glass (flat ink 90 % when it is cut)
             var ps = Resources.Load<PanelSettings>("Kit/HudPanel");
             var go = new GameObject("front-end-ui"); go.SetActive(false); go.transform.SetParent(transform, false);
             doc = go.AddComponent<UIDocument>();
@@ -245,24 +273,10 @@ namespace Suborned.Play
         /// <summary>A scrim band: a 1 x 64 (or 64 x 1) gradient baked once, stretched over its edge (no shader).</summary>
         VisualElement ScrimEl(VisualElement parent, Scrim s)
         {
-            var e = E(parent); e.style.position = Position.Absolute;
+            var e = E(parent); e.style.position = Position.Absolute; e.userData = s;
             var col = Hex(s.color);
-            if (s.edge == "full") { Fill(e); e.style.backgroundColor = new Color(col.r, col.g, col.b, SrgbAlpha(s.alphaAtEdge)); e.userData = s; return e; }
-            bool vert = s.edge is "top" or "bottom"; const int N = 64;
-            var tex = new Texture2D(vert ? 1 : N, vert ? N : 1, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, name = "scrim-" + s.edge };
-            for (int i = 0; i < N; i++)
-            {
-                float u = i / (N - 1f); // 0 at the edge, 1 at the band's far end
-                float t = s.holdFrac >= 1f ? 0f : Mathf.Clamp01((u - s.holdFrac) / Mathf.Max(0.0001f, 1f - s.holdFrac));
-                float a = s.alphaAtEdge * (1f - (s.curve == "smoothstep" ? t * t * (3f - 2f * t) : t));
-                // texture rows: y = 0 is the bottom of the texture (drawn at the element's bottom)
-                int px = s.edge switch { "top" => N - 1 - i, "bottom" => i, "left" => i, _ => N - 1 - i };
-                var c = new Color(col.r, col.g, col.b, SrgbAlpha(a));
-                if (vert) tex.SetPixel(0, px, c); else tex.SetPixel(px, 0, c);
-            }
-            tex.Apply(false, true);
-            e.style.backgroundImage = new StyleBackground(tex);
-            e.style.backgroundSize = new BackgroundSize(new Length(100, LengthUnit.Percent), new Length(100, LengthUnit.Percent));
+            if (s.edge == "full") { Fill(e); e.style.backgroundColor = new Color(col.r, col.g, col.b, SrgbAlpha(s.alphaAtEdge)); return e; }
+            BakeScrim(e, s, W);
             var frac = new Length(s.heightFrac * 100f, LengthUnit.Percent);
             switch (s.edge)
             {
@@ -272,6 +286,30 @@ namespace Suborned.Play
                 default: e.style.top = 0; e.style.bottom = 0; e.style.right = 0; e.style.width = frac; break;
             }
             return e;
+        }
+        readonly Dictionary<VisualElement, float> scrimBakedW = new();
+        /// <summary>The band's gradient; a hold given in ref px (holdRef, light line: the brief's 656) is a fraction of the band at this width, so the band is
+        /// baked again when the width changes.</summary>
+        void BakeScrim(VisualElement e, Scrim s, float width)
+        {
+            var col = Hex(s.color); scrimBakedW[e] = width;
+            float hold = s.holdRef > 0 && s.edge is "left" or "right" ? Mathf.Clamp(s.holdRef / Mathf.Max(1f, s.heightFrac * width), 0f, 0.95f) : s.holdFrac;
+            bool vert = s.edge is "top" or "bottom"; const int N = 64;
+            var tex = new Texture2D(vert ? 1 : N, vert ? N : 1, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, name = "scrim-" + s.edge };
+            for (int i = 0; i < N; i++)
+            {
+                float u = i / (N - 1f); // 0 at the edge, 1 at the band's far end
+                float t = hold >= 1f ? 0f : Mathf.Clamp01((u - hold) / Mathf.Max(0.0001f, 1f - hold));
+                float a = s.alphaAtEdge * (1f - (s.curve == "smoothstep" ? t * t * (3f - 2f * t) : t));
+                // texture rows: y = 0 is the bottom of the texture (drawn at the element's bottom)
+                int px = s.edge switch { "top" => N - 1 - i, "bottom" => i, "left" => i, _ => N - 1 - i };
+                var c = new Color(col.r, col.g, col.b, SrgbAlpha(a));
+                if (vert) tex.SetPixel(0, px, c); else tex.SetPixel(px, 0, c);
+            }
+            tex.Apply(false, true);
+            if (e.style.backgroundImage.value.texture is Texture2D old && old) Destroy(old);
+            e.style.backgroundImage = new StyleBackground(tex);
+            e.style.backgroundSize = new BackgroundSize(new Length(100, LengthUnit.Percent), new Length(100, LengthUnit.Percent));
         }
 
         // ---------------------------------------------------------------- build
@@ -349,6 +387,7 @@ namespace Suborned.Play
         }
         void LayoutPicture()
         {
+            foreach (var e in briefScrims) if (e.userData is Scrim bs && bs.holdRef > 0 && (!scrimBakedW.TryGetValue(e, out var bw) || Mathf.Abs(bw - W) > 0.5f)) BakeScrim(e, bs, W);
             if (!picture) return;
             var a = Map(0, 0); var b = Map(1, 1);
             pictureEl.style.left = a.x; pictureEl.style.top = a.y; pictureEl.style.width = b.x - a.x; pictureEl.style.height = b.y - a.y;
@@ -379,7 +418,12 @@ namespace Suborned.Play
             foreach (var e in menuScrims) Show(e, pic && s == Screen.Menu);
             foreach (var e in briefScrims) Show(e, pic && s == Screen.Brief);
             Show(panelVeil, s is Screen.Options or Screen.Controls);
-            foreach (var e in panelScrims) { var sc = e.userData as Scrim; var vc = Hex(sc?.color ?? F.colors.inkDeep); e.style.opacity = 1f; e.style.backgroundColor = new Color(vc.r, vc.g, vc.b, SrgbAlpha(fromPause ? 0.40f : sc?.alphaAtEdge ?? 0.52f)); } // from the pause menu: the even veil at 0.40 over the frozen game
+            foreach (var e in panelScrims)
+            {
+                var sc = e.userData as Scrim; e.style.opacity = 1f;
+                if (sc == null || sc.edge == "full") { var vc = Hex(sc?.color ?? F.colors.inkDeep); e.style.backgroundColor = new Color(vc.r, vc.g, vc.b, SrgbAlpha(fromPause ? F.lightline.sheet.pauseVeil : sc?.alphaAtEdge ?? 0.52f)); } // from the pause menu: the even veil at 0.40 over the frozen game
+                else Show(e, !fromPause); // light line: the loading screen's bottom band under the sheet, for the build line (the picture only)
+            }
             Show(loadingGroup, s == Screen.Loading); Show(menuGroup, s == Screen.Menu); Show(briefGroup, s == Screen.Brief);
             Show(panelGroup, s is Screen.Options or Screen.Controls);
             Show(buildLabel, pic && s != Screen.Brief);
@@ -412,14 +456,29 @@ namespace Suborned.Play
             else { foreach (var c in covered) if (c) c.enabled = true; covered.Clear(); if (ownCam) ownCam.enabled = false; }
         }
 
+        /// <summary>Brief 062 §6: the key art cross-dissolves to the street over DissolveS, so the briefing is no hard cut; the game's cameras draw under it.</summary>
+        public const float DissolveS = 0.4f;
+        float dissolveUntil = -1f;
+        void DissolveToGame()
+        {
+            Show(Screen.None); if (pictureLayer == null) return;
+            Show(pictureLayer, true); pictureLayer.style.opacity = 1f; FadeOut(pictureLayer, DissolveS); dissolveUntil = Time.unscaledTime + DissolveS;
+        }
+
         void Update()
         {
-            if (screen == Screen.None) return;
+            if (screen == Screen.None)
+            {
+                if (dissolveUntil >= 0f) { Animate(); if (Time.unscaledTime >= dissolveUntil) { dissolveUntil = -1f; Show(pictureLayer, false); pictureLayer.style.opacity = 1f; } }
+                return;
+            }
+            dissolveUntil = -1f;
             if (!fromPause) CoverGame(true); // a camera the scene brought in under the picture (the load) stands down too
             if (L.image.pushIn != null && L.image.pushIn.scale > 0 && screen is Screen.Loading or Screen.Menu) { push = L.image.pushIn.scale * Mathf.Clamp01((Time.unscaledTime - pushStart) / Mathf.Max(1f, L.image.pushIn.seconds)); }
             LayoutPicture();
             if (screen == Screen.Loading) LoadingFrame();
             else Keys();
+            if (menuIntroAt >= 0f && Time.unscaledTime >= menuIntroAt) { menuIntroAt = -1f; IntroReveal(menuList); }
             Animate();
             if (screen is Screen.Options or Screen.Controls) PanelFrame();
         }
@@ -451,6 +510,7 @@ namespace Suborned.Play
             FadeIn(loadingGroup, L.timing.barDelaySeconds, L.timing.barFadeSeconds); FadeIn(buildLabel, L.timing.barDelaySeconds, L.timing.barFadeSeconds);
             float t0 = Time.unscaledTime; yield return null;
             SetProgress(0.02f, "Harbour District");
+            LoadClock.Begin(true);
             var op = SceneManager.LoadSceneAsync(GameScene, LoadSceneMode.Single);
             if (op == null) { Debug.LogError("FrontEnd: HarbourDistrict is not in the build"); yield break; }
             while (!op.isDone) { SetProgress(op.progress / 0.9f * 0.8f, "Harbour District"); yield return null; }
@@ -484,28 +544,43 @@ namespace Suborned.Play
             }
         }
         /// <summary>The proof's still: every fade at its end.</summary>
-        public void Settle() { foreach (var f in fades) { f.E.style.opacity = f.To; f.E.style.translate = new Translate(0, 0); } fades.Clear(); titleRise = 0; FitTitle(); }
+        public void Settle() { foreach (var f in fades) { f.E.style.opacity = f.To; f.E.style.translate = new Translate(0, 0); } fades.Clear(); titleRise = 0; FitTitle(); if (menuIntroAt >= 0f) { menuIntroAt = -1f; IntroReveal(menuList); } }
 
         // ---------------------------------------------------------------- focus and keys (Up/Down move, Enter/Space take, Left/Right change, Tab/Q/E tabs, Esc back)
 
         public sealed class Focusable
         {
             public VisualElement El, Ring; public Action Activate; public Action<int, bool> Adjust; public bool Row; public Func<bool> Visible;
+            /// <summary>Light line: paints the focused state (true) or idle; a disabled one never takes focus and keys skip it.</summary>
+            public Action<bool> Paint; public Func<bool> Disabled; public LightWord Word;
         }
         readonly List<Focusable> focusables = new();
         int focusIx = -1; bool keyFocus;
-        IEnumerable<Focusable> Current() { var l = focusables.Where(f => f.El != null && IsShown(f.El) && (f.Visible == null || f.Visible())).ToList(); return l.Where(f => f.Row).Concat(l.Where(f => !f.Row)); } // a page's rows, then its footer
+        IEnumerable<Focusable> Current() { var l = focusables.Where(f => f.El != null && IsShown(f.El) && (f.Visible == null || f.Visible()) && !(f.Disabled?.Invoke() ?? false)).ToList(); return l.Where(f => f.Row).Concat(l.Where(f => !f.Row)); } // a page's rows, then its footer; disabled ones skipped
         static bool IsShown(VisualElement e) { for (var p = e; p != null; p = p.parent) if (p.resolvedStyle.display == DisplayStyle.None || p.style.display == DisplayStyle.None) return false; return true; }
-        void FocusFirst() { keyFocus = screen is Screen.Menu or Screen.Brief; focusIx = -1; /* the default focus ring shows on open (Glyph 0.2.85 #8); the mouse hover stays the sprite alone */ var list = Current().ToList(); if (list.Count > 0) { focusIx = focusables.IndexOf(DefaultFocus(list)); } PaintFocus(); }
-        Focusable DefaultFocus(List<Focusable> list) => screen switch { Screen.Brief => list.LastOrDefault() ?? list[0], _ => list[0] };
+        // light line: hover = focus, so one thing is marked at a time and the pointer, keys and pad look the same; the focus always shows
+        void FocusFirst() { keyFocus = true; focusIx = -1; var list = Current().ToList(); if (list.Count > 0) { focusIx = focusables.IndexOf(DefaultFocus(list)); } PaintFocus(); }
+        Focusable DefaultFocus(List<Focusable> list) => screen switch
+        {
+            Screen.Brief => list.LastOrDefault() ?? list[0],
+            Screen.Menu => list.FirstOrDefault(f => f.El?.name == "menu-continue") ?? list.FirstOrDefault(f => f.El?.name == "menu-new") ?? list[0], // Continue when present, else New game
+            _ => list[0],
+        };
         void PaintFocus()
         {
             for (int i = 0; i < focusables.Count; i++)
             {
-                var f = focusables[i]; bool on = i == focusIx && keyFocus;
+                var f = focusables[i]; bool on = i == focusIx && keyFocus && !(f.Disabled?.Invoke() ?? false);
                 if (f.Ring != null) Show(f.Ring, on);
+                f.Paint?.Invoke(on);
             }
         }
+        /// <summary>The pointer entered a piece (hover = focus): it takes the focus. Also the proof's pointer step (the same call the PointerEnter makes).</summary>
+        void SetFocus(Focusable f) { if (f == null || (f.Disabled?.Invoke() ?? false)) return; int i = focusables.IndexOf(f); if (i < 0) return; focusIx = i; keyFocus = true; PaintFocus(); }
+        /// <summary>The proof's hover: the piece named `name` (an element name) takes the focus as a PointerEnter would.</summary>
+        public bool HoverFocus(string name) { var f = Current().FirstOrDefault(x => x.El?.name == name); if (f == null) return false; SetFocus(f); return true; }
+        /// <summary>The focused piece's element name (the proof's focus checks).</summary>
+        public string FocusedName => Focused?.El?.name ?? "";
         void MoveFocus(int d)
         {
             var list = Current().ToList(); if (list.Count == 0) return;
@@ -545,32 +620,16 @@ namespace Suborned.Play
             }
         }
 
-        // ---------------------------------------------------------------- buttons (the kit's cream text plate, the focus ring as the HUD's "ready")
+        // ---------------------------------------------------------------- words (light line: the word item replaces every plate button)
 
-        public VisualElement Button(VisualElement parent, string text, float w, float h, Action act, TypeS type, out Focusable fo, bool small = false)
+        /// <summary>A single word with its own marker (footer actions, clash actions, the brief's Continue): focus by hover or keys, the action on release
+        /// over it (or Enter/Space when focused). `lineW` &lt;= 0: the label's width + 14.</summary>
+        public LightWord WordButton(VisualElement parent, string text, TypeS type, float w, float h, float inset, float gutter, float lineW, float lineY, Action act, out Focusable fo, bool shadow = false)
         {
-            var b = E(parent, small ? "s-plate_dark" : "s-btn_text_normal", w: w, h: h, pick: true);
-            if (!small) b.style.unitySliceScale = h / 80f; // Glyph 0.2.85 #3: the plate's tips follow its height (the kit's class fixes 0.5px); kept across the hover and pressed classes
-            b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.style.flexShrink = 0;
-            var l = T(b, type, text, small ? "cream" : null); l.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var ring = E(b); ring.style.position = Position.Absolute; ring.style.left = -4; ring.style.top = -4; ring.style.right = -4; ring.style.bottom = -4;
-            Border(ring, F.button.focus.ringRef, C("live"), h * 0.3f + 4); // the chamfer's line (Glyph 0.2.85 #8) ring.style.backgroundColor = C("live", F.button.focus.glowAlpha * 0.25f); Show(ring, false);
-            var f = new Focusable { El = b, Ring = ring, Activate = act }; focusables.Add(f); fo = f;
-            if (!small)
-            {
-                b.RegisterCallback<PointerEnterEvent>(_ => { b.RemoveFromClassList("s-btn_text_normal"); b.AddToClassList("s-btn_text_hover"); });
-                b.RegisterCallback<PointerLeaveEvent>(_ => { b.RemoveFromClassList("s-btn_text_hover"); b.RemoveFromClassList("s-btn_text_pressed"); b.AddToClassList("s-btn_text_normal"); });
-                b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { b.RemoveFromClassList("s-btn_text_hover"); b.AddToClassList("s-btn_text_pressed"); e.StopPropagation(); } });
-            }
-            else b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
-            b.RegisterCallback<PointerUpEvent>(e =>
-            {
-                if (e.button != 0) return;
-                if (!small) { b.RemoveFromClassList("s-btn_text_pressed"); b.AddToClassList("s-btn_text_hover"); }
-                keyFocus = false; PaintFocus(); act?.Invoke(); e.StopPropagation();
-            });
-            b.userData = l;
-            return b;
+            var lw = Word(parent, text, type, w, h, inset, gutter, lineW, lineY, true, shadow);
+            var f = new Focusable { El = lw.Root, Activate = act, Word = lw }; f.Paint = on => { lw.Focused = on; PaintWord(lw); }; focusables.Add(f); fo = f;
+            Hook(lw, () => SetFocus(f), () => act?.Invoke());
+            return lw;
         }
 
         // ---------------------------------------------------------------- main menu
@@ -581,23 +640,31 @@ namespace Suborned.Play
         public bool ContinueShown { get; private set; }
         public static bool ForceNoSave; // the proof's "menu-nosave" frame
 
+        LightList menuList;
         void BuildMenu()
         {
             menuGroup = E(blocker); Fill(menuGroup);
-            var m = F.menu;
-            var col = E(menuGroup); col.style.position = Position.Absolute; col.style.left = m.leftRef; col.style.bottom = m.bottomRef; col.style.flexDirection = FlexDirection.Column;
-            // brief 051 (Aster's default until Sky says): New game first, Continue second (only when a saved run exists)
+            var m = F.lightline.menu; var mk = F.lightline.marker;
+            // light line: words straight on the picture (its left scrim), one marker that slides; 300 x 48 hit areas, 12 apart, the label 52 in
+            menuList = List(menuGroup, m.itemW, m.itemH, m.gapRef, m.textInsetRef, mk.gutterRef); menuList.Root.style.left = m.leftRef; menuList.Root.style.bottom = m.bottomRef;
+            // brief 051: New game first, Continue second (only when a saved run exists)
             foreach (var (id, label) in new[] { ("new", "New game"), ("continue", "Continue"), ("options", "Options"), ("controls", "Controls"), ("quit", "Quit") })
             {
-                var b = Button(col, label, m.widthRef, m.heightRef, () => MenuAct(id), F.type.menuButton, out var fo);
-                b.style.marginTop = m.gapRef; menuButtons[id] = (b, fo); b.name = "menu-" + id;
+                var w = ListWord(menuList, label, F.lightline.type.word, m.lineWRef, m.lineYRef, 0f, true);
+                var f = new Focusable { El = w.Root, Activate = () => MenuAct(id), Word = w }; f.Paint = on => { w.Focused = on; PaintWord(w); }; focusables.Add(f);
+                Hook(w, () => SetFocus(f), () => MenuAct(id));
+                menuButtons[id] = (w.Root, f); w.Root.name = "menu-" + id;
             }
         }
+        float menuIntroAt = -1f;
 
         void MenuShow(Screen was)
         {
             ContinueShown = !ForceNoSave && (LiveRunAvailable() || (continuePath = NewestSession()) != null);
-            Show(menuButtons["continue"].b, ContinueShown);
+            Show(menuButtons["continue"].b, ContinueShown); Relayout(menuList);
+            // the marker appears at the default item after 0.3 s (no slide, a 0.12 s fade), its line then draws once
+            if (was is Screen.Loading or Screen.None or Screen.Brief) { IntroStart(menuList); menuIntroAt = Time.unscaledTime + F.lightline.timing.markerAppearDelay; } // after loading (or back from play): the intro
+            else { menuIntroAt = -1f; menuList.Intro = false; }
             int i = 0;
             foreach (var id in new[] { "new", "continue", "options", "controls", "quit" })
             {
@@ -642,9 +709,9 @@ namespace Suborned.Play
             switch (id)
             {
                 case "new":
-                    if (h != null && (h.rangeMode)) { pendingAfterLoad = "brief"; SceneManager.LoadScene(GameScene); return; }
+                    if (h != null && (h.rangeMode)) { pendingAfterLoad = "brief"; LoadClock.Begin(false); SceneManager.LoadScene(GameScene); return; }
                     if (h != null && (h.Game == null || h.Game.Tick > 0 || h.Game.Orders.Count > 0 || h.Continued)) h.Begin(); // a fresh run (the one left is saved at its last tick)
-                    liveRun = false; Show(Screen.Brief); return;
+                    liveRun = false; DissolveToGame(); return; // brief 062 B: New game goes straight to the briefing on the street (the lore screen's job is the hook and the objective)
                 case "continue":
                     if (LiveRunAvailable()) { Show(Screen.None); return; }
                     if (continuePath != null && h != null) { h.ContinueFrom(continuePath); liveRun = false; Show(Screen.None); }
@@ -673,7 +740,7 @@ namespace Suborned.Play
         {
             HandoverHost h = null; float t0 = Time.unscaledTime;
             while (((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) && Time.unscaledTime - t0 < 60f) yield return null;
-            if (what == "menu") { liveRun = false; Show(Screen.Menu); } else if (what == "brief") Show(Screen.Brief);
+            if (what == "menu") { liveRun = false; Show(Screen.Menu); } else if (what == "brief") DissolveToGame();
         }
 
         /// <summary>The pause menu's Quit to menu: the run is saved (as Quit does) and the menu comes up over it; Continue returns to it. From the fight
@@ -681,7 +748,7 @@ namespace Suborned.Play
         public static void QuitToMenu(HandoverHost h)
         {
             var fe = Ensure();
-            if (h != null && h.rangeMode) { fe.pendingAfterLoad = "menu"; SceneManager.LoadScene(GameScene); return; }
+            if (h != null && h.rangeMode) { fe.pendingAfterLoad = "menu"; LoadClock.Begin(false); SceneManager.LoadScene(GameScene); return; }
             fe.liveRun = h != null && h.Game != null && !h.Game.Over; fe.Show(Screen.Menu);
         }
 
@@ -721,7 +788,7 @@ namespace Suborned.Play
             foreach (var part in brief.order ?? Array.Empty<string>())
                 switch (part)
                 {
-                    case "hook": if (!string.IsNullOrWhiteSpace(v.hook)) Line(briefText, new TypeS { font = "Jost-Medium", sizeRef = 24f, color = "cream" }, v.hook, gap); break;
+                    case "hook": if (!string.IsNullOrWhiteSpace(v.hook)) Line(briefText, new TypeS { font = "Jost-Medium", sizeRef = 22f, color = "cream" }, v.hook, gap) /* Glyph 0.2.97 #4: 24 wrapped the hook; one line at 22 */; break;
                     case "handler":
                         if (v.handler != null && v.handler.Length > 0) { foreach (var h in v.handler) if (!string.IsNullOrWhiteSpace(h)) Line(briefText, body, h, 6f); briefText[briefText.childCount - 1].style.marginBottom = gap; }
                         break;
@@ -739,7 +806,7 @@ namespace Suborned.Play
                             {
                                 if (string.IsNullOrWhiteSpace(it)) continue;
                                 var row = E(briefText); row.style.flexDirection = FlexDirection.Row; row.style.marginBottom = 5;
-                                var dot = E(row, w: 5, h: 5); dot.style.backgroundColor = C("live"); Radius(dot, 2.5f); dot.style.marginTop = 9; dot.style.marginRight = 12; dot.style.flexShrink = 0;
+                                var dot = E(row, w: 6, h: 6); dot.style.backgroundColor = C("live"); dot.style.rotate = new Rotate(45); dot.style.marginTop = 8.5f; dot.style.marginLeft = 1; dot.style.marginRight = 12; dot.style.flexShrink = 0; // Glyph 0.2.97 #4: the bullet is the light line's marker (a turned square), not a dot
                                 var l = T(row, valueT, it); l.style.whiteSpace = WhiteSpace.Normal; l.style.flexShrink = 1;
                             }
                             briefText[briefText.childCount - 1].style.marginBottom = gap;
@@ -747,8 +814,10 @@ namespace Suborned.Play
                         break;
                     case "signoff": if (!string.IsNullOrWhiteSpace(v.signoff)) Line(briefText, new TypeS { font = "Jost-Medium", sizeRef = 18f, trackingEm = 0.04f, color = "cream" }, v.signoff, 0f); break;
                 }
-            var bb = F.brief.button;
-            var b = Button(briefGroup, bb.label, bb.w, bb.h, BriefContinue, F.type.button, out _); b.style.position = Position.Absolute; b.style.right = c.rightRef; b.style.bottom = c.bottomRef; b.name = "brief-continue";
+            var bb = F.brief.button; var lb = F.lightline.brief;
+            // light line: a word, 18 ref, focused by default (marker + line), bottom right, 64 from the right and the bottom, a 232 ref item
+            var b = WordButton(briefGroup, bb.label, F.lightline.type.wordSmall, lb.continueW, lb.continueH, lb.continueInset, lb.continueGutter, lb.continueLineW, lb.continueLineY, BriefContinue, out _, shadow: true).Root;
+            b.style.position = Position.Absolute; b.style.right = lb.continueRightRef; b.style.bottom = lb.continueBottomRef; b.name = "brief-continue";
         }
         void BriefShow() { FadeIn(briefGroup, 0f, F.timing.screenFadeSeconds); }
         void BriefContinue() { Show(Screen.None); } // the host's own tactical briefing (modal until Begin) is up under it

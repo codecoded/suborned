@@ -17,11 +17,11 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- names
 
-        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by";
+        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : p.Job == Person.RivalJob ? Text?.HoldersPhrase(p.Id) ?? "a rival" : !p.Civilian ? CrowdSecurityName(p) : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by"; // engine 0.33.0: a member of the crew is "a rival"; Pulse 067 W2: a shift guard is "a guard" (his body too)
         public string StashName(StashPlace st) => Text?.TargetName(st.Kind == "door" ? "stash-door" : "stash-bin", st.Kind == "door" ? "the service door" : "the bin") ?? st.Id;
         public string CameraName(string id) => id == "entrance" || id == "pickup" ? Text?.TargetName("camera-" + id, $"the {id} camera") ?? $"the {id} camera"
             : Text != null && Text.TargetNames.TryGetValue("camera-" + id, out var n) ? n : "the square's mast camera";
-        static bool IsOpName(string s) => s is "scout" or "fixer" or "tech" or "enforcer";
+        public static bool IsOpName(string s) => s is "scout" or "fixer" or "tech" or "enforcer";
         static string KeyOf(Person p) => HostViews.KeyOf(p);
 
         // ---------------------------------------------------------------- the plate
@@ -31,6 +31,8 @@ namespace Suborned.Play
         public Slot[] PlateOf(OpId by)
         {
             var own = Slots[(int)by];
+            if (Game != null && Game.Ops[(int)by].Carrying.HasValue && Game.Ops[(int)by].CarryBody.Length == 0) // item 31: carrying a downed agent, Put down is knob 1 (the rest dim; no Hide for an agent)
+            { var pa = new Slot[Math.Max(1, own.Length)]; pa[0] = DropSlot; for (int i = 1; i < own.Length; i++) pa[i] = new Slot(own[i].Id, own[i].Label, own[i].Glyph, true); return pa; }
             if (by == OpId.Enforcer && Game != null && Game.Vale == ValeAt.WithEnforcer) // the end steps: out with Vale, the first knob is the car
             { var v = (Slot[])own.Clone(); v[0] = new Slot("act", Text?.Actions.TryGetValue("board", out var ex) == true && ex.Label.Length > 0 ? ex.Label : "Board", "car"); for (int i = 1; i < v.Length; i++) if (v[i].Id == "fire") v[i] = new Slot("fire", v[i].Label, v[i].Glyph, true); return v; } // Keel c018: walking Vale he doesn't fire (fire-carrying-vale): the knob greys // brief 018: Board (with Vale), then Go from the car
             if (Game == null || Game.Ops[(int)by].CarryBody.Length == 0) return own;
@@ -43,6 +45,7 @@ namespace Suborned.Play
         void PlateAct(string id)
         {
             var op = Game.Ops[(int)Agent];
+            if (id == "drop" && op.Carrying.HasValue && op.CarryBody.Length == 0) { CancelAgent((int)Agent, null); return; } // item 31: an agent is laid down by the cancel (the engine's cancel.carry)
             if (id == "drop") { var o = new Order { Op = Op.Name(Agent), Do = "drop" }; if (Issue(o, null, null)) SayOrder(Agent, o, null); return; }
             var st = NearestStash(op.Pos);
             if (st == null) { PopKey("no-room", null, SelectedWorld(), Feedback.Refused, "No hiding place with room."); return; }
@@ -68,10 +71,21 @@ namespace Suborned.Play
         {
             var R = Game.R;
             var i = new Intent { Slot = slot, Label = $"Loop {CameraName(cam)}", Order = new Order { Op = "tech", Do = "loop", Target = cam } };
-            i.Time = $"{R.LoopS} s"; i.Trail = $"T +{R.LoopTrail}"; i.Outcome = "tethered";
+            i.Time = $"{R.LoopS} s"; i.Trail = $"T +{R.LoopTrail}"; i.Outcome = R.LoopRuns ? $"runs {R.LoopRunS / 60}:{R.LoopRunS % 60:00}" : ""; // engine 0.31.0: the loop runs 2:00 from its landing, wherever the Tech goes (no tether)
             var k = Game.Known("camera:" + cam);
             i.Rows.Add(("watch", k != null && k.Sight ? $"Blinds: what {CameraName(cam)} sees{(Game.S.Cameras.Find(x => x.Id == cam)?.Facings.Length > 1 ? " (all three heads)" : "")}" : "Blinds: ? until the cell watches it"));
-            if (Game.LoopOn && Game.LoopCam != cam) i.Rows.Add(("loop", $"Replaces the loop on {CameraName(Game.LoopCam)}"));
+            return i;
+        }
+
+        /// <summary>Engine 0.31.0 (brief 058 §2, Glyph 058 §1): the Tech's Disable at the cabinet: 10 s, +2 T, and the Alert its report will raise
+        /// when the desk next looks at that screen (Game.AlertIfCut: 1 for the first incident, 2 after). Null when the rulebook has no Disable.</summary>
+        Intent DisableIntent(int slot, string cam)
+        {
+            var R = Game.R; if (!R.DisableOn) return null;
+            var i = new Intent { Slot = slot, Label = $"Disable {CameraName(cam)}", Order = new Order { Op = "tech", Do = "disable", Target = cam } };
+            i.Time = $"{R.DisableS} s"; i.Trail = $"T +{R.DisableTrail}"; int a = 1; Guard("alert if cut", () => a = Game.AlertIfCut()); i.Alert = $"A →{a}"; i.Outcome = "cut";
+            int at = -1; Guard("cut noticed", () => at = Game.CutNoticedAt(cam, Game.Tick + R.DisableS * Game.Hz));
+            if (at >= 0) i.Rows.Add(("p_alert", $"The desk sees it at {MissionClock(at)}")); // the panel's row; the ring keeps the shipped line (Aster 2026-10-25: no extra price fields)
             return i;
         }
 
@@ -84,12 +98,12 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the takedown (Glyph §1, §2)
 
-        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key), _ => null };
+        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key) ?? Game.BodyById(t.Key)?.P, "rivals" when HostViews.IsCrewId(t.Key) => Game.CrewOf(t.Key)?.P, _ => null }; // engine 0.33.0: a member on foot, a rival's body
 
         /// <summary>A takedown on a person, one way, priced by the engine (QuoteTakedown, read-only).</summary>
         Intent TakedownIntent(int slot, Target t, string how)
         {
-            if (t.Kind is not ("person" or "crowd")) return null;
+            if (!(t.Kind is "person" or "crowd" || t.Kind == "rivals" && HostViews.IsCrewId(t.Key))) return null; // engine 0.33.0: the crew as people (rivals.peopleRule)
             var p = PersonOf(t); if (p == null || p.Down) return null;
             if (p == Game.ValeP && how == "knockout") return null; // Vale: the refusal pill only (Glyph §2)
             var q = Game.QuoteTakedown(KeyOf(p), how);
@@ -149,6 +163,10 @@ namespace Suborned.Play
                         var (label, does) = Text.Action(o.Do, TextKey(t));
                         v.Name = o.Do switch { "stash" => $"Hide in {t.Label}", "drop" => label, _ => $"{label} {t.Label}" }; v.Does = does; return true;
                     }
+                case "disable":
+                    {
+                        v.Name = $"Disable {CameraName(o.Target)}"; v.Does = Text.Action("disable", t.Kind == "camera" ? TextKey(t) : "cabinet").does; return true;
+                    }
                 case "loop":
                     {
                         v.Name = $"Loop {CameraName(o.Target)}"; v.Does = Text.Action("loop", t.Kind == "camera" ? TextKey(t) : "cabinet").does;
@@ -165,6 +183,18 @@ namespace Suborned.Play
             var l = new List<Intent>(); var g = Game; var R = g.R; var op = g.Ops[(int)by]; string who = Op.Name(by);
             Intent I(string verb, string target, string label, int s) { var i = new Intent { Slot = -1, Label = label, Order = new Order { Op = who, Do = verb, Target = target } }; i.Time = $"{s} s"; i.Usd = "$0"; i.Trail = "T +0"; i.Alert = "A ?"; return i; }
             bool carrying = op.CarryBody.Length > 0;
+            if (t.Kind == "op" && IsOpName(t.Key))
+            {   // item 31 (Sky 0.2.99: "I've asked tec to move but he's dragging the downed scout"): carrying a downed agent is an explicit, priced way
+                // on the downed agent's ring and hold, never a click; on the carrier itself, Put down
+                var dn = g.Ops[(int)Op.Parse(t.Key)];
+                if (dn.Id != by && dn.Down && !dn.CarriedBy.HasValue && !op.Down && !op.Inside && !op.InCar && !carrying && !op.Carrying.HasValue && !(by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer) && (only == null || only == "carry"))
+                {
+                    var c = I("carry", t.Key, $"Carry the {Cap(t.Key)}", R.CarryS); c.Alert = "A 0";
+                    c.Rows.Add(("s_carrying", by == OpId.Enforcer ? $"walk only · {R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s"));
+                    l.Add(c);
+                }
+                if (dn.Id == by && op.Carrying.HasValue && (only == null || only == "drop")) { var d = I("drop", "", $"Put down the {Cap(Op.Name(op.Carrying.Value))}", 0); d.Alert = "A 0"; l.Add(d); }
+            }
             if (t.Kind == "body")
             {
                 var b = g.BodyById(t.Key); if (b == null || b.Seizing || !b.Open) return l;
@@ -227,13 +257,22 @@ namespace Suborned.Play
             pn.Before.Add(("p_unknown", q.Aware == "no" ? "From behind: they will not see you coming." : q.Aware == "yes" ? (q.Armed ? "They see you coming: a fight." : "They see you coming: a struggle, others may hear.") : "Whether they see you coming: ?"));
             if (q.People.Count > 0)
             {
-                var ws = q.People.ConvertAll(x => { var wp = Game.PersonById(x.id); string nm = wp != null && wp.Role.Length > 0 ? Name(wp.Role) : "a passer-by"; return x.verb == "?" ? $"{nm}: ?" : x.landS >= 0 ? $"{nm}: {x.verb}, lands in {x.landS} s" : $"{nm}: {x.verb}"; });
+                var ws = q.People.ConvertAll(x => { var wp = Game.PersonById(x.id); string nm = wp != null ? PersonName(wp) : "a passer-by"; /* Pulse 067 W2: a shift guard is "a guard" */ return x.verb == "?" ? $"{nm}: ?" : x.landS >= 0 ? $"{nm}: {x.verb}, lands in {x.landS} s" : $"{nm}: {x.verb}"; });
                 pn.Before.Add(("listen", $"{q.People.Count} {(q.People.Count == 1 ? "person" : "people")} within 13 m. {string.Join("; ", ws)}"));
             }
             else pn.Before.Add(("listen", "Nobody within 13 m."));
+            if (q.Coming.Count > 0) // brief 080 (Fable's less.takedown): who arrives before the act ends and would see it
+            {
+                var cs = q.Coming.ConvertAll(x => Text == null ? "" : Text.TdComingItem.Replace("{who}", ComingName(x.id, x.name)).Replace("{s}", x.inS.ToString()).Replace("{verb}", x.verb));
+                pn.Before.Add(("nextevent", (Text?.TdComing ?? "{list}").Replace("{list}", string.Join("; ", cs))));
+            }
             if (q.NextMark >= 0) pn.Before.Add(("nextevent", $"Next check-in: {MissionClock(q.NextMark)}. A missed one sends a robot."));
             pn.Before.Add(("p_alert", $"If seen: Alert {q.AlertIfSeen} · police in ~{q.PoliceInS} s"));
         }
+
+        string ComingName(string id, string name) { var wp = Game.PersonById(id); return wp != null ? PersonName(wp) : name; }
+        /// <summary>Brief 080: the first person the takedown's card says is coming, short (the Alt line): "" when nobody.</summary>
+        public string ComingShort(TakedownQuote q) => q.Coming.Count == 0 || Text == null ? "" : Text.TdComingShort.Replace("{who}", Cap(ComingName(q.Coming[0].id, q.Coming[0].name))).Replace("{s}", q.Coming[0].inS.ToString());
 
         /// <summary>A takedown a known watcher sees puts up the going-loud card (Glyph §1): the 0.5 s hold commits it, release backs off.</summary>
         bool SeenGate(Intent i, Target t, Vector2? screen, string source)
@@ -376,8 +415,13 @@ namespace Suborned.Play
                 "scene" => Game.Acts.Count > 0 ? Game.Acts[Game.Acts.Count - 1].Scene : (Pt?)null,
                 "guard" => Game.GuardPose()?.pos, "patrol" => Game.PatrolPose()?.pos,
                 "door" => Game.SceneHolds.Count > 0 ? Game.SceneHolds[Game.SceneHolds.Count - 1].At : (Pt?)null,
-                "unit" => UnitNear(), _ => null,
+                "unit" => UnitNear(),
+                "rival-car" => Game.RivalCarPose()?.pos, "vale-car" => Game.CarPos(), // brief 059 (Fable's cards): the rival car, Vale's car
+                _ => null,
             };
+            // `sight` in-sight: only when an agent sees the place; `always` (Fable 2026-10-26, brief 067: the rival car turning in off Orbit Walk is
+            // heard wherever the cell stands) shows anywhere, its `at` only what the card points at (a click or N shows it). The host's own override
+            // for rivals.coming (the 059 port) is gone with it
             if (c.Sight == "in-sight" && !(at.HasValue && CellSees(at.Value))) { hidden = true; return true; }
             if (c.Needs == "routine" && !(who?.KRoutine ?? false)) { hidden = true; return true; }
             string result = c.Result;
@@ -406,7 +450,7 @@ namespace Suborned.Play
             string t = l.Text;
             switch (l.Code)
             {
-                case "vale.exits": case "vale.at-car": return Game.PickupService ? "service" : "front";
+                case "vale.exits": case "vale.at-car": return "front"; // brief 059 K1: Vale always comes out of the official door to his car (the service-lane walk is gone)
                 case "fight.ambush": return t.Contains("warning") ? "warned" : "sprung";
                 case "takedown.starts": return t.Contains("sees it coming") ? "struggle" : "unseen";
                 case "takedown.seen": return t.Contains("carried") ? "carry" : "act";

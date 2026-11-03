@@ -11,12 +11,16 @@ namespace Suborned.Sim
     {
         static void FireLineCases()
         {
-            Add("FL-KERB", "—", "Sky 2026-10-22 (build 0.2.48): the Scout, driven, on the road at the kerb before the Records Office's public door, fires on the patrol sweeping the forecourt 10 m ahead: the line is clear (a kerb, a bin, a lamp or a service cabinet blocks no line between two standing people), the going-loud card refuses nothing, and the host's third-person fire order (driven, not forced) is taken, needs no walk-in and fires within the aim time", r =>
+            Add("FL-KERB", "—", "Sky 2026-10-22 (build 0.2.48): the Scout, driven, on the road at the kerb, fires on the patrol sweeping 10 m ahead (engine 0.34.0, brief 067 A: the sweep is the service yard's, so she stands on Apron Road at the yard's kerb, on the sweep's line; it was the forecourt before the public door): the line is clear (a kerb, a bin, a lamp or a service cabinet blocks no line between two standing people), the going-loud card refuses nothing, and the host's third-person fire order (driven, not forced) is taken, needs no walk-in and fires within the aim time", r =>
             {
                 var g = r.G;
-                var kerb = new Pt(6800, -5075); // on the carriageway 75 cm out from the forecourt's kerb (the drive grid's road edge, y -50), 4 m south of the door axis (x 64)
-                r.To(Math.Max(r.SendTo(Scout, kerb), T(75)));
-                var sc = r.Op(Scout); var pat = g.PosOf("patrol");
+                // engine 0.34.0 (brief 067 A): on Apron Road 75 cm out from the yard's kerb (x 80), on the sweep's line (y -7.25); she waits there for the
+                // sweep to be about 10 m ahead of her (it walks between x 61.25 and 76.25)
+                var kerb = new Pt(8075, -725);
+                r.To(r.SendTo(Scout, kerb));
+                var sc = r.Op(Scout);
+                r.Until(() => g.PosOf("patrol") is Pt pp && G.Isqrt(G.D2(sc.Pos, pp)) is >= 950 and <= 1100 && g.S.Sight(sc.Pos, pp, g.R.Eye), T(110));
+                var pat = g.PosOf("patrol");
                 r.Is(pat.HasValue && g.PatrolPose()!.Value.pos == pat.Value && g.PatrolAwayUntil <= g.Tick && !g.PatrolChasing, $"the patrol is on its sweep ({pat})");
                 r.Eq(sc.Pos, kerb, "the Scout stands on the road at the kerb");
                 long d = G.Isqrt(G.D2(sc.Pos, pat!.Value));

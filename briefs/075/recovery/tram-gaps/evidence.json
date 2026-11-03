@@ -1,0 +1,800 @@
+{
+  "status": "HOLD; G-3a BLOCKED; sight patch HOLD",
+  "method": "float32 audit sampling; analytic oriented rectangles in plan frame (old frame is translation +206); six targets only",
+  "hashes": {
+    "contracts/world/harbour-district.plan.json": "fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2",
+    "out/world/harbour-district.world.json": "1c38f7e61dd69718aa8b489023a80e3cf126117a05a9129e2a7388f87d69f1f5",
+    "out/world/harbour-district.walk.json": "f3eafbccaac6309e35af89c447445573a03af72af3aa26d84fd52da27cf44cea",
+    "contracts/world/kit.json": "fc4d65941a095caf091b18578c398aeb1dd8be376a090ece8fb35f89aadfff8b",
+    "contracts/world/kit.collide.json": "8bde9d6e0f4b1644de05fe71a7264d67a6bd0645bcaa102695cba0c689e440ef",
+    "briefs/055/geometry.summary.json": "001c2622bb8a6be2561c1bc243fed7bd69e0aea9700d935f1a317976cb298c3f",
+    "sim/data/handover.people.json": "104afde7ec4e43138fd3cee79070cd942cffa7423e9c4942fe901e1cd64ab3f3",
+    "sim/data/range-dense.site.json": "8f806f32efbfdb197b81be567384b4c053734cf69b4247171be09fc1506b7a7f",
+    "sim/data/handover.site.json": "ea0217ca7cf25aa3c0b50d45f0584d77b944a870599d4d97e5d35f1662028fa0",
+    "sim/data/handover.rounds.json": "c8c884e7dd6d11e78e0a03997cbb7e118d526290d2eeba79eb19f48f99596b56",
+    "sim/data/range-lane.site.json": "9673082e78ee3697cbc92306edb612835f80160f49e88e42534db1dc77b987cc",
+    "sim/data/handover.provisional.json": "1f01ce6907c9644d627932f6dd1b6ba16d14fd7926a60145db20ab28ca4635e2",
+    "sim/data/range.site.json": "b5332531e7ad8c4f8f45a11ed1dc7ec752c97c705bd3afced995a64f3efa2698",
+    "sim/data/handover.takedown.json": "01f09fb753371cf155385aca2b0ef36de64833c663216445859a4a2a44478034",
+    "unity/ProjectSettings/ShaderGraphSettings.asset": "cdba1e5d65bcf6e3269d76ed3e60b6c21f98322002996642c9d74f1eb89f6b91",
+    "unity/ProjectSettings/ProjectSettings.asset": "339fcd631145ccf6e01198482e6195e0ed630ef959d8385585d0009d1c45572d",
+    "unity/ProjectSettings/InputManager.asset": "7a1bb836a1008d26d0860d143e9d9df7ca41731d30a72901b518063819c62df2",
+    "unity/ProjectSettings/TimeManager.asset": "1a83e54adbbda7c9f4851103a0c6ab7f6448a3343d4ea5b7620452fa08416ecd",
+    "unity/ProjectSettings/MultiplayerManager.asset": "aba89fd1a1ddad182727ad82727e536d27372e90328a8196da2a4560398983dd",
+    "unity/ProjectSettings/VersionControlSettings.asset": "e7bda45bf7a394745fee1316e6c71fa676004d591ad1f3aa247fd3e4ceb86071",
+    "unity/ProjectSettings/SceneTemplateSettings.json": "bb9098b3bfcde78d93e264b96f7b77b5430e64e8c57a7aad7f5a5d9c3945e16a",
+    "unity/ProjectSettings/GraphicsSettings.asset": "9086b4e8354afb779e356d34c111b4482846b8dd748f48c3b87f8f5d5f4da2f2",
+    "unity/ProjectSettings/ProjectAuditorSettings.asset": "9e68444b9bda981e2927a98df9edf69ea88362f0c6b7f3c81b39b9d515d2a416",
+    "unity/ProjectSettings/XRSettings.asset": "edd2beb4a2e388312b4b7da241aa51070434005d82c59363f1237dd2e567585f",
+    "unity/ProjectSettings/PresetManager.asset": "29c125923fe6e29f90190d4fce1c82d660e7051546e2c9d02908d18c9cf2436c",
+    "unity/ProjectSettings/UnityConnectSettings.asset": "7f2112b8c6ea0885dcc72b312c9726ffcd909f2e89d1eead61889274a4e5d1c0",
+    "unity/ProjectSettings/EditorSettings.asset": "bbedcf93c32bca12eaba9ed61189ab13f064217e9f2984a66772719fa73c56b5",
+    "unity/ProjectSettings/EditorBuildSettings.asset": "8d1712535531522f729d34e843ea20772c01d002227338f8f802f472d7e8d78e",
+    "unity/ProjectSettings/ClusterInputManager.asset": "40e65dd214bf254955d2c8829ca8ce2130fd3510485560ce012e9a1ddd93e623",
+    "unity/ProjectSettings/PhysicsCoreProjectSettings2D.asset": "bedc5339a832c60dc3f11b84abc4f4384dbfa20b0cd9ad6c444b907e751fc35e",
+    "unity/ProjectSettings/TagManager.asset": "2d94ec98477cc1031168d6f7b6d140fd24647f4809efa909498382170d9b6436",
+    "unity/ProjectSettings/NavMeshAreas.asset": "80106cfa7e6181a1928b142c075f3e510d527441e3d79bc83590e4ac91e7cd66",
+    "unity/ProjectSettings/Physics2DSettings.asset": "d57a0fe55659c33879e8b70bc01c5ea9cdf082069dab649905c6c5138531e6eb",
+    "unity/ProjectSettings/URPProjectSettings.asset": "c317fe22b9488785c0611f0642429922e5d324430d929bffb41648130f30c218",
+    "unity/ProjectSettings/PackageManagerSettings.asset": "f281d96e785df430d30ce0a515f4fe5c625ef44467125879f4b9f4cb087e1578",
+    "unity/ProjectSettings/AudioManager.asset": "aeedeb3243f07b61dbbe854aa08b5ef6f0b5274dd9852ad9f6129dde3e105a31",
+    "unity/ProjectSettings/VFXManager.asset": "f066c6483919961332415ee64204f74fe52f38c02e82892eb02b7a5b2e381f0e",
+    "unity/ProjectSettings/DynamicsManager.asset": "bf017b547bb77ce3443dd5287ddf2516a74fd167f4f2ee5d798340694f51776d",
+    "unity/ProjectSettings/QualitySettings.asset": "9c0cd269b65189e8dd9b7eca90cd79f6a0e17822c2957239db3a727887eb43c5",
+    "unity/ProjectSettings/MemorySettings.asset": "1e8379a461b10ae09f3f696911088c16875d63e87ed5f2d95df9e1892703f9fd",
+    "unity/ProjectSettings/ProjectVersion.txt": "783f2de974f75156071dec6bb0c52e1004fd919a5078f7f84c75a936d3d787c0",
+    "out/scratch/vela/recovery/BedTuft_A_Recovery075.fbx": "9fb503ffc80c396724db4e53457362cdcee4802400cbd258e0aa207fe7108aad",
+    "out/scratch/vela/recovery/PlanterRun_4_C_Recovery075.fbx": "0c517b290c943078d6ea8a29a2c31d2d15f26601b4d3bb45f5acc9de53fada28",
+    "out/scratch/vela/recovery/PlanterRun_4_B_Recovery075.fbx": "4f3b68278c110c6a748da58c0b3ac3d9f201e3df40969fdcc3ff176aecc9d907",
+    "out/scratch/vela/recovery/Cypress_Play_Recovery075.fbx": "f31e692944527cb8ffb849558a7623afbe5717af1c3c462c38ce8cd11fba0bed",
+    "out/scratch/vela/recovery/BedTuft_B_Recovery075.fbx": "90418b34a3958ce70cbe9bbcf6a909389ba1a5822587958c32ba74bc20a5cf2b",
+    "out/scratch/vela/recovery/BedTuft_C_Recovery075.fbx": "8fdb2425c6eaf49302a0219fe66968b3573ffa943d275af6039b72df18e2df82",
+    "out/scratch/vela/recovery/PlanterRun_4_A_Recovery075.fbx": "2bd5e48e78614bdfbf0150575fcc8f576702156d8a0b7427bfaa79eb5e869468",
+    "briefs/075/recovery/tram-fix/audit-after.json": "e72c4ff75163faf6bb2455eb3c9f5bb7573499c00da092bc95688a9387cbb4ce",
+    "tools/world/build.ts": "44cf4bd24481923812185cf25ac3d133752e88536280524909771f57c935aef0",
+    "tools/plan/geom.ts": "82f873d34ad9ed7c690216ccf2cdb745ae1a820114dc019170ac5058923e081d",
+    "tools/world/gen/street/tramstreet.ts": "cdc131dc92a47d6da0febaac20c8e056c3d2b55ff24a1e0433389cea058363dc",
+    "tools/decokit/ground.py": "d14a63b558799b07b79ab610fc03d8b7909787216e7eb5e6e4a1fcfee06763aa",
+    "unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs": "b51c5f309f4766d687c40fd03bf87e56853361b01f18957aa119ead2f11d8fd5",
+    "unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAudit.cs": "678f9ef179dc07596f322bb0ae8c0dbeab91cd0aaa78885282f9bea42800e79e",
+    "unity/Assets/Suborned/Editor/OldTown/DecoKit/DecoKitPlacer.cs": "3669399f55da061cc080e5f408ee3abb12ca6b086ad0e41c37a8b8500cd612a5"
+  },
+  "pinned_inputs_match": true,
+  "inputs_unchanged": true,
+  "samples": 9462,
+  "tiles": 1584,
+  "rows": [
+    {
+      "reported": [
+        -349.557,
+        277.612
+      ],
+      "sample": {
+        "track": "tram/T1/trunk",
+        "segment": 55,
+        "a": [
+          -351.93798828125,
+          276.3160095214844
+        ],
+        "b": [
+          -350.30499267578125,
+          275.2250061035156
+        ],
+        "s": 1.259543776512146,
+        "offset": 1.7999999523162842,
+        "lateral": 0.6000000238418579,
+        "q": [
+          -349.55743408203125,
+          277.6119079589844
+        ]
+      },
+      "current": {
+        "tile": "ground/tram/rail-16#0",
+        "parent": "ground/tram/rail-16",
+        "centre": [
+          -349.086,
+          276.563
+        ],
+        "step": 2.005,
+        "local": [
+          -1.0021783731043312,
+          0.5640004508893444
+        ],
+        "outside_mm": 2.1783731043312216,
+        "audit_covered": false
+      },
+      "scale_only": {
+        "tile": "ground/tram/rail-16#0",
+        "parent": "ground/tram/rail-16",
+        "centre": [
+          -349.086,
+          276.563
+        ],
+        "step": 2.005,
+        "local": [
+          -1.0021783731043312,
+          0.5640004508893444
+        ],
+        "outside_mm": 0.0,
+        "audit_covered": true
+      },
+      "export": {
+        "id": "ground/tram/rail-16",
+        "at": [
+          -349.086,
+          276.563
+        ],
+        "yaw": -0.6358,
+        "size": [
+          2.005,
+          1.355,
+          0.153
+        ],
+        "local": [
+          -1.002178373104331,
+          0.5640004508893444
+        ],
+        "outside_mm": 0.0
+      },
+      "arc": {
+        "c": [
+          -365,
+          255
+        ],
+        "track_radius": 26.799999952316284,
+        "radial_distance": 27.381950691584976,
+        "ideal_sample_radius": 27.399999976158142,
+        "radial_error_mm": -18.049284573166346,
+        "exact_point": [
+          -349.54725484864014,
+          277.6268129877053
+        ],
+        "exact_current": {
+          "tile": "ground/tram/rail-16#0",
+          "parent": "ground/tram/rail-16",
+          "centre": [
+            -349.086,
+            276.563
+          ],
+          "step": 2.005,
+          "local": [
+            -1.0028391182563678,
+            0.5820376371845133
+          ],
+          "outside_mm": 2.839118256367845,
+          "audit_covered": false
+        },
+        "centre_point": [
+          -349.88563614306736,
+          277.1313353109206
+        ],
+        "centre_current": {
+          "tile": "ground/tram/rail-16#0",
+          "parent": "ground/tram/rail-16",
+          "centre": [
+            -349.086,
+            276.563
+          ],
+          "step": 2.005,
+          "local": [
+            -0.9808744190250325,
+            -0.01756021187593282
+          ],
+          "outside_mm": 0.0,
+          "audit_covered": true
+        }
+      },
+      "classification": "real swap tile gap; export continuous at this sample"
+    },
+    {
+      "reported": [
+        -345.526,
+        268.659
+      ],
+      "sample": {
+        "track": "tram/T1/trunk",
+        "segment": 60,
+        "a": [
+          -344.7749938964844,
+          269.69500732421875
+        ],
+        "b": [
+          -343.6839904785156,
+          268.06201171875
+        ],
+        "s": 0.4447743892669678,
+        "offset": -1.7999999523162842,
+        "lateral": 0.6000000238418579,
+        "q": [
+          -345.5257263183594,
+          268.6585388183594
+        ]
+      },
+      "current": {
+        "tile": "ground/tram/rail-195#0",
+        "parent": "ground/tram/rail-195",
+        "centre": [
+          -346.594,
+          269.123
+        ],
+        "step": 2.025,
+        "local": [
+          1.0188044327562173,
+          0.5647746240167681
+        ],
+        "outside_mm": 18.80443275621735,
+        "audit_covered": false
+      },
+      "scale_only": {
+        "tile": "ground/tram/rail-195#0",
+        "parent": "ground/tram/rail-195",
+        "centre": [
+          -346.594,
+          269.123
+        ],
+        "step": 2.025,
+        "local": [
+          1.0188044327562173,
+          0.5647746240167681
+        ],
+        "outside_mm": 6.304432756217393,
+        "audit_covered": false
+      },
+      "export": {
+        "id": "ground/tram/rail-195",
+        "at": [
+          -346.594,
+          269.123
+        ],
+        "yaw": -0.9163,
+        "size": [
+          2.025,
+          1.355,
+          0.153
+        ],
+        "local": [
+          1.0188044327562173,
+          0.5647746240167681
+        ],
+        "outside_mm": 6.304432756217393
+      },
+      "arc": {
+        "c": [
+          -365,
+          255
+        ],
+        "track_radius": 23.200000047683716,
+        "radial_distance": 23.78661426264929,
+        "ideal_sample_radius": 23.800000071525574,
+        "radial_error_mm": -13.385808876282823,
+        "exact_point": [
+          -345.514767259511,
+          268.6662250988923
+        ],
+        "exact_current": {
+          "tile": "ground/tram/rail-195#0",
+          "parent": "ground/tram/rail-195",
+          "centre": [
+            -346.594,
+            269.123
+          ],
+          "step": 2.025,
+          "local": [
+            1.0193779200906365,
+            0.5781481423103967
+          ],
+          "outside_mm": 19.377920090636547,
+          "audit_covered": false
+        },
+        "centre_point": [
+          -346.00599163235654,
+          268.3216984030721
+        ],
+        "centre_current": {
+          "tile": "ground/tram/rail-195#0",
+          "parent": "ground/tram/rail-195",
+          "centre": [
+            -346.594,
+            269.123
+          ],
+          "step": 2.025,
+          "local": [
+            0.9936721583030932,
+            -0.02130097347941584
+          ],
+          "outside_mm": 0.0,
+          "audit_covered": true
+        }
+      },
+      "classification": "real swap tile gap AND export footprint gap at this sample"
+    },
+    {
+      "reported": [
+        -340.328,
+        266.884
+      ],
+      "sample": {
+        "track": "tram/T1/trunk",
+        "segment": 62,
+        "a": [
+          -342.7250061035156,
+          266.3500061035156
+        ],
+        "b": [
+          -341.90301513671875,
+          264.5669860839844
+        ],
+        "s": 0.5185608863830566,
+        "offset": 1.7999999523162842,
+        "lateral": 0.6000000238418579,
+        "q": [
+          -340.328369140625,
+          266.8838806152344
+        ]
+      },
+      "current": {
+        "tile": "ground/tram/rail-22#0",
+        "parent": "ground/tram/rail-22",
+        "centre": [
+          -341.306,
+          267.523
+        ],
+        "step": 2.005,
+        "local": [
+          1.02187008221506,
+          0.5657006454471101
+        ],
+        "outside_mm": 21.870082215059927,
+        "audit_covered": false
+      },
+      "scale_only": {
+        "tile": "ground/tram/rail-22#0",
+        "parent": "ground/tram/rail-22",
+        "centre": [
+          -341.306,
+          267.523
+        ],
+        "step": 2.005,
+        "local": [
+          1.02187008221506,
+          0.5657006454471101
+        ],
+        "outside_mm": 19.37008221505998,
+        "audit_covered": false
+      },
+      "export": {
+        "id": "ground/tram/rail-22",
+        "at": [
+          -341.306,
+          267.523
+        ],
+        "yaw": -1.0846,
+        "size": [
+          2.005,
+          1.355,
+          0.153
+        ],
+        "local": [
+          1.02187008221506,
+          0.5657006454471101
+        ],
+        "outside_mm": 19.37008221505998
+      },
+      "arc": {
+        "c": [
+          -365,
+          255
+        ],
+        "track_radius": 26.799999952316284,
+        "radial_distance": 27.384593985275885,
+        "ideal_sample_radius": 27.399999976158142,
+        "radial_error_mm": -15.40599088225747,
+        "exact_point": [
+          -340.3144894051696,
+          266.8905662340353
+        ],
+        "exact_current": {
+          "tile": "ground/tram/rail-22#0",
+          "parent": "ground/tram/rail-22",
+          "centre": [
+            -341.306,
+            267.523
+          ],
+          "step": 2.005,
+          "local": [
+            1.0224447496186868,
+            0.5810959146048402
+          ],
+          "outside_mm": 22.44474961868681,
+          "audit_covered": false
+        },
+        "centre_point": [
+          -340.85504805328395,
+          266.6301888606732
+        ],
+        "centre_current": {
+          "tile": "ground/tram/rail-22#0",
+          "parent": "ground/tram/rail-22",
+          "centre": [
+            -341.306,
+            267.523
+          ],
+          "step": 2.005,
+          "local": [
+            1.0000638162202322,
+            -0.018486542135191963
+          ],
+          "outside_mm": 0.06381622023221567,
+          "audit_covered": true
+        }
+      },
+      "classification": "real swap tile gap AND export footprint gap at this sample"
+    },
+    {
+      "reported": [
+        -337.343,
+        -393.144
+      ],
+      "sample": {
+        "track": "tram/T1/trunk",
+        "segment": 392,
+        "a": [
+          -338.7760009765625,
+          -392.7250061035156
+        ],
+        "b": [
+          -338.09698486328125,
+          -394.5669860839844
+        ],
+        "s": 0.888765811920166,
+        "offset": 1.7999999523162842,
+        "lateral": -0.6000000238418579,
+        "q": [
+          -337.3426513671875,
+          -393.14385986328125
+        ]
+      },
+      "current": {
+        "tile": "ground/tram/rail-88#0",
+        "parent": "ground/tram/rail-88",
+        "centre": [
+          -336.434,
+          -393.878
+        ],
+        "step": 2.025,
+        "local": [
+          -1.0259813315970137,
+          -0.55854395945842
+        ],
+        "outside_mm": 25.981331597013657,
+        "audit_covered": false
+      },
+      "scale_only": {
+        "tile": "ground/tram/rail-88#0",
+        "parent": "ground/tram/rail-88",
+        "centre": [
+          -336.434,
+          -393.878
+        ],
+        "step": 2.025,
+        "local": [
+          -1.0259813315970137,
+          -0.55854395945842
+        ],
+        "outside_mm": 13.481331597013702,
+        "audit_covered": false
+      },
+      "export": {
+        "id": "ground/tram/rail-88",
+        "at": [
+          -336.434,
+          -393.878
+        ],
+        "yaw": -1.1781,
+        "size": [
+          2.025,
+          1.355,
+          0.153
+        ],
+        "local": [
+          -1.0259813315970137,
+          -0.55854395945842
+        ],
+        "outside_mm": 13.481331597013702
+      },
+      "arc": {
+        "c": [
+          -315,
+          -385
+        ],
+        "track_radius": 23.200000047683716,
+        "radial_distance": 23.7805913212529,
+        "ideal_sample_radius": 23.800000071525574,
+        "radial_error_mm": -19.408750272674524,
+        "exact_point": [
+          -337.3608865294237,
+          -393.1505065500775
+        ],
+        "exact_current": {
+          "tile": "ground/tram/rail-88#0",
+          "parent": "ground/tram/rail-88",
+          "centre": [
+            -336.434,
+            -393.878
+          ],
+          "step": 2.025,
+          "local": [
+            -1.0268188347617653,
+            -0.5779346318448177
+          ],
+          "outside_mm": 26.818834761765274,
+          "audit_covered": false
+        },
+        "centre_point": [
+          -336.79716668024474,
+          -392.9450315874862
+        ],
+        "centre_current": {
+          "tile": "ground/tram/rail-88#0",
+          "parent": "ground/tram/rail-88",
+          "centre": [
+            -336.434,
+            -393.878
+          ],
+          "step": 2.025,
+          "local": [
+            -1.00092835176995,
+            0.021506534159554225
+          ],
+          "outside_mm": 0.9283517699500976,
+          "audit_covered": true
+        }
+      },
+      "classification": "real swap tile gap AND export footprint gap at this sample"
+    },
+    {
+      "reported": [
+        -336.78,
+        -392.936
+      ],
+      "sample": {
+        "track": "tram/T1/trunk",
+        "segment": 392,
+        "a": [
+          -338.7760009765625,
+          -392.7250061035156
+        ],
+        "b": [
+          -338.09698486328125,
+          -394.5669860839844
+        ],
+        "s": 0.888765811920166,
+        "offset": 1.7999999523162842,
+        "lateral": 0.0,
+        "q": [
+          -336.7796936035156,
+          -392.93634033203125
+        ]
+      },
+      "current": {
+        "tile": "ground/tram/rail-88#0",
+        "parent": "ground/tram/rail-88",
+        "centre": [
+          -336.434,
+          -393.878
+        ],
+        "step": 2.025,
+        "local": [
+          -1.0022714214551924,
+          0.04097554788869323
+        ],
+        "outside_mm": 2.271421455192435,
+        "audit_covered": false
+      },
+      "scale_only": {
+        "tile": "ground/tram/rail-88#0",
+        "parent": "ground/tram/rail-88",
+        "centre": [
+          -336.434,
+          -393.878
+        ],
+        "step": 2.025,
+        "local": [
+          -1.0022714214551924,
+          0.04097554788869323
+        ],
+        "outside_mm": 0.0,
+        "audit_covered": true
+      },
+      "export": {
+        "id": "ground/tram/rail-88",
+        "at": [
+          -336.434,
+          -393.878
+        ],
+        "yaw": -1.1781,
+        "size": [
+          2.025,
+          1.355,
+          0.153
+        ],
+        "local": [
+          -1.0022714214551922,
+          0.04097554788869322
+        ],
+        "outside_mm": 0.0
+      },
+      "arc": {
+        "c": [
+          -315,
+          -385
+        ],
+        "track_radius": 23.200000047683716,
+        "radial_distance": 23.180607225196784,
+        "ideal_sample_radius": 23.200000047683716,
+        "radial_error_mm": -19.39282248693175,
+        "exact_point": [
+          -336.7979144261097,
+          -392.9429798491828
+        ],
+        "exact_current": {
+          "tile": "ground/tram/rail-88#0",
+          "parent": "ground/tram/rail-88",
+          "centre": [
+            -336.434,
+            -393.878
+          ],
+          "step": 2.025,
+          "local": [
+            -1.0031100610085577,
+            0.02160086730527866
+          ],
+          "outside_mm": 3.1100610085577074,
+          "audit_covered": false
+        },
+        "centre_point": [
+          -336.7979144261097,
+          -392.9429798491828
+        ],
+        "centre_current": {
+          "tile": "ground/tram/rail-88#0",
+          "parent": "ground/tram/rail-88",
+          "centre": [
+            -336.434,
+            -393.878
+          ],
+          "step": 2.025,
+          "local": [
+            -1.0031100610085577,
+            0.02160086730527866
+          ],
+          "outside_mm": 3.1100610085577074,
+          "audit_covered": false
+        }
+      },
+      "classification": "real swap tile gap; export continuous at this sample"
+    },
+    {
+      "reported": [
+        -323.057,
+        -411.176
+      ],
+      "sample": {
+        "track": "tram/T1/trunk",
+        "segment": 404,
+        "a": [
+          -322.7250061035156,
+          -408.7760009765625
+        ],
+        "b": [
+          -320.83599853515625,
+          -409.3089904785156
+        ],
+        "s": 0.3324429988861084,
+        "offset": -1.7999999523162842,
+        "lateral": -0.6000000238418579,
+        "q": [
+          -323.0567932128906,
+          -411.17608642578125
+        ]
+      },
+      "current": {
+        "tile": "ground/tram/rail-275#0",
+        "parent": "ground/tram/rail-275",
+        "centre": [
+          -321.936,
+          -410.887
+        ],
+        "step": 2.005,
+        "local": [
+          -1.0077816890502083,
+          -0.5693192907743642
+        ],
+        "outside_mm": 7.7816890502082625,
+        "audit_covered": false
+      },
+      "scale_only": {
+        "tile": "ground/tram/rail-275#0",
+        "parent": "ground/tram/rail-275",
+        "centre": [
+          -321.936,
+          -410.887
+        ],
+        "step": 2.005,
+        "local": [
+          -1.0077816890502083,
+          -0.5693192907743642
+        ],
+        "outside_mm": 5.281689050208316,
+        "audit_covered": false
+      },
+      "export": {
+        "id": "ground/tram/rail-275",
+        "at": [
+          -321.936,
+          -410.887
+        ],
+        "yaw": -0.2618,
+        "size": [
+          2.005,
+          1.355,
+          0.153
+        ],
+        "local": [
+          -1.0077816890502083,
+          -0.5693192907743642
+        ],
+        "outside_mm": 5.281689050208316
+      },
+      "arc": {
+        "c": [
+          -315,
+          -385
+        ],
+        "track_radius": 26.799999952316284,
+        "radial_distance": 27.387942921023658,
+        "ideal_sample_radius": 27.399999976158142,
+        "radial_error_mm": -12.057055134484074,
+        "exact_point": [
+          -323.0603400729179,
+          -411.1876099826307
+        ],
+        "exact_current": {
+          "tile": "ground/tram/rail-275#0",
+          "parent": "ground/tram/rail-275",
+          "centre": [
+            -321.936,
+            -410.887
+          ],
+          "step": 2.005,
+          "local": [
+            -1.0082251693964628,
+            -0.5813681871428302
+          ],
+          "outside_mm": 8.225169396462784,
+          "audit_covered": false
+        },
+        "centre_point": [
+          -322.88383626853346,
+          -410.61415864585655
+        ],
+        "centre_current": {
+          "tile": "ground/tram/rail-275#0",
+          "parent": "ground/tram/rail-275",
+          "centre": [
+            -321.936,
+            -410.887
+          ],
+          "step": 2.005,
+          "local": [
+            -0.9861560807718872,
+            0.018225828785882775
+          ],
+          "outside_mm": 0.0,
+          "audit_covered": true
+        }
+      },
+      "classification": "real swap tile gap AND export footprint gap at this sample"
+    }
+  ]
+}

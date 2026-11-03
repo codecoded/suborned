@@ -1,0 +1,194 @@
+{
+    "fingerprint": "056af6301f11c9252e4f75c5333be9073a259f8b2d8a4662135e39eb6109711b",
+    "exportSha256": "f469704e9df3b7a6ce091d6b05dbcb1edc4f4ad231847307cd4862079e3c5e18",
+    "source": "harbour-district v0.5.5 (2026-10-29)",
+    "scene": "Assets/Scenes/HarbourDistrict.unity",
+    "content": "world as built, people layer stripped (PerfStrip, both players). OldTown keeps its baked glTF crowd (District / Southside crowd and traffic roots, 2,590 static instances): it is world, not the people layer, and is switched by oldCrowd.; world as built, people layer stripped (PerfStrip, both players). OldTown keeps its baked glTF crowd (District / Southside crowd and traffic roots, 2,590 static instances): it is world, not the people layer, and is switched by oldCrowd.; roots built: HarbourDistrict, batches, cameras, contact, lighting, sea, source; people: none built (stripped root handover (0 people, no people picker))",
+    "camera": "",
+    "sceneFingerprint": "ff7369ce9bce28de72285f41d9e12374182b75204ae15c9ecb1b4c26a18bcb6e",
+    "roots": [
+        "HarbourDistrict",
+        "batches",
+        "cameras",
+        "contact",
+        "lighting",
+        "sea",
+        "source"
+    ],
+    "stripped": [
+        "handover (0 people, no people picker)"
+    ],
+    "people": 0,
+    "pitch": 38.000003814697266,
+    "yaw": 30.000001907348633,
+    "aspect": 1.7777777910232544,
+    "farMargin": 1257.23095703125,
+    "width": 1920,
+    "height": 1080,
+    "warmup": {
+        "minSeconds": 600.0,
+        "maxSeconds": 900.0,
+        "dwellSeconds": 10.0,
+        "plateau": 0.019999999552965164
+    },
+    "passes": [
+        {
+            "name": "ab075",
+            "why": "per player: its variants interleaved and rotated per stop, 3 repeats, the first segment again at the end (noise gate: within 3 %). HarbourDistrict runs as-built only (the old-* variants refuse to run there: PerfSwitches throws on a switch the scene has no target for)",
+            "vSync": 0,
+            "repeats": 3,
+            "window": "Windowed",
+            "settleSeconds": 2.0,
+            "recordSeconds": 10.0,
+            "missMs": 17.5,
+            "stops": [
+                "cell-open-30",
+                "office-front-30",
+                "office-front-210",
+                "cafe-square-210",
+                "circus-30",
+                "harbour-terrace-30",
+                "harbour-station-30",
+                "southside-30"
+            ],
+            "variants": [
+                "as-built"
+            ],
+            "repeatFirst": true,
+            "shots": true
+        }
+    ],
+    "variants": [
+        {
+            "name": "as-built",
+            "why": "each scene as Sky saw it: OldTown with the old pipeline (PC_RPAsset of OldTownArt: MSAA 4, depth + opaque texture, GRD off, old renderer with Harbour fog and depth-normals SSAO), its lens (Gaussian DOF, sun flare with occlusion, bloom 0.8/0.6) and its crowd; HarbourDistrict as shipped",
+            "ssao": "",
+            "proxies": "",
+            "fade": "",
+            "everyFace": "",
+            "moduleShadows": "",
+            "surfaceDetail": "",
+            "oldCrowd": "",
+            "oldLens": "",
+            "pipeline": "",
+            "msaa": 0,
+            "cascades": 0,
+            "shadowsOff": false,
+            "fadeOff": false
+        }
+    ],
+    "stops": [
+        {
+            "name": "cell-open-30",
+            "why": "the opening (HandoverHost OpeningFocus); same pixels as cafe-square-30. Inside the Handover zone: both scenes hold OUR content here, so the difference is pipeline and lens only (the control)",
+            "focus": {
+                "x": -170.5,
+                "y": 0.0,
+                "z": -227.5
+            },
+            "zoom": 14.0,
+            "standOff": 67.27764892578125,
+            "yaw": 30.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "office-front-30",
+            "why": "Records Office front, inside the zone (control)",
+            "focus": {
+                "x": -160.0,
+                "y": 0.0,
+                "z": -281.0
+            },
+            "zoom": 14.0,
+            "standOff": 72.173583984375,
+            "yaw": 30.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "office-front-210",
+            "why": "the Records Office as played (yaw 210), inside the zone (control)",
+            "focus": {
+                "x": -160.0,
+                "y": 0.0,
+                "z": -281.0
+            },
+            "zoom": 14.0,
+            "standOff": 65.923095703125,
+            "yaw": 210.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "cafe-square-210",
+            "why": "the cafe turned, inside the zone (control)",
+            "focus": {
+                "x": -170.5,
+                "y": 0.0,
+                "z": -227.5
+            },
+            "zoom": 14.0,
+            "standOff": 661.634033203125,
+            "yaw": 210.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "circus-30",
+            "why": "old content: the circus (SwapShots play-circus), 42 static people + 4 cars in the ground footprint",
+            "focus": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": -30.0
+            },
+            "zoom": 14.0,
+            "standOff": 58.480342864990234,
+            "yaw": 30.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "harbour-terrace-30",
+            "why": "old content: the harbour terrace, 51 people + 1 car in the footprint (the densest non-Southside view)",
+            "focus": {
+                "x": 60.0,
+                "y": 0.0,
+                "z": -120.0
+            },
+            "zoom": 14.0,
+            "standOff": 73.32858276367188,
+            "yaw": 30.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "harbour-station-30",
+            "why": "old content with our S2 station: the sky-rail view, 3 people",
+            "focus": {
+                "x": 117.0,
+                "y": 0.0,
+                "z": -140.0
+            },
+            "zoom": 14.0,
+            "standOff": 59.30559158325195,
+            "yaw": 30.0,
+            "path": [],
+            "speed": 0.0
+        },
+        {
+            "name": "southside-30",
+            "why": "old content: the worst crowd view, 68 people + 5 cars in the footprint",
+            "focus": {
+                "x": 30.0,
+                "y": 0.0,
+                "z": -280.0
+            },
+            "zoom": 14.0,
+            "standOff": 45.52719497680664,
+            "yaw": 30.0,
+            "path": [],
+            "speed": 0.0
+        }
+    ]
+}

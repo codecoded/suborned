@@ -1,0 +1,29 @@
+# Brief 074 · Building colours: a colourway per building
+
+Owner: Aster. Opened 2026-10-28. Sky: **"Do building colors"** (2026-10-28), after brief 072's finding that the pushed palette (style contract v0.23.0, 12 wall families) barely shows: every wall is a kit module in one shared colourway (cream stone, teal fascia, seafoam bands), so the families reach only roofs, shopfronts and accents.
+
+## Scope (Redline's costing, briefs/072/redline/phase3.md §5)
+- At most 12 district-wide colourways, one per wall family in unity/Assets/Suborned/Editor/World/facade.json: cream, peach, mint, sky, sand, ivory, blush, powder, butter, lilac, apricot, seagreen. A colourway recolours the module's wall, band and fascia (and plinth where the piece has one) from that family. `civic` stays as today (seafoam and deep teal) and is not one of the 12. The powder-blue road is unchanged.
+- Never one per building: per-building variety still comes from skins, shopfronts, roofs and accents.
+- Brief 073 is untouched: no 073 finish goes into production. The Air sitting stays unscheduled.
+
+## The contract (shared by all three owners)
+- Colourway id = the facade.json family name. The world export decides each building's family (deterministic, seeded by building id) and writes it on the building and on every facade module (`colourway`). Unity reads it instead of picking a family itself, so roofs, plinths and modules agree.
+- Neighbouring buildings get visibly different colourways: wall ΔE ≥ about 22 median between street neighbours (072's push reached a 22.1 median, 6.1 minimum); no two neighbours share a family.
+- Materials: one material set per colourway, differing only in base colour (same shader, same keywords, so no new SetPass; SRP batcher and instancing kept). The wall texture is neutral so a tint can make blue and lilac walls.
+- Column meshes are baked once per layout, never per colourway; materials are swapped per placed instance. Shadow proxies keep the base materials.
+
+## Objectives
+- **074-A · Splice:** the export assigns each building a colourway (family) by area weights, seeded by id, with the neighbour rule; writes it on buildings and modules; a check that fails on neighbours sharing a family or a module whose colourway differs from its building; two `bun run world` runs give the same hash. The civic block is `civic`.
+- **074-B · Vela:** neutral base textures for the wall modules (SideBay, stacks, pilasters, piers, AlleyWall, ShopFill, ShopStack, and the street fronts' wall slots), and the 12 material sets (wall, band, fascia, plinth tints from facade.json families), generated in tools/decokit, deterministic, adopted via `bun run kit`. No new shader variants. Texture memory stays within the 24 MiB set budget.
+- **074-C · Latch:** the builder reads the colourway, swaps materials per placed module and column instance, bakes each column layout once (KitColumns mesh key without the colourway), keeps shadow proxies on the base materials, and makes roofs and plinths follow the building's family. Rebuild, compile clean, offscreen shots: today against colourways at play zoom, café square (cell-open) and the Office front, yaw 30 and 210, plus one wide view across a district street.
+- **074-D · Redline:** measure draws, batches, SetPass and CPU at play zoom and at street level (tp-street, tp-worst) against today; pass mark: no new SetPass; play zoom ≤ +40 batches; street level ≤ +260 module draws.
+- **Keel/Waymark if needed:** the Handover site and checks still ship (colour-only changes should leave the site byte-identical).
+
+## Status
+- 2026-10-28 landed (0c39f98c): CW-1 (no neighbours share a family; neighbour wall ΔE median 26.3, min 16; 12 families across 320 buildings); 60 tinted materials (5 slots × 12) differing only in base colour, a neutral wall sheet (no added texture memory); the builder swaps per instance, columns baked once (165/495), shadow proxies on base materials. Export 67a3a07b, deterministic; Handover site byte-identical; cover check passes. Shots: briefs/074/shots/compare/ (wide-lamplight-y030 shows the variety; civic unchanged).
+- Redline (briefs/074/redline.md, modelled with the GPU Resident Drawer on): SetPass +0, code clean. Draws: tp-street +320 module (mark +260, fail), tp-worst +252 (pass), Handover play views +0–12 (pass), wide-lamplight at zoom 14 +65–70 (mark +40, fail). Cost: play zoom ≤ +0.2 ms render thread, +0.03 ms GPU; street level render thread +0.5–1.1 ms (to ~5.1–5.7 ms on the Air, GPU-bound, frame +0.1–0.2 ms). Tinting only wall + plinth (band and fascia stay seafoam and teal) meets every mark. For Sky.
+- Flyby comparison (Sky: "would need to see how it compares to our original flyby"): briefs/074/flyby.html. The original reel re-rendered from out/old-world, whose DecoKit flyby script, art and scene are byte-identical to ~/Projects/the-suborned/game (rendered from a copy; 62 s, 1080p30); today's flight with the same keys timing, field of view and shadow rule, colourways on and off; clips old-vs-new.mp4, on-vs-off.mp4, grid.png (git-ignored), keys in old-keys.json and new-keys.json. Latch's read: colourways on clearly beats off, but today still falls short of the old reel on density, moving people and traffic (none in the scene), palms, haze and grade, and landmarks; against the old reel's cream walls with one accent and a warm grade, full tinting reads candy-like.
+
+## Sky, 2026-10-28, after the flyby comparison
+**"yeah, let's get moving back to the old world textures. designs etc"**: yes to walls and plinths only (bands and fascias back to seafoam and teal everywhere; a softer tint is fine if it holds the street together like the old reel's cream), and the wider direction opens brief 075. Follow-up 074-H: Vela regenerates the materials (wall and plinth slots only), Latch rebuilds and re-shoots the flyby grid and the play-zoom compare, Redline re-runs the draw model.

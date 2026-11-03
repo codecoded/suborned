@@ -383,10 +383,10 @@ export async function buildView(o: BuildOpts = {}): Promise<View> {
       const rkeys = [...new Set([...other.cast.rows, ...src.cast.rows].map(r => `${r.area}/${r.occupation}`))].sort();
       const oc = withSecrets(other.cast, rules).rows, sc = withSecrets(src.cast, rules).rows;
       const rows = rkeys.map(key => ({ key, ...rowDiff(oc.find(r => `${r.area}/${r.occupation}` === key), sc.find(r => `${r.area}/${r.occupation}` === key)) }));
-      const nm = (c: Cast, k: 'given' | 'family') => new Set(c.names[k].map(x => x.name));
+      const nm = (c: Cast, k: 'given' | 'family') => new Set((c.names?.[k] ?? []).map(x => x.name));
       const kept = [...nm(src.cast, 'given')].filter(x => nm(other!.cast, 'given').has(x)).length + [...nm(src.cast, 'family')].filter(x => nm(other!.cast, 'family').has(x)).length;
       view.compare = {
-        added, removed, changed, same, renamed, shared, dims, rows, otherChecks: runChecks(b).map(c => ({ id: c.id, ok: c.ok })), names: { given: [other.cast.names.given.length, src.cast.names.given.length], family: [other.cast.names.family.length, src.cast.names.family.length], kept },
+        added, removed, changed, same, renamed, shared, dims, rows, otherChecks: runChecks(b).map(c => ({ id: c.id, ok: c.ok })), names: { given: [other.cast.names?.given.length ?? 0, src.cast.names?.given.length ?? 0], family: [other.cast.names?.family.length ?? 0, src.cast.names?.family.length ?? 0], kept },
         gone: removed.map(id => { const q = bm.get(id)!; return { id, name: q.name, unit: unitOf(q), position: q.position, tem: q.temperament, need: q.need }; }),
       };
       const worse = view.compare.otherChecks.filter(c => !c.ok).map(c => c.id), mine = new Map(checks.map(c => [c.id, c.ok])), fixed = worse.filter(id => mine.get(id));

@@ -1,0 +1,481 @@
+{
+ "schema": "suborned.qa.summary/1",
+ "run": "20261024-190031",
+ "at": "2026-10-24T19:22:38.544Z",
+ "seconds": 1327,
+ "previous": "20261024-083341",
+ "lanes": [
+  {
+   "name": "build",
+   "label": "the built player 0.2.117 (engine 0.30.0, working tree on 3d7dcdb17320)",
+   "engine": "suborned.sim/0.30.0",
+   "inputs": "3910f132e44bae3c",
+   "build": "0.2.117",
+   "seeds": 176,
+   "sessionsExact": 0,
+   "mutants": 2105,
+   "plays": 2457,
+   "errors": 0,
+   "replayChecked": 2457,
+   "seconds": 10
+  },
+  {
+   "name": "tree",
+   "label": "the working tree (engine source d2211a182107)",
+   "engine": "suborned.sim/0.30.0",
+   "inputs": "3910f132e44bae3c",
+   "build": null,
+   "seeds": 214,
+   "sessionsExact": 0,
+   "mutants": 4385,
+   "plays": 4813,
+   "errors": 0,
+   "replayChecked": 4813,
+   "seconds": 22
+  },
+  {
+   "name": "bot",
+   "label": "the built player 0.2.117 played through real input (random, greedy, cautious)",
+   "engine": "the built player 0.2.117",
+   "inputs": "the built player",
+   "build": "0.2.117",
+   "seeds": 3,
+   "sessionsExact": 0,
+   "mutants": 0,
+   "plays": 3,
+   "errors": 0,
+   "replayChecked": 0,
+   "seconds": 1289
+  }
+ ],
+ "checks": {
+  "Q-ERR": {},
+  "Q-DET": {},
+  "Q-FAIL": {},
+  "Q-DEBRIEF": {},
+  "Q-WARN": {
+   "build": 1,
+   "tree": 81
+  },
+  "Q-STUCK": {
+   "build": 62,
+   "tree": 434
+  },
+  "Q-SPAWN": {},
+  "Q-OFFER": {
+   "build": 47,
+   "tree": 50,
+   "bot": 1
+  },
+  "Q-DROP": {},
+  "Q-LEARN": {},
+  "Q-ROUTE": {},
+  "Q-SOLID": {
+   "bot": 2
+  },
+  "Q-FRAME": {
+   "bot": 1
+  }
+ },
+ "issues": [
+  {
+   "key": "Q-OFFER:fire:no-target",
+   "check": "Q-OFFER",
+   "severity": "S2",
+   "owner": "Latch (host offer) / Keel (engine refusal)",
+   "title": "The ring offers Fire, then the game refuses it: there is nothing there to act on any more",
+   "plays": {
+    "bot": 1
+   },
+   "share": {
+    "bot": 0.3333
+   },
+   "score": 1.3333,
+   "change": "new",
+   "firstSeen": "20261024-190031 (build 0.2.117)"
+  },
+  {
+   "key": "Q-SOLID:inside",
+   "check": "Q-SOLID",
+   "severity": "S3",
+   "owner": "Pulse (paths) / Keel (walk grid)",
+   "title": "A person walks through a drawn solid",
+   "plays": {
+    "bot": 2
+   },
+   "share": {
+    "bot": 0.6667
+   },
+   "score": 1.3333,
+   "change": "new",
+   "firstSeen": "20261024-190031 (build 0.2.117)"
+  },
+  {
+   "key": "Q-STUCK:vale-at-car",
+   "check": "Q-STUCK",
+   "severity": "S1",
+   "owner": "Keel",
+   "title": "Vale stands at his car and never gets in",
+   "plays": {
+    "build": 62,
+    "tree": 434
+   },
+   "share": {
+    "build": 0.0252,
+    "tree": 0.0902
+   },
+   "score": 0.7214,
+   "change": "known",
+   "firstSeen": "20261024-082727 (build 0.2.100, tree engine 0.30.0)"
+  },
+  {
+   "key": "Q-FRAME:frame",
+   "check": "Q-FRAME",
+   "severity": "S4",
+   "owner": "Redline",
+   "title": "A frame over 50 ms with no save, order or end in it",
+   "plays": {
+    "bot": 1
+   },
+   "share": {
+    "bot": 0.3333
+   },
+   "score": 0.3333,
+   "change": "new",
+   "firstSeen": "20261024-190031 (build 0.2.117)"
+  },
+  {
+   "key": "Q-WARN:late:enforcer-down",
+   "check": "Q-WARN",
+   "severity": "S2",
+   "owner": "Motive",
+   "title": "Fail enforcer-down is warned less than 5 s ahead",
+   "plays": {
+    "tree": 79
+   },
+   "share": {
+    "tree": 0.0164
+   },
+   "score": 0.0657,
+   "change": "known",
+   "firstSeen": "20261024-082727 (tree engine 0.30.0)"
+  },
+  {
+   "key": "Q-WARN:late:rivals-reach-vale",
+   "check": "Q-WARN",
+   "severity": "S2",
+   "owner": "Motive",
+   "title": "Fail rivals-reach-vale is warned less than 5 s ahead",
+   "plays": {
+    "build": 1,
+    "tree": 2
+   },
+   "share": {
+    "build": 0.0004,
+    "tree": 0.0004
+   },
+   "score": 0.04,
+   "change": "known",
+   "firstSeen": "20261024-082727 (tree engine 0.30.0)"
+  }
+ ],
+ "fixed": [
+  "Q-DEBRIEF:vale-reaches-getaway-car:not-won: A run that did not win says \"vale-reaches-getaway-car\" in its debrief",
+  "Q-ERR:refusal:FormatException: no person in the role '*': An order gets engine-error instead of a refusal: FormatException: no person in the role '*'",
+  "Q-LEARN:watch: A repeat Watch is taken and lands again with the same result",
+  "Q-OFFER:session:call:agent-busy: An order Sky gave was refused: call (agent-busy)",
+  "Q-OFFER:session:move:unwalkable: An order Sky gave was refused: move (unwalkable)",
+  "Q-OFFER:session:watch:too-far: An order Sky gave was refused: watch (too-far)",
+  "Q-WARN:none:sealed: Fail sealed came with no warning"
+ ],
+ "statics": {
+  "seconds": 6,
+  "checks": 145,
+  "failed": [],
+  "info": [
+   {
+    "id": "KR-1",
+    "ok": true,
+    "value": "160 returns"
+   },
+   {
+    "id": "RF-3/n",
+    "ok": true,
+    "value": "14841 pieces"
+   },
+   {
+    "id": "KR-2",
+    "ok": true,
+    "value": "93/93"
+   },
+   {
+    "id": "KR-3",
+    "ok": true,
+    "value": "2/2"
+   },
+   {
+    "id": "KR-2/n",
+    "ok": true,
+    "value": "160 returns"
+   }
+  ],
+  "geometry": [
+   {
+    "id": "G-1a",
+    "ok": true,
+    "value": "1 people",
+    "ratchet": 1
+   },
+   {
+    "id": "G-1b",
+    "ok": true,
+    "value": "6 routes",
+    "ratchet": 6
+   },
+   {
+    "id": "G-1d",
+    "ok": true,
+    "value": "0 stretches",
+    "ratchet": 0
+   },
+   {
+    "id": "G-1c",
+    "ok": true,
+    "value": "709 cells",
+    "ratchet": 709
+   },
+   {
+    "id": "G-2a",
+    "ok": true,
+    "value": "0 cells",
+    "ratchet": 0
+   },
+   {
+    "id": "G-2b",
+    "ok": true,
+    "value": "122 cells",
+    "ratchet": 122
+   },
+   {
+    "id": "G-2c",
+    "ok": true,
+    "value": "2 cells",
+    "ratchet": 2
+   },
+   {
+    "id": "G-3a",
+    "ok": true,
+    "value": "61 objects",
+    "ratchet": 61
+   },
+   {
+    "id": "G-3b",
+    "ok": true,
+    "value": "2 occluders",
+    "ratchet": 2
+   },
+   {
+    "id": "K-1",
+    "ok": true,
+    "value": "0 pieces",
+    "ratchet": 0
+   }
+  ],
+  "new": [],
+  "fixed": [
+   "G-3b"
+  ]
+ },
+ "balance": {
+  "t2": [
+   {
+    "lane": "tree",
+    "loudWin": 0.59,
+    "quietWin": 0.525,
+    "loudWinS": 310.9333333333331,
+    "quietWinS": 337.41517857142986,
+    "loudFasterAndCheaper": false
+   }
+  ],
+  "t9": [
+   {
+    "lane": "tree",
+    "unseenPlays": 419,
+    "unseenWinAtAlert1": 0.475,
+    "seenPlays": 145,
+    "seenFailOrLoud": 1,
+    "pass": true
+   }
+  ],
+  "byFamily": [
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "drop",
+    "plays": 258,
+    "win": 0,
+    "flipped": 9
+   },
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "insert",
+    "plays": 276,
+    "win": 0,
+    "flipped": 5
+   },
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "pair",
+    "plays": 625,
+    "win": 0,
+    "flipped": 48
+   },
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "reassign",
+    "plays": 226,
+    "win": 0,
+    "flipped": 11
+   },
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "repeat",
+    "plays": 246,
+    "win": 0,
+    "flipped": 1
+   },
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "shift",
+    "plays": 256,
+    "win": 0,
+    "flipped": 6
+   },
+   {
+    "lane": "build",
+    "seeds": "session",
+    "family": "swap-target",
+    "plays": 218,
+    "win": 0,
+    "flipped": 17
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "drop",
+    "plays": 300,
+    "win": 0.237,
+    "flipped": 168
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "insert",
+    "plays": 267,
+    "win": 0.404,
+    "flipped": 39
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "pair",
+    "plays": 675,
+    "win": 0.207,
+    "flipped": 355
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "reassign",
+    "plays": 258,
+    "win": 0.213,
+    "flipped": 150
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "repeat",
+    "plays": 268,
+    "win": 0.481,
+    "flipped": 1
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "shift",
+    "plays": 257,
+    "win": 0.296,
+    "flipped": 77
+   },
+   {
+    "lane": "tree",
+    "seeds": "route",
+    "family": "swap-target",
+    "plays": 255,
+    "win": 0.325,
+    "flipped": 110
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "drop",
+    "plays": 258,
+    "win": 0,
+    "flipped": 9
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "insert",
+    "plays": 276,
+    "win": 0,
+    "flipped": 5
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "pair",
+    "plays": 625,
+    "win": 0,
+    "flipped": 48
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "reassign",
+    "plays": 226,
+    "win": 0,
+    "flipped": 11
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "repeat",
+    "plays": 246,
+    "win": 0,
+    "flipped": 1
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "shift",
+    "plays": 256,
+    "win": 0,
+    "flipped": 6
+   },
+   {
+    "lane": "tree",
+    "seeds": "session",
+    "family": "swap-target",
+    "plays": 218,
+    "win": 0,
+    "flipped": 17
+   }
+  ]
+ }
+}

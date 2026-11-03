@@ -1,0 +1,32 @@
+fixtures059 plays: A = the embedded fixtures (composed on 0.34.x, old controls) on engine 0.34.2 (out/scratch/keel/base-0342); B = the plans re-composed in one-input form (briefs/039/waymark/fixtures059/) on 0.35.1.
+-nolocks = the fire orders dropped (BAL-YARD-AT-WILL's NoLocks); -late = every fire order 3.0 s late (LateLocks; without the scenario's Go-once-free loop).
+bal-loud-x4.json
+  0.34.2  success  -                  5:01.7  T27 A2 St-1  enforcer.down -  fight.over -  rivals.retreat 4:21.4  rivals.down 4:11.3,4:15.4,4:21.4
+  0.35.1  success  -                  5:01.7  T27 A2 St-1  enforcer.down -  fight.over -  rivals.retreat 4:21.4  rivals.down 4:11.3,4:15.4,4:21.4
+bal-rb-ff-late.json
+  0.34.2  none     -                  8:30.0  T4 A0 St+3  enforcer.down -  fight.over 7:34.6  rivals.retreat -  rivals.down -
+  0.35.1  none     -                  8:30.0  T4 A0 St+3  enforcer.down -  fight.over 7:35.2  rivals.retreat -  rivals.down -
+bal-rb-ff-nolocks.json
+  0.34.2  failure  rivals-reach-vale  7:47.0  T4 A0 St+2  enforcer.down 7:30.0  fight.over -  rivals.retreat -  rivals.down -
+  0.35.1  none     -                  8:30.0  T4 A0 St+2  enforcer.down -  fight.over -  rivals.retreat -  rivals.down -
+bal-rb-ff.json
+  0.34.2  success  -                  7:32.2  T4 A0 St+3  enforcer.down -  fight.over 7:32.2  rivals.retreat -  rivals.down -
+  0.35.1  success  -                  7:32.2  T4 A0 St+3  enforcer.down -  fight.over 7:32.2  rivals.retreat -  rivals.down -
+bal-rbb-ff-late.json
+  0.34.2  failure  rivals-reach-vale  7:42.2  T4 A0 St+2  enforcer.down 7:40.7  fight.over -  rivals.retreat -  rivals.down -
+  0.35.1  failure  rivals-reach-vale  7:44.4  T4 A0 St+2  enforcer.down -  fight.over -  rivals.retreat -  rivals.down -
+bal-rbb-ff-nolocks.json
+  0.34.2  failure  rivals-reach-vale  7:46.0  T4 A0 St+2  enforcer.down 7:30.0  fight.over -  rivals.retreat -  rivals.down -
+  0.35.1  none     -                  8:30.0  T4 A1 St+2  enforcer.down -  fight.over -  rivals.retreat -  rivals.down -
+bal-rbb-ff.json
+  0.34.2  success  -                  7:35.4  T4 A0 St+3  enforcer.down -  fight.over 7:32.2  rivals.retreat -  rivals.down -
+  0.35.1  success  -                  7:35.4  T4 A0 St+3  enforcer.down -  fight.over 7:32.2  rivals.retreat -  rivals.down -
+sq-ra-h3.json
+  0.34.2  success  -                  4:37.3  T5 A0 St+3  enforcer.down -  fight.over 4:22.9  rivals.retreat -  rivals.down -
+  0.35.1  success  -                  4:37.3  T5 A0 St+3  enforcer.down -  fight.over 4:22.9  rivals.retreat -  rivals.down -
+sq-route-a-board.json
+  0.34.2  success  -                  4:15.5  T4 A0 St+2  enforcer.down -  fight.over -  rivals.retreat -  rivals.down -
+  0.35.1  success  -                  4:15.5  T4 A0 St+2  enforcer.down -  fight.over -  rivals.retreat -  rivals.down -
+probe (scratch, not a fixture): at will in one input = the Scout and Fixer press F at the old panic's tick (the Board, 7:25.3), no locks
+  0.35.1  bal-rb-ff-nolocks-F-at-board.json: none     -                  8:30.0  T8 A2 St+2  enforcer.down -  fight.over 7:43.9  rivals.retreat -  rivals.down -
+  0.35.1  bal-rbb-ff-nolocks-F-at-board.json: failure  rivals-reach-vale  7:52.7  T4 A2 St+2  enforcer.down -  fight.over -  rivals.retreat -  rivals.down -

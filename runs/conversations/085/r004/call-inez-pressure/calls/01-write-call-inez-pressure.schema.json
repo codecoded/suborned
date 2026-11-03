@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "takes": {
+      "minItems": 3,
+      "maxItems": 3,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "situation": {
+            "type": "string",
+            "description": "one line: what makes this take different from the others"
+          },
+          "beats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "speaker": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "speaker",
+                "line"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "learned": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "opens": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "situation",
+          "beats",
+          "learned",
+          "opens"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "takes"
+  ],
+  "additionalProperties": false
+}

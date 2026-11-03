@@ -4,6 +4,13 @@ For Motive (numbers), Keel (engine), Vantage and Splice (report points, hide lev
 
 **Third pass (2026-10-16, written to Motive's rev 2, `motive-takedowns.md`, which wins on prices, Alert, Trail, Standing, the dial and missing persons):** §0a lists every change and every place I still differ; §11 to §14 are the missing expected person, where an alarm sends the response, the response behaviour on Motive's dial (one dial), and missing persons (one mechanism). Anything that hinges on Sky's open calls 1 to 9 is marked **[Call n]**. Text marked *(changed)* was rewritten in a later pass.
 
+**Brief 054 rev 4 (Motive, 2026-10-24; Sky: "Ordinary people shouldn't really care unless there's high alert status - think real world. And yeah, would be in cone area only for seeing"):** who *notices* changes; what a person does once they notice (§2.3's list) does not. The rule and its measurement are `briefs/054-watch-insight.md` §3, which wins where this file differs. In short:
+- **Civilians see by a facing cone only:** within 13 m and ±60° of their facing (`people-half-cm` 2252), on a clear line, no near sense. Security (a job in `witness.staff`, and the door guard) see as before, all round within 13 m plus their cones, at every Alert.
+- **Below Alert 2 civilians notice violence only:** a takedown, the Take's struggle, a carry, an open body, a drawn weapon, gunfire. Pressure, Vale's grip (kin excepted) and a runner count only from Alert 2 (`people-care-alert`). Private acts, Watch and device acts never.
+- **Sounds turn heads:** a shot (and a person shot, a car blast) is seen all round within 13 m on a clear line; a scream turns hearers within 13 m on a clear line into witnesses (§2.1 `shout` + `look`, now needed because facing matters). Startle within 30 m and `heard-alarm` within 20 m are unchanged.
+- **Every person on the street has a facing:** the stop facings of 054 §3.3 (seat, server's round, door, stand, kerb, car; startled toward the source). Pulse generates them; a stop with none is rejected at load. This closes this file's open item "Facing at a stop" (§15).
+- Marked *(rev 4)* below where a line changed.
+
 | file | what |
 |---|---|
 | this spec | reactions, reporting, discovery, the woken, determinism and cost, the Handover on r016 |
@@ -60,7 +67,7 @@ A fact travels only through people, paper and a few watchers (GDD §01: no netwo
 
 | kind | made when | who can hold it |
 |---|---|---|
-| `act` | a person with a clear line within 13 m sees a takedown (existing `WitnessesOf`: range plus clear line, 360°) | witnesses; memory entry `saw-takedown` |
+| `act` | a person with a clear line within 13 m sees a takedown (existing `WitnessesOf`: range plus clear line, 360°); *(rev 4)* a civilian only within their ±60° cone; security as before | witnesses; memory entry `saw-takedown` |
 | `body` | a person, robot or camera sees a body lying in view (§2.2) | finders; `found-body` |
 | `carry` | someone sees an operative carry or drag a body | witnesses; `saw-carry` |
 | `alarm` | someone within `scream-m` (20 m) hears a scream or call-out (no line needed) | hearers; no fact beyond place-time, until they look |
@@ -98,8 +105,8 @@ Existing rules this keeps unchanged: *(changed)* **one takedown is one incident,
 
 ### 2.2 When a person notices (proposed)
 
-- **Act or carry:** at the tick it happens, everyone within 13 m with a clear line (the existing witness set). Taken before any startle, as gunfire witnesses are.
-- **Body:** a body that is *open* (lying where it fell, or carried) is noticed by anyone within 13 m on a clear line. In a *shut* place (a container or a service door, Motive §2.1: the only things that hide a body) not at all, until it is serviced (§4.1), searched, or the victim calls out. My *screened* level (4 m) is [L] for v1 **[Call 6]**; the 4 m rows in §7 stay as a measurement. Checked every 5th tick (phase from the body's id), so noticing is at most 0.5 s late. A person who is `sheltered`, inside, or off the street sees nothing.
+- **Act or carry:** at the tick it happens, everyone within 13 m with a clear line (the existing witness set). Taken before any startle, as gunfire witnesses are. *(rev 4)* A civilian must also have it within their ±60° cone; a scream from the act turns heads (054 §3.2).
+- **Body:** a body that is *open* (lying where it fell, or carried) is noticed by anyone within 13 m on a clear line (*(rev 4)* a civilian within their cone; a walker approaching it has it in their cone). In a *shut* place (a container or a service door, Motive §2.1: the only things that hide a body) not at all, until it is serviced (§4.1), searched, or the victim calls out. My *screened* level (4 m) is [L] for v1 **[Call 6]**; the 4 m rows in §7 stay as a measurement. Checked every 5th tick (phase from the body's id), so noticing is at most 0.5 s late. A person who is `sheltered`, inside, or off the street sees nothing.
 - **Watchers:** the patrol robot and the guard see a body in their cone; a live camera records it. A looped camera sees nothing (existing `LoopOn`).
 - **Crowds screen bodies:** a person standing round a body blocks a watcher's line (existing `CrowdBlocks`); this is emergent, no rule.
 
@@ -207,7 +214,7 @@ That is what turns the 45 to 70 s walk (after the dial's dispatch) into the play
 
 ### 3.6 What the player sees (for Glyph, Latch, Fable)
 
-- **Forecast on the takedown quote**, from the same function: for each person with a clear line to the act and the doer's route: "seen by 3 · 2 would report (≈ 22 s)", and the person's verb once their temperament is known ("Dana, Loyal: reports in 22 s"); an unknown temperament shows "?" (Sky Q3). Never a hidden dice: the forecast is the outcome.
+- **Forecast on the takedown quote**, from the same function (*(rev 4)* the same `Sees(person, point, act)` as the engine, over the act's span with routines read ahead; 054 §3.5): for each person with a clear line to the act and the doer's route: "seen by 3 · 2 would report (≈ 22 s)", and the person's verb once their temperament is known ("Dana, Loyal: reports in 22 s"); an unknown temperament shows "?" (Sky Q3). Never a hidden dice: the forecast is the outcome.
 - **In transit:** the reporter runs; a thin line to the report point; a chip "report lands in n s" (≤ 2 icons over a person, §10); the Scout's Watch shows the box.
 - **Kills are shown, not cut away (Sky).** The body lies where it fell until moved, drawn as a body marker; a person who finds it reacts in view (the verb chip); nothing about the report is hidden.
 - **Event codes** for Fable: `body.found`, `carry.seen`, `scream`, `witness.react` (verb), `report.started`, `report.stopped`, `report.landed`, `report.verified` (confirmed or unfounded), `told`, `wake.report`.
@@ -524,4 +531,4 @@ Cases, S and the area watch are campaign state, hashed with the mission's start 
 - **Datum:** `plan.areas[*].securityBase`; the district population and a background layer.
 - **Waymark:** the shift-change guards (p-records-office-29 outgoing, -73 and -74 incoming) are the Handover's most important witnesses (§7.3); route G must schedule round the Dumpster's servicing mark and the check-in marks; Vale's suspicion at 6:30 (landing about 6:39) against the Take; the engine's Vale (370 s) and the people file (330 s) disagree.
 - **Latch, Glyph, Fable, Forma:** the in-transit marker, the forecast line, the response clock on ground hover, arrival chips, event codes (§3.6); a body marker (kills are shown); the robot silhouette.
-- **Facing at a stop (Motive §1.3 asks me):** still to do; I will propose a facing for each stop kind (a door stop faces the street, a bay stop faces the bay) from the world.
+- **Facing at a stop (Motive §1.3 asks me):** *(rev 4)* the table is in 054 §3.3 (door out, stand toward the unit's door, bay and transit toward the kerb, seats and rounds from their data); Pulse generates it in the routine tool, and a stop with none is rejected.

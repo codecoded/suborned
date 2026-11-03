@@ -8,8 +8,12 @@ import { type Civic, blockPlanRect, footprints } from './civic';
 import { type Walk, walks as footWalks } from './walk';
 import { entranceChecks } from './entrances';
 import { driveChecks } from './drives';
+import { floorChecks } from './floors';
 import { roadFinishChecks } from './road-finish';
+import { kerbReturnChecks } from './kerb-return';
+import { blockGrammarChecks } from './block-grammar';
 import { edges } from './graph';
+import { ownPavementFault } from './sections';
 import type { Overlay, Route } from './overlay';
 
 export type Check = { id: string; group: string; rule: string; value: string; limit: string; ok: boolean; detail?: string; source?: string; waived?: string };
@@ -28,6 +32,15 @@ export function inset(P: V[], d = .3): V[] {
     out.push([v[0] + bx / k * d, v[1] + by / k * d], [(v[0] + b[0]) / 2 + n2[0] * d, (v[1] + b[1]) / 2 + n2[1] * d]);
   }
   return out;
+}
+
+/** R-F1's square clause (opt-in, standards.roads.frontageSquare.reach; brief 075 ask 3): a built plot that touches (within standards.roads.frontage) an open
+ *  square or open-ground plot (use open | square) which itself fronts an access road, every vertex of the plot within `reach` m of that road's kerb. Failing
+ *  examples: tools/plan/frontage-square.test.ts. */
+function squareFrontage(plan: Plan, d: Derived) {
+  const tol = plan.standards.roads.frontage as number, near = (A: V[], B: V[]) => A.some(v => inPoly(v, B)) || B.some(v => inPoly(v, A)) || A.some((v, i) => lineToPoly([v, A[(i + 1) % A.length]!], B) <= tol);
+  const squares = d.plots.filter(q => q.use === 'open' || q.use === 'square');
+  return (poly: V[], reach: number) => squares.some(q => near(poly, q.polyV) && d.roads.some(r => r.class === 'access' && lineToPoly(r.line, q.polyV) <= r.w / 2 + tol && poly.every(v => lineDist(v, r.line) - r.w / 2 <= reach + 1e-9)));
 }
 
 export function check(plan: Plan, d: Derived, civic: Civic, strict = false, overlay?: Overlay): Report {
@@ -85,10 +98,23 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   const missing = [...derivedGates].filter(g => !declared.has(g)), extra = [...declared].filter(g => !derivedGates.has(g));
   add({ id: 'R-G1', group: 'Roads', rule: 'Every way in is a declared gate (seal point)', value: `${derivedGates.size} found, ${declared.size} declared`, limit: 'equal', ok: !missing.length && !extra.length, detail: [...missing.map(m => `undeclared ${m}`), ...extra.map(x => `not a gate ${x}`)].join('; ') || undefined });
 
-  const tol = std.roads.frontage, built = d.plots;
+  const tol = std.roads.frontage, built = d.plots, acrossSquare = squareFrontage(plan, d);
   const fronts = (poly: V[], ok: (cls: string) => boolean) => d.roads.some(r => ok(r.class) && lineToPoly(r.line, poly) <= r.w / 2 + tol);
-  const noFront = built.filter(p => !(fronts(p.polyV, c => c === 'access') || (['park', 'open', 'square'].includes(p.use) && (fronts(p.polyV, () => true) || plan.foot.some(w => lineToPoly(w.pts, p.polyV) <= w.w / 2 + tol)))));
-  add({ id: 'R-F1', group: 'Roads', rule: 'Every plot fronts an access road (parks: any street or walk)', value: `${built.length - noFront.length}/${built.length}`, limit: 'all', ok: !noFront.length, detail: noFront.map(p => p.id).join(', ') || undefined });
+  const PUBLIC = ['park', 'open', 'square'], sqR = (std.roads as any).frontageSquare?.reach as number | undefined;
+  const noFront = built.filter(p => !(fronts(p.polyV, c => c === 'access') || (PUBLIC.includes(p.use) && (fronts(p.polyV, () => true) || plan.foot.some(w => lineToPoly(w.pts, p.polyV) <= w.w / 2 + tol))) || (sqR !== undefined && !PUBLIC.includes(p.use) && acrossSquare(p.polyV, sqR))));
+  add({ id: 'R-F1', group: 'Roads', rule: `Every plot fronts an access road (parks: any street or walk)${sqR !== undefined ? `; or fronts an open square that fronts one, the whole plot within ${sqR} m of that road's kerb` : ''}`, value: `${built.length - noFront.length}/${built.length}`, limit: 'all', ok: !noFront.length, detail: noFront.map(p => p.id).join(', ') || undefined, source: sqR !== undefined ? 'Buchanan, Traffic in Towns (frontage access from access roads only) · standards.roads.frontageSquare (brief 075 ask 3): Approved Document B B5 (a pump appliance within 45 m of every point), so a building on a pedestrian square keeps its service and fire access' : undefined });
+
+  // R-PV1 (brief 075 ask 1; opt-in: only a plan with a roads[].pavement has it): a road's own pavement section is whole, keeps its class's clear walk and a usable
+  // kerb zone, gives a reason, and is not on a Handover street (a road entering standards.blocks.zone keeps its class section). Failing examples: road-pavement.test.ts
+  const ownPv = plan.roads.filter(r => r.pavement);
+  if (ownPv.length) {
+    const zr = (std as any).blocks?.zone as [number, number, number, number] | undefined, S = (std as any).streetscape?.sections ?? {}, bad: string[] = [];
+    for (const r of ownPv) {
+      const why = ownPavementFault(S, r.class, r.pavement!); if (why) bad.push(`${r.id}: ${why}`);
+      const g = roadById.get(r.id)!; if (zr && g.line.some(p => p[0] > zr[0] && p[0] < zr[1] && p[1] > zr[2] && p[1] < zr[3])) bad.push(`${r.id}: enters the Handover zone, whose streets keep their class sections`);
+    }
+    add({ id: 'R-PV1', group: 'Roads', rule: 'A road\'s own pavement (roads[].pavement) is kerb + walk + frontage = w, keeps its class\'s clear walk and a kerb zone of 0.75 m, has a why, and stays off the Handover streets', value: `${ownPv.length - new Set(bad.map(b => b.split(':')[0])).size}/${ownPv.length}`, limit: 'all', ok: !bad.length, detail: bad.join('; ') || undefined, source: 'brief 075 ask 1 (old side-street flags 2–4 m) · streetscape.sections note (items ≥ 0.45 m from the kerb face, Manual for Streets) · SF-1 · tools/plan/sections.ts' });
+  }
 
   const clash: string[] = [];
   for (const p of built) {
@@ -128,7 +154,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
     const street = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || dist(p, plan.circus.c) <= plan.circus.island;
     const off = paths.flatMap(p => p.samples).filter(s => !street(s.p));
     add({ id: 'T-C1', group: 'Tram', rule: `${line.id} runs in street space or the circus island`, value: `${off.length / 2} m off`, limit: '0', ok: !off.length });
-    for (const p of paths) for (const r of d.roads.filter(r => r.id !== 'boulevard')) {
+    for (const p of paths) for (const r of d.roads.filter(r => (plan.roads.find(x => x.id === r.id) as { tram?: { line?: string } } | undefined)?.tram?.line !== line.id)) { // brief 075: a road the line runs along (roads[].tram) is its own street, not a crossing (was: every road but the Boulevard)
       const pl = p.samples.map(s => s.p);
       const apart = (A: V[], B: V[]) => Math.max(...A.map(v => v[0])) < Math.min(...B.map(v => v[0])) || Math.max(...B.map(v => v[0])) < Math.min(...A.map(v => v[0])) || Math.max(...A.map(v => v[1])) < Math.min(...B.map(v => v[1])) || Math.max(...B.map(v => v[1])) < Math.min(...A.map(v => v[1]));
       const rx0 = Math.min(...r.line.map(v => v[0])), rx1 = Math.max(...r.line.map(v => v[0])), ry0 = Math.min(...r.line.map(v => v[1])), ry1 = Math.max(...r.line.map(v => v[1]));
@@ -168,7 +194,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
     const pub = (p: V) => d.roads.some(r => nearLine(p, r.line, r.w / 2 + .01)) || plan.foot.some(w => nearLine(p, w.pts, w.w / 2 + .01))
       || d.zones.some(z => ['park', 'quay', 'water'].includes(z.kind) && inZone(p, z)) || dist(p, plan.circus.c) <= plan.circus.island;
     // brief 007: a beam may also pass over a plot through a declared portal (signatures[].portal, megastructures[].portals, supports.portal), where the building carries it (P-1)
-    const portals = portalsOf(plan), inPortal = (p: V) => portals.some(q => p[0] >= q.rect[0] && p[0] <= q.rect[1] && Math.abs(p[1]) <= q.rect[3] && p[1] >= q.rect[2]);
+    const portals = portalsOf(plan), inPortal = (p: V) => portals.some(q => p[0] >= q.rect[0] && p[0] <= q.rect[1] && p[1] <= q.rect[3] && p[1] >= q.rect[2]);
     const off = paths.flatMap(p => p.samples).filter(s => !pub(s.p) && !inPortal(s.p));
     add({ id: 'S-C1', group: 'Sky rail', rule: `${line.id} passes over public space only (no plots)`, value: `${f(off.length / 2)} m over plots`, limit: '0', ok: !off.length });
   }
@@ -197,6 +223,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   const out = civ.buildings.filter(b => !b.poly.every(v => inPoly(v, plotOf(homes[b.id] ?? 'square'))));
   add({ id: 'C-2', group: 'Civic', rule: 'Café and office footprints inside their blocks', value: `${civ.buildings.length - out.length}/${civ.buildings.length}`, limit: 'all', ok: !out.length && civ.buildings.length === 2 });
   C.push(...driveChecks(plan, d, civ));
+  C.push(...floorChecks(plan, civ)); // C-5 (brief 055): opt-in on standards.levels.datum
   const ctx = { plan, d, civ, E, roadById };
   C.push(...(overlay?.civic(ctx) ?? []));
 
@@ -211,6 +238,8 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   add({ id: 'W-4', group: 'Walking', rule: 'Every walk starts at a building entrance (doors are world)', value: `${civ.walkFrom.length - stray.length}/${civ.walkFrom.length}`, limit: `all, within ${DOOR} m of a building edge`, ok: !stray.length && civ.walkFrom.length > 0, detail: stray.map(o => o.name).join(', ') || undefined, source: 'plan.standards.walking · GDD §01 exteriors only: the player starts at a door' });
   C.push(...entranceChecks(plan, d, civ));
   C.push(...roadFinishChecks(plan, undefined, { d, civ })); // RF-1, RF-2: opt-in on standards.streetscape.roads / .inlays (brief 026/028)
+  C.push(...kerbReturnChecks(plan, d, civ)); // KR-1: opt-in on standards.streetscape.kerbReturn (brief 028)
+  C.push(...blockGrammarChecks(plan, d, civ)); // BG-1..BG-5: opt-in on standards.blocks, the old DecoKit block grammar (brief 075)
   const waived = (std.transit?.waived ?? {}) as Record<string, string>;
   if (!strict) for (const c of C) if (!c.ok && waived[c.id]) { c.ok = true; c.waived = waived[c.id]; c.detail = `WAIVED (${waived[c.id]})${c.detail ? '; ' + c.detail : ''}`; }
   return { checks: C, routes, crossings, stops, stations, walks };

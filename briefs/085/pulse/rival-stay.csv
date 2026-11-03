@@ -1,0 +1,49 @@
+variant,plan,seeds,win_pct,unhurt_leavers_per_run,hit_leavers_per_run,first_shot_to_over_med,first_shot_to_over_p90,fight_med,fight_p95,hp_lost_mean,ops_down_mean
+today,quiet-a,400,99.2,1.54,0.41,14.3,21.8,16,36,3.1,0.1
+today,quiet-b,400,90.2,0.77,0.02,10.6,15.1,12,28,6.3,0.21
+today,quiet-g,400,74.2,0.53,0.19,23.9,49.5,27,69,8.3,0.61
+today,thin-quiet,400,89.2,0.84,0.38,11.7,20.9,15,26,7.4,0.13
+today,prepared-loud,400,80.0,1.07,0.57,16.8,25.6,20,118,11.2,0.76
+today,hand-stand-a,400,98.0,1.53,0.43,14.3,24.0,17,39,3.6,0.21
+today,hand-stand-b,400,89.2,0.88,0.01,10.6,18.1,12,27,6.6,0.27
+today,hand-street,400,0.0,1.93,0.15,,,79,122,5.3,0.3
+A run + street 60 s,quiet-a,400,99.2,1.54,0.41,14.3,21.8,16,36,3.1,0.1
+A run + street 60 s,quiet-b,400,90.2,0.77,0.02,10.6,15.1,12,28,6.3,0.21
+A run + street 60 s,quiet-g,400,74.2,0.53,0.19,23.9,49.5,27,69,8.3,0.61
+A run + street 60 s,thin-quiet,400,89.2,0.84,0.38,11.7,20.9,15,26,7.4,0.13
+A run + street 60 s,prepared-loud,400,79.5,1.07,0.57,16.8,25.6,20,120,11.2,0.76
+A run + street 60 s,hand-stand-a,400,98.2,1.53,0.43,14.3,24.0,17,39,3.6,0.2
+A run + street 60 s,hand-stand-b,400,89.2,0.88,0.01,10.6,18.1,12,27,6.6,0.27
+A run + street 60 s,hand-street,400,0.0,1.84,0.16,,,115,131,5.8,0.35
+"B hit rule, last man 0 s",quiet-a,400,97.8,0.84,1.03,17.8,27.5,20,38,3.7,0.15
+"B hit rule, last man 0 s",quiet-b,400,89.8,0.73,0.05,10.6,15.1,12,28,6.3,0.21
+"B hit rule, last man 0 s",quiet-g,400,72.0,0.47,0.22,24.0,50.0,28,69,8.5,0.65
+"B hit rule, last man 0 s",thin-quiet,400,89.0,0.41,0.69,13.6,21.6,15,27,7.6,0.14
+"B hit rule, last man 0 s",prepared-loud,400,79.2,0.96,0.68,16.8,25.6,20,120,11.2,0.76
+"B hit rule, last man 0 s",hand-stand-a,400,96.5,0.76,1.19,17.6,28.0,21,41,4.5,0.3
+"B hit rule, last man 0 s",hand-stand-b,400,89.0,0.83,0.06,10.6,18.2,12,28,6.6,0.28
+"B hit rule, last man 0 s",hand-street,400,0.0,1.93,0.15,,,79,121,5.4,0.32
+"C hit rule, last man 10 s + street 60 s",quiet-a,400,97.5,0.44,1.36,23.0,33.0,23,38,3.8,0.16
+"C hit rule, last man 10 s + street 60 s",quiet-b,400,89.8,0.48,0.05,19.0,23.5,12,36,6.3,0.21
+"C hit rule, last man 10 s + street 60 s",quiet-g,400,68.2,0.28,0.3,32.0,53.2,32,71,8.8,0.66
+"C hit rule, last man 10 s + street 60 s",thin-quiet,400,89.0,0.07,0.86,18.2,25.4,16,28,7.7,0.14
+"C hit rule, last man 10 s + street 60 s",prepared-loud,400,79.2,0.96,0.69,16.9,25.6,20,120,11.2,0.76
+"C hit rule, last man 10 s + street 60 s",hand-stand-a,400,94.0,0.26,1.66,23.7,34.0,25,43,4.9,0.34
+"C hit rule, last man 10 s + street 60 s",hand-stand-b,400,88.8,0.82,0.07,20.5,28.0,12,37,6.6,0.29
+"C hit rule, last man 10 s + street 60 s",hand-street,400,0.0,1.84,0.16,,,115,131,5.8,0.35
+"D hit rule, last man 20 s",quiet-a,400,97.5,0.12,1.58,25.4,36.2,28,41,3.9,0.17
+"D hit rule, last man 20 s",quiet-b,400,89.8,0.35,0.06,29.0,33.5,12,39,6.3,0.21
+"D hit rule, last man 20 s",quiet-g,400,64.8,0.14,0.38,39.1,56.3,37,76,9.1,0.67
+"D hit rule, last man 20 s",thin-quiet,400,89.0,0.0,0.91,18.3,25.8,16,29,7.7,0.14
+"D hit rule, last man 20 s",prepared-loud,400,79.2,0.96,0.69,16.9,25.7,20,120,11.2,0.76
+"D hit rule, last man 20 s",hand-stand-a,400,93.8,0.06,1.87,25.1,37.8,27,46,5.0,0.35
+"D hit rule, last man 20 s",hand-stand-b,400,88.2,0.77,0.11,29.7,37.1,13,46,6.8,0.3
+"D hit rule, last man 20 s",hand-street,400,0.0,1.93,0.15,,,79,121,5.4,0.32
+"C+ as C, and a crew past half down does not count at Go",quiet-a,400,97.5,0.44,1.36,23.0,33.0,23,38,3.8,0.16
+"C+ as C, and a crew past half down does not count at Go",quiet-b,400,89.8,0.48,0.05,19.0,23.5,12,36,6.3,0.21
+"C+ as C, and a crew past half down does not count at Go",quiet-g,400,68.2,0.28,0.3,32.0,53.2,32,71,8.8,0.66
+"C+ as C, and a crew past half down does not count at Go",thin-quiet,400,89.0,0.07,0.86,18.2,25.4,16,28,7.7,0.14
+"C+ as C, and a crew past half down does not count at Go",prepared-loud,400,79.2,0.96,0.69,16.9,25.6,20,120,11.2,0.76
+"C+ as C, and a crew past half down does not count at Go",hand-stand-a,400,94.0,0.26,1.66,23.7,34.0,25,43,4.9,0.34
+"C+ as C, and a crew past half down does not count at Go",hand-stand-b,400,88.8,0.82,0.07,20.5,28.0,12,37,6.6,0.29
+"C+ as C, and a crew past half down does not count at Go",hand-street,400,0.0,1.84,0.16,,,115,131,5.8,0.35

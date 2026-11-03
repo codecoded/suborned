@@ -1,0 +1,3 @@
+075-F1 category 1 (billboards, posters, signage): Vela's art part is ready, 2026-10-28 15:00.
+kit.json `posters` (34 variant .mats + sheet B), the 8 billboards regenerated on one canonical ad cell, notes for Splice in briefs/075/notes.md ("For Splice (075-F1)").
+Evidence: briefs/075/posters/contact_sheet.png, play_a.png, play_b.png (+ 2x crops). Checks: decokit (8 pieces), kit, collide --check ok, typecheck ok, kit + decokit tests 45 pass.

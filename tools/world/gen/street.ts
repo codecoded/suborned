@@ -6,10 +6,10 @@ import type { Ctx } from './common';
 import { type Rect, bbox, growRect } from './geo';
 import type { DeckRec, MegaOut } from './types';
 import { boxRing, roadAt } from '../../plan/street-zones';
-import { type V as PV, dist, dot, norm, sub } from '../../plan/geom';
+import { type V as PV, dist, dot, norm, segDist as segD, sub } from '../../plan/geom';
 import { flagRow } from './colour';
 import { edgeN } from './geo';
-import { streetKit } from './kitrefs';
+import { type PinLog, streetKit } from './kitrefs';
 import { bindPart } from './street/partkit';
 import { type CrossingLog, bankFeet, civicLandings, pairCrossings } from './street/crossings';
 import { Layer, twinBooths } from './street/kit';
@@ -17,9 +17,16 @@ import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks, dressPavi
 import { dressQuiet } from './street/quiet';
 import { type CapLog, dressCapstone } from './street/capstone';
 import { dressRoads } from './street/roads';
+import { dressFootways } from './street/footway';
 import { dressTransit } from './street/transit';
+import { dressAdverts } from './billboards';
+import { type TramStreetLog, newTramLog, tramKerbside } from './street/tramstreet';
+import type { Facade, KerbBay } from '../../../contracts/world/world.schema';
+import { type OldPropsLog, oldProps } from './oldtown/props';
+import type { OldGround } from './oldtown/ground';
+import { OLD_STREET } from './oldstreet';
 
-export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[] } {
+export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[]; old?: OldGround; facades?: Facade[] }): { items: StreetItem[]; flags: Flag[]; oldProps?: OldPropsLog; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[]; adverts?: ReturnType<typeof dressAdverts>; tram?: { bays: KerbBay[]; islands: Mass[]; log: TramStreetLog }; zonePins?: PinLog } {
   const ground = (m: Mass) => m.base < 1;
   const solids: V[][] = [...o.buildings.filter(ground).map(m => m.ring), ...o.megas.flatMap(m => m.parts.filter(ground).map(p => p.ring))];
   const post = (p: V): V[] => [[p[0] - 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] + 0.7], [p[0] - 0.7, p[1] + 0.7]];
@@ -30,6 +37,7 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   const doors = o.frontages.filter(f => f.level === 'street').map(f => boxRing(f.entrance.c as V, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw));
   const L = new Layer(ctx, solids, under, cols, keep, ctx.d.pylons.map(p => p.p), doors);
   dressTransit(ctx, L, o.stops, o.stations, o.connectors, o.decks); // transit kits first: their places are fixed
+  dressFootways(ctx, L); // brief 061: the lane posts of each continuous footway, under explicit ids (no other id moves), before the furniture so it keeps its distance
   dressRoads(ctx, L); dressMedians(ctx, L); dressFoot(ctx, L); dressCircus(ctx, L); dressPavilions(ctx, L); dressParks(ctx, L);
   const hall = o.megas.flatMap(m => m.parts.filter(p => /\/(hall|core)-/.test(p.id)).map(p => p.ring));
   const D = new Layer(ctx, hall, [], [], keep, []);
@@ -45,7 +53,15 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
     const at = new Map(L.items.map(i => [i.id, i.at] as const));
     for (const pts of [takedown.report, takedown.origins] as { item?: string; at: V }[][]) for (const q of pts) { const a = q.item ? at.get(q.item) : undefined; if (a) q.at = [a[0], a[1]]; }
   }
-  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
+  const adverts = dressAdverts(ctx, L, { decks: o.decks, megas: o.megas }); // brief 075-F (BB-3, BB-4): pylons and advertising columns take the ground everything else left, so no other street id moves
+  // brief 075 (the 1950s tram street, tramstreet.ts): the kerbside strip's bays and palm islands come last of all, so no other street id moves (no overhead wires or span poles: Sky 2026-10-28)
+  const tlog = newTramLog(), side = tramKerbside(ctx, L, tlog, { crossings: (strips?.crossings ?? []).map(c => c.strip as V[]), stops: o.stops, frontages: o.frontages });
+  const tram = side ? { ...side, log: tlog } : undefined;
+  // brief 075 remap (oldtown/props.ts): the old town's props by the old placement rules, last of all under their own ids (street/old/<rule>/<n>), so no other street id moves
+  const bays = o.old ? (o.facades ?? []).filter(f => f.form === 'bay' && f.base < 1).flatMap(f => { const m: V = [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], r = ctx.d.roads.filter(x => OLD_STREET.roads.includes(x.id)).find(x => Math.min(...x.line.slice(1).map((q, i) => segD(m, x.line[i]!, q))) < x.w / 2 + 10); return r ? [{ a: f.a as V, b: f.b as V, road: r.id }] : []; }) : [];
+  const oldLog = oldProps(ctx, L, o.old, { buildings: o.buildings, frontBays: bays });
+  const zonePins: PinLog = { used: 0, unmatched: [], unpinned: [], refit: [] }; // brief 075 (stable zone): what the Handover zone's kit pins did (world rule ZK-1)
+  return { ...(oldLog ? { oldProps: oldLog } : {}), items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])], zonePins).map(bindPart), zonePins, flags, adverts, ...(tram ? { tram } : {}), ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

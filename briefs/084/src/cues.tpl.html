@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>084 · cues, live on a real fight</title>
+<style>
+@font-face{font-family:Jost;src:url(%%FONT%%);font-weight:700}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#10201f;color:#f7f4ec;font:14px/1.35 system-ui,sans-serif}
+#app{display:grid;grid-template-columns:minmax(0,1fr) 330px;height:100vh}
+#left{display:flex;flex-direction:column;padding:10px;gap:8px;min-width:0}
+#stagewrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;aspect-ratio:16/9;max-width:100%;max-height:100%;background:#efe6d2;border-radius:4px;touch-action:none}
+#bar{display:flex;align-items:center;gap:8px;font:700 13px Jost,sans-serif}
+button{font:700 13px Jost,sans-serif;color:#f7f4ec;background:#17302f;border:1px solid #2f5350;border-radius:5px;padding:4px 9px;cursor:pointer}button:hover{background:#21403e}button.on{background:#60e0ea;color:#0b1615;border-color:#60e0ea}
+#scrubw{position:relative;flex:1;height:24px;display:flex;align-items:center}#scrub{width:100%;position:relative;z-index:2;margin:0;background:none}#marks{position:absolute;left:8px;right:8px;top:0;height:6px;z-index:1}#marks i{position:absolute;top:0;width:1.5px;height:6px}#marks .c{background:#f7f4ec}#marks .h{background:#e03a2f;top:3px}
+#readout{font:12px ui-monospace,Menlo,monospace;color:#b0cdc7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#panel{overflow:auto;background:#0b1615;padding:12px 14px 30px;border-left:1px solid #2f5350}
+h1{font:700 19px/1.15 Jost,sans-serif;margin:0 0 3px}h2{font:700 15px Jost,sans-serif;margin:16px 0 5px;color:#60e0ea}
+.small{font-size:12.5px;color:#b0cdc7;margin:3px 0 7px}.opts{display:flex;flex-wrap:wrap;gap:4px}.sub{font:700 12px Jost,sans-serif;color:#b0cdc7;margin:8px 0 3px}
+.say{font-size:12.5px;color:#f7f4ec;margin:5px 0 0;min-height:2.6em}[hidden]{display:none!important}
+.preset{display:flex;gap:4px;margin:8px 0}.preset button{flex:1}.preset.col{display:grid;grid-template-columns:1fr 1fr}.jumps button{font-size:12px}label{display:flex;gap:6px;align-items:center;font-size:12.5px;margin-top:5px;color:#b0cdc7}
+details{margin-top:14px;font-size:12.5px;color:#b0cdc7}summary{cursor:pointer;font:700 13px Jost,sans-serif;color:#f7f4ec}ul{padding-left:17px;margin:6px 0}li{margin:3px 0}
+.dec{border-left:3px solid #99784d;padding:3px 0 3px 9px;margin:7px 0;font-size:12.5px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:#0c3434;border:1px solid #cbc6c3;border-radius:7px;padding:2px 9px;font:700 13px Jost,sans-serif}
+</style>
+<div id="app"><div id="left">
+ <div id="stagewrap"><canvas id="view" width="1920" height="1080"></canvas></div>
+ <div id="bar"><button id="play">Pause</button><span id="clock">0:00</span><div id="scrubw"><div id="marks"></div><input id="scrub" type="range"></div>
+ <button data-speed="0.25">¼</button><button data-speed="0.5">½</button><button data-speed="1" class="on">1×</button><button data-speed="2">2×</button><button id="follow" hidden>Back to the video's camera</button></div>
+ <div id="readout"></div>
+</div>
+<div id="panel">
+ <h1>Cues on a real fight</h1>
+ <p class="small">Your video's fight, every shot real. People are stand-ins.<br>Space plays · arrows step · 1–4 looks · H hides cues · drag pans · click an edge mark to go there</p>
+ <div class="preset col"><button data-preset="built">1 · As built</button><button data-preset="pick">2 · Glyph's pick</button><button data-preset="flash">3 · Flashes only</button><button data-preset="quiet">4 · Clear street</button></div>
+ <div class="preset col jumps"><button data-jump="2680">They see you</button><button data-jump="2725">Fight off screen</button><button data-jump="2790">Fight on screen</button><button data-jump="2825" data-frame>Whole fight</button><button data-jump="3026">Your frame</button></div>
+
+ <h2>Which are mine</h2>
+ <div class="opts"><button data-k="m" data-v="built">As built</button><button data-k="m" data-v="ring">Ring on all four</button><button data-k="m" data-v="chev">Arrow over all four</button></div>
+ <p class="say" data-show="m" data-when="built">In a fight, only the selected agent has a mark.</p>
+ <p class="say" data-show="m" data-when="ring">All four keep a ring at their feet. Selected: thicker, with an arrow.</p>
+ <p class="say" data-show="m" data-when="chev">All four get a small arrow overhead. Selected: larger, with the thick ring.</p>
+
+ <h2>Who's shooting whom</h2>
+ <div class="opts"><button data-k="c" data-v="today">As built</button><button data-k="c" data-v="bracket">Corners + faces</button><button data-k="c" data-v="disc">Disc + faces</button><button data-k="c" data-v="thread">Flash line</button><button data-k="c" data-v="selected">Selected's line</button></div>
+ <p class="say" data-show="c" data-when="today">Muzzle flash and spark. A disc only on a target you named.</p>
+ <p class="say" data-show="c" data-when="disc">That disc on every target, with the shooters' faces.</p>
+ <p class="say" data-show="c" data-when="bracket">Corners round every target, with the shooters' faces. A hit snaps in, a miss twitches out.</p>
+ <p class="say" data-show="c" data-when="thread">A line with each shot, gone in a third of a second.</p>
+ <p class="say" data-show="c" data-when="selected">Corners and a dotted line for the selected agent only. Click a portrait.</p>
+ <div class="sub">Shots</div>
+ <div class="opts"><button data-k="s" data-v="built">As built</button><button data-k="s" data-v="hot">Hot flash</button><button data-k="s" data-v="body">Hot flash + knock back</button></div>
+ <div class="sub">Who's firing at me</div>
+ <div class="opts"><button data-k="i" data-v="off">Nothing</button><button data-k="i" data-v="darts">Red dart toward them</button><button data-k="i" data-v="mark">Dart + shooter flashes red</button></div>
+
+ <h2>Someone off screen</h2>
+ <div class="opts"><button data-k="e" data-v="today">As built</button><button data-k="e" data-v="chip">Icon + arrow</button><button data-k="e" data-v="rim">Dart</button><button data-k="e" data-v="portrait">By the portrait</button></div>
+ <p class="say" data-show="e" data-when="today">Nothing in this fight.</p>
+ <p class="say" data-show="e" data-when="chip">Their icon, an arrow, and a badge: sees you, calling it in, coming, firing.</p>
+ <p class="say" data-show="e" data-when="rim">A dart on the edge, red for fire. Doesn't say who.</p>
+ <p class="say" data-show="e" data-when="portrait">Their icon beside the agent they're after, with an arrow.</p>
+
+ <h2>Can it see me?</h2>
+ <div class="opts"><button data-k="w" data-v="today">As built</button><button data-k="w" data-v="hollow">Hollow cone</button><button data-k="w" data-v="gone">No cone</button><button data-k="w" data-v="ring">Ring at the feet</button></div>
+ <p class="say" data-show="w" data-when="today">The closed eye and a count, floating over it. A grey cone if watched.</p>
+ <p class="say" data-show="w" data-when="hollow">Can't see you: its cone goes hollow and dashed. Fills back red in the last 10 s.</p>
+ <p class="say" data-show="w" data-when="gone">Can't see you: no cone. It grows back in the last 10 s.</p>
+ <p class="say" data-show="w" data-when="ring">Can't see you: a turquoise ring at its feet, draining. No cone.</p>
+ <div class="preset col jumps"><button data-jump="3026">Robot</button><button data-jump="2725">Camera</button><button data-jump="2955" data-back="3035">It comes back</button><button data-jump="3026" data-on="guard">Guard (still sees)</button></div>
+ <label><input type="checkbox" id="watched" checked>You've watched it</label>
+ <p class="small">Hover it for the time. Alt: every cone and time.</p>
+ <div class="sub">The robot's lines</div>
+ <div class="opts"><button data-k="l" data-v="play">Always on</button><button data-k="l" data-v="one">Hover the robot, one line</button></div>
+ <label><input type="checkbox" id="way">Show an order's price and route</label>
+ <label><input type="checkbox" id="hide">Hide every cue (H)</label>
+</div></div>
+<script type="application/json" id="data">%%DATA%%</script>
+<script>%%JS%%</script>
+</html>

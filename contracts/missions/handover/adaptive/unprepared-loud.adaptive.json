@@ -1,0 +1,29 @@
+{
+ "schema": "suborned.mission.adaptive/1",
+ "mission": "handover",
+ "id": "unprepared-loud",
+ "style": "unprepared-loud",
+ "note": "Roams and shoots: guns out from the start, no Watch, no Listen, no Loop. Shoots the guard from the street, runs for the door, the rest fire at what's nearest, Enforcer brings Vale straight to the car through it.",
+ "pace": "human",
+ "rules": [
+  {"id":"e-to-door","op":"enforcer","do":"move","to":[6925,-4250],"run":true},
+  {"id":"scout-on","op":"scout","do":"move","to":[4300,-3100],"run":true},
+  {"id":"fixer-on","op":"fixer","do":"move","to":[4400,-3350],"run":true},
+  {"id":"tech-on","op":"tech","do":"move","to":[4600,-3600],"run":true},
+  {"id":"shoot-guard","op":"enforcer","do":"fire","target":"guard","when":["free:enforcer"],"retry":2},
+  {"id":"scout-guard","op":"scout","do":"fire","target":"guard","when":["free:scout"],"retry":3,"unless":["log:guard.down"]},
+  {"id":"fixer-guard","op":"fixer","do":"fire","target":"guard","when":["free:fixer"],"retry":3,"unless":["log:guard.down"]},
+  {"id":"to-door","op":"enforcer","do":"move","to":"d:Office entrance","run":true,"when":["log:guard.down"],"interrupt":true,"retry":2},
+  {"id":"enter","op":"enforcer","do":"enter","when":["done:to-door","free:enforcer"],"retry":2},
+  {"id":"to-car","op":"enforcer","do":"move","to":"d:Getaway bay","when":["log:enter.out"],"retry":2},
+  {"id":"board","op":"enforcer","do":"board","target":"car","when":["done:to-car","free:enforcer"],"retry":2},
+  {"id":"scout-back","op":"scout","do":"move","to":"d:Getaway bay","when":["log:enter.out"],"run":true},
+  {"id":"fixer-back","op":"fixer","do":"move","to":"d:Getaway bay","when":["log:enter.out"],"run":true},
+  {"id":"tech-back","op":"tech","do":"move","to":"d:Getaway bay","when":["log:enter.out"],"run":true},
+  {"id":"scout-in","op":"scout","do":"board","target":"car","when":["log:board.in","free:scout"],"retry":2},
+  {"id":"fixer-in","op":"fixer","do":"board","target":"car","when":["log:board.in","free:fixer"],"retry":2},
+  {"id":"tech-in","op":"tech","do":"board","target":"car","when":["log:board.in","free:tech"],"retry":2},
+  {"id":"go","op":"cell","do":"go","when":["log:board.in","fin:scout-in","fin:fixer-in","fin:tech-in"],"retry":2},
+  {"id":"go-anyway","op":"cell","do":"go","when":["sincelog:board.in:15"],"retry":2}
+ ]
+}

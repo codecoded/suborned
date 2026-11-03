@@ -35,7 +35,7 @@ namespace Suborned.World
             int a = k.Vert(p0), b = k.Vert(p1), c = k.Vert(p2), d = k.Vert(p3);
             if (Vector3.Dot(Vector3.Cross(p1 - p0, p2 - p0), outward) >= 0) { k.Tri(a, b, c); k.Tri(a, c, d); }
             else { k.Tri(a, c, b); k.Tri(a, d, c); }
-            k.Paint(f, atlas.Uv(sw));
+            k.Paint(f, atlas.Uv(sw)); Layer(k, f, sw);
         }
 
         /// <summary>Wall-aligned rectangle at depth d.</summary>
@@ -57,7 +57,7 @@ namespace Suborned.World
         {
             int f = k.VertexCount;
             k.Cap(ccw, h);
-            k.Paint(f, atlas.Uv(sw));
+            k.Paint(f, atlas.Uv(sw)); Layer(k, f, sw);
         }
 
         /// <summary>Flat polygon in the wall plane at depth d, fanned from `centre` (must see every vertex), facing outward. Points are (s, z).</summary>
@@ -71,10 +71,20 @@ namespace Suborned.World
                 int a = ids[i], b = ids[(i + 1) % pts.Count];
                 if (Vector3.Dot(Vector3.Cross(k.At(a) - k.At(c), k.At(b) - k.At(c)), w.Out) >= 0) k.Tri(c, a, b); else k.Tri(c, b, a);
             }
-            k.Paint(f, atlas.Uv(sw));
+            k.Paint(f, atlas.Uv(sw)); Layer(k, f, sw);
         }
 
         /// <summary>Paints everything added to the kit from vertex `from` on.</summary>
-        public void Paint(MeshKit k, int from, string sw) => k.Paint(from, atlas.Uv(sw));
+        public void Paint(MeshKit k, int from, string sw) { k.Paint(from, atlas.Uv(sw)); Layer(k, from, sw); }
+
+        /// <summary>Brief 072-F: a wall swatch (`*_w`: body, parapet and gate-tower walls) takes surface-detail layer 5 panel, so a far-LOD or
+        /// gate wall reads as the DK_Limestone_Tex stone beside it; every other swatch keeps its class default (matte: roof up, render
+        /// elsewhere). Written into the vertex blue channel as Pb.C does; AO 1, class 0 (matte) as QuadKit's unpainted vertices are.</summary>
+        static void Layer(MeshKit k, int from, string sw)
+        {
+            if (sw == null || !sw.EndsWith("_w", System.StringComparison.Ordinal)) return;
+            var c = Pb.C(1f, Cls.Matte, Atlas.LayerPanel);
+            for (int i = from; i < k.VertexCount; i++) k.Colour(i, c);
+        }
     }
 }

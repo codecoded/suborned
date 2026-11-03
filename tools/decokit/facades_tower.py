@@ -131,18 +131,21 @@ def crown(s):
 
 
 def door_canopy(s):
-    """Gold disc canopy over the corner door on two gold columns, lamp domes, chrome rim; revolving door under it."""
+    """Disc canopy over the corner door on two columns, lamp domes, chrome rim; revolving door under it.
+    Brief 075-E (Vela): the old piece drew the 5.9 m disc and its two 3.7 m columns in DK_Gold, which is brass at street level since 14 Oct; brass is a thin line
+    only (SF-21, never a large surface), so the disc is ivory enamel with a brass hairline under the chrome rim and the columns are chrome. Shape unchanged."""
     c = on_diag(6.3)
     with s.at((*c, 0.0)):
-        s.lathe([(0.0, 3.72), (2.75, 3.74), (2.95, 3.84), (2.95, 3.98), (2.8, 4.1), (0.0, 4.14)], pal.Gold, seg=40)
+        s.lathe([(0.0, 3.72), (2.75, 3.74), (2.95, 3.84), (2.95, 3.98), (2.8, 4.1), (0.0, 4.14)], pal.Enamel_Ivory, seg=40)
         s.lathe([(2.97, 3.86), (2.97, 3.96)], pal.Chrome, seg=40, cap_bottom=False, cap_top=False)
+        s.lathe([(2.955, 3.8), (2.955, 3.83)], pal.Gold, seg=40, cap_bottom=False, cap_top=False)
     lamps(s, [on_diag(6.3 + 1.9 * math.cos(math.radians(a)), 1.9 * math.sin(math.radians(a)))
               for a in range(0, 360, 45)]
           + [on_diag(6.3)], 3.72)
     for t in (-1.9, 1.9):
         with s.at((*on_diag(7.9, t), 0.0)):
             s.lathe([(0.0, 0.0), (0.28, 0.0), (0.28, 0.12), (0.18, 0.2), (0.15, 3.5), (0.26, 3.62), (0.26, 3.72),
-                     (0.0, 3.72)], pal.Gold, seg=16)
+                     (0.0, 3.72)], pal.Chrome, seg=16)
     with s.at((*on_diag(TR - 0.3), 0.0)):
         s.lathe([(1.1, 0.45), (1.1, 2.9)], pal.Glass, seg=24, cap_bottom=False, cap_top=False)
         s.lathe([(0.0, 2.9), (1.18, 2.9), (1.18, 3.3), (0.0, 3.3)], pal.Chrome, seg=24)

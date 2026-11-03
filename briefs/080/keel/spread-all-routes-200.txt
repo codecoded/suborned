@@ -1,0 +1,168 @@
+## careless-body-found: seed 0 Failure enforcer-down end 3:30 fight 16s hp 8 T 8 A 2
+   wins 0/200 (0%) [enforcer-downx200] end 3:27..3:37
+   fight s min/p25/med/p75/p95/max 13/16/17/18/19/23 (n 200)  hp lost med 8 max 12  down/run 1.00  hit 53% of 25 shots/run  T 4..23
+   log differs from seed 0: 200/200, first 2:20 med 2:36  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=- 5:00=- 6:00=- 7:00=-
+## careless-enforcer-watches-guard: seed 0 Failure enforcer-down end 2:55 fight 6s hp 8 T 1 A 2
+   wins 0/200 (0%) [enforcer-downx200] end 2:55..2:59
+   fight s min/p25/med/p75/p95/max 6/7/7/7/7/10 (n 200)  hp lost med 8 max 8  down/run 1.00  hit 68% of 11 shots/run  T 1..1
+   log differs from seed 0: 200/200, first 2:20 med 2:34  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## careless-g-disable: seed 0 Failure enforcer-down end 3:58 fight 19s hp 9 T 27 A 3
+   wins 0/200 (0%) [enforcer-downx200] end 3:48..4:21
+   fight s min/p25/med/p75/p95/max 9/11/12/15/19/42 (n 200)  hp lost med 10 max 19  down/run 1.06  hit 49% of 29 shots/run  T 7..36
+   log differs from seed 0: 200/200, first 1:23 med 1:32  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=- 5:00=- 6:00=- 7:00=-
+## careless-guard-left-door-held: seed 0 Failure vale-leaves end 5:13 fight 0s hp 0 T 6 A 1
+   wins 0/200 (0%) [vale-leavesx200] end 5:13..5:13
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 6..6
+   log differs from seed 0: 200/200, first 2:20 med 2:36  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=3/5 5:00=3/12 6:00=- 7:00=-
+## careless-loop-runs-out: seed 0 Failure entry-seen-camera end 2:52 fight 0s hp 0 T 4 A 0
+   wins 0/200 (0%) [entry-seen-camerax200] end 2:52..2:52
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 4..4
+   log differs from seed 0: 190/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## careless-reporter-not-stopped: seed 0 None end 8:30 fight 65s hp 12 T 10 A 2
+   wins 5/200 (2%) [rivals-reach-valex156, Nonex39] end 5:39..8:30
+   fight s min/p25/med/p75/p95/max 7/18/23/30/65/65 (n 99)  hp lost med 0 max 16  down/run 0.80  hit 48% of 24 shots/run  T 3..22
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=3/27 7:00=3/30
+## careless-scout-idles-pickup: seed 0 None end 8:30 fight 23s hp 9 T 10 A 2
+   wins 5/200 (2%) [rivals-reach-valex156, Nonex39] end 5:39..8:30
+   fight s min/p25/med/p75/p95/max 7/18/23/29/65/65 (n 99)  hp lost med 0 max 16  down/run 0.79  hit 48% of 24 shots/run  T 3..16
+   log differs from seed 0: 200/200, first 2:20 med 2:28  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=3/27 7:00=3/30
+## careless-takedown-seen-camera: seed 0 Failure entry-seen-camera end 2:37 fight 0s hp 0 T 1 A 1
+   wins 0/200 (0%) [entry-seen-camerax176, Withdrawnx15, vale-leavesx9] end 2:37..5:13
+   fight s min/p25/med/p75/p95/max 12/19/22/25/27/30 (n 24)  hp lost med 0 max 5  down/run 0.00  hit 48% of 1 shots/run  T 1..19
+   log differs from seed 0: 200/200, first 1:26 med 1:36  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## careless-takedown-seen-crowd: seed 0 Failure vale-leaves end 5:13 fight 0s hp 0 T 1 A 0
+   wins 0/200 (0%) [vale-leavesx200] end 5:13..5:13
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 1..1
+   log differs from seed 0: 199/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=3/5 5:00=3/12 6:00=- 7:00=-
+## careless-thin-all: seed 0 Success end 7:29 fight 82s hp 2 T 23 A 2
+   wins 52/200 (26%) [rivals-reach-valex101, Nonex24, Withdrawnx23] end 5:39..8:30
+   fight s min/p25/med/p75/p95/max 16/82/82/82/135/143 (n 99)  hp lost med 0 max 18  down/run 0.32  hit 40% of 19 shots/run  T 3..45
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=2/27 7:00=1/26
+## fail-district-seals: seed 0 Failure enforcer-down end 3:26 fight 59s hp 8 T 15 A 2
+   wins 0/200 (0%) [sealedx119, vale-leavesx78, enforcer-downx3] end 3:22..5:13
+   fight s min/p25/med/p75/p95/max 45/47/53/56/57/59 (n 200)  hp lost med 3 max 8  down/run 0.02  hit 62% of 12 shots/run  T 8..21
+   log differs from seed 0: 200/200, first 2:20 med 2:27  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=0/4 4:00=- 5:00=- 6:00=- 7:00=-
+## fail-enforcer-down: seed 0 Failure enforcer-down end 1:31 fight 54s hp 8 T 26 A 2
+   wins 0/200 (0%) [enforcer-downx200] end 1:22..2:13
+   fight s min/p25/med/p75/p95/max 45/53/54/56/61/96 (n 200)  hp lost med 8 max 8  down/run 1.00  hit 65% of 24 shots/run  T 16..52
+   log differs from seed 0: 200/200, first 0:37 med 0:39  moved>1m cast/crowd med 1:00=1/0 2:00=- 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## fail-entry-seen-camera: seed 0 Failure entry-seen-camera end 4:42 fight 0s hp 0 T 3 A 1
+   wins 0/200 (0%) [entry-seen-camerax200] end 4:42..4:42
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 3..3
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=4/5 4:00=3/5 5:00=- 6:00=- 7:00=-
+## fail-entry-seen-guard: seed 0 Failure entry-seen-guard end 3:52 fight 0s hp 0 T 2 A 1
+   wins 0/200 (0%) [entry-seen-guardx200] end 3:52..3:52
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 2..2
+   log differs from seed 0: 199/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=- 5:00=- 6:00=- 7:00=-
+## fail-rivals-reach-vale: seed 0 Failure rivals-reach-vale end 5:39 fight 0s hp 0 T 2 A 1
+   wins 0/200 (0%) [rivals-reach-valex200] end 5:39..5:39
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 2..2
+   log differs from seed 0: 200/200, first 0:45 med 0:45  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=- 7:00=-
+## fail-take-seen-camera: seed 0 Failure vale-leaves end 5:13 fight 0s hp 0 T 0 A 1
+   wins 0/200 (0%) [vale-leavesx200] end 5:13..5:13
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 0..0
+   log differs from seed 0: 200/200, first 1:02 med 1:36  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=4/5 4:00=3/5 5:00=3/12 6:00=- 7:00=-
+## fail-vale-dead: seed 0 Failure vale-leaves end 5:13 fight 0s hp 0 T 0 A 1
+   wins 0/200 (0%) [vale-leavesx200] end 5:13..5:13
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 0..0
+   log differs from seed 0: 200/200, first 1:33 med 1:43  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=3/5 5:00=3/12 6:00=- 7:00=-
+## fail-vale-leaves: seed 0 Failure vale-leaves end 5:13 fight 0s hp 0 T 1 A 0
+   wins 0/200 (0%) [vale-leavesx200] end 5:13..5:13
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 1..1
+   log differs from seed 0: 200/200, first 1:02 med 1:43  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=4/5 4:00=3/5 5:00=3/12 6:00=- 7:00=-
+## fight-loud-enforcer-down: seed 0 Failure entry-seen-guard end 1:24 fight 4s hp 1 T 4 A 2
+   wins 0/200 (0%) [enforcer-downx163, entry-seen-guardx37] end 1:24..3:20
+   fight s min/p25/med/p75/p95/max 4/116/117/117/119/120 (n 200)  hp lost med 8 max 8  down/run 0.82  hit 62% of 13 shots/run  T 4..9
+   log differs from seed 0: 199/200, first 1:19 med 1:19  moved>1m cast/crowd med 1:00=1/0 2:00=- 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## fight-loud-wait-square: seed 0 Failure entry-seen-guard end 2:37 fight 4s hp 0 T 4 A 2
+   wins 0/200 (0%) [enforcer-downx163, entry-seen-guardx37] end 2:37..4:04
+   fight s min/p25/med/p75/p95/max 4/85/86/87/89/91 (n 200)  hp lost med 8 max 8  down/run 0.82  hit 61% of 13 shots/run  T 4..8
+   log differs from seed 0: 200/200, first 2:20 med 2:33  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## fight-loud-wait-yard: seed 0 Withdrawn end 7:29 fight 40s hp 5 T 11 A 3
+   wins 0/200 (0%) [rivals-reach-valex101, Withdrawnx98, enforcer-downx1] end 5:39..7:29
+   fight s min/p25/med/p75/p95/max 43/44/44/44/44/44 (n 99)  hp lost med 0 max 13  down/run 0.26  hit 37% of 13 shots/run  T 3..12
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=3/27 7:00=2/27
+## fight-safe-rivals-reach-vale: seed 0 Failure rivals-reach-vale end 5:39 fight 0s hp 0 T 2 A 1
+   wins 0/200 (0%) [rivals-reach-valex200] end 5:39..5:39
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 2..2
+   log differs from seed 0: 200/200, first 0:45 med 0:45  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=- 7:00=-
+## fight-safe-unguarded: seed 0 Failure rivals-reach-vale end 3:09 fight 0s hp 0 T 5 A 1
+   wins 0/200 (0%) [rivals-reach-valex200] end 2:47..3:24
+   fight s min/p25/med/p75/p95/max 1/10/11/12/13/13 (n 43)  hp lost med 0 max 8  down/run 0.08  hit 46% of 3 shots/run  T 1..6
+   log differs from seed 0: 200/200, first 2:20 med 2:29  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=5/5 4:00=- 5:00=- 6:00=- 7:00=-
+## loud-fight: seed 0 Failure entry-seen-guard end 2:37 fight 4s hp 0 T 4 A 2
+   wins 95/200 (47%) [enforcer-downx67, entry-seen-guardx37, sealedx1] end 2:37..5:17
+   fight s min/p25/med/p75/p95/max 4/116/121/137/158/163 (n 200)  hp lost med 9 max 23  down/run 1.14  hit 49% of 55 shots/run  T 4..32
+   log differs from seed 0: 200/200, first 2:20 med 2:33  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## loud-left-downed: seed 0 Failure entry-seen-guard end 2:37 fight 4s hp 0 T 4 A 2
+   wins 95/200 (47%) [enforcer-downx67, entry-seen-guardx37, sealedx1] end 2:37..5:17
+   fight s min/p25/med/p75/p95/max 4/116/121/136/151/163 (n 200)  hp lost med 9 max 23  down/run 1.26  hit 49% of 55 shots/run  T 4..32
+   log differs from seed 0: 200/200, first 2:20 med 2:33  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## loud-left-standing: seed 0 Failure entry-seen-guard end 2:37 fight 4s hp 0 T 4 A 2
+   wins 95/200 (47%) [enforcer-downx67, entry-seen-guardx37, sealedx1] end 2:37..5:17
+   fight s min/p25/med/p75/p95/max 4/116/121/137/151/163 (n 200)  hp lost med 9 max 23  down/run 1.10  hit 49% of 53 shots/run  T 4..32
+   log differs from seed 0: 200/200, first 2:20 med 2:33  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## loud: seed 0 Failure entry-seen-guard end 2:37 fight 4s hp 0 T 4 A 2
+   wins 95/200 (47%) [enforcer-downx67, entry-seen-guardx37, sealedx1] end 2:37..5:17
+   fight s min/p25/med/p75/p95/max 4/107/119/122/139/163 (n 200)  hp lost med 9 max 23  down/run 1.10  hit 49% of 53 shots/run  T 4..32
+   log differs from seed 0: 200/200, first 2:20 med 2:33  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## route-a-board: seed 0 Success end 4:15 fight 11s hp 0 T 4 A 0
+   wins 194/200 (97%) [rivals-reach-valex6] end 4:15..4:19
+   fight s min/p25/med/p75/p95/max 6/11/12/12/12/16 (n 200)  hp lost med 1 max 7  down/run 0.00  hit 46% of 16 shots/run  T 4..4
+   log differs from seed 0: 200/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=3/5 5:00=- 6:00=- 7:00=-
+## route-a-disable: seed 0 Success end 4:38 fight 20s hp 3 T 5 A 1
+   wins 198/200 (99%) [rivals-reach-valex2] end 4:37..4:38
+   fight s min/p25/med/p75/p95/max 7/16/20/22/26/35 (n 200)  hp lost med 2 max 16  down/run 0.07  hit 48% of 25 shots/run  T 5..5
+   log differs from seed 0: 200/200, first 0:25 med 0:35  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=3/5 5:00=- 6:00=- 7:00=-
+## route-a-pressure-board: seed 0 Success end 4:13 fight 21s hp 9 T 6 A 0
+   wins 169/200 (84%) [rivals-reach-valex31] end 4:03..4:24
+   fight s min/p25/med/p75/p95/max 7/12/15/17/22/33 (n 200)  hp lost med 9 max 22  down/run 0.40  hit 46% of 38 shots/run  T 6..8
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=2/3 5:00=- 6:00=- 7:00=-
+## route-a-pressure: seed 0 Success end 4:31 fight 13s hp 4 T 7 A 0
+   wins 190/200 (95%) [Nonex5, rivals-reach-valex5] end 4:22..8:30
+   fight s min/p25/med/p75/p95/max 11/36/39/40/41/58 (n 200)  hp lost med 7 max 23  down/run 0.71  hit 51% of 46 shots/run  T 6..26
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=2/4 5:00=- 6:00=- 7:00=-
+## route-a: seed 0 Success end 4:38 fight 20s hp 3 T 4 A 0
+   wins 198/200 (99%) [rivals-reach-valex2] end 4:37..4:38
+   fight s min/p25/med/p75/p95/max 7/16/20/22/26/35 (n 200)  hp lost med 2 max 16  down/run 0.07  hit 48% of 25 shots/run  T 4..4
+   log differs from seed 0: 200/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=3/5 5:00=- 6:00=- 7:00=-
+## route-b-board: seed 0 Failure rivals-reach-vale end 7:51 fight 26s hp 8 T 8 A 2
+   wins 5/200 (2%) [rivals-reach-valex193, Nonex2] end 5:39..8:30
+   fight s min/p25/med/p75/p95/max 10/16/17/19/27/64 (n 99)  hp lost med 0 max 14  down/run 0.57  hit 39% of 21 shots/run  T 3..11
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=3/27 7:00=3/30
+## route-b-thin: seed 0 Success end 7:32 fight 8s hp 4 T 14 A 2
+   wins 5/200 (2%) [rivals-reach-valex143, Nonex52] end 5:39..8:30
+   fight s min/p25/med/p75/p95/max 7/20/26/55/65/66 (n 99)  hp lost med 0 max 18  down/run 0.75  hit 47% of 24 shots/run  T 3..34
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=2/27 7:00=3/30
+## route-b: seed 0 None end 8:30 fight 65s hp 12 T 10 A 2
+   wins 5/200 (2%) [rivals-reach-valex156, Nonex39] end 5:39..8:30
+   fight s min/p25/med/p75/p95/max 7/18/23/30/65/65 (n 99)  hp lost med 0 max 16  down/run 0.80  hit 48% of 24 shots/run  T 3..22
+   log differs from seed 0: 200/200, first 2:20 med 2:38  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=4/5 5:00=3/12 6:00=3/27 7:00=3/30
+## route-g-board: seed 0 Success end 3:58 fight 7s hp 6 T 6 A 2
+   wins 32/200 (16%) [Withdrawnx85, rivals-reach-valex75, Nonex8] end 3:48..8:30
+   fight s min/p25/med/p75/p95/max 3/8/10/12/16/36 (n 200)  hp lost med 8 max 16  down/run 0.44  hit 47% of 33 shots/run  T 5..18
+   log differs from seed 0: 200/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=4/5 4:00=- 5:00=- 6:00=- 7:00=-
+## route-g-fast-board: seed 0 Success end 3:02 fight 7s hp 1 T 5 A 1
+   wins 79/200 (39%) [rivals-reach-valex71, Nonex30, cell-downx14, sealedx6] end 2:47..8:30
+   fight s min/p25/med/p75/p95/max 2/11/18/24/81/119 (n 200)  hp lost med 11 max 23  down/run 1.31  hit 44% of 40 shots/run  T 1..18
+   log differs from seed 0: 200/200, first 2:20 med 2:29  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=6/2 4:00=- 5:00=- 6:00=- 7:00=-
+## route-g-fast: seed 0 Success end 2:58 fight 3s hp 2 T 5 A 1
+   wins 58/200 (29%) [sealedx52, Nonex50, rivals-reach-valex23, cell-downx17] end 2:52..8:30
+   fight s min/p25/med/p75/p95/max 3/10/16/24/45/109 (n 200)  hp lost med 10 max 23  down/run 1.33  hit 44% of 48 shots/run  T 1..20
+   log differs from seed 0: 200/200, first 2:20 med 2:29  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+## route-g-kill-board: seed 0 Failure enforcer-down end 3:58 fight 15s hp 8 T 3 A 2
+   wins 0/200 (0%) [enforcer-downx200] end 3:55..5:31
+   fight s min/p25/med/p75/p95/max 12/97/100/102/104/106 (n 200)  hp lost med 9 max 12  down/run 1.00  hit 66% of 25 shots/run  T 3..29
+   log differs from seed 0: 200/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=- 5:00=- 6:00=- 7:00=-
+## route-g-kill: seed 0 Failure enforcer-down end 3:58 fight 15s hp 8 T 3 A 2
+   wins 0/200 (0%) [enforcer-downx200] end 3:55..5:37
+   fight s min/p25/med/p75/p95/max 12/97/100/103/109/111 (n 200)  hp lost med 10 max 13  down/run 1.01  hit 65% of 27 shots/run  T 3..29
+   log differs from seed 0: 200/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=3/5 4:00=- 5:00=- 6:00=- 7:00=-
+## route-g: seed 0 Success end 3:58 fight 8s hp 5 T 6 A 2
+   wins 14/200 (7%) [rivals-reach-valex112, Nonex74] end 3:48..8:30
+   fight s min/p25/med/p75/p95/max 3/9/12/27/35/96 (n 200)  hp lost med 10 max 22  down/run 0.82  hit 46% of 44 shots/run  T 5..28
+   log differs from seed 0: 200/200, first 2:20 med 2:37  moved>1m cast/crowd med 1:00=1/0 2:00=1/2 3:00=4/5 4:00=- 5:00=- 6:00=- 7:00=-
+## withdraw: seed 0 Withdrawn end 0:30 fight 0s hp 0 T 0 A 0
+   wins 0/200 (0%) [Withdrawnx200] end 0:30..0:30
+   fight s min/p25/med/p75/p95/max 0/0/0/0/0/0 (n 0)  hp lost med 0 max 0  down/run 0.00  hit 0% of 0 shots/run  T 0..0
+   log differs from seed 0: 0/200, first - med -  moved>1m cast/crowd med 1:00=- 2:00=- 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-

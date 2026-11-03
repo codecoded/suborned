@@ -56,7 +56,7 @@ namespace Suborned.Play
                     "walking" or "running" => (a.Phase == "running" ? "Running" : "Walking") + (q != null ? $" to {ActPlaceName(k, q)}" : ""),
                     "firing" => $"Firing on {Name(a.Target)}",
                     "drawing" => "Drawing",
-                    "holding" => a.Verb == "loop" ? "Holding the loop" : a.Verb == "take" ? "Holding Vale: to the car" : a.Verb == "carry" ? $"Carrying the {a.Target}" : "Holding",
+                    "holding" => a.Verb == "loop" ? "Holding the loop" : a.Verb == "take" ? $"Holding {ValeWord}: to the car" : a.Verb == "carry" ? $"Carrying the {a.Target}" : "Holding",
                     _ => Doingly(a.Verb, op.Busy?.Approach ?? "", a.Target),
                 };
                 // what the cancel stops: the engine's activity; walking to an act, the act is dropped as well
@@ -82,14 +82,16 @@ namespace Suborned.Play
         string Name(string key) => key switch
         {
             "" => "", "hostiles" => "the hostiles", _ when key.StartsWith("camera:") => CameraName(key[7..]),
+            "car:rivals" => Text?.TargetName("rivals", "the rival crew") ?? "the rival crew", _ when HostViews.IsCrewId(key) => Text?.HoldersPhrase(key) ?? "a rival", // brief 059 K8
+            _ when Game != null && Game.S.StandById(key) != null => Text?.TargetName("stand-" + key, "the " + key) ?? key, // brief 059 K6: a car stand (Fable's targets.stand-*)
             _ when Game != null && !IsOpName(key) && key is not ("waitress" or "driver" or "guard" or "councillor") && Game.PersonById(key) is Person cp => PersonName(cp), // a passer-by (brief 013)
             _ when Game != null && Game.S.Stashes.Find(x => x.Id == key) is StashPlace sp => StashName(sp),
-            _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key,
+            _ => Text?.TargetName(key, key.StartsWith("security") ? "the police" : "the " + key) ?? key, // Fable 067 (the glossary): the police, never "the response unit"
         };
 
         string ActPlaceName(int k, Order q) => q.Do switch
         {
-            "loop" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => "Vale",
+            "loop" or "disable" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => $"{ValeWord}",
             _ => q.Target.Length > 0 ? Name(q.Target) : "the act",
         };
 
@@ -99,7 +101,7 @@ namespace Suborned.Play
             var key = verb == "turn" ? approach : verb;
             var label = Text?.Action(key, target).label ?? key;
             bool person = target is "waitress" or "driver" or "guard" or "councillor";
-            return withTarget && person && verb != "take" ? $"{(label == "Listen" ? "Listen to" : label)} {Name(target)}" : label;
+            return withTarget && person && verb != "take" ? Text?.WithTarget(key, Name(target)) ?? $"{label} {Name(target)}" : label; // Fable 067: the text's withTarget ("Listen to Inez")
         }
 
         /// <summary>The roster's line for an act in progress: "Watching Inez", "Paying the driver", "Looping the camera".</summary>
@@ -109,15 +111,15 @@ namespace Suborned.Play
             return (verb == "turn" ? approach : verb) switch
             {
                 "watch" => $"Watching {who}", "listen" => $"Listening to {who}", "ask" => $"Asking {who}", "pay" => $"Paying {who}", "help" => $"Helping {who}",
-                "pressure" => $"Pressuring {who}", "loop" => "Looping the camera", "reroute" => "Rerouting the patrol", "mislead" => "Tipping off the rivals",
-                "enter" => "Inside: finding Vale", "take" => "Taking Vale", "carry" => $"Lifting the {target}", "holster" => "Holstering", "call" => $"Calling {who}",
+                "pressure" => $"Pressuring {who}", "loop" => "Looping the camera", "disable" => "Cutting the line", "reroute" => "Rerouting the patrol", "mislead" => "Tipping off the rivals",
+                "enter" => $"Inside: finding {ValeWord}", "take" => $"Taking {ValeWord}", "carry" => $"Lifting the {target}", "holster" => "Holstering", "call" => $"Calling {who}",
                 var v => v.Length > 0 ? char.ToUpperInvariant(v[0]) + v[1..] : "Busy",
             };
         }
 
         public static string Glyph(string verb, string approach) => verb switch
         {
-            "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "reroute" => "route",
+            "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "disable" => "disable", "reroute" => "route",
             "mislead" => "tip", "enter" => "in", "take" => "take", "board" or "go" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "takedown" => "takedown", "restrain" => "restrain", "stash" => "stash", "drop" => "drop", "" => "", _ => verb,
         };
 
@@ -141,6 +143,59 @@ namespace Suborned.Play
             Track(); intentKey = "";
         }
 
+        // ---------------------------------------------------------------- brief 083: cancelling takes a deliberate act
+
+        /// <summary>Seconds a second click (or key press) after the first still stops the act. A double click (under doubleSeconds) is one slip, not a yes: it asks once.</summary>
+        public const float BusyConfirmS = 3f;
+        /// <summary>The proof reads them: the last busy prompt's words; first clicks that asked; second clicks that stopped an act; squad agents a click left at their act; acts a repeat left running.</summary>
+        public string BusyWords { get; private set; } = "";
+        public int BusyAsks { get; private set; } public int BusyStops { get; private set; } public int BusySkips { get; private set; } public int SameKept { get; private set; }
+        float busyAskAt = -9f; int busyAskMask;
+
+        /// <summary>What agent k is doing that a plain walk would end: an act under way, one it walks to, or the Tech's loop (which holds only at the cabinet). Null: nothing (a walk, carrying,
+        /// holding Vale, a fire order: those carry on or are meant to be walked).</summary>
+        string ActOn(int k)
+        {
+            if (Game == null || k < 0 || k > 3) return null;
+            if (WouldCancel(k) is var (verb, _)) return verb;
+            return doing[k].Phase == "holding" && doing[k].Verb == "loop" ? VerbWord("loop") : null;
+        }
+
+        /// <summary>The prompt's words (the budget's four-word pop): what it is on and the seconds left are the act mark right under it. Fable's less.done.cancel.again, .againKey, .cantStop, .already.</summary>
+        string BusyLine(int k, string again) => doing[k].CanCancel ? again : DW("cancel.cantStop", "Can't stop now");
+
+        /// <summary>A plain click that would walk the selection (brief 083, Sky on 0.2.159: "way too easy to cancel a player's action"). Free agents go and a busy one stays at its act (a squad move
+        /// never stops anyone). With every selected agent busy, the first click asks ("Click again to stop") and nothing else happens; a second click at least a double click's
+        /// time later and within BusyConfirmS stops them and walks. True: the click is spent. `who`: the agents the walk goes to (null: the selection as it stands). Paused "start together" plans wait as ghosts and stop nothing yet.</summary>
+        bool BusyClick(Vector2 p, out List<int> who)
+        {
+            who = null; if (Game == null || Queueing) return false;
+            var sel = SelectedList().FindAll(k => !Game.Ops[k].Inside && !Game.Ops[k].Down); var busy = sel.FindAll(k => ActOn(k) != null);
+            if (busy.Count == 0) { busyAskAt = -9f; return false; }
+            if (busy.Count < sel.Count) { who = sel.FindAll(k => !busy.Contains(k)); BusySkips += busy.Count; busyAskAt = -9f; SayStaying(busy); return false; }
+            float now = Time.unscaledTime, ago = now - busyAskAt; int mask = 0; foreach (var k in busy) mask |= 1 << k;
+            if (mask == busyAskMask && ago <= BusyConfirmS)
+            {
+                if (ago < controls.doubleSeconds) return true; // the same slip's second click
+                if (busy.Exists(k => doing[k].CanCancel)) { busyAskAt = -9f; BusyStops += busy.Count; who = busy.FindAll(k => doing[k].CanCancel); return false; } // yes: WalkNow's cancel says what was lost
+            }
+            busyAskAt = now; busyAskMask = mask; BusyAsks++;
+            BusyWords = BusyLine(busy[0], DW("cancel.again", "Click again to stop"));
+            Pop(BusyWords, null, (AgentWorld(busy[0]) ?? Vector3.zero) + Vector3.up * 1.1f, Feedback.Info, BusyConfirmS, "icons/singles/p_time"); // over the act mark, never on it
+            return true;
+        }
+
+        /// <summary>A new order that is the act already under way (or walked to): nothing is dropped and nothing restarts; it pops what is running. Shift on a walk-in is a real change (it runs there).</summary>
+        bool SameActRunning(int k, Order want, bool run)
+        {
+            var op = Game.Ops[k]; var cur = op.Busy ?? op.Act ?? pending[k];
+            if (cur == null || want == null || cur.Do != want.Do || cur.Target != want.Target || (cur.Approach ?? "") != (want.Approach ?? "") || (cur.How ?? "") != (want.How ?? "")) return false;
+            if (op.Busy == null && run && !op.Running) return false;
+            SameKept++; BusyWords = DW("cancel.already", "Already doing it");
+            Pop(BusyWords, null, (AgentWorld(k) ?? Vector3.zero) + Vector3.up * 1.1f, Feedback.Info, 2f, "icons/singles/p_time");
+            return true;
+        }
+
         /// <summary>The cancel key (C): every selected agent (nothing to cancel says nothing).</summary>
         public void CancelSelected()
         {
@@ -160,7 +215,7 @@ namespace Suborned.Play
 
         void Say(string speaker, string text, Feedback kind = Feedback.Info)
         {
-            if (string.IsNullOrEmpty(text)) return;
+            if (string.IsNullOrEmpty(text) || ConvoQuiet(speaker)) return; // brief 085: what a scene at this landing says, or says better; never the old words in the history
             int agent = Array.IndexOf(OpKeys, speaker);
             Talk.Add(new Said { Born = Time.unscaledTime, Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
             FeedSay(speaker, text);
@@ -210,7 +265,6 @@ namespace Suborned.Play
             string speaker = Op.Name(by), verb = VerbOf(o);
             if (!Beat("ack", verb, speaker, who: Name(o.Target), kind: Feedback.Ok))
                 Say(speaker, w != null ? $"Heading to {(w.Place.Length > 0 ? PlaceName(w.Place) : Name(o.Target))}." : "On it.", Feedback.Ok);
-            ConvoHeard((int)by, false); // brief 032: the scene shows the same ack
             if (w == null) SayArrive(by, o);
             if (o.Do == "call") FeedCall(o.Target);
         }
@@ -219,7 +273,7 @@ namespace Suborned.Play
         void SayArrive(OpId by, Order o)
         {
             var verb = VerbOf(o);
-            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } ConvoHeard((int)by, true); } // Fable §6: arrive is history only (brief 032: the scene shows it)
+            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } } // Fable §6: arrive is history only (brief 032: the scene shows it)
         }
 
         /// <summary>The refusal said for the player: the text's lock line for its code, filled (a port of `fillLock`); else the engine's words.</summary>
@@ -240,12 +294,12 @@ namespace Suborned.Play
             var l = (a.code ?? "").Length > 0 ? Text.LockByCode(a.code) : null;
             l ??= Text.LockOf(a.why ?? "");
             if (l == null || l.Line.Length == 0) return null;
-            var line = TargetKindOf(o.Target) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; // Fable 019: "Scout or Tech" on a machine
+            var line = LockVariant(a, TargetKindOf(o.Target)) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; // Fable 019: "Scout or Tech" on a machine; engine 0.33.0: car-held by the rival car (rival-car, rival-car-driving)
             string who = o.Target.Length > 0 ? Name(o.Target) : "them";
             string op = o.Op.Length > 0 && o.Op != "cell" ? AgentNames[(int)Op.Parse(o.Op)] : "The agent";
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
-            string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
+            string tick = a.tick >= 0 ? LockTick(l.Code, a.tick) : "?"; // engine 0.33.0 (Fable's tickAs): car-held's {tick} is the time still to wait
             line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)); // brief 018: car-held names what blocks the car (Answer.ids)
             return line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
         }
@@ -253,7 +307,7 @@ namespace Suborned.Play
         // engine log codes that land an order's act, and the verb and agent whose exchange they belong to
         static readonly Dictionary<string, (string verb, string op)> Lands = new()
         {
-            ["loop.on"] = ("loop", "tech"), ["patrol.rerouted"] = ("reroute", "tech"), ["rivals.misled"] = ("mislead", "scout"),
+            ["loop.on"] = ("loop", "tech"), ["camera.cut"] = ("disable", "tech"), ["patrol.rerouted"] = ("reroute", "tech"), ["rivals.misled"] = ("mislead", "scout"),
             ["enter.out"] = ("enter", "enforcer"), ["take.done"] = ("take", "enforcer"),
             ["takedown.out"] = ("takedown", "enforcer"), ["takedown.dead"] = ("takedown", "enforcer"),
         };

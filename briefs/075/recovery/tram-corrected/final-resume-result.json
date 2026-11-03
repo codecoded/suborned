@@ -1,0 +1,26 @@
+{
+  "command": [
+    "bun",
+    "tools/game/playing.ts",
+    "unity",
+    "run",
+    "/Users/sky/Projects/suborned/unity",
+    "--timeout",
+    "590",
+    "--log-file",
+    "/Users/sky/Projects/suborned/out/scratch/latch/tram-corrected/final-resume.log",
+    "--no-tail",
+    "--format",
+    "json",
+    "--",
+    "-executeMethod",
+    "Suborned.OldTown.Editor.Swap.SwapTramCorrected.ResumeSavedCandidate",
+    "-tramCheck",
+    "final"
+  ],
+  "exit": 0,
+  "seconds": 137.39958691596985,
+  "restoredExactBytes": [
+    "unity/ProjectSettings/QualitySettings.asset"
+  ]
+}

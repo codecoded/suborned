@@ -126,12 +126,12 @@ namespace Suborned.Sim
             {
                 var g = r.G; var st = KiteStage(r);
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
-                if (!r.Until(() => g.RivalsDrawn && g.RivalsPresent && g.RivalsPose().HasValue, T(120))) { r.Is(false, "the rivals come"); return; }
+                if (!r.Until(() => g.RivalsDrawn && g.Crew[0].OnFoot && g.MemberPose(g.Crew[0]).HasValue, T(120))) { r.Is(false, "the rivals come"); return; } // brief 059: the crew is five people: rival-1, drawn to the Office front
                 Pt? lastR = null; int still = 0;
-                r.Until(() => { var p = g.RivalsPose()?.pos; still = p == lastR ? still + 1 : 0; lastR = p; return still >= 2 || !g.RivalsPresent; }, T(150));
-                var rp = g.RivalsPose()?.pos;
-                if (!r.Is(rp.HasValue && still >= 2, "the rivals stand at the Office")) return;
-                int eff = g.RivalsGun.W!.EffCm;
+                r.Until(() => { var p = g.MemberPose(g.Crew[0])?.pos; still = p == lastR ? still + 1 : 0; lastR = p; return still >= 2 || !g.Crew[0].OnFoot; }, T(150));
+                var rp = g.MemberPose(g.Crew[0])?.pos;
+                if (!r.Is(rp.HasValue && still >= 2, "rival-1 stands at the Office")) return;
+                int eff = g.Crew[0].Gun.W!.EffCm, max = g.Crew[0].Gun.W!.MaxCm;
                 var (o1, o2) = st!.Value; var rpos = rp!.Value;
                 Pt? tp = null; // 72 bearings × three radii (15.5, 16.5, 17.5 m), in order: the first free point that meets the stage
                 for (int rr = eff + 50; rr <= eff + 250 && tp == null; rr += 100)
@@ -139,26 +139,33 @@ namespace Suborned.Sim
                     {
                         double ang = k * Math.PI / 36; var q0 = new Pt(rpos.X + (int)Math.Round(rr * Math.Cos(ang)), rpos.Y + (int)Math.Round(rr * Math.Sin(ang)));
                         if (!g.S.Grid.Free(q0) || G.D2(q0, o1) <= (long)(eff + 50) * (eff + 50) || G.D2(q0, o2) <= (long)(eff + 50) * (eff + 50) || !g.S.Sight(q0, rpos, g.R.Eye)) continue;
-                        if (g.PreviewAnswer(OpId.Tech, "rivals", q0) is KiteAnswer ka && ka.Side == "rivals") tp = q0;
+                        if (g.PreviewAnswer(OpId.Tech, "rival-1", q0) is KiteAnswer ka && ka.Side == "rivals") tp = q0;
                     }
                 if (!r.Is(tp.HasValue, "a spot 15.5–17.5 m from the crew, beyond the officers' rings, from which the crew has somewhere to hide (PreviewAnswer)")) return;
                 r.To(r.SendTo(Tech, tp!.Value)); r.Do(Tech, "draw"); r.Wait(g.DrawT + 1);
-                var at = g.RivalsPose()?.pos; int drawn0 = g.RivalsDrawnTick;
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "volley", Target = "rivals", Shots = 1 }).ok, "one targeted shot on the crew");
-                if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "tech" && s.target == "rivals"), T(3)), "the Tech's shot goes")) return;
-                int t0 = r.Shots().First(s => s.by == "tech" && s.target == "rivals").tick;
+                var at = g.MemberPose(g.Crew[0])?.pos;
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "volley", Target = "rival-1", Shots = 1 }).ok, "one targeted shot on the crew");
+                if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "tech" && s.target == "rival-1"), T(3)), "the Tech's shot goes")) return;
+                int t0 = r.Shots().First(s => s.by == "tech" && s.target == "rival-1").tick;
                 r.Do(Tech, "holster");
+                // engine 0.34.0 (brief 067 K and A, the square and the patrol moved): the crew posts at the Office approach, the volley walks the Tech in
+                // to 14 m (the fire's walk into reach) and he would stand within the crew's max of its lean-out point, on its line, so by Pulse §5.2 (no
+                // lean-out into a shooter still there) rival-1 would never lean out and walk on at kite.hideMax: the Tech steps back out, 4 m beyond
+                // that max, the way he came, and the lean-out point is no longer covered
+                var tpos = r.Op(Tech).Pos; long td = Math.Max(1, G.Dist(tpos, rpos));
+                var stepBack = new Pt(rpos.X + (int)((tpos.X - rpos.X) * (max + 400) / td), rpos.Y + (int)((tpos.Y - rpos.Y) * (max + 400) / td));
+                r.SendTo(Tech, g.Walk.NearestFree(stepBack) ?? stepBack);
                 r.To(t0 + g.Labr!.KiteReact + 2);
-                r.Is(g.RivalsPose()?.pos != at && g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals answer", StringComparison.Ordinal)), "the crew moves out of the line after kite.react");
-                var ans = g.Log.Where(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals answer", StringComparison.Ordinal)).ToList();
+                r.Is(g.MemberPose(g.Crew[0])?.pos != at && g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 answers", StringComparison.Ordinal)), "the crew moves out of the line after kite.react");
+                var ans = g.Log.Where(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 answers", StringComparison.Ordinal)).ToList();
                 if (ans.Count == 0) return;
                 var answered = ans[0].Tick;
-                r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals lean out", StringComparison.Ordinal)), T(60));
-                var back = g.Log.FirstOrDefault(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals lean out", StringComparison.Ordinal));
+                r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 leans out", StringComparison.Ordinal)), T(60));
+                var back = g.Log.FirstOrDefault(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 leans out", StringComparison.Ordinal));
                 if (!r.Is(back.Code == "ai.kite", "the crew comes back")) return;
                 r.Is(back.Tick - answered >= g.Labr.KiteHide, $"not before kite.hide ({g.Labr.KiteHide} ticks) of quiet");
-                r.Eq(g.RivalsDrawnTick - drawn0, back.Tick - answered, "the arrival clock is late by exactly the detour");
-                r.Eq(g.RivalsPose()?.pos, at, "back where it stood");
+                // brief 059: he stood posted at the front, on no walk: no arrival clock to shift (a member still walking shifts his walk by the detour)
+                r.Eq(g.MemberPose(g.Crew[0])?.pos, at, "back where it stood");
             }, LabStart(s => s.Security = 1));
         }
     }

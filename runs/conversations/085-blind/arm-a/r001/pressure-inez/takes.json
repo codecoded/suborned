@@ -1,0 +1,133 @@
+{
+  "takes": [
+    {
+      "situation": "Plates up her arm, she takes the Fixer for the Bureau; the wrong guess collapses.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Mind the plates. If it's the Bureau loan, my card's stamped."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Not the Bureau. It's you and Okafor, on the Office door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Table six is waiting. Who told you that?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We can tell the Office about your affair. Smile, people can see."
+        },
+        {
+          "speaker": "Inez",
+          "line": "They'd have him off that door. What do you want from me?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "When I telephone, call him off it to you. About a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I'll call him, because you've scared me. I won't forget your face."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "No, you won't. You could describe it to anyone who asks."
+        }
+      ],
+      "learned": [
+        "Inez knows the Fixer's face now."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "The ask comes first, as if a favour; she denies Okafor until the threat lands.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Terrace is full, and I've two trays up. Try the counter."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "I'll telephone. You call Okafor off the Office door for a minute."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I don't know any Okafor. Did someone at my tables say that?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "We saw you look at his door. Lower your voice, please."
+        },
+        {
+          "speaker": "Inez",
+          "line": "I've got the Bureau on my card already. Isn't that enough?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Sorry, no. One note by tube tells the Office of your affair."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Don't send it. He comes to me, a minute, and that's all?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "That's all. You'll hate me, and you could describe me if asked."
+        }
+      ],
+      "learned": [
+        "Inez knows the Fixer's face now."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    },
+    {
+      "situation": "She tries to buy her way out with her loan money; the Fixer refuses it.",
+      "beats": [
+        {
+          "speaker": "Inez",
+          "line": "Mind my envelope, that's for my Bureau loan. Are you waiting?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Okafor, in a way. The Office hasn't heard about your affair yet."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Take it, it's all I've got. Just not the Office, please."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Keep it. When we telephone, you call Okafor off the door."
+        },
+        {
+          "speaker": "Inez",
+          "line": "Off the door, in front of everyone? To do what?"
+        },
+        {
+          "speaker": "Fixer",
+          "line": "To stand at your side about a minute. That's all you do."
+        },
+        {
+          "speaker": "Inez",
+          "line": "You've frightened me, so I'll do it. Now turn to the light."
+        },
+        {
+          "speaker": "Fixer",
+          "line": "Go on, look. You could describe me to anyone who asks."
+        }
+      ],
+      "learned": [
+        "Inez knows the Fixer's face now."
+      ],
+      "opens": [
+        "Call Inez"
+      ]
+    }
+  ]
+}

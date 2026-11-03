@@ -1,0 +1,1551 @@
+{
+ "schema": "suborned.leaf077.numbers/1",
+ "brief": "077",
+ "author": "Latch",
+ "date": "2026-10-29",
+ "scene": "Assets/Scenes/probe-leafshader077.unity",
+ "unity": "6000.6.2f1",
+ "captures": [
+  {
+   "file": "captures/play-day-on-play-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "on",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-day-on-play-y210.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "on",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-day-on-close-run-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "on",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-on-close-run-y210.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "on",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-on-close-arc-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "on",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/play-day-off-play-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "off",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-day-off-play-y210.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "off",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-day-off-close-run-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "off",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-off-close-run-y210.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "off",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-off-close-arc-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "off",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/play-night-on-play-y030.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "on",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-night-on-play-y210.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "on",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-night-on-close-run-y030.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "on",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-night-on-close-run-y210.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "on",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-night-on-close-arc-y030.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "on",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/play-night-off-play-y030.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "off",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-night-off-play-y210.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "off",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/play-night-off-close-run-y030.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "off",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-night-off-close-run-y210.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "off",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-night-off-close-arc-y030.png",
+   "look": "play",
+   "phase": "night",
+   "shader": "off",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-on-play-y030.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "on",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-on-play-y210.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "on",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-on-close-run-y030.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "on",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-on-close-run-y210.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "on",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-on-close-arc-y030.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "on",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-off-play-y030.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "off",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-off-play-y210.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "off",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-off-close-run-y030.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "off",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-off-close-run-y210.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "off",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-day-off-close-arc-y030.png",
+   "look": "presentation",
+   "phase": "day",
+   "shader": "off",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-on-play-y030.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "on",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-on-play-y210.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "on",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-on-close-run-y030.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "on",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-on-close-run-y210.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "on",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-on-close-arc-y030.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "on",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-off-play-y030.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "off",
+   "view": "play-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-off-play-y210.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "off",
+   "view": "play-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD2 (relative height 0.166)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD3 (relative height 0.143)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-off-close-run-y030.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "off",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-off-close-run-y210.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "off",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/presentation-night-off-close-arc-y030.png",
+   "look": "presentation",
+   "phase": "night",
+   "shader": "off",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/play-day-colour-close-run-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "colour",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-colour-close-run-y210.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "colour",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-colour-close-arc-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "colour",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  },
+  {
+   "file": "captures/play-day-facing-close-run-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "facing",
+   "view": "close-run-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-facing-close-run-y210.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "facing",
+   "view": "close-run-y210",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.894)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD0 (relative height 0.769)"
+   }
+  },
+  {
+   "file": "captures/play-day-facing-close-arc-y030.png",
+   "look": "play",
+   "phase": "day",
+   "shader": "facing",
+   "view": "close-arc-y030",
+   "lods": {
+    "PlanterArc_TB (Vela, candidate)": "LOD0 (relative height 0.553)",
+    "PlanterRun_4_A_TB (Vela, candidate)": "LOD1 (relative height 0.476)"
+   }
+  }
+ ],
+ "counts": {
+  "shaderOn": {
+   "estimator": [
+    {
+     "view": "play-y030",
+     "kind": "play",
+     "focusPlan": [-170.328156, -21.50375],
+     "yaw": 30,
+     "camera": "ortho 14, pitch 38, yaw 30",
+     "setPassEstimate": {
+      "forward": 4,
+      "depthNormals": 3,
+      "shadow": 3,
+      "total": 10
+     },
+     "draws": {
+      "main": 12,
+      "shadow": 13,
+      "perCascade": [1, 12]
+     },
+     "mainRenderers": 5,
+     "mainTriangles": 5565,
+     "opaqueTriangles": 5565,
+     "shadowsOnlyInFrustum": 0,
+     "censusVisibleRenderers": 5,
+     "censusTriangles": 5565,
+     "lodCulled": 5,
+     "shadow": {
+      "casters": 5,
+      "triangles": 5567,
+      "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+      "cascades": [
+       {
+        "casters": 1,
+        "draws": 1,
+        "triangles": 2,
+        "variants": 1,
+        "sphereRadius": 57.504
+       },
+       {
+        "casters": 5,
+        "draws": 12,
+        "triangles": 5565,
+        "variants": 2,
+        "sphereRadius": 57.504
+       }
+      ]
+     },
+     "materials": 7,
+     "shaders": 2,
+     "shaderVariantsForward": 4,
+     "groups": {
+
+     },
+     "ground": {
+
+     },
+     "probesInFrame": 1,
+     "probes": ["Handover zone probe"],
+     "sun": {
+      "inFrame": false,
+      "viewport": [-24.134, 24.029],
+      "angleFromViewAxis": 166.923
+     },
+     "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+     "byLayer": {
+      "leaf077 review/PlanterArc_TB": {
+       "renderers": 2,
+       "triangles": 4016
+      },
+      "leaf077 review/PlanterRun_4_A_TB": {
+       "renderers": 2,
+       "triangles": 1547
+      },
+      "review ground (DK_Ground_PaveLimestone)": {
+       "renderers": 1,
+       "triangles": 2
+      }
+     },
+     "frameMs": {
+      "Disabled": {
+       "median": 1.76,
+       "p90": 3.05,
+       "drawerActive": "inactive",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      },
+      "InstancedDrawing": {
+       "median": 1.65,
+       "p90": 2.02,
+       "drawerActive": "active",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      }
+     }
+    },
+    {
+     "view": "play-y210",
+     "kind": "play",
+     "focusPlan": [-170.328156, -21.50375],
+     "yaw": 210,
+     "camera": "ortho 14, pitch 38, yaw 210",
+     "setPassEstimate": {
+      "forward": 4,
+      "depthNormals": 3,
+      "shadow": 3,
+      "total": 10
+     },
+     "draws": {
+      "main": 12,
+      "shadow": 13,
+      "perCascade": [1, 12]
+     },
+     "mainRenderers": 5,
+     "mainTriangles": 5565,
+     "opaqueTriangles": 5565,
+     "shadowsOnlyInFrustum": 0,
+     "censusVisibleRenderers": 5,
+     "censusTriangles": 5565,
+     "lodCulled": 5,
+     "shadow": {
+      "casters": 5,
+      "triangles": 5567,
+      "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+      "cascades": [
+       {
+        "casters": 1,
+        "draws": 1,
+        "triangles": 2,
+        "variants": 1,
+        "sphereRadius": 57.504
+       },
+       {
+        "casters": 5,
+        "draws": 12,
+        "triangles": 5565,
+        "variants": 2,
+        "sphereRadius": 57.504
+       }
+      ]
+     },
+     "materials": 7,
+     "shaders": 2,
+     "shaderVariantsForward": 4,
+     "groups": {
+
+     },
+     "ground": {
+
+     },
+     "probesInFrame": 1,
+     "probes": ["Handover zone probe"],
+     "sun": {
+      "inFrame": false,
+      "viewport": [25.134, 174.966],
+      "angleFromViewAxis": 83.812
+     },
+     "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+     "byLayer": {
+      "leaf077 review/PlanterArc_TB": {
+       "renderers": 2,
+       "triangles": 4016
+      },
+      "leaf077 review/PlanterRun_4_A_TB": {
+       "renderers": 2,
+       "triangles": 1547
+      },
+      "review ground (DK_Ground_PaveLimestone)": {
+       "renderers": 1,
+       "triangles": 2
+      }
+     },
+     "frameMs": {
+      "Disabled": {
+       "median": 1.55,
+       "p90": 2.42,
+       "drawerActive": "inactive",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      },
+      "InstancedDrawing": {
+       "median": 1.63,
+       "p90": 2.57,
+       "drawerActive": "active",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      }
+     }
+    }
+   ],
+   "pieces": {
+    "view": "play-y030",
+    "renderers": 4,
+    "draws": 11,
+    "shadowDraws": 11,
+    "triangles": 5563,
+    "forwardPrograms": {
+     "DecoKit/Lit Cutaway Leaf | _DK_TWO_SIDED _DK_VERTEX_COLOR _METALLICSPECGLOSSMAP _NORMALMAP | cull 0": 4,
+     "DecoKit/Lit Cutaway | _DETAIL_MULX2 | cull 2": 2,
+     "DecoKit/Lit Cutaway | _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP | cull 2": 3,
+     "DecoKit/Lit Cutaway | _METALLICSPECGLOSSMAP _NORMALMAP | cull 2": 2
+    },
+    "shadowPrograms": {
+     "DecoKit/Lit Cutaway Leaf |  | cull 0": 4,
+     "DecoKit/Lit Cutaway |  | cull 2": 7
+    }
+   }
+  },
+  "shaderOff": {
+   "estimator": [
+    {
+     "view": "play-y030",
+     "kind": "play",
+     "focusPlan": [-170.328156, -21.50375],
+     "yaw": 30,
+     "camera": "ortho 14, pitch 38, yaw 30",
+     "setPassEstimate": {
+      "forward": 3,
+      "depthNormals": 2,
+      "shadow": 2,
+      "total": 7
+     },
+     "draws": {
+      "main": 12,
+      "shadow": 13,
+      "perCascade": [1, 12]
+     },
+     "mainRenderers": 5,
+     "mainTriangles": 5565,
+     "opaqueTriangles": 5565,
+     "shadowsOnlyInFrustum": 0,
+     "censusVisibleRenderers": 5,
+     "censusTriangles": 5565,
+     "lodCulled": 5,
+     "shadow": {
+      "casters": 5,
+      "triangles": 5567,
+      "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+      "cascades": [
+       {
+        "casters": 1,
+        "draws": 1,
+        "triangles": 2,
+        "variants": 1,
+        "sphereRadius": 57.504
+       },
+       {
+        "casters": 5,
+        "draws": 12,
+        "triangles": 5565,
+        "variants": 1,
+        "sphereRadius": 57.504
+       }
+      ]
+     },
+     "materials": 7,
+     "shaders": 1,
+     "shaderVariantsForward": 3,
+     "groups": {
+
+     },
+     "ground": {
+
+     },
+     "probesInFrame": 1,
+     "probes": ["Handover zone probe"],
+     "sun": {
+      "inFrame": false,
+      "viewport": [-24.134, 24.029],
+      "angleFromViewAxis": 166.923
+     },
+     "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+     "byLayer": {
+      "leaf077 review/PlanterArc_TB": {
+       "renderers": 2,
+       "triangles": 4016
+      },
+      "leaf077 review/PlanterRun_4_A_TB": {
+       "renderers": 2,
+       "triangles": 1547
+      },
+      "review ground (DK_Ground_PaveLimestone)": {
+       "renderers": 1,
+       "triangles": 2
+      }
+     },
+     "frameMs": {
+      "Disabled": {
+       "median": 1.48,
+       "p90": 2.1,
+       "drawerActive": "inactive",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      },
+      "InstancedDrawing": {
+       "median": 1.6,
+       "p90": 2.95,
+       "drawerActive": "active",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      }
+     }
+    },
+    {
+     "view": "play-y210",
+     "kind": "play",
+     "focusPlan": [-170.328156, -21.50375],
+     "yaw": 210,
+     "camera": "ortho 14, pitch 38, yaw 210",
+     "setPassEstimate": {
+      "forward": 3,
+      "depthNormals": 2,
+      "shadow": 2,
+      "total": 7
+     },
+     "draws": {
+      "main": 12,
+      "shadow": 13,
+      "perCascade": [1, 12]
+     },
+     "mainRenderers": 5,
+     "mainTriangles": 5565,
+     "opaqueTriangles": 5565,
+     "shadowsOnlyInFrustum": 0,
+     "censusVisibleRenderers": 5,
+     "censusTriangles": 5565,
+     "lodCulled": 5,
+     "shadow": {
+      "casters": 5,
+      "triangles": 5567,
+      "note": "TacticalShadows on, focusDepth 160; 2 cascades, shadow distance 200 m, splits 0.500/0.000/0.000, tile 2048",
+      "cascades": [
+       {
+        "casters": 1,
+        "draws": 1,
+        "triangles": 2,
+        "variants": 1,
+        "sphereRadius": 57.504
+       },
+       {
+        "casters": 5,
+        "draws": 12,
+        "triangles": 5565,
+        "variants": 1,
+        "sphereRadius": 57.504
+       }
+      ]
+     },
+     "materials": 7,
+     "shaders": 1,
+     "shaderVariantsForward": 3,
+     "groups": {
+
+     },
+     "ground": {
+
+     },
+     "probesInFrame": 1,
+     "probes": ["Handover zone probe"],
+     "sun": {
+      "inFrame": false,
+      "viewport": [25.134, 174.966],
+      "angleFromViewAxis": 83.812
+     },
+     "flare": "LensFlareComponentSRP enabled, occlusion on, intensity 1",
+     "byLayer": {
+      "leaf077 review/PlanterArc_TB": {
+       "renderers": 2,
+       "triangles": 4016
+      },
+      "leaf077 review/PlanterRun_4_A_TB": {
+       "renderers": 2,
+       "triangles": 1547
+      },
+      "review ground (DK_Ground_PaveLimestone)": {
+       "renderers": 1,
+       "triangles": 2
+      }
+     },
+     "frameMs": {
+      "Disabled": {
+       "median": 1.6,
+       "p90": 2.39,
+       "drawerActive": "inactive",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      },
+      "InstancedDrawing": {
+       "median": 1.54,
+       "p90": 1.98,
+       "drawerActive": "active",
+       "renderCountersDelta": {
+        "SetPass Calls Count": 0,
+        "Draw Calls Count": 0,
+        "Batches Count": 0,
+        "Triangles Count": 0,
+        "Vertices Count": 0,
+        "Shadow Casters Count": 0,
+        "Visible Skinned Meshes Count": 0
+       }
+      }
+     }
+    }
+   ],
+   "pieces": {
+    "view": "play-y030",
+    "renderers": 4,
+    "draws": 11,
+    "shadowDraws": 11,
+    "triangles": 5563,
+    "forwardPrograms": {
+     "DecoKit/Lit Cutaway | _DETAIL_MULX2 | cull 2": 2,
+     "DecoKit/Lit Cutaway | _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP | cull 2": 3,
+     "DecoKit/Lit Cutaway | _METALLICSPECGLOSSMAP _NORMALMAP | cull 0": 4,
+     "DecoKit/Lit Cutaway | _METALLICSPECGLOSSMAP _NORMALMAP | cull 2": 2
+    },
+    "shadowPrograms": {
+     "DecoKit/Lit Cutaway |  | cull 0": 4,
+     "DecoKit/Lit Cutaway |  | cull 2": 7
+    }
+   }
+  }
+ },
+ "shader": {
+  "name": "DecoKit/Lit Cutaway",
+  "path": "Assets/Suborned/Shaders/DecoKit/DK_LitCutaway.shader",
+  "sha256": "44623fab0e019539711a4a84b85f8cd28326db13be3c3a62e9bdfa7e4446ac14",
+  "guid": "2529b42165e1d45a8bcfb0013bb5aba3",
+  "includes": {
+   "DK_Cutaway.hlsl": "8ca9a338aa8634adb2a8187980f437cd2735c34bac562d6101cd61da8ce70348",
+   "DK_SurfaceDetail.hlsl": "22bbdafd76c644be5c8fd076c7bfb7f0ca5fa1003902b01ab1e2eb9b0dabd631",
+   "DK_Leaf.hlsl": "41fb64cf7a1ab7aa2efebe41e1a3575dd3b471bd86cc3746e909afd00536bb6c",
+   "DK_LeafForward.hlsl": "352bfff46c0f63487d80c3e54c909a040cb5b2b58d0c5c44f59385c0a5616316",
+   "DK_LeafGBuffer.hlsl": "3b9c4ebfd54da98e55ed9704bd6278fd271b898ee3268a0db6fdd7ffd3263628",
+   "DK_LeafDepthNormals.hlsl": "1f82e83ab62c8fe34d48d71ccf487e2873b1123e6e9e6205650f9baa1f1e0e24",
+   "DK_LeafMeta.hlsl": "fb0a8528741d9154f6824b814d323a6ee6a064a2b435847c8ae98754b85599d2"
+  },
+  "hasError": false,
+  "supported": true,
+  "messages": ["Warning: use of potentially uninitialized variable (DKApplyDetailNormal) (Assets/Suborned/Shaders/DecoKit/DK_SurfaceDetail.hlsl:63) [Metal]"],
+  "srpBatcher": "code 0 (OK ())",
+  "passes": 9,
+  "keywordSpace": ["STEREO_INSTANCING_ON (BuiltinDefault) overridable", "UNITY_SINGLE_PASS_STEREO (BuiltinDefault) overridable", "STEREO_MULTIVIEW_ON (BuiltinDefault) overridable", "STEREO_CUBEMAP_RENDER_ON (BuiltinDefault) overridable", "_MAIN_LIGHT_SHADOWS overridable", "_MAIN_LIGHT_SHADOWS_CASCADE overridable", "_MAIN_LIGHT_SHADOWS_SCREEN overridable", "_ADDITIONAL_LIGHTS_VERTEX overridable", "_ADDITIONAL_LIGHTS overridable", "EVALUATE_SH_MIXED overridable", "EVALUATE_SH_VERTEX overridable", "_LIGHT_LAYERS overridable", "_CLUSTER_LIGHT_LOOP overridable", "_FOVEATED_RENDERING_NON_UNIFORM_RASTER overridable", "LIGHTMAP_SHADOW_MIXING overridable", "SHADOWS_SHADOWMASK overridable", "DIRLIGHTMAP_COMBINED overridable", "LIGHTMAP_ON overridable", "DYNAMICLIGHTMAP_ON overridable", "USE_LEGACY_LIGHTMAPS overridable", "LOD_FADE_CROSSFADE overridable", "PROBE_VOLUMES_L1 overridable", "PROBE_VOLUMES_L2 overridable", "DOTS_INSTANCING_ON overridable", "FOG_LINEAR overridable", "FOG_EXP overridable", "FOG_EXP2 overridable", "INSTANCING_ON overridable", "_NORMALMAP", "_PARALLAXMAP", "_RECEIVE_SHADOWS_OFF", "_DETAIL_MULX2", "_DETAIL_SCALED", "_ADDITIONAL_LIGHT_SHADOWS overridable", "_REFLECTION_PROBE_BLENDING overridable", "_REFLECTION_PROBE_BOX_PROJECTION overridable", "_REFLECTION_PROBE_ATLAS overridable", "_SCREEN_SPACE_REFLECTION overridable", "_SHADOWS_SOFT overridable", "_SHADOWS_SOFT_LOW overridable", "_SHADOWS_SOFT_MEDIUM overridable", "_SHADOWS_SOFT_HIGH overridable", "_SCREEN_SPACE_OCCLUSION overridable", "_SCREEN_SPACE_IRRADIANCE overridable", "_DBUFFER_MRT1 overridable", "_DBUFFER_MRT2 overridable", "_DBUFFER_MRT3 overridable", "_LIGHT_COOKIES overridable", "_WRITE_RENDERING_LAYERS overridable", "LIGHTMAP_BICUBIC_SAMPLING overridable", "REFLECTION_PROBE_ROTATION overridable", "DEBUG_DISPLAY overridable", "_DK_CUT overridable", "_SURFACE_TYPE_TRANSPARENT", "_ALPHATEST_ON", "_ALPHAPREMULTIPLY_ON", "_ALPHAMODULATE_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A", "_OCCLUSIONMAP", "_SPECULARHIGHLIGHTS_OFF", "_ENVIRONMENTREFLECTIONS_OFF", "_SCREENSPACEREFLECTIONS_OFF", "_SPECULAR_SETUP", "_CASTING_PUNCTUAL_LIGHT_SHADOW overridable", "_RENDER_PASS_ENABLED overridable", "_GBUFFER_NORMALS_OCT overridable", "_WRITE_SMOOTHNESS overridable", "_SCREENSPACEREFLECTIONSCONTRIBUTETRANSPARENT_OFF", "EDITOR_VISUALIZATION overridable", "_SPECGLOSSMAP", "_ADD_PRECOMPUTED_VELOCITY", "APPLICATION_SPACE_WARP_MOTION_TRANSPARENT overridable"]
+ },
+ "leafShader": {
+  "name": "DecoKit/Lit Cutaway Leaf",
+  "path": "Assets/Suborned/Shaders/DecoKit/DK_LitCutawayLeaf.shader",
+  "sha256": "aae39615ee0ac29022c7e83730e2c3837647a969870dc55e39048b89014d407d",
+  "guid": "d73ca00e3e5f149f5b9c9b8ed7aa33e7",
+  "includes": {
+   "DK_Cutaway.hlsl": "8ca9a338aa8634adb2a8187980f437cd2735c34bac562d6101cd61da8ce70348",
+   "DK_SurfaceDetail.hlsl": "22bbdafd76c644be5c8fd076c7bfb7f0ca5fa1003902b01ab1e2eb9b0dabd631",
+   "DK_Leaf.hlsl": "41fb64cf7a1ab7aa2efebe41e1a3575dd3b471bd86cc3746e909afd00536bb6c",
+   "DK_LeafForward.hlsl": "352bfff46c0f63487d80c3e54c909a040cb5b2b58d0c5c44f59385c0a5616316",
+   "DK_LeafGBuffer.hlsl": "3b9c4ebfd54da98e55ed9704bd6278fd271b898ee3268a0db6fdd7ffd3263628",
+   "DK_LeafDepthNormals.hlsl": "1f82e83ab62c8fe34d48d71ccf487e2873b1123e6e9e6205650f9baa1f1e0e24",
+   "DK_LeafMeta.hlsl": "fb0a8528741d9154f6824b814d323a6ee6a064a2b435847c8ae98754b85599d2"
+  },
+  "hasError": false,
+  "supported": true,
+  "messages": ["Warning: use of potentially uninitialized variable (DKApplyDetailNormal) (Assets/Suborned/Shaders/DecoKit/DK_SurfaceDetail.hlsl:63) [Metal]"],
+  "srpBatcher": "code 0 (OK ())",
+  "passes": 9,
+  "keywordSpace": ["STEREO_INSTANCING_ON (BuiltinDefault) overridable", "UNITY_SINGLE_PASS_STEREO (BuiltinDefault) overridable", "STEREO_MULTIVIEW_ON (BuiltinDefault) overridable", "STEREO_CUBEMAP_RENDER_ON (BuiltinDefault) overridable", "_MAIN_LIGHT_SHADOWS overridable", "_MAIN_LIGHT_SHADOWS_CASCADE overridable", "_MAIN_LIGHT_SHADOWS_SCREEN overridable", "_ADDITIONAL_LIGHTS_VERTEX overridable", "_ADDITIONAL_LIGHTS overridable", "EVALUATE_SH_MIXED overridable", "EVALUATE_SH_VERTEX overridable", "_LIGHT_LAYERS overridable", "_CLUSTER_LIGHT_LOOP overridable", "_FOVEATED_RENDERING_NON_UNIFORM_RASTER overridable", "LIGHTMAP_SHADOW_MIXING overridable", "SHADOWS_SHADOWMASK overridable", "DIRLIGHTMAP_COMBINED overridable", "LIGHTMAP_ON overridable", "DYNAMICLIGHTMAP_ON overridable", "USE_LEGACY_LIGHTMAPS overridable", "LOD_FADE_CROSSFADE overridable", "PROBE_VOLUMES_L1 overridable", "PROBE_VOLUMES_L2 overridable", "DOTS_INSTANCING_ON overridable", "FOG_LINEAR overridable", "FOG_EXP overridable", "FOG_EXP2 overridable", "INSTANCING_ON overridable", "_NORMALMAP", "_PARALLAXMAP", "_RECEIVE_SHADOWS_OFF", "_DETAIL_MULX2", "_DETAIL_SCALED", "_DK_VERTEX_COLOR", "_DK_TWO_SIDED", "_ADDITIONAL_LIGHT_SHADOWS overridable", "_REFLECTION_PROBE_BLENDING overridable", "_REFLECTION_PROBE_BOX_PROJECTION overridable", "_REFLECTION_PROBE_ATLAS overridable", "_SCREEN_SPACE_REFLECTION overridable", "_SHADOWS_SOFT overridable", "_SHADOWS_SOFT_LOW overridable", "_SHADOWS_SOFT_MEDIUM overridable", "_SHADOWS_SOFT_HIGH overridable", "_SCREEN_SPACE_OCCLUSION overridable", "_SCREEN_SPACE_IRRADIANCE overridable", "_DBUFFER_MRT1 overridable", "_DBUFFER_MRT2 overridable", "_DBUFFER_MRT3 overridable", "_LIGHT_COOKIES overridable", "_WRITE_RENDERING_LAYERS overridable", "LIGHTMAP_BICUBIC_SAMPLING overridable", "REFLECTION_PROBE_ROTATION overridable", "DEBUG_DISPLAY overridable", "_DK_CUT overridable", "_SURFACE_TYPE_TRANSPARENT", "_ALPHATEST_ON", "_ALPHAPREMULTIPLY_ON", "_ALPHAMODULATE_ON", "_EMISSION", "_METALLICSPECGLOSSMAP", "_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A", "_OCCLUSIONMAP", "_SPECULARHIGHLIGHTS_OFF", "_ENVIRONMENTREFLECTIONS_OFF", "_SCREENSPACEREFLECTIONS_OFF", "_SPECULAR_SETUP", "_CASTING_PUNCTUAL_LIGHT_SHADOW overridable", "_RENDER_PASS_ENABLED overridable", "_GBUFFER_NORMALS_OCT overridable", "_WRITE_SMOOTHNESS overridable", "_SCREENSPACEREFLECTIONSCONTRIBUTETRANSPARENT_OFF", "EDITOR_VISUALIZATION overridable", "_SPECGLOSSMAP", "_ADD_PRECOMPUTED_VELOCITY", "APPLICATION_SPACE_WARP_MOTION_TRANSPARENT overridable"]
+ },
+ "srpBatcherLeafAfterRender": "code 0 (OK ())",
+ "srpBatcherAfterRender": "code 0 (OK ())",
+ "materials": [
+  {
+   "name": "DK_Leaf_TB",
+   "shader": "DecoKit/Lit Cutaway Leaf",
+   "keywords": "_DK_TWO_SIDED _DK_VERTEX_COLOR _METALLICSPECGLOSSMAP _NORMALMAP",
+   "cull": 0,
+   "baseColour": "#AFBEA1",
+   "bumpScale": 0.16,
+   "smoothnessScale": 1,
+   "shadowCaster": true,
+   "doubleSidedGI": true,
+   "textures": {
+    "_BaseMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/botanical-atlas-v2.png",
+     "size": "2048x1024",
+     "format": "BC7",
+     "mips": 12,
+     "MiB": 2.6667,
+     "wrap": "Clamp",
+     "aniso": 8,
+     "sourceSha256": "da2573c3f98e3e502ad1a6acd9e786ae43ae0961f0b8dd7a80dc1a75fa2f9bbe"
+    },
+    "_BumpMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/botanical-normal-v2.png",
+     "size": "2048x1024",
+     "format": "BC5",
+     "mips": 12,
+     "MiB": 2.6667,
+     "wrap": "Clamp",
+     "aniso": 8,
+     "sourceSha256": "9c95555b3906cf72a04fe28927dad2a6e6b0b97d84e770261f55819c65a29b79"
+    },
+    "_MetallicGlossMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/DK_Botanical_Mask_TB.png",
+     "size": "2048x1024",
+     "format": "BC7",
+     "mips": 12,
+     "MiB": 2.6667,
+     "wrap": "Clamp",
+     "aniso": 8,
+     "sourceSha256": "599ee46fc86b8f2cd50b9534d04f06c09557c050a5cb7bcd7986cbe4973c5c59"
+    }
+   }
+  },
+  {
+   "name": "DK_Petal_TB",
+   "shader": "DecoKit/Lit Cutaway Leaf",
+   "keywords": "_DK_TWO_SIDED _DK_VERTEX_COLOR _METALLICSPECGLOSSMAP _NORMALMAP",
+   "cull": 0,
+   "baseColour": "#FFFFFF",
+   "bumpScale": 0.16,
+   "smoothnessScale": 1,
+   "shadowCaster": true,
+   "doubleSidedGI": true,
+   "textures": {
+    "_BaseMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/botanical-atlas-v2.png",
+     "size": "2048x1024",
+     "format": "BC7",
+     "mips": 12,
+     "MiB": 2.6667,
+     "wrap": "Clamp",
+     "aniso": 8,
+     "sourceSha256": "da2573c3f98e3e502ad1a6acd9e786ae43ae0961f0b8dd7a80dc1a75fa2f9bbe"
+    },
+    "_BumpMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/botanical-normal-v2.png",
+     "size": "2048x1024",
+     "format": "BC5",
+     "mips": 12,
+     "MiB": 2.6667,
+     "wrap": "Clamp",
+     "aniso": 8,
+     "sourceSha256": "9c95555b3906cf72a04fe28927dad2a6e6b0b97d84e770261f55819c65a29b79"
+    },
+    "_MetallicGlossMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/DK_Botanical_Mask_TB.png",
+     "size": "2048x1024",
+     "format": "BC7",
+     "mips": 12,
+     "MiB": 2.6667,
+     "wrap": "Clamp",
+     "aniso": 8,
+     "sourceSha256": "599ee46fc86b8f2cd50b9534d04f06c09557c050a5cb7bcd7986cbe4973c5c59"
+    }
+   }
+  },
+  {
+   "name": "DK_Soil_TB",
+   "shader": "DecoKit/Lit Cutaway",
+   "keywords": "_METALLICSPECGLOSSMAP _NORMALMAP",
+   "cull": 2,
+   "baseColour": "#FFFFFF",
+   "bumpScale": 0.4,
+   "smoothnessScale": 1,
+   "shadowCaster": true,
+   "doubleSidedGI": false,
+   "textures": {
+    "_BaseMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/soil-base.png",
+     "size": "512x512",
+     "format": "BC7",
+     "mips": 10,
+     "MiB": 0.33336,
+     "wrap": "Repeat",
+     "aniso": 8,
+     "sourceSha256": "1e90af1a2f00040f49999e3b4b72b9043ae19aecd39bdabb0aae4ad4d1ce8f55"
+    },
+    "_BumpMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/soil-normal.png",
+     "size": "512x512",
+     "format": "BC5",
+     "mips": 10,
+     "MiB": 0.33336,
+     "wrap": "Repeat",
+     "aniso": 8,
+     "sourceSha256": "aed2d8f06c5fd2bc4d4ae7c93b309e4710446669507951941f07bcf2be03bc73"
+    },
+    "_MetallicGlossMap": {
+     "path": "Assets/Scenes/probe-leafshader077/Textures/DK_Soil_Mask_TB.png",
+     "size": "512x512",
+     "format": "BC7",
+     "mips": 10,
+     "MiB": 0.33336,
+     "wrap": "Repeat",
+     "aniso": 8,
+     "sourceSha256": "b29d8a81f3ad6a22b370b9c0bb2cb5b11a832418a3d6d6d2730de1e3e3ca723a"
+    }
+   }
+  }
+ ],
+ "meshes": [
+  {
+   "id": "PlanterRun_4_A_TB",
+   "fbx": "Assets/Scenes/probe-leafshader077/Models/DK_PlanterRun_4_A_TB.fbx",
+   "sha256": "7be3f3a5fbe04932e746293b88620544486289f772201e8c581fe0dd5f94f7c4",
+   "submeshes": [
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD0",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 2,
+     "vertices": 4,
+     "uvV": [-0.1425, 0.1425],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD0",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 3724,
+     "vertices": 4291,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.12157, 0.17647, 0.15294, 1],
+     "colourMax": [0.57647, 0.63137, 0.45882, 1],
+     "colourMean": [0.4067, 0.4868, 0.38207, 1],
+     "distinctColours": 33
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD0",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 1869,
+     "vertices": 3471,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 1, 1, 1],
+     "colourMax": [1, 1, 1, 1],
+     "colourMean": [1, 1, 1, 1],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD1",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 2,
+     "vertices": 4,
+     "uvV": [-0.1425, 0.1425],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD1",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 3508,
+     "vertices": 4017,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.12157, 0.17647, 0.15294, 1],
+     "colourMax": [0.57647, 0.63137, 0.45882, 1],
+     "colourMean": [0.40315, 0.48871, 0.37683, 1],
+     "distinctColours": 33
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD1",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 267,
+     "vertices": 445,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 1, 1, 1],
+     "colourMax": [1, 1, 1, 1],
+     "colourMean": [1, 1, 1, 1],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD2",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 2,
+     "vertices": 4,
+     "uvV": [-0.1425, 0.1425],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD2",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 2328,
+     "vertices": 2853,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.12157, 0.17647, 0.15294, 1],
+     "colourMax": [0.57647, 0.63137, 0.45882, 1],
+     "colourMean": [0.40614, 0.4856, 0.38149, 1],
+     "distinctColours": 17
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD2",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 267,
+     "vertices": 445,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 1, 1, 1],
+     "colourMax": [1, 1, 1, 1],
+     "colourMean": [1, 1, 1, 1],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD3",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 2,
+     "vertices": 4,
+     "uvV": [-0.1425, 0.1425],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD3",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 1396,
+     "vertices": 1899,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.12157, 0.17647, 0.15294, 1],
+     "colourMax": [0.57647, 0.63137, 0.45882, 1],
+     "colourMean": [0.40199, 0.4792, 0.37801, 1],
+     "distinctColours": 17
+    },
+    {
+     "renderer": "DK_PlanterRun_4_A_TB_LOD3",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 89,
+     "vertices": 267,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 1, 1, 1],
+     "colourMax": [1, 1, 1, 1],
+     "colourMean": [1, 1, 1, 1],
+     "distinctColours": 1
+    }
+   ],
+   "leafUvAboveHalfPetalBelow": true
+  },
+  {
+   "id": "PlanterArc_TB",
+   "fbx": "Assets/Scenes/probe-leafshader077/Models/DK_PlanterArc_TB.fbx",
+   "sha256": "7ad2a0511a2f720f9b8239582bd8a92f9846e36f58f502b41dd24a57157a8a1b",
+   "submeshes": [
+    {
+     "renderer": "DK_PlanterArc_TB_LOD0",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 54,
+     "vertices": 56,
+     "uvV": [2.3665, 6.15031],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD0",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 6840,
+     "vertices": 7311,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.11373, 0.17647, 0.12549, 1],
+     "colourMax": [0.75294, 0.72157, 0.52157, 1],
+     "colourMean": [0.48735, 0.54364, 0.37482, 1],
+     "distinctColours": 36
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD0",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 4158,
+     "vertices": 7722,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 0.76078, 0.4902, 1],
+     "colourMax": [1, 0.85098, 0.50196, 1],
+     "colourMean": [1, 0.79358, 0.49447, 1],
+     "distinctColours": 2
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD1",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 54,
+     "vertices": 56,
+     "uvV": [2.3665, 6.15031],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD1",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 4356,
+     "vertices": 4977,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.11373, 0.17647, 0.12549, 1],
+     "colourMax": [0.75294, 0.72157, 0.52157, 1],
+     "colourMean": [0.48849, 0.54388, 0.37688, 1],
+     "distinctColours": 29
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD1",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 594,
+     "vertices": 990,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 0.76078, 0.4902, 1],
+     "colourMax": [1, 0.85098, 0.50196, 1],
+     "colourMean": [1, 0.79358, 0.49447, 1],
+     "distinctColours": 2
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD2",
+     "submesh": 0,
+     "material": "DK_Soil_TB",
+     "triangles": 54,
+     "vertices": 56,
+     "uvV": [2.3665, 6.15031],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0, 0, 0, 0],
+     "colourMax": [0, 0, 0, 0],
+     "colourMean": [0, 0, 0, 0],
+     "distinctColours": 1
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD2",
+     "submesh": 1,
+     "material": "DK_Leaf_TB",
+     "triangles": 2136,
+     "vertices": 2915,
+     "uvV": [0.506, 0.994],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [0.11373, 0.17647, 0.12549, 1],
+     "colourMax": [0.75294, 0.72157, 0.52157, 1],
+     "colourMean": [0.48042, 0.53504, 0.37905, 1],
+     "distinctColours": 22
+    },
+    {
+     "renderer": "DK_PlanterArc_TB_LOD2",
+     "submesh": 2,
+     "material": "DK_Petal_TB",
+     "triangles": 594,
+     "vertices": 990,
+     "uvV": [0.006, 0.494],
+     "colourFormat": "UNorm8 x4",
+     "colourMin": [1, 0.76078, 0.4902, 1],
+     "colourMax": [1, 0.85098, 0.50196, 1],
+     "colourMean": [1, 0.79358, 0.49447, 1],
+     "distinctColours": 2
+    }
+   ],
+   "leafUvAboveHalfPetalBelow": true
+  }
+ ],
+ "lodGroups": [
+  {
+   "id": "PlanterRun_4_A_TB",
+   "size": 3.99737,
+   "heights": [0.66623, 0.2961, 0.16656, 0.01],
+   "renderersPerLod": [1, 1, 1, 1],
+   "playZoomRelativeHeight": 0.14276,
+   "lodBias": 1
+  },
+  {
+   "id": "PlanterArc_TB",
+   "size": 4.64711,
+   "heights": [0.34423, 0.18776, 0.01],
+   "renderersPerLod": [1, 1, 1],
+   "playZoomRelativeHeight": 0.16597,
+   "lodBias": 1
+  }
+ ],
+ "build": {
+  "status": "review only; git-ignored scene; nothing placed in the game",
+  "art": {
+   "botanical-atlas-v2.png": "da2573c3f98e3e502ad1a6acd9e786ae43ae0961f0b8dd7a80dc1a75fa2f9bbe",
+   "botanical-normal-v2.png": "9c95555b3906cf72a04fe28927dad2a6e6b0b97d84e770261f55819c65a29b79",
+   "botanical-orm-v2.png": "c3574a250b1ea075f1b80b9c8fe51b805ab3e0dcb819ce5644d97c681b8d3130",
+   "soil-base.png": "1e90af1a2f00040f49999e3b4b72b9043ae19aecd39bdabb0aae4ad4d1ce8f55",
+   "soil-normal.png": "aed2d8f06c5fd2bc4d4ae7c93b309e4710446669507951941f07bcf2be03bc73",
+   "soil-orm.png": "ff8db1f5b19b743c707284aedfb8536baff21f9df499675e0cfc422308e8c8cb"
+  },
+  "masks": {
+   "DK_Botanical_Mask_TB.png": {
+    "from": "botanical-orm-v2.png",
+    "fromSha256": "c3574a250b1ea075f1b80b9c8fe51b805ab3e0dcb819ce5644d97c681b8d3130",
+    "size": "1774x887",
+    "rule": "leaves (rows 0-3, v >= .5) 1 - .49 g; petals (rows 4-7, v < .5) 1 - .64 g",
+    "pngSha256": "599ee46fc86b8f2cd50b9534d04f06c09557c050a5cb7bcd7986cbe4973c5c59",
+    "pixelSha256": "a13a2fa61091be4733d8ce85a2b4a19b64e2639f7456d9a7212cd3c603a07c68"
+   },
+   "DK_Soil_Mask_TB.png": {
+    "from": "soil-orm.png",
+    "fromSha256": "ff8db1f5b19b743c707284aedfb8536baff21f9df499675e0cfc422308e8c8cb",
+    "size": "512x512",
+    "rule": "1 - g",
+    "pngSha256": "b29d8a81f3ad6a22b370b9c0bb2cb5b11a832418a3d6d6d2730de1e3e3ca723a",
+    "pixelSha256": "efbef2d3f6bcba3963f2f0cfaeeebf12f485a7f91b8b1931164d8fcce14fec18"
+   }
+  },
+  "fbx": {
+   "PlanterRun_4_A_TB": {
+    "source": "out/decokit/troughs077/Models/DK_PlanterRun_4_A_TB.fbx",
+    "sha256": "7be3f3a5fbe04932e746293b88620544486289f772201e8c581fe0dd5f94f7c4"
+   },
+   "PlanterArc_TB": {
+    "source": "out/decokit/troughs077/Models/DK_PlanterArc_TB.fbx",
+    "sha256": "7ad2a0511a2f720f9b8239582bd8a92f9846e36f58f502b41dd24a57157a8a1b"
+   }
+  },
+  "kept": ["Sun", "DK grade", "Handover zone probe", "DK street study camera", "Play camera (our play look)", "Play grade (ours, weight 0 except while the play camera renders)"],
+  "reflectionProbesKept": 1,
+  "pieces": [
+   {
+    "id": "PlanterRun_4_A_TB",
+    "lodGroupSize": 3.99737,
+    "heights": [0.66623, 0.2961, 0.16656, 0.01],
+    "stoneSlots": ["DK_Limestone"]
+   },
+   {
+    "id": "PlanterArc_TB",
+    "lodGroupSize": 4.64711,
+    "heights": [0.34423, 0.18776, 0.01],
+    "stoneSlots": ["DK_Limestone", "DK_Limestone_Tex", "DK_Faience_Teal", "DK_Accent_Gold"]
+   }
+  ]
+ },
+ "night": {
+  "source": "Assets/Scenes/HarbourDistrict.unity LightPhase.night (read only)",
+  "sunColour": [0.6549, 0.77255, 0.87451, 1],
+  "sunIntensity": 0.22,
+  "sunRotation": [-0.36964, 0.23912, -0.09905, -0.8924],
+  "ambientSky": [0.11216, 0.14039, 0.16784, 1],
+  "ambientEquator": [0.08965, 0.11718, 0.13482, 1],
+  "ambientGround": [0.02871, 0.04282, 0.048, 1],
+  "fogColour": [0.06275, 0.16863, 0.21176, 1],
+  "fogStart": 1100,
+  "fogEnd": 7500,
+  "fogDensity": 0,
+  "skybox": "Assets/Scenes/HarbourDistrict-sky-night.mat",
+  "reflection": "Assets/Scenes/HarbourDistrict-reflection-night.asset",
+  "reflectionIntensity": 0.45,
+  "probeIntensity": 0.45,
+  "grade": "Assets/Scenes/HarbourDistrict-grade-night.asset",
+  "lamp": "office/forecourt",
+  "lampColour": [1, 0.90196, 0.74902, 1],
+  "lampIntensity": 14,
+  "lampRange": 8,
+  "lampSpot": 85
+ },
+ "seconds": 10.3
+}

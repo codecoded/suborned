@@ -28,6 +28,7 @@ namespace Suborned.World.Review
         readonly WalkInput input = new();
         readonly bool sceneFog = RenderSettings.fog;
         int current;
+        PresentationLife life; bool lifeTried; // brief 075: Pulse's presentation life, only in Fly
         float nextIds;
         PlanIds feet, look;
         Vector3? lookAt;
@@ -67,6 +68,7 @@ namespace Suborned.World.Review
             if (f.Mode > 0) Switch(f.Mode - 1);
             else if (f.NextMode) Switch((current + 1) % modes.Length);
             Mode.Tick(f, dt);
+            if (life) life.Step(Time.time);
             eye.ShadowDistance = Mode.ShadowDistance;
             if (Time.unscaledTime < nextIds) return;
             nextIds = Time.unscaledTime + IdsEvery;
@@ -82,6 +84,8 @@ namespace Suborned.World.Review
             current = to;
             Mode.Enter(from);
             play.enabled = Mode.Camera == play; eye.Camera.enabled = Mode.Camera == eye.Camera;
+            if (Mode == fly && !life && !lifeTried) { lifeTried = true; life = PresentationLife.Installer?.Invoke(); if (life) life.View = eye.Camera; }
+            if (life) life.gameObject.SetActive(Mode == fly); // brief 075: the presentation life in Fly only, never on the play camera or on foot
             Fog();
             nextIds = 0f;
         }
@@ -164,6 +168,6 @@ namespace Suborned.World.Review
             return tex.EncodeToPNG();
         }
 
-        public void Dispose() { input.Dispose(); eye.Dispose(); RenderSettings.fog = sceneFog; }
+        public void Dispose() { if (life) UnityEngine.Object.Destroy(life.gameObject); input.Dispose(); eye.Dispose(); RenderSettings.fog = sceneFog; }
     }
 }

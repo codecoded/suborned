@@ -95,7 +95,7 @@ namespace Suborned.Play
 
         /// <summary>Brief 031 (Intel's chip and the door's next step): who should Watch `target` (a role, camera:&lt;id&gt;, patrol): the selected
         /// agent if it can (too far or out of line still counts: it walks to its ring); else the free agent who'd learn soonest (the walk to
-        /// its ring plus the Watch), ties to the Scout; else the busy one free soonest. Null when nobody can (already watched, tethered, down).
+        /// its ring plus the Watch), ties to the Scout; else the busy one free soonest. Null when nobody can (already watched, down).
         /// Read-only (LearnQuery, one A* each); kept a second.</summary>
         public OpId? WatchBy(string target)
         {
@@ -105,14 +105,14 @@ namespace Suborned.Play
             Answer Q(int k) { Answer a = default; Guard("watch by", () => a = g.LearnQuery(Op.Name((OpId)k), "watch", target)); return a; }
             bool Can(Answer a, bool busy) => a.ok || a.code is "too-far" or "no-clear-line" || (busy && a.code == "agent-busy");
             OpId? by = null;
-            if (sel >= 0 && Can(Q(sel), false)) by = (OpId)sel;
+            if (sel >= 0 && Able(sel) && Can(Q(sel), false)) by = (OpId)sel; // item 29: never a downed agent
             else
             {
                 var t = target.StartsWith("camera:") || target == "patrol" ? WatcherTarget(target) : new Target { Kind = "person", Key = target, Label = Name(target), Id = target };
                 long best = long.MaxValue;
                 for (int k = 0; k < 4; k++)
                 {
-                    var a = Q(k); if (!Can(a, true)) continue;
+                    if (!Able(k)) continue; var a = Q(k); if (!Can(a, true)) continue;
                     long s = g.R.SightWatchS;
                     if (a.code == "agent-busy") s += 100000 + Math.Max(0, g.Ops[k].BusyEnd - g.Tick) / Game.Hz; // a free agent first
                     else { ActWalk w = null; Guard("watch by", () => w = ActPlace((OpId)k, new Order { Op = Op.Name((OpId)k), Do = "watch", Target = target }, t)); if (w != null) s += w.Seconds; }
@@ -137,11 +137,10 @@ namespace Suborned.Play
             return WatchBy(watcher) is OpId b ? (b, watcher) : null;
         }
 
-        /// <summary>The Tech's Watch knob greys while his loop holds (he is tied to the cabinet: the engine refuses run-tethered); its rows on a
-        /// camera or the patrol still show, locked, with the short reason.</summary>
-        public bool KnobTethered(OpId by, Slot s) => by == OpId.Tech && s.Id == "watch" && Game != null && Game.LoopOn;
 
-        Target WatcherTarget(string watcher) => watcher.StartsWith("camera:") ? new Target { Kind = "camera", Key = watcher[7..], Label = WatcherName(watcher), Id = watcher } : new Target { Kind = "patrol", Key = "patrol", Label = WatcherName(watcher), Id = "patrol" };
+        /// <summary>Proofs: a Watch on a watcher given as a click gives it (the walk to a stand point in reach and line, then the Watch).</summary>
+        public void GiveWatchScripted(OpId by, string watcher) => Give(by, new Order { Op = Op.Name(by), Do = "watch", Target = watcher }, WatcherTarget(watcher), null);
+        Target WatcherTarget(string watcher) => watcher == "car:rivals" ? new Target { Kind = "rivals", Key = "car:rivals", Label = Name("rivals"), Id = "car:rivals" } : watcher.StartsWith("camera:") ? new Target { Kind = "camera", Key = watcher[7..], Label = WatcherName(watcher), Id = watcher } : new Target { Kind = "patrol", Key = "patrol", Label = WatcherName(watcher), Id = "patrol" };
 
         /// <summary>The door's next-step chip clicked: the agent selected first; selected, the Watch is given (walk, then watch).</summary>
         public void DoorNextClick()
@@ -160,7 +159,7 @@ namespace Suborned.Play
         /// <summary>The car's hold reach in metres (rulebook fight-hold-m; brief 018 takes it to 8), and whether the final fight is on (the ring
         /// is drawn only then).</summary>
         public float CarHoldM => Game != null ? Game.R.HoldCm / 100f : 0f;
-        public bool CarRingOn => Game is { } g && g.FightBranch.Length > 0 && g.FightOverTick > g.Tick && !g.Over;
+        public bool CarRingOn => Game is { } g && !g.Over && (g.FightBranch.Length > 0 && g.FightOverTick > g.Tick || g.Vale == ValeAt.Car || SealOn); // brief 057 §4.2: the holders' marks steadily whenever the car is held and Vale is aboard or the seal runs, not only in the final fight
 
         /// <summary>A right click on a person's pin (the HUD's pip): as a right click on the person (Sky, route B: Vale's star over his car).</summary>
         public void RightOnPerson(string role)

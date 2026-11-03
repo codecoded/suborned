@@ -1,0 +1,6 @@
+$ bun tools/game/playing.ts dotnet test sim/Suborned.Sim.Tests -c Release --nologo -v q
+Test run for /Users/sky/Projects/suborned/.claude/worktrees/agent-a22ec23e61ecc28b6/sim/Suborned.Sim.Tests/bin/Release/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:  2607, Skipped:     0, Total:  2607, Duration: 2 m 10 s - Suborned.Sim.Tests.dll (net10.0)
+bun run guard dotnet test sim/Suborned.Sim.Tests -c Release --nologo -v q  384.11s user 13.45s system 298% cpu 2:13.01 total

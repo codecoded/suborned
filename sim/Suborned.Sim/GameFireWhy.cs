@@ -31,7 +31,7 @@ namespace Suborned.Sim
     public sealed partial class Game
     {
         /// <summary>The causes in their fixed order, the strongest first.</summary>
-        public static readonly string[] FireCauseOrder = { "range", "final", "fired", "vale", "violence", "drawn", "face", "seen" };
+        public static readonly string[] FireCauseOrder = { "range", "final", "fired", "vale", "violence", "crewmate", "drawn", "face", "seen" }; // crewmate: engine 0.33.0 (Motive M059-S1.6)
 
         readonly Dictionary<string, (int tick, string[] causes)> fireWhyFirst = new Dictionary<string, (int, string[])>(StringComparer.Ordinal); // "<hostile>/<agent>": output only, not hashed (the log says it)
 
@@ -44,7 +44,7 @@ namespace Suborned.Sim
             {
                 yield return "guard"; yield return "patrol";
                 foreach (var g in SecGuns) yield return g.Id;
-                yield return "rivals";
+                foreach (var m in Crew) yield return m.Id; // brief 059: the crew, member by member
                 foreach (var h in Hostiles) yield return h.Id;
                 foreach (var u in Units) yield return u.Id;
             }
@@ -59,7 +59,7 @@ namespace Suborned.Sim
             var op = OpOf(id); var ir = R.Intent; string kind = IntentKind(by);
             string[] foes = kind == "police" ? ir.PoliceFoes : kind == "robots" ? ir.RobotFoes : RivalsAlert ? ir.RivalsAlerted : ir.RivalsCalm;
             var have = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var f in foes) if (HasFoe(f, op)) have.Add(f);
+            foreach (var f in foes) if (HasFoe(f, op, by)) have.Add(f);
             if (Alert >= FaceAt(kind) && faces.Contains(Sim.Op.Name(id))) have.Add("face"); // as Provoked
             var l = new List<string>(); foreach (var c in FireCauseOrder) if (have.Contains(c)) l.Add(c);
             return l.ToArray();

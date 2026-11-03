@@ -1,0 +1,14 @@
+{
+  "schema": "latch.golden075-frame/1",
+  "step": "before",
+  "rendered": "2026-10-28T08:45:42Z",
+  "scene": "Assets/Scenes/HarbourDistrict.unity",
+  "export": "out/scratch/latch/075f1/pin/075f1.world.json",
+  "export_sha256": "2de0d88e618ccbe5ab34ad33a93ed37a10413901e359da30de0ff905de13f254",
+  "eye": [1.9297, 8.1094, -214.5703],
+  "look": [0.4271, 9.0026, -114.5856],
+  "fov_deg": 58,
+  "size": [1920, 1080],
+  "supersample": 2,
+  "lens": "runtime lens + haze (Flyby074 -lens on)"
+}

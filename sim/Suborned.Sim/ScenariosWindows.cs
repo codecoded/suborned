@@ -26,7 +26,7 @@ namespace Suborned.Sim
                     bool ok = (WindowOf(g, "call", "guard") is OpenWindow cg ? guardOpen && cg.Until == g.GuardAwayUntil : !guardOpen)
                         && (WindowOf(g, "call", "pickup") != null) == (g.Tick >= g.BlockedFrom && !g.PickupCameraLive())
                         && (WindowOf(g, "reroute", "patrol") is OpenWindow rp ? rp.Until == g.PatrolAwayUntil && rp.Until > g.Tick : g.PatrolAwayUntil <= g.Tick)
-                        && (WindowOf(g, "loop", g.LoopCam) is OpenWindow lw ? g.LoopOn && lw.Until == -1 : !g.LoopOn)
+                        && (WindowOf(g, "loop", g.LoopCam) is OpenWindow lw ? g.LoopOn && lw.Until == (g.R.LoopRuns ? g.LoopUntil : -1) : !g.LoopOn)
                         && w.All(x => x.Until == -1 || x.Until > g.Tick);
                     if (!ok && same) { same = false; firstOff = $"{Report.Clock(g.Tick)}: {WindowsNow(g)}"; }
                 }
@@ -39,19 +39,16 @@ namespace Suborned.Sim
                 r.Is(cg != null && cg.Until == g.GuardAwayUntil && cg.Until > g.Tick, $"the call lands: call:guard until {Report.Clock(g.GuardAwayUntil)} ({WindowsNow(g)})");
                 r.Is(g.Log.Exists(l => l.Code == "call.waitress" && l.Tick == g.Tick), "on call.waitress");
 
-                // Call the driver, early: the car's hold ends before driverLast, so car.clears closes it
-                r.Do(Fixer, "call", Driver); Go(r.Op(Fixer).BusyEnd);
-                r.Is(WindowOf(g, "call", "pickup") == null, "called, the car is still on its way: the camera is not blind yet");
-                Go(g.BlockedFrom);
-                var cp = WindowOf(g, "call", "pickup");
-                r.Is(cp != null && cp.Until == g.BlockedUntil && g.BlockedUntil < T(g.S.DriverLast), $"car.blocks: call:pickup until {Report.Clock(g.BlockedUntil)} ({WindowsNow(g)})");
-                r.Is(g.Log.Exists(l => l.Code == "car.blocks" && l.Tick == g.Tick), "on car.blocks");
+                // brief 059 (Motive M059-6.1): the driver's Call, the camera block, is retired: no call:pickup window ever opens
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "call", Target = Driver }).code, "nothing-to-call", "the driver has nothing to do on a call");
+                r.Is(WindowOf(g, "call", "pickup") == null, "no call:pickup window");
 
                 // the Tech: the loop, then the reroute
                 Go(r.Send(Tech, "cabinet", run: true));
                 r.Do(Tech, "loop", "entrance"); Go(r.Op(Tech).BusyEnd);
                 var lw = WindowOf(g, "loop", "entrance");
-                r.Is(lw != null && lw.Until == -1, $"loop.on: loop:entrance, held (-1) ({WindowsNow(g)})");
+                int loopEnds = g.Tick + T(g.R.LoopRunS);
+                r.Is(lw != null && lw.Until == loopEnds, $"loop.on: loop:entrance until {Report.Clock(loopEnds)} (Loop v2, engine 0.31.0: a real end) ({WindowsNow(g)})");
                 r.Do(Tech, "reroute", "patrol"); Go(r.Op(Tech).BusyEnd);
                 int away = g.PatrolAwayUntil;
                 var rp = WindowOf(g, "reroute", "patrol");
@@ -59,10 +56,9 @@ namespace Suborned.Sim
                 r.Is(WindowOf(g, "loop", "entrance") != null, "the loop is still listed");
 
                 // the closings: guard.back and car.clears on their ticks
-                int guardBack = g.GuardAwayUntil, clears = g.BlockedUntil;
-                Go(Math.Max(guardBack, clears));
+                int guardBack = g.GuardAwayUntil;
+                Go(guardBack);
                 r.Is(g.Log.Exists(l => l.Code == "guard.back" && l.Tick == guardBack) && WindowOf(g, "call", "guard") == null, $"guard.back at {Report.Clock(guardBack)}: call:guard gone");
-                r.Is(g.Log.Exists(l => l.Code == "car.clears" && l.Tick == clears) && WindowOf(g, "call", "pickup") == null, $"car.clears at {Report.Clock(clears)}: call:pickup gone");
 
                 // the patrol returns: one log line on the tick its false orders run out
                 Go(away - 1);
@@ -73,14 +69,13 @@ namespace Suborned.Sim
                 Go(away + T(5));
                 r.Eq(g.Log.Count(l => l.Code == "patrol.returns"), 1, "said once");
 
-                // the loop ends when the Tech walks off
-                int leaves = g.Tick; r.SendTo(Tech, r.Op(Tech).Pos + new Pt(0, g.R.TetherCm + 600)); // a move lets the loop go (cancel, loop.ends)
-                Go(g.Tick + T(10));
-                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick >= leaves) && WindowOf(g, "loop", "entrance") == null, "the Tech walks off, loop.ends: the loop window is gone");
+                // Loop v2 (engine 0.31.0): the loop runs out on its tick, and the window goes with it (walking off keeps it: S26)
+                Go(Math.Max(g.Tick, loopEnds));
+                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick == loopEnds) && WindowOf(g, "loop", "entrance") == null, $"loop.ends at {Report.Clock(loopEnds)}: the loop window is gone");
 
                 // a false tip
-                Go(r.SendTo(Scout, new Pt(8250, -3100)));
-                r.Is(r.Until(() => { g.Step(); Check(); return g.RivalsPresent; }, T(400)), $"the rivals arrive ({Report.Clock(g.Tick)})");
+                Go(r.SendTo(Scout, TipSpot(r))); // brief 059: the tip at the rival car where it parks
+                r.Is(r.Until(() => { g.Step(); Check(); return g.CarSt == CrewCar.Parked; }, T(400)), $"the rival car parks ({Report.Clock(g.Tick)})");
                 r.Do(Scout, "mislead", "rivals"); Go(r.Op(Scout).BusyEnd);
                 var mr = WindowOf(g, "mislead", "rivals");
                 r.Is(mr != null && mr.Until == g.RivalsDelayedUntil && mr.Until > g.Tick, $"rivals.misled: mislead:rivals until {Report.Clock(g.RivalsDelayedUntil)} ({WindowsNow(g)})");

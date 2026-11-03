@@ -59,7 +59,7 @@ describe('rulebook.json: shape and the people rules it reads', () => {
       expect([base.usd, base.s, base.trail]).toEqual([`p:approaches.${a}.usd`, `p:approaches.${a}.timeS`, `p:approaches.${a}.trail`]);
     }
     expect(['ask', 'pay', 'help', 'pressure'].map((a) => [0, 1, 2].map((i) => num(rb, people, [`p:approaches.${a}.usd`, `p:approaches.${a}.timeS`, `p:approaches.${a}.trail`][i]!))))
-      .toEqual([[0, 25, 1], [70000, 50, 2], [40000, 50, 1], [0, 35, 3]]);
+      .toEqual([[0, 20, 1], [70000, 35, 2], [40000, 35, 1], [0, 25, 3]]); // brief 080 pacing (Sky 2026-10-30): talking about 30 % shorter, Help still dearer in time than Pressure
     expect(collectRefs(rb).filter((r) => r.startsWith('p:')).length).toBeGreaterThan(10);
   });
 
@@ -92,14 +92,14 @@ describe('§04 approaches and the Handover purse (Inez, the driver)', () => {
     expect([role('waitress').need, role('waitress').approach, role('driver').need, role('driver').approach]).toEqual(['debt', 'help', 'cash', 'help']);
     const inez = card('help', person('idealist', 'debt'));
     const driver = card('help', person('idealist', 'cash'));
-    expect([inez.perOrder, inez.orders, inez.outcome]).toEqual([{ usd: 40000, s: 50, trail: 1 }, 1, 'turned']);
+    expect([inez.perOrder, inez.orders, inez.outcome]).toEqual([{ usd: 40000, s: 35, trail: 1 }, 1, 'turned']);
     expect([driver.perOrder.usd, driver.orders]).toEqual([40000, 1]);
     expect(inez.perOrder.usd + driver.perOrder.usd).toBeLessThanOrEqual(PURSE);
   });
 
   test('purse: Pay where it suits ($70,000, a Mercenary) plus the driver is over the purse; learning buys the second route', () => {
     const pay = card('pay', person('mercenary'));
-    expect([pay.perOrder, pay.outcome]).toEqual([{ usd: 70000, s: 50, trail: 2 }, 'turned']);
+    expect([pay.perOrder, pay.outcome]).toEqual([{ usd: 70000, s: 35, trail: 2 }, 'turned']);
     expect(pay.perOrder.usd + card('help', person('idealist', 'cash')).perOrder.usd).toBeGreaterThan(PURSE);
   });
 
@@ -108,9 +108,9 @@ describe('§04 approaches and the Handover purse (Inez, the driver)', () => {
     expect(asked.outcome).toBe('refused');
     expect(asked.changes.find((c) => c.do === 'charge')).toEqual({ do: 'charge', parts: ['s', 'trail'] });
     const inez = asked.after;
-    expect(card('help', inez).perOrder).toEqual({ usd: 50000, s: 50, trail: 2 });
-    expect(card('pay', { ...inez, temperament: 'mercenary' }).perOrder).toEqual({ usd: 80000, s: 50, trail: 3 });
-    expect(card('pressure', { ...inez, temperament: 'fearful' }).perOrder).toEqual({ usd: 0, s: 35, trail: 4 });
+    expect(card('help', inez).perOrder).toEqual({ usd: 50000, s: 35, trail: 2 });
+    expect(card('pay', { ...inez, temperament: 'mercenary' }).perOrder).toEqual({ usd: 80000, s: 35, trail: 3 });
+    expect(card('pressure', { ...inez, temperament: 'fearful' }).perOrder).toEqual({ usd: 0, s: 25, trail: 4 });
     expect(R.needsHold(rb, people, turn('ask'), { subject: inez, band: 'neutral', knows: ALL, given: { reach: true } })).toBe(false);
   });
 });
@@ -177,7 +177,7 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
   test('a keeper tip gives the need, not the temperament: Help shows its base, "?" lines and outcome', () => {
     const q = card('help', person('mercenary'), 'neutral', new Set<R.Know>(['need']));
     expect(q.outcome).toBe('?');
-    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['trust-over-time', '?']]);
+    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['visits-share-first', '?'], ['visits-share-later', false], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2; brief 085: ready reads a mood, which a card with none never has
     expect(q.worst.usd).toBe(40000);
   });
 
@@ -213,6 +213,17 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
     expect(R.quote(rb, people, turn('help'), { subject: person('idealist'), band: 'neutral', knows: new Set<R.Know>(['routine', 'need']), refusedKnown: new Set(['pay']) }).outcome).toBe('?'); // her temperament is still unknown
     expect(rb.preview.knownBy).toEqual(['scout.listen']); // Sky 2026-10-15: Listen reveals the temperament, Watch only the routine
     expect(R.event(rb, 'cell.watch').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['routine'], of: 'subject' }]);
+    // brief 054 §9.2 (engine 0.29.0): a Watch never teaches a secret; only Listen does. The retired lover-within and summon.together parse only in pinned runs
+    expect(R.event(rb, 'cell.watch').also ?? []).toEqual([]);
+    expect(JSON.stringify(rb.events)).not.toContain('lover-within');
+    expect(rb.summon.together).toBeUndefined();
+    expect((rb.values as Record<string, unknown>)['together-m']).toBeUndefined();
+  });
+  test('a body at your feet: a civilian finds an open body within people-near-body-cm whatever the facing (brief 054 §9.1, engine 0.29.0)', () => {
+    const no = rb.witness!.notice!;
+    expect(no.near).toEqual({ acts: ['body'], cm: 'v:people-near-body-cm' });
+    for (const a of no.near!.acts) expect(no.always).toContain(a);
+    expect(num(rb, people, 'v:people-near-body-cm')).toBe(150);
   });
 });
 
@@ -337,11 +348,11 @@ describe('§05 witnesses and Alert: one incident counts once', () => {
 });
 
 describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-15, briefs/011/motive-fights.md)', () => {
-  test('bands and modifiers: a pistol at 12 m hits 3 in 4, walking 3 in 8, walking at a target beside cover 3 in 16', () => {
+  test('bands and modifiers: a pistol at 12 m hits 3 in 4, walking 3 in 8, walking at a target beside full cover 3 in 32 (brief 039 B: full ×250)', () => {
     expect(R.accuracy(rb, people, 'pistol', 12, [])).toBe(750);
     expect(R.accuracy(rb, people, 'pistol', 4, ['untrained'])).toBe(750);
     expect(R.accuracy(rb, people, 'pistol', 12, ['moving'])).toBe(375);
-    expect(R.accuracy(rb, people, 'pistol', 12, ['moving', 'cover'])).toBe(187);
+    expect(R.accuracy(rb, people, 'pistol', 12, ['moving', 'cover'])).toBe(93); // brief 039 B (GDD v0.28.0 §06): full cover ×250 (was ×500: 187)
     expect(R.accuracy(rb, people, 'pistol', 15.5, [])).toBe(400); // the long band: 15–16 m since tuning.md §7.9 (was 15–25)
     expect(R.accuracy(rb, people, 'pistol', 17, [])).toBe(0);
     expect(R.accuracy(rb, people, 'carbine', 18, [])).toBe(750);
@@ -365,8 +376,9 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
   test('tuning.md §8.3 (Sky 2026-10-21): fire on the move, the tables for every shooter; a running target ×850 past point blank, never with cover', () => {
     const t = (d: number, mods: R.AccMod[]) => R.accuracy(rb, people, 'pistol', d, mods);
     // trained: point blank, effective, long × stand, walk, run toward or across, run away
-    expect([4, 12, 15.5].map((d) => [t(d, []), t(d, ['moving']), t(d, ['running']), t(d, ['runningAway'])])).toEqual([[1000, 500, 250, 125], [750, 375, 187, 93], [400, 200, 100, 50]]);
-    expect([4, 12, 15.5].map((d) => [t(d, ['untrained']), t(d, ['moving', 'untrained']), t(d, ['running', 'untrained']), t(d, ['runningAway', 'untrained'])])).toEqual([[750, 375, 187, 93], [562, 281, 140, 69], [300, 150, 75, 37]]);
+    // engine 0.34.0 (brief 067, Motive: mod-running 250 -> 375): a run toward or across fires at three-eighths (was a quarter)
+    expect([4, 12, 15.5].map((d) => [t(d, []), t(d, ['moving']), t(d, ['running']), t(d, ['runningAway'])])).toEqual([[1000, 500, 375, 125], [750, 375, 281, 93], [400, 200, 150, 50]]);
+    expect([4, 12, 15.5].map((d) => [t(d, ['untrained']), t(d, ['moving', 'untrained']), t(d, ['running', 'untrained']), t(d, ['runningAway', 'untrained'])])).toEqual([[750, 375, 281, 93], [562, 281, 210, 69], [300, 150, 112, 37]]);
     expect(t(12, ['targetRunning'])).toBe(637); expect(t(4, ['targetRunning'])).toBe(1000); // not at point blank
     expect(t(12, ['targetRunning', 'cover'])).toBe(637); // one step, never stacked with cover
     expect(t(4, ['cover'])).toBe(1000); // tuning.md §8.4 (Sky 2026-10-21): inside point blank cover doesn't count, as in the lab
@@ -383,11 +395,43 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect(R.hits(rb, people, 750, 400).filter(Boolean).length).toBe(300);
     expect(R.hits(rb, people, 400, 5)).toEqual([false, true, false, true, false]);
   });
+  test('brief 080 (engine 0.37.0): the stat sheet: the ladder, the limits, the streak caps; the seeded start: bands, fairness, who is always the same', () => {
+    const k = rb.weapons.sheet!, n = (r: string) => num(rb, people, r), sd = rb.seed!;
+    const a = k.aim; expect([a.civilian, a.robot, a.guard, a.tech, a.fixer, a.officer, a.scout, a.rival, a.enforcer].map(n)).toEqual([35, 45, 50, 50, 55, 60, 60, 65, 75]);
+    expect([k.limit.min, k.limit.max, k.streak.hits, k.streak.misses, k.streak.floor, k.warnHealth, k.guardSpeed].map(n)).toEqual([5, 95, 3, 3, 20, 3, 140]);
+    expect([k.range.point, k.range.eff, k.range.long, k.cover.full, k.cover.partial, k.cover.targetRunning, k.move.walk, k.move.run, k.move.runAway, k.move.pinned].map(n)).toEqual([30, 0, -25, -45, -25, -10, -25, -40, -55, -25]);
+    expect([sd.crowd.phase, sd.rivals.arrive, sd.fair.firstS].map(n)).toEqual([20, 15, 15]);
+    expect(n(sd.fuzz.people['councillor']!)).toBe(0); expect(n(sd.fuzz.people['waitress']!)).toBe(0); expect(n(sd.fuzz.default)).toBe(1000);
+    const unknown = structuredClone(raw); unknown.weapons.sheet.nope = 1;
+    expect(Rulebook.safeParse(unknown).success).toBe(false);
+  });
+  test('brief 080 pacing (Sky 2026-10-30): talking about 30 % shorter; Enter and Take stay at 38 s', () => {
+    expect(['listen-s', 'mislead-s', 'reroute-s', 'enter-s', 'take-s'].map((k) => rb.values[k]!.v)).toEqual([30, 30, 30, 38, 38]);
+  });
   test('health per kind and the costs of a hit and a down', () => {
     const h = rb.weapons.health, n = (r: string) => num(rb, people, r);
-    expect([h.enforcer, h.op, h.guard, h.officer, h.rival, h.patrol, h.civilian, h.responseOfficers].map(n)).toEqual([6, 4, 3, 3, 3, 4, 2, 2]);
+    expect([h.enforcer, h.op, h.guard, h.officer, h.rival, h.patrol, h.civilian, h.responseOfficers].map(n)).toEqual([8, 5, 3, 3, 3, 4, 3, 2]); /* brief 080: civilians 3 HP, as guards */ // brief 039: the floor, Enforcer 8, ops 5 (GDD v0.28.0 §06)
     expect([rb.weapons.costs.hit, rb.weapons.costs.down, rb.alert.gunfire, rb.weapons.costs.drawSeenSecurity, rb.weapons.costs.drawSeenPeople].map(n)).toEqual([2, 2, 2, 2, 1]);
-    expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([280, 30, 5]);
+    expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([360, 30, 5]); // engine 0.34.0 (brief 067, Motive): the run 2.8 -> 3.6 m/s, twice the cell's 1.8 walk
+  });
+  test('brief 039 B, cover and pin (engine 0.35.0; GDD v0.28.0 §06; Motive\'s probe): one input, the sticky focus, readable cover, the pin, one move each', () => {
+    const w = rb.weapons, n = (r: string) => num(rb, people, r);
+    expect(w.oneInput?.on).toBe(true); expect(w.oneInput?.rule).toMatch(/cease, stance, panic and free orders are retired/);
+    expect(w.focus?.sticky).toBe(true); expect(w.focus?.rule).toMatch(/it waits: no fire\.out-of-range, no fire\.lapses/);
+    expect([n(w.takeCover!.snap), n(w.takeCover!.reach)]).toEqual([150, 10]); // 1.5 m, cover within 10 m
+    expect([n(w.pin!.s), n(w.pin!.mod), w.pin!.hold, w.pin!.cell]).toEqual([2, 500, true, false]); // the probe's B: 2 s, at half, holds; the cell spared (engine 0.35.1, Motive's ruling 7)
+    const m = w.moves!;
+    expect(m.on).toBe(false); expect(m.rule).toMatch(/Out of play from engine 0\.35\.1/); // Sky 2026-10-26: the four moves out of play, the values kept
+    expect(n(m.ready)).toBe(20);
+    expect([n(m.mark.reach), n(m.mark.s)]).toEqual([30, 10]);
+    expect([n(m.talk.reach), n(m.talk.s), n(m.talk.down), m.talk.hurt]).toEqual([12, 2, 1, true]);
+    expect([n(m.steam.reach), n(m.steam.r), n(m.steam.s)]).toEqual([24, 4, 8]);
+    expect([n(m.cover.s), n(m.cover.r), n(m.cover.every)]).toEqual([4, 3, 5]);
+    expect(m.rule).toMatch(/the blocker too/); expect(m.rule).toMatch(/the one fire while he holds Vale/);
+    expect([n(w.mod.cover), n(rb.ai.cover.modPartial)]).toEqual([250, 500]); // B: full ×250, partial ×500
+    const values: Record<string, string[]> = { oneInput: [], focus: [], takeCover: ['take-cover-snap-cm', 'take-cover-reach-m'], pin: ['pin-s', 'pin-mod'],
+      moves: ['move-ready-s', 'mark-reach-m', 'mark-s', 'talk-reach-m', 'talk-shout-s', 'talk-needs-down', 'steam-reach-m', 'steam-r-m', 'steam-s', 'covering-fire-s', 'covering-fire-r-m', 'covering-fire-every-ticks'] };
+    for (const [k, vs] of Object.entries(values)) { const old = structuredClone(raw); delete old.weapons[k]; for (const v of vs) delete old.values[v]; expect(Rulebook.safeParse(old).success, k).toBe(true); } // a rulebook pinned before 0.35.0 (the block and its values gone) still parses
   });
   test('brief 030: a fire order out of reach walks in, outside the lab too; a gun the fight drew holsters 4 s after it (Sky 2026-10-20)', () => {
     expect(rb.weapons.close).toBe(true);
@@ -420,8 +464,8 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect([n(it.police.face), n(it.robots.face), n(it.police.closeIn), n(it.police.closeLevel), n(it.rivals.alertedAt), n(it.police.warn.maxAlert)]).toEqual([2, 2, 3, 1, 2, 1]);
     expect(it.robots.faceHeat).toEqual(['wanted', 'infamous']);
     expect([it.police.warn.ticks, it.police.warn.alert, it.police.warn.perWatcher, it.police.warn.trail]).toEqual(['v:lab-warn-ticks', 'v:lab-warn-alert', 'v:lab-warn-per-watcher', 'v:lab-warn-trail']); // the lab's warning, its numbers
-    expect(it.rivals.calm).toEqual(['drawn', 'vale']);
-    expect(it.rivals.alerted).toEqual(['drawn', 'vale', 'seen']);
+    expect(it.rivals.calm).toEqual(['drawn', 'vale', 'crewmate']); // engine 0.33.0 (Motive M059-S1.6): a member who sees one of the crew taken down fires on the taker
+    expect(it.rivals.alerted).toEqual(['drawn', 'vale', 'seen', 'crewmate']);
     expect(it.rivals.street && it.rivals.press).toBe(true);
     expect(it.final).toBe('agent'); // tuning.md §15.2 (engine 0.20.0): PROVISIONAL, Sky to confirm after play
     expect(rb.ai.intent!.reason).toMatch(/provisional/);
@@ -533,10 +577,70 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(n(rs.checkIn)).toBe(90); // Sky answer 4: every staff post, every 90 s from the shift's start
   });
 
+  test('Loop v2 and Disable (brief 058 §6, engine 0.31.0; Sky 2026-10-25): the tether and its cancel are retired, a loop runs 2:00', () => {
+    expect(rb.cell.loop.tether).toBeUndefined(); expect(rb.values['tether-m']).toBeUndefined(); // kept optional in the schema only for pinned runs
+    expect(rb.cancel.loopHeld).toBeUndefined();
+    expect([n(rb.cell.loop.s), n(rb.cell.loop.trail), n(rb.cell.loop.run!)]).toEqual([20, 1, 120]);
+    expect(rb.cell.disable).toBeDefined();
+    expect([n(rb.cell.disable!.s), n(rb.cell.disable!.trail)]).toEqual([10, 2]);
+    expect(rb.cell.disable!.targets).toBe('cell.loop.targets');
+    const both = structuredClone(raw); both.cell.loop.tether = 'v:loop-s';
+    expect(Rulebook.safeParse(both).success).toBe(false); // exactly one of tether or run
+    expect(rb.witness?.notice?.odd).toEqual(expect.arrayContaining(['threat', 'run'])); // brief 054 §8, Sky 2026-10-25: both rows confirmed
+    expect(rb.witness?.notice?.never).toContain('disable');
+  });
+
+  test('brief 059 (engine 0.32.0; Sky 2026-10-25, 1a 2a 3a): the crew of five, Vale in his car, the Drive; the safe fight\'s −1s retired; Sky\'s S1–S3 values', () => {
+    expect(rb.rivals).toBeDefined(); expect(rb.car?.pickup).toBeDefined(); expect(rb.cell.driveCar).toBeDefined(); // optional in the schema only for pinned runs
+    const cr = rb.rivals!;
+    expect([cr.crew, cr.posted, cr.drop, cr.out, cr.step, cr.follow, cr.followPace, cr.warn, cr.warnLag, cr.lookoutPace].map(n)).toEqual([5, 3, 8, 5, 2, 2, 280, 10, 3, 200]);
+    expect(n(rb.car!.pickup!.valeIn)).toBe(3);
+    expect(rb.fight.safe.minus).toBeUndefined(); expect(rb.values['fight-modifier']).toBeUndefined(); expect(rb.values['fight-safe-hostiles']).toBeUndefined(); // Motive M059-3.6, 3.7: kept optional in the schema only for pinned runs
+    expect(rb.fight.safe.hostiles).toBe('v:rivals-crew');
+    expect(rb.fight.safe.leaveUnfought).toBeUndefined(); expect(rb.fight.loud.entry).toBe('nearest'); // S2 nearest (Sky 'yea'); S1 = no: leaveUnfought retired into always and floor (engine 0.33.0)
+    expect(rb.fight.safe.always).toBe('v:fight-always'); expect(rb.fight.safe.floor).toBe('v:rivals-floor'); expect(n(rb.fight.safe.always!)).toBe(1); expect(n(rb.fight.safe.floor!)).toBe(3); // Motive M059-S1.1, S1.4
+    expect(rb.fight.alwaysRule).toBeDefined(); expect(rb.ai.intent!.rivals.calm).toContain('crewmate'); expect(rb.ai.intent!.rivals.alerted).toContain('crewmate'); // M059-S1.6
+    for (const k of ['posted', 'lookout', 'wheelman'] as const) {
+      const l = cr.beats[k].loop; expect(l.length).toBeGreaterThanOrEqual(cr.beats.minBeats);
+      expect(l.every((b) => b.s <= cr.beats.maxS)).toBe(true);
+      expect(l.every((b, i) => i === 0 || !(b.pose === l[i - 1]!.pose && b.yaw === l[i - 1]!.yaw))).toBe(true);
+    }
+    expect(rb.memory.acts['saw-getaway']).toEqual({ facts: ['cell-car', 'place-time'] }); // Motive M059-2.4
+  });
+
+  test('engine 0.34.0 (brief 067, Motive M067-B1, B2, K3, SQ1, SQ2): the walk split, the run seen and suspicious, hiding in a held car loses', () => {
+    expect([n(rb.cell.speed), n(rb.crowd.walk!), n(rb.cell.runSpeed)]).toEqual([180, 140, 360]); // the cell 1.8 m/s; the city keeps 1.4 (crowd.walk); the run twice the cell's walk
+    expect(n(rb.cell.runSpeed)).toBe(2 * n(rb.cell.speed));
+    expect(n(rb.crowd.run)).toBeLessThan(n(rb.cell.runSpeed)); // a fleeing person is never faster than the cell
+    expect(rb.cell.runAlert).toBeUndefined(); expect(rb.values['run-alert']).toBeUndefined(); // retired: a run is no found fault on its own (kept optional in the schema only for pinned runs)
+    expect(rb.attention?.run).toMatchObject({ at: 'notice', counts: 'still' });
+    expect(n(rb.weapons.mod.running!)).toBe(375); // three-eighths: stand 1000 > walk 500 > run 375 > run away 125
+    expect(n(rb.weapons.mod.moving)).toBeGreaterThan(n(rb.weapons.mod.running!)); expect(n(rb.weapons.mod.running!)).toBeGreaterThan(n(rb.weapons.mod.runningAway!));
+    expect(rb.fight.unguarded).toMatch(/car-no-driver/); expect(rb.fight.unguarded).toMatch(/cell-down/); expect(rb.fight.unguarded).toMatch(/the car held/); // M067-K3, amended: a held car only
+    expect(rb.fight.holdRule).toMatch(/only on purpose/); expect(rb.ai.noStall).toMatch(/can't stall/); // M067-SQ1, SQ2
+    const old = structuredClone(raw); old.cell.runAlert = 'v:op-speed-cm-s';
+    expect(Rulebook.safeParse(old).success).toBe(true); // a rulebook pinned before 0.34.0 still parses (the engine of today refuses it)
+  });
+
+  test('engine 0.34.1 (Aster\'s ruling within M067-SQ2): an advance on an operative closes on him', () => {
+    expect(rb.ai.noStall).toMatch(/closes on him/); // a cover only if its walk to him is strictly shorter than the walk from where the rival stands
+    expect(rb.ai.noStall).toMatch(/strictly shorter/); expect(rb.ai.noStall).toMatch(/inside the rival's effective reach of him or nearer him/);
+    expect(rb.ai.noStall).toMatch(/With nowhere to go that closes he holds/); // else his stop point of him, else he holds
+    expect(rb.ai.noStall).toMatch(/takes no kite step out of a line/); // the advance is not turned back to cover (as K3's walk to a held car)
+  });
+
+  test('engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is no failure): the patrol reports an Enter it sees', () => {
+    expect(rb.cell.enter.seen?.patrol).toBe('report');
+    expect(rb.cell.enter.seen?.rule).toMatch(/fails entry-seen-guard/); expect(rb.cell.enter.seen?.rule).toMatch(/fails entry-seen-camera/); // the guard and the live camera still fail
+    expect(rb.cell.enter.seen?.rule).toMatch(/The patrol robot is no fail/); expect(rb.cell.enter.seen?.rule).toMatch(/a found fault, Alert to at least attention\.alert, no Trail/);
+    const old = structuredClone(raw); delete old.cell.enter.seen;
+    expect(Rulebook.safeParse(old).success).toBe(true); // a rulebook pinned before 0.34.2 still parses (its engine fails entry-seen-patrol)
+  });
+
   test('the takedown: Motive §7.1, read by ref', () => {
     expect([td.ko, td.kill, td.struggle, td.wake, td.stagger, td.restrain, td.free, td.callOut].map(n)).toEqual([6, 3, 3, 120, 4, 8, 3, 10]);
     expect(td.reach).toBe(rb.cell.atReach); // hands: the same reach as an act at a device
-    expect([td.carry.untrained, td.carry.drop, td.stash.container, td.stash.door].map(n)).toEqual([70, 1, 5, 10]);
+    expect([td.carry.untrained, td.carry.drop, td.stash.container, td.stash.door].map(n)).toEqual([90, 1, 5, 10]); // engine 0.34.0 (brief 067, Motive): 0.7 -> 0.9 m/s, half the cell's walk
     expect(n(td.carry.untrained) * 2).toBe(n(rb.cell.speed)); // half the walk; only the Enforcer carries at a walk
     expect([n(td.service.period), n(td.service.dwell)]).toEqual([900, 20]);
     // the act's Trail: a knockout is a hit and a down (+4), a kill +2 more (+6): a quiet takedown is 2 T cheaper than shooting
@@ -673,8 +777,8 @@ describe('brief 014: Standing leans Hero (Sky 2026-10-16; briefs/014/motive-stan
     expect(f({ firedOn: ['rivals'], rivalsBroken: false }).delta).toBe(0); // N96: not won
     expect(f({ firedOn: ['rivals'], firstByCell: true, rivalsPublic: 'neutral' })).toEqual({ outcome: 'first', delta: -1, cause: 'seen-fight-first' }); // N97
     expect(f({ firedOn: ['rivals'], firstByCell: false, rivalsPublic: 'neutral', rivalsBroken: true }).delta).toBe(0); // neutral rivals who fired first
-    expect(f({ firedOn: ['security'] })).toEqual({ outcome: 'security', delta: -1, cause: 'seen-fight-security' }); // N98
-    expect(f({ firedOn: ['security', 'rivals'], rivalsBroken: true })).toMatchObject({ outcome: 'security', delta: -1 }); // N99: authority outranks
+    expect(f({ firedOn: ['security'] })).toEqual({ outcome: 'security', delta: -2, cause: 'seen-fight-security' }); // N98
+    expect(f({ firedOn: ['security', 'rivals'], rivalsBroken: true })).toMatchObject({ outcome: 'security', delta: -2 }); // N99: authority outranks
     expect(f({ public: false, firedOn: ['security'] }).delta).toBe(0); // N100: nobody heard it
     const bad = structuredClone(raw); bad.events.find((x: { id: string }) => x.id === 'fight.public').outcomes[0].when[0].in = ['police'];
     expect(Rulebook.safeParse(bad).success).toBe(false); // the foes are security or rivals

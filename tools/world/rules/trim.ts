@@ -2,6 +2,8 @@
 // look.json, so a part that draws either must be a hairline, a frame member or a bead; anything broad draws a key of its own (gen/surfaces.ts) and its
 // colour is one look.json row. Latch's district check after the rebuild found the Parade canopy slabs, the stair-bank plates, the booths and the palm tubs
 // in brass by eye; this rule is that check on the export, so the next broad part fails here and not in a screenshot.
+// Brief 061 (Sky 2026-10-25: no brass edge lines, kerb studs, inlay arcs or lit field on a crossing; the road edge's three bits of brass go too): the crossing parts that drew `trim` (CrossEdgeLine, KerbStud) are gone from the export, and a signal head draws `orb`,
+// a dot row `glow` (a 0.43 m frame would pass in trim). The rule itself is unchanged: it is about every part Unity paints in brass.
 //
 // The measure is Latch's: a part is broad when it has a face of at least TRIM_FACE m² whose shorter side is wider than TRIM_ACROSS. The export gives a prim as
 // a bounding box (a along yaw, b across, h), so the faces are the box's three: the widest has the two longest sides, and the part is thin when those two are

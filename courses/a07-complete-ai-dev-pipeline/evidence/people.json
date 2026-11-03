@@ -1,0 +1,442 @@
+{
+  "schema": "suborned.a07.people/1",
+  "began": "2026-11-02T21:40:18.598Z",
+  "finished": "2026-11-02T21:41:11.548Z",
+  "mode": "Archived model generation; real current expansion, engine-data staging and player capture",
+  "model_calls_this_run": 0,
+  "fresh_unity_compilation": false,
+  "generation": {
+    "run": "r016",
+    "round": 2,
+    "cast": {
+      "schema": "suborned.cast.promotion/1",
+      "plan": "harbour-district",
+      "scope": "civic-block",
+      "cast": {
+        "file": "contracts/people/harbour-district.cast.json",
+        "sha256": "41e1daca4504dd0df1a1698999ae132a50daa54cbc9bc9818efd2c1806f2f927",
+        "bytes": 19281
+      },
+      "source": {
+        "run": "r016",
+        "round": 2,
+        "version": "0.4.0-r016.2",
+        "file": "runs/levels/harbour-district/r016/round-2/pulse.json",
+        "path": "cast",
+        "sha256": "91d0e418a63fda46dd0d4bedf53beeaf61866e12ef2f448e58ae4bb57778176f",
+        "runFile": "runs/levels/harbour-district/r016/run.json",
+        "outcome": "ACCEPTED"
+      },
+      "promoted": "Sky, 2026-10-16",
+      "why": "People run r016 (civic block, fresh run with the lovers rules; r015 could not be continued because it ended ACCEPTED) was ACCEPTED in 2 rounds ($0.69): round 1 failed P-0 (a guard's evening tie to a server with no stop in the day variant), round 2 passed with Keel 0 faults. P-0..P-15 ok; M-2 casts waitress p-cafe-14 (Inez Nikolaou) and door guard p-records-office-01 (Folake Okafor) as mutual lovers, both secret: affair, driver p-records-office-31, councillor p-records-office-07. Replaces r013, whose cast had no lovers (the game ran on the labelled fixture). Sky, 2026-10-16: \"yeah, that's fine - I love the fact that characters change based on the connection of others\" (relayed by Aster), accepting that the re-roll changes temperaments (Inez fearful, Vale mercenary). The file is round 2's cast byte for byte, held to its run; a new cast is a new run, promoted again."
+    }
+  },
+  "counts": {
+    "persons": 130,
+    "directed_ties": 222,
+    "places": 87,
+    "simulated": 130
+  },
+  "source_hashes": {
+    "contracts/people/harbour-district.cast.json": "41e1daca4504dd0df1a1698999ae132a50daa54cbc9bc9818efd2c1806f2f927",
+    "contracts/people/harbour-district.cast.promotion.json": "1ee87199c4df5192fb61ccb5cb26af413336d49f15c350743084b064f79b9b51",
+    "runs/levels/harbour-district/r016/run.json": "e583e69e2a92fdd5ccbb4ea64d0bccaf81863358f257b0b028239e43e6a71a06",
+    "runs/levels/harbour-district/r016/round-2/pulse.json": "91d0e418a63fda46dd0d4bedf53beeaf61866e12ef2f448e58ae4bb57778176f",
+    "tools/levels/people/plugin.ts": "2bf568589c78fe24f18a2788bfab352fdf257195931bd16b96e765845588684b",
+    "tools/people/expand.ts": "1dd812d0cc3df4c39c565790d7306321c1f784eae779763bfeeac7a7ead0a658",
+    "tools/people/check.ts": "aae9d8e41531d88583f72466969b3599cf917284fd135cfb22e6b05cfdc5ca1f",
+    "tools/people/promoted.ts": "948bd0b261cd61aebaabfe69603c4568ef4da2ba59e34636840850cfd03bd707",
+    "tools/sim/people.ts": "08dde7b5c549dde6104016a3a5c745bf7e8b1888c5a9d927c47014260068f34f",
+    "tools/gen/rules.ts": "75fdcd88dc8fdaf1436850f4d530af14f5e6a7d62b010db38bcc8ec1f4e57ec5",
+    "unity/Assets/Suborned/Runtime/Play/SimBundle.cs": "bd3dbe602b6fa0c7d1675a9ea2b1f04e7e217b15691ce82b5f6687e108fb6c54",
+    "unity/Assets/Suborned/Runtime/Play/HandoverHost.cs": "b273c47ba25d4f4c81d32cda83dca672c78ad12fbe8675abe3d4eece6e2d4d1c"
+  },
+  "integration": {
+    "file": "handover.people.json",
+    "sha256": "047a96edd03e02eedecc12f7de2563748ab734578798c7ed39d0f6474687f7ca",
+    "production_sha256": "69f13ffc4c29aebd6095b797bb120d79aee0ad18b61fbc0ad69177927b3865b2",
+    "matches_production_player": false,
+    "mission_profiles_match_production": [
+      {
+        "role": "waitress",
+        "id": "p-cafe-14",
+        "fields": [
+          "id",
+          "name",
+          "job",
+          "temperament",
+          "need",
+          "record",
+          "size",
+          "holder",
+          "start",
+          "ties"
+        ],
+        "profile": {
+          "id": "p-cafe-14",
+          "name": "Inez Nikolaou",
+          "job": "server",
+          "temperament": "fearful",
+          "need": "debt",
+          "record": "bureau-loan",
+          "size": "standard",
+          "holder": "beyond",
+          "start": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "ties": [
+            [
+              "workmate",
+              "p-cafe-05"
+            ],
+            [
+              "workmate",
+              "p-cafe-21"
+            ],
+            [
+              "lover",
+              "p-records-office-01"
+            ]
+          ]
+        }
+      },
+      {
+        "role": "driver",
+        "id": "p-records-office-31",
+        "fields": [
+          "id",
+          "name",
+          "job",
+          "temperament",
+          "need",
+          "record",
+          "size",
+          "holder",
+          "start",
+          "ties"
+        ],
+        "profile": {
+          "id": "p-records-office-31",
+          "name": "Aleksander Lukac",
+          "job": "official-driver",
+          "temperament": "mercenary",
+          "need": "cash",
+          "record": "lean-month",
+          "size": "standard",
+          "holder": "beyond",
+          "start": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "ties": [
+            [
+              "workmate",
+              "p-records-office-07"
+            ],
+            [
+              "workmate",
+              "p-records-office-39"
+            ]
+          ]
+        }
+      },
+      {
+        "role": "guard",
+        "id": "p-records-office-01",
+        "fields": [
+          "id",
+          "name",
+          "job",
+          "temperament",
+          "need",
+          "record",
+          "size",
+          "holder",
+          "start",
+          "ties"
+        ],
+        "profile": {
+          "id": "p-records-office-01",
+          "name": "Arthur Reilly",
+          "job": "guard",
+          "temperament": "mercenary",
+          "need": "debt",
+          "record": "bureau-loan",
+          "size": "standard",
+          "holder": "beyond",
+          "start": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "ties": [
+            [
+              "regular",
+              "p-cafe-07"
+            ],
+            [
+              "regular",
+              "p-cafe-14"
+            ],
+            [
+              "lover",
+              "p-cafe-14"
+            ]
+          ]
+        }
+      },
+      {
+        "role": "councillor",
+        "id": "p-records-office-07",
+        "fields": [
+          "id",
+          "name",
+          "job",
+          "temperament",
+          "need",
+          "record",
+          "size",
+          "holder",
+          "start",
+          "ties"
+        ],
+        "profile": {
+          "id": "p-records-office-07",
+          "name": "Uros Popovic",
+          "job": "councillor",
+          "temperament": "mercenary",
+          "need": "debt",
+          "record": "bureau-loan",
+          "size": "standard",
+          "holder": "beyond",
+          "start": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "ties": [
+            [
+              "workmate",
+              "p-records-office-31"
+            ],
+            [
+              "workmate",
+              "p-records-office-65"
+            ]
+          ]
+        }
+      }
+    ],
+    "player_build": "Build 0.2.232 \u00b7 c049 \u00b7 sim 0.39.0 \u00b7 bc1df7d0+",
+    "variant": "current-plan people staged in retained production binary",
+    "player_report": {
+      "schema": "suborned.shots.report/1",
+      "status": "ok",
+      "screen": "1920x1080",
+      "build": "Build 0.2.232 \u00b7 c049 \u00b7 sim 0.39.0 \u00b7 bc1df7d0+",
+      "shots": [
+        {
+          "name": "cafe-routines",
+          "status": "ok",
+          "tick": 440,
+          "error": "",
+          "files": [
+            "cafe-routines/f0000.jpg",
+            "cafe-routines/ (120 frames at 20 fps)"
+          ],
+          "clipFrames": 120
+        },
+        {
+          "name": "social-intel",
+          "status": "ok",
+          "tick": 800,
+          "error": "",
+          "files": [
+            "social-intel.png",
+            "social-intel.hud.png",
+            "social-intel.manifest.json",
+            "social-intel.parts.json"
+          ],
+          "audit": {
+            "clean": true,
+            "issues": []
+          }
+        },
+        {
+          "name": "guard-leaves-post",
+          "status": "ok",
+          "tick": 1344,
+          "error": "",
+          "files": [
+            "guard-leaves-post/f0000.jpg",
+            "guard-leaves-post/ (120 frames at 20 fps)"
+          ],
+          "clipFrames": 120
+        },
+        {
+          "name": "street-level-people",
+          "status": "ok",
+          "tick": 448,
+          "error": "",
+          "files": [
+            "street-level-people/f0000.jpg",
+            "street-level-people/ (100 frames at 20 fps)"
+          ],
+          "clipFrames": 100
+        }
+      ]
+    }
+  },
+  "costs": {
+    "run": "r016",
+    "calls": [
+      {
+        "id": "01-people-pulse",
+        "role": "schedule-ai-designer",
+        "model": "claude-sonnet-5-5",
+        "usd": 0.26885030000000004,
+        "tokens": {
+          "input": 23982,
+          "cacheRead": 18292,
+          "output": 17001
+        }
+      },
+      {
+        "id": "02-people-pulse",
+        "role": "schedule-ai-designer",
+        "model": "claude-sonnet-5-5",
+        "usd": 0.1415571,
+        "tokens": {
+          "input": 17428,
+          "cacheRead": 8058,
+          "output": 6923
+        }
+      },
+      {
+        "id": "03-people-critic",
+        "role": "simulation-engineer",
+        "model": "claude-opus-5-5",
+        "usd": 0.28006590000000003,
+        "tokens": {
+          "input": 28086,
+          "cacheRead": 26026,
+          "output": 2401
+        }
+      }
+    ],
+    "actual_usage_usd": 0.6904733000000001,
+    "reported_rounded_usd": 0.6905,
+    "billing": "Claude CLI recorded total_cost_usd usage valuation on a subscription; not an additional API debit or allocated subscription invoice.",
+    "highest": {
+      "id": "03-people-critic",
+      "role": "simulation-engineer",
+      "model": "claude-opus-5-5",
+      "usd": 0.28006590000000003,
+      "tokens": {
+        "input": 28086,
+        "cacheRead": 26026,
+        "output": 2401
+      }
+    },
+    "optimisation": {
+      "implementation": "tools/gen/rules.ts LOOP 2, brief 007 F, 2026-10-14: critic only after deterministic checks pass",
+      "before": {
+        "run": "r008",
+        "rounds": [
+          1,
+          2
+        ],
+        "critic_calls": 2,
+        "recorded_critic_usd": 0.4135186,
+        "calls": [
+          {
+            "id": "04-transit-critic",
+            "objective": "transit-critic",
+            "role": "simulation-engineer",
+            "model": "claude-opus-5-5",
+            "attempt": 1,
+            "status": "accepted",
+            "costUsd": 0.1888644,
+            "seconds": 27
+          },
+          {
+            "id": "08-transit-critic",
+            "objective": "transit-critic",
+            "role": "simulation-engineer",
+            "model": "claude-opus-5-5",
+            "attempt": 1,
+            "status": "accepted",
+            "costUsd": 0.22465420000000003,
+            "seconds": 30
+          }
+        ]
+      },
+      "after": {
+        "run": "r016",
+        "round": 1,
+        "failed": [
+          "P-0"
+        ],
+        "critic_calls": 0,
+        "critic_tokens": 0,
+        "recorded_critic_usd": 0
+      },
+      "limits": "Actual historical calls under the same generation framework, different objectives/candidates. No controlled equal-work percentage or counterfactual saving is claimed. Builder/retry costs remain included in the total."
+    },
+    "excludes": "Subscription invoice allocation, labour, hardware, hosting, other content jobs; no cost charged by this offline replay."
+  },
+  "manual_steps": [
+    "Human approval/promotion of an accepted cast",
+    "Game design and current curated rules/needs/names",
+    "Release publication and compatible-machine first-play test"
+  ],
+  "limits": [
+    "Not a live model-generation recording",
+    "No new Unity build; existing production binary/scene loads regenerated data",
+    "Full background projection differs from the retained production export; four mission profiles are verified equal",
+    "Public download and two-minute playability need separate verification"
+  ],
+  "retained_release_archive": {
+    "file": "out/build/play/TheSuborned-0.2.231.zip",
+    "version": "0.2.231",
+    "people_sha256": "69f13ffc4c29aebd6095b797bb120d79aee0ad18b61fbc0ad69177927b3865b2",
+    "matches_retained_production_people": true,
+    "limits": "Retained local archive, not a fresh public download verification"
+  },
+  "expansion_inputs": {
+    "cast": "a34cd83cca817dbbbbae736dac6cb7142e8442eae6df1a7cbd34a3e536002ccc",
+    "life": "cadbfef0ad54e655a6852098f6ee8dfd0f472d2dfa6fe3cd1259cc185a7300f6",
+    "block": "912f0272db1ceb6d8aea988a54a2243d1437151d7989ed9c704e8012441e06ff",
+    "rules": "5f87ab1276115474504bf185376702b0c8db99623a5f1840c50f5dc4b9befa2f",
+    "mission": "b235c4ae5cbba3585b007f64973d5f26b60e0964fe498eb85b654323ea04f9e7",
+    "plan": "fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2",
+    "needs": "d3c1009827213853c870092af5928d220700f638c2c33aa1159c66123a4635ab",
+    "names": "f3a90cfc5477ab641190d72454731f57a509d09b6d2133e649d658bc894734e5",
+    "tools": "f64cc27363e3b561c5e0aa2713cac96ff80881dbe75c156afb1b03d7110e6c6b"
+  },
+  "recording": {
+    "command": [
+      "bun",
+      "courses/a07-complete-ai-dev-pipeline/people-run.ts",
+      "run"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 55.70523325004615,
+    "video": "out/scratch/a07/people-run/people-terminal-4K.mp4",
+    "cast": "out/scratch/a07/people-run/people-run.cast",
+    "kind": "Live terminal-output recording rendered during command execution, not a GUI desktop screen recording",
+    "resolution": [
+      3840,
+      2160
+    ],
+    "fps": 10,
+    "cast_sha256": "3e1cb05fdcc96603229f45809b9bb0ecf86552d5a7674eaf39fd836a988de7e4"
+  }
+}

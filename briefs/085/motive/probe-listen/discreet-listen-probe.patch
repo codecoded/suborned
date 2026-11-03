@@ -1,0 +1,77 @@
+--- sim/Suborned.Sim/GameApproach.cs	2026-10-26 03:39:56
++++ out/scratch/motive/085l/tree/sim/Suborned.Sim/GameApproach.cs	2026-11-01 17:16:37
+@@ -33,7 +33,16 @@
+         }
+ 
+         /// <summary>In place for a person act: within reach, and for a Watch on a clear line (walls and people), as Scout reads it.</summary>
+-        bool InPlace(Op op, string verb, Pt at, int reach) => G.Within(op.Pos, at, reach) && (verb != "watch" || (Sees(op.Pos, at) && !CrowdBlocks(op.Pos, at)));
++        bool InPlace(Op op, string verb, Pt at, int reach)
++        {
++            if (verb == "listen" && MotiveListen.On)
++            {
++                if (mlArriving) return G.Within(op.Pos, at, reach);
++                if (op.Act != null && mlSpot.TryGetValue(op.Id, out var sp)) return G.Within(op.Pos, sp.at, 60) && G.Within(op.Pos, at, reach);
++                return G.Within(op.Pos, at, reach) && !G.Within(op.Pos, at, MotiveListen.MinCm) && MlBesideSolid(op.Pos);
++            }
++            return G.Within(op.Pos, at, reach) && (verb != "watch" || (Sees(op.Pos, at) && !CrowdBlocks(op.Pos, at)));
++        }
+ 
+         /// <summary>The walk in now and its ticks to the act's start: the grid route from the operative to where the person will be when the
+         /// operative comes within `reach` of her (a server's round read ahead, a second at a time, up to two minutes: the first second t at
+@@ -66,7 +75,11 @@
+             var at = PersonPos(p); if (!at.HasValue) return false;
+             var st = Walk.NearestFree(at.Value); return st.HasValue && Walk.Route(op.Pos, st.Value) != null;
+         }
+-        Path? WalkInRoute(Op op, Person p, string verb) => Intercept(op, p, ActReachOf(op, verb))?.path;
++        Path? WalkInRoute(Op op, Person p, string verb)
++        {
++            if (verb == "listen" && MotiveListen.On) return ListenRoute(op, p);
++            return Intercept(op, p, ActReachOf(op, verb))?.path;
++        }
+ 
+         /// <summary>Ticks this operative walks before the act starts, as the card shows it (the intercept's walk less the act's reach, at a walk):
+         /// 0 in place, -1 no walk. A best estimate from the person's known routine; the walk itself re-aims as she moves. A Watch may walk on
+@@ -119,8 +132,10 @@
+             {
+                 op.Act = null; op.Walk = null; op.WalkMm = 0;
+                 var saved = refusal; refusal = default; string why;
++                mlArriving = o.Do == "listen" && MotiveListen.On; if (mlArriving) { if (mlSpot.TryGetValue(op.Id, out var sq) && MotiveListen.Note) { Note("mp." + sq.kind, $"{G.Dist(op.Pos, at.Value)}"); if (ServerOf(p) is RoundsData.Server sv9) Note("mp.door", $"{G.Dist(sv9.At, at.Value)}"); } mlSpot.Remove(op.Id); }
+                 try { why = o.Do == "turn" ? Turn(op, o) : Scout(op, o); }
+                 catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
++                mlArriving = false;
+                 var code = refusal.code ?? "uncoded"; refusal = saved;
+                 if (why.Length > 0) { Dropped.Add((Tick, op.Id, o, code, why)); Note("order.dropped", $"{name} {(o.Do == "turn" ? o.Approach : o.Do)} {o.Target}: {code}: {why}"); }
+                 return;
+--- sim/Suborned.Sim/GameRounds.cs	2026-10-26 08:21:39
++++ out/scratch/motive/085l/tree/sim/Suborned.Sim/GameRounds.cs	2026-11-01 16:07:49
+@@ -134,7 +134,7 @@
+         {
+             var sv = ServerOf(p); if (sv == null || !R.RoundHolds.Contains(verb)) return;
+             var ev = EvOf(sv); var me = RoundPoseAt(sv, ev, Tick).Pos;
+-            var f = op.Pos - me; if (f == new Pt(0, 0)) f = sv.Face;
++            var f = op.Pos - me; if (f == new Pt(0, 0) || (verb == "listen" && MotiveListen.On)) f = sv.Face;
+             ev.Holds.Add(new RoundEvents.Hold { From = Tick, To = landsAt, Face = f, By = op.Id }); ev.Version++;
+         }
+         /// <summary>An operative's order ends early (cancelled, or the operative down): a hold it made ends now (its linger still follows).</summary>
+--- sim/Suborned.Sim/GameAttention.cs	2026-10-30 19:49:40
++++ out/scratch/motive/085l/tree/sim/Suborned.Sim/GameAttention.cs	2026-11-01 16:10:35
+@@ -61,7 +61,7 @@
+             return AttnPerson(w) && G.Within(s.At, op.Pos, R.AttnNearCm) && Sees(s.At, op.Pos) && !CrowdBlocks(s.At, op.Pos);
+         }
+         /// <summary>Is the operative in an act other than a Watch (the clock holds): busy, carrying a body or an operative, holding Vale.</summary>
+-        bool AttnInAct(Op op) => (op.Busy != null && op.Busy.Do != "watch") || op.CarryBody.Length > 0 || op.Carrying.HasValue
++        bool AttnInAct(Op op) => (MotiveListen.On && op.Act != null && op.Act.Do == "listen" && op.Walk == null) || (op.Busy != null && op.Busy.Do != "watch") || op.CarryBody.Length > 0 || op.Carrying.HasValue
+             || (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking));
+ 
+         /// <summary>Once a tick (brief 031 §2): every security watcher's clock on every operative, its stages, and the reports it makes.</summary>
+--- sim/cli/Adaptive.cs	2026-10-30 19:49:40
++++ out/scratch/motive/085l/tree/sim/cli/Adaptive.cs	2026-11-01 16:07:49
+@@ -328,7 +328,7 @@
+         }
+         if (g.Cause != null) { w.Key("cause"); g.Cause.Write(w); }
+         var marks = new SortedDictionary<string, int>(StringComparer.Ordinal);
+-        foreach (var l in g.Log) if (!marks.ContainsKey(l.Code) && Marks.Contains(l.Code)) marks[l.Code] = l.Tick;
++        foreach (var l in g.Log) if (!marks.ContainsKey(l.Code) && (Marks.Contains(l.Code) || l.Code.StartsWith("mp.", StringComparison.Ordinal) || l.Code == "scout.listen.heard")) marks[l.Code] = l.Code.StartsWith("mp.", StringComparison.Ordinal) ? int.Parse(l.Text, CultureInfo.InvariantCulture) : l.Tick;
+         w.Open("marks"); foreach (var kv in marks) w.Prop(kv.Key, kv.Value); w.EndObj();
+         w.OpenArr("held"); foreach (var l in g.Log) if (l.Code.StartsWith("car.held.", StringComparison.Ordinal)) w.Obj().Prop("tick", l.Tick).Prop("how", l.Code.Substring(9)).Prop("who", l.Text.Split(' ')[0]).EndObj(); w.EndArr(); // MC-11 reads them
+         // full health to down (design §4: nobody under 5 s, the Enforcer under 7 s): each op's first hit to the line that says he fell; a measure only

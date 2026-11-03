@@ -1,0 +1,1116 @@
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/OldTownSwap.cs
+@@ -235,6 +235,7 @@
+                 SwapCut.Run(rep, world, ours, net, hq, plan);
+                 SwapNetwork.ClearImportedGround(rep);
+                 SwapTramInlays.Apply(rep);
++                SwapTramKerbCaps.Apply();
+ 
+                 // ---- 8. SpaceHQ switch: both stand, one is off (ours: our SpaceHQ_Portal in the old finish, SwapHq)
+                 SwapHq.Place(rep, ours.Root, skyGain);
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapMesh.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapMesh.cs
+@@ -1,4 +1,5 @@
+ #if UNITY_EDITOR
++using System;
+ using System.Collections.Generic;
+ using UnityEngine;
+ using UnityEngine.Rendering;
+@@ -78,8 +79,9 @@
+         {
+             readonly List<V> verts = new(); readonly List<List<int>> subs = new(); readonly Read src;
+             readonly Dictionary<int, int> fromSrc = new();
++            readonly bool finalFrames;
+             public int Triangles { get; private set; }
+-            public Write(Read src) { this.src = src; for (int s = 0; s < src.Subs.Count; s++) subs.Add(new List<int>()); }
++            public Write(Read src, bool finalFrames = false) { this.src = src; this.finalFrames = finalFrames; for (int s = 0; s < src.Subs.Count; s++) subs.Add(new List<int>()); }
+             public void Keep(int sub, int a, int b, int c) { subs[sub].Add(Src(a)); subs[sub].Add(Src(b)); subs[sub].Add(Src(c)); Triangles++; }
+             int Src(int i) { if (!fromSrc.TryGetValue(i, out var o)) { fromSrc[i] = o = verts.Count; verts.Add(src.Verts[i]); } return o; }
+             public void Poly(int sub, List<V> poly)
+@@ -97,6 +99,29 @@
+             }
+             public Mesh Mesh(string name)
+             {
++                if(finalFrames && src.HasT)
++                {
++                    var variants=new Dictionary<(int,Vector4),int>();
++                    foreach(var sub in subs)for(int i=0;i<sub.Count;i+=3)
++                    {
++                        var a=verts[sub[i]];var b=verts[sub[i+1]];var c=verts[sub[i+2]];
++                        var basis=SwapTramFrames.BasisOf(a,b,c);
++                        for(int j=0;j<3;j++)
++                        {
++                            int old=sub[i+j];var v=verts[old];v.N=v.N.normalized;var t=SwapTramFrames.Frame(v,basis);
++                            if(v.T.Equals(t)){verts[old]=v;continue;}
++                            if(!variants.TryGetValue((old,t),out var id)){id=verts.Count;v.T=t;verts.Add(v);variants.Add((old,t),id);}sub[i+j]=id;
++                        }
++                    }
++                }
++                if(finalFrames)
++                {
++                    // Derivative-specific corner variants can leave old, unreferenced vertices.
++                    // Pack only referenced output vertices; no source triangle or attribute is removed.
++                    var live=new List<V>();var remap=new Dictionary<int,int>();
++                    foreach(var sub in subs)for(int i=0;i<sub.Count;i++){int old=sub[i];if(!remap.TryGetValue(old,out int id)){id=live.Count;live.Add(verts[old]);remap.Add(old,id);}sub[i]=id;}
++                    verts.Clear();verts.AddRange(live);
++                }
+                 var m = new Mesh { name = name, indexFormat = verts.Count > 65000 ? IndexFormat.UInt32 : IndexFormat.UInt16 };
+                 var p = new Vector3[verts.Count]; for (int i = 0; i < p.Length; i++) p[i] = verts[i].P; m.vertices = p;
+                 if (src.HasN) { var a = new Vector3[verts.Count]; for (int i = 0; i < a.Length; i++) a[i] = verts[i].N; m.normals = a; }
+@@ -172,5 +197,63 @@
+         internal static bool Inside(Rect r, Vector2 p) => p.x >= r.xMin && p.x <= r.xMax && p.y >= r.yMin && p.y <= r.yMax;
+         internal static Rect XZ(Bounds b) => Rect.MinMaxRect(b.min.x, b.min.z, b.max.x, b.max.z);
+     }
++    internal static class SwapTramFrames
++    {
++        internal readonly struct D3
++        {
++            internal readonly double X,Y,Z;internal D3(double x,double y,double z){X=x;Y=y;Z=z;}
++            internal D3(Vector3 p):this(p.x,p.y,p.z){}
++            public static D3 operator +(D3 a,D3 b)=>new(a.X+b.X,a.Y+b.Y,a.Z+b.Z);
++            public static D3 operator -(D3 a,D3 b)=>new(a.X-b.X,a.Y-b.Y,a.Z-b.Z);
++            public static D3 operator *(D3 a,double k)=>new(a.X*k,a.Y*k,a.Z*k);
++            internal static double Dot(D3 a,D3 b)=>a.X*b.X+a.Y*b.Y+a.Z*b.Z;
++            internal static D3 Cross(D3 a,D3 b)=>new(a.Y*b.Z-a.Z*b.Y,a.Z*b.X-a.X*b.Z,a.X*b.Y-a.Y*b.X);
++            internal double Length=>Math.Sqrt(Dot(this,this));internal D3 Unit=>this*(1/Length);
++        }
++        internal readonly struct Basis
++        {
++            internal readonly D3 U,V;internal readonly bool Regular;
++            internal Basis(D3 u,D3 v,bool regular){U=u;V=v;Regular=regular;}
++        }
++        internal static Basis BasisOf(SwapMesh.V a,SwapMesh.V b,SwapMesh.V c)
++        {
++            double u1=(double)b.U0.x-a.U0.x,u2=(double)c.U0.x-a.U0.x,v1=(double)b.U0.y-a.U0.y,v2=(double)c.U0.y-a.U0.y,det=u1*v2-u2*v1;
++            if(det==0){DegenerateUv++;return new Basis(default,default,false);}Regular++;
++            var x=new D3(b.P)-new D3(a.P);var y=new D3(c.P)-new D3(a.P);
++            return new Basis((x*v2-y*v1)*(1/det),(y*u1-x*u2)*(1/det),true);
++        }
++        internal static Vector4 Frame(SwapMesh.V v,Basis basis)
++        {
++            var n=new D3(v.N).Unit;var t=basis.Regular?basis.U:new D3(v.T.x,v.T.y,v.T.z);
++            // Two crosses avoid catastrophic cancellation in Gram-Schmidt near a smooth corner.
++            t=D3.Cross(n,D3.Cross(t,n));
++            if(t.Length<1e-20){var axis=Math.Abs(n.X)<.8?new D3(1,0,0):new D3(0,0,1);t=D3.Cross(axis,n);}t=t.Unit;
++            float sign=basis.Regular?(D3.Dot(D3.Cross(n,t),basis.V)<0?-1:1):(v.T.w<0?-1:1);
++            var f=new Vector3((float)t.X,(float)t.Y,(float)t.Z);
++            MaxOrthogonality=Math.Max(MaxOrthogonality,Math.Abs(Vector3.Dot(v.N.normalized,f)));MaxLengthError=Math.Max(MaxLengthError,Math.Abs(f.magnitude-1));return new Vector4(f.x,f.y,f.z,sign);
++        }
++        internal static long Regular,DegenerateUv;internal static double MaxOrthogonality,MaxLengthError;
++        internal static Vector3 Gradient(Vector3 p0,Vector3 p1,Vector3 p2,double a,double b,double c)
++        {
++            double ux=(double)p1.x-p0.x,uy=(double)p1.y-p0.y,uz=(double)p1.z-p0.z;
++            double vx=(double)p2.x-p0.x,vy=(double)p2.y-p0.y,vz=(double)p2.z-p0.z;
++            double nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,den=nx*nx+ny*ny+nz*nz;
++            if(den==0)return Vector3.zero;
++            double d1=b-a,d2=c-a;
++            return new Vector3((float)(((vy*nz-vz*ny)*d1+(ny*uz-nz*uy)*d2)/den),(float)(((vz*nx-vx*nz)*d1+(nz*ux-nx*uz)*d2)/den),(float)(((vx*ny-vy*nx)*d1+(nx*uy-ny*ux)*d2)/den));
++        }
++        internal static Vector4 Frame(SwapMesh.V v,Vector3 du,Vector3 dv,bool regular)=>Frame(v,new Basis(new D3(du),new D3(dv),regular));
++        internal static void Derivatives(SwapMesh.V a,SwapMesh.V b,SwapMesh.V c,out Vector3 du,out Vector3 dv,out bool regular)
++        {
++            double u1=(double)b.U0.x-a.U0.x,u2=(double)c.U0.x-a.U0.x,v1=(double)b.U0.y-a.U0.y,v2=(double)c.U0.y-a.U0.y,den=u1*v2-u2*v1;
++            regular=den!=0;du=dv=Vector3.zero;
++            if(!regular){DegenerateUv++;return;}Regular++;
++            double ax=(double)b.P.x-a.P.x,ay=(double)b.P.y-a.P.y,az=(double)b.P.z-a.P.z,bx=(double)c.P.x-a.P.x,by=(double)c.P.y-a.P.y,bz=(double)c.P.z-a.P.z;
++            du=new Vector3((float)((ax*v2-bx*v1)/den),(float)((ay*v2-by*v1)/den),(float)((az*v2-bz*v1)/den));
++            dv=new Vector3((float)((bx*u1-ax*u2)/den),(float)((by*u1-ay*u2)/den),(float)((bz*u1-az*u2)/den));
++            if(!Finite(du)||!Finite(dv))throw new System.IO.InvalidDataException("tram UV derivative is nonfinite");
++        }
++        static bool Finite(Vector3 p)=>float.IsFinite(p.x)&&float.IsFinite(p.y)&&float.IsFinite(p.z);
++    }
+ }
+ #endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapNetwork.cs
+@@ -205,7 +205,7 @@
+                     (mats[sub].name == "DK_Gutter_Setts" || mats[sub].name == "DK_Granite_Kerb" || crossGround && mats[sub].name == "DK_Granite_Kerb_B");
+                 if (!Enumerable.Range(0, mats.Length).Any(Ground)) continue;
+                 var rd = SwapTramMeshRead.Read(mf.sharedMesh, mf.transform.localToWorldMatrix);
+-                var wr = new SwapMesh.Write(rd); int cuts = 0;
++                var wr = new SwapMesh.Write(rd,true); int cuts = 0;
+                 for (int sub = 0; sub < rd.Subs.Count; sub++)
+                     for (int j = 0; j < rd.Subs[sub].Length; j += 3)
+                     {
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAttributeProof.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAttributeProof.cs
+@@ -0,0 +1,42 @@
++#if UNITY_EDITOR
++using System;using System.Collections.Generic;using System.Linq;using UnityEngine;using UnityEditor;
++using Object=UnityEngine.Object;
++namespace Suborned.OldTown.Editor.Swap
++{
++    internal static class SwapTramAttributeProof
++    {
++        static object Measure(IEnumerable<MeshFilter> filters)
++        {
++            long vertices=0,frameErrors=0,regular=0,degenerate=0,basisErrors=0;double maxNT=0,maxLength=0,maxDirection=0;long negative=0,positive=0;
++            foreach(var mf in filters)
++            {
++                var rd=SwapTramMeshRead.Read(mf.sharedMesh,Matrix4x4.identity);if(!rd.HasT)continue;
++                foreach(var v in rd.Verts){vertices++;var t=new Vector3(v.T.x,v.T.y,v.T.z);double dot=Math.Abs(Vector3.Dot(v.N,t)),length=Math.Abs(t.magnitude-1);maxNT=Math.Max(maxNT,dot);maxLength=Math.Max(maxLength,length);if(dot>3e-6||length>3e-6||Math.Abs(v.T.w)!=1)frameErrors++;if(v.T.w<0)negative++;else positive++;}
++                foreach(var ix in rd.Subs)for(int i=0;i<ix.Length;i+=3)
++                {
++                    var a=rd.Verts[ix[i]];var b=rd.Verts[ix[i+1]];var c=rd.Verts[ix[i+2]];
++                    double u1=(double)b.U0.x-a.U0.x,u2=(double)c.U0.x-a.U0.x,v1=(double)b.U0.y-a.U0.y,v2=(double)c.U0.y-a.U0.y,det=u1*v2-u2*v1;
++                    if(det==0){degenerate++;continue;}regular++;
++                    double[] e1={(double)b.P.x-a.P.x,(double)b.P.y-a.P.y,(double)b.P.z-a.P.z},e2={(double)c.P.x-a.P.x,(double)c.P.y-a.P.y,(double)c.P.z-a.P.z};
++                    double[] du=new double[3],dv=new double[3];for(int k=0;k<3;k++){du[k]=(e1[k]*v2-e2[k]*v1)/det;dv[k]=(e2[k]*u1-e1[k]*u2)/det;}
++                    foreach(int j in new[]{ix[i],ix[i+1],ix[i+2]})
++                    {
++                        var v=rd.Verts[j];double[] n={v.N.x,v.N.y,v.N.z};double norm=Math.Sqrt(n.Sum(z=>z*z));for(int k=0;k<3;k++)n[k]/=norm;
++                        double dot=0;for(int k=0;k<3;k++)dot+=du[k]*n[k];var expected=new double[3];for(int k=0;k<3;k++)expected[k]=du[k]-dot*n[k];
++                        double length=Math.Sqrt(expected.Sum(z=>z*z));if(length<1e-20)continue;for(int k=0;k<3;k++)expected[k]/=length;
++                        double error=Math.Sqrt(Math.Pow(v.T.x-expected[0],2)+Math.Pow(v.T.y-expected[1],2)+Math.Pow(v.T.z-expected[2],2));maxDirection=Math.Max(maxDirection,error);
++                        double bitangent=(n[1]*v.T.z-n[2]*v.T.y)*dv[0]+(n[2]*v.T.x-n[0]*v.T.z)*dv[1]+(n[0]*v.T.y-n[1]*v.T.x)*dv[2];float sign=bitangent<0?-1:1;if(error>3e-6||v.T.w!=sign)basisErrors++;
++                    }
++                }
++            }
++            return new Dictionary<string,object>{{"vertices",vertices},{"frameErrors",frameErrors},{"basisOrHandednessErrors",basisErrors},{"maxNormalTangentDot",maxNT},{"maxTangentLengthError",maxLength},{"maxUvTangentVectorError",maxDirection},{"regularUvTriangles",regular},{"degenerateUvTriangles",degenerate},{"negativeHandedVertices",negative},{"positiveHandedVertices",positive}};
++        }
++        internal static object Run()
++        {
++            var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/OldTownArt/DecoKit/Models/Ground/DK_Tile_TramRail.fbx");
++            var changed=Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include).Where(mf=>mf.sharedMesh&&(SwapTramRender.Owners.ContainsKey(mf)||mf.sharedMesh.name.Contains("(tram surface cut)")||mf.sharedMesh.name.Contains("(tram signal ownership)")||AssetDatabase.GetAssetPath(mf.sharedMesh).StartsWith("Assets/Suborned/OldTownArt/Swap/TramCorrected/")||AssetDatabase.GetAssetPath(mf.sharedMesh).StartsWith("Assets/Suborned/OldTownArt/Swap/TramSettled/")));
++            return new Dictionary<string,object>{{"sourceRailTemplate",Measure(source.GetComponentsInChildren<MeshFilter>(true))},{"emitted",Measure(changed)},{"note","Independent derivatives from final triangle positions/UV0. Degenerate UV charts are explicitly counted and use an orthonormal source-frame fallback, not a fabricated UV derivative. Source smooth normals remain inverse-transpose mapped."}};
++        }
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAttributeProof.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAttributeProof.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: 339c962e195649bcb236388ab4e5f0d5
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAudit.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramAudit.cs
+@@ -34,6 +34,7 @@
+                     else {var m=t.localToWorldMatrix;polygon=new[]{new Vector3(-1,0,-1),new Vector3(1,0,-1),new Vector3(1,0,1),new Vector3(-1,0,1)}.Select(p=>m.MultiplyPoint3x4(p)).Select(p=>new Vector2(p.x,p.z)).ToArray();}
+                     tiles.Add((t.position, t.right, t.forward,polygon));
+                     foreach (var r in t.GetComponentsInChildren<Renderer>(true)) tileRs.Add(r);
++                    foreach(var mf in SwapTramRender.Filters(t))tileRs.Add(mf.GetComponent<MeshRenderer>());
+                 }
+             }
+             var tileGrid = new Dictionary<Vector2Int, List<int>>();
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCorrected.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCorrected.cs
+@@ -0,0 +1,130 @@
++#if UNITY_EDITOR
++using System;
++using System.IO;
++using System.Linq;
++using UnityEditor;
++using UnityEditor.SceneManagement;
++using UnityEngine;
++using Suborned.OldTown.Editor.DecoKit;
++using Object=UnityEngine.Object;
++namespace Suborned.OldTown.Editor.Swap
++{
++    internal static class SwapTramCorrected
++    {
++        internal static string Dir=>Path.GetFullPath(Path.Combine(Application.dataPath,"../../briefs/075/recovery/tram-corrected"));
++        static string Target=>Path.Combine(Dir,"checks",DecoKitStage.Arg("tramCheck","current"));
++        static void Write(string name,object o)=>File.WriteAllText(Path.Combine(Target,name),SwapTramJson.Encode(o));
++        public static void FinalizeCandidate()=>OldTownSwap.SettledBatch(()=>Body(true));
++        public static void CheckMemory()=>OldTownSwap.SettledBatch(()=>Body(false));
++        static void Body(bool capture)
++        {
++            Directory.CreateDirectory(Target);
++            var scene=EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-swap.unity",OpenSceneMode.Single);
++            var cam=Object.FindObjectsByType<Camera>(FindObjectsInactive.Include).Single(c=>c.name=="DK street study camera");
++            var cold=new SwapTramState(false);Write("materials-cold.json",cold.Materials);
++            void Warm()
++            {
++                var pos=cam.transform.position;var rot=cam.transform.rotation;bool ortho=cam.orthographic;float fov=cam.fieldOfView;
++                cam.orthographic=false;cam.fieldOfView=55;
++                foreach(var p in new[]{new Vector2(-340,-130),new Vector2(-340,-190),new Vector2(-2,-389),new Vector2(-346,272),new Vector2(-332,-403)})
++                {var target=OldTownSwap.Old3(p,0);cam.transform.position=target+new Vector3(0,2.8f,-7);cam.transform.LookAt(target);var image=DecoKitStage.Render(cam,256,144);Object.DestroyImmediate(image);}
++                cam.transform.SetPositionAndRotation(pos,rot);cam.orthographic=ortho;cam.fieldOfView=fov;
++            }
++            Warm();Warm();var warm=new SwapTramState(false);Warm();Warm();var control=new SwapTramState(false);
++            Write("materials-warm.json",warm.Materials);Write("material-initialization.json",cold.MaterialDiff(warm));Write("material-noop-control.json",warm.MaterialDiff(control));
++            var before=new SwapTramState();
++            var root=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);
++            var repo=Path.GetFullPath(Path.Combine(Application.dataPath,"../.."));var geometry=SwapTramSource.Load(repo,"out/world/harbour-district.world.json");var report=new OldTownSwap.Report();
++            SwapTramRender.Apply(root,geometry,report);Write("memory-density.json",SwapTramDensity.Result());SwapNetwork.ClearImportedGround(report);SwapTramInlays.Apply(report);SwapTramKerbCaps.Apply();Write("memory-kerb-caps.json",SwapTramKerbCaps.Evidence);
++            SwapTramCoverage.Run(Path.Combine(Target,"memory-coverage.json"));SwapTramProof.Run(Path.Combine(Target,"memory-mesh-proof.json"));SwapTramOwnershipProof.Check(Path.Combine(Target,"memory-ownership.json"));
++            Write("memory-attributes.json",SwapTramAttributeProof.Run());
++            var after=new SwapTramState();Write("materials-after.json",after.Materials);Write("memory-preservation.json",before.Compare(after));
++            if(capture)
++            {
++                var coverage=SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(Target,"memory-coverage.json"))));
++                var ownership=SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(Target,"memory-ownership.json"))));
++                var attributes=SwapTramSource.Obj(SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(Target,"memory-attributes.json"))))["emitted"]);
++                void Zero(object v,string message){if(Convert.ToDouble(v)!=0)throw new InvalidOperationException("final candidate blocked: "+message+" = "+v);}
++                Zero(coverage["bedOnlyMisses"],"actual bed misses");Zero(coverage["railProfileFailures"],"source rail profile");Zero(coverage["strictBedMisses"],"exact bed coverage");Zero(coverage["strictRailMisses"],"exact rail coverage");
++                Zero(ownership["coplanarPositiveAreaPairs"],"coplanar surface intersections");Zero(attributes["frameErrors"],"frames");Zero(attributes["basisOrHandednessErrors"],"UV basis/handedness");
++                Zero(SwapTramDensity.Failures,"physical UV density");Zero(warm.MaterialDiff(control).Count,"no-op material changes");Zero(before.MaterialDiff(after).Count,"correction material changes");
++                var proof=SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(Target,"memory-mesh-proof.json")))) ;Zero(proof["zeroArea"],"zero area triangles");Zero(proof["nonfinite"],"nonfinite attributes");
++                var preservation=SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(Target,"memory-preservation.json"))));
++                foreach(string k in new[]{"originalTransformChanges","colliderChanges","sourceMeshChanges","signalBindingChanges"})Zero(SwapTramSource.Arr(preservation[k]).Count,k);
++                if(!(bool)preservation["navIdentical"])throw new InvalidOperationException("nav changed");
++                SaveMeshesAndScene(scene);
++                // Verify the persisted bindings and actual triangles after reloading, not just in memory.
++                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramcorrected.unity",OpenSceneMode.Single);
++                root=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);SwapTramRender.Applied.Clear();SwapTramRender.Geometry=null;SwapTramRender.BindExisting(root);
++                var savedCoverage=SwapTramSource.Obj(SwapTramCoverage.Run(Path.Combine(Target,"saved-coverage.json")));
++                var savedOwnership=SwapTramSource.Obj(SwapTramOwnershipProof.Check(Path.Combine(Target,"saved-ownership.json")));
++                Zero(savedCoverage["bedOnlyMisses"],"saved bed coverage");Zero(savedCoverage["railProfileFailures"],"saved rail profile");Zero(savedCoverage["strictBedMisses"],"saved exact bed coverage");Zero(savedCoverage["strictRailMisses"],"saved exact rail coverage");Zero(savedOwnership["coplanarPositiveAreaPairs"],"saved intersections");
++                Write("saved-attributes.json",SwapTramAttributeProof.Run());
++                var world=Suborned.World.WorldReader.Load(Path.Combine(repo,"out/world/harbour-district.world.json"));SwapTramAudit.Run(report,world,Path.Combine(Target,"audit-after.json"));
++                // Baseline scene is immutable; this only opens it to capture matched before frames.
++                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-swap.unity",OpenSceneMode.Single);
++                SwapTramRender.Applied.Clear();SwapTramRender.SurfaceFilters.Clear();SwapTramRender.Owners.Clear();SwapTramRender.Geometry=null;
++                SwapTramAudit.Run(report,world,Path.Combine(Target,"audit-before.json"));
++                cam=Object.FindObjectsByType<Camera>(FindObjectsInactive.Include).Single(c=>c.name=="DK street study camera");SwapTramSettled.Capture(cam,"before",false,Path.Combine(Target,"before"));
++                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramcorrected.unity",OpenSceneMode.Single);
++                cam=Object.FindObjectsByType<Camera>(FindObjectsInactive.Include).Single(c=>c.name=="DK street study camera");SwapTramSettled.Capture(cam,"after",true,Path.Combine(Target,"after"));
++                Write("complete.json",new System.Collections.Generic.Dictionary<string,object>{{"status","candidate only; HOLD pending independent Redline review"},{"savedScene","Assets/Scenes/probe-recovery075-tramcorrected.unity"},{"actualCoverageQueries",33264},{"signalOwnershipIntersections",0}});
++            }
++            Debug.Log(capture?"[TramCorrected] final candidate, saved-scene validation and targeted captures complete; HOLD":"[TramCorrected] in-memory checks complete; no saved scene, mesh assets or captures");
++        }        /// <summary>Continue validation/capture of the existing candidate after a reader-cache
++        /// lifetime failure. No Apply, save, generation, asset rewrite or scene mutation.</summary>
++        public static void ResumeSavedCandidate()=>OldTownSwap.SettledBatch(()=>
++        {
++            Directory.CreateDirectory(Target);
++            EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramcorrected.unity",OpenSceneMode.Single);
++            var root=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);SwapTramRender.BindExisting(root);
++            var coverage=SwapTramSource.Obj(SwapTramCoverage.Run(Path.Combine(Target,"saved-coverage.json")));
++            var ownership=SwapTramSource.Obj(SwapTramOwnershipProof.Check(Path.Combine(Target,"saved-ownership.json")));
++            var attributes=SwapTramAttributeProof.Run();Write("saved-attributes.json",attributes);
++            var emitted=SwapTramSource.Obj(SwapTramSource.Obj(attributes)["emitted"]);
++            foreach(string k in new[]{"bedOnlyMisses","railProfileFailures","strictBedMisses","strictRailMisses"})if(Convert.ToDouble(coverage[k])!=0)throw new InvalidOperationException("saved coverage failed: "+k);
++            if(Convert.ToDouble(ownership["coplanarPositiveAreaPairs"])!=0||Convert.ToDouble(emitted["frameErrors"])!=0||Convert.ToDouble(emitted["basisOrHandednessErrors"])!=0)throw new InvalidOperationException("saved ownership/attributes failed");
++            var assetRows=SwapTramSource.Arr(SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(Target,"mesh-assets.json"))))["assets"]);
++            int checkedAssets=0;foreach(var group in assetRows.Select(SwapTramSource.Obj).GroupBy(o=>(string)o["asset"]))
++            {var m=AssetDatabase.LoadAssetAtPath<Mesh>(group.Key);if(SwapTramState.MeshHash(m)!=(string)group.First()["meshDataSha256"])throw new InvalidOperationException("saved GPU payload changed: "+group.Key);checkedAssets++;}
++            Write("saved-payloads.json",new System.Collections.Generic.Dictionary<string,object>{{"checkedUniqueAssets",checkedAssets},{"payloadChanges",0}});
++            string repo=Path.GetFullPath(Path.Combine(Application.dataPath,"../.."));var world=Suborned.World.WorldReader.Load(Path.Combine(repo,"out/world/harbour-district.world.json"));var report=new OldTownSwap.Report();
++            SwapTramAudit.Run(report,world,Path.Combine(Target,"audit-after.json"));
++            EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-swap.unity",OpenSceneMode.Single);SwapTramRender.Applied.Clear();SwapTramRender.SurfaceFilters.Clear();SwapTramRender.Owners.Clear();SwapTramRender.Geometry=null;
++            SwapTramAudit.Run(report,world,Path.Combine(Target,"audit-before.json"));
++            var cam=Object.FindObjectsByType<Camera>(FindObjectsInactive.Include).Single(c=>c.name=="DK street study camera");SwapTramSettled.Capture(cam,"before",false,Path.Combine(Target,"before"));
++            EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramcorrected.unity",OpenSceneMode.Single);cam=Object.FindObjectsByType<Camera>(FindObjectsInactive.Include).Single(c=>c.name=="DK street study camera");SwapTramSettled.Capture(cam,"after",true,Path.Combine(Target,"after"));
++            Write("complete.json",new System.Collections.Generic.Dictionary<string,object>{{"status","candidate only; HOLD pending independent Redline review"},{"savedScene","Assets/Scenes/probe-recovery075-tramcorrected.unity"},{"actualCoverageQueries",33264},{"signalOwnershipIntersections",0},{"geometryRegeneratedInResume",false}});
++            Debug.Log("[TramCorrected] existing candidate reload, payload checks and targeted capture complete; HOLD");
++        });
++        static void SaveMeshesAndScene(UnityEngine.SceneManagement.Scene scene)
++        {
++            const string directory="Assets/Suborned/OldTownArt/Swap/TramCorrected";Directory.CreateDirectory(directory);
++            var filters=Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include).Where(mf=>mf.sharedMesh&&!AssetDatabase.Contains(mf.sharedMesh)&&(SwapTramRender.Owners.ContainsKey(mf)||mf.sharedMesh.name.Contains("(tram surface cut)")||mf.sharedMesh.name.Contains("(tram signal ownership)"))).ToArray();
++            var hashes=filters.Select(mf=>mf.sharedMesh).Distinct().ToDictionary(m=>m,m=>SwapTramState.MeshHash(m));
++            var wanted=new System.Collections.Generic.HashSet<string>(hashes.Values);var old=new System.Collections.Generic.Dictionary<string,Mesh>();
++            foreach(var guid in AssetDatabase.FindAssets("t:Mesh",new[]{"Assets/Suborned/OldTownArt/Swap/TramSettled"}))
++            {
++                var path=AssetDatabase.GUIDToAssetPath(guid);var mesh=AssetDatabase.LoadAssetAtPath<Mesh>(path);string hash=SwapTramState.MeshHash(mesh);
++                if(wanted.Contains(hash)){if(!old.ContainsKey(hash))old.Add(hash,mesh);}else Resources.UnloadAsset(mesh);
++            }
++            int reused=0,created=0;var assets=new System.Collections.Generic.List<object>();var saved=new System.Collections.Generic.Dictionary<string,Mesh>(old);
++            foreach(var mf in filters)
++            {
++                var mesh=mf.sharedMesh;string hash=hashes[mesh];
++                if(saved.TryGetValue(hash,out var immutable)){mf.sharedMesh=immutable;reused++;}
++                else
++                {
++                    string path=directory+"/"+hash.ToLowerInvariant()+".asset";var prior=AssetDatabase.LoadAssetAtPath<Mesh>(path);
++                    if(prior){if(SwapTramState.MeshHash(prior)!=hash)throw new InvalidOperationException("immutable content-addressed mesh differs");mf.sharedMesh=prior;saved.Add(hash,prior);reused++;}
++                    else{AssetDatabase.CreateAsset(mesh,path);saved.Add(hash,mesh);created++;}
++                }
++                PrefabUtility.RecordPrefabInstancePropertyModifications(mf);assets.Add(new System.Collections.Generic.Dictionary<string,object>{{"object",mf.name},{"asset",AssetDatabase.GetAssetPath(mf.sharedMesh)},{"meshDataSha256",hash}});
++            }
++            Write("mesh-assets.json",new System.Collections.Generic.Dictionary<string,object>{{"created",created},{"reused",reused},{"assets",assets}});
++            if(!EditorSceneManager.SaveScene(scene,"Assets/Scenes/probe-recovery075-tramcorrected.unity"))throw new IOException("corrected scene save failed");
++        }
++
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCorrected.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCorrected.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: a53cb835229946e6b648b7942ceb18c8
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCoverage.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCoverage.cs
+@@ -0,0 +1,173 @@
++#if UNITY_EDITOR
++using System;
++using System.Collections.Generic;
++using System.Linq;
++using System.IO;
++using UnityEditor;
++using UnityEditor.SceneManagement;
++using UnityEngine;
++using G=Suborned.OldTown.Editor.Swap.SwapTramJoin;
++using Object=UnityEngine.Object;
++namespace Suborned.OldTown.Editor.Swap
++{
++    internal static class SwapTramCoverage
++    {
++        internal sealed class Face
++        {
++            internal Vector3 A,B,C;internal string Mesh,Material,Id;internal int Sub,Triangle;internal bool Metal,Signal;
++            internal object Context()=>new Dictionary<string,object>{{"mesh",Mesh},{"material",Material},{"id",Id},{"submesh",Sub},{"triangle",Triangle},{"vertices",new[]{XYZ(A),XYZ(B),XYZ(C)}}};
++        }
++        static double[] XYZ(Vector3 p)=>new[]{(double)p.x,p.y,p.z};
++        internal static IEnumerable<Face> Faces(MeshFilter mf,string id,bool signal=false)
++        {
++            var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;
++            for(int s=0;s<rd.Subs.Count;s++)for(int j=0;j<rd.Subs[s].Length;j+=3)
++            {
++                var ix=rd.Subs[s];yield return new Face{A=rd.Verts[ix[j]].W,B=rd.Verts[ix[j+1]].W,C=rd.Verts[ix[j+2]].W,Mesh=mf.sharedMesh.name,Material=s<mats.Length&&mats[s]?mats[s].name:"none",Id=id,Sub=s,Triangle=j/3,Metal=s<mats.Length&&SwapTramInlays.Metal(mats[s]),Signal=signal};
++            }
++        }
++        internal sealed class Index
++        {
++            internal readonly Dictionary<Vector2Int,List<Face>> Cells=new();
++            internal void Add(Face f)
++            {
++                var bb=new Bounds(f.A,Vector3.zero);bb.Encapsulate(f.B);bb.Encapsulate(f.C);
++                if(bb.min.y>.3f||bb.max.y<-.3f)return;
++                for(int x=Mathf.FloorToInt(bb.min.x/2);x<=Mathf.FloorToInt(bb.max.x/2);x++)for(int y=Mathf.FloorToInt(bb.min.z/2);y<=Mathf.FloorToInt(bb.max.z/2);y++)
++                {var key=new Vector2Int(x,y);if(!Cells.TryGetValue(key,out var list))Cells[key]=list=new();list.Add(f);}
++            }
++            internal List<Face> Near(Vector2 q)=>Cells.TryGetValue(new Vector2Int(Mathf.FloorToInt(q.x/2),Mathf.FloorToInt(q.y/2)),out var list)?list:new List<Face>();
++            internal (double? h,Face face) Top(Vector2 q,bool metal=false,bool combined=false,bool exact=false)
++            {
++                double? top=null;Face winner=null;
++                foreach(var f in Near(q))if((!metal||f.Metal)&&(!f.Signal||combined)&&Bary(f,q,out var h,out _,out var minimum)&&(exact?ContainsExact(f,q):minimum>=-1e-4))
++                    if(top==null||h>top){top=h;winner=f;}
++                return(top,winner);
++            }
++        }
++        static System.Numerics.BigInteger Integer(float f)
++        {
++            uint bits=(uint)BitConverter.SingleToInt32Bits(f);int exponent=(int)((bits>>23)&255);uint mantissa=(bits&0x7fffff)|(exponent==0?0u:0x800000u);
++            var n=new System.Numerics.BigInteger(mantissa);if(exponent>0)n<<=exponent-1;return(bits&0x80000000)!=0?-n:n;
++        }
++        static int Orient(float ax,float ay,float bx,float by,float qx,float qy)
++        {
++            double x=(double)bx-ax,y=(double)by-ay,u=(double)qx-ax,v=(double)qy-ay,det=x*v-y*u;
++            double sumX=Math.Abs(ax)+Math.Abs(bx)+Math.Abs(qx),sumY=Math.Abs(ay)+Math.Abs(by)+Math.Abs(qy);
++            double error=16*2.220446049250313e-16*sumX*sumY;
++            if(Math.Abs(det)>error)return Math.Sign(det);
++            // Every finite float is an integer times 2^-149. This fallback gives an EXACT
++            // predicate on the actual renderer vertices, without expanding any triangle.
++            return((Integer(bx)-Integer(ax))*(Integer(qy)-Integer(ay))-(Integer(by)-Integer(ay))*(Integer(qx)-Integer(ax))).Sign;
++        }
++        internal static bool ContainsExact(Face f,Vector2 q)
++        {
++            if(q.x<Mathf.Min(f.A.x,Mathf.Min(f.B.x,f.C.x))||q.x>Mathf.Max(f.A.x,Mathf.Max(f.B.x,f.C.x))||q.y<Mathf.Min(f.A.z,Mathf.Min(f.B.z,f.C.z))||q.y>Mathf.Max(f.A.z,Mathf.Max(f.B.z,f.C.z)))return false;
++            int t=Orient(f.A.x,f.A.z,f.B.x,f.B.z,f.C.x,f.C.z);if(t==0)return false;
++            return Orient(f.A.x,f.A.z,f.B.x,f.B.z,q.x,q.y)*t>=0&&Orient(f.B.x,f.B.z,f.C.x,f.C.z,q.x,q.y)*t>=0&&Orient(f.C.x,f.C.z,f.A.x,f.A.z,q.x,q.y)*t>=0;
++        }
++        internal static bool Bary(Face f,Vector2 q,out double h,out double[] bary,out double min)
++        {
++            var a=f.A;var b=f.B;var c=f.C;double den=((double)b.z-c.z)*((double)a.x-c.x)+((double)c.x-b.x)*((double)a.z-c.z);
++            h=0;bary=null;min=0;if(den==0)return false;
++            double x=(((double)b.z-c.z)*((double)q.x-c.x)+((double)c.x-b.x)*((double)q.y-c.z))/den;
++            double y=(((double)c.z-a.z)*((double)q.x-c.x)+((double)a.x-c.x)*((double)q.y-c.z))/den,z=1-x-y;
++            h=x*a.y+y*b.y+z*c.y;bary=new[]{x,y,z};min=Math.Min(x,Math.Min(y,z));return true;
++        }
++        static Index BuildIndex()
++        {
++            var index=new Index();
++            foreach(var pair in SwapTramRender.Applied)foreach(var mf in SwapTramRender.Filters(pair.Key))foreach(var f in Faces(mf,pair.Value.Source.Id))index.Add(f);
++            foreach(var mf in Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Exclude))
++            {
++                var mr=mf.GetComponent<MeshRenderer>();if(!mr||!mr.enabled||!mf.sharedMesh)continue;
++                if(!mr.sharedMaterials.Any(m=>m&&(m.name.EndsWith("-crosslight")||m.shader.name=="Suborned/Signal Dots")))continue;
++                foreach(var f in Faces(mf,mf.name,true))index.Add(f);
++            }
++            return index;
++        }
++        internal static object Run(string path)
++        {
++            var index=BuildIndex();
++            var misses=new List<object>();var railMiss=new List<object>();long bed=0,rail=0,strictBedMiss=0,strictRailMiss=0;double maxDelta=0;var exactMisses=new List<object>();
++            // Read the actual immutable source FBX, including its bevel profile.
++            var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/OldTownArt/DecoKit/Models/Ground/DK_Tile_TramRail.fbx");
++            var sf=source.GetComponentsInChildren<MeshFilter>(true).Single();var reference=Faces(sf,"source").ToArray();
++            double? Expected(double along,double lateral)
++            {
++                var q=new Vector2((float)along,(float)lateral);double? hi=null;
++                foreach(var f in reference)if(f.Metal&&Bary(f,q,out var h,out _,out var m)&&m>=-1e-4)hi=Math.Max(hi??double.MinValue,h);
++                return hi+SwapNetwork.BedLift;
++            }
++            foreach(var f in SwapTramRender.Geometry)foreach(double along in new[]{-1,-.9,-.5,0,.5,.9,1})foreach(double lat in new[]{-.5,0,.5})
++            {
++                var p=f.Map(along,lat);var q=new Vector2((float)p.X,(float)(p.Y+OldTownSwap.DZ));var hit=index.Top(q,lat!=0);var combined=index.Top(q,false,true);var strict=index.Top(q,lat!=0,false,true);if(strict.h==null){if(lat==0)strictBedMiss++;else strictRailMiss++;exactMisses.Add(new object[]{f.Source.Id,along,lat,new[]{q.x,q.y}});}
++                if(lat==0)
++                {
++                    bed++;if(hit.h==null)
++                    {
++                        var candidates=index.Near(q).Where(t=>!t.Signal).Select(t=>{bool ok=Bary(t,q,out var h,out var bary,out double min);return(t,ok,h,bary,min);}).Where(t=>t.ok).OrderByDescending(t=>t.min).Take(3).Select(t=>(object)new Dictionary<string,object>{{"face",t.t.Context()},{"height",t.h},{"barycentric",t.bary},{"minimumBarycentric",t.min}}).ToArray();
++                        misses.Add(new Dictionary<string,object>{{"id",f.Source.Id},{"along",along},{"lateral",lat},{"plan",new[]{p.X,p.Y}},{"worldQuery",new[]{q.x,q.y}},{"combinedHeight",combined.h},{"combinedFace",combined.face?.Context()},{"startSeam",new[]{f.Start.Right.X,f.Start.Right.Y,f.Start.Left.X,f.Start.Left.Y}},{"endSeam",new[]{f.End.Right.X,f.End.Right.Y,f.End.Left.X,f.End.Left.Y}},{"nearestTriangles",candidates}});
++                    }
++                }
++                else
++                {
++                    rail++;double? expected=Expected(along,lat);double delta=hit.h!=null&&expected!=null?Math.Abs(hit.h.Value-expected.Value):double.PositiveInfinity;
++                    if(!double.IsInfinity(delta))maxDelta=Math.Max(maxDelta,delta);
++                    if(delta>1e-5)railMiss.Add(new Dictionary<string,object>{{"id",f.Source.Id},{"along",along},{"lateral",lat},{"plan",new[]{p.X,p.Y}},{"actual",hit.h},{"expected",expected},{"delta",double.IsInfinity(delta)?null:(object)delta},{"face",hit.face?.Context()}});
++                }
++            }
++            var result=new Dictionary<string,object>{{"strictBedMisses",strictBedMiss},{"strictRailMisses",strictRailMiss},{"strictMisses",exactMisses},{"strictPredicate","Adaptive double / exact BigInteger orientation on actual float triangles; zero geometric expansion"},{"bedQueries",bed},{"bedOnlyMisses",misses.Count},{"bedMisses",misses},{"railQueries",rail},{"railProfileFailures",railMiss.Count},{"maximumSourceProfileDelta",maxDelta},{"railFailures",railMiss}};
++            File.WriteAllText(path,SwapTramJson.Encode(result));return result;
++        }
++        public static void VerifySavedAuditSamples()
++        {
++            try
++            {
++                string repo=Path.GetFullPath(Path.Combine(Application.dataPath,"../..")),dir=Path.Combine(repo,"briefs/075/recovery/tram-corrected");
++                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramcorrected.unity",OpenSceneMode.Single);
++                var root=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);SwapTramRender.BindExisting(root);var index=BuildIndex();
++                var world=Suborned.World.WorldReader.Load(Path.Combine(repo,"out/world/harbour-district.world.json"));var misses=new List<object>();int samples=0;
++                foreach(var track in world.Transit.Tram)
++                {
++                    float carry=0;var line=track.Line;var offs=track.Spacing>0?new[]{-track.Spacing*.5f,track.Spacing*.5f}:new[]{0f};
++                    for(int i=1;i<line.Length;i++)
++                    {
++                        Vector2 a=line[i-1],b=line[i];float length=Vector2.Distance(a,b);if(length<1e-4f)continue;var d=(b-a)/length;var n=new Vector2(-d.y,d.x);
++                        for(float x=carry;x<length;x+=1f)foreach(float offset in offs)foreach(float lat in new[]{-.6f,0f,.6f})
++                        {var plan=a+d*x+n*(offset+lat);var q=OldTownSwap.Old(plan);samples++;var hit=index.Top(q,false,true,true);if(hit.h==null)misses.Add(new object[]{track.Id,new[]{plan.x,plan.y},offset,lat});}
++                        carry=Mathf.Repeat(carry-length,1f);
++                    }
++                }
++                var old=SwapTramSource.Obj(Suborned.World.Json.Parse(File.ReadAllText(Path.Combine(repo,"briefs/075/recovery/tram-gaps/evidence.json"))));var probes=new List<object>();int failures=0;
++                foreach(var row in SwapTramSource.Arr(old["rows"]).Select(SwapTramSource.Obj))
++                {
++                    var points=new[]{SwapTramSource.Obj(row["sample"])["q"],SwapTramSource.Obj(row["arc"])["exact_point"],SwapTramSource.Obj(row["arc"])["centre_point"]};
++                    foreach(var value in points){var p=SwapTramSource.Point(value);var q=new Vector2((float)p.X,(float)(p.Y+OldTownSwap.DZ));var hit=index.Top(q,false,true,true);if(hit.h==null)failures++;probes.Add(new Dictionary<string,object>{{"plan",new[]{p.X,p.Y}},{"height",hit.h},{"face",hit.face?.Context()}});}
++                }
++                File.WriteAllText(Path.Combine(dir,"saved-audit-surface-proof.json"),SwapTramJson.Encode(new Dictionary<string,object>{{"samples",samples},{"misses",misses},{"originalAndExactArcProbes",probes},{"originalAndExactArcMisses",failures},{"predicate","Actual bed plus retained signal triangle surfaces; exact float-coordinate orientation, no expanded bounds or triangle tolerance"}}));
++                if(misses.Count>0||failures>0)throw new InvalidOperationException("saved actual audit surface coverage failed");
++                Debug.Log("[TramCorrected] actual mesh coverage: "+samples+" audit samples + 18 original/exact-arc probes, zero misses");
++            }
++            catch(Exception ex){Debug.LogException(ex);EditorApplication.Exit(1);}
++        }
++        public static void DiagnosePrior()
++        {
++            try
++            {
++                string dir=Path.GetFullPath(Path.Combine(Application.dataPath,"../../briefs/075/recovery/tram-corrected"));
++                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramsettled.unity",OpenSceneMode.Single);
++                var saved=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);
++                File.WriteAllText(Path.Combine(dir,"prior-persisted-bindings.json"),SwapTramJson.Encode(new Dictionary<string,object>{{"tiles",saved.childCount},{"filters",saved.GetComponentsInChildren<MeshFilter>(true).Select(mf=>(object)new Dictionary<string,object>{{"name",mf.sharedMesh.name},{"asset",AssetDatabase.GetAssetPath(mf.sharedMesh)}}).ToArray()}}));
++                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-swap.unity",OpenSceneMode.Single);
++                var root=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);
++                var geometry=SwapTramSource.Load(Path.GetFullPath(Path.Combine(Application.dataPath,"../..")),"out/world/harbour-district.world.json");
++                var report=new OldTownSwap.Report();SwapTramRender.Apply(root,geometry,report);SwapNetwork.ClearImportedGround(report);
++                Run(Path.Combine(dir,"prior-localized.json"));
++                Debug.Log("[TramCorrected] prior coverage localization complete; no scene save or capture");
++            }
++            catch(Exception ex){Debug.LogException(ex);EditorApplication.Exit(1);}
++        }
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCoverage.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramCoverage.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: d02d3e8437524f45a173a3ed7d612739
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramDensity.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramDensity.cs
+@@ -0,0 +1,42 @@
++#if UNITY_EDITOR
++using System;using System.Collections.Generic;using UnityEngine;
++using G=Suborned.OldTown.Editor.Swap.SwapTramJoin;
++namespace Suborned.OldTown.Editor.Swap
++{
++    /// <summary>Independent physical-chart check on final float positions/UVs. The permitted
++    /// error is calculated from UV float rounding and double operation bounds, never a fit tolerance.</summary>
++    internal static class SwapTramDensity
++    {
++        internal static long Channels,Failures;internal static double MaxError,MaxBound,MinRatio=double.MaxValue,MaxRatio,SumRatio;
++        static double[] Sub(Vector3 a,Vector3 b)=>new[]{(double)a.x-b.x,(double)a.y-b.y,(double)a.z-b.z};
++        static double[] Cross(double[] a,double[] b)=>new[]{a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]};
++        static double Dot(double[] a,double[] b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
++        static double Len(double[] a)=>Math.Sqrt(Dot(a,a));
++        static double HalfUlp(float x){int b=BitConverter.SingleToInt32Bits(Math.Abs(x));float next=BitConverter.Int32BitsToSingle(b+1);return ((double)next-Math.Abs(x))*.5;}
++        internal static void Record(List<SwapMesh.V> poly,Vector3 gu,Vector3 gv,SwapMesh.V source0,Vector3 sourceP0,G.Footprint f,double sign,double height)
++        {
++            foreach(var gradient in new[]{(gu,false),(gv,true)})
++            {
++                var g=gradient.Item1;var worldG=new[]{sign*(f.Direction.X*g.x+f.Normal.X*g.z),(double)g.y,sign*(f.Direction.Y*g.x+f.Normal.Y*g.z)};
++                for(int i=1;i+1<poly.Count;i++)
++                {
++                    var vs=new[]{poly[0],poly[i],poly[i+1]};var a=Sub(vs[1].P,vs[0].P);var b=Sub(vs[2].P,vs[0].P);var n=Cross(a,b);double den=Dot(n,n);if(den==0)continue;
++                    var l1=Cross(b,n);var l2=Cross(n,a);for(int k=0;k<3;k++){l1[k]/=den;l2[k]/=den;}
++                    double U(SwapMesh.V v)=>gradient.Item2?v.U0.y:v.U0.x;
++                    var actual=new double[3];var expected=new double[3];double nd=Dot(n,worldG)/den;
++                    for(int k=0;k<3;k++){actual[k]=l1[k]*(U(vs[1])-U(vs[0]))+l2[k]*(U(vs[2])-U(vs[0]));expected[k]=worldG[k]-n[k]*nd;}
++                    double[] eps=new double[3];for(int k=0;k<3;k++)
++                    {
++                        var p=vs[k].P;double absoluteTerms=(Math.Abs(p.x)+Math.Abs(f.Source.Centre.X)+Math.Abs(sourceP0.x))*Math.Abs(g.x)+(Math.Abs(p.z)+Math.Abs(f.Source.Centre.Y)+OldTownSwap.DZ+Math.Abs(sourceP0.z))*Math.Abs(g.z)+(Math.Abs(p.y)+Math.Abs(height)+Math.Abs(sourceP0.y))*Math.Abs(g.y)+Math.Abs(U(source0));
++                        eps[k]=HalfUlp((float)U(vs[k]))+32*2.220446049250313e-16*absoluteTerms;
++                    }
++                    double bound=Len(l1)*(eps[1]+eps[0])+Len(l2)*(eps[2]+eps[0])+128*2.220446049250313e-16*(Len(actual)+Len(expected));
++                    double error=Len(new[]{actual[0]-expected[0],actual[1]-expected[1],actual[2]-expected[2]});Channels++;MaxError=Math.Max(MaxError,error);MaxBound=Math.Max(MaxBound,bound);if(error>bound)Failures++;
++                    double length=Len(expected);if(length>1e-8){double ratio=Len(actual)/length;MinRatio=Math.Min(MinRatio,ratio);MaxRatio=Math.Max(MaxRatio,ratio);SumRatio+=ratio;}
++                }
++            }
++        }
++        internal static object Result()=>new Dictionary<string,object>{{"triangleUvChannels",Channels},{"failuresAgainstDerivedFloatBound",Failures},{"maximumPhysicalGradientError",MaxError},{"maximumCalculatedRoundingBound",MaxBound},{"minimumDensityRatio",MinRatio},{"maximumDensityRatio",MaxRatio},{"scope","Actual emitted tram positions/UV0 against source physical chart derivatives; UV rounding + double-operation bound per triangle, no global tolerance inflation"}};
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramDensity.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramDensity.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: fbb3bbdb16c64b7d95ddd36582ae9527
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramInlays.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramInlays.cs
+@@ -37,7 +37,7 @@
+             // Hull each physical extruded rail's actual projected mesh profile separately.
+             // All cross-section parts (including the groove floor) are metal: no bed-wide proxy.
+             foreach(var pair in SwapTramRender.Applied)
+-                foreach(var mf in pair.Key.GetComponentsInChildren<MeshFilter>(true))
++                foreach(var mf in SwapTramRender.Filters(pair.Key))
+                 {
+                     var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);
+                     var sides=new[]{new List<Vector2>(),new List<Vector2>()};
+@@ -53,13 +53,15 @@
+                 bool Dot(Material m)=>m&&m.shader&&m.shader.name=="Suborned/Signal Dots";
+                 bool Light(Material m)=>m&&(Dot(m)||m.name.EndsWith("-crosslight"));
+                 if(!mats.Any(Light))continue;
+-                var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var wr=new SwapMesh.Write(rd);int cuts=0;
++                var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var wr=new SwapMesh.Write(rd,true);int cuts=0;var completeSeats=new List<SwapTramSeatUnion.Face>();
+                 bool dots=mats.Any(Dot);
++                bool seatOwner=mats.Any(m=>m&&m.name=="DK_Enamel_Charcoal");
+                 for(int sub=0;sub<rd.Subs.Count;sub++)for(int j=0;j<rd.Subs[sub].Length;j+=3)
+                 {
+                     var tri=rd.Subs[sub];var a=rd.Verts[tri[j]];var b=rd.Verts[tri[j+1]];var c=rd.Verts[tri[j+2]];
+                     float y0=Mathf.Min(a.W.y,Mathf.Min(b.W.y,c.W.y)),y1=Mathf.Max(a.W.y,Mathf.Max(b.W.y,c.W.y));
+-                    bool ground=(dots||sub<mats.Length&&Light(mats[sub]))&&y0>=-.001f&&y1<=SwapNetwork.BedLift+.001f&&y1-y0<1e-6f;
++                    bool ground=(dots||sub<mats.Length&&(Light(mats[sub])||seatOwner&&mats[sub]&&mats[sub].name=="DK_Enamel_Charcoal"))&&y0>=-.001f&&y1<=SwapNetwork.BedLift+.001f&&y1-y0<1e-6f;
++                    if(ground&&sub<mats.Length&&mats[sub]&&mats[sub].name.StartsWith("DK_Enamel_Charcoal",StringComparison.Ordinal))completeSeats.Add(new SwapTramSeatUnion.Face{A=a.W,B=b.W,C=c.W,Source=mf.name});
+                     if(!ground){wr.Keep(sub,tri[j],tri[j+1],tri[j+2]);continue;}
+                     var box=Rect.MinMaxRect(Mathf.Min(a.W.x,Mathf.Min(b.W.x,c.W.x)),Mathf.Min(a.W.z,Mathf.Min(b.W.z,c.W.z)),Mathf.Max(a.W.x,Mathf.Max(b.W.x,c.W.x)),Mathf.Max(a.W.z,Mathf.Max(b.W.z,c.W.z)));
+                     var near=rail.Near(box).Where(h=>h.Overlaps(box)).ToArray();var polys=new List<List<SwapMesh.V>>{new(){a,b,c}};
+@@ -72,11 +74,36 @@
+                     }
+                     if(near.Length>0)cuts++;
+                 }
++                // Retain the complete physical seat silhouette BEFORE metal clipping. It
++                // recesses only non-metal paving; rail geometry remains exempt and unchanged.
++                SwapTramSeatUnion.Add(inlays,completeSeats);
+                 if(cuts>0){mf.sharedMesh=wr.Mesh(mf.sharedMesh.name+" (tram signal ownership)");UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(mf);signalCuts+=cuts;}
+             }
+-            foreach(var pair in SwapTramRender.Applied)foreach(var mf in pair.Key.GetComponentsInChildren<MeshFilter>(true))
++            // The importer can bake the physical enamel seats into a DIFFERENT renderer from
++            // their functional light discs. Associate the actual source seat triangles geometrically.
++            int separateSeats=0;
++            foreach(var mf in Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Exclude))
+             {
+-                var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var wr=new SwapMesh.Write(rd);var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;int cuts=0;
++                var mr=mf.GetComponent<MeshRenderer>();if(!mr||!mr.enabled||!mf.sharedMesh||mr.bounds.min.y>.006f||mr.bounds.max.y<0)continue;
++                var mats=mr.sharedMaterials;
++                bool Seat(int s)=>s<mats.Length&&mats[s]&&mats[s].name.StartsWith("DK_Enamel_Charcoal",StringComparison.Ordinal);
++                if(!Enumerable.Range(0,mats.Length).Any(Seat))continue;
++                var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var seatFaces=new List<SwapTramSeatUnion.Face>();
++                for(int sub=0;sub<rd.Subs.Count;sub++)if(Seat(sub))for(int j=0;j<rd.Subs[sub].Length;j+=3)
++                {
++                    var ix=rd.Subs[sub];var tri=new[]{rd.Verts[ix[j]].W,rd.Verts[ix[j+1]].W,rd.Verts[ix[j+2]].W};
++                    float lo=tri.Min(p=>p.y),hi=tri.Max(p=>p.y);if(lo<0||hi>.006f||hi-lo>1e-6f)continue;
++                    var box=Rect.MinMaxRect(tri.Min(p=>p.x),tri.Min(p=>p.z),tri.Max(p=>p.x),tri.Max(p=>p.z));
++                    // Existing source construction: seat 3mm, light 5mm. This selects actual
++                    // lower supporting faces, never a widened light rectangle or guessed lift.
++                    if(!inlays.Near(box).Any(h=>h.Overlaps(box)&&Math.Abs(h.Y0-lo-.002f)<1e-6f))continue;
++                    seatFaces.Add(new SwapTramSeatUnion.Face{A=tri[0],B=tri[1],C=tri[2],Source=mf.name});separateSeats++;
++                }
++                SwapTramSeatUnion.Add(inlays,seatFaces);
++            }
++            foreach(var pair in SwapTramRender.Applied)foreach(var mf in SwapTramRender.Filters(pair.Key))
++            {
++                var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var wr=new SwapMesh.Write(rd,true);var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;int cuts=0;
+                 for(int sub=0;sub<rd.Subs.Count;sub++)for(int j=0;j<rd.Subs[sub].Length;j+=3)
+                 {
+                     var tri=rd.Subs[sub];var a=rd.Verts[tri[j]];var b=rd.Verts[tri[j+1]];var c=rd.Verts[tri[j+2]];
+@@ -88,7 +115,7 @@
+                 }
+                 if(cuts>0){mf.sharedMesh=wr.Mesh(mf.sharedMesh.name+" (tram inlay recess)");UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(mf);pavingCuts+=cuts;}
+             }
+-            report.Log($"tram crossing ownership: metal profiles {rail.All.Count}; retained {keptSignalTriangles} signal face triangles / {inlays.All.Count} inlay polygons; {signalCuts} signal and {pavingCuts} paving triangle candidates cut; no signal renderer or binding deleted");
++            report.Log($"tram crossing ownership: metal profiles {rail.All.Count}; {separateSeats} actual separate enamel seat faces / {SwapTramSeatUnion.ConvexComponents} exact convex components / {SwapTramSeatUnion.TriangleFallbacks} fallback triangles; retained {keptSignalTriangles} signal face triangles / {inlays.All.Count} inlay polygons; {signalCuts} signal and {pavingCuts} paving triangle candidates cut; no signal renderer or binding deleted");
+         }
+     }
+ }
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramJson.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramJson.cs
+@@ -0,0 +1,28 @@
++#if UNITY_EDITOR
++using System;using System.Collections;using System.Text;using System.Globalization;
++namespace Suborned.OldTown.Editor.Swap { internal static class SwapTramJson {
++        internal static string Encode(object o) { var sb = new StringBuilder(); W(sb, o, 0); return sb.ToString(); }
++        static void W(StringBuilder sb, object o, int depth)
++        {
++            switch (o)
++            {
++                case null: sb.Append("null"); break;
++                case string s: sb.Append('"').Append(s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n")).Append('"'); break;
++                case bool b: sb.Append(b ? "true" : "false"); break;
++                case float f: sb.Append(float.IsFinite(f) ? f.ToString("R", CultureInfo.InvariantCulture) : "null"); break;
++                case double d: sb.Append(double.IsFinite(d) ? d.ToString("R", CultureInfo.InvariantCulture) : "null"); break;
++                case int i: sb.Append(i); break;
++                case long l: sb.Append(l); break;
++                case IDictionary dict:
++                    sb.Append('{'); bool first = true;
++                    foreach (DictionaryEntry e in dict) { if (!first) sb.Append(','); first = false; if (depth < 1) sb.Append("\n "); W(sb, e.Key.ToString(), depth + 1); sb.Append(':'); W(sb, e.Value, depth + 1); }
++                    if (depth < 1) sb.Append('\n'); sb.Append('}'); break;
++                case IEnumerable en:
++                    sb.Append('['); bool f2 = true;
++                    foreach (var x in en) { if (!f2) sb.Append(','); f2 = false; if (depth < 2 && x is IDictionary) sb.Append("\n "); W(sb, x, depth + 1); }
++                    sb.Append(']'); break;
++                default: sb.Append('"').Append(o).Append('"'); break;
++            }
++        }
++}}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramJson.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramJson.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: c980e0abcdc74f248e95d546431bc78f
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramKerbCaps.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramKerbCaps.cs
+@@ -0,0 +1,68 @@
++#if UNITY_EDITOR
++using System;using System.Collections.Generic;using System.Linq;using UnityEngine;using Object=UnityEngine.Object;
++namespace Suborned.OldTown.Editor.Swap
++{
++    /// <summary>Vertical granite end faces on the ACTUAL union boundary of the bed, derived
++    /// from the clipped kerb's open edges. No horizontal cap, source/collider mutation or bed widening.</summary>
++    internal static class SwapTramKerbCaps
++    {
++        internal static readonly List<object> Evidence=new();
++        sealed class Plane{public Vector2 A,B,N;public double C,Error;}
++        static double Ulp(float v){int b=BitConverter.SingleToInt32Bits(Math.Abs(v));return (double)BitConverter.Int32BitsToSingle(b+1)-Math.Abs(v);}
++        static List<Vector2> Hull(IEnumerable<Vector2> input)
++        {
++            var ps=input.Distinct().OrderBy(p=>p.x).ThenBy(p=>p.y).ToArray();var h=new List<Vector2>();
++            double Cross(Vector2 a,Vector2 b,Vector2 c)=>((double)b.x-a.x)*((double)c.y-a.y)-((double)b.y-a.y)*((double)c.x-a.x);
++            foreach(var p in ps){while(h.Count>1&&Cross(h[h.Count-2],h[h.Count-1],p)<=0)h.RemoveAt(h.Count-1);h.Add(p);}int n=h.Count+1;
++            for(int i=ps.Length-2;i>=0;i--){var p=ps[i];while(h.Count>=n&&Cross(h[h.Count-2],h[h.Count-1],p)<=0)h.RemoveAt(h.Count-1);h.Add(p);}if(h.Count>1)h.RemoveAt(h.Count-1);return h;
++        }
++        internal static void Apply()
++        {
++            var bed=new SwapShapes();foreach(var f in SwapTramRender.Geometry)bed.Add("bed",f.Source.Id,SwapTramRender.Polygon(f));
++            foreach(var root in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include).Where(t=>t.name=="Tram street kerbs (old Kerb_Granite on E12's cut edges)"))foreach(var mf in root.GetComponentsInChildren<MeshFilter>(true))
++            {
++                if(!mf.sharedMesh.name.Contains("(tram surface cut)"))continue;var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);
++                double localBound=4*Math.Pow(2,-23)*Math.Max(1,rd.Verts.Max(v=>Math.Max(Math.Abs(v.P.x),Math.Max(Math.Abs(v.P.y),Math.Abs(v.P.z)))));
++                var points=new List<Vector3>();var world=new List<Vector3>();var vid=new int[rd.Verts.Length];
++                for(int i=0;i<vid.Length;i++)
++                {
++                    var p=rd.Verts[i].P;int j=points.FindIndex(q=>((double)p.x-q.x)*((double)p.x-q.x)+((double)p.y-q.y)*((double)p.y-q.y)+((double)p.z-q.z)*((double)p.z-q.z)<=localBound*localBound);
++                    if(j<0){j=points.Count;points.Add(p);world.Add(rd.Verts[i].W);}vid[i]=j;
++                }
++                var edges=new Dictionary<(int,int),int>();
++                for(int s=0;s<rd.Subs.Count;s++)for(int i=0;i<rd.Subs[s].Length;i+=3)for(int k=0;k<3;k++){int a=vid[rd.Subs[s][i+k]],b=vid[rd.Subs[s][i+(k+1)%3]];if(a==b)continue;var key=(Math.Min(a,b),Math.Max(a,b));edges.TryGetValue(key,out int count);edges[key]=count+1;}
++                var boundary=edges.Where(p=>p.Value==1).SelectMany(p=>new[]{p.Key.Item1,p.Key.Item2}).Distinct().ToArray();if(boundary.Length==0)continue;
++                var mr=mf.GetComponent<MeshRenderer>();var box=SwapMesh.XZ(mr.bounds);var planes=new List<Plane>();
++                foreach(var shape in bed.Near(box).Where(h=>h.Overlaps(box)))for(int i=0;i<shape.Poly.Length;i++)
++                {
++                    var a=shape.Poly[i];var b=shape.Poly[(i+1)%shape.Poly.Length];var d=b-a;if(d.sqrMagnitude==0)continue;var n=new Vector2(-d.y,d.x).normalized;double c=-(double)n.x*a.x-(double)n.y*a.y;
++                    double error=4*(Ulp(a.x)+Ulp(a.y)+Ulp(b.x)+Ulp(b.y));
++                    if(planes.Any(p=>Math.Abs((double)p.N.x*n.y-(double)p.N.y*n.x)<=error/d.magnitude&&Math.Abs(p.C-c)<=error))continue;
++                    planes.Add(new Plane{A=a,B=b,N=n,C=c,Error=error});
++                }
++                var wr=new SwapMesh.Write(rd,true);for(int s=0;s<rd.Subs.Count;s++)for(int i=0;i<rd.Subs[s].Length;i+=3)wr.Keep(s,rd.Subs[s][i],rd.Subs[s][i+1],rd.Subs[s][i+2]);int caps=0;
++                foreach(var plane in planes)
++                {
++                    var ids=boundary.Where(i=>Math.Abs((double)plane.N.x*world[i].x+(double)plane.N.y*world[i].z+plane.C)<=plane.Error).ToArray();if(ids.Length<3)continue;
++                    var tangent=new Vector3(plane.N.y,0,-plane.N.x);var origin=new Vector3(plane.A.x,0,plane.A.y);
++                    var hull=Hull(ids.Select(i=>new Vector2(Vector3.Dot(world[i]-origin,tangent),world[i].y)));if(hull.Count<3)continue;
++                    double area=0;for(int i=1;i+1<hull.Count;i++)area+=Math.Abs(((double)hull[i].x-hull[0].x)*((double)hull[i+1].y-hull[0].y)-((double)hull[i].y-hull[0].y)*((double)hull[i+1].x-hull[0].x))*.5;
++                    if(area==0)continue;var centre=origin+tangent*hull.Average(p=>p.x)+Vector3.up*hull.Average(p=>p.y);float probe=(float)plane.Error;
++                    bool In(Vector2 q)=>bed.Hit(q)!=null;
++                    if(!In(new Vector2(centre.x+plane.N.x*probe,centre.z+plane.N.y*probe))||In(new Vector2(centre.x-plane.N.x*probe,centre.z-plane.N.y*probe)))continue;
++                    var normalWorld=new Vector3(plane.N.x,0,plane.N.y);var normal=mf.transform.localToWorldMatrix.transpose.MultiplyVector(normalWorld).normalized;var poly=new List<SwapMesh.V>();
++                    // Match the adjacent source granite's physical UV density, rather than a new palette/material.
++                    double density=0;int samples=0;foreach(var ix in rd.Subs)for(int i=0;i<ix.Length;i+=3)
++                    {
++                        var a=rd.Verts[ix[i]];var b=rd.Verts[ix[i+1]];var c=rd.Verts[ix[i+2]];var gu=SwapTramFrames.Gradient(a.W,b.W,c.W,a.U0.x,b.U0.x,c.U0.x);var gv=SwapTramFrames.Gradient(a.W,b.W,c.W,a.U0.y,b.U0.y,c.U0.y);double d=Math.Sqrt(gu.magnitude*gv.magnitude);if(d>0&&double.IsFinite(d)){density+=d;samples++;}
++                    }
++                    density=samples>0?density/samples:0;
++                    foreach(var p in hull){var w=origin+tangent*p.x+Vector3.up*p.y;poly.Add(new SwapMesh.V{P=mf.transform.InverseTransformPoint(w),W=w,N=normal,T=new Vector4(tangent.x,tangent.y,tangent.z,1),U0=new Vector2((float)(p.x*density),(float)(p.y*density)),C=Color.white});}
++                    wr.Poly(0,poly);caps++;Evidence.Add(new Dictionary<string,object>{{"mesh",mf.name},{"capVertices",hull.Count},{"areaM2",area},{"physicalUvDensity",density},{"sourceDensitySamples",samples},{"normalY",0},{"localWeldRoundoffBound",localBound},{"worldPlaneRoundoffBound",plane.Error},{"plane",new[]{(double)plane.N.x,plane.N.y,plane.C}},{"unionBoundaryProbe",probe}});
++                }
++                if(caps>0){mf.sharedMesh=wr.Mesh(mf.sharedMesh.name+" (closed tram kerb)");UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(mf);}
++            }
++        }
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramKerbCaps.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramKerbCaps.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: 1c4e00bd6433457cb1100ef9eab622d1
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramMeshRead.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramMeshRead.cs
+@@ -12,7 +12,7 @@
+             for(int ch=2;ch<8;ch++)if(mesh.HasVertexAttribute((VertexAttribute)((int)VertexAttribute.TexCoord0+ch)))throw new System.IO.InvalidDataException("tram rewrite cannot drop extra UV channels");
+             for(int s=0;s<mesh.subMeshCount;s++)if(mesh.GetSubMesh(s).topology!=MeshTopology.Triangles)throw new System.IO.InvalidDataException("tram rewrite cannot drop nontriangle submeshes");
+             if(mesh.isReadable)return new SwapMesh.Read(mesh,matrix);
+-            if(!copies.TryGetValue(mesh,out var copy))
++            if(!copies.TryGetValue(mesh,out var copy)||!copy)
+             {
+                 using var data=UnityEditor.MeshUtility.AcquireReadOnlyMeshData(mesh);var md=data[0];copy=new Mesh{name=mesh.name+" (editor read copy)",indexFormat=mesh.indexFormat};
+                 using(var a=new Unity.Collections.NativeArray<Vector3>(md.vertexCount,Unity.Collections.Allocator.Temp)){md.GetVertices(a);copy.vertices=a.ToArray();}
+@@ -22,7 +22,7 @@
+                 foreach(int ch in new[]{0,1})if(md.HasVertexAttribute((VertexAttribute)((int)VertexAttribute.TexCoord0+ch)))using(var a=new Unity.Collections.NativeArray<Vector2>(md.vertexCount,Unity.Collections.Allocator.Temp)){md.GetUVs(ch,a);copy.SetUVs(ch,a.ToArray());}
+                 copy.subMeshCount=md.subMeshCount;
+                 for(int s=0;s<md.subMeshCount;s++){using var a=new Unity.Collections.NativeArray<int>(md.GetSubMesh(s).indexCount,Unity.Collections.Allocator.Temp);md.GetIndices(a,s);copy.SetTriangles(a.ToArray(),s,false);}
+-                copy.RecalculateBounds();copies.Add(mesh,copy);
++                copy.RecalculateBounds();copies[mesh]=copy;
+             }
+             return new SwapMesh.Read(copy,matrix);
+         }
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramOwnershipProof.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramOwnershipProof.cs
+@@ -14,7 +14,7 @@
+     /// <summary>Read-only post-save triangle ownership check; never regenerates or captures.</summary>
+     internal static class SwapTramOwnershipProof
+     {
+-        sealed class Face{public Vector3 A,B,C;public float Y;}
++        sealed class Face{public Vector3 A,B,C;public float Y;public string Material,Mesh;}
+         static double Area(List<P> p){double a=0;for(int i=1;i+1<p.Count;i++)a+=G.Cross(p[i]-p[0],p[i+1]-p[0]);return Math.Abs(a)*.5;}
+         static double Intersection(Face a,Face b)
+         {
+@@ -30,24 +30,19 @@
+             for(int s=0;s<rd.Subs.Count;s++)if(use(s))for(int i=0;i<rd.Subs[s].Length;i+=3){var ix=rd.Subs[s];var a=rd.Verts[ix[i]].W;var b=rd.Verts[ix[i+1]].W;var c=rd.Verts[ix[i+2]].W;
+                 float lo=Mathf.Min(a.y,Mathf.Min(b.y,c.y)),hi=Mathf.Max(a.y,Mathf.Max(b.y,c.y));
+                 if(lo<-.001f||hi>.0061f||hi-lo>1e-6f)continue;
+-                var f=new Face{A=a,B=b,C=c,Y=(a.y+b.y+c.y)/3};if(Area(new List<P>{new(a.x,a.z),new(b.x,b.z),new(c.x,c.z)})>1e-12)yield return f;
++                var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;var f=new Face{A=a,B=b,C=c,Y=(a.y+b.y+c.y)/3,Material=s<mats.Length&&mats[s]?mats[s].name:"none",Mesh=mf.name};if(Area(new List<P>{new(a.x,a.z),new(b.x,b.z),new(c.x,c.z)})>1e-12)yield return f;
+             }
+         }
+-        public static void Run()
++        internal static object Check(string path)
+         {
+-            try
+-            {
+-                string repo=Path.GetFullPath(Path.Combine(Application.dataPath,"..","..")),dir=Path.Combine(repo,"briefs/075/recovery/tram-settled");
+-                EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramsettled.unity",OpenSceneMode.Single);
+-                var root=Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude).Single(t=>t.name==SwapNetwork.RailsRoot);SwapTramRender.BindExisting(root);
+                 var grid=new Dictionary<Vector2Int,List<Face>>();long tileFaces=0;
+-                foreach(var mf in root.GetComponentsInChildren<MeshFilter>(true))foreach(var f in Faces(mf,s=>true))
++                foreach(var mf in SwapTramRender.Owners.Keys)foreach(var f in Faces(mf,s=>true))
+                 {
+                     tileFaces++;int x0=Mathf.FloorToInt(Mathf.Min(f.A.x,Mathf.Min(f.B.x,f.C.x))/2),x1=Mathf.FloorToInt(Mathf.Max(f.A.x,Mathf.Max(f.B.x,f.C.x))/2);
+                     int y0=Mathf.FloorToInt(Mathf.Min(f.A.z,Mathf.Min(f.B.z,f.C.z))/2),y1=Mathf.FloorToInt(Mathf.Max(f.A.z,Mathf.Max(f.B.z,f.C.z))/2);
+                     for(int x=x0;x<=x1;x++)for(int y=y0;y<=y1;y++){var key=new Vector2Int(x,y);if(!grid.TryGetValue(key,out var list))grid[key]=list=new();list.Add(f);}
+                 }
+-                long signals=0,overlaps=0;double area=0,maxArea=0;var examples=new List<object>();
++                long signals=0,overlaps=0;double area=0,maxArea=0;var examples=new List<object>();var largest=new List<(double area,object detail)>();
+                 foreach(var mf in Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Exclude))
+                 {
+                     var mr=mf.GetComponent<MeshRenderer>();if(!mr||!mr.enabled||!mf.sharedMesh)continue;var mats=mr.sharedMaterials;
+@@ -59,13 +54,16 @@
+                         for(int x=x0;x<=x1;x++)for(int y=y0;y<=y1;y++)if(grid.TryGetValue(new Vector2Int(x,y),out var fs))foreach(var tile in fs)
+                         {
+                             if(!seen.Add(tile)||Math.Abs(tile.Y-f.Y)>.000001)continue;double a=Intersection(f,tile);if(a<=1e-12)continue;
+-                            overlaps++;area+=a;maxArea=Math.Max(maxArea,a);if(examples.Count<20)examples.Add(new object[]{mf.name,a,new[]{(f.A.x+f.B.x+f.C.x)/3,(f.A.z+f.B.z+f.C.z)/3-OldTownSwap.DZ}});
++                            overlaps++;area+=a;maxArea=Math.Max(maxArea,a);largest.Add((a,new Dictionary<string,object>{{"area",a},{"signalMesh",f.Mesh},{"signalMaterial",f.Material},{"signalY",f.Y},{"tileMaterial",tile.Material},{"tileMesh",tile.Mesh},{"tileY",tile.Y},{"point",new[]{f.A.x,f.A.z-OldTownSwap.DZ}}}));if(examples.Count<20)examples.Add(new object[]{mf.name,a,new[]{(f.A.x+f.B.x+f.C.x)/3,(f.A.z+f.B.z+f.C.z)/3-OldTownSwap.DZ}});
+                         }
+                     }
+                 }
+-                var result=new Dictionary<string,object>{{"status","read-only saved candidate check; no overlap accepted"},{"tilePlanarFaces",tileFaces},{"signalTriangles",signals},{"coplanarPositiveAreaPairs",overlaps},{"coplanarIntersectionAreaM2",area},{"largestIntersectionM2",maxArea},{"examples",examples},{"arithmetic","double planar triangle intersection of actual float world vertices; heights within 1 micrometre; pair area >1e-12m2 recorded, no bounds proxy or audit filtering"}};
+-                File.WriteAllText(Path.Combine(dir,"ownership-proof.json"),SwapExport.Json(result));Debug.Log("[TramOwnershipProof] "+SwapExport.Json(result));
+-            }
++                var result=new Dictionary<string,object>{{"status","read-only saved candidate check; no overlap accepted"},{"tilePlanarFaces",tileFaces},{"signalTriangles",signals},{"coplanarPositiveAreaPairs",overlaps},{"coplanarIntersectionAreaM2",area},{"largestIntersectionM2",maxArea},{"examples",examples},{"largestOverlaps",largest.OrderByDescending(p=>p.area).Take(30).Select(p=>p.detail).ToArray()},{"arithmetic","double planar triangle intersection of actual float world vertices; heights within 1 micrometre; pair area >1e-12m2 recorded, no bounds proxy or audit filtering"}};
++                File.WriteAllText(path,SwapTramJson.Encode(result));return result;
++        }
++        public static void Run()
++        {
++            try { EditorSceneManager.OpenScene("Assets/Scenes/probe-recovery075-tramsettled.unity",OpenSceneMode.Single);var root=Object.FindObjectsByType<Transform>().Single(t=>t.name==SwapNetwork.RailsRoot);SwapTramRender.BindExisting(root);Check(Path.GetFullPath(Path.Combine(Application.dataPath,"../../briefs/075/recovery/tram-corrected/saved-ownership.json"))); }
+             catch(Exception e){Debug.LogException(e);EditorApplication.Exit(1);}
+         }
+     }
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramProof.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramProof.cs
+@@ -18,7 +18,7 @@
+             foreach(var mf in edits)
+             {
+                 var rd=SwapTramMeshRead.Read(mf.sharedMesh,mf.transform.localToWorldMatrix);var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;
+-                bool tile=SwapTramRender.Applied.Keys.Any(t=>mf.transform.IsChildOf(t));
++                bool tile=SwapTramRender.Owners.ContainsKey(mf)||SwapTramRender.Applied.Keys.Any(t=>mf.transform.IsChildOf(t));
+                 foreach(var v in rd.Verts)
+                 {
+                     if(!Finite(v.P.x)||!Finite(v.P.y)||!Finite(v.P.z)||!Finite(v.N.x)||!Finite(v.N.y)||!Finite(v.N.z)||!Finite(v.T.x)||!Finite(v.T.y)||!Finite(v.T.z)||!Finite(v.T.w)||!Finite(v.U0.x)||!Finite(v.U0.y)||!Finite(v.U1.x)||!Finite(v.U1.y))nonfinite++;
+@@ -50,7 +50,7 @@
+                     if(metal){railQueries++;if(top==null||Math.Abs(top.Value-SwapNetwork.BedLift)>.001){railMiss++;if(missing.Count<20)missing.Add(new object[]{f.Source.Id,along,lateral,top});}}
+                     else{bedQueries++;if(top==null){bedMiss++;if(missing.Count<20)missing.Add(new object[]{f.Source.Id,along,lateral,top});}}
+                 }
+-            var result=new Dictionary<string,object>{{"changedRenderMeshes",edits.Length},{"triangles",triangles},{"zeroArea",degenerate},{"nonfinite",nonfinite},{"attributeFailures",attributes},{"normalLengthMin",minN},{"normalLengthMax",maxN},{"maxNormalTangentDot",maxNT},{"actualRailQueries",railQueries},{"actualRailMisses",railMiss},{"actualBedQueries",bedQueries},{"actualBedMisses",bedMiss},{"firstMisses",missing},{"proof","Actual deformed mesh triangles, no bounds proxies. Rail queries at head centres +/-0.5m; 1mm height tolerance includes crowned head profile and float reconstruction; bed queries include intentional recess/slot floors."}};
++            var result=new Dictionary<string,object>{{"changedRenderMeshes",edits.Length},{"triangles",triangles},{"zeroArea",degenerate},{"nonfinite",nonfinite},{"attributeFailures",attributes},{"normalLengthMin",minN},{"normalLengthMax",maxN},{"maxNormalTangentDot",maxNT},{"actualRailQueries",railQueries},{"legacyUniform5mmAssertionFailures",railMiss},{"actualBedQueries",bedQueries},{"actualBedMisses",bedMiss},{"firstMisses",missing},{"proof","Actual deformed mesh triangles, no bounds proxies. Rail queries at head centres +/-0.5m; Legacy uniform 5mm assertions are preserved as evidence against that obsolete assumption; acceptance uses actual source-profile-relative coverage in memory-coverage.json."}};
+             File.WriteAllText(path,SwapExport.Json(result));return result;
+         }
+         static bool Finite(float x)=>!float.IsNaN(x)&&!float.IsInfinity(x);
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramRender.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramRender.cs
+@@ -16,16 +16,28 @@
+         internal static readonly Dictionary<Transform,G.Footprint> Applied = new();
+         internal static G.Footprint[] Geometry;
+         internal static Vector2[] Polygon(G.Footprint f) => f.Polygon.Select(p => new Vector2((float)p.X,(float)(p.Y+OldTownSwap.DZ))).ToArray();
++        internal const string SurfaceRoot="Joined tram render surfaces (source topology)";
++        internal static readonly Dictionary<Transform,List<MeshFilter>> SurfaceFilters=new();
++        internal static readonly Dictionary<MeshFilter,G.Footprint> Owners=new();
++        internal static IEnumerable<MeshFilter> Filters(Transform tile)=>SurfaceFilters.TryGetValue(tile,out var fs)?fs:tile.GetComponentsInChildren<MeshFilter>(true);
+         internal static void BindExisting(Transform root)
+         {
+-            if(root.Cast<Transform>().All(t=>Applied.ContainsKey(t)))return;
+-            if(!root.GetComponentsInChildren<MeshFilter>(true).Any(mf=>mf.sharedMesh&&mf.sharedMesh.name.Contains("(source tram join)")))return;
++            if(Geometry!=null&&root.Cast<Transform>().All(t=>Applied.ContainsKey(t)))return;
++            bool joined=root.GetComponentsInChildren<MeshFilter>(true).Any(mf=>mf.sharedMesh&&(mf.sharedMesh.name.Contains("(source tram join)")||AssetDatabase.GetAssetPath(mf.sharedMesh).StartsWith("Assets/Suborned/OldTownArt/Swap/TramSettled/")));
++            var surfaces=Object.FindObjectsByType<Transform>(FindObjectsInactive.Include).SingleOrDefault(t=>t.name==SurfaceRoot);
++            if(!joined&&!surfaces)return;
+             var repo=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..",".."));
+             var geometry=SwapTramSource.Load(repo,"out/world/harbour-district.world.json");
+             var doc=SwapTramSource.Obj(Suborned.World.Json.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(repo,SwapTramSource.Sidecar))));
+             var ids=SwapTramSource.Arr(doc["tiles"]).Select(x=>(string)SwapTramSource.Obj(x)["id"]).ToArray();var byId=geometry.ToDictionary(f=>f.Source.Id);
+             var children=root.Cast<Transform>().ToArray();if(children.Length!=ids.Length)throw new InvalidOperationException("persisted tram placement count");
+-            Applied.Clear();Geometry=geometry;for(int i=0;i<ids.Length;i++)Applied.Add(children[i],byId[ids[i]]);
++            Applied.Clear();SurfaceFilters.Clear();Owners.Clear();Geometry=geometry;
++            for(int i=0;i<ids.Length;i++)
++            {
++                var f=byId[ids[i]];Applied.Add(children[i],f);
++                var fs=surfaces?surfaces.Cast<Transform>().Where(t=>t.name==ids[i]).SelectMany(t=>t.GetComponentsInChildren<MeshFilter>(true)).ToList():children[i].GetComponentsInChildren<MeshFilter>(true).ToList();
++                if(fs.Count==0)throw new InvalidOperationException("missing saved joined surface: "+ids[i]);SurfaceFilters.Add(children[i],fs);foreach(var mf in fs)Owners.Add(mf,f);
++            }
+         }
+         internal static void Apply(Transform root, G.Footprint[] geometry, OldTownSwap.Report report)
+         {
+@@ -36,7 +48,10 @@
+             var repo=System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath,"..",".."));
+             var doc=SwapTramSource.Obj(Suborned.World.Json.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(repo,SwapTramSource.Sidecar))));
+             var ids=SwapTramSource.Arr(doc["tiles"]).Select(x=>(string)SwapTramSource.Obj(x)["id"]).ToArray();
+-            var byId=geometry.ToDictionary(f=>f.Source.Id); Applied.Clear();Geometry=geometry;
++            var byId=geometry.ToDictionary(f=>f.Source.Id); Applied.Clear();SurfaceFilters.Clear();Owners.Clear();Geometry=geometry;
++            if(Object.FindObjectsByType<Transform>(FindObjectsInactive.Include).Any(t=>t.name==SurfaceRoot))throw new InvalidOperationException("joined surface root already exists; use pristine source scene");
++            var surfaceRoot=new GameObject(SurfaceRoot).transform;surfaceRoot.SetParent(root.parent,false);
++            if(surfaceRoot.localToWorldMatrix!=Matrix4x4.identity)throw new InvalidOperationException("joined render frame must be identity");
+             long triangles=0,caps=0;double maxScale=0,minScale=double.MaxValue,maxLateral=0,maxHeight=0;
+             for(int index=0;index<placed.Length;index++)
+             {
+@@ -46,7 +61,7 @@
+                 foreach(var mf in tile.GetComponentsInChildren<MeshFilter>(true))
+                 {
+                     var mesh=mf.sharedMesh;if(!mesh)continue;
+-                    var rd=SwapTramMeshRead.Read(mesh,mf.transform.localToWorldMatrix);var wr=new SwapMesh.Write(rd);
++                    var rd=SwapTramMeshRead.Read(mesh,mf.transform.localToWorldMatrix);var wr=new SwapMesh.Write(rd,true);
+                     // Compose the local hierarchy: inverse(world)*world loses tens of micrometres
+                     // at the far map coordinates, enough to falsely exceed the exact +/-1 source cap.
+                     var toRoot=Matrix4x4.identity;
+@@ -68,14 +83,7 @@
+                             if(p.All(v=>Mathf.Abs(v.x-1)<1e-6f) && !(sign>0?last:first) || p.All(v=>Mathf.Abs(v.x+1)<1e-6f) && !(sign>0?first:last)) {caps++;continue;}
+                             // UV derivatives in original root metres. Extend each existing chart with
+                             // physical along distance, avoiding texture density scaling with a short step.
+-                            Vector3 Gradient(Func<SwapMesh.V,float> value)
+-                            {
+-                                Vector3 a=p[1]-p[0],b=p[2]-p[0];double aa=Vector3.Dot(a,a),bb=Vector3.Dot(b,b),ab=Vector3.Dot(a,b),den=aa*bb-ab*ab;
+-                                if(den<=aa*bb*1e-12)return Vector3.zero;
+-                                double va=value(tri[1])-value(tri[0]),vb=value(tri[2])-value(tri[0]);
+-                                return a*(float)((va*bb-vb*ab)/den)+b*(float)((vb*aa-va*ab)/den);
+-                            }
+-                            Vector3 gu=Gradient(v=>v.U0.x),gv=Gradient(v=>v.U0.y);
++                            Vector3 gu=SwapTramFrames.Gradient(p[0],p[1],p[2],tri[0].U0.x,tri[1].U0.x,tri[2].U0.x),gv=SwapTramFrames.Gradient(p[0],p[1],p[2],tri[0].U0.y,tri[1].U0.y,tri[2].U0.y);
+                             // Clip in SOURCE root local x, not float world coordinates.
+                             List<SwapMesh.V> Half(bool positive)
+                             {
+@@ -101,20 +109,34 @@
+                                     var jac=Matrix4x4.identity;jac.SetColumn(0,(Vector4)(d*(float)(scale*sign)));jac.SetColumn(1,new Vector4(0,1,0,0));jac.SetColumn(2,(Vector4)((n+d*(float)shear)*(float)sign));
+                                     var normalRoot=fromRoot.transpose.MultiplyVector(v.N);
+                                     var nw=jac.inverse.transpose.MultiplyVector(normalRoot).normalized;
+-                                    v.N=mf.transform.localToWorldMatrix.transpose.MultiplyVector(nw).normalized;
+-                                    if(rd.HasT){var tr=toRoot.MultiplyVector(new Vector3(v.T.x,v.T.y,v.T.z));var tw=jac.MultiplyVector(tr);var tl=mf.transform.worldToLocalMatrix.MultiplyVector(tw);tl=(tl-v.N*Vector3.Dot(tl,v.N)).normalized;v.T=new Vector4(tl.x,tl.y,tl.z,v.T.w);}
++                                    v.N=nw;
++                                    if(rd.HasT){var tr=toRoot.MultiplyVector(new Vector3(v.T.x,v.T.y,v.T.z));var tw=jac.MultiplyVector(tr);var tl=tw;tl=(tl-v.N*Vector3.Dot(tl,v.N)).normalized;v.T=new Vector4(tl.x,tl.y,tl.z,v.T.w);}
+                                     double newAlong=G.Dot(mapped-f.Source.Centre,f.Direction)*sign;
+-                                    v.U0+=new Vector2(gu.x,gv.x)*(float)(newAlong-local.x);
+-                                    v.P=mf.transform.worldToLocalMatrix.MultiplyPoint3x4(world);v.W=world;
++                                    // Evaluate the source chart in the ACTUAL stored float geometry,
++                                    // so coordinate quantisation cannot silently change texture density.
++                                    var actual=new G.P((double)world.x,(double)world.z-OldTownSwap.DZ)-f.Source.Centre;
++                                    double x=G.Dot(actual,f.Direction)*sign,z=G.Dot(actual,f.Normal)*sign,y=(double)world.y-tile.position.y;
++                                    double dx=x-p[0].x,dy=y-p[0].y,dz=z-p[0].z;
++                                    v.U0=new Vector2((float)(tri[0].U0.x+gu.x*dx+gu.y*dy+gu.z*dz),(float)(tri[0].U0.y+gv.x*dx+gv.y*dy+gv.z*dz));
++                                    v.P=world;v.W=world;
+                                     maxHeight=Math.Max(maxHeight,Math.Abs(world.y-v0.W.y));
+                                     maxLateral=Math.Max(maxLateral,Math.Abs(G.Dot(mapped-f.Source.Centre,f.Normal)-lat));output.Add(v);
+                                 }
++                                SwapTramDensity.Record(output,gu,gv,tri[0],p[0],f,sign,tile.position.y);
+                                 wr.Poly(sub,output);
+                             }
+                         }
+                     }
+-                    mf.sharedMesh=wr.Mesh(mesh.name+" (source tram join)");
+-                    PrefabUtility.RecordPrefabInstancePropertyModifications(mf);triangles+=wr.Triangles;
++                    // One common float render frame gives both sides exactly the same seam
++                    // vertices. Original transforms, source MeshFilters and collider references stay.
++                    var go=new GameObject(f.Source.Id);go.layer=mf.gameObject.layer;go.tag=mf.gameObject.tag;go.transform.SetParent(surfaceRoot,false);
++                    var generated=go.AddComponent<MeshFilter>();generated.sharedMesh=wr.Mesh(mesh.name+" (source tram join)");
++                    var original=mf.GetComponent<MeshRenderer>();var renderer=go.AddComponent<MeshRenderer>();EditorUtility.CopySerialized(original,renderer);
++                    renderer.sharedMaterials=original.sharedMaterials;renderer.enabled=original.enabled;
++                    var block=new MaterialPropertyBlock();original.GetPropertyBlock(block);renderer.SetPropertyBlock(block);
++                    for(int k=0;k<original.sharedMaterials.Length;k++){var perMaterial=new MaterialPropertyBlock();original.GetPropertyBlock(perMaterial,k);renderer.SetPropertyBlock(perMaterial,k);}
++                    original.enabled=false;PrefabUtility.RecordPrefabInstancePropertyModifications(original);
++                    if(!SurfaceFilters.TryGetValue(tile,out var list))SurfaceFilters[tile]=list=new();list.Add(generated);Owners.Add(generated,f);triangles+=wr.Triangles;
+                 }
+             }
+             report.Log($"source tram joins: {placed.Length} tiles, {triangles} triangles; {caps} internal cap triangles removed; along scale [{minScale:R},{maxScale:R}], lateral error {maxLateral:R}, height error {maxHeight:R}; source/collider meshes and transforms untouched");
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSeatUnion.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSeatUnion.cs
+@@ -0,0 +1,34 @@
++#if UNITY_EDITOR
++using System;using System.Collections.Generic;using System.Linq;using UnityEngine;
++namespace Suborned.OldTown.Editor.Swap
++{
++    /// <summary>Replace an actual connected convex source-seat triangulation by its identical
++    /// boundary. Area equality is checked in translated doubles. Never invent a wider light mask.</summary>
++    internal static class SwapTramSeatUnion
++    {
++        internal sealed class Face{internal Vector3 A,B,C;internal string Source;}
++        internal static long ConvexComponents,TriangleFallbacks;
++        static double Area(Vector2[] p){double a=0;for(int i=1;i+1<p.Length;i++)a+=((double)p[i].x-p[0].x)*((double)p[i+1].y-p[0].y)-((double)p[i].y-p[0].y)*((double)p[i+1].x-p[0].x);return Math.Abs(a)*.5;}
++        internal static void Add(SwapShapes masks,List<Face> faces)
++        {
++            if(faces.Count==0)return;var parent=Enumerable.Range(0,faces.Count).ToArray();int Find(int i){while(parent[i]!=i){parent[i]=parent[parent[i]];i=parent[i];}return i;}
++            var vertex=new Dictionary<Vector2,int>();
++            for(int i=0;i<faces.Count;i++)foreach(var p in new[]{faces[i].A,faces[i].B,faces[i].C}){var key=new Vector2(p.x,p.z);if(vertex.TryGetValue(key,out var j))parent[Find(i)]=Find(j);else vertex.Add(key,i);}
++            foreach(var group in Enumerable.Range(0,faces.Count).GroupBy(Find))
++            {
++                var fs=group.Select(i=>faces[i]).ToArray();var points=fs.SelectMany(f=>new[]{new Vector2(f.A.x,f.A.z),new Vector2(f.B.x,f.B.z),new Vector2(f.C.x,f.C.z)}).ToArray();
++                var temp=new SwapShapes();var hull=temp.Add("seat",fs[0].Source,points);double sum=fs.Sum(f=>Area(new[]{new Vector2(f.A.x,f.A.z),new Vector2(f.B.x,f.B.z),new Vector2(f.C.x,f.C.z)}));double boundary=Area(hull.Poly);
++                double roundoff=(fs.Length*32+points.Length*16)*2.220446049250313e-16*(sum+boundary);
++                if(Math.Abs(sum-boundary)<=roundoff)
++                {
++                    masks.Add("source-convex-enamel-seat",fs[0].Source,hull.Poly,fs.Min(f=>Math.Min(f.A.y,Math.Min(f.B.y,f.C.y))),fs.Max(f=>Math.Max(f.A.y,Math.Max(f.B.y,f.C.y))));ConvexComponents++;
++                }
++                else
++                {
++                    foreach(var f in fs)masks.Add("source-seat-triangle",f.Source,new[]{new Vector2(f.A.x,f.A.z),new Vector2(f.B.x,f.B.z),new Vector2(f.C.x,f.C.z)},Mathf.Min(f.A.y,Mathf.Min(f.B.y,f.C.y)),Mathf.Max(f.A.y,Mathf.Max(f.B.y,f.C.y)));TriangleFallbacks+=fs.Length;
++                }
++            }
++        }
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSeatUnion.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSeatUnion.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: 064fd77d24a74ccdaed21abbfad1d315
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSettled.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramSettled.cs
+@@ -54,7 +54,7 @@
+                 return new Dictionary<string,object>{{"transformsIdentical",Transforms.SequenceEqual(a.Transforms)},{"collidersIdentical",Colliders.SequenceEqual(a.Colliders)},{"rendererStateIdentical",Renderers.SequenceEqual(a.Renderers)},{"materialStateIdentical",Materials.SequenceEqual(a.Materials)},{"navIdentical",Nav==a.Nav},{"sourceMeshMutations",mutations},{"sourceMeshCount",Sources.Count},{"colliderCount",Colliders.Length},{"transformCount",Transforms.Length},{"changedRenderMeshes",changed}};
+             }
+         }
+-        public static void Run()=>OldTownSwap.SettledBatch(Body);
++        public static void Run()=>SwapTramCorrected.FinalizeCandidate();
+         static void Body()
+         {
+             var geometry=SwapTramSource.Load(Repo,"out/world/harbour-district.world.json");
+@@ -85,7 +85,7 @@
+             File.WriteAllText(Out("complete.json"),SwapExport.Json(new Dictionary<string,object>{{"generatedMeshes",k},{"status","reviewable candidate; HOLD until independent review"},{"geometryTiles",geometry.Length}}));
+             Debug.Log("[TramSettled] correction, proof and targeted capture complete; HOLD");
+         }
+-        static void Capture(Camera cam,string tag,bool motion)
++        internal static void Capture(Camera cam,string tag,bool motion,string destination=null)
+         {
+             var focuses=new (string id,Vector2 at)[]{("west-cut",new(-340,-130)),("crossing-west",new(-340,-190)),("crossing-south",new(-2,-389)),("curve-north",new(-346,272)),("curve-south",new(-332,-403))};
+             cam.enabled=true;cam.orthographic=false;cam.fieldOfView=55;cam.nearClipPlane=.05f;cam.farClipPlane=2500;cam.useOcclusionCulling=false;
+@@ -94,7 +94,7 @@
+             {
+                 Vector3 target=OldTownSwap.Old3(view.at,0);
+                 void Pose(float t){cam.transform.position=target+new Vector3(-5+t*10,2.8f,-7);cam.transform.LookAt(target+new Vector3(0,0,t*4-2),Vector3.up);}
+-                Pose(.5f);string folder=Out(tag);Directory.CreateDirectory(folder);
++                Pose(.5f);string folder=destination??Out(tag);Directory.CreateDirectory(folder);
+                 DecoKitStage.WithShadows(120,()=>DecoKitStage.Capture(cam,1920,1080,Path.Combine(folder,view.id+".png"),2));
+                 if(motion){string frames=Path.Combine(folder,view.id+"-motion");Directory.CreateDirectory(frames);for(int i=0;i<36;i++){Pose(i/35f);DecoKitStage.WithShadows(120,()=>DecoKitStage.Capture(cam,1280,720,Path.Combine(frames,$"{i:0000}.png"),1));}}
+             }
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramState.cs
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramState.cs
+@@ -0,0 +1,72 @@
++#if UNITY_EDITOR
++using System;
++using System.Collections.Generic;
++using System.IO;
++using System.Linq;
++using System.Security.Cryptography;
++using System.Text;
++using UnityEditor;
++using UnityEngine;
++using Object=UnityEngine.Object;
++namespace Suborned.OldTown.Editor.Swap
++{
++    internal sealed class SwapTramState
++    {
++        readonly Dictionary<Transform,string> transforms=new();readonly Dictionary<Collider,string> colliders=new();
++        readonly Dictionary<Mesh,string> sources=new();readonly string nav;
++        readonly Dictionary<global::Suborned.Play.SignalHead,string> signals=new();
++        internal readonly Dictionary<string,Dictionary<string,object>> Materials=new();
++        internal static string MeshHash(Mesh mesh)
++        {
++            using var data=UnityEditor.MeshUtility.AcquireReadOnlyMeshData(mesh);var md=data[0];using var sha=SHA256.Create();
++            void Add(byte[] b)=>sha.TransformBlock(b,0,b.Length,null,0);
++            Add(Encoding.UTF8.GetBytes(string.Join("|",mesh.GetVertexAttributes().Select(a=>$"{a.attribute}/{a.format}/{a.dimension}/{a.stream}"))+"|"+mesh.bounds.ToString("R")));
++            for(int i=0;i<md.vertexBufferCount;i++)Add(md.GetVertexData<byte>(i).ToArray());Add(md.GetIndexData<byte>().ToArray());
++            for(int i=0;i<md.subMeshCount;i++){var d=md.GetSubMesh(i);Add(Encoding.UTF8.GetBytes($"{d.indexStart}/{d.indexCount}/{d.baseVertex}/{d.firstVertex}/{d.vertexCount}/{d.topology}"));}
++            sha.TransformFinalBlock(Array.Empty<byte>(),0,0);return BitConverter.ToString(sha.Hash).Replace("-","");
++        }
++        static string TransformState(Transform t)=>t.localPosition.ToString("R")+"|"+t.localRotation.ToString("R")+"|"+t.localScale.ToString("R")+"|"+t.gameObject.activeSelf;
++        static string Nav()
++        {
++            var host=Object.FindObjectsByType<global::Suborned.Play.HandoverHost>(FindObjectsInactive.Include).FirstOrDefault();
++            return host&&host.frame!=null?string.Join(",",host.frame.heights)+"|"+Convert.ToBase64String(host.frame.kinds??Array.Empty<byte>()):"none";
++        }
++        internal SwapTramState(bool full=true)
++        {
++            var rs=Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include);
++            foreach(var m in rs.SelectMany(r=>r.sharedMaterials).Where(m=>m).Distinct())
++            {
++                var key=AssetDatabase.GetAssetPath(m)+"|"+m.name+"|"+m.GetEntityId();
++                var props=new Dictionary<string,object>();Flatten(Suborned.World.Json.Parse(EditorJsonUtility.ToJson(m)),"",props);Materials.Add(key,props);
++            }
++            if(!full)return;
++            foreach(var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))transforms.Add(t,TransformState(t));
++            foreach(var c in Object.FindObjectsByType<Collider>(FindObjectsInactive.Include))colliders.Add(c,EditorJsonUtility.ToJson(c));
++            var meshes=Object.FindObjectsByType<MeshFilter>(FindObjectsInactive.Include).Select(mf=>mf.sharedMesh).Concat(Object.FindObjectsByType<MeshCollider>(FindObjectsInactive.Include).Select(c=>c.sharedMesh)).Where(m=>m).Distinct();
++            foreach(var m in meshes)sources.Add(m,MeshHash(m));foreach(var h in Object.FindObjectsByType<global::Suborned.Play.SignalHead>(FindObjectsInactive.Include))signals.Add(h,EditorJsonUtility.ToJson(h));nav=Nav();
++        }
++        static void Flatten(object value,string prefix,Dictionary<string,object> output)
++        {
++            if(value is Dictionary<string,object> dict){foreach(var pair in dict)Flatten(pair.Value,prefix+"/"+pair.Key,output);}
++            else if(value is List<object> list){for(int i=0;i<list.Count;i++)Flatten(list[i],prefix+"["+i+"]",output);output[prefix+".length"]=list.Count;}
++            else output[prefix]=value;
++        }
++        static object PropertyName(Dictionary<string,object> props,string path)
++        {
++            var match=System.Text.RegularExpressions.Regex.Match(path,@"^(.*\[\d+\])/second(?:/.*)?$");
++            return match.Success&&props.TryGetValue(match.Groups[1].Value+"/first",out var name)?name:null;
++        }
++        internal List<object> MaterialDiff(SwapTramState after)
++        {
++            var diff=new List<object>();
++            foreach(var key in Materials.Keys.Union(after.Materials.Keys).OrderBy(k=>k))
++            {
++                Materials.TryGetValue(key,out var a);after.Materials.TryGetValue(key,out var b);
++                if(a==null||b==null){diff.Add(new Dictionary<string,object>{{"material",key},{"before",a},{"after",b}});continue;}
++                foreach(var p in a.Keys.Union(b.Keys).OrderBy(k=>k)){a.TryGetValue(p,out var x);b.TryGetValue(p,out var y);if(!Equals(x,y))diff.Add(new Dictionary<string,object>{{"material",key},{"property",p},{"propertyName",PropertyName(a,p)},{"before",x},{"after",y}});}
++            }return diff;
++        }
++        internal object Compare(SwapTramState after)=>new Dictionary<string,object>{{"originalTransforms",transforms.Count},{"originalTransformChanges",transforms.Where(p=>!p.Key||TransformState(p.Key)!=p.Value).Select(p=>p.Key?p.Key.name:"destroyed").ToArray()},{"colliders",colliders.Count},{"colliderChanges",colliders.Where(p=>!p.Key||EditorJsonUtility.ToJson(p.Key)!=p.Value).Select(p=>p.Key?p.Key.name:"destroyed").ToArray()},{"originalMeshes",sources.Count},{"sourceMeshChanges",sources.Where(p=>!p.Key||MeshHash(p.Key)!=p.Value).Select(p=>p.Key?p.Key.name:"destroyed").ToArray()},{"signalBindingChanges",signals.Where(p=>!p.Key||EditorJsonUtility.ToJson(p.Key)!=p.Value).Select(p=>p.Key?p.Key.name:"destroyed").ToArray()},{"navIdentical",nav==Nav()},{"materialPropertyDifferences",MaterialDiff(after)}};
++    }
++}
++#endif
+--- phase-start/unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramState.cs.meta
++++ unity/Assets/Suborned/Editor/OldTown/Swap/SwapTramState.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: 5a682ebeeca341a88979afa11e08de8b

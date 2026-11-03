@@ -1,28 +1,237 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route B, the pickup, quiet (GDD §07; Keel N11b): watch and listen to the driver, turn him before 5:40 with the approach the card shows works, the pickup moves to the service lane, a false tip sends the rivals away, take Vale at 6:10 and fight the smaller ambush (the turned driver and the tip each take a rival) with the whole armed cell. Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md §10.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
+ "note": "Route B, the pickup, quiet (GDD v0.26.0 §07; Keel N11b), fight it out (brief 018 §5). The Scout listens to the driver and the Fixer pays him by 5:40 ($70,000); his word sends the rivals' lookout off; the Scout gives the rival car a false tip at 3:10; the Tech reroutes the patrol from the cabinet at 5:00 (it lands at 5:45 and keeps the yard clear to 7:40: brief 067 A, the patrol sweeps the service yard; rerouted it never breaks to the yard fight), then runs to the getaway car and Drives it round behind Vale's car once it parks in the service bay (car.parks). The Enforcer waits at the square until 5:50 (in the yard before the Reroute the patrol reported him at 1:53.4), walks to the service lane, takes Vale from the back seat (38 s, off-screen) and carries him 3.5 m to the car. The posted three run after the Driven car and spring at the Take; the Fixer and then the Scout, 0.5 s later (Motive's rb-st: on the same tick the Fixer took both rivals' fire and went down), lock rival-1 then rival-2 (focus fire, Motive M059-B7: at will the three shoot the carrying Enforcer down) until the crew breaks; then Go. The three left behind on a calm street walk out.",
  "start": {},
- "until": 5100,
+ "until": 4500,
  "steps": [
-  {"op": "enforcer", "do": "move", "to": "d:Service lane", "why": "to wait where the turned driver will bring the car"},
-  {"op": "scout", "do": "move", "to": [7950, -4000], "why": "brief 031: to watch the driver from the Office's south-west corner, 4.7 m from him, 3.4 m outside the pickup camera's cone and outside the guard's (Waymark)"},
-  {"op": "fixer", "do": "move", "to": [7950, -3850], "why": "brief 031: to wait for the Watch beside the Scout, 2.2 m outside the pickup camera's cone (Waymark)"},
-  {"op": "scout", "do": "watch", "target": "driver", "label": "watched", "gap": 62, "why": "brief 031: from the corner, 4.7 m from the driver, once there (the walk is about 60 s): a Watch in reach starts where the Scout stands, so given on the way it would stop him in the guard's cone"},
-  {"op": "scout", "do": "move", "to": "d:Meet driver", "why": "Watch reaches 6 m and stops the walk; Listen needs 3 m: on to the driver"},
-  {"op": "scout", "do": "listen", "target": "driver", "label": "heard", "gap": 5, "why": "given once the Scout stands at the meeting point (the walk is under 2 s; 5 s covers it), so the Listen starts where he stands; engine 0.23.0 walks an out-of-reach Listen in, so given on the way it would start late"},
-  {"op": "fixer", "do": "move", "to": "d:Boarding pavilion", "after": ["watched"], "why": "brief 031: to the driver as the Watch ends (20 s; the walk is about 6 s), for the Pay, which holds the pickup camera's clock (an act, Sky L1); waiting idle by the car in its view would be noticed", "gap": 14},
-  {"op": "fixer", "do": "turn", "target": "driver", "approach": "pay", "by": "5:40", "label": "turned", "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"},
-  {"op": "fixer", "do": "move", "to": [725, -5025], "why": "back to the getaway car to cover the extraction; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the fixer fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke) Brief 027 (Waymark, engine 0.18.0): the post is now the getaway car's south side, west end (cv-002), the car between him and the ambush spots by the square; at the pavilion pier (cv-093) he is downed."},
-  {"op": "scout", "do": "move", "to": [8600, -3400], "after": ["heard"], "gap": 52, "why": "once the Listen is over (42 s) and 10 s more, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"},
-  {"op": "scout", "do": "mislead", "target": "rivals", "at": "3:10", "why": "a false tip sends the rivals away (3:50) as soon as they park"},
-  {"op": "scout", "do": "move", "to": [725, -4625], "why": "tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke) Brief 027 (Waymark, engine 0.18.0): the post is now the getaway car's north side, west end (cv-003): from the car's east end (cv-006), with both sides firing on the move, the rivals down the Scout and the Fixer and the Tech is captured fighting when the car leaves."},
-  {"op": "tech", "do": "move", "to": [675, -4625], "after": ["scout"], "why": "tuning.md §7.9 (the 16 m sidearm, the kite response): the Tech, idle at the car all mission, to the post by it the loud route takes, within 15 m of the ambush spots"},
-  {"op": "enforcer", "do": "take", "label": "take", "why": "Vale reaches the car in the service lane at 6:10"},
-  {"op": "enforcer", "do": "move", "to": [2400, -6000], "after": ["take"], "gap": 0, "why": "with Vale, to a point 19.5 m south-east of the car, off the rivals' posts by the planters: the ambush springs at 20 m, and the Enforcer holds there while the cell fights"},
-  {"op": "cell", "do": "panic", "after": ["take"], "why": "the ambush: the armed cell fires at will"},
-  {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.over", "label": "out", "why": "the last rival down: to the car"},
-  {"op": "enforcer", "do": "board", "target": "car", "after": ["out"], "label": "in", "why": "Vale into the car first (Board, 4 s carrying; brief 018 §2)"},
-  {"op": "cell", "do": "go", "after": ["in"], "why": "fight it out: the crew is broken and the car free, so the car leaves at once; the three walk out on a calm street (brief 018 §3), which costs nothing, so they do not spend time boarding"}
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane",
+   "at": "4:50",
+   "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7950,
+    -4000
+   ],
+   "why": "to the Office's south-west corner on the way to the driver, 3.4 m outside the pickup camera's cone and outside the guard's (brief 031, Waymark)"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ],
+   "why": "to the corner beside the Scout, 2.2 m outside the pickup camera's cone, on the way to the driver (brief 031, Waymark)"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "gap": 62,
+   "why": "the corner is on the way: on to the driver once there (the walk is about 60 s), so the Scout never stands in the guard's cone; brief 054: no Watch on the driver to give first; a Listen within 5 m needs no walk in (engine 0.39.0)"
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "driver",
+   "label": "heard",
+   "gap": 5,
+   "why": "given once the Scout stands at the meeting point (the walk is under 2 s; 5 s covers it), so the Listen starts where he stands; engine 0.23.0 walks an out-of-reach Listen in, so given on the way it would start late"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Boarding pavilion",
+   "gap": 62,
+   "why": "to the driver once at the corner (the walk is about 60 s, then 6 s on), for the Pay, which holds the pickup camera's clock (an act, Sky L1); waiting idle by the car in its view would be noticed. Brief 054: Pay needs no Watch on the driver"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "pay",
+   "by": "4:40",
+   "label": "turned",
+   "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8600,
+    -3400
+   ],
+   "after": [
+    "heard"
+   ],
+   "gap": 52,
+   "why": "once the Listen is over (30 s, and his walk to a spot) and a margin, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"
+  },
+  {
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals",
+   "at": "3:10",
+   "label": "tip",
+   "why": "a false tip sends the rivals away (3:50) as soon as they park"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7300,
+    -1900
+   ],
+   "after": [
+    "tip"
+   ],
+   "at": "4:55",
+   "label": "scout-yard"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7300,
+    -1100
+   ],
+   "after": [
+    "turned"
+   ],
+   "at": "4:55",
+   "label": "fixer-yard"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true,
+   "why": "brief 067 A: to the cabinet for the Reroute"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "at": "4:00",
+   "label": "rr",
+   "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "rr"
+   ],
+   "when": "patrol.rerouted",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in"
+  },
+  {
+   "op": "tech",
+   "do": "drive-car",
+   "target": "service-drive",
+   "label": "drive",
+   "when": "car.parks"
+  },
+  {
+   "op": "enforcer",
+   "do": "take",
+   "when": "car.parks",
+   "label": "take",
+   "at": "5:45",
+   "why": "Vale reaches the car in the service lane at 6:10"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "fixer-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "take"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "scout-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "fixer-l1"
+   ],
+   "gap": 0.5
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "scout-l2",
+   "every": 0.5,
+   "after": [
+    "scout-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "fixer-l2",
+   "every": 0.5,
+   "after": [
+    "fixer-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "take",
+    "drive"
+   ],
+   "when": "take.done",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in",
+   "why": "Vale into the car first (Board, 4 s carrying; brief 018 §2)"
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "in"
+   ],
+   "when": "fight.over",
+   "unless": [
+    "captured",
+    "withdraw.car"
+   ],
+   "why": "fight it out: the crew is broken and the car free, so the car leaves at once; the three walk out on a calm street (brief 018 §3), which costs nothing, so they do not spend time boarding"
+  }
  ]
 }

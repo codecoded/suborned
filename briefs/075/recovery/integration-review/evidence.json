@@ -1,0 +1,79 @@
+{
+  "inputs-before.json": {
+    "entries": 48,
+    "mismatches": []
+  },
+  "source-hashes.json": {
+    "entries": 4,
+    "mismatches": []
+  },
+  "finalRenderDependencies": {
+    "entries": 4511,
+    "mismatches": []
+  },
+  "sourceCopyEqual": true,
+  "selectedIds": [
+    "civic/run-west-cafe/1",
+    "civic/civic-office-north/tuft-0",
+    "civic/cyp-office-e"
+  ],
+  "addedRendererPaths": [
+    "HarbourDistrict/civic/civic/civic-office-north/tuft-0",
+    "HarbourDistrict/civic/civic/run-west-cafe/1"
+  ],
+  "changedRendererPaths": [
+    "HarbourDistrict/civic/civic/cyp-office-e/DK_Cypress_Play",
+    "batches/civic/DK_Bloom_Coral@-3,-5#-10,-20",
+    "batches/civic/DK_Bloom_Cream@-3,-5#-10,-20",
+    "batches/civic/DK_Bloom_Flamingo@-3,-4#-12,-14",
+    "batches/civic/DK_Bloom_Peach@-3,-4#-12,-14",
+    "batches/civic/DK_Leaf_Civic@-3,-4#-12,-14",
+    "batches/civic/DK_Leaf_Civic@-3,-5#-10,-20",
+    "batches/civic/DK_Leaf_CivicDark@-3,-4#-12,-14"
+  ],
+  "allOtherRendererRowsEqual": true,
+  "recordedRemovalTriangles": 707,
+  "expectedRemovalTriangles": 707,
+  "triangleDelta": 10791,
+  "slotDelta": 10,
+  "collidersEqual": true,
+  "transformsEqual": true,
+  "navEqual": true,
+  "reportedComparatorPasses": 14,
+  "bounds": {
+    "status": "PASS production envelope, tolerance 1 mm",
+    "placements": [
+      {
+        "id": "civic/run-west-cafe/1",
+        "sourceBounds": "Center: (-179.50000, 0.71079, -222.48710), Extents: (0.34000, 0.53079, 2.15057)",
+        "candidateBounds": "Center: (-179.49730, 1.00948, -222.49520), Extents: (0.28012, 0.22948, 2.14218)",
+        "containedWithin1mmTolerance": true
+      },
+      {
+        "id": "civic/civic-office-north/tuft-0",
+        "sourceBounds": "Center: (-151.57300, 1.10331, -304.75100), Extents: (0.31000, 0.22331, 0.29541)",
+        "candidateBounds": "Center: (-151.57290, 1.10203, -304.75100), Extents: (0.31024, 0.22203, 0.29538)",
+        "containedWithin1mmTolerance": true
+      },
+      {
+        "id": "civic/cyp-office-e",
+        "sourceBounds": "Center: (-171.66680, 3.34187, -287.02290), Extents: (0.76599, 3.16187, 0.75592)",
+        "candidateBounds": "Center: (-171.66680, 3.33192, -287.02290), Extents: (0.76596, 3.15192, 0.75592)",
+        "containedWithin1mmTolerance": true
+      }
+    ]
+  },
+  "tram": {
+    "samples": 9462,
+    "onBed": 9456,
+    "offBed": 6,
+    "level": 38,
+    "over": 597,
+    "unreadable": 105
+  },
+  "restyleSemanticChangedKeys": [
+    "foliageReview",
+    "ground",
+    "ground_note"
+  ]
+}

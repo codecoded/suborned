@@ -1,0 +1,27 @@
+{
+ "schema": "suborned.air-sitting/1",
+ "brief": "086",
+ "build": "0.2.191 (c047, cbce637a+), committed at c06ae51c",
+ "status": "NOT MEASURED: the Air's session is locked; no frame was timed",
+ "air": {
+  "copy": "~/Downloads/suborned-air-0195/The Suborned.app",
+  "kit": "~/Downloads/suborned-air-0195/kit (same files as briefs/086/air-0191/kit)",
+  "macmon": { "path": "~/.local/suborned-air/macmon/macmon", "version": "0.10.0", "sha256": "0ccff60b7bf67bcb9e09cc8f804656a1cafa7eeae7297ee83d10e460ead7d43d", "shaSource": "GitHub release asset digest, checked on the Studio and on the Air" },
+  "preflight": { "at": "2026-10-31 21:34 to 22:08 +07", "power": "AC, 100 %, charged", "lowPowerMode": 0, "thermalState": 0, "load1m": "2.0 to 4.1 on 10 cores", "cpuC": "36 to 43 idle; one 59 C sample at 22:03 with cpu 9.6 W, cause not traced", "busy": "spotlightknowledged about 100 %, Storage.appex up to 92 %, signpost_reporter and duetexpertd in bursts" },
+  "displayMode": "3840x2410 (the player's log); panel 2880x1864. So the shipped full screen is RenderCap 0.75: 3D about 2880x1808, HUD native",
+  "blocker": { "CGSSessionScreenIsLocked": true, "lockedSince": "19:40:12 +07 (CGSSessionScreenLockedTime 1793450412), still locked at 22:08", "seen": "both launches: process up, log ends after scene load, GPU 338 MHz, 0.2 W, active 0.17, no row in 150 s and 420 s", "cause": "most likely the lock (a locked session presents no frames); not proven until a launch runs unlocked" },
+  "playerProcessMinutes": 9.5
+ },
+ "rows": [],
+ "studioCountsOnly": {
+  "note": "Counts from the Studio, 0.2.191. Not Air figures, and its ms are not judged (NOISY MACHINE). All 1920x1080.",
+  "rows": [
+   { "name": "play-opening", "view": "play", "zoom": 10, "triangles": 1.3e6, "setPass": 110, "casters": 361, "drawn": 218, "beyond150": 126 },
+   { "name": "play-z18", "view": "play", "zoom": 18.5, "renderScalePct": 65, "triangles": 1975916, "setPass": 161, "casters": 735, "drawn": 448, "beyond150": 218 },
+   { "name": "tp-street", "view": "third person", "triangles": 5.6e6, "setPass": 237, "casters": 946, "drawn": 2338, "beyond150": 1627 },
+   { "name": "tp-worst", "view": "third person", "triangles": 7.9e6, "setPass": 233, "casters": 991, "drawn": 2182, "beyond150": 1510 }
+  ]
+ },
+ "notMeasured": ["every Air frame time: warm, cold, soak, zooms, shipped size, third person", "throttling"],
+ "playerCannotGiveAt0191": ["per-pass GPU (no recorder; macmon gives whole-GPU clock, power and temperature only)", "soft shadows", "bloom", "leaves' alpha / planting-off", "shadows-off", "old-far-off", "FSR: the asset's upscaling filter is 0 (Auto), so a render-scale row prices the smaller 3D pass, not an FSR pass"]
+}

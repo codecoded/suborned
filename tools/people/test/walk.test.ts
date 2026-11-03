@@ -12,22 +12,23 @@ setDefaultTimeout(60000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 const plan: Plan = read('contracts/world/harbour-district.plan.json'), block = read(plan.civic.block), toPlan = toPlanFn(plan.civic), d = derive(plan);
 const live = civic(plan.civic, block), bare = civic({ ...plan.civic, groundPieces: undefined }, block); // the block as civic.ts read it before: no planter runs, pots, bollards or lamp bases
-// run-sq-south/0 and /1 (block frame, x 20.5, y -46.2 .. -37.8 together); two places 3 m apart, one each side of them (block x 19, x 22)
-const west = toPlan([18.9, -42]), east = toPlan([22.1, -42]), speed = 1.4;
+// run-east-cafe/0..3 (block frame, y -8.5, x -13.7 .. 2.7 together: the square's east kerb run); two places 3.2 m apart, one each side of its second module (block y -10.1, y -6.9, x -7.5).
+// (brief 067 K: the two freestanding runs the test used, run-sq-south and run-sq-west, are out of the block; the kerb runs stay.)
+const west = toPlan([-7.5, -10.1]), east = toPlan([-7.5, -6.9]), speed = 1.4;
 
-test('a planter run is not walked through: the places either side of run-sq-south are 3.2 m apart on the open ground and 9 m or more apart round the two modules', () => {
+test('a planter run is not walked through: the places either side of run-east-cafe are 3.2 m apart on the open ground and 9 m or more apart round its four modules', () => {
   const pts: V[] = [west, east], w1 = walker(plan, d, live, pts, speed), w0 = walker(plan, d, bare, pts, speed);
   expect(w0.m(west, east)).toBeLessThan(4.5); // without the planters: a step across
-  expect(w1.m(west, east)).toBeGreaterThan(9); // with them: round the 8.4 m run, a body's width off its ends
+  expect(w1.m(west, east)).toBeGreaterThan(9); // with them: round the 16.4 m run, a body's width off its ends
 });
 
 test('no one stands inside a planter run, a pot, a bollard or a lamp base: those places are not free ground', () => {
   const w = walker(plan, d, live, [west, east], speed);
-  for (const id of ['run-sq-south/0', 'run-sq-west/0', 'run-east-cafe/1', 'top-office-w', 'bol-cross-1', 'lamp-fore-w']) {
+  for (const id of ['run-east-south/0', 'run-west-south/0', 'run-east-cafe/1', 'top-office-w', 'bol-cross-1', 'lamp-fore-w']) {
     const poly = live.solids![live.solidIds!.indexOf(id)]!, c: V = [poly.reduce((t, p) => t + p[0], 0) / poly.length, poly.reduce((t, p) => t + p[1], 0) / poly.length];
     expect(w.free(c), id).toBe(false);
   }
-  const o = walker(plan, d, bare, [west, east], speed), poly = live.solids![live.solidIds!.indexOf('run-sq-south/0')]!;
+  const o = walker(plan, d, bare, [west, east], speed), poly = live.solids![live.solidIds!.indexOf('run-east-cafe/1')]!;
   expect(o.free([poly.reduce((t, p) => t + p[0], 0) / 4, poly.reduce((t, p) => t + p[1], 0) / 4])).toBe(true); // the block as it was left the module as open ground
 });
 

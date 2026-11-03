@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How Sky plays, and how the human bot copies it</title>
+<style>
+  :root {
+    --ink: var(--foreground, #17302f);
+    --soft: var(--muted-foreground, #5d6f6d);
+    --line: var(--border, #d2e6e2);
+    --mark: var(--chart-1, #2a8f87);
+    --panel: var(--card, transparent);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-sans, system-ui, sans-serif); color: var(--ink); line-height: 1.4; }
+  .wrap { width: 100%; }
+  h2 { font-size: 15px; margin: 28px 0 4px; letter-spacing: .02em; }
+  .sub { color: var(--soft); font-size: 13px; margin: 0 0 12px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; padding: 4px 0 10px; border-bottom: 1px solid var(--line); }
+  .hero .n { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .hero .l { font-size: 12px; color: var(--soft); display: block; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: var(--radius, 8px); padding: 12px; background: var(--panel); }
+  .tile .big { font-size: 24px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .tile .what { font-size: 13px; margin-top: 2px; }
+  .tile .more { font-size: 12px; color: var(--soft); margin-top: 4px; }
+  .tag { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; color: var(--soft); margin-top: 6px; }
+  .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .sw.m { background: var(--mark); }
+  .sw.e { border: 1.5px dashed var(--mark); }
+  .chart { position: relative; }
+  svg text { fill: var(--soft); font-size: 11px; font-family: var(--font-sans, system-ui, sans-serif); }
+  svg .lbl { fill: var(--ink); font-size: 12px; }
+  .tip { position: absolute; pointer-events: none; background: var(--popover, #fff); color: var(--popover-foreground, #17302f); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 12px; opacity: 0; transition: opacity .1s; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+  .flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+  .step { flex: 1 1 120px; border: 1px solid var(--line); border-radius: var(--radius, 8px); padding: 10px; font-size: 12.5px; }
+  .step b { display: block; font-size: 13px; margin-bottom: 3px; }
+  .arrow { align-self: center; color: var(--soft); font-size: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { text-align: left; font-weight: 600; color: var(--soft); border-bottom: 1px solid var(--line); padding: 6px 6px 6px 0; font-size: 12px; }
+  td { border-bottom: 1px solid var(--line); padding: 7px 6px 7px 0; vertical-align: top; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bar { height: 8px; border-radius: 0 4px 4px 0; background: var(--mark); display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .bar.e { background: transparent; border: 1.5px dashed var(--mark); height: 9px; }
+  ul.catch { margin: 0; padding-left: 18px; font-size: 13px; }
+  ul.catch li { margin: 4px 0; }
+  .found { color: var(--soft); font-size: 12px; }
+  .foot { color: var(--soft); font-size: 11.5px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div><span class="n">56</span><span class="l">of your Handover games</span></div>
+  <div><span class="n">1,077</span><span class="l">decisions</span></div>
+  <div><span class="n">2.6 h</span><span class="l">of mission time</span></div>
+  <div><span class="n">15–23 Oct</span><span class="l">builds you tested</span></div>
+</div>
+
+<h2>How you play</h2>
+<p class="sub">Measured from your own saved games (automated test runs left out).</p>
+<div class="tiles">
+  <div class="tile"><div class="big">22%</div><div class="what">orders changed or cancelled before they land</div><div class="more">34% of actions, 21% of walks</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">1.9 s</div><div class="what">how soon you change your mind</div><div class="more">1 in 10 times: after 8.5 s</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">22%</div><div class="what">same action, same person, again</div><div class="more">53% of refused actions retried within 30 s</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">45%</div><div class="what">Watches and Listens never followed up</div><div class="more">20 of 44 lines dropped</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">2.6 s</div><div class="what">typical pause between orders</div><div class="more">11% of pauses run past 15 s (≈23 s each)</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">14%</div><div class="what">orders the game refused</div><div class="more">mostly clicks on ground you can't walk on</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">21%</div><div class="what">of games use third person</div><div class="more">8% of time; glances ≈2 s, some 20 s</div><div class="tag"><span class="sw m"></span>measured</div></div>
+  <div class="tile"><div class="big">1.1 s</div><div class="what">to your first order</div><div class="more">16% of decisions are whole-squad orders</div><div class="tag"><span class="sw m"></span>measured</div></div>
+</div>
+
+<h2>How long things take you</h2>
+<p class="sub">Dot = typical, line = out to the slow 1 in 10. Log scale. Hover for numbers.</p>
+<div class="chart" id="ranges"><div class="tip"></div></div>
+
+<h2>Why the game said no</h2>
+<p class="sub">166 refused orders, by cause. Hover for counts.</p>
+<div class="chart" id="refusals"><div class="tip"></div></div>
+
+<h2>How the human bot uses it</h2>
+<p class="sub">Every night it plays the real build with the real controls, steering toward a winning plan but behaving like you.</p>
+<div class="flow">
+  <div class="step"><b>1 · Pick a plan</b>a winning route (door, pickup, loud) plus two backups</div>
+  <div class="arrow">→</div>
+  <div class="step"><b>2 · Next step</b>waits for the agent and the mission clock, like the route did</div>
+  <div class="arrow">→</div>
+  <div class="step"><b>3 · Roll your habits</b>cancel, repeat, pause, misclick, wrong option, give up… at your rates</div>
+  <div class="arrow">→</div>
+  <div class="step"><b>4 · Real input</b>select, click, ring, wedge, hold, Q/E, third person</div>
+  <div class="arrow">→</div>
+  <div class="step"><b>5 · Log and check</b>what it meant vs what the game did; problems tied to the habit that caused them</div>
+</div>
+
+<h2>The habit dials</h2>
+<p class="sub">Chance per decision. Solid = measured from your games; dashed = estimated (saves don't record it).</p>
+<table>
+  <thead><tr><th>Habit</th><th>You</th><th style="width:38%"></th><th>What the bot does</th></tr></thead>
+  <tbody id="dials"></tbody>
+</table>
+
+<h2>What it's there to catch</h2>
+<ul class="catch">
+  <li>A new order quietly stopping the one before it <span class="found">· your games: third person stopped a Turn at 4:12 (old build)</span></li>
+  <li>The Tech walking off a camera loop <span class="found">· your games: at 2:06</span></li>
+  <li>A walk that turns into a carry</li>
+  <li>A ring still offering an action on someone who's down <span class="found">· your games: 2.3 s after the patrol fell</span></li>
+  <li>Orders piling up on a busy agent</li>
+  <li>A cancelled action still happening, or still costing Trail</li>
+  <li>A key held over after swapping agents walking the new one</li>
+</ul>
+
+<p class="foot">Every random choice is seeded, so any game the bot plays can be replayed exactly to reproduce what it found. Profile: tools/qa/human-profile.json · brief 060 “Human profile”.</p>
+</div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function tipper(box) {
+  const tip = box.querySelector('.tip');
+  return {
+    show(ev, html) { const r = box.getBoundingClientRect(); tip.innerHTML = html; tip.style.opacity = 1;
+      let x = ev.clientX - r.left + 12, y = ev.clientY - r.top - 10; const w = tip.offsetWidth;
+      if (x + w > r.width) x = ev.clientX - r.left - w - 12; tip.style.left = x + 'px'; tip.style.top = y + 'px'; },
+    hide() { tip.style.opacity = 0; }
+  };
+}
+const css = getComputedStyle(document.documentElement);
+const MARK = 'var(--chart-1, #2a8f87)';
+
+// Range chart (log seconds)
+(function () {
+  const rows = [
+    ['Between orders', 2.6, 8.5, 'typical 2.6 s · slow 1 in 10: 8.5 s'],
+    ['Changing your mind', 1.9, 8.5, 'typical 1.9 s · slow 1 in 10: 8.5 s'],
+    ['Third-person glance', 2.3, 20, 'typical 2.3 s · long 1 in 10: 20 s'],
+    ['A long pause', 22.8, 50, 'typical 23 s · long 1 in 10: 50 s'],
+  ];
+  const box = document.getElementById('ranges'), t = tipper(box);
+  const W = box.clientWidth || 700, L = 140, R = 16, rowH = 34, H = rows.length * rowH + 28;
+  const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, box);
+  const lo = Math.log10(0.5), hi = Math.log10(60), x = s => L + (Math.log10(s) - lo) / (hi - lo) * (W - L - R);
+  for (const s of [1, 2, 5, 10, 20, 50]) {
+    el('line', { x1: x(s), x2: x(s), y1: 4, y2: H - 22, stroke: 'var(--border, #d2e6e2)', 'stroke-width': 1 }, svg);
+    el('text', { x: x(s), y: H - 6, 'text-anchor': 'middle' }, svg).textContent = s + ' s';
+  }
+  rows.forEach(([name, p50, p90, tipText], i) => {
+    const y = 18 + i * rowH;
+    el('text', { x: 0, y: y + 4, class: 'lbl' }, svg).textContent = name;
+    el('line', { x1: x(p50), x2: x(p90), y1: y, y2: y, stroke: MARK, 'stroke-width': 2, 'stroke-linecap': 'round' }, svg);
+    el('circle', { cx: x(p50), cy: y, r: 6, fill: MARK, stroke: 'var(--background, #fff)', 'stroke-width': 2 }, svg);
+    el('text', { x: x(p90) + 6, y: y + 4 }, svg).textContent = p90 + ' s';
+    const hit = el('rect', { x: L, y: y - rowH / 2, width: W - L - R, height: rowH, fill: 'transparent' }, svg);
+    hit.addEventListener('mousemove', e => t.show(e, `<b>${name}</b><br>${tipText}`));
+    hit.addEventListener('mouseleave', t.hide);
+  });
+})();
+
+// Refusals bar chart
+(function () {
+  const rows = [
+    ['Ground you can’t walk on', 90], ['Agent busy', 29], ['Fight order not possible', 21],
+    ['Not ready yet (needs to know more, or too far)', 17], ['Agent down, carried or away', 9],
+  ];
+  const total = rows.reduce((a, r) => a + r[1], 0);
+  const box = document.getElementById('refusals'), t = tipper(box);
+  const W = box.clientWidth || 700, rowH = 30, H = rows.length * rowH + 4;
+  const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, box);
+  const L = Math.min(300, W * 0.45), R = 44, max = rows[0][1];
+  rows.forEach(([name, n], i) => {
+    const y = i * rowH + 6, w = Math.max(2, (n / max) * (W - L - R));
+    el('text', { x: 0, y: y + 13, class: 'lbl' }, svg).textContent = name;
+    el('path', { d: `M${L},${y + 2} h${w - 4} a4,4 0 0 1 4,4 v8 a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill: MARK }, svg);
+    el('text', { x: L + w + 6, y: y + 13 }, svg).textContent = n;
+    const hit = el('rect', { x: 0, y: y - 4, width: W, height: rowH, fill: 'transparent' }, svg);
+    hit.addEventListener('mousemove', e => t.show(e, `<b>${name}</b><br>${n} of ${total} refusals (${Math.round(n / total * 100)}%)`));
+    hit.addEventListener('mouseleave', t.hide);
+  });
+})();
+
+// Dials table
+(function () {
+  const rows = [
+    ['Change or cancel an order', 0.223, true, 'redirects the agent with a click a few steps away, or presses X'],
+    ['Repeat the same action', 0.221, true, 'gives the same Watch/Listen/Turn on the same person again'],
+    ['Do steps out of order', 0.15, false, 'takes a later step of the plan first'],
+    ['Open a ring and close it', 0.12, false, 'looks at the prices, backs out'],
+    ['Long pause', 0.113, true, 'stops for ≈23 s (sometimes 50 s)'],
+    ['Third-person glance', 0.10, true, 'presses T, looks around, comes back'],
+    ['Misclick', 0.06, false, 'clicks just beside the target'],
+    ['Turn the camera', 0.05, false, 'Q or E'],
+    ['Pick the wrong option', 0.03, false, 'takes a harmless neighbour, then backs out'],
+    ['Give up on the plan', 0.019, true, 'switches to a backup route or wanders, then returns'],
+  ];
+  const tb = document.getElementById('dials'), max = 0.25;
+  for (const [name, p, measured, does] of rows) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${name}</td><td class="num">${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%</td>` +
+      `<td><span class="bar ${measured ? '' : 'e'}" style="width:${Math.max(3, p / max * 62)}%"></span>` +
+      `<span class="tag" style="margin:0">${measured ? 'measured' : 'estimated'}</span></td><td>${does}</td>`;
+    tb.appendChild(tr);
+  }
+})();
+</script>
+</body>
+</html>

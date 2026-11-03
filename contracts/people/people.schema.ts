@@ -9,8 +9,9 @@ const minute = z.number().int().min(0).max(1440);
 const v2 = z.array(z.number()).length(2);
 
 export const Place = z.object({
-  id, kind: z.enum(['door', 'bay', 'stop', 'seat', 'stand', 'home']).describe('seat: a chair of a café set the world draws; stand: a standing point beside the café that keeps every keep-clear zone clear (tools/people/seats.ts)'), name: z.string().min(1), at: v2.describe('plan frame, metres'),
+  id, kind: z.enum(['door', 'bay', 'stop', 'seat', 'stand', 'home']).describe('seat: a chair of a café set the world draws; stand: a standing point beside the café that keeps every keep-clear zone clear (tools/people/seats.ts), or a post\'s waiting point (`beside`)'), name: z.string().min(1), at: v2.describe('plan frame, metres'),
   area: id, plot: id.optional(),
+  beside: id.optional().describe('a post\'s waiting point (brief 067 L, tools/people/seats.ts postStandingPoints): the staffed door this stand waits beside, along its building\'s face. Whoever relieves that post waits here until it falls free, and a post a cast person holds through the mission is never taken: its relief stands here for her shift. It stands on the ground the door\'s own keep-clear zone keeps clear, and faces the kerb (tools/sim/people.ts)'),
 });
 export const Stop = z.object({
   place: z.union([id, z.literal('beyond')]).describe('"beyond" = off the sheet (lives beyond it, between the tram and home)'),
@@ -38,6 +39,9 @@ export const Person = z.object({
   position: id.describe('the person\'s position in their unit, or their role at a civic employer; "resident" for a resident (brief 010, keel-rulebook.md point 8)'),
   needRecord: id.optional().describe('the record of the person\'s need (contracts/people/<plan id>.needs.json, brief 017): their need is its kind; the label is what Listen teaches. Written only when the people were made with a catalogue (a pinned older run has none)'),
   secretRecord: id.optional().describe('the record of the person\'s secret (an affair\'s or a past on file); with needRecord, only when the people were made with a catalogue'),
+  sex: z.enum(['f', 'm']).optional().describe('brief 089: the body of the figure the host dresses the person in (tools/people/looks.ts figureSex); the given name is drawn for it. Written when the rules have names.lists'),
+  age: z.number().int().min(16).max(95).optional().describe('brief 089: years, drawn in the band people.rules.json names.lists.ages gives; sets the decade of birth the given name is drawn from'),
+  origin: id.optional().describe('brief 089: the country whose name lists the person\'s names come from (contracts/people/names/<country>.json); a family shares one'),
   needWeights: z.record(id, z.number().int().positive()).describe('the needs the person\'s own cast row offers their position, as integer per mille (largest remainder, sum 1000): the weights the rulebook draws a replacement need from (Sky Q2). `need` is one of them'),
 });
 /** Rules knowledge (P5), derived from the people at the start: what a person knows besides their own day. */
@@ -48,8 +52,8 @@ export const Knowledge = z.object({
 export const People = z.object({
   schema: z.literal('suborned.people/1'),
   plan: z.object({ id: z.string(), version: z.string() }), scope: id,
-  inputs: z.object({ cast: z.string(), life: z.string(), block: z.string(), rules: z.string(), mission: z.string(), plan: z.string(), tools: z.string().optional(), needs: z.string().optional() })
-    .describe('sha256 of each input: the cast (of its parsed JSON), life.json, the civic block, the people rules, the mission and the plan text. `needs` (brief 017): the sha256 of the need kinds and the catalogue, when the people were made with them. `tools` (written by `bun run people`): the people tools hash (tools/levels/people/hash.ts), so a file made by other code is known. A reader (M-2, the Unity people layer) refuses a file whose hashes are not the current inputs\''),
+  inputs: z.object({ cast: z.string(), life: z.string(), block: z.string(), rules: z.string(), mission: z.string(), plan: z.string(), tools: z.string().optional(), needs: z.string().optional(), names: z.string().optional() })
+    .describe('sha256 of each input: the cast (of its parsed JSON), life.json, the civic block, the people rules, the mission and the plan text. `needs` (brief 017): the sha256 of the need kinds and the catalogue, when the people were made with them. `names` (brief 089): the sha256 of the name lists, their sources, the ban list, the exclusions and the figure files, when the rules draw names from the lists. `tools` (written by `bun run people`): the people tools hash (tools/levels/people/hash.ts), so a file made by other code is known. A reader (M-2, the Unity people layer) refuses a file whose hashes are not the current inputs\''),
   places: z.array(Place),
   units: z.array(z.object({ id, plot: id, area: id, trade: id, employer: id, name: z.string(), staffPerShift: z.number().int(), hours: v2, shifts: z.array(z.object({ from: minute, to: minute })) })),
   persons: z.array(Person),

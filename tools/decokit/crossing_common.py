@@ -7,7 +7,7 @@ Colour roles (all from the palette; proposal009.py still reports dE2000 to the s
   walk           DK_Cross_Walk #9BCFC2 (the civic pale seafoam, e_seafoam_pale), hotter than the bars: it is the message
   stop           DK_Cross_Stop #E8402F, a signal red, emissive on its dark display plate (signal colours are free since 16 Oct; a signal is read by its emissive draw and its figure)
   light volumes  DK_Cross_Beam #9BCFC2 (alpha 0.28) and DK_Cross_Halo #72B5A7 (alpha 0.40): kind `glow`, translucent; Latch draws them additive, double-sided
-  frame          DK_Brass_Civic #99784D: bezels, bar and dot frames, hairlines, the dome stud (small metal only)
+  frame          DK_Brass_Civic (mats.BRASS, brass-gold #C29A55 since 072-G): bezels, bar and dot frames, hairlines, the dome stud (small metal only)
   body           DK_Chrome, display plate DK_Enamel_Charcoal #2B2F33, arc inlay DK_Inlay_Seafoam (as the civic paving)
 
 Frames: metres, Z up, pivot at the ground. Flat pieces are 4 mm (light, inlay) to 6 mm (brass) proud of the surface they are set in, with no sides and no
@@ -23,7 +23,7 @@ register("DK_Cross_Walk", "emit", "#9BCFC2", 2.4)
 register("DK_Cross_Stop", "emit", "#E8402F", 2.4)
 register("DK_Cross_Beam", "glow", "#9BCFC2", 2.0, 0.28)
 register("DK_Cross_Halo", "glow", mats.LIB["DK_Enamel_Seafoam"][1], 2.0, 0.40)
-register("DK_Brass_Civic", "brass", "#99784D")                                 # as civic_common.py (setdefault: the same row)
+register("DK_Brass_Civic", "brass", mats.BRASS)                               # as civic_common.py (setdefault: the same row)
 register("DK_Inlay_Seafoam", "ceramic", mats.LIB["DK_Enamel_Seafoam"][1])      # as civic_paving.py
 
 INLAY, LIGHT, BRASS = 0.004, 0.004, 0.006   # heights above the surface: inlay tile, light lens, brass frame

@@ -28,9 +28,12 @@ namespace Suborned.Play
             public int Agent, Id; public string Do = "", Approach = "", Tone = "ok", AnchorKey = ""; public Vector3? At; public float Born;
             public readonly List<GainLine> Lines = new(); public readonly List<UnlockPill> Unlocks = new(); public string Role = "";
         }
+        /// <summary>Glyph's 0.2.104 review #2: gates that opened on a landing with no chip of their person ("m:ss role|verb (chips: do:role,...)"), for the proof: why they opened then.</summary>
+        public readonly List<string> UnattachedGates = new();
+        public int RolelessUnlockFrames { get; private set; }
         public readonly List<DoneChip> DoneChips = new();
         /// <summary>An open window's marker: what it is on (a view key), its seconds left (-1 held), the face that holds it (-1 none).</summary>
-        public sealed class WindowMark { public string Kind = "", Thing = "", Key = ""; public int Until = -1, Face = -1, Left = -1, Total = -1; }
+        public sealed class WindowMark { public string Kind = "", Thing = "", Key = "", Label = ""; public int Until = -1, Face = -1, Left = -1, Total = -1; } // Label: a fixed m:ss in place of the count (brief 059: Vale's car before it parks shows the 8:30 close)
         /// <summary>Each open window's length in ticks, taken when it first shows (or its end moves): the marker's draining underline.</summary>
         readonly Dictionary<string, (int until, int span)> windowSpan = new();
         public readonly List<WindowMark> WindowMarks = new();
@@ -88,7 +91,7 @@ namespace Suborned.Play
             {
                 Person p = null; try { p = g.PersonByRole(role); } catch (Exception) { } if (p == null) continue;
                 Answer a = default; bool got = Guard("gate listen", () => a = g.LearnQuery("scout", "listen", role));
-                if (got && (a.ok || a.code is "too-far" or "agent-busy" or "no-clear-line" or "no-walk" or "run-tethered")) open.Add(role + "|listen");
+                if (got && (a.ok || a.code is "too-far" or "agent-busy" or "no-clear-line" or "no-walk")) open.Add(role + "|listen");
                 if (!p.Turned)
                     foreach (var ap in Approaches)
                     {
@@ -126,16 +129,35 @@ namespace Suborned.Play
             }
             if (c.StartsWith("call.", StringComparison.Ordinal) && c[5..] is "waitress" or "driver" or "guard") return L((int)OpId.Fixer, "call");
             if (c == "loop.on") return L((int)OpId.Tech, "loop");
+            if (c == "camera.cut") return L((int)OpId.Tech, "disable"); // engine 0.31.0 (brief 058 §2): the Tech's Disable lands
+            if (c == "fire.camera-dark") return L(CameraShooter(g, l), "camera-shot"); // brief 058 §3 (Glyph board 03): the shooter's chip, "Camera shot out"
             if (c == "patrol.rerouted") return L((int)OpId.Tech, "reroute");
             if (c is "take.done" or "enter.in" or "enter.out") return L((int)OpId.Enforcer, c[..c.IndexOf('.')]);
             if (c is "takedown.out" or "takedown.dead") return L(AgentIn(l.Text, (int)OpId.Enforcer), "takedown");
             if (c == "board.in") return L(AgentIn(l.Text, (int)OpId.Enforcer), "board");
+            if (c == "car.parked") { for (int k = 0; k < 4; k++) if (g.Ops[k].InCar) return L(k, "drive-car"); return no; } // brief 059 K6: the Drive has arrived (its driver: the first aboard)
             if (c == "carry.body") return L(AgentIn(l.Text, (int)OpId.Enforcer), "carry");
             if (c.StartsWith("stash.", StringComparison.Ordinal) && c is not "stash.found") return L(AgentIn(l.Text, (int)OpId.Enforcer), "stash");
             if (c == "restrain.done") return L(AgentIn(l.Text, (int)OpId.Enforcer), "restrain");
             if (c == "carry.down") return L(AgentIn(l.Text, (int)OpId.Enforcer), "drop");
             return no;
         }
+
+        /// <summary>Who shot a camera out: the agent of the last hit on it at or before the dark line ("{by} fires on camera:{id} at …"), else
+        /// the Enforcer.</summary>
+        static int CameraShooter(Suborned.Sim.Game g, LogLine dark)
+        {
+            var m = System.Text.RegularExpressions.Regex.Match(dark.Text ?? "", @"The (\S+) camera"); string on = m.Success ? " fires on camera:" + m.Groups[1].Value : " fires on camera:";
+            for (int i = g.Log.Count - 1; i >= 0; i--)
+            {
+                var x = g.Log[i]; if (x.Tick > dark.Tick) continue; if (x.Tick < dark.Tick - Game.Hz) break;
+                int f = (x.Text ?? "").IndexOf(on, StringComparison.Ordinal); if (f > 0 && IsOpName(x.Text[..f])) return (int)Op.Parse(x.Text[..f]);
+            }
+            return (int)OpId.Enforcer;
+        }
+
+        /// <summary>The proof reads it: lasting fire orders the engine lapsed for a broken line (fire.lapses), each said over its agent.</summary>
+        public int LapsePops { get; private set; }
 
         static int AgentIn(string text, int fallback)
         {
@@ -162,6 +184,9 @@ namespace Suborned.Play
             {
                 var l = g.Log[i]; var c = l.Code ?? "";
                 if (c == "fire.out-of-range") { int k = AgentIn(l.Text.Split(':')[0], -1); if (k >= 0) { LocksDrop(new[] { k }); PopKey("fire-out-of-range", null, AgentWorld(k), Feedback.Info); OutOfRangePops++; } continue; }
+                // brief 067 D (Sky: "when the rivals move I kept losing the target"): the engine lapses a lasting order whose line stays broken for
+                // line-lapse-s once the player's move spent its walk-in; that is said over the agent (it was silent: the lock just went)
+                if (c == "fire.lapses") { int k = AgentIn(l.Text.Split(' ')[0], -1); if (k >= 0) { LocksDrop(new[] { k }); var w = Text != null && Text.Pops.TryGetValue("fire-lapses", out var fl) ? fl : Text?.DoneWord("fire.no-clear-line", null) is string nl ? char.ToUpperInvariant(nl[0]) + nl[1..] : "No line"; popCode = "fire-lapses"; Pop(w, null, AgentWorld(k), Feedback.Info, 2f, PopIcon("no-line")); LapsePops++; } continue; }
                 if (c == "order.dropped") { DroppedPop(l); continue; }
                 if (c == "order.walk-in-ends") { int k = AgentIn(l.Text.Split(':')[0], -1); if (k >= 0 && now - cancelPopAt[k] > 0.5f && actSeen[k] != null) ActCancelPop(k, actSeen[k], ""); continue; }
                 if (Ending.Length > 0) continue;
@@ -176,7 +201,9 @@ namespace Suborned.Play
             if (made.Count == 0 && g.Tick == gateTick && g.Log.Count == gateLog && g.Orders.Count == gateOrders)
             {
                 for (int k = 0; k < 4; k++) actSeen[k] = g.Ops[k].Busy ?? g.Ops[k].Act ?? pending[k];
-                DoneChips.RemoveAll(x => now - x.Born > DoneChipS); return;
+                DoneChips.RemoveAll(x => now - x.Born > DoneChipS);
+                foreach (var dc in DoneChips) if (dc.Role.Length == 0 && dc.Unlocks.Count > 0) RolelessUnlockFrames++; // Glyph's 0.2.104 review #2: the proofs assert it stays 0
+                return;
             }
             gateTick = g.Tick; gateLog = g.Log.Count; gateOrders = g.Orders.Count;
             // the unlock row: the gates now against the last frame's
@@ -189,12 +216,13 @@ namespace Suborned.Play
                 foreach (var key in open)
                 {
                     if (openBefore.Contains(key)) continue;
-                    var parts = key.Split('|'); var chip = made.Find(x => x.Role == parts[0]) ?? made[^1];
+                    var parts = key.Split('|'); var chip = made.Find(x => x.Role.Length > 0 && x.Role == parts[0]); // Glyph's 0.2.104 review #2: an unlock belongs to the person's own chip only (a Reroute chip has no Role: the "Patrol away" chip wore Pay, Help, Pressure)
+                    if (chip == null) { UnattachedGates.Add($"{MissionClock(g.Tick)} {key} (chips: {string.Join(",", made.ConvertAll(x => x.Do + ":" + (x.Role.Length > 0 ? x.Role : "-")))})"); if (UnattachedGates.Count > 40) UnattachedGates.RemoveAt(0); continue; }
                     if (chip.Unlocks.Count < 3 && !chip.Unlocks.Exists(u => u.Word == VerbWord(parts[1]))) chip.Unlocks.Add(new UnlockPill { Icon = HudModel.AtlasIcon(parts[1] is "ask" or "pay" or "help" or "pressure" ? "turn" : parts[1], parts[1], ""), Word = VerbWord(parts[1]) });
                 }
                 foreach (var key in shut)
                 {
-                    if (shutBefore.Contains(key)) continue; var parts = key.Split('|'); var chip = made.Find(x => x.Role == parts[0]) ?? made[^1];
+                    if (shutBefore.Contains(key)) continue; var parts = key.Split('|'); var chip = made.Find(x => x.Role.Length > 0 && x.Role == parts[0]); if (chip == null) continue;
                     if (chip.Unlocks.Count < 3) chip.Unlocks.Add(new UnlockPill { Icon = HudModel.AtlasIcon("turn", parts[1], ""), Word = VerbWord(parts[1]), Shut = true });
                 }
             }
@@ -236,10 +264,13 @@ namespace Suborned.Play
                     if (p != null)
                     {
                         chip.AnchorKey = land.Role; bool hadRoutine = knownBefore.TryGetValue("p:" + land.Role, out var kb) && kb.sight;
-                        if (p.KRoutine && !hadRoutine) Line("routine", DW("gain.rounds", "Rounds"));
+                        string md = ""; if (land.Role != "guard") Guard("mood", () => md = g.MoodOf(land.Role)); // brief 054: a person's Watch shows their mood (a face, one word)
+                        if (land.Role != "guard" && md.Length > 0 && md != "neutral") Line("mood_" + md, DW("gain.mood-" + md, Cap(md)));
+                        else if (land.Role == "guard" && p.KRoutine && !hadRoutine) Line("routine", DW("gain.rounds", "Rounds"));
                         if (land.Role == "guard" && Game.Known("guard") is { Sight: true } gk && !(knownBefore.TryGetValue("guard", out var gb) && gb.sight)) Line("cone", DW("gain.cone", "Cone"));
                         if (chip.Lines.Count == 0) Line("dot", DW("gain.nothing-new", "Nothing new"));
                     }
+                    else if ((l.Text ?? "").Contains("rivals' timetable")) { chip.AnchorKey = "car/rivals"; Line("nextevent", DW("gain.timetable", "Timetable")); } // brief 059 §2.2: a Watch on the rival car
                     else
                     {
                         var mm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"watched the (\w+)( camera)?");
@@ -257,7 +288,7 @@ namespace Suborned.Play
                     {
                         if (p.KNeed) { string lb = ""; try { lb = g.NeedRecordOf(p).label ?? ""; } catch (Exception) { } Line(p.Need.Length > 0 ? p.Need : "unknown", lb.Length > 0 ? lb : Intel("need", p.Need)); }
                         if (p.KTemperament) Line(p.Temperament.Length > 0 ? p.Temperament : "unknown", Intel("temperament", p.Temperament));
-                        if (p.KSecret && p.Secret.Length > 0) { string lover = p.Lover != null ? Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; Line(p.Secret == "affair" ? "kin" : "secret", Intel("secret", p.Secret, lover)); }
+                        if (p.KSecret && p.Secret.Length > 0) { string lover = p.Lover != null ? Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; if (lover.StartsWith("the ", StringComparison.Ordinal)) lover = lover[4..]; /* a done chip's fact is at most 2 words (§10): "Loves guard" */ Line(p.Secret == "affair" ? "lovers" : "secret", Intel("secret", p.Secret, lover)); }
                         if (chip.Lines.Count == 0) Line("dot", DW("gain.nothing-new", "Nothing new"));
                     }
                     break;
@@ -276,16 +307,19 @@ namespace Suborned.Play
                     else if (l.Code == "call.waitress") { chip.AnchorKey = "guard"; Line("eye_shut", DW("gain.guard-away", "Guard away")); }
                     else { chip.AnchorKey = l.Code[5..]; Line("call", VerbWord("call")); }
                     break;
-                case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("eye_shut", DW("gain.camera-dark", "Camera dark")); break;
+                case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("loop", DW("gain.camera-looped", "Camera looped")); break; // brief 058 (Motive): a looped camera shows the desk a clean picture; never "Camera dark" (Glyph 058 §3: the 2:00 rides the window marker under it)
+                case "disable": { var dm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"cuts the (\S+) camera"); chip.AnchorKey = "camera/" + (dm.Success ? dm.Groups[1].Value : "entrance"); Line("disable", DW("gain.camera-cut", "Camera cut")); break; } // engine 0.31.0 (Glyph 058 §3): the desk's clock is the marker under it
+                case "camera-shot": { var sm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"The (\S+) camera"); chip.AnchorKey = "camera/" + (sm.Success ? sm.Groups[1].Value : "entrance"); Line("fire", DW("gain.camera-shot", "Camera shot out")); break; } // Glyph 058 §3: no marker
                 case "reroute": chip.AnchorKey = "patrol"; Line("reroute", DW("gain.patrol-away", "Patrol away")); break;
-                case "mislead": chip.AnchorKey = "rivals/0"; Line("mislead", DW("gain.rivals-away", "Rivals away")); break;
+                case "mislead": chip.AnchorKey = "car/rivals"; Line("mislead", DW("gain.rivals-away", "Rivals away")); break;
                 case "enter":
                     chip.AnchorKey = "op/enforcer";
                     if (l.Code == "enter.in") Line("enter", DW("gain.inside", "Inside"));
-                    else if (g.Vale == ValeAt.WithEnforcer) Line("take", DW("gain.vale", "Vale")); else { Line("refused", DW("gain.no-vale", "No Vale")); tone = "bad"; }
+                    else if (g.Vale == ValeAt.WithEnforcer) Line("take", DW("gain.vale", $"{ValeWord}")); else { Line("refused", DW("gain.no-vale", $"No {ValeWord}")); tone = "bad"; }
                     break;
-                case "take": chip.AnchorKey = "councillor"; Line("take", DW("gain.vale", "Vale")); break;
+                case "take": chip.AnchorKey = "councillor"; Line("take", DW("gain.vale", $"{ValeWord}")); break;
                 case "board": chip.AnchorKey = "car/getaway"; Line("car", DW("gain.aboard", "Aboard")); break;
+                case "drive-car": chip.AnchorKey = "car/getaway"; Line("car", DW("gain.parked", "Parked")); break; // Glyph 059 board 04: the arrival, one row
                 case "takedown":
                     {
                         var who = BodyKeyIn(l.Text); chip.AnchorKey = who.Length > 0 ? "body/" + who : "op/" + Op.Name((OpId)k);
@@ -349,16 +383,20 @@ namespace Suborned.Play
             var now = new Dictionary<string, int>();
             foreach (var w in ws)
             {
+                if (w.Kind == "seal") continue; // engine 0.30: the seal's window is HostSeal's marker under the clock pill, never a world mark or a close pop
                 var m = new WindowMark { Kind = w.Kind, Thing = w.Thing, Until = w.Until, Key = WindowKey(w.Kind, w.Thing) };
-                m.Left = w.Until < 0 ? -1 : Math.Max(0, (w.Until - g.Tick + Game.Hz - 1) / Game.Hz); if (w.Kind == "loop") m.Face = (int)OpId.Tech;
-                string sk = w.Kind + "|" + w.Thing; if (w.Until >= 0 && (!windowSpan.TryGetValue(sk, out var sp) || sp.until != w.Until)) windowSpan[sk] = sp = (w.Until, Math.Max(1, w.Until - g.Tick));
+                m.Left = w.Until < 0 ? -1 : Math.Max(0, (w.Until - g.Tick + Game.Hz - 1) / Game.Hz); if (w.Kind == "loop" && w.Until < 0) m.Face = (int)OpId.Tech; // engine 0.31.0 (Glyph 058 §3): a loop has an end (Until), so it counts 2:00 down like every window; the Tech's face only for a loop with no end (a pinned tether run)
+                string sk = w.Kind + "|" + w.Thing; if (w.Until >= 0 && (!windowSpan.TryGetValue(sk, out var sp) || sp.until != w.Until)) windowSpan[sk] = sp = (w.Until, Math.Max(1, w.Until - (w.From >= 0 ? Math.Min(w.From, g.Tick) : g.Tick))); // the desk's clock drains from the cut (OpenWindow.From)
                 m.Total = w.Until < 0 ? -1 : Math.Max(1, (windowSpan[sk].span + Game.Hz - 1) / Game.Hz);
                 WindowMarks.Add(m); now[w.Kind + "|" + w.Thing] = w.Until;
             }
+            RivalWindowMarks(); // brief 059: the rivals' next move once watched, Vale's car round the back (never closing pops: not in `now`)
             if (pops && Ending.Length == 0)
                 foreach (var kv in windowsBefore)
                 {
                     if (now.ContainsKey(kv.Key)) continue; var parts = kv.Key.Split('|');
+                    if (parts[0] == "loop" && g.CameraDark(parts[1])) continue; // a loop the cut (or a shot) ended: the camera is not "on"
+                    if (parts[0] == "disable") { DoneChips.RemoveAll(c => c.AnchorKey == WindowKey(parts[0], parts[1])); continue; } // the desk's clock goes at the report; the dead disc stays and the feed beat is Fable's (Glyph 058 §2): no close pop
                     string kind = parts[0] == "call" ? (parts[1] == "guard" ? "guard" : "camera") : parts[0] == "loop" ? "camera" : parts[0] == "reroute" ? "patrol" : "rivals";
                     string word = DW("close." + kind, kind == "guard" ? "Guard back" : kind == "camera" ? "Camera on" : kind == "patrol" ? "Patrol back" : "Rivals back");
                     var at = AnchorWorld(WindowKey(parts[0], parts[1])); if (!at.HasValue) continue;
@@ -371,7 +409,7 @@ namespace Suborned.Play
 
         static string WindowKey(string kind, string thing) => kind switch
         {
-            "call" => thing == "guard" ? "guard" : "camera/pickup", "loop" => "camera/" + thing, "reroute" => "patrol", "mislead" => "rivals/0", _ => thing,
+            "call" => thing == "guard" ? "guard" : "camera/pickup", "loop" or "disable" => "camera/" + thing, "reroute" => "patrol", "mislead" => "car/rivals", _ => thing,
         };
 
         // ---------------------------------------------------------------- cancelling
@@ -390,7 +428,7 @@ namespace Suborned.Play
             Activity a = null; Guard("activity", () => a = Game.ActivityOf((OpId)k)); if (a == null || !a.CanCancel) return "";
             var code = a.CancelCost ?? ""; if (CancelFree.Contains(code) || code is "quiet" or "put-down" or "keeps-vale") return "";
             if (code == "lost") { int s = Math.Max(0, (Game.Tick - Game.Ops[k].BusyStart) / Game.Hz); return s >= 1 ? DW("cancel.cost.lost", "{s} s lost").Replace("{s}", s.ToString()) : ""; }
-            return DW("cancel.cost." + code, code switch { "aborted" => "They remember", "released" => "They report", "staff-report" => "Staff report", "vale-reports" => "Vale reports", "ends" => "Loop ends", _ => "" });
+            return DW("cancel.cost." + code, code switch { "aborted" => "They remember", "released" => "They report", "staff-report" => "Staff report", "vale-reports" => $"{ValeWord} reports", "ends" => "Loop ends", _ => "" });
         }
 
         /// <summary>The tag over the pill before you let go (Sky 2026-10-22: never cancel unseen): "Cancels Listen · 12 s lost"; null when the

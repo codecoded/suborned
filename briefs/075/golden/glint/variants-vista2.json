@@ -1,0 +1,32 @@
+[
+ {
+  "name": "w-a",
+  "lens": "briefs/075/golden/glint/lens/v1.json",
+  "haze": "briefs/075/golden/glint/haze/h0.json"
+ },
+ {
+  "name": "w-b",
+  "lens": "briefs/075/golden/glint/lens/v1.json",
+  "haze": "briefs/075/golden/glint/haze/h5.json"
+ },
+ {
+  "name": "w-c",
+  "lens": "briefs/075/golden/glint/lens/v1.json",
+  "haze": "briefs/075/golden/glint/haze/h6.json"
+ },
+ {
+  "name": "w-d",
+  "lens": "briefs/075/golden/glint/lens/v2.json",
+  "haze": "briefs/075/golden/glint/haze/h5.json"
+ },
+ {
+  "name": "w-e",
+  "lens": "briefs/075/golden/glint/lens/v2.json",
+  "haze": "briefs/075/golden/glint/haze/h6.json"
+ },
+ {
+  "name": "w-f",
+  "lens": "briefs/075/golden/glint/lens/v3.json",
+  "haze": "briefs/075/golden/glint/haze/h6.json"
+ }
+]

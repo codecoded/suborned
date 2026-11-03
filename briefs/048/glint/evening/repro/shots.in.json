@@ -1,0 +1,10 @@
+{
+  "schema": "suborned.shots/1",
+  "defaults": { "hud": false },
+  "shots": [
+    { "name": "play-opening-30", "tick": 0 },
+    { "name": "cafe-front-30", "script": "route-a-board", "tick": 600, "focus": "waitress", "yaw": 0 },
+    { "name": "office-front-210", "script": "route-a-board", "tick": 1200, "focus": "camera/entrance", "yaw": 2 },
+    { "name": "follow-scout-cafe", "script": "route-a-board", "tick": 1300, "view": "follow", "agent": "scout", "face": "waitress" }
+  ]
+}

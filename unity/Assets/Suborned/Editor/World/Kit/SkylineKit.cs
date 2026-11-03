@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -13,7 +14,7 @@ namespace Suborned.World
     /// Placement: a facade piece's export point is its footprint centre (the piece is modelled with its pivot on the facade plane);
     /// a SkyBridge stands its lowest point on its base; every other piece stands its pivot on (at, base). Horizon pieces cast no
     /// shadows and take the export's haze share: ring pieces a lit copy of their materials mixed toward the haze colour, sky bodies
-    /// (planet, moons) Suborned/SkyBody (unlit, unfogged, haze mixed in).</summary>
+    /// (planet, moons) Suborned/SkyBody (unlit, unfogged, the kit's map and colour with the haze mixed over them).</summary>
     public sealed class SkylineKit
     {
         readonly KitPlacer placer; readonly Look look;
@@ -21,10 +22,16 @@ namespace Suborned.World
 
         public SkylineKit(KitPlacer placer, Look look) { this.placer = placer; this.look = look; }
 
+        /// <summary>Brief 072 (Sky's decision 4): the sky bodies' haze share (builder kit.json `skyBodyHaze`), in place of the export's; NaN = the export's.</summary>
+        public float SkyBodyHaze = float.NaN;
+        public int SkyBodiesL0;
+
+        /// <summary>The facades layer: the wave-2 street pieces as placed pieces; brief 072's every-face modules too, those of one column baked into one
+        /// instance (KitColumns, Redline's plan 3.2).</summary>
         public void Facades(Transform layer, List<FacadeDto> facades)
         {
-            foreach (var f in facades)
-                placer.Place(Nodes.Element(layer, f.Id), layer.name, f.Kit, placer.PivotForCentre(f.Kit, f.Kit.At), f.Base, 0f);
+            KitColumns.Reset();
+            KitColumns.Place(layer, facades, placer, placer.ClassDistances("column"));
         }
 
         public static float SignatureZ(KitPlacer placer, SignatureDto s) => s.Kind == "skybridge" ? placer.PivotForLowest(s.Kit, s.Base) : s.Base;
@@ -34,12 +41,9 @@ namespace Suborned.World
             foreach (var s in signatures)
             {
                 var el = Nodes.Element(layer, s.Id);
-                if (s.Kit != null) { placer.Place(el, layer.name, s.Kit, s.Kit.At, SignatureZ(placer, s), 0f); continue; }
-                // no adopted piece yet: its ground as a plain mass to its tip, so the skyline keeps the volume (and the gap is visible)
-                if (s.Ground is not { Length: 4 } g) throw new InvalidDataException($"World: signature {s.Id} has neither a kit piece nor a ground ({s.Why})");
-                Debug.LogWarning($"World: signature {s.Id} is procedural: {s.Why}");
-                var ring = new[] { new Vector2(g[0], g[2]), new Vector2(g[1], g[2]), new Vector2(g[1], g[3]), new Vector2(g[0], g[3]) };
-                nodes.Part(el, s.Id, new MeshKit().Prism(ring, s.Base, Mathf.Max(s.Tip, s.Base + 1f)), "landmark");
+                if (s.Kit != null) { KitLiveries.Apply(placer.Place(el, layer.name, s.Kit, s.Kit.At, SignatureZ(placer, s), 0f), s.Id, "kit", s.Kit.Id); continue; }
+                // brief 075 NP-1 (Splice's rule): no adopted piece = a placeholder; the build fails instead of standing a plain mass in the skyline
+                throw new InvalidDataException($"World: NP-1 signature {s.Id} ({s.Kind}) has no kit piece: {s.Why ?? s.Pending ?? "no adopted piece"}");
             }
         }
 
@@ -60,16 +64,26 @@ namespace Suborned.World
                     t.rotation = Quaternion.FromToRotation(Vector3.up, to) * t.rotation;
                 }
                 bool sky = p.Ring is "planet" or "moon";
+                float share = sky && !float.IsNaN(SkyBodyHaze) ? SkyBodyHaze : p.Haze;
+                if (sky && t.TryGetComponent<LODGroup>(out _))
+                {   // brief 072: a sky body is a few thousand triangles at ~30 px; its L1/L2 read faceted, so it always draws L0: unpacked, no LODGroup, no far levels
+                    PrefabUtility.UnpackPrefabInstance(t.gameObject, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                    Object.DestroyImmediate(t.GetComponent<LODGroup>());
+                    foreach (var c in t.GetComponentsInChildren<Transform>(true).Where(c => c != t && !KitLods.IsLod0(c, t)).Select(c => c.gameObject).ToList())
+                        if (c) Object.DestroyImmediate(c);
+                    SkyBodiesL0++;
+                }
                 foreach (var r in t.GetComponentsInChildren<MeshRenderer>(true))
                 {
                     r.shadowCastingMode = ShadowCastingMode.Off;
                     r.receiveShadows = false;
                     var mats = r.sharedMaterials;
-                    for (int i = 0; i < mats.Length; i++) mats[i] = Hazed(mats[i], haze, p.Haze, sky);
+                    for (int i = 0; i < mats.Length; i++) mats[i] = Hazed(mats[i], haze, share, sky);
                     r.sharedMaterials = mats;
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(r);
+                    if (PrefabUtility.IsPartOfPrefabInstance(r)) PrefabUtility.RecordPrefabInstancePropertyModifications(r);
                 }
             }
+            Debug.Log($"World: sky bodies drawn at L0 always {SkyBodiesL0}, haze share {(float.IsNaN(SkyBodyHaze) ? "the export's" : SkyBodyHaze.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + " (builder kit.json skyBodyHaze; the export says " + string.Join("/", h.Pieces.Where(x => x.Ring is "planet" or "moon").Select(x => x.Haze.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)).Distinct()) + ")")}");
             Sea(seaRoot, h, ground, haze);
         }
 
@@ -84,7 +98,19 @@ namespace Suborned.World
             {
                 m = new Material(Shader.Find("Suborned/SkyBody") ?? throw new InvalidDataException("World: shader Suborned/SkyBody not found (Assets/Suborned/Shaders)"))
                     { name = $"{src.name}/sky-haze{share:F2}" };
-                m.SetColor("_BaseColor", mixed);
+                // the kit's own map and colour (the old DecoKit planet bands, ring profile, moon; brief 072 decision 4), the haze mixed
+                // over them in the shader so the texture survives the mix
+                string map = src.HasTexture("_BaseMap") && src.GetTexture("_BaseMap") ? "_BaseMap" : src.HasTexture("_MainTex") && src.GetTexture("_MainTex") ? "_MainTex" : null;
+                if (map != null)
+                {
+                    m.SetTexture("_BaseMap", src.GetTexture(map));
+                    m.SetTextureScale("_BaseMap", src.GetTextureScale(map));
+                    m.SetTextureOffset("_BaseMap", src.GetTextureOffset(map));
+                }
+                c.a = 1f;
+                m.SetColor("_BaseColor", c);
+                m.SetColor("_HazeColor", haze);
+                m.SetFloat("_Haze", share);
             }
             else
             {   // the haze also lifts the shaded side (atmospheric perspective): emission of the haze at half the share
@@ -128,9 +154,11 @@ namespace Suborned.World
         {
             var go = new GameObject(id) { isStatic = true };
             go.transform.SetParent(root, false);
-            go.AddComponent<MeshFilter>().sharedMesh = kit.Build(id);
+            var mesh = kit.Build(id); var mat = look.Mat(surface);
+            if (Look.NeedsBoxUv(mat)) Look.BoxUv(mesh); // 072-F: the horizon's colour surfaces carry a detail pair
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
             var mr = go.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = look.Mat(surface);
+            mr.sharedMaterial = mat;
             mr.shadowCastingMode = ShadowCastingMode.Off;
         }
     }

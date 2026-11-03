@@ -1,0 +1,141 @@
+{
+ "inworld": {
+  "larthi": {
+   "voice": "Serena",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "hasti": {
+   "voice": "Ashley",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "sethre": {
+   "voice": "Oliver",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "arruns": {
+   "voice": "Graham",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "popovic": {
+   "voice": "Theodore",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "arthur": {
+   "voice": "Brian",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "lukac": {
+   "voice": "Victor",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "inez": {
+   "voice": "Chloe",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "milena": {
+   "voice": "Lauren",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "police": {
+   "voice": "Derek",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "rival": {
+   "voice": "Callum",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  },
+  "watcher": {
+   "voice": "Dennis",
+   "why": "chosen from name and measured pitch (Inworld publishes no voice descriptions); not by ear"
+  }
+ },
+ "qwen": {
+  "larthi": {
+   "describe": "A young woman in her mid twenties, low and quiet alto voice, dry, clipped and watchful, speaks little and evenly, never raises her voice except in danger; neutral unplaceable accent."
+  },
+  "hasti": {
+   "describe": "A woman in her early thirties, warm, unhurried mezzo voice, kind and reassuring, puts strangers at ease, measured pace; neutral accent."
+  },
+  "sethre": {
+   "describe": "A man around thirty, calm patient baritone, softly amused and wry, relaxed even pace; neutral accent."
+  },
+  "arruns": {
+   "describe": "A big older man around sixty, deep, calm bass voice, slow and economical, says as little as he can, grounded and heavy."
+  },
+  "popovic": {
+   "describe": "A city councillor in his early sixties, dry, precise, slightly nasal official voice, clipped consonants, used to being obeyed; faint Central European colouring."
+  },
+  "arthur": {
+   "describe": "A door guard around forty, warm working-class baritone, plain and friendly, a little tired at the end of a shift; soft city accent."
+  },
+  "lukac": {
+   "describe": "A chauffeur in his forties, laconic, wry low voice, unimpressed and a bit weary, faint Central European colouring."
+  },
+  "inez": {
+   "describe": "A young waitress in her mid twenties, bright quick voice, nervous and defensive, words tumbling out, warm underneath."
+  },
+  "milena": {
+   "describe": "A woman in her late thirties, dry teasing alto, fond and knowing, unhurried, gently mocking a friend."
+  },
+  "police": {
+   "describe": "A uniformed police officer in his thirties, loud commanding parade-ground voice, sharp and authoritative."
+  },
+  "rival": {
+   "describe": "A rough hard man in his thirties, gravelly urgent voice, a gang heavy shouting orders."
+  },
+  "watcher": {
+   "describe": "A security desk man in his fifties, flat bureaucratic voice turned urgent, reporting over a telephone."
+  }
+ },
+ "fish": {
+  "larthi": {
+   "voice": "b347db033a6549378b48d00acb0d06cd",
+   "name": "Selene"
+  },
+  "hasti": {
+   "voice": "e3cd384158934cc9a01029cd7d278634",
+   "name": "Laura"
+  },
+  "sethre": {
+   "voice": "536d3a5e000945adb7038665781a4aca",
+   "name": "Ethan"
+  },
+  "arruns": {
+   "voice": "bf322df2096a46f18c579d0baa36f41d",
+   "name": "Adrian"
+  },
+  "popovic": {
+   "voice": "bf322df2096a46f18c579d0baa36f41d",
+   "name": "Adrian"
+  },
+  "arthur": {
+   "voice": "79d0bd3e4e5444b18f7b6d89b5927bf1",
+   "name": "Jordan"
+  },
+  "lukac": {
+   "voice": "79d0bd3e4e5444b18f7b6d89b5927bf1",
+   "name": "Jordan"
+  },
+  "inez": {
+   "voice": "933563129e564b19a115bedd57b7406a",
+   "name": "Sarah"
+  },
+  "milena": {
+   "voice": "9a9cf47702da476aa4629e2506d4a857",
+   "name": "Hannah"
+  },
+  "police": {
+   "voice": "536d3a5e000945adb7038665781a4aca",
+   "name": "Ethan"
+  },
+  "rival": {
+   "voice": "79d0bd3e4e5444b18f7b6d89b5927bf1",
+   "name": "Jordan"
+  },
+  "watcher": {
+   "voice": "536d3a5e000945adb7038665781a4aca",
+   "name": "Ethan"
+  }
+ },
+ "note": "No voice is a clone of anyone. Fish has eight stock voices, so its men double: Adrian plays Arruns and Popovic, Jordan plays Arthur, Lukac and the rival, Ethan plays Sethre, the officer and the watcher."
+}
