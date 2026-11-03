@@ -66,9 +66,9 @@ describe('briefs: the Inez chain, sized to each act', () => {
     expect(briefs).toHaveLength(17);
     const at = (id: string) => briefs.find(b => b.id === id)!;
     expect(at('inez/watch/any')).toMatchObject({ seconds: 20, lines: [4, 6], scene: 0 });
-    expect(at('inez/listen/loyal')).toMatchObject({ seconds: 42, lines: [9, 14], scene: 7 });
-    expect(at('inez/help/fearful')).toMatchObject({ seconds: 50, lines: [10, 16], outcome: 'turned' });
-    expect(at('inez/pressure/loyal')).toMatchObject({ seconds: 35, lines: [7, 11], outcome: 'suspicious' });
+    expect(at('inez/listen/loyal')).toMatchObject({ seconds: 30, lines: [6, 10], scene: 7 });
+    expect(at('inez/help/fearful')).toMatchObject({ seconds: 35, lines: [7, 11], outcome: 'turned' });
+    expect(at('inez/pressure/loyal')).toMatchObject({ seconds: 25, lines: [5, 8], outcome: 'suspicious' });
     expect(at('inez/call/mercenary')).toMatchObject({ seconds: 60, lines: [12, 20] });
   });
   test('Listen overhears the guard (the affair) and a customer (the debt); Watch reveals neither', () => {
@@ -88,7 +88,7 @@ describe('code checks', () => {
   });
   test('length, bubble size, cast, monologues, stage directions and the word filter', () => {
     const issues = (c: Conversation) => checkConversation(listen, c, guide).map(i => i.reason).join('\n');
-    expect(issues({ lines: good.lines.slice(0, 4) })).toContain('holds 9–14 bubbles');
+    expect(issues({ lines: good.lines.slice(0, 4) })).toContain('holds 6–10 bubbles');
     expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: 'I will pay the lender back every single penny I owe him by Friday night.' }] })).toContain('15 words');
     expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'fixer', line: 'Hello.' }] })).toContain('fixer is not in this scene');
     expect(issues({ lines: [...good.lines.slice(0, 8), { speaker: 'customer', line: 'One.' }, { speaker: 'customer', line: 'Two.' }] })).toContain('three bubbles running');

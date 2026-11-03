@@ -31,8 +31,9 @@ export function pick(text: string, pattern: RegExp, what: string): string[] {
   if (!m) throw new Error(`GDD no longer states ${what}; update the style guide extraction`);
   return m.slice(1);
 }
-const lineOf = (text: string, start: string, what: string) => {
-  const line = text.split('\n').find(l => l.startsWith(start));
+const lineOf = (text: string, start: string | string[], what: string) => {
+  const starts = Array.isArray(start) ? start : [start];
+  const line = text.split('\n').find(l => starts.some(prefix => l.startsWith(prefix)));
   if (!line) throw new Error(`GDD no longer has ${what}`);
   return line;
 };
@@ -49,9 +50,9 @@ export function buildGuide(read: Read, names: string[], sha: Sha = file => hash(
   const add = (id: string, file: string, locator: string, excerpt: string) => sources.push({ id, file, locator, sha256: sha(file), excerpt });
 
   add('world', pair.agent.path, '§01 world', [
-    lineOf(gdd, 'world (Sky, 2026-10-14)', '§01 world'),
+    lineOf(gdd, ['world (Sky, 2026-10-14)', 'world: an alternate history'], '§01 world'),
     lineOf(gdd, '- thinking machines and networks never came', '§01 no networks'),
-    lineOf(gdd, '- reads (rules unchanged)', '§01 reads'),
+    lineOf(gdd, ['- reads (rules unchanged)', '- reads:'], '§01 reads'),
   ].join('\n'));
   add('approaches', pair.agent.path, '§04 approaches, temperament, preview', [
     lineOf(gdd, '| Help (clear debt)', '§04 Help row'), lineOf(gdd, '| Pressure | need known', '§04 Pressure row'),
@@ -60,7 +61,7 @@ export function buildGuide(read: Read, names: string[], sha: Sha = file => hash(
     lineOf(gdd, 'preview: ', '§04 preview'),
   ].join('\n'));
   add('handover', pair.agent.path, '§07 cast, capstone, route A', [
-    lineOf(gdd, 'cast: Vale', '§07 cast'), lineOf(gdd, 'the capstone (Sky, 2026-10-15', '§07 capstone'), lineOf(gdd, 'route A, front door', '§07 route A'),
+    lineOf(gdd, ['cast: Vale', 'cast: Councillor'], '§07 cast'), lineOf(gdd, ['the capstone (Sky, 2026-10-15', 'the capstone:'], '§07 capstone'), lineOf(gdd, 'route A, front door', '§07 route A'),
   ].join('\n'));
   add('lines', pair.agent.path, '§10 lines', lineOf(gdd, '- lines: the goal line', '§10 lines'));
   add('fable', pair.agent.path, '§14 Fable', block(gdd, '### Fable'));

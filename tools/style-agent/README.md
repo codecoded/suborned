@@ -5,7 +5,7 @@ A Generator → Evaluator → Refiner loop for the game's conversations (brief 0
 ## Commands
 
 ```sh
-bun run style:guide        # the style guide: REVEAL, VOICE, WORLD, FORM, built from GDD v0.24, the voice sheet and brief 054
+bun run style:guide        # REVEAL, VOICE, WORLD, FORM from the current approved GDD, voice sheet and brief 054
 bun run style:briefs       # the 17 Inez conversations: act, length (act seconds ÷ 3 s per bubble), what to reveal and withhold
 bun run style:replay RUN   # play a saved run step by step (a brief id, a demo name or a run folder); no model
 bun run style:verify RUN   # rebuild a saved run from its archived sources and check it; no model

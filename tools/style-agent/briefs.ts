@@ -16,10 +16,10 @@ const PLAN = 'anything about the cell\'s plan: Vale, the Office door, the Take o
 export function buildBriefs(read: Read, names: string[], sha?: Sha): Brief[] {
   const guide = buildGuide(read, names, sha), gdd = read(gddPair(names).agent.path), text = JSON.parse(read(TEXT_FILE));
   // Act seconds come from the GDD (§04 approaches, §07 route A); each bubble takes guide.bubble.seconds (§10).
-  const [watch] = pick(gdd, /routine known \(Watch (\d+) s/, 'the Watch time (§04)').map(Number);
-  const [listen, help] = pick(gdd, /\| Help \(clear debt\) \| need known \(Listen (\d+) s\) \| [\d,]+ \| (\d+) s/, 'the Listen and Help times (§04)').map(Number);
+  const [watch] = pick(gdd, /(?:routine known \(Watch |a Watch first, where one is offered \()(\d+) s/, 'the Watch time (§04)').map(Number);
+  const [listen, help] = pick(gdd, /\| Help \(clear debt\) \| need known \(Listen (\d+) s\) \| [\d,]+(?: \([^|]+\))? \| (\d+) s/, 'the Listen and Help times (§04)').map(Number);
   const [pressure] = pick(gdd, /\| Pressure \| need known \| \d+ \| (\d+) s/, 'the Pressure time (§04)').map(Number);
-  const [, stays] = pick(gdd, /guard walks (\d+) s, stays (\d+) s/, 'the guard\'s stay on the call (§07)').map(Number);
+  const [stays] = pick(gdd, /guard walks (?:\d+ s|to her side \(about \d+ s\)), stays (\d+) s/, 'the guard\'s stay on the call (§07)').map(Number);
   const seconds: Record<string, number> = { watch: watch!, listen: listen!, help: help!, pressure: pressure!, call: stays! };
   const temperament = (t: string) => {
     const name = t[0]!.toUpperCase() + t.slice(1);
