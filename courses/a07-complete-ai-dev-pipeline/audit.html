@@ -1,20 +1,42 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><title>The Suborned - Assignment 7 pipeline audit</title>
-<style>@page{size:A4;margin:15mm}body{font:9.6pt/1.3 sans-serif;color:#173c3d;margin:0}h1{font-size:25pt;line-height:1.05;margin:5pt 0 6pt}h2{font-size:11pt;color:#146b66;margin:12pt 0 4pt}p{margin:4pt 0 6pt}.label{font-size:9pt;color:#146b66;letter-spacing:1pt}.meta{font-size:8.5pt;color:#536567}.note{border-left:3px solid #a34430;padding-left:8pt}footer{font-size:8pt;border-top:1px solid #c9d2cd;margin-top:10pt;padding-top:7pt;color:#536567}a{color:inherit}code{font-family:sans-serif;font-size:inherit}strong{color:#143536}</style>
-<div class="label">ASSIGNMENT 7 / PRODUCTION PIPELINE AUDIT</div>
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>The Suborned - Assignment 7 audit</title>
+<style>
+@page{size:A4;margin:16mm}
+body{font:11pt/1.32 sans-serif;color:#203b3b;margin:0}
+h1{font-size:27pt;line-height:1.05;margin:5pt 0 6pt}
+h2{font-size:12pt;color:#146b66;margin:13pt 0 5pt}
+p{margin:4pt 0 7pt}
+.kicker{font-size:9pt;letter-spacing:1pt;color:#146b66}
+.byline{font-size:10pt;color:#526765;margin-bottom:12pt}
+strong{color:#143c3b}
+footer{font-size:9pt;color:#526765;border-top:1px solid #cbd6d1;margin-top:11pt;padding-top:8pt}
+a{color:#146b66;text-decoration:none}
+</style>
+<div class="kicker">ASSIGNMENT 7 / PIPELINE AUDIT</div>
 <h1>The Suborned</h1>
-<p class="meta">Sky Rumsey | Unity 6000.6.2f1 | People, relationships and routines | Recorded generation: r016</p>
-<p>A squad tactics game about turning ordinary people and using their relationships to take Councillor Popovic alive. Content is generated during development; no model runs during play.</p>
-<h2>01 / Production and functionality</h2>
-<p><strong>Output:</strong> AI-generated cast tables, expanded deterministically into 130 people, 222 directed relationships and daily routines. The accepted <code>r016</code> cast is promoted with its original hash. In the playable Handover, Inez Nikolaou and Arthur Reilly are lovers; Inez's debt and Arthur's relationship provide a social route past his post. Lukac and Popovic are cast from the same population.</p>
-<p><strong>Flow:</strong> GDD/rules retrieved through SurrealDB RAG; Pulse proposes structured cast data; deterministic checks reject defects; Keel critiques clean candidates. Promotion, people expansion, simulation export and Unity's hash-checked <code>StreamingAssets</code> loader require no hand reformatting. The recorded replay actually expands, exports, stages and runs the output in the retained player binary; it makes no new model call or Unity compilation.</p>
-<p><strong>Manual friction:</strong> a person approves cast promotion and maintains design/rule data. The shipped background projection predates the city remap; today's expansion changes some residents/stops. All four mission profiles' names, needs, temperaments and ties are verified equal. The video labels its fresh projection as a local replay variant, rather than claiming an identical public release. Publication and first-play testing remain release gates.</p>
-<h2>02 / Architectural reflection</h2>
-<p><strong>Change:</strong> promotion pins the AI cast, but the full downstream world/people projection can survive as a stale generated file. A cast hash alone cannot reproduce a shipped population. <strong>Alternative:</strong> a content-addressed build manifest pinning cast, plan, block, life rules, names, needs, generator versions and every output. Build a dependency graph that regenerates affected outputs and refuses publication when an input hash differs. Keep human promotion as an explicit approval gate; automate propagation and evidence capture after it.</p>
-<h2>03 / Actual recorded run cost</h2>
-<p><strong>r016: $0.6905 recorded usage across three calls</strong> (unrounded sum $0.6904733), including the failed first proposal. Pulse: $0.2688503 + $0.1415571; Keel: $0.2800659. The <strong>most expensive step is Keel's final critic call</strong>, recorded on Claude Opus; Pulse used Claude Sonnet. Amounts come from the original CLI call records, not a forecast.</p>
-<p>These are Claude CLI <code>total_cost_usd</code> usage valuations on a subscription, not additional API debits or an allocated subscription invoice. The offline recording makes zero model calls. This bounded build-time approach is sustainable at this scale: reuse accepted data, cap rounds/spend and pay no runtime inference. Review labour, subscriptions, hardware, hosting and other game pipelines are excluded.</p>
-<h2>04 / Mid-project cost reduction</h2>
-<p><strong>Before:</strong> the shared generation loop called Keel even after deterministic failure. Actual <code>r008</code> rounds 1-2 incurred two such critic calls: <strong>$0.4135186</strong>. <strong>After:</strong> loop 2 (brief 007 F, 14 October) sends failed candidates directly back to their owner. Actual <code>r016</code> round 1 failed P-0 and made <strong>zero critic calls, zero critic tokens, $0 critic cost</strong>; the corrected round received full critique. Builder/retry costs remain in the total. These are different objectives/candidates under the same framework, not an equal-work percentage benchmark.</p>
-<footer>Evidence: <code>evidence/people.json</code>; <code>runs/levels/harbour-district/r016/</code>; cast promotion record; <code>tools/gen/rules.ts</code>; <code>people-run.ts</code>. Historical model output is replayed; terminal output and player frames are captured from actual execution.</footer>
-<p class="meta note">Release gate still open: public download is macOS 0.2.231; the replay uses the 0.2.232 binary with freshly staged data. A compatible stranger's visit-to-control time of at most 120 seconds has not been certified.</p>
+<p class="byline">Sky Rumsey | Unity | Generating the city's people</p>
+<p>The Suborned is a squad tactics game about using people's needs and relationships to carry out a plan. This pipeline creates the people who make that possible.</p>
+
+<h2>1. What it produces, and what still needs me</h2>
+<p>The pipeline creates <strong>130 people, their daily routines and 222 relationship links</strong>. In the playable mission, Inez the waitress owes money and is involved with Arthur, the door guard. Learning this gives the player a way to draw him away from his post.</p>
+<p>An AI agent reads relevant game-design rules and proposes the cast. Code checks the proposal; a second agent reviews it. Once approved, the cast becomes people and routines in a format Unity can load <strong>without hand reformatting</strong>.</p>
+<p>I still approve the cast and maintain the game rules. Publishing and first-play testing also need human attention. To automate more, I would connect the remaining release steps so one approved version is checked, packaged and uploaded together.</p>
+
+<h2>2. What I would change</h2>
+<p><strong>I would save every input needed to rebuild a release.</strong> The replay exposed an old population file left over from before the city was redesigned. The four mission characters still match the shipped cast, but regenerating today changes some background residents and travel stops.</p>
+<p>I would replace loose generated files with a versioned build record: the cast, city layout, rules, names and generator versions. A build would recreate anything affected by a change and stop if its inputs did not match the approved version.</p>
+
+<h2>3. What the generation actually cost</h2>
+<p><strong>The recorded cast-generation run used about $0.69 across three AI calls</strong>, including the first rejected proposal. The final review was the largest call at <strong>$0.28</strong>. The writing agent used Claude Sonnet; the reviewer used Claude Opus.</p>
+<p>These are Claude's reported usage costs. The calls were covered by a subscription, so this was not a separate API payment. Subscription fees, my time, hardware and hosting are excluded.</p>
+<p>This is affordable for a solo developer at this scale: generation happens during development, approved content is reused, and rounds and spending are capped. <strong>There is no AI inference cost during play.</strong> Human review remains a significant time cost.</p>
+
+<h2>4. How I reduced wasted calls</h2>
+<p><strong>Before:</strong> the AI reviewer ran even when code had already found a fault. In an earlier transit run, two such reviews used <strong>$0.41</strong>.</p>
+<p><strong>After:</strong> failed checks send the work straight back for correction. In the people run's failed first round, this meant <strong>zero review calls, zero review tokens and $0 review cost</strong>. The corrected result still received a full review. These are different candidates, so this is not a like-for-like percentage saving.</p>
+
+<footer><strong>Recording limits:</strong> original AI responses are archived; the video records a real offline replay and the generated data running in an existing game executable. It does not show new AI calls or a newly compiled Unity build. The public download's two-minute first-play check is still outstanding.<br>
+Costs are rounded here; exact call records and verification are in the <a href="https://github.com/codecoded/suborned/tree/assignment-07/courses/a07-complete-ai-dev-pipeline">Assignment 7 evidence pack on GitHub</a>.</footer>
 </html>
