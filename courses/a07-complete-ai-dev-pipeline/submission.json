@@ -6,8 +6,8 @@
   "deadline_utc": "2026-11-03T23:59:00Z",
   "playable_url": "https://codecoded.itch.io/the-suborned",
   "repository_url": "https://github.com/codecoded/suborned/tree/assignment-07",
-  "pipeline_video_url": "https://youtu.be/ZbhbxH8Lg3c",
-  "local_walkthrough": "out/scratch/a07/story-video/TheSuborned-A07-Make-the-City-Work-4K.mp4",
+  "pipeline_video_url": "https://youtu.be/NO-8wQidYPc",
+  "local_walkthrough": "out/scratch/a07/story-video-v2/TheSuborned-A07-Make-the-City-Work-v2-4K.mp4",
   "walkthrough_kind": "Gameplay-led whole-workflow overview with actual recorded offline CLI excerpts and a people worked example; archived AI generation, retained player binary",
   "audit": "audit.pdf",
   "pipeline_example": "people-relationships-routines-r016",
@@ -39,7 +39,7 @@
     "reason": "wrong channel"
   },
   "audit_status": "one-page whole-workflow audit rendered and visually checked",
-  "local_pipeline_video": "out/scratch/a07/story-video/TheSuborned-A07-Make-the-City-Work-4K.mp4",
+  "local_pipeline_video": "out/scratch/a07/story-video-v2/TheSuborned-A07-Make-the-City-Work-v2-4K.mp4",
   "pipeline_recorded": true,
   "fresh_model_generation_recorded": false,
   "fresh_unity_build_recorded": false,
@@ -57,5 +57,6 @@
   "audit_scope": "Whole game development workflow: design, agent code/content work, validation/review, Unity integration, player testing and release",
   "pipeline_example_role": "Recorded worked example within the wider development workflow; not a full recording of game creation",
   "cost_scope": "People run: recorded subscription usage; portrait campaign: separate image API charges. No reconciled whole-game total.",
-  "detailed_execution_video_url": "https://youtu.be/725LKDmVNQ8"
+  "detailed_execution_video_url": "https://youtu.be/725LKDmVNQ8",
+  "previous_edit_video_url": "https://youtu.be/ZbhbxH8Lg3c"
 }

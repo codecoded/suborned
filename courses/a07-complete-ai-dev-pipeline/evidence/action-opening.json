@@ -1,0 +1,48 @@
+{
+  "report": {
+    "schema": "suborned.shots.report/1",
+    "status": "ok",
+    "screen": "1920x1080",
+    "build": "Build 0.2.232 · c049 · sim 0.39.0 · bc1df7d0+",
+    "shots": [
+      {
+        "name": "officers-wide",
+        "status": "ok",
+        "tick": 2382,
+        "error": "",
+        "files": [
+          "officers-wide/f0000.png",
+          "officers-wide/ (120 frames at 20 fps)"
+        ],
+        "clipFrames": 120
+      },
+      {
+        "name": "rivals-follow",
+        "status": "ok",
+        "tick": 2655,
+        "error": "",
+        "files": [
+          "rivals-follow/f0000.png",
+          "rivals-follow/ (120 frames at 20 fps)"
+        ],
+        "clipFrames": 120
+      },
+      {
+        "name": "rivals-wide",
+        "status": "ok",
+        "tick": 2655,
+        "error": "",
+        "files": [
+          "rivals-wide/f0000.png",
+          "rivals-wide/ (120 frames at 20 fps)"
+        ],
+        "clipFrames": 120
+      }
+    ]
+  },
+  "player": "out/build/play/The Suborned.app",
+  "script": "tools/game/pins/loud.seed3.json",
+  "script_sha256": "dcbf007b81dd51d3461790c9b1427b8672fdcd375ebfa735e55e37c6742526dd",
+  "capture": "Ordinary mission start, seed 3; route orders through the real host; no fixtures or relationship overrides",
+  "limits": "Retained 0.2.232 release binary, separate from the people replay variant; no fresh Unity compilation"
+}

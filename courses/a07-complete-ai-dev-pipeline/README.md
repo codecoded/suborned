@@ -10,7 +10,7 @@ The audit covers the **whole development workflow**, from game design to release
 
 - Playable game: https://codecoded.itch.io/the-suborned
 - Source: https://github.com/codecoded/suborned/tree/assignment-07
-- Main film: **https://youtu.be/ZbhbxH8Lg3c** — **CodeCoded / @codecoded**, Unlisted; 78 seconds, 4K delivery. Gameplay-led introduction, whole-workflow overview and the costed people example.
+- Main film: **https://youtu.be/NO-8wQidYPc** — **CodeCoded / @codecoded**, Unlisted; 93 seconds, 4K delivery. Longer officers/rivals opening and gameplay-led introduction, whole-workflow overview and the costed people example.
 - Detailed worked-example execution: **https://youtu.be/725LKDmVNQ8** — 95 seconds; retained as supporting proof with longer command output.
 - One-page audit: [audit.pdf](audit.pdf), [HTML source](audit.html).
 - Original brief: [assignment-brief.pdf](assignment-brief.pdf).
@@ -65,7 +65,7 @@ The check was run successfully in a fresh source-only checkout of commit `990c0b
 5. Launch that copy and execute ordinary Route A orders through the real host. Capture 340 gameplay frames at 20 fps plus one audited Intel still. No relationship or portrait overrides are used.
 6. Retain the hashes, source references, counts, profile comparisons, player report and recorded costs in `evidence/people.json`.
 
-The main film opens with separate, labelled release-build firefight footage, then follows Inez and Arthur in the local people replay. It adds motion captions and the game's existing lounge-spy music as an editorial soundtrack. The [edit script](story-video.py) and [receipt](evidence/story-video.json) retain its sources, timing, music provenance and limitations. The detailed execution video remains linked for closer inspection.
+The main film opens with two six-second release-build captures: officers near the getaway car and a third-person rival fight. Each starts with two seconds clear of editorial captions. The social route then gets longer holds before the film follows the people pipeline. These [captures](action-capture.ts) and their [receipt](evidence/action-opening.json) use the ordinary seed-3 loud route through the real player; they are separate from the local people replay. It adds motion captions and the game's existing lounge-spy music as an editorial soundtrack. The [edit script](story-video.py) and [receipt](evidence/story-video.json) retain its sources, timing, music provenance and limitations. The detailed execution video remains linked for closer inspection.
 
 The terminal section is **real stdout captured while the command executed**, rendered legibly at 3840×2160. It is not a GUI desktop screen recording or simulated typing. The edited video removes engine loading/saving waits, keeps the command output at its recorded speed and inserts explanatory cards. Gameplay is genuine 1920×1080 capture from the same run, upscaled for the 4K delivery. Original AI generation is historical. No new Unity compilation occurred: the existing binary/scene loads newly generated data.
 
@@ -74,11 +74,12 @@ Author-machine reproduction (retained player, Bun, Python/Pillow and ffmpeg):
 ```sh
 bun run guard python3 courses/a07-complete-ai-dev-pipeline/record-run.py
 bun run guard python3 courses/a07-complete-ai-dev-pipeline/people-video.py
-# Main film also needs the retained release capture and existing music sketch:
+# Main film also needs the retained player and existing music sketch:
+bun run guard bun courses/a07-complete-ai-dev-pipeline/action-capture.ts
 bun run guard python3 courses/a07-complete-ai-dev-pipeline/story-video.py
 ```
 
-Artifacts live under `out/scratch/a07/people-run/`: raw timed `people-run.cast`, uncut terminal video, full command output, freshly exported engine data, replay app, player captures, edited video and receipts. The recording scripts make no model calls. Live model generation is a separate, explicitly approved and budgeted operation.
+The main edit and upload copy are under `out/scratch/a07/story-video-v2/`; opening captures are under `out/scratch/a07/action-opening/`. Execution artifacts live under `out/scratch/a07/people-run/`: raw timed `people-run.cast`, uncut terminal video, full command output, freshly exported engine data, replay app, player captures, edited video and receipts. The recording scripts make no model calls. Live model generation is a separate, explicitly approved and budgeted operation.
 
 ## Production boundary and the issue the replay found
 

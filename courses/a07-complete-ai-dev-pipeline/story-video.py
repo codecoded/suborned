@@ -11,10 +11,10 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 BASE = ROOT / 'out/scratch/a07/people-run'
-OUT = ROOT / 'out/scratch/a07/story-video'
+OUT = ROOT / 'out/scratch/a07/story-video-v2'
 OUT.mkdir(parents=True, exist_ok=True)
 GAME = BASE / 'gameplay'
-FIRE = ROOT / 'out/scratch/itch-screenshots/fire/raw'
+FIRE = ROOT / 'out/scratch/a07/action-opening/raw'
 FONT = ROOT / 'briefs/011/ui/kit/fonts'
 W, H = 3840, 2160
 CREAM, TEAL, MUTE, GOLD = '#f7f1e4', '#123b3c', '#abc3bb', '#ecd49b'
@@ -42,12 +42,13 @@ def encode(args, p):
                     '-pix_fmt', 'yuv420p', '-movflags', '+faststart', str(p)], check=True)
 
 
-def overlay(title, sub, source, number):
+def overlay(title, sub, source, number, action=False):
     im = Image.new('RGBA', (W, H))
     d = ImageDraw.Draw(im)
-    d.rounded_rectangle((330, 150, W - 330, 465), radius=28, fill=TEAL)
-    words(im, title, (390, 175), 100)
-    words(im, sub, (395, 335), 54, GOLD, False)
+    top = H - 330 if action else 150
+    d.rounded_rectangle((330, top, W - 330, top + (190 if action else 315)), radius=28, fill=TEAL)
+    words(im, title, (390, top + 15), 70 if action else 100)
+    words(im, sub, (395, top + (112 if action else 185)), 44 if action else 54, GOLD, False)
     d.rectangle((0, H - 110, W, H), fill=TEAL)
     words(im, f'CASE FILE 07 / {source}', (90, H - 91), 43, MUTE, False)
     words(im, f'{number:02d}', (W - 190, H - 96), 50, GOLD)
@@ -68,12 +69,13 @@ def game(folder, title, sub, seconds, start=0, release=False):
     n = len(scenes)
     ext = 'png' if release else 'jpg'
     label = 'RELEASE BUILD 0.2.232' if release else 'A07 LOCAL REPLAY / CURRENT-PLAN PEOPLE'
-    ov = overlay(title, sub, label + ' / 1080p source, 20 fps', n)
+    ov = overlay(title, sub, label + ' / 1080p source, 20 fps', n, action=release)
     p = OUT / f'{n:02d}-game.mp4'
     # Slide in editorial caption; source gameplay remains at its original speed.
+    motion = "overlay=0:0:shortest=1:enable='gte(t,2)'" if release else "overlay=x='if(lt(t,0.25),-W*(1-t/0.25),0)':y=0:shortest=1"
     encode(['-framerate','20','-start_number',str(round(start*20)),'-i',str(folder / f'f%04d.{ext}'),
             '-loop','1','-i',str(ov),'-filter_complex',
-            f'[0:v]scale={W}:{H}:flags=lanczos[bg];[bg][1:v]overlay=x=\'if(lt(t,0.25),-W*(1-t/0.25),0)\':y=0:shortest=1',
+            f'[0:v]scale={W}:{H}:flags=lanczos[bg];[bg][1:v]{motion}',
             '-t',str(seconds)],p)
     add(p,seconds,title,'real gameplay',folder)
 
@@ -118,11 +120,12 @@ def terminal(start,seconds,title):
     add(p,seconds,title,'actual recorded CLI / original speed',BASE/'people-run.cast')
 
 
-# Cold open: short action beat, then reveal the social alternative.
-game(FIRE/'firefight-live-third-person','There is a loud way in.','But that is only one way to play.',2,release=True)
-game(GAME/'guard-leaves-post','Or you could move one person.','A guard. A doorway. One useful relationship.',2)
-game(GAME/'cafe-routines','Meet Inez. She needs help.','Watch. Listen. Learn what matters to her.',4)
-photo('Arthur is her lover.','Her need and her relationship become your opening.',5,GAME/'social-intel.png','ACTUAL INTEL FRAME / A07 replay variant / 1080p source')
+# Let each fight read at its original speed; captions wait two seconds.
+game(FIRE/'officers-wide','Officers close in.','There is a loud way through the city.',6,release=True)
+game(FIRE/'rivals-follow','Rivals want the same prize.','Your crew has company.',6,release=True)
+game(GAME/'guard-leaves-post','Or you could move one person.','A guard. A doorway. One useful relationship.',4)
+game(GAME/'cafe-routines','Meet Inez. She needs help.','Watch. Listen. Learn what matters to her.',6)
+photo('Arthur is her lover.','Her need and her relationship become your opening.',6,GAME/'social-intel.png','ACTUAL INTEL FRAME / A07 replay variant / 1080p source')
 game(GAME/'guard-leaves-post','She calls. He leaves.','A relationship changes the route.',4,start=2)
 plate('THE SUBORNED',['Make the city do the work.'],3,eyebrow='SKY RUMSEY / ASSIGNMENT 7',footer='Real game captures / No staged relationship overrides')
 
@@ -170,10 +173,14 @@ subprocess.run(['ffmpeg','-y','-v','error','-f','concat','-safe','0','-i',str(ma
 music=ROOT/'briefs/087/music/lounge_spy.mp3'
 duration=float(json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','json',str(silent)]))['format']['duration'])
 assert abs(duration - sum(s['seconds'] for s in scenes)) < .1
-target=OUT/'TheSuborned-A07-Make-the-City-Work-4K.mp4'
+target=OUT/'TheSuborned-A07-Make-the-City-Work-v2-4K.mp4'
 subprocess.run(['ffmpeg','-y','-v','error','-i',str(silent),'-i',str(music),'-i',str(music),
     '-filter_complex',f'[1:a][2:a]acrossfade=d=2:c1=tri:c2=tri,atrim=0:{duration},loudnorm=I=-20:TP=-2:LRA=8,afade=t=in:d=0.4,afade=t=out:st={duration-2}:d=2[music]',
     '-map','0:v','-map','[music]','-c:v','copy','-c:a','aac','-b:a','192k','-t',str(duration),'-movflags','+faststart',str(target)],check=True)
+upload=target.with_name(target.stem + '-upload.mp4')
+subprocess.run(['ffmpeg','-y','-v','error','-i',str(target),'-c:v','libx264',
+    '-preset','medium','-crf','23','-c:a','copy','-movflags','+faststart',str(upload)],check=True)
+assert upload.stat().st_size < 50 * 1024 * 1024, 'Browser upload bridge limit'
 receipt={
     'video':str(target.relative_to(ROOT)),'seconds':duration,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),
     'bytes':target.stat().st_size,'resolution':[W,H],'fps':20,'model_calls':0,
@@ -182,8 +189,11 @@ receipt={
              'source':'Game lounge-spy sketch, ACE-Step; existing provenance in briefs/087/licences/generated.md. No experimental Demucs layers used.',
              'mix':'Two copies joined with a 2-second crossfade; -20 LUFS target, -2 dBTP limit; fades at start/end. Editorial soundtrack, not recorded gameplay audio.'},
     'limits':['AI generation is archived; no new model calls','Current-plan replay variant in the retained 0.2.232 binary; four mission profiles match production; full background differs',
-              'Opening firefight is separate release-build footage, labelled on screen','Gameplay is 1080p/20fps source upscaled to 4K','No new Unity compilation','Public two-minute first-play test remains open'],
+              'Opening officers/rivals firefights are separate release-build captures, labelled on screen after two seconds','Gameplay is 1080p/20fps source upscaled to 4K','No new Unity compilation','Public two-minute first-play test remains open'],
     'detailed_execution_url':'https://youtu.be/725LKDmVNQ8',
+    'upload':{'file':str(upload.relative_to(ROOT)), 'bytes':upload.stat().st_size,
+              'sha256':hashlib.sha256(upload.read_bytes()).hexdigest(),
+              'encoding':'H.264 CRF 23, medium; 3840x2160 at 20 fps; original mixed AAC audio copied'},
     'scenes':[{**s,'file':str(s['file'].relative_to(ROOT)),
                'source':s['source'].removeprefix(str(ROOT) + '/')} for s in scenes],
     'youtube_url':None,
