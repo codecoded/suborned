@@ -212,13 +212,6 @@
   },
   {
    "op": "cell",
-   "do": "panic",
-   "after": [
-    "in"
-   ]
-  },
-  {
-   "op": "cell",
    "do": "go",
    "after": [
     "in"

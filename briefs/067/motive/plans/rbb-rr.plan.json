@@ -211,13 +211,6 @@
    "label": "in"
   },
   {
-   "op": "cell",
-   "do": "panic",
-   "after": [
-    "in"
-   ]
-  },
-  {
    "op": "scout",
    "do": "move",
    "to": "service-drive",

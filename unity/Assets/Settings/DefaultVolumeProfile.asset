@@ -280,6 +280,97 @@ MonoBehaviour:
   SunScatteringIntensity:
     m_OverrideState: 1
     m_Value: 2
+--- !u!114 &-5011331990700645954
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22ca81034710f4488947102638027968, type: 3}
+  m_Name: Print073Grade
+  m_EditorClassIdentifier: Suborned.Runtime::Suborned.Scratch.Print073Grade
+  active: 1
+  strength:
+    m_OverrideState: 1
+    m_Value: 0
+  capKnee:
+    m_OverrideState: 1
+    m_Value: 1.6
+  capRange:
+    m_OverrideState: 1
+    m_Value: 0.8
+  capMix:
+    m_OverrideState: 1
+    m_Value: 0
+  ink:
+    m_OverrideState: 1
+    m_Value: {r: 0.09, g: 0.12, b: 0.14, a: 1}
+  paper:
+    m_OverrideState: 1
+    m_Value: {r: 0.98, g: 0.95, b: 0.87, a: 1}
+  fade:
+    m_OverrideState: 1
+    m_Value: 0
+  saturation:
+    m_OverrideState: 1
+    m_Value: 1
+  highlightDesat:
+    m_OverrideState: 1
+    m_Value: 0
+  warmth:
+    m_OverrideState: 1
+    m_Value: 0
+  inkLines:
+    m_OverrideState: 1
+    m_Value: 0
+  inkLow:
+    m_OverrideState: 1
+    m_Value: 0.05
+  inkHigh:
+    m_OverrideState: 1
+    m_Value: 0.25
+  halftone:
+    m_OverrideState: 1
+    m_Value: 0
+  halftoneCell:
+    m_OverrideState: 1
+    m_Value: 4
+  halftoneAngle:
+    m_OverrideState: 1
+    m_Value: 15
+  halftoneColour:
+    m_OverrideState: 1
+    m_Value: 0
+  grain:
+    m_OverrideState: 1
+    m_Value: 0
+  mottle:
+    m_OverrideState: 1
+    m_Value: 0
+  vignette:
+    m_OverrideState: 1
+    m_Value: 0
+  anchor:
+    m_OverrideState: 1
+    m_Value: 0
+  cel:
+    m_OverrideState: 1
+    m_Value: 0
+  celSoft:
+    m_OverrideState: 1
+    m_Value: 0.15
+  hazeTop:
+    m_OverrideState: 1
+    m_Value: 0
+  hazeColour:
+    m_OverrideState: 1
+    m_Value: {r: 0.96, g: 0.9, b: 0.86, a: 1}
+  paint:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-4463884970436517307
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -468,6 +559,7 @@ MonoBehaviour:
   - {fileID: -6288072647309666549}
   - {fileID: 7518938298396184218}
   - {fileID: -1410297666881709256}
+  - {fileID: -5011331990700645954}
 --- !u!114 &853819529557874667
 MonoBehaviour:
   m_ObjectHideFlags: 3

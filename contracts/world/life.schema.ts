@@ -40,7 +40,7 @@ export type Life = {
   generator: {
     occupations: Record<string, { category: string; hours: Hours; meanWidth: number; depth: number; staffPerUnit: number; shifts: { lengthH: number } | string }>;
     expected: { workersPerArea: Record<string, { frontageMetres: number; units: number; staff: number; trades: Record<string, { units: number }> }> };
-    homes: { plot: string; area: string; use: string; residents: number }[];
+    homes: { plot: string; area: string; use: string; storeys: number; residents: number }[];
     commuters: { rule: string; stations: string[] };
     routines: Record<'worker' | 'resident' | 'shopper' | 'reveller' | 'docker', string[]>;
     tiers: { simulated: string; background: string; maxCombatants: number; src: string };

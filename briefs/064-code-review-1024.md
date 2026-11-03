@@ -350,7 +350,7 @@ All of them are view-only and I found none that changes an order, so replay stay
 - **Sequence (~25 min of load):**
   1. tplong-01, cold, `-novsync`.
   2. tplong-02 … 07 back to back: the same three rows every ~110 s, to ~13 min. This is the soak and its time series.
-  3. perf064 (2880 × 1864, warm 30, windows 20) and late (1920 × 1080), as run-air.sh runs them.
+  3. perf064 (warm 30, windows 20) and late, as run-air.sh runs them. Since the 1080p bar (below), every row asks for 1920 × 1080; 0.2.122's perf064 still runs at 2880 × 1864 and is logged as such.
   4. tplong-08 `-novsync`: the warm row.
   5. As shipped: tplong-09 with vsync on (the player's settings, no `-novsync`), and perf064 `-capture-native` at the display's own size.
 - **Verdict rule (Redline reads it):**
@@ -442,3 +442,34 @@ All of them are view-only and I found none that changes an order, so replay stay
   - items 1 and 5 after Glint's shots.
 - **Glint:** items 1 (confirm it is invisible), 3, 6, 8, 9 and 10; render scale with Sky.
 - **Not now:** item 10, STP.
+
+## The 1080p bar (2026-10-26)
+- **Sky, 2026-10-26: "1080p probably ok" as the 60 fps bar** (GDD §11's "60 fps at 1080p"; answers A1 gap 3 and the "1080p or the Air's panel" question). Air runs measure at 1920 × 1080 from now on. Render scale stays Sky's look call.
+- **Scripts changed** (not run; `zsh -n` clean; the helpers dry-tested on the 0.2.122 kit and results on the Studio):
+  - `briefs/064/air-0122/run-air.sh` and `soak-air.sh` rewrite every tp-long and late row to `"w": 1920, "h": 1080` as they copy the kit's resolved files. The 0.2.122 kit's tp-long rows say 2880 × 1864; late's already said 1920 × 1080.
+  - perf064 gets `-capture-size 1920x1080`.
+  - After each pass, `atsize` reads the size the pass really ran at from its own JSON (`screen`) into machine.log, with a WARNING when that size is not 1920 × 1080. A number is then never mixed in at the wrong size without its label.
+  - soak's `perf064-native` (`-capture-native`) stays: it is A4's display-mode check, not a bar row.
+- **What the player supports:** windowed only. CaptureSize.Apply sizes a windowed drawable of exactly 1920 × 1080 pixels (on the Air's Retina, a 960 × 540-point window). There is no fullscreen-at-1080 path in any harness. At 1920 × 1080, RenderCap (cap 2880 × 1864) draws the 3D at scale 1.
+- **0.2.122's perf064 cannot measure at 1080.** Perf064.cs:46 calls `CaptureSize.Apply(2880, 1864)` unless `-capture-native` and ignores `-capture-size`. The flag is passed for the next build; until Latch's fix, its row comes back logged 2880 × 1864.
+- **Which 0.2.122 Air numbers were taken at 2880 × 1864** (5.37 Mpx, 2.59× 1080p's 2.07 Mpx):
+  - all tp-long rows in both runs: play-opening 14.98 / 19.27 → 20.99 / 25.97, tp-street 14.30 / 18.47 → 21.87 / 30.82, tp-worst 14.93 / 17.87 → 23.26 / 28.89 ms (mean / p99), and their main and render thread ms;
+  - all of perf064: cones p99 26.1 → 7.7 and 22.9 → 6.3; whole-frame p99 45.0 / 41.2 → 25.2 / 27.2; after-1 → after-2 15.46 → 17.31 mean, frames over 16.7 ms 220 → 652;
+  - every derived number: A3's savings column, A1's ×1.40–1.56 ratios, A5's "today" (21.0 / 26.0 and 23.3 / 28.9; 8 and 10 ms over).
+- **Already at 1920 × 1080:** late (loud-fight 12.66 / 19.71, max 57.7; loud-left-downed 14.11 / 23.14, max 45.2), and 008 B6's A/B.
+- **What should change when re-measured at 1080, and what should not** (estimates, from A3's two-point model: 2.1–2.5 ms a Mpx warm pixel work, 53–64 % of the warm play frame):
+  - **Counts do not move:** triangles, SetPass, shadow casters, renderers drawn. Neither do the CPU costs: main and render thread, perf064's cone ms and builds, late's 57.7 ms order+save frame (R2).
+  - **Play-opening warm:** ~21.0 → ~12.7–14.2 ms mean, which matches late's 12.7–14.1 at 1080. That is at or just over A5's 13.0 target. p99 ~15.3–20 (ratio 1.20–1.41): borderline.
+  - **tp-worst warm:** ~23.3 → ~14.1–15.7 mean, p99 ~17–22. Still over: street level still needs brief 048's geometry items.
+  - **Cold rows:** ~15 → ~9–10 mean.
+  - **A3's per-pixel savings shrink about 0.39×.** SSAO off at play is ~0.8–1.4 ms instead of 2–3.5; items 3, 4, 6, 8 and 10 shrink alike. Items that are not per pixel do not shrink: 7's culling, 9's casters. Item 2 changes question: at a 1080 window the 3D is already at the GDD's pixels. What remains is what a fullscreen player on the Air gets (RenderCap draws up to 2880 × 1864 there), which is Sky's look call and A4.
+  - **Throttling (A1) does not go away:** the rise is the GPU clock, so it should be about the same fraction at 1080. In ms it is smaller: ~+4–5 instead of +6–8.
+  - **A5's target holds** (warm mean ≤ 13.0, p99 ≤ 16.7, at 1920 × 1080). "Today" becomes the re-measured warm 1080 rows; the asset brief stays frame-neutral until they are in.
+- **Bar and shipped player differ:** the bar is 1080, but the shipped default is borderless fullscreen at the desktop's drawable, so a player on the Air draws more than the bar. Whether the shipped Air default should be 1080 is Sky's call (render scale), via Aster.
+- **Handoffs:**
+  - **Latch:** Perf064.cs:46 should honour `-capture-size` (default 1920 × 1080) and update its summary (line 18). CaptureSize.cs's comment (lines 11–15) says the 60 fps limit is set at 2880 × 1864.
+  - **Splice:** move the measure sizes to 1920 × 1080:
+    - `tools/game/tplong.ts` DEFAULT_SIZE (line 16) and its header, tplong.test.ts;
+    - `tools/game/batch.ts` perf064 `-capture-size 2880x1864` (lines 305, 313) and the header lines 14–15;
+    - `tools/game/cli.ts` AIR / `-frames-size 2880x1864` (line 242 on).
+  - Then a fresh Air kit's resolved rows are already 1080, and the scripts' rewrite is a no-op.
