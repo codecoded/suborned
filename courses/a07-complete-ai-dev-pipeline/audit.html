@@ -4,39 +4,39 @@
 <title>The Suborned - Assignment 7 audit</title>
 <style>
 @page{size:A4;margin:16mm}
-body{font:11pt/1.32 sans-serif;color:#203b3b;margin:0}
+body{font:11pt/1.3 sans-serif;color:#203b3b;margin:0}
 h1{font-size:27pt;line-height:1.05;margin:5pt 0 6pt}
-h2{font-size:12pt;color:#146b66;margin:13pt 0 5pt}
-p{margin:4pt 0 7pt}
+h2{font-size:12pt;color:#146b66;margin:11pt 0 5pt}
+p{margin:4pt 0 5pt}
 .kicker{font-size:9pt;letter-spacing:1pt;color:#146b66}
 .byline{font-size:10pt;color:#526765;margin-bottom:12pt}
 strong{color:#143c3b}
 footer{font-size:9pt;color:#526765;border-top:1px solid #cbd6d1;margin-top:11pt;padding-top:8pt}
 a{color:#146b66;text-decoration:none}
 </style>
-<div class="kicker">ASSIGNMENT 7 / PIPELINE AUDIT</div>
+<div class="kicker">ASSIGNMENT 7 / COMPLETE AI DEV PIPELINE</div>
 <h1>The Suborned</h1>
-<p class="byline">Sky Rumsey | Unity | Generating the city's people</p>
-<p>The Suborned is a squad tactics game about using people's needs and relationships to carry out a plan. This pipeline creates the people who make that possible.</p>
+<p class="byline">Sky Rumsey | Unity | From game design to a playable release</p>
+<p>The Suborned is squad tactics built around social infiltration. AI assists development and content creation; <strong>no AI model runs during play.</strong></p>
 
-<h2>1. What it produces, and what still needs me</h2>
-<p>The pipeline creates <strong>130 people, their daily routines and 222 relationship links</strong>. In the playable mission, Inez the waitress owes money and is involved with Arthur, the door guard. Learning this gives the player a way to draw him away from his post.</p>
-<p>An AI agent reads relevant game-design rules and proposes the cast. Code checks the proposal; a second agent reviews it. Once approved, the cast becomes people and routines in a format Unity can load <strong>without hand reformatting</strong>.</p>
-<p>I still approve the cast and maintain the game rules. Publishing and first-play testing also need human attention. To automate more, I would connect the remaining release steps so one approved version is checked, packaged and uploaded together.</p>
+<h2>1. From design to game</h2>
+<p><strong>Design / agent work / review / Unity / tests / release.</strong> The game-design document sets the rules. Specialist agents work from focused briefs and retrieve relevant design passages for structured generation. They propose code and content; automated checks and agent reviews catch faults. I approve design and creative choices.</p>
+<p>Outputs include world geometry and props, character art, people and routines, dialogue, simulation code and the interface. Approved plans and asset lists drive generation and import. Checked data feeds Unity; builds are playtested, packaged, signed and published.</p>
+<p><strong>The video's worked example:</strong> cast data becomes 130 people and 222 relationship links, is exported automatically, and functions in Unity without hand reformatting. Inez's debt and relationship with Arthur give the player a way past his post.</p>
+<p><strong>Human work remains:</strong> design, art selection and finishing, dialogue revision, playtesting and release approval. To automate more, I would store approved choices as data and connect the remaining steps from checks through publishing.</p>
 
 <h2>2. What I would change</h2>
-<p><strong>I would save every input needed to rebuild a release.</strong> The replay exposed an old population file left over from before the city was redesigned. The four mission characters still match the shipped cast, but regenerating today changes some background residents and travel stops.</p>
-<p>I would replace loose generated files with a versioned build record: the cast, city layout, rules, names and generator versions. A build would recreate anything affected by a change and stop if its inputs did not match the approved version.</p>
+<p><strong>Give each release one complete, versioned build record.</strong> Individual approvals do not preserve every dependency: the mission cast matches the shipped game, but the redesigned city changes some background residents and travel stops when regenerated.</p>
+<p>I would save the design, city plan, rules, assets and generator versions together. Builds would regenerate changed outputs and reject mismatched inputs.</p>
 
-<h2>3. What the generation actually cost</h2>
-<p><strong>The recorded cast-generation run used about $0.69 across three AI calls</strong>, including the first rejected proposal. The final review was the largest call at <strong>$0.28</strong>. The writing agent used Claude Sonnet; the reviewer used Claude Opus.</p>
-<p>These are Claude's reported usage costs. The calls were covered by a subscription, so this was not a separate API payment. Subscription fees, my time, hardware and hosting are excluded.</p>
-<p>This is affordable for a solo developer at this scale: generation happens during development, approved content is reused, and rounds and spending are capped. <strong>There is no AI inference cost during play.</strong> Human review remains a significant time cost.</p>
+<h2>3. Actual costs, with a clear boundary</h2>
+<p><strong>The people run used $0.6905 across three AI calls</strong>, including a rejected proposal. Its largest call was the Claude Opus review, about <strong>$0.28</strong>; Claude Sonnet drafted the cast. These are subscription usage values, not extra API payments.</p>
+<p>Separately, portraits incurred <strong>$1.1556 in image API charges</strong>. Neither figure is the game's total cost; project-wide spend has not been reconciled. Subscription fees, labour, hardware and hosting are excluded.</p>
+<p>Reuse and spending limits make these examples affordable for solo development. Review still costs time.</p>
 
-<h2>4. How I reduced wasted calls</h2>
-<p><strong>Before:</strong> the AI reviewer ran even when code had already found a fault. In an earlier transit run, two such reviews used <strong>$0.41</strong>.</p>
-<p><strong>After:</strong> failed checks send the work straight back for correction. In the people run's failed first round, this meant <strong>zero review calls, zero review tokens and $0 review cost</strong>. The corrected result still received a full review. These are different candidates, so this is not a like-for-like percentage saving.</p>
+<h2>4. A cost-saving change to the shared workflow</h2>
+<p><strong>Before:</strong> the AI reviewer ran even when code had already found a fault. Two such reviews in an earlier transit run used about <strong>$0.41</strong>. <strong>After:</strong> failed checks go straight back for correction. The people run's failed first round therefore used <strong>zero review calls, zero review tokens and $0 review cost</strong>. The corrected result still received review. Different candidates mean no like-for-like percentage saving is claimed.</p>
 
-<footer><strong>Recording limits:</strong> original AI responses are archived; the video records a real offline replay and the generated data running in an existing game executable. It does not show new AI calls or a newly compiled Unity build. The public download's two-minute first-play check is still outstanding.<br>
-Costs are rounded here; exact call records and verification are in the <a href="https://github.com/codecoded/suborned/tree/assignment-07/courses/a07-complete-ai-dev-pipeline">Assignment 7 evidence pack on GitHub</a>.</footer>
+<footer><strong>Video scope:</strong> archived AI output is replayed into an existing player, with some background data differing from release. It demonstrates one path, not the whole game's creation. The two-minute first-play test remains open.<br>
+Exact records and source: <a href="https://github.com/codecoded/suborned/tree/assignment-07/courses/a07-complete-ai-dev-pipeline">Assignment 7 evidence pack on GitHub</a>.</footer>
 </html>

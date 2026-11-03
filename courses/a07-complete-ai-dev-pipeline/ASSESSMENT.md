@@ -1,6 +1,7 @@
 # Assignment 7 evidence reassessment
 
-The primary example is now the **people, relationships and routines pipeline**. A real offline execution has been recorded through expansion, engine-data staging and a running Unity player. The audit now covers that path. The earlier portrait walkthrough remains optional supporting evidence.
+The submission is framed around the **whole game-development workflow**, from design and agent work through review, Unity integration, player testing and release. The people/relationships/routines execution is the concrete recorded example within it. The one-page audit now uses that wider scope, with measured run costs explicitly separated from the unknown full-project total. The video is not presented as a recording of every pipeline or the entire game's creation.
+
 
 The execution exposed a retained pre-remap background population in the shipped game. The four mission profiles match the fresh export, but the full background projection does not. The video labels the current-plan replay variant, the retained player binary and historical AI generation. See README.md and evidence/people.json for the final proof boundary.
 

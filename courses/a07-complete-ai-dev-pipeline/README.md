@@ -4,17 +4,33 @@
 
 The Suborned is real-time squad tactics and social infiltration. The Handover asks the player to take Councillor Popovic alive by learning about ordinary people and using their relationships. AI content is made during development; no model runs during play.
 
-The primary example is the **people, relationships and routines pipeline**. World/DecoKit supplies the setting in the gameplay footage. Portraits are optional supporting evidence, not the submission's main example.
+The audit covers the **whole development workflow**, from game design to release. The **people, relationships and routines pipeline is the recorded worked example**, rather than the scope of the entire submission. Its costs are one measured example, not a whole-game budget.
 
 ## Submission links
 
 - Playable game: https://codecoded.itch.io/the-suborned
 - Source: https://github.com/codecoded/suborned/tree/assignment-07
-- Primary execution video: **https://youtu.be/725LKDmVNQ8** - **CodeCoded / @codecoded**, Unlisted; 95 seconds, 4K delivery.
+- Worked-example execution video: **https://youtu.be/725LKDmVNQ8** - **CodeCoded / @codecoded**, Unlisted; 95 seconds, 4K delivery.
 - One-page audit: [audit.pdf](audit.pdf), [HTML source](audit.html).
 - Original brief: [assignment-brief.pdf](assignment-brief.pdf).
 
 **Release gate remains open.** The anonymously viewed itch page offered macOS `TheSuborned-0.2.231.zip` (521 MB). A compatible stranger's visit-to-control time of at most 120 seconds has not been certified. The video uses the 0.2.232 player binary with freshly staged current-plan people, explicitly labelled as a local replay variant. It does not claim that variant is the public release or that a fresh Unity compilation occurred.
+
+## Whole-game production workflow
+
+**Game design and briefs → agent code/content work → checks, critique and approval → Unity integration → player tests → packaging and release.** This is a production workflow with automated stages and deliberate human review, not a claim that one command creates the entire game.
+
+| Stage | What it contributes | Source and limits |
+| --- | --- | --- |
+| Design and task assignment | Rules, visual direction and focused tasks for specialist agents | [GDD](../../GDD/), [briefs](../../briefs/), [crew roles](../../.codex/agents/); design decisions require approval |
+| Generation and implementation | Retrieved design context for structured content; agent-authored code and assets | [retrieval](../../tools/rag/), [headless simulation development](../../tools/goals/README.md); the goal coordinator is limited to simulation code |
+| World and assets | Plan-driven geometry/props, asset catalogue and hash-checked copying into Unity | [DecoKit](../../tools/decokit/run.ts), [kit import](../../tools/kit/cli.ts), [world export](../../tools/world/export.ts); the played city also retains legacy content; art selection and finishing remain review work |
+| People, routines and relationships | Approved cast tables expanded into people and engine data | [recorded example](people-run.ts); current regeneration and the retained release differ in some background people |
+| Dialogue | Generated drafts/tables, checks and editorial revision before adoption | [generation](../../tools/levels/dialogue/plugin.ts), [production writing decisions](../../briefs/085-play-notes-0177.md); not every generated draft reached the game |
+| Unity and verification | Engine data and assets functioning with the simulation and interface; player proofs and performance checks | [Unity runtime](../../unity/Assets/Suborned/Runtime/Play/), [batch](../../tools/game/batch.ts); individual content checks are not a guarantee of the entire game's quality |
+| Release | Packaging, signing and distribution of a tested player | [build/release tooling](../../tools/game/cli.ts), public itch link above; publication and the stranger's first-play check remain release responsibilities |
+
+The one-page audit assesses this wider workflow. The video follows one inspectable path through it, and the evidence below verifies that path. It does not record every asset pipeline or the whole game's creation. There is no reconciled whole-project spending total: the people run's subscription usage and the separate portrait API charges retain their own scopes.
 
 ## For markers
 
@@ -77,7 +93,7 @@ The actual mid-project change is **checks before critique**, introduced in brief
 
 - [x] Accepted cast, provenance and recorded usage verified.
 - [x] Real expansion, engine-data staging and player execution recorded.
-- [x] One-page people-pipeline audit rendered and visually checked.
+- [x] One-page whole-workflow audit rendered and visually checked; people run retained as the costed worked example.
 - [x] Publish the primary video on CodeCoded, Unlisted; signed-out playback verified; 2160p, 1440p and 1080p renditions available.
 - [x] Verify source-repository access while signed out (Public; assignment-07 branch visible).
 - [ ] Confirm a compatible marker platform and record a visit-to-control test within 120 seconds.

@@ -38,7 +38,7 @@
     "visibility": "private",
     "reason": "wrong channel"
   },
-  "audit_status": "one-page people-pipeline audit rendered and visually checked",
+  "audit_status": "one-page whole-workflow audit rendered and visually checked",
   "local_pipeline_video": "out/scratch/a07/people-run/TheSuborned-A07-People-Pipeline-4K-upload.mp4",
   "pipeline_recorded": true,
   "fresh_model_generation_recorded": false,
@@ -53,5 +53,8 @@
   "pipeline_video_channel": "CodeCoded / @codecoded",
   "pipeline_video_visibility": "unlisted",
   "pipeline_video_signed_out_verified": true,
-  "pipeline_video_4k_available": true
+  "pipeline_video_4k_available": true,
+  "audit_scope": "Whole game development workflow: design, agent code/content work, validation/review, Unity integration, player testing and release",
+  "pipeline_example_role": "Recorded worked example within the wider development workflow; not a full recording of game creation",
+  "cost_scope": "People run: recorded subscription usage; portrait campaign: separate image API charges. No reconciled whole-game total."
 }
