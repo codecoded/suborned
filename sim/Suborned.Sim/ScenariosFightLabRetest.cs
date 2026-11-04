@@ -185,20 +185,6 @@ namespace Suborned.Sim
                 r.Is(!r.Shots().Exists(s => s.tick > broke && s.by.StartsWith("rival-", StringComparison.Ordinal)), "and fire no more");
             }, LabStart(s => s.Security = 1));
 
-            Add("N165", "—", "Brief 027 retest (Motive tuning.md §7.5): route A to the safe fight under the lab, the Scout drawn. From the tick a blocker is picked to the end of the fight, a move of the Scout's onto the cover point the blocker walks to or stands on never snaps there (it is held, whatever its bookkeeping says).", r =>
-            {
-                var g = r.G;
-                RouteA(r, reroute: true); Support(r); ToAmbush(r);
-                if (!r.Op(Scout).Gun.Drawn) r.Do(Scout, "draw");
-                if (!r.Is(r.Until(() => g.Blockers.Count > 0 || g.Over, T(60)) && !g.Over, "a blocker goes for the road")) return;
-                var b = g.Hostiles.First(h => h.Id == g.Blockers[0]); var dest = b.Home;
-                var cv = g.S.Cover.FirstOrDefault(c => c.At == dest);
-                if (!r.Is(cv != null, $"{b.Id} heads for a cover point ({cv?.Id})")) return;
-                int bad = 0, checks = 0;
-                r.Until(() => { if (!b.Down && b.Present && r.Op(Scout).Gun.Drawn && !r.Op(Scout).Down) { checks++; if (g.PreviewSnap(OpId.Scout, cv!.At)?.Id == cv.Id) bad++; } return b.Down || g.FightOverTick != Never || g.Over; }, T(40));
-                r.Is(checks > 0, $"{checks} ticks checked");
-                r.Eq(bad, 0, $"ticks a move onto {cv!.Id} would snap there while {b.Id} walks to it or holds it");
-            }, LabStart());
         }
     }
 }

@@ -593,7 +593,7 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
   test('brief 059 (engine 0.32.0; Sky 2026-10-25, 1a 2a 3a): the crew of five, Vale in his car, the Drive; the safe fight\'s −1s retired; Sky\'s S1–S3 values', () => {
     expect(rb.rivals).toBeDefined(); expect(rb.car?.pickup).toBeDefined(); expect(rb.cell.driveCar).toBeDefined(); // optional in the schema only for pinned runs
     const cr = rb.rivals!;
-    expect([cr.crew, cr.posted, cr.drop, cr.out, cr.step, cr.follow, cr.followPace, cr.warn, cr.warnLag, cr.lookoutPace].map(n)).toEqual([5, 3, 8, 5, 2, 2, 280, 10, 3, 200]);
+    expect([cr.crew, cr.posted, cr.drop, cr.out, cr.step, cr.follow, cr.followPace, cr.lookoutPace].map(n)).toEqual([5, 3, 8, 5, 2, 2, 280, 200]); expect(cr.warn).toBeUndefined(); expect(cr.warnLag).toBeUndefined(); // brief 096 (engine 0.41.0): the driver's word (F4) is retired
     expect(n(rb.car!.pickup!.valeIn)).toBe(3);
     expect(rb.fight.safe.minus).toBeUndefined(); expect(rb.values['fight-modifier']).toBeUndefined(); expect(rb.values['fight-safe-hostiles']).toBeUndefined(); // Motive M059-3.6, 3.7: kept optional in the schema only for pinned runs
     expect(rb.fight.safe.hostiles).toBe('v:rivals-crew');

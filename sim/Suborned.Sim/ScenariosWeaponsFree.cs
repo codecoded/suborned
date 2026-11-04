@@ -257,7 +257,7 @@ namespace Suborned.Sim
                 }
                 One(r, "bal-loud-x4");
                 if (r.Inputs == null) return;
-                foreach (var fx in new[] { "sq-ra-h3", "sq-route-a-board", "bal-rb-ff", "bal-rbb-ff" }) { var b = Alt(r, r.Inputs); One(b, fx); foreach (var c in b.Checks) r.Is(c.ok, $"[{fx}] " + c.what); }
+                foreach (var fx in new[] { "sq-ra-h3", "sq-route-a-board" }) /* brief 096 (engine 0.41.0): bal-rb-ff and bal-rbb-ff, the yard's one-car way, are boxed on arrival now */ { var b = Alt(r, r.Inputs); One(b, fx); foreach (var c in b.Checks) r.Is(c.ok, $"[{fx}] " + c.what); }
             });
 
             Add("HI-SCOUT", "—", "Sky 2026-10-21 (hostile-initiative.md answer 2): the Enforcer goes in wild; the holstered Scout in the hostiles' sight is never fired on", r =>

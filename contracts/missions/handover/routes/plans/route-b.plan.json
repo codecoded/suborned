@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route B, the pickup, quiet (GDD v0.26.0 §07; Keel N11b), fight it out (brief 018 §5). The Scout listens to the driver and the Fixer pays him by 5:40 ($70,000); his word sends the rivals' lookout off; the Scout gives the rival car a false tip at 3:10; the Tech reroutes the patrol from the cabinet at 5:00 (it lands at 5:45 and keeps the yard clear to 7:40: brief 067 A, the patrol sweeps the service yard; rerouted it never breaks to the yard fight), then runs to the getaway car and Drives it round behind Vale's car once it parks in the service bay (car.parks). The Enforcer waits at the square until 5:50 (in the yard before the Reroute the patrol reported him at 1:53.4), walks to the service lane, takes Vale from the back seat (38 s, off-screen) and carries him 3.5 m to the car. The posted three run after the Driven car and spring at the Take; the Fixer and then the Scout, 0.5 s later (Motive's rb-st: on the same tick the Fixer took both rivals' fire and went down), lock rival-1 then rival-2 (focus fire, Motive M059-B7: at will the three shoot the carrying Enforcer down) until the crew breaks; then Go. The three left behind on a calm street walk out.",
+ "note": "Route B, the pickup, quiet, on engine 0.41.0 (brief 096, Motive's rivals page; recomposed by Keel for Waymark). The Scout listens to the driver; the Tech loops the pickup camera from the cabinet and the Fixer pays the driver inside the loop ($70,000, off tape); the rival car boxes our car in at the square about 2:53; the Scout misleads the lookout about 4:30 (he watches the public door until about 6:45, past Popovic's car leaving at 5:53); the Tech reroutes the patrol at 4:40; the Enforcer takes Popovic from the back seat in the service bay and walks him round to Rocket Lane while the three blow the block's car; the crew springs, the cell fights it out, the Enforcer boards and Go.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -46,6 +46,23 @@
    "why": "given once the Scout stands at the meeting point (the walk is under 2 s; 5 s covers it), so the Listen starts where he stands; engine 0.23.0 walks an out-of-reach Listen in, so given on the way it would start late"
   },
   {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true,
+   "why": "brief 067 A: to the cabinet for the Reroute"
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "pickup",
+   "after": [
+    "heard"
+   ],
+   "label": "loop",
+   "why": "brief 096: Lukac stands in the pickup camera's view, so the Pay is looped first (it was on tape in c051); the loop's 2:00 covers the walk in and the 35 s Pay"
+  },
+  {
    "op": "fixer",
    "do": "move",
    "to": "d:Boarding pavilion",
@@ -59,7 +76,11 @@
    "approach": "pay",
    "by": "5:20",
    "label": "turned",
-   "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
+   "why": "inside the pickup camera's loop: the Pay is off tape (brief 096)",
+   "after": [
+    "loop"
+   ],
+   "when": "loop.on"
   },
   {
    "op": "scout",
@@ -75,47 +96,6 @@
    "why": "once the Listen is over (30 s, and his walk to a spot) and a margin, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"
   },
   {
-   "op": "scout",
-   "do": "mislead",
-   "target": "rivals",
-   "at": "3:10",
-   "label": "tip",
-   "why": "a false tip sends the rivals away (3:50) as soon as they park"
-  },
-  {
-   "op": "scout",
-   "do": "move",
-   "to": [
-    7300,
-    -1900
-   ],
-   "after": [
-    "tip"
-   ],
-   "at": "5:35",
-   "label": "scout-yard"
-  },
-  {
-   "op": "fixer",
-   "do": "move",
-   "to": [
-    7300,
-    -1100
-   ],
-   "after": [
-    "turned"
-   ],
-   "at": "5:35",
-   "label": "fixer-yard"
-  },
-  {
-   "op": "tech",
-   "do": "move",
-   "to": "cabinet",
-   "run": true,
-   "why": "brief 067 A: to the cabinet for the Reroute"
-  },
-  {
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
@@ -124,27 +104,27 @@
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
   {
-   "op": "tech",
+   "op": "scout",
    "do": "move",
-   "to": "d:Getaway bay",
-   "after": [
-    "rr"
+   "to": [
+    9100,
+    -2700
    ],
-   "when": "patrol.rerouted",
-   "run": true
+   "after": [
+    "heard"
+   ],
+   "at": "3:40",
+   "label": "to-lookout",
+   "why": "engine 0.41.0: the lookout takes his post about 3:58, watching Popovic's car"
   },
   {
-   "op": "tech",
-   "do": "board",
-   "target": "car",
-   "label": "tech-in"
-  },
-  {
-   "op": "tech",
-   "do": "drive-car",
-   "target": "service-drive",
-   "label": "drive",
-   "when": "car.parks"
+   "op": "scout",
+   "do": "mislead",
+   "target": "rival-4",
+   "at": "4:30",
+   "label": "misled",
+   "when": "rivals.lookout-posted",
+   "why": "lands 5:00: he watches the Office's public door until about 6:45, so nobody follows Popovic's car at 5:53"
   },
   {
    "op": "enforcer",
@@ -155,59 +135,135 @@
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {
-   "op": "fixer",
-   "do": "fire",
-   "target": "rival-1",
-   "label": "fixer-l1",
-   "every": 0.5,
-   "when": "fight.ambush",
-   "after": [
-    "take"
-   ]
-  },
-  {
    "op": "scout",
-   "do": "fire",
-   "target": "rival-1",
-   "label": "scout-l1",
-   "every": 0.5,
-   "when": "fight.ambush",
-   "after": [
-    "fixer-l1"
+   "do": "move",
+   "to": [
+    1250,
+    -5250
    ],
-   "gap": 0.5
-  },
-  {
-   "op": "scout",
-   "do": "fire",
-   "target": "rival-2",
-   "label": "scout-l2",
-   "every": 0.5,
    "after": [
-    "scout-l1"
+    "misled"
    ],
-   "when": "fight.down"
+   "at": "5:35",
+   "label": "scout-sq"
   },
   {
    "op": "fixer",
-   "do": "fire",
-   "target": "rival-2",
-   "label": "fixer-l2",
-   "every": 0.5,
-   "after": [
-    "fixer-l1"
+   "do": "move",
+   "to": [
+    1500,
+    -5200
    ],
-   "when": "fight.down"
+   "after": [
+    "turned"
+   ],
+   "at": "5:35",
+   "label": "fixer-sq"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    1750,
+    -5250
+   ],
+   "after": [
+    "rr"
+   ],
+   "when": "patrol.rerouted",
+   "run": true,
+   "label": "tech-sq"
   },
   {
    "op": "enforcer",
    "do": "move",
-   "to": "service-drive",
+   "to": [
+    2000,
+    -6500
+   ],
    "after": [
-    "take",
-    "drive"
+    "take"
    ],
    "when": "take.done",
+   "label": "walk",
+   "why": "Popovic walked out of the yard round to Rocket Lane, 20 m off our car (the rival car stands across its way out)"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "after": [
+    "scout-sq",
+    "take"
+   ],
+   "when": "take.done",
+   "label": "blow-s",
+   "why": "the three blow the block's car while he walks (in the safe fight its shots are untraced; the first springs the crew)"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "after": [
+    "fixer-sq",
+    "blow-s"
+   ],
+   "label": "blow-f"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "after": [
+    "tech-sq",
+    "blow-s"
+   ],
+   "label": "blow-t"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "s1",
+   "after": [
+    "blow-s"
+   ],
+   "when": "car.burning",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "f2",
+   "after": [
+    "blow-f"
+   ],
+   "when": "car.burning",
+   "every": 0.5
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-3",
+   "label": "t3",
+   "after": [
+    "blow-t"
+   ],
+   "when": "car.burning",
+   "every": 0.5
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "walk"
+   ],
+   "when": "fight.over",
    "label": "out"
   },
   {
@@ -218,7 +274,7 @@
     "out"
    ],
    "label": "in",
-   "why": "Vale into the car first (Board, 4 s carrying; brief 018 §2)"
+   "why": "Popovic into the car first (Board, 4 s carrying)"
   },
   {
    "op": "cell",
@@ -226,12 +282,12 @@
    "after": [
     "in"
    ],
-   "when": "fight.over",
    "unless": [
     "captured",
     "withdraw.car"
    ],
-   "why": "fight it out: the crew is broken and the car free, so the car leaves at once; the three walk out on a calm street (brief 018 §3), which costs nothing, so they do not spend time boarding"
+   "why": "the crew is down or broken and the block's car is gone: Go",
+   "when": "fight.over"
   }
  ]
 }

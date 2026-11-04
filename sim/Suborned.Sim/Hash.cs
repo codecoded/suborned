@@ -111,7 +111,7 @@ namespace Suborned.Sim
             h.I((int)g.Vale).Z(g.PickupService).Z(g.EntryInProgress); var vp = g.ValePos(); h.Z(vp.HasValue); if (vp.HasValue) h.P(vp.Value);
             h.Z(g.PatrolDown).Z(g.PatrolChasing).Z(g.PatrolTracking).I(g.PatrolAwayUntil); var pp = g.PatrolPose(); h.Z(pp.HasValue); if (pp.HasValue) h.P(pp.Value.pos);
             h.I(g.RivalAt).Z(g.RivalsArrived).Z(g.RivalsDrawn).Z(g.RivalsTracking).I(g.RivalsDelayedUntil).I(g.RivalsDrawnTick).S(g.RivalsDelayMethod);
-            h.Z(false); g.HashCrew(h); g.HashDriveCar(h); // brief 059: RivalsPose is retired (its byte stays, false); the crew and the getaway's stand hash on their own, no bytes until the car enters or the car moves
+            h.Z(false); g.HashCrew(h); g.HashGang(h); g.HashDriveCar(h); // brief 059: RivalsPose is retired (its byte stays, false); the crew and the getaway's stand hash on their own, no bytes until the car enters or the car moves
             h.I(g.SecurityArrives).I(g.Lockdown).Z(g.SecurityDown).Z(g.SecurityTracking);
             var sp = g.SecurityPose(); h.Z(sp.HasValue); if (sp.HasValue) h.P(sp.Value.pos);
             h.Z(g.InezWitnessedShooting).S(g.InezMethod).S(g.RouteKind).S(g.RouteGuard).S(g.RouteBot).S(g.RouteRival);

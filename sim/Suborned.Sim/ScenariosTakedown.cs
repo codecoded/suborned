@@ -541,7 +541,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Send(Tech, "cabinet");
-                r.SendTo(Scout, TipSpot(r)); r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals"); // the false tip (route B), so the rivals don't reach Vale first
+                r.SendTo(Scout, TipSpot(r)); r.To(T(g.S.RivalsArrive) + 1); /* brief 096: the false tip is retired; no crew here (NoCrew) */ // the false tip (route B), so the rivals don't reach Vale first
                 r.To(T(220)); r.Do(Tech, "reroute", "patrol"); // engine 0.34.0 (brief 067 A): as N57, the yard patrol away over the carry to the Dumpster
                 r.To(T(240)); r.To(r.SendTo(Enf, g.S.Stand(g.S.CarBlock) + new Pt(-300, -300)));
                 r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech); // brief 059: the camera block is retired; the loop blinds it to 7:10
@@ -557,7 +557,7 @@ namespace Suborned.Sim
                 r.Is(!g.Over && g.Vale == ValeAt.Taking || g.Vale == ValeAt.WithEnforcer, "Vale is being taken");
                 r.Is(!g.Log.Exists(l => l.Code == "person.missed"), "being taken, Vale reports nothing");
                 r.Is(!g.Acts.Exists(x => x.Take), "an unseen Take opens no incident (brief 013 D: a Take is seen only by whoever sees it)");
-            }, DriverBlind());
+            }, NoCrew(DriverBlind()));
 
             Add("N58", "—", "Who can be taken (Sky 2026-10-16: anyone; one rule, no named list): only the Enforcer; within his reach; anyone on the street, cast or crowd, by role or id; Vale only killed (knockout: use Take), and killing him fails the mission; the patrol and cameras are no targets (Reroute and Loop are their verbs).", r =>
             {

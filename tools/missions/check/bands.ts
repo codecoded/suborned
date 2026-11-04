@@ -18,7 +18,7 @@ export type Row = {
   replayIdentical?: boolean; stats: { fightS: number; shots: number; hits: number; hpLost: number; down: number }; campaignTrail?: number; campaignStanding?: number; openCases?: number; cause?: { why?: string; culprits?: { id: string }[] };
   marks: Record<string, number>; idleMaxS: number; idleAt: number; inputs: number; refused: number; unpriced: number; giveUps: number; firstShot: number; held?: { tick: number; how: string; who: string }[]; fullToDown?: { op: string; s10: number }[]; refusals: Record<string, number>; given: Record<string, number>; never: string[]; error?: string;
 };
-export type Style = 'prepared-quiet' | 'thin-quiet' | 'careless' | 'prepared-loud' | 'unprepared-loud' | 'twin';
+export type Style = 'prepared-quiet' | 'thin-quiet' | 'careless' | 'prepared-loud' | 'unprepared-loud' | 'twin' | 'variant'; // brief 096: a variant plays another way to win (thinned, the veteran's shot, the drive-round), read only by its own band
 /** Brief 096 (Motive's rules page): a `twin` plays its quiet plan with one mistake (quiet-b-taped: the Pay on the live camera; drive-early: the car parked on the drive before the chime, no Reroute). */
 export const TWINS: Record<string, string> = { 'quiet-b-taped': 'quiet-b', 'drive-early': 'quiet-b' };
 export const REFERENCE: Style[] = ['prepared-quiet', 'prepared-loud'];
@@ -96,6 +96,26 @@ export function bands(s: Summary[], rows: Row[], caseEq = 3): Line[] {
   // brief 096 (Motive): a one-mistake twin is clearly worse than its quiet plan, and its mistake is seen (Alert on nearly every seed)
   for (const x of by('twin')) { const q = s.find(y => y.plan === TWINS[x.plan]); L.push({ id: `B-15 ${x.plan}`, rule: `one mistake costs: wins at least 10 points under ${TWINS[x.plan] ?? '(no twin)'}`, ok: !!q && x.winPct <= q.winPct - 10, value: q ? `${x.winPct} % against ${q.winPct} %` : 'no twin played' }); }
   for (const x of by('twin')) { const r = rows.filter(y => y.plan === x.plan), seen = r.filter(y => y.alert >= 1).length; L.push({ id: `B-16 ${x.plan}`, rule: 'the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds', ok: seen * 100 >= 95 * r.length, value: `${seen}/${r.length}` }); }
+  L.push(...rivals096(s, rows));
+  return L;
+}
+
+/** Brief 096's rivals round (Motive briefs/096/motive/rivals.json bands, Sky 2026-11-04 "all recommended"): the expected bands of the block on
+ *  arrival, the lookout, thinning and the veteran's shot. Reports, never a plan's target (brief 080). A plan that isn't played reads "not played". */
+function rivals096(s: Summary[], rows: Row[]): Line[] {
+  const P = (id: string) => s.find(x => x.plan === id), L: Line[] = [];
+  const band = (id: string, rule: string, plan: string, lo: number, hi: number) => { const x = P(plan); L.push({ id: `R96 ${id}`, rule, ok: !!x && x.winPct >= lo && x.winPct <= hi, value: x ? `${x.winPct}%` : 'not played' }); };
+  band('A', 'quiet-a wins 80-95 % (the block on every route)', 'quiet-a', 80, 95);
+  band('B', 'quiet-b wins 70-85 % (the walk to the square, the fight at the block)', 'quiet-b', 70, 85);
+  band('B-ignored', 'quiet-b with the lookout ignored wins ≤ 5 %', 'quiet-b-lookout-ignored', 0, 5);
+  { const b = P('quiet-b'), t = P('quiet-b-thinned'); L.push({ id: 'R96 B-thinned', rule: 'quiet-b thinned wins ≥ quiet-b + 5 points', ok: !!b && !!t && t.winPct >= b.winPct + 5, value: b && t ? `${t.winPct} % against ${b.winPct} %` : 'not played' }); }
+  band('G', 'quiet-g wins 60-80 %', 'quiet-g', 60, 80);
+  band('loud', 'prepared-loud within 10 points of 75.5 % (c050)', 'prepared-loud', 65.5, 85.5);
+  band('drive-round', 'the drive-round shortcut wins 5-25 %', 'drive-round', 5, 25);
+  band('veteran', "the veteran's shot wins 15-35 % (Q1 a)", 'veteran', 15, 35);
+  { const b = P('quiet-b'); L.push({ id: 'R96 B-idle', rule: 'quiet-b: the whole cell idle, median ≤ 30 s', ok: !!b && b.idleMed <= 30, value: b ? `median ${b.idleMed} s, p95 ${b.idleP95} s` : 'not played' }); }
+  { const a = P('quiet-a'); L.push({ id: 'R96 A-fight', rule: 'quiet-a final fight median 20-45 s', ok: !!a && a.fightMed >= 20 && a.fightMed <= 45, value: a ? `median ${a.fightMed} s` : 'not played' }); }
+  { const r = rows.filter(y => y.plan === 'quiet-b-lookout-ignored'), reach = r.filter(y => y.fail === 'rivals-reach-vale').length; L.push({ id: 'R96 B-ignored-reach', rule: 'the lookout ignored: rivals reach Popovic on ≥ 95 % of seeds', ok: r.length > 0 && reach * 100 >= 95 * r.length, value: `${reach}/${r.length}` }); }
   return L;
 }
 
@@ -122,7 +142,7 @@ export const BAD_PLANS: Bad[] = [
 /** The steps whose window a person's pace must have ≥ 30 s of (design §6). A plan's other steps wait on what they see and have no window to lose. */
 export const WINDOWS: Record<string, string[]> = {
   'quiet-a': ['call', 'enter', 'go'],
-  'quiet-b': ['pay', 'tip', 'reroute', 'take', 'go'],
+  'quiet-b': ['help-1', 'mislead-lookout', 'reroute', 'take', 'go'], // brief 096 (engine 0.41.0): Help, not the taped Pay; the lookout misled, not the retired tip
   'quiet-g': ['beside-guard', 'enter', 'go'],
 };
 

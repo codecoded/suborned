@@ -21,14 +21,12 @@ namespace Suborned.Sim
         /// <summary>The crew member a person is (CrewMember.P), or null.</summary>
         CrewMember? CrewOfPerson(Person? p) => p != null && p.Job == Person.RivalJob ? CrewOf(p.Id) : null;
 
-        /// <summary>A member not yet in the fight who will be (the safe fight): riding the car to the stand, boarding it, or walking to it.</summary>
+        /// <summary>A member not yet in the fight who will be (the safe fight): in the rival car on the map (the wheelman at the block steps out at
+        /// the spring), or coming in it; not one away with it.</summary>
         bool CrewComing(CrewMember m)
         {
-            if (!Up(m) || m.Fight) return false;
-            if (m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Walking && m.Goal == "board")) return true;
-            if (m.Mode != CrewMode.Aboard) return false;
-            if (m == Wheelman && wheelmanAwayAtStart) return false;
-            if (CarSt == CrewCar.Away || CarSt == CrewCar.TipOut) return false;
+            if (!Up(m) || m.Fight || m.Mode != CrewMode.Aboard) return false;
+            if (CarSt == CrewCar.Away || CarSt == CrewCar.Leaving || CarSt == CrewCar.Gone) return false;
             return CarSt != CrewCar.Stopped || m.OutAt < INF;
         }
         /// <summary>A member taken down by a knockout and not tied: he wakes and comes back (Motive M059-3.4).</summary>
@@ -92,9 +90,9 @@ namespace Suborned.Sim
             }
             var car = RivalCarPose();
             if (RivalsDrawn && !CrewBrokenPre) StartWalk(m, at, FrontPlace(m), "front", rivSpeed);
-            else if (CrewBrokenPre || (m == Lookout && lookoutWarned) || m == Wheelman)
+            else if (CrewBrokenPre || m == Wheelman)
             {
-                if (car.HasValue && (CarSt == CrewCar.Parked || CarSt == CrewCar.Stopped || CarSt == CrewCar.Dropping) && !(m == Lookout && lookoutWarned)) StartWalk(m, at, StepOutAt(), "aboard", rivSpeed);
+                if (car.HasValue && (CarSt == CrewCar.Blocking || CarSt == CrewCar.Stopped)) StartWalk(m, at, StepOutAt(), "aboard", rivSpeed);
                 else StartWalk(m, at, S.Stand(S.RivalLookoutExit), "leave", rivSpeed);
             }
             else if (m == Lookout) StartWalk(m, at, S.Stand(S.RivalLookout), "lookout", rivSpeed);
@@ -118,50 +116,26 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- the floor and crew destroyed (fight.alwaysRule (3), (4))
 
-        /// <summary>Motive M059-S1.4 (rivals-floor) at the safe fight's start: count the members up and coming (bodies up, riders coming, the
-        /// lookout boarding; not one still knocked out, who joins only when he wakes: S1-FLOOR-WAKE); while fewer than the floor, away members come back, the earliest at the stand
-        /// first (ties by id): the tipped car cuts its tip short and rides to the stand's rival stop (the wheelman steps out rivals.out after it
-        /// stops); the warned lookout walks back from where he is (or from rivals.posts.lookoutExit once gone) to his spot. Nothing spawns: a
-        /// killed or tied member stays gone. Then, with fight.safe.always and nobody able, the fight is over: the crew is destroyed.</summary>
-        void CrewFloor(Stand st, bool lookoutBoards)
+        /// <summary>Motive M059-S1.4 (rivals-floor) at the safe fight's start: count the members up and coming (bodies up, riders coming; not one
+        /// still knocked out, who joins only when he wakes: S1-FLOOR-WAKE); while fewer than the floor, the car away after a pre-fight break with
+        /// members aboard cuts its trip short and comes back to the stand's block point (engine 0.41.0: the riders step out there for the fight).
+        /// Nothing spawns: a killed, tied or paid member stays gone; a misled man is on foot and already a body. Then, with fight.safe.always and
+        /// nobody able, the fight is over: the crew is destroyed.</summary>
+        void CrewFloor(Stand st)
         {
-            int coming = CrewAbleCount(lookoutBoards, false);
-            if (R.RivalsFloor > 0 && coming < R.RivalsFloor)
+            int coming = CrewAbleCount(false);
+            if (R.RivalsFloor > 0 && coming < R.RivalsFloor && (CarSt == CrewCar.Away || CarSt == CrewCar.Leaving) && !carForGood && !crewCarless)
             {
-                var opts = new List<(long t, int n)>();
-                bool carAway = CarSt == CrewCar.Away || CarSt == CrewCar.TipOut;
-                if (carAway && Up(Wheelman) && Wheelman.Mode == CrewMode.Aboard)
+                int aboard = Crew.FindAll(x => Up(x) && x.Mode == CrewMode.Aboard).Count;
+                if (aboard > 0)
                 {
-                    var from = RivalCarPose()?.pos ?? S.CarStand(S.RivalCarEntry);
-                    opts.Add((CarProfile(CarRouteP(S.Drive.NearestFree(from) ?? from, S.CarStand(st.RivalStop))).Length + T(Cr.OutS), Wheelman.N));
-                }
-                var l = Lookout;
-                if (!l.Gun.Down && !l.Fight && (lookoutWarned || l.Mode == CrewMode.Gone || (l.Mode == CrewMode.Walking && l.Goal == "exit")))
-                {
-                    var from = LookoutBackFrom();
-                    long walk = WalkMm(from, SpotFor(l, st)); opts.Add((walk / Math.Max(1, rivSpeed), l.N));
-                }
-                opts.Sort((a, b) => a.t != b.t ? a.t.CompareTo(b.t) : a.n.CompareTo(b.n));
-                foreach (var (_, n) in opts)
-                {
-                    if (coming >= R.RivalsFloor) break;
-                    if (n == Wheelman.N)
-                    {
-                        var from = RivalCarPose()?.pos ?? S.CarStand(S.RivalCarEntry);
-                        CarLeg(CrewCar.ToStand, CarRouteP(S.Drive.NearestFree(from) ?? from, S.CarStand(st.RivalStop)), st.RivalStop);
-                        crewNextAt = INF; crewNext = ""; wheelmanAwayAtStart = false; RivalsDelayedUntil = Tick;
-                        Note("rivals.recalled", "The rival car cuts its trip short and comes back for the fight.");
-                    }
-                    else
-                    {
-                        var from = LookoutBackFrom();
-                        lookoutWarned = false; JoinFightOnFoot(l, from, "The rival lookout turns back for the fight."); // logs rivals.recalled
-                    }
+                    var from = RivalCarPose()?.pos; LegToBlock(CrewCar.Returning, st, from);
+                    crewNextAt = INF; crewNext = ""; RivalsDelayedUntil = Tick;
+                    Note("rivals.recalled", "The rival car cuts its trip short and comes back for the fight.");
                     if (!FightWhy.Contains("rivals-recalled")) FightWhy.Add("rivals-recalled");
-                    coming++;
                 }
             }
-            if (R.FightAlways && CrewDestroyed()) // M059-S1.5: every one of the five killed or tied, none knocked out to wake
+            if (R.FightAlways && CrewDestroyed()) // M059-S1.5: every one of the five killed, tied or paid, none knocked out to wake
             {
                 FightOverTick = Tick; FightWhy.Add("crew-destroyed"); Chain.Add("rivals-destroyed");
                 Note("rivals.wiped", "Nobody of the rival crew is left to fight: the crew is destroyed. The car can go.");
@@ -169,18 +143,15 @@ namespace Suborned.Sim
         }
         /// <summary>Motive M059-S1.5: no member of the crew is able: each is down (shot down or killed) or tied, none knocked out to wake. A
         /// member alive and away (the wheelman on a tip, the lookout warned off) is able.</summary>
-        bool CrewDestroyed() => Crew.TrueForAll(m => m.Gun.Down && !CrewWaking(m));
-        /// <summary>Where the warned lookout turns back from: where he walks, or rivals.posts.lookoutExit once he is off the map.</summary>
-        Pt LookoutBackFrom() { var l = Lookout; return l.Mode == CrewMode.Gone ? S.Stand(S.RivalLookoutExit) : MemberPos(l, Tick); }
+        bool CrewDestroyed() => Crew.TrueForAll(m => (m.Gun.Down && !CrewWaking(m)) || m.Paid); // engine 0.41.0: a paid man is gone for good too
         /// <summary>The members up and coming at the safe fight's start: a body up (on the street or still in the car), a rider coming, the
         /// lookout boarding; with waking, a knocked-out member not tied too.</summary>
-        int CrewAbleCount(bool lookoutBoards, bool waking)
+        int CrewAbleCount(bool waking)
         {
             int n = 0;
             foreach (var m in Crew)
             {
                 if (m.H != null && Hostiles.Contains(m.H) && Up(m.H)) { n++; continue; }
-                if (m == Lookout && lookoutBoards && Up(m)) { n++; continue; }
                 if (CrewComing(m) || (waking && CrewWaking(m))) n++;
             }
             return n;

@@ -31,7 +31,6 @@ namespace Suborned.Sim
             pickupBoxedSince = -1;
             valeDriveStart = Tick; carToService = new Path(S.CarServicePath); carDrive = CarProfile(carToService); carMouthMm = MouthMm(carToService);
             Note("car.leaves", $"{Cap(ValeName)} gets into his car. The turned driver drives him round to the service bay.");
-            ValeCarMoves(); // F2: the rival car follows rivals.follow later
         }
 
         /// <summary>Brief 059 K2, K5 and brief 096 (car.kerb): the turned driver's drive round with Vale in the back. As he comes up to his kerbside

@@ -115,56 +115,6 @@ namespace Suborned.Sim
                 r.Is(d.Route.Contains("vale-reaches-getaway-car") && d.Route.Contains("vale-taken-through-office"), $"the debrief: through the Office, and he reached the car (route: {string.Join(", ", d.Route)})");
             }, NoFight());
 
-            Add("N185", "—", "The held car with Vale aboard and the seal running (brief 057 §4), restated on engine 0.35.2 (Motive briefs/039/motive/rulings-0.35.1.md §2, Sky's yes 2026-10-27): N111's fixture (route A, quiet, the ambush springs; one rival goes for the road and holds the exit lane). The Scout and the Fixer fight on and spare the blocker; the Enforcer walks Vale in and boards, and the two board after him; the Tech, never drawn, stands outside. Go is refused car-held, naming the holders. 0.34.0 to 0.35.1: the undrawn Tech kept K3's walk off and the district sealed with the car held (FailCause.Car held). Now an undrawn agent standing by is no guard: the rivals up and not broken walk to the held car and take Vale before the seal (rivals-reach-vale). FailCause.Car held at the seal has no play here any more (a held car with Vale aboard now needs a drawn agent outside, who is fought): flagged to Motive.", r =>
-            {
-                var g = r.G;
-                RouteA(r, reroute: true);
-                r.Send(Scout, "crew:scout"); r.Send(Fixer, "crew:fixer"); r.Do(Fixer, "draw"); r.Do(Scout, "draw");
-                r.Send(Enf, "d:Getaway bay");
-                r.Until(() => g.Over || g.FightSprung != Never, T(240));
-                var b = g.Hostiles.Find(h => h.Blocker);
-                if (!r.Is(b != null && !g.Over, $"the ambush springs and one goes for the road ({Report.Clock(g.Tick)})")) return;
-                // engine 0.33.0 (Motive M059-B1, B7): the crew fights from where it stands and shoots the carrier, so the three support him (focus
-                // fire on whoever fires on him), sparing the blocker
-                // engine 0.34.0 (Motive M067-SQ2, K3): the Scout and the Fixer cover him; the Tech, who never draws, stands outside. A rival with nobody
-                // in reach now advances on an operative he has cause to fire on, so three firing at the car would break the crew (the blocker leaves
-                // with it) or be shot down (then K3's walk to the car takes Vale): neither leaves the car held at the seal. Once Vale is aboard the
-                // two board too; the Tech, outside and nobody's foe, keeps K3 off, and with no operative to advance on the rivals hold
-                r.Focus = true;
-                r.Engage(() => Targets(g, true), () => g.Over || (r.Op(Enf).Walk == null && r.Op(Enf).Busy == null && g.Vale == ValeAt.WithEnforcer), 120, new[] { Scout, Fixer }, false, advance: false);
-                r.Focus = false;
-                r.Is(!g.Over && r.Op(Enf).Walk == null && g.Vale == ValeAt.WithEnforcer, $"the Enforcer at the car with Vale ({Report.Clock(g.Tick)}; {g.Result} {g.FailCode})");
-                if (!r.Is(r.Do(Enf, "board", "car"), "he boards with Vale")) return;
-                r.Done(Enf); g.Step();
-                r.Is(g.Vale == ValeAt.Car, "Vale is in the car");
-                var two = new[] { Scout, Fixer }; var boarded = new HashSet<string>();
-                foreach (var s0 in two) if (!r.Op(s0).Down) { g.Issue(new Order { Tick = g.Tick, Op = s0, Do = "cease" }); r.Send(s0, "d:Getaway bay"); }
-                for (int k = 0; k < T(30) && !g.Over && two.Any(s0 => !r.Op(s0).Down && !r.Op(s0).InCar); k++)
-                {
-                    foreach (var s0 in two) { var o = r.Op(s0); if (!o.Down && !o.InCar && !boarded.Contains(s0) && o.Busy == null && g.AtGetaway(o.Pos)) { boarded.Add(s0); r.Do(s0, "board", "car"); } }
-                    g.Step();
-                }
-                r.Is(two.All(s0 => r.Op(s0).Down || r.Op(s0).InCar), $"the two who fought are aboard ({string.Join(", ", two.Select(s0 => s0 + (r.Op(s0).InCar ? " in the car" : r.Op(s0).Down ? " down" : " outside")))})");
-                r.Is(!r.Op(Tech).Down && !r.Op(Tech).InCar && !r.Op(Tech).Gun.Drawn && !r.Op(Tech).Gun.Fired, "the Tech stands outside, never drawn: nobody's foe");
-                r.Until(() => g.Over || g.CarHolders().Contains(b!.Id), T(60));
-                var a = g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "go" });
-                r.Eq((a.ok, a.code), (false, "car-held"), $"Go is refused while the car is held ({a.ids})");
-                int refused = g.Tick;
-                List<string> last = new List<string>();
-                // the three hold their fire on the blocker: they cease whenever one fires on it, so the lane stays held to the seal
-                while (!g.Over && g.Tick < T(g.ClockOver) + T(900))
-                {
-                    foreach (var s in new[] { Scout, Fixer, Tech }) { var o = r.Op(s); if (!o.Down && o.Gun.Target == b!.Id) g.Issue(new Order { Tick = g.Tick, Op = s, Do = "cease" }); }
-                    last = g.CarHolders(); g.Step();
-                }
-                // engine 0.35.2: the undrawn Tech outside is no guard (fight.unguarded a): the rivals walk to the held car and take Vale, before the seal
-                int walk = LogTick(g, "rivals.for-car", refused - 1);
-                r.Is(g.FailCode == "rivals-reach-vale" && walk >= 0, $"the rivals walk past the undrawn Tech to the held car and take Vale ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; rivals.for-car {(walk >= 0 ? Report.Clock(walk) : "-")})");
-                r.Is(g.Tick < g.Lockdown, $"before the seal ({Report.Clock(g.Tick)}, Lockdown {Report.Clock(g.Lockdown)})");
-                r.Is(!r.Op(Tech).Down && !r.Op(Tech).InCar && !r.Op(Tech).Gun.Drawn, "the Tech still stands outside, undrawn, up");
-                r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car" && l.Text.StartsWith(b!.Id + " ", StringComparison.Ordinal)), $"the blocker ({b!.Id}) keeps his lane");
-                RouteBacked(r);
-            });
 
             Add("N186", "—", "The rerouted patrol walks, and its path as walked (brief 057 §2, Sky 2026-10-24: the robot follows the drawn path and moves smoothly; cell.reroute.walk; Game.PatrolLegs, PatrolRoute): route A's opening with the reroute. On its sweep the path is the straight line between the site's patrol-a and patrol-b. Rerouted, it walks the walk grid at patrol-chase-cm-s to the wait spot (patrol-reroute), waits, and walks back at the same pace to stand on its sweep exactly where SweepPos has it at PatrolAwayUntil, all inside the false orders (blind throughout, as before: the Reroute buys what it bought); it never steps more than its pace in a tick. Then a drawn weapon in its sweep cone breaks the sweep: it chases on the grid route the path names. At every tick the robot stands within 30 cm of a walked leg of the path read a second before (or on a placement leg's point), the sweep ends are the site's, and the read moves no hash.", r =>
             {

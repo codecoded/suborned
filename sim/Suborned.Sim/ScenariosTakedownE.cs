@@ -63,16 +63,16 @@ namespace Suborned.Sim
             Add("N81", "—", "Face to face is unchanged (brief 013 E1): Waymark's late driver route; guard 74 knocked out at 5:55 beside the car. The driver sees it, keeps quiet, and tells Vale at once: Vale is on the street, walking to his car within speaking range (no phone, no walk).", r =>
             {
                 var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] { Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"), Act(3550, Enf, "takedown", Guard74, "knockout") }).ToArray());
+                Orders(r, DriverOpening().Concat(new[] { Mv(2340, Scout, "crew:scout"), Act(3550, Enf, "takedown", Guard74, "knockout") }).ToArray());
                 r.Is(ToldBy(g.ValeP, g.Driver), "Vale is told at the sight");
                 r.Is(g.Log.Exists(l => l.Code == "witness.told" && l.Tick == T(355) && l.Text.Contains("councillor") && !l.Text.Contains("by phone")), "face to face, not by phone");
                 r.Is(!g.Reps.Exists(x => x.P == g.Driver), "no walk to a phone");
-            });
+            }, NoCrew());
 
             Add("N82", "—", "One hop (Pulse §3.4; rulebook memory: a told entry is never retold): the late driver route on to 6:40. Vale, waiting at his car (Start.ValeWaits), sees the driver knocked out at 6:28 (engine 0.33.0: after the T1 clerks have walked past the official bay, brief 060 cause A; guard 74 is taken first at 6:16) and tells guard 65, by phone; 65, Loyal, walks to report it. At his phone he calls nobody: what he was told is not his to tell. (Before brief 013 E1 a told reporter told again from the phone.)", r =>
             {
                 var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] { Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"), Act(3760, Enf, "takedown", Guard74, "knockout"),
+                Orders(r, DriverOpening().Concat(new[] { Mv(2340, Scout, "crew:scout"), Act(3760, Enf, "takedown", Guard74, "knockout"),
                     MvTo(3850, Enf, new Pt(7690, -3370)), Act(3880, Enf, "takedown", Driver, "knockout") }).ToArray()); // engine 0.33.0: 3:31 later than 0.28.0's (5:55, 6:04, 6:07): the T1 clerks now walk the grid past the official bay to 6:10 (brief 060 cause A), and three of them saw guard 74's takedown; engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the driver 3 s later
                 var a = ActOn(r, Driver);
                 var g65 = g.PersonById(Guard65)!;
@@ -83,7 +83,7 @@ namespace Suborned.Sim
                 r.To(rep.LandAt);
                 r.Is(rep.Phase == "landed", $"his report lands ({Report.Clock(rep.LandAt)})");
                 r.Is(!g.People.Concat(g.Walkers.Select(w => w.P)).Any(p => ToldBy(p, g65)), "and he tells nobody: one hop");
-            }, new Start { ValeWaits = true }); // engine 0.33.0: Vale waits at his car past 6:13 (test only) for the later takedowns
+            }, NoCrew(new Start { ValeWaits = true })); // engine 0.33.0: Vale waits at his car past 6:13 (test only) for the later takedowns
 
             // Re-cast 2026-10-19 (Keel, brief 023): Pulse's leave stagger (0..8 min after the chime for an inside post) keeps clerk 32 inside
             // past the close and sends 42 out alone at 6:30, so the pair no longer walks. The intent is the same with the 5:30 group bound for
@@ -199,7 +199,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 OrdersWhileOn(r, DriverOpening().Concat(new[] {
                     Act(400, Tech, "reroute", "patrol") /* engine 0.34.0 (brief 067 A): the yard patrol would see the kills at the official car and the carry into the yard: rerouted over them (lands 1:25, away to 3:20) */, Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10 and 4:05, blind from 0:36 to 6:25 as the held loop was */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
-                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), Act(1960, Scout, "mislead", "rivals"), /* engine 0.34.0: the 3:16 reroute is dropped: the 0:40 one, given as the Tech walks in, lands 2:02.6 and covers to 3:57.6 */ // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
+                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), /* engine 0.34.0: the 3:16 reroute is dropped: the 0:40 one, given as the Tech walks in, lands 2:02.6 and covers to 3:57.6 */ // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
                     new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 now sees the driver's takedown and radios it (the face margin moved his walk), so he lies where he fell: no second carry
                     MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "loop", "pickup"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
                     MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
@@ -225,7 +225,7 @@ namespace Suborned.Sim
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.To(T(500));
                 r.Is(g.FailCode != "engine-error", "the run goes on");
-            }, NoFight()); // brief 018 (c018): walking Vale the Enforcer no longer fires, so the loud final fight downs him at 7:35, before the 7:58.5 search; without the final fight the fixture is the same path
+            }, NoCrew(NoFight())); // brief 018 (c018): walking Vale the Enforcer no longer fires, so the loud final fight downs him at 7:35, before the 7:58.5 search; without the final fight the fixture is the same path
         }
     }
 }

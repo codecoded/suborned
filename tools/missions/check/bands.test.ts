@@ -39,7 +39,7 @@ describe('the bands, judged', () => {
   });
   test('every playing style has a plan', () => {
     const styles = new Set(readdirSync(DIR).map(f => (JSON.parse(readFileSync(join(DIR, f), 'utf8')) as { style: string }).style));
-    expect([...styles].sort()).toEqual(['careless', 'prepared-loud', 'prepared-quiet', 'thin-quiet', 'twin', 'unprepared-loud']); // brief 096: the one-mistake twins
+    expect([...styles].sort()).toEqual(['careless', 'prepared-loud', 'prepared-quiet', 'thin-quiet', 'twin', 'unprepared-loud', 'variant']); // brief 096: the one-mistake twins; the rivals round's variants (thinned, the lookout ignored, the drive-round, the veteran's shot)
   });
 });
 

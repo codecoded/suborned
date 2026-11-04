@@ -172,10 +172,10 @@ namespace Suborned.Sim
                     }
                     if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.GetawaySeat }); continue; }
                     if (name == "enforcer" && G.Vale == ValeAt.WithEnforcer) { if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } // brief 018: walking Vale he doesn't fire; he holds back while the others fight
-                    bool line = G.S.Sight(e.Pos, np, G.R.Eye);
+                    bool line = near.StartsWith("car:", StringComparison.Ordinal) || G.S.Sight(e.Pos, np, G.R.Eye); // engine 0.41.0: a car's own body stands on its centre's line; the engine's fire order judges it
                     bool inEff = line && bd <= (long)(w.EffCm - 200) * (w.EffCm - 200);
                     bool firedOn = G.GunOf(near)!.Target == name;
-                    if (e.Gun.Order.Length == 0 && line && bd <= (long)w.MaxCm * w.MaxCm && (inEff || (advance && e.Walk == null) || firedOn)) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "fire", Target = near });
+                    if (e.Gun.Order.Length == 0 && line && bd <= (long)w.MaxCm * w.MaxCm && (inEff || (advance && e.Walk == null) || firedOn)) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "fire", Target = near, Force = near.StartsWith("car:", StringComparison.Ordinal) }); // engine 0.41.0: a car takes the hold (the block's car)
                     // tuning.md §7.11.3 (a), the ping-pong: a fire order's walk into range (fire.close; today's weapons.close) wins until its target is
                     // down or out of reach, so neither the cover seek nor the move toward the target re-orders an agent walking in to fire
                     if (e.CloseWalk && e.Gun.Order.Length > 0) continue;
@@ -212,12 +212,12 @@ namespace Suborned.Sim
         public void FightItOutAll(int limitS = 120, params string[] with) => FightItOut(true, limitS, with);
         void FightItOut(bool all, int limitS, string[] with)
         {
-            Func<bool> free = all ? () => !G.CarHeld() && G.FightOverTick != int.MaxValue / 4 : () => !G.CarHeld();
+            Func<bool> free = all ? () => !G.CarHeld() && G.GetawayBoxers().Count == 0 && G.FightOverTick != int.MaxValue / 4 : () => !G.CarHeld() && G.GetawayBoxers().Count == 0; // engine 0.41.0: the rival car across the way out too
             var ops = new List<string> { "enforcer" }; ops.AddRange(with);
             int end = G.Tick + Game.T(limitS); var car = G.GetawayCarPos();
             while (!G.Over && G.Tick < end)
             {
-                Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; },
+                Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); if (!l.Exists(id => G.PosOf(id).HasValue && G.GunOf(id) is Gun lg && !lg.Down) && G.GetawayBoxers().Contains("car:rivals")) l.Add("car:rivals"); return l; }, // engine 0.41.0: nobody left to fight and the block stands: blow it up
                        free, Math.Max(1, (end - G.Tick) / Game.Hz), ops.ToArray(), true);
                 if (G.Over || G.Tick >= end) return;
                 // the fight is over: the engine ends the fire orders still open on the broken crew (rulebook fight.over, Motive 2026-10-19),

@@ -884,7 +884,7 @@ describe('feed cards for engine events no scene covers', () => {
     expect(codes.length).toBeGreaterThan(15);
     // brief 059 (engine 0.32.0): car.blocks is retired with the driver's Call (Motive M059-6.1). The host keeps its fallback until Latch's port;
     // it may list only codes that have words here or are retired in the engine too, so a retired code that comes back fails here, with no words for it.
-    const RETIRED = ['car.blocks'];
+    const RETIRED = ['car.blocks', 'rivals.arrive', 'rivals.drop', 'rivals.follows', 'rivals.warned', 'rivals.no-warning', 'rivals.at-vale']; // brief 096 (engine 0.41.0): the park, the drop, the tail, the driver's word and the wheelman at Vale's door are retired
     expect(codes.filter((c) => !(c in items) && !RETIRED.includes(c))).toEqual([]);
     for (const c of RETIRED) { expect(c in items, `${c} has no card`).toBe(false); if (haveSim) expect(logCodes().has(c), `${c} is still logged by the engine`).toBe(false); expect(c in t.silentLogs, `${c} is not a silent log`).toBe(false); }
   });
@@ -908,13 +908,13 @@ describe('feed cards for engine events no scene covers', () => {
     expect(items.captured!.result as string).toContain('{agent}');
   });
   test('cards a person would only know in sight say so, as their scenes do; the one the cell hears anywhere says so too', () => {
-    expect(items['rivals.arrive']!.sight).toBe('in-sight'); expect(items['guard.at-cafe']!.sight).toBe('in-sight');
+    expect(items['guard.at-cafe']!.sight).toBe('in-sight'); // brief 096 (engine 0.41.0): rivals.arrive is retired with the park
     // the two cards of the city scenes (their place is the scene's); and brief 013's cards, which name where the check looks (`at`). Nothing else is in sight only.
-    const SCENE_CARDS = ['rivals.arrive', 'guard.at-cafe'];
+    const SCENE_CARDS = ['guard.at-cafe'];
     // brief 067 (Aster, from Sky on 0.2.122): the rival car turning in at 2:35 is heard wherever the cell stands, so its card is `always`; its `at` only says what the card points at
     const HEARD_AT: Record<string, string> = { 'rivals.coming': 'rival-car' };
-    const SEEN_AT: Record<string, string> = { 'rivals.drop': 'rival-car', 'rivals.follows': 'rival-car', 'rivals.back': 'rival-car', 'rivals.warned': 'rival-lookout', 'rivals.no-warning': 'rival-lookout', 'rivals.wakes': 'victim', 'rivals.frees': 'victim',
-      'rivals.at-vale': 'vale-car', 'car.blocked': 'vale-car', 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
+    const SEEN_AT: Record<string, string> = { 'rivals.back': 'rival-car', 'rivals.wakes': 'victim', 'rivals.frees': 'victim', // brief 096: drop, follows, warned, no-warning and at-vale retired
+      'car.blocked': 'vale-car', 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
       'report.unfounded': 'scene', 'report.confirmed': 'scene', 'person.missed': 'person', 'guard.back-to-post': 'guard', 'alarm.reassigns': 'unit', 'doors.lock': 'door', 'patrol.alarm': 'patrol', 'entry.seen': 'patrol', 'entry.stopped': 'patrol',
       'patrol.stands-down': 'patrol', 'stash.serviced': 'stash', 'stash.opened': 'stash' };
     for (const [c, x] of Object.entries(items)) {
@@ -1070,7 +1070,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('the distance refusals all show the distance as a number', () => {
     const stands = Object.keys(t.locks).filter((c) => /^stand-(?!boxed$)|^too-far$|^out-of-range$/.test(c)); // brief 096: stand-boxed is box-in, not a distance
-    expect(stands.length).toBeGreaterThanOrEqual(10);
+    expect(stands.length).toBeGreaterThanOrEqual(9); // brief 096: stand-near-rivals retired with the tip
     for (const c of stands) expect(t.locks[c]!.short, c).toContain('{m} m');
   });
   test('every card has a fate; only a beat card has a beat; its words are at most four and a fragment', () => {
@@ -1152,7 +1152,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('a beat keeps its card\'s sight and needs rules (the cell is never told what it did not see): the cards that said in-sight still do', () => {
     for (const [code, c] of Object.entries(t.cards.items)) if (c.fate === 'beat' && /found|confirmed|opened|serviced/.test(code)) expect(c.sight, code).toBe('in-sight');
-    expect(t.cards.items['rivals.arrive']!.sight).toBe('in-sight');
+    // brief 096 (engine 0.41.0): rivals.arrive is retired with the park (HostFeed's RETIRED list holds it out)
     expect(t.cards.items['post.missed']!.needs).toBe('routine');
     expect(t.cards.items['post.missed']!.fate).not.toBe('beat'); // a missed check in is a clock pip over the guard, once the routine is learned
   });
@@ -1345,7 +1345,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const F = L.failcam;
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
-      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car', 'tail'], 'vale-leaves': ['driven-away', 'too-late'], 'vale-dead': ['killed', 'shot'],
+      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car', 'lookout'], 'vale-leaves': ['driven-away', 'too-late'], 'vale-dead': ['killed', 'shot'],
       'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'on-foot', 'no-go'], 'engine-error': ['error'] };
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
@@ -1386,7 +1386,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(82); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
+    expect(Object.keys(t.cards.items).length).toBe(76); // brief 096 (engine 0.41.0): less the six of the retired routine (rivals.arrive, drop, follows, warned, no-warning, at-vale); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
   });
@@ -1687,7 +1687,7 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
   test('the 2:35 beat is heard wherever the cell stands (Sky on 0.2.122): the card is always and still points at the car, the Scout speaks of what he hears, the drop and the park stay in sight', () => {
     const c = t.cards.items['rivals.coming']!;
     expect(c.sight).toBe('always'); expect(c.at).toBe('rival-car'); expect(c.fate).toBe('beat'); expect(c.beat).toBe('Rival car coming.');
-    expect(t.cards.items['rivals.drop']!.sight).toBe('in-sight'); expect(t.cards.items['rivals.arrive']!.sight).toBe('in-sight');
+    // brief 096 (engine 0.41.0): the drop and the park are retired (the car stops across our way out: rivals.block, worded by Fable)
     // a spoken line follows its card's sight rule, so with the card shown anywhere the Scout may not claim to see the car
     const e = lookup(t, { event: 'rivals-coming', speaker: 'scout' })!;
     expect(e.lines.length).toBeGreaterThanOrEqual(2);
@@ -1981,7 +1981,7 @@ describe('brief 096: the end card says what really happened (debrief.cause, by t
         for (const w of ws) add(f, w);
       }
       const seed = simFile('GameSeed.cs'); for (const w of ['on-foot', 'no-driver', 'boxed', 'car-held', 'no-go']) expect(seed.includes(`"${w}"`), w).toBe(true);
-      expect(want['rivals-reach-vale']).toEqual(new Set(['beat-to-pickup', 'tail', 'downed-enforcer', 'reached-car']));
+      expect(want['rivals-reach-vale']).toEqual(new Set(['beat-to-pickup', 'lookout', 'downed-enforcer', 'reached-car'])); // brief 096: the lookout follows on foot (the tail is retired)
     }
     add('engine-error', 'error');
     const missing: string[] = [];

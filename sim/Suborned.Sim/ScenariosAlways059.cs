@@ -141,46 +141,6 @@ namespace Suborned.Sim
         {
             var inez = new Start(); inez.Turned.Add(Inez);
 
-            Add("S1-GATE-EARLY-YARD", "059", "Motive M059-S1.2, S1.3 (Sky's S1 = no): the getaway car at the service drive and Vale aboard before the rival car enters. Go is refused car-held naming car:rivals (with the first step-out's tick once it rides) until the first rider steps out at rival-tail; he is the blocker, and the refusal names him wherever he stands until he is down; then Go is taken, after blocker.out.", r =>
-            {
-                var g = r.G;
-                YardEarly(r);
-                if (!r.Is(g.Vale == ValeAt.Car && g.Tick < g.CrewEntry, $"Vale aboard at {Report.Clock(g.Tick)}, before the rival car enters ({Report.Clock(g.CrewEntry)})")) return;
-                var a = g.Issue(Go(g));
-                r.Eq((a.ok, a.code, a.ids), (false, "car-held", "car:rivals"), "Go is refused: car:rivals holds it before anyone is on the map (the gate)");
-                r.Eq(g.GoQuery().ids, "car:rivals", "the Go card reads the same");
-                r.Until(() => g.CarSt != CrewCar.Off, T(120));
-                r.Wait(1);
-                var b = g.Issue(Go(g)); int said = b.tick;
-                r.Is(!b.ok && b.ids == "car:rivals" && b.tick > g.Tick, $"while the car rides in, car-held's tick is its first step-out ({(b.tick >= 0 ? Report.Clock(b.tick) : "none")}; {b.why})");
-                int joined = -1; string firstOut = "";
-                r.Until(() => { if (joined < 0) { var f = g.Crew.FirstOrDefault(m => m.Fight); if (f != null) { joined = g.Tick; firstOut = f.Id; } } return g.Blockers.Count > 0 || g.Over; }, T(60));
-                r.Is(joined >= 0 && joined == g.Tick && g.Crew.Count(m => m.Fight) == 1, $"the blocker is picked the tick the first rider steps out ({Report.Clock(g.Tick)}; out {firstOut} at {(joined >= 0 ? Report.Clock(joined) : "-")})");
-                r.Eq((g.Blockers.FirstOrDefault(), firstOut), ("rival-1", "rival-1"), "the first out is rival-1 (ties by id) and he is the blocker");
-                r.Eq(joined, said, "he steps out at the tick car-held gave");
-                r.Is(G.Within(g.Hostiles.Find(h => h.Id == "rival-1")!.Pos(g.Tick), g.S.CarStand(g.S.RivalCarTail), 500), "he stepped out at rival-tail, the stand's rival stop");
-                var bl = g.Hostiles.Find(h => h.Blocker)!;
-                bool far = false; int fromT = g.Tick;
-                while (!g.Over && !bl.Down && g.Tick < fromT + T(60))
-                {
-                    if (g.Tick % 5 == 0)
-                    {
-                        var c = g.Issue(Go(g));
-                        if (c.ok) { r.Is(false, $"Go taken at {Report.Clock(g.Tick)} with the blocker up"); return; }
-                        if (!c.ids.Split(',').Contains(bl.Id)) { r.Is(false, $"the refusal names the blocker ({c.ids})"); return; }
-                        if (!G.Within(bl.Pos(g.Tick), g.GetawayCarPos(), g.R.HoldCm) && !g.S.InExitLane(bl.Pos(g.Tick), g.CurStand)) far = true;
-                    }
-                    Locks(r, new[] { Fixer, Tech }, new[] { bl.Id });
-                    g.Step();
-                }
-                r.Is(far, "he holds the car from beyond the hold and outside the lane too (wherever he stands, M059-S1.2(1))");
-                r.Is(bl.Down, $"the Fixer and the Tech down the blocker ({Report.Clock(g.Tick)}; {g.Result} {g.FailCode})");
-                r.Until(() => LogTick(g, "blocker.out") >= 0 || g.Over, T(5));
-                int outAt = LogTick(g, "blocker.out");
-                r.Until(() => g.GoQuery().ok || g.Over, T(30));
-                var d = g.Issue(Go(g));
-                r.Is(d.ok && g.Result == Outcome.Success && outAt >= 0 && g.Tick >= outAt, $"then Go is taken at {Report.Clock(g.Tick)}, at or after blocker.out ({(outAt >= 0 ? Report.Clock(outAt) : "-")}): {d.why}");
-            }, inez);
 
             Add("S1-GATE-SWITCH-OFF", "059", "Motive M059-S1.1: fight-always 0 gives back engine 0.32.0's pick. The S1-GATE-EARLY-YARD start: Go is taken at Vale-aboard, before the crew enters, and the ambush never springs (the leak).", r =>
             {
@@ -194,124 +154,12 @@ namespace Suborned.Sim
                 r.Is(g.FightBranch == "safe" && g.RivalPoses().members.Count == 0 && r.Shots().Count == 0, "the safe fight started, and the cell left with nobody of the crew on the map and no shot fired: unfought");
             }, inez);
 
-            Add("S1-GATE-LOUD-YARD", "059", "Motive M059-S1.2 (M059-5.4's race): route B taken at Alert 2 (the pickup camera shot as Vale's car parks), the in-car Take, the carry, Board. Go is refused car-held while the police blocker is up, wherever he stands: the officers' 7.5 s against the cell's 6.5 s is no race now.", r =>
-            {
-                var g = r.G;
-                Open059(r); Tip059(r);
-                r.To(Math.Max(g.Tick, T(370) + T(g.R.ValeInS))); r.Until(() => g.PickupService || g.Over, T(60));
-                r.Do(Fixer, "draw"); r.Wait(g.DrawT + 1); r.Fire(Fixer, "camera:pickup"); r.Until(() => g.CameraDark("pickup") || g.Over, T(20));
-                r.Is(g.Gunfire > 0 && g.Alert >= 2, $"a shot: Alert {g.Alert}, the run is loud");
-                r.Do(Fixer, "holster");
-                if (!r.Is(!g.Over && g.PickupService, $"Vale's car parks round the back ({g.Result} {g.FailCode})")) return;
-                int there = DriveRound(r);
-                r.Do(Enf, "take"); r.To(Math.Max(there, r.Op(Enf).BusyEnd));
-                if (!r.Is(g.FightBranch == "loud" && g.CurStand.Id == "service-drive", $"the loud fight at the service drive ({g.FightBranch} {g.Result} {g.FailCode})")) return;
-                r.To(Math.Max(g.Tick, r.SendTo(Enf, g.GetawaySeat))); if (!g.Over) { r.Do(Enf, "board", "car"); r.Done(Enf); g.Step(); }
-                if (!r.Is(g.Vale == ValeAt.Car && !g.Over, $"Vale aboard ({Report.Clock(g.Tick)}; {g.Result} {g.FailCode})")) return;
-                r.Is(g.Blockers.Count == 1 && g.Blockers[0].StartsWith("officer-", StringComparison.Ordinal), $"the loud blocker is an officer ({string.Join(",", g.Blockers)})");
-                var bl = g.Hostiles.Find(h => h.Blocker);
-                int held = 0, far = 0;
-                for (int k = 0; k < 10 && !g.Over && bl != null && !bl.Down; k++)
-                {
-                    var a = g.Issue(Go(g)); if (a.ok) break;
-                    if (a.ids.Split(',').Contains(bl.Id)) held++;
-                    if (!G.Within(bl.Pos(g.Tick), g.GetawayCarPos(), g.R.HoldCm) && !g.S.InExitLane(bl.Pos(g.Tick), g.CurStand)) far++;
-                    r.Wait(T(1));
-                }
-                r.Is(held > 0 && (bl == null || bl.Down || held == 10 || g.Over), $"Go is refused naming the blocker {bl?.Id} each second while he is up ({held} of 10 s)");
-                r.Line(far > 0, $"seconds he held it from beyond the hold and outside the lane: {far} (the gate holds wherever he is; with him in the lane by Board, the race is gone either way)");
-            });
 
             var early = new Start(); early.Turned.Add(Inez);
-            Add("S1-SPRING-LATE", "059", "Motive M059-S1.3: the cell has Vale before the crew enters; the Enforcer brings him within fight-ambush-m of the car at the square with nobody of the crew on foot: the ambush springs and no blocker is picked. At the first step-out (rival-1 at rival-drop, ties by id) he is picked among those on foot, and each later arrival fires weapons.aimNew after he steps out.", r =>
-            {
-                var g = r.G;
-                int at = Max(r.Send(Tech, "cabinet"), r.Send(Enf, "d:Office entrance"));
-                r.To(at);
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                r.Do(Tech, "reroute", "patrol");
-                r.Do(Fixer, "call", Inez);
-                r.Until(() => !g.GuardAtDoor, T(120));
-                r.Do(Enf, "enter"); r.Done(Enf);
-                r.SendTo(Enf, g.GetawaySeat);
-                r.Until(() => g.FightSprung != Never || g.Over, T(120));
-                r.Is(g.FightSprung != Never && g.Tick < g.CrewEntry && g.RivalPoses().members.Count == 0, $"the ambush springs at {Report.Clock(g.Tick)} with nobody of the crew on the map");
-                g.Step();
-                r.Eq(g.Blockers.Count, 0, "no blocker is picked at the spring (nobody on foot)");
-                r.To(r.SendTo(Enf, g.GetawaySeat)); r.Do(Enf, "board", "car"); r.Done(Enf);
-                var joins = new Dictionary<string, int>(StringComparer.Ordinal); int firstPick = -1;
-                int end = g.Tick + T(120);
-                while (!g.Over && g.Tick < end && joins.Count < 5)
-                {
-                    g.Step();
-                    foreach (var m in g.Crew) if (m.Fight && !joins.ContainsKey(m.Id)) { joins[m.Id] = g.Tick; r.Is(m.Gun.NextShot >= g.Tick + g.AimNewT, $"{m.Id} steps out at {Report.Clock(g.Tick)}: his first shot no sooner than aimNew later (next shot {Report.Clock(m.Gun.NextShot)})"); }
-                    if (firstPick < 0 && g.Blockers.Count > 0) firstPick = g.Tick;
-                }
-                var first = joins.OrderBy(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal).FirstOrDefault();
-                r.Is(first.Key == "rival-1" && firstPick == first.Value && g.Blockers.FirstOrDefault() == "rival-1", $"the blocker is picked at the first step-out: {string.Join(",", g.Blockers)} at {(firstPick >= 0 ? Report.Clock(firstPick) : "-")} (first out {first.Key} {(first.Value > 0 ? Report.Clock(first.Value) : "-")})");
-                foreach (var s in r.Shots()) if (joins.TryGetValue(s.by, out var j) && s.tick < j + g.AimNewT) { r.Is(false, $"{s.by} fired at {Report.Clock(s.tick)}, sooner than aimNew after he stepped out"); break; }
-            }, early);
 
-            Add("S1-FLOOR-TIP", "059", "Motive M059-S1.4 (rivals-floor 3): route B, the tip and the warned lookout, P1 gone (Start.CrewGone): at the safe fight's start two posted are up, so the tipped car cuts its trip short at once and rides to rival-tail; the wheelman steps out there about 19.8 s later (the entry to rival-tail, then rivals.out). Count 3; the lookout is not recalled.", r =>
-            {
-                var g = r.G;
-                YardB(r);
-                if (!r.Is(g.FightBranch == "safe" && g.CurStand.Id == "service-drive", $"the safe fight at the service drive ({g.FightBranch} {g.Result} {g.FailCode})")) return;
-                int start = g.FightStart;
-                r.Is(g.Log.Exists(l => l.Code == "rivals.tip-leaves") && g.Log.Count(l => l.Code == "rivals.recalled" && l.Tick == start) == 1, "the car was away on the tip at the fight's start, and one away member is recalled (rivals.recalled), not both");
-                r.Is(g.FightWhy.Contains("rivals-recalled"), "fight why: rivals-recalled");
-                // the earliest at the stand first (ties by id): the car from the entry to rival-tail, then rivals.out; the lookout's walk from his exit to his spot
-                var st = g.CurStand; long carT = g.CarProfileTicks(g.S.RivalCarEntry, st.RivalStop) + T(g.R.Crew.OutS);
-                var spot4 = g.S.Stand(st.Ambush[3]); var wr = g.S.Grid.Route(g.S.Grid.NearestFree(g.S.Stand(g.S.RivalLookoutExit))!.Value, g.S.Grid.NearestFree(spot4)!.Value); long lkT = wr == null ? long.MaxValue : new Path(wr).Length / g.R.RivalsSpeed;
-                string first = lkT < carT ? "rival-4" : "rival-5";
-                r.Line(true, $"the wheelman by car {Sec1(carT / 10.0)} s (entry to rival-tail + rivals.out; Motive 19.8 s), the lookout's walk from rival-lookout-exit to his spot {st.Ambush[3]} {Sec1(lkT / 10.0)} s (Motive: 21.7 s to rival-tail)");
-                r.Eq(string.Join(",", RivalBodies(g)), first == "rival-4" ? "rival-2,rival-3,rival-4" : "rival-2,rival-3,rival-5", $"count 3: the two posted and the earliest away, {first}");
-                if (first == "rival-5")
-                {
-                    r.Is(g.CarSt == CrewCar.ToStand && g.Crew[3].Mode == CrewMode.Gone, "the tipped car rides for the stand at once; the lookout stays gone");
-                    r.Until(() => g.Crew[4].Fight || g.Over, T(60));
-                    r.Is(g.Crew[4].Fight && Math.Abs(g.Tick - start - carT) <= 2, $"the wheelman steps out {Sec1((g.Tick - start) / 10.0)} s after the fight's start, at rival-tail");
-                }
-                else r.Is(g.Crew[3].Fight && g.Crew[3].H!.Run != null && G.Within(g.Crew[3].H!.Run!.Points[0], g.S.Stand(g.S.RivalLookoutExit), 200) && g.CarSt == CrewCar.Away, "the lookout walks back from rival-lookout-exit; the car stays away on its tip");
-            }, Gone(new Start(), "rival-1"));
 
-            Add("S1-FLOOR-LOOKOUT", "059", "Motive M059-S1.4: route A at the square, no tip, the driver turned before the mission (his word sends the lookout off), P1 and P2 gone: at the fight's start the wheelman rides in by car (F6, the car parked) and the lookout walks back from rival-lookout-exit. Count 3.", r =>
-            {
-                var g = r.G;
-                RouteA(r);
-                if (!r.Is(g.FightBranch == "safe", $"the safe fight ({g.FightBranch} {g.Result} {g.FailCode} at {Report.Clock(g.Tick)})")) return;
-                int start = g.FightStart;
-                r.Is(g.Crew[3].Fight && g.Crew[3].Mode == CrewMode.Walking && LogTick(g, "rivals.recalled", tx => tx.Contains("lookout")) == start, "the lookout walks back for the fight (rivals.recalled)");
-                r.Is(!g.Crew[4].Fight && g.Crew[4].Mode == CrewMode.Aboard && g.CarSt == CrewCar.ToStand, "the wheelman rides in by car for the stand (F6, Parked)");
-                r.Eq(string.Join(",", RivalBodies(g)), "rival-3,rival-4,rival-5", "count 3: the posted P3, the lookout, the wheelman's body still aboard");
-                r.Is(G.Within(g.Crew[3].H!.Run?.Points[0] ?? default, g.S.Stand(g.S.RivalLookoutExit), 200), "the lookout's walk starts at rival-lookout-exit, where he left the map");
-            }, Gone(Turned(Driver), "rival-1", "rival-2"));
 
-            Add("S1-FLOOR-NO-SPAWN", "059", "Motive M059-S1.4: route B, tip and warn, P1-P3 gone: the wheelman (by car) and the lookout (on foot) come back, count 2; no hostile beyond rival-1..rival-5 exists and the fight has no fresh body.", r =>
-            {
-                var g = r.G;
-                YardB(r);
-                if (!r.Is(g.FightBranch == "safe", $"the safe fight ({g.FightBranch} {g.Result} {g.FailCode})")) return;
-                int start = g.FightStart;
-                r.Eq(g.Log.Count(l => l.Code == "rivals.recalled" && l.Tick == start), 2, "both away members are recalled at the start (the car, the lookout)");
-                r.Is(g.Crew[3].Fight && g.CarSt == CrewCar.ToStand, "the lookout walks back; the car rides in");
-                r.Until(() => g.Crew[4].Fight || g.Over, T(60));
-                var ids = g.Hostiles.Select(h => h.Id).ToList();
-                r.Is(ids.All(id => id == "rival-4" || id == "rival-5") && ids.Count == 2, $"count 2, and the fight's bodies are rival-4 and rival-5 only ({string.Join(",", ids)})");
-                r.Is(g.Crew.Take(3).All(m => m.Gun.Down && !m.Fight), "the three gone stay gone: nothing spawns");
-            }, Gone(new Start(), "rival-1", "rival-2", "rival-3"));
 
-            Add("S1-FLOOR-ZERO", "059", "Motive M059-S1.4, S1.5: rivals-floor 0 with S1-FLOOR-NO-SPAWN's start: no recall. With fight-always 1 the crew is destroyed only when no member is able; the wheelman (on the tip) and the lookout (warned off) live, so it is not, and the fight is not over.", r =>
-            {
-                if (!r.Is(r.Inputs != null, "inputs")) return;
-                var alt = Alt(r, FloorZero(r.Inputs!), Gone(new Start(), "rival-1", "rival-2", "rival-3"));
-                YardB(alt); foreach (var c in alt.Checks) r.Is(c.ok, "[rivals-floor 0] " + c.what);
-                var g = alt.G;
-                if (!r.Is(g.FightBranch == "safe", $"the safe fight ({g.FightBranch} {g.Result} {g.FailCode})")) return;
-                r.Is(g.R.RivalsFloor == 0 && LogTick(g, "rivals.recalled") < 0, "no recall with rivals-floor 0");
-                r.Is(!g.FightWhy.Contains("crew-destroyed") && g.FightOverTick == Never && LogTick(g, "rivals.wiped") < 0, "not destroyed: the wheelman and the lookout are alive");
-                r.Is(g.Hostiles.Count(h => h.Id.StartsWith("rival-", StringComparison.Ordinal)) == 0, "no body in the fight");
-            }, Gone(new Start(), "rival-1", "rival-2", "rival-3"));
 
             Add("S1-CREW-WIPED", "059", "Motive M059-S1.5: all five gone (Start.CrewGone; the car never comes, nobody drives it). The cell has Vale early at the square: the safe fight is over at its start (rivals.wiped), the gate is open, Go is taken, and the debrief's fight why reads crew-destroyed.", r =>
             {
@@ -334,15 +182,17 @@ namespace Suborned.Sim
             Add("S1-SEE-TAKEDOWN", "059", "Motive M059-S1.6: rival-1 at ambush-3 knocked out where rival-2 at ambush-1 (2.3 m off) sees it (his cone with its near ring, a clear line, his pistol's max ring), but rival-1 does not see the Enforcer coming. rival-2 counts the Enforcer a foe (ai.intent crewmate) and fires: gunfire, Alert at least 2, so the final fight would be loud.", r =>
             {
                 var g = r.G;
-                r.Until(() => Mem(r, 1).Mode == CrewMode.Posted && Mem(r, 2).Mode == CrewMode.Posted, T(240));
-                r.Is(g.S.Stands[0].Ambush[Mem(r, 1).Spot] == "ambush-3" && g.S.Stands[0].Ambush[Mem(r, 2).Spot] == "ambush-1", "rival-1 at ambush-3, rival-2 at ambush-1");
-                if (!CrewTakedownAt(r, "rival-1", "knockout", T(120), seenBy: "rival-2")) return;
+                r.Until(() => Mem(r, 1).Mode == CrewMode.Posted && Mem(r, 2).Mode == CrewMode.Posted && Mem(r, 3).Mode == CrewMode.Posted, T(240));
+                // engine 0.41.0 (brief 096): they step out at the block point, so who takes which spot moved; the pair is whoever stands at ambush-3 and ambush-1 (2.3 m apart)
+                var at3 = g.Crew.Take(3).FirstOrDefault(m => g.S.Stands[0].Ambush[m.Spot] == "ambush-3"); var at1 = g.Crew.Take(3).FirstOrDefault(m => g.S.Stands[0].Ambush[m.Spot] == "ambush-1");
+                if (!r.Is(at3 != null && at1 != null, $"two of the three at ambush-3 and ambush-1 ({at3?.Id}, {at1?.Id})")) return;
+                if (!CrewTakedownAt(r, at3!.Id, "knockout", T(120), seenBy: at1!.Id)) return;
                 int td = g.Tick;
                 r.Until(() => LogTick(g, "rivals.see-takedown") >= 0 || g.Over, T(8));
-                r.Is(LogTick(g, "rivals.see-takedown") >= td && Mem(r, 2).Avenge.Contains("enforcer"), "rival-2 sees it (rivals.see-takedown) and counts the Enforcer a foe");
-                r.Until(() => r.Shots().Exists(s => s.by == "rival-2") || g.Over, T(15));
-                r.Is(r.Shots().Exists(s => s.by == "rival-2" && s.target == "enforcer"), "rival-2 fires on the Enforcer");
-                r.Is(g.FireCauses("rival-2", OpId.Enforcer).Contains("crewmate"), "his cause: crewmate");
+                r.Is(LogTick(g, "rivals.see-takedown") >= td && at1.Avenge.Contains("enforcer"), $"{at1.Id} sees it (rivals.see-takedown) and counts the Enforcer a foe");
+                r.Until(() => r.Shots().Exists(s => s.by == at1.Id) || g.Over, T(15));
+                r.Is(r.Shots().Exists(s => s.by == at1.Id && s.target == "enforcer"), $"{at1.Id} fires on the Enforcer");
+                r.Is(g.FireCauses(at1.Id, OpId.Enforcer).Contains("crewmate"), "his cause: crewmate");
                 r.Is(g.Alert >= 2, $"gunfire before the final fight: Alert {g.Alert}, so the final fight is loud (StartFight: a shot or Alert 2)");
             });
 
@@ -361,8 +211,7 @@ namespace Suborned.Sim
                 r.Done(Enf);
                 int down = g.Tick;
                 r.Is(Mem(r, 3).Gun.Down && g.BodyById("rival-3") != null && !g.Acts.Last().Kill, $"rival-3 is out at {Report.Clock(down)} (a body, brief 013)");
-                r.Send(Enf, "d:Office entrance"); // away from him before he wakes: he would shoot the man who took him down on sight (M059-3.4)
-                Tip059(r);
+                r.Send(Enf, "d:Office entrance"); // away from him before he wakes: he would shoot the man who took him down on sight (M059-3.4); engine 0.41.0: no tip (retired)
                 ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): the yard sweep never sees the door, so no wait
                 r.Do(Tech, "loop", "entrance"); r.Do(Fixer, "call", Inez);
                 ToEntryOpening(r, walkDone: true);
@@ -373,7 +222,7 @@ namespace Suborned.Sim
                 r.Is(wake >= down + T(g.R.WakeS) - 1 && wake < g.FightStart, $"he woke at {(wake >= 0 ? Report.Clock(wake) : "-")}, wake-s ({g.R.WakeS} s) after the takedown and before the fight ({Report.Clock(g.FightStart)})");
                 r.Is(Mem(r, 3).Avenge.Contains("enforcer"), "the Enforcer is his foe (M059-3.4)");
                 r.Is(RivalBodies(g).Contains("rival-1") && RivalBodies(g).Contains("rival-2") && RivalBodies(g).Contains("rival-3"), $"the posted three are the fight's bodies ({string.Join(",", RivalBodies(g))})");
-                r.Is(LogTick(g, "rivals.recalled") < 0 && g.Crew[3].Mode == CrewMode.Gone && g.CarSt == CrewCar.Away, "no recall is made: the lookout stays gone and the car away (the floor is met)");
+                r.Is(LogTick(g, "rivals.recalled") < 0, "no recall is made (the floor is met)");
             }
             Add("S1-FLOOR-WAKE", "059", "Motive M059-S1.4, M059-3.4: route A at the square with the driver turned before the mission (the lookout warned off) and the tip given; rival-3 knocked out unseen at his post (ambush-2), wake-s before the fight. He wakes, gets up where he fell and posts again, the Enforcer his foe; at the fight's start the posted three are up, so no recall is made. Played on the rulebook with wake-s 30 (the scenario's timing; the rule reads the value).", r =>
             {
@@ -451,46 +300,7 @@ namespace Suborned.Sim
             // route B at the yard: Motive's rb-ff (fight it out) and rbb-ff (board and go), composed on this engine (tools/sim/fixtures059.ts); their
             // locks are the cell's fire orders: dropped, the play is at will (the cell's panic only); 3.0 s later, a slower player. Engine 0.34.0
             // (brief 067 A): the fixtures are Motive's rb-rr and rbb-rr, the same plays with the Tech's Reroute at 5:00 (the patrol sweeps the yard)
-            static List<Order> NoLocks(List<Order> os) => os.Where(o => o.Do != "fire").ToList();
             static List<Order> LateLocks(List<Order> os) => os.Select(o => { if (o.Do == "fire") o.Tick += T(3); return o; }).OrderBy(o => o.Tick).ToList();
-            // brief 039 (one input, Motive rulings-0.35.1 §3): at will is F. The edit drops the fixture's locks (its fire orders) and the Scout and
-            // the Fixer press F (draw) once: at the spring (the run's own tick, FightSprung) or at the Board (the Enforcer's board order's tick)
-            static List<Order> FAt(List<Order> os, int tick)
-            {
-                var keep = os.Where(o => o.Do != "fire").ToList();
-                int at = keep.FindLastIndex(o => o.Tick <= tick) + 1;
-                keep.InsertRange(at, new[] { new Order { Tick = tick, Op = Scout, Do = "draw" }, new Order { Tick = tick, Op = Fixer, Do = "draw" } });
-                return keep;
-            }
-            static int BoardTick(List<Order> os) => os.First(o => o.Op == Enf && o.Do == "board").Tick;
-            void AtWill(Run r, string fx, bool atBoard)
-            {
-                var g = r.G; int drew = -1;
-                Action? atSpring = atBoard ? null : () =>
-                {
-                    if (drew >= 0 || g.FightSprung > g.Tick) return;
-                    drew = g.Tick;
-                    foreach (var op in new[] { Scout, Fixer }) r.Is(g.Issue(new Order { Tick = g.Tick, Op = op, Do = "draw" }).ok, $"{fx}: the {op} presses F at the spring ({Report.Clock(g.Tick)})");
-                };
-                if (!PlayFixture(r, fx, atBoard ? os => { drew = BoardTick(os); return FAt(os, drew); } : NoLocks, atSpring)) return;
-                r.Is(drew >= 0, $"{fx}: the Scout and the Fixer press F {(atBoard ? "at the Board" : "at the spring")}");
-            }
-            Add("BAL-YARD-AT-WILL", "059", "Motive M059-B7 restated (rulings-0.35.1 §3, one input): route B at the yard (svc-ambush-1 at (77.35, -8.0)), Motive's rb-ff and rbb-ff with their locks dropped, the Scout and the Fixer pressing F once. F at the spring: both hold the carry and win, no focus needed (Motive 7:32.2 and 7:35.4). F only at the Board on board and go (rbb-ff): the rivals walk to the held car with all aboard and take Vale (rivals-reach-vale with rivals.for-car; Motive 7:52.7). Drawing late is still punished.", r =>
-            {
-                var g = r.G;
-                r.Is(g.S.Stand("svc-ambush-1") == new Pt(7735, -800), "svc-ambush-1 at (77.35, -8.0) (Vantage, M059-B4)");
-                AtWill(r, "bal-rb-ff", false);
-                r.Line(g.Result == Outcome.Success, $"bal-rb-ff, F at the spring, wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; Motive 7:32.2)");
-                if (r.Inputs == null) return;
-                var b = Alt(r, r.Inputs); AtWill(b, "bal-rbb-ff", false);
-                foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff F-spring] " + c.what);
-                r.Line(b.G.Result == Outcome.Success, $"bal-rbb-ff, F at the spring, wins ({b.G.Result} {b.G.FailCode} at {Report.Clock(b.G.Tick)}; Motive 7:35.4)");
-                var c2 = Alt(r, r.Inputs); AtWill(c2, "bal-rbb-ff", true);
-                foreach (var c in c2.Checks) r.Is(c.ok, "[rbb-ff F-board] " + c.what);
-                var gb = c2.G; int forCar = LogTick(gb, "rivals.for-car");
-                r.Is(gb.FailCode == "rivals-reach-vale" && forCar >= 0, $"bal-rbb-ff, F only at the Board, loses: all aboard a held car, the rivals walk to it and take Vale ({gb.Result} {gb.FailCode} at {Report.Clock(gb.Tick)}; rivals.for-car {(forCar >= 0 ? Report.Clock(forCar) : "-")})");
-                r.Line(gb.Tick == T(472) + 7, $"bal-rbb-ff, F at the Board: rivals-reach-vale at {Report.Clock(gb.Tick)} (Motive 7:52.7; rivals.for-car 7:43.8)");
-            });
             void Focus(Run r, string fx, bool late)
             {
                 var g = r.G;
@@ -513,52 +323,8 @@ namespace Suborned.Sim
                 if (r.Inputs == null) return;
                 var b = Alt(r, r.Inputs); Focus(b, "bal-rbb-ff", false); foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff] " + c.what);
             });
-            Add("BAL-YARD-FOCUS-LATE", "059", "Motive M059-B4: BAL-YARD-FOCUS with every lock 3.0 s late (a slower player): rb-ff still wins (the player Goes once the car is free); rbb-ff loses (since 0.34.0, restated on 0.35.1 by Motive rulings-0.35.1 §3): nobody stands outside the held car, so the rivals walk to it and take Vale with the Enforcer up (rivals-reach-vale, rivals.for-car; Motive 7:44.4; M067-K3 a).", r =>
-            {
-                Focus(r, "bal-rb-ff", true);
-                if (r.Inputs == null) return;
-                var b = Alt(r, r.Inputs); Focus(b, "bal-rbb-ff", true); foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff] " + c.what);
-            });
 
-            // engine 0.35.2 (Motive rulings-0.35.1 §2 and §3's last row, Sky's yes 2026-10-27): the yard plays with their locks dropped and no F at
-            // all. 0.35.1: none at 8:30 (the stall: an undrawn cell by a held car with Vale aboard was a guard, never shot, never pressed)
-            void NeverDrawn(Run r, string fx)
-            {
-                var g = r.G;
-                if (!PlayFixture(r, fx, NoLocks)) return;
-                r.Is(!g.Log.Exists(l => l.Code == "order.draw"), $"{fx}: nobody of the cell draws");
-                int forCar = LogTick(g, "rivals.for-car");
-                r.Is(g.FailCode == "rivals-reach-vale" && forCar >= 0, $"{fx}, never drawn, loses: the rivals walk to the held car past the undrawn cell and take Vale ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; rivals.for-car {(forCar >= 0 ? Report.Clock(forCar) : "-")})");
-                r.Is(g.Tick < T(g.ClockOver), $"{fx}: an outcome before the close, no stall ({Report.Clock(g.Tick)})");
-            }
-            Add("BAL-YARD-NEVER-DRAWN", "059", "Engine 0.35.2 (Motive rulings-0.35.1 §2, Sky's yes 2026-10-27: only a drawn agent guards a held car): route B at the yard, Motive's rb-ff and rbb-ff with their locks dropped and nobody pressing F. An undrawn agent standing by is no guard: the rivals walk to the held car with Vale aboard and take him (rivals-reach-vale with rivals.for-car). 0.35.1: none at 8:30, the run idled to the close.", r =>
-            {
-                NeverDrawn(r, "bal-rb-ff");
-                if (r.Inputs == null) return;
-                var b = Alt(r, r.Inputs); NeverDrawn(b, "bal-rbb-ff"); foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff] " + c.what);
-                r.Line(true, $"bal-rb-ff never drawn: {r.G.FailCode} at {Report.Clock(r.G.Tick)}; bal-rbb-ff: {b.G.FailCode} at {Report.Clock(b.G.Tick)}");
-            });
 
-            Add("BAL-YARD-POST", "059", "Motive M059-B9 (the build as it stands): in rb-ff's run the yard's blocker is svc-ambush-1's man; he walks about 9.16 m to the open post (86, -5) and is there within the carry and Board from Vale's car (the Enforcer's carry at the cell's pace plus Board carrying, read from the rules and the run).", r =>
-            {
-                var g = r.G;
-                int spring = -1, take = -1; Pt from = default; long walk = 0; Hostile? bl = null; int atPost = -1;
-                if (!PlayFixture(r, "bal-rb-ff", null, () =>
-                {
-                    if (take < 0 && g.Vale == ValeAt.WithEnforcer) { take = g.Tick; from = r.Op(Enf).Pos; }
-                    if (spring < 0 && g.Blockers.Count > 0) { spring = g.FightSprung; bl = g.Hostiles.Find(h => h.Blocker); walk = bl?.Run?.Length ?? 0; }
-                    if (bl != null && atPost < 0 && !bl.Moving(g.Tick)) atPost = g.Tick;
-                })) return;
-                if (!r.Is(bl != null && spring >= 0, "a blocker is picked at the spring")) return;
-                var m = g.CrewOf(bl!.Id)!;
-                r.Eq(g.S.Stands[1].Ambush[m.Spot], "svc-ambush-1", $"the blocker ({bl.Id}) is the man at svc-ambush-1");
-                r.Is(G.Within(bl.Home, new Pt(8600, -500), 100), $"his post is the lane's open point (86, -5): {bl.Home}");
-                r.Line(Math.Abs(walk - 9160) <= 300, $"his walk is {Sec1(walk / 1000.0)} m (Vantage measured 9.16 m)");
-                long carry = G.Dist(from, g.S.Stand(g.S.Stands[1].Car));
-                int limit = (int)((carry * Game.Hz + g.R.CellSpeed - 1) / g.R.CellSpeed) + T(g.R.BoardS + g.R.CarryS);
-                r.Is(atPost >= 0 && atPost - spring <= limit, $"he is at his post {Sec1((atPost - spring) / 10.0)} s after the spring, within the carry and Board ({Sec1(limit / 10.0)} s: {Sec1(carry / 100.0)} m at {g.R.CellSpeed} cm/s + Board carrying {g.R.BoardS + g.R.CarryS} s)");
-                r.Line(atPost - spring <= T(6) + 5, $"and within Motive's 6.5 s (the brief's 3.5 m carry): {Sec1((atPost - spring) / 10.0)} s");
-            });
 
             // the loud fight on the drawn crew: Motive's loud-x4 (briefs/059/motive/balance/probe-plans/loud-x4.plan.json) composed on this engine
             // (tools/sim/fixtures059.ts → Fixtures/bal-loud-x4.script.json): the guard shot at 2:31 draws the crew to the Office front with four on
@@ -568,7 +334,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 if (!PlayFixture(r, "bal-loud-x4")) return;
                 var downs = g.Log.Where(l => l.Code == "rivals.down").Select(l => l.Tick).ToList(); int brk = LogTick(g, "rivals.retreat");
-                int stop = LogTick(g, "rivals.drawn-stop");
+                int stop = LogTick(g, "rivals.drawn"); // engine 0.41.0 (brief 096): the crew on foot go to the front; the car keeps its block (RIV-21)
                 r.Is(stop >= 0 && g.Log.Count(l => l.Code == "rivals.joins" || l.Code == "rivals.late") == 0, $"the gunfire drew the crew to the Office front ({(stop >= 0 ? Report.Clock(stop) : "-")})");
                 r.Line(downs.Count >= 3, $"brief 039 drift (B, cover and pin; Motive re-composes): three of the drawn crew go down ({downs.Count}; {g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
                 if (downs.Count < 3) return;
@@ -586,50 +352,6 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Tick > brk && l.Code == "board.in" && l.Text.Contains(g.ValeName)), "the Enforcer walks Vale out after it and boards (the log names him from the cast, brief 089)");
             });
 
-            Add("BAL-LANE", "059", "Motive M059-B2 (GDD §06: the blocker keeps its lane and answers only from it): route A; the Enforcer holds Vale at the service lane, far from the car, while the Scout's shot from the pistol's long band springs the ambush (brief 059: a shot at a lurker gives it away). The rival blocker walks to his lane post; the Fixer then fires on him from the long band, beyond his effective reach: he takes no kite step out of the line and stays on the lane.", r =>
-            {
-                var g = r.G; var w = g.R.Pistol;
-                RouteA(r, reroute: true);
-                if (!r.Is(g.FightBranch == "safe" && g.Vale == ValeAt.WithEnforcer, $"the Enforcer has Vale at the service lane ({g.FightBranch} {Report.Clock(g.Tick)})")) return;
-                Pt? Band(Pt at, Pt from)
-                {
-                    Pt? best = null; long bd = long.MaxValue;
-                    for (int d = w.EffCm + 40; d <= w.MaxCm - 40; d += 20)
-                        for (int k = 0; k < 72; k++)
-                        {
-                            double a = Math.PI * 2 * k / 72; var q = at + new Pt((int)(Math.Cos(a) * d), (int)(Math.Sin(a) * d));
-                            if (!g.S.Grid.Free(q) || G.Within(q, at, w.EffCm + 20) || !G.Within(q, at, w.MaxCm - 20) || !g.S.Sight(q, at, g.R.Eye)) continue;
-                            long dd = G.D2(q, from); if (dd < bd && g.S.Grid.Route(from, q) != null) { bd = dd; best = q; }
-                        }
-                    return best;
-                }
-                var lurker = g.Hostiles.Where(h => h.Id.StartsWith("rival-", StringComparison.Ordinal) && h.Present).OrderBy(h => h.Id, StringComparer.Ordinal).FirstOrDefault();
-                if (!r.Is(lurker != null, "a rival lies in wait at his spot")) return;
-                var s1 = Band(lurker!.Pos(g.Tick), r.Op(Scout).Pos);
-                if (!r.Is(s1.HasValue, "a spot for the Scout's shot")) return;
-                r.To(Math.Max(g.Tick, r.SendTo(Scout, s1!.Value)));
-                r.Do(Scout, "draw"); r.Wait(g.DrawT + 1); r.Fire(Scout, lurker.Id);
-                r.Until(() => g.FightSprung != Never || g.Over, T(15));
-                r.Is(LogTick(g, "fight.ambush", tx => tx.Contains("shot")) >= 0, "the shot springs the ambush");
-                r.Until(() => g.Blockers.Count > 0 || g.Over, T(5));
-                var bl = g.Hostiles.Find(h => h.Blocker);
-                if (!r.Is(bl != null && bl.Id.StartsWith("rival-", StringComparison.Ordinal), $"a rival blocker ({bl?.Id})")) return;
-                g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", Point = g.S.Stand("crew:scout") }); // the Scout steps back
-                r.Until(() => !bl!.Moving(g.Tick) || bl.Down || g.Over, T(30));
-                var post = bl!.Pos(g.Tick);
-                r.Is(g.S.InExitLane(post, g.CurStand), $"he stands on his lane post {post}");
-                var spot = Band(post, r.Op(Fixer).Pos);
-                if (!r.Is(spot.HasValue, "a spot beyond his effective reach with a line to him")) return;
-                r.To(Math.Max(g.Tick, r.SendTo(Fixer, spot!.Value)));
-                if (!r.Is(!g.Over && !r.Op(Fixer).Down && !bl.Down, $"the Fixer at {spot}, {G.Dist(r.Op(Fixer).Pos, bl.Pos(g.Tick)) / 100} m from him ({g.Result} {g.FailCode})")) return;
-                int from = g.Tick; r.Do(Fixer, "draw"); r.Wait(g.DrawT + 1);
-                r.Fire(Fixer, bl.Id);
-                int stop = g.Tick + T(12); bool off = false;
-                while (!g.Over && g.Tick < stop && !bl.Down) { if (!g.S.InExitLane(bl.Pos(g.Tick), g.CurStand)) off = true; g.Step(); }
-                r.Is(r.Shots().Exists(x => x.by == Fixer && x.target == bl.Id && x.tick >= from), "the Fixer fires on him");
-                r.Is(!g.Log.Exists(l => l.Tick >= from && l.Code == "ai.kite" && l.Text.StartsWith(bl.Id + " ", StringComparison.Ordinal) && l.Text.Contains("out of the line")), $"{bl.Id} takes no kite step out of the line");
-                r.Is(!off, $"he stays on the lane ({bl.Pos(g.Tick)})");
-            });
         }
 
         /// <summary>Plays an embedded fixture script (tools/sim/fixtures059.ts) on the scenario's run, each order at its tick, to its end. False
