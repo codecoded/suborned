@@ -1848,6 +1848,7 @@
    "footerBare": "{who} · {mood}"
   },
   "sealed": {
+   "live": {"heading": "District seals in {time}", "empty": "Get Popovic into the car and leave.", "ready": "Leave in the getaway car. Press Go.", "held": "Clear the exit, then press Go.", "cause": "Security is closing the exits."},
    "rule": "Brief 057 section 4 (Glyph's wording table; Sky, 2026-10-24: 'District sealed. Sealed off before Vale reached the car.' on a card that also said Vale reached the car). The engine's fail is: the getaway car had not left when security sealed the district. Keel's FailCause.Car says which of three it was: held (hostiles held the car, so Go was refused), ready (Vale was aboard, the car was free and Go was never given), empty (Vale was not aboard). `line` is the fail card's sub-line (it replaces briefing.fails.sealed whenever the car state is known; briefing.fails.sealed is the same sentence as `unknown`), `tip` the fail camera's next-time line, `story` the debrief's extra route line after 'Vale reached the getaway car.', and the same car state chooses all three, so they cannot disagree. {holders} is names.holders as holdersPhrase says it ('a rival', '2 robots', 'police'). The origin captions (less.failcam.caption.sealed) stay: they say what caused the seal; these say why it cost the run.",
    "line": {
     "held": "{holders} held the car, so it couldn't leave before the district sealed.",

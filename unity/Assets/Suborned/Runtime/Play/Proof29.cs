@@ -343,18 +343,20 @@ namespace Suborned.Play
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; HandoverHost.SeedPin = pinKeep;
                 var g = h.Game; var orders = Route("fail-district-seals"); Play(h, orders, 1700, 1700);
                 for (int i = 0; i < 600 && !h.SealOn && !g.Over; i++) h.RunTo(g.Tick + 1);
-                bool on = h.SealOn; int left = h.SealLeftS; string words = "", cause = "", endLines = "", car = "";
+                bool on = h.SealOn, visible = false, thirdVisible = false; int left = h.SealLeftS; string words = "", cause = "", endLines = "", car = "";
                 if (on)
                 {
                     yield return Frames(4); words = HudToolkit.SealWords; HudToolkit.SealHoverForce = true; yield return Frames(2); cause = h.SealCauseIcon();
                     yield return new WaitForSecondsRealtime(0.7f); yield return Shoot(h, dir, "r29-seal-clock", log, "active"); HudToolkit.SealHoverForce = false;
-                    // the last 10 s (amber, blinking): run to 8 s before the seal, unpaused a moment so the blink and the underline draw
+                    var bounds = HudToolkit.SealBounds; visible = HudToolkit.SealVisible && bounds.xMin >= 0 && bounds.yMin >= 0 && bounds.xMax <= Screen.width && bounds.yMax <= Screen.height && HudToolkit.SealActionWords.Length > 0;
+                    bool followed = h.Following; if (!followed) h.FollowToggle(); yield return Frames(4); thirdVisible = h.Following && HudToolkit.SealVisible && HudToolkit.SealWords.Contains("District seals in"); if (!followed) h.FollowToggle();
+                    // The last seconds: the deadline stays opaque and amber, with its draining underline.
                     if (g.Lockdown < int.MaxValue / 4) { h.RunTo(g.Lockdown - 8 * Suborned.Sim.Game.Hz); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); log.Add($"r29 seal last 10 s: marker '{HudToolkit.SealWords}' at tick {g.Tick}"); yield return Shoot(h, dir, "r29-seal-last10", log, "active"); }
                     Play(h, orders, int.MaxValue, 6000); for (int i = 0; i < 3000 && !g.Over; i++) h.RunTo(g.Tick + 1);
                     yield return new WaitForSecondsRealtime(0.6f); car = h.SealedCar; endLines = string.Join(" | ", HudToolkit.EndLinesNow ?? new List<string>());
                     yield return Shoot(h, dir, "r29-seal-end", log, "active");
                 }
-                bool sOk = on && words.Contains(":") && g.FailCode == "sealed" && !(car == "empty" && endLines.Contains("Vale reached the getaway car"));
+                bool sOk = on && visible && thirdVisible && words.Contains("District seals in") && g.FailCode == "sealed" && !(car == "empty" && endLines.Contains("Vale reached the getaway car"));
                 ok &= sOk;
                 parts.Add($"\"seal\": {{\"ok\": {B(sOk)}, \"on\": {B(on)}, \"leftS\": {left}, \"marker\": \"{J(words)}\", \"cause\": \"{cause}\", \"fail\": \"{g.FailCode}\", \"car\": \"{car}\", \"end\": \"{J(endLines)}\"}}");
                 log.Add($"r29 seal: {(sOk ? "ok" : "FAILED")}: on {on}, {left} s left, marker '{words}', cause {cause}; ended {g.FailCode}; car state '{car}' (Keel's FailCause.Car); end card: {endLines}");

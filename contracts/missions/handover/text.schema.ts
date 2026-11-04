@@ -308,7 +308,7 @@ export const Less = z.strictObject({
     footerHurt: Short(44).describe('the footer when the mood hurts an approach and favours none (Quote.Hurt): {who} {mood} {lever}'),
     footerBare: Short(44).describe('the footer when the mood moves no price: {who} {mood}'),
   }).describe('brief 054 (the Watch teaches a mood): the words of the Watch card\'s footer and the price pill\'s tag. Neutral says nothing, so a Watch that taught nothing has no footer'),
-  sealed: z.strictObject({
+  sealed: z.strictObject({ live: z.strictObject({ heading: Line, empty: Line, ready: Line, held: Line, cause: Line }).optional().describe('Persistent deadline and escape instruction while the seal runs; {time} is the remaining mission time as m:ss'),
     rule: z.string().min(1),
     line: z.strictObject({ held: Line, ready: Line, empty: Line, unknown: Line }).describe('brief 057 section 4: the fail card\'s sub-line when the district seals, by FailCause.Car (held, ready, empty), and `unknown` when the engine gave none; {holders} is names.holders as holdersPhrase says it'),
     tip: z.strictObject({ held: Short(36), ready: Short(36), empty: Short(36) }).describe('what to do next time, by FailCause.Car; at most six words, the fail camera\'s tip form'),

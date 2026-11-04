@@ -324,8 +324,7 @@ namespace Suborned.Play
                 MoodLikely = S(md, "likely") ?? MoodLikely; MoodHurt = S(md, "hurt") ?? MoodHurt; MoodFooter = S(md, "footer") ?? MoodFooter; MoodFooterHurt = S(md, "footerHurt") ?? MoodFooterHurt; MoodFooterBare = S(md, "footerBare") ?? MoodFooterBare;
             }
             if (l.Opt("alt")?.Opt("mood") is JNode am) foreach (var kv in am.Entries) if (kv.Value.Kind == JKind.Str) AltMood[kv.Key] = kv.Value.Str();
-            if (l.Opt("sealed") is JNode sd) // brief 057 §4 (Fable): the sealed fail by the car's state
-                foreach (var (k, into) in new[] { ("line", SealedLine), ("tip", SealedTip), ("story", SealedStory) }) if (sd.Opt(k) is JNode m) foreach (var kv in m.Entries) if (kv.Value.Kind == JKind.Str) into[kv.Key] = kv.Value.Str();
+            ReadSeal(l.Opt("sealed"));
             if (l.Opt("closedIn")?.Opt("line") is JNode cil) foreach (var kv in cil.Entries) if (kv.Value.Kind == JKind.Str) ClosedInLine[kv.Key] = kv.Value.Str(); // brief 080 (Fable)
             if (l.Opt("odds") is JNode od)
             {
