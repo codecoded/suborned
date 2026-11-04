@@ -55,7 +55,7 @@ namespace Suborned.Sim
                 bool civShot = false; foreach (var kv in civGuns) if (kv.Value.Down) civShot = true; // a civilian shot (a takedown is no shot)
                 if (civShot) { n += R.LoudCivilian; FightWhy.Add("civilian-shot"); }
                 var entry = LoudEntryNow(out var entryName); // brief 059 S2 (fight.loud.entry): the response unit's entry, or the nearest to the car's stand
-                var stands = CurStand.Police; // brief 059 K6: the stand's police stands
+                var stands = FightStandNow.Police; // brief 059 K6: the stand's police stands (engine 0.42.0: the lent car's, when the fight is at it)
                 for (int i = 0; i < n && i < stands.Length; i++)
                 {
                     var route = RouteRoundHold(entry, S.Stand(stands[i])) ?? Walk.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) }; // engine 0.34.0 (Motive M067-SQ1): a walk to a post goes round the car's hold
@@ -77,8 +77,7 @@ namespace Suborned.Sim
             {
                 // brief 059 K9: the crew on the map (and still to come in the car) are the hostiles; no fresh spawns. The −1s are people who left
                 CrewToFight();
-                if (lookoutWarned) FightWhy.Add("lookout-warned-off");
-                if (CarSt == CrewCar.Away || CarSt == CrewCar.TipOut) FightWhy.Add("wheelman-away");
+                if (CarSt == CrewCar.Away || CarSt == CrewCar.Leaving) FightWhy.Add("crew-car-away"); // brief 096: the warned lookout and the tipped wheelman are retired
                 FightWarned = Inez.Turned && !Inez.Down && Inez.Has(R.HelpedAct);
                 if (FightWarned) FightWhy.Add("waitress-warns");
                 GuardAlly = !GuardDown && GuardGun.Health == GuardGun.Max && !GuardEngaged && !SawCell(GuardP);
@@ -116,9 +115,10 @@ namespace Suborned.Sim
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
             if (RivalReachesVale()) { Fail("rivals-reach-vale", $"A rival reaches the car with nobody beside it and takes {ValeName} out.", RivalsAtCar); return; }
             var e = Enforcer; var car = Car;
-            if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car
+            if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car) || LendSpringNear(car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car; engine 0.42.0 (Motive L7): or an agent near our car while he is lent
             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
             if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
+            if (!anyUp && FightBranch == "safe" && rivalBlockFight && GetawayBoxers().Contains("car:rivals")) anyUp = true; // brief 096 (engine 0.41.0): the block still stands: break it or blow it up, and the fight goes on (its shots untraced)
             if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
             // the guard runs in against the rivals (safe); his shots are in Combat()
             if (GuardAlly && guardAllyPath != null && !GuardDown)
@@ -138,7 +138,8 @@ namespace Suborned.Sim
                 // member still in the car springs when he gets out (he comes in on his path)
                 foreach (var h in Hostiles) { if (CrewOf(h.Id) is CrewMember cm && !cm.Fight) continue; h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
                 Note("fight.ambush", shot ? "The cell's shot gives the ambush away: the rival crew springs." : FightWarned ? $"{Cap(InezName)}'s warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
-                if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
+                CrewSprings(); rivalBlockFight = RivalBlockHere; // engine 0.41.0 (GameCrewTurn.cs, GameRivalBlock.cs): the crew's spring foes; the rival car as the block
+                if (!blockersPicked && !rivalBlockFight) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire); brief 096: none where the rival car is the block
                 if (GuardAlly)
                 {
                     var from = GuardPose()?.pos ?? S.Stand(S.GuardPost);

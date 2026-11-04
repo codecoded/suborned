@@ -3,7 +3,7 @@
  "mission": "handover",
  "id": "quiet-a",
  "style": "prepared-quiet",
- "note": "Route A as a person plays it, prepared: Watch and Listen on Inez, Help till she's turned, the Loop planted while the last Help runs so it covers the entry, the call, in when the guard has walked off, then cover the car and fight from hold; Vale to the car when its mark clears.",
+ "note": "Route A as a person plays it, prepared: Watch and Listen on Inez, Help till she's turned, the Loop planted while the last Help runs so it covers the entry, the call, in when the guard has walked off, then cover the car and fight from hold; Vale to the car when its mark clears. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else. Engine 0.41.0 (brief 096): the rival car boxes our car in on arrival; the plan's end gains the block's answer (blow the car once nobody of the crew stands or once Popovic is aboard, and Go once the box is gone), nothing else.",
  "pace": "human",
  "rules": [
   {"id":"scout-to-inez","op":"scout","do":"move","to":"beside-inez","run":true},
@@ -37,6 +37,25 @@
   {"id":"board","op":"enforcer","do":"board","target":"car","when":["free:enforcer","near:enforcer:d%Getaway bay:4"],"retry":1},
   {"id":"go","op":"cell","do":"go","when":["log:board.in"],"retry":1,"react":"expected"},
   {"id":"rescue-move","op":"scout","do":"move","to":"d:Getaway bay","when":["log:board.in","down:enforcer"],"interrupt":true,"why":"the Enforcer's down in the car with Vale: somebody has to drive"},
-  {"id":"rescue-board","op":"scout","do":"board","target":"car","when":["done:rescue-move","free:scout"],"retry":1}
+  {"id":"rescue-board","op":"scout","do":"board","target":"car","when":["done:rescue-move","free:scout"],"retry":1},
+  {"id":"blow-a-near-s","op":"scout","do":"move","to":[1250,-5250],"when":["boxed","!hostiles>=:2","log:enter.out"],"why":"close in on the rival car across our way out"},
+  {"id":"blow-a-near-f","op":"fixer","do":"move","to":[1500,-5200],"with":"blow-a-near-s"},
+  {"id":"blow-a-near-t","op":"tech","do":"move","to":[1750,-5250],"with":"blow-a-near-s"},
+  {"id":"blow-a","op":"scout","do":"fire","target":"car:rivals","force":true,"when":["boxed","!hostiles>=:2","log:enter.out"],"retry":2,"why":"the rival car still across our way out: blow it up"},
+  {"id":"blow-a-fixer","op":"fixer","do":"fire","target":"car:rivals","force":true,"with":"blow-a"},
+  {"id":"blow-a-tech","op":"tech","do":"fire","target":"car:rivals","force":true,"with":"blow-a"},
+  {"id":"blow-b-near-s","op":"scout","do":"move","to":[1250,-5250],"when":["boxed","!hostiles>=:2","log:take.done"],"why":"close in on the rival car across our way out"},
+  {"id":"blow-b-near-f","op":"fixer","do":"move","to":[1500,-5200],"with":"blow-b-near-s"},
+  {"id":"blow-b-near-t","op":"tech","do":"move","to":[1750,-5250],"with":"blow-b-near-s"},
+  {"id":"blow-b","op":"scout","do":"fire","target":"car:rivals","force":true,"when":["boxed","!hostiles>=:2","log:take.done"],"retry":2,"why":"the rival car still across our way out: blow it up"},
+  {"id":"blow-b-fixer","op":"fixer","do":"fire","target":"car:rivals","force":true,"with":"blow-b"},
+  {"id":"blow-b-tech","op":"tech","do":"fire","target":"car:rivals","force":true,"with":"blow-b"},
+  {"id":"blow-loud-near-s","op":"scout","do":"move","to":[1250,-5250],"when":["boxed","log:fight.loud","sincelog:fight.loud:20"],"why":"close in on the rival car across our way out"},
+  {"id":"blow-loud-near-f","op":"fixer","do":"move","to":[1500,-5200],"with":"blow-loud-near-s"},
+  {"id":"blow-loud-near-t","op":"tech","do":"move","to":[1750,-5250],"with":"blow-loud-near-s"},
+  {"id":"blow-loud","op":"scout","do":"fire","target":"car:rivals","force":true,"when":["boxed","log:fight.loud","sincelog:fight.loud:20"],"retry":2,"why":"the rival car still across our way out: blow it up"},
+  {"id":"blow-loud-fixer","op":"fixer","do":"fire","target":"car:rivals","force":true,"with":"blow-loud"},
+  {"id":"blow-loud-tech","op":"tech","do":"fire","target":"car:rivals","force":true,"with":"blow-loud"},
+  {"id":"go-unboxed","op":"cell","do":"go","when":["log:board.in","log:car.unboxed","!boxed"],"retry":1,"react":"expected","why":"engine 0.41.0: the box is gone: Go (retry if the car is held)"}
  ]
 }

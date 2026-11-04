@@ -11,7 +11,7 @@ namespace Suborned.Sim
     public enum Outcome { None, Success, Failure, Withdrawn }
     /// <summary>Where Vale is. Pickup: standing at his car at the official bay (6:10); InCar (brief 059 K1): in the back of his own car, from
     /// car.pickup.valeIn after he reaches it (appended last so every earlier value hashes as before).</summary>
-    public enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead, InCar }
+    public enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead, InCar, Lent, Out } // engine 0.42.0 (car.lend): in the back of his lent car; out (the win fixed)
 
     /// <summary>The start state's choices beyond the site: what a scenario fixes before tick 0 (hashed into the start state).</summary>
     public sealed class Start
@@ -72,13 +72,11 @@ namespace Suborned.Sim
         /// <summary>Test only (brief 059, Keel): Vale's driver neither drives him away (Sky 3a) nor round: Vale waits at his car at the official
         /// bay to the close, as before engine 0.32.0. For the scenarios of other systems (takedowns, the crowd, the fail camera) that need the
         /// pickup after 6:13, as `holds` places a held scene. Never in a route or a session; off, every start hashes as before.</summary>
-        public bool ValeWaits;
+        public bool ValeWaits, OneCar; // OneCar: engine 0.42.0, test only: car.lend.split read as 0 (the one-car getaway's twin); hashed when set
         /// <summary>Test only (engine 0.33.0, Keel; Motive's S1-FLOOR-NO-SPAWN, S1-FLOOR-ZERO, S1-CREW-WIPED): members of the rival crew killed before
         /// the mission and never found (no body), so the floor and crew-destroyed rules can be read with three or five dead, as `holds` places a
         /// held scene. Never in a route or a session; empty, every start hashes as before.</summary>
         public readonly List<string> CrewGone = new List<string>();
-        /// <summary>Test only (brief 096, Keel): the rival car stands at At, nose Heading, from tick From until tick Until (then drives off), as the split's block (brief 082) will put it; for car.box's scenarios before the crew enters. Never in a route or a session; null, every start hashes as before.</summary>
-        public (Pt At, Pt Heading, int From, int Until)? RivalBlock;
         /// <summary>Brief 025 playground (EXPERIMENTAL): the driven agent's switches for this run, over the rulebook's cell.drive: pace (per mille
         /// of every pace, 250..4000), onBusy (cancel, hold), onRelease (stand, resume), gap (cm, 0 off). Null: the rulebook's. Hashed when set.</summary>
         public int? DrivePace, DriveGap; public string? DriveOnBusy, DriveOnRelease;
@@ -95,12 +93,11 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "rivalBlock");
+            n.Only("seed", "pre080", "oldClock", "rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone", "oneCar");
             if (n.Opt("seed") is JNode sd) { long sv = sd.Long(); if (sv < 0 || sv > int.MaxValue) throw new FormatException($"{sd.Path}: seed 0..2147483647"); s.Seed = (int)sv; } // brief 080
             if (n.Opt("pre080") is JNode p80) s.Pre080 = p80.Bool(); // brief 080, test only
             if (n.Opt("oldClock") is JNode oc) s.OldClock = oc.Bool(); // brief 080, test only
-            if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
-            if (n.Opt("rivalBlock") is JNode rb) { rb.Only("x", "y", "hx", "hy", "from", "until"); s.RivalBlock = (new Pt(rb["x"].Int(), rb["y"].Int()), new Pt(rb["hx"].Int(), rb["hy"].Int()), rb["from"].Int(), rb["until"].Int()); } // brief 096: test only
+            if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); if (n.Opt("oneCar") is JNode o1) s.OneCar = o1.Bool(); // brief 059, engine 0.42.0: test only
             if (n.Opt("crewGone") is JNode cg) foreach (var x in cg.Items) { var id = x.Str(); if (!id.StartsWith("rival-", StringComparison.Ordinal) || s.CrewGone.Contains(id)) throw new FormatException($"{x.Path}: crewGone names rival-1..rival-5, once each"); s.CrewGone.Add(id); } // engine 0.33.0: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
             {
@@ -209,8 +206,7 @@ namespace Suborned.Sim
                 w.EndObj();
             }
             if (Holds.Count > 0) { w.OpenArr("holds"); foreach (var (d, f, u) in Holds) w.Obj().Prop("door", d).Prop("from", f).Prop("until", u).EndObj(); w.EndArr(); } // test only: likewise
-            if (ValeWaits) w.Prop("valeWaits", true); // brief 059, test only: likewise
-            if (RivalBlock is var rbk && rbk.HasValue) w.Open("rivalBlock").Prop("x", rbk.Value.At.X).Prop("y", rbk.Value.At.Y).Prop("hx", rbk.Value.Heading.X).Prop("hy", rbk.Value.Heading.Y).Prop("from", rbk.Value.From).Prop("until", rbk.Value.Until).EndObj(); // brief 096, test only: likewise
+            if (ValeWaits) w.Prop("valeWaits", true); if (OneCar) w.Prop("oneCar", true); // brief 059, engine 0.42.0, test only: likewise
             if (CrewGone.Count > 0) { w.OpenArr("crewGone"); foreach (var x in CrewGone) w.Str(x); w.EndArr(); } // engine 0.33.0, test only: likewise
             return w.EndObj().ToString();
         }
@@ -373,7 +369,7 @@ namespace Suborned.Sim
                 }
             RivalAt = T(Start.RivalsAtS ?? rivalsArriveS + DrawBand(R.Seeds.RivalsId, "arrive", R.Seeds.RivalsArriveS)); // brief 080: every beat of the car moves with it (InitCrew)
             CurStand = S.Stands[0]; // brief 059 K6: the getaway car starts at its first stand (getaway.car)
-            if (!Range) { InitCrew(); if (Driver.Turned) driverTurnedAt = 0; } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
+            if (!Range) { InitCrew(); } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
 
             blockPath = new Path(S.CarBlockPath); // car.drive (brief 023): the block move keeps to drivable cells, from the pickup to the block's stand
             // engine 0.36.0 (car.footprint, brief 079, Sky: "walking through the car"): the response unit's walk is made once at load, and goes round the mission's start cars as the crowd's legs do (0.33.1 left it on the bare grid)
@@ -399,7 +395,7 @@ namespace Suborned.Sim
         public long D2(Pt a, Pt b) => G.D2(a, b);
         public void Note(string code, string text) => Log.Add(new LogLine { Tick = Tick, Code = code, Text = text });
         /// <summary>The run fails: once, with its code, its words, and its cause (FailCause.cs: read-only, never hashed).</summary>
-        void Fail(string code, string text, Func<FailCause>? cause = null) { if (Result != Outcome.None) return; RecordsAtEnd(); Result = Outcome.Failure; FailCode = code; FailText = text; Cause = MakeCause(code, cause); Note("fail." + code, text); }
+        void Fail(string code, string text, Func<FailCause>? cause = null) { if (Result != Outcome.None || LendSwallows(code)) return; RecordsAtEnd(); Result = Outcome.Failure; FailCode = code; FailText = text; Cause = MakeCause(code, cause); Note("fail." + code, text); }
         public bool Over => Result != Outcome.None;
 
         // ---------------------------------------------------------------- the tick
@@ -471,7 +467,7 @@ namespace Suborned.Sim
             if (!Over && !Range) CloseStep(); // Motive's ruling on Redline E8 (brief 080; GameSeed.cs): Vale's absence is noticed, then the close is a verdict
             // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no
             // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
-            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking) GivesUp(); // brief 096 (car.box): a boxed official car stays: closed-in (GameKerb.cs)
+            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking && Vale != ValeAt.Lent && Vale != ValeAt.Out) GivesUp(); // brief 096 (car.box): a boxed official car stays: closed-in (GameKerb.cs)
             FightEnds(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
         }
@@ -606,7 +602,7 @@ namespace Suborned.Sim
         public Pt? CarHeading() => OfficialHeading();
         public Pt? DriverPos()
         {
-            if (Driver.Down) return null;
+            if (Driver.Down) return null; if (Lent) return LentDriverPos(); // engine 0.42.0 (car.lend): out of his car, walking off
             var car = CarPos();
             if (valeDriveStart < 0 && car == blockPath.Points[0]) return S.Stand(S.CarDriver); // brief 059: on duty by his car at the pickup until Vale is in
             return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car (engine 0.33.1: the road side)
@@ -617,7 +613,7 @@ namespace Suborned.Sim
             {
                 case ValeAt.Leaving: { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.At(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
                 case ValeAt.Pickup: return BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): at his car's kerb-side door until he gets in, or waiting by it (0.33.0: its centre, inside the body, unless disabled)
-                case ValeAt.InCar: return CarPos(); // brief 059 K1: in the back of his car
+                case ValeAt.InCar: case ValeAt.Lent: return CarPos(); // brief 059 K1: in the back of his car (engine 0.42.0: lent too)
                 case ValeAt.Taking: return OfficialOut || !PickupService ? BesideCar(CarPos(), 1) : CarPos(); // seized at the door at the front; in the back round the back
                 case ValeAt.WithEnforcer: return Enforcer.Inside ? (Pt?)null : Enforcer.Pos + new Pt(100, 0);
                 default: return null;
@@ -650,7 +646,7 @@ namespace Suborned.Sim
 
         /// <summary>Brief 059: the crew is on the map (the car has entered and is not off it on a tip, or a member is on foot), before the final
         /// fight takes them in.</summary>
-        public bool RivalsPresent { get { if (Range || rivalsAbsorbed) return false; if (CarSt != CrewCar.Off && CarSt != CrewCar.Away) return true; foreach (var m in Crew) if (Up(m) && m.OnFoot) return true; return false; } }
+        public bool RivalsPresent { get { if (Range || rivalsAbsorbed) return false; if (CarSt != CrewCar.Off && CarSt != CrewCar.Away && CarSt != CrewCar.Gone) return true; foreach (var m in Crew) if (Up(m) && m.OnFoot) return true; return false; } }
         /// <summary>Retired by brief 059 (RivalPoses: five members and the car). Kept for hosts mid-migration: the rival car's pose while it is on the
         /// map, else the first member on foot. Never read by a rule.</summary>
         public (Pt pos, Pt facing)? RivalsPose()
@@ -817,7 +813,7 @@ namespace Suborned.Sim
             if (arrival >= SecurityArrives) return;
             bool first = SecurityArrives == INF;
             int lockBefore = Lockdown;
-            SecurityArrives = arrival; Lockdown = arrival + T(SealS); SealMoved(lockBefore);
+            SecurityArrives = arrival; if (!gangOn) Lockdown = arrival + T(SealS); SealMoved(lockBefore); // brief 096: a gang shooting's call sets no seal (GameGangShooting.cs)
             if (origin != null) NoteSealOrigin(lockBefore, origin); // what the seal clock began from (FailCause.cs, output only)
             Note("security.called", $"{text} Security is coming from the north street.");
             if (R.SealWarns && Lockdown != lockBefore) // engine 0.30.0 (Suture's bot pass: the district sealed with no warning): every path that sets the seal clock says so
@@ -866,7 +862,7 @@ namespace Suborned.Sim
         /// <summary>Every change to Trail, Alert and standing with its cause, in order: the answer to "why is the investigation active?" (§13 T3).</summary>
         public readonly List<(int tick, string what, int delta, int now, string cause)> Ledger = new List<(int, string, int, int, string)>();
         void AddTrail(int n, string cause) { if (n == 0) return; Trail += n; Ledger.Add((Tick, "trail", n, Trail, cause)); }
-        void RaiseAlert(int to, string cause) { if (to <= Alert) return; int d = to - Alert; bool two = Alert < 2 && to >= 2; Alert = to; Ledger.Add((Tick, "alert", d, Alert, cause)); if (two) AlertTwo(cause); if (Alert >= 2) RoundsEnd("alert-2"); }
+        void RaiseAlert(int to, string cause) { if (to >= 3) GangIncident("alert-3"); if (to <= Alert) return; int d = to - Alert; bool two = Alert < 2 && to >= 2; Alert = to; Ledger.Add((Tick, "alert", d, Alert, cause)); if (two) AlertTwo(cause); if (Alert >= 2) RoundsEnd("alert-2"); }
         /// <summary>Move the district's Standing: `cause` for the ledger, `why` a rulebook standing.causes id and `who` the person it names, for the
         /// debrief's Standing line (brief 014). StandingMoves is output only, never hashed: Standing itself is.</summary>
         void MoveStanding(int d, string cause, string why, string who)

@@ -729,7 +729,7 @@ namespace Suborned.Sim
             return false;
         }
         /// <summary>Vale is in the cell's hands (being taken, held, in the car): he calls no one.</summary>
-        bool ValeHeld => Vale == ValeAt.Taking || Vale == ValeAt.WithEnforcer || Vale == ValeAt.Car;
+        bool ValeHeld => Vale == ValeAt.Taking || Vale == ValeAt.WithEnforcer || Vale == ValeAt.Car || Vale == ValeAt.Lent;
         /// <summary>The person's routine has them inside a unit now (a stop not on the street, not beyond the sheet).</summary>
         bool Indoors(Walker w)
         {

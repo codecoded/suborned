@@ -48,7 +48,7 @@ export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'p
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',
-  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field',
+  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'end', 'volley', 'field',
   'mark', 'talk-down', 'steam', 'covering-fire'] as const; // brief 039 (engine 0.35.0): one move each (Keel's draft words in text.json, Fable to confirm); parked from engine 0.35.1 (MOVE_VERBS)
 /** Engine 0.35.1 (Sky 2026-10-26): the four moves are out of play (rulebook weapons.moves.on false; their orders are refused unknown-verb). Their words stay, each
  *  marked `parked` with the reason (PARKED), so turning the switch back on needs no new copy. While parked the host offers none of them (the engine refuses each unknown-verb). */

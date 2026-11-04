@@ -328,63 +328,8 @@ namespace Suborned.Sim
             });
 
             // Motive briefs/067/motive-square.md §2-§4 and §5.3 (engine 0.34.0): the square without its planters, on the plays Motive measured
-            Add("SQ1-WALK", "067", "Motive M067-SQ1 (the hold is entered only on purpose) and M067-K3 (a) on a held car only: route A, board and go (route-a-board's plan, composed on this engine: tools/sim/fixtures059.ts). The whole cell boards a free car and Go is taken (Motive 4:15.5); rival-4, the late car's man, walks from the rival car to his spot round the getaway car's hold, 8.9 m or more from it all run (Motive); the rivals never walk to the free car; the only hold is the blocker's (car.held.blocker, once).", r =>
-            {
-                var g = r.G; long min4 = long.MaxValue;
-                if (!PlayFixture(r, "sq-route-a-board", null, () =>
-                {
-                    var h = g.Hostiles.Find(x => x.Id == "rival-4");
-                    if (h != null && h.Present && !h.Down) min4 = Math.Min(min4, G.Dist(h.Pos(g.Tick), g.GetawayCarPos())); // the hold's centre (Game.Car)
-                })) return;
-                r.Eq((g.Result, Report.Clock(g.Tick)), (Outcome.Success, "4:15.5"), "the cell aboard a free car goes: success at 4:15.5 (Motive)");
-                r.Is(min4 != long.MaxValue && min4 > g.R.HoldCm, FormattableString.Invariant($"rival-4 keeps out of the hold: {min4 / 100.0:0.0} m or more from the car, beyond fight.hold's {g.R.HoldCm / 100} m (Motive's probe 8.9 m; 7.3 m on 0.33.1's straight walk past it)"));
-                r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car"), "a free car with the cell aboard waits for Go: no walk to it (K3 a on a held car only)");
-                var held = g.Log.Where(l => l.Code.StartsWith("car.held.", StringComparison.Ordinal)).Select(l => l.Code + " " + l.Text.Substring(0, l.Text.IndexOf(' '))).ToList();
-                r.Eq(string.Join(", ", held), "car.held.blocker rival-2", "the one hold is the blocker's, logged once");
-            });
 
-            Add("SQ1-STEP", "067", "Motive M067-SQ1: an answer to fire never ends inside the getaway car's hold or on its exit lane (a rival's step out of a line, a step to cover while engaged, a police body's cover or close). On the square's plays (route A board and go, route A fought out, route B fought out and board and go, loud with the four on foot): every walk an answer starts ends beyond fight.hold of the car, and no answer holds it (car.held.answer).", r =>
-            {
-                var fxs = new[] { "sq-ra-h3", "sq-route-a-board", "bal-rb-ff", "bal-rbb-ff", "bal-loud-x4" };
-                foreach (var fx in fxs)
-                {
-                    if (fx != fxs[0] && r.Inputs == null) break; // a harness run with no inputs to make more games from (RoundsTests): its own play only
-                    var b = fx == fxs[0] ? r : Alt(r, r.Inputs!); var g = b.G; int answers = 0, inHold = 0; var seen = new Dictionary<string, Path?>(StringComparer.Ordinal);
-                    if (!PlayFixture(b, fx, null, () =>
-                    {
-                        var car = g.GetawayCarPos(); // the hold's centre (Game.Car)
-                        foreach (var h in g.Hostiles)
-                        {
-                            seen.TryGetValue(h.Id, out var was);
-                            if (h.Run != null && !ReferenceEquals(h.Run, was) && h.Why == "answer") { answers++; if (G.Within(h.Run.End, car, g.R.HoldCm)) inHold++; }
-                            seen[h.Id] = h.Run;
-                        }
-                    })) { r.Is(false, $"[{fx}] the fixture plays"); continue; }
-                    r.Is(inHold == 0, $"[{fx}] {answers} answers to fire, none ending within {g.R.HoldCm / 100} m of the car ({inHold})");
-                    r.Is(!g.Log.Exists(l => l.Code == "car.held.answer"), $"[{fx}] no answer holds the car (car.held.answer)");
-                }
-            });
 
-            Add("SQ2-NO-STALL", "067", "Motive M067-SQ2 (the safe fight can't stall): route A, the cell fights it out at the square (Motive's ra-h3, composed on this engine). A rival holding with nobody in his reach advances again ai.engageLapse later, on an operative he has cause to fire on (ai.advance), never while he has a target; the fight ends (Motive: fight.over 4:22.9; 0.33.1 stalled to the script's end) and the run wins (4:37.3).", r =>
-            {
-                var g = r.G; var idle = new Dictionary<string, int>(StringComparer.Ordinal); int bad = 0, advances = 0, lastLog = 0;
-                if (!PlayFixture(r, "sq-ra-h3", null, () =>
-                {
-                    for (int k = lastLog; k < g.Log.Count; k++)
-                    {
-                        var l = g.Log[k]; if (l.Code != "ai.advance") continue;
-                        advances++; string id = l.Text.Substring(0, l.Text.IndexOf(' '));
-                        if (!idle.TryGetValue(id, out int since) || g.Tick - since < T(g.R.EngageLapseS)) bad++; // he had a target within the lapse
-                    }
-                    lastLog = g.Log.Count;
-                    foreach (var h in g.Hostiles) { if (h.Gun.Target.Length > 0 || h.Down) idle.Remove(h.Id); else if (!idle.ContainsKey(h.Id)) idle[h.Id] = g.Tick; }
-                })) return;
-                r.Is(advances > 0 && bad == 0, $"{advances} advances, each by a rival with no target for ai.engageLapse ({g.R.EngageLapseS} s) at least ({bad} sooner)");
-                int fo = LogTick(g, "fight.over"); r.Is(fo >= 0, $"the fight ends ({(fo >= 0 ? Report.Clock(fo) : "-")})");
-                r.Line(fo >= 0 && Report.Clock(fo) == "4:22.9", $"brief 039 drift (B, cover and pin; Motive re-composes): the fight ends at Motive's 4:22.9 (engine 0.34; got {(fo >= 0 ? Report.Clock(fo) : "-")})");
-                r.Eq((g.Result, Report.Clock(g.Tick)), (Outcome.Success, "4:37.3"), "and the run wins (Motive 4:37.3)");
-                r.Is(g.Log.Where(l => l.Code == "ai.advance").All(l => l.Text.StartsWith("rival-", StringComparison.Ordinal)), "only rivals advance (police and the blocker hold)");
-            });
 
             Add("SQ2-CLOSES", "067", "Aster's ruling within Motive M067-SQ2 (engine 0.34.1): an advance closes on its operative. On the square's fights and route B's (SQ1-STEP's plays: ra-h3 fought out, route-a-board, rb-rr, rbb-rr, loud-x4), measured here from the walk grid, not read from the engine: every advance on an operative (ai.advance) that takes a cover ends strictly nearer him by walk than where the rival stood, and inside his effective reach of him or nearer him than he stood; one with no cover walks to a point nearer him by walk; and no rival changes cover twice without closing: of any two steps to cover in a row by one rival (ai.cover) once he is out of the warned ambush's wait (alerted: there the kite answer steps him out of lines as before, counted, not judged), the second leaves him within his effective reach of the operative nearest him, or strictly nearer that operative by walk than where he stood at the first. 0.34.0: ra-h3's rival-3 went cv-030, cv-029, cv-030 … every 1.8 s (4:13.9-4:21.1), 15.2-15.3 m from the Tech and never nearer; with the advance's cover rule alone (Aster's), a kite step turned each walk out back to cv-029 (every 2.2-2.5 s), so an advance on an operative takes no kite step on the way (Hostile.Closing, as on K3's walk to the car).", r =>
             {

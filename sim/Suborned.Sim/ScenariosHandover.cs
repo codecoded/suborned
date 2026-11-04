@@ -202,7 +202,7 @@ namespace Suborned.Sim
                 r.Is(g.Inez.Turned, "Inez is turned");
                 r.Done(Tech); r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:34 by the tether)
                 r.Do(Fixer, "call", Inez);
-                r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); r.Do(Scout, "mislead", "rivals");
+                r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(g.LureTick + g.VisitWalkTicks);
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
@@ -229,7 +229,7 @@ namespace Suborned.Sim
                 var d = Debrief.Of(g);
                 r.Eq(d.PublicSecurity, "high", "the debrief: high alert");
                 r.Eq(d.InvestigationCause, "waitress-witnessed-shooting", "the debrief: Inez witnessed the shooting");
-            });
+            }, NoCrew());
 
             Add("S06", "95", "A shot on the guard's walk back, away from the café, does not make Inez a witness.", r =>
             {
@@ -309,14 +309,14 @@ namespace Suborned.Sim
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 r.Eq(g.Gunfire, 0, "no shots");
-                r.Is(!g.Log.Exists(l => l.Code == "attention.reporting" || l.Code == "patrol.breaks"), "the yard sweep reports nobody and never breaks: an escorted Vale is seen by no machine (§07, ScanEscort)");
+                r.Is(!g.Log.Exists(l => (l.Code == "attention.reporting" && l.Text.StartsWith("patrol", StringComparison.Ordinal)) || l.Code == "patrol.breaks"), "the yard sweep reports nobody and never breaks: an escorted Vale is seen by no machine (§07, ScanEscort)");
                 var d = Debrief.Of(g);
                 r.Eq(d.Contacts, 1, "one contact");
                 r.Eq(d.PublicSecurity, "calm", "calm streets");
                 r.Eq(d.InvestigationCause, "staged-distraction", "Inez's staged distraction can be traced");
                 r.Is(!d.Route.Contains("entry-timed-between-sweeps") && !d.Route.Contains("patrol-diverted"), "the route summary claims no sweep gap at the door and no diversion: the patrol had no part in the entry (engine 0.34.0: RouteBot \"\")");
                 r.Is(d.Route.Contains("waitress-pulls-guard-away") && d.Route.Contains("entrance-camera-looped"), "the route summary: Inez pulls the guard away, the camera is looped");
-            });
+            }, NoCrew());
 
             Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; the cell downs the response unit, then breaks the rival crew before Vale comes out (engine 0.34.0); success. The Enforcer hit, Raised.", r =>
             {
@@ -550,7 +550,7 @@ namespace Suborned.Sim
                 r.Is(g.Driver.Turned, "the driver is turned");
                 r.To(r.SendTo(Scout, TipSpot(r)));
                 r.To(T(320));
-                r.Do(Scout, "mislead", "rivals");
+                /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: Vale gets in at 6:13 and is driven round to the service bay
                 r.Is(g.PickupService, "the turned driver brought Vale round to the service bay");
                 int there = DriveRound(r); // brief 059 (Sky 1a): the Tech brings the getaway car round behind Vale's
@@ -559,8 +559,7 @@ namespace Suborned.Sim
                 r.Extract();
                 r.Line(g.Result == Outcome.Success, $"route B wins ({g.Result} {g.FailCode}; brief 059: with no final fight among the 28, the posted three at the yard fire on the Vale holder in their cone, Sky's answer 3: Waymark and Motive)");
                 r.Eq(g.Gunfire, 0, "no shots");
-                r.Is(g.Chain.Contains("rivals-false-tip"), "the rivals followed a false tip");
-            });
+            }, NoCrew());
 
             var drv = Turned(Driver); drv.Known[Driver] = new List<string> { "routine", "need", "temperament" };
             Add("S21", "347", "Brief 059 (Motive M059-6.1): the driver's Call (the camera block) is retired: a call on the turned driver is refused (nothing-to-call), his car never moves at the front, the pickup camera stays live. The turned driver drives Vale round from 6:13 at the car's pace (car.pace) and parks in the service bay; Vale is in the back; the debrief leads with the driver.", r =>
@@ -572,7 +571,7 @@ namespace Suborned.Sim
                 // a car stands on the drive grid, at its place's nearest drivable cell (rulebook car.drive)
                 var pickup = g.S.CarStand(g.S.CarPickup); var bay = g.S.CarStand(g.S.CarService);
                 r.Eq(g.CarPos(), pickup, "the car starts at Vale's pickup");
-                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals"); r.Done(Scout);
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(360));
                 r.Eq(g.CarPos(), pickup, "it never moves at the front before Vale is in");
                 r.Is(g.PickupCameraLive(), "the pickup camera stays live (no block)");
@@ -592,7 +591,7 @@ namespace Suborned.Sim
                 var d = Debrief.Of(g);
                 r.Eq(d.Route.Count > 0 ? d.Route[0] : "", "driver-moves-vale-to-service-lane", "the route summary leads with the driver");
                 r.Is(d.Extra.Contains("1 reroute") && !d.Extra.Contains("call:driver"), "the debrief lists 1 patrol reroute and no camera blockade");
-            }, drv);
+            }, NoCrew(drv));
 
             Add("S22", "386", "Gating: no action at a distance; an unknown person isn't callable; the Fixer and the Scout must stand beside Inez; a turned contact is callable. Engine 0.23.0 (rulebook cell.approach, Sky 2026-10-22): an act given at a distance is taken and walks the agent in, and starts only in reach; a need walking won't cure is still refused.", r =>
             {
@@ -810,37 +809,6 @@ namespace Suborned.Sim
                 r.Is(dd.FightWhy.Contains("waitress-warns") && dd.FightWhy.Contains("guard-fights-them"), "the debrief says why: Inez's warning, the guard");
             });
 
-            Add("N11b", "—", "Final fight, safe, prepared (§07): route B with the driver turned (he blocks the rival car, −1) and the rivals tipped off earlier (−1): three rivals. Brief 018: the three fight it out (walking Vale, the Enforcer doesn't fire), anyone downed is carried in, and the whole cell boards and goes.", r =>
-            {
-                var g = r.G;
-                r.Send(Enf, "d:Service lane");
-                r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
-                TurnDriver(r);
-                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals"); r.Done(Scout);
-                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60));
-                int there = DriveRound(r); // brief 059 (Sky 1a): the Tech brings the getaway car round behind Vale's; the support walks over to it (motive-fights.md §2.9)
-                r.SendTo(Scout, g.S.Grid.NearestFree(g.S.Stand("service-drive") + new Pt(300, 300)) ?? g.S.Stand("service-drive")); r.SendTo(Fixer, g.S.Grid.NearestFree(g.S.Stand("service-drive") + new Pt(300, -300)) ?? g.S.Stand("service-drive"));
-                r.Do(Enf, "take"); r.To(Math.Max(there, r.Op(Enf).BusyEnd)); // taken in his car in the service bay
-                r.Eq(g.FightBranch, "safe", "a quiet route B: the final fight is safe");
-                r.Eq(g.Hostiles.FindAll(h => h.Id.StartsWith("rival-", StringComparison.Ordinal)).Count, 3, "three rivals: the lookout warned off by the turned driver, the wheelman away on the earlier false tip (brief 059: bodies, Pulse §7)");
-                foreach (var op in new[] { Enf, Scout, Fixer }) r.Do(op, "draw"); // with Vale in hand the fight is on its way: drawing is no new act (the final fight is untraced)
-                r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018: fight it out (the crew broken), then the whole cell boards and goes
-                // brief 018 (c018): walking Vale the Enforcer no longer fires, so the three take the fight and one of them may go down: carry him in
-                foreach (var down in new[] { Scout, Fixer, Tech })
-                {
-                    if (g.Over) break;
-                    if (!r.Op(down).Down) continue;
-                    var by = Array.Find(new[] { Fixer, Scout, Tech }, o => o != down && !r.Op(o).Down && !r.Op(o).Carrying.HasValue);
-                    if (by == null) continue;
-                    r.To(r.SendTo(by, g.S.Grid.NearestFree(r.Op(down).Pos)!.Value)); r.Do(by, "carry", down); r.Done(by);
-                }
-                if (!g.Over) r.GetAway(Enf, Scout, Fixer, Tech);
-                // brief 059: at the service drive the three post by the service door and fight from there; whether this scripted cell wins it is
-                // Waymark's re-composition and Motive's balance (the yard stand's spots, MC-11), recorded as lines
-                r.Line(g.LeftBehindAtGo.Count == 0 && g.Result == Outcome.Success, $"the prepared route wins with nobody left behind ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, left {g.LeftBehindAtGo.Count})");
-                r.Line(g.Log.Exists(l => l.Code == "ai.cover" && l.Text.StartsWith("rival-", StringComparison.Ordinal)), "a rival steps to cover the data give (Pulse §2.3)");
-            });
 
             Add("N12", "—", "People step their routines (§04, brief 010): at each tick everyone stands at the stop the people file gives, or walks between two stops, or is off the street.", r =>
             {
@@ -1033,14 +1001,14 @@ namespace Suborned.Sim
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
                 r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
-                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); r.Do(Enf, "take"); r.Done(Enf); // brief 059: in his car in the service bay
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", To = "d:Getaway bay", Run = true });
                 r.Is(!ok && why.Contains(g.ValeName), $"carrying {g.ValeName}, the run is refused: {why}");
                 r.Eq(g.QuoteMove(Enf, r.Stand("d:Getaway bay")).RunRefused, why, "the move chip shows the same reason");
                 r.Send(Enf, "d:Getaway bay");
                 r.Eq(r.Op(Enf).WalkSpeed, g.R.CellSpeed, "he walks");
-            }, NoFight());
+            }, NoCrew(NoFight()));
 
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Known[Driver] = new List<string> { "routine", "need", "temperament" };
             var purse = new Start(); purse.Known[Inez] = known.Known[Inez]; purse.Known[Driver] = known.Known[Driver];
@@ -1130,7 +1098,8 @@ namespace Suborned.Sim
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
             Pickup059(); // engine 0.32.0 (brief 059): route B at the service door, the rival crew of five, Drive, Sky's S1–S3 both ways (ScenariosPickup059.cs)
-            Always059(); Camera096(); Box096(); Parked096(); // engine 0.40.0 (brief 096): bribes on camera, box-in and the kerbside stop, the parked car (Scenarios*096.cs); engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
+            Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); // engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
+            // engine 0.40.0 (brief 096): bribes on camera, box-in and the kerbside stop, the parked car (Scenarios*096.cs); engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
             FightBCases(); // engine 0.35.0 (brief 039 B): Covering fire holding Vale, Talk down on the blocker (ScenariosFightB.cs)
             Pace067(); // engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
         }

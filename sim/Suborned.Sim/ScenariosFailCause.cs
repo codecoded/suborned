@@ -89,7 +89,7 @@ namespace Suborned.Sim
             Add("N121", "—", "The fail camera: the abduction seen by the pickup camera (§07; route fail-take-seen-camera): the driver unturned, the rivals sent away, the Take at the official car under the live pickup camera. The culprit is the pickup camera, facing the car; Vale is the second, where he stood.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"rival-park\"},{\"tick\":3200,\"op\":\"scout\",\"do\":\"mislead\",\"target\":\"rivals\"},{\"tick\":3700,\"op\":\"enforcer\",\"do\":\"take\"}]");
+                Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"rival-park\"},{\"tick\":3700,\"op\":\"enforcer\",\"do\":\"take\"}]");
                 r.Eq(g.FailCode, "abduction-seen-camera", "the pickup camera sees the Take");
                 var c = CauseIs(r, "abduction-seen-camera", "seen", true, "camera:pickup", "camera", Enf);
                 var cam = g.S.Cameras.Single(x => x.Id == "pickup");
@@ -97,15 +97,15 @@ namespace Suborned.Sim
                 r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].At == g.ValePos() && g.CarBodyCm("car:official", c.Culprits[1].At) is int vb && vb >= 0 && vb <= g.R.CarReachCm, "then Vale, at his car (engine 0.33.1: at its kerb-side door)");
             });
 
-            Add("N122", "—", "The fail camera: the rivals beat the cell to Vale (§07; route fail-rivals-reach-vale; brief 059 F2): route B without the false tip; the rival car follows Vale's car round and its wheelman reaches Vale's door before the Take in the service bay is done. The culprit is the wheelman where he stands; no operative is named.", r =>
+            Add("N122", "—", "The fail camera: the rivals beat the cell to Vale (§07; route fail-rivals-reach-vale; brief 059 F2): route B with the lookout ignored (brief 096: the tip and the car's tail are retired); the lookout follows Vale's car round on foot and reaches it before the Take in the service bay is done. The culprit is the lookout where he stands; no operative is named.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Service lane\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":776,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":797,\"op\":\"scout\",\"do\":\"listen\",\"target\":\"driver\"},{\"tick\":1217,\"op\":\"fixer\",\"do\":\"turn\",\"target\":\"driver\",\"approach\":\"pay\"},{\"tick\":1717,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]},{\"tick\":3860,\"op\":\"enforcer\",\"do\":\"take\"}]"); r.Until(() => g.Over, T(60)); // c022: the Scout steps to the driver before the Listen (3 m); brief 059: the Take in the service bay once Vale's car parks (6:25.9)
+                Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Service lane\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":776,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":797,\"op\":\"scout\",\"do\":\"listen\",\"target\":\"driver\"},{\"tick\":1217,\"op\":\"fixer\",\"do\":\"turn\",\"target\":\"driver\",\"approach\":\"pay\"},{\"tick\":1717,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]}]"); r.Until(() => g.Over, T(330)); // engine 0.41.0: no Take order: the lookout reaches Vale's car first // c022: the Scout steps to the driver before the Listen (3 m); brief 059: the Take in the service bay once Vale's car parks (6:25.9)
                 r.Eq(g.FailCode, "rivals-reach-vale", "the rivals reach Vale first");
-                var c = CauseIs(r, "rivals-reach-vale", "tail", true, "rival-5", "rival", "");
-                var wq = g.MemberPose(g.Crew[4]); if (!r.Is(wq.HasValue, $"the wheelman is on the street ({g.FailCode} at {Report.Clock(g.Tick)}, {g.Crew[4].Mode} {g.CarSt})")) return;
+                var c = CauseIs(r, "rivals-reach-vale", "lookout", true, "rival-4", "rival", ""); // brief 096 (engine 0.41.0): the lookout follows Vale's car on foot (F2's tail is retired)
+                var wq = g.MemberPose(g.Crew[3]); if (!r.Is(wq.HasValue, $"the lookout is on the street ({g.FailCode} at {Report.Clock(g.Tick)}, {g.Crew[3].Mode} {g.CarSt})")) return;
                 var wp = wq!.Value;
-                PosedAs(r, c?.Culprits.FirstOrDefault(), wp.pos, wp.facing, "the wheelman");
+                PosedAs(r, c?.Culprits.FirstOrDefault(), wp.pos, wp.facing, "the lookout");
                 r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale", "then Vale");
             });
 
@@ -121,12 +121,12 @@ namespace Suborned.Sim
             Add("N124", "—", "The fail camera: Vale leaves in his car at the close (§07; route fail-vale-leaves; brief 059 K4): the driver turned at the start, the Scout sends the rivals away late (the tip runs past the close, so no tail comes back), nobody takes Vale; at 8:30 the driver gives up and drives him on. The culprit is the official car where it stands (the service bay), then Vale.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]},{\"tick\":2361,\"op\":\"scout\",\"do\":\"mislead\",\"target\":\"rivals\"}]");
+                Script(r, "[{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]}]");
                 r.To(T(g.ClockOver));
                 r.Eq(g.FailCode, "vale-leaves", "Vale leaves in the official car");
                 var c = CauseIs(r, "vale-leaves", "too-late", true, "car", "car", "");
                 r.Is(c != null && c.Culprits[0].At == g.CarPos() && g.CarPos() == g.S.CarStand(g.S.CarService) && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].Role == "left", "the official car in the service bay, then Vale leaving in it");
-            }, Turned(Driver));
+            }, NoCrew(Turned(Driver)));
 
             Add("N125", "—", "The fail camera: the Enforcer down (§07; route fail-enforcer-down): an unprepared shot at the guard from inside his cone; the Enforcer trades fire until the response unit's officer drops him. The culprit is the shooter that downed him, where it fired from and facing him; the Enforcer is the operative and the second culprit (the victim).", r =>
             {

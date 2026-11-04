@@ -40,14 +40,14 @@ namespace Suborned.Sim
             else
             {
                 if (!ReferenceEquals(o, camAct)) { camAct = o; camCur = null; }
-                var p = PersonByRole(o!.Target); var pp = PersonPos(p);
+                var p = TurnSubject(o!.Target); var pp = PersonPos(p); // brief 096 (engine 0.41.0): a member of the rival crew paid on camera is recorded too
                 foreach (var c in S.Cameras)
                 {
                     bool sf = CameraWatching(c.Id, f.Pos), ss = pp.HasValue && CameraWatching(c.Id, pp.Value);
                     if (!sf && !ss) continue;
                     if (camCur == null)
                     {
-                        camCur = new CamRec { Act = o, Cam = c.Id, Subject = p.Role, Approach = o.Approach, From = Tick, LandAt = CameraLands(c.Id, Tick), At = pp ?? f.Pos, Face = sf && R.CamFace };
+                        camCur = new CamRec { Act = o, Cam = c.Id, Subject = p.Role.Length > 0 ? p.Role : p.Id, Approach = o.Approach, From = Tick, LandAt = CameraLands(c.Id, Tick), At = pp ?? f.Pos, Face = sf && R.CamFace };
                         camRecs.Add(camCur);
                         Note("camera.recorded", $"The {c.Id} camera records the Fixer's {o.Approach} on {p.Role} (it reaches the desk {Sim.Report.Clock(camCur.LandAt)}).");
                     }
@@ -65,7 +65,7 @@ namespace Suborned.Sim
         void LandRecord(CamRec r, bool alert)
         {
             string cause = $"recorded:{r.Approach}:{r.Subject}:camera:{r.Cam}";
-            var p = PersonByRole(r.Subject);
+            var p = TurnSubject(r.Subject); // brief 096: a crew member by id
             if (!r.Witnessed) { AddTrail(R.CamTrail, cause); AddIncident("recorded", cause + (r.Face ? ":face" : ""), r.At, new[] { (p, r.At) }); } // one act, one incident: seen by people too, theirs stands
             if (!alert) { r.AtEnd = true; Note("camera.record-lands", $"The {r.Cam} camera's record of the {r.Approach} on {r.Subject} is on file at the end (+{R.CamTrail} T)."); return; }
             Reported++;

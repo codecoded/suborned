@@ -28,11 +28,9 @@ namespace Suborned.Sim
             }
             return l;
         }
-        /// <summary>Where the rival car is and which way it points, or null while it is off the map (Off, Away); a test's Start.RivalBlock places it
-        /// for its window (brief 096: the split's block point, until the split builds it).</summary>
-        public (Pt pos, Pt heading)? RivalCarPose() => RivalBlocked ? (Start.RivalBlock!.Value.At, Start.RivalBlock.Value.Heading) : RivalCarPoseCrew();
-        /// <summary>A test's Start.RivalBlock holds the rival car standing now.</summary>
-        bool RivalBlocked => Start.RivalBlock is var b && b.HasValue && Tick >= b.Value.From && Tick < b.Value.Until;
+        /// <summary>Where the rival car is and which way it points, or null while it is off the map (Off, Away, Gone). Engine 0.41.0: the block on
+        /// arrival is the crew's own routine (GameRivalBlock.cs); 0.40.0's test seam Start.RivalBlock is retired into it.</summary>
+        public (Pt pos, Pt heading)? RivalCarPose() => RivalCarPoseCrew();
         /// <summary>A stand's way out (car.box), or none (the range).</summary>
         public Pt[] WayOut(string standId) => !Range && S.GroundOf(R).Way.TryGetValue(standId, out var w) ? w : Array.Empty<Pt>();
         /// <summary>The cars boxing the getaway car in where it stands now (none while it drives). A host read: the ring's "Boxed in", Alt's way out.</summary>
@@ -41,15 +39,16 @@ namespace Suborned.Sim
         public List<string> StandBoxers(string standId) => CarsOn(WayOut(standId), "car:getaway");
         /// <summary>The cars boxing the official car in where it stands: at the pickup (its route out to the carriageway, then fight-block-m), in the
         /// service bay (its route in, backwards), at its kerbside stop (fight-block-m straight on); none while it drives or once it has stopped elsewhere.</summary>
-        public List<string> OfficialBoxers()
+        public List<string> OfficialBoxers() => Range || !OfficialStanding() ? new List<string>() : CarsOn(OfficialWay(), "car:official");
+        /// <summary>The official car's way out where it stands (OfficialBoxers'; engine 0.42.0: the lent car's lane is its first fight-block-m). Empty once it stopped elsewhere.</summary>
+        Pt[] OfficialWay()
         {
-            if (Range || !OfficialStanding()) return new List<string>();
             var g = S.GroundOf(R);
-            if (valeDriveStart < 0 || carToService == null) return CarsOn(g.PickupWay, "car:official");
-            if (carStoppedAt.HasValue) return new List<string>();
-            if (CarAtKerb) { var at = CarPos(); return CarsOn(new[] { at, CarGeo.Ahead(at, kerbHeading, g.BlockCm) }, "car:official"); }
-            if (CarAtMouth) { var at = CarPos(); return CarsOn(new[] { at, CarGeo.Ahead(at, OfficialHeading(), g.BlockCm) }, "car:official"); }
-            return CarsOn(g.ServiceWay, "car:official");
+            if (valeDriveStart < 0 || carToService == null) return LendOn ? PickupWayToKerb(g) : g.PickupWay; // engine 0.42.0 (L10): with the drive taken, only as far as his kerbside stop
+            if (carStoppedAt.HasValue) return Array.Empty<Pt>();
+            if (CarAtKerb) { var at = CarPos(); return new[] { at, CarGeo.Ahead(at, kerbHeading, g.BlockCm) }; }
+            if (CarAtMouth) { var at = CarPos(); return new[] { at, CarGeo.Ahead(at, OfficialHeading(), g.BlockCm) }; }
+            return g.ServiceWay;
         }
         /// <summary>car-boxed's and drive-boxed's words: the cars in the way, then (Go) the holders.</summary>
         static string BoxedWords(List<string> bx, List<string>? holders = null) =>

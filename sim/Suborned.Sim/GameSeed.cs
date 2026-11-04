@@ -94,7 +94,7 @@ namespace Suborned.Sim
         /// still here is closed in, and the fail names why: no-driver (nobody aboard can drive), car-held (who holds it), on-foot (Vale still walking), no-go (the car was free and nobody said go).</summary>
         void CloseStep()
         {
-            bool held = Vale == ValeAt.WithEnforcer || Vale == ValeAt.Car; if (!held) return;
+            bool held = Vale == ValeAt.WithEnforcer || Vale == ValeAt.Car || Vale == ValeAt.Lent; if (!held) return; // engine 0.42.0: lent too
             if (CloseWarnedAt < 0 && Tick >= T(overS) - T(R.CloseWarnS))
             {
                 CloseWarnedAt = Tick; int left = Math.Max(0, T(overS) - Tick) / Hz;
@@ -102,6 +102,7 @@ namespace Suborned.Sim
             }
             if (Tick < T(overS)) return;
             string why; Blamed? who = null;
+            if (Vale == ValeAt.Lent) { string lwords; (why, who, lwords) = LentCloseWhy(); Fail("closed-in", $"The district closes on the cell: {lwords}.", () => Because(why, true, who)); return; } // engine 0.42.0 (car.lend): the lent car's why, one of the four below
             if (Vale == ValeAt.WithEnforcer) { why = "on-foot"; who = Locate(NearestHostileToVale(), "closed-in"); }
             else if (!CarHasDriver()) { why = "no-driver"; string by = ""; int last = -1; foreach (var o in Ops) if (o.Gun.Down && o.Gun.ShotByTick > last) { last = o.Gun.ShotByTick; by = o.Gun.ShotBy; } who = Locate(by.Length > 0 ? by : "getaway-car", "closed-in"); }
             else { var hs = CarHolders(); var bx = GetawayBoxers(); why = bx.Count > 0 ? "boxed" : hs.Count > 0 ? "car-held" : "no-go"; who = Locate(bx.Count > 0 ? LocateCar(bx[0]) : hs.Count > 0 ? hs[0] : "getaway-car", "closed-in"); } // brief 096 (car.box): boxed in first

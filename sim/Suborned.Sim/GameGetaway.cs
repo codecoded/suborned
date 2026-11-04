@@ -46,6 +46,7 @@ namespace Suborned.Sim
         /// candidate downed by this tick's shots is no candidate); the blocker's fall and the hold coming free are logged by code.</summary>
         void GetawayAfterFire()
         {
+            LendStep(); if (Over) return; // engine 0.42.0 (car.lend, GameLend.cs): the police clock after vale.out
             if (pickFrom.Length > 0)
             {
                 var from = pickFrom; pickFrom = "";
@@ -109,7 +110,7 @@ namespace Suborned.Sim
         public readonly List<(string op, string fate, string why)> LeftBehindAtGo = new List<(string, string, string)>();
 
         /// <summary>Anyone in the getaway car: an operative, or Vale.</summary>
-        public bool AnyInCar { get { foreach (var op in Ops) if (op.InCar) return true; return Vale == ValeAt.Car; } }
+        public bool AnyInCar { get { foreach (var op in Ops) if (op.InCar && !op.InLent) return true; return Vale == ValeAt.Car; } } // engine 0.42.0: the cell's car
 
         bool HoldsCar(Pt p) => G.Within(p, Car, R.HoldCm) || InLane(p); // brief 059 K6: the current stand's exit lane
         static bool Up(Hostile h) => !h.Down && h.Gun.St != "break" && h.Gun.St != "gone";
@@ -142,7 +143,7 @@ namespace Suborned.Sim
         List<string> GateHolders(out int until)
         {
             var l = new List<string>(); until = -1;
-            if (!R.FightAlways || Vale != ValeAt.Car || FightBranch.Length == 0 || FightBranch == "range" || FightOverTick != INF || blockerOut) return l;
+            if (!R.FightAlways || Vale != ValeAt.Car || FightBranch.Length == 0 || FightBranch == "range" || FightOverTick != INF || blockerOut || rivalBlockFight) return l; // brief 096 (engine 0.41.0): where the rival car is the block, the box is the gate
             if (Blockers.Count > 0) { foreach (var id in Blockers) { var b = HostileOf(id); if (b != null && Up(b)) l.Add(id); } return l; }
             foreach (var h in Hostiles)
             {
@@ -183,6 +184,7 @@ namespace Suborned.Sim
         /// Read-only. fate: captured or walked; why: downed, fighting, sealed or walked.</summary>
         public List<(string op, string fate, string why)> LeftBehind()
         {
+            if (Lent) return LeftBehindSplit(); // engine 0.42.0 (car.lend, L8)
             var l = new List<(string, string, string)>(); bool fighting = FightStillOn(), sealing = Lockdown != INF;
             foreach (var op in Ops)
             {
@@ -205,7 +207,9 @@ namespace Suborned.Sim
         /// <summary>Board (brief 018 §2): into the getaway car, with whoever the operative carries (Vale, or a downed operative), the carried first.</summary>
         string Board(Op op, Order o)
         {
-            if (o.Target.Length > 0 && o.Target != "car") return No("target-unknown", $"board names the getaway car (\"car\"), not '{o.Target}'");
+            if (LentTarget(o.Target)) return BoardLent(op, o); // engine 0.42.0 (car.lend, L3)
+            if (o.Target.Length > 0 && o.Target != "car" && o.Target != "car:getaway") return No("target-unknown", $"board names the getaway car (\"car\") or the lent car (\"car:official\"), not '{o.Target}'");
+            if (GetawayGone) return No("car-left", "the getaway car has left");
             if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
@@ -237,17 +241,17 @@ namespace Suborned.Sim
             if (o.Point.HasValue) to = o.Point.Value;
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
             else return No("no-place", $"no place '{o.To}'");
-            var walk = Walk;
-            if (walk.CarCovers(to) && walk.RouteBeside(walk.NearestFree(GetawaySeat) ?? GetawaySeat, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): as Move, beside a standing car
+            var walk = Walk; var seat = op.InLent ? LentSeat : GetawaySeat; // engine 0.42.0: out of the car he is in
+            if (walk.CarCovers(to) && walk.RouteBeside(walk.NearestFree(seat) ?? seat, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): as Move, beside a standing car
             if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
-            if (walk.Route(GetawaySeat, to) == null) return No("no-walk", "no walk there");
+            if (walk.Route(seat, to) == null) return No("no-walk", "no walk there");
             Engage(op, o, R.BoardS);
             return "";
         }
         void LandStepOut(Op op, Order o)
         {
             if (op.Down || !op.InCar) return;
-            op.InCar = false; op.Pos = Walk.NearestFree(GetawaySeat) ?? GetawaySeat; // engine 0.33.1 (car.footprint): out at the car's side, the free cell nearest its seat
+            var seat = op.InLent ? LentSideOut : GetawaySeat; op.InCar = false; op.InLent = false; op.Pos = Walk.NearestFree(seat) ?? seat; // engine 0.33.1 (car.footprint): out at the car's side, the free cell nearest its seat
             Note("board.out", $"The {Sim.Op.Name(op.Id)} steps out of the car.");
             var why = Move(op, o);
             if (why.Length > 0) Note("order.rejected", $"{o.Op} move {o.To}: {why}");
@@ -258,11 +262,15 @@ namespace Suborned.Sim
         string Go(Order o)
         {
             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
+            if (LentTarget(o.Target)) return GoLent(); // engine 0.42.0 (car.lend, L6): the lent car's own Go
+            if (o.Target.Length > 0 && o.Target != "car" && o.Target != "car:getaway") return No("target-unknown", $"go names the getaway car (\"car\") or the lent car (\"car:official\"), not '{o.Target}'");
+            if (GetawayGone) return No("car-left", "the getaway car has left");
             if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
             if (!CarHasDriver()) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); } // engine 0.34.0 (Motive M067-K3 c)
             var hs = CarHolders(); var bx = GetawayBoxers(); // brief 096 (car.box): boxed in first, the physical fact; the words and ids name the holders too
             if (bx.Count > 0) { goRefusedAt = Tick; goRefused = "car-boxed"; return No("car-boxed", BoxedWords(bx, hs), ids: BoxedIds(bx, hs)); }
             if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; GateHolders(out int until); return No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)); }
+            if (Lent && Vale != ValeAt.Car) { GetawayLeavesSplit(); return ""; } // engine 0.42.0 (L8, LEND-17): the three out; the mission runs on, or ends after vale.out
             Leave();
             return "";
         }
@@ -315,9 +323,11 @@ namespace Suborned.Sim
         /// <summary>The security body that would see the car leave now, the first by id, or "": the response unit's officers and the final
         /// fight's (their cone, else witness range on a clear line), the response's robots and police (theirs, likewise), the patrol only while
         /// engaged (chasing or answering an alarm). Never the rivals, never the guard. Read-only: the Go card's "+1 T".</summary>
-        public string CarWatcher()
+        public string CarWatcher() => CarWatcherAt(Car);
+        /// <summary>The same for a car standing at `car` (engine 0.42.0: the lent car's seen-leaving).</summary>
+        string CarWatcherAt(Pt car)
         {
-            var car = Car; var c = new List<string>();
+            var c = new List<string>();
             bool near(Pt p) => G.Within(p, car, witnessRange) && Sees(p, car);
             for (int k = 0; k < SecGuns.Length; k++)
             {
@@ -371,7 +381,7 @@ namespace Suborned.Sim
             }
         }
         /// <summary>The blocker's post (brief 018 §10, Pulse): the cover BlockCover gives, else the open lane centreline fight.blockNear along it.</summary>
-        Pt BlockPost(Pt from, out CoverPoint? cv) { cv = BlockCover(from); return cv != null ? cv.At : LaneAt(R.BlockNearCm); } // brief 059 K6: the stand's lane
+        Pt BlockPost(Pt from, out CoverPoint? cv) { if (FightAtLent) { cv = null; return LentLaneAt(R.BlockNearCm); } cv = BlockCover(from); return cv != null ? cv.At : LaneAt(R.BlockNearCm); } // engine 0.42.0 (L6): the loud fight at the lent car: its lane // brief 059 K6: the stand's lane
         /// <summary>The free cover point inside the exit lane and between fight.blockNear and fight.blockFar of the car point (straight line, as
         /// the hold), nearest `from` (present, at least partial; ties by id), or null.</summary>
         CoverPoint? BlockCover(Pt from)
@@ -391,6 +401,7 @@ namespace Suborned.Sim
         /// with no operative standing within cell.reach of it (brief 018 §1).</summary>
         bool RivalReachesVale()
         {
+            if (Vale == ValeAt.Lent) return RivalReachesLent(); // engine 0.42.0 (L11): the lent car's body
             if (Vale != ValeAt.Car) return false;
             bool rival = false;
             foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && AtGetaway(h.Pos(Tick))) rival = true;
@@ -421,6 +432,7 @@ namespace Suborned.Sim
         void Custody(Between b, Func<int, string> fmt)
         {
             foreach (var (op, fate, why) in LeftBehindAtGo) b.Lines.Add(new BetweenLine { Line = "left-behind", Who = op, Detail = $"{fate} ({why})" });
+            if (LentSeenBy.Length > 0) b.Lines.Add(new BetweenLine { Line = "lent-seen", Who = LentSeenBy, Detail = $"+{fmt(R.WitnessTrail)} T; a lead on {ValeName}'s car, not a hunted car" }); // engine 0.42.0 (L9)
             if (CarSeenBy.Length > 0) { b.CarSeenBy = CarSeenBy; b.Lines.Add(new BetweenLine { Line = "car-seen", Who = CarSeenBy, Detail = $"+{fmt(R.WitnessTrail)} T; the investigation hunts the car (cell-car)" }); }
             if (!LeftBehindAtGo.Exists(x => x.fate == "captured")) return;
             string post = PostOfCaptives();
@@ -455,6 +467,7 @@ namespace Suborned.Sim
         /// <summary>The getaway's state for the checkpoint hash: no bytes until someone boards, a blocker is picked or the car leaves.</summary>
         internal void HashGetaway(Hash.H h)
         {
+            HashLend(h); // engine 0.42.0 (car.lend): no bytes until the car is lent
             bool any = Blockers.Count > 0 || CarLeftTick != INF || CarSeenBy.Length > 0 || carWasHeld || pickFrom.Length > 0 || pickLater; foreach (var op in Ops) any |= op.InCar;
             if (!any) return;
             foreach (var op in Ops) h.Z(op.InCar);

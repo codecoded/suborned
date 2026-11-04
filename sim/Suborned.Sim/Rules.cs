@@ -129,7 +129,7 @@ namespace Suborned.Sim
         /// <summary>What the cell did to a person this mission that their word carries (standing.word; rulebook.schema.ts DONE_TO).</summary>
         public static readonly string[] DoneTo = { "helped", "pressured", "knocked-out" };
         /// <summary>The Standing line's causes besides seen-&lt;traceable act&gt; (rulebook standing.causes; rulebook.schema.ts STANDING_CAUSES).</summary>
-        public static readonly string[] StandingFixedCauses = { "found-killing", "word-helped", "word-pressured", "word-knocked-out", "balanced", "drift-down", "drift-up", "steady" };
+        public static readonly string[] StandingFixedCauses = { "found-killing", "word-helped", "word-pressured", "word-knocked-out", "balanced", "drift-down", "drift-up", "steady", "blast-near" }; // brief 096 (engine 0.41.0): blast-near, car.target.blastStanding
         public static readonly string[] StandingLineFields = { "district", "from", "to", "band", "cause", "who" };
         /// <summary>Whom the cell fired on in a fight, and how the public sees a mission's rivals (fight.public; rulebook.schema.ts FOES, RIVALS_PUBLIC).</summary>
         public static readonly string[] Foes = { "security", "rivals" }, RivalsPublics = { "menace", "neutral" };
@@ -213,7 +213,7 @@ namespace Suborned.Sim
         public readonly int DisableS, DisableTrail;
         /// <summary>Engine 0.34.0 (brief 067, Motive M067-B1): CellSpeed (cell.speed) is the cell's walk only; PeopleWalk (crowd.walk) the city's,
         /// for everyone the engine walks itself. cell.runAlert is retired (M067-B2): a run is no found fault; attention.run counts it.</summary>
-        public readonly int CellSpeed, RunSpeed, PeopleWalk, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, TakeStruggleS, CarryS;
+        public readonly int CellSpeed, RunSpeed, PeopleWalk, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, TakeStruggleS, CarryS;
         // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
         public readonly Weapon Pistol, Carbine;
         // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
@@ -535,7 +535,7 @@ namespace Suborned.Sim
             }
             c["reroute"].Only("s", "trail", "away", "walk"); RerouteS = RI(c["reroute"]["s"]); RerouteTrail = RI(c["reroute"]["trail"]); RerouteAwayS = RI(c["reroute"]["away"]);
             RerouteWalkCmS = c["reroute"].Opt("walk") is JNode rw ? RI(rw) : 0; // engine 0.30.0 (brief 057 §2, Sky 2026-10-24): the rerouted patrol walks; absent, it is placed (0.29.0)
-            c["mislead"].Only("s", "trail", "away"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); MisleadAwayS = RI(c["mislead"]["away"]);
+            c["mislead"].Only("s", "trail"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); // brief 096 (engine 0.41.0): the false tip and its `away` are retired (Motive Q2 a)
             c["call"].Only("trail"); CallTrail = RI(c["call"]["trail"]);
             c["enter"].Only("s", "alarm", "seen"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
             // engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is "no, not a failure"): the patrol robot's sight of an Enter is a report, not a
@@ -545,7 +545,7 @@ namespace Suborned.Sim
             c["board"].Only("s"); BoardS = RI(c["board"]["s"]); // brief 018 §2: Board, and stepping out
             if (BoardS < 1) throw new FormatException("cell.board.s is at least 1 s");
             c["take"].Only("s", "trailUnturned", "struggle"); TakeS = RI(c["take"]["s"]); TakeTrailUnturned = RI(c["take"]["trailUnturned"]); TakeStruggleS = RI(c["take"]["struggle"]);
-            var se = b["security"]; se.Only("response", "speed", "rivals", "patrol", "sealWarns", "rule", "tag", "src");
+            var se = b["security"]; se.Only("response", "speed", "rivals", "unclaimed", "patrol", "sealWarns", "rule", "tag", "src");
             SealWarns = se.Opt("sealWarns") is JNode sealWarnsN && sealWarnsN.Bool(); // engine 0.30.0: the response's call says when the district seals (seal.starts); absent, as 0.29.0 // checkIn and seal retired by brief 013 (response.checkIn, response.levels)
             var re = se["response"]; re.Only("witness", "seen", "unseen", "civilian", "rivalsUnseen");
             RespWitnessS = RI(re["witness"]); RespSeenS = RI(re["seen"]); RespUnseenS = RI(re["unseen"]); RespCivilianS = RI(re["civilian"]); RespRivalsUnseenS = RI(re["rivalsUnseen"]);
@@ -796,7 +796,7 @@ namespace Suborned.Sim
             // brief 023 (engine 0.8.2): where a car may be. The rule has no numbers; the engine routes every moving car on the site's drive grid
             // only when the rulebook states it (unknown = reject: a rulebook without car.drive is one the engine was not built for)
             var cd = b.Opt("car") ?? throw new FormatException("rulebook has no car section: engine 0.8.2 routes cars by car.drive (brief 023)");
-            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "box", "kerb", "tag", "src", "proposed", "reason"); ReadCars096(b); // brief 096: camera, car.box, car.kerb (RulesGetaway.cs)
+            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "box", "kerb", "lend", "tag", "src", "proposed", "reason"); ReadCars096(b); ReadRivals096(b); ReadLend(b); // brief 096: camera, car.box, car.kerb (RulesGetaway.cs); the unclaimed shooting and the blast's Standing (RulesRivals.cs)
             { // engine 0.33.1 (brief 041, Sky: "characters are walking through cars"): a standing car blocks the walk; required (unknown = reject)
                 var fp = cd.Opt("footprint") ?? throw new FormatException("rulebook car.footprint is missing: engine 0.33.1 keeps walkers out of a standing car (brief 041)");
                 fp.Only("len", "w", "clear", "reach", "rule", "ahead"); fp["rule"].Str();
@@ -810,7 +810,7 @@ namespace Suborned.Sim
             if ((cd.Opt("paceRule")?.Str() ?? "").Length == 0) throw new FormatException("rulebook car.paceRule is missing (brief 023)");
             { // tuning.md §10.7 (engine 0.16.0): cars are targets; required (unknown = reject: a rulebook without it is one this engine was not built for)
                 var ct = cd.Opt("target") ?? throw new FormatException("rulebook car.target is missing: engine 0.16.0 makes cars targets (tuning.md §10.7)");
-                ct.Only("health", "disabledAt", "burn", "blast", "rule", "src"); ct["rule"].Str(); ct["src"].Str();
+                ct.Only("health", "disabledAt", "burn", "blast", "blastStanding", "rule", "src"); ct["rule"].Str(); ct["src"].Str();
                 var bl = ct["blast"]; bl.Only("m", "damage");
                 HealthCar = RI(ct["health"]); CarDisabledAt = RI(ct["disabledAt"]); CarBurnS = RI(ct["burn"]); CarBlastCm = RI(bl["m"]) * 100; CarBlastDamage = RI(bl["damage"]);
                 if (HealthCar < 2 || CarDisabledAt < 1 || CarDisabledAt >= HealthCar) throw new FormatException("car.target: health at least 2, disabledAt between 1 and health − 1 (disabled before it burns)");

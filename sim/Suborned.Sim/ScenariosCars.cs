@@ -141,14 +141,14 @@ namespace Suborned.Sim
                 r.Is(g.Cause != null && g.Cause.Why == "wrecked" && g.Cause.Culprits.Count > 0 && g.Cause.Culprits[0].Kind == "car", "the cause: the wrecked getaway car");
             });
 
-            Add("CAR-RIVALS", "—", "§10.7: the rival car is a target once it has parked, not before", r =>
+            Add("CAR-RIVALS", "—", "§10.7: the rival car is a target once it is on the street (engine 0.41.0: across our way out), not before", r =>
             {
                 var g = r.G;
                 r.Is(!g.PosOf("car:rivals").HasValue, "before the rivals arrive: no rival car");
                 r.Do(Scout, "draw"); r.Wait(T(1));
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "fire", Target = "car:rivals" }).code, "no-target", "fire on it: no-target");
-                r.To(T(g.S.RivalsArrive) + 1);
-                r.Eq(g.PosOf("car:rivals"), (Pt?)g.S.Stand(g.S.RivalsPark), "parked: a target at rivals.park");
+                r.Until(() => g.CarSt == CrewCar.Blocking, T(300)); // engine 0.41.0 (brief 096): it stops at the block point, not the retired park
+                r.Eq(g.PosOf("car:rivals"), (Pt?)g.BlockAt(g.S.Stands[0]).at, "standing across our way out: a target at the block point");
             });
         }
     }

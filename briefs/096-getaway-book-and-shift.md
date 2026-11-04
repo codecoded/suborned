@@ -71,3 +71,10 @@ Next: once Keel's box-in round (bribes on camera, box-in, kerbside stop, parked 
 - The seal leaves the slim feed ("sure"): its plate under the clock is the one countdown. Done in HostCrucial.cs (the Journal keeps the event).
 - The tester waits ("wait") for the build with the camera, box-in, rivals and the lend.
 - No Linux build this round ("don't need to build the linux"): the round ends in one Mac build for Sky.
+
+## The lend built (Keel, 2026-11-05)
+Branch `t3/lend-cell-car-engine-round` (was `t3/c800160e`; from `work/096`, the rivals round `t3/rival-block-and-lookout` merged in): engine 0.42.0, Motive's lend addendum: the
+lend and two Go's behind `car.lend.split` (on), the police close in 60 s after Popovic is out, L10's drive-mouth block, F1-F3, V1-V2; the
+lend plans and route-b's reference (c052). Report briefs/096/keel/report-lend.md; GDD text gdd-text-lend.md; bands bands-lend-after-200.txt.
+Next: Motive (the misses and the prepared-loud/L6 conflict), Waymark (MC-0/11/13/14), Fable (words), Glyph and Latch (two Go's, the
+countdown, the left-behind flags), Chime.

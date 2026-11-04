@@ -61,7 +61,7 @@ namespace Suborned.Sim
         {
             if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
             if (Range && Array.IndexOf(RangeVerbs, o.Do) < 0) return No("unknown-verb", $"verb '{o.Do}' is not the fight range's (brief 029: {string.Join(", ", RangeVerbs)})");
-            if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
+            if (o.Do == "end" || (o.Do == "withdraw" && ValeOutTick != INF)) return EndOrder(); if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
@@ -70,7 +70,7 @@ namespace Suborned.Sim
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");
             if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
-            if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
+            if (op.LeftMap) return No("agent-gone", $"the {o.Op} has left in a car"); if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
             if (o.Do == "trigger") return Trigger(op, o); // tuning.md §11 (engine 0.17.0): before the busy check, so a release is always taken
             if (o.Do == "drive") return Drive(op, o); // brief 025 (EXPERIMENTAL): before the busy check, since moving a busy agent is the step's to judge (cell.drive.onBusy)
             if (o.Do == "drive-car") return DriveCar(op, o); // brief 059 K6: before the busy and in-car checks (it has its own: drive-busy, drive-no-driver)
@@ -168,6 +168,7 @@ namespace Suborned.Sim
         /// rivals) is nothing to watch for anyone (target-unknown).</summary>
         string Scout(Op op, Order o, bool engage = true)
         {
+            if (IsCrewId(o.Target) && !Range) return CrewLearn(op, o, engage); // engine 0.41.0: a member of the rival crew (GameCrewTurn.cs)
             bool machine = o.Do == "watch" && !IsPersonRoleName(o.Target);
             if (o.Do == "listen" && op.Id != OpId.Scout) return No("only-scout", "only the Scout listens (§03)");
             if (machine && (o.Target == "rivals" || o.Target == "car:rivals")) return WatchRivals(op, o, engage); // brief 059 §2.2: the rival car's timetable
@@ -262,6 +263,7 @@ namespace Suborned.Sim
         {
             if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer turns people (§03)");
             if (o.Approach.Length == 0) return No("turn-needs-approach", "turn needs an approach (ask, pay, help, pressure)");
+            if (IsCrewId(o.Target) && !Range) return CrewTurn(op, o); // engine 0.41.0 (rivals.turn, GameCrewTurn.cs)
             var ev = R.Ev("turn." + o.Approach);
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one the cell can turn here"); // engine 0.30.0 (Suture's bot pass): refused, not thrown
             var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
@@ -287,6 +289,7 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
+                case "watch" or "listen" or "turn" or "mislead" when IsCrewId(o.Target): LandCrew(op, o); break; // engine 0.41.0 (GameCrewTurn.cs)
                 case "watch" when o.Target == "rivals" || o.Target == "car:rivals": RivalsWatched = true; Note($"{Sim.Op.Name(op.Id)}.watch.watched", $"The rivals' timetable is read: their next move, where each will go, and that their car follows {ValeName}'s."); break; // brief 059 §2.2
                 case "watch" when IsContainer(o.Target): LandWatchContainer(op, o); break; // a container's round (GameStashWatch.cs)
                 case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break; // a camera or the patrol (rulebook sight), the Scout's or the Tech's
@@ -305,11 +308,6 @@ namespace Suborned.Sim
                     if (PatrolUnit() is Unit pu) { pu.St = "gone"; PatrolAlarmed = false; } // false orders override the alarm too
                     AddTrail(R.RerouteTrail, "reroute"); Actions.Add("reroute"); Chain.Add("patrol-rerouted");
                     Note("patrol.rerouted", "The patrol follows false orders and leaves its sweep."); break; // engine 0.34.0: the sweep is the yard's now (brief 067 A), so the words name no place
-                case "mislead": // brief 059 F3: it lands on the parked car and its wheelman
-                    if (!TipLands()) { Note("mislead.missed", "The rival car is gone before the tip lands."); break; }
-                    RivalsDelayMethod = "mislead"; MisledOnce();
-                    AddTrail(R.MisleadTrail, "mislead"); Actions.Add("mislead"); Chain.Add("rivals-false-tip");
-                    Note("rivals.misled", "A false tip sends the rival car and its wheelman away. They may return."); break;
                 case "drive-car": LandDriveCar(op); break; // brief 059 K6
                 case "ride": break; // a passenger of the Drive: nothing of his own lands
                 case "enter" when o.How == "out": ExitWithoutVale(op, false); break; // a cancelled Enter waiting inside for a free door
@@ -326,7 +324,7 @@ namespace Suborned.Sim
                         Note("enter.out", serviceHeld ? $"The service door is held: {ValeName} and the Enforcer come out at the public door." : $"{Cap(ValeName)} and the Enforcer come out at the service lane."); StartFight(); break;
                     }
                 case "takedown": LandTakedown(op, o); break;
-                case "board": LandBoard(op); break;
+                case "board": if (LentTarget(o.Target)) LandBoardLent(op); else LandBoard(op); break;
                 case "move": LandStepOut(op, o); break; // only a boarded operative's move is an action: the step out
                 case "drop": case "stash": case "restrain": LandBodyOrder(op, o); break;
                 case "carry" when !IsOpId(o.Target): LandBodyOrder(op, o); break;
@@ -338,7 +336,7 @@ namespace Suborned.Sim
                         Note("carry.lifted", $"The {Sim.Op.Name(op.Id)} lifts the {o.Target}. Walk them to the car.");
                         break;
                     }
-                case "take":
+                case "take": if (LendOn && TakeInCar) { Lend(op); StartFight(); break; } // engine 0.42.0 (car.lend, Motive L1): the in-car Take ends with the Enforcer at the wheel
                     Vale = ValeAt.WithEnforcer; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; // brief 018: walking Vale, he doesn't fire
                     if (!Driver.Turned) AddTrail(R.TakeTrailUnturned, "take:unturned-driver");
                     Chain.Add("vale-taken-outside"); Note("take.done", $"{Cap(ValeName)} is with the Enforcer. Get to the car."); StartFight(); break;
@@ -383,7 +381,7 @@ namespace Suborned.Sim
                     var parts = c.L("parts");
                     if (parts.Contains("trail")) AddTrail((int)q.Trail, $"{q.Event}:{p.Role}");
                     return parts.Contains("usd");
-                case "turn": p.Turned = true; Chain.Add($"{p.Role}-turned"); if (p == Driver) DriverTurned(); return false; // brief 059 F4: the lookout's word counts from the turn
+                case "turn": p.Turned = true; Chain.Add($"{p.Role}-turned"); return false; // brief 096 (engine 0.41.0): the driver's word to the lookout (F4) is retired
                 case "move": LadderMove(p, c.S("on")); return false;
                 case "need-met": p.NeedMet = true; return false;
                 case "remember": Remember(p, c.S("act"), "fixer", witnessed); return false;
@@ -723,9 +721,7 @@ namespace Suborned.Sim
         string Mislead(Op op, Order o)
         {
             if (op.Id != OpId.Scout) return No("only-scout", "only the Scout misleads (§03)");
-            if (o.Target.Length > 0 && o.Target != "rivals" && o.Target != "car:rivals") return No("target-unknown", $"a false tip is given to the rivals (\"rivals\" or \"car:rivals\"), not '{o.Target}'");
-            var no = MisleadRefusal(op); if (no.Length > 0) return no; // brief 059 F3: at the parked car, the wheelman aboard
-            Engage(op, o, R.MisleadS); return "";
+            return CrewMislead(op, o); // brief 096 (engine 0.41.0, GameCrewTurn.cs): a member on foot; the false tip on the car is retired
         }
 
         string Enter(Op op, Order o)

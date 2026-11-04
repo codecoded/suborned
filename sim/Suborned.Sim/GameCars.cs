@@ -30,8 +30,9 @@ namespace Suborned.Sim
             public string Id = ""; public Gun Gun = null!; public int DisabledAt = -1, BurningAt = -1, BlastAt = -1; public bool Blown; public string By = ""; public Pt At;
         }
         readonly SortedDictionary<string, CarTarget> cars = new SortedDictionary<string, CarTarget>(StringComparer.Ordinal); // hashed in HashCars, only once a car is named
-        /// <summary>The rival car parked at rivals.park (brief 059: CarSt Parked there): hashed with the cars only.</summary>
-        bool rivalCarParked => CarSt == CrewCar.Parked && ccStop == S.RivalsPark;
+        /// <summary>The rival car parked at rivals.park (brief 059): retired with the park by engine 0.41.0 (the car blocks the cell's car instead), so
+        /// the site's car/rivals cover points, laid at the park, never stand. Its hashed byte stays (false).</summary>
+        bool rivalCarParked => false;
         List<CoverPoint>? liveCover; // the site's cover less a blown car's points; null while no car has blown
         List<CoverPoint>? liveCoverAt; int liveCoverKey = -1; // brief 059: the cover of the cars where they stand now, cached by which stand
         /// <summary>The cover points standing now: the site's, less those of a car that has blown (tuning.md §10.7: "cars stay cover"), and less
@@ -66,7 +67,7 @@ namespace Suborned.Sim
             switch (id)
             {
                 case "car:getaway": return Car;
-                case "car:official": return CarPos();
+                case "car:official": return lentLeft ? (Pt?)null : CarPos(); // engine 0.42.0: gone once the lent car leaves
                 case "car:rivals": return RivalCarPose()?.pos; // brief 059 K7: a target from its entry, wherever it drives
                 default: return null;
             }
@@ -95,6 +96,7 @@ namespace Suborned.Sim
                 tg.Down = true; c.BurningAt = Tick; c.BlastAt = Tick + T(R.CarBurnS); c.At = CarAt(t) ?? c.At;
                 Chain.Add(t.Substring(4) + "-car-burning");
                 Note("car.burning", $"The {CarName(t)} is on fire. It will explode.");
+                if (t == "car:rivals") { GangScene(c.At); foreach (var m in Crew) if (m.Mode == CrewMode.Aboard && Up(m) && m.OutAt > Tick) m.OutAt = Tick; } // engine 0.42.0 (Motive V1): every rider still aboard gets out at once, unhurt; V2: the car's stop is the scene
                 return;
             }
             if (c.DisabledAt != Tick) Note("car.hit", $"The {CarName(t)} is hit.");
@@ -111,14 +113,15 @@ namespace Suborned.Sim
                 case "car:getaway":
                     Fail("getaway-lost", "The getaway car is wrecked.", () => With(Because("wrecked", true, Locate("getaway-car", "wrecked")), OpIn(c.By)));
                     return;
-                case "car:rivals": // brief 059: it stops where it is and never drives again; whoever is in it gets out (the wheelman stands by it)
-                    { var cp = RivalCarPose(); if (cp.HasValue) CarHalt(CrewCar.Stopped, "", cp.Value.pos, cp.Value.heading); crewNextAt = INF; tailAt = INF;
-                      foreach (var m in Crew) if (m.Mode == CrewMode.Aboard && Up(m) && m.OutAt >= INF) m.OutAt = Tick + T(R.Crew.StepS) * m.N; }
+                case "car:rivals": // brief 059: it stops where it is and never drives again; brief 096 (engine 0.41.0): its riders get out, the first after board-s, then rivals.step apart in id order, the wheelman last
+                    { GangScene(c.At); var cp = RivalCarPose(); if (cp.HasValue) CarHalt(CrewCar.Stopped, ccStop, cp.Value.pos, cp.Value.heading); crewNextAt = INF;
+                      int k = 0; foreach (var m in Crew) if (m.Mode == CrewMode.Aboard && Up(m)) m.OutAt = Math.Min(m.OutAt, Tick + T(R.BoardS) + T(R.Crew.StepS) * k++); }
                     return;
                 default:
                     if (Range) RangeCarOut(c); // the range's car: its occupant gets out (GameRange.cs)
                     return;
                 case "car:official":
+                    if (Lent) { LentDisabled(); return; } // engine 0.42.0 (car.lend): the Enforcer steps out with the target (GameLend.cs)
                     StopOfficial(c.At); // it stops where it is (the driver-shot rule's own stop)
                     bool driverIn = !Driver.Down && valeDriveStart >= 0, valeIn = Vale == ValeAt.InCar; // at the pickup the driver stands beside it already (brief 059: until Vale is in)
                     if (valeIn) { Vale = ValeAt.Pickup; PickupService = false; } // brief 059: he gets out and stands by it
@@ -162,6 +165,7 @@ namespace Suborned.Sim
                 RaiseAlert(R.ViolenceSeen, "violence-seen:blast:" + c.Id);
                 if (incidents.Add("seen:blast:" + c.Id)) { AddTrail(R.WitnessTrail, "witnessed:violence:blast:" + c.Id); MoveStanding(-R.StandingStep, "violence-seen:blast:" + c.Id, "seen-violence", c.Id); }
             }
+            BlastStandingStep(c, at); // brief 096 (engine 0.41.0, GameGangShooting.cs): a blast near city people is a menace act
             int dmg = R.CarBlastDamage * HealthScale; long ring = R.CarBlastCm;
             foreach (var id in BlastIds(c))
             {
@@ -172,6 +176,7 @@ namespace Suborned.Sim
                 bool cell = IsOpId(c.By) && !IsOpId(id), untraced = Range || IsFightHostile(id) && !R.FightTraced && FightOverTick == INF;
                 resolving = new PendingShot { By = c.By.Length > 0 ? c.By : c.Id, T = id, G = g, At = pos ?? at, From = at, D = pos.HasValue ? Dist(pos.Value, at) : 0, Dmg = dmg, Hit = true };
                 Note("car.blast-hits", $"The blast hits {id}.");
+                if (!IsCrewId(id) && !IsOpId(id) && c.By.Length > 0) GangClaimed("the blast hit " + id); // brief 096: a blast that hits anyone but the crew claims the shooting
                 Damage(id, g, IsOpId(id) ? Absorb(OpOf(Sim.Op.Parse(id)), dmg) : dmg, IsOpId(id) ? "blast" : c.By, cell, untraced);
                 resolving = null;
                 if (Over) return;
@@ -179,7 +184,8 @@ namespace Suborned.Sim
         }
 
         /// <summary>Held inside the car at its blast: Vale while the Enforcer is seizing him at the official car.</summary>
-        bool Inside(CarTarget c, string id) => c.Id == "car:official" && id == "councillor" && (Vale == ValeAt.Taking || Vale == ValeAt.InCar); // brief 059: in the back of his car too
+        bool Inside(CarTarget c, string id) => (c.Id == "car:official" && id == "councillor" && (Vale == ValeAt.Taking || Vale == ValeAt.InCar || Vale == ValeAt.Lent)) // brief 059: in the back of his car too
+            || (c.Id == "car:rivals" && CrewOf(id) is CrewMember im && im.Mode == CrewMode.Aboard && !im.Fight); // brief 096 (engine 0.41.0): a member still in the rival car
 
         /// <summary>Everyone a blast can reach, in a fixed order: the cell, the city's people by role, the guard and the patrol, the response's
         /// officers, units and robots, the fight's hostiles, then the crowd by id.</summary>
@@ -190,6 +196,7 @@ namespace Suborned.Sim
             foreach (var g in SecGuns) yield return g.Id;
             foreach (var u in Units) yield return u.Id;
             foreach (var h in Hostiles) yield return h.Id;
+            foreach (var m in Crew) if (!m.Fight && HostileOf(m.Id) == null && (m.OnFoot || m.Mode == CrewMode.Aboard)) yield return m.Id; // brief 096 (engine 0.41.0): the crew on the street or in the rival car
             var crowd = new List<string>(); foreach (var (p, _) in OnTheStreet()) if (p.Civilian && p != ValeP && p != Driver && p != Inez) crowd.Add(p.Id);
             crowd.Sort(StringComparer.Ordinal); foreach (var id in crowd) yield return id;
             foreach (var b in rangeCivs) yield return b.Id; // the range's bystanders (none outside the range)

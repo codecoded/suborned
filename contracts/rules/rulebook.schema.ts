@@ -6,7 +6,7 @@
 // is restated here, and checkRulebook() rejects any id that file does not know (GDD §01: unknown = reject).
 import { z } from 'zod';
 import type { PeopleRules } from '../people/people.rules.schema.ts';
-import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; // brief 096 (engine 0.40.0)
+import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend } from './rulebook.schema096l.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0)
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const eventId = z.string().regex(/^[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/);
@@ -264,7 +264,7 @@ export const Rulebook = z.strictObject({
     // engine 0.31.0 (brief 058 §2): the Tech cuts a camera's line at the cabinet; its targets are the loop's (the one literal pointer); optional only for runs pinned before it
     disable: z.strictObject({ s: Ref, trail: Ref, targets: z.literal('cell.loop.targets') }).optional(),
     reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref, walk: Ref.optional() }), // engine 0.30.0 (brief 057 §2): the rerouted patrol walks out and back at this pace; absent, it is placed (0.29.0)
-    mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
+    mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref.optional() }), // brief 096 (engine 0.41.0): the false tip's away is retired; optional only for pinned runs
     call: z.strictObject({ trail: Ref }),
     // engine 0.34.2 (Sky 2026-10-26): who sees an Enter and what it does; optional only for runs pinned before it (absent: the patrol's sight fails entry-seen-patrol)
     enter: z.strictObject({ s: Ref, alarm: Ref, seen: z.strictObject({ patrol: z.enum(['fail', 'report']), rule: text, ...grounded }).optional() }),
@@ -285,7 +285,7 @@ export const Rulebook = z.strictObject({
     response: z.strictObject({ witness: Ref, seen: Ref, unseen: Ref, civilian: Ref, checkIn: Ref.optional(), rivalsUnseen: Ref }),
     checkIn: Ref.optional(), seal: Ref.optional(), speed: Ref,
     sealWarns: z.boolean().optional(), // engine 0.30.0 (Suture's bot pass): the response's call logs seal.starts when it sets the seal clock
-    rivals: z.strictObject({ speed: Ref, drawn: Ref, retreat: Ref }),
+    rivals: z.strictObject({ speed: Ref, drawn: Ref, retreat: Ref }), unclaimed: Unclaimed.optional(), // brief 096 (engine 0.41.0): the gang shooting
     patrol: z.strictObject({ breakTo: Ref, period: Ref, chase: Ref }),
     rule: text,
   }),
@@ -457,11 +457,11 @@ export const Rulebook = z.strictObject({
   rounds: ground({ linger: Ref, close: Ref, clear: Ref, part: Ref, holds: z.array(id).nonempty(), ends: z.array(z.enum(['alert-2', 'gunfire', 'body-found', 'final-fight'])).nonempty(), rule: text }).optional(),
   // brief 023 (engine 0.8.2): where a moving car may go, the site's drive grid (car.drive), and car.pace (Motive 2026-10-19); both optional only for runs pinned before them (rulebook.test.ts holds the live one to them)
   // tuning.md §10.7 (engine 0.16.0): cars are targets; optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
-  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(), box: CarBox.optional(), kerb: CarKerb.optional(), // brief 096
+  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(), box: CarBox.optional(), kerb: CarKerb.optional(), lend: CarLend.optional(), // brief 096
     // brief 059 K1–K4 (engine 0.32.0): Vale gets into his car at the official bay; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     pickup: z.strictObject({ valeIn: Ref, rule: text }).optional(),
     footprint: z.strictObject({ len: Ref, w: Ref, clear: Ref, reach: Ref, ahead: Ref.optional(), rule: text }).optional(), // engine 0.33.1 (optional only for runs pinned before it)
-    target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
+    target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), blastStanding: BlastStanding.optional(), rule: text, src: text }).optional() }).optional(),
   fight: ground({
     // brief 059 (engine 0.32.0, Motive M059-3.7): `minus` is retired (the −1s are people who have left); optional only so runs pinned before it parse, and
     // rulebook.test.ts holds the live rulebook to none. leaveUnfought (Sky's S1 as 0.32.0 built it) and loud.entry (S2): optional only for runs pinned
@@ -488,7 +488,7 @@ export const Rulebook = z.strictObject({
   }),
   // brief 059 (engine 0.32.0): the rival crew, five people and a car (Pulse briefs/059/pulse/rival-routine.md); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
   rivals: ground({
-    crew: Ref, posted: Ref, speed: Ref, followPace: Ref, drop: Ref, out: Ref, step: Ref, follow: Ref, warn: Ref, warnLag: Ref, lookoutPace: Ref,
+    crew: Ref, posted: Ref, speed: Ref, followPace: Ref, drop: Ref, out: Ref, step: Ref, follow: Ref, warn: Ref.optional(), warnLag: Ref.optional(), lookoutPace: Ref, block: RivalsBlock.optional(), lookout: RivalsLookout.optional(), turn: RivalsTurn.optional(), // brief 096 (engine 0.41.0): F4's warn and warnLag retired
     // engine 0.33.0 (Motive M059-3.1, 3.4): the crew as people for the takedown and the body orders; free: a crewmate within it unties a tied member.
     // Optional only so a rulebook pinned before 0.33.0 parses (rulebook.test.ts holds the live one to both)
     free: Ref.optional(), peopleRule: text.optional(),
@@ -605,7 +605,7 @@ export function num(rb: Rulebook, people: PeopleRules, ref: string): number {
 }
 
 /** The Standing line's causes besides seen-<traceable act> (rulebook standing.causes; sim Between.StandingLine). */
-export const STANDING_CAUSES = ['found-killing', 'word-helped', 'word-pressured', 'word-knocked-out', 'balanced', 'drift-down', 'drift-up', 'steady'] as const;
+export const STANDING_CAUSES = ['found-killing', 'word-helped', 'word-pressured', 'word-knocked-out', 'balanced', 'drift-down', 'drift-up', 'steady', 'blast-near'] as const; // brief 096 (engine 0.41.0): blast-near, car.target.blastStanding
 
 /** Keys people.rules.json owns as definitions; the rulebook may name them as values, never as its own keys (never redefine).
  *  FIELDS may appear nowhere in the rulebook; SECTIONS may not be top-level sections of it (an event's `needs` is its conditions). */

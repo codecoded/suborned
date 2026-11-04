@@ -198,7 +198,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, new Pt(8600, -3400)))); // c025 (brief 031): the tip waits outside the pickup camera's cone
-                r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals");
+                r.To(T(g.S.RivalsArrive) + 1); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
                 r.To(T(g.ClockValeAtCar));
@@ -221,7 +221,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "alarm.dispatches") && g.SecurityArrives == land + T(g.DialNow.DispatchS), "the response: the unit the level's dispatch after the landing");
                 r.Is(!a.ActTrail && g.Trail == trail + g.R.WitnessTrail, "no assault Trail: the Take keeps its own");
                 r.Eq(g.Acts.Count(x => x.Take), 1, "one Take, one incident");
-            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
+            }, NoCrew(new Start { ValeWaits = true })); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N74", "—", "A found body holds the scene (Motive rev 4 R4.1; Sky 2026-10-16): the guard knocked out unseen at his post; the card says that, found here, he would hold the Office door. The Tech lets the loop go, so the entrance camera reads him at its next scan: a body found. A unit of officers comes at Alert 1 (no robot reach for officers; not one of the dial's units) and holds the Office door, which he lies at: Enter is refused (door-held) from its arrival, through its check and 60 s sweep, until it stands down; the Alert stays 1 (a knockout), and at Alert 1 the sweep opens no stash.", r =>
             {
@@ -317,7 +317,7 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true },
                     MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), /* engine 0.28.0: the driver's Watch (0:62) dropped: no Watch to give on him, brief 054 §2.1 */
                     Mv(760, Fixer, "d:Boarding pavilion"), Mv(820, Scout, "d:Meet driver"), new Order { Tick = 820, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(838, Scout, "listen", Driver),
-                    MvTo(1270, Scout, TipPt), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals") /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it; brief 059: the tip at the rival car where it parks */, MvTo(2340, Scout, new Pt(1175, -4825)), Act(3000, Tech, "reroute", "patrol"), new Order { Tick = 3460, Op = Tech, Do = "move", Point = new Pt(675, -4625), Run = true }, Mv(3500, Enf, "d:Service lane"));
+                    MvTo(1270, Scout, TipPt), MvTo(1320, Fixer, new Pt(1025, -4625)) /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it; brief 059: the tip at the rival car where it parks */, MvTo(2340, Scout, new Pt(1175, -4825)), Act(3000, Tech, "reroute", "patrol"), new Order { Tick = 3460, Op = Tech, Do = "move", Point = new Pt(675, -4625), Run = true }, Mv(3500, Enf, "d:Service lane"));
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: Vale gets in at 6:13 and is driven round
                 r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the service bay, its driver turned");
                 int near = 0; var vp = g.ValePos()!.Value; foreach (var w in g.Walkers) if (g.CrowdPos(w) is Pt p && G.Within(p, vp, g.R.WitnessRangeCm)) near++;
@@ -332,7 +332,7 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 r.FightItOut(120, Scout, Fixer, Tech); r.Extract();
                 r.Line(!g.Acts.Exists(x => x.Take), $"the escort (3.5 m) unseen: nobody within 3 m of the grip (brief 059: at 7:07 the clerks leaving by the service door stand within 3 m of it: {string.Join(", ", g.Acts.Where(x => x.Take).SelectMany(x => x.Noticed))}; Waymark times the carry)");
                 r.Line(g.Result == Outcome.Success, $"route B wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}; Waymark re-composes route B on engine 0.32.0)");
-            });
+            }, NoCrew());
 
             Add("N78", "—", "The escort seen (rev 4 R4.2): Vale taken inside his car in the lane (the driver turned), then walked straight at a clerk standing in the lane: within 3 m she sees the grip. A carry seen: +1 witness Trail and one step toward Menace at sight; her report lands at Alert 2. Workmate is not kin (rev 4): Vale's workmates further off see two men walking.", r =>
             {
@@ -341,7 +341,7 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
                 r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
-                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60));
                 int trail = g.Trail, standing = g.Standing; // brief 059: before the Take lands (the clerks leaving by the service door may see the grip at once)
                 r.Do(Enf, "take"); r.Done(Enf); // brief 059: in his car in the service bay
@@ -360,7 +360,7 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 var reps = g.Reps.Where(x => x.Act == a.Id && x.Phase != "stopped").ToList();
                 if (reps.Count > 0) { r.To(reps.Min(x => x.LandAt)); r.Eq(g.Alert, 2, "her report lands: Alert 2 (a carry seen)"); }
                 else r.Is(a.Noticed.Count >= 1, "she keeps quiet by her row (no report to land)");
-            });
+            }, NoCrew());
         }
     }
 }

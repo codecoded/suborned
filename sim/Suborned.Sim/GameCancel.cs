@@ -179,7 +179,7 @@ namespace Suborned.Sim
                         {
                             case "turn":
                                 Cash += paid; // held at the order, paid only in the outcome's charge (Redline E2): it comes back
-                                if (R.CancelTurn == "aborted") Remember(PersonByRole(o.Target), "aborted", "fixer", false);
+                                if (R.CancelTurn == "aborted" && !IsCrewId(o.Target)) Remember(PersonByRole(o.Target), "aborted", "fixer", false); // brief 096: a crew member keeps no memory
                                 break;
                             case "enter":
                                 EntryInProgress = false;

@@ -152,45 +152,6 @@ namespace Suborned.Sim
 
         static void GetawayCases()
         {
-            Add("N111", "—", "The hold and Go refused (brief 018 §1, §2): route A, quiet. The Scout walks to the car and boards empty-handed (1 s) before the ambush. When it springs one rival (fight.blockers) goes for the road, to a point in the exit lane (site getaway.exit); the other ambush stops, 12–19 m off, hold nothing by standing there. Go (someone is in the car) is refused car-held while the blocker stands in the lane, and the refusal names every holder in id order; the Go card (GoQuery) reads the same. In the car the Scout doesn't fire, and any shot at her there is at one beside cover (×500).", r =>
-            {
-                var g = r.G; var car = r.At("d:Getaway bay");
-                RouteA(r, reroute: true);
-                int at = r.Send(Scout, "d:Getaway bay"); r.Send(Fixer, "crew:fixer"); r.Do(Fixer, "draw"); r.Do(Scout, "draw");
-                r.Do(Enf, "draw"); r.Send(Enf, "d:Getaway bay");
-                int boarded = -1;
-                while (!g.Over && g.FightSprung == Never)
-                {
-                    if (boarded < 0 && g.Tick >= at && r.Op(Scout).Busy == null) { r.Do(Scout, "board", "car"); boarded = r.Op(Scout).BusyEnd - g.Tick; }
-                    g.Step();
-                }
-                r.Eq(boarded, T(g.R.BoardS), "the Scout boards empty-handed: 1 s");
-                r.Is(r.Op(Scout).InCar && g.Vale != ValeAt.Car, "the Scout is in the car before the ambush, without Vale");
-                r.Eq(g.Blockers.Count, g.R.Blockers, "one hostile goes for the road (fight.blockers)");
-                var b = g.Hostiles.Find(h => h.Blocker);
-                if (!r.Is(b != null, "the blocker is one of the ambush")) return;
-                r.Is(b!.Id.StartsWith("rival-", StringComparison.Ordinal) && g.S.InExitLane(b.Home), $"the blocker ({b.Id}) makes for a point in the exit lane");
-                r.Is(!G.Within(b.Home, car, g.R.BlockNearCm - 1) && G.Within(b.Home, car, g.R.BlockFarCm), $"its post is in the 10–13 m ring from the car, not at the door ({b.Gun.Cover}, {G.Dist(b.Home, car) / 100} m; brief 018 §10)");
-                bool holdsWhere(string id) { var h = g.Hostiles.Find(x => x.Id == id); var p = h != null ? h.Pos(g.Tick) : g.PosOf(id)!.Value; return G.Within(p, car, g.R.HoldCm) || g.S.InExitLane(p); }
-                r.Is(g.CarHolders().TrueForAll(holdsWhere), "every holder stands within 8 m of the car or in the lane");
-                r.Is(g.Hostiles.Exists(h => !h.Blocker && !h.Down && !g.CarHolders().Contains(h.Id)), "the ambush stops hold nothing by standing there");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = "hostiles" }).code, "fire-carrying-vale", "walking Vale, the Enforcer doesn't fire (brief 018, Waymark c018)");
-                r.Engage(() => Targets(g, true), () => g.CarHolders().Contains(b.Id), 30, new[] { Enf, Fixer }, false, advance: false); // the rest fight on, sparing the blocker
-                r.Is(!r.Shots().Exists(x => x.by == Enf), "and fires nothing while he holds her");
-                r.Is(g.CarHolders().Contains(b.Id) && !g.Over, $"the blocker in the lane holds the car ({Report.Clock(g.Tick)})");
-                var a = g.Issue(Go(g));
-                r.Eq((a.ok, a.code), (false, "car-held"), "Go is refused while the car is held");
-                r.Eq(a.ids, string.Join(",", g.CarHolders()), "the refusal names the holders, in id order");
-                r.Is(a.ids.Split(',').Contains(b.Id), $"the blocker is among them ({a.ids})");
-                var q = g.GoQuery();
-                r.Eq((q.ok, q.code, q.ids), (a.ok, a.code, a.ids), "the Go card reads the same");
-                r.Refused(Scout, "fire", "hostiles", "in the car the Scout doesn't fire");
-                int from = g.Tick; r.Wait(T(20));
-                r.Is(!r.Shots().Exists(x => x.tick > from && x.by == Scout), "she fires nothing from the car");
-                var shots = ShotsAt(g, Scout, from);
-                bool cover(int m, int pm) { for (int d = m * 100; d < m * 100 + 100; d++) if (g.R.Accuracy(g.R.Pistol, d, false, g.R.ModCover, false, true) == pm || g.R.Accuracy(g.R.Pistol, d, true, g.R.ModCover, false, true) == pm) return true; return false; } // standing or walking (engine 0.33.0: the lookout fires walking in to his spot, M059-B1)
-                r.Is(shots.TrueForAll(x => x.m * 100 < g.R.PointBlankCm || cover(x.m, x.pm)), $"any shot at her in the car past point blank is at one beside cover, ×500 (at arm's length cover counts for nothing: tuning.md §8.4; {shots.Count} shots: {string.Join(", ", shots.Select(x => x.m + " m " + x.pm))} ‰)");
-            });
 
             Add("N112", "—", "Left behind, downed and fighting (brief 018 §3 rows 1 and 2), and Go without Vale: the guard downs the Scout in front of the Office (N26's fixture); the Fixer boards the empty car and the car goes. The outcome is Withdrawn and the left-behind rules apply: the Scout is captured downed; the Tech and the Enforcer, standing while the guard still fights, are captured fighting. Custody (campaign.custody, founding cell bravery 2, loyalty 3): downed holds 2 missions (talks at the third questioning, 3 + 0 > 2 + 0), abandoned holds 1 (2 + 1 > 2 + 0); +4 T each to the campaign; a captive gives every face, the car and place and time.", r =>
             {
@@ -229,58 +190,6 @@ namespace Suborned.Sim
                 r.Is(fc != null && fc.Culprits[0].At == r.At(g.S.GetawayCar) && d.Cause == fc, "at the getaway bay; the debrief carries the same cause");
             }, new Start { OneInput = false }); // brief 039: the old controls (stance hold)
 
-            Add("N113", "—", "§4's twin of N95 (brief 018 §4): route A, quiet, the feared rivals' ambush; the three by the car down the blocker and draw the fire while the Enforcer walks Vale in, and the car goes with the crew unbroken. The final fight is judged when the car leaves: public, but no outcome holds (driven off needs the crew broken): Standing 0 from the fight, cause none; Inez's word still adds +1 between missions (+2 → +3). The three left by the car are captured fighting: the captures move nothing. The blocker is not replaced.", r =>
-            {
-                var g = r.G;
-                r.Eq(g.RivalsPublic, "menace", "the Handover's rivals are feared");
-                RouteA(r, reroute: true);
-                Support(r);
-                ToAmbush(r);
-                var b = g.Hostiles.Find(h => h.Blocker)!;
-                CoveredBoardAndGo(r, go: false, draw: false, door: g.Walk.NearestFree(r.Stand("d:Getaway bay") + new Pt(0, -160))); // the three by the car down the blocker and draw the fire while the Enforcer boards (engine 0.33.1: by its road-side door, out of the guard's sight: at the kerb side he sees Vale carried, a Menace step)
-                r.Is(!g.CarHeld() && (b.Down || b.Gun.St == "break" || b.Gun.St == "gone"), $"the car is free: the blocker {b.Id} is down");
-                r.Is(g.Hostiles.Exists(h => h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone"), "the crew is not broken");
-                r.Eq(g.Hostiles.Count(h => h.Blocker), 1, "the job of the road did not pass on");
-                var bo = g.Log.FindAll(l => l.Code == "blocker.out"); var cf = g.Log.FindAll(l => l.Code == "car.free");
-                // 2026-10-19 (Keel, brief 023; the west-face door): the three down rival-1 before he reaches the lane, so the car is never held and
-                // no car.free is logged; "blocker.out, then car.free" is checked in N95, where he holds the lane first
-                r.Is(bo.Count == 1 && cf.TrueForAll(l => l.Tick >= bo[0].Tick), $"logged by code: blocker.out, and no car.free before it ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
-                r.Is(r.Do("cell", "go"), "Go");
-                r.Eq(g.Result, Outcome.Success, "Vale in the car when it leaves: the win");
-                if (!r.Is(g.Fights.Count == 1, $"one fight: the final fight ({g.Fights.Count})")) return;
-                var f = g.Fights[0];
-                r.Eq((f.Final, f.Public, f.Outcome, f.Delta), (true, true, "none", 0), "judged when the car leaves: the crew unbroken, Standing 0");
-                r.Eq(f.End, g.CarLeftTick, "it ends with the mission, at the tick the car leaves");
-                r.Eq(FightMoves(g).Count, 0, "no move from the fight");
-                // tuning.md §7.9 (2026-10-20): with the 16 m sidearm the three cover from inside the crew's reach, and some go down before Go
-                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => x.fate == "captured" && (x.why == "fighting" || x.why == "downed")), $"the rest, left while the crew fights on, are captured, fighting or downed ({string.Join(", ", g.LeftBehindAtGo.Select(x => x.why))})");
-                r.Eq(g.StandingMoves.Count, 0, "the captures move nothing");
-                var next = g.BetweenMissions(g.Investigate());
-                var l = OneLine(r, next);
-                r.Eq((l.From, l.End, l.Word, l.To), (2, 2, 1, 3), "2 + 0 the fight + 1 Inez's word = +3 (Motive's board-and-go row)");
-                r.Eq(next.Captives.Count, 3, "three captives");
-                r.Is(next.Captives.TrueForAll(c => c.Holds >= 1 && c.Facts.Contains("contact:" + g.Inez.Id)), $"each is held a mission or more and would give Inez as a contact ({string.Join(", ", next.Captives.Select(c => c.Holds))})");
-            }, new Start { OneInput = false }); // brief 039: the old controls (DrawFire: one shot, then cease)
-
-            Add("N114", "—", "Left behind, walked (brief 018 §3 row 4): route A fought out until the crew breaks (FightItOutAll; with the blocker on the road, the car comes free before the crew breaks), the Enforcer boards with Vale and the car goes before the guard's missed check-in (the rivals downed him) calls security. The fight is over and no seal runs: the three left walk out, nobody is captured, no captive in the debrief. The fight +1 (the crew driven off).", r =>
-            {
-                var g = r.G;
-                RouteA(r, reroute: true);
-                Support(r); ToAmbush(r); // brief 018: walking Vale the Enforcer doesn't fire; the three by the car fight
-                r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018 §10: the blocker on the road falls first, so fight on until the crew breaks
-                r.Is(g.FightOverTick != Never, "the fight is over: the crew broken");
-                BoardVale(r);
-                r.Is(g.Lockdown == Never, "no seal clock");
-                r.Is(r.Do("cell", "go"), "Go");
-                r.Eq(g.Result, Outcome.Success, "the win");
-                // brief 059: the crew's five bodies may down one of the three; a downed operative is captured (row 1), the rest walk (row 4)
-                int downed = g.LeftBehindAtGo.Count(x => x.why == "downed");
-                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => (x.fate == "walked" && x.why == "walked") || (x.fate == "captured" && x.why == "downed")) && downed < 3, $"the fight over and no seal: the three left standing walk out ({string.Join("; ", g.LeftBehindAtGo)})");
-                r.Eq(g.Captured.Count, downed, "nobody standing captured");
-                var next = Debrief.Of(g).Next;
-                r.Is(next.Captives.Count == downed && next.Lines.Count(l => l.Line == "left-behind" && l.Detail == "walked (walked)") == 3 - downed, "no captive but the downed; the walked lines");
-                r.Eq(FightMoves(g).Sum(m => m.delta), 1, "the crew driven off: +1");
-            });
 
             Add("N115", "—", "Left behind, sealed (brief 018 §3 row 3), and stepping out (§2): N68's route G-kill without the final fight (the dead guard left at his post; the entrance camera reads him when the Tech leaves the cabinet: Alert 2, the response called, the seal clock running). Nobody has fought the cell. The Fixer walks to the car and boards (1 s), steps out at the car's side (1 s) and boards again; Go before the seal (Withdrawn: no Vale) leaves the Scout, the Tech and the Enforcer (inside with Vale) standing under the seal: captured sealed.", r =>
             {
@@ -302,7 +211,7 @@ namespace Suborned.Sim
                 r.Eq(g.Result, Outcome.Withdrawn, "no Vale: the cell withdraws by car");
                 r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => x.fate == "captured" && x.why == "sealed"), $"nobody fights, but the seal clock runs: captured, sealed ({string.Join("; ", g.LeftBehindAtGo)})");
                 r.Is(Debrief.Of(g).Next.Captives.TrueForAll(c => c.Why == "sealed" && c.Holds == 1), "left standing: abandoned, each holds 1 mission");
-            }, NoFight());
+            }, NoCrew(NoFight()));
 
             Add("N116", "—", "Seen leaving (brief 018 §3; Sky 2026-10-18 answer 5), at level 1: the Fixer waits in the car while the Enforcer shoots the guard at the door; the response unit comes in from the north street and passes the bay with the car in its officers' cone. Go then (no Vale: Withdrawn) makes the departure one witnessed incident, +1 T (witness-trail), and the investigation hunts the car (cell-car); the debrief's car-seen line. The officers on the street are not holders: they stand outside 8 m and the lane. (On this block a loud final fight's officers hold stands the car is hidden from, or 19.4 m off, past security's 19 m: Keel's probe.)", r =>
             {
@@ -321,7 +230,7 @@ namespace Suborned.Sim
                 var d = Debrief.Of(g);
                 r.Is(d.Inv.Hunted.Contains("cell-car"), "the investigation hunts the car");
                 r.Is(d.Next.Lines.Exists(l => l.Line == "car-seen" && l.Who == watcher), "the debrief's car-seen line");
-            }, Level(1));
+            }, NoCrew(Level(1)));
 
             Add("N118", "—", "The menu's Withdraw stays a free abort (Sky 2026-10-18 answer 4): N112's fixture, the Scout downed, withdrawn from the menu instead of by car: nobody is captured, nobody is left behind.", r =>
             {

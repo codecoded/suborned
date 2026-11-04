@@ -73,12 +73,13 @@ namespace Suborned.Sim
                 Go(Math.Max(g.Tick, loopEnds));
                 r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick == loopEnds) && WindowOf(g, "loop", "entrance") == null, $"loop.ends at {Report.Clock(loopEnds)}: the loop window is gone");
 
-                // a false tip
-                Go(r.SendTo(Scout, TipSpot(r))); // brief 059: the tip at the rival car where it parks
-                r.Is(r.Until(() => { g.Step(); Check(); return g.CarSt == CrewCar.Parked; }, T(400)), $"the rival car parks ({Report.Clock(g.Tick)})");
-                r.Do(Scout, "mislead", "rivals"); Go(r.Op(Scout).BusyEnd);
-                var mr = WindowOf(g, "mislead", "rivals");
-                r.Is(mr != null && mr.Until == g.RivalsDelayedUntil && mr.Until > g.Tick, $"rivals.misled: mislead:rivals until {Report.Clock(g.RivalsDelayedUntil)} ({WindowsNow(g)})");
+                // brief 096 (engine 0.41.0): the false tip is retired; a misled lookout is the mislead window, back at m:ss once he watches the other door
+                var post = g.S.Stand(g.S.RivalLookout); Go(r.SendTo(Scout, g.S.Grid.NearestFree(post + new Pt(-300, 0)) ?? post));
+                r.Is(r.Until(() => { g.Step(); Check(); return g.Crew[3].Mode == CrewMode.Posted && g.Crew[3].Post == "lookout"; }, T(400)), $"the rival lookout is posted ({Report.Clock(g.Tick)})");
+                r.Do(Scout, "mislead", "rival-4"); Go(r.Op(Scout).BusyEnd);
+                r.Is(r.Until(() => { g.Step(); Check(); return g.Crew[3].Mode == CrewMode.Posted && g.Crew[3].Post == "misled"; }, T(60)), "he walks to the other door and watches it");
+                var mr = WindowOf(g, "mislead", "rival-4");
+                r.Is(mr != null && mr.Until > g.Tick, $"rivals.misled: mislead:rival-4 until {(mr == null ? "-" : Report.Clock(mr.Until))} ({WindowsNow(g)})");
                 r.Is(same, "tick by tick the list matched the fields" + (same ? "" : " (first off at " + firstOff + ")"));
                 r.Is(!g.Over, "the mission still runs");
             }, Turned(Inez, Driver));

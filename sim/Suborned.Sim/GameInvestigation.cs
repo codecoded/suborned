@@ -96,6 +96,7 @@ namespace Suborned.Sim
 
         Incident AddIncident(string kind, string cause, Pt at, IEnumerable<(Person p, Pt at)>? witnesses = null)
         {
+            GangIncident(kind); // brief 096 (engine 0.41.0): a new incident places the cell at a gang shooting (GameGangShooting.cs)
             var i = new Incident { Tick = Tick, Kind = kind, Cause = cause, At = at };
             if (witnesses != null) i.Witnesses.AddRange(witnesses);
             Incidents.Add(i); return i;

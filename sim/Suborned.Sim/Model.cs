@@ -129,6 +129,7 @@ namespace Suborned.Sim
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
         public bool InCar;                               // brief 018: boarded the getaway car (off the street, doesn't fire, a target as beside cover)
+        public bool InLent, LeftMap;                     // engine 0.42.0 (car.lend): InCar in the lent car, not the cell's; gone in a car that left (hashed only once lent)
         public Gun Gun = null!;                          // health, weapon, fire order and stance (rulebook weapons)
         public OpId? Carrying, CarriedBy;                // carrying a downed operative, or being carried (rulebook cell.carry)
         public string CarryBody = "";                    // brief 013: the body (a person's id) this operative carries
@@ -258,8 +259,8 @@ namespace Suborned.Sim
             "person-away", "no-place", "unwalkable", "no-walk", "run-carrying-vale", "run-carrying-downed", "run-tethered", "only-scout", "only-fixer",
             "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
             "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", /* brief 059: car-gone, car-busy and call-too-late retired with the driver's Call */
-            "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", "no-rivals",
-            "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
+            "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", /* brief 096: no-rivals and stand-near-rivals retired with the tip */
+            "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
             "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "not-driven", "follow-not-cell", "fire-running",
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
             "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
@@ -281,12 +282,16 @@ namespace Suborned.Sim
             // tuning.md §14 (engine 0.19.0): weapons free is the cell's setting
             "free-not-cell",
             // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
-            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked", "car-boxed", "drive-boxed", "stand-boxed", // brief 096 (car.box)
+            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked", "car-boxed", "drive-boxed", "stand-boxed", // brief 096
+            "stand-at-car", "board-lent-full", "drive-lent", "car-left", "car-disabled", "not-out", "agent-gone", // engine 0.42.0 (car.lend): the lent car's Board, Drive and Go, End, an agent gone in a car (car.box)
             // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
             "car-driving",
             // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the
             // crew is down, not on a rival still unhurt; Steam with no heat-main grille in reach
             "move-cooling", "talk-police", "talk-none-down", "talk-not-hurt", "steam-no-grille",
+            // brief 096 (engine 0.41.0, GameCrewTurn.cs): the false tip retired; a member of the crew spoken to (no need record, paid off, in the
+            // fight, on the move, a Pay refused once)
+            "tip-retired", "crew-no-need", "crew-gone", "crew-fighting", "crew-walking", "refused-before",
         };
     }
 

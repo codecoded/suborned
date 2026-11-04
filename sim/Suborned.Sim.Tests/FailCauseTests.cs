@@ -82,7 +82,7 @@ public class FailCauseTests
         // entry-seen-patrol on any site; the code stays for rulebooks pinned before 0.34.2 (APinnedRulebookStillFailsAnEntryThePatrolSees).
         // cell-down (Motive M067-K3 b) is new in 0.34.0.
         var want = new[] { "abduction-seen-camera/seen", "cell-down/shot", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "getaway-lost/wrecked",
-            "rivals-reach-vale/beat-to-pickup", "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/tail", "sealed/sealed", "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
+            "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/lookout", "sealed/sealed", // brief 096 (engine 0.41.0): the tail and the parked car's beat-to-pickup are retired; the lookout follows on foot (096-RIV-6) "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
             "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" };
         foreach (var w in want) Assert.True(seen.Contains(w), $"no scenario ends in {w} (seen: {string.Join(", ", seen)})");
         Assert.DoesNotContain("entry-seen-patrol/seen", seen); // engine 0.34.2: the patrol's sight of an Enter is a report, never a fail
