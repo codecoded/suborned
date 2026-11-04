@@ -1,0 +1,95 @@
+{
+  "schema": "suborned.motive.values/1",
+  "brief": "096",
+  "author": "Motive",
+  "date": "2026-11-04",
+  "page": "briefs/096/motive/rules.html",
+  "status": "proposed: for Sky to read before Keel builds. Every value is [S] (a starting value, tuned by playtest). Nothing here is measured: the engine has none of these rules yet. Geometry is worked by hand from sim/data/handover.site.json and contracts/world/civic-block.json; Keel and Splice print the exact points from the grid.",
+  "gates": {
+    "Q1": "which approaches a camera records (camera.approaches)",
+    "Q2": "what a record costs in the mission (camera.alert, camera.trail)",
+    "Q3": "build order: the rivals' block now, or with the split (rivalBlock.*)",
+    "Q4": "how a rivals' block ends (rivalBlock.endsWhen)",
+    "Q5": "one rival car, brief 082's two blocks (rivalBlock.when)"
+  },
+
+  "camera": {
+    "rule": "A Pay or a Pressure is recorded when a live camera (not looped, not disabled, not shot out) watches the Fixer or the person being turned at any second of the act: in its cone and on a clear line from its lens to their head or chest, not blocked by a crowd (Game.CameraWatching, the same test the watchers' log and attention use). One act is one incident, however many cameras or people see it. Ask, Listen and Help stay private (Q1).",
+    "approaches": { "v": ["pay", "pressure"], "tag": "S", "proposed": true, "gate": "Q1", "reason": "Sky named the bribe; Pressure is already not private. Help clears a debt (told, not handed over) and stays private, so Listen then Help stays the clean way and learning keeps paying. Ask is a chat; a camera can't hear it." },
+    "window": { "v": "any-second", "tag": "S", "proposed": true, "reason": "preparation > improvisation: a loop has to cover the whole act. A loop that runs out mid-Pay, or a Loop started mid-Pay, still leaves seconds on screen. The price line knows the loop's end, so it can say so before commit." },
+    "trail": { "v": 1, "unit": "trail", "tag": "S", "proposed": true, "gate": "Q2", "src": "v:witness-trail", "reason": "the same +1 as a person who sees a traceable act: one incident per act. On top of the approach's own Trail (Pay +2, Pressure +3)." },
+    "alert": { "v": 1, "unit": "alert", "tag": "S", "proposed": true, "gate": "Q2", "src": "v:alert-inquiry", "reason": "the desk sees a stranger paying or threatening the councillor's driver: a found fault, reported as a loiterer is (A >= 1, the dial's Alert-1 response: S2 sends 2 robots to the spot). It counts as an incident, so a second one is Alert 2. Never at sight: when the report lands (alert rule)." },
+    "lands": { "v": "first desk scan at or after the first watched second, + 3 s", "src": "v:camera-scan-s (20 s) and the camera report's +3 s (attention.report.scan)", "tag": "S", "proposed": true, "reason": "a camera's report already lands at its desk's next scan + 3 s. A record is on tape: a loop, Disable or shot after the watched second does not undo it. If the mission ends first, the Trail and the lead are charged at the end." },
+    "standing": { "v": 0, "tag": "S", "proposed": true, "reason": "Standing is what the public sees and says. The desk is security, not the public, and doesn't gossip." },
+    "lead": { "v": ["place-time", "subject", "face:fixer"], "tag": "S", "proposed": true, "reason": "investigators get the place, the time and who was approached; the Fixer's face only if the camera watched him (the subject alone on screen gives no face). The subject is already exposed by the existing rule (rulebook exposure: a watcher logged an operative within approach reach of a turned contact)." },
+    "codes": { "log": "camera.recorded", "incident": "recorded:<approach>:<subject role>", "debrief": "camera-recorded" }
+  },
+
+  "box": {
+    "rule": "A car standing on another car's way out boxes it in. Its Go and Drive are refused and name the car in the way. A Drive is also refused when a standing car is on the way out of the stand it would drive to (it can't get in). A driving car blocks nothing. A car that leaves, or explodes, frees the way at once. A disabled or burning car still stands and still boxes.",
+    "wayOut": { "v": "the drive grid's route from the stand's car cell to the first point of its exit polyline (getaway.stands[].exit), then the exit polyline to its end (fight-block-m, 30 m)", "tag": "S", "proposed": true, "reason": "the site's own data: the exit lane already starts where the car meets the carriageway, so the way out is the drive leg plus that lane. Unknown = reject: a stand whose way out has no route fails the site load." },
+    "corridorW": { "v": 282, "unit": "cm", "src": "v:car-w-cm 182 + 2 x v:car-clear-cm 50", "tag": "S", "proposed": true, "reason": "the car's own width plus the walk keep-off each side: the ground the leaving car sweeps. It is narrower than the exit lane (the hold, 12 m) on purpose, so a car parked at the far kerb (rival-tail) does not box anything by accident." },
+    "standing": { "v": "Game.StandingCars(), less exploded cars, less the car itself", "tag": "S", "proposed": true, "reason": "the cars already solid to walkers (car.footprint): the getaway car not driving, the official car at the pickup, parked, stopped or at the kerb, the rival car not moving. The test is the car's footprint (car-len-cm x car-w-cm at its heading, not grown) meeting the corridor." },
+    "who": { "v": "every simulated car that leaves a stand, the cell's or not", "tag": "S", "proposed": true, "reason": "one rule for every car. A city car whose way out is boxed waits where it stands and tries again each second. In the Handover that only touches the official car in the service bay with the cell's car behind it (the turned driver's give-up at the close, which fails closed-in anyway)." },
+    "refusals": {
+      "car-boxed": { "on": "Go", "ids": "the cars in the way, by id, then any holders", "order": "after car-no-driver, before car-held", "placeholder": "Boxed in: {car} is in the way.", "reason": "the physical fact first: no fight on the street moves a car. When the car is held as well, the words name both." },
+      "drive-boxed": { "on": "Drive", "order": "after drive-held", "placeholder": "Boxed in: {car} is in the way." },
+      "stand-boxed": { "on": "Drive", "order": "after drive-boxed", "placeholder": "Can't get in: {car} is across the drive." }
+    },
+    "closeCause": { "v": "boxed", "reason": "the closed-in verdict at the close already says why (who holds the car); add 'boxed in by {car}' as a cause for Fable's end card (debrief.cause)." }
+  },
+
+  "kerb": {
+    "rule": "A turned driver who finds his drive taken (the cell's car at a stand on it, or driving there) pulls in at the kerb short of the drive, clear of it and of the taken stand's way out, and stops there with his route's heading. The Take, the lend [D] and the carry use that stop as they use the bay. His car never boxes the cell's.",
+    "point": { "v": "on his own route to the bay, the last point before the drive's kerb line (civic-block drives[].kerb) at which his footprint grown by kerb-clear-m touches neither the drive's polygon nor the taken stand's way out; then moved across to the near kerb (the carriageway edge the drive joins) until the footprint's edge is car-clear-cm off it. Taken by another standing car: step back along the route until free.", "tag": "S", "proposed": true },
+    "kerbClear": { "v": 100, "unit": "cm", "tag": "S", "proposed": true, "reason": "two walk cells: the cell's car swings out of the drive without a touch, and a walker can pass between the bonnet and the drive's edge." },
+    "handover": { "v": { "at": [8141, -1990], "heading": [0, 100] }, "unit": "site cm", "tag": "S", "proposed": true, "reason": "hand-worked: kerb x 80 + 0.5 + 0.91 = 81.41; the drive's west edge y -16.5 less 1 m less half the car (2.365) = -19.87. Footprint x 80.5..82.3, y -22.3..-17.5: 1 m clear of the drive, 2.5 m clear of the way out's corridor, outside the pickup camera's reach (21 m ahead of its pole against 18), clear of rival-tail on the far lane. Splice prints the grid's exact point; a scenario checks the properties, never this number." },
+    "replaces": "rulebook cell.driveCar 'the turned driver stops at the drive's mouth on Apron Road (the last carriageway point of his route)' and log car.blocked's words"
+  },
+
+  "rivalBlock": {
+    "rule": "The rival crew's blocks (brief 082, decided by Sky, not built) are box-in, with no rule of their own: the rival car stops at a stand's block point, and box-in does the rest.",
+    "point": { "v": "the first point of the stand's way out, from where it meets the carriageway, at least rival-block-near-m from the stand's car point; heading along the way out", "tag": "S", "proposed": true, "reason": "derived from the stand's data, so a generated mission gets the same. 10 m keeps the cell's car outside the 5 m blast if the cell blows the rival car up." },
+    "nearM": { "v": 10, "unit": "m", "src": "v:fight-block-near-m", "tag": "S", "proposed": true },
+    "handover": { "service-drive": { "at": [8600, -1500], "heading": [0, 100], "fromCarM": 16.7 }, "square": { "at": [1476, -5600], "heading": [100, 0], "fromCarM": 10.0 }, "unit": "site cm", "reason": "hand-worked; Vantage places them as site points (rivalBlock per stand in getaway.stands[]), the checker proves each boxes its stand and stands >= 10 m off" },
+    "when": { "v": { "wayB": "the cell's car stands at a stand off its start (the service drive) and the rival car is on the map and not tipped away: it drives to that stand's block point at once (about 7 s from rival-park), or straight there when it turns in", "split": "[D] Popovic's car leaves with the Enforcer at the wheel: it drives to the block point of the cell's own car's stand" }, "tag": "S", "proposed": true, "gate": "Q5", "src": "brief 082 Sky's calls 2 and 4; Sky 2026-10-30: 'rivals come block you off for shoot out'" },
+    "wheelman": { "v": "sits in the car; gets out (2 s) and fights when Popovic comes out or when he sees an op (a person's sight: cone +-60 deg, 13 m, the way the car faces)", "tag": "S", "proposed": true, "src": "brief 082: 'they can sit in the car then get out when Vale comes out or when they spot you'" },
+    "endsWhen": { "v": ["the rival car explodes", "a broken crew's wheelman, up and aboard, drives it away"], "tag": "S", "proposed": true, "gate": "Q4", "reason": "today a broken crew leaves on foot, so a block could only end by blowing the car up. Letting the wheelman drive off makes fighting it out a second way through." },
+    "build": { "v": "with the split (071/082)", "gate": "Q3", "reason": "on the one-car route B the Drive round is the only quiet ending. A block there before the split exists drops route B's quiet win rate to the shortcut's 10-30 %." }
+  },
+
+  "parkedCar": {
+    "rule": "A car of the cell's standing on private ground is a loiterer: every security watcher that keeps attention clocks keeps one for the car, with the same marks and the same report. It runs whether anyone is aboard or not. Operatives aboard keep no clocks of their own (they are off the street); out beside it, theirs run as today.",
+    "ground": { "v": { "private": ["civic-block drives[]", "a bay whose use is official or service"], "public": ["the carriageway", "a bay whose use is public"] }, "tag": "S", "proposed": true, "reason": "cars stand at the kerb; a strange car in an office's yard or on its drive looks wrong. Needs a 'use' on civic-block bays[] (squareBay public, officeBay official, serviceBay service): Splice and Vantage, block schema. Unknown = reject." },
+    "who": { "v": "attention's watchers: live cameras, the door guard (not the cell's ally), the patrol robot, the response's officers and robots", "tag": "S", "proposed": true },
+    "sightPoint": { "v": 120, "unit": "cm", "tag": "S", "proposed": true, "reason": "the car is seen when the line to a point 1.2 m over its centre is clear (a person's chest height; the sedan's roof is about 1.45 m), through the watcher's cone." },
+    "marks": { "v": "attention.bands: Heat 0-2 noticed 8 s, wary 20 s, report 45 s; 3-5 6/18/35; 6-9 5/15/25; 10+ 3/12/18", "tag": "S", "proposed": true, "reason": "one clock, one rule, already learned on people. 45 s at Heat 0 is the 30-45 s of work Sky asked for: a 30 s Reroute plus the Tech's walk." },
+    "clock": { "v": "+1 s a second standing in sight; -1 s out of sight, to 0 or to the wary mark once wary", "tag": "S", "proposed": true },
+    "report": { "v": "once per car per watcher per mission: a found fault, A >= 1, no Trail, an incident, a lead (the cell's car, place, time); lands as attention's do (camera: next scan + 3 s; robot or person: radio 3 s); the dial's Alert-1 response goes to the car", "tag": "S", "proposed": true },
+    "handover": { "v": "the service-drive stand is 7.75 m in front of the patrol's line; it is in the sweep's view for about 13.9 of its 15 m (93 % of each 100 s there and back), so an unrerouted car there is reported at about 45-52 s at Heat 0, by seed (the sweep's phase). No camera sees it. The square's bay is public: no clock.", "tag": "S" },
+    "codes": { "log": ["car.noticed", "car.wary", "car.reported"], "incident": "car-reported:<watcher>" }
+  },
+
+  "bands": {
+    "seeds": 200,
+    "baseline": "briefs/080/waymark/bands.json (2026-10-30, before the 5:30 shift); Waymark re-measures at 5:30 first, then with these rules",
+    "rows": [
+      { "plan": "quiet-a", "was": "99 %", "expect": ">= 90 %, within 3 points of its 5:30 re-measure", "why": "no camera sees the café; the car stays at the public square; nothing at the square boxes it" },
+      { "plan": "quiet-b (rewritten: Help, or Loop the pickup camera then Pay; the Reroute timed to cover the car and the carry; Drive once Popovic's car is in)", "was": "80.5 %", "expect": "within 5 points of its 5:30 re-measure while the rivals' block waits for the split (Q3)", "why": "the car stands only 15-25 s before the Go, so its clock never reaches 45 s; the Loop or Help keeps the Pay off tape" },
+      { "plan": "quiet-b-taped (new twin: Pay with the pickup camera live)", "expect": "Alert >= 1 on every seed; Trail >= quiet-b's on every seed; wins at least 10 points under quiet-b", "why": "the record is an incident, so any later one is Alert 2 and a loud final fight" },
+      { "plan": "drive-early (new: the tester's way: Drive to the service drive before the chime, no Reroute, wait)", "expect": "the car reported on >= 95 % of seeds; wins <= 40 % (with the bribe taped too: <= 25 %)", "why": "93 % of the sweep sees the car" },
+      { "plan": "way B with the rivals' block (when built, Q3)", "expect": "10-30 % without a tip (brief 082's proposal)", "why": "every way out of the yard means the block: blow the car or break the crew" },
+      { "plan": "quiet-g", "was": "70.5 %", "expect": "unchanged, within 3 points", "why": "no Pay, the car at the square" },
+      { "plan": "prepared-loud (brings the car round first)", "was": "2 %", "expect": "within 5 points; its early Drive now needs the Reroute timed to the car", "why": "Popovic's car now stops at the kerb: a 10 m carry in the yard instead of about 8 m at the mouth" },
+      { "plan": "careless, unprepared-loud", "was": "0 %, 0 %", "expect": "<= 30 %, <= 20 % (unchanged)" },
+      { "plan": "B-8 idle (quiet-b, whole cell idle)", "was": "median 63 s, p95 83 s", "expect": "median <= 45 s at 5:30", "why": "two timed jobs move into the wait (the Loop before the Pay, the late Reroute) and parking early is punished. Not enough alone: see the page." }
+    ]
+  },
+
+  "tests": {
+    "camera": ["CAM-1 pay-live-camera", "CAM-2 pay-under-loop", "CAM-3 loop-ends-mid-pay", "CAM-4 help-stays-private", "CAM-5 pressure-one-incident", "CAM-6 out-of-view-or-blocked", "CAM-7 dark-camera", "CAM-8 quote-honest-200-seeds", "CAM-9 replay"],
+    "box": ["BOX-1 way-out-derived", "BOX-2 go-and-drive-boxed", "BOX-3 leaving-frees", "BOX-4 disabled-boxes-exploded-frees", "BOX-5 driving-blocks-nothing", "BOX-6 far-kerb-no-box", "BOX-7 cell-car-boxes-official", "BOX-8 stand-boxed", "BOX-9 boxed-and-held"],
+    "kerb": ["KERB-1 drive-taken-kerbside", "KERB-2 never-boxes-200-seeds", "KERB-3 take-and-carry-at-kerb", "KERB-4 driving-there-counts", "KERB-5 generated-site"],
+    "parked": ["PARK-1 reported-in-band-200-seeds", "PARK-2 reroute-covers", "PARK-3 wary-holds", "PARK-4 public-bay-no-clock", "PARK-5 aboard-no-own-clock", "PARK-6 heat-scales", "PARK-7 once-per-watcher", "PARK-8 drive-card-quotes"]
+  }
+}
