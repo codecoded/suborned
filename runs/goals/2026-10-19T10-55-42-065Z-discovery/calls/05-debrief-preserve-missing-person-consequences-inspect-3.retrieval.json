@@ -1,0 +1,161 @@
+{
+  "query": "Preserve existing case and area-watch consequences in JSON debriefs ‖ | missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+  "queries": [
+    "Preserve existing case and area-watch consequences in JSON debriefs",
+    "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3862712200364832,
+      "key": "55c5c6cd533522c040aca4a6",
+      "kind": "gdd-agent",
+      "lineEnd": 194,
+      "lineStart": 183,
+      "section": "§08 CAMPAIGN › objectives",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+      "version": "v0.24.0",
+      "score": 0.06233293048402157,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.4062155308191634,
+      "key": "7b449f26a7918e1853ee1882",
+      "kind": "gdd-human",
+      "lineEnd": 550,
+      "lineStart": 532,
+      "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+      "version": "v0.24.0",
+      "score": 0.0616370305344031,
+      "signals": [
+        "semantic:1",
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.23977933884982106,
+      "key": "1158c1fa81b107c3728eede3",
+      "kind": "gdd-human",
+      "lineEnd": 739,
+      "lineStart": 726,
+      "section": "One lead, clear owners, named handoffs › Decisions (v0.23.0) (1/4)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "One lead, clear owners, named handoffs › Decisions (v0.23.0)\nSky (brief 013): anyone can be targeted, with no list; the cost comes from who sees it. Bodies stay where they fall and are found; the Enforcer carries them to a quiet place, outdoors or through a service door. Both knockout and kill: someone knocked out talks unless hidden, tied up or turned; someone killed never talks, but a found body is far worse. Kills are shown. The cones are the Scout's skill.\nSky, answering Motive: a killing found moves Standing −1, as one value to tune; no rule finds every body, so a hidden one is a missing person (+2 Trail, no Menace, the family and workmates worry; one more guard and camera on that block for 3 missions; every 2 open cases raise the district's security level; a found killing's case closes after 3 missions); the Enforcer's face is a fact a Talker can give up; guards check in every 90 s at times the Scout can learn; a service door and a bin in the lane; the driver can be taken, a missing expected person raises the alarm, and an alarm sends robots and police to the scene and to the connections; the response's size and speed are the difficulty dial, kept as data.",
+      "version": "v0.24.0",
+      "score": 0.03125763125763126,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.4015667917211989,
+      "key": "0dffd14eab5f60ca398c8382",
+      "kind": "gdd-human",
+      "lineEnd": 570,
+      "lineStart": 550,
+      "section": "Nothing hand-authored, everything checked (3/4)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Nothing hand-authored, everything checked\nConsequences | The rules, applied to the mission log | Replaying the mission to confirm the same result |\nThe mission checker: a generated mission ships only if at least 2 quiet routes win · a loud route exists and costs more Trail · every way to fail can actually happen · no single contact is essential · a player who knows everything finishes with at least a minute to spare. An open case counts as 3 Trail.\nThe risk is sameness. When everyone is generated, it's easy for nobody to be memorable. Watch Dogs: Legion is the cautionary example. The answer is history, not backstory : people become memorable through what the systems record with you (who you helped, who got braver, who sold you out). Generated text is only a light layer on top. Every fact a person carries must change a price or an outcome: a field that no rule reads is rejected, because detailed bios that change nothing (Legion again) are the opposite of memorable.",
+      "version": "v0.24.0",
+      "score": 0.031099324975891997,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.18756816535374954,
+      "key": "2d77794873fff3eb54aee998",
+      "kind": "gdd-human",
+      "lineEnd": 359,
+      "lineStart": 347,
+      "section": "The city moves without you › Alert, 0 to 3",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "The city moves without you › Alert, 0 to 3\nLevel | Security does | Raised by |\n0 · Routine | Follows its schedules | — |\n1 · Inquiry | Robots check the reported spot. The patrol tightens its sweep. | A report that lands of a found knockout, a woken victim, a noise, a missed check-in or a missing person; a discovered fault; counted once per incident Spec |\n2 · Search | Sends the response unit and robots to the place; their search opens hiding places within 30 m | A second incident; a report that lands of a found kill or a carry seen; any gunfire at once (§06), which sets Alert to at least 2; a shot no longer adds +1 each Built |\n3 · Lockdown | Exterior doors lock (security level 2 and up), units cordon the district's mouths, and the district begins to seal. | A report that lands of a takedown seen; gunfire or violence seen by a civilian sets 3 at once Built |\nSilent acts wait for the report. A takedown, a carry, a body or a missing person raises Alert only when someone's report reaches security, never at the moment it is seen; gunfire raises it at once, because security hears it. Witness Trail and Standing still move at sight. A knockout that is found, or wakes and reports, never raises Alert above 1; a takedown seen is 3 when it is reported, knockout or not. One takedown is one incident and one dispatch, however many people find it. Spec",
+      "version": "v0.24.0",
+      "score": 0.031054405392392875,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.25018731505236935,
+      "key": "37ecdc5620d6e3a0aa30b71d",
+      "kind": "gdd-agent",
+      "lineEnd": 124,
+      "lineStart": 114,
+      "section": "§05 PRESSURE › reports",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§05 PRESSURE › reports\nreports [S]: a fact reaches security only through a person (no networks, §01). Whoever notices a takedown, a carry or a body reacts by the first row that holds: (1) a person turned for this very act (the driver who brought the car): never its witness · (2) staff: radio from where they stand (lands in 5 s) · (3) kin of the victim (lover, family): report at once · (4) turned (loyalty ≥ 1): keep quiet · (5) an Informer: report · (6) terrified: flee, never report · (7) Loyal: report · (8) Idealist: walk over to check the body, then report · (9) Mercenary: keep quiet until Alert 2, then report · (10) Fearful: flee an act, avoid a body, tell a tie. A reporter walks to the nearest report point (a staffed door, or a call box: the world places them so every street point is within 40 m of one), running after an act and walking after a body, and calls (6 s); the report lands. A live camera's lands at its next scan + 3 s; a robot's in 4 s. A reporter taken down before the report lands drops it. Whoever quiets, avoids, flees or reports also tells one tie: face to face within 20 m, or by phone to a tie indoors. No Tech action cuts a call box.\nbodies [S] (Sky, 2026-10-16: \"civilians can see bodies. They don't disappear; the enforcer has to take them into a quiet place\"): a person knocked out or killed stays where they fell until moved; kills are shown, not cut away. An open body is found by anyone within 13 m on a clear line and by watchers in their cones. Only a stash hides one: a container (5 s on the street, seen as a carry; holds 1) or a service door (10 s, off-screen; holds 3). A container is emptied on a round every 15:00, its time learnable by Watch, in the mission only. A knocked-out victim wakes after 2:00, staggers 4 s and reports the assault (Alert 1; his facts become leads); hidden, he calls out every 10 s, heard within 20 m; restrained, he is silent until freed. On landing: a found knockout 1, a found kill 2, a carry seen 2, a takedown seen 3. A found body, knocked out or killed, brings a unit of officers at any Alert and holds the scene: the door the body lies at and every door within 13 m in sight of it refuse Enter and any exit until the unit stands down (1:00 after the last alarm at Alert 1, 3:00 at Alert 2, never at Alert 3). A body moved before the unit arrives makes the report unfounded: Alert stays, no seal. At Alert ≥ 2 the unit's search opens every stash within 30 m (10 s each). Preparation earns the right to leave a body: with the camera looped and the patrol rerouted, nobody may find it in time (Sky).\nsuspicion [S] (Sky: a person who expects someone and finds them missing grows suspicious and can raise the alarm): a person due to meet a lover, family member or workmate at a stop they share (from routines, never authored) who is there without them raises a missing-person alarm after 20 s (Alert 1). A turned waiter says nothing; a person being Taken reports nothing.\nresponse [S] (Sky: \"it's easy to swarm the play area with robots if we need to temper the game play\"): a dial, data per district and mission, not code. S = the district's base (data in the plan) + ⌊open cases ÷ 2⌋ (at most +2) + the mission's bonus. The Handover runs at S2.\n| S | name | dispatch | Alert 1 sends | Alert ≥ 2 sends | +1 unit every | unit cap | seal | Alert 3 adds |\n| 0 | lax | 20 s | 1 robot | 1 unit | — | 1 | 3:00 | — |\n| 1 | routine | 12 s | 1 robot | 1 unit | — | 1 | 2:25 | — |\n| 2 | watchful | 10 s | 2 robots | 1 unit + 2 robots | 40 s | 3 | 2:25 | +1 unit, doors lock |\n| 3 | guarded | 8 s | 2 robots | 2 units + 2 robots | 30 s | 4 | 2:00 | +1 unit, doors lock |\n| 4 | swarm | 6 s | 3 robots | 2 units + 4 robots | 20 s | 6 | 1:30 | +2 units, doors lock |\nA unit is 2 officers; a robot is an armed patrol unit, and robots count against the 30-combatant cap. An alarm sends the response to the scene, then to where the missing person's post, car and close ties are meant to be now, then to the alarm-raiser's ties (up to 3 each); robots go only to places within 60 m of where they start. Fighting out is a last resort, not a route (Sky).",
+      "version": "v0.24.0",
+      "score": 0.029236022193768675,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.2692622324604458,
+      "key": "f6201dff3bf1366eecbc1c5e",
+      "kind": "gdd-agent",
+      "lineEnd": 30,
+      "lineStart": 30,
+      "section": "§01 GAME + CORE › terms",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§01 GAME + CORE › terms\nterms: Trail = campaign evidence from traceable acts, drives investigations · Alert 0–3 = security response now (routine, inquiry, search, lockdown) · security level S 0–4 = how hard a district answers an alarm (lax, routine, watchful, guarded, swarm): the response dial (§05) · Standing = Hero ↔ Menace per district: acts seen or found, a public fight once by opponent, and word of mouth between missions; starts leaning Hero (+2) · Heat = T + Menace, threshold schedules a fight · bravery (helped → Fighter) / resentment (coerced → Informer) · Talker = fear + resentment > bravery + loyalty, gives you up when questioned",
+      "version": "v0.24.0",
+      "score": 0.028985507246376812,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.27449974125626275,
+      "key": "14441d0de07d22fb9786dae8",
+      "kind": "gdd-human",
+      "lineEnd": 386,
+      "lineStart": 373,
+      "section": "The city moves without you › The response is a dial Spec",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "The city moves without you › The response is a dial Spec\n\"It's easy to swarm the play area with robots if we need to temper the game play\" (Sky). How hard a district answers is data per district and mission, not code: the security level is the district's base, plus one for every two open cases (at most two), plus the mission's own bonus. The Handover runs at level 2.\nLevel | Dispatch | Alert 1 sends | Alert 2+ sends | Another unit every | Unit cap | Seal | Alert 3 adds |\n0 · Lax | 20 s | 1 robot | 1 unit | — | 1 | 3:00 | — |\n1 · Routine | 12 s | 1 robot | 1 unit | — | 1 | 2:25 | — |\n2 · Watchful | 10 s | 2 robots | 1 unit + 2 robots | 40 s | 3 | 2:25 | +1 unit, doors lock |\n3 · Guarded | 8 s | 2 robots | 2 units + 2 robots | 30 s | 4 | 2:00 | +1 unit, doors lock |\n4 · Swarm | 6 s | 3 robots | 2 units + 4 robots | 20 s | 6 | 1:30 | +2 units, doors lock |\nA unit is two officers; a robot is an armed patrol unit, and robots count toward the cap of 30 combatants. An alarm sends the response to the scene, then to where the missing person's post, car and closest people are meant to be, then to the people the alarm-raiser knows. Robots only go within 60 m of where they start. Fighting your way out is a last resort, not a route.",
+      "version": "v0.24.0",
+      "score": 0.02857142857142857,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    }
+  ]
+}

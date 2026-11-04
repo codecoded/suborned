@@ -1,0 +1,55 @@
+{
+  "state": "inspect",
+  "explanation": "Need the complete serialization entry path, consequence projection, and relevant tests to distinguish the export gap from existing behavior and coverage.",
+  "evidence": [],
+  "reads": [
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "from": 1,
+      "to": 88
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "from": 195,
+      "to": 228
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "from": 190,
+      "to": 456
+    },
+    {
+      "path": "sim/cli/Program.cs",
+      "from": 1,
+      "to": 140
+    },
+    {
+      "path": "sim/Suborned.Sim/Script.cs",
+      "from": 50,
+      "to": 83
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Redline.cs",
+      "from": 1,
+      "to": 137
+    },
+    {
+      "path": "sim/Suborned.Sim/ScenariosTakedown.cs",
+      "from": 110,
+      "to": 185
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Tests.cs",
+      "from": 1,
+      "to": 45
+    }
+  ],
+  "searches": [
+    "AreaWatch",
+    "Debrief.Of",
+    "\"areaWatch\"",
+    "\"cases\""
+  ],
+  "tests": [],
+  "writable": []
+}

@@ -1,0 +1,11 @@
+{
+  "verdict": "fail",
+  "summary": "The proposed tests use existing APIs and meaningfully cover empty exports, legacy fields, purity and replay, but tuple-value fidelity remains inadequately tested. Static review only; tests were not executed.",
+  "faults": [
+    {
+      "path": "GoalDebriefCaseWatchExportTests.SerializerPreservesMultipleEntriesAssociationsOrderAndMultiplicity",
+      "problem": "All scenario-generated area-watch entries have guards=1, cameras=1 and missions=3. Combining and duplicating these entries cannot detect swapped guards/cameras or hardcoded numeric values. Such defective serializers would pass despite the requirement to export each entry's current values faithfully.",
+      "fix": "Add a serialization-boundary fixture using the existing public Between collections with distinct guards, cameras and duration values across entries. Snapshot the expected tuples before Write and assert exact exported values and unchanged collections afterward. Treat these as serializer test data, without introducing campaign rules."
+    }
+  ]
+}

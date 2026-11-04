@@ -1,0 +1,77 @@
+Command: ["dotnet","test","sim/Suborned.Sim.Tests","--filter","FullyQualifiedName~GoalDebriefCaseWatchFidelityTests","--logger","trx;LogFileName=/private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/evidence/baseline/target.trx","--verbosity","minimal"]
+Exit: 1; timedOut: false
+
+STDOUT
+  Determining projects to restore...
+  Restored /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim/Suborned.Sim.csproj (in 57 ms).
+  Restored /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/Suborned.Sim.Tests.csproj (in 73 ms).
+  Suborned.Sim -> /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim/bin/Debug/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll
+Test run for /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates [101 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates() in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 107
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues [26 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues() in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 123
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays [26 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays() in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 75
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums [128 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums() in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 162
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything [111 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything() in /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 215
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Results File: /private/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt/out/goals/verify-campaign-8QCd31/feature-1/evidence/baseline/target.trx
+
+Failed!  - Failed:     5, Passed:     0, Skipped:     0, Total:     5, Duration: 401 ms - Suborned.Sim.Tests.dll (net10.0)
+
+STDERR
+[xUnit.net 00:00:00.79]     GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates [FAIL]
+[xUnit.net 00:00:00.82]     GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues [FAIL]
+[xUnit.net 00:00:00.84]     GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays [FAIL]
+[xUnit.net 00:00:00.97]     GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums [FAIL]
+[xUnit.net 00:00:01.08]     GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything [FAIL]
+

@@ -1,0 +1,229 @@
+{
+  "query": "Handover capstone every order preview price Watch Listen check in ‖ turned keeper tips knowledge needs campaign carryover wounds Continue",
+  "queries": [
+    "Handover capstone every order preview price Watch Listen check in",
+    "turned keeper tips knowledge needs campaign carryover wounds Continue"
+  ],
+  "pinned": [],
+  "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+  "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+  "embeddingModel": "BAAI/bge-small-en-v1.5",
+  "hits": [
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "bm25": 1.6896330118179321,
+      "key": "b751d6ccbbc84f9d117eb45c",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › readBy",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "5873056d7d8d6e1e21f833578f84da545378494cf713a31e4c57448c5fa09fea",
+      "text": "people rules › readBy\nevery field a simulated person carries names the rule that reads it:\nname: §08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\ntemperament: §04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\nneed: §04 Help and Pressure require the need known (Listen); needs.list.metBy\nties: §04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\nscales: §04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\nmemory: §04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\nroutine: §04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\nsecret: §04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\nGDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\nLegion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.",
+      "version": "suborned.people.rules/1",
+      "score": 0.0439657771747324,
+      "signals": [
+        "keyword:1",
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.275308034559842,
+      "key": "ba54c2e34b7df72913bbb5f0",
+      "kind": "gdd-agent",
+      "lineEnd": 85,
+      "lineStart": 85,
+      "section": "§04 PEOPLE › preview",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§04 PEOPLE › preview\npreview: an order always shows its price; whether it will work shows as \"?\" until Listen reveals the temperament (Sky, 2026-10-15: Watch gives where and when; Listen gives who they are).",
+      "version": "v0.24.0",
+      "score": 0.03278688524590164,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.30290204014498323,
+      "key": "23452dd13fc8b530fd20ce15",
+      "kind": "gdd-human",
+      "lineEnd": 550,
+      "lineStart": 532,
+      "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+      "version": "v0.24.0",
+      "score": 0.030886196246139225,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.30659764766076003,
+      "key": "e634d9d95932e288ef2f9ade",
+      "kind": "gdd-human",
+      "lineEnd": 284,
+      "lineStart": 272,
+      "section": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Knowledge makes consent cheap. Reputation decides who says yes. › Temperament Spec\nTemperament | Responds to | If you are Heroes | If you are a Menace |\nIdealist | Help. Refuses bribes. | Volunteers with no offer needed; gains bravery fast | Refuses, and may report you |\nMercenary | Pay | Overcharges you: \"heroes can afford it\" | Gives a discount, and sells you out to the highest bidder |\nFearful | Pressure | Hesitates and needs Help twice | Folds immediately, for free |\nLoyal (to an institution) | Only trust built over time | Can turn after repeated Help | Reports any approach |\nA Hero campaign and a Menace campaign turn different halves of the city , so a second playthrough has a different cast. That's the replay value.",
+      "version": "v0.24.0",
+      "score": 0.030834914611005692,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "bm25": 2.011289119720459,
+      "key": "facd2db534aee02ad68b2ba5",
+      "kind": "gdd-human",
+      "lineEnd": 650,
+      "lineStart": 636,
+      "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+      "version": "v0.24.0",
+      "score": 0.03057889822595705,
+      "signals": [
+        "keyword:1",
+        "semantic:2"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "bm25": 4.84902811050415,
+      "key": "ff475527301e5a276b3aff78",
+      "kind": "gdd-human",
+      "lineEnd": 246,
+      "lineStart": 245,
+      "section": "Four operatives, four verbs › Scout",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Four operatives, four verbs › Scout\nWatch · Listen · Mislead. Watch reveals a routine, and a watcher's sight (its cone) and check-in marks: the cones are the Scout's skill. Listen reveals needs and temperament. Can send rivals after false tips.",
+      "version": "v0.24.0",
+      "score": 0.029957522915269395,
+      "signals": [
+        "keyword:1",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3209860920906019,
+      "key": "f61a67df9a0c1c35eaca913e",
+      "kind": "gdd-agent",
+      "lineEnd": 160,
+      "lineStart": 160,
+      "section": "§07 HANDOVER › brief",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§07 HANDOVER › brief\nbrief: Councillor Vale signed the clearance order for the marked block. At shift handover he leaves the Civic Records Office for his official car. Take him alive to the getaway car. Full cell, all four armed (Arms 3). Purse $100,000. Every verb introduced once.",
+      "version": "v0.24.0",
+      "score": 0.02976190476190476,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "distance": 0.33503427103059413,
+      "key": "174b2b1a1115497dc4aca020",
+      "kind": "gdd-human",
+      "lineEnd": 750,
+      "lineStart": 739,
+      "section": "One lead, clear owners, named handoffs › Decisions (v0.22.0) (2/3)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "One lead, clear owners, named handoffs › Decisions (v0.22.0)\nSky: the controls for real time ( briefs/011/play/HOW-TO-PLAY.md and Motive's fight controls) replace \"click to select or move, Shift to group, 1–4 operative, E engage, F fire, C call, click a person for the action card\" (section 10). Camera rotation is rejected for now: yaw stays 30.\nSky: the HUD is simple and Syndicate-style, built for real time ( briefs/011/ui/round4 v10, round5 , round5/placement ): roster, verb plate, status pill, price chip, at most two icons over a person, the action panel. The dock is a setting; the default dock (left column or corner) and the finish (cab-cluster or deco-console) are still Sky's open pick.\nSky: \"every order shows its full price before you commit\" stays. In real time it is met by the price chip on hover, the action panel, the run price on ground hover and the going-loud card.\nAster: section 07's \"west street\" was the top-down test's compass; as built, the police come in by the north street ( contracts/missions/handover/mission.json ), as Motive's proposal reads.",
+      "version": "v0.24.0",
+      "score": 0.028991596638655463,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Human GDD (wins on conflict)",
+      "bm25": 1.9795722961425781,
+      "key": "0dffd14eab5f60ca398c8382",
+      "kind": "gdd-human",
+      "lineEnd": 570,
+      "lineStart": 550,
+      "section": "Nothing hand-authored, everything checked (3/4)",
+      "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+      "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+      "text": "Nothing hand-authored, everything checked\nConsequences | The rules, applied to the mission log | Replaying the mission to confirm the same result |\nThe mission checker: a generated mission ships only if at least 2 quiet routes win · a loud route exists and costs more Trail · every way to fail can actually happen · no single contact is essential · a player who knows everything finishes with at least a minute to spare. An open case counts as 3 Trail.\nThe risk is sameness. When everyone is generated, it's easy for nobody to be memorable. Watch Dogs: Legion is the cautionary example. The answer is history, not backstory : people become memorable through what the systems record with you (who you helped, who got braver, who sold you out). Generated text is only a light layer on top. Every fact a person carries must change a price or an outcome: a field that no rule reads is rejected, because detailed bios that change nothing (Legion again) are the opposite of memorable.",
+      "version": "v0.24.0",
+      "score": 0.02871794871794872,
+      "signals": [
+        "keyword:1",
+        "semantic:2"
+      ]
+    },
+    {
+      "authority": "People rules (suborned.people.rules/1); Motive owns them, the checker enforces them",
+      "distance": 0.3275186815118394,
+      "key": "d781564276ab9e1934f2fa26",
+      "kind": "people-rules",
+      "lineEnd": 0,
+      "lineStart": 0,
+      "section": "people rules › person and tiers",
+      "source": "contracts/people/people.rules.json",
+      "sourceHash": "5873056d7d8d6e1e21f833578f84da545378494cf713a31e4c57448c5fa09fea",
+      "text": "people rules › person and tiers\n{\"is\":[\"routine\",\"need\",\"temperament\",\"memory\",\"secret\"],\"needsPerPerson\":1,\"memoryAtStart\":\"empty\",\"src\":\"§04 person = routine + need + temperament + memory; §09 people checked for one clear need; §09 history, not backstory\",\"reason\":\"memory starts empty: a person's history is what the systems record from the first run on (§09), never written backstory. Ties are the only relationships a person starts with.\",\"readBy\":{\"fields\":{\"name\":\"§08 debrief reports each contact with cause; §13 T7 names ≥ 2 contacts a day later; names.pinned casts Inez and Vale\",\"temperament\":\"§04 which approach a person responds to, refuses or reports; Hero/Menace changes the price\",\"need\":\"§04 Help and Pressure require the need known (Listen); needs.list.metBy\",\"ties\":\"§04 introductions (ties.kinds.introduces); §08 keeper tips needs (knowledge.needsKnown); needs kin and protection require a tie\",\"scales\":\"§04 Talker test and lie rule; §04 Accomplice hides ops and drives, Fighter joins armed (§06)\",\"memory\":\"§04 Ask leaves a remembered refusal (+$10,000, +1 T); Talker gives only facts in memory; §08 debrief\",\"routine\":\"§04 Pay requires routine known (Watch); §05 who stands within 13 m of an act to witness it\",\"secret\":\"§04 Pressure's leverage when known (turn.pressure); affair also the lover tie's summons (rulebook summon) (Motive, briefs/011/motive-lovers.md)\"},\"src\":\"GDD §09 risk: sameness (Watch Dogs: Legion); briefs/010/research/df-for-the-suborned.md\",\"proposed\":true,\"reason\":\"Legion's bios did nothing, and DF's wiki says 'many gameplay effects of facets are still unknown'. Every field a simulated person carries names the rule that reads it, and the schema rejects a carried field with no reader. A generated fact no rule reads is trivia.\"}}\ntiers: {\"simulated\":{\"carries\":[\"name\",\"temperament\",\"need\",\"ties\",\"scales\",\"memory\",\"routine\",\"secret\"],\"src\":\"§09; life.json generator.tiers [G]\"},\"background\":{\"carries\":[\"routine\"],\"src\":\"life.json generator.tiers: walk, run and cheer only\",\"proposed\":true,\"reason\":\"background people carry no name, temperament, need or ties, so the checker can reject a background person that has any; they cannot be approached, questioned or tied to.\"}}",
+      "version": "suborned.people.rules/1",
+      "score": 0.028665028665028666,
+      "signals": [
+        "semantic:2",
+        "keyword:2"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "distance": 0.3519332602043942,
+      "key": "3f783a3fdec2672fc7ac3923",
+      "kind": "gdd-agent",
+      "lineEnd": 162,
+      "lineStart": 162,
+      "section": "§07 HANDOVER › the capstone",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§07 HANDOVER › the capstone\nthe capstone (Sky, 2026-10-15: \"the guard comes to visit Inez when she calls him because you bribed / pressured her and that's what makes him leave his post\"): the call that pulls the guard off his door is Inez, called because the cell helped, paid or pressured her. Her debt is her need (Help clears it); the affair is her secret (Pressure threatens to expose it).",
+      "version": "v0.24.0",
+      "score": 0.02667140825035562,
+      "signals": [
+        "semantic:1",
+        "keyword:1"
+      ]
+    },
+    {
+      "authority": "Agent GDD (the human GDD wins on conflict)",
+      "bm25": 3.86999249458313,
+      "key": "db28fe680077a45cbc19ca16",
+      "kind": "gdd-agent",
+      "lineEnd": 181,
+      "lineStart": 181,
+      "section": "§08 CAMPAIGN › economy",
+      "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "text": "§08 CAMPAIGN › economy\neconomy [S]: turned people become sources paying each mission: clerk skims cash, quartermaster diverts arms, café owner tips needs before Scout listens. Procurement missions target a source. Snowball.",
+      "version": "v0.24.0",
+      "score": 0.01639344262295082,
+      "signals": [
+        "keyword:2"
+      ]
+    }
+  ]
+}

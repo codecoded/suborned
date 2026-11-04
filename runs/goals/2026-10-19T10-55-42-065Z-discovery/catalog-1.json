@@ -1,0 +1,112 @@
+{
+  "summary": "One goal-scoped requirement preserves existing missing-person cases and area-watch consequences in headless JSON debriefs. Completion requires current code inspection and behavioral verification; no implementation gap is inferred from the code index.",
+  "coverage": [
+    {
+      "section": "01",
+      "disposition": "requirements",
+      "reason": "Exact replay and unknown-rule rejection constrain serialization: exposing consequences must not change simulation results or introduce rules."
+    },
+    {
+      "section": "02",
+      "disposition": "outside-domain",
+      "reason": "Resource accounting, transit and action pricing are outside this serialization goal; existing consequence calculations remain unchanged."
+    },
+    {
+      "section": "03",
+      "disposition": "outside-domain",
+      "reason": "Operative abilities and movement do not require changes to preserve case and area-watch debrief data."
+    },
+    {
+      "section": "04",
+      "disposition": "outside-domain",
+      "reason": "People, ties, fear and Standing calculations provide upstream context; changing or expanding them is outside the declared goal."
+    },
+    {
+      "section": "05",
+      "disposition": "outside-domain",
+      "reason": "Missing-person alarms, investigations and response behavior are upstream simulation rules. This goal only preserves their existing campaign consequences in the debrief."
+    },
+    {
+      "section": "06",
+      "disposition": "outside-domain",
+      "reason": "Combat and takedown accounting remain unchanged; implementing consequence triggers is outside this serializer scope."
+    },
+    {
+      "section": "07",
+      "disposition": "outside-domain",
+      "reason": "Handover's kill route supplies possible verification context, but route implementation, balance and mission outcomes are outside this goal."
+    },
+    {
+      "section": "08",
+      "disposition": "requirements",
+      "reason": "Direct source for debrief cases, area-watch additions and duration, district security consequences, and preservation of committed results. Retrieved passage 55c5c6cd533522c040aca4a6 supplies the complete case row; human passage 23452dd13fc8b530fd20ce15 confirms debrief inheritance and replay commitment."
+    },
+    {
+      "section": "09",
+      "disposition": "requirements",
+      "reason": "Consequences derive from the mission log and must reproduce on replay. Human passage 0dffd14eab5f60ca398c8382 supports this constraint; generation and mission checking are otherwise outside scope."
+    },
+    {
+      "section": "10",
+      "disposition": "outside-domain",
+      "reason": "Presentation, controls and live knowledge queries are unrelated to preserving case and area-watch JSON debrief output."
+    },
+    {
+      "section": "11",
+      "disposition": "requirements",
+      "reason": "The shared Unity-free C# library and exact replay architecture constrain the headless serialization boundary. Unity integration, performance rendering targets and production milestones are outside scope."
+    },
+    {
+      "section": "12",
+      "disposition": "outside-domain",
+      "reason": "Crew workflow and historical decisions are context, not executable instructions. Repeated case rules are covered by the current §08 requirement."
+    },
+    {
+      "section": "13",
+      "disposition": "outside-domain",
+      "reason": "The player studies assess gameplay comprehension and presentation, not this headless JSON preservation goal."
+    },
+    {
+      "section": "14",
+      "disposition": "requirements",
+      "reason": "Keel's shared-engine and exact-replay constraints corroborate serialization noninterference (06dc432993965a32106057ec). Ownership, delegation and review instructions are context only."
+    },
+    {
+      "section": "15",
+      "disposition": "outside-domain",
+      "reason": "Art, assets, camera and visual style have no bearing on case and area-watch JSON serialization."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "debrief-preserve-case-area-watch-json",
+      "title": "Preserve existing case and area-watch consequences in JSON debriefs",
+      "section": "08",
+      "quote": "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+      "acceptance": [
+        "Inspect the current consequence model, debrief construction, JSON writer and relevant consumers/tests to establish the existing behavior and wire contract before identifying any serialization gap; index entries and prior reviews are not completion evidence.",
+        "For existing simulation results containing missing-person cases, parsed headless JSON preserves each case and its available consequence data, including area-watch location, added guard and camera, duration, and district security consequence. Values come from existing computed results, without recalculation or invented fields or rules.",
+        "Verify that existing results retain the §08 semantics where represented: an unfound killing remains an open case until discovery; area watch adds one posted guard and one camera on the last-seen block for three missions; a found killing's case closes after three missions; each two open cases contribute one security level, capped at a contribution of two. Missing or conflicting rulebook definitions are inspection blockers, not authorization to implement new consequences.",
+        "Repeated serialization of the same completed result produces identical JSON. Replaying the same start state and orders produces equivalent case and area-watch debrief data.",
+        "Constructing or serializing the debrief does not mutate simulation state, checksums, case lifetimes, consequence totals or subsequent results, and does not apply any consequence a second time.",
+        "Preserve established JSON fields, types and values and existing consumer behavior. Verify backward compatibility for results with no cases or area watch as well as populated results; determine absent-versus-empty conventions from the current contract rather than inventing them.",
+        "Do not introduce campaign persistence, advance the campaign, or change Trail, Standing, fear, security or case-generation rules to satisfy serialization checks."
+      ],
+      "terms": [
+        "missing person",
+        "open case",
+        "area watch",
+        "last-seen block",
+        "security level S",
+        "headless JSON debrief",
+        "deterministic serialization",
+        "backward compatibility"
+      ],
+      "dependsOn": [],
+      "value": 4,
+      "effort": 2,
+      "risk": 3,
+      "rationale": "Preserves consequential simulation output at a narrow shared-library boundary. Expected implementation effort is modest, but omissions, accidental consequence reapplication and wire-contract changes warrant focused verification. Source: §08, passage 55c5c6cd533522c040aca4a6; replay constraints: §09 human passage 0dffd14eab5f60ca398c8382 and §11. Side-effect freedom and backward compatibility are explicit goal constraints. Scores are provisional pending current code inspection."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "state": "partial",
+  "explanation": "Existing case and area-watch data are calculated, but Debrief.Write does not export either collection. Its complete nextMission serialization emits aggregate counts and descriptive lines instead, so neither populated nor empty collections satisfy the requirement. Repair only Debrief.cs: serialize every existing tuple, preserving its values, associations and order, unconditionally including empty arrays, without changing existing fields or consequence calculations. Existing scenario and replay tests provide regression coverage but do not verify collection JSON fidelity, empty arrays, preservation of all previous fields, repeated-read immutability or exported replay equality. Those coverage gaps prevent an implemented conclusion. No tests were run.",
+  "evidence": [
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "public readonly List<(string who, string kind, string place, int missions)> Cases = new List<(string, string, string, int)>(); // kind missing (open) or found-killing (closes)"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "public readonly List<(string place, int guards, int cameras, int missions)> AreaWatch = new List<(string, int, int, int)>();"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "foreach (var a in missing) { b.AreaWatch.Add((a.Scene.ToString(), R.AreaWatchStep, R.AreaWatchStep, R.AreaWatchMissions)); b.Cases.Add((Who(a.P), \"missing\", a.Scene.ToString(), -1)); }"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "w.Prop(\"campaignTrail\", Next.CampaignTrail).Prop(\"campaignStanding\", Next.CampaignStanding).Prop(\"openCases\", Next.OpenCases).Prop(\"nextLevel\", Next.NextLevel); w.OpenArr(\"ambushBy\"); foreach (var a in Next.AmbushBy) w.Str(a); w.EndArr();"
+    },
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "quote": "w.OpenArr(\"lines\"); foreach (var l in Next.Lines) w.Obj().Prop(\"line\", l.Line).Prop(\"who\", l.Who).Prop(\"detail\", l.Detail).EndObj(); w.EndArr();"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "quote": "// brief 013 (Sky 2026-10-16; Motive §2.5, §2.6): what the takedowns leave the campaign. No campaign layer runs yet: these are outputs."
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Tests.cs",
+      "quote": "Assert.Equal(played.Checkpoints, replay.Checkpoints);\n        Assert.Equal(played.Result, replay.Result);"
+    }
+  ],
+  "reads": [],
+  "searches": [],
+  "tests": [
+    "ScenarioTests.Passes",
+    "ScenarioTests.SameOrdersSameChecksumsTwice",
+    "ScenarioTests.ReplaysFromStartStateAndOrders",
+    "RedlineTests.E7_every_report_is_the_same_in_every_culture"
+  ],
+  "writable": [
+    "sim/Suborned.Sim/Debrief.cs"
+  ]
+}

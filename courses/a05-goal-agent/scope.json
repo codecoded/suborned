@@ -1,0 +1,121 @@
+{
+  "id": "container-watch",
+  "goal": "Complete Scout Watch learning a container servicing round in the shared deterministic simulation; no Unity or assets.",
+  "sources": [
+    {
+      "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "quote": "A container is emptied on a round every 15:00, its time learnable by Watch, in the mission only."
+    },
+    {
+      "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "quote": "Same orders \u2192 same result. Any run replays exactly from start state + orders."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "container-clock",
+      "title": "A deterministic next servicing round exists and is initially unknown",
+      "source": 0,
+      "owner": "simulation-engineer",
+      "dependsOn": [],
+      "checks": [
+        "clock"
+      ]
+    },
+    {
+      "id": "container-watch",
+      "title": "Scout can complete or cancel Watch on a container; queries, repeat refusal and role/reach rules agree",
+      "source": 0,
+      "owner": "simulation-engineer",
+      "dependsOn": [
+        "container-clock"
+      ],
+      "checks": [
+        "watch"
+      ]
+    },
+    {
+      "id": "watch-replay",
+      "title": "Learned container timing is mission state and replays exactly from recorded orders",
+      "source": 1,
+      "owner": "simulation-engineer",
+      "dependsOn": [
+        "container-watch"
+      ],
+      "checks": [
+        "replay"
+      ]
+    }
+  ],
+  "context": [
+    {
+      "path": "sim/Suborned.Sim/GameOrders.cs",
+      "from": 135,
+      "to": 260
+    },
+    {
+      "path": "sim/Suborned.Sim/GameHudReads.cs",
+      "from": 60,
+      "to": 88
+    },
+    {
+      "path": "sim/Suborned.Sim/GameCancel.cs",
+      "from": 20,
+      "to": 180
+    },
+    {
+      "path": "sim/Suborned.Sim/GameSight.cs",
+      "from": 508,
+      "to": 565
+    },
+    {
+      "path": "sim/Suborned.Sim/Hash.cs",
+      "from": 1,
+      "to": 145
+    },
+    {
+      "path": "sim/Suborned.Sim/Site.cs",
+      "from": 1,
+      "to": 55
+    },
+    {
+      "path": "sim/Suborned.Sim/GameTakedown.cs",
+      "from": 825,
+      "to": 865
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/GoalWatchTests.cs"
+    }
+  ],
+  "writable": [
+    "sim/Suborned.Sim/GameStashWatch.cs",
+    "sim/Suborned.Sim/GameOrders.cs",
+    "sim/Suborned.Sim/GameHudReads.cs",
+    "sim/Suborned.Sim/GameCancel.cs",
+    "sim/Suborned.Sim/Hash.cs"
+  ],
+  "testProject": "sim/Suborned.Sim.Tests",
+  "checks": [
+    {
+      "id": "clock",
+      "filter": "FullyQualifiedName~GoalWatchTests.ExistingServiceClockIsDeterministicAndInitiallyUnknown",
+      "minTests": 1
+    },
+    {
+      "id": "watch",
+      "filter": "FullyQualifiedName~GoalWatchTests&FullyQualifiedName!~ExistingServiceClockIsDeterministicAndInitiallyUnknown&FullyQualifiedName!~LearnedRoundSurvivesReplayFromOnlyTheRecordedOrders",
+      "minTests": 6
+    },
+    {
+      "id": "replay",
+      "filter": "FullyQualifiedName~GoalWatchTests.LearnedRoundSurvivesReplayFromOnlyTheRecordedOrders",
+      "minTests": 1
+    },
+    {
+      "id": "regression",
+      "filter": "FullyQualifiedName!~GoalWatchTests",
+      "minTests": 100
+    }
+  ],
+  "regression": "regression"
+}

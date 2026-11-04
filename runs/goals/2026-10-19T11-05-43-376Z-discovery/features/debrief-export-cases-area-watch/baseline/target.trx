@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3a849476-50d6-4c01-8757-112499a681d9" name="@Skys-Mac-Studio 2026-10-19 18:08:39" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-19T18:08:39.1929620+07:00" queuing="2026-10-19T18:08:39.1929620+07:00" start="2026-10-19T18:08:37.9160890+07:00" finish="2026-10-19T18:08:39.1951010+07:00" />
+  <TestSettings name="default" id="e24474da-1d52-41c7-afed-be443484c72b">
+    <Deployment runDeploymentRoot="_Skys-Mac-Studio_2026-10-19_18_08_39" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="0fd5e668-4386-4292-88b5-18ae08cd4273" testId="2d554b30-f5fd-ecd2-3f79-86a4abbc485d" testName="GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays" computerName="Skys-Mac-Studio" duration="00:00:00.0257653" startTime="2026-10-19T18:08:38.8818750+07:00" endTime="2026-10-19T18:08:38.9070340+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0fd5e668-4386-4292-88b5-18ae08cd4273">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.True() Failure
+Expected: True
+Actual:   False</Message>
+          <StackTrace>   at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 75
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="72d6f6d4-6afe-421c-afb4-aff1c0045d2f" testId="009dcb30-fb04-0f2d-538c-cd80e10f9913" testName="GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates" computerName="Skys-Mac-Studio" duration="00:00:00.1017038" startTime="2026-10-19T18:08:38.7477070+07:00" endTime="2026-10-19T18:08:38.8548430+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="72d6f6d4-6afe-421c-afb4-aff1c0045d2f">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.True() Failure
+Expected: True
+Actual:   False</Message>
+          <StackTrace>   at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 107
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1f88ba8e-a6b0-43ef-9bf2-33e683a93c89" testId="d25bb010-f3f4-05f2-5f25-42a0d58e0d3b" testName="GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums" computerName="Skys-Mac-Studio" duration="00:00:00.1306721" startTime="2026-10-19T18:08:38.9073160+07:00" endTime="2026-10-19T18:08:39.0378640+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f88ba8e-a6b0-43ef-9bf2-33e683a93c89">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.True() Failure
+Expected: True
+Actual:   False</Message>
+          <StackTrace>   at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 162
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="bc83ee3e-cc4c-4d7f-a22c-8c46f91bc3b4" testId="5c6e7031-0b9c-4e77-53a5-80e28a2fc321" testName="GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything" computerName="Skys-Mac-Studio" duration="00:00:00.1132045" startTime="2026-10-19T18:08:39.0381610+07:00" endTime="2026-10-19T18:08:39.1512290+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bc83ee3e-cc4c-4d7f-a22c-8c46f91bc3b4">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.True() Failure
+Expected: True
+Actual:   False</Message>
+          <StackTrace>   at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 215
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="655e3bae-f854-4256-9904-33dbae99381a" testId="f6d77160-e218-f35c-4d1f-ab9b35d1e482" testName="GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues" computerName="Skys-Mac-Studio" duration="00:00:00.0262027" startTime="2026-10-19T18:08:38.8593560+07:00" endTime="2026-10-19T18:08:38.8811940+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="655e3bae-f854-4256-9904-33dbae99381a">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.True() Failure
+Expected: True
+Actual:   False</Message>
+          <StackTrace>   at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 123
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="2d554b30-f5fd-ecd2-3f79-86a4abbc485d">
+      <Execution id="0fd5e668-4386-4292-88b5-18ae08cd4273" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="SuccessfulHeadlessReportIncludesEmptyArrays" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="d25bb010-f3f4-05f2-5f25-42a0d58e0d3b">
+      <Execution id="1f88ba8e-a6b0-43ef-9bf2-33e683a93c89" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="f6d77160-e218-f35c-4d1f-ab9b35d1e482">
+      <Execution id="655e3bae-f854-4256-9904-33dbae99381a" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="ExistingLegacyFieldsKeepTheirNamesTypesAndValues" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="009dcb30-fb04-0f2d-538c-cd80e10f9913">
+      <Execution id="72d6f6d4-6afe-421c-afb4-aff1c0045d2f" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates" />
+    </UnitTest>
+    <UnitTest name="GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything" storage="/users/sky/.t3/worktrees/suborned/assignment-05/sim/suborned.sim.tests/bin/debug/net10.0/suborned.sim.tests.dll" id="5c6e7031-0b9c-4e77-53a5-80e28a2fc321">
+      <Execution id="bc83ee3e-cc4c-4d7f-a22c-8c46f91bc3b4" />
+      <TestMethod codeBase="/Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GoalDebriefCaseWatchFidelityTests" name="ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2d554b30-f5fd-ecd2-3f79-86a4abbc485d" executionId="0fd5e668-4386-4292-88b5-18ae08cd4273" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="009dcb30-fb04-0f2d-538c-cd80e10f9913" executionId="72d6f6d4-6afe-421c-afb4-aff1c0045d2f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d25bb010-f3f4-05f2-5f25-42a0d58e0d3b" executionId="1f88ba8e-a6b0-43ef-9bf2-33e683a93c89" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5c6e7031-0b9c-4e77-53a5-80e28a2fc321" executionId="bc83ee3e-cc4c-4d7f-a22c-8c46f91bc3b4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f6d77160-e218-f35c-4d1f-ab9b35d1e482" executionId="655e3bae-f854-4256-9904-33dbae99381a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="5" executed="5" passed="0" failed="5" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.03]   Discovering: Suborned.Sim.Tests
+[xUnit.net 00:00:00.62]   Discovered:  Suborned.Sim.Tests
+[xUnit.net 00:00:00.62]   Starting:    Suborned.Sim.Tests
+[xUnit.net 00:00:00.74]       Assert.True() Failure
+[xUnit.net 00:00:00.74]       Expected: True
+[xUnit.net 00:00:00.74]       Actual:   False
+[xUnit.net 00:00:00.74]       Stack Trace:
+[xUnit.net 00:00:00.74]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(20,0): at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name)
+[xUnit.net 00:00:00.74]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(50,0): at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch)
+[xUnit.net 00:00:00.74]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(107,0): at GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates()
+[xUnit.net 00:00:00.74]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.74]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.76]       Assert.True() Failure
+[xUnit.net 00:00:00.76]       Expected: True
+[xUnit.net 00:00:00.76]       Actual:   False
+[xUnit.net 00:00:00.76]       Stack Trace:
+[xUnit.net 00:00:00.76]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(20,0): at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name)
+[xUnit.net 00:00:00.76]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(50,0): at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch)
+[xUnit.net 00:00:00.76]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(123,0): at GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues()
+[xUnit.net 00:00:00.76]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.76]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.79]       Assert.True() Failure
+[xUnit.net 00:00:00.79]       Expected: True
+[xUnit.net 00:00:00.79]       Actual:   False
+[xUnit.net 00:00:00.79]       Stack Trace:
+[xUnit.net 00:00:00.79]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(20,0): at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name)
+[xUnit.net 00:00:00.79]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(50,0): at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch)
+[xUnit.net 00:00:00.79]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(75,0): at GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays()
+[xUnit.net 00:00:00.79]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.79]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.92]       Assert.True() Failure
+[xUnit.net 00:00:00.92]       Expected: True
+[xUnit.net 00:00:00.92]       Actual:   False
+[xUnit.net 00:00:00.92]       Stack Trace:
+[xUnit.net 00:00:00.92]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(20,0): at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name)
+[xUnit.net 00:00:00.92]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(50,0): at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch)
+[xUnit.net 00:00:00.92]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(162,0): at GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums()
+[xUnit.net 00:00:00.92]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.92]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:01.03]       Assert.True() Failure
+[xUnit.net 00:00:01.03]       Expected: True
+[xUnit.net 00:00:01.03]       Actual:   False
+[xUnit.net 00:00:01.03]       Stack Trace:
+[xUnit.net 00:00:01.03]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(20,0): at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name)
+[xUnit.net 00:00:01.03]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(50,0): at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch)
+[xUnit.net 00:00:01.03]         /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs(215,0): at GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything()
+[xUnit.net 00:00:01.03]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:01.03]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:01.04]   Finished:    Suborned.Sim.Tests
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T18:08:38.8559700+07:00">
+        <Text>[xUnit.net 00:00:00.74]     GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T18:08:38.8815950+07:00">
+        <Text>[xUnit.net 00:00:00.76]     GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T18:08:38.9073040+07:00">
+        <Text>[xUnit.net 00:00:00.79]     GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T18:08:39.0381500+07:00">
+        <Text>[xUnit.net 00:00:00.92]     GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="Skys-Mac-Studio" outcome="Error" timestamp="2026-10-19T18:08:39.1515180+07:00">
+        <Text>[xUnit.net 00:00:01.03]     GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

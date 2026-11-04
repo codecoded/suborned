@@ -1,0 +1,229 @@
+{
+  "schema": "suborned.crew.discovery.keel/1",
+  "role": "Keel / simulation-engineer",
+  "provider": "Codex session, existing subscription task",
+  "runKind": "Current-code crew research; not goals CLI and not a Claude run",
+  "head": "af46f14dfd6edd29eeed6123e38778081275abef",
+  "scope": "Focused GDD §02–§08 review with deeper execution inspection of §05 and §07. Not exhaustive GDD coverage. No production edits. Container Watch excluded as already generated.",
+  "latestGdd": {
+    "version": "0.24.0",
+    "files": [
+      "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+      "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html"
+    ],
+    "verification": "rg --files GDD lists the matching v0.24.0 agent and human copies; exact relevant HTML paragraphs checked.",
+    "sha256": {
+      "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+      "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159"
+    }
+  },
+  "candidates": [
+    {
+      "id": "keel-stop-woken-report",
+      "title": "Cancel a woken victim’s pending report when the reporter is incapacitated again",
+      "ready": true,
+      "gdd": [
+        {
+          "path": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "line": 367,
+          "section": "05",
+          "quote": "Take the reporter down before the call ends and the report is dropped."
+        },
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 114,
+          "section": "05",
+          "quote": "A reporter taken down before the report lands drops it."
+        }
+      ],
+      "codeExecutionPath": [
+        "Game.Step -> TakedownStep -> BodiesStep/Wake -> ReportsStep -> NextLanding -> LandAct -> ChargeAct/Alarm",
+        "sim/Suborned.Sim/GameTakedown.cs:804 Wake removes the body and explicitly sets p.Down=false before creating the woken report.",
+        "sim/Suborned.Sim/GameTakedown.cs:558 ReportsStep exempts Kind == woken from the reporter Down cancellation guard.",
+        "sim/Suborned.Sim/GameTakedown.cs:621 LandAct charges the original assault when the exempt report lands."
+      ],
+      "existingTests": [
+        {
+          "path": "sim/Suborned.Sim/ScenariosTakedown.cs:347",
+          "id": "N56",
+          "coverage": "Natural wake and report; executed, all 15 checks pass; no second incapacitation."
+        },
+        {
+          "path": "sim/Suborned.Sim/ScenariosTakedown.cs:378",
+          "id": "N65",
+          "coverage": "Stops an ordinary witness before reporting; inspected, not run."
+        },
+        {
+          "path": "sim/Suborned.Sim.Tests/Tests.cs:18",
+          "coverage": "All scenarios feed Passes and adjacent replay/determinism theories."
+        }
+      ],
+      "reproduction": {
+        "command": "dotnet run --project out/keel-codex-discovery/Probe.csproj",
+        "result": "N56 15/15 passes. Replaying its orders to wake, then setting the reporter Down before report landing: woken lands at tick 3730 and ActTrail=true; same pending report changed to seen stops and ActTrail=false.",
+        "limitations": "White-box lifecycle reproduction: second incapacitation is an explicit public-state mutation, not a second player order. The control changes Kind. This proves the live cancellation branch discrepancy, not a complete second-takedown route or deterministic replay of the injected mutation."
+      },
+      "smallestChange": {
+        "paths": [
+          "sim/Suborned.Sim/GameTakedown.cs",
+          "sim/Suborned.Sim/ScenariosTakedown.cs"
+        ],
+        "description": "Remove or narrowly correct the woken cancellation exemption now Wake clears Down; add a regression for a victim incapacitated again before a pending report lands. Preserve reports already landed and reports from other witnesses."
+      },
+      "blockers": [],
+      "dependencies": [
+        "Existing Wake/ReportsStep machinery and report lifecycle fixtures. No design numbers or model calls required."
+      ],
+      "acceptanceChecks": [
+        "Regression: live woken victim reports normally; re-incapacitated victim’s pending report stops, with no original-report Trail or dispatch.",
+        "Regression: a second incident and independent witnesses still report normally; reports already landed remain landed.",
+        "Run N56 and N65 with Passes and replay/checksum coverage; add an order-driven fixture if practical.",
+        "Run focused simulation tests covering report/wake lifecycle; do not claim all broad-suite failures fixed."
+      ],
+      "scores": {
+        "value": 5,
+        "effort": 2,
+        "risk": 2,
+        "directDependents": 2,
+        "total": 20,
+        "directDependentNames": [
+          "Silent-takedown report interruption",
+          "Incident Trail and dispatch correctness"
+        ]
+      },
+      "confidence": {
+        "level": "high",
+        "reason": "Explicit matching human and agent GDD requirement, current execution path and passing baseline plus failing white-box boundary reproduction."
+      }
+    },
+    {
+      "id": "keel-driverless-departure",
+      "title": "Prevent a driverless official car from ending the mission as vale-leaves",
+      "ready": false,
+      "gdd": [
+        {
+          "path": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "line": 486,
+          "section": "07",
+          "quote": "The official car needs its driver; without one it waits."
+        },
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 168,
+          "section": "07",
+          "quote": "The official car needs its driver: with no driver it waits."
+        }
+      ],
+      "codeExecutionPath": [
+        "sim/Suborned.Sim/Game.cs:344 CarTimeline gates departure to service lane on !Driver.Down.",
+        "sim/Suborned.Sim/Game.cs:362 ValeTimeline considers whether the driver is known down when deciding whether Vale exits.",
+        "sim/Suborned.Sim/Game.cs:311 Game.Step at the mission deadline selects rivals-reach-vale or vale-leaves without checking driver availability or whether Vale is in the car."
+      ],
+      "existingTests": [
+        {
+          "path": "sim/Suborned.Sim/ScenariosFailCause.cs:105",
+          "id": "N124",
+          "coverage": "Normal official-car departure with rivals absent; inspected only."
+        },
+        {
+          "path": "sim/Suborned.Sim/ScenariosHandover.cs:94",
+          "id": "S02",
+          "coverage": "Vale exits and reaches normal pickup; inspected only."
+        },
+        {
+          "path": "sim/Suborned.Sim/ScenariosTakedownE.cs",
+          "coverage": "Driver takedown/report behavior exists; no claim it is unimplemented."
+        }
+      ],
+      "reproduction": {
+        "command": "dotnet run --project out/keel-codex-discovery/Probe.csproj",
+        "result": "With rivals delayed to 9999 s, final fight/crowd disabled: Driver.Down=false and Driver.Down=true both end at tick 5100 with Failure/vale-leaves and Vale=Pickup.",
+        "limitations": "Constructed state isolates terminal predicate. Driver.Down is injected without a Body or incident; not a proven reachable capstone route. Actual generated cast may make that route fail earlier."
+      },
+      "smallestChange": {
+        "paths": [
+          "sim/Suborned.Sim/Game.cs",
+          "sim/Suborned.Sim/ScenariosFailCause.cs"
+        ],
+        "description": "Gate official departure on a usable driver and valid Vale state; retain independent rival and district-seal failures. Add paired available/unavailable driver deadline fixtures."
+      },
+      "blockers": [
+        "Motive/Waymark must resolve the closing-event behavior when the driver is unavailable and rivals are absent: GDD forbids departure but also specifies a mission close; do not silently invent a replacement failure or unlimited mission."
+      ],
+      "dependencies": [
+        "Motive/Waymark closing-event ruling",
+        "A reachable order-driven driver interruption fixture if intended as a capstone route"
+      ],
+      "acceptanceChecks": [
+        "No vale-leaves when driver is unavailable.",
+        "Normal N124 departure remains unchanged.",
+        "Rivals or seal still fail on their own conditions.",
+        "Implement approved no-driver/no-rivals closing behavior with replay checks."
+      ],
+      "scores": {
+        "value": 3,
+        "effort": 2,
+        "risk": 3,
+        "directDependents": 1,
+        "total": 9,
+        "directDependentNames": [
+          "Handover closing-event correctness"
+        ]
+      },
+      "confidence": {
+        "level": "medium",
+        "reason": "Predicate mismatch reproduced; gameplay reachability and replacement close behavior need separate proof/ruling."
+      }
+    }
+  ],
+  "recommendation": {
+    "id": "keel-stop-woken-report",
+    "reason": "Highest score, explicit rule, bounded current-code bug, no unresolved design decision.",
+    "handoff": {
+      "inputs": [
+        "GDD §05 report cancellation",
+        "keel-evidence.txt",
+        "out/keel-codex-discovery/Program.cs"
+      ],
+      "doneCheck": "Regression demonstrates stopped woken report after renewed incapacitation; existing ordinary wake and witness interruption tests plus deterministic replay pass.",
+      "nextOwner": "Aster assigns Keel implementation and Suture or Redline independent review."
+    }
+  },
+  "commands": [
+    {
+      "command": "pwd; cat AGENTS.md; cat CLAUDE.md",
+      "result": "Read repository policies."
+    },
+    {
+      "command": "rg --files GDD sim tools; targeted rg and sed reads of GDD, simulation, tests and rulebook",
+      "result": "Discovered current files and execution paths; initial inventory included absent tests/ directory, then used sim/Suborned.Sim.Tests."
+    },
+    {
+      "command": "dotnet --version",
+      "exitCode": 0,
+      "result": "10.0.401"
+    },
+    {
+      "command": "dotnet run --project out/keel-codex-discovery/Probe.csproj",
+      "exitCode": 0,
+      "result": "Current simulation source compiled into scratch; N56 15 checks pass, two differential boundary probes reproduced issues. Output in keel-evidence.txt. Probe prints findings; exit zero is execution success, not acceptance success."
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exitCode": 0,
+      "result": "af46f14dfd6edd29eeed6123e38778081275abef"
+    }
+  ],
+  "artifacts": [
+    "runs/crew/2026-10-19T10-24-00Z-codex-discovery/keel.json",
+    "runs/crew/2026-10-19T10-24-00Z-codex-discovery/keel-evidence.txt",
+    "out/keel-codex-discovery/Probe.csproj",
+    "out/keel-codex-discovery/Program.cs"
+  ],
+  "limitations": [
+    "Broad suite not run.",
+    "Probe compiles current simulation source directly under out/; no production project edits.",
+    "White-box probes are not order-only replay proofs.",
+    "Focused review, not full GDD exhaustiveness."
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "suborned.a05.report-generation-validation/1",
+  "verifiedAt": "2026-10-19T11:48:15.665Z",
+  "ok": true,
+  "verificationReport": "validation/report-generation/index.html",
+  "verificationJson": "validation/report-generation/verification.json",
+  "stages": [
+    {
+      "name": "typecheck",
+      "ok": true
+    },
+    {
+      "name": "tooling-tests",
+      "ok": true
+    },
+    {
+      "name": "crew-cards",
+      "ok": true
+    },
+    {
+      "name": "submitted-simulation",
+      "ok": true
+    },
+    {
+      "name": "generated-feature-replay",
+      "ok": true
+    },
+    {
+      "name": "unchanged-rerun-replay",
+      "ok": true
+    }
+  ],
+  "changes": [
+    "Submission index is a guide, with no current execution status",
+    "Archived example is explicitly labelled and moved to recorded-run.html",
+    "Each verification generates its own timestamped HTML report",
+    "Live run CLI emits its own report/evidence paths; campaign reports show identity and timestamps"
+  ],
+  "failureRendering": "Ad hoc fixture confirmed FAILED and NOT RUN labels; error HTML escaped; no PASS stage falsely shown",
+  "scope": "This verification ran in the working tree; the earlier fresh-export test is retained separately",
+  "headlessPreview": {
+    "pages": [
+      "submission guide",
+      "generated verification result"
+    ],
+    "widths": [
+      1200,
+      390
+    ],
+    "horizontalOverflow": false,
+    "consoleErrors": []
+  }
+}

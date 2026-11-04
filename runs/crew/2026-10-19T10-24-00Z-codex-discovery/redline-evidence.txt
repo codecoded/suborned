@@ -1,0 +1,47 @@
+REDLINE independent Codex review
+HEAD af46f14dfd6edd29eeed6123e38778081275abef
+
+COMMANDS AND RESULTS
+$ pwd && cat AGENTS.md && cat CLAUDE.md
+Read workspace and shared crew policy; review only.
+
+$ cat runs/crew/2026-10-19T10-24-00Z-codex-discovery/{keel.json,keel-evidence.txt,splice.json,bootstrap.json,retrieval.json}
+Read both candidate submissions and saved real retrieval. Bootstrap reused corpus ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df in c_ffc7f384e553845d (577 chunks). No new retrieval/model call.
+
+$ Targeted rg/sed reads: GameTakedown.cs (154–220, 552–645, 780–820), GameCombat.cs (435–485, 651–674), Debrief.cs, GameInvestigation.cs (32–40, 420–425), ScenariosTakedown.cs (N47/N56/N65), tools/goals/backlog.ts (70–77), latest human GDD (355–389, 477–490, 532–551), agent GDD §11
+Seize cancels pending reports before their deadline; serializer omits existing tuples; GDD requires report interruption and case/watch output but does not prescribe JSON fields. Two initial guessed paths Engine.cs and Replay.cs did not exist; located Engine in Debrief.cs and read it.
+
+$ mkdir -p out/redline-codex-discovery && cp out/keel-codex-discovery/Probe.csproj out/redline-codex-discovery/Probe.csproj
+Created separate scratch project; Keel scratch unchanged. Program.cs authored only in Redline scratch.
+
+$ dotnet run --project out/redline-codex-discovery/Probe.csproj > out/redline-codex-discovery/probe-output.txt 2>&1
+N56 15/15, N65 19/19, N47 27/27 checks pass. Both order-driven second takedowns stop woken report and replay exactly; N47 structured case/watch JSON absent. Fire experiment refused, not a reachable shooting reproduction. Execution success is not acceptance of the proposed fix.
+
+$ git status --short; git rev-parse HEAD
+HEAD af46f14dfd6edd29eeed6123e38778081275abef; existing dirty source/crew/goals/Watch work observed and preserved.
+
+$ Python hashlib.sha256 over GDD and reviewed source/probe files
+Hashes saved in this report and scratch hashes.json; latest GDD hashes match both submissions and retrieval.
+
+EXACT SCRATCH OUTPUT
+N56 checks=15 failures=0
+order 2150 enforcer move  (1029,-3804)
+order 2400 enforcer takedown p-records-office-73 
+order 2460 enforcer carry p-records-office-73 
+order 2490 enforcer move  (740,-6180)
+order 2661 enforcer drop  
+order 2671 enforcer move  (-760,-6180)
+knockout issued tick=3661 accepted=True reason= phaseImmediately=stopped down=True due=3730
+knockout end=3730 firstDown=3661 phase=stopped actTrail=False down=True acts=2 checkpointReplay=True stateReplay=True refusals=0
+kill issued tick=3661 accepted=True reason= phaseImmediately=stopped down=True due=3730
+kill end=3730 firstDown=3661 phase=stopped actTrail=False down=True acts=2 checkpointReplay=True stateReplay=True refusals=0
+fire issued tick=3661 accepted=False reason=target 'p-records-office-73' is unknown (unknown = reject) phaseImmediately=radio down=False due=3730
+fire end=3730 firstDown=-1 phase=landed actTrail=True down=False acts=1 checkpointReplay=True stateReplay=True refusals=1
+N65 checks=19 failures=0
+N47 checks=27 failures=0 cases=1 areaWatch=1 jsonCases=False jsonAreaWatch=False
+
+VERDICT
+Keel pre-deadline second-takedown defect unproven: Seize already stops the report; both accepted order-driven variants pass exact replay. Other incapacitation paths remain unproven.
+Recommend splice-debrief-case-export: READY, corrected score 12. Aster can accept the bounded serialization task.
+Scores after removing unsupported dependency bonuses: woken 16 (ineligible), driverless 7 (blocked), export 12 (ready), case carry 8 (blocked).
+No production edits. Scope and acceptance tests are in redline.json.

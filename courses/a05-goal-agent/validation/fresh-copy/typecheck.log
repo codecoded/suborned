@@ -1,0 +1,5 @@
+Command: ["bun","run","typecheck"]
+Exit: 0; timedOut: false
+
+
+$ tsc --noEmit

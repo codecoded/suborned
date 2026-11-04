@@ -1,0 +1,15 @@
+N56 checks=15 failures=0
+order 2150 enforcer move  (1029,-3804)
+order 2400 enforcer takedown p-records-office-73 
+order 2460 enforcer carry p-records-office-73 
+order 2490 enforcer move  (740,-6180)
+order 2661 enforcer drop  
+order 2671 enforcer move  (-760,-6180)
+knockout issued tick=3661 accepted=True reason= phaseImmediately=stopped down=True due=3730
+knockout end=3730 firstDown=3661 phase=stopped actTrail=False down=True acts=2 checkpointReplay=True stateReplay=True refusals=0
+kill issued tick=3661 accepted=True reason= phaseImmediately=stopped down=True due=3730
+kill end=3730 firstDown=3661 phase=stopped actTrail=False down=True acts=2 checkpointReplay=True stateReplay=True refusals=0
+fire issued tick=3661 accepted=False reason=target 'p-records-office-73' is unknown (unknown = reject) phaseImmediately=radio down=False due=3730
+fire end=3730 firstDown=-1 phase=landed actTrail=True down=False acts=1 checkpointReplay=True stateReplay=True refusals=1
+N65 checks=19 failures=0
+N47 checks=27 failures=0 cases=1 areaWatch=1 jsonCases=False jsonAreaWatch=False

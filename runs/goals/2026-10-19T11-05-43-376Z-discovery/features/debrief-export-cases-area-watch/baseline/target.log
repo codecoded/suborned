@@ -1,0 +1,76 @@
+Command: ["dotnet","test","sim/Suborned.Sim.Tests","--filter","FullyQualifiedName~GoalDebriefCaseWatchFidelityTests","--logger","trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T11-05-43-376Z-discovery/features/debrief-export-cases-area-watch/baseline/target.trx","--verbosity","minimal"]
+Exit: 1; timedOut: false
+
+STDOUT
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Suborned.Sim -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim/bin/Debug/netstandard2.1/Suborned.Sim.dll
+  Suborned.Sim.Tests -> /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll
+Test run for /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/bin/Debug/net10.0/Suborned.Sim.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates [101 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 107
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues [26 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 123
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays [25 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 75
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums [130 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 162
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything [113 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at GoalDebriefCaseWatchFidelityTests.Property(JsonElement e, String name) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 20
+   at GoalDebriefCaseWatchFidelityTests.Exports(JsonElement root, ValueTuple`4[] cases, ValueTuple`4[] watch) in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 50
+   at GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything() in /Users/sky/.t3/worktrees/suborned/assignment-05/sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs:line 215
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Results File: /Users/sky/.t3/worktrees/suborned/assignment-05/runs/goals/2026-10-19T11-05-43-376Z-discovery/features/debrief-export-cases-area-watch/baseline/target.trx
+
+Failed!  - Failed:     5, Passed:     0, Skipped:     0, Total:     5, Duration: 403 ms - Suborned.Sim.Tests.dll (net10.0)
+
+STDERR
+[xUnit.net 00:00:00.74]     GoalDebriefCaseWatchFidelityTests.SerializationPreservesDistinctValuesAssociationsOrderAndDuplicates [FAIL]
+[xUnit.net 00:00:00.76]     GoalDebriefCaseWatchFidelityTests.ExistingLegacyFieldsKeepTheirNamesTypesAndValues [FAIL]
+[xUnit.net 00:00:00.79]     GoalDebriefCaseWatchFidelityTests.SuccessfulHeadlessReportIncludesEmptyArrays [FAIL]
+[xUnit.net 00:00:00.92]     GoalDebriefCaseWatchFidelityTests.MissingPersonExportsReplayWithoutChangingConsequencesOrChecksums [FAIL]
+[xUnit.net 00:00:01.03]     GoalDebriefCaseWatchFidelityTests.ReadingLiveConsequencesDoesNotCommitOrAdvanceAnything [FAIL]
+

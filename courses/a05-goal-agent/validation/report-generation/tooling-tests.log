@@ -1,0 +1,294 @@
+Command: ["bun","test","tools/goals/test","tools/rag/rag.test.ts","tools/crew"]
+Exit: 0; timedOut: false
+
+bun test v1.4.3 (c6da4a4d3)
+[goals] round 1: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] evidence: runs/goals/2026-10-19T11-43-28-069Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T11-43-28-074Z-discovery; latest local GDD 0.24.0
+[goals] inspect second-price (priority 14)
+[goals] evidence: runs/goals/2026-10-19T11-43-28-082Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T11-43-28-089Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T11-43-28-096Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T11-43-28-102Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-19T11-43-28-106Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+
+
+tools/crew/cards.test.ts:
+(pass) GDD crew in both clients > every Claude role has a parseable Codex counterpart with identical responsibilities and core [1.85ms]
+(pass) GDD crew in both clients > coordinator assigns one writer per file and independent reviewers [0.24ms]
+(pass) GDD crew in both clients > project config enables a bounded crew without overriding session credentials or permissions [0.03ms]
+(pass) GDD crew in both clients > both generated sets match the current GDD [8.72ms]
+
+tools/rag/rag.test.ts:
+(pass) corpus > source changes invalidate identity; chunks keep auditable source lines [0.14ms]
+(pass) corpus > the live corpus covers every agent GDD section, the human GDD and the plan [36.02ms]
+(pass) corpus > a cast-table query finds the café: its trade, hours and staff, its entrance and its employer [32.80ms]
+(pass) corpus > agent GDD chunks point at their true file lines [32.78ms]
+(pass) skyline and kit chunks (chunker v3) > the chunker version is 5 (4 + the people-rules knowledge, mix, introduces and readBy blocks), and the live plan yields a chunk per signature, megastructure and tower site [31.78ms]
+(pass) skyline and kit chunks (chunker v3) > additive: a plan without signatures, megastructures or tower sites chunks as before (recorded runs keep their keys) [1.67ms]
+(pass) skyline and kit chunks (chunker v3) > kit chunks: one per category and one per adopted piece, with size, tags and status; no hashes, files or candidates as pieces [3.98ms]
+(pass) skyline and kit chunks (chunker v3) > the pinned digest is small, idempotent, and gives the same chunks as kit.json itself [8.81ms]
+(pass) skyline and kit chunks (chunker v3) > loadCorpus reads the kit through the override map, so a pinned digest stands in for kit.json [97.00ms]
+(pass) agent GDD chunking > a long section splits on its tagged entries, each prefixed with the section title and holding its true lines [0.18ms]
+(pass) agent GDD chunking > a short section stays whole; a short entry joins the next untagged one [0.04ms]
+(pass) agent GDD chunking > the live corpus has the boarding rule as its own chunk [31.91ms]
+(pass) retrieval > fusion rewards agreement and keeps unique candidates [0.14ms]
+(pass) retrieval > keyword terms drop stopwords and short tokens but keep ids and section marks [0.06ms]
+(pass) claude transcript > accepts structured output and records provenance [0.15ms]
+(pass) claude transcript > rejects missing init [0.02ms]
+(pass) claude transcript > rejects extra tools
+(pass) claude transcript > rejects MCP servers
+(pass) claude transcript > rejects missing result
+(pass) claude transcript > rejects non-zero exit
+(pass) claude transcript > rejects is_error
+(pass) claude transcript > rejects no structured output
+(pass) images in a crew call > the arguments are the same without pictures; with them only the input format changes, and the call stays tool-less [1.55ms]
+(pass) images in a crew call > one stream-json user message: the images first, in order, as base64 blocks, then the prompt text [0.11ms]
+(pass) images in a crew call > loadImages pins sha256 and size, and refuses a missing file, an unknown type and an oversize picture [2.80ms]
+(pass) images in a crew call > invokeClaude sends the message on stdin, with the input format flag, and without pictures sends the plain prompt [392.84ms]
+(pass) claude invocation > crew card as system prompt, no built-in tools, project-only settings, $schema-free schema [1.08ms]
+(pass) claude invocation > pipes the prompt on stdin from the repo root with CLAUDE.md disabled [289.69ms]
+(pass) claude invocation > every crew card parses, names itself and maps to a Claude model [0.82ms]
+(pass) claude invocation > a card resolves by GDD name or agent name [1.63ms]
+(pass) live call guard > an agent session may not start a live call, unless it uses a stand-in or opts in; a person in a terminal is unaffected [9.89ms]
+(pass) live call guard > a truthy CLAUDE_BIN alone does not disable the guard: only a binary that says it is a stand-in does [10.10ms]
+(pass) live call guard > invokeClaude refuses before it starts anything; opted in, the call goes through (an injected spawn, no process) [1.31ms]
+(pass) live call guard > the binary and the environment the child gets are the ones the guard judged, not process.env (N4) [0.31ms]
+
+tools/goals/test/campaign.test.ts:
+(pass) an inspection can use successive model, writer and consumer reads before its supported conclusion [5.42ms]
+(pass) inspection needs actual read execution path and test context [0.08ms]
+(pass) gap repair is bounded to production C# and never trusts pending reads [0.03ms]
+(pass) inspection requests and test selectors cannot inject commands or arbitrary filters [0.06ms]
+
+tools/goals/test/discovery-sources.test.ts:
+(pass) latest GDD sources > semantic version wins over lexical filename and date, consistently for retrieval [1.31ms]
+(pass) latest GDD sources > rejects mismatched, missing, and ambiguous source pairs [0.94ms]
+(pass) latest GDD sources > all numbered sections including roles and art retain true line boundaries [0.91ms]
+(pass) latest GDD sources > invalid sections and symlinked designs fail rather than escape the checkout [1.70ms]
+(pass) latest GDD sources > main-checkout freshness records matching hashes and rejects newer or same-version drift [3.17ms]
+(pass) latest GDD sources > a newer local design is allowed while an older main is explicitly recorded [1.61ms]
+(pass) current code navigation and evidence > indexes simulation C# and rule contracts, excluding build output [2.00ms]
+(pass) current code navigation and evidence > literal search includes rules, reports truncation, and preserves source lines [1.83ms]
+(pass) current code navigation and evidence > bounded search exposes later tests and headless consumers despite repeated early matches [2.91ms]
+(pass) current code navigation and evidence > unknown paths, duplicates, oversized context, and stale source are rejected [1.86ms]
+(pass) current code navigation and evidence > symlinked source and rule files cannot bypass root containment [1.43ms]
+(pass) current code navigation and evidence > range reads are line-accurate and pinned while source outside the excerpt remains hashed [1.60ms]
+(pass) current code navigation and evidence > range limits reject malformed, oversized, excessive and aggregate-overbudget requests [1.72ms]
+
+tools/goals/test/models.test.ts:
+(pass) Codex requires recorded approval, an explicit model and honest subscription usage bounds [0.09ms]
+(pass) unknown, negative and non-finite prior costs stop retries instead of increasing the budget [0.06ms]
+(pass) spent budgets and call limits prevent another invocation [0.01ms]
+(pass) retrieval requires bootstrap and always passes its pinned hash [0.09ms]
+
+tools/goals/test/verify-codex.test.ts:
+(pass) Codex evidence replays offline with unavailable dollar cost and known bounded tokens [27.34ms]
+(pass) Codex transcript output and recorded usage must agree exactly [9.25ms]
+(pass) Codex authorization checks model, provider and CLI version against transcript metadata [10.87ms]
+(pass) Codex rejects unknown usage, invented dollar costs and exhausted token authorization [11.91ms]
+(pass) tool activity and fake or mixed-provider events cannot establish Codex evidence [22.75ms]
+(pass) Codex cannot masquerade as a Claude campaign even with fabricated dollar metadata [12.35ms]
+(pass) audited Codex schema and effort remain bound to the recorded call [11.01ms]
+(pass) prior catalog is verified against its own authorized model and token budget [26.44ms]
+(pass) a prior Claude catalog remains valid for a current Codex campaign [26.28ms]
+(pass) a final in-flight Codex call may cross the threshold, but another call may not start [20.10ms]
+(pass) goal-scoped backlog and catalog origin cannot be relabelled as a broader completion [15.17ms]
+(pass) Codex invocation must use the archived TOML role and exact developer instructions [9.34ms]
+(pass) accepted Codex calls require v2 prompt hashes matching the saved invocation [12.00ms]
+
+tools/goals/test/audit.test.ts:
+(pass) audit accepts both recorded modifications and newly generated writable source [4.37ms]
+(pass) audit refuses changed immutable acceptance tests [2.03ms]
+(pass) audit refuses unrecorded edits to otherwise writable source [2.17ms]
+(pass) audit refuses newly injected source outside the declared write scope [2.55ms]
+
+tools/goals/test/patch.test.ts:
+(pass) bounded exact code patches > preparation permits exactly one match, records before/after hashes, and does not mutate the snapshot [0.05ms]
+(pass) bounded exact code patches > ambiguous, absent, empty, out-of-scope and no-op replacements fail [0.04ms]
+(pass) bounded exact code patches > new files require an empty search and nonempty content [0.03ms]
+(pass) bounded exact code patches > stale sources are rejected even when the search text would still match [0.33ms]
+(pass) bounded exact code patches > all replacements validate before any file changes [0.43ms]
+(pass) bounded exact code patches > applies multiple exact edits and new files within the approved snapshot [0.80ms]
+(pass) bounded exact code patches > destination symlinks and symlinked ancestors cannot escape the root [0.58ms]
+(pass) bounded exact code patches > a staging-path symlink must never overwrite its external target [0.97ms]
+
+tools/goals/test/backlog.test.ts:
+(pass) discovered backlog contracts > a catalog accounts for every design section without requiring art implementation [0.13ms]
+(pass) discovered backlog contracts > a source quote must actually occur in its declared design section [0.02ms]
+(pass) discovered backlog contracts > coverage and requirement declarations must agree [0.02ms]
+(pass) discovered backlog contracts > identities and dependencies reject duplicates, missing references, self edges and cycles [0.04ms]
+(pass) persistent backlog reconciliation > unchanged design and requirements retain verification evidence on a rerun [0.06ms]
+(pass) persistent backlog reconciliation > either authoritative design hash changing invalidates cached verification [0.03ms]
+(pass) persistent backlog reconciliation > changed acceptance criteria require new verification even with the same design quote [0.01ms]
+(pass) persistent backlog reconciliation > removed requirements remain auditable as retired, never active work [0.02ms]
+(pass) evidence freshness and deterministic priority > changed, deleted, or empty inspected evidence makes verification stale [0.06ms]
+(pass) evidence freshness and deterministic priority > a gap assessment is stale after its inspected source changes too [0.02ms]
+(pass) evidence freshness and deterministic priority > prerequisite verification gates work and priority explains every score component [0.07ms]
+(pass) evidence freshness and deterministic priority > equal scores use stable IDs and no empty, unknown, or partial backlog is complete [0.22ms]
+
+tools/goals/test/feature.test.ts:
+(pass) independent tests precede production and red-to-green verification retains self-contained snapshots [14.15ms]
+(pass) already implemented behavior is reviewed and assessed without a production write [7.32ms]
+(pass) nonbehavioral baseline failure cannot trigger a writer [7.29ms]
+(pass) rejected tests are recorded but never written [3.52ms]
+(pass) independent test-review faults drive another proposal before tests are frozen or production is written [12.06ms]
+(pass) a later run recovers reviewer faults when replacement test generation was interrupted [12.31ms]
+(pass) a reviewer fault prevents success despite passing tests and optimistic assessment [10.47ms]
+(pass) test mutation is detected before verification [9.66ms]
+(pass) budget interruption after writing retains incomplete mechanical rescan evidence [10.44ms]
+(pass) a later invocation resumes frozen tests and current generated code without spending on test regeneration [14.54ms]
+(pass) resume refuses unrecorded production edits instead of attributing them to the agent [10.96ms]
+(pass) test and assessment validators reject missing criteria, skipped tests and fabricated evidence [0.08ms]
+(pass) baseline classifier rejects setup exceptions and zero tests [1.76ms]
+
+tools/goals/test/verify-campaign.test.ts:
+(pass) offline replay reconstructs red baseline and generated patch without using current game files [17.51ms]
+(pass) a bounded generated feature cannot turn an unresolved backlog into COMPLETE [6.45ms]
+(pass) snapshot tampering and unsafe archive paths fail before executing tests [12.63ms]
+(pass) model output edits cannot masquerade as the archived generated patch [9.80ms]
+(pass) recorded patch hashes and rescan hashes must match the exact reconstructed files [21.80ms]
+(pass) tampered TRX counters and nonassertion red failures do not establish a generated feature [23.16ms]
+(pass) archived GDD hashes and catalog source quotes remain tied to the actual design [6.96ms]
+(pass) frozen tests must be exactly the reviewed model-generated code [12.08ms]
+(pass) resumed evidence follows prior test and writer provenance while replaying the current snapshot [23.05ms]
+(pass) resumed snapshots cannot hide manual production edits or inherit discarded tests [31.16ms]
+(pass) reused catalogs retain model provenance from a prior discovery-only campaign [19.66ms]
+(pass) editing a reused catalog or its archived model output invalidates provenance [21.44ms]
+(pass) missing or mutable catalog origins cannot bypass model provenance checks [17.39ms]
+(pass) COMPLETE cannot promote an unproved entry or omit, duplicate, or change catalog entries [25.85ms]
+(pass) zero-new-feature rerun replays retained provenance and current acceptance checks in isolation [20.49ms]
+(pass) retained proof requires current logs, valid TRX, selectors, source hashes and undiminished test minimums [74.17ms]
+(pass) retained proof cannot substitute another requirement or discard the archived review [22.85ms]
+(pass) pre-existing implementation can be verified through supported inspection and archived checks [29.05ms]
+(pass) implemented status alone and invented or empty check reports cannot establish completion [29.78ms]
+(pass) real .NET zero-new-feature rerun replays red/green retained proof and acceptance tests [12868.77ms]
+(pass) existing-only zero-feature reruns retain supported inspection and require fresh acceptance evidence [28.98ms]
+(pass) supported inspection provenance accepts later coordinator inspection exchanges [17.77ms]
+
+tools/goals/test/checks.test.ts:
+(pass) TRX check evidence > accepts complete passing runs with minimum test coverage [0.07ms]
+(pass) TRX check evidence > zero tests and too few matched tests cannot verify a requirement [0.02ms]
+(pass) TRX check evidence > skipped tests fail even if the completed tests passed [0.02ms]
+(pass) TRX check evidence > failed tests retain counters and fail the check [0.01ms]
+(pass) TRX check evidence > aborted, error and inconsistent summary outcomes cannot pass [0.07ms]
+(pass) TRX check evidence > rejects missing, nonnumeric, negative, fractional and overflowing counters [0.06ms]
+(pass) TRX check evidence > rejects truncated, mismatched, duplicate and malformed XML [0.05ms]
+(pass) TRX check evidence > requires one root and one direct result summary; comment evidence is ignored [0.02ms]
+(pass) TRX check evidence > rejects entity declarations rather than resolving untrusted XML
+
+tools/goals/test/loop.test.ts:
+(pass) goal coordinator iteration > writes, verifies, rescans, independently reviews, then reassesses before completion [3.71ms]
+(pass) goal coordinator iteration > repairs failed checks in a second recorded iteration [4.30ms]
+(pass) goal coordinator iteration > repairs an independent review rejection in a second recorded iteration [4.60ms]
+(pass) goal coordinator iteration > iteration exhaustion remains INCOMPLETE even if the model claims satisfaction [3.00ms]
+(pass) goal coordinator iteration > failed checks force a repair even when review and assessment both claim success [3.39ms]
+(pass) goal coordinator iteration > a budget stop after a real application preserves mechanical rescan and incomplete status [2.24ms]
+(pass) goal coordinator iteration > blocked scope does not invoke a writer or claim completion [1.37ms]
+
+tools/goals/test/verify.test.ts:
+(pass) offline replay refuses an edited immutable input before running tests [2.48ms]
+(pass) offline replay refuses modified recorded patch hashes [1.54ms]
+(pass) offline replay refuses manual implementation edits outside the recorded patches [1.54ms]
+(pass) offline replay rejects escaping input and run paths [1.61ms]
+(pass) an accepted label cannot turn a failed transcript into generation evidence [2.69ms]
+(pass) already-complete readiness runs replay their baseline without claiming a generated feature [5.68ms]
+
+tools/goals/test/bootstrap.test.ts:
+(pass) retrieval bootstrap (offline) > fresh checkout starts its local services and publishes an index; second run reuses it [0.22ms]
+(pass) retrieval bootstrap (offline) > source changes create a new index and preserve the previous corpus [0.04ms]
+(pass) retrieval bootstrap (offline) > healthy remote services ingest normally without Docker [0.02ms]
+(pass) retrieval bootstrap (offline) > remote: failure must not start Docker or ingest [0.12ms]
+(pass) retrieval bootstrap (offline) > custom local ports: failure must not start Docker or ingest [0.02ms]
+(pass) retrieval bootstrap (offline) > startup disabled: failure must not start Docker or ingest [0.02ms]
+(pass) retrieval bootstrap (offline) > stale embedding model or incomplete manifest requires ingestion [0.03ms]
+(pass) retrieval bootstrap (offline) > ingest success without a published manifest is not accepted [0.03ms]
+(pass) retrieval bootstrap (offline) > source mutation during ingestion fails instead of reporting the wrong corpus [0.03ms]
+(pass) retrieval bootstrap (offline) > startup failure preserves the cause while redacting credentials [0.05ms]
+(pass) retrieval bootstrap (offline) > services that remain unhealthy after startup stop before ingestion [0.03ms]
+
+tools/goals/test/scan.test.ts:
+(pass) goal scan and ranking > verification requires a satisfied source assessment and passing behavioral checks [0.10ms]
+(pass) goal scan and ranking > every referenced check must pass and a missing check cannot certify success [0.02ms]
+(pass) goal scan and ranking > literal source evidence must be present in the supplied context, not just the inventory [0.03ms]
+(pass) goal scan and ranking > missing, duplicate, or extra model requirement IDs reject the entire assessment [0.03ms]
+(pass) goal scan and ranking > dependencies require verified evidence and unknown/blocked work is ineligible [0.06ms]
+(pass) goal scan and ranking > score counts direct work unlocked and ties use a stable requirement ID order [0.04ms]
+(pass) goal scan and ranking > rescan reads changed source, includes newly created writable files, and pins GDD quotes [1.76ms]
+(pass) goal scan and ranking > scope loader rejects missing dependencies and cyclic prerequisite graphs [0.80ms]
+
+tools/goals/test/campaign-loop.test.ts:
+(pass) two bounded runs retain the first proof, rerun its tests, and select the next discovered gap [12.65ms]
+(pass) explicit goals keep separate backlogs and reject a mismatched stored scope [1.19ms]
+(pass) one passing selector cannot hide a missing separately requested acceptance test [6.11ms]
+(pass) an implemented inspection cannot waive the pending review of an interrupted generated feature [7.42ms]
+(pass) a rejected continuation preserves its previous frozen-test pointer and concrete stop reason [6.29ms]
+(pass) reruns preserve the observed minimum count of existing acceptance cases [9.25ms]
+
+tools/goals/test/codex.test.ts:
+(pass) Codex card and command isolation > loads exact TOML bytes and developer instructions by role and GDD name [3.21ms]
+(pass) Codex card and command isolation > pins explicit model, schema and isolation, with no shell interpolation or card-model fallback [0.11ms]
+(pass) Codex card and command isolation > inherits authentication location without API keys or injected provider/config environment [0.04ms]
+(pass) Codex transcript verification > new invocation audits bind the stdin prompt and reject absent or changed bindings [0.41ms]
+(pass) Codex transcript verification > retains known CLI 0.163.0 startup diagnostics without accepting runtime or unknown errors [0.41ms]
+(pass) Codex transcript verification > reconstructs output and truthful metadata with unknown cost and no server-attested model [0.06ms]
+(pass) Codex transcript verification > accepts a matching model report but rejects mismatching selection, CLI model and version [0.17ms]
+(pass) Codex transcript verification > rejects command_execution at item.started [0.06ms]
+(pass) Codex transcript verification > rejects command_execution at item.updated [0.04ms]
+(pass) Codex transcript verification > rejects command_execution at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects file_change at item.started [0.04ms]
+(pass) Codex transcript verification > rejects file_change at item.updated [0.04ms]
+(pass) Codex transcript verification > rejects file_change at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects mcp_tool_call at item.started [0.03ms]
+(pass) Codex transcript verification > rejects mcp_tool_call at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects mcp_tool_call at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects web_search at item.started [0.03ms]
+(pass) Codex transcript verification > rejects web_search at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects web_search at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects collab_tool_call at item.started [0.04ms]
+(pass) Codex transcript verification > rejects collab_tool_call at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects collab_tool_call at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects delegate_task at item.started [0.03ms]
+(pass) Codex transcript verification > rejects delegate_task at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects delegate_task at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects tool_call at item.started [0.03ms]
+(pass) Codex transcript verification > rejects tool_call at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects tool_call at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects function_call at item.started [0.04ms]
+(pass) Codex transcript verification > rejects function_call at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects function_call at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects todo_list at item.started [0.03ms]
+(pass) Codex transcript verification > rejects todo_list at item.updated [0.04ms]
+(pass) Codex transcript verification > rejects todo_list at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects future_tool at item.started [0.03ms]
+(pass) Codex transcript verification > rejects future_tool at item.updated [0.03ms]
+(pass) Codex transcript verification > rejects future_tool at item.completed [0.03ms]
+(pass) Codex transcript verification > rejects every unknown, failed, malformed or out-of-order event [0.68ms]
+(pass) Codex transcript verification > rejects audit tampering, missing captures and failed exits [0.47ms]
+(pass) Codex transcript verification > rejects incomplete, duplicate and type-changing item lifecycles [0.24ms]
+(pass) Codex transcript verification > requires output, JSON, completion, and matching last-message file [0.30ms]
+(pass) Codex transcript verification > usage counts must be present, finite, nonnegative safe integers [0.56ms]
+(pass) Codex transcript verification > optional read ranges travel as required nullable and normalize identically on replay [0.64ms]
+(pass) Codex invocation with an injected process (never a model) > requires opt-in before any process or version probe [0.17ms]
+(pass) Codex invocation with an injected process (never a model) > uses an empty temporary cwd, passes schema and prompt, drains streams, replays, and cleans up [2.26ms]
+(pass) Codex invocation with an injected process (never a model) > rejects unsupported CLI versions before generation and cleans its directory [0.35ms]
+(pass) Codex invocation with an injected process (never a model) > kills timed-out generation and retains a rejected replayable capture [10.63ms]
+
+ 225 pass
+ 0 fail
+ 1730 expect() calls
+Ran 225 tests across 18 files. [14.86s]

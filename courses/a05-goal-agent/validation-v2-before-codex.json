@@ -1,0 +1,119 @@
+{
+  "validatedAt": "2026-10-19T09:55:07.353501+00:00",
+  "status": "IMPLEMENTED_OFFLINE_VALIDATED_LIVE_DISCOVERY_PENDING",
+  "gdd": {
+    "version": "0.24.0",
+    "agentSha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+    "humanSha256": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+    "mainComparisons": [
+      {
+        "root": "/Users/sky/Projects/suborned",
+        "version": "0.24.0",
+        "agentHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+        "humanHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+        "status": "same"
+      }
+    ],
+    "remoteMainObserved": "af46f14dfd6edd29eeed6123e38778081275abef"
+  },
+  "offlineTests": {
+    "command": "bun test tools/goals/test tools/rag/rag.test.ts",
+    "passed": 146,
+    "failed": 0,
+    "assertions": 1066,
+    "log": "validation/discovery-tests.log"
+  },
+  "rerunRegression": {
+    "passed": 5,
+    "log": "validation/discovery-reruns.log"
+  },
+  "typecheck": {
+    "passed": true,
+    "log": "validation/discovery-typecheck.log"
+  },
+  "existingGeneratedFeatureReplay": {
+    "ok": true,
+    "run": "2026-10-19T09-03-05-932Z-container-watch",
+    "rounds": 1,
+    "generatedFeature": true,
+    "requirements": 3,
+    "directory": "out/goals/verify-qVRopD",
+    "replayed": [
+      {
+        "stage": "baseline",
+        "checks": [
+          {
+            "id": "clock",
+            "passed": 1,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "watch",
+            "passed": 1,
+            "failed": 5,
+            "ok": false
+          },
+          {
+            "id": "replay",
+            "passed": 0,
+            "failed": 1,
+            "ok": false
+          },
+          {
+            "id": "regression",
+            "passed": 858,
+            "failed": 0,
+            "ok": true
+          }
+        ]
+      },
+      {
+        "stage": "round-1",
+        "checks": [
+          {
+            "id": "clock",
+            "passed": 1,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "watch",
+            "passed": 6,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "replay",
+            "passed": 1,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "regression",
+            "passed": 858,
+            "failed": 0,
+            "ok": true
+          }
+        ]
+      }
+    ]
+  },
+  "liveDiscovery": {
+    "run": "runs/goals/2026-10-19T10-09-48-241Z-discovery",
+    "status": "ERROR",
+    "calls": 2,
+    "reportedCostUsd": 0,
+    "blocker": "Provider usage_limit_reached before model generation; reported reset 2026-10-19 17:40 Asia/Bangkok",
+    "generatedFeature": false,
+    "catalogCreated": false,
+    "previousAttempt": "runs/goals/2026-10-19T09-46-13-956Z-discovery",
+    "taskSelected": null
+  },
+  "remaining": [
+    "Run live GDD discovery when provider availability returns",
+    "Generate and verify an eligible newly discovered simulation feature",
+    "Record live rerun rechecking completed work and choosing the next gap"
+  ],
+  "manualEditsToGeneratedWatch": []
+}

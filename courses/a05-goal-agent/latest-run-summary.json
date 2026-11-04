@@ -1,0 +1,38 @@
+{
+  "schema": "suborned.a05.completed-report/1",
+  "outcome": "COMPLETE_SCOPED_GOAL",
+  "goal": "Export the existing case and area-watch collections in headless JSON debriefs. Preserve current consequence values, existing JSON fields, deterministic replay and side-effect-free reads. Do not add campaign persistence or change gameplay rules.",
+  "provider": "codex",
+  "requestedModel": "gpt-6-astra",
+  "gdd": {
+    "version": "0.24.0",
+    "agentHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+    "humanHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159"
+  },
+  "run": "runs/goals/2026-10-19T11-05-43-376Z-discovery",
+  "catalogSource": "runs/goals/2026-10-19T11-01-02-466Z-discovery/catalog-1.json",
+  "rerun": "runs/goals/2026-10-19T11-14-05-156Z-discovery",
+  "feature": {
+    "id": "debrief-export-cases-area-watch",
+    "title": "Export existing cases and area watch in headless JSON debriefs",
+    "score": 12,
+    "productionFiles": [
+      "sim/Suborned.Sim/Debrief.cs"
+    ],
+    "tests": "sim/Suborned.Sim.Tests/GoalDebriefCaseWatchFidelityTests.cs",
+    "baseline": {
+      "passed": 0,
+      "failed": 5
+    },
+    "acceptancePassed": 5,
+    "regressionPassed": 866,
+    "writingRounds": 1
+  },
+  "calls": 9,
+  "reportedTokens": 464473,
+  "costUsd": null,
+  "rerunCalls": 0,
+  "rerunWrites": 0,
+  "manualProductionEdits": [],
+  "validation": "validation-codex.json"
+}

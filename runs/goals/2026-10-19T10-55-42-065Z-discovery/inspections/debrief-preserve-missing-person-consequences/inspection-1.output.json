@@ -1,0 +1,58 @@
+{
+  "state": "inspect",
+  "explanation": "Need the debrief construction and complete JSON writer, consequence model and copy path, serialization entry point, contract, and relevant test/consumer navigation before judging omissions or compatibility.",
+  "evidence": [],
+  "reads": [
+    {
+      "path": "sim/Suborned.Sim/Debrief.cs",
+      "from": 1,
+      "to": 228
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "from": 1,
+      "to": 75
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "from": 200,
+      "to": 320
+    },
+    {
+      "path": "sim/Suborned.Sim/Script.cs",
+      "from": 1,
+      "to": 83
+    },
+    {
+      "path": "sim/Suborned.Sim/Json.cs",
+      "from": 145,
+      "to": 184
+    },
+    {
+      "path": "contracts/rules/rulebook.json",
+      "from": 695,
+      "to": 710
+    },
+    {
+      "path": "contracts/rules/rulebook.json",
+      "from": 760,
+      "to": 810
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/Tests.cs",
+      "from": 1,
+      "to": 100
+    }
+  ],
+  "searches": [
+    "AreaWatch",
+    "found-killing",
+    "nextMission",
+    "Debrief.Of",
+    "debrief[",
+    "\"areaWatch\"",
+    "\"cases\""
+  ],
+  "tests": [],
+  "writable": []
+}

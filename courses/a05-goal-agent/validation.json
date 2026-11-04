@@ -1,0 +1,142 @@
+{
+  "recordedAt": "2026-10-19T09:28:03.966290+00:00",
+  "run": "runs/goals/2026-10-19T09-03-05-932Z-container-watch",
+  "runStatus": "COMPLETE",
+  "generatedRounds": 1,
+  "modelCalls": 4,
+  "reportedModelCostUsd": 2.5090981,
+  "manualGeneratedFeatureEdits": [],
+  "typecheck": {
+    "exitCode": 0
+  },
+  "agentTests": {
+    "passed": 56,
+    "failed": 0
+  },
+  "simulation": {
+    "passed": 866,
+    "failed": 0,
+    "acceptance": 8,
+    "existingRegression": 858
+  },
+  "offlineReplay": {
+    "ok": true,
+    "requirements": 3,
+    "generatedFeature": true,
+    "stages": [
+      {
+        "stage": "baseline",
+        "checks": [
+          {
+            "id": "clock",
+            "passed": 1,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "watch",
+            "passed": 1,
+            "failed": 5,
+            "ok": false
+          },
+          {
+            "id": "replay",
+            "passed": 0,
+            "failed": 1,
+            "ok": false
+          },
+          {
+            "id": "regression",
+            "passed": 858,
+            "failed": 0,
+            "ok": true
+          }
+        ]
+      },
+      {
+        "stage": "round-1",
+        "checks": [
+          {
+            "id": "clock",
+            "passed": 1,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "watch",
+            "passed": 6,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "replay",
+            "passed": 1,
+            "failed": 0,
+            "ok": true
+          },
+          {
+            "id": "regression",
+            "passed": 858,
+            "failed": 0,
+            "ok": true
+          }
+        ]
+      }
+    ]
+  },
+  "independentProbe": {
+    "passed": 9,
+    "file": "probe/result.txt"
+  },
+  "bootstrap": {
+    "initial": {
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "database": "c_ffc7f384e553845d",
+      "chunks": 577,
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "indexed": true,
+      "reused": false,
+      "started": false
+    },
+    "secondRunReused": true
+  },
+  "repositoryTests": {
+    "exitCode": 1,
+    "passed": 1196,
+    "skipped": 3,
+    "failed": 8,
+    "seconds": 1013.12,
+    "failuresIdenticalToUntouchedBaseline": true,
+    "failureNames": [
+      "brass over gold (Sky, 14 Oct): street level and facades draw brass, the 25 crown and skyline pieces keep the old golds as DK_Crown_Gold and DK_Crown_Gold17",
+      "brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted, base SpaceHQ rejected; every LOD asks only for its piece's materials",
+      "copy verifies hashes, is idempotent, and refuses a tampered source",
+      "kit.json is the manifest, normalised, and rebuilding it changes nothing",
+      "nothing moved > the record ids are the only difference in the written people file",
+      "the Handover's cover file > CV-1 holds",
+      "the Handover's cover file > is what the plan, the block, the kit and the site make today (bun run cover)",
+      "the rules, each with a failing example > CV-1: a point on blocked ground, a faces that is not a unit, a wrong cos or quality, a stale input, a car with no window"
+    ],
+    "baseline": {
+      "baseCommit": "af46f14dfd6edd29eeed6123e38778081275abef",
+      "workspace": "out/a05-baseline-o04dkycl",
+      "command": [
+        "bun",
+        "test",
+        "tools/kit/kit.test.ts",
+        "tools/cover/cover.test.ts",
+        "tools/people/test/needs.test.ts"
+      ],
+      "exitCode": 1
+    }
+  },
+  "artifactsSha256": {
+    "validation/agent-tests.log": "2d90c0ced8ea3de713e8bf3279e5163293e55ff1db37eed454cef7760682cc9c",
+    "validation/baseline-comparison.json": "aede0befff62f8c9db86c268a36c7676a4d7d1e7ec5e992ebd1b96cbb892b678",
+    "validation/baseline-failures.log": "788ba587d9b8e966b278e8b3f6752ae3d66b7ec8e8baea6badae18874f119830",
+    "validation/bootstrap-reuse.log": "6808d95c42ca70636cdf7463d53ff7c42b422e9f3f22edc18df01760d64c61e6",
+    "validation/replay.log": "160dd97a58f57d124363a7ef0be0598f3762055043f48199d9597403995e9989",
+    "validation/repository-tests.log": "53659bd1eaf6f1ffdbdfa224e73a7820eb783aed2a1735f40d479d75c1cb05fd",
+    "validation/typecheck.log": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+  }
+}

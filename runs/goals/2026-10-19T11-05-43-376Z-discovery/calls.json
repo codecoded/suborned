@@ -1,0 +1,1842 @@
+[
+  {
+    "id": "01-debrief-export-cases-area-watch-inspect-1",
+    "objective": "debrief-export-cases-area-watch-inspect-1",
+    "role": "simulation-engineer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/simulation-engineer.toml",
+      "sourceHash": "b759199ff69f6cf299e0dbedb60587e6e55fc0433359acdb1c9f3ba55e306624",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/01-debrief-export-cases-area-watch-inspect-1.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/inspect.md",
+      "sourceHash": "529ba3b38731a60067f97aaa0763eb88fa47a53e450be5edda7863373ea389cf"
+    },
+    "promptSha256": "30d201b42b22bd4b71350620d94d17fa14cb06ca29dce10b6ac8fd58a2422d5d",
+    "schemaSha256": "2494cb5c790642a1bb088ba3b78271b144628227c9bafeb9a54f5945aca3da2b",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 12,
+    "usage": {
+      "input_tokens": 32611,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 242,
+      "reasoning_output_tokens": 0
+    },
+    "retrieval": {
+      "query": "Export existing cases and area watch in headless JSON debriefs ‖ | missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+      "queries": [
+        "Export existing cases and area watch in headless JSON debriefs",
+        "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.04788306451612903,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.04612021857923497,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.7309727668762207,
+          "key": "76852c58693ab00324dcdf21",
+          "kind": "gdd-human",
+          "lineEnd": 243,
+          "lineStart": 223,
+          "section": "Watch, turn, time, take, inherit › What the player manages (2/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit › What the player manages\nAlert 0–3 | Mission | Security's response right now | Reports that land (a witness, a camera, a missed check-in, a missing person), discovered faults, shots |\nSecurity level 0–4 | District | How big and how fast the response to an alarm is | The district's base, its open cases and the mission (§05) |\nStanding | District | Who agrees easily, who refuses, how crowds behave | Acts seen or found, public fights, and word of mouth between missions (§04) |\nEvery order shows its full price before you commit: cash, time, Trail, Alert risk and who would see it. In real time that is one line per way on the action panel, the move ring on the ground, Alt for the breakdown, and the going-loud card (§10).\nFast travel. Boarding a tram or the sky rail takes the cell across the city: board at any stop or station and ride to any other. It costs time only: the wait for the next service plus the ride, both from the timetable. There is no fare. Spec",
+          "version": "v0.24.0",
+          "score": 0.043927125506072875,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.1539456844329834,
+          "key": "14441d0de07d22fb9786dae8",
+          "kind": "gdd-human",
+          "lineEnd": 386,
+          "lineStart": 373,
+          "section": "The city moves without you › The response is a dial Spec",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › The response is a dial Spec\n\"It's easy to swarm the play area with robots if we need to temper the game play\" (Sky). How hard a district answers is data per district and mission, not code: the security level is the district's base, plus one for every two open cases (at most two), plus the mission's own bonus. The Handover runs at level 2.\nLevel | Dispatch | Alert 1 sends | Alert 2+ sends | Another unit every | Unit cap | Seal | Alert 3 adds |\n0 · Lax | 20 s | 1 robot | 1 unit | — | 1 | 3:00 | — |\n1 · Routine | 12 s | 1 robot | 1 unit | — | 1 | 2:25 | — |\n2 · Watchful | 10 s | 2 robots | 1 unit + 2 robots | 40 s | 3 | 2:25 | +1 unit, doors lock |\n3 · Guarded | 8 s | 2 robots | 2 units + 2 robots | 30 s | 4 | 2:00 | +1 unit, doors lock |\n4 · Swarm | 6 s | 3 robots | 2 units + 4 robots | 20 s | 6 | 1:30 | +2 units, doors lock |\nA unit is two officers; a robot is an armed patrol unit, and robots count toward the cap of 30 combatants. An alarm sends the response to the scene, then to where the missing person's post, car and closest people are meant to be, then to the people the alarm-raiser knows. Robots only go within 60 m of where they start. Fighting your way out is a last resort, not a route.",
+          "version": "v0.24.0",
+          "score": 0.043064182194616975,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.39522376032017126,
+          "key": "c0e7e411b9628f11a86081fa",
+          "kind": "gdd-agent",
+          "lineEnd": 248,
+          "lineStart": 248,
+          "section": "§12 CREW › tools",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§12 CREW › tools\ntools: Runware (Glyph, Vela, Forma, Chime; concepts incl. Qwen Image 2.1, priced per run) · Codex CLI image tool (ChatGPT plan, cost 0 per run; concepts) · every concept starts from the style contract's concept_prompt (§15) · Blender: DecoKit generator tools/decokit (bun run decokit, headless, build time): Vela owns the pieces, materials and facade detail, Splice the pipeline (run, orders, kit.json catalogue, bun run kit, same plan → same kit); Forma people; Glint previews · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).",
+          "version": "v0.24.0",
+          "score": 0.032266458495966696,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.23977933884982106,
+          "key": "1158c1fa81b107c3728eede3",
+          "kind": "gdd-human",
+          "lineEnd": 739,
+          "lineStart": 726,
+          "section": "One lead, clear owners, named handoffs › Decisions (v0.23.0) (1/4)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Decisions (v0.23.0)\nSky (brief 013): anyone can be targeted, with no list; the cost comes from who sees it. Bodies stay where they fall and are found; the Enforcer carries them to a quiet place, outdoors or through a service door. Both knockout and kill: someone knocked out talks unless hidden, tied up or turned; someone killed never talks, but a found body is far worse. Kills are shown. The cones are the Scout's skill.\nSky, answering Motive: a killing found moves Standing −1, as one value to tune; no rule finds every body, so a hidden one is a missing person (+2 Trail, no Menace, the family and workmates worry; one more guard and camera on that block for 3 missions; every 2 open cases raise the district's security level; a found killing's case closes after 3 missions); the Enforcer's face is a fact a Talker can give up; guards check in every 90 s at times the Scout can learn; a service door and a bin in the lane; the driver can be taken, a missing expected person raises the alarm, and an alarm sends robots and police to the scene and to the connections; the response's size and speed are the difficulty dial, kept as data.",
+          "version": "v0.24.0",
+          "score": 0.03125763125763126,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.18756816535374954,
+          "key": "2d77794873fff3eb54aee998",
+          "kind": "gdd-human",
+          "lineEnd": 359,
+          "lineStart": 347,
+          "section": "The city moves without you › Alert, 0 to 3",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › Alert, 0 to 3\nLevel | Security does | Raised by |\n0 · Routine | Follows its schedules | — |\n1 · Inquiry | Robots check the reported spot. The patrol tightens its sweep. | A report that lands of a found knockout, a woken victim, a noise, a missed check-in or a missing person; a discovered fault; counted once per incident Spec |\n2 · Search | Sends the response unit and robots to the place; their search opens hiding places within 30 m | A second incident; a report that lands of a found kill or a carry seen; any gunfire at once (§06), which sets Alert to at least 2; a shot no longer adds +1 each Built |\n3 · Lockdown | Exterior doors lock (security level 2 and up), units cordon the district's mouths, and the district begins to seal. | A report that lands of a takedown seen; gunfire or violence seen by a civilian sets 3 at once Built |\nSilent acts wait for the report. A takedown, a carry, a body or a missing person raises Alert only when someone's report reaches security, never at the moment it is seen; gunfire raises it at once, because security hears it. Witness Trail and Standing still move at sight. A knockout that is found, or wakes and reports, never raises Alert above 1; a takedown seen is 3 when it is reported, knockout or not. One takedown is one incident and one dispatch, however many people find it. Spec",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.42327279656584005,
+          "key": "c49de16df75795c2695b4941",
+          "kind": "gdd-agent",
+          "lineEnd": 467,
+          "lineStart": 466,
+          "section": "§15 ART › pipeline",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§15 ART › pipeline\npipeline: concept (studio, Runware/Codex) → mesh (Tripo/Meshy image-to-3D from the sheet) → rig (Blender auto_rig, Mixamo 65-bone) → clips (mixamo_ingest, local library) → look (Blender steps) → LOD + export (gltf-transform, web GLB) → review (viewer + QA metrics). Recipe = workbench/characters/<name>/character.json.",
+          "version": "v0.24.0",
+          "score": 0.030886196246139225,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/01-debrief-export-cases-area-watch-inspect-1.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/01-debrief-export-cases-area-watch-inspect-1.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/01-debrief-export-cases-area-watch-inspect-1.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/01-debrief-export-cases-area-watch-inspect-1.attempt-1.stderr.txt"
+  },
+  {
+    "id": "02-debrief-export-cases-area-watch-inspect-2",
+    "objective": "debrief-export-cases-area-watch-inspect-2",
+    "role": "simulation-engineer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/simulation-engineer.toml",
+      "sourceHash": "b759199ff69f6cf299e0dbedb60587e6e55fc0433359acdb1c9f3ba55e306624",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/02-debrief-export-cases-area-watch-inspect-2.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/inspect.md",
+      "sourceHash": "529ba3b38731a60067f97aaa0763eb88fa47a53e450be5edda7863373ea389cf"
+    },
+    "promptSha256": "cbe7d590d91822f2ebcbd6ab66e8f8f06e634e191f1595aa8380e51848e96e00",
+    "schemaSha256": "2494cb5c790642a1bb088ba3b78271b144628227c9bafeb9a54f5945aca3da2b",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 9,
+    "usage": {
+      "input_tokens": 52546,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 165,
+      "reasoning_output_tokens": 18
+    },
+    "retrieval": {
+      "query": "Export existing cases and area watch in headless JSON debriefs ‖ | missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+      "queries": [
+        "Export existing cases and area watch in headless JSON debriefs",
+        "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.04788306451612903,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.04612021857923497,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.7309727668762207,
+          "key": "76852c58693ab00324dcdf21",
+          "kind": "gdd-human",
+          "lineEnd": 243,
+          "lineStart": 223,
+          "section": "Watch, turn, time, take, inherit › What the player manages (2/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit › What the player manages\nAlert 0–3 | Mission | Security's response right now | Reports that land (a witness, a camera, a missed check-in, a missing person), discovered faults, shots |\nSecurity level 0–4 | District | How big and how fast the response to an alarm is | The district's base, its open cases and the mission (§05) |\nStanding | District | Who agrees easily, who refuses, how crowds behave | Acts seen or found, public fights, and word of mouth between missions (§04) |\nEvery order shows its full price before you commit: cash, time, Trail, Alert risk and who would see it. In real time that is one line per way on the action panel, the move ring on the ground, Alt for the breakdown, and the going-loud card (§10).\nFast travel. Boarding a tram or the sky rail takes the cell across the city: board at any stop or station and ride to any other. It costs time only: the wait for the next service plus the ride, both from the timetable. There is no fare. Spec",
+          "version": "v0.24.0",
+          "score": 0.043927125506072875,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.1539456844329834,
+          "key": "14441d0de07d22fb9786dae8",
+          "kind": "gdd-human",
+          "lineEnd": 386,
+          "lineStart": 373,
+          "section": "The city moves without you › The response is a dial Spec",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › The response is a dial Spec\n\"It's easy to swarm the play area with robots if we need to temper the game play\" (Sky). How hard a district answers is data per district and mission, not code: the security level is the district's base, plus one for every two open cases (at most two), plus the mission's own bonus. The Handover runs at level 2.\nLevel | Dispatch | Alert 1 sends | Alert 2+ sends | Another unit every | Unit cap | Seal | Alert 3 adds |\n0 · Lax | 20 s | 1 robot | 1 unit | — | 1 | 3:00 | — |\n1 · Routine | 12 s | 1 robot | 1 unit | — | 1 | 2:25 | — |\n2 · Watchful | 10 s | 2 robots | 1 unit + 2 robots | 40 s | 3 | 2:25 | +1 unit, doors lock |\n3 · Guarded | 8 s | 2 robots | 2 units + 2 robots | 30 s | 4 | 2:00 | +1 unit, doors lock |\n4 · Swarm | 6 s | 3 robots | 2 units + 4 robots | 20 s | 6 | 1:30 | +2 units, doors lock |\nA unit is two officers; a robot is an armed patrol unit, and robots count toward the cap of 30 combatants. An alarm sends the response to the scene, then to where the missing person's post, car and closest people are meant to be, then to the people the alarm-raiser knows. Robots only go within 60 m of where they start. Fighting your way out is a last resort, not a route.",
+          "version": "v0.24.0",
+          "score": 0.043064182194616975,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.39522376032017126,
+          "key": "c0e7e411b9628f11a86081fa",
+          "kind": "gdd-agent",
+          "lineEnd": 248,
+          "lineStart": 248,
+          "section": "§12 CREW › tools",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§12 CREW › tools\ntools: Runware (Glyph, Vela, Forma, Chime; concepts incl. Qwen Image 2.1, priced per run) · Codex CLI image tool (ChatGPT plan, cost 0 per run; concepts) · every concept starts from the style contract's concept_prompt (§15) · Blender: DecoKit generator tools/decokit (bun run decokit, headless, build time): Vela owns the pieces, materials and facade detail, Splice the pipeline (run, orders, kit.json catalogue, bun run kit, same plan → same kit); Forma people; Glint previews · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).",
+          "version": "v0.24.0",
+          "score": 0.032266458495966696,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.23977933884982106,
+          "key": "1158c1fa81b107c3728eede3",
+          "kind": "gdd-human",
+          "lineEnd": 739,
+          "lineStart": 726,
+          "section": "One lead, clear owners, named handoffs › Decisions (v0.23.0) (1/4)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Decisions (v0.23.0)\nSky (brief 013): anyone can be targeted, with no list; the cost comes from who sees it. Bodies stay where they fall and are found; the Enforcer carries them to a quiet place, outdoors or through a service door. Both knockout and kill: someone knocked out talks unless hidden, tied up or turned; someone killed never talks, but a found body is far worse. Kills are shown. The cones are the Scout's skill.\nSky, answering Motive: a killing found moves Standing −1, as one value to tune; no rule finds every body, so a hidden one is a missing person (+2 Trail, no Menace, the family and workmates worry; one more guard and camera on that block for 3 missions; every 2 open cases raise the district's security level; a found killing's case closes after 3 missions); the Enforcer's face is a fact a Talker can give up; guards check in every 90 s at times the Scout can learn; a service door and a bin in the lane; the driver can be taken, a missing expected person raises the alarm, and an alarm sends robots and police to the scene and to the connections; the response's size and speed are the difficulty dial, kept as data.",
+          "version": "v0.24.0",
+          "score": 0.03125763125763126,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.18756816535374954,
+          "key": "2d77794873fff3eb54aee998",
+          "kind": "gdd-human",
+          "lineEnd": 359,
+          "lineStart": 347,
+          "section": "The city moves without you › Alert, 0 to 3",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › Alert, 0 to 3\nLevel | Security does | Raised by |\n0 · Routine | Follows its schedules | — |\n1 · Inquiry | Robots check the reported spot. The patrol tightens its sweep. | A report that lands of a found knockout, a woken victim, a noise, a missed check-in or a missing person; a discovered fault; counted once per incident Spec |\n2 · Search | Sends the response unit and robots to the place; their search opens hiding places within 30 m | A second incident; a report that lands of a found kill or a carry seen; any gunfire at once (§06), which sets Alert to at least 2; a shot no longer adds +1 each Built |\n3 · Lockdown | Exterior doors lock (security level 2 and up), units cordon the district's mouths, and the district begins to seal. | A report that lands of a takedown seen; gunfire or violence seen by a civilian sets 3 at once Built |\nSilent acts wait for the report. A takedown, a carry, a body or a missing person raises Alert only when someone's report reaches security, never at the moment it is seen; gunfire raises it at once, because security hears it. Witness Trail and Standing still move at sight. A knockout that is found, or wakes and reports, never raises Alert above 1; a takedown seen is 3 when it is reported, knockout or not. One takedown is one incident and one dispatch, however many people find it. Spec",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.42327279656584005,
+          "key": "c49de16df75795c2695b4941",
+          "kind": "gdd-agent",
+          "lineEnd": 467,
+          "lineStart": 466,
+          "section": "§15 ART › pipeline",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§15 ART › pipeline\npipeline: concept (studio, Runware/Codex) → mesh (Tripo/Meshy image-to-3D from the sheet) → rig (Blender auto_rig, Mixamo 65-bone) → clips (mixamo_ingest, local library) → look (Blender steps) → LOD + export (gltf-transform, web GLB) → review (viewer + QA metrics). Recipe = workbench/characters/<name>/character.json.",
+          "version": "v0.24.0",
+          "score": 0.030886196246139225,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/02-debrief-export-cases-area-watch-inspect-2.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/02-debrief-export-cases-area-watch-inspect-2.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/02-debrief-export-cases-area-watch-inspect-2.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/02-debrief-export-cases-area-watch-inspect-2.attempt-1.stderr.txt"
+  },
+  {
+    "id": "03-debrief-export-cases-area-watch-inspect-3",
+    "objective": "debrief-export-cases-area-watch-inspect-3",
+    "role": "simulation-engineer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/simulation-engineer.toml",
+      "sourceHash": "b759199ff69f6cf299e0dbedb60587e6e55fc0433359acdb1c9f3ba55e306624",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/03-debrief-export-cases-area-watch-inspect-3.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/inspect.md",
+      "sourceHash": "529ba3b38731a60067f97aaa0763eb88fa47a53e450be5edda7863373ea389cf"
+    },
+    "promptSha256": "7475c37fea429152829de1a7cd04686abeb3a36d928a8ab73e04ed8f6bd434c7",
+    "schemaSha256": "2494cb5c790642a1bb088ba3b78271b144628227c9bafeb9a54f5945aca3da2b",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 27,
+    "usage": {
+      "input_tokens": 56171,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 920,
+      "reasoning_output_tokens": 21
+    },
+    "retrieval": {
+      "query": "Export existing cases and area watch in headless JSON debriefs ‖ | missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+      "queries": [
+        "Export existing cases and area watch in headless JSON debriefs",
+        "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.04788306451612903,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.04612021857923497,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.7309727668762207,
+          "key": "76852c58693ab00324dcdf21",
+          "kind": "gdd-human",
+          "lineEnd": 243,
+          "lineStart": 223,
+          "section": "Watch, turn, time, take, inherit › What the player manages (2/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit › What the player manages\nAlert 0–3 | Mission | Security's response right now | Reports that land (a witness, a camera, a missed check-in, a missing person), discovered faults, shots |\nSecurity level 0–4 | District | How big and how fast the response to an alarm is | The district's base, its open cases and the mission (§05) |\nStanding | District | Who agrees easily, who refuses, how crowds behave | Acts seen or found, public fights, and word of mouth between missions (§04) |\nEvery order shows its full price before you commit: cash, time, Trail, Alert risk and who would see it. In real time that is one line per way on the action panel, the move ring on the ground, Alt for the breakdown, and the going-loud card (§10).\nFast travel. Boarding a tram or the sky rail takes the cell across the city: board at any stop or station and ride to any other. It costs time only: the wait for the next service plus the ride, both from the timetable. There is no fare. Spec",
+          "version": "v0.24.0",
+          "score": 0.043927125506072875,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.1539456844329834,
+          "key": "14441d0de07d22fb9786dae8",
+          "kind": "gdd-human",
+          "lineEnd": 386,
+          "lineStart": 373,
+          "section": "The city moves without you › The response is a dial Spec",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › The response is a dial Spec\n\"It's easy to swarm the play area with robots if we need to temper the game play\" (Sky). How hard a district answers is data per district and mission, not code: the security level is the district's base, plus one for every two open cases (at most two), plus the mission's own bonus. The Handover runs at level 2.\nLevel | Dispatch | Alert 1 sends | Alert 2+ sends | Another unit every | Unit cap | Seal | Alert 3 adds |\n0 · Lax | 20 s | 1 robot | 1 unit | — | 1 | 3:00 | — |\n1 · Routine | 12 s | 1 robot | 1 unit | — | 1 | 2:25 | — |\n2 · Watchful | 10 s | 2 robots | 1 unit + 2 robots | 40 s | 3 | 2:25 | +1 unit, doors lock |\n3 · Guarded | 8 s | 2 robots | 2 units + 2 robots | 30 s | 4 | 2:00 | +1 unit, doors lock |\n4 · Swarm | 6 s | 3 robots | 2 units + 4 robots | 20 s | 6 | 1:30 | +2 units, doors lock |\nA unit is two officers; a robot is an armed patrol unit, and robots count toward the cap of 30 combatants. An alarm sends the response to the scene, then to where the missing person's post, car and closest people are meant to be, then to the people the alarm-raiser knows. Robots only go within 60 m of where they start. Fighting your way out is a last resort, not a route.",
+          "version": "v0.24.0",
+          "score": 0.043064182194616975,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.39522376032017126,
+          "key": "c0e7e411b9628f11a86081fa",
+          "kind": "gdd-agent",
+          "lineEnd": 248,
+          "lineStart": 248,
+          "section": "§12 CREW › tools",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§12 CREW › tools\ntools: Runware (Glyph, Vela, Forma, Chime; concepts incl. Qwen Image 2.1, priced per run) · Codex CLI image tool (ChatGPT plan, cost 0 per run; concepts) · every concept starts from the style contract's concept_prompt (§15) · Blender: DecoKit generator tools/decokit (bun run decokit, headless, build time): Vela owns the pieces, materials and facade detail, Splice the pipeline (run, orders, kit.json catalogue, bun run kit, same plan → same kit); Forma people; Glint previews · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).",
+          "version": "v0.24.0",
+          "score": 0.032266458495966696,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.23977933884982106,
+          "key": "1158c1fa81b107c3728eede3",
+          "kind": "gdd-human",
+          "lineEnd": 739,
+          "lineStart": 726,
+          "section": "One lead, clear owners, named handoffs › Decisions (v0.23.0) (1/4)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Decisions (v0.23.0)\nSky (brief 013): anyone can be targeted, with no list; the cost comes from who sees it. Bodies stay where they fall and are found; the Enforcer carries them to a quiet place, outdoors or through a service door. Both knockout and kill: someone knocked out talks unless hidden, tied up or turned; someone killed never talks, but a found body is far worse. Kills are shown. The cones are the Scout's skill.\nSky, answering Motive: a killing found moves Standing −1, as one value to tune; no rule finds every body, so a hidden one is a missing person (+2 Trail, no Menace, the family and workmates worry; one more guard and camera on that block for 3 missions; every 2 open cases raise the district's security level; a found killing's case closes after 3 missions); the Enforcer's face is a fact a Talker can give up; guards check in every 90 s at times the Scout can learn; a service door and a bin in the lane; the driver can be taken, a missing expected person raises the alarm, and an alarm sends robots and police to the scene and to the connections; the response's size and speed are the difficulty dial, kept as data.",
+          "version": "v0.24.0",
+          "score": 0.03125763125763126,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.18756816535374954,
+          "key": "2d77794873fff3eb54aee998",
+          "kind": "gdd-human",
+          "lineEnd": 359,
+          "lineStart": 347,
+          "section": "The city moves without you › Alert, 0 to 3",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › Alert, 0 to 3\nLevel | Security does | Raised by |\n0 · Routine | Follows its schedules | — |\n1 · Inquiry | Robots check the reported spot. The patrol tightens its sweep. | A report that lands of a found knockout, a woken victim, a noise, a missed check-in or a missing person; a discovered fault; counted once per incident Spec |\n2 · Search | Sends the response unit and robots to the place; their search opens hiding places within 30 m | A second incident; a report that lands of a found kill or a carry seen; any gunfire at once (§06), which sets Alert to at least 2; a shot no longer adds +1 each Built |\n3 · Lockdown | Exterior doors lock (security level 2 and up), units cordon the district's mouths, and the district begins to seal. | A report that lands of a takedown seen; gunfire or violence seen by a civilian sets 3 at once Built |\nSilent acts wait for the report. A takedown, a carry, a body or a missing person raises Alert only when someone's report reaches security, never at the moment it is seen; gunfire raises it at once, because security hears it. Witness Trail and Standing still move at sight. A knockout that is found, or wakes and reports, never raises Alert above 1; a takedown seen is 3 when it is reported, knockout or not. One takedown is one incident and one dispatch, however many people find it. Spec",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.42327279656584005,
+          "key": "c49de16df75795c2695b4941",
+          "kind": "gdd-agent",
+          "lineEnd": 467,
+          "lineStart": 466,
+          "section": "§15 ART › pipeline",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§15 ART › pipeline\npipeline: concept (studio, Runware/Codex) → mesh (Tripo/Meshy image-to-3D from the sheet) → rig (Blender auto_rig, Mixamo 65-bone) → clips (mixamo_ingest, local library) → look (Blender steps) → LOD + export (gltf-transform, web GLB) → review (viewer + QA metrics). Recipe = workbench/characters/<name>/character.json.",
+          "version": "v0.24.0",
+          "score": 0.030886196246139225,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/03-debrief-export-cases-area-watch-inspect-3.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/03-debrief-export-cases-area-watch-inspect-3.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/03-debrief-export-cases-area-watch-inspect-3.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/03-debrief-export-cases-area-watch-inspect-3.attempt-1.stderr.txt"
+  },
+  {
+    "id": "04-debrief-export-cases-area-watch-inspect-4",
+    "objective": "debrief-export-cases-area-watch-inspect-4",
+    "role": "simulation-engineer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/simulation-engineer.toml",
+      "sourceHash": "b759199ff69f6cf299e0dbedb60587e6e55fc0433359acdb1c9f3ba55e306624",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/04-debrief-export-cases-area-watch-inspect-4.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/inspect.md",
+      "sourceHash": "529ba3b38731a60067f97aaa0763eb88fa47a53e450be5edda7863373ea389cf"
+    },
+    "promptSha256": "cc38bfa0c65f0b17d10f90cad01e59a0902e09e3b0d7eb7df036f444d72b6a7c",
+    "schemaSha256": "2494cb5c790642a1bb088ba3b78271b144628227c9bafeb9a54f5945aca3da2b",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 21,
+    "usage": {
+      "input_tokens": 56190,
+      "cached_input_tokens": 10112,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 681,
+      "reasoning_output_tokens": 41
+    },
+    "retrieval": {
+      "query": "Export existing cases and area watch in headless JSON debriefs ‖ | missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |",
+      "queries": [
+        "Export existing cases and area watch in headless JSON debriefs",
+        "| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.04788306451612903,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.04612021857923497,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.7309727668762207,
+          "key": "76852c58693ab00324dcdf21",
+          "kind": "gdd-human",
+          "lineEnd": 243,
+          "lineStart": 223,
+          "section": "Watch, turn, time, take, inherit › What the player manages (2/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit › What the player manages\nAlert 0–3 | Mission | Security's response right now | Reports that land (a witness, a camera, a missed check-in, a missing person), discovered faults, shots |\nSecurity level 0–4 | District | How big and how fast the response to an alarm is | The district's base, its open cases and the mission (§05) |\nStanding | District | Who agrees easily, who refuses, how crowds behave | Acts seen or found, public fights, and word of mouth between missions (§04) |\nEvery order shows its full price before you commit: cash, time, Trail, Alert risk and who would see it. In real time that is one line per way on the action panel, the move ring on the ground, Alt for the breakdown, and the going-loud card (§10).\nFast travel. Boarding a tram or the sky rail takes the cell across the city: board at any stop or station and ride to any other. It costs time only: the wait for the next service plus the ride, both from the timetable. There is no fare. Spec",
+          "version": "v0.24.0",
+          "score": 0.043927125506072875,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.1539456844329834,
+          "key": "14441d0de07d22fb9786dae8",
+          "kind": "gdd-human",
+          "lineEnd": 386,
+          "lineStart": 373,
+          "section": "The city moves without you › The response is a dial Spec",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › The response is a dial Spec\n\"It's easy to swarm the play area with robots if we need to temper the game play\" (Sky). How hard a district answers is data per district and mission, not code: the security level is the district's base, plus one for every two open cases (at most two), plus the mission's own bonus. The Handover runs at level 2.\nLevel | Dispatch | Alert 1 sends | Alert 2+ sends | Another unit every | Unit cap | Seal | Alert 3 adds |\n0 · Lax | 20 s | 1 robot | 1 unit | — | 1 | 3:00 | — |\n1 · Routine | 12 s | 1 robot | 1 unit | — | 1 | 2:25 | — |\n2 · Watchful | 10 s | 2 robots | 1 unit + 2 robots | 40 s | 3 | 2:25 | +1 unit, doors lock |\n3 · Guarded | 8 s | 2 robots | 2 units + 2 robots | 30 s | 4 | 2:00 | +1 unit, doors lock |\n4 · Swarm | 6 s | 3 robots | 2 units + 4 robots | 20 s | 6 | 1:30 | +2 units, doors lock |\nA unit is two officers; a robot is an armed patrol unit, and robots count toward the cap of 30 combatants. An alarm sends the response to the scene, then to where the missing person's post, car and closest people are meant to be, then to the people the alarm-raiser knows. Robots only go within 60 m of where they start. Fighting your way out is a last resort, not a route.",
+          "version": "v0.24.0",
+          "score": 0.043064182194616975,
+          "signals": [
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.39522376032017126,
+          "key": "c0e7e411b9628f11a86081fa",
+          "kind": "gdd-agent",
+          "lineEnd": 248,
+          "lineStart": 248,
+          "section": "§12 CREW › tools",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§12 CREW › tools\ntools: Runware (Glyph, Vela, Forma, Chime; concepts incl. Qwen Image 2.1, priced per run) · Codex CLI image tool (ChatGPT plan, cost 0 per run; concepts) · every concept starts from the style contract's concept_prompt (§15) · Blender: DecoKit generator tools/decokit (bun run decokit, headless, build time): Vela owns the pieces, materials and facade detail, Splice the pipeline (run, orders, kit.json catalogue, bun run kit, same plan → same kit); Forma people; Glint previews · plan checker (Splice owns; Datum, Vantage run it before handoff) · Unity (Latch owns; Splice, Glint, Suture check).",
+          "version": "v0.24.0",
+          "score": 0.032266458495966696,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.23977933884982106,
+          "key": "1158c1fa81b107c3728eede3",
+          "kind": "gdd-human",
+          "lineEnd": 739,
+          "lineStart": 726,
+          "section": "One lead, clear owners, named handoffs › Decisions (v0.23.0) (1/4)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Decisions (v0.23.0)\nSky (brief 013): anyone can be targeted, with no list; the cost comes from who sees it. Bodies stay where they fall and are found; the Enforcer carries them to a quiet place, outdoors or through a service door. Both knockout and kill: someone knocked out talks unless hidden, tied up or turned; someone killed never talks, but a found body is far worse. Kills are shown. The cones are the Scout's skill.\nSky, answering Motive: a killing found moves Standing −1, as one value to tune; no rule finds every body, so a hidden one is a missing person (+2 Trail, no Menace, the family and workmates worry; one more guard and camera on that block for 3 missions; every 2 open cases raise the district's security level; a found killing's case closes after 3 missions); the Enforcer's face is a fact a Talker can give up; guards check in every 90 s at times the Scout can learn; a service door and a bin in the lane; the driver can be taken, a missing expected person raises the alarm, and an alarm sends robots and police to the scene and to the connections; the response's size and speed are the difficulty dial, kept as data.",
+          "version": "v0.24.0",
+          "score": 0.03125763125763126,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.18756816535374954,
+          "key": "2d77794873fff3eb54aee998",
+          "kind": "gdd-human",
+          "lineEnd": 359,
+          "lineStart": 347,
+          "section": "The city moves without you › Alert, 0 to 3",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "The city moves without you › Alert, 0 to 3\nLevel | Security does | Raised by |\n0 · Routine | Follows its schedules | — |\n1 · Inquiry | Robots check the reported spot. The patrol tightens its sweep. | A report that lands of a found knockout, a woken victim, a noise, a missed check-in or a missing person; a discovered fault; counted once per incident Spec |\n2 · Search | Sends the response unit and robots to the place; their search opens hiding places within 30 m | A second incident; a report that lands of a found kill or a carry seen; any gunfire at once (§06), which sets Alert to at least 2; a shot no longer adds +1 each Built |\n3 · Lockdown | Exterior doors lock (security level 2 and up), units cordon the district's mouths, and the district begins to seal. | A report that lands of a takedown seen; gunfire or violence seen by a civilian sets 3 at once Built |\nSilent acts wait for the report. A takedown, a carry, a body or a missing person raises Alert only when someone's report reaches security, never at the moment it is seen; gunfire raises it at once, because security hears it. Witness Trail and Standing still move at sight. A knockout that is found, or wakes and reports, never raises Alert above 1; a takedown seen is 3 when it is reported, knockout or not. One takedown is one incident and one dispatch, however many people find it. Spec",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.42327279656584005,
+          "key": "c49de16df75795c2695b4941",
+          "kind": "gdd-agent",
+          "lineEnd": 467,
+          "lineStart": 466,
+          "section": "§15 ART › pipeline",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§15 ART › pipeline\npipeline: concept (studio, Runware/Codex) → mesh (Tripo/Meshy image-to-3D from the sheet) → rig (Blender auto_rig, Mixamo 65-bone) → clips (mixamo_ingest, local library) → look (Blender steps) → LOD + export (gltf-transform, web GLB) → review (viewer + QA metrics). Recipe = workbench/characters/<name>/character.json.",
+          "version": "v0.24.0",
+          "score": 0.030886196246139225,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/04-debrief-export-cases-area-watch-inspect-4.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/04-debrief-export-cases-area-watch-inspect-4.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/04-debrief-export-cases-area-watch-inspect-4.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/04-debrief-export-cases-area-watch-inspect-4.attempt-1.stderr.txt"
+  },
+  {
+    "id": "05-debrief-export-cases-area-watch-tests",
+    "objective": "debrief-export-cases-area-watch-tests",
+    "role": "simulation-engineer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/simulation-engineer.toml",
+      "sourceHash": "b759199ff69f6cf299e0dbedb60587e6e55fc0433359acdb1c9f3ba55e306624",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/05-debrief-export-cases-area-watch-tests.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/feature-tests.md",
+      "sourceHash": "3444c70d6ab1d1175185d30700be83743e22d622f35951f04e4dd1c70ab89842"
+    },
+    "promptSha256": "d6e55aa900530c15f328f205a3a1a6e0b44cc7be97276569880a89be24d4484d",
+    "schemaSha256": "f65d335f86b2b32683b9a51a4cf9ce2a6495dc3276ec76813a89e7257e3fb319",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 93,
+    "usage": {
+      "input_tokens": 44510,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4436,
+      "reasoning_output_tokens": 338
+    },
+    "retrieval": {
+      "query": "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads ‖ simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay",
+      "queries": [
+        "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads",
+        "simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3485877735298508,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.06231203665002413,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.36770673797766795,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.04497917754656597,
+          "signals": [
+            "semantic:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.32481759710469194,
+          "key": "23452dd13fc8b530fd20ce15",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.9811172485351562,
+          "key": "f47a5e50b40b554654de1563",
+          "kind": "gdd-human",
+          "lineEnd": 706,
+          "lineStart": 691,
+          "section": "One lead, clear owners, named handoffs › Core handoffs (1/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Core handoffs\nOwner | Brief them with | Expect back · next handoff |\nLead and producer · Aster | Product goal, current milestone, constraints and open decisions | Task briefs and a decision log, each with an owner and a definition of done. Settles conflicts between parts of the game. |\nSystems designer · Motive | Which pillar the work serves, approach costs, temperaments and standing | Rule tables: approach prices, how each temperament reacts to your standing, how standing starts, spreads and drifts, how bravery and resentment grow, takedown prices, missing persons and cases, the response dial's values, debrief rules. Goes to Keel, Waymark and Fable. |\nMission designer · Waymark | The mission template, the district's people and the rulebook | A mission generator and its checker, including the mission rule overlays on the plan checker. Each mission comes with a route and clue map, how it closes, how it fails and what starts the fight. Keel checks it; Latch builds it. |",
+          "version": "v0.24.0",
+          "score": 0.031746031746031744,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.3488281771191408,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03125,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 3.794076681137085,
+          "key": "cff31e8ebfbc2b3c346823f7",
+          "kind": "gdd-agent",
+          "lineEnd": 338,
+          "lineStart": 332,
+          "section": "§14 ROLES › Motive",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing (its start, word, drift and public fights), bravery and resentment, Talkers, Heat, takedown prices, missing persons and cases, the response dial's values, and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route. Standing starts at +2, leaning Hero. Turning is private except Pressure.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+          "version": "v0.24.0",
+          "score": 0.031009615384615385,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/05-debrief-export-cases-area-watch-tests.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/05-debrief-export-cases-area-watch-tests.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/05-debrief-export-cases-area-watch-tests.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/05-debrief-export-cases-area-watch-tests.attempt-1.stderr.txt"
+  },
+  {
+    "id": "06-debrief-export-cases-area-watch-test-review",
+    "objective": "debrief-export-cases-area-watch-test-review",
+    "role": "code-performance-reviewer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/code-performance-reviewer.toml",
+      "sourceHash": "f64d0bd6ac0daeb4f1362e1e0a70653f9c8c7c18907ec6b6849a44c54d22013a",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/06-debrief-export-cases-area-watch-test-review.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/feature-review.md",
+      "sourceHash": "08d501aa0f9518c95c87e249fe7ec6555066d5f3a5c9a0bb84cfb11adac23bb7"
+    },
+    "promptSha256": "9d2fcea3f8e6930cb10062ea7288ecd705ceb93ac5283c6af4db5d23f68cb675",
+    "schemaSha256": "20f6306f7ba797ceaa1d8e076f6ca850c7b67092e5484805464ee9fef218f45c",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 9,
+    "usage": {
+      "input_tokens": 48520,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 160,
+      "reasoning_output_tokens": 67
+    },
+    "retrieval": {
+      "query": "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads ‖ simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay",
+      "queries": [
+        "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads",
+        "simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3485877735298508,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.06231203665002413,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.36770673797766795,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.04497917754656597,
+          "signals": [
+            "semantic:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.32481759710469194,
+          "key": "23452dd13fc8b530fd20ce15",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.9811172485351562,
+          "key": "f47a5e50b40b554654de1563",
+          "kind": "gdd-human",
+          "lineEnd": 706,
+          "lineStart": 691,
+          "section": "One lead, clear owners, named handoffs › Core handoffs (1/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Core handoffs\nOwner | Brief them with | Expect back · next handoff |\nLead and producer · Aster | Product goal, current milestone, constraints and open decisions | Task briefs and a decision log, each with an owner and a definition of done. Settles conflicts between parts of the game. |\nSystems designer · Motive | Which pillar the work serves, approach costs, temperaments and standing | Rule tables: approach prices, how each temperament reacts to your standing, how standing starts, spreads and drifts, how bravery and resentment grow, takedown prices, missing persons and cases, the response dial's values, debrief rules. Goes to Keel, Waymark and Fable. |\nMission designer · Waymark | The mission template, the district's people and the rulebook | A mission generator and its checker, including the mission rule overlays on the plan checker. Each mission comes with a route and clue map, how it closes, how it fails and what starts the fight. Keel checks it; Latch builds it. |",
+          "version": "v0.24.0",
+          "score": 0.031746031746031744,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.3488281771191408,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03125,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 3.794076681137085,
+          "key": "cff31e8ebfbc2b3c346823f7",
+          "kind": "gdd-agent",
+          "lineEnd": 338,
+          "lineStart": 332,
+          "section": "§14 ROLES › Motive",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing (its start, word, drift and public fights), bravery and resentment, Talkers, Heat, takedown prices, missing persons and cases, the response dial's values, and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route. Standing starts at +2, leaning Hero. Turning is private except Pressure.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+          "version": "v0.24.0",
+          "score": 0.031009615384615385,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/06-debrief-export-cases-area-watch-test-review.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/06-debrief-export-cases-area-watch-test-review.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/06-debrief-export-cases-area-watch-test-review.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/06-debrief-export-cases-area-watch-test-review.attempt-1.stderr.txt"
+  },
+  {
+    "id": "07-debrief-export-cases-area-watch-write-1",
+    "objective": "debrief-export-cases-area-watch-write-1",
+    "role": "simulation-engineer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/simulation-engineer.toml",
+      "sourceHash": "b759199ff69f6cf299e0dbedb60587e6e55fc0433359acdb1c9f3ba55e306624",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/07-debrief-export-cases-area-watch-write-1.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/feature-write.md",
+      "sourceHash": "6c50057c665db192507f7e243b8fcb9a3d84e1440c6a20475bf6654730c8e45a"
+    },
+    "promptSha256": "7ef78e1211cf1b33b23cd9a1495c6d56bc26adc78a431580cd90b514b727fa24",
+    "schemaSha256": "c322ebda22d7bf5543d21ae8bff87fabdc132c46b5091ad69e426c6c20b7a3a8",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 11,
+    "usage": {
+      "input_tokens": 56363,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 303,
+      "reasoning_output_tokens": 0
+    },
+    "retrieval": {
+      "query": "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads ‖ simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay",
+      "queries": [
+        "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads",
+        "simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3485877735298508,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.06231203665002413,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.36770673797766795,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.04497917754656597,
+          "signals": [
+            "semantic:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.32481759710469194,
+          "key": "23452dd13fc8b530fd20ce15",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.9811172485351562,
+          "key": "f47a5e50b40b554654de1563",
+          "kind": "gdd-human",
+          "lineEnd": 706,
+          "lineStart": 691,
+          "section": "One lead, clear owners, named handoffs › Core handoffs (1/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Core handoffs\nOwner | Brief them with | Expect back · next handoff |\nLead and producer · Aster | Product goal, current milestone, constraints and open decisions | Task briefs and a decision log, each with an owner and a definition of done. Settles conflicts between parts of the game. |\nSystems designer · Motive | Which pillar the work serves, approach costs, temperaments and standing | Rule tables: approach prices, how each temperament reacts to your standing, how standing starts, spreads and drifts, how bravery and resentment grow, takedown prices, missing persons and cases, the response dial's values, debrief rules. Goes to Keel, Waymark and Fable. |\nMission designer · Waymark | The mission template, the district's people and the rulebook | A mission generator and its checker, including the mission rule overlays on the plan checker. Each mission comes with a route and clue map, how it closes, how it fails and what starts the fight. Keel checks it; Latch builds it. |",
+          "version": "v0.24.0",
+          "score": 0.031746031746031744,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.3488281771191408,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03125,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 3.794076681137085,
+          "key": "cff31e8ebfbc2b3c346823f7",
+          "kind": "gdd-agent",
+          "lineEnd": 338,
+          "lineStart": 332,
+          "section": "§14 ROLES › Motive",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing (its start, word, drift and public fights), bravery and resentment, Talkers, Heat, takedown prices, missing persons and cases, the response dial's values, and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route. Standing starts at +2, leaning Hero. Turning is private except Pressure.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+          "version": "v0.24.0",
+          "score": 0.031009615384615385,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/07-debrief-export-cases-area-watch-write-1.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/07-debrief-export-cases-area-watch-write-1.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/07-debrief-export-cases-area-watch-write-1.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/07-debrief-export-cases-area-watch-write-1.attempt-1.stderr.txt"
+  },
+  {
+    "id": "08-debrief-export-cases-area-watch-review-1",
+    "objective": "debrief-export-cases-area-watch-review-1",
+    "role": "code-performance-reviewer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/code-performance-reviewer.toml",
+      "sourceHash": "f64d0bd6ac0daeb4f1362e1e0a70653f9c8c7c18907ec6b6849a44c54d22013a",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/08-debrief-export-cases-area-watch-review-1.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/feature-review.md",
+      "sourceHash": "08d501aa0f9518c95c87e249fe7ec6555066d5f3a5c9a0bb84cfb11adac23bb7"
+    },
+    "promptSha256": "1f779cff7d5dd4da2d35fad1a78f38f172d168aea4067c32fb5b4068a59720ba",
+    "schemaSha256": "20f6306f7ba797ceaa1d8e076f6ca850c7b67092e5484805464ee9fef218f45c",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 10,
+    "usage": {
+      "input_tokens": 60751,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 168,
+      "reasoning_output_tokens": 24
+    },
+    "retrieval": {
+      "query": "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads ‖ simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay",
+      "queries": [
+        "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads",
+        "simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3485877735298508,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.06231203665002413,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.36770673797766795,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.04497917754656597,
+          "signals": [
+            "semantic:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.32481759710469194,
+          "key": "23452dd13fc8b530fd20ce15",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.9811172485351562,
+          "key": "f47a5e50b40b554654de1563",
+          "kind": "gdd-human",
+          "lineEnd": 706,
+          "lineStart": 691,
+          "section": "One lead, clear owners, named handoffs › Core handoffs (1/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Core handoffs\nOwner | Brief them with | Expect back · next handoff |\nLead and producer · Aster | Product goal, current milestone, constraints and open decisions | Task briefs and a decision log, each with an owner and a definition of done. Settles conflicts between parts of the game. |\nSystems designer · Motive | Which pillar the work serves, approach costs, temperaments and standing | Rule tables: approach prices, how each temperament reacts to your standing, how standing starts, spreads and drifts, how bravery and resentment grow, takedown prices, missing persons and cases, the response dial's values, debrief rules. Goes to Keel, Waymark and Fable. |\nMission designer · Waymark | The mission template, the district's people and the rulebook | A mission generator and its checker, including the mission rule overlays on the plan checker. Each mission comes with a route and clue map, how it closes, how it fails and what starts the fight. Keel checks it; Latch builds it. |",
+          "version": "v0.24.0",
+          "score": 0.031746031746031744,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.3488281771191408,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03125,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 3.794076681137085,
+          "key": "cff31e8ebfbc2b3c346823f7",
+          "kind": "gdd-agent",
+          "lineEnd": 338,
+          "lineStart": 332,
+          "section": "§14 ROLES › Motive",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing (its start, word, drift and public fights), bravery and resentment, Talkers, Heat, takedown prices, missing persons and cases, the response dial's values, and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route. Standing starts at +2, leaning Hero. Turning is private except Pressure.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+          "version": "v0.24.0",
+          "score": 0.031009615384615385,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/08-debrief-export-cases-area-watch-review-1.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/08-debrief-export-cases-area-watch-review-1.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/08-debrief-export-cases-area-watch-review-1.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/08-debrief-export-cases-area-watch-review-1.attempt-1.stderr.txt"
+  },
+  {
+    "id": "09-debrief-export-cases-area-watch-assess-1",
+    "objective": "debrief-export-cases-area-watch-assess-1",
+    "role": "lead-producer",
+    "provider": "codex",
+    "model": "gpt-6-astra",
+    "modelsUsed": [],
+    "tools": [],
+    "cliVersion": "0.163.0",
+    "card": {
+      "source": ".codex/agents/lead-producer.toml",
+      "sourceHash": "a2707dbd4458bb5be27dc9ca142f6dbec40daadd7c73d7bbc6b69f79c482fb87",
+      "file": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/09-debrief-export-cases-area-watch-assess-1.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/feature-assess.md",
+      "sourceHash": "d6d667c02a64ac0226e1b1b7c7ab7db09678fd2aaf17162da063c985bbd5a65a"
+    },
+    "promptSha256": "3975ec324d212530d762a460649772a9957d41fabc3f2a65c658a5a699afdd1b",
+    "schemaSha256": "4ef2f1d817e54a7990e85ffd9512247041b15a137be30da2006c0982d63a5100",
+    "effort": "medium",
+    "status": "accepted",
+    "exitCode": 0,
+    "costUsd": null,
+    "attempt": 1,
+    "seconds": 24,
+    "usage": {
+      "input_tokens": 48702,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1034,
+      "reasoning_output_tokens": 0
+    },
+    "retrieval": {
+      "query": "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads ‖ simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay",
+      "queries": [
+        "GDD Export existing cases and area watch in headless JSON debriefs headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads",
+        "simulation rules headless JSON debrief cases area watch missing persons consequence preservation deterministic replay side-effect-free reads deterministic replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3485877735298508,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.06231203665002413,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.36770673797766795,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.04497917754656597,
+          "signals": [
+            "semantic:1",
+            "semantic:2",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.32481759710469194,
+          "key": "23452dd13fc8b530fd20ce15",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (2/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nStatements Spec | People knocked out who came home: +4 Trail and their facts as leads (the face, if they saw him coming) | Knockouts not quieted |\nBravery and resentment, Heat Spec | Per contact and campaign | Jobs completed, pressure used, grief and worry |\nReplay freely before you Continue . After that the result stands, and replays are practice only.\n09 · GENERATION",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 4.228791236877441,
+          "key": "55c5c6cd533522c040aca4a6",
+          "kind": "gdd-agent",
+          "lineEnd": 194,
+          "lineStart": 183,
+          "section": "§08 CAMPAIGN › objectives",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§08 CAMPAIGN › objectives\nobjectives [S]: kidnapping · bank job via planted teller · killing by manipulated proxy · takeover via ruined reputation. Direct force always works, with bigger T.\ndebrief [B] → next mission:\n| output | states | from |\n| public security | Calm → Raised → High | final A; any shot fired |\n| investigation | little → early → active (named cause) | T 0 / 1–2 / 3+; named witnesses take precedence |\n| assets | e.g. Inez introduces café contacts; Inez may identify Fixer | how turned, what they saw |\n| standing [S] | one line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | acts seen or found, public fights, word of mouth, drift (§04) |\n| missing persons and cases [S] | each open case; the area watch: +1 posted guard and +1 camera on the block where the person was last seen, for 3 missions; the district's security level S | a kill never found: +2 T, no Menace, close ties fear +1, the case stays open until the body is found · a found killing: −1 Standing, grief, its case closes after 3 missions · every 2 open cases raise S by 1, at most +2 |\n| statements [S] | knockout victims who came home: +4 T and their facts as leads (the face if they saw it coming) | knockouts not quieted |\n| bravery, resentment, Heat [S] | per contact / campaign | jobs, pressure used, grief and worry |\nreplay freely before Continue; after, the result stands.",
+          "version": "v0.24.0",
+          "score": 0.03278688524590164,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 3.9811172485351562,
+          "key": "f47a5e50b40b554654de1563",
+          "kind": "gdd-human",
+          "lineEnd": 706,
+          "lineStart": 691,
+          "section": "One lead, clear owners, named handoffs › Core handoffs (1/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "One lead, clear owners, named handoffs › Core handoffs\nOwner | Brief them with | Expect back · next handoff |\nLead and producer · Aster | Product goal, current milestone, constraints and open decisions | Task briefs and a decision log, each with an owner and a definition of done. Settles conflicts between parts of the game. |\nSystems designer · Motive | Which pillar the work serves, approach costs, temperaments and standing | Rule tables: approach prices, how each temperament reacts to your standing, how standing starts, spreads and drifts, how bravery and resentment grow, takedown prices, missing persons and cases, the response dial's values, debrief rules. Goes to Keel, Waymark and Fable. |\nMission designer · Waymark | The mission template, the district's people and the rulebook | A mission generator and its checker, including the mission rule overlays on the plan checker. Each mission comes with a route and clue map, how it closes, how it fails and what starts the fight. Keel checks it; Latch builds it. |",
+          "version": "v0.24.0",
+          "score": 0.031746031746031744,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.3488281771191408,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03125,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "bm25": 4.798693656921387,
+          "key": "7b449f26a7918e1853ee1882",
+          "kind": "gdd-human",
+          "lineEnd": 550,
+          "lineStart": 532,
+          "section": "From one waitress to the city › The debrief writes the next mission Built (1/2)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "From one waitress to the city › The debrief writes the next mission Built\nOutput | States | Computed from |\nPublic security | Calm → Raised → High | Final Alert, and whether any shot was fired |\nInvestigation | Little evidence → Early → Active (named cause) | Trail 0 / 1–2 / 3+, with named witnesses taking precedence |\nAssets | For example, Inez can introduce café contacts · Inez may identify the Fixer | How each contact was turned and what they saw |\nStanding Spec | One line per district: band, number, change and its cause (\"Harbour: Hero +3 ▲1, Inez told her family a stranger cleared her debt\") | Acts seen or found, public fights, word of mouth, drift (§04) |\nMissing persons and cases Spec | Each open case; the block where the person was last seen gets one more posted guard and one more camera for 3 missions; the district's security level | A kill never found: +2 Trail, no Menace, the family and workmates worry, and the case stays open until the body is found. A killing found: −1 Standing, grief, and the case closes after 3 missions. Every 2 open cases raise the security level by 1, at most 2. |",
+          "version": "v0.24.0",
+          "score": 0.031054405392392875,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "bm25": 3.794076681137085,
+          "key": "cff31e8ebfbc2b3c346823f7",
+          "kind": "gdd-agent",
+          "lineEnd": 338,
+          "lineStart": 332,
+          "section": "§14 ROLES › Motive",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Motive\n### Motive · Systems designer · Opus 5.5\nowns: The rules for people and pressure: approach prices, temperament, standing (its start, word, drift and public fights), bravery and resentment, Talkers, Heat, takedown prices, missing persons and cases, the response dial's values, and the debrief.\nreceives: The pillar the work serves; Suture's playtest findings.\ndelivers: Rule tables to Keel, Waymark and Fable. Done when Keel accepts them and scenarios pass.\nhold: Inez: Ask $0 · 25 s · +1 Trail. Pay $70,000 · 50 s · +2. Help $40,000 · 50 s · +1. Pressure $0 · 35 s · +3. Purse $100,000: pay + driver ($110,000) fails; help + driver ($80,000) fits, so learning pays for a second route. Standing starts at +2, leaning Hero. Turning is private except Pressure.\nalso: Witnesses cross Pulse, Fable, Glyph and Chime. Drafts the rulebook with Keel first.\nopens: §02, §04–06, §08 · tests T2, T3",
+          "version": "v0.24.0",
+          "score": 0.031009615384615385,
+          "signals": [
+            "keyword:1",
+            "keyword:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/09-debrief-export-cases-area-watch-assess-1.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/09-debrief-export-cases-area-watch-assess-1.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/09-debrief-export-cases-area-watch-assess-1.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T11-05-43-376Z-discovery/calls/09-debrief-export-cases-area-watch-assess-1.attempt-1.stderr.txt"
+  }
+]

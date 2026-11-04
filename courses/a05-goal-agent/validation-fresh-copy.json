@@ -1,0 +1,99 @@
+{
+  "method": "Export of existing files eligible for Git, including intended untracked additions; no commit or clone claimed",
+  "source": "/Users/sky/.t3/worktrees/suborned/assignment-05",
+  "destination": "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/suborned-a05-review-wzh37hmt",
+  "files": 5637,
+  "bytes": 779368756,
+  "pathAndContentSha256": "d47934dbaf92ffdf9d9eb17d768639397119e7990edb09a3736924931d0284dc",
+  "absentBeforeInstall": [
+    ".git",
+    ".env",
+    "node_modules",
+    "out",
+    "sim/Suborned.Sim/bin",
+    "sim/Suborned.Sim/obj",
+    "courses/a05-goal-agent/gap-probe/bin",
+    "courses/a05-goal-agent/gap-probe/obj"
+  ],
+  "hostPackageCaches": "Existing Bun/NuGet caches may be reused; this is a fresh repository export, not a fresh OS",
+  "commands": [
+    "bun install --frozen-lockfile",
+    "bun run goals:verify"
+  ],
+  "verifiedAt": "2026-10-19T11:32:20.670Z",
+  "ok": true,
+  "exitCode": 0,
+  "seconds": 257.74,
+  "bun": "1.4.3",
+  "dotnet": "10.0.401",
+  "liveOptIn": "SUBORNED_LIVE=0",
+  "toolingTests": {
+    "passed": 225,
+    "failed": 0
+  },
+  "simulationTests": {
+    "total": 871,
+    "executed": 871,
+    "passed": 871,
+    "failed": 0,
+    "ok": true
+  },
+  "stages": [
+    {
+      "name": "typecheck",
+      "ok": true,
+      "seconds": 3.116
+    },
+    {
+      "name": "tooling-tests",
+      "ok": true,
+      "seconds": 13.431
+    },
+    {
+      "name": "crew-cards",
+      "ok": true,
+      "seconds": 0.024
+    },
+    {
+      "name": "submitted-simulation",
+      "ok": true,
+      "seconds": 45.927
+    },
+    {
+      "name": "generated-feature-replay",
+      "ok": true,
+      "seconds": 94.716
+    },
+    {
+      "name": "unchanged-rerun-replay",
+      "ok": true,
+      "seconds": 100.522
+    }
+  ],
+  "rawResult": "validation/fresh-copy/verification.json",
+  "replayEvidenceCopies": [
+    "validation/fresh-copy/generated-feature-replay/baseline/target.log",
+    "validation/fresh-copy/generated-feature-replay/baseline/target.trx",
+    "validation/fresh-copy/generated-feature-replay/baseline/regression.log",
+    "validation/fresh-copy/generated-feature-replay/baseline/regression.trx",
+    "validation/fresh-copy/generated-feature-replay/round-1/target.log",
+    "validation/fresh-copy/generated-feature-replay/round-1/target.trx",
+    "validation/fresh-copy/generated-feature-replay/round-1/regression.log",
+    "validation/fresh-copy/generated-feature-replay/round-1/regression.trx",
+    "validation/fresh-copy/unchanged-rerun-replay/baseline/target.log",
+    "validation/fresh-copy/unchanged-rerun-replay/baseline/target.trx",
+    "validation/fresh-copy/unchanged-rerun-replay/baseline/regression.log",
+    "validation/fresh-copy/unchanged-rerun-replay/baseline/regression.trx",
+    "validation/fresh-copy/unchanged-rerun-replay/round-1/target.log",
+    "validation/fresh-copy/unchanged-rerun-replay/round-1/target.trx",
+    "validation/fresh-copy/unchanged-rerun-replay/round-1/regression.log",
+    "validation/fresh-copy/unchanged-rerun-replay/round-1/regression.trx",
+    "validation/fresh-copy/unchanged-rerun-replay/recheck/acceptance-1.log",
+    "validation/fresh-copy/unchanged-rerun-replay/recheck/acceptance-1.trx"
+  ],
+  "notes": [
+    "Raw result paths describe the temporary export at execution time; corresponding replay logs/TRX are copied alongside this record for retention.",
+    "Manifest covers the prospective check-in export before adding this validation record and its documentation link. This snapshot predates the later presentation clarification and timestamped HTML verification reports; the subsequent verification is recorded separately.",
+    "Both archived campaigns were reconstructed and replayed; no model calls or database bootstrap were performed."
+  ]
+}

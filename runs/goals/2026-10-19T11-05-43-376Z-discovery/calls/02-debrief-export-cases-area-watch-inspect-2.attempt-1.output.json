@@ -1,0 +1,25 @@
+{
+  "state": "inspect",
+  "explanation": "The complete Debrief.Write method emits aggregate counts and descriptive lines but does not serialize Cases or AreaWatch. Requesting the headless report wrapper and projection initialization to finish tracing the export and read-only behavior before concluding.",
+  "evidence": [],
+  "reads": [
+    {
+      "path": "sim/Suborned.Sim/Script.cs",
+      "from": 55,
+      "to": 83
+    },
+    {
+      "path": "sim/Suborned.Sim/GameInvestigation.cs",
+      "from": 145,
+      "to": 240
+    },
+    {
+      "path": "sim/Suborned.Sim.Tests/FailCauseTests.cs",
+      "from": 75,
+      "to": 110
+    }
+  ],
+  "searches": [],
+  "tests": [],
+  "writable": []
+}

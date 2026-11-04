@@ -1,0 +1,442 @@
+[
+  {
+    "id": "01-catalog-1",
+    "objective": "catalog-1",
+    "role": "lead-producer",
+    "provider": "claude",
+    "model": "claude-opus-5-5",
+    "modelsUsed": [],
+    "tools": [
+      "StructuredOutput"
+    ],
+    "cliVersion": "2.1.303",
+    "card": {
+      "source": ".claude/agents/lead-producer.md",
+      "sourceHash": "fd793516651ae8a599651b7eaacff06a1a34f243c652236337d2cf089cde8971",
+      "file": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/discover.md",
+      "sourceHash": "7e98e2da19de5090f00804e392be0892af807bef57c44f976af17b1bebad1df9"
+    },
+    "promptSha256": "f7fc065f60fc0886d4be6ce991c253fc9f8d4e07b5d85e9ed9c1dace09232385",
+    "schemaSha256": "b65393731d86df5fafa7630e351eab1d381c00d9196bb8d0412da28441f88f1e",
+    "effort": "medium",
+    "status": "rejected",
+    "error": "Claude exited 1",
+    "exitCode": 1,
+    "costUsd": 0,
+    "attempt": 1,
+    "seconds": 4,
+    "usage": {
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 0,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "",
+      "iterations": [],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "retrieval": {
+      "query": "shared simulation rules Watch Learn Turn Time Take Fight Inherit ‖ headless deterministic orders query pricing cancellation replay",
+      "queries": [
+        "shared simulation rules Watch Learn Turn Time Take Fight Inherit",
+        "headless deterministic orders query pricing cancellation replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.1782107108298152,
+          "key": "0b451c58f5802f9c3cfbd293",
+          "kind": "gdd-human",
+          "lineEnd": 219,
+          "lineStart": 217,
+          "section": "Watch, turn, time, take, inherit",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit\nWatch → Learn → Turn → Time → Take → Fight → Inherit",
+          "version": "v0.24.0",
+          "score": 0.04891591750396616,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2778695060092492,
+          "key": "faa51917ad025160dabf7ed4",
+          "kind": "gdd-human",
+          "lineEnd": 243,
+          "lineStart": 223,
+          "section": "Watch, turn, time, take, inherit › What the player manages (3/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit › What the player manages\n03 · THE CELL",
+          "version": "v0.24.0",
+          "score": 0.03200204813108039,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2927745580673218,
+          "key": "a5fbd6eebcb16fae8ac3120b",
+          "kind": "gdd-human",
+          "lineEnd": 570,
+          "lineStart": 550,
+          "section": "Nothing hand-authored, everything checked (4/4)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Nothing hand-authored, everything checked\nBuild time only. No AI runs during play. The same choices always give the same result, it costs nothing to run, and any mission can be replayed exactly. Live AI crowd chatter can be tried later, as long as it never touches the rules.\n10 · PRESENTATION",
+          "version": "v0.24.0",
+          "score": 0.03149801587301587,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2764929533004761,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03128054740957967,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.31655845839481567,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.030621785881252923,
+          "signals": [
+            "semantic:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3054376426599993,
+          "key": "9eb68478ceaf14785b68e140",
+          "kind": "gdd-agent",
+          "lineEnd": 37,
+          "lineStart": 31,
+          "section": "§01 GAME + CORE › house rules",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§01 GAME + CORE › house rules\nhouse rules:\n- build only against Keel's rulebook (each event: needs, changes, witnesses). Unknown = reject.\n- no AI at runtime. Content generated at build time. Same orders → same result. Any run replays exactly from start state + orders.\n- handoff = inputs · done-check · next owner.\n- only Latch edits Unity scenes. Price paid runs before starting.\n- escalate to Sky (via Aster) only: pillar change, new paid spend, release, destructive action, unresolved conflict.",
+          "version": "v0.24.0",
+          "score": 0.030309988518943745,
+          "signals": [
+            "semantic:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.31959859489198283,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.029957522915269395,
+          "signals": [
+            "semantic:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.30817902088165283,
+          "key": "7535e807913df6fa497f70e9",
+          "kind": "gdd-agent",
+          "lineEnd": 239,
+          "lineStart": 233,
+          "section": "§11 BUILD › capstone, 5 weeks",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§11 BUILD › capstone, 5 weeks\ncapstone, 5 weeks:\n| wk | deliverable | exit |\n| 1 | rules proven in top-down test | 2 routes win; loud fails at a cost [done] |\n| 2 | rules in Unity; Handover in the 3D world | 28 scenarios pass in Unity |\n| 3 | cell control, contacts, security, rivals, readability | first uncoached playtest |\n| 4 | final fight both branches, payoff cut, Intel, event log, debrief | new-player test; freeze rules |\n| 5 | tuning, fixes, audio cues; no new systems | final uncoached gate |",
+          "version": "v0.24.0",
+          "score": 0.029850746268656716,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.attempt-1.output.json",
+    "eventsFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.attempt-1.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.attempt-1.stderr.txt"
+  },
+  {
+    "id": "01-catalog-1",
+    "objective": "catalog-1",
+    "role": "lead-producer",
+    "provider": "claude",
+    "model": "claude-opus-5-5",
+    "modelsUsed": [],
+    "tools": [
+      "StructuredOutput"
+    ],
+    "cliVersion": "2.1.303",
+    "card": {
+      "source": ".claude/agents/lead-producer.md",
+      "sourceHash": "fd793516651ae8a599651b7eaacff06a1a34f243c652236337d2cf089cde8971",
+      "file": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.card.md"
+    },
+    "brief": {
+      "source": "tools/goals/prompts/discover.md",
+      "sourceHash": "7e98e2da19de5090f00804e392be0892af807bef57c44f976af17b1bebad1df9"
+    },
+    "promptSha256": "f7fc065f60fc0886d4be6ce991c253fc9f8d4e07b5d85e9ed9c1dace09232385",
+    "schemaSha256": "b65393731d86df5fafa7630e351eab1d381c00d9196bb8d0412da28441f88f1e",
+    "effort": "medium",
+    "status": "rejected",
+    "error": "Claude exited 1",
+    "exitCode": 1,
+    "costUsd": 0,
+    "attempt": 2,
+    "seconds": 3,
+    "usage": {
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 0,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "",
+      "iterations": [],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "retrieval": {
+      "query": "shared simulation rules Watch Learn Turn Time Take Fight Inherit ‖ headless deterministic orders query pricing cancellation replay",
+      "queries": [
+        "shared simulation rules Watch Learn Turn Time Take Fight Inherit",
+        "headless deterministic orders query pricing cancellation replay"
+      ],
+      "pinned": [],
+      "method": "HNSW cosine + full-text BM25 per query, reciprocal rank fusion; critic-cited chunks pinned",
+      "corpusHash": "ffc7f384e553845df367bf447ed2d8c00fa233ce7a79acde0579d31f53ac14df",
+      "embeddingModel": "BAAI/bge-small-en-v1.5",
+      "hits": [
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.1782107108298152,
+          "key": "0b451c58f5802f9c3cfbd293",
+          "kind": "gdd-human",
+          "lineEnd": 219,
+          "lineStart": 217,
+          "section": "Watch, turn, time, take, inherit",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit\nWatch → Learn → Turn → Time → Take → Fight → Inherit",
+          "version": "v0.24.0",
+          "score": 0.04891591750396616,
+          "signals": [
+            "semantic:1",
+            "keyword:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2778695060092492,
+          "key": "faa51917ad025160dabf7ed4",
+          "kind": "gdd-human",
+          "lineEnd": 243,
+          "lineStart": 223,
+          "section": "Watch, turn, time, take, inherit › What the player manages (3/3)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Watch, turn, time, take, inherit › What the player manages\n03 · THE CELL",
+          "version": "v0.24.0",
+          "score": 0.03200204813108039,
+          "signals": [
+            "semantic:1",
+            "keyword:1"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2927745580673218,
+          "key": "a5fbd6eebcb16fae8ac3120b",
+          "kind": "gdd-human",
+          "lineEnd": 570,
+          "lineStart": 550,
+          "section": "Nothing hand-authored, everything checked (4/4)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Nothing hand-authored, everything checked\nBuild time only. No AI runs during play. The same choices always give the same result, it costs nothing to run, and any mission can be replayed exactly. Live AI crowd chatter can be tried later, as long as it never touches the rules.\n10 · PRESENTATION",
+          "version": "v0.24.0",
+          "score": 0.03149801587301587,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.2764929533004761,
+          "key": "facd2db534aee02ad68b2ba5",
+          "kind": "gdd-human",
+          "lineEnd": 650,
+          "lineStart": 636,
+          "section": "Prove the rules small, then dress them › Capstone slice (five weeks)",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › Capstone slice (five weeks)\nWeek | Deliverable | Exit check |\n1 | Rules proven in the top-down test | Two routes win, and going loud fails at a cost Done |\n2 | The rules move into Unity. Handover laid out in the 3D world. | 28 scenarios pass in Unity |\n3 | Cell control, contacts, security, rivals, readability pass | First uncoached playtest |\n4 | Final fight (both branches), payoff cut, Intel, event log, debrief | New-player test; freeze the rules |\n5 | Tuning, fixes, audio cues. No new systems. | Final uncoached gate |\nGate. An uncoached player can state the objective and fail conditions, pick an approach because of something they learned, explain its cash, time and Trail cost, complete a chain, say why they fought police rather than rivals (or the reverse), and read what the next mission inherits.\nIf the schedule slips, cut in this order: crowd witnesses (crowds stay decorative) → patrol reroute → camera-block variant → the police branch of the final fight (rivals only). Always keep both routes, the one payoff cut, the debrief and the gate test.",
+          "version": "v0.24.0",
+          "score": 0.03128054740957967,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.31655845839481567,
+          "key": "06dc432993965a32106057ec",
+          "kind": "gdd-agent",
+          "lineEnd": 376,
+          "lineStart": 371,
+          "section": "§14 ROLES › Keel",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§14 ROLES › Keel\n### Keel · Simulation engineer · Opus 5.5\nowns: The rulebook: every event in the city, what it needs, what it changes and who sees it. Also the 28 test scenarios and the C# sim library that runs them (Unity-free; provisional, Sky to confirm).\nreceives: Motive's rules, Waymark's missions, Pulse's schedules, Fable's lines, and what the debrief carries forward.\ndelivers: The rulebook to everyone; checked content to Latch; mistakes back to their authors. Design decisions stay with Motive.\nhold: The rules live apart from the engine. Any run replays exactly from its starting state and the player's orders. One incident counts once toward Alert and dispatches once. Silent acts raise Alert when the report lands. Unity must pass the same 28 scenarios before content goes in. One C# engine: Unity runs it live, tools headless via dotnet; 10 Hz, integer state, replay = orders + checksums. Locked only after the week 4 playtest.\nopens: §05, §06, §08, §11",
+          "version": "v0.24.0",
+          "score": 0.030621785881252923,
+          "signals": [
+            "semantic:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.3054376426599993,
+          "key": "9eb68478ceaf14785b68e140",
+          "kind": "gdd-agent",
+          "lineEnd": 37,
+          "lineStart": 31,
+          "section": "§01 GAME + CORE › house rules",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§01 GAME + CORE › house rules\nhouse rules:\n- build only against Keel's rulebook (each event: needs, changes, witnesses). Unknown = reject.\n- no AI at runtime. Content generated at build time. Same orders → same result. Any run replays exactly from start state + orders.\n- handoff = inputs · done-check · next owner.\n- only Latch edits Unity scenes. Price paid runs before starting.\n- escalate to Sky (via Aster) only: pillar change, new paid spend, release, destructive action, unresolved conflict.",
+          "version": "v0.24.0",
+          "score": 0.030309988518943745,
+          "signals": [
+            "semantic:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Human GDD (wins on conflict)",
+          "distance": 0.31959859489198283,
+          "key": "4e7ee6bfd474ee552879fd71",
+          "kind": "gdd-human",
+          "lineEnd": 636,
+          "lineStart": 627,
+          "section": "Prove the rules small, then dress them › How it's built",
+          "source": "GDD/the-suborned-gdd-v0.24.0-2026-10-18.html",
+          "sourceHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+          "text": "Prove the rules small, then dress them › How it's built\nThe rules live apart from the engine. Everything that happens in the city (a guard leaving, a contact answering) is an event with its conditions, effects and witnesses.\nAny run can be replayed exactly from its starting state and the player's orders.\nUnity has to pass the same 28 scenarios as the top-down test before it's trusted.\nOne simulation engine. A Unity-free C# library: Unity runs it live, build tools run it headless. Fixed 10 Hz tick, integer state; a replay is the orders plus checksums.\nPerformance is judged by frame rate at play zoom, not by polygon counts. The target is 60 fps at 1080p on a 15-inch MacBook Air M4 (Mac16,13), the reference machine. It has no fan and a 10-core GPU, so it is measured warm, after several minutes of running, at play zoom with people, vehicles and the simulation in, by a perf harness in a development build. A mid-range PC (an RTX 3060-class GPU with a 6-core CPU) must also pass, as a check, not the bar.",
+          "version": "v0.24.0",
+          "score": 0.029957522915269395,
+          "signals": [
+            "semantic:1",
+            "keyword:2"
+          ]
+        },
+        {
+          "authority": "Agent GDD (the human GDD wins on conflict)",
+          "distance": 0.30817902088165283,
+          "key": "7535e807913df6fa497f70e9",
+          "kind": "gdd-agent",
+          "lineEnd": 239,
+          "lineStart": 233,
+          "section": "§11 BUILD › capstone, 5 weeks",
+          "source": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "sourceHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+          "text": "§11 BUILD › capstone, 5 weeks\ncapstone, 5 weeks:\n| wk | deliverable | exit |\n| 1 | rules proven in top-down test | 2 routes win; loud fails at a cost [done] |\n| 2 | rules in Unity; Handover in the 3D world | 28 scenarios pass in Unity |\n| 3 | cell control, contacts, security, rivals, readability | first uncoached playtest |\n| 4 | final fight both branches, payoff cut, Intel, event log, debrief | new-player test; freeze rules |\n| 5 | tuning, fixes, audio cues; no new systems | final uncoached gate |",
+          "version": "v0.24.0",
+          "score": 0.029850746268656716,
+          "signals": [
+            "semantic:1",
+            "semantic:2"
+          ]
+        }
+      ]
+    },
+    "pinning": {
+      "cited": 0,
+      "pinned": 0,
+      "truncated": false,
+      "dropped": []
+    },
+    "promptFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.prompt.txt",
+    "outputFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.attempt-2.output.json",
+    "eventsFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.attempt-2.events.jsonl",
+    "stderrFile": "runs/goals/2026-10-19T10-09-48-241Z-discovery/calls/01-catalog-1.attempt-2.stderr.txt"
+  }
+]

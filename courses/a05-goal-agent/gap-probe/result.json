@@ -1,0 +1,16 @@
+{
+  "diagnostic": "learn-query-in-car",
+  "reproduced": true,
+  "fixture": "Fresh Handover; Scout positioned at an unwatched container; InCar=true",
+  "preview": {
+    "accepted": true,
+    "code": ""
+  },
+  "issue": {
+    "accepted": false,
+    "code": "in-car"
+  },
+  "previewIsPure": true,
+  "expectedAfterRepair": "Both refuse in-car; preview remains pure",
+  "implementationChanged": false
+}

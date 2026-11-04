@@ -1,0 +1,366 @@
+{
+  "schema": "suborned.a05.submission-verification/1",
+  "ok": true,
+  "startedAt": "2026-10-19T11:43:10.566Z",
+  "finishedAt": "2026-10-19T11:48:15.665Z",
+  "modelCalls": 0,
+  "stages": [
+    {
+      "name": "typecheck",
+      "ok": true,
+      "seconds": 2.705,
+      "result": {
+        "argv": [
+          "bun",
+          "run",
+          "typecheck"
+        ],
+        "exitCode": 0,
+        "log": "out/goals/submission/2026-10-19T11-43-10-566Z/typecheck.log"
+      }
+    },
+    {
+      "name": "tooling-tests",
+      "ok": true,
+      "seconds": 14.865,
+      "result": {
+        "argv": [
+          "bun",
+          "test",
+          "tools/goals/test",
+          "tools/rag/rag.test.ts",
+          "tools/crew"
+        ],
+        "exitCode": 0,
+        "log": "out/goals/submission/2026-10-19T11-43-10-566Z/tooling-tests.log"
+      }
+    },
+    {
+      "name": "crew-cards",
+      "ok": true,
+      "seconds": 0.014,
+      "result": {
+        "argv": [
+          "bun",
+          "run",
+          "crew",
+          "--check"
+        ],
+        "exitCode": 0,
+        "log": "out/goals/submission/2026-10-19T11-43-10-566Z/crew-cards.log"
+      }
+    },
+    {
+      "name": "submitted-simulation",
+      "ok": true,
+      "seconds": 49.407,
+      "result": {
+        "argv": [
+          "dotnet",
+          "test",
+          "sim/Suborned.Sim.Tests/Suborned.Sim.Tests.csproj",
+          "--logger",
+          "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/submission/2026-10-19T11-43-10-566Z/submitted-simulation.trx",
+          "--verbosity",
+          "minimal"
+        ],
+        "exitCode": 0,
+        "log": "out/goals/submission/2026-10-19T11-43-10-566Z/submitted-simulation.log",
+        "tests": {
+          "total": 871,
+          "executed": 871,
+          "passed": 871,
+          "failed": 0,
+          "ok": true
+        }
+      }
+    },
+    {
+      "name": "generated-feature-replay",
+      "ok": true,
+      "seconds": 126.487,
+      "result": {
+        "ok": true,
+        "run": "2026-10-19T11-05-43-376Z-discovery",
+        "complete": true,
+        "features": [
+          {
+            "id": "debrief-export-cases-area-watch",
+            "sourceRun": "runs/goals/2026-10-19T11-05-43-376Z-discovery",
+            "retained": false,
+            "generated": true,
+            "rounds": 1,
+            "stages": [
+              {
+                "stage": "baseline",
+                "checks": [
+                  {
+                    "id": "target",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-InfguF/feature-1/evidence/baseline/target.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 1,
+                    "timedOut": false,
+                    "total": 5,
+                    "passed": 0,
+                    "failed": 5,
+                    "ok": false,
+                    "outputFile": "evidence/baseline/target.log",
+                    "reportFile": "evidence/baseline/target.trx",
+                    "outputHash": "749de8ee019c032f65ee1ede9487c72c9b7fa953cb643fd9db8d983b1c803277",
+                    "seconds": 5.534
+                  },
+                  {
+                    "id": "regression",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName!~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-InfguF/feature-1/evidence/baseline/regression.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 866,
+                    "passed": 866,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/baseline/regression.log",
+                    "reportFile": "evidence/baseline/regression.trx",
+                    "outputHash": "17e6c60f354aec6f64379813b5da84d04d9a3fb1c054aa3b4e83d8fad6f4ff52",
+                    "seconds": 62.635
+                  }
+                ]
+              },
+              {
+                "stage": "round-1",
+                "checks": [
+                  {
+                    "id": "target",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-InfguF/feature-1/evidence/round-1/target.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 5,
+                    "passed": 5,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/round-1/target.log",
+                    "reportFile": "evidence/round-1/target.trx",
+                    "outputHash": "529a6b86503c6151996412965f46af9f1f04134c67f868fc67f4a55e78a4eb9c",
+                    "seconds": 3.037
+                  },
+                  {
+                    "id": "regression",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName!~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-InfguF/feature-1/evidence/round-1/regression.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 866,
+                    "passed": 866,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/round-1/regression.log",
+                    "reportFile": "evidence/round-1/regression.trx",
+                    "outputHash": "00b9a0ae55d60d6060eb1737bd7fd4512a4d0de978fb30d11d7b3324e7bc3b3e",
+                    "seconds": 54.807
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inspected": [],
+        "directory": "out/goals/verify-campaign-InfguF"
+      }
+    },
+    {
+      "name": "unchanged-rerun-replay",
+      "ok": true,
+      "seconds": 111.621,
+      "result": {
+        "ok": true,
+        "run": "2026-10-19T11-14-05-156Z-discovery",
+        "complete": true,
+        "features": [
+          {
+            "id": "debrief-export-cases-area-watch",
+            "sourceRun": "runs/goals/2026-10-19T11-05-43-376Z-discovery",
+            "retained": true,
+            "generated": true,
+            "rounds": 1,
+            "stages": [
+              {
+                "stage": "baseline",
+                "checks": [
+                  {
+                    "id": "target",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-sWF34n/feature-1/evidence/baseline/target.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 1,
+                    "timedOut": false,
+                    "total": 5,
+                    "passed": 0,
+                    "failed": 5,
+                    "ok": false,
+                    "outputFile": "evidence/baseline/target.log",
+                    "reportFile": "evidence/baseline/target.trx",
+                    "outputHash": "76bdeb0460233d532fb98ea0c9b9940fa05ef5bf7791fd17f4a65ecc6bc550b3",
+                    "seconds": 2.79
+                  },
+                  {
+                    "id": "regression",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName!~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-sWF34n/feature-1/evidence/baseline/regression.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 866,
+                    "passed": 866,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/baseline/regression.log",
+                    "reportFile": "evidence/baseline/regression.trx",
+                    "outputHash": "4e81a4168d049f1659dd10a105e525e59cbb8e63baeeb166f698df86d7e8b18c",
+                    "seconds": 54.91
+                  }
+                ]
+              },
+              {
+                "stage": "round-1",
+                "checks": [
+                  {
+                    "id": "target",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-sWF34n/feature-1/evidence/round-1/target.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 5,
+                    "passed": 5,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/round-1/target.log",
+                    "reportFile": "evidence/round-1/target.trx",
+                    "outputHash": "8c16dc891e642ac0596299259188f26dc1fea7d236fab833b1091c8661d5599b",
+                    "seconds": 2.674
+                  },
+                  {
+                    "id": "regression",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests",
+                      "--filter",
+                      "FullyQualifiedName!~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-sWF34n/feature-1/evidence/round-1/regression.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 866,
+                    "passed": 866,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/round-1/regression.log",
+                    "reportFile": "evidence/round-1/regression.trx",
+                    "outputHash": "ea36d98798da0d80ad2a6020c59f216764669064c66e722b862c6ee9d3ee5788",
+                    "seconds": 48.544
+                  }
+                ]
+              },
+              {
+                "stage": "recheck",
+                "checks": [
+                  {
+                    "id": "acceptance-1",
+                    "argv": [
+                      "dotnet",
+                      "test",
+                      "sim/Suborned.Sim.Tests/Suborned.Sim.Tests.csproj",
+                      "--filter",
+                      "FullyQualifiedName~GoalDebriefCaseWatchFidelityTests",
+                      "--logger",
+                      "trx;LogFileName=/Users/sky/.t3/worktrees/suborned/assignment-05/out/goals/verify-campaign-sWF34n/feature-1/evidence/recheck/acceptance-1.trx",
+                      "--verbosity",
+                      "minimal"
+                    ],
+                    "exitCode": 0,
+                    "timedOut": false,
+                    "total": 5,
+                    "passed": 5,
+                    "failed": 0,
+                    "ok": true,
+                    "outputFile": "evidence/recheck/acceptance-1.log",
+                    "reportFile": "evidence/recheck/acceptance-1.trx",
+                    "outputHash": "40703e84bcfb824b0b75ec94e3f53d6bb6823e99cc4960ad6a4759a170cc7a43",
+                    "seconds": 2.274
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inspected": [],
+        "directory": "out/goals/verify-campaign-sWF34n"
+      }
+    }
+  ]
+}

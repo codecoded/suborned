@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "summary": "Debrief.cs unconditionally exports both collections, preserving every tuple value, association, duplicate and ordering without changing existing fields or simulation behavior. Tests address the prior fidelity gap with distinct numeric values and cover empty arrays, escaping, legacy compatibility, read purity and deterministic replay. Supplied results report 5 targeted and 866 regression tests passing; independently reviewed source and tests, without rerunning them. No substantive faults found against §08 [7b449f26a7918e1853ee1882] and replay requirements [4e7ee6bfd474ee552879fd71].",
+  "faults": []
+}

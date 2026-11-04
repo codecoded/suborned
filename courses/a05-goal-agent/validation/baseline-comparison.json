@@ -1,0 +1,12 @@
+{
+  "baseCommit": "af46f14dfd6edd29eeed6123e38778081275abef",
+  "workspace": "out/a05-baseline-o04dkycl",
+  "command": [
+    "bun",
+    "test",
+    "tools/kit/kit.test.ts",
+    "tools/cover/cover.test.ts",
+    "tools/people/test/needs.test.ts"
+  ],
+  "exitCode": 1
+}

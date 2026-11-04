@@ -1,0 +1,233 @@
+{
+  "schema": "suborned.goals.reviewed-candidates/1",
+  "reviewedAt": "2026-10-19T10:04:06.495330+00:00",
+  "method": "Developer and delegated read-only code audit, plus an executable preview diagnostic. Not the live discovery catalog; not written to runs/goals/backlog.json. Scores are reviewer estimates.",
+  "gdd": {
+    "version": "0.24.0",
+    "agentSha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+    "humanSha256": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+    "mainComparisons": [
+      {
+        "root": "/Users/sky/Projects/suborned",
+        "version": "0.24.0",
+        "agentHash": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1",
+        "humanHash": "377d0b26a249584b75f8b7d62d67c527b1d9de3f16a6fe0c62bcd27cc2f47159",
+        "status": "same"
+      }
+    ],
+    "remoteMainObserved": "af46f14dfd6edd29eeed6123e38778081275abef"
+  },
+  "gaps": [
+    {
+      "id": "preview-parity",
+      "short": "Preview parity",
+      "title": "Make the preview tell the truth",
+      "label": "Smallest repair",
+      "state": "ready",
+      "stateLabel": "Ready to test first",
+      "value": 4,
+      "effort": 1,
+      "risk": 1,
+      "dependsOn": [],
+      "pitch": "Scout is inside the car. Watch looks available. The click is refused. The action card should have said so first.",
+      "player": "A reliable action preview lets the player plan without discovering restrictions through failed clicks.",
+      "exists": "Issue already rejects in-car orders. LearnQuery already mirrors down, inside and busy gates, and its reads are pure.",
+      "gap": "LearnQuery omits the in-car gate. A fresh-state diagnostic now reproduces preview accepted=true while Issue returns in-car.",
+      "next": "Add and freeze a failing preview/Issue parity test, then repair the shared eligibility gate. No new game rule or asset is needed.",
+      "boundary": "Fits the current engine-only writer boundary. The report reproduces the defect; it does not fix it.",
+      "checks": [
+        "A boarded Scout gets in-car from both LearnQuery and Issue.",
+        "Watch and Listen retain their existing refusal precedence and supported targets.",
+        "Calling the preview changes no state hash, orders or logs.",
+        "On-foot orders still behave identically; regression tests remain green."
+      ],
+      "evidence": [
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 50,
+          "quote": "rule: every order shows its full price before commit",
+          "sha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameOrders.cs",
+          "line": 70,
+          "quote": "if (op.InCar)",
+          "sha256": "9abfa2fa0b7c072141baaf8e32ce0f8d8232331caff5b0d53538ef359a56b79f"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameOrders.cs",
+          "line": 194,
+          "quote": "public Answer LearnQuery(string agent, string verb, string target)",
+          "sha256": "9abfa2fa0b7c072141baaf8e32ce0f8d8232331caff5b0d53538ef359a56b79f"
+        }
+      ],
+      "diagnostic": "gap-probe/result.json",
+      "unblocks": 0,
+      "score": 14
+    },
+    {
+      "id": "keeper-tips",
+      "short": "Keeper tips",
+      "title": "Make a turned café owner useful",
+      "label": "Next substantive feature",
+      "state": "scope",
+      "stateLabel": "Rules ready · adapter scope needed",
+      "value": 4,
+      "effort": 2,
+      "risk": 2,
+      "dependsOn": [],
+      "pitch": "A café owner knows their regulars. Turning them should reveal those people’s needs before Scout spends time listening.",
+      "player": "One contact becomes an intelligence source, opening cheaper and better-informed approaches to other people.",
+      "exists": "The people generator derives who each keeper knows. The rulebook already defines keeper.tips at mission start: reveal needs only.",
+      "gap": "The simulation export omits that knowledge map; its loader does not accept it. Startup applies manual knowledge instead of evaluating keeper tips, and turned inputs address mission roles rather than arbitrary keeper IDs.",
+      "next": "Carry the existing knowledge map into the simulation, accept turned keeper IDs, and apply the rulebook event once at mission start.",
+      "boundary": "Requires people-export and input-schema integration outside the current sim/*.cs writer allowlist. Bound and review that adapter change before an autonomous write. No new balance numbers are needed.",
+      "checks": [
+        "A turned keeper reveals exactly their workmates’ and regulars’ needs.",
+        "An unturned keeper reveals no needs.",
+        "Temperament, secrets and routine remain unknown; unrelated people stay unknown.",
+        "New inputs and learned knowledge participate in deterministic replay hashes."
+      ],
+      "evidence": [
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 181,
+          "quote": "café owner tips needs before Scout listens",
+          "sha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1"
+        },
+        {
+          "path": "contracts/rules/rulebook.json",
+          "line": 1025,
+          "quote": "\"id\": \"keeper.tips\"",
+          "sha256": "627344123cb08346338d35f33e058749745dadea167a6f15e38e81fd8e9a6229"
+        },
+        {
+          "path": "tools/people/knowledge.ts",
+          "line": 7,
+          "quote": "export function deriveKnowledge",
+          "sha256": "5c156fad57bbd209706351f40249032fa073096b7d7876e605cb26d7de569a66"
+        },
+        {
+          "path": "tools/sim/people.ts",
+          "line": 71,
+          "quote": "schema: 'suborned.sim.people/2'",
+          "sha256": "12b071aef859faf2d56f3c7f104dac53e23b5a65524e67fad3febad835949dc1"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameCrowd.cs",
+          "line": 70,
+          "quote": "n.Only(\"schema\", \"from\", \"scope\", \"frame\", \"startsAt\", \"places\", \"needs\", \"people\");",
+          "sha256": "3e0447a9850bed9015b59d60172989131093aa697ac2d4ed7025f862385a8e87"
+        },
+        {
+          "path": "sim/Suborned.Sim/Game.cs",
+          "line": 236,
+          "quote": "foreach (var kv in Start.Known)",
+          "sha256": "a60f4bac6cc6aa172e15c16a4b733be21be26bbe2cc98a2dcca39356c0fb087e"
+        }
+      ],
+      "unblocks": 0,
+      "score": 12
+    },
+    {
+      "id": "campaign-carryover",
+      "short": "Campaign carryover",
+      "title": "Give Continue a lasting consequence",
+      "label": "Foundation for later work",
+      "state": "scope",
+      "stateLabel": "Bound the transition contract",
+      "value": 5,
+      "effort": 4,
+      "risk": 3,
+      "dependsOn": [],
+      "pitch": "The debrief can explain what happened. The next mission still needs a durable way to inherit it.",
+      "player": "Contacts, needs, Trail and district Standing become the consequences the player lives with, not just the contents of a debrief.",
+      "exists": "BetweenMissions already computes contact copies, replaced needs, Standing, cases and next security. Those calculations are not missing.",
+      "gap": "The engine exposes those results as outputs, but a campaign layer does not consume and persist them into the next mission. Fresh starts rebuild state from site defaults and optional overrides.",
+      "next": "Define a narrow, versioned campaign snapshot and a commit-once transition into mission 2. Start with contacts, needs, Trail and Standing; separate the wider calendar and world changes.",
+      "boundary": "Needs an explicit transition contract and idempotency tests. Do not bundle every campaign mechanic or extra guard/camera placement into one agent task.",
+      "checks": [
+        "Continue commits the mission result exactly once.",
+        "Mission 2 starts with projected contacts, needs, Trail and Standing.",
+        "Save/load reproduces the same next start and replay hashes.",
+        "Practice replay never commits rewards or consequences a second time."
+      ],
+      "evidence": [
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 193,
+          "quote": "replay freely before Continue; after, the result stands.",
+          "sha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameInvestigation.cs",
+          "line": 36,
+          "quote": "No campaign layer runs yet: these are outputs.",
+          "sha256": "d1ce10f5025d7ef67933fd5c8ccb208248706ab8542fc9a07182cc19ef955350"
+        },
+        {
+          "path": "sim/Suborned.Sim/Game.cs",
+          "line": 187,
+          "quote": "Cash = Start.Cash ?? S.Purse;",
+          "sha256": "a60f4bac6cc6aa172e15c16a4b733be21be26bbe2cc98a2dcca39356c0fb087e"
+        },
+        {
+          "path": "sim/Suborned.Sim/Debrief.cs",
+          "line": 103,
+          "quote": "w.Open(\"nextMission\").Prop(\"ambush\", Next.Ambush);",
+          "sha256": "5dd715dd4c7bb01710b568d5605935ec1bc7bf8d8579d97983924506c97c8230"
+        }
+      ],
+      "unblocks": 1,
+      "score": 15
+    },
+    {
+      "id": "persistent-wounds",
+      "short": "Persistent wounds",
+      "title": "Carry the wounds into tomorrow",
+      "label": "Dependent follow-on",
+      "state": "dependent",
+      "stateLabel": "After campaign carryover",
+      "value": 4,
+      "effort": 3,
+      "risk": 3,
+      "dependsOn": [
+        "campaign-carryover"
+      ],
+      "pitch": "An operative who leaves injured should begin the next mission injured. Starting a new game currently restores the default health.",
+      "player": "Surviving a fight has a lasting cost, and finding a doctor becomes a meaningful future choice.",
+      "exists": "Combat already tracks damage, and the debrief exports the cell’s remaining health.",
+      "gap": "The new-game constructor creates every operative at rulebook starting health. Start has no persisted per-operative health input.",
+      "next": "Add validated health to the campaign snapshot and next-start state. Keep healing and calendar choices outside this first slice.",
+      "boundary": "Depends on a campaign transition. Doctor healing rates, prices and scheduling need rulebook decisions; do not invent them in the carryover patch.",
+      "checks": [
+        "An injured survivor keeps their exact remaining health next mission.",
+        "Healthy survivors stay healthy; invalid health is rejected.",
+        "Save/load and replay include per-operative health.",
+        "Downed and captured operatives have explicit transition handling."
+      ],
+      "evidence": [
+        {
+          "path": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md",
+          "line": 182,
+          "quote": "wounds [S]: health carries over.",
+          "sha256": "e9004454449e278a7e86bccf977693d27d19d18c88c2a9530df716eaf20436c1"
+        },
+        {
+          "path": "sim/Suborned.Sim/Game.cs",
+          "line": 195,
+          "quote": "Health = enf ? R.HealthEnforcer : R.HealthOp",
+          "sha256": "a60f4bac6cc6aa172e15c16a4b733be21be26bbe2cc98a2dcca39356c0fb087e"
+        },
+        {
+          "path": "sim/Suborned.Sim/Debrief.cs",
+          "line": 46,
+          "quote": "d.Cell.Add((Sim.Op.Name(op.Id), op.Gun.Health, op.Gun.Max));",
+          "sha256": "5dd715dd4c7bb01710b568d5605935ec1bc7bf8d8579d97983924506c97c8230"
+        }
+      ],
+      "unblocks": 0,
+      "score": 10
+    }
+  ]
+}

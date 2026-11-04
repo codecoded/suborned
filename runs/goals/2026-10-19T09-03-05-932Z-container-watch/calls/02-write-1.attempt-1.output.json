@@ -1,0 +1,40 @@
+{
+  "summary": "Scout Watch on a container (GDD §05: a container's round time is learnable by Watch, in the mission only). New GameStashWatch.cs: WatchContainer checks the order: it refuses already-watched first, then too-far, measured with the existing rulebook sight.watch reach (R.SightReachCm) from the container's stand cell, then no-clear-line. It engages for R.SightWatchS at no cost. LandWatchContainer adds the container to the mission's learned rounds only on completion. HashStashWatch adds bytes only once something is learned, so historical hashes are preserved. Scout() routes container targets before the watcher path: other operatives still get only-scout, and doors or unknown ids still get target-unknown. Land dispatches the container watch. NextRound reports known from that state and stays a pure read. OnDone gives the activity text \"learns when the round empties it\". Cancel uses the existing watch line (lost, nothing learned). Hash.State calls HashStashWatch. Not yet verified: the clock, watch, replay and regression checks have not been run on this patch.",
+  "edits": [
+    {
+      "path": "sim/Suborned.Sim/GameStashWatch.cs",
+      "search": "",
+      "replacement": "// The Scout's Watch on a container (GDD §05 bodies: \"A container is emptied on a round every 15:00, its time learnable by Watch, in the\n// mission only\"). The round itself is GameTakedown's ServiceRound and the HUD's NextRound; this file holds what the cell has learned of\n// it. The Watch reuses the rulebook's sight.watch (its seconds and its reach) and the Watch cancel line (lost: nothing learned). Mission\n// knowledge only: never carried to the debrief. Hashed only once something is learned, so every run that never watches a container\n// hashes as it always did.\nusing System;\nusing System.Collections.Generic;\n\nnamespace Suborned.Sim\n{\n    public sealed partial class Game\n    {\n        /// <summary>The containers whose round the cell has learned this mission, in the order learned, with the tick each was learned.</summary>\n        readonly List<(string id, int tick)> roundsKnown = new List<(string id, int tick)>();\n\n        /// <summary>Whether this id is a container stash (one with a servicing round).</summary>\n        bool IsContainer(string id) => StashById(id) is StashPlace s && s.Kind == \"container\";\n\n        /// <summary>Whether the cell knows this container's round (a completed Watch). Read-only.</summary>\n        public bool KnowsRound(string stashId) => roundsKnown.Exists(r => r.id == stashId);\n\n        /// <summary>A Watch on a container (the Scout's: §03 Watch reveals a routine): within sight.watch reach of the container's stand on a\n        /// clear line; it takes sight.watch seconds, costs nothing, and lands as the round learned. A round already known is refused\n        /// already-watched, free. `engage` false only checks (LearnQuery) and changes nothing.</summary>\n        string WatchContainer(Op op, Order o, bool engage = true)\n        {\n            var s = StashById(o.Target);\n            if (s == null || s.Kind != \"container\") return No(\"target-unknown\", $\"'{o.Target}' is no container to watch here\");\n            if (op.Id != OpId.Scout) return No(\"only-scout\", \"only the Scout watches a container's round (§03)\");\n            if (KnowsRound(s.Id)) return No(\"already-watched\", $\"the cell knows when the round empties the {s.Id} already: a Watch teaches nothing more\");\n            if (!G.Within(op.Pos, s.Stand, R.SightReachCm)) return No(\"too-far\", $\"stand within {R.SightReachCm / 100} m of the {s.Id}\", m: R.SightReachCm / 100);\n            if (!Sees(op.Pos, s.Stand)) return No(\"no-clear-line\", $\"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it\");\n            if (!engage) return \"\";\n            Engage(op, o, R.SightWatchS);\n            op.BusyQuote = null; op.BusyPaid = 0;\n            return \"\";\n        }\n\n        void LandWatchContainer(Op op, Order o)\n        {\n            var s = StashById(o.Target);\n            if (s == null || s.Kind != \"container\" || KnowsRound(s.Id)) return;\n            roundsKnown.Add((s.Id, Tick));\n            int next = NextRound(s.Id).tick, secs = next / Hz;\n            Note(\"scout.watch.container\", $\"The Scout has watched the {s.Id}: the round empties it every {R.ServicePeriodS / 60}:{R.ServicePeriodS % 60:00}, next at {secs / 60}:{secs % 60:00}.\");\n        }\n\n        /// <summary>The learned rounds for the checkpoint hash: no bytes until the cell has learned one.</summary>\n        internal void HashStashWatch(Hash.H h)\n        {\n            if (roundsKnown.Count == 0) return;\n            h.S(\"rounds-known\").I(roundsKnown.Count);\n            foreach (var (id, tick) in roundsKnown) h.S(id).I(tick);\n        }\n    }\n}\n"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameOrders.cs",
+      "search": "            if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)",
+      "replacement": "            if (machine && IsContainer(o.Target)) return WatchContainer(op, o, engage); // a container's round (§05; GameStashWatch.cs)\n            if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameOrders.cs",
+      "search": "                case \"watch\" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break;",
+      "replacement": "                case \"watch\" when IsContainer(o.Target): LandWatchContainer(op, o); break; // a container's round (GameStashWatch.cs)\n                case \"watch\" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break;"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameCancel.cs",
+      "search": "                        if (IsPersonRoleName(o.Target)) return \"learns the routine\";",
+      "replacement": "                        if (IsPersonRoleName(o.Target)) return \"learns the routine\";\n                        if (IsContainer(o.Target)) return \"learns when the round empties it\";"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameHudReads.cs",
+      "search": "        /// has no round). Known is false for now: the engine has no order that teaches a round yet (the HUD shows \"?\").</summary>",
+      "replacement": "        /// has no round). Known once a Scout's Watch on the container has completed this mission (GameStashWatch.cs); until then the HUD\n        /// shows \"?\". Read-only.</summary>"
+    },
+    {
+      "path": "sim/Suborned.Sim/GameHudReads.cs",
+      "search": "            return (next, false);",
+      "replacement": "            return (next, KnowsRound(s.Id));"
+    },
+    {
+      "path": "sim/Suborned.Sim/Hash.cs",
+      "search": "            g.HashRounds(h); // brief 022:",
+      "replacement": "            g.HashStashWatch(h); // container rounds learned by Watch (§05): no bytes until one is learned\n            g.HashRounds(h); // brief 022:"
+    }
+  ]
+}

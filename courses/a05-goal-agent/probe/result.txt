@@ -1,0 +1,10 @@
+PASS walkable point in range blocked by actual site geometry exists
+PASS query refuses blocked sightline
+PASS Issue agrees on blocked sightline
+PASS Scout begins container Watch
+PASS completed Watch stores knowledge
+PASS knowledge survives Scout downed
+PASS new mission does not inherit container knowledge
+PASS knowledge itself changes the state hash, independently of logs and orders
+PASS restored knowledge restores exact state hash
+Inherited in-car query: already-watched; Issue: in-car

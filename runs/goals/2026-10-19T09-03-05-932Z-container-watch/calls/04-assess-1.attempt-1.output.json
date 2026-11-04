@@ -1,0 +1,78 @@
+{
+  "summary": "All three requirements are satisfied. Each check passed: clock 1/1, watch 6/6, replay 1/1, and the regression suite 858/858. The independent review passed with no faults. A Scout's Watch on a container uses the existing sight.watch seconds and reach. It costs nothing and adds no Trail. Cancelling it teaches nothing. The learned rounds are kept only for the mission and enter the state hash only once one is learned, so recorded orders replay exactly. Things not yet checked (none of them faults): no test covers the no-clear-line refusal, reach is measured to the container's stand cell rather than the container itself, and if a game snapshot or clone exists it would also need to copy the learned rounds.",
+  "features": [
+    {
+      "id": "container-clock",
+      "state": "satisfied",
+      "explanation": "NextRound works out each container's next round from a phase taken from its id and the service period. It answers -1 for a door or an unknown id, and its known flag comes from KnowsRound, which is false until a Watch on that container lands. The clock check passed (1/1): two fresh games give the same answer, it starts unknown, and reading it leaves the state hash unchanged.",
+      "evidence": [
+        {
+          "path": "sim/Suborned.Sim/GameHudReads.cs",
+          "quote": "int period = T(R.ServicePeriodS), phase = (int)(Streams.Fnv1a32(s.Id) % (uint)period);"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameHudReads.cs",
+          "quote": "return (next, KnowsRound(s.Id));"
+        },
+        {
+          "path": "sim/Suborned.Sim.Tests/GoalWatchTests.cs",
+          "quote": "Assert.Equal((phase, false), g.NextRound(id));"
+        }
+      ],
+      "value": 3,
+      "effort": 1,
+      "risk": 1,
+      "reason": "Value 3: the next-round time is what the player learns and what the Watch builds on. Effort 1: it reuses the existing ServiceRound maths. Risk 1: a read-only query that changes no state."
+    },
+    {
+      "id": "container-watch",
+      "state": "satisfied",
+      "explanation": "WatchContainer refuses an unknown target or door (target-unknown), anyone but the Scout (only-scout), a round already known (already-watched), a Scout out of reach (too-far) and a blocked view (no-clear-line). It then engages for sight.watch seconds at no cost, and LandWatchContainer records the round. Cancel goes through the acting path, which never calls Land, and its cancel line is 'lost'. LearnQuery runs the same checks with engage false and changes nothing. The watch check passed (6/6).",
+      "evidence": [
+        {
+          "path": "sim/Suborned.Sim/GameStashWatch.cs",
+          "quote": "if (KnowsRound(s.Id)) return No(\"already-watched\""
+        },
+        {
+          "path": "sim/Suborned.Sim/GameStashWatch.cs",
+          "quote": "if (op.Id != OpId.Scout) return No(\"only-scout\", \"only the Scout watches a container's round (§03)\");"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameOrders.cs",
+          "quote": "if (machine && IsContainer(o.Target)) return WatchContainer(op, o, engage);"
+        },
+        {
+          "path": "sim/Suborned.Sim/GameCancel.cs",
+          "quote": "case \"watch\": case \"listen\": return (\"lost\", \"the time is spent; nothing is learned\");"
+        }
+      ],
+      "value": 4,
+      "effort": 2,
+      "risk": 2,
+      "reason": "Value 4: this is the core of the goal. It puts the Scout's 'Watch reveals a routine' to work on the body-hiding and timing play. Effort 2: one new file plus small changes to how orders are routed. Risk 2: it changes how Watch orders are routed, but all 858 regression tests still pass."
+    },
+    {
+      "id": "watch-replay",
+      "state": "satisfied",
+      "explanation": "roundsKnown belongs to each game, is filled only when a Watch lands, and is never carried into the debrief. HashStashWatch adds the learned ids and their ticks to the checkpoint hash, and adds nothing while none is learned. The replay check passed (1/1): a replay from the recorded orders alone learns the same round, with matching checkpoints and final hash.",
+      "evidence": [
+        {
+          "path": "sim/Suborned.Sim/GameStashWatch.cs",
+          "quote": "foreach (var (id, tick) in roundsKnown) h.S(id).I(tick);"
+        },
+        {
+          "path": "sim/Suborned.Sim/Hash.cs",
+          "quote": "g.HashStashWatch(h); // container rounds learned by Watch (§05): no bytes until one is learned"
+        },
+        {
+          "path": "sim/Suborned.Sim.Tests/GoalWatchTests.cs",
+          "quote": "Assert.Equal(g.Checkpoints, replay.Checkpoints);"
+        }
+      ],
+      "value": 3,
+      "effort": 1,
+      "risk": 2,
+      "reason": "Value 3: exact replay is a house rule, and anything that breaks it is a defect. Effort 1: a short hash function. Risk 2: the hash change touches every checkpoint, but it adds nothing to runs that never watch a container."
+    }
+  ]
+}

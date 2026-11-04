@@ -1,0 +1,42 @@
+[
+  {
+    "role": "simulation-engineer",
+    "taskId": "node:delegated-task:command%3Amcp%3A2742b233-f1fc-4e2a-8729-e6d8625f12a1%3Adelegate-task%3Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-simulation-engineer",
+    "childThreadId": "thread:delegated-task:command%3Amcp%3A2742b233-f1fc-4e2a-8729-e6d8625f12a1%3Adelegate-task%3Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-simulation-engineer",
+    "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A2742b233-f1fc-4e2a-8729-e6d8625f12a1%253Adelegate-task%253Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-simulation-engineer:ordinal:1",
+    "childNodeId": "node:delegated-task:command%3Amcp%3A2742b233-f1fc-4e2a-8729-e6d8625f12a1%3Adelegate-task%3Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-simulation-engineer",
+    "status": "running",
+    "workState": "working",
+    "hasPendingChildRuns": false,
+    "latestTerminalRunId": null,
+    "latestTerminalStatus": null,
+    "latestTerminalSummary": null,
+    "latestTerminalResultContextTransferId": null,
+    "providerInstanceId": "codex",
+    "model": "gpt-6-astra",
+    "summary": null,
+    "resultContextTransferId": null,
+    "hasPendingQuestion": false,
+    "waitTimedOut": false
+  },
+  {
+    "role": "tools-engineer",
+    "taskId": "node:delegated-task:command%3Amcp%3A2742b233-f1fc-4e2a-8729-e6d8625f12a1%3Adelegate-task%3Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-tools-engineer",
+    "childThreadId": "thread:delegated-task:command%3Amcp%3A2742b233-f1fc-4e2a-8729-e6d8625f12a1%3Adelegate-task%3Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-tools-engineer",
+    "childRunId": "run:thread:thread%3Adelegated-task%3Acommand%253Amcp%253A2742b233-f1fc-4e2a-8729-e6d8625f12a1%253Adelegate-task%253Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-tools-engineer:ordinal:1",
+    "childNodeId": "node:delegated-task:command%3Amcp%3A2742b233-f1fc-4e2a-8729-e6d8625f12a1%3Adelegate-task%3Aruns-crew-2026-10-19T10-24-00Z-codex-discovery-tools-engineer",
+    "status": "running",
+    "workState": "working",
+    "hasPendingChildRuns": false,
+    "latestTerminalRunId": null,
+    "latestTerminalStatus": null,
+    "latestTerminalSummary": null,
+    "latestTerminalResultContextTransferId": null,
+    "providerInstanceId": "codex",
+    "model": "gpt-6-astra",
+    "summary": null,
+    "resultContextTransferId": null,
+    "hasPendingQuestion": false,
+    "waitTimedOut": false
+  }
+]
