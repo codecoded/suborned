@@ -71,14 +71,14 @@ public class Book096
         Log("vale.exits"); Log("turn.pay.turned", "The waitress takes the money (waitress)."); Log("seal.starts"); Log("rivals.coming");
         g.Ops[(int)OpId.Tech].Gun.Down = true; Host.Call(h, "CrucialTrack");
         var kinds = h.CrucialQueue.Select(c => c.Kind).ToList();
-        Assert.That(kinds, Is.EqualTo(new List<string> { "seal", "down", "target-out", "rival-car", "turned" }), "seal > agent down > Popovic out > rival car > turned (Sky's call 7)");
-        Assert.That(h.CrucialNow.Kind, Is.EqualTo("seal"));
+        Assert.That(kinds, Is.EqualTo(new List<string> { "down", "target-out", "rival-car", "turned" }), "agent down > Popovic out > rival car > turned (Sky's call 7); the seal is its plate's, never a card (Sky 2026-11-05)");
+        Assert.That(h.CrucialNow.Kind, Is.EqualTo("down"));
         var turned = h.CrucialQueue.Find(c => c.Kind == "turned"); Assert.That(turned.Title, Does.Contain("Inez")); Assert.That(turned.Face, Does.Contain("cameo_waitress"));
         Assert.That(h.CrucialQueue.Find(c => c.Kind == "down").Title, Does.Contain(h.AgentName((int)OpId.Tech)));
-        h.CrucialDismiss(); Assert.That(h.CrucialNow.Kind, Is.EqualTo("down"), "a click reads the card and the next shows");
         g.Ops[(int)OpId.Tech].Gun.Down = false; Host.Call(h, "CrucialTrack");
         Assert.That(h.CrucialQueue.Exists(c => c.Kind == "down"), Is.False, "the agent is up again: the card leaves by itself (Sky's call 4)");
-        Assert.That(h.CrucialLog.Count, Is.EqualTo(5), "every card stays in the Journal");
+        h.CrucialDismiss(); Assert.That(h.CrucialNow.Kind, Is.EqualTo("rival-car"), "a click reads the card and the next shows");
+        Assert.That(h.CrucialLog.Count, Is.EqualTo(4), "every card stays in the Journal");
         g.Alert = 1; Host.Call(h, "CrucialTrack"); Assert.That(h.CrucialNow.Kind, Is.EqualTo("alert"), "Alert outranks Popovic out");
         Assert.That(h.CrucialLine(h.CrucialNow), Does.EndWith(HandoverHost.MissionClock(g.Tick)));
         g.Alert = 0; g.Ops[(int)OpId.Tech].Gun.Down = false;

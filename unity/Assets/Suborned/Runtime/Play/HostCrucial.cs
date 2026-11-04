@@ -7,7 +7,7 @@ namespace Suborned.Play
 {
     /// <summary>Brief 096, the slim feed (Sky 2026-11-04: "the main feed bottom right of the screen should really only show crucial info that lasts until clicked on to dismiss
     /// (then shows the next etc)"; Glyph's mocks 3a, 3b, 3d; Sky's calls 4 and 7, "all. recommended"): one crucial card at a time, kept until clicked, "1 of n"; queued most
-    /// urgent first (seal, police, agent down, rivals for our car, Alert, seen, Popovic out, rival car, turned or refused, body found). A card leaves by itself only once
+    /// urgent first (police, agent down, rivals for our car, Alert, seen, Popovic out, rival car, turned or refused, body found). A card leaves by itself only once
     /// it stops being true (the rivals turn back from the car, the agent is up again). Everything, crucial or not, is in the book's Journal. The clock runs; nothing
     /// pauses. Read from the engine's log, ledger and state once a tick (from FeedClock): nothing here changes the run, so a replay is untouched.</summary>
     public sealed partial class HandoverHost
@@ -18,7 +18,7 @@ namespace Suborned.Play
             public readonly List<(string icon, string word)> Fixes = new();
         }
         /// <summary>The kinds in their order of urgency (Sky's call 7); turned and refused share a rank.</summary>
-        public static readonly string[] CrucialOrder = { "seal", "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
+        public static readonly string[] CrucialOrder = { "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
         /// <summary>Cards waiting to be read, the shown one first; and every crucial card this run, oldest first (the Journal marks them).</summary>
         public readonly List<CrucialCard> CrucialQueue = new(), CrucialLog = new();
         public CrucialCard CrucialNow => CrucialQueue.Count > 0 ? CrucialQueue[0] : null;
@@ -83,8 +83,8 @@ namespace Suborned.Play
         void CrucialFromLog(LogLine l)
         {
             string code = l.Code ?? "";
-            if (code == "seal.starts") { var c = Crucial("seal", code); c.Icon = "lock"; }
-            else if (code is "security.called" or "fight.loud" || code.StartsWith("alarm.dispatches", StringComparison.Ordinal))
+            // Sky 2026-11-05 ("sure"): the seal is never a feed card; its plate under the clock (brief 093) carries the countdown, in the Journal like every event
+            if (code is "security.called" or "fight.loud" || code.StartsWith("alarm.dispatches", StringComparison.Ordinal))
             { if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; } }
             else if (code == "vale.exits") { var c = Crucial("target-out", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "councillor"; }
             else if (code == "rivals.coming") { var c = Crucial("rival-car", code); c.Face = "badges/signal_rival"; c.View = "car/rivals"; }
