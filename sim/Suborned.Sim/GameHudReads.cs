@@ -154,7 +154,7 @@ namespace Suborned.Sim
                 l.Add(new OpenWindow("call", "pickup", until));
             }
             if (!PatrolDown && PatrolAwayUntil > Tick) l.Add(new OpenWindow("reroute", "patrol", PatrolAwayUntil));
-            if (RivalsDelayMethod == "mislead" && RivalsDelayedUntil > Tick && !RivalsAbsorbed) l.Add(new OpenWindow("mislead", "rivals", RivalsDelayedUntil));
+            if (!RivalsAbsorbed) foreach (var m in Crew) if (Up(m) && !m.Fight && m.Misled && ((m.Mode == CrewMode.Walking && m.Goal == "misled") || (m.Mode == CrewMode.Posted && m.Post == "misled"))) l.Add(new OpenWindow("mislead", m.Id, m.Mode == CrewMode.Posted ? MisledBackTick(m) : -1)); // brief 096 (engine 0.41.0): a misled member away from his post, back at m:ss once he watches
             if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, R.LoopRuns ? LoopUntil : -1)); // engine 0.31.0 (Loop v2): a real end
             if (!Over) foreach (var c in CutReps) if (!c.Done) l.Add(new OpenWindow("disable", c.Cam, c.LandAt, c.From)); // engine 0.31.0 (brief 058 §2): the desk's clock
             if (!Range && !Over && Lockdown < INF) l.Add(new OpenWindow("seal", "district", Lockdown, sealMovedAt, SealRunning)); // brief 057 §4 (engine 0.30.0)

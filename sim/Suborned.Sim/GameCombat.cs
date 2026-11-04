@@ -386,8 +386,8 @@ namespace Suborned.Sim
                 if (s.Covering) Note("shot.covering", $"{s.By} lays covering fire on {s.T} at {s.D / 100} m.");
                 else Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
                 int ev = shotEvents.Count; shotEvents.Add(new ShotEvent { Tick = Tick, By = s.By, Target = s.T, From = s.From, At = s.At, Hit = s.Hit, Covering = s.Covering, Damage = s.Hit ? s.Dmg : 0, Covered = !s.Hit && !s.Covering && s.D > R.PointBlankCm && CoverMod(s.T, s.At, s.From) < 1000 }); // brief 039: the host's events (output only)
-                if (FightBranch == "safe" && FightSprung == INF && IsOpId(s.By) && IsRival(s.T) && IsFightHostile(s.T)) Spring(true); // brief 059: the crew lurks in plain sight; a shot at one of them springs the ambush
-                bool cell = IsOpId(s.By), untraced = cell && (Range || IsFightHostile(s.T) && !R.FightTraced && FightOverTick == INF); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced)
+                if (FightBranch == "safe" && FightSprung == INF && IsOpId(s.By) && ((IsRival(s.T) && IsFightHostile(s.T)) || s.T == "car:rivals")) Spring(true); // brief 059: the crew lurks in plain sight; a shot at one of them (brief 096: or at their car) springs the ambush
+                RivalCarShotNear(s.From, s.At, s.T); bool cell = IsOpId(s.By), untraced = cell && (Range || (IsFightHostile(s.T) || (s.T == "car:rivals" && FightBranch == "safe")) && !R.FightTraced && FightOverTick == INF); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced); brief 096: the rival car, the safe fight's block, is fought untraced
                 if (cell) CellGunfire(OpOf(Sim.Op.Parse(s.By)), s.T, s.At, untraced);
                 else if (!IsFightHostile(s.By) && !(s.By == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + s.By); // any gunfire (§05)
                 if (Over) return;
@@ -405,7 +405,7 @@ namespace Suborned.Sim
         {
             string name = Sim.Op.Name(op.Id);
             if (untraced) { FightShots++; if (!Range) WakePatrol(op.Pos, op.Id); return; }
-            Gunfire++;
+            Gunfire++; gangShotNow = GangTarget(t); // brief 096 (engine 0.41.0, GameGangShooting.cs): the shot's own incidents place nobody
             var shot = new CauseOrigin { Tick = Tick, Report = "gunfire:" + t, Because = "gunfire", Reporter = Shooter(name, op.Pos, at), ScenePlaced = true, Scene = IsPersonTarget(t) ? at : op.Pos }; shot.Ops.Add(name); // output only (FailCause.cs)
             if (gunfireOrigin == null) gunfireOrigin = shot;
             shotNow = shot; RaiseAlert(R.GunfireAlert, "gunfire:" + t); shotNow = null;
@@ -439,11 +439,11 @@ namespace Suborned.Sim
             if (CivilianOf(t) is Person shotAt) CivilianShotAt(shotAt, op);
             DrawRivals(); WakePatrol(op.Pos, op.Id);
             var (delay, text, who) = Reporter(t, op.Pos, civSees > 0);
-            if (delay >= 0)
+            bool civSaw = civSees > 0 || seen.Exists(w => w.p.Civilian); if (delay >= 0) // brief 096: a passer-by who saw the shooter or the target
             {
                 var scene = IsPersonTarget(t) ? at : op.Pos; var by = who == "witness" ? (firstCiv.Length > 0 ? firstCiv : "heard") : who;
-                CallSecurity(delay, text, scene, origin: () => OriginNow("gunfire:" + t, "response", by, scene, by == "heard" ? op.Pos : (Pt?)null, op.Pos, name));
-            }
+                GangOrCall(t, who, civSaw, delay, text, scene, () => OriginNow("gunfire:" + t, "response", by, scene, by == "heard" ? op.Pos : (Pt?)null, op.Pos, name)); // brief 096: an unclaimed shooting seals nothing (GameGangShooting.cs)
+            } else if (GangPending && !GangTarget(t)) GangClaimed("another shooting"); gangShotNow = false; // brief 096: a shot nobody reports at a non-rival still places the cell; then the flag is down
         }
 
         /// <summary>Who reports the cell's gunfire, and so how soon the response unit comes (rulebook security.response).</summary>

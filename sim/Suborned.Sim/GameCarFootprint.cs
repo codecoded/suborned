@@ -61,7 +61,7 @@ namespace Suborned.Sim
             if (Range) { foreach (var c in rangeCars) if (!c.Replaced) l.Add(new StandingCar(c.Id, S.At($"spawn:car:{c.Slot}"), CarNose)); return l; }
             if (getawayPath == null && CurStand != null) l.Add(new StandingCar("car:getaway", CurStand.CarAt, CurStand.Facing));
             if (OfficialStanding()) l.Add(new StandingCar("car:official", CarPos(), OfficialHeading()));
-            if ((!CarMoving || RivalBlocked) && RivalCarPose() is var rp && rp.HasValue) l.Add(new StandingCar("car:rivals", rp.Value.pos, rp.Value.heading)); // brief 096: a test's block stands
+            if (!CarMoving && RivalCarPose() is var rp && rp.HasValue) l.Add(new StandingCar("car:rivals", rp.Value.pos, rp.Value.heading)); // brief 096: a driving car blocks nothing
             return l;
         }
         /// <summary>The official car stands: at the pickup until it drives (the block move is retired, brief 059), parked round the back, or stopped.</summary>
@@ -204,7 +204,7 @@ namespace Suborned.Sim
         {
             if (Range || ccPath == null || ccProf == null || !CarMoving || carAheadLeg == ccStart || ccProf.Length - 1 - (Tick - ccStart) > R.CarAheadTicks) return;
             carAheadLeg = ccStart;
-            var mask = MaskOf(S.Grid, R, new[] { (ccPath.End, FacingOf(ccStop)) }); if (mask == null) return;
+            var mask = MaskOf(S.Grid, R, new[] { (ccPath.End, ccPath.Heading(ccPath.Length)) }); if (mask == null) return;
             var g = S.Grid;
             foreach (var op in Ops)
             {

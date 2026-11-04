@@ -348,10 +348,10 @@ namespace Suborned.Sim
                 r.Is(!g.FightWarned, "pressured, Inez warns nobody");
                 r.Is(!g.GuardAlly, "the guard saw the cell: no ally");
                 r.Send(Enf, "d:Getaway bay");
-                r.FightItOut(120);
+                r.FightItOut(120); r.Until(() => g.Over, T(200)); // engine 0.41.0: boxed in by the rival car, he can't board and go past them
                 r.Eq(g.Result, Outcome.Failure, "the lone, unprepared Enforcer loses the safe fight");
                 r.Eq(g.FailCode, "rivals-reach-vale", "and the fail names what the rivals came for");
-                var fc = CauseIs(r, "rivals-reach-vale", "downed-enforcer", true, r.Shots().FindLast(s => s.hit).by, "rival", Enf); // the fail camera (ScenariosFailCause.cs): the rival whose shot downed him
+                var lastBy = r.Shots().FindLast(s => s.hit).by; var fc = CauseIs(r, "rivals-reach-vale", "downed-enforcer", true, lastBy, lastBy.StartsWith("rival", StringComparison.Ordinal) ? "rival" : "officer", Enf); // engine 0.41.0: boxed in, the fight runs long enough for the response to join // the fail camera (ScenariosFailCause.cs): the rival whose shot downed him
                 ShotFrom(r, fc, r.Shots().FindLast(s => s.hit).by, Enf);
             }, pressure);
 

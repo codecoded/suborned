@@ -142,7 +142,7 @@ namespace Suborned.Sim
         List<string> GateHolders(out int until)
         {
             var l = new List<string>(); until = -1;
-            if (!R.FightAlways || Vale != ValeAt.Car || FightBranch.Length == 0 || FightBranch == "range" || FightOverTick != INF || blockerOut) return l;
+            if (!R.FightAlways || Vale != ValeAt.Car || FightBranch.Length == 0 || FightBranch == "range" || FightOverTick != INF || blockerOut || rivalBlockFight) return l; // brief 096 (engine 0.41.0): where the rival car is the block, the box is the gate
             if (Blockers.Count > 0) { foreach (var id in Blockers) { var b = HostileOf(id); if (b != null && Up(b)) l.Add(id); } return l; }
             foreach (var h in Hostiles)
             {

@@ -258,8 +258,8 @@ namespace Suborned.Sim
             "person-away", "no-place", "unwalkable", "no-walk", "run-carrying-vale", "run-carrying-downed", "run-tethered", "only-scout", "only-fixer",
             "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
             "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", /* brief 059: car-gone, car-busy and call-too-late retired with the driver's Call */
-            "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", "no-rivals",
-            "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
+            "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", /* brief 096: no-rivals and stand-near-rivals retired with the tip */
+            "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
             "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "not-driven", "follow-not-cell", "fire-running",
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
             "already-carrying", "carry-names-downed", "carry-self", "not-down", "already-carried", "nothing-to-cancel", "keeps-vale", "holstering",
@@ -287,6 +287,9 @@ namespace Suborned.Sim
             // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the
             // crew is down, not on a rival still unhurt; Steam with no heat-main grille in reach
             "move-cooling", "talk-police", "talk-none-down", "talk-not-hurt", "steam-no-grille",
+            // brief 096 (engine 0.41.0, GameCrewTurn.cs): the false tip retired; a member of the crew spoken to (no need record, paid off, in the
+            // fight, on the move, a Pay refused once)
+            "tip-retired", "crew-no-need", "crew-gone", "crew-fighting", "crew-walking", "refused-before",
         };
     }
 

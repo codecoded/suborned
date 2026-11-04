@@ -28,11 +28,9 @@ namespace Suborned.Sim
             }
             return l;
         }
-        /// <summary>Where the rival car is and which way it points, or null while it is off the map (Off, Away); a test's Start.RivalBlock places it
-        /// for its window (brief 096: the split's block point, until the split builds it).</summary>
-        public (Pt pos, Pt heading)? RivalCarPose() => RivalBlocked ? (Start.RivalBlock!.Value.At, Start.RivalBlock.Value.Heading) : RivalCarPoseCrew();
-        /// <summary>A test's Start.RivalBlock holds the rival car standing now.</summary>
-        bool RivalBlocked => Start.RivalBlock is var b && b.HasValue && Tick >= b.Value.From && Tick < b.Value.Until;
+        /// <summary>Where the rival car is and which way it points, or null while it is off the map (Off, Away, Gone). Engine 0.41.0: the block on
+        /// arrival is the crew's own routine (GameRivalBlock.cs); 0.40.0's test seam Start.RivalBlock is retired into it.</summary>
+        public (Pt pos, Pt heading)? RivalCarPose() => RivalCarPoseCrew();
         /// <summary>A stand's way out (car.box), or none (the range).</summary>
         public Pt[] WayOut(string standId) => !Range && S.GroundOf(R).Way.TryGetValue(standId, out var w) ? w : Array.Empty<Pt>();
         /// <summary>The cars boxing the getaway car in where it stands now (none while it drives). A host read: the ring's "Boxed in", Alt's way out.</summary>

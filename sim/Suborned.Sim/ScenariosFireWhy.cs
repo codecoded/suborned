@@ -141,7 +141,7 @@ namespace Suborned.Sim
             {
                 var g = r.G; Free(r, false);
                 // brief 059: the lookout (rival-4) posts across Apron Road at 3:18, facing the official bay: the Enforcer stands 6 m in front of him, where the bay's watchers see his draw (Alert 2: the crew alerted, ai.intent.rivals)
-                r.Is(r.Until(() => g.Crew[3].Mode == CrewMode.Posted, T(200)), "the rival crew is here");
+                r.Is(r.Until(() => g.Crew[3].Mode == CrewMode.Posted, T(300)), "the rival crew is here"); // engine 0.41.0: the lookout posts about 3:58 (out at the block, 84 m)
                 var post = g.MemberPos(g.Crew[3], g.Tick); var face = g.Crew[3].Base; long fl = Math.Max(1, G.Isqrt((long)face.X * face.X + (long)face.Y * face.Y));
                 var front = new Pt(post.X + (int)(face.X * 600L / fl), post.Y + (int)(face.Y * 600L / fl)); var e = g.S.Grid.NearestFree(front) ?? front;
                 r.To(r.SendTo(Enf, e));

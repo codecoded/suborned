@@ -85,16 +85,16 @@ namespace Suborned.Sim
                 r.Is(g.LoopOn && !g.CameraWatching("entrance", r.Stand("d:Office entrance")), "the camera stays blind");
             });
 
-            Add("N31", "—", "Cancel Reroute and Mislead part-done: the patrol keeps its sweep and the rivals stay; no Trail.", r =>
+            Add("N31", "—", "Cancel Reroute and Mislead part-done: the patrol keeps its sweep and the lookout keeps his post; no Trail.", r =>
             {
-                var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, TipSpot(r)))); // brief 059: the tip is given at the rival car where it parks
+                var g = r.G; var lp = g.S.Stand(g.S.RivalLookout);
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, g.S.Grid.NearestFree(lp + new Pt(-300, 0)) ?? lp))); // brief 096 (engine 0.41.0): the false tip is retired; Mislead names the lookout
                 int trail = g.Trail;
                 r.Do(Tech, "reroute", "patrol"); r.Wait(T(20)); r.Do(Tech, "cancel"); r.Wait(T(30));
                 r.Is(g.PatrolAwayUntil <= g.Tick && g.Trail == trail, "the patrol keeps its sweep; no Trail");
-                r.To(g.RivalAt);
-                r.Do(Scout, "mislead", "rivals"); r.Wait(T(20)); r.Do(Scout, "cancel"); r.Wait(T(30));
-                r.Is(g.RivalsPresent && g.RivalsDelayedUntil == 0 && g.Trail == trail, "the rivals stay; no Trail");
+                r.Until(() => g.Crew[3].Mode == CrewMode.Posted && g.Crew[3].Post == "lookout", T(300));
+                r.Do(Scout, "mislead", "rival-4"); r.Wait(T(20)); r.Do(Scout, "cancel"); r.Wait(T(30));
+                r.Is(g.Crew[3].Post == "lookout" && !g.Crew[3].Misled && g.Trail == trail, "the lookout keeps his post; no Trail");
             });
 
             Add("N32", "—", "Cancel Enter (rulebook cancel.enter staff-report): the Enforcer comes back out at the public door without Vale; the staff report the intruder, one reported incident.", r =>
@@ -126,7 +126,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
-                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: taken in his car round the back
                 r.Do(Enf, "take"); r.Wait(T(10));
                 r.Eq(g.ActivityOf(OpId.Enforcer).CancelCost, "vale-reports", "the HUD reads the cost");
@@ -140,7 +140,7 @@ namespace Suborned.Sim
                 var a = g.ActivityOf(OpId.Enforcer);
                 r.Is(!a.CanCancel && a.CancelCost == "keeps-vale", "holding Vale: putting him down is no cancel");
                 r.Refused(Enf, "cancel", "", "the cancel is refused");
-            }, drv);
+            }, NoCrew(drv));
 
             Add("N34", "—", "Cancel a carry: lifting part-done, nothing is lifted; carrying, the downed operative is laid down where the carrier stands.", r =>
             {

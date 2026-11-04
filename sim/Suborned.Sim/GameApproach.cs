@@ -114,6 +114,7 @@ namespace Suborned.Sim
             var o = op.Act!; string name = Sim.Op.Name(op.Id);
             if (op.Down || op.Inside || op.InCar || op.Driven || op.CarriedBy.HasValue) { DropAct(op, o, op.Down ? "agent-down" : op.Inside ? "enforcer-inside" : op.InCar ? "in-car" : "agent-busy", "the walk in ends"); return; }
             if (op.Busy != null) return; // an act of its own started (none should: any act given ends the walk in); wait
+            if (IsCrewId(o.Target) && !Range) { CrewApproachStep(op, o); return; } // brief 096 (engine 0.41.0): a member of the rival crew (GameCrewTurn.cs)
             var p = PersonByRole(o.Target); var at = PersonPos(p);
             if (!at.HasValue) { DropAct(op, o, p.Down ? "person-down" : "person-away", p.Down ? $"{p.Role} is down" : $"{p.Role} is not out on the street"); return; }
             if (InPlace(op, o.Do, at.Value, ActReachOf(op, o.Do)))

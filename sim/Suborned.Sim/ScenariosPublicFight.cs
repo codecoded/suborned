@@ -108,8 +108,7 @@ namespace Suborned.Sim
                 r.FightItOutAll(120, Scout, Fixer, Tech); // brief 018 §10: break the crew (the blocker falls first; a free car alone is board and go, N113)
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
-                var bo = g.Log.FindAll(l => l.Code == "blocker.out"); var cf = g.Log.FindAll(l => l.Code == "car.free"); // moved here from N113 (2026-10-19)
-                r.Is(bo.Count == 1 && (cf.Count == 0 || cf[0].Tick >= bo[0].Tick), $"logged by code: blocker.out, and car.free (if the car was held) after it (brief 059: the blocker can fall before he holds it) ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
+                r.Is(!g.Log.Exists(l => l.Code == "fight.blocker") && g.Log.Exists(l => l.Code == "car.unboxed"), "engine 0.41.0 (brief 096): the rival car is the block, so no body goes for the road; the way clears when the car leaves or explodes (car.unboxed)");
                 r.Eq(g.Fights.Count, 1, "one fight: the final fight");
                 var f = g.Fights[0];
                 r.Is(f.Final && f.Public, "the final fight, and the public heard it");
