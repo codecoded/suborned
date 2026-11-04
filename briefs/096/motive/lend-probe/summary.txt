@@ -1,0 +1,50 @@
+== veteran
+200 fails {'enforcer-down': 174, 'sealed': 26}
+claim [('a new incident (gunfire).', 95), ('the police saw the fixer at the scene.', 67), ('no gang filed', 13), ('never claimed', 11), ("the police know the tech's face.", 4), ('the police saw the tech at the scene.', 4), ('a new incident (weapon-drawn).', 3), ("the police know the fixer's face.", 2), ("the police know the scout's face.", 1)]
+blast hits an op 75
+first drawn.seen [("The patrol sees the scout's weapon drawn. Alert 2.", 54), ("The patrol sees the tech's weapon drawn. Alert 2.", 25), ("The entrance camera shows the fixer's weapon drawn. Alert 2.", 24), ("The security sees the tech's weapon drawn. Alert 2.", 21), ("The entrance camera shows the scout's weapon drawn. Alert 2.", 14), ("The patrol sees the enforcer's weapon drawn. Alert 2.", 13)]
+disabled median 175.55
+dis n 180 med 175.6 p25 167.0 p75 183.5
+ret-dis n 180 med 8.5 p25 5.8 p75 11.6
+lastgone-ret n 12 med 52.5 p25 51.9 p75 54.8
+drawnseen-called n 164 med 16.8 p25 10.9 p75 38.9
+claim-called n 176 med 47.1 p25 23.3 p75 65.2
+Counter({'retreat': 200, 'gone0': 188, 'downs5': 122, 'downs3': 42, 'downs4': 30, 'gone1': 8, 'gone2': 4, 'downs2': 3, 'downs1': 3})
+[('security.called', 389), ('response.reinforces', 242), ('response.hit', 220), ('security.gang', 187), ('security.gang-claimed', 176), ('response.down', 121), ('security.hit', 30), ('security.officer-down', 12), ('security.down', 11)]
+== quiet-a
+spring->board.in             n 189 med   41.3 p25   36.4 p75   57.5
+spring->car.burning          n 138 med   56.6 p25   50.8 p75   89.6
+spring->car.disabled         n 138 med   52.1 p25   45.5 p75   86.6
+spring->car.exploded         n 138 med   62.6 p25   56.8 p75   95.6
+spring->car.unboxed          n 185 med   58.5 p25   42.2 p75   78.2
+spring->end                  n 200 med   63.0 p25   50.6 p75   84.4
+spring->fight.over           n 184 med   58.5 p25   42.3 p75   79.0
+spring->rivals.drives-off    n  54 med   31.3 p25   27.6 p75   42.2
+Counter({'win': 179, 'unbox:explode': 138, 'unbox:drive-off': 54, 'closed-in': 9, 'unbox:none': 8, 'vale-dead': 7, 'rivals-reach-vale': 4, 'sealed': 1})
+== quiet-b
+car.parks                  n 200 med 6:05.9 p10 6:05.9 p90 6:05.9
+take.done                  n 200 med 6:45.6 p10 6:44.1 p90 6:55.7
+fight.ambush               n 200 med 6:59.4 p10 6:51.2 p90 7:10.9
+rivals.lookout-posted      n 200 med 3:59.6 p10 3:46.6 p90 4:11.6
+car.unboxed                n 199 med 7:11.9 p10 7:03.6 p90 7:23.3
+car.exploded               n 199 med 7:11.8 p10 7:03.5 p90 7:23.2
+end-take.done              n 200 med 1:01.3 p10 0:43.6 p90 1:17.8
+board.in                   n  97 med 7:49.6 p10 7:33.7 p90 8:06.6
+[('rivals-reach-vale / downed-enforcer', 90), ('win / ', 90), ('closed-in / on-foot', 13), ('closed-in / no-go', 7)]
+== rear
+td->fight.ambush       n 200 med   13.1 p25    8.3 p75   19.5 p90   23.1
+td->car.exploded       n 193 med   25.9 p25   21.9 p75   31.4 p90   35.4
+td->car.unboxed        n 193 med   26.0 p25   22.0 p75   31.5 p90   35.5
+[('boarded1', 167), ('rivals-reach-vale/downed-enforcer', 133), ('opsdown3', 120), ('closed-in/on-foot', 67), ('opsdown2', 64), ('boarded2', 26), ('opsdown1', 16), ('boarded0', 7)]
+== probe-rear-open
+td->fight.ambush       n 200 med    6.8 p25    4.8 p75   12.0 p90   16.6
+td->car.exploded       n  61 med   79.3 p25   77.3 p75   82.4 p90   84.3
+td->car.unboxed        n  60 med   79.4 p25   77.4 p75   82.8 p90   85.1
+[('closed-in/on-foot', 199), ('boarded0', 188), ('opsdown0', 112), ('opsdown1', 78), ('boarded1', 10), ('opsdown2', 8), ('opsdown3', 2), ('boarded2', 2), ('rivals-reach-vale/downed-enforcer', 1)]
+== probe-rear-thin
+td->fight.ambush       n 199 med    9.5 p25    5.1 p75   16.2 p90   22.3
+td->car.exploded       n 163 med   65.7 p25   59.9 p75   72.6 p90   78.0
+td->car.unboxed        n 168 med   65.3 p25   59.7 p75   72.6 p90   78.1
+td->end                n  22 med   78.4 p25   73.1 p75   82.5 p90   83.8
+td->rivals.drives-off  n   5 med   28.3 p25   22.7 p75   38.4 p90   38.8
+[('closed-in/on-foot', 175), ('opsdown0', 108), ('boarded0', 100), ('opsdown1', 66), ('boarded1', 39), ('boarded2', 32), ('boarded3', 29), ('withdrawn/car-left-without-vale', 22), ('opsdown2', 21), ('opsdown3', 5), ('rivals-reach-vale/downed-enforcer', 2), ('rivals-reach-vale/lookout', 1)]

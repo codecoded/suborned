@@ -1,0 +1,210 @@
+{
+ "schema": "suborned.motive.values/1",
+ "brief": "096",
+ "author": "Motive",
+ "date": "2026-11-05",
+ "page": "briefs/096/motive/lend.html",
+ "status": "for Keel to build right after engine 0.41.0 (branch t3/rival-block-and-lookout). No Sky gate: every rule follows a call Sky has made (071 Option A 2026-10-26; 082 calls 1-4 2026-10-30; 096 rivals page 2026-11-04; 'build the lend now' 2026-11-05). Every value is [S] and proposed. The lend and the two-car rules are behind the build switch getaway-split; the fight fixes (F1-F3) and the placing rule (V2) are today's rules on every route. Times are on the 5:30 shift, measured on engine 0.41.0 where marked (200 seeds, out/scratch/motive/096l; summary in briefs/096/motive/lend-probe/summary.txt).",
+ "sky": {
+  "2026-11-05": "build the lend now (decided 2026-10-26, brief 071, never built): the turned driver lends his car, the Enforcer drives Popovic off in it from the service bay, the other three escape in the cell's car through the block; two cars, two Go's. Not a later close.",
+  "082.1": "Your three get taken down - just have police coming until done for now I think - if they're not in the car",
+  "082.2": "they block your own car as soon as enforcer leaves with Vale",
+  "082.4": "they block vales car if you take it [our car to the service entrance] since it shouldn't be at the service entrance",
+  "096.rivals.4": "a block ends when a beaten crew's wheelman, still in the car, drives it off, else only by blowing the car up"
+ },
+ "questionsForSky": [],
+ "lend": {
+  "L1-lend": {
+   "v": "A turned driver's car, standing where he stopped for the pickup (the service bay, or the kerbside stop when the drive is taken), with the target inside, becomes a cell car when the in-car Take ends: the Enforcer at the wheel, the target in the back. The driver steps out within the Take and walks off by his routine's way off the map (Pulse).",
+   "price": {"usd": 0, "s": 0, "trail": 0, "note": "inside the Take's 38 s"},
+   "lendStepS": {"v": 0, "unit": "s"},
+   "src": "071 R1; 0.40.0 kerb ('the Take, the lend and the carry use that stop')",
+   "tag": "S"
+  },
+  "L2-cars": {
+   "v": "Each cell car has its own stand, seats, hold, exit lane, blocker, Go and seen-leaving. Board, Drive, Step out and Go name the car. car:getaway is the cell's own (Drive allowed, hunted if seen); car:official, once lent, is a cell car for Board, Step out and Go only (never Driven).",
+   "src": "071 R2",
+   "tag": "S"
+  },
+  "L3-seats": {
+   "v": "The lent car takes one standing op: the Enforcer at the wheel, with the target. Another op may board it only while no standing op is aboard (to drive it if the Enforcer is down or has stepped out). The cell's car seats the four and the target, as today.",
+   "lendSeats": {"v": 1, "unit": "standing ops", "tag": "S", "proposed": true},
+   "refusal": {"code": "board-lent-full", "placeholder": "Only one of us drives Popovic's car: {op} is at the wheel."},
+   "reason": "Sky 2026-11-05: 'the other three escape in the cell's car through the block'. 071 seated five, which lets all four leave in Popovic's car and skips the climax. The one exception keeps the rescue (a downed Enforcer can still be driven out).",
+   "overrides": "071 getaway.cars 'Seats 5 each'",
+   "tag": "S"
+  },
+  "L4-stand": {
+   "v": "The lent car's stand is a site stand like any other: service-bay (and the kerbside stop when used), with its exit lane from the car (071 R11: down the drive at the drive's width, then Apron Road at the road's width, 30 m in all), police stands (svc-police-1..4), no ambush spots (no crew posts there), and a block point (rivals.block needs one on every stand; unknown = reject). Its way out (box-in) is the drive grid's route from the bay down the drive to Apron Road, then route getaway-service.",
+   "handover": {"car": "service-bay (63.75, -15.0) facing west (nose in)", "lane": "22.25 m of drive, then 7.75 m of Apron Road (071 measures)", "blockerPost": "10 m down the drive, about (73.75, -15.0)"},
+   "owners": "Splice exports the stand and its lane parts; Vantage checks the police stands against the lane",
+   "src": "071 R11; 0.40.0 box.wayOut",
+   "tag": "S"
+  },
+  "L5-win": {
+   "v": "The win is fixed the tick a cell car leaves with the target aboard (vale.out). The mission runs on. Go order in a tick: acts land; the spring; Go on the target's car first; the spring again; then the other cars by id.",
+   "src": "071 R3, R8",
+   "tag": "S"
+  },
+  "L6-go": {
+   "v": "Go on a car is refused while it is held (its own hold), gated (the fight is at it), boxed in (0.40.0), or has no standing op aboard. Each refusal names its own holders or the car in the way. In the safe branch the fight is at the cell's car (the posted crew's), so the lent car is never gated there; in the loud branch the fight is at the car with the target (the lent car), then, once he is out, at the cell car nearest a standing op.",
+   "src": "071 R9, R13; 0.40.0 refusals car-boxed, car-held",
+   "tag": "S"
+  },
+  "L7-spring": {
+   "v": "The posted crew springs on any of: the target within 20 m of the cell's car (today), the cell's first shot at a crew member or at their car (0.41.0), and, while the target is in the lent car: an op within 20 m of the cell's car, or the lent car leaving.",
+   "src": "071 R7 + 0.41.0 rivals.block",
+   "tag": "S"
+  },
+  "L8-after": {
+   "v": "After vale.out the police close in: split-police-s after it (or the seal, or the close at 8:10, whichever comes first) the mission ends, and every op not in a car that has left is captured, standing or down. The mission also ends earlier when no op is on the map outside a car that has left, or at End (the menu's Withdraw becomes End once the target is out). The seal and every op down no longer fail the mission after vale.out.",
+   "splitPoliceS": {
+    "v": 60,
+    "unit": "s",
+    "tag": "S",
+    "proposed": true,
+    "reason": "Sky 082.1: 'taken down ... police coming until done ... if they're not in the car'. One clock, shown from vale.out, no three-way fight to build. 60 s: with F1 the rearguard is expected to break the crew in about 25-35 s, then the drive-off, the walk to the car and Board, about 40-45 s from vale.out; 60 s leaves a margin a careless rearguard spends. With the Take ending 6:44-6:56 (measured), the police come about 7:45-7:57, before the 8:10 close."
+   },
+   "retires": {"split-strand-capture": "always captured on the split (Sky 082.1); the 071 walk-out after the win is gone"},
+   "unchanged": "the one-car routes (A, G, the one-car B) end at their Go as today, and the 'walks out on a calm street' rule stays for them",
+   "src": "071 R4, R5, R6 (R5 overruled by Sky 082.1)",
+   "tag": "S"
+  },
+  "L9-carLeft": {
+   "v": "The cell's own car still standing when the mission ends is lost and counts as seen leaving: +1 T, hunted next mission. A lent car seen leaving is +1 T and a lead, not a hunted car.",
+   "src": "071 R12, §06 seen leaving",
+   "tag": "S"
+  },
+  "L10-driveRound": {
+   "v": "On a stand reached by a drive, the block point stands across the drive's mouth on the carriageway, so the rival car boxes both the cell's car on the drive and the target's car at the kerbside stop. Property for the checker: it boxes every car standing for that stand's drive (the cell's car at the service-drive stand, the official car at the kerbside stop), stands >= 10 m from the cell's car and >= 5.5 m from the kerbside car's centre (outside the 5 m blast).",
+   "handover": {"candidate": [8240, -1450], "heading": [100, 0], "fromCellCarM": 13.1, "fromKerbCarM": 5.5, "unit": "site cm; hand-worked, Splice prints the grid's exact point"},
+   "reason": "Sky 082.4. Today's derived point (86, -15) on Apron Road's centre line boxes the cell's car on the drive but not the kerbside car (its way out runs x 80.0-82.8, the rival car's footprint x 85.1-86.9): with the lend, the drive-round would get a free Go.",
+   "replaces": "0.41.0 BlockPoint for stands whose car point is on a drive (the square's Rocket Lane point is unchanged)",
+   "tag": "S"
+  },
+  "L11-lookout": {
+   "v": "Unchanged from 0.41.0 up to the lent car's Go: he follows Popovic's car on foot and reaches it within 6 m while Popovic is in it or being taken, before the final fight; in the final fight, a rival within 1 m of a cell car's body with the target in it and no op standing within 6 m. After vale.out nobody can reach the target.",
+   "tag": "S"
+  },
+  "L12-talker": {
+   "v": "The driver holds the Enforcer's face, the place and the time, never the cell's car; paid or helped, loyalty 1, fear 0, resentment 0: silent.",
+   "src": "071 §3",
+   "tag": "S"
+  }
+ },
+ "fight": {
+  "F1-wheelman": {
+   "v": "The wheelman stays at the wheel through the final fight. He gets out only when his car is disabled or burning. When the crew breaks he drives off at once, for good, picking nobody up: the block ends at the break. In his car he does not fire and can be shot only as an op in a car can (a target beside cover).",
+   "replaces": "0.41.0 rivals.block wheelman ('sits in until the spring, a shot at or within 30 m of his car, or a disable')",
+   "reason": "Route A's fight median is 50 s (band 15-40). Measured, 0.41.0 quiet-a, 200 seeds: the block ended by the car blowing up on 138 seeds (spring to blast median 62.6 s) and by the wheelman driving off on 54 (median 31.3 s). He gets out at the spring and is usually shot, so the car has to be blown. Sky's call 4 already says 'still in the car'.",
+   "tag": "S",
+   "proposed": true
+  },
+  "F2-broken": {
+   "v": "A rival who breaks is out of the fight at once: he puts his gun away and runs off by the crew's way off the map (rivals-follow-cm-s 280). He holds no car, isn't counted as a hostile, isn't picked by weapons free, and the floor never recalls him. An order can still shoot him: that is a new shooting at a man running away (traced as any).",
+   "reason": "Measured: on 0.41.0 a broken man walks off in about 10-52 s (veteran: last one off 52.5 s median after the break) and counts as a hostile all that time: quiet-a waited 26 s with the crew broken before blowing the car; the veteran's cell kept its guns out chasing one man and was seen.",
+   "tag": "S",
+   "proposed": true
+  },
+  "F3-break": {
+   "v": "The crew breaks when more than half of those in the fight are down, counting the posted, the lookout (in it from the spring wherever he is) and anyone misled; not counting the wheelman at the wheel, nor a paid man.",
+   "table": [
+    {"out": "nothing", "onFoot": 4, "breakAt": 3},
+    {"out": "the lookout", "onFoot": 3, "breakAt": 2},
+    {"out": "the lookout and one posted", "onFoot": 2, "breakAt": 2},
+    {"out": "the lookout and two posted", "onFoot": 1, "breakAt": 1}
+   ],
+   "replaces": "rivals.json thinning.fightSize (which counted the wheelman)",
+   "tag": "S",
+   "proposed": true
+  }
+ },
+ "veteran": {
+  "V1-riders": {
+   "v": "Disabled (5 HP), the car stops where it is and its riders get out (the first after board-s, then rivals-step-s apart, the wheelman last) and fight: unhurt, no daze. Set burning (0 HP) with riders still aboard, they all get out at once. Anyone still aboard or within 5 m at the blast takes it (3 damage, as today). They don't burn.",
+   "reason": "Measured, 0.41.0 veteran, 200 seeds: the street fight is already winnable. On 164 of 180 seeds where the car was disabled no op went down; the crew broke a median 8.5 s after the disable. Weakening the riders would make the shot free. What fails is what follows (F2, V2). The one change: riders of a burning car no longer sit in it waiting their 2 s turn.",
+   "tag": "S"
+  },
+  "V2-placed": {
+   "v": "While a gang shooting is pending, the cell is placed (the seal runs from then, as 0.41.0) by: (a) any security watcher (camera, guard, patrol, officer, robot) seeing an op with a weapon drawn, firing, carrying a body or taking someone down, at any time; (b) during the hold (unclaimed-hold-s from the response's arrival), a response officer or robot seeing an op within unclaimed-scene-m of the scene; (c) a known face in security's sight at any time; (d) a later shooting that is not unclaimed, any new incident, or Alert 3.",
+   "unclaimedSceneM": {
+    "v": 30,
+    "unit": "m",
+    "tag": "S",
+    "proposed": true,
+    "reason": "The police look at who is still near the scene, not at everyone on the map. 30 m: about the square. With the break about 8.5 s after the disable, a holster and a 30 m walk (about 19 s at 1.6 m/s), the cell has to be clear in about 30 s against a response arriving 35-45 s after the first shot: tight, seed-dependent, earnable."
+   },
+   "unclaimedHoldS": {"v": 60, "unit": "s", "src": "0.41.0, unchanged"},
+   "scene": "the points the shots were fired from and the car's stop (the burning or blown car's place)",
+   "replaces": "0.41.0 security.unclaimed 'an op in a response officer's or robot's sight from its arrival until the hold's end' (anywhere on the map)",
+   "reason": "Measured, 0.41.0 veteran: placed on 176 of 200 seeds; 67 of them 'the police saw the fixer at the scene', which is any op in sight anywhere during the hold, and 95 'a new incident (gunfire)', the cell shooting at the patrol after a drawn weapon was seen while it chased a broken man (F2). The intent stands: an unseen shooting of rivals alone seals nothing until the cell is placed; a gun out where security looks still places it.",
+   "tag": "S"
+  },
+  "lateEnough": "the seal runs dial2-seal-s (145 s) from the placing: a placing after about 4:20 seals after Popovic's car leaves (about 6:46), and after about 4:55 after the three's expected Go. So the danger window is the first two minutes after the shooting; Fable and Glyph show the hold's clock on the response marks.",
+  "after": "the crew whose car is destroyed walks off for good (0.41.0): no posted crew, no block, no lookout. The rest is route B at Alert 2 with a loud final fight: police come for the lent car (L6), a police blocker on the drive; Go when it is down; then the three to their unboxed car before split-police-s.",
+  "tag": "S"
+ },
+ "routeA": {
+  "fix": "F1 + F2 (+ F3's count); no band change",
+  "reason": "Sky set 15-40 s (2026-10-30). The length isn't the fight, it's the cleanup: shooting the wheelman, waiting for broken men to leave, then blowing a 10 HP car (first car shot to blast 13.1 s median, measured). Fix the cause, keep the band.",
+  "expect": "median 22-35 s, p95 under 90 s",
+  "levers": "if under 15 s: count the lookout's arrival (already in F3); if over 40 s: the break at half down instead of more than half"
+ },
+ "bands": {
+  "seeds": 200,
+  "note": "expectations, not measurements: Keel measures. 'Out' = Popovic out (the win). 'All out' = all four ops in cars that left, of the wins.",
+  "baseline": "0.41.0 (bands-rivals-after-200): A 89.5 %, B 45 %, B thinned 36 %, G 68 %, prepared-loud 44.5 %, drive-round 9 %, veteran 0 %, lookout-ignored 0 %, B idle median 23 s, A fight median 50 s",
+  "rows": [
+   {"plan": "quiet-a", "expect": "90-97 %; final fight median 22-35 s, p95 < 90 s", "why": "F1 and F2: the wheelman drives off at the break"},
+   {"plan": "quiet-b (rewritten on the lend)", "expect": "out 85-95 %; all out 60-80 % of wins; captured per win <= 0.6", "why": "no 64 m walk under fire (90 of today's 110 fails): Go at the Take's end, about 6:46. The three face 4 on foot with no Enforcer; the police clock at about 7:46"},
+   {"plan": "quiet-b-thinned", "expect": "out within 3 points of quiet-b; all out >= quiet-b's + 10 points; rearguard median shorter on >= 70 % of seeds", "why": "the lookout paid: 3 on foot, break at 2"},
+   {"plan": "quiet-b-lookout-ignored", "expect": "<= 5 %; rivals reach Popovic on >= 95 % of seeds", "why": "unchanged: he reaches the car in the Take"},
+   {"plan": "quiet-g", "expect": "70-82 %", "why": "closed-in falls with F1"},
+   {"plan": "thin-quiet", "expect": "within 10 points of 85 %", "why": "route A's end"},
+   {"plan": "prepared-loud (rewritten on the lend, as 082 proposed)", "expect": "out 50-70 %; all out >= 50 % of wins", "why": "the three open on the crew at the square as the Take ends; Popovic leaves by the drive; police on the three. If Waymark keeps today's drive-round plan, expect the drive-round's band"},
+   {"plan": "drive-round", "expect": "5-20 %", "why": "L10: both cars boxed at the drive's mouth; the patrol's clock; the kerbside stop in the lookout's view"},
+   {"plan": "veteran (rewritten: burn the car on Orbit Walk, holster, clear 30 m, then route B on the lend at Alert 2)", "expect": "15-35 %", "why": "the street fight is won on most seeds (measured); not being placed in the hold and the loud lend are the hard parts", "levers": "over 35 %: unclaimed-scene-m 40 or the hold 90 s; under 15 %: unclaimed-scene-m 20"},
+   {"plan": "quiet-b idle", "expect": "median <= 30 s", "why": "the middle is unchanged; the three now also set up the rearguard"},
+   {"plan": "careless, unprepared-loud", "expect": "<= 30 %, <= 20 %"}
+  ]
+ },
+ "scenarios": [
+  "LEND-1 lend-at-bay: the Take ends with the Enforcer at the wheel; the driver out and walking; Go offered on car:official",
+  "LEND-2 lend-at-kerb: the drive taken, the Take at the kerbside stop, the lend there",
+  "LEND-3 win-fixed: Go on the lent car, the three at the square: vale.out, the mission runs on",
+  "LEND-4 seats: a second op's Board on the lent car refused board-lent-full; allowed once the Enforcer is down",
+  "LEND-5 never-driven: Drive on the lent car refused",
+  "LEND-6 spring-leave: the three 30 m from their car, the lent car leaves: the crew springs that tick",
+  "LEND-7 spring-near: an op within 20 m of the cell's car after the Take ends: spring",
+  "LEND-8 same-tick: Go on both cars in one tick: the lent car leaves; the cell's car refused car-boxed (the rival car)",
+  "LEND-9 gate-per-car: safe fight at the square; the lent car's Go taken",
+  "LEND-10 own-car-boxes-lent: the cell's car Driven to the service drive behind the lent car: lent Go refused car-boxed naming car:getaway",
+  "LEND-11 drive-round-both-boxed (L10): the rival block at the drive's mouth boxes the cell's car and the kerbside car; >= 10 m and >= 5.5 m off",
+  "LEND-12 lane-bay: a hostile 10 m down the drive holds the lent car (071 R11)",
+  "LEND-13 police-clock: split-police-s after vale.out the mission ends; an op standing outside a car captured (+4 T)",
+  "LEND-14 carried-out: a downed op boarded (4 s) into the cell's car that leaves is out",
+  "LEND-15 car-lost: the cell's car left standing at the end: +1 T, hunted, debrief car-seen 'left'",
+  "LEND-16 after-win-seal: a loud run, the seal after vale.out: success stands, those left captured",
+  "LEND-17 withdraw-not-end: Go on the cell's car without Popovic while he is in the bay with the Enforcer: the mission goes on",
+  "LEND-18 public-fight-once: the lent car leaving judges nothing; board and go at the square judged 0; breaking the crew +1",
+  "LEND-19 loud-lend: police come for the lent car, a blocker on the drive; Go refused car-held until he is down",
+  "LEND-20 lookout-after-go: no reach after vale.out",
+  "LEND-21 talker-driver: the driver's facts hold no car",
+  "FIX-1 wheelman-stays (F1): he stays aboard through the spring and the fight; the break: he drives off at once, the block ends",
+  "FIX-2 wheelman-disabled: his car disabled: he gets out and fights; the block ends only by the blast",
+  "FIX-3 broken-out (F2): a broken man holds nothing, is not a hostile, not picked by weapons free; an order to shoot him is a new shooting",
+  "FIX-4 break-count (F3): the table, 4 on foot break at 3, the lookout paid break at 2",
+  "VET-1 burning-riders-out (V1): riders still aboard at 0 HP all get out at once",
+  "VET-2 placed-near (V2 b): an op 25 m from the scene in the response's sight in the hold: placed; 35 m: not",
+  "VET-3 placed-gun (V2 a): a drawn weapon seen by the patrol, anywhere: placed",
+  "VET-4 placed-late: placed after 4:20: the seal after the lent car's Go; the win stands",
+  "LEND-B bands-200 (the rows above), and every scenario's replay; twins at getaway-split 0 equal 0.41.0 + F1-F3 + V1-V2"
+ ],
+ "evidence": {
+  "engine": "0.41.0 at 7154cd76 (worktree t3-a2394298), dotnet batch, 200 seeds each, --no-replay; scratch out/scratch/motive/096l; summary briefs/096/motive/lend-probe/summary.txt (probe plans and scripts beside it)",
+  "quietA": "block ended by blast 138, drive-off 54, none 8; spring to drive-off median 31.3 s (p25 27.6, p75 42.2); spring to blast 62.6 s; first car shot to blast 13.1 s",
+  "quietB": "car parks 6:05.9; take.done median 6:45.6 (p10 6:44.1, p90 6:55.7); fails rivals-reach-vale (downed Enforcer on the walk) 90, closed-in 20",
+  "veteran": "fails enforcer-down 174, sealed 26; placed 176 (new incident (gunfire) 95, police saw the fixer 67, known faces 7, others); car disabled median 2:55.6; crew breaks 8.5 s after; street fight no op down 164/180; blast hits an op 75/200",
+  "rearguardProbe": "quiet-b with the Enforcer held in the bay after the Take (a stand-in for the lent car's Go), the three alone: walking up to blow the car, 3 ops down on 120/200; opening first from the car's side, no op down 112/200 but the block cleared only 65-80 s after the Take (the wheelman out and shot, broken men lingering), so most hit the 8:10 close. So F1 and F2 are needed for the lend, not only for route A"
+ }
+}

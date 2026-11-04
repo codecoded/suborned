@@ -1,0 +1,427 @@
+{
+ "schema": "suborned.mission.adaptive/1",
+ "mission": "handover",
+ "id": "probe-lend-rear",
+ "style": "prepared-quiet",
+ "note": "Motive probe (brief 096 lend): quiet-b with the Enforcer holding Popovic in the service bay after the Take (a stand-in for the lent car leaving), the three blow the block and get out alone; Go = withdraw. Scratch only.",
+ "pace": "human",
+ "rules": [
+  {
+   "id": "scout-to-driver",
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "when": [
+    "t>=:0:48"
+   ],
+   "why": "the driver comes on at about 1:00"
+  },
+  {
+   "id": "fixer-off",
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ],
+   "why": "out of the pickup camera's sight"
+  },
+  {
+   "id": "tech-to-cabinet",
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "id": "enforcer-wait",
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    8700,
+    -2300
+   ],
+   "when": [
+    "t>=:3:00"
+   ],
+   "why": "behind the lookout's post, off Apron Road, for when he comes"
+  },
+  {
+   "id": "listen",
+   "op": "scout",
+   "do": "listen",
+   "target": "driver",
+   "after": [
+    "scout-to-driver"
+   ],
+   "when": [
+    "free:scout"
+   ]
+  },
+  {
+   "id": "help-1",
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "help",
+   "by": "5:20",
+   "when": [
+    "log:scout.listen.heard"
+   ],
+   "retry": 5,
+   "why": "Help after the Listen: private, so the pickup camera records nothing (brief 096)"
+  },
+  {
+   "id": "help-2",
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "help",
+   "by": "5:20",
+   "when": [
+    "log:turn.help.not-yet"
+   ],
+   "unless": [
+    "log:turn.help.turned"
+   ],
+   "retry": 5
+  },
+  {
+   "id": "fixer-away",
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ],
+   "when": [
+    "done:help-1"
+   ],
+   "unless": [
+    "log:turn.help.not-yet"
+   ]
+  },
+  {
+   "id": "scout-to-lookout",
+   "op": "scout",
+   "do": "move",
+   "to": [
+    9100,
+    -2700
+   ],
+   "when": [
+    "log:rivals.lookout-posted",
+    "free:scout"
+   ],
+   "why": "the lookout's card: walk over to him"
+  },
+  {
+   "id": "mislead-lookout",
+   "op": "scout",
+   "do": "mislead",
+   "target": "rival-4",
+   "when": [
+    "posted:rival-4",
+    "t>=:4:30",
+    "free:scout"
+   ],
+   "retry": 3,
+   "why": "lands about 5:00: he's away at the public door until about 6:45, past Popovic's car leaving at 5:53 (the card says when he's back)"
+  },
+  {
+   "id": "reroute",
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "when": [
+    "t>=:5:05",
+    "free:tech"
+   ],
+   "retry": 5,
+   "why": "1:55 away from 5:35: it covers the Take in the yard and the walk out"
+  },
+  {
+   "id": "enforcer-lane",
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane",
+   "when": [
+    "t>=:5:40"
+   ]
+  },
+  {
+   "id": "take",
+   "op": "enforcer",
+   "do": "take",
+   "when": [
+    "log:car.parks",
+    "done:enforcer-lane",
+    "free:enforcer"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "scout-square",
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "when": [
+    "t>=:5:20",
+    "free:scout"
+   ],
+   "why": "to our car before the fight"
+  },
+  {
+   "id": "fixer-square",
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    725,
+    -5025
+   ],
+   "when": [
+    "log:car.leaves"
+   ]
+  },
+  {
+   "id": "tech-square",
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ],
+   "when": [
+    "log:patrol.rerouted"
+   ],
+   "run": true
+  },
+  {
+   "id": "draw-all",
+   "op": "scout",
+   "do": "draw",
+   "when": [
+    "log:fight.ambush"
+   ],
+   "react": "expected"
+  },
+  {
+   "id": "draw-fixer",
+   "op": "fixer",
+   "do": "draw",
+   "with": "draw-all"
+  },
+  {
+   "id": "draw-tech",
+   "op": "tech",
+   "do": "draw",
+   "with": "draw-all"
+  },
+  {
+   "id": "pre-near-s",
+   "op": "scout",
+   "do": "move",
+   "to": [
+    1250,
+    -5250
+   ],
+   "when": [
+    "log:take.done",
+    "boxed"
+   ],
+   "why": "route B's clock is short (the Take ends about 6:45, the close is 8:10): while the Enforcer walks Popovic round, the three blow the block's car (in the safe fight its shots are untraced; the first springs the crew)"
+  },
+  {
+   "id": "pre-near-f",
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1500,
+    -5200
+   ],
+   "with": "pre-near-s"
+  },
+  {
+   "id": "pre-near-t",
+   "op": "tech",
+   "do": "move",
+   "to": [
+    1750,
+    -5250
+   ],
+   "with": "pre-near-s"
+  },
+  {
+   "id": "pre-blow",
+   "op": "scout",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "when": [
+    "done:pre-near-s",
+    "boxed"
+   ],
+   "retry": 2
+  },
+  {
+   "id": "pre-blow-f",
+   "op": "fixer",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "with": "pre-blow"
+  },
+  {
+   "id": "pre-blow-t",
+   "op": "tech",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "with": "pre-blow"
+  },
+  {
+   "id": "near-block-s",
+   "op": "scout",
+   "do": "move",
+   "to": [
+    1250,
+    -5250
+   ],
+   "when": [
+    "log:fight.ambush",
+    "boxed",
+    "!hostiles>=:2"
+   ],
+   "why": "at most one of the crew left and their car still across our way out: close in on it"
+  },
+  {
+   "id": "near-block-f",
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1500,
+    -5200
+   ],
+   "with": "near-block-s"
+  },
+  {
+   "id": "blow-block",
+   "op": "scout",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "when": [
+    "log:fight.ambush",
+    "boxed",
+    "!hostiles>=:2"
+   ],
+   "retry": 2,
+   "why": "blow it up (its shots are untraced in the fight)"
+  },
+  {
+   "id": "blow-block-fixer",
+   "op": "fixer",
+   "do": "fire",
+   "target": "car:rivals",
+   "force": true,
+   "with": "blow-block"
+  },
+  {
+   "id": "rear-draw",
+   "op": "scout",
+   "do": "draw",
+   "when": [
+    "log:take.done"
+   ],
+   "react": "expected"
+  },
+  {
+   "id": "rear-draw-f",
+   "op": "fixer",
+   "do": "draw",
+   "with": "rear-draw"
+  },
+  {
+   "id": "rear-draw-t",
+   "op": "tech",
+   "do": "draw",
+   "with": "rear-draw"
+  },
+  {
+   "id": "b-s-move",
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": [
+    "log:take.done",
+    "!boxed",
+    "!hostilesnear:d%Getaway bay:16:1"
+   ],
+   "interrupt": true,
+   "retry": 1
+  },
+  {
+   "id": "b-f-move",
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "with": "b-s-move"
+  },
+  {
+   "id": "b-t-move",
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "with": "b-s-move"
+  },
+  {
+   "id": "b-s",
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "free:scout",
+    "near:scout:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "b-f",
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "free:fixer",
+    "near:fixer:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "b-t",
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "when": [
+    "free:tech",
+    "near:tech:d%Getaway bay:4"
+   ],
+   "retry": 1
+  },
+  {
+   "id": "go3",
+   "op": "cell",
+   "do": "go",
+   "when": [
+    "done:b-s",
+    "done:b-f",
+    "done:b-t",
+    "!boxed"
+   ],
+   "retry": 1,
+   "react": "expected"
+  }
+ ]
+}
