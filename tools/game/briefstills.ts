@@ -1,4 +1,6 @@
 // usage: bun tools/game/briefstills.ts [--mission handover] [--app <The Suborned.app>] [--resolve-only] [--out <dir>] [--key <what they are made from>]
+// --place-only --app <TheSuborned.x86_64 | .app>: copy the last set (out/build/play/stills/<mission>) into that build without running a player: how a Linux
+//   build gets the stills a Mac player took (Sky 2026-11-04: the Linux page showed blank prints and no plan).
 // --key (the batch's delta; tools/game/cli.ts): when the folder holds a complete set taken under the same key, no player runs: the set goes into the new app as it is (about 15 s saved).
 // Brief 070 (GDD v0.27.0 §10 briefing): the briefing page's stills, captured at build time from a replay of the mission's reference routes, HUD off,
 // one per pinned place, so a generated mission gets its own page from its own data. This file derives the pins from the mission's data (never by
@@ -23,7 +25,7 @@
 //             a place with a car: the same yaw rule, the play pitch, zoom 9, the architecture cut off; the ending: a camera off the getaway car's
 //             end, 25° down (Glyph N5). Every still is the 3D world only: no rings, route marks, bay outlines or cones (Glyph N4, `bare`)
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 export const ROOT = resolve(import.meta.dir, '../..');
@@ -207,19 +209,31 @@ export function shotsFile(s: Stills, outDir: string, root = ROOT): Json {
   };
 }
 
+/** Where a built player reads StreamingAssets: a macOS bundle's Contents/Resources/Data, or a Linux player's <name>_Data beside its executable. */
+export function streamingAssets(app: string): string {
+  if (app.endsWith('.app')) return join(app, 'Contents/Resources/Data/StreamingAssets');
+  return join(dirname(app), basename(app).replace(/\.x86_64$/, '') + '_Data', 'StreamingAssets');
+}
+
 function main() {
   const args = process.argv.slice(2), val = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
   const mission = val('--mission') ?? 'handover', app = val('--app') ?? join(ROOT, 'out/build/play/The Suborned.app');
   const out = resolve(val('--out') ?? join(ROOT, 'out/build/play/stills', mission));
   const s = derive(mission), key = val('--key'), keyFile = join(out, 'stills.key');
   const place = () => { // into the app, where BriefScreen reads it (StreamingAssets/missions/<mission>/stills), then the ad hoc signature over the changed bundle
-    const dst = join(app, 'Contents/Resources/Data/StreamingAssets/missions', mission, 'stills');
+    const dst = join(streamingAssets(app), 'missions', mission, 'stills');
     rmSync(dst, { recursive: true, force: true }); mkdirSync(dst, { recursive: true });
     for (const f of ['stills.json', ...s.pins.map(p => p.file)]) copyFileSync(join(out, f), join(dst, f));
+    if (!app.endsWith('.app')) { console.log(`stills: ${readdirSync(dst).length} files into ${dst.replace(ROOT + '/', '')}`); return; } // a Linux player: no bundle to sign
     const sign = spawnSync('/usr/bin/codesign', ['--force', '--deep', '--sign', '-', app], { encoding: 'utf8' });
     console.log(`stills: ${readdirSync(dst).length} files into ${dst.replace(ROOT + '/', '')}; ad hoc signature ${sign.status === 0 ? 'ok' : 'FAILED ' + sign.stderr}`);
     if (sign.status !== 0) process.exit(1);
   };
+  if (args.includes('--place-only')) {
+    const missing = ['stills.json', ...s.pins.map(p => p.file)].filter(f => !existsSync(join(out, f)));
+    if (missing.length) { console.error(`stills: --place-only: no complete set in ${out} (missing ${missing.join(', ')}): build and take them on the Mac first`); process.exit(1); }
+    place(); return;
+  }
   if (key && !args.includes('--resolve-only') && existsSync(keyFile) && readFileSync(keyFile, 'utf8') === key && existsSync(join(out, 'stills.json')) && readFileSync(join(out, 'stills.json'), 'utf8') === JSON.stringify(s, null, 1) + '\n' && s.pins.every(p => existsSync(join(out, p.file)))) {
     console.log(`stills: the last set stands, nothing they are made from changed (${key.slice(0, 12)})`);
     place(); return;

@@ -14,7 +14,7 @@ import { readTexts, world } from '../../../tools/people/inputs.ts';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, RETIRED_FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, MOVE_VERBS, OUTCOMES, PARKED, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, HOST_WAYS, RETIRED_FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, MOVE_VERBS, OUTCOMES, PARKED, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -316,7 +316,8 @@ describe('times and numbers agree with the mission', () => {
 
 describe('verbs and refusals', () => {
   test('every panel verb has an action, a label, an agent and an engine order', () => {
-    expect(Object.keys(t.actions).filter((k) => !k.startsWith('ring-')).sort()).toEqual([...VERBS, ...CONTROL_VERBS].sort());
+    expect(Object.keys(t.actions).filter((k) => !k.startsWith('ring-') && !(HOST_WAYS as readonly string[]).includes(k)).sort()).toEqual([...VERBS, ...CONTROL_VERBS].sort());
+    for (const k of HOST_WAYS) expect(t.actions[k], k).toBeDefined(); // brief 096: a way the host builds from an engine verb (step-out: a move), with its own words
     for (const [k, a] of Object.entries(t.actions)) if (k.startsWith('ring-')) expect(a.label.length, k).toBeLessThanOrEqual(8); // brief 030: one word on a wedge
     for (const a of Object.values(t.actions)) { expect(a.label.length).toBeGreaterThan(0); expect(a.by.length).toBeGreaterThan(0); }
   });
@@ -1344,7 +1345,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const F = L.failcam;
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
-      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
+      'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car', 'tail'], 'vale-leaves': ['driven-away', 'too-late'], 'vale-dead': ['killed', 'shot'],
       'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'on-foot', 'no-go'], 'engine-error': ['error'] };
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
@@ -1439,7 +1440,8 @@ describe('brief 057 section 4: the sealed fail line says what happened by the ca
     expect(S.line.held).toContain('{holders}');
     expect(S.line.ready).toMatch(/Popovic was in the car/); expect(S.line.ready).toMatch(/Go/);
     expect(S.line.empty).toMatch(/Popovic wasn't in the car/);
-    expect(S.story.ready).toBe('Go was never given.');
+    expect(S.story.ready).toBe('Nobody pressed Go.'); // brief 096: the debrief's story words (debrief.story.no-go)
+    expect(S.story.ready).toBe(t.debrief.story['no-go']!);
     expect(S.story.held).toContain('{holders}');
   });
   test('the tips are at most six words and name Go where Go is the fix', () => {
@@ -1832,8 +1834,8 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     for (const l of lookup(t, { event: 'rivals-for-car', speaker: 'scout' })!.lines) expect(l, l).toMatch(/outside|unguarded/i);
     // the host already makes a fallback card of both codes (HostFeed.FeedEvents), so the text carries their words: what, why and the fix, no sight rule (the cell is in the car), no beat (the feed is at its ten)
     const fc = t.cards.items['rivals.for-car']!, bc = t.cards.items['rivals.back-to-cover']!;
-    expect(fc.title).toBe('Rivals going for Popovic'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon');
-    expect(fc.result).toBe('No gun is drawn outside the car, so they come for Popovic. Draw one there (F).'); // engine 0.35.2 (GDD v0.30.2 section 06): only a drawn op guards a held car, so the fix is F
+    expect(fc.title).toBe('Rivals moving on the car'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon'); // brief 096: the crucial feed card (objective 5) takes it once the feed has one
+    expect(fc.result).toBe('Nobody outside the car has a gun drawn. Step out and draw, or down them.'); // engine 0.35.2 (GDD v0.30.2 section 06): only a drawn op guards a held car; brief 096: the fix in words, no key (Sky: no key-only features)
     expect(bc.title).toBe('Rivals back in cover'); expect(bc.fate).toBe('alt');
     expect(bc.result).toBe('They fall back to cover: a gun is drawn by the car, or nothing blocks it.'); // "blocks", never "held" (GDD section 10)
     for (const c of [fc, bc]) { expect(c.sight).toBeUndefined(); expect(c.beat).toBeUndefined(); expect(JSON.stringify(c)).not.toMatch(/\bheld\b/i); }
@@ -1958,5 +1960,83 @@ describe('brief 080: the seeded game\'s words', () => {
       const c = t.cards.items[code]!; expect(c.fate).toBe(fate); expect(JSON.stringify(c.result)).toContain('{n}');
       expect(t.events[ev]!.log).toEqual([code]); expect(lookup(t, { event: ev, speaker: who }), ev).toBeTruthy();
     }
+  });
+});
+
+describe('brief 096: the end card says what really happened (debrief.cause, by the engine\'s reason)', () => {
+  const C = t.debrief.cause, ST = t.debrief.story, L = t.less;
+  test('every cause the engine can fail with has a head and a line: each Fail("code", ...) site\'s why (Because, ShotDown, RivalsAtCar), the close\'s four, the seal\'s car states', () => {
+    const want: Record<string, Set<string>> = {};
+    const add = (f: string, w: string) => (want[f] ??= new Set()).add(w);
+    add('sealed', 'held'); add('sealed', 'ready'); add('sealed', 'empty'); add('sealed', 'unknown'); // FailCause.Car (CarAtSeal), `unknown` when none
+    add('withdraw', 'withdrew'); add('withdraw', 'car-left-without-vale'); // FailCause.cs Withdrew
+    if (haveSim) {
+      for (const src of simAll()) for (const line of src.split('\n')) {
+        const m = line.match(/\bFail\("([a-z-]+)"/); if (!m || line.includes('void Fail(')) continue;
+        const f = m[1]!; if ((RETIRED_FAILS as readonly string[]).includes(f) || f === 'sealed') continue;
+        const ws = [...line.matchAll(/\b(?:Because|ShotDown)\("([a-z-]+)"/g)].map((x) => x[1]!);
+        if (line.includes('RivalsAtCar')) ws.push('reached-car');
+        if (line.includes('Because(why')) for (const w of ['on-foot', 'no-driver', 'car-held', 'no-go']) ws.push(w); // GameSeed.CloseStep's why
+        expect(ws.length, line.trim()).toBeGreaterThan(0);
+        for (const w of ws) add(f, w);
+      }
+      const seed = simFile('GameSeed.cs'); for (const w of ['on-foot', 'no-driver', 'car-held', 'no-go']) expect(seed.includes(`"${w}"`), w).toBe(true);
+      expect(want['rivals-reach-vale']).toEqual(new Set(['beat-to-pickup', 'tail', 'downed-enforcer', 'reached-car']));
+    }
+    add('engine-error', 'error');
+    const missing: string[] = [];
+    for (const [f, ws] of Object.entries(want)) for (const w of ws) if (!C[f]?.[w]) missing.push(`${f}.${w}`);
+    expect(missing).toEqual([]);
+    for (const f of Object.keys(C)) expect([...FAILS, 'withdraw'], f).toContain(f);
+  });
+  test('plain words: no exclamation, the head fits the card (two lines at most), the line one or two short sentences; every story key is worded', () => {
+    const bad: string[] = [];
+    for (const [f, m] of Object.entries(C)) for (const [w, c] of Object.entries(m)) {
+      const at = `${f}.${w}`;
+      if (/!/.test(c.head + c.line)) bad.push(`${at}: exclamation`);
+      if (/\.$/.test(c.head)) bad.push(`${at}: the head is a title, no full stop`);
+      if (!/\.$/.test(c.line)) bad.push(`${at}: the line ends with a full stop`);
+      if ((c.line.match(/[.?] /g) ?? []).length > 1) bad.push(`${at}: more than two sentences`);
+      if (/\b(objective|failed|failure|mission|operative|extraction|neutralis|terminat)/i.test(c.head + ' ' + c.line)) bad.push(`${at}: formal or design word`);
+      for (const k of c.story ?? []) if (!(k in ST)) bad.push(`${at}: story ${k} has no words`);
+    }
+    for (const [k, x] of Object.entries(ST)) if (!/\.$/.test(x)) bad.push(`story.${k}: no full stop`);
+    expect(bad).toEqual([]);
+  });
+  test('the held car the way Sky met it: the rivals took Popovic from the car because nobody guarded it, and the story says Go was blocked and nobody guarded it', () => {
+    const rc = C['rivals-reach-vale']!['reached-car']!;
+    expect(rc.head).toMatch(/car/); expect(rc.line).toMatch(/guard/); expect(rc.line).toMatch(/drawn/);
+    expect(rc.story).toEqual(['blocked', 'unguarded']);
+    expect(ST.blocked).toContain('{holders}'); expect(ST.blocked).toMatch(/Go/); expect(ST.unguarded).toMatch(/guard/);
+    expect(rc.head + rc.line).not.toMatch(/first/); // the old line ("got to Popovic first") blamed the wrong thing
+    // the words the ring uses: "blocked", never "held", in what the player reads (locks.car-held: "The car is blocked by {holders}")
+    const said = [...Object.values(C).flatMap((m) => Object.values(m).flatMap((c) => [c.head, c.line])), ...Object.values(ST)];
+    expect(said.filter((x) => /\bheld\b/.test(x))).toEqual([]);
+  });
+  test('the end card and the sealed and closed-in lines it replaces once wired say the same', () => {
+    expect(C.sealed!.held!.line).toBe(L.sealed.line.held);
+    expect(C['closed-in']!['car-held']!.line).toBe(L.closedIn.line['car-held']);
+    expect(C['closed-in']!['no-go']!.line).toBe(L.closedIn.line['no-go']);
+    expect(C.sealed!.unknown!.line).toBe(L.sealed.line.unknown);
+    expect(ST.blocked).toBe(L.sealed.story.held);
+  });
+});
+
+describe('brief 096: Step out and the getaway in the book', () => {
+  test('Step out is the car ring\'s way out for anyone aboard, a move, and says Popovic stays in', () => {
+    const a = t.actions['step-out']!;
+    expect(a.label).toBe('Step out'); expect(a.engine.do).toBe('move'); expect(a.by.slice().sort()).toEqual([...AGENTS].sort());
+    expect(a.does).toMatch(/Popovic stays in/);
+  });
+  test('the book\'s getaway lines: on both ways the car, the guard while blocked, Go, then the walk-out (Latch\'s check words car-guarded and left-safe are live; never a check the host can\'t read)', () => {
+    const N = t.book.job.needs;
+    const vocab = /^(guard-away|camera-blind:[a-z]+|inside:[a-z]+|vale:[A-Za-z,]+|turned:[a-z]+|log:[a-z.-]+|sight:[a-z:-]+|car-guarded|left-safe)$/;
+    for (const [way, list] of Object.entries(N.ways)) {
+      const ids = list.map((n) => n.id), at = ids.indexOf('getaway'); expect(at, way).toBeGreaterThanOrEqual(0); expect(ids.slice(at), way).toEqual(['getaway', 'guarded', 'go', 'left-safe']);
+      expect(list.find((n) => n.id === 'guarded')!.check).toBe('car-guarded'); expect(list.find((n) => n.id === 'left-safe')!.check).toBe('left-safe');
+      for (const n of list) for (const part of [n.check, ...(n.known ? [n.known] : [])].flatMap((c) => c.split('|'))) expect(part.trim(), `${way}.${n.id}`).toMatch(vocab);
+    }
+    for (const p of N.pending ?? []) { expect(p.check).not.toMatch(vocab); for (const w of p.ways) expect(N.ways[w]!.some((n) => n.id === p.after) || (N.pending ?? []).some((q) => q.id === p.after), `${p.id} after ${p.after}`).toBe(true); }
+    expect(t.book.cell.car?.line).toMatch(/Board.*Step out.*Drive.*Go/);
   });
 });

@@ -45,7 +45,7 @@ namespace Suborned.Play
             var other = Script.Parse(File.ReadAllText(path)); other.Start.Seed = b == int.MaxValue ? 1 : b + 1;
             var og = Engine.Play(h.PlayInputs, other.Start, other.Orders, other.Until); bool differs = og.Checkpoints[og.Checkpoints.Count - 1].hash != final;
             var whys = new[] { "no-driver", "car-held", "on-foot", "no-go" }; var missing = new List<string>();
-            foreach (var w in whys) if (h.Text == null || !h.Text.ClosedInLine.ContainsKey(w)) missing.Add(w);
+            foreach (var w in whys) if (h.Text?.CauseFor("closed-in", w) == null) missing.Add(w); // brief 096: debrief.cause's closed-in words
             bool ok = rolled && kept && saved && same && differs && missing.Count == 0 && chip.Contains("%") && h.Text.OddsSum.Length > 0 && h.Text.TdComing.Length > 0;
             log.Add($"seed: rolled {a} {b}, replay {again}; saved {sc.Start.Seed}, replay same {same} ({verdict}), another seed differs {differs}; shots {g.CellShots} hits {g.CellHits}; chip \"{chip}\"; closedIn missing [{string.Join(",", missing)}]");
             json[0] = $"{{\"ok\": {(ok ? "true" : "false")}, \"rolled\": [{a}, {b}], \"replayKept\": {again}, \"savedSeed\": {sc.Start.Seed}, \"savedReplaysSame\": {(same ? "true" : "false")}, \"otherSeedDiffers\": {(differs ? "true" : "false")}, \"shots\": {g.CellShots}, \"hits\": {g.CellHits}, \"chip\": \"{chip}\", \"closedInMissing\": {missing.Count}}}";

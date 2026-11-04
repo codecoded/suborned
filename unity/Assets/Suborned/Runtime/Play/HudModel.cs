@@ -346,10 +346,8 @@ namespace Suborned.Play
             var g = h.Game; var d = h.EndDebrief; Ended = true; EndLines.Clear();
             string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
             string head = h.Text != null && h.Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : ""; // Glyph's 0.2.104 review: the title is less.end.fail's ("District sealed"), so the line under it is the only one about the car
-            string sealStory = null;
-            if (g.FailCode == "closed-in" && g.Cause is Suborned.Sim.FailCause cin && h.ClosedInWords(cin) is { Length: > 0 } cl) failLine = cl; // brief 080: less.closedIn by Cause.Why
-            if (g.FailCode == "sealed" && g.Cause is Suborned.Sim.FailCause sc) { var (sl, _, ss) = h.SealedWords(sc); if (!string.IsNullOrEmpty(sl)) failLine = sl; sealStory = ss; } // brief 057 §4: the line says which of held, ready, empty it was (FailCause.Car), so the card and the story agree
-            EndLines.Add(g.Result == Outcome.Success ? $"{h.ValeWord} is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
+            var cw = g.Result == Outcome.Success ? default : h.EndCauseWords(); if (cw.Line != null) failLine = cw.Line; // brief 096 (Fable's debrief.cause): the engine's own reason, the seal by its car
+            EndLines.Add(g.Result == Outcome.Success ? $"{h.ValeWord} is in the car" : cw.Head ?? (g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed"));
             EndLines.Add(g.Result == Outcome.Success ? $"The crew escapes with {h.ValeWord} alive." : failLine.Length > 0 ? failLine : g.FailText);
             EndLines.Add($"Done at {HandoverHost.MissionClock(g.Tick)}   ·   ${g.S.Purse - g.Cash:N0} spent   ·   Trail {g.Trail}");
             if (d != null)
@@ -359,8 +357,8 @@ namespace Suborned.Play
                 EndLines.Add($"{sec} {inv}".Trim());
                 foreach (var st in h.StandingLines()) EndLines.Add(st.line); // brief 014: one Standing line per district (the debrief)
                 var ids = new List<string>(d.Route); if (h.SealedCar == "empty") ids.Remove("vale-reaches-getaway-car"); // brief 057 §4 (Suture: Debrief.cs claims it on every route; Keel's fix comes): never say Vale reached the car when the fail says he had not
-                var route = ids.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)?.Replace("{vale}", h.ValeWord)).FindAll(x => x != null);
-                if (!string.IsNullOrEmpty(sealStory)) route.Add(sealStory); // "Police held the car." / "Go was never given." after "Vale reached the getaway car."
+                var route = new List<string>(); foreach (var id in ids) { if ((h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)?.Replace("{vale}", h.ValeWord)) is string w) route.Add(w); if (id == "vale-reaches-getaway-car" && cw.Story != null) route.AddRange(cw.Story); }
+                // brief 096: the story runs to the end: after "Popovic reached the getaway car.", why Go was refused and that nobody guarded the car (debrief.story)
                 if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add(FightLine(h, d));
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));

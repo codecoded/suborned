@@ -1,0 +1,43 @@
+/* Glyph, brief 096: the light page's look (brief 088 / look4 L), as CSS, for mocks only. Colours sampled from Latch's 0.2.2xx book capture (briefs/088/latch/job.png). */
+@font-face{font-family:Jost;font-weight:700;src:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/fonts/Jost-Bold.ttf)}
+@font-face{font-family:Jost;font-weight:600;src:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/fonts/Jost-SemiBold.ttf)}
+@font-face{font-family:Jost;font-weight:500;src:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/fonts/Jost-Medium.ttf)}
+@font-face{font-family:JostTab;font-weight:500;src:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/fonts/Jost-Medium-Tab.ttf)}
+@font-face{font-family:Barlow;font-weight:500;src:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/fonts/Barlow-Medium.ttf)}
+:root{--page:#f9f7ee;--ink:#17302f;--dim:#9da29d;--mid:#5d6b68;--deep:#1f6c67;--deeper:#133b39;--orange:#e8622c;--turq:#60e0ea;--ring:#74d5d8;--sea:#72b5a7;--pale:#9bcfc2;--cream:#f7f4ec;--violet:#8a4fd0;--amber:#f0a020;--chrome:#cbc6c3;--body:#0c3434}
+*{box-sizing:border-box}
+body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:Jost;font-weight:500;color:var(--ink);position:relative;background:#222}
+.abs{position:absolute}
+.street{position:absolute;inset:0;background-size:1920px 1080px;background-repeat:no-repeat}
+.ic{display:inline-block;flex:none;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat;vertical-align:middle}
+/* the page: one big circle, its left edge the curve, a turquoise rim */
+.page{position:absolute;border-radius:50%;background:var(--page);box-shadow:0 0 0 7px rgba(116,213,216,.9),0 0 0 9px rgba(255,255,255,.5),-14px 0 40px rgba(0,0,0,.18)}
+.face{position:absolute;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 5px var(--ring),0 6px 18px rgba(0,0,0,.15)}
+.rail{position:absolute;right:48px;width:84px;height:84px;border-radius:50%;background:var(--deeper);color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;font-size:16px}
+.rail .ic{width:34px;height:34px;margin-bottom:2px}
+.rail.on{background:var(--orange);width:108px;height:108px;right:36px;font-size:20px}
+.rail.on .ic{width:42px;height:42px}
+.rail.dim{background:#e9e7df;color:#c9c9c1}
+.way{position:absolute;height:88px;border-radius:12px;background:var(--deep);box-shadow:inset 0 0 0 4px var(--deep),inset 0 0 0 6px var(--cream);color:var(--cream);display:flex;align-items:center;padding:0 26px 0 22px;gap:16px}
+.way .ic{width:46px;height:46px}
+.way b{display:block;font-weight:600;font-size:38px;line-height:40px}
+.way small{display:block;font-weight:500;font-size:24px;color:#cfe3de;line-height:28px}
+.need{display:flex;gap:12px;font-size:21px;line-height:27px;margin-bottom:9px}
+.need i.o{flex:none;width:21px;height:21px;border-radius:50%;border:2px solid var(--ink);margin-top:4px}
+.need.q{color:var(--dim)} .need.q i.o{border-color:var(--dim)}
+.clockpill{position:absolute;top:18px;right:68px;height:34px;padding:0 12px;border-radius:6px;background:#244241;box-shadow:0 0 0 2px #8fa7a2,inset 0 0 0 1px #0b1615;color:var(--cream);font:500 21px JostTab;display:flex;align-items:center;gap:8px}
+.track{position:absolute;display:flex}
+.st{width:168px;position:relative}
+.st .dot{width:44px;height:44px;border-radius:50%;border:2.5px solid var(--mid);background:var(--page);color:var(--mid);display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+.st .dot .ic{width:26px;height:26px}
+.st.on .dot{background:var(--deep);border-color:var(--deep);color:var(--cream)}
+.st .lab{font-weight:600;font-size:22px;margin-top:12px;white-space:nowrap}
+.st .t{font:500 21px JostTab;color:var(--mid);margin-top:2px}
+.st:not(:last-child)::after{content:"";position:absolute;left:44px;right:0;top:21px;height:2.5px;background:var(--mid)}
+/* HUD kit bits */
+.plate{position:absolute;border-style:solid;border-width:12px;border-image:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/markers/plate_dark@2x.png) 24 fill / 12px stretch;color:var(--cream)}
+.panel{position:absolute;border-style:solid;border-image:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/panels/panel_dark@2x.png) 35 fill / 17.5px stretch;color:var(--cream)}
+.strip{position:absolute;border-style:solid;border-image:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/panels/panel_strip@2x.png) 25 fill / 12.5px stretch;color:var(--cream)}
+.disc{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#0e2e2d;box-shadow:0 0 0 2px var(--chrome),0 0 0 3px #0b1615;color:var(--cream);flex:none}
+.note{position:absolute;font:600 17px Jost;color:#fff;background:rgba(232,98,44,.95);padding:4px 10px;border-radius:6px}
+.callout{position:absolute;border:2.5px dashed var(--orange);border-radius:12px}

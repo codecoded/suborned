@@ -1,6 +1,6 @@
 // Brief 070: the briefing page's stills are derived from the mission's data (tools/game/briefstills.ts), one per pinned place, never by hand.
 import { describe, expect, test } from 'bun:test';
-import { derive, faceRuns, nearestFace, PLAN_MIN_M, PLAN_MIN_M2, polyArea, POSTED_KEY, POSTED_TURN, shortSide, shotsFile, WAIT_SHIFT, WAIT_ZOOM } from './briefstills';
+import { streamingAssets, derive, faceRuns, nearestFace, PLAN_MIN_M, PLAN_MIN_M2, polyArea, POSTED_KEY, POSTED_TURN, shortSide, shotsFile, WAIT_SHIFT, WAIT_ZOOM } from './briefstills';
 
 describe('the briefing stills (brief 070)', () => {
   const s = derive('handover');
@@ -51,4 +51,9 @@ describe('the briefing stills (brief 070)', () => {
       ['brief-getaway', 0, false, true, true, false], ['brief-driver', 3100, false, true, false, true], ['brief-service-bay', 3260, false, true, false, true],
     ]);
   });
+});
+
+test('the stills go where each player reads StreamingAssets: a macOS bundle, or a Linux player\'s _Data folder (Sky 2026-11-04)', () => {
+  expect(streamingAssets('/b/play/The Suborned.app')).toBe('/b/play/The Suborned.app/Contents/Resources/Data/StreamingAssets');
+  expect(streamingAssets('/b/linux/TheSuborned.x86_64')).toBe('/b/linux/TheSuborned_Data/StreamingAssets');
 });

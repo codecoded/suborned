@@ -1,0 +1,34 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="book.css"><link rel="stylesheet" href="feed.css"><style>
+.forcar{position:absolute;width:30px;height:30px;border-radius:50%;box-shadow:0 0 0 2px #8a4fd0;display:flex;align-items:center;justify-content:center}
+.forcar span{width:26px;height:26px;border-radius:50%;background:#0e2e2d;display:flex;align-items:center;justify-content:center;color:var(--cream)}
+.pips{position:absolute;height:18px;padding:0 6px;border-radius:9px;background:#0b1615;box-shadow:0 0 0 1.5px var(--chrome);display:flex;align-items:center;gap:3px}
+.pips i{width:8px;height:8px;border-radius:50%;border:1.3px solid var(--cream)}.pips i.on{background:var(--cream)}
+.lockm{position:absolute;width:30px;height:30px;border-radius:50%;background:#0e2e2d;box-shadow:0 0 0 2px #8a4fd0,0 0 10px rgba(138,79,208,.7);display:flex;align-items:center;justify-content:center;color:var(--cream)}
+.lockm b{position:absolute;right:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:var(--cream);color:var(--ink);font:700 12px Jost;display:flex;align-items:center;justify-content:center}
+</style></head><body>
+<div class="street" style="background-image:url(bg/fight-hud.png)"></div>
+<!-- each rival walking for the held car: the car icon on a dark disc in a violet ring (r123 §3, built); the car's lock marker in the same ring -->
+<div class="forcar" style="display:none;left:1083px;top:622px"><span><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/car@2x.png);width:16px;height:16px"></i></span></div>
+<div class="forcar" style="left:1538px;top:478px"><span><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/car@2x.png);width:16px;height:16px"></i></span></div>
+<div class="forcar" style="left:1600px;top:694px"><span><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/car@2x.png);width:16px;height:16px"></i></span></div>
+<div class="lockm" style="display:none;"left:945px;top:520px"><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/lock@2x.png);width:15px;height:15px"></i><b>1</b></div>
+<div class="pips" style="display:none;"left:922px;top:552px"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div><svg class="abs" style="left:0;top:0" width="1920" height="1080">
+<defs><pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#0b1615"/><rect width="3" height="8" fill="#1d2b2a"/></pattern></defs>
+<circle cx="960" cy="505" r="96" fill="none" stroke="#cbc6c3" stroke-width="3"/>
+<path d="M894.9,439.9 A92,92 0 0 1 1025.1,439.9 L981.2,483.8 A30,30 0 0 0 938.8,483.8Z" fill="url(#hatch)" stroke="#60e0ea" stroke-width="3"/>
+<path d="M1025.1,439.9 A92,92 0 0 1 1025.1,570.1 L981.2,526.2 A30,30 0 0 0 981.2,483.8Z" fill="rgba(31,108,103,.97)" stroke="none" stroke-width="3"/>
+<path d="M1025.1,570.1 A92,92 0 0 1 894.9,570.1 L938.8,526.2 A30,30 0 0 0 981.2,526.2Z" fill="rgba(12,52,52,.95)" stroke="none" stroke-width="3"/>
+<path d="M894.9,570.1 A92,92 0 0 1 894.9,439.9 L938.8,483.8 A30,30 0 0 0 938.8,526.2Z" fill="rgba(31,108,103,.97)" stroke="none" stroke-width="3"/>
+<circle cx="960" cy="505" r="30" fill="none" stroke="#cbc6c3" stroke-width="2"/>
+<!-- tethers: only a holder outside the ring keeps one, thin -->
+
+<circle cx="960" cy="469" r="6" fill="#8a4fd0" stroke="#0b1615" stroke-width="2"/></svg>
+<div class="abs" style="left:947px;top:433px;color:#60e0ea"><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/lock@2x.png);width:26px;height:26px"></i></div>
+<div class="abs" style="left:1004px;top:492px;color:var(--cream)"><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/car@2x.png);width:26px;height:26px"></i></div>
+<div class="abs" style="left:947px;top:549px;color:var(--cream);font:700 22px Jost;width:26px;text-align:center">···</div>
+<div class="abs" style="left:890px;top:492px;color:var(--cream)"><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/s_moving@2x.png);width:26px;height:26px;transform:scaleX(-1)"></i></div>
+<!-- the hovered wedge's pill: what happened, why, the fix -->
+<div class="plate" style="left:810px;top:345px;height:38px;display:flex;align-items:center;gap:8px;padding:0 8px;font:700 16px Jost;white-space:nowrap">Go<i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/lock@2x.png);width:15px;height:15px"></i><span style="font-weight:500;color:#b0cdc7">held by</span>
+ <span class="disc vring" style="width:22px;height:22px;background:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/badges/signal_rival@2x.png) center/100%"></span></div>
+<div class="plate" style="left:810px;top:387px;height:32px;display:flex;align-items:center;gap:7px;padding:0 8px;font:600 14px Jost;white-space:nowrap"><i class="ic" style="--i:url(../../../../unity/Assets/Suborned/UI/Resources/Kit/icons/singles/s_moving@2x.png);width:14px;height:14px"></i>Step out and draw · or down them</div>
+<div class="abs" style="left:1106px;top:594px;width:42px;height:42px;border-radius:50%;border:3px solid #8a4fd0;box-shadow:0 0 12px #8a4fd0,inset 0 0 8px #8a4fd0"></div><div class="abs" style="left:1098px;top:586px;width:58px;height:58px;border-radius:50%;border:1.5px solid rgba(138,79,208,.6)"></div></body></html>

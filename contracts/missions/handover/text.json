@@ -205,8 +205,8 @@
   "win": "Popovic in the getaway car when it leaves.",
   "fails": {
    "vale-dead": "Popovic is dead. We needed him alive.",
-   "vale-leaves": "Popovic left in his car. We were too slow.",
-   "rivals-reach-vale": "The rival crew got to Popovic first.",
+   "vale-leaves": "Popovic left in his car before we had him.",
+   "rivals-reach-vale": "The rivals took Popovic before we got away.",
    "sealed": "The getaway car hadn't left when security sealed the district.",
    "closed-in": "The district closed in before we got Popovic away.",
    "enforcer-down": "The Enforcer is down. Nobody else can carry Popovic.",
@@ -351,6 +351,7 @@
   "enter": {"label":"Enter the Office","by":["enforcer"],"engine":{"do":"enter"},"does":"Go in for Popovic by the public door. If anyone sees you go in, you fail.","onTarget":{"door":"Go in by the public door while the guard is away and the camera is blind."},"withTarget":"Go in by {target}","then":"goes in by {target}"},
   "take": {"label":"Take Popovic","by":["enforcer"],"engine":{"do":"take"},"does":"Take Popovic at his car. A watching camera or the rivals will ruin it.","onTarget":{"councillor":"Take Popovic at his car. A watching camera or the rivals will ruin it."},"withTarget":"Take {target}","then":"takes {target}"},
   "board": {"label":"Board","by":["scout","fixer","tech","enforcer"],"engine":{"do":"board"},"does":"Get into the getaway car, with anyone you carry.","onTarget":{"car-getaway":"Get in the car, with anyone you carry. In the car you can't fire."},"withTarget":"Board {target}","then":"boards {target}"},
+  "step-out": {"label":"Step out","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Get out and stand beside the car. Popovic stays in."},
   "go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"Leave with whoever is in the car. The rest stay behind.","onTarget":{"car-getaway":"Leave now. Anyone outside the car stays behind. A hostile near it blocks it."},"withTarget":"Leave in {target}","then":"leaves in {target}"},
   "drive-car": {"label":"Drive","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive-car"},"does":"Drive the getaway car to another bay. Free, but it takes time.","onTarget":{"stand-service-drive":"Put the car behind Popovic's for a short carry. Free, and it takes time.","stand-square":"Take the car back to the square's bay. Free, and it takes time."},"withTarget":"Drive into {target}","then":"drives into {target}"},
   "spawn": {"label":"Spawn","by":["fixer"],"engine":{"do":"spawn"},"does":"Fight range only: put 1 to 6 hostiles on the range."},
@@ -607,7 +608,7 @@
    "rivals.see-takedown": {"kind":"warning","fate":"icon","title":"A crewmate saw it","result":"A rival saw his crewmate go down and opened fire. It's loud now."},
    "rivals.wakes": {"kind":"warning","fate":"icon","title":"A rival is awake","sight":"in-sight","at":"victim","result":"He is up again and goes for the Enforcer on sight."},
    "rivals.frees": {"kind":"city","fate":"alt","title":"A rival is untied","sight":"in-sight","at":"victim","result":"A crewmate found him tied and untied him."},
-   "rivals.for-car": {"kind":"warning","fate":"icon","title":"Rivals going for Popovic","result":"No gun is drawn outside the car, so they come for Popovic. Draw one there (F)."},
+   "rivals.for-car": {"kind":"warning","fate":"icon","title":"Rivals moving on the car","result":"Nobody outside the car has a gun drawn. Step out and draw, or down them."},
    "rivals.back-to-cover": {"kind":"city","fate":"alt","title":"Rivals back in cover","result":"They fall back to cover: a gun is drawn by the car, or nothing blocks it."},
    "car.parks": {"kind":"city","fate":"icon","title":"Popovic's car parks","result":"In the service bay. Take him from the back seat."},
    "car.blocked": {"kind":"warning","fate":"beat","beat":"Popovic's car stops.","title":"Popovic's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
@@ -676,7 +677,7 @@
   }
  },
  "debrief": {
-  "rule": "The end card in the player's words, by the ids of sim Debrief.cs (route, assets, investigation cause) and the engine's named-witness:<role>. A failure with a line in briefing.fails takes that line's first sentence as its headline and the whole line as its result; the Fixer's spoken fail or win line sits under it (events fail, win). An id with no sentence here is not shown. The replay verdict and hash are never player text. brief 014: the Standing line, one per district (rulebook debrief.lines.standing: district, from, to, band, cause, who). `line` is filled by the host from the debrief's fields: {district} is the district's name, {band} is bands[band], {from} and {to} are signed (+3, 0, -1), {cause} is causes[cause] filled with {who}, the person's name. The seen and found causes say what the city saw or found, with no name. The word causes are rumour, not fact the cell watched: they begin Word is, and name no face, place or time.",
+  "rule": "Brief 096 (Sky 2026-11-04: \"the End card needs to be plain english and clear but not too formal\"): `cause` words the end card by the engine's reason, never one line per code: cause[Game.FailCode][key], the key FailCause.Why, except sealed (FailCause.Car: held, ready, empty, else unknown) and withdraw (its why). `head` is the title, `line` the sentence under it ({by} {agent} as less.failcam, {holders} as names.holders), and `story` names lines of `story` that follow \"Popovic reached the getaway car.\" in the route, so the story runs to the end ({holders} is Game.CarHolders() at the end; a line with {holders} and none is left out). A cause with no entry (why unresolved) falls back to less.end.fail and briefing.fails. Once wired it replaces less.sealed.line, less.sealed.story and less.closedIn.line, which say the same. The end card in the player's words, by the ids of sim Debrief.cs (route, assets, investigation cause) and the engine's named-witness:<role>. A failure with a line in briefing.fails takes that line's first sentence as its headline and the whole line as its result; the Fixer's spoken fail or win line sits under it (events fail, win). An id with no sentence here is not shown. The replay verdict and hash are never player text. brief 014: the Standing line, one per district (rulebook debrief.lines.standing: district, from, to, band, cause, who). `line` is filled by the host from the debrief's fields: {district} is the district's name, {band} is bands[band], {from} and {to} are signed (+3, 0, -1), {cause} is causes[cause] filled with {who}, the person's name. The seen and found causes say what the city saw or found, with no name. The word causes are rumour, not fact the cell watched: they begin Word is, and name no face, place or time.",
   "headline": {"win":"Popovic is in the car","withdraw":"You withdrew","fail":"The attempt failed"},
   "result": {"win":"The cell gets away with Popovic alive."},
   "tally": "Done at {clock} · {usd} spent · Trail {trail}",
@@ -696,6 +697,68 @@
    "crew-destroyed": "No rival was left to fight."
   },
   "kept": "Kept for next time: {list}",
+  "cause": {
+   "rivals-reach-vale": {
+    "beat-to-pickup": {"head": "Rivals got to Popovic first", "line": "Their crew was watching his car and grabbed him before the Take."},
+    "tail": {"head": "Rivals got to his car first", "line": "Their driver walked up to Popovic's car and took him before the Take was done."},
+    "downed-enforcer": {"head": "The Enforcer went down", "line": "He was shot while carrying Popovic, and the rivals took him."},
+    "reached-car": {"head": "Rivals took Popovic from the car", "line": "Nobody stood guard outside with a gun drawn, so they walked up and took him.", "story": ["blocked", "unguarded"]}
+   },
+   "closed-in": {
+    "on-foot": {"head": "Time ran out on foot", "line": "Popovic was still on foot when the district closed in."},
+    "no-driver": {"head": "Nobody left to drive", "line": "Popovic was aboard, but everyone in the car was down.", "story": ["no-driver"]},
+    "car-held": {"head": "The car was blocked", "line": "{by} blocked the car, so Go wouldn't work, and time ran out.", "story": ["blocked"]},
+    "no-go": {"head": "Nobody pressed Go", "line": "Popovic was aboard and the car was free, but nobody pressed Go in time.", "story": ["no-go"]}
+   },
+   "sealed": {
+    "held": {"head": "Sealed in, car blocked", "line": "{holders} blocked the car, so Go wouldn't work before the district sealed.", "story": ["blocked"]},
+    "ready": {"head": "Sealed in, nobody pressed Go", "line": "Popovic was aboard and the car was free, but nobody pressed Go.", "story": ["no-go"]},
+    "empty": {"head": "Sealed in before the car", "line": "Security sealed the district before Popovic was in the car."},
+    "unknown": {"head": "District sealed", "line": "The getaway car hadn't left when security sealed the district."}
+   },
+   "vale-leaves": {
+    "driven-away": {"head": "Popovic got away", "line": "He got into his car and his driver drove him off, right on time."},
+    "too-late": {"head": "Out of time", "line": "Time ran out before we had Popovic, and he was driven off."}
+   },
+   "vale-dead": {
+    "shot": {"head": "Popovic is dead", "line": "He was hit in the shooting. We needed him alive."},
+    "killed": {"head": "Popovic is dead", "line": "{agent} killed him in a takedown. We needed him alive."}
+   },
+   "enforcer-down": {
+    "shot": {"head": "The Enforcer went down", "line": "He was shot before Popovic was in the car, and only he can take him."}
+   },
+   "cell-down": {
+    "shot": {"head": "The whole cell is down", "line": "Everyone was shot, so nobody was left to finish the job."}
+   },
+   "driver-shot": {
+    "shot": {"head": "The driver was shot", "line": "Security heard it and pulled Popovic to safety."}
+   },
+   "entry-seen-guard": {
+    "seen": {"head": "The guard saw the Enforcer", "line": "He was back at the door as the Enforcer went in, and warned Popovic."}
+   },
+   "entry-seen-camera": {
+    "seen": {"head": "The camera saw the Enforcer", "line": "The entrance camera caught him going in, and the Office locked down."}
+   },
+   "abduction-seen-camera": {
+    "seen": {"head": "The camera saw the Take", "line": "The pickup camera caught the Enforcer taking Popovic. Security got him back."}
+   },
+   "getaway-lost": {
+    "wrecked": {"head": "The getaway car is wrecked", "line": "It took too many hits to drive, so Popovic had no way out."}
+   },
+   "engine-error": {
+    "error": {"head": "This run doesn't count", "line": "Something broke on our side. Start again."}
+   },
+   "withdraw": {
+    "withdrew": {"head": "You withdrew", "line": "The cell pulled out. You can try again."},
+    "car-left-without-vale": {"head": "Left without Popovic", "line": "Go was pressed before Popovic was aboard, so the cell pulled out."}
+   }
+  },
+  "story": {
+   "blocked": "{holders} blocked the car, so Go wouldn't work.",
+   "unguarded": "Nobody stood guard outside it with a gun drawn, so the rivals took him.",
+   "no-go": "Nobody pressed Go.",
+   "no-driver": "Everyone aboard was down, so nobody could drive."
+  },
   "route": {"waitress-pulls-guard-away":"Inez drew the guard off the door.","guard-shot-beside-waitress":"The guard was shot beside Inez.","guard-shot-away-from-waitress":"The guard was shot away from Inez.","guard-knocked-out":"The Enforcer knocked the guard out.","guard-killed":"The Enforcer killed the guard.","entrance-camera-looped":"The entrance camera was looped.","patrol-diverted":"The patrol was rerouted.","entry-timed-between-sweeps":"The Enforcer went in between the patrol's sweeps.","vale-taken-through-office":"The Enforcer took Popovic through the Office.","vale-reaches-getaway-car":"Popovic reached the getaway car.","driver-moves-vale-to-service-lane":"The driver brought Popovic round the back.","pickup-camera-blocked":"The driver's car blinded the pickup camera.","rivals-driven-back":"The rivals were driven back.","rivals-follow-false-tip":"The rivals followed a false tip.","vale-intercepted-outside":"Popovic was taken outside."},
   "assets": {"waitress-introduces-cafe":"Inez, who can introduce you at the café.","waitress-may-be-questioned":"Inez, though investigators may question her.","waitress-may-identify-fixer":"Inez, who could identify the Fixer.","waitress-witnessed-shooting":"Inez, who saw the shooting.","driver-alters-pickups":"The driver, who can change a pickup."},
   "between": {"volunteer":"{who} came forward unasked and gave up {fact}.","statement":"{who} gave a statement: {facts}. Trail {trail}.","missing":"{who} is missing near {place}. Case open, Trail {trail}.","grief":"{who} grieves for {of}: {move}.","worry":"{who} is frightened for {of}: {fear}.","area-watch":"{place}: +{guards} guard, +{cameras} camera for {missions} missions.","case":"Case on {who}: {kind}. Closes {closes}.","left-behind":"{who} was left behind and {fate}: {why}.","captive":"{who}: talks in {holds} · rescue within {rescue-until} · at {held-at}","car-seen":"{by} saw the car leave. Investigators know it now. Trail +{trail}."},
@@ -1736,7 +1799,7 @@
    "ways": {"front-door": "Front door", "pickup": "Pickup"}
   },
   "end": {
-   "rule": "The end card is one line, the tally (m:ss, $ spent, Trail) and two buttons. The sentence under it, the route, the security and investigation lines and Kept are the debrief.",
+   "rule": "The end card is one line, the tally (m:ss, $ spent, Trail) and two buttons. The sentence under it, the route, the security and investigation lines and Kept are the debrief. Brief 096: debrief.cause words the card by the engine's reason; `fail` is its fallback.",
    "win": "Popovic is in the car.",
    "withdraw": "You withdrew.",
    "fail": {
@@ -1851,8 +1914,8 @@
    "live": {"heading": "District seals in {time}", "empty": "Get Popovic into the car and leave.", "ready": "Leave in the getaway car. Press Go.", "held": "Clear the exit, then press Go.", "cause": "Security is closing the exits."},
    "rule": "Brief 057 section 4 (Glyph's wording table; Sky, 2026-10-24: 'District sealed. Sealed off before Vale reached the car.' on a card that also said Vale reached the car). The engine's fail is: the getaway car had not left when security sealed the district. Keel's FailCause.Car says which of three it was: held (hostiles held the car, so Go was refused), ready (Vale was aboard, the car was free and Go was never given), empty (Vale was not aboard). `line` is the fail card's sub-line (it replaces briefing.fails.sealed whenever the car state is known; briefing.fails.sealed is the same sentence as `unknown`), `tip` the fail camera's next-time line, `story` the debrief's extra route line after 'Vale reached the getaway car.', and the same car state chooses all three, so they cannot disagree. {holders} is names.holders as holdersPhrase says it ('a rival', '2 robots', 'police'). The origin captions (less.failcam.caption.sealed) stay: they say what caused the seal; these say why it cost the run.",
    "line": {
-    "held": "{holders} held the car, so it couldn't leave before the district sealed.",
-    "ready": "Popovic was in the car, but nobody gave Go before the district sealed.",
+    "held": "{holders} blocked the car, so Go wouldn't work before the district sealed.",
+    "ready": "Popovic was in the car, but nobody pressed Go before the district sealed.",
     "empty": "Popovic wasn't in the car when security sealed the district.",
     "unknown": "The getaway car hadn't left when security sealed the district."
    },
@@ -1862,17 +1925,17 @@
     "empty": "Get Popovic aboard before the seal."
    },
    "story": {
-    "held": "{holders} held the car.",
-    "ready": "Go was never given."
+    "held": "{holders} blocked the car, so Go wouldn't work.",
+    "ready": "Nobody pressed Go."
    }
   },
   "closedIn": {
    "rule": "Brief 080 (engine 0.37.0, rulebook fight.close): the fail card's sub-line when the close catches the cell with Vale in hand, by Game.Cause.Why. {by} is the first culprit, worded as less.failcam.by. The caption and tip are less.failcam's closed-in.",
    "line": {
     "no-driver": "Popovic was aboard, but nobody in the car could drive.",
-    "car-held": "{by} held the car until the district closed in.",
+    "car-held": "{by} blocked the car, so Go wouldn't work, and time ran out.",
     "on-foot": "Popovic was still on foot when the district closed in.",
-    "no-go": "Popovic was aboard and the car was free, but nobody pressed Go."
+    "no-go": "Popovic was aboard and the car was free, but nobody pressed Go in time."
    }
   },
   "odds": {
@@ -1942,12 +2005,14 @@
     },
     "rivals-reach-vale": {
      "beat-to-pickup": "{by} reached the pickup first.",
+     "tail": "{by} reached Popovic's car.",
      "downed-enforcer": "{by} downed {agent}.",
      "reached-at-close": "{by} reached Popovic first.",
      "reached-car": "{by} reached the car."
     },
     "vale-leaves": {
-     "too-late": "Popovic's car left. Too slow."
+     "too-late": "Time ran out. Popovic left.",
+     "driven-away": "Popovic's car left on time."
     },
     "vale-dead": {
      "killed": "{agent} killed Popovic.",
@@ -1967,7 +2032,7 @@
     },
     "closed-in": {
      "no-driver": "Nobody left who can drive.",
-     "car-held": "{by} held the car.",
+     "car-held": "{by} blocked the car.",
      "on-foot": "Popovic was still on foot.",
      "no-go": "Car ready, and nobody said Go."
     },
@@ -1994,12 +2059,14 @@
     },
     "rivals-reach-vale": {
      "beat-to-pickup": "The rivals head for the pickup.",
+     "tail": "Down or delay their driver first.",
      "downed-enforcer": "Cover the one carrying Popovic.",
      "reached-at-close": "Rivals take Popovic at the close.",
      "reached-car": "Draw a gun by the car."
     },
     "vale-leaves": {
-     "too-late": "Popovic's car leaves on schedule."
+     "too-late": "Popovic's car leaves on schedule.",
+     "driven-away": "Turn the driver to buy time."
     },
     "vale-dead": {
      "killed": "Use Take, not Kill, on Popovic.",
@@ -2806,7 +2873,7 @@
        },
        {
          "icon": "takedown",
-         "word": "Rivals reach Popovic first",
+         "word": "Rivals take Popovic",
          "fails": [
            "rivals-reach-vale"
          ]
@@ -2859,19 +2926,25 @@
        }
      ],
      "needs": {
-    "rule": "What each way in needs, as conditions, never methods: any act that makes one true ticks it. check and known use the host's vocabulary (HostBook.Needs.cs): guard-away, camera-blind:<camera>, inside:<agent>, vale:<state>, turned:<role>, log:<code>, sight:<watcher>; ' | ' is any of. known keeps the condition at '?' until it holds. Words may carry {t:valeExits} {t:valeAtCar} {t:driverLast} {t:chime}.",
+    "rule": "What each way in needs, as conditions, never methods: any act that makes one true ticks it. check and known use the host's vocabulary (HostBook.Needs.cs): guard-away, camera-blind:<camera>, inside:<agent>, vale:<state>, turned:<role>, log:<code>, sight:<watcher>, car-guarded (Popovic aboard and the car not blocked, or an agent outside it with a gun drawn: the engine's guard), left-safe (nobody a Go now leaves behind would be captured); ' | ' is any of. known keeps the condition at '?' until it holds. Words may carry {t:valeExits} {t:valeAtCar} {t:driverLast} {t:chime}. Brief 096: `pending` holds conditions written ahead of their check word (the host reads none of it); once Latch adds the word, each moves into its ways after `after` (car-guarded and left-safe moved in, 2026-11-04).",
     "ways": {
      "front-door": [
       { "id": "guard-away", "words": "The guard is off the door", "check": "guard-away" },
       { "id": "door-camera", "words": "The entrance camera can't see the door", "check": "camera-blind:entrance" },
       { "id": "inside", "words": "The Enforcer is inside before {t:valeExits}", "check": "inside:enforcer | vale:WithEnforcer,Car" },
-      { "id": "getaway", "words": "Popovic reaches the getaway car", "check": "vale:Car" }
+      { "id": "getaway", "words": "Popovic reaches the getaway car", "check": "vale:Car" },
+      { "id": "guarded", "words": "While blocked, someone guards the car outside, gun drawn", "check": "car-guarded" },
+      { "id": "go", "words": "Go gets Popovic out, and the job's done", "check": "log:success" },
+      { "id": "left-safe", "words": "Anyone left outside walks out, if no fight or seal is on", "check": "left-safe" }
      ],
      "pickup": [
       { "id": "driver", "words": "The driver is turned", "check": "turned:driver" },
       { "id": "pickup-camera", "words": "The pickup camera can't see Popovic's car", "check": "camera-blind:pickup", "known": "sight:camera:pickup" },
       { "id": "has-vale", "words": "The Enforcer has Popovic", "check": "vale:WithEnforcer,Car" },
-      { "id": "getaway", "words": "Popovic reaches the getaway car", "check": "vale:Car" }
+      { "id": "getaway", "words": "Popovic reaches the getaway car", "check": "vale:Car" },
+      { "id": "guarded", "words": "While blocked, someone guards the car outside, gun drawn", "check": "car-guarded" },
+      { "id": "go", "words": "Go gets Popovic out, and the job's done", "check": "log:success" },
+      { "id": "left-safe", "words": "Anyone left outside walks out, if no fight or seal is on", "check": "left-safe" }
      ]
     }
    },
@@ -2934,6 +3007,11 @@
      "icon": "take",
      "line": "Takes the target, inside or at the car, and carries them to ours."
     }
+   },
+   "car": {
+    "word": "The getaway car",
+    "icon": "car",
+    "line": "Anyone can Board, Step out, Drive or Go. With Popovic aboard, Go wins."
    }
    }
  },

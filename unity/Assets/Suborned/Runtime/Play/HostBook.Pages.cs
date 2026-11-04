@@ -22,6 +22,8 @@ namespace Suborned.Play
         public sealed class Need { public string Id = "", Words = "", Check = "", Known = ""; }
         public readonly Dictionary<string, List<Need>> Needs = new();
         public readonly Dictionary<string, (string word, string icon, string line)> Does = new();
+        /// <summary>Brief 096 (Fable, book.cell.car): the getaway car's line on every agent's page (anyone can Board, Step out, Drive or Go).</summary>
+        public (string word, string icon, string line) Car = ("", "", "");
 
         static BookWordsFile one;
         public static BookWordsFile Get()
@@ -43,6 +45,7 @@ namespace Suborned.Play
                 if (c.Opt("who") is JNode wh) foreach (var kv in wh.Entries) one.Who[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
+                if (c.Opt("car") is JNode car) one.Car = (S(car, "word"), S(car, "icon"), S(car, "line"));
             }
             catch (Exception e) { Debug.LogWarning($"Book: text.json's book block not read ({e.Message})"); }
             return one;
@@ -102,6 +105,7 @@ namespace Suborned.Play
             p.Weapon = BookWeaponOf(k, weapon);
             p.Scales.Add(new BookScale { Word = bw.Health, Value = op.Gun.Health, Max = op.Gun.Max });
             p.Can.AddRange(BookCanOf(k));
+            if (bw.Car.word.Length > 0) p.Can.Add(new BookCan { Id = "car", Icon = bw.Car.icon.Length > 0 ? bw.Car.icon : "car", Word = bw.Car.word, Line = bw.Car.line }); // brief 096: the same on every page, last
             for (int i = 0; i < 4; i++) if (i != k) { var r = Op.Name((OpId)i); p.Others.Add(new BookOther { Agent = i, Face = $"portraits/portrait_{r}_{(g.Ops[i].Down ? "down" : "normal")}", Word = AgentName(i) }); }
             var vt = views?.Find("op/" + role); bool shown = vt && vt.gameObject.activeInHierarchy;
             p.Subject = shown ? vt.position : frame.World(op.Pos); p.Line = shown; p.SubjectView = "op/" + role;

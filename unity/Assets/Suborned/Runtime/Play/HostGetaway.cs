@@ -192,7 +192,29 @@ namespace Suborned.Play
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow); // a free Go tops the card
             CarDriveRows(pn, order);
+            CarStepOutRows(pn);
             foreach (var r in pn.Rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
+        }
+
+        /// <summary>Marks a Step out way (Intent.How; the ring ranks it and gives it to every agent aboard: DoersOf).</summary>
+        public const string StepOutHow = "step-out";
+
+        /// <summary>Sky 2026-11-04 (a tester boarded without Popovic and couldn't get out): Step out on the car's ring for every agent aboard who
+        /// stands, one way for all of them (same order, merged on the ring). It is the engine's move on a boarded operative (GDD §06 Board, brief 018):
+        /// board.s to step out at the car's side, Popovic stays in. The point is the free cell beside the seat, so the agent stops there.</summary>
+        void CarStepOutRows(ActionPanel pn)
+        {
+            var g = Game; if (g == null || g.Range || g.Over) return;
+            var seat = g.GetawaySeat; var at = g.Walk.NearestFree(seat) ?? seat;
+            string word = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sa) && sa.Label.Length > 0 ? sa.Label : "Step out";
+            for (int k = 0; k < 4; k++)
+            {
+                var op = g.Ops[k]; if (!op.InCar || op.Down) continue;
+                var v = new Intent { Slot = -1, Label = word, Name = word, How = StepOutHow, Lead = "s_moving", Order = new Order { Op = Op.Name((OpId)k), Do = "move", Point = at } };
+                v.Time = $"{g.R.BoardS} s"; v.Usd = "$0"; v.Trail = "T 0"; v.Alert = "A 0"; v.Outcome = g.Vale == ValeAt.Car ? $"{ValeWord} stays in" : "";
+                var lk = op.Busy != null ? new Answer { ok = false, code = "agent-busy", why = "busy in the car", m = -1, cm = -1, usd = -1, tick = -1 } : new Answer { ok = true, code = "", why = "" };
+                pn.Rows.Add(new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });
+            }
         }
 
         /// <summary>Brief 067 C (Sky on 0.2.122: "very annoying getting them into the car and then trying to make the car go"): once anyone is aboard,

@@ -57,6 +57,10 @@ export const PARKED = 'parked: moves off, Sky 2026-10-26';
 const Parked = z.string().startsWith(PARKED).optional().describe('engine 0.35.1: the word is unused while the four moves are off (weapons.moves.on false); kept for when Sky takes them up');
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
 export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
+/** Brief 096 (Sky 2026-11-04: a tester boarded without Popovic and couldn't get out): ways the host builds from an engine verb, with their own
+ *  words. `step-out` is a move on a boarded operative (GDD §06 Board: steps out at the car's side, 1 s; Popovic stays in), offered on the car's
+ *  ring for everyone aboard (HostGetaway.CarStepOutRows reads actions.step-out). Not an engine verb, so not in VERBS. */
+export const HOST_WAYS = ['step-out'] as const;
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb.
  *  `step-target` (brief 067, Glyph F9) is the tip H22 "Scroll to switch": stepping through the things under the cursor is a control, not an order, either. */
 /** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
@@ -209,6 +213,12 @@ export const Debrief = z.strictObject({
   causes: z.record(code, Line).describe('Debrief.InvestigationCause (and the engine\'s named-witness:<role>, whose {who} is the role as names.targets says it)'),
   fight: z.strictObject({ loud: Line, safe: Line }),
   fightWhy: z.record(code, Line).describe('engine 0.33.0 (brief 059): one clause for each id the debrief\'s finalFight.why can carry (sim FightWhy.Add), each a plain sentence that follows the Final fight line on the end card and in the history'),
+  cause: z.record(code, z.record(code, z.strictObject({
+    head: Short(32).describe('the end card\'s title for this cause (the card wraps it to two lines at most: HudToolkit EndCardAudit)'),
+    line: Line.describe('the line under it: what happened and why, in everyday words; {by} {agent} {holders} as less.failcam and names.holders'),
+    story: z.array(code).optional().describe('keys of debrief.story, in order: the debrief\'s route lines after "Popovic reached the getaway car.", so the story runs to the end'),
+  }))).describe('brief 096 (Sky 2026-11-04: "the End card needs to be plain english and clear but not too formal"): the end card by cause, not by code: cause[Game.FailCode][key], the key FailCause.Why, except `sealed`, keyed by FailCause.Car (held, ready, empty; `unknown` when none), and `withdraw`, keyed by the withdrawal\'s why. A cause with no entry (why `unresolved`) falls back to less.end.fail and briefing.fails'),
+  story: z.record(code, Line).describe('brief 096: the lines that finish the story after "Popovic reached the getaway car." on the debrief, named by debrief.cause[..].story; {holders} is names.holders as holdersPhrase says Game.CarHolders() at the end (a line with {holders} and no holders is left out)'),
   kept: Line,
   route: z.record(code, Line),
   assets: z.record(code, Line),
@@ -288,7 +298,7 @@ export const Less = z.strictObject({
   end: z.strictObject({
     rule: z.string().min(1),
     win: Short(), withdraw: Short(),
-    fail: z.record(code, Short()).describe('one line per fail code (the headline); the full sentence is briefing.fails, shown in the debrief'),
+    fail: z.record(code, Short()).describe('one line per fail code (the headline); the full sentence is briefing.fails, shown in the debrief. Brief 096: the fallback when debrief.cause has no entry for the ending\'s cause'),
   }),
   pop: z.record(code, Short()).describe('refusals and notices the host builds itself (not engine codes): one pop each'),
   why: z.record(code, Short(16)).describe('engine 0.33.0 (brief 059, Keel 0.25.0 FireWhyOf): the one or two words of why a hostile fires on an agent, by the engine\'s fire cause (Game.FireCauseOrder: range, final, fired, vale, violence, crewmate, drawn, face, seen). The under-fire cue shows the main cause beside its icon; Alt lists them all'),
@@ -467,7 +477,7 @@ export const TextFile = z.strictObject({
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
   goingLoud: z.strictObject({ captured: Line, fails: z.record(code, Line).describe('the hold card\'s line when the shot would fail the mission, by fail code (vale-dead, driver-shot, getaway-lost): what dies, then "The mission fails."') }).describe('lines on the going-loud card beyond its numbers'),
-  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the action ring (opened by a left click on a thing) (label, at most 8 characters)'),
+  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS, ...HOST_WAYS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, brief 030\'s `ring-<verb>` entries: the one word on a wedge of the action ring (opened by a left click on a thing) (label, at most 8 characters), and brief 096\'s HOST_WAYS (a way the host builds from an engine verb: `step-out` is a move)'),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),

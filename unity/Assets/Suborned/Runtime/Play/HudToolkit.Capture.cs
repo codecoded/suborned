@@ -246,6 +246,11 @@ namespace Suborned.Play
             foreach (var kv in t.EndFail) lines.Add(("fail." + kv.Key, kv.Value));
             foreach (var (code, fl) in t.Fails) if (!t.EndFail.ContainsKey(code)) lines.Add(("briefing.fails." + code, fl.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))); // the fallback head (HudModel.EndCard) when less.end has no line for the code
             lines.Add(("fallback", "The attempt failed"));
+            // brief 096: every debrief.cause head (the card's title by the engine's reason), each fill at its longest
+            static string Longest(IEnumerable<string> xs) { string m = ""; foreach (var x in xs) if (x != null && x.Length > m.Length) m = x; return m; }
+            var hs = new List<string>(); foreach (var (h1, hn) in t.Holders.Values) { hs.Add(h1); hs.Add(hn.Replace("{n}", "12")); }
+            string by = Longest(new List<string>(t.FailBy.Values) { Longest(t.TargetNames.Values), "The " + Longest(t.Speakers.Values) }), holders = Longest(hs), agent = "the " + Longest(t.Speakers.Values);
+            foreach (var (key, c) in t.DebriefCause) lines.Add(("cause." + key.Replace('|', '.'), c.Head.Replace("{by}", by).Replace("{holders}", holders).Replace("{agent}", agent).TrimEnd('.')));
             foreach (var (key, text) in lines)
             {
                 if (string.IsNullOrEmpty(text)) continue;

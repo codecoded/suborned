@@ -18,7 +18,7 @@ namespace Suborned.Play
         void ReadSeal(JNode sd)
         {
             if (sd == null) return;
-            foreach (var (k, into) in new[] { ("line", SealedLine), ("tip", SealedTip), ("story", SealedStory), ("live", SealLive) })
+            foreach (var (k, into) in new[] { ("tip", SealedTip), ("live", SealLive) } /* line and story: debrief.cause (brief 096) */)
                 if (sd.Opt(k) is JNode m) foreach (var kv in m.Entries) if (kv.Value.Kind == JKind.Str) into[kv.Key] = kv.Value.Str();
         }
 

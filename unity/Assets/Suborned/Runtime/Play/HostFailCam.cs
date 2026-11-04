@@ -391,15 +391,12 @@ namespace Suborned.Play
             // a fail code the text does not word yet (engine 0.34.0's cell-down) says the engine's own fail sentence, never the bare code
             string cap = t != null && t.FailCaption.TryGetValue(c.Fail + "|" + why, out var cp) ? cp : (Text?.EndFail.TryGetValue(c.Fail, out var ef) == true ? ef : endGame?.FailText is { Length: > 0 } ft ? ft : c.Fail);
             string tip = t != null && t.FailTip.TryGetValue(c.Fail + "|" + why, out var tp) ? tp : "";
-            if (c.Fail == "sealed" && SealedWords(c).tip is string st && st.Length > 0) tip = st; // brief 057 §4 (Fable's less.sealed.tip): what to do next time, by the car's state
+            if (c.Fail == "sealed" && SealedTip(c) is string st && st.Length > 0) tip = st; // brief 057 §4 (Fable's less.sealed.tip): what to do next time, by the car's state
             string byWords = FailByWords(c, who);
             string agent = c.Ops.Count > 0 ? "the " + (t != null && t.Speakers.TryGetValue(c.Ops[0], out var ag) ? ag : c.Ops[0]) : "us";
             string Fill(string s) => s.Replace("{by}", byWords).Replace("{agent}", agent);
             return (Fill(cap), Fill(tip));
         }
-
-        /// <summary>Brief 080: the closed-in fail's line (Fable's less.closedIn) by the cause's why; "" when the text has none.</summary>
-        public string ClosedInWords(FailCause c) => Text != null && Text.ClosedInLine.TryGetValue(c.Why, out var l) ? l.Replace("{by}", FailByWords(c, null)) : "";
 
         /// <summary>{by} in words: the culprit named as the fail camera names it (less.failcam.by).</summary>
         string FailByWords(FailCause c, Blamed who)

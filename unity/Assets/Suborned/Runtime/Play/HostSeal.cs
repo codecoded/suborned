@@ -55,15 +55,12 @@ namespace Suborned.Play
             return (car is "empty" or "ready" or "held" ? car : "", ids);
         }
 
-        /// <summary>The fail card's sealed sub-line, the fail camera's tip and the debrief's story line for the car's state (Fable's less.sealed);
-        /// null where the text has none (the card keeps briefing.fails.sealed).</summary>
-        public (string line, string tip, string story) SealedWords(FailCause c)
+        /// <summary>The fail camera's tip for the car's state (Fable's less.sealed.tip); null where the text has none. The card's line and the
+        /// story after the car are debrief.cause's (brief 096, HostEndWords).</summary>
+        public string SealedTip(FailCause c)
         {
-            var (car, ids) = SealCarOf(c); var t = Text; if (t == null || c == null || c.Fail != "sealed") return (null, null, null);
-            string holders = t.HoldersPhrase(ids); string Fill(string s) => s?.Replace("{holders}", holders);
-            string Cap1(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s[1..];
-            string key = car.Length > 0 ? car : "unknown";
-            return (Cap1(Fill(t.SealedLine.TryGetValue(key, out var l) ? l : null)), Fill(car.Length > 0 && t.SealedTip.TryGetValue(car, out var tp) ? tp : null), Cap1(Fill(car.Length > 0 && t.SealedStory.TryGetValue(car, out var st) ? st : null)));
+            var (car, ids) = SealCarOf(c); var t = Text; if (t == null || car.Length == 0) return null;
+            return t.SealedTip.TryGetValue(car, out var tp) ? tp?.Replace("{holders}", t.HoldersPhrase(ids)) : null;
         }
         /// <summary>The car state the fail recorded ("" unknown): the end card drops "Vale reached the getaway car" when he had not.</summary>
         public string SealedCar => Game?.Cause is FailCause c ? SealCarOf(c).car : "";

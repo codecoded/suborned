@@ -434,15 +434,15 @@ namespace Suborned.Play
         {
             var lines = HudToolkit.EndLinesNow?.ToList() ?? new List<string>(); cur.CardHead = lines.Count > 0 ? lines[0] : "";
             var text = h.Text; string fc = g.FailCode ?? ""; bool boarded = g.Log.Any(l => l.Code == "board.in" && l.Text.IndexOf("councillor", StringComparison.OrdinalIgnoreCase) >= 0) || g.Vale == ValeAt.Car;
-            string want = g.Result == Outcome.Success ? "Vale is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : text != null && text.EndFail.TryGetValue(fc, out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : "";
+            var cw = g.Result == Outcome.Success ? default : h.EndCauseWords(); // brief 096: the card's head and line are the cause's (debrief.cause) where the text words it
+            string want = g.Result == Outcome.Success ? "Vale is in the car" : cw.Head ?? (g.Result == Outcome.Withdrawn ? "You withdrew" : text != null && text.EndFail.TryGetValue(fc, out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : "");
             var problems = new List<string>();
             if (lines.Count == 0) problems.Add("no end card lines");
             else if (want.Length > 0 && lines[0] != want) problems.Add($"head \"{lines[0]}\", the engine's result wants \"{want}\"");
             if (g.Result != Outcome.Success && lines.Any(l => l.Contains("escapes with Vale"))) problems.Add("a failed run's card says the crew escaped with Vale");
             string reached = text != null && text.Route.TryGetValue("vale-reaches-getaway-car", out var rw) ? rw : "Vale reached the getaway car";
             if (!boarded && lines.Any(l => l.Contains(reached.TrimEnd('.')))) problems.Add($"the card says \"{reached}\" but Vale never boarded (no board.in)");
-            if (g.Result == Outcome.Failure && fc == "sealed" && h.SealedCar is string car && car.Length > 0 && car != "unknown" && lines.Count > 1 && text != null)
-            { var (sl, _, _) = h.SealedWords(g.Cause as FailCause); if (!string.IsNullOrEmpty(sl) && lines[1] != sl) problems.Add($"sealed with the car {car}: line \"{lines[1]}\", wants \"{sl}\""); }
+            if (cw.Line is string cl && lines.Count > 1 && lines[1] != cl) problems.Add($"{fc} ({HandoverHost.CauseKey(g.Cause as FailCause)}): line \"{lines[1]}\", the cause wants \"{cl}\""); // the seal's car state included (brief 057 §4)
             try
             {
                 var sb = new StringBuilder("{\n");

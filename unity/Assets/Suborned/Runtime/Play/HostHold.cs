@@ -106,7 +106,7 @@ namespace Suborned.Play
             var who = new List<int>(); if (plan == null || way < 0 || way >= plan.Givers.Count) return who;
             foreach (var g in plan.Givers[way]) if (Selected[(int)g]) who.Add((int)g);
             if (who.Count == 0) foreach (var g in plan.Givers[way]) who.Add((int)g);
-            if (plan.Row(way)?.I?.Order?.Do == "board") return who; // brief 067 C (Sky: "I wanted the whole squad to just get in the car"): Board goes to every selected agent who can, one order each in the same tick
+            if (plan.Row(way)?.I is { } wi && (wi.Order?.Do == "board" || wi.How == StepOutHow)) return who; // brief 067 C (Sky: "I wanted the whole squad to just get in the car"): Board goes to every selected agent who can, one order each in the same tick Step out too (Sky 2026-11-04: everyone aboard steps out)
             if (Driving && who.Contains(dAgent)) return new List<int> { dAgent }; // brief 085: in third person the agent in hand does what he can; the squad does the rest
             var idle = who.FindAll(k => !BusyAgent(k)); if (idle.Count > 0) who = idle; // Sky 2026-10-22: best placed never takes a busy agent while an idle one can
             if (who.Count < 2) return who;

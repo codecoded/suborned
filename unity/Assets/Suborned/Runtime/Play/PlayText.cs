@@ -110,8 +110,7 @@ namespace Suborned.Play
         public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
         /// <summary>The fail camera's words (Fable, less.failcam): caption and tip by "fail|why"; {by} by the culprit's kind.</summary>
         public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
-        /// <summary>Brief 080 (Fable, less.closedIn, less.odds, less.takedown): the closed-in fail's line by Game.Cause.Why; the fire chip and its Alt; the takedown card's Coming row.</summary>
-        public readonly Dictionary<string, string> ClosedInLine = new();
+        /// <summary>Brief 080 (Fable, less.odds, less.takedown): the fire chip and its Alt; the takedown card's Coming row. (less.closedIn's line is debrief.cause's now: PlayText.Cause.)</summary>
         public string OddsChip = "{pct} % · down in about {s} s", OddsChipBare = "{pct} %", OddsSum = "", OddsLimits = "", OddsStreakHead = "", OddsStreakHits = "", OddsStreakMisses = "", TdComing = "Coming: {list}.", TdComingItem = "{who} in {s} s: {verb}", TdComingShort = "{who} · {s} s";
         public string ObjGo = "Leave in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind"; // Fable 067: "Drive" is the Drive order's word now; Go leaves
         /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): the Alt line of the Go wedge while Vale is not aboard (Go then withdraws the cell).</summary>
@@ -138,8 +137,8 @@ namespace Suborned.Play
         public string MoodLikely = "likely", MoodHurt = "harder", MoodFooter = "{who} · {mood} · {lever} likely", MoodFooterHurt = "{who} · {mood} · {lever} harder", MoodFooterBare = "{who} · {mood}";
         /// <summary>less.alt.mood: the mood's words on Alt.</summary>
         public readonly Dictionary<string, string> AltMood = new();
-        /// <summary>Brief 057 §4 (Fable, less.sealed): the sealed fail's sub-line, tip and story line by the car's state (held, ready, empty; line also unknown).</summary>
-        public readonly Dictionary<string, string> SealedLine = new(), SealedTip = new(), SealedStory = new();
+        /// <summary>Brief 057 §4 (Fable, less.sealed.tip): the fail camera's next-time tip by the car's state (held, ready, empty). The card's line and story are debrief.cause's (brief 096).</summary>
+        public readonly Dictionary<string, string> SealedTip = new();
         /** brief 030 (no plate): Fable's one hint, less.hint.firstAct ("Right-click to act."); "" until text.json carries it */ public string FirstActHint = "";
         public float ObjShowS = 6, FeedS = 4, FeedDedupeS = 10, BubbleS = 3, HintShowS = 6, HintReturnS = 20; public int FeedMax = 2, BubbleMax = 2, CityBeats = 3, HintMaxShows = 2;
 
@@ -262,6 +261,7 @@ namespace Suborned.Play
             if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
             if (n.Opt("debrief")?.Opt("fight") is JNode dfi && dfi.Kind == JKind.Obj) foreach (var kv in dfi.Entries) if (kv.Value.Kind == JKind.Str) DebriefFight[kv.Key] = kv.Value.Str(); // the Final fight line by branch (loud, safe)
             if (n.Opt("debrief")?.Opt("fightWhy") is JNode dfw && dfw.Kind == JKind.Obj) foreach (var kv in dfw.Entries) if (kv.Value.Kind == JKind.Str) FightWhy[kv.Key] = kv.Value.Str(); // engine 0.33.0: a clause per id of finalFight.why
+            ReadCause(n.Opt("debrief")); // brief 096 (Fable): the end card by cause (debrief.cause) and the story after the car (debrief.story)
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) { LoudCaptured = S(gl, "captured") ?? ""; if (gl.Opt("fails") is JNode glf) foreach (var kv in glf.Entries) LoudFails[kv.Key] = kv.Value.Str(); }
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();
@@ -325,7 +325,6 @@ namespace Suborned.Play
             }
             if (l.Opt("alt")?.Opt("mood") is JNode am) foreach (var kv in am.Entries) if (kv.Value.Kind == JKind.Str) AltMood[kv.Key] = kv.Value.Str();
             ReadSeal(l.Opt("sealed"));
-            if (l.Opt("closedIn")?.Opt("line") is JNode cil) foreach (var kv in cil.Entries) if (kv.Value.Kind == JKind.Str) ClosedInLine[kv.Key] = kv.Value.Str(); // brief 080 (Fable)
             if (l.Opt("odds") is JNode od)
             {
                 OddsChip = S(od, "chip") ?? OddsChip; OddsChipBare = S(od, "chipBare") ?? OddsChipBare; OddsSum = S(od, "sum") ?? OddsSum; OddsLimits = S(od, "limits") ?? OddsLimits;

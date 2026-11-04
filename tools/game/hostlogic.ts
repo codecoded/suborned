@@ -17,11 +17,11 @@ const run = (cmd: string[], cwd = OUT) => { const r = Bun.spawnSync(cmd, { cwd, 
 const cached = (name: string, file: string) => { const p = join(UNITY, 'Library/PackageCache'), d = existsSync(p) ? readdirSync(p).find(x => x.startsWith(name + '@')) : undefined; return d ? join(p, d, file) : ''; };
 
 /** The runner's csproj; pure, so a test can read it. */
-export function runnerCsproj(o: { player: string; shim: string; sim: string; sa: string; nunit: string; tests: string[]; cases: string }): string {
+export function runnerCsproj(o: { player: string; shim: string; sim: string; sa: string; nunit: string; tests: string[]; cases: string[] }): string {
   return `<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><Nullable>disable</Nullable><InvariantGlobalization>true</InvariantGlobalization><LangVersion>latest</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputPath>bin/</OutputPath><AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath><NoWarn>CS0618;CS1701;CS1702;NU1701;MSB3277;CS0436;CS0169;CS8632</NoWarn></PropertyGroup>
   <ItemGroup>
-    <Compile Include="${o.cases}" />
+${o.cases.map(f => `    <Compile Include="${f}" />`).join('\n')}
 ${o.tests.map(f => `    <Compile Include="${f}" />`).join('\n')}
     <Reference Include="${o.player}" />
     <Reference Include="${o.sim}" />
@@ -48,6 +48,8 @@ function shim(ver: string): { dir: string; error?: string } {
   return r.code === 0 ? { dir } : { dir, error: `the Unity copy failed:\n${r.out.slice(-800)}` };
 }
 
+/** The cases: every .cs in hostlogic/ but the assembly patcher (HostLogic.cs, and a file a topic once it would pass 500 lines: brief 084). */
+export const caseFiles = (dir = DIR) => readdirSync(dir).filter(f => f.endsWith('.cs') && f !== 'Patch.cs').sort().map(f => join(dir, f));
 export type HostLogic = { ok: boolean; line: string; out: string; seconds: number };
 export function hostLogic(filter = '', o: { skipCompile?: boolean } = {}): HostLogic {
   const t0 = performance.now(), done = (ok: boolean, line: string, out = ''): HostLogic => ({ ok, line, out, seconds: (performance.now() - t0) / 1000 });
@@ -59,7 +61,7 @@ export function hostLogic(filter = '', o: { skipCompile?: boolean } = {}): HostL
   const nunit = cached('com.unity.ext.nunit', 'net472/unity-custom/nunit.framework.dll'); if (!nunit) return done(false, 'NUnit is not in unity/Library/PackageCache: the project has to have opened once');
   const tests = EDITOR_TESTS.map(f => join(UNITY, 'Assets/Suborned/Tests/Editor', f));
   const proj = join(OUT, 'hostlogic.csproj');
-  writeFileSync(proj, runnerCsproj({ player: join(patched, 'check.dll'), shim: s.dir, sim: join(UNITY, 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll'), sa: join(UNITY, 'Library/ScriptAssemblies'), nunit, tests, cases: join(DIR, 'HostLogic.cs') }));
+  writeFileSync(proj, runnerCsproj({ player: join(patched, 'check.dll'), shim: s.dir, sim: join(UNITY, 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll'), sa: join(UNITY, 'Library/ScriptAssemblies'), nunit, tests, cases: caseFiles() }));
   const b = run(['dotnet', 'build', proj, '-nologo', '-v', 'q', '-clp:NoSummary']);
   if (b.code !== 0) return done(false, 'the cases do not compile', b.out.split('\n').filter(l => /: error /.test(l)).slice(0, 12).join('\n'));
   const r = run(['dotnet', join(OUT, 'bin/hostlogic.dll'), ROOT, ...(filter ? [filter] : [])]), lines = r.out.trim().split('\n');

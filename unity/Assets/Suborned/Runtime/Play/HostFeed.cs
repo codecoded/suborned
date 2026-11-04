@@ -38,11 +38,14 @@ namespace Suborned.Play
         readonly FeedCard[] actCard = new FeedCard[4];
         int feedIds;
 
-        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; crewCodeAt.Clear(); }
+        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; crewCodeAt.Clear(); forCarCard = false; }
 
-        /// <summary>Engine 0.34.0: the crew's codes that each member logs for himself in the same beat (rivals.for-car, rivals.back-to-cover, the
-        /// floor's rivals.recalled): one card for the beat, not one a member. A code seen again within CrewBeatS of its last line makes no card.</summary>
-        static readonly HashSet<string> CrewBeatCodes = new() { "rivals.for-car", "rivals.back-to-cover", "rivals.recalled" };
+        /// <summary>Engine 0.34.0: the crew's codes that each member logs for himself in the same beat (rivals.back-to-cover, the floor's
+        /// rivals.recalled): one card for the beat, not one a member. A code seen again within CrewBeatS of its last line makes no card.
+        /// rivals.for-car is one card a walk on the car instead (brief 096: Game.RivalsForCar turning non-empty; forCarCard).</summary>
+        static readonly HashSet<string> CrewBeatCodes = new() { "rivals.back-to-cover", "rivals.recalled" };
+        /// <summary>Brief 096: a walk on the held car is on (its card is up); cleared, once a tick, when Game.RivalsForCar is empty again.</summary>
+        bool forCarCard;
         const int CrewBeatS = 3;
         readonly Dictionary<string, int> crewCodeAt = new();
 
@@ -298,6 +301,7 @@ namespace Suborned.Play
         void FeedEvent(LogLine l)
         {
             if (PressedStreet(l)) { quiet = l; return; } /* brief 085: a pressed call's arrival (HostConvo.Street) */ if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
+            if (l.Code == "rivals.for-car") { if (forCarCard) return; forCarCard = true; } // brief 096: one card a walk on the car, not one a rival (the engine logs each)
             if (CrewBeatCodes.Contains(l.Code)) { bool again = crewCodeAt.TryGetValue(l.Code, out var was) && l.Tick - was < CrewBeatS * Game.Hz; crewCodeAt[l.Code] = l.Tick; if (again) return; } // one card a beat, not one a member
             if (l.Code == "rivals.for-car") HolderPulseAt = Time.unscaledTime; // engine 0.34.0 (M067-K3 a): the held car's holder marks pulse once as the crew goes for Vale (an existing motion cue, no new mark; Glyph's cue to come)
             bool hidden = false;
@@ -419,6 +423,7 @@ namespace Suborned.Play
         /// <summary>The clock's city scenes (the chime), on their tick.</summary>
         void FeedClock()
         {
+            if (forCarCard && Game.RivalsForCar.Count == 0) forCarCard = false; // brief 096: the walk is over (back to cover, or the walkers down): the next one has its card
             if (Text == null) return;
             foreach (var e in Text.Events.Values) if (e.Clock.Length > 0 && e.Log.Count == 0 && Game.Tick == ClockTick(e.Clock)) _ = CityScene(e.Id, null);
         }

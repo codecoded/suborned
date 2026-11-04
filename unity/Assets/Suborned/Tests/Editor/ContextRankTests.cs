@@ -114,6 +114,19 @@ namespace Suborned.Play.Tests
             var bd = new[] { W("drive-car"), W("board") }; Assert.AreEqual("board", Picked(C("car", bd), bd), "Board and Drive no longer tie: Board is the quick way while someone is outside");
         }
 
+        /// <summary>Sky 2026-11-04 (a tester boarded without Popovic and couldn't get out): Step out is on the car's ring, after Board and Drive and
+        /// before the withdraw; once Popovic is aboard Go still leads.</summary>
+        [Test] public void OnTheCarStepOutComesBeforeTheWithdraw()
+        {
+            var step = W("move", how: HandoverHost.StepOutHow);
+            var a = new[] { W("go", outcome: "withdraw"), step, W("drive-car"), W("board") };
+            Assert.AreEqual(new List<int> { 3, 2, 1, 0 }, C("car", a).Order, "Board, Drive, Step out, then the withdraw last");
+            var b = new[] { step, W("go", outcome: "win") };
+            Assert.AreEqual(1, C("car", b).Order[0], "Popovic aboard: Go first, Step out after");
+            var c = new[] { W("move") };
+            Assert.AreEqual(8, ContextRank.Tier(c[0]), "a plain move keeps its tier");
+        }
+
         [Test] public void ABodyIsCarriedNeverHidden()
         {
             var a = new[] { W("carry"), W("restrain") }; Assert.AreEqual("carry", Picked(C("body", a), a));

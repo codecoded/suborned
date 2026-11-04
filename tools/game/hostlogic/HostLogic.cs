@@ -350,13 +350,25 @@ public class Words
 /// <summary>Brief 085: which scene a landing plays, read from the engine (Fable's table), on the routes' real orders; what the read-time, the Door field and the docks do. No views here, so the cutaway itself falls to bubbles: Proof085Scenes plays it.</summary>
 public class Conversations
 {
-    static List<string> Play(string route, int until)
+    static HandoverHost PlayHost(string route, int until)
     {
         var h = Host.Fresh(); h.controls.conversations = ConversationScenes.Always; Host.Set(h, "HintsOn", false); /* a learned hint writes PlayerPrefs, which has no store here */ var orders = Script.Parse(File.ReadAllText(System.IO.Path.Combine(Root.Path, "contracts/missions/handover/routes", route + ".json"))).Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList();
         foreach (var o in orders) { if (o.Tick >= until || h.Game.Over) break; if (o.Tick > h.Game.Tick) h.RunTo(o.Tick); if (o.Do is "watch" or "listen" or "turn" or "call" && o.Op != "cell") h.GiveScripted(o); else h.Issue(o); Host.Call(h, "Track"); }
-        h.RunTo(until); Assert.That(h.Fault, Is.Null, h.Status); return h.ConvoPicks;
+        h.RunTo(until); Assert.That(h.Fault, Is.Null, h.Status); return h;
     }
+    static List<string> Play(string route, int until) => PlayHost(route, until).ConvoPicks;
     [Test] public void TheHelpRoutePlaysEachScene() { var p = Play("route-a", 1300); Assert.That(p, Is.EqualTo(new[] { "listen-inez", "help-inez-1", "help-inez-2", "call-inez" }), string.Join(",", p)); }
+    /// <summary>Sky 2026-11-04 ("couldn't find a way for Fixer to pressure anyone" · "leave for now if it's there after listen"): Pressure needs the need
+    /// known (GDD §04), so before the Scout's Listen the ring shows it locked, and once the Listen has landed the Fixer's ring offers it.</summary>
+    [Test] public void PressureIsOfferedOnceTheListenLands()
+    {
+        static HandoverHost.PanelRow PressureRow(HandoverHost h) { h.Select(OpId.Fixer, false); return Host.Plan(h, "waitress").Pn.Rows.FirstOrDefault(r => r.I?.Order?.Do == "turn" && r.I.Order.Approach == "pressure"); }
+        var before = PressureRow(PlayHost("route-a-pressure", 280));
+        Assert.That(before == null || !before.Available, "before the Listen, Pressure is not open");
+        var after = PressureRow(PlayHost("route-a-pressure", 596));
+        Assert.That(after, Is.Not.Null, "after the Listen, no Pressure row on Inez");
+        Assert.That(after.Available, after.Reason);
+    }
     [Test] public void ThePressureRoutePlaysItsScenes() { var p = Play("route-a-pressure", 1600); Assert.That(p, Does.Contain("listen-inez")); Assert.That(p, Does.Contain("pressure-inez")); Assert.That(p, Does.Contain("call-inez-pressure"), string.Join(",", p)); Assert.That(p, Does.Not.Contain("call-inez")); }
     [Test] public void ThePayRoutePlaysTheDriver() { var p = Play("route-b", 1600); Assert.That(p, Does.Contain("pay-driver"), string.Join(",", p)); }
     [Test] public void OtherTemperamentsGetNoConversation()
@@ -462,7 +474,7 @@ public sealed class BookCases
         var h = Host.Fresh(); var job = h.BookJobPage(); Assert.That(job.Name, Is.Not.Empty); /* the ways read the built copy of brief.json: ProofBook.bookJobWay holds them */ Assert.That(job.Track.Count, Is.EqualTo(5)); Assert.That(job.Track[0].Word, Is.EqualTo("?"), "the rivals stay unknown until they come");
         for (int k = 0; k < 4; k++)
         {
-            var c = h.BookCellPage(k); Assert.That(c.Weapon, Is.Not.Null); Assert.That(c.Weapon.Stats.ConvertAll(x => x.id), Is.EqualTo(new List<string> { "damage", "rate", "range", "aim" })); Assert.That(c.Scales[0].Max, Is.EqualTo(h.Game.Ops[k].Gun.Max)); Assert.That(c.Ways, Is.Empty, "no ways on an agent"); Assert.That(c.Can.Count, Is.EqualTo(HandoverHost.Slots[k].Length), "one row a verb of the plate");
+            var c = h.BookCellPage(k); Assert.That(c.Weapon, Is.Not.Null); Assert.That(c.Weapon.Stats.ConvertAll(x => x.id), Is.EqualTo(new List<string> { "damage", "rate", "range", "aim" })); Assert.That(c.Scales[0].Max, Is.EqualTo(h.Game.Ops[k].Gun.Max)); Assert.That(c.Ways, Is.Empty, "no ways on an agent"); Assert.That(c.Can.Count, Is.EqualTo(HandoverHost.Slots[k].Length + 1), "one row a verb of the plate, then the car's (brief 096)"); Assert.That(c.Can[^1].Id + ":" + c.Can[^1].Icon, Is.EqualTo("car:car"));
             foreach (var w in c.Can) { Assert.That(w.Word, Is.Not.Empty, w.Id); Assert.That(w.Line, Is.Not.Empty, w.Id); foreach (var n in new[] { "Inez", "Vale", "Okafor" }) Assert.That(w.Word + w.Line, Does.Not.Contain(n)); }
         }
         var s = h.BookCellPage(0); Assert.That(s.Facts.Exists(f => f.Word.Contains("30")), "the Scout's reach is the rulebook's 30 m");
