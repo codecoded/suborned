@@ -521,6 +521,9 @@
   "drive-fight": {"line":"The fight has started. Fight it out here, or Go.","short":"Fight or Go","verbs":["*"]},
   "car-empty": {"line":"Nobody is in the car. Board first.","short":"Car is empty","verbs":["go"]},
   "car-no-driver": {"line":"Nobody aboard can drive. Board someone who isn't down, then Go.","short":"Nobody can drive","verbs":["go"]},
+  "car-boxed": {"line":"Boxed in: a car is across your way out. It must leave or burn first.","short":"Boxed in","verbs":["go"]},
+  "drive-boxed": {"line":"Boxed in: a car is across your way out. It must leave or burn first.","short":"Boxed in","verbs":["*"]},
+  "stand-boxed": {"line":"Can't get in: a car is across that drive.","short":"Can't get in","verbs":["*"]},
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
   "in-car": {"line":"That agent is in the car. Walk them out first.","short":"In the car","verbs":["*"]},
@@ -708,6 +711,7 @@
     "on-foot": {"head": "Time ran out on foot", "line": "Popovic was still on foot when the district closed in."},
     "no-driver": {"head": "Nobody left to drive", "line": "Popovic was aboard, but everyone in the car was down.", "story": ["no-driver"]},
     "car-held": {"head": "The car was blocked", "line": "{by} blocked the car, so Go wouldn't work, and time ran out.", "story": ["blocked"]},
+    "boxed": {"head": "The car was boxed in", "line": "{by} stood across the way out, and time ran out."},
     "no-go": {"head": "Nobody pressed Go", "line": "Popovic was aboard and the car was free, but nobody pressed Go in time.", "story": ["no-go"]}
    },
    "sealed": {
@@ -1056,6 +1060,15 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "camera.recorded": "engine 0.40.0 (brief 096; rulebook camera): silent for now, pending Fable and Glyph: a camera has the Pay or Pressure on tape; the card comes when the record lands (camera.record-lands)",
+  "camera.record-lands": "engine 0.40.0 (brief 096): pending Fable's card (crucial: Alert up): the camera's record reaches the desk, e.g. \"The pickup camera caught the Fixer paying Lukac.\"",
+  "car.kerbside": "engine 0.40.0 (brief 096; rulebook car.kerb): pending Fable's card: Popovic pulls in at the kerb because our car is on the service drive (replaces car.blocked's stop at the mouth, which stays only for the tick's window after he passes the kerbside point)",
+  "car.boxed-in": "engine 0.40.0 (brief 096; rulebook car.box): pending Fable: Popovic's car is boxed in (at the pickup he waits; at the close he stays, closed-in)",
+  "car.noticed": "engine 0.40.0 (brief 096; rulebook attention.parked): silent: a watcher has noticed our car on private ground; the watcher's cue and the car's stage mark show it (Glyph)",
+  "car.wary": "engine 0.40.0 (brief 096): silent: the watcher is wary of our car for the mission; the cue shows it",
+  "car.reported": "engine 0.40.0 (brief 096): silent: the watcher reports our car; the card comes when it lands (car.report-lands)",
+  "car.report-lands": "engine 0.40.0 (brief 096): pending Fable's card (crucial: Alert up): \"The patrol reported your car on the service drive.\"",
+  "car.report-stopped": "engine 0.40.0 (brief 096): silent: the watcher was downed before its report of our car landed",
   "car.blocked": "engine 0.32.0 (brief 059): card only: Vale's car stops at the road because our car is on the service drive; the Take still works from the back seat",
   "car.parks": "engine 0.32.0 (brief 059): event car-parks and a card: the turned driver parks Vale's car in the service bay",
   "car.parked": "engine 0.32.0 (brief 059): silent: the getaway car has stopped. The street shows it, the Drive's price line gave the time and the riders leave \"Driving\"; a line would only repeat that",

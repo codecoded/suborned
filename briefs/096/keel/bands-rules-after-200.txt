@@ -1,0 +1,65 @@
+| plan | style | wins | fails | loud | fight med (p25-p75, p95) | end | HP lost | down/win | T | A | Standing | Heat | idle med/p95 | reported |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| careless | careless | 0 % | entry-seen-camera 200 | 0 % (0 won) | 0 s (0-0, 0) | 0:00 | 0 | 0 | 0 | 0 | 0 | 0 | 14/46 s | 199 |
+| drive-early | twin | 52 % | enforcer-down 48, rivals-reach-vale 27, closed-in 21 | 54 % (38 won) | 17 s (13-21, 29) | 7:11 | 12 | 0.59 | 18 | 2 | 0 | 19 | 35/57 s | 13 |
+| prepared-loud | prepared-loud | 78 % | sealed 32, enforcer-down 9, closed-in 3 | 83 % (125 won) | 20 s (16-38, 118) | 5:29 | 12 | 0.49 | 33 | 2 | 0 | 33 | 22/46 s | 4 |
+| quiet-a | prepared-quiet | 100 % | - | 0 % (0 won) | 14 s (10-18, 28) | 4:38 | 2 | 0.08 | 4 | 0 | 3 | 4 | 13/22 s | 0 |
+| quiet-b-taped | twin | 43 % | closed-in 100, enforcer-down 14 | 100 % (86 won) | 24 s (14-48, 79) | 7:15 | 8 | 0.47 | 32 | 3 | 0 | 33 | 67/83 s | 25 |
+| quiet-b | prepared-quiet | 88 % | rivals-reach-vale 21, closed-in 3 | 0 % (0 won) | 12 s (9-15, 50) | 7:09 | 6 | 0.09 | 9 | 1 | 3 | 9 | 64/79 s | 0 |
+| quiet-g | prepared-quiet | 79 % | rivals-reach-vale 26, sealed 2, cell-down 1, closed-in 13 | 0 % (0 won) | 28 s (23-40, 73) | 6:07 | 6 | 0.13 | 6 | 1 | 3 | 6 | 67/96 s | 0 |
+| thin-quiet | thin-quiet | 87 % | rivals-reach-vale 25, entry-seen-camera 1 | 0 % (0 won) | 14 s (11-19, 27) | 4:04 | 7 | 0.05 | 7 | 1 | 2 | 7 | 16/52 s | 5 |
+| unprepared-loud | unprepared-loud | 0 % | entry-seen-camera 192, sealed 8 | 0 % (0 won) | 4 s (2-8, 46) | 0:00 | 0 | 0 | 0 | 0 | 0 | 0 | 5/29 s | 10 |
+ok    R-1  no crash: every play gave its line: 1800 plays, 0 errors
+ok    R-2  no stall: every play reaches a verdict by the close: 0 plays reach the close with no verdict
+ok    R-3  every fail names its cause (fail code and culprit): 746/746
+ok    R-4  every order shows its price: each verb given has its line on the card (text.json less.price), each Listen and Turn had its quote when given: 18/18 verbs, 0 unquoted acts
+ok    R-5  a saved run replays exactly from seed + orders (a win and a fail of each plan; the bands' own run gives the same hash): 15/15
+ok    R-6  unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace: 5/5
+FAIL  R-7  no reference window under 30 s at a person's pace: each step 30 s late loses at most 10 points of wins: 9/11
+ok    B-1 quiet-a  prepared quiet wins ≥ 90 %: 100%
+ok    B-1 quiet-b  prepared quiet wins ≥ 80 %: 88%
+ok    B-1 quiet-g  prepared quiet wins ≥ 75 %: 79%
+ok    B-2 thin-quiet  thin quiet wins 60-90 %: 87%
+ok    B-3 careless  careless wins ≤ 30 %: 0%
+ok    B-4 prepared-loud  prepared loud wins 50-75 %: only wins whose final fight was loud: 62.5%
+ok    B-5 unprepared-loud  unprepared loud wins ≤ 20 %: 0%
+ok    B-6  prepared loud clearly above unprepared (≥ 40 points): 62.5 % against 0 %
+MISS  B-7 quiet-a  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 14 s, p95 28 s
+MISS  B-7 quiet-b  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 12 s, p95 50 s
+ok    B-7 quiet-g  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 28 s, p95 73 s
+MISS  B-7 thin-quiet  quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s: median 14 s, p95 27 s
+MISS  B-8 prepared-loud  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 22 s, p95 46 s, worst 135 s
+ok    B-8 quiet-a  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 13 s, p95 22 s, worst 30 s
+MISS  B-8 quiet-b  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 64 s, p95 79 s, worst 89 s
+MISS  B-8 quiet-g  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 67 s, p95 96 s, worst 130 s
+ok    B-9 quiet-a  agents down per win ≤ 0.5, prepared: 0.08
+ok    B-9 quiet-b  agents down per win ≤ 0.5, prepared: 0.09
+ok    B-9 quiet-g  agents down per win ≤ 0.5, prepared: 0.13
+ok    B-10 prepared-loud  agents down per win ≤ 1.5, loud: 0.49
+ok    B-10 unprepared-loud  agents down per win ≤ 1.5, loud: no win
+MISS  B-11 drive-early  variety: middle half of fight lengths spans ≥ 10 s: 13-21 s
+ok    B-11 prepared-loud  variety: middle half of fight lengths spans ≥ 10 s: 16-38 s
+MISS  B-11 quiet-a  variety: middle half of fight lengths spans ≥ 10 s: 10-18 s
+ok    B-11 quiet-b-taped  variety: middle half of fight lengths spans ≥ 10 s: 14-48 s
+MISS  B-11 quiet-b  variety: middle half of fight lengths spans ≥ 10 s: 9-15 s
+ok    B-11 quiet-g  variety: middle half of fight lengths spans ≥ 10 s: 23-40 s
+MISS  B-11 thin-quiet  variety: middle half of fight lengths spans ≥ 10 s: 11-19 s
+ok    B-12  at least one prepared quiet route wins on every seed: 200/200
+ok    B-13  loud's Trail at least 3× quiet's in 95 % of the loud wins: 124/125 loud wins ≥ 27 T (3 × quiet's dearest median 9 T); loud median 36 T
+ok    B-14  nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling): Enforcer: 0 of 172 falls under 7 s, fastest 10.3 s; others: 0 of 478 under 5 s, fastest 5.9 s
+ok    B-15 drive-early  one mistake costs: wins at least 10 points under quiet-b: 52 % against 88 %
+ok    B-15 quiet-b-taped  one mistake costs: wins at least 10 points under quiet-b: 43 % against 88 %
+ok    B-16 drive-early  the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds: 200/200
+ok    B-16 quiet-b-taped  the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds: 200/200
+window quiet-a call: 100 % as planned, 98 % 30 s late
+window quiet-a enter: 100 % as planned, 98 % 30 s late
+window quiet-a go: 100 % as planned, 100 % 30 s late
+window quiet-b pay: 88 % as planned, 88 % 30 s late
+window quiet-b tip: 88 % as planned, 90 % 30 s late
+window quiet-b reroute: 88 % as planned, 83 % 30 s late
+window quiet-b take: 88 % as planned, 63 % 30 s late
+window quiet-b go: 88 % as planned, 88 % 30 s late
+window quiet-g beside-guard: 79 % as planned, 39 % 30 s late
+window quiet-g enter: 79 % as planned, 75 % 30 s late
+window quiet-g go: 79 % as planned, 76 % 30 s late
+HOLDS handover: 9 plans × 200 seeds in 103 s; 1 rigid failed, 10 of 35 bands missed; report out/scratch/keel/096/bands-final/bands.html

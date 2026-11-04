@@ -281,7 +281,7 @@ namespace Suborned.Sim
             // tuning.md §14 (engine 0.19.0): weapons free is the cell's setting
             "free-not-cell",
             // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
-            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked",
+            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked", "car-boxed", "drive-boxed", "stand-boxed", // brief 096 (car.box)
             // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
             "car-driving",
             // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the
@@ -311,6 +311,10 @@ namespace Suborned.Sim
         /// <summary>Brief 054 §4.3: the mood the card reads (known: a Watch's, or the true one once the temperament is known; "" none), and whether
         /// it favours this approach (likely, a dashed tick) or hurts it (a dashed half).</summary>
         public string Mood = ""; public bool Likely, Hurt;
+        /// <summary>Brief 096 (rulebook camera): a Pay or Pressure card's camera mark: "yes" a camera the cell knows would record the act where it is
+        /// done, "?" one it does not know, "no"; the camera; the Trail and the Alert the record costs; the seconds to its landing; the tick a loop
+        /// on it ends inside the act (-1 none: Alt's "loop ends m:ss · on camera").</summary>
+        public string Recorded = "no", RecordedBy = ""; public int RecordTrail, RecordAlert, RecordInS = -1, RecordLoopEnds = -1;
         public string Refused = "";          // a Watch or Listen that can teach nothing more: already-watched or already-heard (Sky 2026-10-18), the row greyed; "" otherwise
     }
 }

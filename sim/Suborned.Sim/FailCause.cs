@@ -285,7 +285,7 @@ namespace Suborned.Sim
                     case "violence-seen": who = last; break;
                     case "takedown-fails": who = last; op = "enforcer"; break;
                     case "gunfire": if (shotNow != null) { alertTwoOrigin = Recast(shotNow, "alert"); return; } who = last; break; // the cell's shot (CellGunfire), or a city gunman's (Resolve: gunfire:<shooter>)
-                    case "sighting": who = last; break;
+                    case "sighting": case "recorded": case "car-reported": who = last; break; // brief 096: a camera's record, the parked car's report
                     case "confirmed": who = landingBy; break;
                 }
                 if (who == "security") who = "security-1";

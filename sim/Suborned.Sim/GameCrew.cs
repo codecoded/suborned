@@ -100,7 +100,7 @@ namespace Suborned.Sim
         bool CarMoving => ccPath != null && ccProf != null && (CarSt == CrewCar.Entering || CarSt == CrewCar.Rounding || CarSt == CrewCar.Tail || CarSt == CrewCar.TipOut || CarSt == CrewCar.TipBack || CarSt == CrewCar.ToStand || CarSt == CrewCar.Front);
         long CcMm(int tick) { int k = tick - ccStart; var d = ccProf!; return k <= 0 ? 0 : k >= d.Length ? d[d.Length - 1] : d[k]; }
         /// <summary>Where the rival car is and which way it points, or null while it is off the map (Off, Away).</summary>
-        public (Pt pos, Pt heading)? RivalCarPose()
+        (Pt pos, Pt heading)? RivalCarPoseCrew() // brief 096: RivalCarPose (GameBoxIn.cs) reads this unless a test seam places the car
         {
             if (CarSt == CrewCar.Off || CarSt == CrewCar.Away) return null;
             if (CarMoving) { long mm = CcMm(Tick); return (ccPath!.At(mm), ccPath.Heading(mm)); }

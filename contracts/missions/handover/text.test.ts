@@ -1069,7 +1069,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(bad).toEqual([]);
   });
   test('the distance refusals all show the distance as a number', () => {
-    const stands = Object.keys(t.locks).filter((c) => /^stand-|^too-far$|^out-of-range$/.test(c));
+    const stands = Object.keys(t.locks).filter((c) => /^stand-(?!boxed$)|^too-far$|^out-of-range$/.test(c)); // brief 096: stand-boxed is box-in, not a distance
     expect(stands.length).toBeGreaterThanOrEqual(10);
     for (const c of stands) expect(t.locks[c]!.short, c).toContain('{m} m');
   });
@@ -1976,11 +1976,11 @@ describe('brief 096: the end card says what really happened (debrief.cause, by t
         const f = m[1]!; if ((RETIRED_FAILS as readonly string[]).includes(f) || f === 'sealed') continue;
         const ws = [...line.matchAll(/\b(?:Because|ShotDown)\("([a-z-]+)"/g)].map((x) => x[1]!);
         if (line.includes('RivalsAtCar')) ws.push('reached-car');
-        if (line.includes('Because(why')) for (const w of ['on-foot', 'no-driver', 'car-held', 'no-go']) ws.push(w); // GameSeed.CloseStep's why
+        if (line.includes('Because(why')) for (const w of ['on-foot', 'no-driver', 'boxed', 'car-held', 'no-go']) ws.push(w); // GameSeed.CloseStep's why (brief 096: boxed)
         expect(ws.length, line.trim()).toBeGreaterThan(0);
         for (const w of ws) add(f, w);
       }
-      const seed = simFile('GameSeed.cs'); for (const w of ['on-foot', 'no-driver', 'car-held', 'no-go']) expect(seed.includes(`"${w}"`), w).toBe(true);
+      const seed = simFile('GameSeed.cs'); for (const w of ['on-foot', 'no-driver', 'boxed', 'car-held', 'no-go']) expect(seed.includes(`"${w}"`), w).toBe(true);
       expect(want['rivals-reach-vale']).toEqual(new Set(['beat-to-pickup', 'tail', 'downed-enforcer', 'reached-car']));
     }
     add('engine-error', 'error');

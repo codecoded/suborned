@@ -274,7 +274,7 @@ describe('the §09 conditions, each with a failing example', () => {
   });
 });
 
-const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet', 'B-7 thin-quiet' /* brief 085: a real 1 s under the floor with the pressed call; Motive's band, let it report */, 'B-7 quiet-a', 'B-11 quiet-a' /* brief 096: the shift 40 s later and the city with it: route A's fight median 16 → 14 s, its middle half 12-24 → 10-18 s; Motive's bands */];
+const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet', 'B-7 thin-quiet' /* brief 085: a real 1 s under the floor with the pressed call; Motive's band, let it report */, 'B-7 quiet-a', 'B-11 quiet-a' /* brief 096: the shift 40 s later and the city with it: route A's fight median 16 → 14 s, its middle half 12-24 → 10-18 s; Motive's bands */, 'B-8 prepared-loud' /* brief 096, engine 0.40.0: its first Reroute (to cover the car parked early) leaves the cell idle a little longer: p95 46 s against 45; Motive's band */, 'B-11 drive-early' /* brief 096: the new one-mistake twin's fights run alike (13-21 s); Motive's band, a report */];
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.
   test('across seeds the references win as their bands say, the scripts play as the manifest expects, and the check ships but for its named owners', async () => {

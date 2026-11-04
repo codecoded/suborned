@@ -31,30 +31,32 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "2b7b196060207e890dcb8721e99b870de2d88afd2337c15dd9d52de5433d929d",
+  "sha256": "dfea4c373e368fac9ac1f9de1b97ba84d0321fc0d4d1a74892478d273bd558ba",
   "owner": "Vantage",
   "applied": [
    {
     "op": "addBay",
     "id": "officeBay",
+    "use": "official",
     "polygon": [
      [77, -38.2],
      [80, -38.2],
      [80, -23.8],
      [77, -23.8]
     ],
-    "reason": "Vantage: the office bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -168.2..-153.8, y -310..-307. The Oct 9 source has no bay object (the ground is one flat floor), so the lay-by is stated here. Checker C-4."
+    "reason": "Vantage: the office bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -168.2..-153.8, y -310..-307. The Oct 9 source has no bay object (the ground is one flat floor), so the lay-by is stated here. Checker C-4. Use official (brief 096, Motive's rules page, Sky 2026-11-04 \"all. recommended\"): the Office's own lay-by under the official door canopy: official cars only (Councillor Vale's). A car of the cell standing on a drive or in an official or service bay is a loiterer to security (rulebook attention.parked); a public bay keeps no clock. Keel for Vantage (tools/plan/block.ts carries use; unknown = reject)."
    },
    {
     "op": "addBay",
     "id": "squareBay",
+    "use": "public",
     "polygon": [
      [4, -50],
      [13, -50],
      [13, -47],
      [4, -47]
     ],
-    "reason": "Vantage: the square bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -180..-177, y -243..-234. Not in the Oct 9 source. Checker C-4."
+    "reason": "Vantage: the square bay is a lay-by 3 m deep, carriageway level, outer edge on the kerb. Plan x -180..-177, y -243..-234. Not in the Oct 9 source. Checker C-4. Use public (brief 096, Motive's rules page, Sky 2026-11-04 \"all. recommended\"): a lay-by on the square: anyone may stand a car there. A car of the cell standing on a drive or in an official or service bay is a loiterer to security (rulebook attention.parked); a public bay keeps no clock. Keel for Vantage (tools/plan/block.ts carries use; unknown = reject)."
    },
    {
     "op": "addStructure",
@@ -289,13 +291,14 @@
    {
     "op": "addBay",
     "id": "serviceBay",
+    "use": "service",
     "polygon": [
      [60.5, -16.5],
      [67, -16.5],
      [67, -13.5],
      [60.5, -13.5]
     ],
-    "reason": "Sky 2026-10-19, service door east face, quiet back way; Sky's rule that things go where a real city would put them: a service yard behind an office has a bay for a van or car, reached from the nearest road. One car, 6.5 x 3 m (the lay-bys are 3 m deep), parallel to the wing's east face, 3 m off it (y -16.5..-13.5), x 60.5..67, beside the Dumpster (which stands against the wall in the door strip, y -19.5..-18.2) and the door. The driver's car pulls in nose first along -x from Apron Road down the reserved drive (keep-clear service-drive, x 67..80, y -16.5..-13.5) and stops at (63.75, -15.0); 'Service lane' (62.5, -16.8), 2.1 m out from the service door, is the car's kerbside door. Quiet: no camera cone, the guard's door cone or the patrol's sweep reaches the yard, and the Apron Road pavement (x 76..80) is 14.2 m from the stopped car and 15.6 m from 'Service lane', beyond the 13 m witness range. A bay is carriageway level (plan 0); until the block can state the drive (Splice, brief 023), the world has no lowered way between it and Apron Road. Since 2026-10-26 (Sky playing 0.2.122, brief 067 A) the patrol's sweep has moved off the Office front into this yard (mission.json patrol-a and patrol-b: a line 11.65 m out from the service door, facing it), so the yard is quiet only once the Tech's Reroute sends the patrol away or between its passes; the camera cones and the guard's door cone still do not reach it."
+    "reason": "Sky 2026-10-19, service door east face, quiet back way; Sky's rule that things go where a real city would put them: a service yard behind an office has a bay for a van or car, reached from the nearest road. One car, 6.5 x 3 m (the lay-bys are 3 m deep), parallel to the wing's east face, 3 m off it (y -16.5..-13.5), x 60.5..67, beside the Dumpster (which stands against the wall in the door strip, y -19.5..-18.2) and the door. The driver's car pulls in nose first along -x from Apron Road down the reserved drive (keep-clear service-drive, x 67..80, y -16.5..-13.5) and stops at (63.75, -15.0); 'Service lane' (62.5, -16.8), 2.1 m out from the service door, is the car's kerbside door. Quiet: no camera cone, the guard's door cone or the patrol's sweep reaches the yard, and the Apron Road pavement (x 76..80) is 14.2 m from the stopped car and 15.6 m from 'Service lane', beyond the 13 m witness range. A bay is carriageway level (plan 0); until the block can state the drive (Splice, brief 023), the world has no lowered way between it and Apron Road. Since 2026-10-26 (Sky playing 0.2.122, brief 067 A) the patrol's sweep has moved off the Office front into this yard (mission.json patrol-a and patrol-b: a line 11.65 m out from the service door, facing it), so the yard is quiet only once the Tech's Reroute sends the patrol away or between its passes; the camera cones and the guard's door cone still do not reach it. Use service (brief 096, Motive's rules page, Sky 2026-11-04 \"all. recommended\"): the Office's service yard bay: deliveries and staff only. A car of the cell standing on a drive or in an official or service bay is a loiterer to security (rulebook attention.parked); a public bay keeps no clock. Keel for Vantage (tools/plan/block.ts carries use; unknown = reject)."
    },
    {
     "op": "addDrive",
@@ -1528,6 +1531,7 @@
  "bays": [
   {
    "id": "officeBay",
+   "use": "official",
    "polygon": [
     [77, -38.2],
     [80, -38.2],
@@ -1537,6 +1541,7 @@
   },
   {
    "id": "squareBay",
+   "use": "public",
    "polygon": [
     [4, -50],
     [13, -50],
@@ -1546,6 +1551,7 @@
   },
   {
    "id": "serviceBay",
+   "use": "service",
    "polygon": [
     [60.5, -16.5],
     [67, -16.5],

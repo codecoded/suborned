@@ -96,7 +96,7 @@ namespace Suborned.Sim
     public sealed class Approach { public string Id = "", Requires = ""; public int Usd, S, Trail; }
     public sealed class Need { public string Id = "", Requires = ""; public HashSet<string> MetBy = new HashSet<string>(StringComparer.Ordinal); }
 
-    public sealed class Rules
+    public sealed partial class Rules
     {
         public static readonly string[] ScaleNames = { "bravery", "resentment", "fear", "loyalty" };
         public const int Bravery = 0, Resentment = 1, Fear = 2, Loyalty = 3;
@@ -229,7 +229,7 @@ namespace Suborned.Sim
         // the crowd in a fight (Pulse §4)
         public readonly int CrowdScatterCm, CrowdStartleTicks, CrowdStartleFearfulTicks, CrowdRunSpeed, CrowdFleeMaxCm, CrowdQuietS, CrowdOccludeCm, CrowdPaceSpreadPct;
         /// <summary>Engine 0.34.0 (brief 067, Motive M067-B2, attention.run): a run in a clock-keeping watcher's sight lifts its clock to the notice mark, then counts as standing still.</summary>
-        public readonly bool AttnRun;
+        public bool AttnRun { get; private set; }
         /// <summary>car.drive (brief 023, engine 0.8.2): the rule's words; the engine routes every moving car on the site's drive grid (Site.Drive).</summary>
         public readonly string CarDrive = "";
         /// <summary>car.pace (brief 023, Motive 2026-10-19): cm/s (= mm a tick) on a carriageway cell and on a drive or bay cell.</summary>
@@ -318,7 +318,7 @@ namespace Suborned.Sim
         /// <summary>Brief 031 §2 (rulebook attention): the Heat bands (ascending from heatFrom 0) with their marks in seconds; whether the guard and
         /// the officers sense within AttnNearCm all round (people) or by their cone; the Alert a loiterer reported raises; the report's scan and call.</summary>
         public readonly List<(string id, int heatFrom, int noticeS, int waryS, int reportS)> AttnBands = new List<(string, int, int, int, int)>();
-        public readonly bool AttnGuardNear, AttnOfficerNear; public readonly int AttnNearCm, AttnAlert, AttnScanS, AttnCallS;
+        public bool AttnGuardNear { get; private set; } public bool AttnOfficerNear { get; private set; } public int AttnNearCm { get; private set; } public int AttnAlert { get; private set; } public int AttnScanS { get; private set; } public int AttnCallS { get; private set; }
         /// <summary>The band a Heat falls in: the last whose heatFrom it reaches.</summary>
         public (string id, int heatFrom, int noticeS, int waryS, int reportS) AttnBand(int heat) { var b = AttnBands[0]; foreach (var x in AttnBands) if (heat >= x.heatFrom) b = x; return b; }
         public readonly Dictionary<string, (string learn, string routine)> SightKinds = new Dictionary<string, (string, string)>(StringComparer.Ordinal);
@@ -369,7 +369,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "rivals", "investigation", "preview", "streams", "phases", "debrief", "events", "seed");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "rivals", "investigation", "preview", "streams", "phases", "debrief", "events", "seed", "camera");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -714,33 +714,7 @@ namespace Suborned.Sim
                 SightBy[k] = who.ToArray();
             }
             if (si["unknown"].Str() != "?") throw new FormatException("sight.unknown is not '?'");
-            { // brief 031 §2: the attention clock (Sky 2026-10-20 D1, D3, L1-L3)
-                var at = b.Opt("attention") ?? throw new FormatException("rulebook has no attention section: engine 0.11.0 runs the attention clock (brief 031)");
-                at.Only("bands", "sense", "near", "alert", "report", "run", "rule", "tag", "src", "proposed", "reason");
-                { // engine 0.34.0 (brief 067, Motive M067-B2): the run counted on the clock; required (unknown = reject: a rulebook without it is pinned before 0.34.0)
-                    var ar = at.Opt("run") ?? throw new FormatException("attention.run is missing: engine 0.34.0 counts a run on the watchers' clocks (cell.runAlert is retired; brief 067, Motive M067-B2)");
-                    ar.Only("at", "counts", "rule", "tag", "src", "proposed", "reason");
-                    OneOf(ar["at"], new[] { "notice" }); OneOf(ar["counts"], new[] { "still" });
-                    if (ar["rule"].Str().Length == 0) throw new FormatException("attention.run.rule is empty");
-                    AttnRun = true;
-                }
-                foreach (var bn in at["bands"].Items)
-                {
-                    bn.Only("id", "heatFrom", "notice", "wary", "report");
-                    var row = (bn["id"].Str(), RI(bn["heatFrom"]), RI(bn["notice"]), RI(bn["wary"]), RI(bn["report"]));
-                    if (!(row.Item3 >= 1 && row.Item3 < row.Item4 && row.Item4 < row.Item5)) throw new FormatException($"attention.bands.{row.Item1}: 1 <= notice < wary < report");
-                    if (AttnBands.Count == 0 ? row.Item2 != 0 : row.Item2 <= AttnBands[AttnBands.Count - 1].heatFrom) throw new FormatException($"attention.bands.{row.Item1}: heatFrom ascends from 0");
-                    foreach (var x in AttnBands) if (x.id == row.Item1) throw new FormatException($"attention.bands: '{row.Item1}' twice");
-                    AttnBands.Add(row);
-                }
-                if (AttnBands.Count == 0) throw new FormatException("attention.bands: at least one band");
-                var asn = at["sense"]; asn.Only("camera", "patrol", "robot", "guard", "officer");
-                foreach (var m in new[] { "camera", "patrol", "robot" }) OneOf(asn[m], new[] { "cone" }); // L2: a machine sees by its cone only
-                AttnGuardNear = OneOf(asn["guard"], new[] { "cone", "near" }) == "near"; AttnOfficerNear = OneOf(asn["officer"], new[] { "cone", "near" }) == "near";
-                AttnNearCm = RI(at["near"]) * 100; AttnAlert = RI(at["alert"]);
-                at["report"].Only("scan", "call"); AttnScanS = RI(at["report"]["scan"]); AttnCallS = RI(at["report"]["call"]);
-                if (AttnScanS < 1 || AttnCallS < 0 || AttnAlert < 1 || AttnAlert > 3) throw new FormatException("attention: scan >= 1 s, call >= 0 s, alert 1..3");
-            }
+            ReadAttention(b); // brief 031 §2 and brief 096: the attention clock and the parked car (RulesGetaway.cs)
             if (SightKinds["guard"].routine == "person" && SightKinds["guard"].learn != "watch") throw new FormatException("sight.kinds.guard: a person routine is learned by a Watch");
             // ---- brief 013: the takedown, the witnesses, the response dial, the campaign
             var td = b["takedown"]; td.Only("ko", "kill", "struggle", "reach", "trail", "koAlertMax", "foundKillStanding", "wake", "stagger", "restrain", "free", "callOut", "carry", "stash", "service", "rule", "tag", "src", "proposed", "reason");
@@ -822,7 +796,7 @@ namespace Suborned.Sim
             // brief 023 (engine 0.8.2): where a car may be. The rule has no numbers; the engine routes every moving car on the site's drive grid
             // only when the rulebook states it (unknown = reject: a rulebook without car.drive is one the engine was not built for)
             var cd = b.Opt("car") ?? throw new FormatException("rulebook has no car section: engine 0.8.2 routes cars by car.drive (brief 023)");
-            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "tag", "src", "proposed", "reason");
+            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "box", "kerb", "tag", "src", "proposed", "reason"); ReadCars096(b); // brief 096: camera, car.box, car.kerb (RulesGetaway.cs)
             { // engine 0.33.1 (brief 041, Sky: "characters are walking through cars"): a standing car blocks the walk; required (unknown = reject)
                 var fp = cd.Opt("footprint") ?? throw new FormatException("rulebook car.footprint is missing: engine 0.33.1 keeps walkers out of a standing car (brief 041)");
                 fp.Only("len", "w", "clear", "reach", "rule", "ahead"); fp["rule"].Str();

@@ -112,7 +112,9 @@ namespace Suborned.Sim
                 }
                 if (seenMask != 0) attnSeen[w] = seenMask;
             }
-            AttentionReports();
+            CameraRecordStep(); // brief 096: bribes on camera (GameCameraRecord.cs)
+            if (!Over) ParkedCarStep(); // brief 096: the parked car noticed (GameParkedCar.cs)
+            if (!Over) AttentionReports();
             if (!Over) EntryReports(); // engine 0.34.2: the patrol's report of an Enter (GameEntrySeen.cs)
         }
 
@@ -192,6 +194,7 @@ namespace Suborned.Sim
         /// <summary>The clocks and reports for the checkpoint hash: no bytes until a clock has moved.</summary>
         internal void HashAttention(Hash.H h)
         {
+            HashRecords(h); HashParked(h); // brief 096: no bytes until a record or a car clock exists
             if (attn.Count == 0 && attnReps.Count == 0) return;
             h.S("attention").I(Heat);
             foreach (var kv in attn)

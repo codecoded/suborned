@@ -18,7 +18,9 @@ export type Row = {
   replayIdentical?: boolean; stats: { fightS: number; shots: number; hits: number; hpLost: number; down: number }; campaignTrail?: number; campaignStanding?: number; openCases?: number; cause?: { why?: string; culprits?: { id: string }[] };
   marks: Record<string, number>; idleMaxS: number; idleAt: number; inputs: number; refused: number; unpriced: number; giveUps: number; firstShot: number; held?: { tick: number; how: string; who: string }[]; fullToDown?: { op: string; s10: number }[]; refusals: Record<string, number>; given: Record<string, number>; never: string[]; error?: string;
 };
-export type Style = 'prepared-quiet' | 'thin-quiet' | 'careless' | 'prepared-loud' | 'unprepared-loud';
+export type Style = 'prepared-quiet' | 'thin-quiet' | 'careless' | 'prepared-loud' | 'unprepared-loud' | 'twin';
+/** Brief 096 (Motive's rules page): a `twin` plays its quiet plan with one mistake (quiet-b-taped: the Pay on the live camera; drive-early: the car parked on the drive before the chime, no Reroute). */
+export const TWINS: Record<string, string> = { 'quiet-b-taped': 'quiet-b', 'drive-early': 'quiet-b' };
 export const REFERENCE: Style[] = ['prepared-quiet', 'prepared-loud'];
 /** Motive's floor for each prepared route (briefs/080/motive/tuning): the Handover's three aren't equally forgiving, and needn't be. */
 export const ROUTE_FLOOR: Record<string, number> = { 'quiet-a': 90, 'quiet-b': 80, 'quiet-g': 75 };
@@ -91,6 +93,9 @@ export function bands(s: Summary[], rows: Row[], caseEq = 3): Line[] {
   const falls = rows.flatMap(r => (r.fullToDown ?? []).map(f => ({ ...f, plan: r.plan, seed: r.seed }))).filter(f => f.s10 < 10000), en = falls.filter(f => f.op === 'enforcer'), rest = falls.filter(f => f.op !== 'enforcer');
   const min = (v: typeof falls) => v.length ? Math.min(...v.map(f => f.s10)) / 10 : Infinity, under = (v: typeof falls, s: number) => v.filter(f => f.s10 < s * 10).length;
   L.push({ id: 'B-14', rule: 'nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling)', ok: !under(rest, 5) && !under(en, 7), value: `Enforcer: ${under(en, 7)} of ${en.length} falls under 7 s, fastest ${min(en)} s; others: ${under(rest, 5)} of ${rest.length} under 5 s, fastest ${min(rest)} s` });
+  // brief 096 (Motive): a one-mistake twin is clearly worse than its quiet plan, and its mistake is seen (Alert on nearly every seed)
+  for (const x of by('twin')) { const q = s.find(y => y.plan === TWINS[x.plan]); L.push({ id: `B-15 ${x.plan}`, rule: `one mistake costs: wins at least 10 points under ${TWINS[x.plan] ?? '(no twin)'}`, ok: !!q && x.winPct <= q.winPct - 10, value: q ? `${x.winPct} % against ${q.winPct} %` : 'no twin played' }); }
+  for (const x of by('twin')) { const r = rows.filter(y => y.plan === x.plan), seen = r.filter(y => y.alert >= 1).length; L.push({ id: `B-16 ${x.plan}`, rule: 'the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds', ok: seen * 100 >= 95 * r.length, value: `${seen}/${r.length}` }); }
   return L;
 }
 

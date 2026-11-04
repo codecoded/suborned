@@ -61,7 +61,7 @@ namespace Suborned.Sim
         {
             if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
             if (Range && Array.IndexOf(RangeVerbs, o.Do) < 0) return No("unknown-verb", $"verb '{o.Do}' is not the fight range's (brief 029: {string.Join(", ", RangeVerbs)})");
-            if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
+            if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
@@ -358,7 +358,9 @@ namespace Suborned.Sim
             if (!ev.Private) foreach (var w in ev.Witnesses) if (AllHold(w.When, x)) acts.Add(w.Act); // rulebook privacy: a private conversation has no onlookers
             bool witnessed = false;
             if (ev.Id == "cell.watch" && R.MoodOn) p.KMood = MoodNow(p); // brief 054 §2.3: the mood seen at the Watch's end
+            witnessTrailOff = RecordTrailPaid(o); // brief 096 (camera): one act, one incident: a record that already charged its Trail
             foreach (var act in acts) witnessed |= WitnessAct(act, p, "fixer");
+            witnessTrailOff = false; if (witnessed) ActWitnessed(o); // and a record still to land charges none
             bool charged = false;
             foreach (var c in changes) charged |= Apply(c, p, q, witnessed);
             if (paid > 0 && !charged) { Cash += paid; } // no deal: the money stays with the cell
@@ -396,27 +398,6 @@ namespace Suborned.Sim
             }
         }
 
-        void LadderMove(Person p, string move)
-        {
-            foreach (var (k, by) in R.Ladders[move]) p.Sc[k] = R.Clamp(k, p.Sc[k] + by);
-        }
-
-        /// <summary>rulebook memory (K1): an entry on the subject; when full, the oldest sighting or told fact goes first (Motive's review #9).</summary>
-        void Remember(Person p, string act, string by, bool witnessed)
-        {
-            p.Memory.Add(new Mem { Act = act, By = by, Place = p.Place, Tick = Tick, Witnessed = witnessed });
-            if (p.Memory.Count <= R.MemoryCap) return;
-            int drop = -1;
-            for (int j = 0; j < p.Memory.Count; j++)
-                if (Sighting(p.Memory[j].Act) && (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick)) drop = j;
-            if (drop < 0) for (int j = 0; j < p.Memory.Count; j++) if (drop < 0 || p.Memory[j].Tick < p.Memory[drop].Tick) drop = j;
-            p.Memory.RemoveAt(drop);
-        }
-
-        /// <summary>rulebook memory.whenFull: what a person saw (or was told) goes before what was done to them.</summary>
-        static bool Sighting(string act) => act == "saw-act" || act == "saw-runner" || act == "saw-gunfire" || act == "saw-violence" || act == "saw-weapon-drawn" || act == "told"
-            || act == "saw-takedown" || act == "saw-carry" || act == "found-body" || act == "heard-alarm"; // brief 013's sightings
-
         /// <summary>A report (rulebook reports): an incident for Alert — the nth reported incident raises it to at least byIncident[n−1].</summary>
         void Report(Person p)
         {
@@ -443,7 +424,7 @@ namespace Suborned.Sim
             inc.Witnesses.Add((subject, at.Value)); // the person the act was done to stood at it: the nearest to question (§05 sightline + distance)
             if (incidents.Add($"{act}:{subject.Role}:{Tick}"))
             {
-                AddTrail(R.WitnessTrail, $"witnessed:{act}:{subject.Role}");
+                AddTrail(witnessTrailOff ? 0 : R.WitnessTrail, $"witnessed:{act}:{subject.Role}");
                 MoveStanding(R.Traceable[act] * R.StandingStep, $"witnessed:{act}", "seen-" + act, subject.Role.Length > 0 ? subject.Role : subject.Id);
             }
             foreach (var w in seen) Remember(w, "saw-act", by, true);
@@ -607,6 +588,7 @@ namespace Suborned.Sim
             }
             // seen by (rulebook sight.unknown): where the operative stands for the act, its own place when already within reach, else the person's
             if (at.HasValue) q.Seen = SeenAt(G.Within(op.Pos, at.Value, approachReach) ? op.Pos : at.Value);
+            QuoteRecord(q, approach, p, op, at.HasValue && G.Within(op.Pos, at.Value, approachReach) ? op.Pos : at, at); // brief 096 (camera): the camera mark (GameCameraRecord.cs)
             return q;
         }
 

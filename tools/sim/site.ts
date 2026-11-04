@@ -23,6 +23,7 @@ import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 import { buildExit, blockM, checkExit } from './getaway';
 import { driveGrid, driveFree, type Drive } from './drive';
 import { buildRivals, buildStands, checkRivals, checkStands } from './stands';
+import { groundOf } from './ground';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -237,6 +238,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
     vale: { exit: 'd:Official entrance', car: 'd:Official drop-off', service: 'd:Service lane', src: 'GDD §07 5:50 Vale exits, 6:10 at car (service lane if the driver is turned); mission.json roles.councillor leavesTo' },
     car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'service-bay', block: 'block-spot', serviceFacing: serviceFacing, blockFacing: blockFacing, src: 'GDD §07; mission.json roles.driver; blockFacing: parked at block-spot the car lies along its bay\'s long axis (the official bay\'s kerb), nose the way it pulled out from the pickup (tools/sim/site.ts); the turned driver parks in the Office\'s east yard bay (mission.json point service-bay, brief 023), nose in: serviceFacing is the bay\'s long axis pointing away from the drive it is entered by (tools/sim/site.ts)' },
     drive,
+    ground: groundOf(block), // brief 096: the bays' use and the drives' kerbs (car.box, car.kerb, attention.parked)
     rivals: { park: 'rival-park', front: 'd:Office approach', // engine 0.33.0: rivals.entry (rival-entry) is retired: the crew comes by car (rivals.car.entry)
       ...(mission.rivals ? { public: mission.rivals.public } : {}), ...(opts.foldStands ? { car: rivalsNew.car, posts: rivalsNew.posts } : {}), src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' + (mission.rivals ? `; public: mission.json rivals (${mission.rivals.src})` : '') },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },

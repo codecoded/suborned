@@ -6,7 +6,7 @@
 //                  round behind it, the in-car Take, a 3.5 m carry, the safe fight at the yard with the posted three (who walked after the car)
 //    P59-NOBODY    the turned driver waits with Vale in the bay; nobody takes him; at 8:30 he drives on: vale-leaves
 //    P59-UNTURNED  Sky 3a: an unturned driver drives Vale away at 6:13: vale-leaves
-//    P59-FIRST     the getaway car on the service drive first: the turned driver stops at its mouth (K5); the Take there is in-car
+//    P59-FIRST     the getaway car on the service drive first: the turned driver pulls in at the kerb short of it (K5; car.kerb, 0.40.0); the Take there is in-car
 //    P59-TAIL      no tip: the rival car follows Vale's car, the wheelman walks to Vale's door and reaches him before the Take is done
 //    P59-TIP       the tip at the parked car: the car and wheelman leave the way they came, back at the park 3:50 after it lands
 //    P59-EARLY     the cell has Vale before the rivals come: the car comes straight to the cell's stand, all five step out there
@@ -165,7 +165,7 @@ namespace Suborned.Sim
                 r.Is(g.Cause != null && g.Cause.Why == "driven-away", "the cause: driven away");
             });
 
-            Add("P59-FIRST", "059", "Brief 059 K5: the getaway car on the service drive before Vale's car comes: the turned driver stops at the drive's mouth on Apron Road and the hand-off happens there, in the car.", r =>
+            Add("P59-FIRST", "059", "Brief 059 K5, brief 096 (car.kerb, engine 0.40.0): the getaway car on the service drive before Vale's car comes: the turned driver pulls in at the kerb short of the drive on Apron Road (no longer across its mouth) and the hand-off happens there, in the car.", r =>
             {
                 var g = r.G;
                 Open059(r); Tip059(r);
@@ -173,7 +173,7 @@ namespace Suborned.Sim
                 r.Is(g.CurStand.Id == "service-drive" && g.Log.Exists(l => l.Code == "car.parked"), "our car stands on the service drive");
                 r.To(T(370) + T(g.R.ValeInS));
                 r.Until(() => g.CarInBayTick > 0 && g.Tick >= g.CarInBayTick, T(60));
-                r.Is(g.CarAtMouth && g.Log.Exists(l => l.Code == "car.blocked"), "the driver stops at the drive's mouth (car.blocked)");
+                r.Is(g.CarAtKerb && g.Log.Exists(l => l.Code == "car.kerbside") && !g.Log.Exists(l => l.Code == "car.blocked"), "the driver pulls in at the kerb short of the drive (car.kerbside), not across its mouth");
                 r.Is(g.S.Drive.SurfaceAt(g.CarPos()) == 'r', "on the carriageway (Apron Road), not the drive");
                 r.Is(g.PickupService && g.TakeInCar, "the Take there is in-car (brief 059 §1.4)");
                 r.To(Math.Max(g.Tick, r.SendTo(Enf, g.S.Grid.NearestFree(g.CarPos() + new Pt(0, -250)) ?? g.CarPos())));
