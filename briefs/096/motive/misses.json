@@ -1,0 +1,88 @@
+{
+  "schema": "suborned.motive.values/1",
+  "id": "096-misses",
+  "by": "Motive (systems designer)",
+  "date": "2026-11-05",
+  "for": "Keel (engine), Waymark (plans and bands); Sky through Aster for the three questions",
+  "on": "engine 0.42.0 (work/096 at d56e3510); Keel's report briefs/096/keel/report-lend.md, bands briefs/096/keel/bands-lend-after-200.txt",
+  "page": "briefs/096/motive/misses.html",
+  "probe": "briefs/096/motive/misses-probe/ (summary.txt, mkplans.py, endgame.py); 200 seeds a plan on a scratch copy of sim/ (out/scratch/motive/096m), sim/ untouched",
+  "tags": "[S] starting value, tune by playtest. Every rule here is today's game once Keel builds it, except where marked sky.",
+
+  "rules": {
+    "V3-fired": {
+      "v": "A police body or robot counts an agent a foe for having fired only if it saw the shot (its own sight, at the time) or once the cell is placed. While a gang shooting is pending and unplaced, an agent who fired earlier and now stands holstered is not shot on sight. Drawn, seen violence, a known face and the rest of ai.intent stand as today.",
+      "replaces": "ai.intent foe 'fired' = the agent has ever fired (Gun.Fired), which the police can't know",
+      "build": "the minimum Keel probed: HasFoe 'fired' returns Gun.Fired && !GangPending. Measured: changes no plan but the veteran (14 plans).",
+      "why": "Information moves through people (§01): an officer arriving at an unseen shooting doesn't know who fired. Without it V2 (the gang shooting's placing) never matters: the veteran loses enforcer-down on 192 of 200 seeds.",
+      "tag": "S",
+      "player": "visible: the response no longer opens fire on a holstered agent who fired before they came. Follows Sky's gang-shooting call (2026-11-04, 'the seal waits until the cell is seen') and the veteran's shot (route B's middle)."
+    },
+    "L8-police": {
+      "v": 75, "unit": "s", "key": "split-police-s", "was": 60,
+      "rule": "unchanged: the police close in split-police-s after vale.out, or at the seal or the 8:10 close if sooner",
+      "why": "Measured on quiet-b: the crew breaks a median 26.5 s after vale.out and the car leaves about 20 s later; at 60 s, 40 seeds lose all three to the police and the carry window is closed on most downs. At 75 s (with Waymark's late Go before 8:05) all four out 69.5 % of wins, 0.52 captured. 90 s buys nothing: vale.out is about 6:49, so the 8:10 close caps it at about 81 s (68 %, 0.61).",
+      "tag": "S",
+      "player": "visible: the countdown after Popovic is out reads 1:15, not 1:00. 082.1 set no number; 60 was mine."
+    },
+    "G1-go-waits": {
+      "v": "A Go given on a car while an agent is boarding it (Board in progress, 1 s, or 4 s with a carry) lands the tick that Board lands. The Go's card before commit names who it leaves behind and that they are caught (R-4).",
+      "why": "Measured: the late Go left the Tech outside while he climbed in carrying the Fixer (quiet-b-thinned seed 4, both caught). A player pressing Go as the last one climbs in means 'go with him'.",
+      "tag": "S",
+      "player": "visible, small: Go no longer drives off from someone half in the car."
+    }
+  },
+
+  "bands": {
+    "B-7 quiet final fight": { "v": "median 10-40 s, 95 % under 90 s", "was": "median 15-40 s", "sky": "Q1", "why": "the warned ambush (A, 13 s) and thinning (B thinned, 10-11 s) are preparation paying; the 15 s floor punishes them" },
+    "L96 A-fight": { "v": "median 10-40 s (expect 11-16)", "was": "15-40 s", "sky": "Q1" },
+    "L96 B": { "v": "Popovic out >= 85 %", "was": "85-95 %", "why": "on the lend the quiet fight is at our car and the spring comes as Popovic's car leaves, so his Go is safe by design (L6). The risk moved to the three: read it on all-out and captured. Mistakes still cost everything: lookout ignored, taped bribe, drive-early all 0 %." },
+    "L96 B-all": { "v": "all four out 60-80 % of wins, captured per win <= 0.6", "unchanged": true, "expect": "69.5 %, 0.52 (measured with L8 75 s and the late Go before 8:05)" },
+    "L96 B-thinned": { "v": "out within 3 points of B; all four out >= B + 10 points", "unchanged": true, "expect": "out 97-98 %, all out about 81 % (measured on the 122 Mercenary seeds: out 96 %, all out 89 %, captured 0.21; the 78 Loyal seeds play B: 100 %, 69.5 %)", "needs": "Waymark's thinned plan, below" },
+    "L96 G": { "v": "quiet-g wins >= 75 % (GDD §09)", "was": "70-82 % (my estimate, not a GDD band)", "why": "F1 removed the closed-in fails it was meant to; never lower a route's wins to meet a guess. G's real misses are B-8 (idle p95 98 s) and R-7 (beside-guard 87 -> 48 % 30 s late): Waymark and Pulse." },
+    "L96 loud-lend": { "v": "report only, expect 30-40 % out", "was": "50-70 % out", "why": "L6 holds: a loud fight comes to the car with the target, here the bay, while the three are 64 m off at the square. The lend is route B's quiet tool; loud's reference stays the front door (prepared-loud 66.5 %, in band). Measured at 75 s: out 37.5 %, all four out 58.7 % of wins.", "sky": "Q3 (keep)" },
+    "L96 veteran": { "v": "Popovic out 40-70 %; captured per win reported", "was": "15-35 %", "expect": "65 % out, all four out 3 % of wins, 2.84 captured a win (V3 + 75 s)", "sky": "Q2" }
+  },
+
+  "plans_for_waymark": {
+    "late-go": "Every lend plan: go-late at split-police-s - 5 s, and also at 8:05 (the close caps the countdown); carries while 25 s are left. Measured: quiet-b 69.5 % all out at 75 s; without the 8:05 Go a 90 s clock lost seeds to the 8:10 close.",
+    "quiet-b-thinned": "Thin a posted man, not only the lookout. Today's plan Listens to rival-2 only after paying the lookout (about 5:11): walk-in 40 s + Listen 30 s + Pay 35 s lands after the spring on every seed (0 of 196 paid), and leaves the Scout 4 m from rival-2 when the crew springs (77 seeds with an agent down against B's 51). Rewrite: after the driver's Listen (about 2:20), Listen to rival-2 at his post (posted about 3:10; heard about 4:15); Pay him if Mercenary ($30,000, after the Help); mislead the lookout at 4:30 as quiet-b does; if rival-2 is Loyal, play quiet-b. Probe plan qbt6 (mkplans.py section 8) lacks the Loyal fallback: its 78 Loyal seeds lost.",
+    "veteran": "Keel's plan as written wins 61-65 % with V3. Worth a try, now the burnt rival car boxes nothing: our car driven round to the service drive after the hold (about 4:40), the patrol rerouted first, so the three wait beside the bay. My crude try (vet-drive) won 21 %: the car went late or was reported parked; it needs your timing, not a rule.",
+    "fight": "No plan change for quiet-a."
+  },
+
+  "tried_and_dropped": [
+    { "what": "break at three quarters (RivalDown: down*4 >= n*3)", "measured": "quiet-a unchanged (4 on foot already break at 3); thinned all four out 51.8 -> 26.6 %", "why": "no lever for A, hurts thinning" },
+    { "what": "veteran: unclaimed-scene-m 40, unclaimed-hold-s 90", "measured": "out 65 / 65 / 60.5 % (scene 40, hold 90, both)", "why": "the veteran's fate is decided at the loud fight at the bay, not at the placing" },
+    { "what": "loud lend: everyone standing at Popovic's car may ride (seats probe)", "measured": "veteran 20-42 % out, all four out 0-1 %; loud-lend 0.5-33 %", "why": "not proven: the police take turns on the lane, so the bots' three reach the car after it has left or never clear it. Stays an option for Sky (Q2 b) if Waymark finds a plan" },
+    { "what": "one countdown after vale.out (no seal or 8:10 cap)", "measured": "veteran out 55.5 %, all four out 12.6 %; quiet-b 60.5 %, 0.65 (plan noise)", "why": "helps the veteran a little, B not at all; a second clock rule for little gain. Option for Sky (Q2 c)" }
+  ],
+
+  "rule_readings": {
+    "L10-point": { "verdict": "confirm", "note": "The rule is the property (boxes both cars, >= 10 m from ours, outside the kerbside car's blast); Keel's search finds (82.36, -14.25), better than my hand point (82.40, -14.50). The companion rule is right too: with the drive taken the turned driver's way out ends at his kerbside stop (0.40.0's intent: his own car never traps the cell), lend on only." },
+    "K3-box-as-hold": { "verdict": "confirm", "note": "067 (motive-square §4): only a free car waits for Go; a boxed car is not free. Scope: our car with Popovic aboard (one-car routes A and G). The lent car keeps its own hold and L11 (after vale.out nobody can reach Popovic). The wheelman at the wheel never walks to the car (F1)." },
+    "F2-before-final": { "verdict": "correct the wording", "note": "The code is right and my lend page contradicted itself (F2 'never recalled' against 1.3 'the floor calls it back'). Read it as: a man who breaks in the final fight, or whose crew's car is gone, runs off holstered and never comes back. A crew that breaks before the final fight with its car still able to drive boards and drives off holstered, out of every fight while away, and comes back to block again after security.rivals.retreat (M059-3.5, 0.41.0; CrewBrokenPre clears on return). That keeps Sky's point that destroying the car is what ends them. Keel's report line 'out of every fight' holds only until the return." },
+    "our-car-ends": { "verdict": "confirm", "note": "On the split nobody walks out (L8), so once both cars have left anyone still on the map can only be caught at the countdown: ending at once gives the same result sooner. With G1 (the Go waits for a Board in progress) and the Go's card naming who is left behind." }
+  },
+
+  "scenarios_for_keel": [
+    "VET-5 (V3): a gang shooting pending, an agent who fired at the crew at 2:55 stands holstered in a response officer's sight at 3:40, nobody saw him fire: not fired on, not placed. Twin: the officer saw the shot: fired on.",
+    "VET-6 (V3): the same agent after the cell is placed (a seen gun): 'fired' counts again.",
+    "LEND-13b (L8 75 s): the countdown captures at vale.out + 75 s; at vale.out 7:00 the 8:10 close comes first.",
+    "LEND-22 (G1): Go while the Tech boards carrying the Fixer: the car leaves the tick the Board lands, both aboard; the Go's card listed nobody left behind.",
+    "FIX-5 (F2 wording): a crew broken at 3:00 with its car working drives off, returns after the retreat time and blocks again; one broken in the final fight never returns.",
+    "LEND-B: the bands above across 200 seeds; every replay as before."
+  ],
+
+  "sky_questions": {
+    "Q1": { "what": "The quiet final fight's floor: 15 s or 10 s?", "why": "Route A's fight runs a median 13 s: Inez's warning lets four agents and the guard shoot first, from 6 m, so the crew breaks fast. Thinning route B's crew does the same (10-11 s). The 15 s floor was Aster's reading of your 'try the shorter' (2026-10-30).", "options": ["a: floor 10 s (median 10-40 s, 95 % under 90 s): preparation earns a short fight", "b: keep 15 s: Pulse makes the warned crew spring from cover (unmeasured, about +5-10 s), which takes some of the warning's value away"], "recommend": "a" },
+    "Q2": { "what": "The veteran's price: Popovic out on about 6 seeds in 10, the other three caught on nearly all of them. Is that fair?", "why": "Shooting the rival car means gunfire, so the final fight is loud and the police come to Popovic's car in the bay (L6). The three beat them there, then have about 30 s to cross 64 m to our car before 8:10. Each caught agent is +4 Trail and a Talker test.", "options": ["a: yes: possible, and far from free; the band becomes out 40-70 %, captures shown; Waymark tries driving our car round once the rival car is burnt", "b: in a loud fight everyone at Popovic's car may ride in it (our car lost, +1 T, hunted): not proven yet", "c: after Popovic is out, one police countdown (no 8:10 cap): all four out 3 -> 13 % of wins"], "recommend": "a" },
+    "Q3": { "what": "Loud on route B: keep it the hard way (about 37 %), or make it a real route?", "why": "In a loud fight the police come for Popovic's car in the bay while the three are at the square. Loud by the front door already wins 66.5 %.", "options": ["a: keep: the lend is the quiet route's tool, the book says the police come for his car if it goes loud", "b: let everyone at his car ride in a loud fight (as Q2 b)"], "recommend": "a" }
+  },
+
+  "handoff": {
+    "inputs": "this file, misses.html, misses-probe/",
+    "done_check": "V3, L8 75 s and G1 built; VET-5, VET-6, LEND-13b, LEND-22, FIX-5 pass; Waymark's late Go and thinned rewrite in; the bands above hold or come back with rows; Sky's Q1-Q3 answered",
+    "next": "Keel (V3, L8, G1, scenarios), Waymark (plans, bands), Aster (Q1-Q3 to Sky; GDD text), Fable (the Go's left-behind line), Glyph (1:15 countdown)"
+  }
+}
