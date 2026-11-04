@@ -61,7 +61,7 @@ namespace Suborned.Sim
             if (Range) { foreach (var c in rangeCars) if (!c.Replaced) l.Add(new StandingCar(c.Id, S.At($"spawn:car:{c.Slot}"), CarNose)); return l; }
             if (getawayPath == null && CurStand != null) l.Add(new StandingCar("car:getaway", CurStand.CarAt, CurStand.Facing));
             if (OfficialStanding()) l.Add(new StandingCar("car:official", CarPos(), OfficialHeading()));
-            if (!CarMoving && RivalCarPose() is var rp && rp.HasValue) l.Add(new StandingCar("car:rivals", rp.Value.pos, rp.Value.heading));
+            if ((!CarMoving || RivalBlocked) && RivalCarPose() is var rp && rp.HasValue) l.Add(new StandingCar("car:rivals", rp.Value.pos, rp.Value.heading)); // brief 096: a test's block stands
             return l;
         }
         /// <summary>The official car stands: at the pickup until it drives (the block move is retired, brief 059), parked round the back, or stopped.</summary>
@@ -78,7 +78,7 @@ namespace Suborned.Sim
         Pt OfficialHeadingLive()
         {
             if (valeDriveStart < 0 || carToService == null) return S.CarBlockFacing;
-            if (Tick >= CarInBayTick) return CarAtMouth ? carToService.Heading(CarDriveMm(Tick)) : S.CarServiceFacing;
+            if (Tick >= CarInBayTick) return CarAtKerb ? kerbHeading : CarAtMouth ? carToService.Heading(CarDriveMm(Tick)) : S.CarServiceFacing; // brief 096 (car.kerb): nose the way he was driving
             return carToService.Heading(CarDriveMm(Tick));
         }
         Pt carStoppedHead;

@@ -260,7 +260,8 @@ namespace Suborned.Sim
             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
             if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
             if (!CarHasDriver()) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); } // engine 0.34.0 (Motive M067-K3 c)
-            var hs = CarHolders();
+            var hs = CarHolders(); var bx = GetawayBoxers(); // brief 096 (car.box): boxed in first, the physical fact; the words and ids name the holders too
+            if (bx.Count > 0) { goRefusedAt = Tick; goRefused = "car-boxed"; return No("car-boxed", BoxedWords(bx, hs), ids: BoxedIds(bx, hs)); }
             if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; GateHolders(out int until); return No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)); }
             Leave();
             return "";
@@ -276,6 +277,7 @@ namespace Suborned.Sim
                 if (Over) why = No("mission-over", "the mission is over");
                 else if (!AnyInCar) why = No("car-empty", "nobody is in the car");
                 else if (!CarHasDriver()) why = No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); // engine 0.34.0 (Motive M067-K3 c)
+                else if (GetawayBoxers() is var bx && bx.Count > 0) why = No("car-boxed", BoxedWords(bx, CarHolders()), ids: BoxedIds(bx, CarHolders())); // brief 096 (car.box): boxed in before held
                 else { var hs = CarHolders(); GateHolders(out int until); why = hs.Count > 0 ? No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)) : ""; }
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
@@ -287,7 +289,7 @@ namespace Suborned.Sim
 
         void Leave()
         {
-            SeenLeaving();
+            RecordsAtEnd(); SeenLeaving(); // brief 096: a camera record still to land is charged at the end
             var lb = LeftBehind(); LeftBehindAtGo.AddRange(lb);
             foreach (var (name, fate, why) in lb)
             {

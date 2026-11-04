@@ -3128,6 +3128,35 @@
   ],
   "src": "where a car may be (rulebook car.drive) and at what pace (car.pace): a cell is drivable when its centre lies on a carriageway ('r', within w/2 of a plan road's centreline), or in a civic-block bay (officeBay, squareBay, serviceBay) or on a drive (service-drive) ('y', which wins over a carriageway); lane: half of life.json traffic.laneWidth 3.3 m; tools/sim/drive.ts"
  },
+ "ground": {
+  "bays": [
+   {
+    "id": "officeBay",
+    "use": "official",
+    "polygon": [[7700,-3820],[8000,-3820],[8000,-2380],[7700,-2380]]
+   },
+   {
+    "id": "squareBay",
+    "use": "public",
+    "polygon": [[400,-5000],[1300,-5000],[1300,-4700],[400,-4700]]
+   },
+   {
+    "id": "serviceBay",
+    "use": "service",
+    "polygon": [[6050,-1650],[6700,-1650],[6700,-1350],[6050,-1350]]
+   }
+  ],
+  "drives": [
+   {
+    "id": "service-drive",
+    "road": "apron-road",
+    "to": "serviceBay",
+    "kerb": [[8000,-1650],[8000,-1350]],
+    "polygon": [[6700,-1650],[8000,-1650],[8000,-1350],[6700,-1350]]
+   }
+  ],
+  "src": "brief 096 (Motive, briefs/096/motive/rules.html; Keel): civic-block.json bays[] with their use (Vantage, civic-block.adjust.json addBay) and drives[] with their kerb, road and bay (Splice, brief 023), block frame in integer cm (tools/sim/ground.ts). The engine reads them for car.box (each stand's way out), car.kerb (the turned driver's kerbside stop) and attention.parked (private ground: a drive, an official or a service bay)"
+ },
  "rivals": {
   "park": "rival-park",
   "front": "d:Office approach",

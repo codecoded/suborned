@@ -509,7 +509,7 @@ describe('sight: cones are the Scout\'s skill (Sky 2026-10-16), every agent watc
     expect(Rulebook.safeParse(missing).success).toBe(false);
     const old = structuredClone(raw); old.sight.watch.reach = 'v:watch-s'; delete old.attention; // a pinned run's one reach still parses (the four reach values then read by no rule: left out)
     for (const a of ['scout', 'fixer', 'tech', 'enforcer']) delete old.values[`watch-reach-${a}-m`];
-    for (const v of Object.keys(old.values)) if (v.startsWith('attention-') || v.startsWith('heat-')) delete old.values[v];
+    for (const v of Object.keys(old.values)) if (v.startsWith('attention-') || v.startsWith('heat-') || v === 'car-sight-cm') delete old.values[v]; // brief 096: car-sight-cm is attention.parked's
     const r = Rulebook.safeParse(old); expect(r.success, JSON.stringify(r.error?.issues?.slice(0, 3))).toBe(true);
   });
   test('every agent watches every watched kind, people included; Listen stays the Scout\'s (brief 031)', () => {

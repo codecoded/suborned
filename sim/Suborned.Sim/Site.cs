@@ -32,7 +32,7 @@ namespace Suborned.Sim
     /// <summary>A place that hides a body (brief 013; Vantage §2.1): a closed container on the street (holds Holds) or a service door (any number).</summary>
     public sealed class StashPlace { public string Id = "", Kind = "", Of = ""; public Pt At, Stand; public int Holds; } // At: the piece or the door; Stand: the free cell the operative stands on
 
-    public sealed class Site
+    public sealed partial class Site
     {
         public readonly JNode Root;
         /// <summary>The site's mission: "handover", or "range", the fight range (brief 029, sim/data/range*.site.json from tools/sim/range.ts), whose
@@ -243,7 +243,7 @@ namespace Suborned.Sim
         {
             Root = JNode.Parse(json, "site");
             var r = Root;
-            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover", "drive", "heat", "heatSrc");
+            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover", "drive", "heat", "heatSrc", "ground");
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             Mission = r["mission"].Str();
             if (Mission != "handover" && Mission != "range") throw new FormatException("only the Handover plays (brief 011), and the fight range (brief 029)");
@@ -353,6 +353,7 @@ namespace Suborned.Sim
             }
             else if (Mission == "handover") throw new FormatException($"{ge.Path}.stands is missing: engine 0.32.0 drives the getaway car between its stands (brief 059 K6; bun run sim:site --fold-stands)");
             else Stands.Add(new Stand { Id = "square", Car = GetawayCar, CarAt = at[GetawayCar], CarCell = at[GetawayCar], Exit = ExitLane, ExitHalfCm = ExitHalfCm, Ambush = FightAmbush, Police = FightPolice, Facing = new Pt(100, 0) }); // the range: its parked car's one stand
+            ReadGround(r); // brief 096: the bays' use and the drives' kerbs (SiteGround.cs)
             var sc = r["schedule"]; sc.Only("guardMark", "rivalsArrive", "chime", "driverLast", "valeExits", "valeAtCar", "over", "blockMoveS", "blockHoldS", "src");
             int Sec(string k, int lo) { int v = sc[k].Int(); if (v < lo || v > 3600) throw new FormatException($"{sc.Path}.{k} = {v} is outside {lo}..3600"); Schedule[k] = v; return v; }
             GuardMark = sc.Opt("guardMark")?.Int() ?? -1; RivalsArrive = Sec("rivalsArrive", 0); Chime = Sec("chime", 0); DriverLast = Sec("driverLast", 0); ValeExits = Sec("valeExits", 0); ValeAtCar = Sec("valeAtCar", 0); Over = Sec("over", 1);

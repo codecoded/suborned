@@ -104,6 +104,9 @@ public class FinalIntentTests
         // engine 0.35.2 (Motive rulings-0.35.1 §2): the rivals walking to an unguarded held car fire as they walk at whoever the intent lets
         // them (agent: a cell that never drew, nobody; every: anyone), so the walk's hashes differ both ways by the rule; the outcome does not
         bool walked(Game g) => g.Log.Exists(l => l.Code == "rivals.for-car");
+        // engine 0.40.0 (brief 096, rulebook camera): a Pay on the live pickup camera is recorded and its Alert sends the dial's robots, who meet the
+        // cell: whom they fire on is the intent's own reading, so the hashes after it differ both ways by the rule; the outcome, Trail and Alert do not
+        if (a.CameraRecords().Count > 0 || b.CameraRecords().Count > 0) { Assert.Equal((a.Result, a.FailCode, a.Alert), (b.Result, b.FailCode, b.Alert)); return; }
         if (walked(a) || walked(b)) { Assert.Equal(("safe", "safe"), (a.FightBranch, b.FightBranch)); Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode)); return; }
         Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode));
         if (!name.StartsWith("careless-", StringComparison.Ordinal) && !name.StartsWith("fight-", StringComparison.Ordinal) && !Moves.Contains(name)) Assert.Equal((a.Trail, a.Alert), (b.Trail, b.Alert)); // the failure rows' Trail may fall (fight-loud-enforcer-down 9 -> 8: fewer hits)
