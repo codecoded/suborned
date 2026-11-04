@@ -13,5 +13,5 @@
   {"tick":880,"op":"enforcer","do":"enter"},
   {"tick":1560,"op":"enforcer","do":"move","to":"police-1"}
  ],
- "until": 4500
+ "until": 4900
 }

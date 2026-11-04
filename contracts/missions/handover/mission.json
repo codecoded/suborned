@@ -10,11 +10,11 @@
  "clock": {
   "unit": "m:ss",
   "scale": "1 mission s = 1 day s (life.clock.scale): day time = startsAt + offset. This is the only day time in the file.",
-  "startsAt": "17:25:30",
+  "startsAt": "17:24:50",
   "provisional": false,
   "band": "peak",
-  "src": "Sky's ruling 2026-10-15 (clock.ruling): the handover chime is the Records Office's real shift end, life.generator.civicEmployers[0].shiftEnd 17:30, so 0:00 = 17:30 less the chime; Sky 2026-10-30 (brief 080, pacing.html) brings the chime to 4:30: 0:00 = 17:25:30, and the whole city's routines come with it, the rivals' timetable excepted. GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
-  "transit": "17:24:30 = 62670 s, 30 s past a multiple of 120, 180 and 240 (62640 s). With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line left its first stop 30 s before mission 0:00; the next forward departures are 1:30 (S1), 2:30 (T1) and 3:30 (T2). Under the old 17:00 start every line left at 0:00 (removed life.transit.schedule: '17:00 = 61200 s is a multiple of 120, 180 and 240').",
+  "src": "Sky's ruling 2026-10-15 (clock.ruling): the handover chime is the Records Office's real shift end, life.generator.civicEmployers[0].shiftEnd 17:30, so 0:00 = 17:30 less the chime; Sky 2026-10-30 (brief 080, pacing.html) brought the chime to 4:30 (0:00 = 17:25:30); Sky 2026-11-04 (brief 096: Popovic out at 5:30) moves it to 5:10: 0:00 = 17:24:50, and the whole city's routines come with it, the rivals' timetable and the guard's marks excepted. GDD §07 gives offsets only, no day time. The 8-12 min mission window stays a world rule (life.clock.mission.windowMin, GDD §01).",
+  "transit": "17:24:50 = 62690 s, 50 s past a multiple of 120, 180 and 240 (62640 s). With phase 0 and the peak headways (S1 120 s, T1 180 s, T2 240 s) every line left its first stop 50 s before mission 0:00; the next forward departures are 1:10 (S1), 2:10 (T1) and 3:10 (T2) (brief 096; at 17:24:30 they were 1:30, 2:30, 3:30). Under the old 17:00 start every line left at 0:00 (removed life.transit.schedule: '17:00 = 61200 s is a multiple of 120, 180 and 240').",
   "ruling": {
    "by": "Sky",
    "on": "2026-10-15",
@@ -48,30 +48,30 @@
    "note": "The park at rival-park (90.5, -31), Apron Road's south kerb (Vantage, brief 059 §5); the lookout steps out rivals.out later and posts at rival-lookout. Read by tools/sim/site.ts as schedule.rivalsArrive (/rival car parks/)."
   },
   {
-   "at": "4:30",
+   "at": "5:10",
    "what": "handover chime",
    "src": "GDD §07",
    "note": "Removed anchor: 'handover chime: Records Office shift ends, guard leaves the door routine' (src 'GDD §07, §05 guard routine'). §07 lists the chime only; its brief has Vale leave 'at shift handover'. Since Sky's ruling (clock.ruling) the chime is the Office's 17:30 shift end. 'guard leaves the door routine' is in neither §07 nor §05 (§05: 'guard on door routine (café stop pre-shift)'): the old data's reading, kept here, not a rule."
   },
   {
-   "at": "4:40",
+   "at": "5:20",
    "what": "last chance to turn the driver",
    "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)"
   },
   {
-   "at": "4:50",
+   "at": "5:30",
    "what": "Popovic comes out of the official door",
    "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
    "note": "Brief 059 K1: he always walks to his car at the official bay (the service-lane walk is retired: a turned driver drives him round). Read by tools/sim/site.ts as schedule.valeExits (/Vale comes out/)."
   },
   {
-   "at": "5:10",
-   "what": "Popovic at his car, in by 5:13: his own driver drives him away (over); a turned driver drives him round to the service bay (5:25) and waits there",
+   "at": "5:50",
+   "what": "Popovic at his car, in by 5:53: his own driver drives him away (over); a turned driver drives him round to the service bay (6:05) and waits there",
    "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
    "note": "Brief 059 K1, K2: 6:10 is schedule.valeAtCar (/Vale at his car/); he gets in car.pickup.valeIn (3 s) later. Unturned, the driver drives him away and the mission fails vale-leaves (Sky 3a); turned, the drive round on the drive grid at car.pace parks in the service bay at about 6:26 (engine 0.32.0: 6:25.9)."
   },
   {
-   "at": "7:30",
+   "at": "8:10",
    "what": "the turned driver gives up and drives Popovic on (over)",
    "src": "GDD §07 (v0.25.0; brief 059 K4); Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
    "note": "The close (schedule.over, read by tools/sim/site.ts as /\\(over\\)$/). Brief 059 K4: with no Take begun by then the turned driver drives Vale on and the mission fails vale-leaves; a Take begun before it holds him until it ends. If the Enforcer holds Vale at 8:30 the run goes on (horizon.open) and wins only when Vale reaches the getaway car."
@@ -81,7 +81,7 @@
   {
    "id": "records-handover",
    "area": "records",
-   "at": "4:30",
+   "at": "5:10",
    "windowS": 300,
    "surge": 1.8,
    "who": "Records Office staff leave by the front and service doors toward T1/records and the Circus",
@@ -105,13 +105,13 @@
    "position": "server",
    "at": "Café door",
    "near": 4,
-   "shift": { "from": "0:00", "to": "7:30" },
+   "shift": { "from": "0:00", "to": "8:10" },
    "need": "debt",
    "approach": "help",
    "secret": "affair",
    "tiedTo": [{ "kind": "lover", "role": "guard", "cast": true }],
    "src": "GDD §07 cast: Inez (café waitress, in debt); Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door (Motive briefs/011/motive-lovers.md: the lover tie, the affair secret, the summons), route A: Scout listens to Inez (1:34), Fixer helps Inez ($40,000), Fixer calls Inez; safe fight: helped Inez warns 10 s early; brief 010 D; Motive §3, Sky Q4",
-   "note": "In place at the café entrance from 0:00 to the 7:30 close (17:25:30-17:33:00; Sky 2026-10-15 extends her window with the close): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
+   "note": "In place at the café entrance from 0:00 to the 8:10 close (17:24:50-17:33:00; Sky 2026-10-15 extends her window with the close): route A reads her from 0:00 and the safe fight to the close. Inez is a pinned name part (people.rules.json names.pinned), not this file's."
   },
   {
    "id": "driver",
@@ -119,13 +119,13 @@
    "employer": "records-office",
    "role": "official-driver",
    "at": "Meet driver",
-   "shift": { "from": "0:00", "to": "4:30" },
+   "shift": { "from": "0:00", "to": "5:10" },
    "need": "cash",
    "approach": "help",
    "tiedTo": [{ "kind": "workmate", "role": "councillor", "cast": true }],
    "waitsFor": "councillor",
    "src": "GDD §07 cast: the driver (pickup, needs cash), route B: Scout watches car (48 s), Fixer turns driver before 5:40 ($40,000; Help, the purse $80,000 = Inez + driver), fail 'Vale leaves in official car'; brief 010 D; Motive §3, Sky Q4; Suture 2026-10-15 §3",
-   "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`. The window is the driver's shift at the bay to the chime (5:30 = 17:30); waitsFor holds the driver there past it until the cast councillor's leavesTo stop begins, which covers 5:40, the last chance to turn. tiedTo: the driver is the councillor's own (a workmate tie to the councillor cast); people.rules.json has no 'drives for' tie, and workmate (both ways, same employer) is the closest it offers."
+   "note": "Meet driver lies in the official bay's polygon; a bay place is matched by polygon, not by `near`. The window is the driver's shift at the bay to the chime (5:10 = 17:30 since brief 096); waitsFor holds the driver there past it until the cast councillor's leavesTo stop begins, which covers 5:20, the last chance to turn. tiedTo: the driver is the councillor's own (a workmate tie to the councillor cast); people.rules.json has no 'drives for' tie, and workmate (both ways, same employer) is the closest it offers."
   },
   {
    "id": "guard",
@@ -134,22 +134,22 @@
    "role": "guard",
    "at": "Office entrance",
    "near": 4,
-   "shift": { "from": "1:52", "to": "4:30" },
+   "shift": { "from": "1:52", "to": "5:10" },
    "regularOf": "cafe",
    "tiedTo": [{ "kind": "regular", "role": "waitress" }],
    "alone": true,
    "src": "GDD §07 front door, route A: Fixer calls Inez, guard walks; fail 'entry seen by guard'; §05 guard on door routine (café stop pre-shift); brief 010 D; Motive §3; Suture 2026-10-15 §3",
-   "note": "The entry window (windows front-door): from 1:52 (the earliest call is 1:25 since brief 080 pacing, Watch and Listen 0:50 then Help 35 s; the guard's cast shift stays 1:52 until the people are re-cast), the earliest call as it was (prep A: Watch and Listen 1:02 since Sky's Watch 20 s, then Help, people.rules.json approaches.help.timeS 50 s; it was 2:24 on Watch 52 s), to 5:30, the chime, when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
+   "note": "The entry window (windows front-door): from 1:52 (the earliest call is 1:25 since brief 080 pacing, Watch and Listen 0:50 then Help 35 s; the guard's cast shift stays 1:52 until the people are re-cast), the earliest call as it was (prep A: Watch and Listen 1:02 since Sky's Watch 20 s, then Help, people.rules.json approaches.help.timeS 50 s; it was 2:24 on Watch 52 s), to 5:10, the chime (brief 096), when the outgoing guard's shift ends. alone: one guard on the door, or the lure leaves others watching. tiedTo: a regular of a café server in place at the café door in this window (Inez or her shift), so Inez's call reaches him; regularOf is the row-level form P-6 and the review read."
   },
   {
    "id": "councillor",
    "what": "Councillor Vale: a councillor inside the Records Office until the chime, who then leaves for the official bay",
    "employer": "records-office",
    "role": "councillor",
-   "shift": { "from": "0:00", "to": "4:30" },
-   "leavesTo": { "at": "Meet driver", "by": "5:10" },
+   "shift": { "from": "0:00", "to": "5:10" },
+   "leavesTo": { "at": "Meet driver", "by": "5:50" },
    "src": "GDD §07 cast: Councillor Vale; schedule 0:00 Vale inside, 5:50 Vale exits north (service lane if driver turned), 6:10 Vale at car; brief 010 D; Suture 2026-10-15 §3",
-   "note": "On shift, inside, to the chime (5:30 = 17:30, his shift end). leavesTo: his routine's next stop is the official bay, begun by 6:10 (17:30:40; routines are whole minutes, so by 17:31). The service-lane branch is the turned driver's change to the pickup, not the routine's. Vale is a pinned name part (people.rules.json names.pinned)."
+   "note": "On shift, inside, to the chime (5:10 = 17:30 since brief 096, his shift end). leavesTo: his routine's next stop is the official bay, begun by 5:50 (17:30:40; routines are whole minutes, so by 17:31). The service-lane branch is the turned driver's change to the pickup, not the routine's. Vale is a pinned name part (people.rules.json names.pinned)."
   }
  ],
  "listenPartners": [

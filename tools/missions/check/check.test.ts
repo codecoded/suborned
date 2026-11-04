@@ -21,7 +21,7 @@ describe('the Handover route manifest and scripts', () => {
     for (const s of Object.values(L.scripts)) {
       expect(s.schema).toBe('suborned.sim.script/1');
       expect(s.start).toEqual({}); // no fixture: every route starts from the mission's own start, the final fight and the crowd on
-      expect([4500, 5100, 6000]).toContain(s.until); // the 7:30 close (brief 080; a careless run that seals after it plays on)
+      expect([4900, 5100, 6000]).toContain(s.until); // the 8:10 close (brief 096, was 7:30 in brief 080; a careless run that seals after it plays on)
       expect(s.orders.every((o, i, a) => i === 0 || a[i - 1]!.tick <= o.tick)).toBe(true);
     }
     // §07: route A and route B quiet, a loud route, every fail listed, both final-fight branches played (N10, N11 landed)
@@ -45,9 +45,9 @@ describe('the Handover route manifest and scripts', () => {
     expect(L.manifest.scripts.filter(s => s.adaptive).map(s => `${s.id} ${s.adaptive}`)).toEqual(['route-a quiet-a', 'route-b quiet-b', 'route-g quiet-g', 'loud prepared-loud']);
     expect(L.manifest.scripts.some(s => s.id === 'fail-entry-seen-patrol')).toBe(false);
     expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale', 'fight-safe-unguarded', 'fight-loud-wait-square', 'fight-loud-wait-yard']);
-    // the close: 7:30 (Sky 2026-10-30, brief 080 pacing), mission.json's last timeline entry; route B closes on it
-    expect(L.manifest.closing.at).toBe('7:30');
-    expect(L.manifest.scripts.filter(s => s.closes).map(s => `${s.id} ${s.closes!.at} ${s.closes!.secured}`)).toEqual(['route-a 4:50 enter.in', 'route-b 7:30 take.done', 'route-g 4:50 enter.in']);
+    // the close: 8:10 (Sky 2026-11-04, brief 096; 7:30 in brief 080 pacing), mission.json's last timeline entry; route B closes on it
+    expect(L.manifest.closing.at).toBe('8:10');
+    expect(L.manifest.scripts.filter(s => s.closes).map(s => `${s.id} ${s.closes!.at} ${s.closes!.secured}`)).toEqual(['route-a 5:30 enter.in', 'route-b 8:10 take.done', 'route-g 5:30 enter.in']);
   });
   test('the manifest rejects what it must', () => {
     expect(broken(() => {})).toBe(true);
@@ -101,7 +101,7 @@ describe('the §09 conditions, each with a failing example', () => {
       'loud-left-downed': { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4, left: { scout: 'captured downed' } }, 'loud-left-standing': { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4, left: { scout: 'captured fighting' } },
     };
     for (const s of M.scripts.filter(s => s.kind === 'fail' && !s.pending)) p[s.id] = fail(s.expects.fail!);
-    p['route-b'] = win(4698, 4, { 'take.done': 3400 }); // taken 5:40: 1:50 before the 7:30 close
+    p['route-b'] = win(5098, 4, { 'take.done': 3800 }); // taken 6:20: 1:50 before the 8:10 close
     // brief 013 D: route G takes the guard out (no contact); careless twins fail or win only loud and dearer
     p['route-g'] = { ...win(2474, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 }; p['route-g-fast'] = { ...win(2170, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 };
     p['route-g-kill'] = { ...win(2843, 2), campaignTrail: 2, alert: 1, takedownS: 34.4, openCases: 1 };
@@ -268,13 +268,13 @@ describe('the §09 conditions, each with a failing example', () => {
     expect(r.conditions.find(c => c.id === 'MC-4')!.ok).toBe(true);
   });
   test('MC-5: Vale secured under a minute before a route\'s closing event', () => {
-    const p = good(); p['route-b'] = win(4698, 4, { 'take.done': 4200 }); // taken 30 s before the 7:30 close
+    const p = good(); p['route-b'] = win(5098, 4, { 'take.done': 4600 }); // taken 30 s before the 8:10 close
     expect(ids(p)).toEqual(['MC-5']);
     expect(assessment(J(p)).failures.map(f => f.rule)).toEqual(['MC-5']);
   });
 });
 
-const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet', 'B-7 thin-quiet' /* brief 085: a real 1 s under the floor with the pressed call; Motive's band, let it report */];
+const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet', 'B-7 thin-quiet' /* brief 085: a real 1 s under the floor with the pressed call; Motive's band, let it report */, 'B-7 quiet-a', 'B-11 quiet-a' /* brief 096: the shift 40 s later and the city with it: route A's fight median 16 → 14 s, its middle half 12-24 → 10-18 s; Motive's bands */];
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.
   test('across seeds the references win as their bands say, the scripts play as the manifest expects, and the check ships but for its named owners', async () => {

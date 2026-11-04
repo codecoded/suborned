@@ -11,8 +11,8 @@ describe('the briefing stills (brief 070)', () => {
     ]);
     expect(s.pins.map(p => p.text)).toEqual(['waitress', 'guard', 'driver', 'car-official', 'car-getaway']);
   });
-  test('ticks and routes from the data: Inez at 0:03, the guard at 1:00 (route A); the driver at Vale at his car 5:10, the bay at 5:25 + 1 s (route B)', () => {
-    expect(s.pins.map(p => p.tick)).toEqual([30, 600, 3100, 3260, 0]);
+  test('ticks and routes from the data: Inez at 0:03, the guard at 1:00 (route A); the driver at Vale at his car 5:50, the bay at 6:05 + 1 s (route B; brief 096)', () => {
+    expect(s.pins.map(p => p.tick)).toEqual([30, 600, 3500, 3660, 0]);
     expect(s.pins.map(p => p.route.split('/').pop())).toEqual(['route-a.json', 'route-a.json', 'route-b.json', 'route-b.json', 'route-b.json']);
   });
   test('cameras: Inez and the guard in the conversation profile off their door; the car places on the play camera facing the face; the getaway car off its end', () => {
@@ -48,7 +48,7 @@ describe('the briefing stills (brief 070)', () => {
     expect(f.shots.find((x: any) => x.name === 'brief-getaway').pose.offset).toEqual([1.8, 5.8, 11.5]);
     expect(f.shots.map((x: any) => [x.name, x.tick, x.hud, x.jpg, x.pose.on, x.nocut])).toEqual([
       ['brief-waitress', 30, false, true, true, false], ['brief-guard', 600, false, true, true, false],
-      ['brief-getaway', 0, false, true, true, false], ['brief-driver', 3100, false, true, false, true], ['brief-service-bay', 3260, false, true, false, true],
+      ['brief-getaway', 0, false, true, true, false], ['brief-driver', 3500, false, true, false, true], ['brief-service-bay', 3660, false, true, false, true],
     ]);
   });
 });

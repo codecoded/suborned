@@ -44,6 +44,11 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 39. (brief 081, engine 0.37.0; Motive, not Sky) fight.spacing.cell, the operatives' spacing: built, proposed, Motive to confirm.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
+## v0.38.0 (2026-11-04; brief 096)
+- Sky, 2026-11-04 (brief 096): the shift moves 40 s later: "I think we need to move the clock back to 5:30 for when popovic comes out" → asked 5:30 or 5:00: "5:30". Every shift time moves together (chime 5:10, last turn 5:20, Popovic out 5:30, at his car 5:50, in by 5:53, service bay 6:05, close warning 7:10, close 8:10); the rivals 2:35 and the guard's marks 1:00, 2:30, 4:00 stay. Undoes 40 s of brief 080's minute (2026-10-30). §01, §07, §10, §14; engine data, run c050 (Keel).
+- Sky, 2026-11-04 (brief 096, a tester boarded without Popovic and couldn't get out): "I think it needs to be also an action in the action ring". §10 the getaway car's ring: Step out for everyone aboard, after Board and Drive, before a withdrawing Go. The rule was already §06 Board (a move steps out); only the ring way is new.
+- Sky, 2026-11-04 (brief 096): Pressure stays the Fixer's, open once the Scout's Listen lands: "leave for now if it's there after listen". No change.
+
 ## v0.37.1 (2026-11-02; briefs 088, 089)
 - Sky, 2026-11-02 (brief 088): the book may use sentences: "yeah, can use sentencens". §10: the player opens the book with the clock stopped, so the reading limits for play don't apply to it, as for the briefing.
 - Sky, 2026-11-02 (brief 089): the briefing's cell strip shows each agent's name with the job word ("Larthi · Scout"): "Sure". §10 the briefing.

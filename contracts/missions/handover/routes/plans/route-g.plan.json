@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Route G, knockout (brief 013 D; Motive 013 §6.1 G-KO), fight it out: the Scout watches the guard (his cone and check-in marks), the Tech loops the entrance camera at 1:00, and the Enforcer knocks the guard out from beside just after his 2:30 mark and leaves him where he fell, enters at once and takes Vale out by the service door. No Reroute (brief 067 A: the patrol sweeps the service yard, and nothing is carried into it). He holds Vale at (24.0, -60.0) while the Scout, Fixer and Tech lock rival-2 then rival-1 (focus fire, Motive M059-B7) until the crew breaks; then he boards and the car leaves; the three walk out.",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "tech",

@@ -3,13 +3,13 @@
  "mission": "handover",
  "note": "Careless loiter (brief 031), the twin of route-b: route-b, but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there for the tip. The discreet Listen itself ends out of every cone (engine 0.39.0), so standing there is the carelessness: the camera notices him, grows wary, and reports him at about 2:25 (it lands at about 2:38, Alert 1); the patrol's report of the idling Fixer takes it to Alert 2. The route still wins on this script's seed, one Alert dearer than its twin (Alert 1). As route-b: the Reroute at 4:00, the Enforcer at the square until 4:50, the Scout's lock 0.5 s after the Fixer's.",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "enforcer",
    "do": "move",
    "to": "d:Service lane",
-   "at": "4:50",
+   "at": "5:30",
    "why": "to wait where the turned driver will bring the car"
   },
   {
@@ -67,7 +67,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "4:40",
+   "by": "5:20",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
   },
@@ -103,7 +103,7 @@
    "after": [
     "tip"
    ],
-   "at": "4:55",
+   "at": "5:35",
    "label": "scout-yard"
   },
   {
@@ -116,7 +116,7 @@
    "after": [
     "turned"
    ],
-   "at": "4:55",
+   "at": "5:35",
    "label": "fixer-yard"
   },
   {
@@ -130,7 +130,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "4:00",
+   "at": "4:40",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -162,7 +162,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "5:45",
+   "at": "6:25",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

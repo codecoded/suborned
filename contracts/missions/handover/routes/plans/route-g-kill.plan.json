@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Route G with a kill (brief 013 D; Motive 013 §6.1 G-kill), fight it out: the guard killed (3 s) and his body carried to the Office's service door and put through it, never found in the mission (a missing person, an open case: GDD §07 kill variant). The Tech reroutes the patrol before the carry (brief 067 A: the yard's sweep would see the carry; Motive briefs/067/motive-square.md §5.2). The Enforcer holds Vale at (20.0, -65.0) while the three fight the crew until it breaks (SQ2: a rival with nobody in reach advances on the op, so the fight ends), then boards; the three walk out.",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "tech",

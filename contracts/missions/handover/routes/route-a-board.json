@@ -35,5 +35,5 @@
   {"tick":2095,"op":"tech","do":"board","target":"car"},
   {"tick":2134,"op":"cell","do":"go"}
  ],
- "until": 4500
+ "until": 4900
 }

@@ -296,7 +296,7 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 r.To(r.SendTo(Enf, Dumpster)); r.Body(Enf, "stash", DumpsterId); r.Done(Enf);
                 r.Is(g.BodyById("guard")!.Stash == DumpsterId, "the guard is in the Dumpster");
                 var w = WalkerById(r, "p-records-office-74");
-                r.To(MeetFromBehind(r, w, T(222))); // engine 0.34.0 (brief 067 L, A): she walks past the public door at 3:47 now, so he meets her before it, under the loop and the reroute (at 4:10 she is in front of the pickup camera, guard 29 and the driver, and the yard patrol back on its sweep sees the carry)
+                r.To(MeetFromBehind(r, w, T(212))); // brief 096: 3:32, was 3:42: she walks from the café 2:10-4:10 now (40 s later), so he meets her on it sooner, and the door stash is done before the reroute runs out (4:20); engine 0.34.0 (brief 067 L, A): she walks past the public door at 3:47 now, so he meets her before it, under the loop and the reroute (at 4:10 she is in front of the pickup camera, guard 29 and the driver, and the yard patrol back on its sweep sees the carry)
                 r.Is(r.Until(() => g.CrowdPos(w) is Pt p && G.Within(p, r.Op(Enf).Pos, g.R.TakedownReachCm), T(30)), "guard 74 walks into reach");
                 r.Takedown("p-records-office-74", "knockout"); r.Done(Enf);
                 r.Body(Enf, "carry", "p-records-office-74"); r.Done(Enf);

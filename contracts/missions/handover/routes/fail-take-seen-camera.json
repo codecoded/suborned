@@ -17,16 +17,16 @@
    "to": "rival-park"
   },
   {
-   "tick": 2600,
+   "tick": 3000,
    "op": "scout",
    "do": "mislead",
    "target": "rivals"
   },
   {
-   "tick": 3100,
+   "tick": 3500,
    "op": "enforcer",
    "do": "take"
   }
  ],
- "until": 4500
+ "until": 4900
 }

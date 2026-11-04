@@ -87,7 +87,7 @@ namespace Suborned.Sim
 
     public sealed partial class Game
     {
-        const int OldClockS = 60;
+        const int OldClockS = 20; // the pre-080 clock (Vale out 5:50) on the site's: 60 s on 0.37.0's 4:50, 20 s on brief 096's 5:30 (Sky 2026-11-04); the people file moves with clock.startsAt, so the old routines come back to the second too
         /// <summary>The tick the close's warning went out (rulebook fight.close), -1 not yet: the host's clock turns; the log says close.warning.</summary>
         public int CloseWarnedAt = -1;
         /// <summary>Rulebook fight.close: with Vale in the cell's hands (on foot or in the car), `warn` before the close his absence is noticed, once, and the HUD says so; at the close, a mission
@@ -114,7 +114,7 @@ namespace Suborned.Sim
             foreach (var id in CombatantIds()) { if (!Combatant(id)) continue; var p = PosOf(id); if (!p.HasValue) continue; long d = G.D2(p.Value, at); if (d < bd) { bd = d; best = id; } }
             return best.Length > 0 ? best : "enforcer";
         }
-        /// <summary>The mission's clock this game plays (seconds): the site's schedule, a minute later on a test's Start.OldClock.</summary>
+        /// <summary>The mission's clock this game plays (seconds): the site's schedule, OldClockS later on a test's Start.OldClock (the pre-080 clock).</summary>
         public int ClockOver => overS; public int ClockValeExits => valeExitsS; public int ClockValeAtCar => valeAtCarS; public int ClockDriverLast => driverLastS;
         internal bool NowStaff(Walker w) => IsStaff(w.P);
         /// <summary>The run's seed: the host shows it with a saved run. A read.</summary>
@@ -156,7 +156,7 @@ namespace Suborned.Sim
         /// <summary>The start's draws that need the whole cast standing (end of the constructor). Nothing at seed 0.</summary>
         void SeedStart()
         {
-            if (Start.OldClock) foreach (var w in Walkers) // test only: the routines a minute later, as before the shift came forward
+            if (Start.OldClock) foreach (var w in Walkers) // test only: the routines OldClockS later, as before the shift came forward (brief 080)
             {
                 var f = (int[])w.From.Clone(); var to = (int[])w.To.Clone();
                 for (int i = 0; i < f.Length; i++) f[i] += T(OldClockS);

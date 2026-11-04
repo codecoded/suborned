@@ -11,7 +11,7 @@
   {"tick":310,"op":"scout","do":"watch","target":"guard"},
   {"tick":510,"op":"scout","do":"move","to":[725,-4625]},
   {"tick":850,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":1300,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":1150,"op":"tech","do":"loop","target":"entrance"},
   {"tick":1400,"op":"enforcer","do":"move","to":[6520,-4110]},
   {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"kill"},
   {"tick":1540,"op":"enforcer","do":"carry","target":"guard"},
@@ -25,9 +25,9 @@
   {"tick":3122,"op":"fixer","do":"draw"},
   {"tick":3122,"op":"tech","do":"draw"},
   {"tick":3122,"op":"enforcer","do":"draw"},
-  {"tick":3378,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":3482,"op":"enforcer","do":"board","target":"car"},
-  {"tick":3522,"op":"cell","do":"go"}
+  {"tick":3395,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":3499,"op":"enforcer","do":"board","target":"car"},
+  {"tick":3539,"op":"cell","do":"go"}
  ],
- "until": 5100
+ "until": 4900
 }

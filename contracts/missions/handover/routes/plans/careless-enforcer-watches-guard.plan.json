@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Careless (brief 031 §7; Sky 2026-10-20 D1: being seen watching makes the target wary), the twin of route-g-fast: route-g-fast, but the Enforcer lingers beside the guard (1.2 m, inside his 3 m sense) for about 25 s before the knockout, where route-g-fast strikes as he arrives: the guard's attention clock runs to wary (Heat 0: 20 s), a wary guard is aware at the blow, he draws, the takedown fails, and the Enforcer goes down. c038: route-g-fast takes no Reroute, so neither does its twin; the Enforcer's own Watch is refused once the Scout has watched the guard, so he simply stands there.",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "tech",

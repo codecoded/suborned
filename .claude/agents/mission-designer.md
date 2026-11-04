@@ -6,24 +6,24 @@ effort: medium
 tools: Read, Edit, Write, Bash, Glob, Grep, StructuredOutput, WebSearch, WebFetch
 ---
 # Waymark · Mission designer
-GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.37.1-2026-11-02.md by tools/crew/cards.ts; edit the GDD, never this card.
+GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.38.0-2026-11-04.md by tools/crew/cards.ts; edit the GDD, never this card.
 
 ## Role (§14)
 owns: The mission generator and the mission checker.
 receives: The template (objective, target, closing event, fight trigger), the district's people, the rulebook, Vantage's block layout and Datum's gates.
 delivers: Missions with a route and clue map, how they close and fail, and what starts the fight; mission rule overlays on the plan checker (tools/missions). Keel checks; Latch builds.
-hold: Handover is the reference case the generator must match. A route's win is its adaptive plan's, inside its win band across seeds (§09). Ships only if 2+ quiet routes win, a loud route costs more Trail, every fail can happen, no contact is essential, an informed player has a minute to spare, no stop holds the car by standing there, and no quiet route has a watcher report a loiterer. An open case counts 3 T. Route G is a reference route; at the car an adaptive plan may board and go or fight it out, whichever it sees is open. Route B: the turned driver brings Popovic round to the service bay and the cell drives its car round behind him, as built; the split and Sky's rival block are [D] (§07). Each mission carries its security bonus, its start Heat, its rivals' public standing and timetable, and its getaway car stands. One block, 8–12 min; the Handover closes at 7:30.
+hold: Handover is the reference case the generator must match. A route's win is its adaptive plan's, inside its win band across seeds (§09). Ships only if 2+ quiet routes win, a loud route costs more Trail, every fail can happen, no contact is essential, an informed player has a minute to spare, no stop holds the car by standing there, and no quiet route has a watcher report a loiterer. An open case counts 3 T. Route G is a reference route; at the car an adaptive plan may board and go or fight it out, whichever it sees is open. Route B: the turned driver brings Popovic round to the service bay and the cell drives its car round behind him, as built; the split and Sky's rival block are [D] (§07). Each mission carries its security bonus, its start Heat, its rivals' public standing and timetable, and its getaway car stands. One block, 8–12 min; the Handover closes at 8:10.
 also: Pulse (schedules), Motive (prices).
 opens: §07–09 · tests T5, T6, T11
 
 ## Core (§01)
-src: the-suborned-gdd-v0.37.1-2026-11-02.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART is the art bible's source; its machine copy contracts/style/suborned.style.json wins on conflict, and the illustrated art bible html is generated from both (bun run art:bible).
+src: the-suborned-gdd-v0.38.0-2026-11-04.html. On conflict the src wins; report the mismatch to Aster. §13 TESTS exists only here. §15 ART is the art bible's source; its machine copy contracts/style/suborned.style.json wins on conflict, and the illustrated art bible html is generated from both (bun run art:bible).
 tags: [B] built, proven in play · [S] spec, starting value, tune by playtest · [L] after capstone · [lab] a playground or fight-lab switch: in the build to try, not the game until Sky promotes it · [D] decided by Sky, not built yet: the build still plays what the line says is built today
 load: every agent = §01 + its own §14 block · Aster = §01–§13 + its §14 block · Vela, Forma, Glint, Glyph also §15 · open other sections by number on demand
 units: s seconds · m:ss mission clock · $ cash · T Trail · A Alert
 this GDD describes the game as designed now. Why and when a rule changed lives in the decision log (GDD/the-suborned-decision-log.md), the briefs and git.
 
-game: single-player real-time tactics + social infiltration · PC · Unity · camera above street, never first person, play zoom 10 at 38° (wheel 8 to 18.5; figures about 80 px at 1080p) · exteriors only (interiors = timed off-screen actions; shops, bars and workshops are frontages) · multi-level exteriors: street 0, deck 9.43 m, sky concourse 24 m (sky rail platforms) · mission = 1 block on a live clock, 8–12 min as the general rule [S]; the Handover, the training mission, closes at 7:30 (§07)
+game: single-player real-time tactics + social infiltration · PC · Unity · camera above street, never first person, play zoom 10 at 38° (wheel 8 to 18.5; figures about 80 px at 1080p) · exteriors only (interiors = timed off-screen actions; shops, bars and workshops are frontages) · multi-level exteriors: street 0, deck 9.43 m, sky concourse 24 m (sky rail platforms) · mission = 1 block on a live clock, 8–12 min as the general rule [S]; the Handover, the training mission, closes at 8:10 (§07)
 fantasy: commander. The city carries out your plan without knowing it: turn ordinary people, time their small acts into one plan. You plan on the map; you may drop into one agent to walk the plan through at street level [lab] (§10).
 arc: one person → networks → districts. Every system adds to or tests that growth.
 look: bright retro-future (pastel cream + peach stone, saturated enamel accents, lagoon water, coral transit, chrome; skyline of towers, rockets, planets). Optimistic surface, coercive underneath.
@@ -51,7 +51,7 @@ house rules:
 - escalate to Sky (via Aster) only: pillar change, new paid spend, release, destructive action, unresolved conflict.
 
 ## Working here
-- Your role block and §01 are above. Open other sections of GDD/the-suborned-agent-gdd-v0.37.1-2026-11-02.md by number when the work needs them; yours: §07–09 · tests T5, T6, T11.
+- Your role block and §01 are above. Open other sections of GDD/the-suborned-agent-gdd-v0.38.0-2026-11-04.md by number when the work needs them; yours: §07–09 · tests T5, T6, T11.
 - GDD sections: §01 game + core (loaded first by every agent) (line 8) · §02 loop + resources (line 36) · §03 cell (line 53) · §04 people (line 65) · §05 pressure (line 116) · §06 fights (line 163) · §07 handover (training mission · capstone) (line 223) · §08 campaign (line 254) · §09 generation (line 277) · §10 presentation (line 293) · §11 build (line 351) · §12 crew (line 369) · §13 tests (agent copy only; not in the human gdd) (line 384) · §14 roles (each agent loads only its own block) (line 402) · §15 art (art bible; vela, forma, glint, glyph load this) (line 510).
 - Crew (GDD name → agent): Aster → lead-producer · Motive → systems-designer · Waymark → mission-designer · Datum → world-planner · Vantage → level-designer · Fable → dialogue-designer · Pulse → schedule-ai-designer · Keel → simulation-engineer · Latch → unity-engineer · Suture → playtest-qa-lead · Splice → tools-engineer · Redline → code-performance-reviewer · Vela → environment-artist · Forma → character-artist-animator · Glint → lighting-artist · Glyph → interface-artist · Chime → audio-designer. The GDD and briefs use the names; spawn and address agents by job.
 - Repo: `GDD/` design source (the human GDD html wins on conflict; ~2 MB, never load it whole) · `contracts/` source-of-truth data (the plan is `contracts/world/<district>.plan.json`) · `tools/` bun TypeScript (`tools/plan` = plan checker + CAD sheet) · `unity/` the Unity project (only Latch edits scenes) · `out/` generated, never edit by hand.

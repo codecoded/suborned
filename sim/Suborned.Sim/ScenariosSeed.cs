@@ -137,14 +137,14 @@ namespace Suborned.Sim
                 }
                 r.Is(seen >= 1, $"{seen} turns read and kept");
             });
-            Add("PACE-CLOCK", "080", "The shift comes forward a minute (Sky 2026-10-30, pacing.html): Vale out 4:50, at his car 5:10, close 7:30, the driver's last turn 4:40, the rivals where they were; the guard's marks 1:00, 2:30, 4:00; talking about 30 % shorter, and the prices shown follow; Enter and Take stay at 38 s.", r =>
+            Add("PACE-CLOCK", "080", "The shift came forward a minute (Sky 2026-10-30, pacing.html) and goes back 40 s (Sky 2026-11-04, brief 096): Vale out 5:30, at his car 5:50, close 8:10, the chime 5:10, the driver's last turn 5:20, the rivals where they were; the guard's marks 1:00, 2:30, 4:00; talking about 30 % shorter, and the prices shown follow; Enter and Take stay at 38 s.", r =>
             {
                 r.Wait(1); var g = r.G;
-                r.Eq((g.S.Chime, g.S.DriverLast, g.S.ValeExits, g.S.ValeAtCar, g.S.Over, g.S.RivalsArrive), (270, 280, 290, 310, 450, 190), "the schedule");
+                r.Eq((g.S.Chime, g.S.DriverLast, g.S.ValeExits, g.S.ValeAtCar, g.S.Over, g.S.RivalsArrive), (310, 320, 330, 350, 490, 190), "the schedule");
                 r.Eq(g.NextMarkOf(g.GuardP, 1), T(60), "the guard's first mark, 1:00"); r.Eq(g.NextMarkOf(g.GuardP, T(61)), T(150), "2:30"); r.Eq(g.NextMarkOf(g.GuardP, T(151)), T(240), "4:00");
                 r.Eq(g.R.Num("v:listen-s") , 30, "Listen 30 s"); r.Eq(g.R.Num("v:mislead-s"), 30, "Mislead 30 s"); r.Eq(g.R.Num("v:reroute-s"), 30, "Reroute 30 s"); r.Eq(g.R.Num("v:enter-s"), 38, "Enter stays 38 s"); r.Eq(g.R.Num("v:take-s"), 38, "Take stays 38 s");
-                r.To(T(291)); r.Eq(g.Vale, ValeAt.Leaving, "at 4:51 Vale is walking to his car");
-                r.To(T(313) + 1); r.Is(g.Over && g.FailCode == "vale-leaves", $"by 5:13 he is driven away, no plan made ({g.FailCode})");
+                r.To(T(331)); r.Eq(g.Vale, ValeAt.Leaving, "at 5:31 Vale is walking to his car");
+                r.To(T(353) + 1); r.Is(g.Over && g.FailCode == "vale-leaves", $"by 5:53 he is driven away, no plan made ({g.FailCode})");
             });
             Add("CLOSE-VERDICT", "080", "The close is a verdict (fight.close): Vale in the Enforcer's hands, the warning a minute before, closed-in at the close, naming why; the warning once.", r =>
             {
