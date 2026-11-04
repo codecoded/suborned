@@ -45,8 +45,8 @@ namespace Suborned.Play
             var full = ScreenCapture.CaptureScreenshotAsTexture();
             int w = full.width, h = full.height;
             File.WriteAllBytes(basePath + ".png", full.EncodeToPNG());
-            if (state == "rest" && host != null && host.ShowBriefing) state = BriefOnStreet ? "page" : "briefing"; // brief 070: the briefing page's own budget state (glyph-page-budget §1; the 0.2.117 card kept `briefing`)
-            else if (state == "rest" && host != null && host.FeedHistoryOpen) state = "log"; // Splice's budget state for the open history panel (a reading surface, 18 %)
+            if (host != null && host.BookOpen) { Destroy(full); yield return CaptureSize.ToRun(); LastShot = basePath; ShotBusy = false; yield break; } // brief 096: the book (the start briefing too) is a page over the stopped street, not HUD over play: the picture alone, no HUD layer, so the budget lists it unmasked (it has no state for the book yet: Splice)
+            // brief 096: the old history panel's `log` state is gone with the panel (the Journal is in the book); a price rested on (HostKeys096) shows its breakdown in its own frame's state
             File.WriteAllText(basePath + ".manifest.json", Manifest(state, h));
             File.WriteAllText(basePath + ".parts.json", Parts(h)); // brief 014 round 2: every visible HUD part's rect, for the 2x inspection crops
             Destroy(full);
@@ -122,13 +122,13 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++) list.Add(($"portrait-{i + 1}", colWins[i]?.Clip));
             for (int i = 0; i < 4; i++) { list.Add(($"roster-weapon-{i + 1}", colWins[i]?.Arm)); list.Add(($"roster-status-{i + 1}", colWins[i]?.Status)); list.Add(($"roster-dots-{i + 1}", colWins[i]?.Dots)); } // brief 046: the row under each portrait
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));
-            for (int i = 0; i < beatEls.Count; i++) list.Add(($"beat-{i + 1}", beatEls[i].root));
+            list.Add(("crucial", crCard)); // brief 096: the slim feed's one card
             for (int i = 0; i < bubbleEls.Count; i++) list.Add(($"bubble-{i + 1}", bubbleEls[i].root));
             for (int i = 0; i < popEls.Count; i++) list.Add(($"pop-{i + 1}", popEls[i].root));
             for (int i = 0; i < pipEls.Count; i++) list.Add(($"pip-{Cast[i]}", pipEls[i].root));
             for (int i = 0; i < edgeEls.Count; i++) list.Add(($"edge-{i + 1}", edgeEls[i]));
             for (int i = 0; i < edgeCams.Count; i++) list.Add(($"edge-cameo-{i + 1}", edgeCams[i].Root));
-            list.Add(("history-key", historyKey2));
+            list.Add(("book-key", historyKey2));
             // brief 044: the overlays of the done moment and the hold controls (the 2x crops of Glyph's review)
             list.Add(("verb-pill", vpill)); list.Add(("verb-pill-tail", vpillTail)); list.Add(("cancel-tag", cancelTag)); list.Add(("drag-faces", dragGhost));
             for (int i = 0; i < chipEls.Count; i++) list.Add(($"gain-chip-{i + 1}", chipEls[i].Root));

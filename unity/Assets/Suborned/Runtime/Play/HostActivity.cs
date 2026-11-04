@@ -205,8 +205,6 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the briefing and the dialogue log
 
-        /// <summary>The briefing card: open at the start (the clock paused), B brings it back.</summary>
-        public bool ShowBriefing { get; set; }
         /// <summary>The dialogue log, expanded (L or its header) or collapsed to its last line.</summary>
         public bool LogOpen { get; set; }
 

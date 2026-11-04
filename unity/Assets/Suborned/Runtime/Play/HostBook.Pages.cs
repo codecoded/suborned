@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Suborned.Play
 {
     /// <summary>Brief 088: the book's words (text.json's `book` block, draft for Fable), read once at the first open: nothing here costs a frame while the book is shut.</summary>
-    public sealed class BookWordsFile
+    public sealed partial class BookWordsFile
     {
         public sealed class End { public string Icon = "", Word = ""; public readonly List<string> Fails = new(); }
         public sealed class Stop { public string Icon = "", Log = ""; }
@@ -46,6 +46,7 @@ namespace Suborned.Play
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
                 if (c.Opt("car") is JNode car) one.Car = (S(car, "word"), S(car, "icon"), S(car, "line"));
+                one.Read096(b);
             }
             catch (Exception e) { Debug.LogWarning($"Book: text.json's book block not read ({e.Message})"); }
             return one;
@@ -54,7 +55,7 @@ namespace Suborned.Play
         /// <summary>The list: one entry a section. Which have pages is this table; a sign with none is dim and has no page.</summary>
         public List<BookSection> Sections()
         {
-            var pages = new Dictionary<string, Func<HandoverHost, BookPage>> { ["cell"] = h => h.BookCellPage(h.BookAgent), ["job"] = h => h.BookJobPage() };
+            var pages = new Dictionary<string, Func<HandoverHost, BookPage>> { ["cell"] = h => h.BookCellPage(h.BookAgent), ["job"] = h => h.BookJobPage(), ["journal"] = h => h.BookJournalPage() };
             var l = new List<BookSection>(); foreach (var (id, icon, word) in SectionRows) l.Add(new BookSection(id, icon, word, pages.TryGetValue(id, out var p) ? p : null)); return l;
         }
     }
@@ -79,18 +80,18 @@ namespace Suborned.Play
                     if (Text != null && Text.PageWays.TryGetValue(id, out var pw) && pw.when.Length > 0) way.Sub.Add(new BookField { Text = pw.when });
                     p.Ways.Add(way);
                 }
-            BookNeeds(p);
+            BookNeeds(p); BookJobStart(p, bw);
             if (Text != null)
                 foreach (var at in Text.PageClock)
                 {
-                    var (_, label, known) = Text.Timeline.Find(x => x.at == at); bw.Stops.TryGetValue(at, out var st);
+                    var (_, label, _) = Text.Timeline.Find(x => x.at == at); bw.Stops.TryGetValue(at, out var st); const bool known = true; // brief 096, Sky's call 2: every station shows its time from the start, the rivals' 2:35 too
                     int logged = -1; if (st != null && st.Log.Length > 0) for (int i = 0; i < g.Log.Count; i++) if (g.Log[i].Code == st.Log) { logged = g.Log[i].Tick; break; }
                     var parts = at.Split(':'); int tick = (int.Parse(parts[0]) * 60 + int.Parse(parts[1])) * Game.Hz;
                     bool past = logged >= 0 || known && g.Tick >= tick && (st == null || st.Log.Length == 0); bool open = known || logged >= 0;
-                    string word = open ? (Text.TimelineShort.TryGetValue(at, out var sh) ? sh : label ?? at) : "?";
+                    string word = open ? (bw.Stations.TryGetValue(at, out var sw) ? sw : Text.TimelineShort.TryGetValue(at, out var sh) ? sh : label ?? at) : "?";
                     p.Track.Add(new BookStop { Icon = st?.Icon ?? "nextevent", Word = word, Time = logged >= 0 ? MissionClock(logged) : known ? at : "?", Past = past });
                 }
-            if (Brief?.TargetAt is Vector3 door) { p.Subject = door; p.SubjectYaw = baseYaw + BriefYaw(); }
+            if (!BookStart && Brief?.TargetAt is Vector3 door) { p.Subject = door; p.SubjectYaw = baseYaw + BriefYaw(); } // brief 096: the start stays on the opening view (the cell), a hover turns it
             return p;
         }
 

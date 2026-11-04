@@ -143,8 +143,8 @@ namespace Suborned.Play
             // ---- WASD dead: the two ways in, each reproduced
             yield return Fresh(h); g = h.Game; h.DriveEnter083(); yield return Wait(0.6f);
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(false); yield return Wait(0.8f); yield return Dead(h, "restartInThird", Row);
-            yield return Fresh(h); g = h.Game; h.ShowBriefing = true; yield return Frames(2); Keys(Key.T); yield return Frames(2); Keys(); yield return Frames(2); bool under = h.Following && !h.Driving; h.ShowBriefing = false; yield return Wait(0.8f);
-            log.Add($"r083 T under the briefing: follow view with no agent while modal {under}"); yield return Dead(h, "tUnderBriefing", Row);
+            yield return Fresh(h); g = h.Game; h.SetPaused(true); h.ShowBriefing = true; yield return Frames(2); bool book = h.BookOpen && h.BookStart; Keys(Key.T); yield return Frames(2); Keys(); yield return Frames(2); bool under = h.Following; h.ShowBriefing = false; h.SetPaused(false); yield return Wait(0.8f);
+            log.Add($"r083 T under the briefing: the start book {book}, a follow view opened under it {under}"); Row("tUnderBriefing", book && !under && !h.Following && !h.BookOpen, $"brief 096: the start is the book (up {book}); T under it opened a follow view {under}; after it shut, following {h.Following}, book {h.BookOpen}");
             // the lab's own follow view is still asked for and left alone
             yield return Fresh(h); h.FollowToggle(); yield return Wait(0.8f); Row("labFollowOnly", h.Following && !h.Driving, $"following {h.Following}, driving {h.Driving}"); h.FollowToggle(); yield return Frames(2);
 

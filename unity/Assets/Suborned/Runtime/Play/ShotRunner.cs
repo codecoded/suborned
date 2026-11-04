@@ -170,7 +170,7 @@ namespace Suborned.Play
                 }
                 else
                 {
-                    var docs = FindObjectsByType<UIDocument>(FindObjectsSortMode.None); var shown = docs.Select(d => d.rootVisualElement.style.display).ToArray();
+                    var docs = s.briefing ? new UIDocument[0] : FindObjectsByType<UIDocument>(FindObjectsSortMode.None); var shown = docs.Select(d => d.rootVisualElement.style.display).ToArray(); // brief 096: a briefing shot keeps its page (the start is the book, a page over the street, not HUD)
                     foreach (var d in docs) d.rootVisualElement.style.display = DisplayStyle.None;
                     yield return null; yield return new WaitForEndOfFrame();
                     error = Guard(() => { var t = ScreenCapture.CaptureScreenshotAsTexture(); File.WriteAllBytes(path + Ext(s), Encode(t, s)); Destroy(t); res.Files.Add(s.name + Ext(s)); });

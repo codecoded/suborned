@@ -417,10 +417,10 @@ namespace Suborned.Play
             if (kb != null)
             {
                 if (c.Down(kb, PlayAction.Pause) && !FightLabSpace()) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) { if (ShowBriefing) ClockStarted = Time.unscaledTime; ShowBriefing = false; } else Save(); }
-                if (c.Down(kb, PlayAction.Briefing)) ShowBriefing = !ShowBriefing;
+                if (c.Down(kb, PlayAction.Briefing)) BookOpenNow("job"); // brief 096: B opens the book on Job (the briefing is the Job page)
                 if (Frozen && Loud == null && Ring == null && c.Down(kb, PlayAction.Restart)) Release(); // a ring open: Enter takes its lit way (RightFrame) // brief 027: Return releases the queue on the frozen tick
                 if (c.Down(kb, PlayAction.TargetMode)) TargetKey(); // brief 027: target mode (Y)
-                if (c.Down(kb, PlayAction.DialogueLog)) FeedHistoryOpen = !FeedHistoryOpen; // L: the feed's history (the old dialogue log is the ticker now)
+                if (c.Down(kb, PlayAction.DialogueLog)) BookOpenNow("journal"); // brief 096: L opens the book's Journal (the history moved there)
                 if (!HoldOn && c.Down(kb, PlayAction.Cancel)) CancelSelected(); // brief 041 (hold): C is the camera's follow, X stops (HoldKeys)
                 if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
                 if (!HoldOn && !OneInput && c.Down(kb, PlayAction.Cease)) CeaseFire(); // engine 0.35: one input retires X (to stop, holster)

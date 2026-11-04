@@ -126,7 +126,7 @@ namespace Suborned.Play
             stepsWas = h.StackSteps; pillWas = (state, t);
             float lapse = Mathf.Clamp01((nowP - lockLapseAt) / 0.15f), lapseA = state == "offer" && lapse < 1f ? Mathf.Lerp(LockPillAlpha * 0.45f, 1f, 1f - (1f - lapse) * (1f - lapse)) : 1f;
             vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : state == "lock" ? LockPillAlpha : lapseA; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px); brief 067 E3: the locked pill at 80 % (nothing to hold)
-            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : (state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire) && h.Peeking ? h.OddsAltLine() : ""); // brief 080: Alt on the fire chip: the sum and the streak note
+            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : (state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire) && (h.Peeking || h.PricePeek) ? h.OddsAltLine() : ""); // brief 080: Alt on the fire chip: the sum and the streak note
             vpill.style.scale = state == "ready" ? new Scale(new Vector3(ReadyScale, ReadyScale, 1f)) : new Scale(Vector3.one); // full: the pill pops while it says "Let go"
             float glide = Mathf.Clamp01((nowP - glideAt) / 0.12f); if (glide < 1f) q = Vector2.Lerp(glideFrom, q, 1f - (1f - glide) * (1f - glide));
             pillQWas = q;

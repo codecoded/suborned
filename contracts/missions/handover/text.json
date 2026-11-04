@@ -2850,6 +2850,11 @@
        "id": "journal",
        "icon": "papers",
        "word": "Journal"
+     },
+     {
+       "id": "menu",
+       "icon": "pause",
+       "word": "Menu"
      }
    ],
    "job": {
@@ -3013,6 +3018,116 @@
     "icon": "car",
     "line": "Anyone can Board, Step out, Drive or Go. With Popovic aboard, Go wins."
    }
+   },
+   "start": {
+    "rule": "Brief 096, placeholders for Fable (Glyph's mock briefs/096/glyph/1-start-job.png; Sky 2026-11-04: \"all. recommended\"). The start briefing is the book's Job page with the clock stopped: `begin` where Back is, `shared` the line under the ways (both end at our car), `cell` one line under each face in the cell strip (replaces briefing.page.cell on the page; the false tip is dropped), `purse` and `heat` beside the folded ways to fail. The way names, their when, the conditions and the clock are the Job page's own data.",
+    "begin": "Begin",
+    "shared": "Both end at our car: Popovic in · Go · the rest clear before the seal",
+    "purse": "Purse",
+    "heat": "Heat",
+    "cell": {
+     "scout": "Watches from furthest; listens in.",
+     "fixer": "Turns Inez or the driver; calls Inez.",
+     "tech": "Loops cameras, moves the patrol, drives our car.",
+     "enforcer": "Takes Popovic. Only he can carry him."
+    },
+    "stations": {
+     "5:50": "His car leaves"
+    }
+   },
+   "journal": {
+    "rule": "Brief 096, placeholders for Fable (Glyph's mock 3c-journal.png): the Journal is the full log (what the L history held), newest first, with time and place; crucial rows marked, unread dotted. `sub` heads the list, `new` follows it while rows are unread, `filters` the chips in order (crucial, learned, turned and city filter by kind), `begins` the first row at 0:00.",
+    "sub": "everything so far, newest first",
+    "new": "{n} new",
+    "begins": "The job begins",
+    "empty": "Nothing yet",
+    "filters": [
+     {
+      "id": "all",
+      "word": "All"
+     },
+     {
+      "id": "crucial",
+      "word": "Crucial"
+     },
+     {
+      "id": "learned",
+      "word": "Learned"
+     },
+     {
+      "id": "turned",
+      "word": "Turned"
+     },
+     {
+      "id": "city",
+      "word": "City"
+     }
+    ]
+   },
+   "key": {
+    "rule": "Brief 096, placeholders for Fable: `word` the HUD's Book button, bottom right in the notes key's place (Glyph's mock 2-hud-book.png); `stop` the fire line's Stop button, which replaced its \"X stop\" keycap (Glyph's key audit).",
+    "word": "Book",
+    "stop": "Stop"
+   },
+   "feed": {
+    "rule": "Brief 096, placeholders for Fable (Glyph's mock 3b-feed-cards.png; Sky 2026-11-04: one crucial card at a time, kept until clicked, most urgent first; a card leaves by itself only once it stops being true). `of` counts the queue; each card has a title of four words or fewer and an optional `line` (where or what), the clock follows it. {agent} an agent's name, {who} a person's, {n} a count, {seal} and {s} times. `fixes` are the chips under the rivals-for-the-car card.",
+    "of": "{i} of {n}",
+    "cards": {
+     "seal": {
+      "title": "District sealing",
+      "line": "sealed at {seal}"
+     },
+     "police": {
+      "title": "Police coming",
+      "line": "here in {s}"
+     },
+     "down": {
+      "title": "{agent} is down"
+     },
+     "for-car": {
+      "title": "Rivals for our car",
+      "line": "{n} rivals",
+      "fixes": [
+       {
+        "icon": "run",
+        "word": "Step out, draw"
+       },
+       {
+        "icon": "takedown",
+        "word": "Down them"
+       }
+      ]
+     },
+     "alert": {
+      "title": "Alert up"
+     },
+     "seen": {
+      "title": "One of ours seen",
+      "line": "by {by}"
+     },
+     "target-out": {
+      "title": "Popovic is out",
+      "line": "official door"
+     },
+     "rival-car": {
+      "title": "Rival car coming",
+      "line": "east road"
+     },
+     "turned": {
+      "title": "{who} turned"
+     },
+     "refused": {
+      "title": "{who} refused"
+     },
+     "body": {
+      "title": "Body found"
+     }
+    }
+   },
+   "heldGo": {
+    "rule": "Brief 096 objective 7, placeholders for Fable (Glyph's mock 4c-car-ring-2x.png): Go on the car's ring while rivals hold the car: `heldBy` before a badge per holder, `fix` the line under it.",
+    "heldBy": "held by",
+    "fix": "Step out and draw · or down them"
    }
  },
  "pending": {

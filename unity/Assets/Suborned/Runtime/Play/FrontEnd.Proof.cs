@@ -65,9 +65,9 @@ namespace Suborned.Play
             fe.Show(FrontEnd.Screen.Menu); yield return null;
             HandoverHost.BriefCamInAutomation = true; var b = fe.MenuButton("new"); b?.Invoke(); yield return null;
             // brief 062 B: New game goes straight to the briefing on the street (no lore screen), the key art dissolving into it
-            Check("newGameBriefing", fe.Showing == FrontEnd.Screen.None && h.ShowBriefing && h.BriefCamOn, $"showing {fe.Showing}; host briefing {h.ShowBriefing}, camera on the briefing frame {h.BriefCamOn}");
+            Check("newGameBriefing", fe.Showing == FrontEnd.Screen.None && h.ShowBriefing, $"showing {fe.Showing}; host briefing {h.ShowBriefing}"); // brief 096: the start is the book's Job page (it opens on the next frame)
             yield return new WaitForSecondsRealtime(FrontEnd.DissolveS + 0.3f);
-            Check("briefingAfter", h.ShowBriefing && !FrontEnd.Covers && HudToolkit.BriefingState.StartsWith("up"), $"host briefing {h.ShowBriefing}; {HudToolkit.BriefingState}");
+            Check("briefingAfter", h.ShowBriefing && !FrontEnd.Covers && h.BookOpen && h.BookStart && h.BookSectionNow == "job" && HudToolkit.BookShown && h.Paused, $"host briefing {h.ShowBriefing}; book {h.BookOpen} start {h.BookStart} on {h.BookSectionNow}, drawn {HudToolkit.BookShown}, paused {h.Paused}");
             yield return Shot(fe, "briefing");
             // the start (board 03): Begin, then stills at 0.15 s (the exit), 1.8 s (the glide), 3.4 s (the settle), then play; the clock holds until 3.6 s
             HandoverHost.StartFreeze = true; h.BriefingBegin(); int tick0 = h.Game.Tick;

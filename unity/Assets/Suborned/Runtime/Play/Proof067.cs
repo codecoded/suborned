@@ -335,7 +335,7 @@ namespace Suborned.Play
             //      0.25 m a tick); bodies keep their walker's figure (logged); the rival car is Vela's Sedan_Rival
             {
                 yield return Fresh(h); var g = h.Game; int hz = Suborned.Sim.Game.Hz;
-                h.GiveWatchScripted(OpId.Scout, "guard"); To(h, 4 * 600 + 28 * hz);
+                h.GiveWatchScripted(OpId.Scout, "guard"); To(h, 5 * 600 + 8 * hz); // brief 096: the shift at 5:30 (+40 s, GDD v0.38.0)
                 int eased0 = h.Views.StepEases; h.Views.StepEased.Clear(); var last = new Dictionary<string, Vector3>(); float worst = 0f; string worstKey = "";
                 for (int t = 0; t < 6 * hz && !g.Over; t++)
                 {

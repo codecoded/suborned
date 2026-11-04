@@ -84,7 +84,7 @@ namespace Suborned.Play
             // Glyph's 016 review §5: the detail layer shows once Alt has been held 0.25 s, so an Alt chord (Alt + middle turns the view) or a quick
             // tap never flashes it; nothing shows while the view is being turned
             bool held = controls.Held(Keyboard.current, PlayAction.Peek); if (!held) peekHeldSince = -1f; else if (peekHeldSince < 0f) peekHeldSince = Time.unscaledTime;
-            Peeking = (PeekLatch || held && Time.unscaledTime - peekHeldSince >= PeekDelay) && Ending.Length == 0 && !TurnDragging;
+            Peeking = (PeekLatch || held && Time.unscaledTime - peekHeldSince >= PeekDelay) && Ending.Length == 0 && !TurnDragging; PricePeekFrame(); // brief 096: a price rested on shows its breakdown (HostKeys096)
             FocusWatcher = null;
             Guard("sight", () =>
             {

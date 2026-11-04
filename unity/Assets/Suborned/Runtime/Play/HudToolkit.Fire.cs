@@ -57,8 +57,8 @@ namespace Suborned.Play
             fireDown = L(fireLine, "verb-name"); fireDown.style.fontSize = 13f; fireDown.style.marginLeft = 10; Show(fireDown, false);
             fireHeldIcon = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireHeldIcon.style.position = Position.Relative; fireHeldIcon.style.left = StyleKeyword.Auto; fireHeldIcon.style.top = StyleKeyword.Auto; fireHeldIcon.style.marginLeft = 14; Show(fireHeldIcon, false);
             fireHeld = L(fireLine, "verb-name"); fireHeld.style.fontSize = 13f; fireHeld.style.marginLeft = 4; fireHeld.text = "held"; Show(fireHeld, false);
-            fireCapX = E(fireLine); fireCapX.style.flexDirection = FlexDirection.Row; fireCapX.style.alignItems = Align.Center; fireCapX.style.marginLeft = 10; KeyCap(fireCapX, host.controls.Label(PlayAction.Cease));
-            fireStop = L(fireCapX, "verb-name"); fireStop.style.fontSize = 13f; fireStop.style.marginLeft = 4; fireStop.text = "stop"; Show(fireCapX, false);
+            fireCapX = E(fireLine, "s-plate_light", pick: true); fireCapX.style.flexDirection = FlexDirection.Row; fireCapX.style.alignItems = Align.Center; fireCapX.style.marginLeft = 10; fireCapX.style.height = 24; fireCapX.style.paddingLeft = 8; fireCapX.style.paddingRight = 10; var sx = E(fireCapX, null, w: 12, h: 12); Icon(sx, "close_x", Ink); fireCapX.name = "fire-stop"; fireCapX.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.StopClick(); e.StopPropagation(); } }); // brief 096: the "X stop" keycap is a Stop button (Glyph's key audit)
+            fireStop = L(fireCapX, "verb-name"); fireStop.style.fontSize = 13f; fireStop.style.marginLeft = 5; fireStop.style.color = Ink; fireStop.text = BookWordsFile.Get().StopWord; Show(fireCapX, false);
             manifest.Add((fireLine, "image", () => "fire line: who, how long, the stop key"));
             Show(fireLine, false);
             // Sky's rule (a key legend means the controls are wrong; Glyph's 0.2.65 review 8, Aster 2026-10-22 "make sure no key legend survives
@@ -376,7 +376,7 @@ namespace Suborned.Play
                     fireLine.style.opacity = stopped ? Mathf.Clamp01((HandoverHost.StoppedS - (Time.unscaledTime - host.FireStoppedAt[k])) / 0.3f) : 1f;
                 }
             }
-            Show(fireLine, show); if (show) fireLine.BringToFront();
+            Show(fireLine, show); Show(fireCapX, show); if (show) fireLine.BringToFront();
         }
     }
 }

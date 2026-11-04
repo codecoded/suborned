@@ -43,10 +43,10 @@ namespace Suborned.Play
             Row("bookStopsStopped", up2 && stays && g.Tick == t4, $"opened {up2}, Esc closed and left the clock stopped {stays}, no menu {!h.MenuOpen}"); h.SetPaused(false); yield return Frames(2);
             // ---- the modal gate: J does nothing under the briefing or the pause menu; street keys do nothing under the book
             h.OpenMenu(); yield return Frames(2); yield return Press(Key.J); bool underMenu = h.BookOpen; h.ResumeFromMenu(); yield return Frames(2);
-            h.ShowBriefing = true; yield return Frames(2); yield return Press(Key.J); bool underBrief = h.BookOpen; h.ShowBriefing = false; yield return Frames(2);
+            h.SetPaused(true); h.ShowBriefing = true; yield return Frames(2); bool startBook = h.BookOpen && h.BookStart && h.BookSectionNow == "job"; yield return Press(Key.J); bool underBrief = !(startBook && !h.BookOpen && !h.ShowBriefing && h.Paused); h.SetPaused(false); yield return Frames(2); // brief 096: the start is the book on Job; J shuts it, the clock still stopped
             h.BookOpenNow(); yield return Frames(3); int n0 = g.Orders.Count, w0 = h.WorldPresses; int s0 = h.Speed; yield return Press(Key.Equals); yield return Press(Key.F); yield return Press(Key.Space); bool stillOpen = h.BookOpen && h.Paused && h.Speed == s0 && g.Orders.Count == n0;
             h.BookClose(); yield return Frames(2);
-            Row("bookModal", !underMenu && !underBrief && stillOpen && h.WorldPresses == w0, $"under the menu {underMenu}, under the briefing {underBrief}, street keys under the book left it up with no order {stillOpen}");
+            Row("bookModal", !underMenu && !underBrief && stillOpen && h.WorldPresses == w0, $"under the menu {underMenu}, the start book misbehaved {underBrief}, street keys under the book left it up with no order {stillOpen}");
             // ---- both views: it opens in third person and the follow camera stays
             h.DriveEnter083(); yield return Wait(0.5f); bool third = h.Following; yield return Press(Key.J); bool tOpen = h.BookOpen && h.Paused; var cam3 = h.View.transform.position; yield return Wait(0.3f); float moved = (h.View.transform.position - cam3).magnitude; yield return Press(Key.J); bool tShut = !h.BookOpen;
             Row("bookThird", third && tOpen && tShut && moved < 0.01f, $"third {third}, open {tOpen}, the camera moved {moved:0.000} m, shut {tShut}");
@@ -108,7 +108,8 @@ namespace Suborned.Play
                     {
                         bool withV = g.Vale == ValeAt.WithEnforcer || g.Vale == ValeAt.Car, unk = n.Id == "pickup-camera" && g.Known("camera:pickup") is not { Sight: true };
                         bool want = n.Id switch { "guard-away" => !g.GuardAtDoor, "door-camera" => g.CameraDark("entrance") || g.LoopOn && g.LoopCam == "entrance", "inside" => g.Ops[3].Inside || withV, "getaway" => g.Vale == ValeAt.Car,
-                            "driver" => g.PersonByRole("driver").Turned, "pickup-camera" => !unk && (g.CameraDark("pickup") || g.LoopOn && g.LoopCam == "pickup"), "has-vale" => withV, _ => !n.Met };
+                            "driver" => g.PersonByRole("driver").Turned, "pickup-camera" => !unk && (g.CameraDark("pickup") || g.LoopOn && g.LoopCam == "pickup"), "has-vale" => withV,
+                            "guarded" => g.Vale == ValeAt.Car && (!g.CarHeld() || System.Array.Exists(g.Ops, o => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0)), "go" => g.Log.Exists(l => l.Code == "success"), "left-safe" => g.LeftBehind().TrueForAll(x => x.fate == "walked"), _ => !n.Met }; // brief 096: the getaway's conditions, read from the engine
                         if (n.Met != want || n.Unknown != unk) { nbad++; nsaid2.Add($"{route} {HandoverHost.MissionClock(at)} {n.Group}/{n.Id}: page {n.Met}{(n.Unknown ? "?" : "")}, engine {want}{(unk ? "?" : "")}"); }
                         if (n.Met) nmet[n.Group + "/" + n.Id] = (nmet.TryGetValue(n.Group + "/" + n.Id, out var c) ? c : 0) + 1;
                     }

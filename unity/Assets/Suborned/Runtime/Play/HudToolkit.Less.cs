@@ -53,12 +53,11 @@ namespace Suborned.Play
 
         VisualElement nextUnknown, nextTip; Label nextTipText;
         readonly List<VisualElement> peopleDiscs = new(); VisualElement historyKey2;
-        VisualElement keys, keyIntel, keyHistory, keyDot, pauseIcon, goal, goalCameo, goalGlyph, goalWords, beatsBox, sheet, sheetHead, sheetCameo, sheetBadge, sheetRows, sheetTip, chip2, chipLead, chipFields, respIcons, loudIcons, loudLost;
+        VisualElement keys, keyIntel, pauseIcon, goal, goalCameo, goalGlyph, goalWords, sheet, sheetHead, sheetCameo, sheetBadge, sheetRows, sheetTip, chip2, chipLead, chipFields, respIcons, loudIcons, loudLost;
         Label endCash, endTrail, endStand; Paint endStandArrow; int endStandDir;
         Label keyIntelN, sheetName, sheetNote, sheetTipText, respOff, respBot, respCome, chipRefused, endTally, briefGoal;
         Paint world; // the street's painted marks (rings, wedges, dotted lines, arrows), behind the HUD's plates
         readonly List<(VisualElement root, VisualElement icon, Label text, VisualElement bar, VisualElement fill, VisualElement x)> busy = new();
-        readonly List<(VisualElement root, VisualElement badge, Label text)> beatEls = new();
         readonly List<(VisualElement root, Label text, VisualElement tail)> bubbleEls = new();
         readonly List<(VisualElement root, VisualElement icon, Label text)> popEls = new();
         sealed class Row { public VisualElement Root, Glyph, Fields, Alt, Key, Cameo, TagIcon; public Label Name, KeyText; public int Index; public string FieldsKey = "", AltKey = ""; }
@@ -102,14 +101,7 @@ namespace Suborned.Play
                 d.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (KnownPerson(people[k])) FindPerson(people[k]); else host.IntelOpen = !host.IntelOpen; e.StopPropagation(); } });
             }
             manifest.Add((keys, "image", () => "known people"));
-            // the history (notes) key: the bottom-right corner, where its drawer opens (Sky); the story beats stack above it
-            var hk = E(root, "s-plate_dark", pick: true); hk.style.position = Position.Absolute; hk.style.right = 14; hk.style.bottom = 14; hk.style.width = ChipH; hk.style.height = ChipH; hk.style.alignItems = Align.Center; hk.style.justifyContent = Justify.Center;
-            // the glyph 11 px in (the rim's 6.5 and 4 clear); unread notes widen the plate by 10 so the dot sits beside the glyph, inside the
-            // same clearance (the audit's rule), never on the rim's corner
-            keyHistory = E(hk, null, 11, 11, Glyph, Glyph, pick: true); Icon(E(keyHistory, null, 0, 0, Glyph, Glyph), "papers", Cream);
-            keyDot = E(hk, "s-dot_unread", 28, (ChipH - 7) / 2f, 7, 7);
-            hk.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.FeedHistoryOpen = !host.FeedHistoryOpen; e.StopPropagation(); } });
-            historyKey2 = hk;
+            BuildBookKey(); historyKey2 = bookKey; // brief 096: the Book key takes the notes key's place (HudToolkit.BookKey); the history is the book's Journal
             // busy chips beside the portraits
             for (int i = 0; i < 4; i++)
             {
@@ -144,14 +136,7 @@ namespace Suborned.Play
             hintQ.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.HintReopenAt = Time.unscaledTime; e.StopPropagation(); } });
             manifest.Add((hintQ, "image", () => "hint reopen"));
             manifest.Add((goalCameo, "image", () => "hint portrait"));
-            // story beats: lower right, newest at the bottom
-            beatsBox = E(root); beatsBox.style.position = Position.Absolute; beatsBox.style.right = 14; beatsBox.style.bottom = 14 + 36 + 8; /* above the history key, the standard gap */ beatsBox.style.flexDirection = FlexDirection.Column; beatsBox.style.alignItems = Align.FlexEnd;
-            for (int i = 0; i < 2; i++)
-            {
-                var b = E(beatsBox, "s-plate_dark"); b.style.height = ChipH; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.paddingLeft = ChipPad; b.style.paddingRight = ChipPad; b.style.marginTop = 8; // the chips' rule
-                var bd = E(b, null, w: Glyph, h: Glyph); bd.style.marginRight = 8; /* under 70% of the chip's height */ var t = L(b, "verb-name"); t.style.fontSize = 13;
-                beatEls.Add((b, bd, t)); int bi = i; manifest.Add((b, "beat", () => beatEls[bi].text.text));
-            }
+            BuildCrucial(); // brief 096: the slim feed, one crucial card above the Book key (HudToolkit.Crucial); the story beats live in the Journal
             // the order sheet (Glyph §2): one row per way
             sheet = E(root, "s-panel_dark", 0, 0, 374, float.NaN, pick: true); sheet.style.paddingTop = 12; sheet.style.paddingBottom = 18; sheet.style.paddingLeft = 22; sheet.style.paddingRight = 22; // clear of panel_dark's corner screws
             sheet.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
@@ -205,7 +190,7 @@ namespace Suborned.Play
             manifest.Add((briefGoal, "line", () => briefGoal.text)); manifest.Add((briefPeople, "image", () => "cell portraits"));
             BuildScope();
             BuildMenu();
-            BuildRing(); // brief 030
+            BuildRing(); BuildKeys096(); // brief 030; brief 096: the pause button and the turn buttons (HudToolkit.Keys096)
         }
 
         bool goalHover; int busyHover = -1; string goalText = "";
@@ -313,7 +298,7 @@ namespace Suborned.Play
                 if (show && !m.PanelOpen) { Text(sheetTipText, alt ? m.Slots[tipFor].CancelBody : shortCost); var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse); sheetTip.style.left = p.x + 14; sheetTip.style.top = p.y + 12; sheetTip.style.width = alt ? 300 : StyleKeyword.Auto; }
             }
             // the pill: clock, pause glyph (or speed), next mark as icon and time ("?" when unknown; its word on Alt), $ and Trail dimming
-            Show(pauseIcon, host.Paused || host.Frozen); pauseIcon.style.opacity = host.Frozen && !PlateOn ? 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f)) : 1f; /* brief 030: the pause glyph pulses while frozen */ Text(state, host.Speed > 1 ? $"x{host.Speed}" : ""); Show(state, host.Speed > 1);
+            Keys096Frame(m.Ended); pauseIcon.style.opacity = host.Frozen && !PlateOn ? 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f)) : 1f; /* brief 030: the pause glyph pulses while frozen */ Text(state, host.Speed > 1 ? $"x{host.Speed}" : ""); Show(state, host.Speed > 1);
             {
                 bool unknown = m.NextLabel == "?"; string shortLabel = "";
                 if (host.Text != null && host.Text.TimelineShort.TryGetValue(m.NextTime, out var sl)) shortLabel = sl;
@@ -324,7 +309,7 @@ namespace Suborned.Play
                 if (m.Trail != lastTrail) { lastTrail = m.Trail; trailChanged = Time.unscaledTime; }
                 bool lit = alt || pillHover; cash.style.opacity = lit || Time.unscaledTime - cashChanged < 4f ? 1f : 0.55f; trail.style.opacity = lit || Time.unscaledTime - trailChanged < 4f ? 1f : 0.55f;
             }
-            Show(keys, !ended && !m.BriefingOpen); Show(historyKey2, !ended && !m.BriefingOpen); Show(keyDot, m.Unread > 0); historyKey2.style.width = m.Unread > 0 ? ChipH + 10 : ChipH;
+            Show(keys, !ended && !m.BriefingOpen); BookKeyFrame(!ended && !m.BriefingOpen);
             { string[] people = { "waitress", "guard", "driver", "councillor" }; for (int i = 0; i < 4; i++) { bool kn = KnownPerson(people[i]); peopleDiscs[i].style.opacity = kn ? 1f : 0.28f; peopleDiscs[i].style.unityBackgroundImageTintColor = kn ? Color.white : new Color(0.55f, 0.6f, 0.6f); } }
             intel.style.top = 14 + 44 + 8 + 36 + 8;
             // Intel rows: the sentence column is Alt only
@@ -337,11 +322,11 @@ namespace Suborned.Play
             // the history drawer over the beats' place
             history.style.bottom = 14 + 36 + 8; // opens above its key
             GoalLine(W);
-            Beats();
+            CrucialFrame(!m.Ended && !m.BriefingOpen);
             Bubbles(cam);
             Pops(cam);
-            Sheet(alt, W, H);
-            Chip(alt, W);
+            Sheet(alt || host.PricePeek, W, H); // brief 096: a price rested on 0.6 s shows its breakdown, as Alt does
+            Chip(alt || host.PricePeek, W);
             RingFrame(); CursorFrame(); // brief 030: the ring, the cursor's mark
             StreetLess(alt, cam);
             AttentionHud(W, H); // brief 031: the Watch ring, the person watchers' marks, the callouts (HudToolkit.Attention)
@@ -513,24 +498,6 @@ namespace Suborned.Play
         }
 
         // ---------------------------------------------------------------- beats, bubbles, pops
-
-        void Beats()
-        {
-            host.DecideBeats(host.View);
-            float now = Time.unscaledTime, life = host.Text?.FeedS ?? 4f; int max = Mathf.Min(host.Text?.FeedMax ?? 2, beatEls.Count);
-            bool latest = history.resolvedStyle.display != DisplayStyle.None && !m.HistoryOpen; // the feed panel shows its newest entry: one beat at most above it (the budget's two)
-            if (latest) max = Mathf.Min(max, 1);
-            float hh = history.resolvedStyle.height; beatsBox.style.bottom = 14 + 36 + 8 + (latest && !float.IsNaN(hh) ? hh + 8 : 0);
-            var live = new List<HandoverHost.StoryBeat>();
-            for (int i = host.Beats.Count - 1; i >= 0 && live.Count < max; i--) { var b = host.Beats[i]; if (b.Decided && b.Show && now - b.Born < life + 0.25f) live.Insert(0, b); }
-            bool on = !m.HistoryOpen && !m.Ended;
-            for (int i = 0; i < beatEls.Count; i++)
-            {
-                var (r, bd, tx) = beatEls[i]; bool has = on && i < live.Count; Show(r, has); if (!has) continue;
-                var b = live[i]; Art(bd, b.Badge, b.Tinted ? Cream : (Color?)null); Text(tx, b.Text);
-                float age = now - b.Born; r.style.opacity = Mathf.Clamp01((life + 0.25f - age) / 0.4f) * Mathf.Clamp01((age - 0.25f) / 0.2f);
-            }
-        }
 
         readonly List<Rect> bubbleRects = new();
         static readonly HashSet<string> Cell = new() { "scout", "fixer", "tech", "enforcer" };
@@ -1696,7 +1663,7 @@ namespace Suborned.Play
             var placed = new List<Rect>();
             // the HUD groups an edge mark slides clear of (panel space), with 6 px air
             var blocks = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, beatsBox, plateStub, squadBtn, freeBtn, freePlate, clipBlock })
+            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, crCard, plateStub, squadBtn, freeBtn, freePlate, clipBlock })
                 if (e != null && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.width > 0) { var b = e.worldBound; float air = e == goal ? 12 : e == pill ? 14 : 6; blocks.Add(Rect.MinMaxRect(b.xMin - air, b.yMin - air, b.xMax + air, b.yMax + air)); } // Glyph 016 r2 G: 12 px clear of the goal line; techwatch fix 1: 14 px clear of the status pill, the HUD groups' margin
             // Glyph N7 (0.2.125): the left column's band is no place for an edge mark (the Squad and weapons buttons stand under the roster): edge marks keep x >= the roster's right + 12
             if (column != null && column.resolvedStyle.display != DisplayStyle.None && column.worldBound.width > 0) blocks.Add(Rect.MinMaxRect(-100f, -100f, column.worldBound.xMax + 12f, H + 100f));

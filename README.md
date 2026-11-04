@@ -49,11 +49,10 @@ Linux x86-64 builds use the same scenes and build counter, with separate output:
 unity install-modules --editor-version 6000.6.2f1 --architecture arm64 --module linux-mono --yes --accept-eula
 bun run guard bun tools/sim/unity.ts --tree
 bun run guard unity build unity --target StandaloneLinux64 --execute-method Suborned.World.Play.GameBuild.CliLinux --output-path out/build/linux/TheSuborned.x86_64 --allow-dirty-build
-bun tools/game/briefstills.ts --place-only --app out/build/linux/TheSuborned.x86_64
 ```
 
-The last line copies the briefing page's stills and plan, taken by the Mac player
-(`bun run game`), into the Linux build; without it the briefing shows blank prints.
+The start briefing is the book's Job page over the real street (brief 096), so a Linux
+build needs no stills copied from the Mac player.
 
 The module command above is for the Apple silicon build Mac. Ship the whole Linux
 output folder, including its data directory and shared libraries. A Linux build

@@ -85,8 +85,9 @@ namespace Suborned.Play
         /// <summary>The thin line from the face to the person, their eye and ground ring, on the frozen street: drawn only where the person stands in view; moved each frame with the camera's glide.</summary>
         void BookLinePaint(Painter2D p, Rect r)
         {
-            var page = host.BookPageNow; if (page == null || !page.Line || bkPage == null) return;
-            var t = host.Views?.Find(page.SubjectView); if (!t || !t.gameObject.activeInHierarchy || !Proj(t.position + Vector3.up * 2.1f, out var head) || !Proj(t.position, out var feet)) return;
+            var page = host.BookPageNow; if (page == null || bkPage == null) return;
+            string key = host.BookLookView.Length > 0 ? host.BookLookView : page.Line ? page.SubjectView : null; if (string.IsNullOrEmpty(key)) return; // brief 096: a hovered way or face is joined by the line too
+            var t = host.Views?.Find(key); if (!t || !t.gameObject.activeInHierarchy || !Proj(t.position + Vector3.up * 2.1f, out var head) || !Proj(t.position, out var feet)) return;
             float k = bkPage.resolvedStyle.scale.value.x; if (k <= 0f) k = 1f; float ox = bkPage.resolvedStyle.left, oy = bkPage.resolvedStyle.top;
             Vector2 G(Vector2 q) => new Vector2((q.x - ox) / k + BkPad, (q.y - oy) / k + BkPad);
             Vector2 a = G(head), b = new(BookLayout.HeroX + 20f + BkPad, 250f + BkPad), f = G(feet);
@@ -125,8 +126,16 @@ namespace Suborned.Play
                     case BookSlot.Knows: BkKnows(body, pg, it); break;
                     case BookSlot.Track: BkStop(body, pg, it, r); break;
                     case BookSlot.Others: BkOther(body, pg.Others[it.Index], it.At); break;
+                    case BookSlot.Kicker: BkKicker(body, pg, it); break;
+                    case BookSlot.Purse: BkPurse(body, pg, it); break;
+                    case BookSlot.Faces: BkFace(body, pg.Ways[it.Index / 16].Faces[it.Index % 16], it); break;
+                    case BookSlot.Shared: BkShared(body, pg, it); break;
+                    case BookSlot.Crew: BkCrew(body, pg.Crew[it.Index], it, r.CrewLines[it.Index]); break;
+                    case BookSlot.Begin: BkBegin(body, it); break;
+                    case BookSlot.Filters: BkFilter(body, pg.Filters[it.Index], it); break;
+                    case BookSlot.Rows: BkRow(body, pg.Rows[it.Index], it); break;
                 }
-            BkSigns(body, pg); BkChrome(body);
+            BkSigns(body, pg); BkChrome(body, pg);
         }
 
         void BkHero(VisualElement body, BookPage pg, Rect at)
@@ -155,8 +164,11 @@ namespace Suborned.Play
             BkPut(e, 100f, at.height / 2f - 16f, w.Word, 40f, "Jost-Bold", inkHex);
             float sx = 100f;
             foreach (var f in w.Sub) { if (f.Icon.Length > 0 && f.Icon != "p_time") { Icon(E(e, null, sx, at.height / 2f + 13f, 20f, 20f), f.Icon, ink); sx += 22f; } BkPut(e, sx, at.height / 2f + 24f, f.Text, 25f, "Jost-Medium", subHex); sx += BkTw(f.Text, 25f, "Jost-Medium") + 10f; }
-            e.RegisterCallback<PointerEnterEvent>(_ => { if (inl != null) Border(inl, 2f, BkTurq); else Border(e, 2f, BkInk); }); e.RegisterCallback<PointerLeaveEvent>(_ => { if (inl != null) Border(inl, 2f, Cream); else Border(e, 2f, BkSoft); });
-            e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookTakeWay(w); });
+            string view = w.Faces.Count > 0 ? w.Faces[0].View : w.Target?.Key ?? "";
+            if (inl != null && host.BookLookView.Length > 0 && host.BookLookView == view) Border(inl, 2f, BkTurq);
+            e.RegisterCallback<PointerEnterEvent>(_ => { if (inl != null) Border(inl, 2f, BkTurq); else Border(e, 2f, BkInk); host.BookHover(view); }); // brief 096: a hover turns the street to the way's place
+            e.RegisterCallback<PointerLeaveEvent>(_ => { if (inl != null && host.BookLookView != view) Border(inl, 2f, Cream); else if (inl == null) Border(e, 2f, BkSoft); host.BookHover(null); });
+            e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); if (host.BookStart) host.BookPin(view); else host.BookTakeWay(w); }); // the start: a click keeps the street there; in play: the way's ring
         }
 
         /// <summary>A verb the agent has: a pictogram, its word, its one line. Not a sign and no click: nothing here looks pressable, the ring is where you act.</summary>
@@ -197,7 +209,7 @@ namespace Suborned.Play
             float x = it.At.x, y = it.At.y, d = it.D; var m = E(body, null, x, y + 2f, d, d); Round(m, d / 2f); m.name = "book-need";
             if (n.Met) { m.style.backgroundColor = BkDeep; Icon(E(m, null, 4f, 4f, d - 8f, d - 8f), "check", Cream); }
             else { Border(m, 1.8f, BkSoft); if (n.Unknown) BkPut(m, d * .3f, d / 2f, "?", d * .6f, "Jost-Bold", BkSoftHex); }
-            for (int i = 0; i < lines.Length; i++) BkPut(body, x + d + 12f, y + 13f + 27f * i, lines[i], it.Size, "Jost-Medium", n.Met ? BkInkHex : n.Unknown ? BkSoftHex : BkInkHex);
+            for (int i = 0; i < lines.Length; i++) BkPut(body, x + d + 12f, y + 13f + BookLayout.NeedLineH * i, lines[i], it.Size, "Jost-Medium", n.Met ? BkInkHex : n.Unknown ? BkSoftHex : BkInkHex);
         }
 
         void BkScales(VisualElement body, BookPage pg, BookLayout.Item it)
@@ -246,19 +258,21 @@ namespace Suborned.Play
             var list = host.BookSections; if (list == null) return; int n = list.Count; BookSigns = n;
             for (int i = 0; i < n; i++)
             {
-                var s = list[i]; bool cur = s.Id == pg.Section, dim = s.Page == null; float d = cur ? 108f : 84f, y = BookLayout.SignY(i, n), x = BookLayout.SignX;
+                var s = list[i]; bool menu = s.Id == "menu", cur = s.Id == pg.Section, dim = !menu && (s.Page == null || !host.BookSectionLive(s.Id)); float d = cur ? 108f : 84f, y = BookLayout.SignY(i, n), x = BookLayout.SignX; // brief 096: Menu opens the pause menu; the Journal is dim until it has a row
                 var e = E(body, null, x - d / 2f, y - d / 2f, d, d, !dim); Round(e, d / 2f); e.style.backgroundColor = cur ? BkOrange : BkBody; e.name = "book-sign-" + s.Id; if (dim) e.style.opacity = .34f;
                 Icon(E(e, null, d * .25f, d * .14f, d * .5f, d * .5f), s.Icon, Cream);
                 var l = BkPut(e, 0f, d * .74f, s.Word, cur ? 22f : 16f, "Jost-Bold", BkCreamHex); l.style.width = d; l.style.unityTextAlign = TextAnchor.MiddleCenter;
-                if (!dim) { string id = s.Id; e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookShow(id); }); }
+                if (menu) e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookToMenu(); });
+                else if (!dim) { string id = s.Id; e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookShow(id); }); }
             }
         }
 
         /// <summary>The small clock chip (the kit's plate, the pause mark) and the page's back control, top right.</summary>
-        void BkChrome(VisualElement body)
+        void BkChrome(VisualElement body, BookPage pg)
         {
             var chip = PlateDark(body, 40f, 0.43f); chip.style.position = Position.Absolute; chip.style.right = 64f; chip.style.top = 14f; chip.style.paddingLeft = 12f; chip.style.paddingRight = 14f;
             Icon(E(chip, null, w: 18f, h: 18f), "pause", Cream); bkClock = Words(chip, 22f); bkClock.style.marginLeft = 6f; bkClock.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Kit/fonts/Jost-Medium-Tab"));
+            if (pg.Begin) return; // brief 096: the start has Begin (bottom right) where Back would be
             string word = BookWordsFile.Get().Back; float bw = 30f + BkTw(word, 24f, "Jost-SemiBold");
             var back = E(body, null, 1920f - 64f - 120f - 24f - bw, 14f, bw, 40f, true); back.name = "book-back";
             var ch = E(back, null, 0f, 11f, 18f, 18f); Icon(ch, "chev_up", BkInk); ch.style.rotate = new Rotate(-90f);

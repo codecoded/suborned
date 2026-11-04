@@ -812,7 +812,7 @@ namespace Suborned.Play
                 loud.style.left = Mathf.Clamp(p.x + 24, 14, W - 430 - 14); loud.style.top = Mathf.Max(14, p.y - lh2 - 16);
             }
             // the briefing: brief 062 B (Briefing.cs) on the street replaces the card; the old card stays built but hidden (BriefOnStreet off brings it back)
-            if (BriefOnStreet) { Show(brief, false); BriefingFrame(); Entrance(); }
+            if (BriefOnStreet) { Show(brief, false); Entrance(); } // brief 096: the start is the book's Job page (HudToolkit.Book); the old page is retired
             else Show(brief, m.BriefingOpen && m.BriefTitle.Length > 0);
             if (!BriefOnStreet && m.BriefingOpen && m.BriefTitle.Length > 0)
             {
@@ -844,7 +844,7 @@ namespace Suborned.Play
             // the history (Sky 2026-10-18: "always opened showing latest message, but then can expand up for history"): collapsed it shows the
             // newest entry only (its title and its newest spoken line), anchored at its bottom edge; expanded (L, a click on it, or the papers
             // key) it grows upward: the header and filters fixed, every entry with the newest at the top, held at the newest unless scrolled down
-            bool expanded = m.HistoryOpen, collapsedOn = !expanded && !m.Ended && !m.BriefingOpen && m.History.Count > 0;
+            bool expanded = m.HistoryOpen, collapsedOn = false; // brief 096: the screen keeps only the crucial card; the history is the book's Journal
             Show(history, expanded || collapsedOn);
             if (expanded && !historyWasOpen) historyPinned = true; historyWasOpen = expanded;
             if (expanded || collapsedOn)

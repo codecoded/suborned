@@ -222,7 +222,7 @@ namespace Suborned.Play
                     yield return ClickAt(h, sp, got); clicked++;
                     var (pr, mv, rg, bx) = got[0]; through += pr; moves += mv; if (rg) rings++; if (bx) boxes++;
                     if (pr > 0 || rg || bx) bad.Add(what + "@" + (int)sp.x + "," + (int)sp.y); else if (mv > 0) movedBy.Add(what + "@" + (int)sp.x + "," + (int)sp.y);
-                    h.CloseRing(); if (h.MenuOpen) h.ResumeFromMenu();
+                    h.CloseRing(); if (h.MenuOpen) h.ResumeFromMenu(); if (h.BookOpen) h.BookClose(); // brief 096: the Book key opens the book (a modal page), as the menu
                 }
                 bool vok = heard == 1 && clicked >= 3 && through == 0 && rings == 0 && boxes == 0; // a move given by a HUD button's own act (the door or car step mark sends the Enforcer) is the HUD's, not a click through: the gate is pressesThrough
                 ok &= vok;

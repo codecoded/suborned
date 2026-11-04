@@ -32,13 +32,14 @@ namespace Suborned.Play
         }
         /// <summary>Cards not yet acknowledged (oldest first), and the acknowledged history (newest last).</summary>
         public readonly List<FeedCard> Feed = new(), FeedHistory = new();
-        public bool FeedHistoryOpen { get; set; }
+        /// <summary>Brief 096: the history is the book's Journal; asking for it opens the book there (the old drawer never opens).</summary>
+        public bool FeedHistoryOpen { get => false; set { if (value) BookOpenNow("journal"); } }
         public string FeedFilter { get; set; } = "all"; // all · learned · turned · city · warnings (Glyph's history filters)
         public int Unread { get { int n = 0; foreach (var c in Feed) if (!c.Live && !c.Read) n++; return n; } }
         readonly FeedCard[] actCard = new FeedCard[4];
         int feedIds;
 
-        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; crewCodeAt.Clear(); forCarCard = false; }
+        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; crewCodeAt.Clear(); forCarCard = false; ResetCrucial(); } // brief 096: the slim feed's queue (HostCrucial)
 
         /// <summary>Engine 0.34.0: the crew's codes that each member logs for himself in the same beat (rivals.back-to-cover, the floor's
         /// rivals.recalled): one card for the beat, not one a member. A code seen again within CrewBeatS of its last line makes no card.
@@ -424,6 +425,7 @@ namespace Suborned.Play
         void FeedClock()
         {
             if (forCarCard && Game.RivalsForCar.Count == 0) forCarCard = false; // brief 096: the walk is over (back to cover, or the walkers down): the next one has its card
+            CrucialTrack(); // brief 096: the slim feed's crucial cards (HostCrucial)
             if (Text == null) return;
             foreach (var e in Text.Events.Values) if (e.Clock.Length > 0 && e.Log.Count == 0 && Game.Tick == ClockTick(e.Clock)) _ = CityScene(e.Id, null);
         }
