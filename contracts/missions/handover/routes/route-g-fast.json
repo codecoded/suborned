@@ -33,5 +33,5 @@
   {"tick":1754,"op":"tech","do":"fire","target":"rival-3"},
   {"tick":1808,"op":"cell","do":"go"}
  ],
- "until": 4500
+ "until": 4900
 }

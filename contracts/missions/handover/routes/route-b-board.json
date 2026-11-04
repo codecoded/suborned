@@ -33,5 +33,5 @@
   {"tick":3914,"op":"fixer","do":"board","target":"car"},
   {"tick":3924,"op":"cell","do":"go"}
  ],
- "until": 4500
+ "until": 4900
 }

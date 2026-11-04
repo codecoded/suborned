@@ -272,7 +272,7 @@ describe('times and numbers agree with the mission', () => {
       const hint = t.briefing.hints[id as 'front-door' | 'pickup'];
       expect(hint, id).toMatch(/^[A-Z][a-z]+( [a-z]+)?: /); expect(sentences(hint.split(': ', 2)[1]!) + sentences(w.line), id).toBeLessThanOrEqual(2);
     }
-    expect(p.clock).toEqual(['2:35', '4:30', '4:40', '4:50', '5:10']); // Sky, brief 070: five stations
+    expect(p.clock).toEqual(['2:35', '5:10', '5:20', '5:30', '5:50']); // Sky, brief 070: five stations
     const marks = t.briefing.timeline.map((x) => x.at); expect(p.clock.every((a) => marks.includes(a))).toBe(true);
     expect([...p.clock].sort((a, b) => marks.indexOf(a) - marks.indexOf(b))).toEqual(p.clock);
     expect(Object.keys(p.cell).sort()).toEqual([...AGENTS].sort());
@@ -286,7 +286,7 @@ describe('times and numbers agree with the mission', () => {
     expect([h.where, h.clock, h.heat]).toEqual(['Where', 'The clock', 'Heat']);
     for (const x of [...Object.values(h.ways), h.where, h.clock, h.heat]) { expect(x.split(/\s+/).length, x).toBeLessThanOrEqual(4); expect(x, x).not.toMatch(/[.!?:]/); }
   });
-  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 5:10 station is one fragment', () => {
+  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 5:50 station is one fragment', () => {
     const p = t.briefing.page; const m = json('contracts/missions/handover/mission.json') as { points: { id: string }[]; destinations: Record<string, unknown> };
     expect(p.ways['front-door'].line).toBe('Turn her to call him off and loop his camera.'); // Aster 2026-10-26: the page cut to 220 words
     expect(p.cell.scout).toMatch(/false tip/); expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
@@ -294,18 +294,18 @@ describe('times and numbers agree with the mission', () => {
     expect(p.captions).toEqual({ 'service-bay': 'Service bay' }); // Glyph R6 on 0.2.133: still 4 and its legend; within the page's 5-word caption cap
     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
     expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/i);
-    const at = t.briefing.timeline.find((x) => x.at === '5:10')!.label;
+    const at = t.briefing.timeline.find((x) => x.at === '5:50')!.label;
     expect(at).toBe('Popovic at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/); // play's timeline keeps the true label
-    expect(p.stations).toEqual({ '5:10': "Popovic's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 4:40 carries the condition
+    expect(p.stations).toEqual({ '5:50': "Popovic's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 5:20 carries the condition
     for (const k of Object.keys(p.stations ?? {})) expect(p.clock, k).toContain(k);
-    expect(t.briefing.timeline.find((x) => x.at === '4:40')!.label).toMatch(/turn the driver/);
+    expect(t.briefing.timeline.find((x) => x.at === '5:20')!.label).toMatch(/turn the driver/);
   });
-  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 5:10, turned he waits until 7:30', () => {
-    const c = t.briefing.clock.line; expect(c).toMatch(/5:10/); expect(c).toMatch(/7:30/); expect(c).toMatch(/turn/);
-    expect(t.briefing.card.at(-1)).toMatch(/5:10.*7:30.*turn/);
+  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 5:50, turned he waits until 8:10', () => {
+    const c = t.briefing.clock.line; expect(c).toMatch(/5:50/); expect(c).toMatch(/8:10/); expect(c).toMatch(/turn/);
+    expect(t.briefing.card.at(-1)).toMatch(/5:50.*8:10.*turn/);
     const at = (m: string) => t.briefing.timeline.find((x) => x.at === m)!.label;
-    expect(at('5:10')).toMatch(/[Uu]nless turned/); expect(at('7:30')).toMatch(/turned driver/);
-    expect(JSON.stringify(t.briefing)).not.toMatch(/At 7:30 Popovic's driver|the driver drives Popovic away/);
+    expect(at('5:50')).toMatch(/[Uu]nless turned/); expect(at('8:10')).toMatch(/turned driver/);
+    expect(JSON.stringify(t.briefing)).not.toMatch(/At 8:10 Popovic's driver|the driver drives Popovic away/);
   });
   test('the hints name the two known approaches', () => {
     expect(t.briefing.hints['front-door']).toMatch(/Inez/);

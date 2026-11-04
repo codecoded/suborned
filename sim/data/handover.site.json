@@ -3268,11 +3268,11 @@
  },
  "schedule": {
   "rivalsArrive": 190,
-  "chime": 270,
-  "driverLast": 280,
-  "valeExits": 290,
-  "valeAtCar": 310,
-  "over": 450,
+  "chime": 310,
+  "driverLast": 320,
+  "valeExits": 330,
+  "valeAtCar": 350,
+  "over": 490,
   "guardMark": 60,
   "blockMoveS": 8,
   "blockHoldS": 150,
@@ -3319,12 +3319,12 @@
   },
   "from": "out/people/harbour-district.people.json",
   "sha256": "c91285a123c8ba02b0176dd8b38ee4faaf98b08ef967e7edda71ad9b74bdd969",
-  "startsAt": "17:25:30",
+  "startsAt": "17:24:50",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "8a6ef4155865d620ccb9a29e44ac9a922936c8e67247dca77b8c749d123358c0",
+  "sha256": "d1efd1205b4f5ce00846bb24c87b35f5d8afb5363bde5c26fb8c94b0263cb643",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight; sha256 of the points, blockers and refuge as copied here",
   "points": [
    {
@@ -3338,7 +3338,7 @@
     "q": 630,
     "kind": "car",
     "of": "car/getaway",
-    "present": [0,450]
+    "present": [0,490]
    },
    {
     "id": "cv-002",
@@ -3351,7 +3351,7 @@
     "q": 640,
     "kind": "car",
     "of": "car/getaway",
-    "present": [0,450]
+    "present": [0,490]
    },
    {
     "id": "cv-003",
@@ -3364,7 +3364,7 @@
     "q": 663,
     "kind": "car",
     "of": "car/getaway",
-    "present": [0,450]
+    "present": [0,490]
    },
    {
     "id": "cv-004",
@@ -3377,7 +3377,7 @@
     "q": 640,
     "kind": "car",
     "of": "car/getaway",
-    "present": [0,450]
+    "present": [0,490]
    },
    {
     "id": "cv-005",
@@ -3390,7 +3390,7 @@
     "q": 663,
     "kind": "car",
     "of": "car/getaway",
-    "present": [0,450]
+    "present": [0,490]
    },
    {
     "id": "cv-006",
@@ -3403,7 +3403,7 @@
     "q": 630,
     "kind": "car",
     "of": "car/getaway",
-    "present": [0,450]
+    "present": [0,490]
    },
    {
     "id": "cv-007",
@@ -3416,7 +3416,7 @@
     "q": 832,
     "kind": "car",
     "of": "car/official",
-    "present": [0,310]
+    "present": [0,350]
    },
    {
     "id": "cv-008",
@@ -3429,7 +3429,7 @@
     "q": 630,
     "kind": "car",
     "of": "car/official",
-    "present": [0,310]
+    "present": [0,350]
    },
    {
     "id": "cv-009",
@@ -3442,7 +3442,7 @@
     "q": 630,
     "kind": "car",
     "of": "car/official",
-    "present": [0,310]
+    "present": [0,350]
    },
    {
     "id": "cv-010",
@@ -3455,7 +3455,7 @@
     "q": 810,
     "kind": "car",
     "of": "car/official",
-    "present": [0,310]
+    "present": [0,350]
    },
    {
     "id": "cv-011",
@@ -3468,7 +3468,7 @@
     "q": 877,
     "kind": "car",
     "of": "car/rivals",
-    "present": [190,450]
+    "present": [190,490]
    },
    {
     "id": "cv-012",
@@ -3481,7 +3481,7 @@
     "q": 562,
     "kind": "car",
     "of": "car/rivals",
-    "present": [190,450]
+    "present": [190,490]
    },
    {
     "id": "cv-013",
@@ -3494,7 +3494,7 @@
     "q": 562,
     "kind": "car",
     "of": "car/rivals",
-    "present": [190,450]
+    "present": [190,490]
    },
    {
     "id": "cv-014",
@@ -3507,7 +3507,7 @@
     "q": 877,
     "kind": "car",
     "of": "car/rivals",
-    "present": [190,450]
+    "present": [190,490]
    },
    {
     "id": "cv-015",

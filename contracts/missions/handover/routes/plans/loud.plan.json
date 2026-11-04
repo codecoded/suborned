@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "The loud reference, board and go (GDD v0.26.0 §07 loud; Keel N10; brief 018 §5): loop the camera and reroute the patrol, shoot the guard just after his 2:30 mark (gunfire: Alert 2, the shots traced), enter (68 s at Alert 2), and take Vale out by the service door. The gunfire draws the rival car to the Office front (16 s), four of them on foot; when the final fight opens (police from the north street, the seal clock running) the Scout, Fixer and Tech down the response unit (security-2 then security-1, the blocker), then the Scout and Fixer flank across the square and drop rival-1, rival-2 and rival-3 in turn (traced: they are not the final fight's hostiles), until the crew breaks (§06: more than half down; Motive M059-B5, S11's shape: break the drawn crew before Vale is walked into it). Only then does the Enforcer walk Vale to the car; the three board after him and the car leaves with officers 1 and 2 still at their stands: one of them sees it go (+1 T, the car hunted).",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "tech",

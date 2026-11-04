@@ -3,13 +3,13 @@
  "mission": "handover",
  "note": "Route B, board and go (brief 018 §5), the route's primary: as route-b to the Take (the driver paid, the false tip, the Reroute at 5:00, the car Driven round behind Vale's, the Enforcer at the square until 5:50); then the Enforcer carries Vale 3.5 m into the car while the Fixer and the Scout (0.5 s after him) lock rival-1 then rival-2, and once the blocker is down the two board and the car leaves with the whole cell.",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "enforcer",
    "do": "move",
    "to": "d:Service lane",
-   "at": "4:50",
+   "at": "5:30",
    "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane"
   },
   {
@@ -57,7 +57,7 @@
    "do": "turn",
    "target": "driver",
    "approach": "pay",
-   "by": "4:40",
+   "by": "5:20",
    "label": "turned",
    "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
   },
@@ -92,7 +92,7 @@
    "after": [
     "tip"
    ],
-   "at": "4:55",
+   "at": "5:35",
    "label": "scout-yard"
   },
   {
@@ -105,7 +105,7 @@
    "after": [
     "turned"
    ],
-   "at": "4:55",
+   "at": "5:35",
    "label": "fixer-yard"
   },
   {
@@ -119,7 +119,7 @@
    "op": "tech",
    "do": "reroute",
    "target": "patrol",
-   "at": "4:00",
+   "at": "4:40",
    "label": "rr",
    "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
   },
@@ -151,7 +151,7 @@
    "do": "take",
    "when": "car.parks",
    "label": "take",
-   "at": "5:45",
+   "at": "6:25",
    "why": "Vale reaches the car in the service lane at 6:10"
   },
   {

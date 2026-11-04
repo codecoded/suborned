@@ -847,8 +847,8 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Is(g.Walkers.Count > 100, $"the civic block's people are in ({g.Walkers.Count})");
                 bool atStops = true; int walking = 0, onStreet0 = 0;
-                Walker? mover = null;
-                for (int t = 0; t <= T(360); t += T(30)) // brief 059: an unturned driver drives Vale away at 6:13, and the run ends there
+                Walker? mover = null; var movers = new List<Walker>();
+                for (int t = 0; t <= T(360); t += T(30)) // brief 059: an unturned driver drives Vale away (5:53 since brief 096), and the run ends there
                 {
                     r.To(t);
                     foreach (var w in g.Walkers)
@@ -858,7 +858,7 @@ namespace Suborned.Sim
                         bool inStop = false;
                         for (int k = 0; k < w.Place.Length; k++)
                             if (t >= w.From[k] && t < w.To[k]) { inStop = true; if (w.Out[k] ? at != g.People2!.Places[w.Place[k]] : at != null) atStops = false; }
-                        if (!inStop && at.HasValue) { walking++; mover ??= w; }
+                        if (!inStop && at.HasValue) { walking++; mover ??= w; if (!movers.Contains(w)) movers.Add(w); }
                         if (t == 0 && at.HasValue) onStreet0++;
                     }
                 }
@@ -870,9 +870,8 @@ namespace Suborned.Sim
                 r.Is(walking > 0 && mover != null, $"someone walks between stops during the mission ({mover?.P.Id})");
                 if (mover != null)
                 {
-                    int k = 0; while (k + 1 < mover.Place.Length && !(mover.To[k] <= g.Tick && g.Tick < mover.From[k + 1])) k++;
-                    var seen = new List<Pt>();
-                    for (int t = 0; t <= T(480); t += Game.Hz) { var p = g.CrowdPos(mover, t); if (p.HasValue && !seen.Contains(p.Value)) seen.Add(p.Value); }
+                    var seen = new List<Pt>(); // brief 096: the walker caught on the longest walk, not the first caught (the first may be on a 5 s leg once the shift moves)
+                    foreach (var m in movers) { var s = new List<Pt>(); for (int t = 0; t <= T(480); t += Game.Hz) { var p = g.CrowdPos(m, t); if (p.HasValue && !s.Contains(p.Value)) s.Add(p.Value); } if (s.Count > seen.Count) { seen = s; mover = m; } }
                     r.Is(seen.Count > 5, $"{mover.P.Name} moves in live time ({seen.Count} positions)");
                 }
             });

@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "§06 rivals reach Vale at an unguarded car (engine 0.35.2, Motive rulings-0.35.1 §2: only a drawn operative guards a held car), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell never draws (one input, engine 0.35.1, brief 039: the cell that will not fight is the cell that never presses F). The Enforcer walks Vale in, boards him and steps out again to stand by the car. Undrawn, nobody of the cell guards the held car, so the rivals leave cover and walk to it (rivals.for-car, 2:54.7), and the first there takes Vale with the Enforcer standing beside it: rivals-reach-vale at 3:09.7 (Keel, 0.35.2). Renamed from fight-safe-cell-down (Aster, 2026-10-27): the cell-down fail is covered by Keel's K3-CELL-DOWN scenario, not a route (Sky: \"Sure\").",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "tech",

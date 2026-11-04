@@ -530,7 +530,7 @@ namespace Suborned.Sim
         {
             if (People2 == null || !People2.Stops.TryGetValue(p.Id, out var s)) return null;
             if (!Start.OldClock) return s;
-            if (oldStops.TryGetValue(p.Id, out var o)) return o; // test only: a minute later, as the walkers are (SeedStart)
+            if (oldStops.TryGetValue(p.Id, out var o)) return o; // test only: OldClockS later, as the walkers are (SeedStart)
             o = new List<(string, int, int, bool)>(s.Count); foreach (var (pl, f, t, ou) in s) o.Add((pl, f + T(OldClockS), t + T(OldClockS), ou)); oldStops[p.Id] = o; return o;
         }
         readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> oldStops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);

@@ -29,5 +29,5 @@
   {"tick":2171,"op":"enforcer","do":"board","target":"car"},
   {"tick":2211,"op":"cell","do":"go"}
  ],
- "until": 4500
+ "until": 4900
 }

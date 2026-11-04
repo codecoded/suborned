@@ -18,5 +18,5 @@
   {"tick":1560,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
   {"tick":1579,"op":"enforcer","do":"enter"}
  ],
- "until": 4500
+ "until": 4900
 }

@@ -3,7 +3,7 @@
  "mission": "handover",
  "note": "Fight it out, the loud twin (brief 018 §5): as loud to the Enforcer's Board; then he steps out again (Vale stays in) and the whole cell, his carbine with the three sidearms, downs the final fight's two officers on the café wall (the police never break; three sidearms alone lose to two trained officers on this engine), and only then do they board: the seal clock runs, so anyone left standing would be captured. Nobody is up to see the car go, so it costs 1 T less than loud.",
  "start": {},
- "until": 4500,
+ "until": 4900,
  "steps": [
   {
    "op": "tech",

@@ -199,7 +199,7 @@
    "At shift change he carries it out of the Civic Records Office.",
    "We take him alive, get him into our getaway car and drive off.",
    "Quietly, if we can. Others want him too, and this city notices noise.",
-   "We have $100,000, four people, and until 5:10, or 7:30 if we turn his driver."
+   "We have $100,000, four people, and until 5:50, or 8:10 if we turn his driver."
   ],
   "objective": "Take Councillor Popovic alive to the getaway car.",
   "win": "Popovic in the getaway car when it leaves.",
@@ -220,8 +220,8 @@
    "withdraw": "We pulled out. The attempt is over."
   },
   "clock": {
-   "close": "7:30",
-   "line": "Handover chime 4:30. Popovic's driver takes him away at 5:10, or 7:30 if turned."
+   "close": "8:10",
+   "line": "Handover chime 5:10. Popovic's driver takes him away at 5:50, or 8:10 if turned."
   },
   "purse": {
    "usd": 100000,
@@ -231,7 +231,7 @@
    "front-door": "Front door: Inez and the door guard are close.",
    "pickup": "Pickup: Popovic rides from the official bay; his driver is short of cash."
   },
-  "tracker": "Take Popovic alive to the getaway car · closes 7:30",
+  "tracker": "Take Popovic alive to the getaway car · closes 8:10",
   "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
   "timeline": [
    {
@@ -253,31 +253,31 @@
     "known": false
    },
    {
-    "at": "4:30",
+    "at": "5:10",
     "label": "Handover chime",
     "short": "Chime",
     "known": true
    },
    {
-    "at": "4:40",
+    "at": "5:20",
     "label": "Last chance to turn the driver",
     "short": "Last chance",
     "known": true
    },
    {
-    "at": "4:50",
+    "at": "5:30",
     "label": "Popovic leaves the Office",
     "short": "Popovic out",
     "known": true
    },
    {
-    "at": "5:10",
+    "at": "5:50",
     "label": "Popovic at his car; unless turned, the driver leaves",
     "short": "Popovic at car",
     "known": true
    },
    {
-    "at": "7:30",
+    "at": "8:10",
     "label": "Close: a turned driver drives Popovic away; if we hold Popovic, we're closed in",
     "short": "Close",
     "known": true
@@ -290,16 +290,16 @@
    "enforcer": "Enforcer: goes in, takes Popovic, takes people down. Only he carries Popovic."
   },
   "page": {
-   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 5:10 station is the short form, since the 4:40 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
-   "target": "Comes out at 4:50 and leaves by car.",
+   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 5:50 station is the short form, since the 5:20 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
+   "target": "Comes out at 5:30 and leaves by car.",
    "ways": {
-    "front-door": {"when": "Before 4:50", "line": "Turn her to call him off and loop his camera."},
-    "pickup": {"when": "From 5:10", "line": "Turn him before 4:40 and he brings Popovic to the service bay."}
+    "front-door": {"when": "Before 5:30", "line": "Turn her to call him off and loop his camera."},
+    "pickup": {"when": "From 5:50", "line": "Turn him before 5:20 and he brings Popovic to the service bay."}
    },
    "ending": "Both ways end here: Popovic in the getaway car as it leaves.",
    "captions": {"service-bay": "Service bay"},
-   "clock": ["2:35", "4:30", "4:40", "4:50", "5:10"],
-   "stations": {"5:10": "Popovic's car leaves"},
+   "clock": ["2:35", "5:10", "5:20", "5:30", "5:50"],
+   "stations": {"5:50": "Popovic's car leaves"},
    "cell": {
     "scout": "Listens to Inez and the driver. Gives the rivals a false tip.",
     "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
@@ -750,10 +750,10 @@
   "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
   "taken": {"kind":"reply","trigger":"Vale is brought out (the Enforcer takes him at the car, or comes out of the Office with him)","speakers":["councillor"],"log":["take.done","enter.out"],"verbs":["enter","take"]},
   "start": {"kind":"world","trigger":"the mission starts, cell at the getaway car","speakers":["scout","fixer","tech","enforcer"],"log":["start"]},
-  "chime": {"kind":"world","trigger":"the 4:30 handover chime","speakers":["scout","fixer"],"clock":"4:30"},
-  "last-turn": {"kind":"world","trigger":"the 4:40 last chance to turn the driver","speakers":["scout","fixer"],"clock":"4:40"},
-  "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"4:50"},
-  "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"5:10"},
+  "chime": {"kind":"world","trigger":"the 5:10 handover chime","speakers":["scout","fixer"],"clock":"5:10"},
+  "last-turn": {"kind":"world","trigger":"the 5:20 last chance to turn the driver","speakers":["scout","fixer"],"clock":"5:20"},
+  "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:30"},
+  "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"5:50"},
   "rivals-arrive": {"kind":"world","trigger":"the rival car parks near the pickup (or comes in on gunfire)","speakers":["rivals","scout"],"log":["rivals.arrive"],"clock":"3:10"},
   "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35","note":"brief 067 (Aster, from Sky on 0.2.122: they should be coming in from somewhere when the chime comes): the car always turns in out of sight, so the beat and the Scout's line show wherever the cell stands (the card's sight is `always`, its `at` still points at the car), and the Scout speaks of what he hears, never of what he sees. The 2:46 drop and the 3:10 park stay in sight."},
   "rivals-drop": {"kind":"world","trigger":"the rival car drops three by the cell's car","speakers":["rivals","scout"],"log":["rivals.drop"],"clock":"2:46"},
@@ -1715,7 +1715,7 @@
    "cityBeats": 3
   },
   "objective": {
-   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (7:30) is on the clock pill. It never explains and it is not a hint.",
+   "rule": "The Next Objective is one imperative with the nouns that have a marker in [brackets], coloured as their markers. It shows for `showSeconds` when the clock starts, on each change (take, bring, carry) and when the pill's next mark passes (the chime, Vale's exit), then fades; the close (8:10) is on the clock pill. It never explains and it is not a hint.",
    "take": "Take [Popovic] alive.",
    "bring": "Bring [Popovic] out.",
    "carry": "Get [Popovic] to the [car].",
@@ -2882,22 +2882,22 @@
          "log": "rivals.coming"
        },
        {
-         "at": "4:30",
+         "at": "5:10",
          "icon": "nextevent",
          "log": ""
        },
        {
-         "at": "4:40",
+         "at": "5:20",
          "icon": "turn_person",
          "log": ""
        },
        {
-         "at": "4:50",
+         "at": "5:30",
          "icon": "s_moving",
          "log": "vale.exits"
        },
        {
-         "at": "5:10",
+         "at": "5:50",
          "icon": "car",
          "log": "vale.at-car"
        }
