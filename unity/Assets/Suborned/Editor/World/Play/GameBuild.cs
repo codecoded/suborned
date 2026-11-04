@@ -22,8 +22,20 @@ namespace Suborned.World.Play
     public static class GameBuild
     {
         public const string AppName = "The Suborned";
-        public static string Dir => scratchDir ?? Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "play");
-        public static string AppPath => Path.Combine(Dir, AppName + ".app");
+        public static string Dir => scratchDir ?? platformDir ?? Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "play");
+        public static string AppPath => linuxPath ?? Path.Combine(Dir, AppName + ".app");
+        static string platformDir, linuxPath;
+        static BuildTarget playerTarget = BuildTarget.StandaloneOSX;
+
+        /// <summary>Linux x86-64 Mono player, with the same scenes, content and build counter as macOS. The CLI's -buildOutput is the executable.</summary>
+        public static void CliLinux()
+        {
+            playerTarget = BuildTarget.StandaloneLinux64;
+            var args = Environment.GetCommandLineArgs(); int i = Array.IndexOf(args, "-buildOutput");
+            linuxPath = Path.GetFullPath(i >= 0 && i + 1 < args.Length ? args[i + 1] : Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "linux", "TheSuborned.x86_64"));
+            platformDir = Path.GetDirectoryName(linuxPath);
+            Cli();
+        }
         /// <summary>A scratch build's folder (CliScratch), else null: the game build's own out/build/play.</summary>
         static string scratchDir;
 
@@ -81,6 +93,7 @@ namespace Suborned.World.Play
 
         public static bool Build()
         {
+            if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, playerTarget)) throw new InvalidOperationException($"Game: install Unity's {playerTarget} build support first");
             Debug.Log(Suborned.World.UI.KitImport.LivePortraits()); // brief 033: Forma's live portraits as they are now (a re-cut rides with the next build)
             var b = SimBundle.Load(); SimScenarios.CheckDll(b); // the DLL Unity builds is the bundle's
             // brief 029: the fight range is rebuilt from Keel's range sites every build (seconds), so a new layout or piece never ships stale
@@ -114,7 +127,7 @@ namespace Suborned.World.Play
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
                     scenes = new[] { FrontEndBuild.ScenePath, OldTownPlay.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
-                    target = BuildTarget.StandaloneOSX,
+                    target = playerTarget,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
                     options = BuildOptions.None, // release
@@ -126,7 +139,7 @@ namespace Suborned.World.Play
             AssetDatabase.SaveAssets();
             var s = report.summary; bool ok = s.result == BuildResult.Succeeded;
             OldTownPlay.WriteContents(report, Dir);
-            string post = ok ? Finish(ver) : "";
+            string post = ok ? playerTarget == BuildTarget.StandaloneLinux64 ? "Linux x86-64 Mono player; native Linux playtest pending" : Finish(ver) : "";
             if (ok && scratchDir == null) ver.Commit(); // only a build that succeeded takes the number (a scratch build never does)
             var line = $"Game: build {ver.Full} ({ver.Recording}, sim {BuildStamp.Sim}, {ver.Sha}{(ver.Dirty ? "+" : "")}) {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; engine {b.Source}, DLL {b.DllSha[..12]}; {post}";
             File.WriteAllText(Path.Combine(Dir, "build.json"),
