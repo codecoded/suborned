@@ -74,19 +74,7 @@ namespace Suborned.Sim
                 r.Is(g.Gunfire == 0, "the block's car is fought untraced in the safe fight: no gunfire on the district");
             });
 
-            Add("096-RIV-20", "096", "Motive RIV-20: Vale aboard at the service drive early (the posted three gone before the mission); the lookout and the wheelman block the drive's mouth and the wheelman steps out at the spring; the cell shoots him down outside his car: the car stays and boxes ours when the fight is over; only blowing it up frees the way.", r =>
-            {
-                var g = r.G; YardEarly(r); UntilBlocked(r);
-                r.Until(() => g.Crew[4].Fight || g.Over, T(60));
-                foreach (var op in new[] { Scout, Fixer, Tech }) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "fire", Target = "rival-5" });
-                r.Until(() => g.Crew[4].Gun.Down || g.Over, T(90));
-                if (!r.Is(g.Crew[4].Gun.Down, Iv($"the wheelman down outside at {Report.Clock(g.Tick)} ({g.Result} {g.FailCode})"))) return;
-                r.Until(() => g.FightOverTick < int.MaxValue / 4 || g.Over, T(1));
-                r.Is(g.GetawayBoxers().Contains("car:rivals"), "the car still boxes ours");
-                r.FightItOut(150, Scout, Fixer, Tech);
-                r.Is(g.CarOf("car:rivals")?.Blown == true && g.GetawayBoxers().Count == 0, Iv($"the way frees only by the blast ({g.Result} {g.FailCode}, blown {g.CarOf("car:rivals")?.Blown})"));
-                r.Is(!g.Chain.Contains("rivals-block-off"), "nobody drove it off");
-            }, Gone(Turned(Inez), "rival-1", "rival-2", "rival-3")); // the posted three killed before the mission (test only): the lookout and the wheelman, so the scripted fight is the rule's, not a balance test
+            // 096-RIV-20 (the wheelman out at the spring, shot down outside his car) is retired by engine 0.42.0: he stays at the wheel (Motive F1); FIX-1, FIX-2 (ScenariosLend096b.cs) hold the rule now
 
             Add("096-RIV-21", "096", "Motive RIV-21: a shot at the Office front (the Enforcer shoots the entrance camera at 3:30): the crew on foot walk to the front; the car keeps its block, its wheelman aboard (the shot is over 30 m from it).", r =>
             {
@@ -173,7 +161,7 @@ namespace Suborned.Sim
                 if (!r.Is(r.Inputs != null, "inputs")) return;
                 var re = new Regex(@"\[\s*\[\s*8600\s*,\s*-1500\s*\]\s*,\s*\[\s*8600\s*,\s*1500\s*\]\s*\]"); var i = r.Inputs!;
                 string why;
-                try { var bad = Engine.FromTexts(i.Rulebook, i.PeopleRules, re.Replace(i.Site, "[[7000,-1500],[7100,-1500]]", 1), i.People, i.Provisional, i.Takedown, i.Rounds); Engine.New(bad); why = "loaded"; }
+                try { var bad = Engine.FromTexts(i.Rulebook, i.PeopleRules, re.Replace(i.Site, "[[7000,-1500],[7100,-1500]]", 1), i.People, i.Provisional, i.Takedown, i.Rounds); Engine.New(bad, new Start { OneCar = true }); why = "loaded"; } // engine 0.42.0: the one-car twin (with the lend a drive stand blocks at its mouth, L10)
                 catch (FormatException e) { why = e.Message; }
                 r.Is(why.Contains("rivals.block") || why.Contains("car.box"), Iv($"a stand with a 1 m exit lane is rejected: {why}"));
             });

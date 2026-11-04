@@ -6,7 +6,7 @@
 // is restated here, and checkRulebook() rejects any id that file does not know (GDD §01: unknown = reject).
 import { z } from 'zod';
 import type { PeopleRules } from '../people/people.rules.schema.ts';
-import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; // brief 096 (engine 0.40.0, 0.41.0)
+import { AttnParked, Camera, CarBox, CarKerb } from './rulebook.schema096.ts'; import { BlastStanding, RivalsBlock, RivalsLookout, RivalsTurn, Unclaimed } from './rulebook.schema096r.ts'; import { CarLend } from './rulebook.schema096l.ts'; // brief 096 (engine 0.40.0, 0.41.0, 0.42.0)
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const eventId = z.string().regex(/^[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/);
@@ -457,7 +457,7 @@ export const Rulebook = z.strictObject({
   rounds: ground({ linger: Ref, close: Ref, clear: Ref, part: Ref, holds: z.array(id).nonempty(), ends: z.array(z.enum(['alert-2', 'gunfire', 'body-found', 'final-fight'])).nonempty(), rule: text }).optional(),
   // brief 023 (engine 0.8.2): where a moving car may go, the site's drive grid (car.drive), and car.pace (Motive 2026-10-19); both optional only for runs pinned before them (rulebook.test.ts holds the live one to them)
   // tuning.md §10.7 (engine 0.16.0): cars are targets; optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
-  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(), box: CarBox.optional(), kerb: CarKerb.optional(), // brief 096
+  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(), box: CarBox.optional(), kerb: CarKerb.optional(), lend: CarLend.optional(), // brief 096
     // brief 059 K1–K4 (engine 0.32.0): Vale gets into his car at the official bay; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     pickup: z.strictObject({ valeIn: Ref, rule: text }).optional(),
     footprint: z.strictObject({ len: Ref, w: Ref, clear: Ref, reach: Ref, ahead: Ref.optional(), rule: text }).optional(), // engine 0.33.1 (optional only for runs pinned before it)

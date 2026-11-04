@@ -43,6 +43,7 @@ namespace Suborned.Sim
             if (!R.DriveCarOn || Range) return No("unknown-verb", "drive-car is the getaway car's Drive (rulebook cell.driveCar): unknown = reject");
             var id = o.Target.Length > 0 ? o.Target : o.To;
             var st = S.StandById(id); if (st == null) return No("unknown-stand", $"'{id}' is no stand for the getaway car (site getaway.stands)");
+            if (op.InLent) return No("drive-lent", $"{Cap(ValeName)}'s car is never driven round: Go takes it out"); // engine 0.42.0 (car.lend, L2)
             if (!op.InCar) return No("drive-no-driver", $"the {o.Op} is not in the getaway car: board it first");
             if (FightStart != INF) return No("drive-fight", "the final fight has started: it is fought where it started, and Go is the way out");
             foreach (var x in Ops) if (x.InCar && x.Busy != null) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");

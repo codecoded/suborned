@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route B, the pickup, quiet, on engine 0.41.0 (brief 096, Motive's rivals page; recomposed by Keel for Waymark). The Scout listens to the driver; the Tech loops the pickup camera from the cabinet and the Fixer pays the driver inside the loop ($70,000, off tape); the rival car boxes our car in at the square about 2:53; the Scout misleads the lookout about 4:30 (he watches the public door until about 6:45, past Popovic's car leaving at 5:53); the Tech reroutes the patrol at 4:40; the Enforcer takes Popovic from the back seat in the service bay and walks him round to Rocket Lane while the three blow the block's car; the crew springs, the cell fights it out, the Enforcer boards and Go.",
+ "note": "Route B, the pickup, quiet, on the lend (engine 0.42.0, brief 096: Motive's lend addendum, Sky 2026-11-05 'build the lend now'; recomposed by Keel for Waymark). The Scout listens to the driver; the Tech loops the pickup camera from the cabinet and the Fixer pays the driver inside the loop ($70,000, off tape); the rival car boxes our car in at the square about 2:53; the Scout misleads the lookout about 4:30; the Tech reroutes the patrol at 4:40; the Enforcer takes Popovic from the back seat in the service bay and the Take ends with him at the wheel of Popovic's car: Go on it (vale.out, the win). The three wait at our car; the crew springs as Popovic's car leaves; each takes one of the posted three; at the break the wheelman drives off; they board our car and Go before the police close in, 60 s after Popovic is out.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -138,90 +138,55 @@
    "op": "scout",
    "do": "move",
    "to": [
-    1250,
-    -5250
+    725,
+    -4625
    ],
    "after": [
     "misled"
    ],
    "at": "5:35",
-   "label": "scout-sq"
+   "label": "scout-sq",
+   "why": "to our car before the Take ends (engine 0.42.0, the lend): the crew springs on whoever stands within 20 m once Popovic is lent, or as his car leaves"
   },
   {
    "op": "fixer",
    "do": "move",
    "to": [
-    1500,
-    -5200
+    725,
+    -5025
    ],
    "after": [
     "turned"
    ],
    "at": "5:35",
-   "label": "fixer-sq"
+   "label": "fixer-sq",
+   "why": "to our car before the Take ends (engine 0.42.0, the lend): the crew springs on whoever stands within 20 m once Popovic is lent, or as his car leaves"
   },
   {
    "op": "tech",
    "do": "move",
    "to": [
-    1750,
-    -5250
+    675,
+    -4625
    ],
    "after": [
     "rr"
    ],
    "when": "patrol.rerouted",
    "run": true,
-   "label": "tech-sq"
+   "label": "tech-sq",
+   "why": "to our car before the Take ends (engine 0.42.0, the lend): the crew springs on whoever stands within 20 m once Popovic is lent, or as his car leaves"
   },
   {
-   "op": "enforcer",
-   "do": "move",
-   "to": [
-    2000,
-    -6500
-   ],
+   "op": "cell",
+   "do": "go",
+   "target": "car:official",
    "after": [
     "take"
    ],
-   "when": "take.done",
-   "label": "walk",
-   "why": "Popovic walked out of the yard round to Rocket Lane, 20 m off our car (the rival car stands across its way out)"
-  },
-  {
-   "op": "scout",
-   "do": "fire",
-   "target": "car:rivals",
-   "force": true,
-   "after": [
-    "scout-sq",
-    "take"
-   ],
-   "when": "take.done",
-   "label": "blow-s",
-   "why": "the three blow the block's car while he walks (in the safe fight its shots are untraced; the first springs the crew)"
-  },
-  {
-   "op": "fixer",
-   "do": "fire",
-   "target": "car:rivals",
-   "force": true,
-   "after": [
-    "fixer-sq",
-    "blow-s"
-   ],
-   "label": "blow-f"
-  },
-  {
-   "op": "tech",
-   "do": "fire",
-   "target": "car:rivals",
-   "force": true,
-   "after": [
-    "tech-sq",
-    "blow-s"
-   ],
-   "label": "blow-t"
+   "when": "lend.lent",
+   "label": "out",
+   "why": "engine 0.42.0 (the lend): the Take ends with the Enforcer at the wheel of Popovic's own car; its Go is the win (vale.out), down the drive and out along Apron Road"
   },
   {
    "op": "scout",
@@ -229,10 +194,11 @@
    "target": "rival-1",
    "label": "s1",
    "after": [
-    "blow-s"
+    "scout-sq"
    ],
-   "when": "car.burning",
-   "every": 0.5
+   "when": "take.done",
+   "every": 0.5,
+   "why": "the rearguard at our car: one of the posted three each (4 on foot break at 3 down; the wheelman then drives off at once)"
   },
   {
    "op": "fixer",
@@ -240,54 +206,96 @@
    "target": "rival-2",
    "label": "f2",
    "after": [
-    "blow-f"
+    "fixer-sq"
    ],
-   "when": "car.burning",
-   "every": 0.5
+   "when": "take.done",
+   "every": 0.5,
+   "why": "the rearguard at our car: one of the posted three each (4 on foot break at 3 down; the wheelman then drives off at once)"
   },
   {
    "op": "tech",
    "do": "fire",
-   "target": "rival-3",
+   "target": "rival-1",
    "label": "t3",
    "after": [
-    "blow-t"
+    "tech-sq"
    ],
-   "when": "car.burning",
-   "every": 0.5
+   "when": "take.done",
+   "every": 0.5,
+   "why": "focus fire (Motive M059-B7): the Tech with the Scout on rival-1; weapons free takes the next as each falls"
   },
   {
-   "op": "enforcer",
+   "op": "scout",
    "do": "move",
    "to": "d:Getaway bay",
    "after": [
-    "walk"
+    "out"
    ],
    "when": "fight.over",
-   "label": "out"
+   "label": "s-car",
+   "why": "the crew broken (its wheelman drives off) or the block blown: to our car"
   },
   {
-   "op": "enforcer",
-   "do": "board",
-   "target": "car",
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
    "after": [
     "out"
    ],
-   "label": "in",
-   "why": "Popovic into the car first (Board, 4 s carrying)"
+   "when": "fight.over",
+   "label": "f-car",
+   "why": "the crew broken (its wheelman drives off) or the block blown: to our car"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "out"
+   ],
+   "when": "fight.over",
+   "label": "t-car",
+   "why": "the crew broken (its wheelman drives off) or the block blown: to our car"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "s-car"
+   ],
+   "label": "s-in"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "f-car"
+   ],
+   "label": "f-in"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "t-car"
+   ],
+   "label": "t-in"
   },
   {
    "op": "cell",
    "do": "go",
    "after": [
-    "in"
+    "s-in",
+    "f-in",
+    "t-in"
    ],
    "unless": [
-    "captured",
-    "withdraw.car"
+    "captured"
    ],
-   "why": "the crew is down or broken and the block's car is gone: Go",
-   "when": "fight.over"
+   "why": "all three in: Go before the police close in, 60 s after Popovic is out"
   }
  ]
 }

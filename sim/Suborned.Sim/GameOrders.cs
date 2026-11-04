@@ -61,7 +61,7 @@ namespace Suborned.Sim
         {
             if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
             if (Range && Array.IndexOf(RangeVerbs, o.Do) < 0) return No("unknown-verb", $"verb '{o.Do}' is not the fight range's (brief 029: {string.Join(", ", RangeVerbs)})");
-            if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
+            if (o.Do == "end" || (o.Do == "withdraw" && ValeOutTick != INF)) return EndOrder(); if (o.Do == "withdraw") { RecordsAtEnd(); Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
@@ -70,7 +70,7 @@ namespace Suborned.Sim
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");
             if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
-            if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
+            if (op.LeftMap) return No("agent-gone", $"the {o.Op} has left in a car"); if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
             if (o.Do == "trigger") return Trigger(op, o); // tuning.md §11 (engine 0.17.0): before the busy check, so a release is always taken
             if (o.Do == "drive") return Drive(op, o); // brief 025 (EXPERIMENTAL): before the busy check, since moving a busy agent is the step's to judge (cell.drive.onBusy)
             if (o.Do == "drive-car") return DriveCar(op, o); // brief 059 K6: before the busy and in-car checks (it has its own: drive-busy, drive-no-driver)
@@ -324,7 +324,7 @@ namespace Suborned.Sim
                         Note("enter.out", serviceHeld ? $"The service door is held: {ValeName} and the Enforcer come out at the public door." : $"{Cap(ValeName)} and the Enforcer come out at the service lane."); StartFight(); break;
                     }
                 case "takedown": LandTakedown(op, o); break;
-                case "board": LandBoard(op); break;
+                case "board": if (LentTarget(o.Target)) LandBoardLent(op); else LandBoard(op); break;
                 case "move": LandStepOut(op, o); break; // only a boarded operative's move is an action: the step out
                 case "drop": case "stash": case "restrain": LandBodyOrder(op, o); break;
                 case "carry" when !IsOpId(o.Target): LandBodyOrder(op, o); break;
@@ -336,7 +336,7 @@ namespace Suborned.Sim
                         Note("carry.lifted", $"The {Sim.Op.Name(op.Id)} lifts the {o.Target}. Walk them to the car.");
                         break;
                     }
-                case "take":
+                case "take": if (LendOn && TakeInCar) { Lend(op); StartFight(); break; } // engine 0.42.0 (car.lend, Motive L1): the in-car Take ends with the Enforcer at the wheel
                     Vale = ValeAt.WithEnforcer; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; // brief 018: walking Vale, he doesn't fire
                     if (!Driver.Turned) AddTrail(R.TakeTrailUnturned, "take:unturned-driver");
                     Chain.Add("vale-taken-outside"); Note("take.done", $"{Cap(ValeName)} is with the Enforcer. Get to the car."); StartFight(); break;

@@ -398,6 +398,7 @@
   "ring-restrain": {"label":"Tie","by":["scout","fixer","tech","enforcer"],"engine":{"do":"restrain"},"does":"The ring's word for this verb."},
   "ring-drop": {"label":"Drop","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drop"},"does":"The ring's word for this verb."},
   "ring-more": {"label":"More","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"The ring's last wedge: the full panel."},
+  "end": {"label": "End", "by": ["fixer"], "engine": {"do": "end"}, "does": "Popovic is out: end it now. Anyone not in a car that left is taken."},
   "withdraw": {"label":"Withdraw","by":["fixer"],"engine":{"do":"withdraw"},"does":"Call off the attempt. The cell gets away to try again."},
   "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Back to map","does":"Back to the map. Whatever they are doing carries on."}}},
   "trigger": {"label":"Trigger","by":["scout","fixer","tech","enforcer"],"engine":{"do":"trigger"},"does":"Fire by hand from the agent you drive: hold to keep firing, let go to stop."},
@@ -521,6 +522,13 @@
   "car-no-driver": {"line":"Nobody aboard can drive. Board someone who isn't down, then Go.","short":"Nobody can drive","verbs":["go"]},
   "tip-retired": {"line":"The false tip is retired. Mislead one of the rival crew on foot.","short":"Tip retired","verbs":["mislead"]},
   "crew-no-need": {"line":"The rival crew have no need to meet. Only Pay works on them.","short":"Pay only","verbs":["pay"]},
+  "stand-at-car": {"line": "Too far from Popovic's car. Walk within {m} m of it, then Board.", "short": "Too far · {m} m", "verbs": ["board"]},
+  "board-lent-full": {"line": "Only one of us drives Popovic's car, and someone is at the wheel.", "short": "At the wheel", "verbs": ["board"]},
+  "drive-lent": {"line": "Popovic's car isn't driven round. Go takes it out.", "short": "Go only", "verbs": ["drive-car"]},
+  "car-left": {"line": "That car has already gone.", "short": "Gone", "verbs": ["board", "go"]},
+  "car-disabled": {"line": "Popovic's car is wrecked. Walk him to ours.", "short": "Wrecked", "verbs": ["board", "go"]},
+  "not-out": {"line": "End comes once Popovic is out. Withdraw calls it off.", "short": "Not yet", "verbs": ["end"]},
+  "agent-gone": {"line": "They've left in a car.", "short": "Gone", "verbs": ["*"]},
   "crew-gone": {"line":"He took the money and is gone.","short":"Gone","verbs":["listen","pay","mislead","watch"]},
   "crew-fighting": {"line":"He is in the fight now. No talking.","short":"Fighting","verbs":["listen","pay","mislead","watch"]},
   "crew-walking": {"line":"He is on the move. Speak to him where he stands.","short":"On the move","verbs":["listen","pay","mislead","watch"]},
@@ -808,7 +816,7 @@
   }
  },
  "events": {
-  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","drive-car","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw","mark","talk-down","steam","covering-fire"]},
+  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","drive-car","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw","end","mark","talk-down","steam","covering-fire"]},
   "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","disable","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
   "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, camera.cut, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","camera.cut","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","disable","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
   "reply": {"kind":"reply","trigger":"a turn order lands on a person: their answer, by the rulebook outcome (suspicious when the approach is reported)","speakers":["waitress","driver","guard"],"verbs":["ask","pay","help","pressure"],"note":"one answer per turn order; the contact's temperament picks the voice"},
@@ -1046,6 +1054,10 @@
   "withdraw": [
    "ack",
    "withdraw"
+  ],
+  "end": [
+   "ack",
+   "withdraw"
   ]
  },
  "silentStates": {
@@ -1069,6 +1081,14 @@
   "car.parked": "engine 0.32.0 (brief 059): silent: the getaway car has stopped. The street shows it, the Drive's price line gave the time and the riders leave \"Driving\"; a line would only repeat that",
   "board.missed": "engine 0.32.0 (brief 059): card only: the car drove off while an agent walked up to board it",
   "rivals.coming": "engine 0.32.0 (brief 059): event rivals-coming and a card (the beat \"Rival car coming.\"): the 2:35 entry, and the drawn and late entries with it",
+  "lend.lent": "engine 0.42.0 (brief 096, car.lend L1): PLACEHOLDER, a crucial card (Fable words, Glyph's list: Popovic in our hands): the driver gets out and walks off; Popovic's car is ours, the Enforcer at its wheel; its own Go",
+  "vale.out": "engine 0.42.0 (car.lend L5): PLACEHOLDER, a crucial card that stays (Fable): Popovic is out, the job is done; now get the others out before the police come",
+  "split.police": "engine 0.42.0 (car.lend L8): PLACEHOLDER, the police countdown's plate (Glyph; Game.SplitPoliceAt): anyone not in a car that has left by then is taken",
+  "lend.spring": "engine 0.42.0 (car.lend L7): PLACEHOLDER, card (Fable): the rival crew sees Popovic's car go and turns on ours",
+  "lent.seen": "engine 0.42.0 (car.lend L9): PLACEHOLDER, card (Fable): security saw Popovic's car leave: a lead, not our car",
+  "car.leaves-split": "engine 0.42.0 (car.lend): PLACEHOLDER, card (Fable): our car leaves with those aboard; the mission runs on while Popovic is still in the bay",
+  "car.lost": "engine 0.42.0 (car.lend L9): PLACEHOLDER, debrief line and card (Fable): our car left behind; the police will trace it (+1 T, hunted)",
+  "lend.goes-on": "engine 0.42.0 (car.lend L8): PLACEHOLDER, card (Fable): our car wrecked or the cell down, but Popovic is out (or his car can still go): the mission runs on",
   "rivals.block": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Glyph's crucial list: rivals for our car): the rival car stops across our way out; the ring's Boxed in names it",
   "rivals.lookout-posted": "engine 0.41.0 (brief 096; Aster's addition, Sky approved): PLACEHOLDER, a crucial card that stays until clicked (Latch wires, Fable words): the rival lookout takes his post watching Popovic's car; deal with him before 5:53",
   "rivals.lookout-follows": "engine 0.41.0 (brief 096): PLACEHOLDER, a crucial card that stays until clicked (Motive's seen table, 5:53): the lookout is going after Popovic's car",
@@ -1764,6 +1784,9 @@
     ],
     "withdraw": [
      "name"
+    ],
+    "end": [
+     "name"
     ]
    },
    "examples": {
@@ -2221,6 +2244,7 @@
   {"event":"ack","verb":"drive-car","speaker":"tech","lines":["Driving. Mind the corners.","Short hop. Hold on.","Rolling. Steady hands."]},
   {"event":"ack","verb":"drive-car","speaker":"enforcer","lines":["Driving.","Hold on.","Car's moving."]},
   {"event":"ack","verb":"withdraw","speaker":"fixer","lines":["Pull back. We'll try again.","Walk away. All of you."]},
+  {"event":"ack","verb":"end","speaker":"fixer","lines":["He's out. We're done here.","That's it. Wrap it up."]},
   {"event":"ack","verb":"fire","speaker":"scout","lines":["I see them. Firing.","They're in my sights. Firing."]},
   {"event":"ack","verb":"fire","speaker":"fixer","lines":["Forgive me.","If I must."]},
   {"event":"ack","verb":"fire","speaker":"tech","lines":["Steady. Firing.","Aiming. Nobody move."]},

@@ -271,7 +271,7 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         static List<Scenario>? all;
-        public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); foreach (var s in all) { if (Array.IndexOf(CountedShots, s.Id) >= 0) s.Start.Pre080 = true; if (Array.IndexOf(OldClockTicks, s.Id) >= 0) s.Start.OldClock = true; } } return all; } }
+        public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); foreach (var s in all) { if (Array.IndexOf(CountedShots, s.Id) >= 0) s.Start.Pre080 = true; if (Array.IndexOf(OldClockTicks, s.Id) >= 0) s.Start.OldClock = true; if (Array.IndexOf(OneCarIds, s.Id) >= 0) s.Start.OneCar = true; } } return all; } }
         /// <summary>Brief 080: the scenarios whose subject is another rule (a Trail price, a carry, a fail's cause, a rival walking to a car nobody guards) and that need a shot to
         /// land on a known tick: they play the counted shot (Start.Pre080), as the fights' mechanics keep Pre039. Rolled shots have their own: SEED-*. Keep this short: a new
         /// scenario reads its shots, or fires until down, rather than joining it.</summary>

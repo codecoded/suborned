@@ -32,7 +32,7 @@ namespace Suborned.Sim
         static bool Guards(Op o) => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0;
 
         /// <summary>K3 (a): no drawn operative stands outside the getaway car, held (a holder stands), with Vale in it, in the safe fight still on.</summary>
-        bool CarUnguarded() => !Range && FightBranch == "safe" && FightOverTick == INF && Vale == ValeAt.Car && !Array.Exists(Ops, Guards) && CarHeld();
+        bool CarUnguarded() => !Range && FightBranch == "safe" && FightOverTick == INF && Vale == ValeAt.Car && !Array.Exists(Ops, Guards) && (CarHeld() || GetawayBoxers().Contains("car:rivals")); // engine 0.42.0: the rival car's box holds it too (F1 keeps the wheelman at the wheel; the box is the gate)
 
         /// <summary>K3 (a), once a tick as it starts: the rivals go for the unguarded car, or back to cover once it is guarded again.</summary>
         void UnguardedStep()
@@ -96,6 +96,6 @@ namespace Suborned.Sim
         }
 
         /// <summary>K3 (c): someone standing is in the getaway car to drive it.</summary>
-        bool CarHasDriver() => Array.Exists(Ops, o => o.InCar && !o.Down);
+        bool CarHasDriver() => Array.Exists(Ops, o => o.InCar && !o.InLent && !o.Down); // engine 0.42.0: the cell's car (the lent car's is LentHasDriver)
     }
 }

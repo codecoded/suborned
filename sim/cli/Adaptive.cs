@@ -60,12 +60,15 @@ static class Adaptive
         ["rivals.misled"] = "the man walking off, and the card", ["rivals.paid"] = "the man walking off, and the card", ["rivals.refuses"] = "the card", ["rivals.listen.heard"] = "the Listen's card (his temperament on his ring)",
         ["rivals.drives-off"] = "the rival car driving off", ["car.unboxed"] = "the ring's Boxed in clears", ["car.disabled"] = "the car's pips", ["car.burning"] = "the fire on the car", ["car.exploded"] = "the blast",
         ["security.gang"] = "the card: no seal clock", ["rivals.misled-back"] = "the man walking back", ["car.parked"] = "our car standing at its new stand", ["take.done"] = "the Take's card",
+        // engine 0.42.0 (car.lend): the lend's cards, the countdown, the security that sees a car go, the break
+        ["lend.lent"] = "the lend's card; Popovic's car gets its Go", ["vale.out"] = "Popovic's car driving off, and the card that stays", ["split.police"] = "the police countdown on the HUD",
+        ["lend.spring"] = "the crew turning on our car, and the card", ["car.leaves-split"] = "our car driving off", ["ai.break"] = "the crew running off, holstered",
     };
 
     public sealed class Pace { public double GapP50, GapP90, ReactP50, ReactP90, IdleProb, IdleP50, IdleP90; }
     internal sealed class Rule
     {
-        public string Id = "", Why = "", OrderText = "", Op = "", Do = "", TargetVar = "", With = "";
+        public string Id = "", Why = "", OrderText = "", Op = "", Do = "", TargetVar = "", With = "", ToVar = "";
         public Func<Ctx, bool>[] When = Array.Empty<Func<Ctx, bool>>(), Unless = Array.Empty<Func<Ctx, bool>>();
         public int By = int.MaxValue, RetryT = 30, RepeatT, Tries = 40, LateT; public bool Interrupt, Expected;
     }
@@ -88,8 +91,8 @@ static class Adaptive
         public Hostile? Blocker() { foreach (var h in G.Hostiles) if (h.Present && !h.Down && h.Blocker) return h; return null; }
         public IEnumerable<(string id, Pt at)> Foes()
         {
-            foreach (var m in G.Crew) if (G.PosOf(m.Id) is Pt p) yield return (m.Id, p);
-            foreach (var h in G.Hostiles) if (h.Present && !h.Down) yield return (h.Id, h.Pos(T));
+            foreach (var m in G.Crew) if (!m.Fight && G.PosOf(m.Id) is Pt p && !(G.CrewBrokenPre || m.Goal == "exit" || m.Goal == "leave")) yield return (m.Id, p); // engine 0.42.0 (F2): a broken man, holstered and running, is no foe on the map; a fight body is the Hostiles' below
+            foreach (var h in G.Hostiles) if (h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone") yield return (h.Id, h.Pos(T));
         }
     }
 
@@ -195,9 +198,14 @@ static class Adaptive
             var r = nodes[i]; var rule = plan.Rules[i]; var where = $"{name} rule {rule.Id}";
             r.Only(RuleKeys);
             var w = new JWriter().Obj().Key("tick").Raw("__T__");
-            foreach (var k in OrderKeys) if (r.Opt(k) is JNode v) { if (k == "target" && v.Str().StartsWith('$')) { rule.TargetVar = v.Str(); w.Prop(k, "__TARGET__"); continue; } w.Key(k); Value(w, v); }
+            foreach (var k in OrderKeys) if (r.Opt(k) is JNode v)
+            {
+                if (k == "target" && v.Str().StartsWith('$')) { rule.TargetVar = v.Str(); w.Prop(k, "__TARGET__"); continue; }
+                if (k == "to" && v.Kind == JKind.Str && v.Str().StartsWith("$at:", StringComparison.Ordinal)) { rule.ToVar = v.Str().Substring(4); Op.Parse(rule.ToVar); w.Prop(k, "__TO__"); continue; } // engine 0.42.0: where an agent stands or lies (the map shows him)
+                w.Key(k); Value(w, v);
+            }
             rule.OrderText = w.EndObj().ToString();
-            Order.Parse(JNode.Parse(rule.OrderText.Replace("__T__", "0", StringComparison.Ordinal).Replace("__TARGET__", "x", StringComparison.Ordinal), where)); // an order the engine can't parse is rejected at load
+            Order.Parse(JNode.Parse(rule.OrderText.Replace("__T__", "0", StringComparison.Ordinal).Replace("__TARGET__", "x", StringComparison.Ordinal).Replace("\"__TO__\"", "[0,0]", StringComparison.Ordinal), where)); // an order the engine can't parse is rejected at load
             rule.Op = r.Opt("op")?.Str() ?? ""; rule.Do = r["do"].Str(); rule.Why = r.Opt("why")?.Str() ?? ""; rule.With = r.Opt("with")?.Str() ?? "";
             if (rule.With.Length > 0 && !plan.Index.ContainsKey(rule.With)) throw new FormatException($"{where}: with '{rule.With}': no such rule");
             var when = new List<Func<Ctx, bool>>();
@@ -260,6 +268,7 @@ static class Adaptive
                 if (who == null) return false;
                 txt = txt.Replace("__TARGET__", who, StringComparison.Ordinal);
             }
+            if (r.ToVar.Length > 0) { var at = k.Op(r.ToVar).Pos; txt = txt.Replace("\"__TO__\"", $"[{at.X.ToString(CultureInfo.InvariantCulture)},{at.Y.ToString(CultureInfo.InvariantCulture)}]", StringComparison.Ordinal); }
             var a = g.Issue(Order.Parse(JNode.Parse(txt, r.Id)));
             x.Inputs++;
             if (a.ok)
@@ -330,7 +339,7 @@ static class Adaptive
         w.Prop("cash", g.Cash).Prop("trail", g.Trail).Prop("alert", g.Alert).Prop("gunfire", g.Gunfire).Prop("standing", g.Standing);
         w.Prop("startHash", Hash.Hex(g.StartHash)).Prop("finalHash", Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash));
         if (replayed) w.Prop("replayIdentical", same);
-        w.Open("stats").Prop("fightS", g.CellFightS).Prop("shots", g.CellShots).Prop("hits", g.CellHits).Prop("hpLost", g.CellHpLost).Prop("down", g.CellDownCount).EndObj();
+        w.Open("stats").Prop("fightS", g.CellFightS).Prop("shots", g.CellShots).Prop("hits", g.CellHits).Prop("hpLost", g.CellHpLost).Prop("down", g.CellDownCount).Prop("captured", g.Captured.Count).EndObj(); // engine 0.42.0: captured (all four out = 0 on a win)
         if (g.Result == Outcome.Success)
         {
             var d = Debrief.Of(g);
@@ -362,5 +371,5 @@ static class Adaptive
         return w.EndObj().ToString();
     }
     static readonly string[] OpNames = { "scout", "fixer", "tech", "enforcer" };
-    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside" };
+    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "vale.out", "lend.lent", "ai.break", "rivals.drives-off", "car.unboxed", "car.exploded", "split.police", "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside" };
 }

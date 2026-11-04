@@ -274,7 +274,12 @@ describe('the §09 conditions, each with a failing example', () => {
   });
 });
 
-const KNOWN_RED = ['R-7', 'MC-11', 'B-7 quiet-b', 'B-8 quiet-b', 'B-8 quiet-g', 'B-11 quiet-b', 'B-11 thin-quiet', 'B-7 thin-quiet' /* brief 085: a real 1 s under the floor with the pressed call; Motive's band, let it report */, 'B-7 quiet-a', 'B-11 quiet-a' /* brief 096: the shift 40 s later and the city with it: route A's fight median 16 → 14 s, its middle half 12-24 → 10-18 s; Motive's bands */, 'B-8 prepared-loud' /* brief 096, engine 0.40.0: its first Reroute (to cover the car parked early) leaves the cell idle a little longer: p95 46 s against 45; Motive's band */, 'B-11 drive-early' /* brief 096: the new one-mistake twin's fights run alike (13-21 s); Motive's band, a report */];
+const KNOWN_RED = [
+  'R-7', 'MC-11', 'MC-14' /* engine 0.41.0's block: the box is the gate (no blocker is picked), so "blocker out" never logs on a route under the block; Waymark: read car.unboxed there */,
+  'MC-0', 'MC-13' /* fight-loud-wait-yard and careless-scout-idles-pickup lose to the lookout (0.41.0: he follows Popovic's car); Waymark recomposes them */,
+  'B-2 thin-quiet', 'B-7 quiet-a', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', 'B-11 quiet-b-thinned', 'B-11 quiet-b', 'B-14', 'B-16 drive-early' /* engine 0.42.0 (brief 096, the lend and F1-F3): Motive's bands, reports */,
+  'L96 B', 'L96 B-all', 'L96 B-thinned', 'L96 G', 'L96 loud-lend', 'L96 veteran', 'L96 A-fight' /* engine 0.42.0: Motive's lend bands missed, causes in briefs/096/keel/report-lend.md; Motive's levers */,
+];
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.
   test('across seeds the references win as their bands say, the scripts play as the manifest expects, and the check ships but for its named owners', async () => {

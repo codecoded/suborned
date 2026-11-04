@@ -63,7 +63,7 @@ namespace Suborned.Sim
             var at = g.S.Grid.NearestFree(g.CarPos() + new Pt(0, -250)) ?? g.CarPos();
             r.To(Math.Max(g.Tick, r.SendTo(Enf, at)));
             r.Do(Enf, "take"); r.Done(Enf);
-            return g.Vale == ValeAt.WithEnforcer;
+            return g.Vale == ValeAt.WithEnforcer || g.Vale == ValeAt.Lent; // engine 0.42.0: with the lend on, he is in the back of his lent car
         }
 
         static void Rivals096()

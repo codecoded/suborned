@@ -82,7 +82,7 @@ namespace Suborned.Sim
             var l = new List<(string, Pt)>(); long eff = (long)g.W!.EffCm * g.W.EffCm;
             foreach (var op in Ops)
             {
-                if (op.Down || op.Inside) continue;
+                if (op.Down || op.Inside || op.LeftMap) continue;
                 bool foe = (anyOp && (R.Intent.FinalEvery || Range)) || Provoked(id, op); // engine 0.20.0 (ai.intent.final agent, tuning.md §15.2, PROVISIONAL): in the final fight too, per agent; the range every // engine 0.19.0 (ai.intent): per agent, from what it is seen doing or its own known face (was: a weapon out, fired, Vale, or security saw violence, for every body)
                 if (!foe || !sees(op.Pos)) continue;
                 long d2 = G.D2(pos, op.Pos);
@@ -264,7 +264,7 @@ namespace Suborned.Sim
         {
             var g = h.Gun; var pos = h.Pos(Tick);
             if (IsHolder(h)) { if (h.Blocker) { MoveTo(h, h.Home); h.Why = "blocker"; } else MoveToFight(h, h.Home); return; } // engine 0.34.0 (Motive M067-SQ1): back to its stand round the car's hold (the blocker's lane is the road)
-            Pt foe = !Enforcer.Inside && !Enforcer.Down ? Enforcer.Pos : Car;
+            Pt foe = !Enforcer.Inside && !Enforcer.Down && !Enforcer.InLent ? Enforcer.Pos : Car; // engine 0.42.0: at the wheel of the lent car (or gone in it) he is no foe to walk on
             var c = SelectCover(pos, Car, foe, R.SeekRivalCm); h.Why = "advance";
             if (c != null) { TakeCover(g, c); MoveTo(h, c.At); return; }
             MoveTo(h, StopPoint(pos, Car, g.W!.EffCm));
@@ -299,20 +299,25 @@ namespace Suborned.Sim
             TakeCover(GuardGun, c); return c.At;
         }
 
-        /// <summary>Rivals break (Pulse §3.1): the tick a rival goes down, if more than half the crew is down, every rival still up runs for its car.</summary>
+        /// <summary>Rivals break (Pulse §3.1): the tick a rival goes down, if more than half the crew is down, every rival still up breaks. Engine
+        /// 0.42.0 (Motive F3): the count is of those in the fight (the posted, the lookout, anyone misled), not the wheelman at the wheel nor a paid
+        /// man; (F2) a man who breaks puts his gun away and runs off by the crew's way off the map at rivals.block.brokenPace, out of the fight.</summary>
         void RivalDown(Hostile? who = null)
         {
             int n = 0, down = 0;
             bool Crew(Hostile h) => IsRival(h.Id) && (!Range || who == null || h.Wave == who.Wave); // brief 029: in the range a crew is one spawn
-            foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down || talked.Contains(h.Id)) down++; } // brief 039: a rival talked down counts as one down
+            foreach (var h in Hostiles) if (Crew(h) && !(CrewOf(h.Id) is CrewMember wm && AtTheWheel(wm))) { n++; if (h.Down || talked.Contains(h.Id)) down++; } // brief 039: a rival talked down counts as one down; F3: the wheelman at the wheel is not counted
             if (down * 2 <= n) return;
             bool any = false;
             var carAt = Range ? S.Stand(S.RivalsPark) : RivalCarPose() is var rcp && rcp.HasValue ? Walk.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark); // brief 059: they run for their car where it stands
+            var offAt = Range ? carAt : S.Stand(S.RivalLookoutExit); // engine 0.42.0 (F2): the crew's way off the map
             foreach (var h in Hostiles)
             {
                 if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
                 if (!h.Present) { h.Gun.St = "gone"; if (CrewOf(h.Id) is CrewMember gm && !gm.Fight) { gm.Mode = CrewMode.Gone; gm.ModeTick = Tick; } continue; } // still lying in wait, or still in the car: it never comes
-                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); h.Why = "break"; any = true;
+                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Why = "break"; any = true;
+                if (Range) { h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); continue; }
+                h.Gun.Drawn = false; h.Speed = Cr.BrokenCmS; h.BreakTo = offAt; MoveTo(h, offAt); // F2: holstered, off the map
             }
             if (any) { FightWhy.Add("rivals-break"); Note("ai.break", "More than half the crew is down: the rivals break for their car."); }
         }
@@ -329,7 +334,7 @@ namespace Suborned.Sim
                 var pose = SecOfficerPose(k); if (!pose.HasValue) continue;
                 var from = pose.Value.pos;
                 string stand = ""; long bd = long.MaxValue;
-                foreach (var st in CurStand.Police) { long d = G.D2(from, S.Stand(st)); if (d < bd || (d == bd && string.CompareOrdinal(st, stand) < 0)) { bd = d; stand = st; } } // brief 059 K6: the stand's police stands
+                foreach (var st in FightStandNow.Police) { long d = G.D2(from, S.Stand(st)); if (d < bd || (d == bd && string.CompareOrdinal(st, stand) < 0)) { bd = d; stand = st; } } // brief 059 K6: the stand's police stands
                 var sp = S.Stand(stand);
                 bool taken = false;
                 foreach (var o in Hostiles) if (!o.Down && o.Home == sp) taken = true;

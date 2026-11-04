@@ -65,18 +65,18 @@ namespace Suborned.Sim
             });
 
 
-            Add("BOX-4", "096", "Motive BOX-4: the Scout shoots the rival car across the drive. Disabled, it still stands and still boxes; burning, still; exploded, the way is free.", r =>
+            Add("BOX-4", "096", "Motive BOX-4: the cell shoots the rival car across the drive (engine 0.42.0: only its wheelman aboard, who stays at the wheel until it is disabled, F1; the cell fires together). Disabled, it still stands and still boxes; burning, still; exploded, the way is free.", r =>
             {
                 var g = r.G; r.To(DriveAtStart(r));
                 var spot = g.S.Grid.NearestFree(new Pt(7800, -2600))!.Value; r.To(r.SendTo(Scout, spot)); if (!r.Is(UntilBlocked(r), "the rival car stops across the drive's mouth")) return;
-                r.Fire(Scout, "car:rivals", true);
+                AllFire(r, "car:rivals");
                 r.Until(() => g.CarDisabled("car:rivals") || g.Over, T(240));
                 r.Is(g.CarDisabled("car:rivals") && g.GetawayBoxers().Contains("car:rivals"), Iv($"disabled at {Report.Clock(g.Tick)}: still boxed"));
                 r.Until(() => g.CarBurning("car:rivals") || g.Over, T(240));
                 r.Is(g.CarBurning("car:rivals") && g.GetawayBoxers().Contains("car:rivals"), Iv($"burning at {Report.Clock(g.Tick)}: still boxed"));
                 r.Until(() => g.CarOf("car:rivals")?.Blown == true || g.Over, T(30));
                 r.Is(g.CarOf("car:rivals")?.Blown == true && g.GetawayBoxers().Count == 0 && g.GoQuery().code != "car-boxed", Iv($"exploded at {Report.Clock(g.Tick)}: the way is free"));
-            });
+            }, Gone(new Start(), "rival-1", "rival-2", "rival-3", "rival-4"));
 
             Add("BOX-5", "096", "Motive BOX-5: a car driving across a way out boxes nothing: Popovic's car drives down the service drive (the service-drive stand's way out) while our car waits at the square; the Drive there is never refused stand-boxed while it moves, and refused by nothing once it is parked in the bay.", r =>
             {

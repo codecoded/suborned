@@ -39,15 +39,16 @@ namespace Suborned.Sim
         public List<string> StandBoxers(string standId) => CarsOn(WayOut(standId), "car:getaway");
         /// <summary>The cars boxing the official car in where it stands: at the pickup (its route out to the carriageway, then fight-block-m), in the
         /// service bay (its route in, backwards), at its kerbside stop (fight-block-m straight on); none while it drives or once it has stopped elsewhere.</summary>
-        public List<string> OfficialBoxers()
+        public List<string> OfficialBoxers() => Range || !OfficialStanding() ? new List<string>() : CarsOn(OfficialWay(), "car:official");
+        /// <summary>The official car's way out where it stands (OfficialBoxers'; engine 0.42.0: the lent car's lane is its first fight-block-m). Empty once it stopped elsewhere.</summary>
+        Pt[] OfficialWay()
         {
-            if (Range || !OfficialStanding()) return new List<string>();
             var g = S.GroundOf(R);
-            if (valeDriveStart < 0 || carToService == null) return CarsOn(g.PickupWay, "car:official");
-            if (carStoppedAt.HasValue) return new List<string>();
-            if (CarAtKerb) { var at = CarPos(); return CarsOn(new[] { at, CarGeo.Ahead(at, kerbHeading, g.BlockCm) }, "car:official"); }
-            if (CarAtMouth) { var at = CarPos(); return CarsOn(new[] { at, CarGeo.Ahead(at, OfficialHeading(), g.BlockCm) }, "car:official"); }
-            return CarsOn(g.ServiceWay, "car:official");
+            if (valeDriveStart < 0 || carToService == null) return LendOn ? PickupWayToKerb(g) : g.PickupWay; // engine 0.42.0 (L10): with the drive taken, only as far as his kerbside stop
+            if (carStoppedAt.HasValue) return Array.Empty<Pt>();
+            if (CarAtKerb) { var at = CarPos(); return new[] { at, CarGeo.Ahead(at, kerbHeading, g.BlockCm) }; }
+            if (CarAtMouth) { var at = CarPos(); return new[] { at, CarGeo.Ahead(at, OfficialHeading(), g.BlockCm) }; }
+            return g.ServiceWay;
         }
         /// <summary>car-boxed's and drive-boxed's words: the cars in the way, then (Go) the holders.</summary>
         static string BoxedWords(List<string> bx, List<string>? holders = null) =>

@@ -129,6 +129,7 @@ namespace Suborned.Sim
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
         public bool InCar;                               // brief 018: boarded the getaway car (off the street, doesn't fire, a target as beside cover)
+        public bool InLent, LeftMap;                     // engine 0.42.0 (car.lend): InCar in the lent car, not the cell's; gone in a car that left (hashed only once lent)
         public Gun Gun = null!;                          // health, weapon, fire order and stance (rulebook weapons)
         public OpId? Carrying, CarriedBy;                // carrying a downed operative, or being carried (rulebook cell.carry)
         public string CarryBody = "";                    // brief 013: the body (a person's id) this operative carries
@@ -281,7 +282,8 @@ namespace Suborned.Sim
             // tuning.md §14 (engine 0.19.0): weapons free is the cell's setting
             "free-not-cell",
             // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
-            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked", "car-boxed", "drive-boxed", "stand-boxed", // brief 096 (car.box)
+            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked", "car-boxed", "drive-boxed", "stand-boxed", // brief 096
+            "stand-at-car", "board-lent-full", "drive-lent", "car-left", "car-disabled", "not-out", "agent-gone", // engine 0.42.0 (car.lend): the lent car's Board, Drive and Go, End, an agent gone in a car (car.box)
             // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
             "car-driving",
             // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the

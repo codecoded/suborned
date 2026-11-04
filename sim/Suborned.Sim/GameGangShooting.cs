@@ -2,9 +2,11 @@
 // recommended"; rulebook security.unclaimed, car.target.blastStanding). A shooting at the rival crew or its car that nobody of security saw
 // (its reporter is "heard"), that no city person saw (the shooter or the target), with nobody but the crew hit, is filed as a gang shooting:
 // Alert 2 and the response come as for any shooting, and its Trail and Standing are charged, but the district does not seal. The seal waits for
-// the cell to be confirmed: an operative in a response officer's or robot's sight from its arrival until security.unclaimed.hold after it, a
-// known face in its sight later, a later shooting that is not unclaimed, any later incident, or Alert 3. Then the seal runs from the later of
-// that moment and the response's arrival, as any. Also here: a blast the cell set off with city people near is a menace act (blastStanding).
+// the cell to be placed (engine 0.42.0, Motive V2): (a) a security watcher seeing a weapon drawn or fired, any time; (b) in the hold
+// (security.unclaimed.hold from the response's arrival) an operative within security.unclaimed.scene of the scene in a response officer's or
+// robot's sight; (c) a known face in its sight, any time; (d) a later shooting that is not unclaimed, any later incident, or Alert 3. The scene
+// is the points the unclaimed shots came from and the rival car's stop (disabled, burning). Then the seal runs from the later of that moment
+// and the response's arrival, as any. Also here: a blast the cell set off with city people near is a menace act (blastStanding).
 // Hashed with the response (HashGang), only once a gang shooting has been filed.
 using System;
 using System.Collections.Generic;
@@ -18,14 +20,21 @@ namespace Suborned.Sim
         /// <summary>The tick the cell was placed at a gang shooting (the seal ran from then), -1 never; and why. Output only.</summary>
         public int GangClaimedAt { get; private set; } = -1; public string GangClaimedWhy { get; private set; } = "";
         int gangHoldUntil = INF; bool gangFiled, gangShotNow, gangSpoiled; CauseOrigin? gangOrigin; readonly HashSet<string> blastStood = new HashSet<string>(StringComparer.Ordinal);
+        /// <summary>Engine 0.42.0 (Motive V2 b): the scene's points (the unclaimed shots' origins, the rival car's stop), in order, no repeats.</summary>
+        readonly List<Pt> gangScene = new List<Pt>();
+        void GangScene(Pt p) { if (!Range && !gangScene.Contains(p)) gangScene.Add(p); }
+        /// <summary>Host read (and VET-2): the gang shooting's scene, and whether p is within security.unclaimed.scene of it.</summary>
+        public IReadOnlyList<Pt> GangScenePoints => gangScene;
+        public bool NearGangScene(Pt p) { foreach (var q in gangScene) if (G.Within(p, q, R.UnclaimedSceneCm)) return true; return false; }
 
         /// <summary>The cell's shot at this target is at the crew or its car (a candidate for a gang shooting): set over CellGunfire's own incidents.</summary>
         static bool GangTarget(string t) => IsCrewId(t) || t == "car:rivals";
 
         /// <summary>CellGunfire, once its reporter is known: an unclaimed shot calls the response with no seal; any other claims a pending one.</summary>
-        void GangOrCall(string t, string who, bool civSaw, int delay, string text, Pt scene, Func<CauseOrigin?> origin)
+        void GangOrCall(string t, string who, bool civSaw, int delay, string text, Pt scene, Func<CauseOrigin?> origin, Pt from)
         {
             bool gang = !Range && GangTarget(t) && who == "heard" && !civSaw && !gangSpoiled && Alert < 3;
+            if (gang) GangScene(from);
             if (!gang)
             {
                 if (GangTarget(t) || IsPersonTarget(t)) gangSpoiled = true; // a seen shooting: no later shot of this mission is unclaimed
@@ -55,19 +64,22 @@ namespace Suborned.Sim
             if (Lockdown != lockBefore) Note("seal.starts", $"The cell is placed: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)}), at {Sim.Report.Clock(Lockdown)}.");
         }
 
-        /// <summary>Once a tick: an operative in the response's sight from its arrival to the hold's end claims it; later, a known face in its sight.</summary>
+        /// <summary>Once a tick (engine 0.42.0, Motive V2 b, c): in the hold, an operative within security.unclaimed.scene of the scene in the
+        /// response's sight claims it; at any time, a known face in its sight.</summary>
         void GangStep()
         {
             if (!GangPending || Over || Tick < SecurityArrives) return;
             bool hold = Tick <= gangHoldUntil;
             foreach (var op in Ops)
             {
-                if (op.Down || op.Inside || op.InCar) continue;
-                string name = Sim.Op.Name(op.Id);
-                if (!hold && !faces.Contains(name)) continue;
-                if (ResponseSees(op.Pos)) { GangClaimed(hold ? $"the police saw the {name} at the scene" : $"the police know the {name}'s face"); return; }
+                if (op.Down || op.Inside || op.InCar || op.LeftMap) continue;
+                string name = Sim.Op.Name(op.Id); bool known = faces.Contains(name), near = hold && NearGangScene(op.Pos);
+                if (!known && !near) continue;
+                if (ResponseSees(op.Pos)) { GangClaimed(near ? $"the police saw the {name} at the scene" : $"the police know the {name}'s face"); return; }
             }
         }
+        /// <summary>Engine 0.42.0 (Motive V2 a): a security watcher sees an operative's weapon drawn, at any time: the cell is placed.</summary>
+        void GangDrawnSeen(string watcher, string name) { if (GangPending) GangClaimed(watcher.StartsWith("camera:", StringComparison.Ordinal) ? $"the {watcher.Substring(7)} camera showed the {name}'s weapon drawn" : $"the {watcher} saw the {name}'s weapon drawn"); }
         /// <summary>A response officer or robot on the street has p in its sight (their cones, as the car's watchers read them).</summary>
         bool ResponseSees(Pt p)
         {
@@ -91,6 +103,7 @@ namespace Suborned.Sim
         {
             if (!gangFiled) return;
             h.S("gang").Z(GangPending).I(GangClaimedAt).I(gangHoldUntil).Z(gangSpoiled);
+            foreach (var p in gangScene) h.P(p); // engine 0.42.0 (V2): the scene
         }
     }
 }

@@ -20,9 +20,9 @@ namespace Suborned.Sim
     public sealed class CrewRules
     {
         public readonly int Size, Posted, SpeedCmS, FollowCmS, DropS, OutS, StepS, FollowS, LookoutPaceCm;
-        /// <summary>Engine 0.41.0 (brief 096, rivals.block): the block point's stand-off from the cell's car (cm), the wheelman's gunfire ring (cm)
-        /// and his step out (s).</summary>
-        public readonly int BlockCm, WheelmanNearCm, WheelmanOutS;
+        /// <summary>Engine 0.41.0 (brief 096, rivals.block): the block point's stand-off from the cell's car (cm) and the wheelman's step out (s);
+        /// engine 0.42.0 (Motive F1, F2): the wheelman's gunfire ring is retired (he stays at the wheel), a broken man's run off the map (cm/s).</summary>
+        public readonly int BlockCm, WheelmanOutS, BrokenCmS;
         /// <summary>Engine 0.41.0 (rivals.lookout): his run after the target's car (cm/s), and how long a misled member watches where he was sent (s).</summary>
         public readonly int LookoutRunCmS, MisledS;
         /// <summary>Engine 0.41.0 (rivals.turn): Pay's price, time and Trail; the cap on one temperament (per cent of the crew); the kinds, in draw order.</summary>
@@ -42,8 +42,8 @@ namespace Suborned.Sim
             LookoutPaceCm = ri(n["lookoutPace"]);
             // engine 0.41.0 (brief 096; Motive rivals.json; required: a rulebook without them is pinned before 0.41.0, unknown = reject)
             var bk = n.Opt("block") ?? throw new FormatException("rivals.block is missing: engine 0.41.0 runs the block on arrival (brief 096)");
-            bk.Only("standOff", "wheelmanNear", "wheelmanOut", "rule", "tag", "src", "proposed", "reason"); if (bk["rule"].Str().Length == 0) throw new FormatException("rivals.block.rule is empty");
-            BlockCm = ri(bk["standOff"]) * 100; WheelmanNearCm = ri(bk["wheelmanNear"]) * 100; WheelmanOutS = ri(bk["wheelmanOut"]);
+            bk.Only("standOff", "wheelmanOut", "brokenPace", "rule", "tag", "src", "proposed", "reason"); if (bk.Opt("brokenPace") == null) throw new FormatException("rivals.block.brokenPace is missing: engine 0.42.0 runs a broken man off the map (brief 096, Motive F2)"); if (bk["rule"].Str().Length == 0) throw new FormatException("rivals.block.rule is empty");
+            BlockCm = ri(bk["standOff"]) * 100; WheelmanOutS = ri(bk["wheelmanOut"]); BrokenCmS = ri(bk["brokenPace"]);
             var lk = n.Opt("lookout") ?? throw new FormatException("rivals.lookout is missing: engine 0.41.0 makes the lookout the cell's job (brief 096)");
             lk.Only("follow", "misled", "rule", "tag", "src", "proposed", "reason"); if (lk["rule"].Str().Length == 0) throw new FormatException("rivals.lookout.rule is empty");
             LookoutRunCmS = ri(lk["follow"]); MisledS = ri(lk["misled"]);
@@ -52,7 +52,7 @@ namespace Suborned.Sim
             PayUsd = ri(tn["pay"]); PayS = ri(tn["s"]); PayTrail = ri(tn["trail"]); TemperMaxPct = ri(tn["maxShare"]);
             var kinds = new List<string>(); foreach (var k in tn["kinds"].Items) kinds.Add(k.Str()); Kinds = kinds.ToArray();
             if (Kinds.Length != 2 || Kinds[0] != "mercenary" || Kinds[1] != "loyal") throw new FormatException("rivals.turn.kinds: the engine draws mercenary or loyal (Motive Q3 a)");
-            if (BlockCm < 100 || WheelmanNearCm < 100 || WheelmanOutS < 1 || LookoutRunCmS < 1 || MisledS < 1 || PayUsd < 1 || PayS < 1 || PayTrail < 0 || TemperMaxPct < 50 || TemperMaxPct > 100) throw new FormatException("rivals.block, lookout, turn: positive values; maxShare 50..100 %");
+            if (BlockCm < 100 || BrokenCmS < 1 || WheelmanOutS < 1 || LookoutRunCmS < 1 || MisledS < 1 || PayUsd < 1 || PayS < 1 || PayTrail < 0 || TemperMaxPct < 50 || TemperMaxPct > 100) throw new FormatException("rivals.block, lookout, turn: positive values; maxShare 50..100 %");
             if (Size != 5) throw new FormatException("rivals.crew: the engine's crew is five (rival-1..3 posted, rival-4 the lookout, rival-5 the wheelman; GDD §07)");
             if (Posted != 3) throw new FormatException("rivals.posted: the engine posts three (rival-1..3)");
             if (safeHostiles != Size) throw new FormatException("fight.safe.hostiles is the crew's size (rivals.crew)");

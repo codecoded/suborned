@@ -283,7 +283,7 @@ namespace Suborned.Sim
         bool CrewDue()
         {
             if (FightBranch != "safe") return false;
-            foreach (var m in Crew) if (m.H == null && Up(m) && !m.Fight && m.Mode == CrewMode.Aboard && (CrewCarHere || CarSt == CrewCar.Off) && (CarSt != CrewCar.Stopped || m.OutAt < INF)) return true;
+            foreach (var m in Crew) if (m.H == null && Up(m) && !m.Fight && m.Mode == CrewMode.Aboard && (CrewCarHere || CarSt == CrewCar.Off) && (CarSt != CrewCar.Stopped || m.OutAt < INF) && !(m == Wheelman && m.OutAt >= INF && CarSt == CrewCar.Blocking)) return true; // engine 0.42.0 (F1): the wheelman at the wheel of the block is no one still to come
             return false;
         }
 
@@ -509,9 +509,9 @@ namespace Suborned.Sim
             foreach (var x in Crew)
             {
                 if (!Up(x) || x.Fight || !x.OnFoot) continue;
-                var from = MemberPos(x, Tick); x.Until = INF; x.Disp = null; // brief 081 (engine 0.37.0): read before the detour is dropped: he leaves from where he stands
+                var from = MemberPos(x, Tick); x.Until = INF; x.Disp = null; x.Gun.Drawn = false; LoseTarget(x.Gun); // brief 081 (engine 0.37.0): read before the detour is dropped: he leaves from where he stands; engine 0.42.0 (Motive F2): a broken man puts his gun away
                 if (car) { StartWalk(x, from, StepOutAt(), "flee", rivSpeed); any = true; }
-                else { StartWalk(x, from, S.Stand(S.RivalLookoutExit), "exit", rivSpeed); crewCarless = true; }
+                else { StartWalk(x, from, S.Stand(S.RivalLookoutExit), "exit", Cr.BrokenCmS); crewCarless = true; } // F2: off the map at brokenPace
             }
             if (!car) { crewCarless = true; foreach (var x in Crew) if (Up(x) && x.Mode == CrewMode.Aboard) { x.Mode = CrewMode.Gone; x.ModeTick = Tick; } } // aboard a wreck: out and gone with them
             if (car && !any) CrewLeaves();

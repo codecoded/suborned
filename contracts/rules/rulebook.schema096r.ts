@@ -11,13 +11,14 @@ const grounded = { tag: z.enum(['B', 'S', 'L']), src: text, proposed: z.literal(
 const ground = <T extends z.ZodRawShape>(shape: T) =>
   z.strictObject({ ...shape, ...grounded }).refine((v) => { const o = v as { proposed?: true; reason?: string }; return !o.proposed || !!o.reason; }, { message: 'a proposed rule needs a reason' });
 
-/** The block point's stand-off, the wheelman's gunfire ring and his step out. */
-export const RivalsBlock = ground({ standOff: Ref, wheelmanNear: Ref, wheelmanOut: Ref, rule: text });
+/** The block point's stand-off, the wheelman's step out, and (engine 0.42.0, Motive F2) a broken man's run off the map; the wheelman's gunfire
+ * ring is retired by 0.42.0 (F1), optional only for runs pinned before it. */
+export const RivalsBlock = ground({ standOff: Ref, wheelmanNear: Ref.optional(), wheelmanOut: Ref, brokenPace: Ref.optional(), rule: text });
 /** The lookout's run after the target's car, and how long a misled member watches. */
 export const RivalsLookout = ground({ follow: Ref, misled: Ref, rule: text });
 /** Pay on a member: price, time, Trail; the cap on one temperament; the kinds, in draw order. */
 export const RivalsTurn = ground({ pay: Ref, s: Ref, trail: Ref, maxShare: Ref, kinds: z.tuple([z.literal('mercenary'), z.literal('loyal')]), rule: text });
-/** The unclaimed shooting: how long the response holds the scene. */
-export const Unclaimed = ground({ hold: Ref, rule: text });
+/** The unclaimed shooting: how long the response holds the scene, and (engine 0.42.0, Motive V2 b) how near the scene it places the cell. */
+export const Unclaimed = ground({ hold: Ref, scene: Ref.optional(), rule: text });
 /** A blast near city people: the Standing step and its reach. */
 export const BlastStanding = ground({ v: Ref, near: Ref, rule: text });

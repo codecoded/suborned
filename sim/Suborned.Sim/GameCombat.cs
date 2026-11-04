@@ -121,7 +121,7 @@ namespace Suborned.Sim
         /// <summary>Where a shooter or target stands now, or null when it is not out on the street to be shot at.</summary>
         public Pt? PosOf(string id)
         {
-            if (IsOpId(id)) { var op = OpOf(Sim.Op.Parse(id)); return op.Inside ? (Pt?)null : op.Pos; }
+            if (IsOpId(id)) { var op = OpOf(Sim.Op.Parse(id)); return op.Inside || op.LeftMap ? (Pt?)null : op.Pos; } // engine 0.42.0: gone in a car that left
             switch (id)
             {
                 case "guard": return GuardDown ? (KoBody("guard") is Body gb ? BodyPos(gb) : (Pt?)null) : GuardPose()?.pos; // tuning.md §9.1: knocked out, a target where he lies
@@ -333,7 +333,7 @@ namespace Suborned.Sim
         bool Combatant(string id)
         {
             var g = GunOf(id); if (g == null || g.Down || !PosOf(id).HasValue) return false;
-            if (IsFightHostile(id)) { var h = HostileOf(id)!; return h.Present && h.Gun.St != "break" && h.Gun.St != "gone"; }
+            if (IsFightHostile(id)) { var h = HostileOf(id)!; return h.Present && h.Gun.St != "break" && h.Gun.St != "gone"; } if (CrewOf(id) is CrewMember bm && !bm.Fight && (CrewBrokenPre || bm.Goal == "exit" || bm.Goal == "leave")) return false; // engine 0.42.0 (Motive F2): a broken man is out of every fight
             if (id == "guard" && GuardAlly) return false;
             if (IsOpId(id) || IsCivilian(id)) return false;
             return IsOpId(g.Target) || g.Fired;
@@ -387,7 +387,7 @@ namespace Suborned.Sim
                 else Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
                 int ev = shotEvents.Count; shotEvents.Add(new ShotEvent { Tick = Tick, By = s.By, Target = s.T, From = s.From, At = s.At, Hit = s.Hit, Covering = s.Covering, Damage = s.Hit ? s.Dmg : 0, Covered = !s.Hit && !s.Covering && s.D > R.PointBlankCm && CoverMod(s.T, s.At, s.From) < 1000 }); // brief 039: the host's events (output only)
                 if (FightBranch == "safe" && FightSprung == INF && IsOpId(s.By) && ((IsRival(s.T) && IsFightHostile(s.T)) || s.T == "car:rivals")) Spring(true); // brief 059: the crew lurks in plain sight; a shot at one of them (brief 096: or at their car) springs the ambush
-                RivalCarShotNear(s.From, s.At, s.T); bool cell = IsOpId(s.By), untraced = cell && (Range || (IsFightHostile(s.T) || (s.T == "car:rivals" && FightBranch == "safe")) && !R.FightTraced && FightOverTick == INF); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced); brief 096: the rival car, the safe fight's block, is fought untraced
+                RivalCarShotNear(s.From, s.At, s.T); bool cell = IsOpId(s.By), untraced = cell && (Range || ((IsFightHostile(s.T) && !(HostileOf(s.T) is Hostile bh && bh.Gun.St == "break")) || (s.T == "car:rivals" && FightBranch == "safe")) && !R.FightTraced && FightOverTick == INF); // engine 0.42.0 (Motive F2): a shot at a man running away is a new shooting, traced as any // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced); brief 096: the rival car, the safe fight's block, is fought untraced
                 if (cell) CellGunfire(OpOf(Sim.Op.Parse(s.By)), s.T, s.At, untraced);
                 else if (!IsFightHostile(s.By) && !(s.By == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + s.By); // any gunfire (§05)
                 if (Over) return;
@@ -442,7 +442,7 @@ namespace Suborned.Sim
             bool civSaw = civSees > 0 || seen.Exists(w => w.p.Civilian); if (delay >= 0) // brief 096: a passer-by who saw the shooter or the target
             {
                 var scene = IsPersonTarget(t) ? at : op.Pos; var by = who == "witness" ? (firstCiv.Length > 0 ? firstCiv : "heard") : who;
-                GangOrCall(t, who, civSaw, delay, text, scene, () => OriginNow("gunfire:" + t, "response", by, scene, by == "heard" ? op.Pos : (Pt?)null, op.Pos, name)); // brief 096: an unclaimed shooting seals nothing (GameGangShooting.cs)
+                GangOrCall(t, who, civSaw, delay, text, scene, () => OriginNow("gunfire:" + t, "response", by, scene, by == "heard" ? op.Pos : (Pt?)null, op.Pos, name), op.Pos); // brief 096: an unclaimed shooting seals nothing (GameGangShooting.cs)
             } else if (GangPending && !GangTarget(t)) GangClaimed("another shooting"); gangShotNow = false; // brief 096: a shot nobody reports at a non-rival still places the cell; then the flag is down
         }
 
@@ -535,7 +535,7 @@ namespace Suborned.Sim
             Note(name + ".hit." + (IsFightHostile(by) ? "fight" : by), $"{by} hits the {name}. {op.Gun.Health} health left.");
             if (op.Id == OpId.Enforcer && !down && Rolled && EnforcerWarnedAt < 0 && op.Gun.Health <= R.Sheet.WarnHealth) { EnforcerWarnedAt = Tick; Note("enforcer.warning", $"The Enforcer is badly hurt: {op.Gun.Health} health left. Get him into cover or out of the line."); } // brief 080: the warning, once, before he can drop
             if (!down) return;
-            if (op.Id == OpId.Enforcer && Vale != ValeAt.Car && !Range) // brief 029: in the range the Enforcer is any operative; brief 018 §2: once Vale is in the car, the Enforcer is any operative
+            if (op.Id == OpId.Enforcer && Vale != ValeAt.Car && Vale != ValeAt.Lent && Vale != ValeAt.Out && !Range) /* engine 0.42.0 (car.lend): at the wheel of the lent car he is any operative */ // brief 029: in the range the Enforcer is any operative; brief 018 §2: once Vale is in the car, the Enforcer is any operative
             {
                 if (FightBranch == "safe" && Vale == ValeAt.WithEnforcer) Fail("rivals-reach-vale", $"The Enforcer is down and the rival crew takes {ValeName} off him.", () => ShotDown("downed-enforcer", "enforcer")); // the rivals' goal (Motive addendum Q7)
                 else Fail("enforcer-down", "The Enforcer is down.", () => ShotDown("shot", "enforcer"));
@@ -638,7 +638,7 @@ namespace Suborned.Sim
             string name = Sim.Op.Name(op.Id);
             KnowFace(name); // engine 0.19.0 (ai.intent face): security saw this agent draw
             RaiseAlert(R.DrawSeenSecurity, $"drawn-seen:{w}:{name}");
-            Note("drawn.seen", $"The {w.Replace("camera:", "")} {(w.StartsWith("camera", StringComparison.Ordinal) ? "camera shows" : "sees")} the {name}'s weapon drawn. Alert {Alert}.");
+            Note("drawn.seen", $"The {w.Replace("camera:", "")} {(w.StartsWith("camera", StringComparison.Ordinal) ? "camera shows" : "sees")} the {name}'s weapon drawn. Alert {Alert}."); GangDrawnSeen(w, name); // engine 0.42.0 (Motive V2 a): a gun out where security looks places the cell
             switch (w)
             {
                 case "guard":

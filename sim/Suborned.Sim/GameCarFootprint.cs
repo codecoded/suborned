@@ -67,6 +67,7 @@ namespace Suborned.Sim
         /// <summary>The official car stands: at the pickup until it drives (the block move is retired, brief 059), parked round the back, or stopped.</summary>
         bool OfficialStanding()
         {
+            if (lentLeft) return false; // engine 0.42.0 (car.lend): the lent car has left
             if (carStoppedAt.HasValue) return true;
             if (valeDriveStart < 0 || carToService == null) return BlockMove == INF || Tick < BlockMove || (Tick >= BlockedFrom && Tick < BlockedUntil) || Tick >= BlockedUntil + blockMoveT;
             return Tick >= CarInBayTick;
