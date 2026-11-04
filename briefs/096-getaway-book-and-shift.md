@@ -70,3 +70,4 @@ Next: once Keel's box-in round (bribes on camera, box-in, kerbside stop, parked 
 - Route B's squeeze under the block (0.41.0: B 45 %): **build the lend now** ("yes"), not a later close. Motive's addendum (briefs/096/motive/lend.html) also covers the veteran's shot (0 %) and route A's long final fight (50 s); then Keel builds it on `t3/rival-block-and-lookout`. 0.41.0 stays off `work/096` until then; 0.40.0 is merged.
 - The seal leaves the slim feed ("sure"): its plate under the clock is the one countdown. Done in HostCrucial.cs (the Journal keeps the event).
 - The tester waits ("wait") for the build with the camera, box-in, rivals and the lend.
+- No Linux build this round ("don't need to build the linux"): the round ends in one Mac build for Sky.
