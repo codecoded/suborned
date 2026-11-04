@@ -1,0 +1,416 @@
+{
+ "schema": "suborned.motive.values/1",
+ "brief": "096",
+ "author": "Motive, with Pulse's routine as data",
+ "date": "2026-11-04",
+ "page": "briefs/096/motive/rivals.html",
+ "status": "proposed: for Sky to read before Keel builds. Every value is [S] (a starting value, tuned by playtest). Nothing is measured: none of these rules is in the engine. Times are on the 5:30 shift (rivals turn in 2:35 +-15 s; Popovic out 5:30, in his car 5:53, at the service bay 6:05; close 8:10). Geometry is worked by hand from sim/data/handover.site.json (out/scratch/motive/096r/geo.py); Splice prints exact points from the grid and the checks test properties, never these numbers.",
+ "supersedes": {
+  "briefs/096/motive/values.json rivalBlock.build": "was 'with the split (Q3)'; now: the block happens on arrival, on every route, this round (Sky 2026-11-04, route B's middle). The split no longer has its own block: the arrival block is already in place when the Enforcer drives off (082 call 2 met). 082 call 4 (block Popovic's car too) stays unbuilt: one car, one block.",
+  "briefs/096/motive/values.json rivalBlock.when": "replaced by routine.arrive below: every time the rival car comes onto the map it drives to the block point of the stand the cell's car stands at (or is driving to).",
+  "briefs/096/motive/values.json rivalBlock.wheelman": "was 'gets out when Popovic comes out or when he sees an op'. With the car 10 m from the cell's car at the square, that would start a fight at 2:56. Now: he sits in until the final fight springs, gunfire, or his car is disabled; then out (board-s 1 s) and he fights by the usual causes (ai.intent rivals).",
+  "briefs/096/motive/values.json rivalBlock.endsWhen": "unchanged (Sky's call 4): a broken crew's wheelman, up and aboard, drives it off; else only the explosion clears it.",
+  "rulebook rivals F4 (the turned driver's word: driver-warns-s, driver-warn-lag-s)": "retired: the cell deals with the lookout itself.",
+  "rulebook rivals F2 (the rival car tails Popovic's car; the wheelman walks to rival-vale-door)": "replaced by routine.lookout.follow: the lookout on foot follows. The car stays on its block.",
+  "rulebook rivals park (rival-park 3:10) and the drop (rival-drop 2:46)": "retired for the Handover: the car stops once, at the block point. rival-drop stays the square stand's rivalStop only if Splice keeps it as a site point; the block point is derived."
+ },
+ "gates": {
+  "Q1": "the seal after an early shooting nobody of security saw (veteran.seal)",
+  "Q2": "the false tip on the rival car: retire it, Mislead moves to the crew on foot (mislead.car)",
+  "Q3": "can the crew be turned: Pay, by temperament (crew.temperament, pay)",
+  "Q4": "the block on arrival reaches routes A and G too (routine.arrive.everyRoute)"
+ },
+ "routine": {
+  "rule": "Pulse's rival routine as data (systems > scripts): every point is derived from the mission's own data, so any mission's rivals run it. The mission gives: the crew's roles (posted x n, a lookout, a wheelman), the target's car and its stand, a lookout post with a clear line to that stand, the cell car stands (each with ambush spots; box-in derives each block point), and the crew's way off the map. Unknown = reject at load.",
+  "arrive": {
+   "v": "On its timetable, and again each time it comes back onto the map, the rival car drives to the block point of the stand the cell's car stands at, or is driving to; it re-targets each time a Drive of the cell's car starts before it stops. It stops there across the way out (box-in does the rest).",
+   "everyRoute": {
+    "v": true,
+    "gate": "Q4",
+    "reason": "Sky 2026-11-04: 'they see your car, so they come, block you off and get out the car'. Aster's reading: on arrival, every route. It also lengthens the final fight, which at 5:30 runs a median 14 s on quiet-a, under §07's 15-40 s."
+   },
+   "handover": {
+    "square": {
+     "blockAt": [
+      1476,
+      -5600
+     ],
+     "heading": [
+      -100,
+      0
+     ],
+     "fromCarM": 10.0,
+     "fromTurnInM": 94.5,
+     "stopsAbout": "2:56 (+-15 s)"
+    },
+    "service-drive": {
+     "blockAt": [
+      8600,
+      -1500
+     ],
+     "heading": [
+      0,
+      100
+     ],
+     "fromCarM": 16.7,
+     "fromTurnInM": 161.2,
+     "stopsAbout": "3:09 (+-15 s)"
+    },
+    "unit": "site cm; times at car-road-cm-s 500, profile rounding left to the engine"
+   },
+   "tag": "S",
+   "proposed": true
+  },
+  "out": {
+   "v": "rivals-out-s (5 s) after it stops, the posted three step out rivals-step-s (2 s) apart and walk to the stand's first three ambush spots (the seed says who takes which, as today); the lookout steps out next and walks to the lookout post; the wheelman stays aboard.",
+   "handover": "three out 3:01, 3:03, 3:05; the lookout out 3:07, walks about 84 m (about 58 s at 1.6 m/s), posted about 4:05 (+-15 s), facing the official bay",
+   "tag": "S",
+   "proposed": true
+  },
+  "wheelman": {
+   "v": "aboard at the block until the final fight springs, gunfire on his car or within 30 m, or his car is disabled; then out (board-s) and fights",
+   "tag": "S",
+   "proposed": true
+  },
+  "drawn": {
+   "v": "gunfire draws the crew on foot to the shots as today (F5); the car keeps its block",
+   "tag": "S",
+   "proposed": true,
+   "reason": "otherwise one shot anywhere unboxes the cell's car; the block is the wheelman's job"
+  },
+  "lookout": {
+   "post": {
+    "v": "the mission's lookout post: a free pavement cell with a clear line to the target car's stand within rivals' sight (facing-reach-m 18 m, rivals-half-m 8 m)",
+    "handover": {
+     "at": [
+      9400,
+      -2700
+     ],
+     "toOfficialBayM": 16.3,
+     "toServiceBayM": 32.5,
+     "toKerbStopM": 14.5,
+     "toPickupCameraM": 23.9
+    },
+    "tag": "S"
+   },
+   "follow": {
+    "v": "If, at his post, he sees the target's car leave its stand with the target aboard, or sees it standing anywhere else with the target aboard, he follows it on foot at a run (rivals-follow-cm-s 280) to where it stops. On foot within act reach of it before a Take there ends: the rivals reach the target (today's fail, F2 moved from the wheelman to him).",
+    "handover": "Popovic's car leaves the bay about 5:53, 14 degrees off his facing at 8 m: always seen. The run to the service bay is about 39 m of walk grid, about 14 s: he is there about 6:08, inside the Take (6:05 to 6:43). An unhandled lookout fails route B on every seed.",
+    "tag": "S",
+    "proposed": true
+   },
+   "fight": {
+    "v": "at the spring he runs to the fight from where he is (about 30 s from his post to the square): he counts as coming for the floor",
+    "tag": "S"
+   }
+  },
+  "reenter": {
+   "v": "a crew that broke before the fight leaves in its car for rivals-retreat-s (175 s); back on the map it blocks again (arrive). At the final fight's start the floor recalls it as today.",
+   "tag": "S"
+  },
+  "blockEnds": {
+   "v": [
+    "in the final fight the crew breaks with the wheelman up and aboard: he drives off the way it came, for good",
+    "the car explodes"
+   ],
+   "tag": "S",
+   "src": "Sky's call 4, 2026-11-04"
+  }
+ },
+ "lookoutJob": {
+  "rule": "The rival lookout is the cell's job on route B. Three ways, each with its price; ignored, he follows Popovic's car and reaches him. The turned driver no longer warns him (F4 retired).",
+  "driverStill": [
+   "drives Popovic round to the service bay at 5:53 (or pulls in at the kerb if the drive is taken) and waits until 8:10",
+   "his deadline stays 5:20; with no word to pass, no 'turned too late to warn' note",
+   "the lend on the split [D] unchanged"
+  ],
+  "mislead": {
+   "who": "Scout",
+   "s": 30,
+   "usd": 0,
+   "trail": 1,
+   "reach": "act reach",
+   "src": "v:mislead-s, v:mislead-trail",
+   "does": "he walks to the target's other door (the mission's data: the Office's public door, about 35 m, about 22 s), watches it mislead-rival-s, walks back",
+   "misleadRivalS": {
+    "v": 60,
+    "unit": "s",
+    "tag": "S",
+    "proposed": true,
+    "reason": "a short look, so the word is timed: walk to the public door about 22 s, watch 60 s, walk back about 22 s: away from his post about 104 s from the landing. It covers Popovic's car leaving (5:53) and turning into the drive (about 6:00) only if it lands between about 4:16 and 5:52. Too early and he is back at his post as the car leaves. The card says 'back at his post m:ss', so the player times it against 5:53."
+   },
+   "fight": "he is able: the floor recalls him to the fight; Mislead buys the pickup, not a smaller fight",
+   "face": "he holds the Scout's face: once back, the Scout in his sight is a foe at the spring (cause 'seen')"
+  },
+  "pay": {
+   "who": "Fixer",
+   "s": 35,
+   "trail": 2,
+   "src": "v:pay-s, Pay's +2",
+   "usd": {
+    "v": 30000,
+    "unit": "usd",
+    "tag": "S",
+    "proposed": true,
+    "gate": "Q3",
+    "reason": "paid to walk away, not to act: under half the driver's $70,000. Help Lukac $40,000 + $30,000 = $70,000 fits the purse; Pay Lukac $70,000 + $30,000 = $100,000, exactly the purse, so Inez can't be bought too. Learning still pays."
+   },
+   "needs": "a Watch first (any agent, as Pay does); Listen (Scout, 30 s, 3 m) shows his temperament, else the card shows '?'",
+   "does": "Mercenary: takes it and walks off the map by rivals.posts.lookoutExit, gone for the mission; the floor never recalls a paid man. Loyal: refuses, a remembered refusal, and tells his crew: the crew counts the Fixer a foe at the spring.",
+   "camera": "the lookout post is 23.9 m from the pickup camera (reach 18 m): never on tape"
+  },
+  "takeDown": {
+   "who": "Enforcer",
+   "src": "rulebook rivals.peopleRule (engine 0.33.0): a crew member on foot is a person for the takedown and the body orders",
+   "does": "knockout 6 s or kill 3 s from his blind side; a KO wakes in 2:00 and walks back to his post unless tied (restrain 8 s); a body left open is found by passers (a report); stash in the service door (10 s) or the yard container (5 s), about 33 m across Apron Road: a carry seen is a report (Alert 2), so the yard needs the patrol rerouted for the carry",
+   "price": "$0; Trail only from who sees it (KO +4 T, kill +6 T on a confirmed report); unseen and stashed: 0 T, no Alert",
+   "fight": "out for good if killed, or tied and stashed: one fewer gun, and he counts as down for the crew's break"
+  }
+ },
+ "thinning": {
+  "rule": "Each of the three posted round the cell's car can be thinned before the pickup by the same three ways. Each one out for good (paid, killed, tied) is one fewer gun at the spring; drawn away, he joins late from where he is. The fight is never empty: whoever is left fights, and the block still has to be broken or blown (fight.alwaysRule).",
+  "pay": "as the lookout's: $30,000, 35 s, +2 T, Mercenary only (Q3); he walks off the map",
+  "mislead": "the Scout's word 'your lookout wants you': he walks to the lookout post (about 84 m from the square, about 53 s), stands mislead-rival-s (60 s), walks back: about 2:46 away; alone on that walk he is takeable away from his mates",
+  "takeDown": "at his post in the square: ambush spots 1 and 3 stand 2.3 m apart and face the car, so one sees the other taken (he fires: loud); the café terrace is in sight of spot 2. The seed says who stands where, so a Watch decides which man can be taken",
+  "fightSize": {
+   "v": [
+    {
+     "out": "nothing",
+     "hostiles": 5,
+     "breakAt": 3,
+     "note": "the lookout arrives about 30 s after the spring"
+    },
+    {
+     "out": "the lookout (paid, killed or tied)",
+     "hostiles": 4,
+     "breakAt": 3
+    },
+    {
+     "out": "the lookout and one posted",
+     "hostiles": 3,
+     "breakAt": 2
+    },
+    {
+     "out": "the lookout and two posted (paid)",
+     "hostiles": 2,
+     "breakAt": 2
+    },
+    {
+     "out": "the lookout and two posted (killed or tied)",
+     "hostiles": 2,
+     "breakAt": 2,
+     "note": "three down on the map breaks the crew before the fight (M059-3.5): the car leaves (unboxed) for 175 s; the floor recalls it at the spring and it blocks again"
+    }
+   ],
+   "rule": "in the fight the crew breaks when more than half of those in it are down (today's rule); before the fight, more than half of those on the map (today's M059-3.5). A paid man is gone, not down",
+   "tag": "S"
+  },
+  "crew": {
+   "temperament": {
+    "v": "drawn by the people rules from a 'rival crew' row: Mercenary or Loyal (no temperament over 60 %, §04 restricted), pinned by the crew's ids like the named cast, so every game has the same five; the seed moves who stands where",
+    "gate": "Q3",
+    "tag": "S",
+    "proposed": true
+   },
+   "need": "none: no need record, so Help and Pressure are not offered on a crew member",
+   "listen": "reveals the temperament only (30 s, 3 m, private)"
+  }
+ },
+ "veteran": {
+  "rule": "The rival car can be shot from the moment it turns in. A car is a target as in §06: 10 HP; at 5 it stops for good where it is and its riders get out (the first after board-s, then rivals-step-s apart, in id order, the wheelman last); at 0 it burns, and 6 s later it explodes: 3 damage to everyone within 5 m with a line, occupants included. Stopped short of its block point, it boxes nothing.",
+  "movingTarget": {
+   "v": -10,
+   "unit": "pct",
+   "tag": "S",
+   "proposed": true,
+   "reason": "a car driving past is a running target past point blank (§06 hits), never with cover"
+  },
+  "window": "about 8-10 s in a carbine's effective 20 m from the square's south corner as it comes along Orbit Walk and up Rocket Lane (geo.py), then stopped 10 m from the cell's car with its riders out 5 s later",
+  "expected": "all four firing from a prepared spot do about 1.5 damage a second at a moving car: disabled about 4.5 s after the first shot (draw and aim included), at 0 about 3 s later, the blast 6 s after that: the riders out last (the lookout, the wheelman) are usually still inside the 5 m ring; the posted three usually clear it, into a street fight",
+  "price": {
+   "trail": "+2 T for the car (once); each rival shot at +2, hit +2, down +2 (§06 cost); each the blast hits counts as hit by the cell (+2, +2 if down). Typical: the car, two in the blast, one shot down = 2 + 8 + 6 = 16 T; up to about 30. Heat next mission 16+ (infamous).",
+   "alert": "Alert 2 at once (gunfire heard). Gunfire or a blast seen by a civilian within 13 m on a clear line is Alert 3 at once (lockdown: doors lock at S2, the district seals): so the veteran needs a stretch with nobody within 13 m.",
+   "response": "the dial's Alert-2 response to the place: at S2 one unit + 2 robots, +1 unit every 40 s to 3; it arrives response-rivals-unseen-s (35 s) or response-unseen-s (45 s) after the shot when nobody saw it, 12 s when a civilian did; units stand down 3:00 after the last alarm. Enter takes 68 s for the rest of the mission.",
+   "standing": {
+    "v": "a public fight (city people within 30 m): broke feared rivals +1 (§04); new: a car blown up with city people within 30 m -1, once per fight; a civilian the blast hits -1 each and +1 officer in the final fight",
+    "blastStanding": {
+     "v": -1,
+     "unit": "standing",
+     "tag": "S",
+     "proposed": true,
+     "reason": "Sky's Hero 'shields civilians'; a blast on a street is a menace act whoever was in the car. Nets the best case to 0, below it if careless."
+    }
+   },
+   "fight": "the fight starts about 2:45: three to five of the most dangerous shooters (aim 65) against four, before any other preparation; an agent down must be carried or is left behind (captured +4 T)",
+   "after": "a crew that breaks with its car destroyed walks off the map and is gone for the mission (no car to come back in; the floor can't recall it). With Alert 2 the final fight is loud: police from the entry nearest the stand, no rivals, no block."
+  },
+  "seal": {
+   "gate": "Q1",
+   "today": "gunfire seals the district dial2-seal-s (2:25) after the response arrives: a shooting at 2:45 seals about 5:22 (seen) to 5:55 (unseen), before Popovic is in any car on route B (5:53 at the earliest), and while he is still inside on A and G at Alert 2 (Enter 68 s). As the rules stand the veteran plan can't win.",
+   "a": {
+    "v": "unclaimed shooting: when nobody of security (cameras, the guard, the patrol, officers, robots) saw an op during the shooting, no civilian within 13 m saw it, nobody but rivals was hit, and no op is in the response's sight when it arrives or while it holds the scene (unclaimed-hold-s), it is filed as a gang shooting: Alert 2 and its response, the Trail and Standing charged; the seal waits for the cell to be confirmed (an op seen by security doing a seen act, a known face, or the next incident). Any rival fight, any mission.",
+    "unclaimedHoldS": {
+     "v": 60,
+     "unit": "s",
+     "src": "the search's 60 s at a scene (§05 bodies)"
+    },
+    "recommended": true
+   },
+   "b": "keep today's seal: the veteran shot pays only on A or G finished before about 5:20 at Alert 2",
+   "c": "no early shot at all: the rival car can only be shot once it stands at the block, in the final fight (untraced, as Sky's call 4 already allows)"
+  }
+ },
+ "mislead": {
+  "car": {
+   "v": "retired",
+   "gate": "Q2",
+   "tag": "S",
+   "proposed": true,
+   "reason": "Sky doubts the tip ('not one of mine'). At the block, tipping the car would unbox the cell's car for 3:50 and make the drive-round easy. Mislead stays the Scout's verb, on a crew member on foot (lookoutJob.mislead, thinning.mislead)."
+  }
+ },
+ "seen": {
+  "rule": "What the player sees and when (Glyph, Fable, Chime); each threat reads from the street before it costs.",
+  "rows": [
+   {
+    "when": "from 0:00",
+    "where": "the Job page and the clock",
+    "what": "'2:35 the rival car comes for our car: it stops across our way out and its crew gets out' (Sky's call: the 2:35 shows from the start)"
+   },
+   {
+    "when": "2:35",
+    "where": "the street, a crucial card",
+    "what": "the car turns in off Orbit Walk; card 'Rival car coming'. A Watch on it draws its route and its stop (dashed) at our car; its 10 HP pips show on the fire offer"
+   },
+   {
+    "when": "about 2:56",
+    "where": "the car, our car's ring",
+    "what": "it stops across Rocket Lane; outlined, a line from our car's nose to it; Go and Drive locked 'Boxed in: the rival car'; card 'The rival car is across our way out'"
+   },
+   {
+    "when": "3:01-3:05",
+    "where": "the square",
+    "what": "three men walk to posts round our car (as today)"
+   },
+   {
+    "when": "3:07-4:05",
+    "where": "the street",
+    "what": "a man walks off toward the Office's official side and stands facing Popovic's car; a Watch on him shows his cone and his job: 'watches Popovic's car: if it goes round, he follows it'"
+   },
+   {
+    "when": "always",
+    "where": "the book, route B",
+    "what": "'Deal with the lookout before Popovic's car leaves (5:53): send him off (Scout), pay him (Fixer), or take him (Enforcer)'"
+   },
+   {
+    "when": "on a ring",
+    "where": "each crew member",
+    "what": "Listen, Pay ($30,000 · ? until Listen), Mislead ('back at his post m:ss'), Knock out / Kill with who would see it; the book's fight line 'at our car: 5 rivals, break at 3'"
+   },
+   {
+    "when": "5:53",
+    "where": "the lookout",
+    "what": "if he's still there: his head turns with Popovic's car; card 'The rival lookout is going after Popovic's car' (stays until clicked)"
+   }
+  ]
+ },
+ "bands": {
+  "seeds": 200,
+  "baseline": "Keel's 5:30 re-measure, run c050 (brief 096 'Shift landed'): quiet-a 100 %, quiet-b 91.5 %, quiet-g 79 %, thin-quiet 87 %, prepared-loud 75.5 %",
+  "rows": [
+   {
+    "plan": "quiet-a (front door; the fight at the square now breaks the crew or blows the car)",
+    "was": "100 %",
+    "expect": "80-95 %; final fight median 20-45 s (inside §07's 15-40 s is the aim)",
+    "why": "board-and-go past one blocker is gone; the lookout runs in about 30 s late"
+   },
+   {
+    "plan": "quiet-b (rewritten: Listen and Help Lukac, Mislead the lookout 4:16-5:52 or Pay him, Reroute timed to the Take, walk Popovic about 65 m to the square)",
+    "was": "91.5 %",
+    "expect": "70-85 %",
+    "why": "the 3.5 m carry becomes the A-length walk, and the fight has the block"
+   },
+   {
+    "plan": "quiet-b-lookout-ignored (twin)",
+    "expect": "<= 5 %; rivals-reach on >= 95 % of seeds",
+    "why": "he is at the service bay about 14 s into the 38 s Take"
+   },
+   {
+    "plan": "quiet-b-thinned (twin: lookout paid, one posted paid or taken)",
+    "expect": ">= quiet-b + 5 points; final fight median shorter than quiet-b's on >= 70 % of seeds",
+    "why": "3 hostiles, break at 2"
+   },
+   {
+    "plan": "quiet-g",
+    "was": "79 %",
+    "expect": "60-80 %",
+    "why": "no guard ally against the block's crew"
+   },
+   {
+    "plan": "thin-quiet",
+    "was": "87 %",
+    "expect": "within 10 points",
+    "why": "Waymark to say which route it follows"
+   },
+   {
+    "plan": "prepared-loud",
+    "was": "75.5 %",
+    "expect": "within 10 points",
+    "why": "the car keeps its block when the crew is drawn, but a loud fight's police, not the crew, decide it"
+   },
+   {
+    "plan": "drive-round shortcut (Drive to the service drive before the rivals arrive, about 2:30, and wait)",
+    "expect": "5-25 % (082: hard, not impossible)",
+    "why": "the patrol's clock on the car for about 4 min (two timed Reroutes), the block across the drive's mouth, and the kerb stop 14.5 m in the lookout's view"
+   },
+   {
+    "plan": "veteran shoots the car (on Orbit Walk, nobody within 13 m; then route B at Alert 2)",
+    "expect": "Q1 (a): 15-35 %; (b): 0-5 %; (c): n/a",
+    "why": "the stretch with nobody near is seed-dependent; burning it in 8-10 s takes all four; the street fight; staying unseen by the response; then the rest at Alert 2 with a loud final fight"
+   },
+   {
+    "plan": "careless, unprepared-loud",
+    "was": "<= 30 %, <= 20 %",
+    "expect": "unchanged"
+   },
+   {
+    "plan": "B-8 idle on quiet-b",
+    "was": "median 63 s (4:50 shift)",
+    "expect": "median <= 30 s",
+    "why": "the lookout's job (4:05-5:48), Listen on the crew, thinning, the timed Reroute"
+   }
+  ]
+ },
+ "tests": [
+  "RIV-1 arrive-blocks-square (200 seeds)",
+  "RIV-2 arrive-follows-drive",
+  "RIV-3 retarget-mid-entry",
+  "RIV-4 crew-out-and-posts",
+  "RIV-5 wheelman-stays-aboard",
+  "RIV-6 lookout-follows-fails (200 seeds)",
+  "RIV-7 lookout-misled-covers",
+  "RIV-8 lookout-misled-late",
+  "RIV-9 lookout-paid-gone",
+  "RIV-10 loyal-refuses-tells-crew",
+  "RIV-11 lookout-stashed-unseen",
+  "RIV-12 lookout-ko-wakes",
+  "RIV-13 driver-no-word",
+  "RIV-14 posted-paid",
+  "RIV-15 posted-misled-joins-late",
+  "RIV-16 posted-taken-mate-sees",
+  "RIV-17 fight-size-table",
+  "RIV-18 break-drives-off",
+  "RIV-19 blow-the-block",
+  "RIV-20 wheelman-down-car-stays",
+  "RIV-21 drawn-crew-car-stays",
+  "RIV-22 prefight-break-reblocks",
+  "RIV-23 shot-on-the-way",
+  "RIV-24 unclaimed-no-seal (Q1 a)",
+  "RIV-25 seen-shooting-seals",
+  "RIV-26 veteran-price",
+  "RIV-27 carless-crew-gone",
+  "RIV-28 bands-200",
+  "RIV-29 replay",
+  "RIV-30 generated-site"
+ ]
+}
