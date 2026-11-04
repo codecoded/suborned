@@ -48,7 +48,7 @@ namespace Suborned.Play
         public struct Query { public string Event, Verb, Speaker, Outcome, Temperament, About; }
 
         public string Source { get; private set; } = "placeholder (Fable's text.json is not in StreamingAssets/sim yet)";
-        public string Title = "", Objective = "", Win = "", ClockLine = "", Close = "7:30", PurseLine = "", Tracker = "", Seed = "handover-1";
+        public string Title = "", Objective = "", Win = "", ClockLine = "", Close = "8:10", PurseLine = "", Tracker = "", Seed = "handover-1";
         public readonly List<string> Card = new(), Hints = new();
         public readonly List<(string code, string line)> Fails = new();
         /// <summary>The status pill's marks (briefing.timeline): m:ss, label, and whether the cell knows it before it happens.</summary>
@@ -529,7 +529,7 @@ namespace Suborned.Play
                 Title = "The Handover",
                 Objective = "Take the councillor alive and get him into your getaway car.",
                 Win = "The councillor, alive, in your getaway car.",
-                ClockLine = "Handover chime at 4:30. the councillor's driver takes him away at 5:10, or 7:30 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
+                ClockLine = "Handover chime at 5:10. the councillor's driver takes him away at 5:50, or 8:10 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
                 PurseLine = "$100,000 for the whole job. Every payment can be traced.",
                 Tracker = "Take the councillor alive to the getaway car · closes {close}",
             };
@@ -579,8 +579,8 @@ namespace Suborned.Play
             Lk("busy", "busy until", "Wait until the current act lands, or cancel it (C).");
             Lk("cash", "not enough cash", "You can't afford the worst case; try a cheaper approach.");
             Lk("refused", "refused this already", "They said no to this; try another approach.");
-            Lk("vale-inside", "The councillor is not inside", "Only while the councillor is in the Office (before 4:50).");
-            Lk("vale-car", "not at his car", "Wait for the councillor to reach his car (after 4:50).");
+            Lk("vale-inside", "The councillor is not inside", "Only while the councillor is in the Office (before 5:30).");
+            Lk("vale-car", "not at his car", "Wait for the councillor to reach his car (after 5:30).");
             Lk("no-vale", "don't have the councillor", "Take the councillor first (Enforcer).");
             Lk("no-rivals", "no rivals", "The rival crew arrives later.");
             void E(string id, string kind, string[] log, params string[] speakers) { var e = new EventText { Id = id, Kind = kind }; if (log != null) e.Log.AddRange(log); e.Speakers.AddRange(speakers); t.Events[id] = e; }
