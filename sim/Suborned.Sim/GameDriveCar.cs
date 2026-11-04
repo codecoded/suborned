@@ -36,7 +36,8 @@ namespace Suborned.Sim
         Pt LaneAt(int cm) => S.LanePointAt(cm, CurStand);
 
         /// <summary>Drive (brief 059 K6): refused while held (drive-held), by an operative not in the car (drive-no-driver), while anyone in it is
-        /// mid-act (drive-busy), for no stand (unknown-stand) or the one it is at (drive-here), and once the final fight has started (drive-fight).</summary>
+        /// mid-act (drive-busy), for no stand (unknown-stand) or the one it is at (drive-here), and once the final fight has started (drive-fight);
+        /// brief 096 (car.box): boxed in where it stands (drive-boxed), or the stand it would drive to boxed (stand-boxed).</summary>
         string DriveCar(Op op, Order o)
         {
             if (!R.DriveCarOn || Range) return No("unknown-verb", "drive-car is the getaway car's Drive (rulebook cell.driveCar): unknown = reject");
@@ -47,6 +48,8 @@ namespace Suborned.Sim
             foreach (var x in Ops) if (x.InCar && x.Busy != null) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");
             if (st == CurStand) return No("drive-here", $"the car is at {st.Id} already");
             var hs = CarHolders(); if (hs.Count > 0) return No("drive-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
+            var bx = GetawayBoxers(); if (bx.Count > 0) return No("drive-boxed", BoxedWords(bx), ids: string.Join(",", bx)); // brief 096 (car.box): boxed in where it stands
+            var sb = StandBoxers(st.Id); if (sb.Count > 0) return No("stand-boxed", $"can't get in: {string.Join(", ", sb)} {(sb.Count == 1 ? "is" : "are")} across the way out of {st.Id}", ids: string.Join(",", sb)); // and where it would go
             var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm) ?? new[] { CurStand.CarCell, st.CarCell });
             var prof = CarProfile(path); int ticks = Math.Max(1, prof.Length - 1);
             getawayPath = path; getawayProf = prof; getawayStart = Tick; GetawayDest = st;

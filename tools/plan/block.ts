@@ -88,7 +88,7 @@ const objects: Item[] = nav.solids
 // ---- adjustments ----
 type Adj = {
   op: 'addBay' | 'addDrive' | 'addStructure' | 'edit' | 'buildingHeight' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing' | 'floor'; reason: string;
-  id?: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number;
+  id?: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number; use?: string; // addBay: use = public, official or service (brief 096)
   building?: string; tower?: string; to?: P | string; on?: string; face?: string; // towerFootprint, moveEntrance, addEntrance; addDrive: `to` = the bay it reaches
   road?: string; kerb?: [P, P]; // addDrive: the plan road it leaves and the segment of that road's kerb it crosses (block frame)
   kind?: string; level?: string; top?: number; rise?: number; risers?: number; tread?: number; // floor: what the floor is, its level and height, and a flight's steps
@@ -96,7 +96,9 @@ type Adj = {
 const adjFile = readFileSync(ADJUST, 'utf8');
 const adj: { schema: string; owner: string; adjustments: Adj[]; dressing?: Record<string, unknown> } = JSON.parse(adjFile);
 if (adj.schema !== 'suborned.block-adjust/1') throw new Error('adjust file schema must be suborned.block-adjust/1');
-const bays: { id: string; polygon: P[] }[] = [];
+// A bay's use (brief 096, Motive; rulebook attention.parked): public (anyone parks), official (the Office's own cars) or service (deliveries, staff). Required: unknown = reject.
+const BAY_USES = ['public', 'official', 'service'];
+const bays: { id: string; use: string; polygon: P[] }[] = [];
 // A drive (brief 023; Sky 2026-10-19, service door east face): the vehicle crossing from a road's carriageway across the pavement of the plot to a bay that touches no road. Block frame, like the bays.
 // `kerb` is the segment of the road's kerb the drive crosses (the world drops that kerb flush); `to` is the bay it reaches. tools/sim/drive.ts reads {id, polygon}; the plan checker's DR-1..DR-3 hold the rest.
 const drives: { id: string; polygon: P[]; road: string; kerb: [P, P]; to: string; reason: string }[] = [];
@@ -111,7 +113,7 @@ const building = (a: Adj) => { const b = buildings.find(x => x.id === a.building
 let dressing: Record<string, unknown> | undefined;
 for (const a of adj.adjustments) {
   if (!a.reason?.trim()) throw new Error(`adjustment without a reason: ${JSON.stringify(a)}`);
-  if (a.op === 'addBay') bays.push({ id: a.id!, polygon: a.polygon! });
+  if (a.op === 'addBay') { if (!BAY_USES.includes(a.use ?? '')) throw new Error(`adjustment addBay ${a.id}: use must be one of ${BAY_USES.join(', ')} (brief 096), not ${a.use}`); bays.push({ id: a.id!, use: a.use!, polygon: a.polygon! }); }
   else if (a.op === 'addDrive') {
     if (!a.id || !a.polygon || a.polygon.length < 3 || !a.road || !a.kerb || a.kerb.length !== 2 || typeof a.to !== 'string') throw new Error(`adjustment addDrive ${a.id ?? ''}: needs id, polygon, road, kerb [[x,y],[x,y]] and to (a bay id)`);
     if (drives.some(x => x.id === a.id)) throw new Error(`adjustment addDrive: ${a.id} exists`);

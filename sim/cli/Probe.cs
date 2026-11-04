@@ -95,4 +95,18 @@ static class Probe
             }
         }
     }
+
+    /// <summary>Brief 096 (engine 0.40.0): the site's car ground as the engine works it out: each stand's way out (car.box) and private ground
+    /// (attention.parked), the official car's ways out, the turned driver's kerbside stop for each taken stand (car.kerb). For Splice and Vantage.</summary>
+    public static void Ground(Engine.Inputs i)
+    {
+        var s = i.SiteData; var g = s.GroundOf(i.Rules);
+        string P(Pt p) => FormattableString.Invariant($"({p.X / 100.0:0.00}, {p.Y / 100.0:0.00})");
+        string L(Pt[] w) => string.Join(" → ", Array.ConvertAll(w, P));
+        Console.WriteLine($"way out half-width {g.Half} cm (car.footprint.w / 2 + car.box.side); fight-block {g.BlockCm} cm");
+        foreach (var st in s.Stands) Console.WriteLine($"stand {st.Id}: car {P(st.CarAt)}, private {g.Private[st.Id]}; way out {L(g.Way[st.Id])}");
+        Console.WriteLine($"official from the pickup: {L(g.PickupWay)}");
+        Console.WriteLine($"official out of the service bay: {L(g.ServiceWay)}");
+        foreach (var kv in g.Kerb) Console.WriteLine(FormattableString.Invariant($"kerbside stop when {kv.Key} takes {kv.Value.Drive}: {P(kv.Value.At)} heading ({kv.Value.Heading.X}, {kv.Value.Heading.Y}), {kv.Value.Mm / 1000.0:0.00} m along the driver's route"));
+    }
 }

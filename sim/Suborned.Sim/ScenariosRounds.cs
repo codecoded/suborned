@@ -20,7 +20,7 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         /// <summary>The cases that read the round itself (they have nothing to compare with the round off).</summary>
-        public static readonly HashSet<string> PlaysTheRound = new HashSet<string>(StringComparer.Ordinal) { "N130", "N131", "N132", "N133", "N134", "N135", "N136", "N178", "N179", "N180", "CLOSE-VERDICT", "BOARD-REACH", "GUARD-LEAVES", "SHOT-INTAKE", "CARD-COMING", "SEED-REPLAY", "SEED-DIFFER", "SEED-NEUTRAL", "SEED-FIXED", "SEED-READS", "SEED-FAIR", "PACE-CLOCK", "SHOT-SUM", "SHOT-STREAK" }; // brief 080: these play their own games on the run's inputs
+        public static readonly HashSet<string> PlaysTheRound = new HashSet<string>(StringComparer.Ordinal) { "N130", "N131", "N132", "N133", "N134", "N135", "N136", "N178", "N179", "N180", "CLOSE-VERDICT", "BOARD-REACH", "GUARD-LEAVES", "SHOT-INTAKE", "CARD-COMING", "SEED-REPLAY", "SEED-DIFFER", "SEED-NEUTRAL", "SEED-FIXED", "SEED-READS", "SEED-FAIR", "PACE-CLOCK", "SHOT-SUM", "SHOT-STREAK", "CAM-5", "CAM-8", "CAM-9", "BOX-1", "KERB-2", "KERB-3", "KERB-5", "PARK-1", "PARK-8" }; // brief 080: these play their own games on the run's inputs (brief 096: and these)
         static string PhaseOf(Game g) => g.PersonPose(g.Inez)?.phase ?? "";
         static Start KnowingRoutine() { var s = new Start(); s.Known["waitress"] = new List<string> { "routine" }; return s; }
         static Start KnowingSecret() { var s = new Start(); s.Known["waitress"] = new List<string> { "secret" }; return s; }

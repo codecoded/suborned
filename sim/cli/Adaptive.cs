@@ -53,6 +53,7 @@ static class Adaptive
         ["takedown.out"] = "the body on the ground", ["takedown.fails"] = "the struggle", ["takedown.seen"] = "the card", ["guard.down"] = "the guard falling", ["patrol.down"] = "the robot falling", ["security.down"] = "officers falling",
         ["alarm.dispatches"] = "the alarm's card", ["seal.starts"] = "the seal clock on the HUD", ["gunfire"] = "the shots", ["report"] = "the Alert pip and the card", ["camera.dark"] = "the lens mark",
         ["disable.on"] = "the Tech's card; the lens goes dark", ["close.warning"] = "the clock turns and its line (fight.close, 6:30)",
+        ["camera.record-lands"] = "the card and the Alert pip (brief 096)", ["car.report-lands"] = "the card and the Alert pip (brief 096)", ["car.kerbside"] = "Vale's car pulling in at the kerb (brief 096)",
     };
 
     public sealed class Pace { public double GapP50, GapP90, ReactP50, ReactP90, IdleProb, IdleP50, IdleP90; }
@@ -352,5 +353,5 @@ static class Adaptive
         return w.EndObj().ToString();
     }
     static readonly string[] OpNames = { "scout", "fixer", "tech", "enforcer" };
-    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over" };
+    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside" };
 }

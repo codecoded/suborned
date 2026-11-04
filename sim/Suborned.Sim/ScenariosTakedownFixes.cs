@@ -327,7 +327,7 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 int there = DriveRound(r); // brief 059 (Sky 1a): the getaway car round behind Vale's
                 r.Do(Enf, "take"); int done = r.Op(Enf).BusyEnd; r.To(done - 1);
                 r.Is(!g.Acts.Exists(x => x.Take), "inside the car: nobody saw a Take, the driver no witness");
-                r.Eq(g.Alert, 0, "Alert 0");
+                r.Eq(g.Alert, g.CameraRecords().Exists(x => x.state == "landed") ? g.R.CamAlert : 0, "Alert 0 but the taped Pay's (engine 0.40.0, brief 096: route-b pays Lukac with the pickup camera live): the Take adds none");
                 r.To(Math.Max(there, done));
                 r.FightItOut(120, Scout, Fixer, Tech); r.Extract();
                 r.Line(!g.Acts.Exists(x => x.Take), $"the escort (3.5 m) unseen: nobody within 3 m of the grip (brief 059: at 7:07 the clerks leaving by the service door stand within 3 m of it: {string.Join(", ", g.Acts.Where(x => x.Take).SelectMany(x => x.Noticed))}; Waymark times the carry)");
