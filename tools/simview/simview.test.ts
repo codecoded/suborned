@@ -12,7 +12,7 @@ describe('simview', () => {
   // median tick, the first seed's hashes), and loud-fight is no longer played. So the dump is checked on fixed-script plays: a quiet-side fail, a loud fight with shots, a camera fail.
   test.skipIf(!hasDotnet)('a dump ends on the recorded final hash, with the reads changing nothing', async () => {
     const dll = buildCli(), record = latestRecord();
-    for (const script of ['fail-rivals-reach-vale', 'fight-loud-wait-yard', 'careless-takedown-seen-camera']) {
+    for (const script of ['fail-rivals-reach-vale', 'fight-loud-wait-square', 'careless-takedown-seen-camera']) { // engine 0.42.0 (c052): fight-loud-wait-yard loses to the lookout before a shot (0.41.0; Waymark recomposes it), so the loud fight with shots is the square's twin
       expect(`${script}: ${recordedPlay(record, script).kind}`).toBe(`${script}: script`);
       const d = await dump(dll, record, script);
       expect(d.data.readsChangedNothing).toBe(true);
@@ -20,7 +20,7 @@ describe('simview', () => {
       expect(d.data.finalHash).toBe(d.recorded.finalHash);
       expect([d.data.outcome, d.data.fail, d.data.tick]).toEqual([d.recorded.outcome, d.recorded.fail, d.recorded.tick]);
       expect(d.code).toBe(0);
-      if (script === 'fight-loud-wait-yard') expect(d.data.shots.length).toBeGreaterThan(0);
+      if (script === 'fight-loud-wait-square') expect(d.data.shots.length).toBeGreaterThan(0);
     }
   }, 60_000);
 
