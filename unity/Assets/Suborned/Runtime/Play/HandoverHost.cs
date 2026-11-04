@@ -147,7 +147,7 @@ namespace Suborned.Play
         /// <summary>Pulse 067 W2: a crowd security person in the player's words ("a guard"; any other security job "an officer").</summary>
         string CrowdSecurityName(Person p) => p.Job == "guard" ? Text?.TargetName("crowd-guard", "a guard") ?? "a guard" : Text?.TargetName("crowd-officer", "an officer") ?? "an officer";
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
-        public sealed class Intent
+        public sealed partial class Intent
         {
             /** brief 080: a fire offer's chance, -1 none */ public int OddsPct = -1; public bool OddsDown = true; public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
             /// <summary>For the kit's card: orders a turn takes (more than one = "one step worse"), a Pressure on a known secret, the walk first (s).</summary>
@@ -698,7 +698,7 @@ namespace Suborned.Play
                 PointerHover(screen);
                 var i = HoverIntent;
                 if (Picked >= 0 && i != null && i.Actionable && !controls.quickAction && i.Order.Do != "fire" && Harmful(i.Order, t, AnyDrawn())) { Picked = -1; intentKey = ""; RightRing(t, screen); return; } // brief 038 §4.5: a picked Kill or Pressure still goes through the ring
-                if (Picked >= 0 && i != null && i.Actionable) { Picked = -1; intentKey = ""; if (i.Order.Do == "go") GoGive(Agent, screen, "right"); else if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once (a seen takedown asks for the hold first); spent by the click (brief 038 §4.5)
+                if (Picked >= 0 && i != null && i.Actionable) { Picked = -1; intentKey = ""; if (i.Order.Do == "go") GoGive(Agent, screen, "right", i.Order.Target); else if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // the fast path: a verb picked on the hotbar fires at once (a seen takedown asks for the hold first); spent by the click (brief 038 §4.5)
                 if (Picked >= 0) { PickedRefused(i, t, screen); return; } // brief 038 §4.5: it can't apply here: its lock, and nothing else
                 OpenPanel(t, screen);                                                                       // else the action panel (Sky: "expecting an actions panel to pop out")
                 return;
@@ -796,11 +796,11 @@ namespace Suborned.Play
                 if (n.StartsWith("body/")) { var bp = Game.PersonById(n[5..]) ?? Game.BodyById(n[5..])?.P; return bp == null ? null : new Target { Kind = "body", Key = n[5..], Id = n[5..], Label = PersonName(bp) }; } // engine 0.33.0: a rival's body (BodyById finds the crew; PersonById the cast and the crowd)
                 if (n.StartsWith("stash/")) { var st = Game.S.Stashes.Find(x => x.Id == n[6..]); return st == null ? null : new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) }; }
                 if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
-                if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = Text?.TargetName("car-official", $"{ValeWord}'s car") ?? $"{ValeWord}'s car" }; // Fable 067 (the glossary): $"{ValeWord}'s car"
+                if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = OfficialCarName() }; // Fable 067 (the glossary): $"{ValeWord}'s car"; brief 096: ours once lent (HostLent)
                 if (n.StartsWith("stand/")) return StandTarget(n); // brief 059 K6: a stand of the getaway car (its Drive)
                 if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
                 if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a passer-by" }; } // engine 0.18: a range bystander
-                if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = "the getaway car" };
+                if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = GetawayCarName() }; // brief 096: "our car" (names.targets.car-getaway)
                 if (n == "marker/door") return new Target { Kind = "door", Key = "door", Label = "the public door" };
                 if (n == "marker/cabinet") return new Target { Kind = "cabinet", Key = "cabinet", Label = "the control cabinet" };
                 if (n.StartsWith("camera/")) return new Target { Kind = "camera", Key = n[7..], Label = CameraName(n[7..]) };
@@ -817,7 +817,7 @@ namespace Suborned.Play
             if (t.Kind == "crowd" && !Selected[(int)OpId.Enforcer]) return new Intent { Label = t.Label }; // takes no orders but the Enforcer's takedown (brief 013): a hover says nothing (Fable A8); Pulse 067 W2: a shift guard is "a guard"
             if (t.Kind is "body" or "stash") { Intent b = null; Guard("price", () => { var l = BodyIntents(Agent, t); b = l.Count > 0 ? l[0] : new Intent { Label = t.Label, Hint = WhoCan(t) }; }); return b; }
             Intent got = null;
-            if (IsGetaway(t)) { Guard("price", () => got = Game.Ops[(int)Agent].InCar || (Game.AnyInCar && BoardLock(Agent).code is "in-car" or "agent-down") ? GoIntent(Agent) : BoardIntent(Agent)); if (got != null) { if (got.Order?.Do == "board" && got.WalkS == 0) Guard("walk", () => { var aw = ActPlace(Agent, got.Order, t); if (aw != null) got.WalkS = aw.Seconds; }); return got; } } // brief 018: Board, or Go from the car
+            if (IsLentCar(t)) return LentChipIntent(t); if (IsGetaway(t)) { Guard("price", () => got = Game.Ops[(int)Agent].InCar || (Game.AnyInCar && BoardLock(Agent).code is "in-car" or "agent-down") ? GoIntent(Agent) : BoardIntent(Agent)); if (got != null) { if (got.Order?.Do == "board" && got.WalkS == 0) Guard("walk", () => { var aw = ActPlace(Agent, got.Order, t); if (aw != null) got.WalkS = aw.Seconds; }); return got; } } // brief 018: Board, or Go from the car
             Guard("price", () =>
             {
                 var slots = PlateOf(Agent);
@@ -904,8 +904,8 @@ namespace Suborned.Play
                         var i = I(id, t.Key, "", Text?.WithTarget(id, t.Label) ?? $"{(id == "listen" ? "Listen to" : plate[slot].Label)} {t.Label}"); i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Outcome = id == "watch" ? (t.Key == "guard" ? "routine" : "mood") : "need, temperament"; return i; // brief 054: a person's Watch reads the mood; the guard's his sight and marks
                     }
                 case "mislead":
-                    if (t.Kind != "rivals" || t.Key != "car:rivals") return null; // brief 059 F3: the tip is given at the parked car, to its wheelman
-                    { var i = I("mislead", "car:rivals", "", "False tip"); i.Time = $"{R.MisleadS} s"; i.Trail = $"T +{R.MisleadTrail}"; return i; }
+                    return null; // engine 0.41.0 (rivals.turn, Motive Q2 a): the false tip on the rival car is retired (the engine refuses tip-retired), so it is never offered;
+                    // Mislead on a rival on foot (and Listen, Pay on the crew) is the rivals round's, not wired in the host yet (brief 096, Latch's report)
                 case "ask": case "pay": case "help": case "pressure":
                     if (t.Kind != "person" || t.Key == "councillor" || CastOf(t.Key) == null) return null; // a turn is on a cast person only
                     {
@@ -914,7 +914,7 @@ namespace Suborned.Play
                         i.Usd = q.WorstUsd > q.Usd ? $"${q.Usd:N0}–{q.WorstUsd:N0}" : $"${q.Usd:N0}";
                         i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Orders = q.Orders; i.Leverage = q.Leverage; // the walk is the card's own (Walk, WalkS)
                         i.Alert = q.Reports == "no" ? "A 0" : q.Reports == "yes" ? $"A →{q.AlertIfReported}" : $"A ?→{q.AlertIfReported}";
-                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome; i.Seen = SeenWords(q.Seen);
+                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome; i.Seen = SeenWords(q.Seen); Tape(i, q); /* brief 096: a live camera records Pay and Pressure (HostTape) */
                         i.Likely = q.Likely; i.Hurt = q.Hurt; i.Exact = CastOf(t.Key)?.KTemperament ?? false; i.Eyes = new List<string>(q.WitnessIds); // engine 0.28
                         return i;
                     }
@@ -929,8 +929,8 @@ namespace Suborned.Play
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
                 case "act":
                     if (t.Kind == "door") { var i = I("enter", "", "", "Enter the Office"); i.Time = $"{R.EnterS} s"; i.Alert = "seen = fail"; var sq = g.SeenAt(g.S.Stand(g.S.GuardPost)); i.Seen = SeenWords(sq); i.SeenQ = sq; return i; } // brief 014: the eye on the line (the engine's card-only SeenAt)
-                    if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official") || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", $"Take {ValeWord}"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
-                    if (t.Kind == "car" && t.Key == "getaway") return g.Ops[(int)by].InCar ? GoIntent(by) : BoardIntent(by); // brief 018: Extract retired into Board and Go
+                    if ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official" && !IsLentCar(t)) || (t.Kind == "person" && t.Key == "driver" && g.Vale == ValeAt.Pickup)) { var i = I("take", "", "", $"Take {ValeWord}"); i.Time = $"{R.TakeS} s"; i.Trail = g.Driver.Turned ? "T 0" : $"T +{R.TakeTrailUnturned}"; return i; } // Sky, route B: Vale stands in (or is hidden by) his car at the pickup; the car takes the click too
+                    if (IsCellCar(t)) return CarActIntent(by, t); // brief 018: Extract retired into Board and Go; brief 096: either cell car (HostLent)
                     return null;
                 case "takedown": return TakedownIntent(slot, t, Way);
                 case "drop": case "stash": { var l = BodyIntents(by, t, id); return l.Count > 0 ? l[0] : null; }
@@ -1164,9 +1164,9 @@ namespace Suborned.Play
             {
                 // Sky: "the action menu should only show the actions for the player(s) I've selected"
                 var order = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k] && Able(k)) order.Add(k); // item 29: a downed agent is no giver (its rows never exist: no wedge, no cameo)
-                if (order.Count == 0 && (IsGetaway(t) || t.Kind == "stand")) for (int k = 0; k < 4; k++) if (Game.Ops[k].InCar && Able(k)) order.Add(k); // brief 067 C1.3 (Glyph): the car (and a stand) answers with nobody selected: for the crew aboard, in cell order
+                if (order.Count == 0 && (IsCellCar(t) || t.Kind == "stand")) for (int k = 0; k < 4; k++) if (Game.Ops[k].InCar && Game.Ops[k].InLent == IsLentCar(t) && Able(k)) order.Add(k); // brief 067 C1.3 (Glyph): the car (and a stand) answers with nobody selected: for the crew aboard, in cell order
                 if (order.Count == 0) { pn.Note = "Select an agent."; return; }
-                if (IsGetaway(t)) { CarRows(pn, order, t); KeyRows(pn); return; } // brief 018: Board for each selected agent, then Go
+                if (IsCellCar(t)) { CarRows(pn, order, t); KeyRows(pn); return; } // brief 018: Board for each selected agent, then Go (brief 096: either car)
                 if (t.Kind == "stand") { StandRows(pn, order, t); KeyRows(pn); return; } // brief 059 K6: Drive the getaway car here
                 foreach (var k in order)
                 {
@@ -1201,7 +1201,7 @@ namespace Suborned.Play
                     pn.Rows.AddRange(rows.FindAll(r => r.Available)); pn.Rows.AddRange(rows.FindAll(r => !r.Available));
                 }
                 // Sky, route B ("couldn't get the take action to appear"): Vale or his car with the Enforcer not selected: his Take, greyed, says who does it
-                if (!Selected[(int)OpId.Enforcer] && Able((int)OpId.Enforcer) && ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official")) && Verb(OpId.Enforcer, 0, t) is Intent tk)
+                if (!Selected[(int)OpId.Enforcer] && Able((int)OpId.Enforcer) && ((t.Kind == "person" && t.Key == "councillor") || (t.Kind == "car" && t.Key == "official" && !IsLentCar(t))) && Verb(OpId.Enforcer, 0, t) is Intent tk)
                 {
                     Words(tk, t); var only = new Answer { ok = false, code = "only-enforcer", why = "Enforcer only", m = -1, cm = -1, tick = -1, usd = -1 };
                     pn.Rows.Add(new PanelRow { By = OpId.Enforcer, Slot = 0, I = tk, Verb = tk.Name, Lock = only, Reason = only.why, Available = false, Unlock = "Select the Enforcer." });
@@ -1299,8 +1299,8 @@ namespace Suborned.Play
                     if (!g.R.LoopRuns) return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
                     return g.LoopOn && g.LoopCam != o.Target ? No("loop-holds", $"one loop at a time: the {g.LoopCam} loop runs until {MissionClock(g.LoopUntil)}", g.LoopUntil) : yes;
                 case "disable": return g.CameraDark(o.Target) ? No("camera-dead", "that camera is already dead") : yes;
-                case "board": return BoardLock(by);
-                case "go": return GoLock();
+                case "board": return CarBoardLock(by, o.Target);
+                case "go": return CarGoLock(o.Target);
                 case "takedown": return v.Td != null && v.Td.Refused.Length > 0 ? No(v.Td.RefusedCode, v.Td.Refused) : op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "stash": return op.CarryBody.Length == 0 ? No("not-carrying", "carry the body to the stash first") : StashFree(o.Target) <= 0 ? No("stash-full", "full") : yes;
                 case "drop": return op.CarryBody.Length == 0 && !op.Carrying.HasValue ? No("not-carrying", "carrying nobody") : yes;

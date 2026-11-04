@@ -22,7 +22,7 @@ namespace Suborned.Play
         void GetawayLeaving()
         {
             var g = host.Game;
-            if (g == null || g.Range || !g.Over || g.CarLeftTick > g.Tick) { if (leaveFor != null) { leaveFor = null; leaveHeading = null; } return; }
+            if (g == null || g.Range || g.CarLeftTick > g.Tick) /* brief 096 (engine 0.42.0): with the lend our car can leave while the mission runs on */ { if (leaveFor != null) { leaveFor = null; leaveHeading = null; } return; }
             if (!things.TryGetValue(GetawayKey, out var th)) return;
             if (leaveFor != g)
             {

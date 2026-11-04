@@ -125,7 +125,7 @@ namespace Suborned.Play
         {
             if (builtFrame == Time.frameCount) return; builtFrame = Time.frameCount; // both views may ask; it is built once a frame
             var g = h.Game; Refresh(h);
-            goLeft = h.GoCardOpen ? h.LeftBehindNow() : noneLeft; // brief 018: the Go card's left-behind flags on the roster
+            goLeft = h.LeftFlagsOn ? h.LeftBehindNow() : noneLeft; // brief 018: the Go card's left-behind flags on the roster
             Fault = h.Fault != null ? h.Status : null; Status = h.Status; Dock = h.controls.dock; Mouse = h.Mouse; Box = h.BoxScreen;
             AckKey = h.controls.Label(PlayAction.Acknowledge); HistoryKey = h.controls.Label(PlayAction.DialogueLog); HintKey = h.controls.Label(PlayAction.Hints);
             bool ended = h.Ending.Length > 0;
@@ -143,7 +143,7 @@ namespace Suborned.Play
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
                 s.Role = Op.Name((OpId)i); s.Hurt = op.Gun.Health < op.Gun.Max && !op.Down; s.CancelTitle = $"Cancel {d.CancelVerb}"; s.CancelBody = d.CancelText;
                 s.InCar = op.InCar && !ended; s.LeftFate = "";
-                if (!ended && !op.InCar && h.GoCardOpen) foreach (var (who, fate, _) in goLeft) if (who == s.Role) s.LeftFate = fate;
+                if (!ended && !op.InCar && h.LeftFlagsOn) foreach (var (who, fate, _) in goLeft) if (who == s.Role) s.LeftFate = fate;
                 s.Icon = AtlasIcon(op.Busy?.Do ?? (d.Phase is "walking" or "running" ? "move" : d.Verb), op.Busy?.Approach ?? "", d.Phase);
                 bool carries = op.CarryBody.Length > 0 || op.Carrying.HasValue; // item 31: a downed agent carried reads as carrying too
                 s.StateTag = op.Down ? "DOWN" : carries ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
@@ -347,7 +347,7 @@ namespace Suborned.Play
             string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
             string head = h.Text != null && h.Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : ""; // Glyph's 0.2.104 review: the title is less.end.fail's ("District sealed"), so the line under it is the only one about the car
             var cw = g.Result == Outcome.Success ? default : h.EndCauseWords(); if (cw.Line != null) failLine = cw.Line; // brief 096 (Fable's debrief.cause): the engine's own reason, the seal by its car
-            EndLines.Add(g.Result == Outcome.Success ? $"{h.ValeWord} is in the car" : cw.Head ?? (g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed"));
+            EndLines.Add(g.Result == Outcome.Success ? (h.ValeOut ? BookWordsFile.Get().EndWinHead : $"{h.ValeWord} is in the car") : cw.Head ?? (g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed"));
             EndLines.Add(g.Result == Outcome.Success ? $"The crew escapes with {h.ValeWord} alive." : failLine.Length > 0 ? failLine : g.FailText);
             EndLines.Add($"Done at {HandoverHost.MissionClock(g.Tick)}   ·   ${g.S.Purse - g.Cash:N0} spent   ·   Trail {g.Trail}");
             if (d != null)
@@ -402,8 +402,7 @@ namespace Suborned.Play
                 line ??= lb?.Replace("{who}", Who(op)).Replace("{fate}", W(t.GetawayFate, fate)).Replace("{why}", W(t.GetawayWhy, why));
                 if (line != null) EndLines.Add($"\u0001{op}:{fate}\u0001{line}");
             }
-            if (d.Next.CarSeenBy.Length > 0 && t.DebriefBetween.TryGetValue("car-seen", out var cs))
-                EndLines.Add(cs.Replace("{by}", W(t.GetawayBy, PlayText.RoleOfId(d.Next.CarSeenBy))).Replace("{trail}", h.Game.R.WitnessTrail.ToString()));
+            CarLines(h, d, t, W); // brief 096 (engine 0.42.0): the car seen leaving, our car left behind, Popovic's car seen leaving (HudModel.Lend)
         }
 
         static string RouteWords(string id) => id switch
@@ -451,7 +450,7 @@ namespace Suborned.Play
                 case "loop": return "Loops the camera for two minutes; the Tech is free to go"; // engine 0.31.0: no tether
                 case "disable": return "Cuts the camera for good; the desk notices";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
-                case "go": return i.Outcome == "win" ? "Wins the mission" : "Withdraws"; // brief 018: who stays is the Go line itself
+                case "go": return i.Outcome == "win" ? "Wins the mission" : i.Outcome == "clear" ? "Gets the rest clear" : "Withdraws"; // brief 018: who stays is the Go line itself
                 case "board": return i.Outcome.Length > 0 ? "In the car " + i.Outcome : "In the car";
                 case "fire": return "Goes loud";
                 default: return i.Outcome;

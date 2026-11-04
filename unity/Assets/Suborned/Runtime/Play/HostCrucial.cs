@@ -17,8 +17,11 @@ namespace Suborned.Play
             public int Id, Tick, Rank, Value, Agent = -1; public string Kind = "", Code = "", Role = "", Title = "", Line = "", Face = "", Icon = "", View = ""; public Vector3? Place; public bool Read, Gone;
             public readonly List<(string icon, string word)> Fixes = new();
         }
-        /// <summary>The kinds in their order of urgency (Sky's call 7); turned and refused share a rank.</summary>
-        public static readonly string[] CrucialOrder = { "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
+        /// <summary>The kinds in their order of urgency (Sky's call 7); turned and refused share a rank. Brief 096, the lend (engine 0.42.0): Popovic out (vale.out)
+        /// tops it, since from then the police countdown runs; the lookout watching Popovic's car and our car boxed in rank with the rivals for our car; Popovic's car
+        /// lent to us with Popovic out of the Office.</summary>
+        public static readonly string[] CrucialOrder = { "vale-out", "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
+        static string RankAs(string kind) => kind switch { "refused" => "turned", "lookout" or "boxed" => "for-car", "lent" => "target-out", _ => kind };
         /// <summary>Cards waiting to be read, the shown one first; and every crucial card this run, oldest first (the Journal marks them).</summary>
         public readonly List<CrucialCard> CrucialQueue = new(), CrucialLog = new();
         public CrucialCard CrucialNow => CrucialQueue.Count > 0 ? CrucialQueue[0] : null;
@@ -34,7 +37,7 @@ namespace Suborned.Play
             journalSeen = 0; JournalOpenId = -1; JournalFrom = 0; JournalFilter = "all";
         }
 
-        static int CrucialRank(string kind) { int i = Array.IndexOf(CrucialOrder, kind == "refused" ? "turned" : kind); return i < 0 ? CrucialOrder.Length : i; }
+        static int CrucialRank(string kind) { int i = Array.IndexOf(CrucialOrder, RankAs(kind)); return i < 0 ? CrucialOrder.Length : i; }
 
         CrucialCard Crucial(string kind, string code = "", string role = "", int agent = -1)
         {
@@ -77,6 +80,8 @@ namespace Suborned.Play
         {
             "for-car" => Game.RivalsForCar.Count > 0,
             "down" => c.Agent >= 0 && Game.Ops[c.Agent].Down,
+            "boxed" => StillBoxed(),
+            "lookout" => LookoutWatching(),
             _ => true,
         };
 
@@ -86,6 +91,10 @@ namespace Suborned.Play
             // Sky 2026-11-05 ("sure"): the seal is never a feed card; its plate under the clock (brief 093) carries the countdown, in the Journal like every event
             if (code is "security.called" or "fight.loud" || code.StartsWith("alarm.dispatches", StringComparison.Ordinal))
             { if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; } }
+            else if (code == "vale.out") { var c = Crucial("vale-out", code); c.Icon = "car"; c.View = "car/getaway"; } // brief 096 (car.lend L5): Popovic is out; the rest to our car before the police
+            else if (code == "lend.lent") { var c = Crucial("lent", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "car/official"; } // L1: Popovic's car is ours, the Enforcer at its wheel
+            else if (code == "rivals.lookout-posted") { var c = Crucial("lookout", code); c.Face = "badges/signal_rival"; c.View = "car/official"; c.Place = LookoutAt(); } // engine 0.41.0: deal with him, or he reaches Popovic's car
+            else if (code is "rivals.block" or "rivals.back") { if (!CrucialQueue.Exists(x => x.Kind == "boxed")) { var c = Crucial("boxed", code); c.Icon = "car"; c.View = "car/rivals"; } } // engine 0.41.0: the rival car across our way out
             else if (code == "vale.exits") { var c = Crucial("target-out", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "councillor"; }
             else if (code == "rivals.coming") { var c = Crucial("rival-car", code); c.Face = "badges/signal_rival"; c.View = "car/rivals"; }
             else if (code == "report.confirmed") { var c = Crucial("body", code); c.Icon = "body_out"; }
@@ -106,11 +115,17 @@ namespace Suborned.Play
             {
                 line = line.Replace("{n}", (c.Kind == "for-car" ? Math.Max(1, Game.RivalsForCar.Count) : c.Value).ToString())
                     .Replace("{seal}", Game.Lockdown < int.MaxValue / 8 ? MissionClock(Game.Lockdown) : "?").Replace("{by}", "")
-                    .Replace("{s}", RespSoonestS >= 0 ? $"{RespSoonestS} s" : "?");
+                    .Replace("{s}", RespSoonestS >= 0 ? $"{RespSoonestS} s" : "?").Replace("{police}", Game.SplitPoliceAt < LendInf ? MissionClock(Game.SplitPoliceAt) : "?");
                 line = line.Trim();
             }
             return line.Length > 0 ? $"{line} · {MissionClock(c.Tick)}" : MissionClock(c.Tick);
         }
+
+        /// <summary>Our car is still boxed in (engine 0.40.0 car.box: GetawayBoxers).</summary>
+        bool StillBoxed() { List<string> bx = null; Guard("boxers", () => bx = Game.GetawayBoxers()); return bx != null && bx.Count > 0; }
+        /// <summary>The rival lookout is still up and watching Popovic's car, or following it (engine 0.41.0 rivals.lookout): not down or paid; a misled one is walking away.</summary>
+        bool LookoutWatching() => Game.Crew.Exists(m => !m.Gun.Down && !m.Paid && (m.Mode == CrewMode.Posted && m.Post == "lookout" || m.Mode == CrewMode.Walking && m.Goal is "lookout" or "follow"));
+        Vector3? LookoutAt() { var m = Game.Crew.Find(x => x.Post == "lookout" || x.Goal == "lookout"); return m == null ? (Vector3?)null : frame.World(m.Place); }
 
         /// <summary>A click on the card: it is read and the next one shows.</summary>
         public void CrucialDismiss() { if (CrucialQueue.Count == 0) return; CrucialQueue[0].Read = true; CrucialQueue.RemoveAt(0); }

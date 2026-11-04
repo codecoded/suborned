@@ -64,7 +64,7 @@ namespace Suborned.Play
         int MainWay(ContextPlan plan)
         {
             if (plan == null) return -1;
-            if (IsGetaway(plan.T)) return CarMainWay(plan); // brief 067 C: Board (the whole selection), then Go with Vale aboard, else Drive
+            if (IsCellCar(plan.T)) return CarMainWay(plan); // brief 067 C: Board (the whole selection), then Go with Vale aboard, else Drive
             // brief 043 §3.3: an act that just opened (fresh, 90 s) leads, in ContextRank's order among the fresh ones
             for (int pass = 0; pass < 2; pass++)
             {

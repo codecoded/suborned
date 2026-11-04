@@ -782,7 +782,8 @@
     "downed": "down when the car left",
     "fighting": "the fight was still on",
     "sealed": "the district was sealed",
-    "walked": "the street was calm"
+    "walked": "the street was calm",
+    "police": "the police closed in"
    },
    "by": {
     "officer": "A police officer",
@@ -2009,13 +2010,16 @@
     "downed": "down",
     "fighting": "fighting",
     "sealed": "sealed",
-    "walked": "walks out"
+    "walked": "walks out",
+    "police": "police",
+    "lent": "stays on"
    },
    "seen": "+{trail} T if seen",
    "flag": "Left behind",
    "fate": {
     "captured": "{who} would be captured.",
-    "walked": "{who} would walk out."
+    "walked": "{who} would walk out.",
+    "stays": "{who} stays to get clear."
    },
    "noVale": "Calls off the attempt; try again"
   },
@@ -3154,6 +3158,22 @@
      },
      "body": {
       "title": "Body found"
+     },
+     "vale-out": {
+      "title": "Popovic is out",
+      "line": "rest clear by {police}"
+     },
+     "lent": {
+      "title": "Popovic's car is ours",
+      "line": "Go when the way is clear"
+     },
+     "lookout": {
+      "title": "Rival lookout posted",
+      "line": "watching Popovic's car"
+     },
+     "boxed": {
+      "title": "Our car boxed in",
+      "line": "rival car across the way"
      }
     }
    },
@@ -3161,6 +3181,35 @@
     "rule": "Brief 096 objective 7, placeholders for Fable (Glyph's mock 4c-car-ring-2x.png): Go on the car's ring while rivals hold the car: `heldBy` before a badge per holder, `fix` the line under it.",
     "heldBy": "held by",
     "fix": "Step out and draw · or down them"
+   },
+   "cars": {
+    "rule": "Brief 096, the lend (engine 0.42.0), placeholders for Fable: `goLent` the Go on Popovic's car once it is ours (its Go takes him out: the win is fixed, the mission runs on); `endWinHead` and `endWinLine` the end card's head and line after a win by that Go; `lentName` Popovic's car once it is ours (our own stays names.targets.car-getaway); the debrief's `carLost` (our car left standing at the end: +{trail} T, the police trace it) and `lentSeen` ({by} saw Popovic's car leave: +{trail} T and a lead, not a hunted car).",
+    "goLent": "Go · Popovic out",
+    "lentName": "Popovic's car, ours now",
+    "carLost": "We left our car behind. The police will trace it. Trail +{trail}.",
+    "lentSeen": "{by} saw Popovic's car leave: a lead, not our car. Trail +{trail}.",
+    "endWinHead": "Popovic is out",
+    "endWinLine": "Popovic is out in his own car."
+   },
+   "police": {
+    "rule": "Brief 096, the lend (engine 0.42.0, Game.SplitPoliceAt), placeholders for Fable: the one countdown plate under the clock once Popovic is out. `head` with {time} (m:ss left), `why` the line under it, `left` who is still out ({list} their names, {n} how many), `clear` when nobody is, `end` the button that ends the mission now (End, in Withdraw's place; everyone not in a car that has left is captured).",
+    "head": "Police close in {time}",
+    "why": "Popovic is out. Get the rest clear.",
+    "left": "Still out: {list}",
+    "clear": "Everyone is clear",
+    "end": "End now"
+   },
+   "tape": {
+    "rule": "Brief 096 (engine 0.40.0, bribes on camera), placeholders for Fable: the Pay or Pressure card's camera line, its eye's hover and the panel row. `seen` a camera the cell has watched would record it ({camera} its name, {alert} the Alert, {s} seconds until its desk sees it, {trail} the Trail); `maybe` one the cell hasn't watched; `loopEnds` added when a loop on it runs out inside the act ({t} the clock).",
+    "seen": "{camera} would tape it: Alert {alert} in {s} s, +{trail} T",
+    "maybe": "A camera might see this: watch {camera} first",
+    "loopEnds": "loop ends {t}"
+   },
+   "parked": {
+    "rule": "Brief 096 (engine 0.40.0, the parked car), placeholders for Fable: the Drive card's line where our car would stand on private ground. `seen` a watcher the cell knows would see it ({who} the watchers, {s} the seconds in sight before they report it); `maybe` one it doesn't know yet; `back` added while the patrol is rerouted ({t} when it is back).",
+    "seen": "Parked here, {who} would see it: reported after {s} s",
+    "maybe": "Parked here, {who} might see it: watch first",
+    "back": "patrol back {t}"
    }
  },
  "pending": {

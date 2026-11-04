@@ -76,7 +76,7 @@ namespace Suborned.Play
             {
                 Intent i = null; Guard("price", () => i = IntentFor(t)); // the target given (the focus in third person), not what is under the cursor
                 if (i != null && i.Actionable && !controls.quickAction && i.Order.Do != "fire" && Harmful(i.Order, t, AnyDrawn())) { Picked = -1; intentKey = ""; RightRing(t, screen); return; } // brief 038 §4.5: a picked Kill or Pressure still goes through the ring
-                if (i != null && i.Actionable) { Picked = -1; intentKey = ""; if (i.Order.Do == "go") GoGive(Agent, screen, "right"); else if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // a picked action wins (Shift+1–4, Tab), spent by the click
+                if (i != null && i.Actionable) { Picked = -1; intentKey = ""; if (i.Order.Do == "go") GoGive(Agent, screen, "right", i.Order.Target); else if (!SeenGate(i, t, screen, "right")) Give(Agent, i.Order, t, screen); return; } // a picked action wins (Shift+1–4, Tab), spent by the click
                 PickedRefused(i, t, screen); return; // brief 038 §4.5: it can't apply: its lock, and never another act
             }
             if (controls.panelOnRight) { OpenPanel(t, screen); return; } // Sky may bring the panel back (controls.panelOnRight)
@@ -98,7 +98,7 @@ namespace Suborned.Play
         {
             if (r == null) return;
             if (!r.Available) { LockPop(r, at, world); return; }
-            if (r.I.Order?.Do == "go") { GoGive(r.By, at, source); return; } // brief 018: the commit hold when anyone stays
+            if (r.I.Order?.Do == "go") { GoGive(r.By, at, source, r.I.Order.Target); return; } // brief 018: the commit hold when anyone stays
             if (SeenGate(r.I, t, at, source)) return;
             if (r.I.Order?.Do == "fire") { FireRow(r.By, r.I.Order, t, at, source); return; } // a Fire way: the fire path (the going-loud card or the wedge's hold; the engine walks it into reach)
             Give(r.By, r.I.Order, t, at);
@@ -107,7 +107,7 @@ namespace Suborned.Play
         void LockPop(PanelRow r, Vector2 at, Vector3? world)
         {
             if (r == null) return;
-            if (r.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime;
+            if (r.Lock.code is "car-held" or "car-boxed") HolderPulseAt = Time.unscaledTime;
             var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}";
             popCode = r.Lock.code ?? ""; Pop(Text?.ShortLock(r.Lock.code) is string ? ShortOf(r.I.Order, r.Lock) ?? full : full, at, world, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full);
         }

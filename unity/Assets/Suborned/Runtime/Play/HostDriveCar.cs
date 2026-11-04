@@ -88,6 +88,7 @@ namespace Suborned.Play
             var i = new Intent { Slot = -1, Label = "Drive", Order = new Order { Op = Op.Name(by), Do = "drive-car", Target = st.Id } };
             i.Time = ticks < 0 ? "" : $"{(ticks + Game.Hz - 1) / Game.Hz} s"; i.Usd = "$0"; i.Trail = "T 0"; i.Alert = "A 0";
             i.Outcome = StandAfterVale(st) ? $"after {ValeWord}'s car" : "";
+            ParkedNote(i, st); // brief 096 (attention.parked): who would see the car parked there, and when they'd report it (HostTape)
             return i;
         }
 
@@ -97,11 +98,13 @@ namespace Suborned.Play
             var g = Game; var op = g.Ops[(int)by];
             Answer No(string code, string why, string ids = "") => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = -1, tick = -1, ids = ids };
             if (!g.R.DriveCarOn) return No("unknown-verb", "no Drive in this rulebook");
-            if (!op.InCar) return No("drive-no-driver", $"the {Op.Name(by)} is not in the getaway car: board it first");
+            if (!op.InCar || op.InLent) return No("drive-no-driver", $"the {Op.Name(by)} is not in the getaway car: board it first");
             if (FightStarted) return No("drive-fight", "the final fight has started: fight it out here, or Go");
             foreach (var x in g.Ops) if (x.InCar && x.Busy != null) return No("drive-busy", $"the {Op.Name(x.Id)} in the car is busy");
             if (st == g.CurStand && !g.GetawayDriving) return No("drive-here", "the car is there already");
             List<string> hs = null; Guard("car holders", () => hs = g.CarHolders()); if (hs != null && hs.Count > 0) return No("drive-held", "the car is held", string.Join(",", hs));
+            List<string> bx = null; Guard("boxers", () => bx = g.GetawayBoxers()); if (bx != null && bx.Count > 0) return No("drive-boxed", "boxed in", string.Join(",", bx)); // brief 096 (car.box): the engine's DriveCar order, after drive-held
+            Guard("stand boxers", () => bx = g.StandBoxers(st.Id)); if (bx != null && bx.Count > 0) return No("stand-boxed", "can't get in", string.Join(",", bx));
             return new Answer { ok = true, code = "", why = "" };
         }
 

@@ -433,7 +433,7 @@ namespace Suborned.Play
         public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
-            GetawayLeaving(); // brief 079: the car that left drives away (HostViews.Leaving)
+            GetawayLeaving(); LentLeaving(); // brief 079: the car that left drives away (HostViews.Leaving); brief 096: Popovic's car too (HostViews.LeavingLent)
             FallenSilhouettes();
             foreach (var kv in things)
             {

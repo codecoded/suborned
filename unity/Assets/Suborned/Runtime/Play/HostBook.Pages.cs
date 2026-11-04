@@ -46,7 +46,7 @@ namespace Suborned.Play
                 foreach (var kv in c["weapons"].Entries) one.Weapons[kv.Key] = kv.Value.Str();
                 foreach (var kv in c["does"].Entries) one.Does[kv.Key] = (S(kv.Value, "word"), S(kv.Value, "icon"), S(kv.Value, "line"));
                 if (c.Opt("car") is JNode car) one.Car = (S(car, "word"), S(car, "icon"), S(car, "line"));
-                one.Read096(b);
+                one.Read096(b); one.ReadLend(b);
             }
             catch (Exception e) { Debug.LogWarning($"Book: text.json's book block not read ({e.Message})"); }
             return one;

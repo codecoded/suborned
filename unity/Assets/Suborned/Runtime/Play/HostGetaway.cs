@@ -36,7 +36,7 @@ namespace Suborned.Play
             i.Time = "now"; i.Usd = "$0"; i.Alert = "A 0";
             string seen = ""; Guard("car watcher", () => seen = g.CarWatcher());
             i.Trail = seen.Length > 0 ? $"T +{g.R.WitnessTrail}" : "T 0";
-            i.Outcome = g.Vale == ValeAt.Car ? "win" : "withdraw";
+            i.Outcome = g.Vale == ValeAt.Car ? "win" : g.Lent ? "clear" : "withdraw"; // brief 096 (engine 0.42.0): once Popovic's car is lent, ours leaves with whoever is aboard (gets the rest clear), never a withdraw
             i.Label = GoLine(seen.Length > 0); return i;
         }
 
@@ -76,12 +76,12 @@ namespace Suborned.Play
         }
 
         /// <summary>The Go card is up (the panel on the car with its Go row, or the commit hold): the roster flags who would stay.</summary>
-        public bool GoCardOpen => Game != null && (Loud?.Left != null || (Panel != null && IsGetaway(Panel.T) && Panel.Rows.Exists(r => r.I.Order?.Do == "go")));
+        public bool GoCardOpen => Game != null && (Loud?.Left != null || (Panel != null && IsCellCar(Panel.T) && Panel.Rows.Exists(r => r.I.Order?.Do == "go")));
 
         /// <summary>An agent is in the car (the roster's in-car badge, the car marker's seats).</summary>
         public bool InCar(int k) => Game != null && Game.Ops[k].InCar;
         /// <summary>The car marker's five seat pips: Vale, then the Scout, Fixer, Tech and Enforcer; true when in the car.</summary>
-        public bool[] Seats() { var s = new bool[5]; if (Game == null) return s; s[0] = Game.Vale == ValeAt.Car; for (int k = 0; k < 4; k++) s[k + 1] = Game.Ops[k].InCar; return s; }
+        public bool[] Seats() { var s = new bool[5]; if (Game == null) return s; s[0] = Game.Vale == ValeAt.Car; for (int k = 0; k < 4; k++) s[k + 1] = Game.Ops[k].InCar && !Game.Ops[k].InLent; return s; }
         /// <summary>Brief 067 C3 (Glyph): the seat pips' states this frame: filled (Seats), pending (a Board ordered and not landed: the host's queued
         /// Board, the engine's walk-in to it, or getting in; Vale's with the Enforcer's when he carries him), and when each seat last filled (the
         /// 0.3 s landing beat). Read once a frame by the HUD.</summary>
@@ -116,14 +116,15 @@ namespace Suborned.Play
         public bool GoAvailable => Game != null && !Game.Over && Game.AnyInCar;
 
         /// <summary>Go given: with anyone left behind, the going-loud card's 0.5 s hold commits it (no pause); else at once.</summary>
-        void GoGive(OpId by, Vector2? screen, string source)
+        void GoGive(OpId by, Vector2? screen, string source, string car = "")
         {
+            if (LentOrder(car)) { LentGoGive(by, screen); return; } // brief 096: Popovic's car has its own Go
             var lk = GoLock();
             var at = GetawayWorld;
             if (!lk.ok) { Pop(ShortOf(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why); if (lk.code == "car-held") HolderPulseAt = Time.unscaledTime; return; }
             var order = new Order { Op = Op.Name(by), Do = "go" };
             var left = LeftBehindNow();
-            if (left.Count > 0 && Loud == null)
+            if ((Game.Lent ? left.Exists(x => x.fate == "captured") : left.Count > 0) && Loud == null) // brief 096: while lent, only a capture asks for the hold (the rest stay on)
             {
                 string seen = ""; Guard("car watcher", () => seen = Game.CarWatcher());
                 var card = new LoudCard { Loud = true, Why = "go-left-behind", AlertTo = Game.Alert, ReportedBy = seen.Length > 0 ? "seen" : "none" };
@@ -178,6 +179,7 @@ namespace Suborned.Play
         /// <summary>The car's rows on its panel: Board for each selected agent not in the car, then Go once anyone is in (or greyed with its reason).</summary>
         void CarRows(ActionPanel pn, List<int> order, Target t)
         {
+            if (IsLentCar(t)) { LentRows(pn, order, t); return; } // brief 096: Popovic's car, lent
             foreach (var k in order)
             {
                 var op = Game.Ops[k]; if (op.InCar) continue;
@@ -192,30 +194,12 @@ namespace Suborned.Play
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow); // a free Go tops the card
             CarDriveRows(pn, order);
-            CarStepOutRows(pn);
+            StepOutRows(pn, false);
             foreach (var r in pn.Rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
         }
 
         /// <summary>Marks a Step out way (Intent.How; the ring ranks it and gives it to every agent aboard: DoersOf).</summary>
         public const string StepOutHow = "step-out";
-
-        /// <summary>Sky 2026-11-04 (a tester boarded without Popovic and couldn't get out): Step out on the car's ring for every agent aboard who
-        /// stands, one way for all of them (same order, merged on the ring). It is the engine's move on a boarded operative (GDD §06 Board, brief 018):
-        /// board.s to step out at the car's side, Popovic stays in. The point is the free cell beside the seat, so the agent stops there.</summary>
-        void CarStepOutRows(ActionPanel pn)
-        {
-            var g = Game; if (g == null || g.Range || g.Over) return;
-            var seat = g.GetawaySeat; var at = g.Walk.NearestFree(seat) ?? seat;
-            string word = Text != null && Text.Actions.TryGetValue(StepOutHow, out var sa) && sa.Label.Length > 0 ? sa.Label : "Step out";
-            for (int k = 0; k < 4; k++)
-            {
-                var op = g.Ops[k]; if (!op.InCar || op.Down) continue;
-                var v = new Intent { Slot = -1, Label = word, Name = word, How = StepOutHow, Lead = "s_moving", Order = new Order { Op = Op.Name((OpId)k), Do = "move", Point = at } };
-                v.Time = $"{g.R.BoardS} s"; v.Usd = "$0"; v.Trail = "T 0"; v.Alert = "A 0"; v.Outcome = g.Vale == ValeAt.Car ? $"{ValeWord} stays in" : "";
-                var lk = op.Busy != null ? new Answer { ok = false, code = "agent-busy", why = "busy in the car", m = -1, cm = -1, usd = -1, tick = -1 } : new Answer { ok = true, code = "", why = "" };
-                pn.Rows.Add(new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });
-            }
-        }
 
         /// <summary>Brief 067 C (Sky on 0.2.122: "very annoying getting them into the car and then trying to make the car go"): once anyone is aboard,
         /// the car's own ways include Drive to each of its other stands, by the agent who would drive (a selected agent aboard, else the first
@@ -224,8 +208,8 @@ namespace Suborned.Play
         void CarDriveRows(ActionPanel pn, List<int> order)
         {
             var g = Game; if (g == null || g.Range || !g.R.DriveCarOn || g.S.Stands.Count < 2) return;
-            int drv = -1; foreach (var k in order) if (g.Ops[k].InCar && !g.Ops[k].Down) { drv = k; break; }
-            if (drv < 0) for (int k = 0; k < 4; k++) if (g.Ops[k].InCar && !g.Ops[k].Down) { drv = k; break; }
+            int drv = -1; foreach (var k in order) if (g.Ops[k].InCar && !g.Ops[k].InLent && !g.Ops[k].Down) { drv = k; break; }
+            if (drv < 0) for (int k = 0; k < 4; k++) if (g.Ops[k].InCar && !g.Ops[k].InLent && !g.Ops[k].Down) { drv = k; break; }
             if (drv < 0) return;
             foreach (var st in g.S.Stands)
             {
@@ -260,12 +244,12 @@ namespace Suborned.Play
             {
                 var r = plan.Row(w); if (r?.Available != true) continue; var o = r.I?.Order; if (o == null) continue;
                 if (o.Do == "board" && b < 0 && plan.Givers[w].Exists(x => Selected[(int)x])) b = w;
-                if (o.Do == "go" && go < 0 && r.I.Outcome == "win") go = w;
+                if (o.Do == "go" && go < 0 && r.I.Outcome is "win" or "clear") go = w; // brief 096: our car's Go once Popovic is lent gets the rest clear
                 if (o.Do == "drive-car") { drives++; if (d < 0) d = w; }
             }
             if (b >= 0) return b;
             if (go >= 0) return go;
-            return drives == 1 && Game.Vale != ValeAt.Car ? d : -1;
+            return drives == 1 && Game.Vale != ValeAt.Car && !Game.Lent ? d : -1;
         }
 
         /// <summary>Brief 067 C4 (Glyph): after a squad Board, each selected agent it did not take (but one already aboard) says why on its portrait,

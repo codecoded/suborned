@@ -22,7 +22,12 @@ export const Book = z.strictObject({
     filters: z.array(z.strictObject({ id: z.enum(['all', 'crucial', 'learned', 'turned', 'city']), word })).min(1) }).optional().describe('the Journal: the full log'),
   key: z.strictObject({ rule: z.string().min(1), word, stop: word.optional() }).optional().describe('the HUD\'s Book button and the fire line\'s Stop button'),
   feed: z.strictObject({ rule: z.string().min(1), of: z.string().includes('{n}'),
-    cards: z.record(z.enum(['seal', 'police', 'down', 'for-car', 'alert', 'seen', 'target-out', 'rival-car', 'turned', 'refused', 'body']),
+    cards: z.record(z.enum(['seal', 'police', 'down', 'for-car', 'alert', 'seen', 'target-out', 'rival-car', 'turned', 'refused', 'body', 'vale-out', 'lent', 'lookout', 'boxed']),
       z.strictObject({ title: z.string().min(1).max(32), line: z.string().min(1).max(40).optional(), fixes: z.array(z.strictObject({ icon, word })).max(2).optional() })) }).optional().describe('the slim feed\'s crucial cards, most urgent first'),
   heldGo: z.strictObject({ rule: z.string().min(1), heldBy: word, fix: z.string().min(1).max(60) }).optional().describe('Go on the car\'s ring while rivals hold it'),
+  // brief 096, the lend and the rules round (engines 0.40.0-0.42.0): placeholders for Fable, each optional (HostBook.WordsLend.cs)
+  cars: z.strictObject({ rule: z.string().min(1), goLent: word, endWinHead: word, endWinLine: z.string().min(1).max(80), lentName: word, carLost: z.string().includes('{trail}').max(80), lentSeen: z.string().includes('{by}').max(80) }).optional().describe('the Go on Popovic\'s car once lent, and the end card after a win by it'),
+  police: z.strictObject({ rule: z.string().min(1), head: z.string().includes('{time}').max(32), why: z.string().min(1).max(60), left: z.string().includes('{list}').max(60), clear: word, end: word }).optional().describe('the police countdown plate under the clock once Popovic is out, with its End button'),
+  tape: z.strictObject({ rule: z.string().min(1), seen: z.string().includes('{camera}').max(80), maybe: z.string().min(1).max(80), loopEnds: z.string().includes('{t}').max(30) }).optional().describe('the camera mark on a Pay or Pressure card'),
+  parked: z.strictObject({ rule: z.string().min(1), seen: z.string().includes('{who}').max(80), maybe: z.string().includes('{who}').max(80), back: z.string().includes('{t}').max(30) }).optional().describe('the Drive card\'s parked notice on private ground'),
 });

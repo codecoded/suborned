@@ -199,7 +199,7 @@ namespace Suborned.Play
                 case "listen": { var p = CastOf(c.Target); return p == null || (!p.KNeed && !p.KTemperament) ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
                 case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is free to go." : "The loop didn't hold."; // engine 0.31.0: no tether
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";
-                case "mislead": { bool away = g.CarSt is CrewCar.TipOut or CrewCar.Away or CrewCar.TipBack; c.Tone = away ? Feedback.Ok : Feedback.Info; return away ? "The rivals follow the false tip. They may be back." : "The tip missed."; } // brief 059 F3: the car leaves on the tip (CarSt), the crew on foot stays
+                case "mislead": { bool away = g.CrewOf(c.Target ?? "") is CrewMember cm && cm.Misled; c.Tone = away ? Feedback.Ok : Feedback.Info; return away ? "He takes the word and walks off. He'll be back." : "The word missed."; } // engine 0.41.0 (rivals.turn): the false tip is retired; Mislead sends one man on foot away for a while (placeholder words for Fable)
                 case "enter": return g.Vale == ValeAt.WithEnforcer ? $"Out at the service lane with {ValeWord}." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : $"Back out without {ValeWord}.";
                 case "take": c.Tone = g.Vale == ValeAt.WithEnforcer ? Feedback.Ok : Feedback.Info; return g.Vale == ValeAt.WithEnforcer ? $"{ValeWord} is with the Enforcer: get him to the car." : $"{ValeWord} was not taken.";
                 case "carry": return "Lifted: walk them to the car.";

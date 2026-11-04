@@ -399,7 +399,7 @@ namespace Suborned.Play
         /// engine fault or a zero heading, when the car keeps the rotation it has).</summary>
         Vector3? CarFacing()
         {
-            var g = host.Game; if (g == null) return null;
+            var g = host.Game; if (g == null) return null; if (lentHeading is Vector3 lh) return lh; // brief 096: along its way out, once the lent car has left (HostViews.LeavingLent)
             Pt? h = null; try { h = g.CarHeading(); } catch { return null; }
             if (h is not Pt v || (v.X == 0 && v.Y == 0)) return null;
             var at = g.CarPos(); var w = frame.World(new Pt(at.X + v.X, at.Y + v.Y)) - frame.World(at); w.y = 0f;

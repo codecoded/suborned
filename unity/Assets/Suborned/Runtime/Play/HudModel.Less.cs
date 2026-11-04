@@ -115,7 +115,9 @@ namespace Suborned.Play
                         {
                             string eye = i.SeenMark.Length > 0 ? (i.SeenMark == "no" ? "open" : i.SeenMark == "unk" ? "unk" : "shut")
                                 : i.SeenQ != null ? HandoverHost.EyeOf(i.SeenQ) : i.Seen == "?" ? "unk" : i.Seen.Length > 0 ? "open" : "shut";
-                            var ef = F("eye", "eye_" + (eye == "unk" ? "unk" : eye), ""); ef.Eye = eye; ef.Tip = EyeTip(eye, i.Seen);
+                            string tape = i.Tape, tapeTip = i.TapeTip; // brief 096: a camera would record it (HostTape)
+                            if (tape == "yes") eye = "open"; else if (tape == "?" && eye == "shut") eye = "unk";
+                            var ef = F("eye", "eye_" + (eye == "unk" ? "unk" : eye), ""); ef.Eye = eye; ef.Tip = tape.Length > 0 ? tapeTip : EyeTip(eye, i.Seen);
                             break;
                         }
                     case "learns":
@@ -143,6 +145,11 @@ namespace Suborned.Play
                             break;
                         }
                 }
+            if (o.Do == "drive-car" && i.Parked.Length > 0) // brief 096 (attention.parked): the Drive card's parked notice, its Alert and eye (Drive's own fields are name and time)
+            {
+                if (Arrow.Match(i.Alert ?? "") is var am && am.Success) F("alert", "p_alert", am.Groups[1].Value);
+                var pe = F("eye", i.Parked == "yes" ? "eye_open" : "eye_unk", ""); pe.Eye = i.Parked == "yes" ? "open" : "unk"; pe.Tip = i.ParkedTip;
+            }
             if (HudToolkit.Stress) foreach (var f in l) f.Text = f.Kind switch { "usd" => "100k–140k", "time" => "88 s", "trail" => "+12", "alert" => "≥2", "pace" => "1.4 m/s", _ => f.Text };
             return l;
         }
@@ -165,6 +172,7 @@ namespace Suborned.Play
                 return l;
             }
             if (i.WalkS > 0 && act.Success) { F("s_moving", $"{i.WalkS} s"); F("p_time", $"{act.Groups[1].Value} s"); }
+            if (i.TapeLoopEnds >= 0) F("loop", HandoverHost.MissionClock(i.TapeLoopEnds)); // brief 096: the loop ends inside the act, so the camera records it
             if ((i.Usd ?? "") is "$0" or "") F("p_cash", "0");
             if (!Plus.IsMatch(i.Trail ?? "") || (i.Trail ?? "").Contains("+0")) F("p_trail", "+0");
             if ((i.Alert ?? "") is "A 0" or "") F("p_alert", "0");
