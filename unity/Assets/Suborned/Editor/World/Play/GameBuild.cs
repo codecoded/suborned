@@ -94,6 +94,7 @@ namespace Suborned.World.Play
         public static bool Build()
         {
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, playerTarget)) throw new InvalidOperationException($"Game: install Unity's {playerTarget} build support first");
+            using var linuxVideo = playerTarget == BuildTarget.StandaloneLinux64 ? new LinuxVideoImport() : null;
             Debug.Log(Suborned.World.UI.KitImport.LivePortraits()); // brief 033: Forma's live portraits as they are now (a re-cut rides with the next build)
             var b = SimBundle.Load(); SimScenarios.CheckDll(b); // the DLL Unity builds is the bundle's
             // brief 029: the fight range is rebuilt from Keel's range sites every build (seconds), so a new layout or piece never ships stale

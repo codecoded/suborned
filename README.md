@@ -43,6 +43,18 @@ Signing and notarisation, so the game opens on other Macs without "not verified"
 
 ## Run it
 
+Linux x86-64 builds use the same scenes and build counter, with separate output:
+
+```sh
+unity install-modules --editor-version 6000.6.2f1 --architecture arm64 --module linux-mono --yes --accept-eula
+bun run guard bun tools/sim/unity.ts --tree
+bun run guard unity build unity --target StandaloneLinux64 --execute-method Suborned.World.Play.GameBuild.CliLinux --output-path out/build/linux/TheSuborned.x86_64 --allow-dirty-build
+```
+
+The module command above is for the Apple silicon build Mac. Ship the whole Linux
+output folder, including its data directory and shared libraries. A Linux build
+still needs testing on a Linux desktop; a macOS player cannot serve as that test.
+
 Needs [Bun](https://bun.sh) 1.4+ and Docker. Generation and the crew need [Claude Code](https://code.claude.com) (signed in). The visible world needs Unity 6000.6.2f1; the Unity MCP needs the `unity` CLI on `PATH` (or set `UNITY_CLI`).
 
 ```sh
