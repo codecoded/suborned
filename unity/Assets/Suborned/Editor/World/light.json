@@ -173,13 +173,14 @@
   "contact": {
     "note": "Glint, 026 round 1 (briefs/026/glint/lighting-r1.html). Baked contact shade (Light/ContactShade.cs): URP SSAO is blind at the orthographic play zoom, so the shade is geometry. Strength and power are materials; widths are geometry (rebuild). Round 1 defaults (foot 0.8 m / 0.45 / 2.2, kerb 0.3 m / 0.4 / 1.6, blob 0.5 / 1.5) were drawn but did not read at play zoom (0.8 m is about 22 px and the power-2.2 falloff leaves about 6 px). Now wider with a softer falloff: the darkest pixel at a contact line is 20 to 50 levels below round 1 (the old city: up to about 36), over 1 to 4 percent of a frame, and the frame mean does not rise (138.5 -> 138.0). Tint stays the shader's cool shade.",
     "enabled": true,
+    "r096": "Glint, brief 096 (Sky picked A1, 2026-11-05: briefs/096/glint/ambient/index.html): footStrength 0.6, kerbStrength 0.6, blobStrength 0.7 -> 1.0 each (x2, held at the shader's maximum 1): the contact shade grounds the Handover zone's buildings, kerbs and street pieces at play zoom. No cost: the same strips and blobs, a different constant. Reaches the player when HarbourWorldBuilder and the OldTown swap run.",
     "footWidth": 1.6,
-    "footStrength": 0.6,
+    "footStrength": 1.0,
     "footPower": 1.2,
     "kerbWidth": 0.6,
-    "kerbStrength": 0.6,
+    "kerbStrength": 1.0,
     "kerbPower": 1.2,
-    "blobStrength": 0.7,
+    "blobStrength": 1.0,
     "blobPower": 1.1
   },
   "night": {

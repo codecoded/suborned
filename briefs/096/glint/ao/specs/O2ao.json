@@ -1,0 +1,1 @@
+{"id": "O2ao", "ssao": 1, "ssaoFalloff": 1000, "ssaoDirect": 0.5, "ssaoDownsample": 1, "ssaoAfterOpaque": 1, "ssaoSamples": 1, "ssaoBlur": 1, "ssaoSource": 0, "ssaoShader": "Glint096/SSAO096", "ssaoRadius": 0.9, "ssaoIntensity": 2.5}

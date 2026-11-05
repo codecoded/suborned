@@ -24,6 +24,7 @@ namespace Suborned.Play
         [Serializable] public sealed class Mat { public string name = ""; public string baseColour = ""; public float smoothness = float.NaN, coat = float.NaN, env = float.NaN, spec = float.NaN, bump = float.NaN, detail = float.NaN, emissionScale = float.NaN; public string emission = ""; }
         [Serializable] public sealed class Spec
         {
+            public string ssaoShader = ""; // brief 096 AO: a Resources path to a project copy of URP's SSAO shader, swapped into the feature for this launch
             public string id = "", tonemap = "", grading = "", filter = "", splitShadows = "", splitHighlights = "", lut = "", sunColour = "", vignetteColour = "";
             public float exposure = float.NaN, contrast = float.NaN, saturation = float.NaN, temperature = float.NaN, tint = float.NaN, hueShift = float.NaN;
             public float[] lift = { }, gamma = { }, gain = { }, shadows = { }, midtones = { }, highlights = { };
@@ -128,6 +129,7 @@ namespace Suborned.Play
                         if (Has(s.ssaoIntensity)) Set("Intensity", s.ssaoIntensity); if (Has(s.ssaoRadius)) Set("Radius", s.ssaoRadius); if (Has(s.ssaoFalloff)) Set("Falloff", s.ssaoFalloff);
                         if (Has(s.ssaoDirect)) Set("DirectLightingStrength", s.ssaoDirect); if (s.ssaoDownsample >= 0) Set("Downsample", s.ssaoDownsample == 1); if (s.ssaoAfterOpaque >= 0) Set("AfterOpaque", s.ssaoAfterOpaque == 1);
                         if (s.ssaoSamples >= 0) Set("Samples", s.ssaoSamples); if (s.ssaoBlur >= 0) Set("BlurQuality", s.ssaoBlur); if (s.ssaoSource >= 0) Set("Source", s.ssaoSource);
+                        if (s.ssaoShader != "" && Resources.Load<Shader>(s.ssaoShader) is { } sh) { typeof(ScreenSpaceAmbientOcclusion).GetField("m_RasterizationShader", Any).SetValue(ao, sh); log.Add("ssao shader " + sh.name); } // TryPrepareResources only fetches URP's when this is null
                         ao.SetActive(s.ssao == 1); ao.Create();
                         log.Add("ssao " + string.Join(", ", t.GetFields(Any).Select(fi => fi.Name + " " + fi.GetValue(st))));
                     }
