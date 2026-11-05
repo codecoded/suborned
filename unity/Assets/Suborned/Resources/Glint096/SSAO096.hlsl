@@ -285,7 +285,7 @@ half4 FragSSAO(Varyings input)
 
     float centerRawDepth = SampleDepth(uv, DOWNSAMPLE);
     float centerLinearDepth = GetLinearEyeDepth(centerRawDepth);
-    half centerHalfLinearDepth = half(centerLinearDepth);
+    float centerHalfLinearDepth = centerLinearDepth; // Glint 096: full precision (half steps 0.125 m at the 160 m stand-off: the dotted bars)
     if (ShouldSkipAO(centerRawDepth, centerHalfLinearDepth, FALLOFF))
         return PackAOAndNormal(HALF_ZERO, HALF_ZERO);
 
@@ -308,8 +308,8 @@ half4 FragSSAO(Varyings input)
     float3 centerViewPos = ReconstructViewPos(uv, centerLinearDepth);
 
     // Parameters used in coordinate conversion
-    half3 camTransform000102 = half3(_CameraViewProjections[unity_eyeIndex]._m00, _CameraViewProjections[unity_eyeIndex]._m01, _CameraViewProjections[unity_eyeIndex]._m02);
-    half3 camTransform101112 = half3(_CameraViewProjections[unity_eyeIndex]._m10, _CameraViewProjections[unity_eyeIndex]._m11, _CameraViewProjections[unity_eyeIndex]._m12);
+    float3 camTransform000102 = float3(_CameraViewProjections[unity_eyeIndex]._m00, _CameraViewProjections[unity_eyeIndex]._m01, _CameraViewProjections[unity_eyeIndex]._m02);
+    float3 camTransform101112 = float3(_CameraViewProjections[unity_eyeIndex]._m10, _CameraViewProjections[unity_eyeIndex]._m11, _CameraViewProjections[unity_eyeIndex]._m12);
 
     const half rcpSampleCount = half(rcp(SAMPLE_COUNT));
     half ao = HALF_ZERO;
@@ -321,20 +321,20 @@ half4 FragSSAO(Varyings input)
 
         // Sample point
         half3 v_s1 = PickSamplePoint(uv, s, sHalf, rcpSampleCount, centerNormal, pixelDensity);
-        half3 vpos_s1 = half3(centerViewPos + v_s1);
-        half2 spos_s1 = half2(
+        float3 vpos_s1 = centerViewPos + v_s1;
+        float2 spos_s1 = float2(
             camTransform000102.x * vpos_s1.x + camTransform000102.y * vpos_s1.y + camTransform000102.z * vpos_s1.z,
             camTransform101112.x * vpos_s1.x + camTransform101112.y * vpos_s1.y + camTransform101112.z * vpos_s1.z
         );
 
-        half zDist;
-        half2 uv_s1_01;
+        float zDist;
+        float2 uv_s1_01;
         #if defined(_ORTHOGRAPHIC)
             zDist = centerHalfLinearDepth;
-            uv_s1_01 = saturate((spos_s1 + HALF_ONE) * HALF_HALF);
+            uv_s1_01 = saturate((spos_s1 + 1.0) * 0.5);
         #else
             zDist = half(-dot(UNITY_MATRIX_V[2].xyz, vpos_s1));
-            uv_s1_01 = saturate(half2(spos_s1 * rcp(zDist) + HALF_ONE) * HALF_HALF);
+            uv_s1_01 = saturate((spos_s1 * rcp(zDist) + 1.0) * 0.5);
         #endif
 
         #if defined(SUPPORTS_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
@@ -349,23 +349,23 @@ half4 FragSSAO(Varyings input)
         float linearDepth_s = GetLinearEyeDepth(rawDepth_s);
 
         // We need to make sure we not use the AO value if the sample point it's outside the radius or if it's the sky...
-        half halfLinearDepth_s = half(linearDepth_s);
+        float halfLinearDepth_s = linearDepth_s;
         half isInsideRadius = abs(zDist - halfLinearDepth_s) < RADIUS ? 1.0 : 0.0;
         isInsideRadius *= rawDepth_s > SKY_DEPTH_VALUE ? 1.0 : 0.0;
 
         // Relative postition of the sample point
-        half3 v_s2 = half3(ReconstructViewPos(uv_s1_01, linearDepth_s) - centerViewPos);
+        float3 v_s2 = ReconstructViewPos(uv_s1_01, linearDepth_s) - centerViewPos;
 
         // Estimate the obscurance value
         // Glint 096: URP subtracts kBeta x the centre's eye depth (0.004 x ~160 m = 0.64 m from the orthographic play camera), more than the radius, so no
         // sample ever occludes. In the orthographic view the depth is the camera's stand-off, not a scale: the bias is a small fraction of the radius instead.
         #if defined(_ORTHOGRAPHIC)
-        half dotVal = dot(v_s2, centerNormal) - half(0.03) * RADIUS;
+        float dotVal = dot(v_s2, (float3)centerNormal) - 0.03 * RADIUS;
         #else
         half dotVal = dot(v_s2, centerNormal) - kBeta * centerHalfLinearDepth;
         #endif
-        half a1 = max(dotVal, HALF_ZERO);
-        half a2 = dot(v_s2, v_s2) + kEpsilon;
+        float a1 = max(dotVal, 0.0);
+        float a2 = dot(v_s2, v_s2) + kEpsilon;
         ao += a1 * rcp(a2) * isInsideRadius;
     }
 
@@ -382,6 +382,13 @@ half4 FragSSAO(Varyings input)
 
     // Apply contrast + intensity + falloff^2
     ao = PositivePow(saturate(ao * INTENSITY * falloff * rcpSampleCount), kContrast);
+
+    #if defined(_ORTHOGRAPHIC)
+    // Glint 096 (Sky: "no darkening on the facades as a whole"): contact on the ground only (wall feet, under props): weight by how much the surface faces up
+    // (abs: the view-space normal's sign convention does not matter here); walls and fronts, which face sideways, take none.
+    float3 upVS = normalize(mul((float3x3)UNITY_MATRIX_V, float3(0.0, 1.0, 0.0)));
+    ao *= half(smoothstep(0.6, 0.9, abs(dot((float3)centerNormal, upVS))));
+    #endif
 
     // Return the packed ao + normals
     return PackAOAndNormal(ao, centerNormal);
