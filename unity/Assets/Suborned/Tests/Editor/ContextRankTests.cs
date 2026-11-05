@@ -25,6 +25,16 @@ namespace Suborned.Play.Tests
             var l = new[] { W("watch", ok: false), W("listen") }; Assert.AreEqual("listen", Picked(C("person", l), l), "a finished Watch drops out: the next sensible step");
         }
 
+        [Test] public void ARivalOnFootListensFirstPaysAGambleOpensTheRingAndTheMisleadIsNextAfterTheListen()
+        {   // brief 096 (engine 0.41.0 rivals.turn): a member of the crew on foot: Listen, Mislead, Pay ($30,000, "?" until a Listen), the takedowns and Fire
+            var all = new[] { W("listen"), W("mislead", outcome: "misled", trail: 1), W("turn", "pay", "?", mine: false, usd: 30000, trail: 2), W("takedown", how: "knockout", mine: false), W("fire", outcome: "loud") };
+            var c = C("rivals", all); Assert.AreEqual("listen", Picked(c, all), "a free learn first"); Assert.AreEqual(new[] { 0, 2, 1, 3, 4 }, c.Order.ToArray(), "Listen, Pay, Mislead, Knock out, Fire");
+            var heard = new[] { W("listen", ok: false), W("mislead", outcome: "misled", trail: 1) }; Assert.AreEqual("mislead", Picked(C("rivals", heard), heard), "heard: the Scout's word is the click");
+            var gamble = C("rivals", W("turn", "pay", "?", usd: 30000, trail: 2), W("fire", outcome: "loud")); Assert.AreEqual(ContextRank.Act.Ring, gamble.Act); Assert.AreEqual("gamble", gamble.Why);
+            var merc = new[] { W("turn", "pay", "turned", usd: 30000, trail: 2), W("fire", outcome: "loud") }; Assert.AreEqual("turn:pay", Picked(C("rivals", merc), merc), "a known Mercenary: the Pay is the click");
+            var loyal = C("rivals", W("turn", "pay", "refused", usd: 30000, trail: 2), W("fire", outcome: "loud")); Assert.AreEqual(ContextRank.Act.Ring, loyal.Act, "a known Loyal man: never paid by a click");
+        }
+
         [Test] public void FixerWithTheTemperamentUnknownOpensTheRing()
         {
             var c = C("person", W("turn", "ask", "?", usd: 0), W("turn", "pay", "?", usd: 100), W("turn", "help", "?"), W("turn", "pressure", "?"));

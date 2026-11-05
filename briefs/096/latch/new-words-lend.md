@@ -72,3 +72,49 @@ One plate under the clock, in the seal's place, from vale.out to the end (it alr
 
 - `HudModel.cs`, the Go's Alt does-line: "Gets the rest clear" (beside the old hard-coded "Wins the mission" and "Withdraws"). Our car's Go once Popovic is lent.
 - `HostFeed.cs`, Mislead's result line: "He takes the word and walks off. He'll be back." / "The word missed." (the false tip's lines went with the tip in 0.41.0).
+
+## The rival crew on foot (`book.crew`, and the lookout card's chips), Latch 2026-11-05
+
+Engine 0.41.0 (`rivals.turn`) wired in the host: Watch, Listen, Pay and Mislead on a member of the rival crew on foot (the lookout and the three posted
+round our car), beside the takedowns and the body rows he already had. Code: `HostCrewTurn.cs`; words read in `HostBook.WordsCrew.cs`, which keeps the same
+placeholders if the block is absent. The block is optional in `book.schema.ts`. A ring row's name is `actions.<verb>.withTarget` filled with the man
+(`lookout` for the lookout, else `names.holders.rival`).
+
+| Key | Placeholder | Where it shows |
+|---|---|---|
+| `lookout` | the lookout | the lookout's name on his rows ("Pay the lookout"), the feed and the footers |
+| `timetable` | their timetable | Watch's outcome on a member (as on their car) |
+| `temperament` | money or loyalty | Listen's outcome on a member |
+| `watchDoes` | Learn the crew's timetable: where each of them goes, and when. | Watch's card line on a member |
+| `listenDoes` | Hear whether he's in it for the money or loyal to his crew. | Listen's card line |
+| `payDoes` | {usd} to walk away. A loyal man refuses and tells his crew. | Pay's card line before a Listen (`{usd}` the engine's $30,000) |
+| `payDoesMercenary` | He's in it for the money: he takes {usd} and walks off for good. | Pay's card line, a known Mercenary |
+| `payDoesLoyal` | He's loyal: he refuses, tells his crew about the Fixer, and we keep the money. | Pay's card line, a known Loyal man |
+| `payUnknown` | takes it, or refuses and tells his crew: Listen first | Pay's card row (icon "?") before a Listen |
+| `payTakes` | takes it and walks off for good | Pay's card row, a known Mercenary |
+| `payRefuses` | refuses: his crew will know the Fixer | Pay's card row, a known Loyal man |
+| `misleadDoesLookout` | Send him to watch the other door for a while. He comes back knowing the Scout's face. | Mislead's card line on the lookout |
+| `misleadDoesPosted` | Send him to the lookout's post for a while. He comes back knowing the Scout's face. | Mislead's card line on a posted man |
+| `back` | back at his post {t} | Mislead's card row: `{t}` the clock he'd be back (`Game.MisleadBackTick`) |
+| `face` | he'll know the Scout's face | Mislead's card row |
+| `sees` | He sees you coming and fires: come from behind | a Knock out or Kill card on a rival who would see it coming (the engine's `Aware` yes, armed) |
+| `armed` | Armed: if he sees you coming, he fires | the same where the engine doesn't know (`Aware` ?) |
+| `heardMercenary` | {who} is in it for the money. | the feed card's footer after a Listen on a Mercenary |
+| `heardLoyal` | {who} is loyal to his crew. | the same, a Loyal man |
+| `heardNothing` | Nothing learned. | a Listen that landed with nothing (he left) |
+| `paid` | {who} takes the money and walks off. | the feed footer after a Pay a Mercenary took |
+| `refused` | {who} won't take it, and tells his crew. The money stays with us. | the feed footer after a Loyal man's refusal |
+| `payMissed` | {who} was gone before the Fixer paid. The money stays with us. | the feed footer when he left before the Pay landed |
+
+The lookout card (`book.feed.cards.lookout`) now has three chips, each with an `agent` (new, optional in the schema; `fixes` may hold three now):
+`Mislead` (scout), `Pay` (fixer), `Take` (enforcer). Each is a button: that agent is selected, the view goes to the lookout, and his ring opens with
+that agent's ways on him; the card stays. Its line now pans to him, not to Popovic's car. Chips without an `agent` (the rivals-for-the-car card's) stay labels.
+
+### Fable's lines that now read wrong (yours, not touched)
+
+- `actions.mislead`: label "False tip", ring word "Tip", `does` "Send the rivals the wrong way for a while", `onTarget.rivals` "Whisper the rivals a bad
+  address". The tip on their car is retired, so the Scout's word now goes to one man on foot. My crew rows use `book.crew` for the line, but the knob
+  and ring word still say "False tip" / "Tip". Motive calls it "Mislead".
+- `hints.items.H8`: "Another crew watches the pickup. The Scout can give them a false tip." H8 now rings the lookout at his post (not their car) and
+  goes away once anyone speaks to the crew.
+- `HostFeed.cs` (in code): the `rivals.misled` event card "Rivals sent away" still points at their car.

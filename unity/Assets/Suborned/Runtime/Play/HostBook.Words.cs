@@ -8,7 +8,7 @@ namespace Suborned.Play
     /// (book.heldGo). Each block is optional: a text without one shows the host's own placeholder, never a blank.</summary>
     public sealed partial class BookWordsFile
     {
-        public sealed class FeedCardWords { public string Title = "", Line = ""; public readonly List<(string icon, string word)> Fixes = new(); }
+        public sealed class FeedCardWords { public string Title = "", Line = ""; public readonly List<(string icon, string word)> Fixes = new(); public readonly List<string> FixBy = new(); } // FixBy: a chip's agent ("" a label; brief 096: the lookout card's chips open his ring for that agent)
 
         public string Begin = "Begin", Shared = "", PurseWord = "Purse", HeatWord = "Heat";
         public readonly Dictionary<string, string> StartCell = new(), Stations = new();
@@ -40,7 +40,7 @@ namespace Suborned.Play
                     foreach (var kv in cs.Entries)
                     {
                         var w = new FeedCardWords { Title = S(kv.Value, "title"), Line = S(kv.Value, "line") };
-                        if (kv.Value.Opt("fixes") is JNode fx) foreach (var x in fx.Items) w.Fixes.Add((S(x, "icon"), S(x, "word")));
+                        if (kv.Value.Opt("fixes") is JNode fx) foreach (var x in fx.Items) { w.Fixes.Add((S(x, "icon"), S(x, "word"))); w.FixBy.Add(S(x, "agent")); }
                         FeedCards[kv.Key] = w;
                     }
             }

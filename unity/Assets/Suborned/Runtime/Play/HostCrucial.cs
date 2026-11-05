@@ -15,7 +15,7 @@ namespace Suborned.Play
         public sealed class CrucialCard
         {
             public int Id, Tick, Rank, Value, Agent = -1; public string Kind = "", Code = "", Role = "", Title = "", Line = "", Face = "", Icon = "", View = ""; public Vector3? Place; public bool Read, Gone;
-            public readonly List<(string icon, string word)> Fixes = new();
+            public readonly List<(string icon, string word)> Fixes = new(); public readonly List<string> FixBy = new(); // FixBy: a chip's agent, "" a label (CrucialFix)
         }
         /// <summary>The kinds in their order of urgency (Sky's call 7); turned and refused share a rank. Brief 096, the lend (engine 0.42.0): Popovic out (vale.out)
         /// tops it, since from then the police countdown runs; the lookout watching Popovic's car and our car boxed in rank with the rivals for our car; Popovic's car
@@ -26,12 +26,12 @@ namespace Suborned.Play
         public readonly List<CrucialCard> CrucialQueue = new(), CrucialLog = new();
         public CrucialCard CrucialNow => CrucialQueue.Count > 0 ? CrucialQueue[0] : null;
 
-        int crucialLogAt, crucialLedgerAt, crucialAlert, crucialSeenAt = -1000; readonly bool[] crucialDown = new bool[4]; bool crucialForCar;
+        int crucialLogAt, crucialLedgerAt, crucialAlert, crucialSeenAt = -1000; readonly bool[] crucialDown = new bool[4]; bool crucialForCar, crucialLookout;
 
         void ResetCrucial()
         {
             if (BookOpen) BookShut(true); // a new run shuts the book (Begin resets the feed); the start opens it again on Job
-            CrucialQueue.Clear(); CrucialLog.Clear(); Array.Clear(crucialDown, 0, 4); crucialForCar = false; crucialSeenAt = -1000;
+            CrucialQueue.Clear(); CrucialLog.Clear(); Array.Clear(crucialDown, 0, 4); crucialForCar = crucialLookout = false; crucialSeenAt = -1000;
             crucialLogAt = Game?.Log.Count ?? 0; crucialLedgerAt = Game?.Ledger.Count ?? 0; crucialAlert = Game?.Alert ?? 0;
             if (Game != null) for (int k = 0; k < 4; k++) crucialDown[k] = Game.Ops[k].Down;
             journalSeen = 0; JournalOpenId = -1; JournalFrom = 0; JournalFilter = "all";
@@ -45,7 +45,7 @@ namespace Suborned.Play
             var c = new CrucialCard { Id = ++feedIds, Tick = Game.Tick, Kind = kind, Rank = CrucialRank(kind), Code = code, Role = role, Agent = agent, Line = w.Line };
             string agentName = agent >= 0 ? AgentName(agent) : "";
             c.Title = w.Title.Replace("{agent}", agentName).Replace("{who}", role.Length > 0 ? Cap(Name(role)) : "").Replace("{vale}", ValeWord);
-            c.Fixes.AddRange(w.Fixes);
+            c.Fixes.AddRange(w.Fixes); c.FixBy.AddRange(w.FixBy);
             CrucialQueue.Add(c); CrucialLog.Add(c);
             CrucialQueue.Sort((a, b) => a.Rank != b.Rank ? a.Rank.CompareTo(b.Rank) : a.Id.CompareTo(b.Id));
             return c;
@@ -72,6 +72,8 @@ namespace Suborned.Play
             bool forCar = g.RivalsForCar.Count > 0;
             if (forCar && !crucialForCar) { var c = Crucial("for-car", "rivals.for-car"); c.Icon = "car"; c.View = "car/getaway"; }
             crucialForCar = forCar;
+            bool lk = LookoutWatching(); if (lk && !crucialLookout && CrucialLog.Exists(x => x.Kind == "lookout") && !CrucialQueue.Exists(x => x.Kind == "lookout")) LookoutCard("rivals.misled-back"); // back at his post (misled, or awake): the card again
+            crucialLookout = lk;
             // a card that stops being true leaves by itself (Sky's call 4); it stays in the Journal
             for (int i = CrucialQueue.Count - 1; i >= 0; i--) { var c = CrucialQueue[i]; if (!CrucialTrue(c)) { c.Gone = true; CrucialQueue.RemoveAt(i); } }
         }
@@ -93,7 +95,7 @@ namespace Suborned.Play
             { if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; } }
             else if (code == "vale.out") { var c = Crucial("vale-out", code); c.Icon = "car"; c.View = "car/getaway"; } // brief 096 (car.lend L5): Popovic is out; the rest to our car before the police
             else if (code == "lend.lent") { var c = Crucial("lent", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "car/official"; } // L1: Popovic's car is ours, the Enforcer at its wheel
-            else if (code == "rivals.lookout-posted") { var c = Crucial("lookout", code); c.Face = "badges/signal_rival"; c.View = "car/official"; c.Place = LookoutAt(); } // engine 0.41.0: deal with him, or he reaches Popovic's car
+            else if (code == "rivals.lookout-posted") LookoutCard(code); // engine 0.41.0: deal with him, or he reaches Popovic's car
             else if (code is "rivals.block" or "rivals.back") { if (!CrucialQueue.Exists(x => x.Kind == "boxed")) { var c = Crucial("boxed", code); c.Icon = "car"; c.View = "car/rivals"; } } // engine 0.41.0: the rival car across our way out
             else if (code == "vale.exits") { var c = Crucial("target-out", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "councillor"; }
             else if (code == "rivals.coming") { var c = Crucial("rival-car", code); c.Face = "badges/signal_rival"; c.View = "car/rivals"; }
@@ -126,6 +128,8 @@ namespace Suborned.Play
         /// <summary>The rival lookout is still up and watching Popovic's car, or following it (engine 0.41.0 rivals.lookout): not down or paid; a misled one is walking away.</summary>
         bool LookoutWatching() => Game.Crew.Exists(m => !m.Gun.Down && !m.Paid && (m.Mode == CrewMode.Posted && m.Post == "lookout" || m.Mode == CrewMode.Walking && m.Goal is "lookout" or "follow"));
         Vector3? LookoutAt() { var m = Game.Crew.Find(x => x.Post == "lookout" || x.Goal == "lookout"); return m == null ? (Vector3?)null : frame.World(m.Place); }
+        /// <summary>The lookout card: his face, the view on him (its line pans there), its chips his ways by agent (Mislead, Pay, Take: CrucialFix opens his ring).</summary>
+        void LookoutCard(string code) { var c = Crucial("lookout", code); c.Face = "badges/signal_rival"; c.View = LookoutId(); c.Place = LookoutAt(); }
 
         /// <summary>A click on the card: it is read and the next one shows.</summary>
         public void CrucialDismiss() { if (CrucialQueue.Count == 0) return; CrucialQueue[0].Read = true; CrucialQueue.RemoveAt(0); }

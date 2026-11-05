@@ -196,6 +196,7 @@ namespace Suborned.Play
                         return $"Learned: what {who} sees{(k.Routine && k.RoutineNeedsS > 0 ? ", and its rounds" : k.RoutineNeedsS > 0 ? $" ({k.WatchedS} of {k.RoutineNeedsS} s toward its rounds)" : "")}.";
                     }
                 case "watch": { var p = CastOf(c.Target); return p == null ? "Nothing learned." : p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
+                case "listen" or "pay" when IsCrew(c.Target ?? ""): return CrewFooter(c); // brief 096: a member of the rival crew (HostCrewTurn)
                 case "listen": { var p = CastOf(c.Target); return p == null || (!p.KNeed && !p.KTemperament) ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
                 case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is free to go." : "The loop didn't hold."; // engine 0.31.0: no tether
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";

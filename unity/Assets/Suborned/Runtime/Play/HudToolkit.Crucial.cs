@@ -51,11 +51,13 @@ namespace Suborned.Play
                 else Icon(crIcon, c.Icon.Length > 0 ? c.Icon : "p_alert", Cream);
                 Border(crDisc, c.Kind == "for-car" ? 2f : 0f, RivalViolet); Round(crDisc, 22f); // the rivals' own ring on their card (r123 §3's car disc)
                 crFixes.Clear(); Show(crFixes, c.Fixes.Count > 0);
-                foreach (var (icon, word) in c.Fixes)
+                for (int fi = 0; fi < c.Fixes.Count; fi++)
                 {
+                    var (icon, word) = c.Fixes[fi]; int fix = fi; bool acts = fi < c.FixBy.Count && c.FixBy[fi].Length > 0; // brief 096: a chip with an agent is a button (the lookout's ring for him)
                     var chip = E(crFixes); chip.style.flexDirection = FlexDirection.Row; chip.style.alignItems = Align.Center; chip.style.height = 20; chip.style.paddingLeft = 8; chip.style.paddingRight = 9; chip.style.marginRight = 6;
                     chip.style.backgroundColor = InkDeep; Round(chip, 10f); Border(chip, 1f, PanelLine);
                     var ic = E(chip, null, w: 12, h: 12); ic.style.marginRight = 5; Icon(ic, icon, Cream); Words(chip, 12.5f).text = word;
+                    if (acts) { chip.pickingMode = PickingMode.Position; Border(chip, 1f, TurqLight); chip.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.CrucialFix(fix); e.StopPropagation(); } }); }
                 }
             }
             CrucialShown = $"{c.Kind}|{c.Title}|{crLine.text}|1 of {n}";

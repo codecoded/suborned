@@ -3169,7 +3169,8 @@
      },
      "lookout": {
       "title": "Rival lookout posted",
-      "line": "watching Popovic's car"
+      "line": "watching Popovic's car",
+      "fixes": [{"icon": "mislead", "word": "Mislead", "agent": "scout"}, {"icon": "pay", "word": "Pay", "agent": "fixer"}, {"icon": "takedown", "word": "Take", "agent": "enforcer"}]
      },
      "boxed": {
       "title": "Our car boxed in",
@@ -3210,6 +3211,32 @@
     "seen": "Parked here, {who} would see it: reported after {s} s",
     "maybe": "Parked here, {who} might see it: watch first",
     "back": "patrol back {t}"
+   },
+   "crew": {
+    "rule": "Brief 096, placeholders for Fable (Latch; engine 0.41.0 rivals.turn): the cards of Watch, Listen, Pay and Mislead on a member of the rival crew on foot, and their feed footers. {usd} the Pay, {t} a clock, {who} the man. The lookout is named by his job (`lookout`); the others by names.holders.rival.",
+    "lookout": "the lookout",
+    "timetable": "their timetable",
+    "temperament": "money or loyalty",
+    "watchDoes": "Learn the crew's timetable: where each of them goes, and when.",
+    "listenDoes": "Hear whether he's in it for the money or loyal to his crew.",
+    "payDoes": "{usd} to walk away. A loyal man refuses and tells his crew.",
+    "payDoesMercenary": "He's in it for the money: he takes {usd} and walks off for good.",
+    "payDoesLoyal": "He's loyal: he refuses, tells his crew about the Fixer, and we keep the money.",
+    "payUnknown": "takes it, or refuses and tells his crew: Listen first",
+    "payTakes": "takes it and walks off for good",
+    "payRefuses": "refuses: his crew will know the Fixer",
+    "misleadDoesLookout": "Send him to watch the other door for a while. He comes back knowing the Scout's face.",
+    "misleadDoesPosted": "Send him to the lookout's post for a while. He comes back knowing the Scout's face.",
+    "back": "back at his post {t}",
+    "face": "he'll know the Scout's face",
+    "sees": "He sees you coming and fires: come from behind",
+    "armed": "Armed: if he sees you coming, he fires",
+    "heardMercenary": "{who} is in it for the money.",
+    "heardLoyal": "{who} is loyal to his crew.",
+    "heardNothing": "Nothing learned.",
+    "paid": "{who} takes the money and walks off.",
+    "refused": "{who} won't take it, and tells his crew. The money stays with us.",
+    "payMissed": "{who} was gone before the Fixer paid. The money stays with us."
    }
  },
  "pending": {

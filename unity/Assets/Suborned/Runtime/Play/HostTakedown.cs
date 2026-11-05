@@ -98,12 +98,12 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the takedown (Glyph §1, §2)
 
-        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key) ?? Game.BodyById(t.Key)?.P, "rivals" when HostViews.IsCrewId(t.Key) => Game.CrewOf(t.Key)?.P, _ => null }; // engine 0.33.0: a member on foot, a rival's body
+        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key) ?? Game.BodyById(t.Key)?.P, "rivals" when IsCrew(t.Key) => Game.CrewOf(t.Key)?.P, _ => null }; // engine 0.33.0: a member on foot, a rival's body
 
         /// <summary>A takedown on a person, one way, priced by the engine (QuoteTakedown, read-only).</summary>
         Intent TakedownIntent(int slot, Target t, string how)
         {
-            if (!(t.Kind is "person" or "crowd" || t.Kind == "rivals" && HostViews.IsCrewId(t.Key))) return null; // engine 0.33.0: the crew as people (rivals.peopleRule)
+            if (!(t.Kind is "person" or "crowd" || t.Kind == "rivals" && IsCrew(t.Key))) return null; // engine 0.33.0: the crew as people (rivals.peopleRule)
             var p = PersonOf(t); if (p == null || p.Down) return null;
             if (p == Game.ValeP && how == "knockout") return null; // Vale: the refusal pill only (Glyph §2)
             var q = Game.QuoteTakedown(KeyOf(p), how);
@@ -115,6 +115,7 @@ namespace Suborned.Play
             i.Trail = $"T +{q.TrailIfFound}"; i.Alert = $"A {(seen ? q.AlertIfSeen : q.AlertIfFound)}";
             i.SeenMark = seen ? "no" : q.Seen.Seen == "?" || q.People.Exists(x => x.verb == "?") ? "unk" : "ok";
             i.Outcome = ""; i.Seen = SeenWords(q.Seen); // the way's rows say what follows (Glyph §2)
+            if (IsCrew(p.Id) && q.Armed && q.Aware != "no") i.Rows.Add(("p_alert", q.Aware == "yes" ? BookWordsFile.Get().CrewSees : BookWordsFile.Get().CrewArmed)); // brief 096: a rival who sees it coming fires (the engine's Aware, IfAware fight)
             // the way's own rows: found, never found, wakes or never talks
             string doors = q.HoldsDoors.Count == 0 ? "holds no door" : $"holds {string.Join(", ", q.HoldsDoors.ConvertAll(DoorName))} ~{Clock(q.HoldS)}";
             if (how == "kill")

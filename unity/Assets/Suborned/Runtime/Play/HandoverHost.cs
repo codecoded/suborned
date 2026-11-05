@@ -885,6 +885,7 @@ namespace Suborned.Play
             Intent I(string verb, string target, string approach, string label) => new Intent { Slot = slot, Label = label, Order = new Order { Op = op, Do = verb, Target = target, Approach = approach } };
             switch (id)
             {
+                case "watch" or "listen" or "pay" or "mislead" when t.Kind == "rivals" && IsCrew(t.Key): return CrewVerb(by, slot, id, t); // brief 096 (engine 0.41.0, rivals.turn): a member on foot (HostCrewTurn)
                 case "watch" when t.Kind == "rivals": // brief 059 §2.2: a Watch on the rival car teaches their timetable (RivalNext), once; on the car, never a member
                     {
                         if (t.Key != "car:rivals" || g.RivalsWatched || !g.RivalCarPose().HasValue) return null;
@@ -903,9 +904,7 @@ namespace Suborned.Play
                         // Fable 2026-10-26 (Suture: the pill read "Listen the guard"): the verb's withTarget names it with its target
                         var i = I(id, t.Key, "", Text?.WithTarget(id, t.Label) ?? $"{(id == "listen" ? "Listen to" : plate[slot].Label)} {t.Label}"); i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Outcome = id == "watch" ? (t.Key == "guard" ? "routine" : "mood") : "need, temperament"; return i; // brief 054: a person's Watch reads the mood; the guard's his sight and marks
                     }
-                case "mislead":
-                    return null; // engine 0.41.0 (rivals.turn, Motive Q2 a): the false tip on the rival car is retired (the engine refuses tip-retired), so it is never offered;
-                    // Mislead on a rival on foot (and Listen, Pay on the crew) is the rivals round's, not wired in the host yet (brief 096, Latch's report)
+                case "mislead": return null; // engine 0.41.0 (Motive Q2 a): the false tip on the rival car is retired (tip-retired); Mislead on a member on foot is above
                 case "ask": case "pay": case "help": case "pressure":
                     if (t.Kind != "person" || t.Key == "councillor" || CastOf(t.Key) == null) return null; // a turn is on a cast person only
                     {
@@ -1252,7 +1251,7 @@ namespace Suborned.Play
         void Words(Intent v, Target t)
         {
             var o = v.Order; var key = o.Do == "turn" ? o.Approach : o.Do;
-            if (TakedownWords(v, t)) return;
+            if (TakedownWords(v, t) || CrewWords(v, t)) return; // brief 096: a member of the rival crew (HostCrewTurn)
             // an approach's own line for this person names their debt or secret: only once the cell knows them (§04), else the generic line
             var (label, does) = Text != null ? Text.Action(key, o.Do == "turn" && !KnownPerson(t) ? null : TextKey(t), o.Op) : (key, "");
             bool person = t.Kind == "person" && o.Do != "take";
@@ -1283,10 +1282,10 @@ namespace Suborned.Play
             {
                 case "watch" when Game.WatcherKind(o.Target) is "camera" or "patrol":
                     return g.ConeFan(o.Target) != null ? yes : No("watcher-away", "not out on the street");
-                case "watch": case "listen": return CastOf(o.Target) is not Person wp ? No("target-unknown", "no one to watch or listen to") : g.PersonPos(wp).HasValue ? yes : No("person-away", "not out on the street"); // a cast person only: PersonByRole throws on anything else
+                case "watch": case "listen": return IsCrew(o.Target) ? yes : CastOf(o.Target) is not Person wp ? No("target-unknown", "no one to watch or listen to") : g.PersonPos(wp).HasValue ? yes : No("person-away", "not out on the street"); // a cast person only: PersonByRole throws on anything else
                 case "turn":
                     {
-                        var p = CastOf(o.Target); if (p == null) return No("target-unknown", "no one to turn");
+                        if (IsCrew(o.Target)) return CrewLock(by, o); var p = CastOf(o.Target); if (p == null) return No("target-unknown", "no one to turn"); // brief 096: Pay on a member (HostCrewTurn)
                         if (!g.PersonPos(p).HasValue) return No("person-away", "not out on the street");
                         var need = g.R.ApproachRequires(o.Approach); // engine 0.28 (brief 054 §2.2): "routine known" = watched, or no Watch to give (the driver is paid at once)
                         if (need != "nothing" && !(need == "routine" ? p.KRoutine || !g.WatchOffered(o.Target) : p.Knows(need))) return No("needs-" + need, $"needs their {need} — {(need == "routine" ? "Watch" : "Listen (Scout)")} first");
@@ -1306,7 +1305,7 @@ namespace Suborned.Play
                 case "drop": return op.CarryBody.Length == 0 && !op.Carrying.HasValue ? No("not-carrying", "carrying nobody") : yes;
                 case "restrain": case "carry" when !IsOpName(o.Target): return op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "reroute": return g.PatrolAwayUntil > g.Tick ? No("patrol-away", "the patrol is already away", g.PatrolAwayUntil) : yes;
-                case "mislead": return MisleadOpen() ? yes : No("no-rivals", "no rival car parked here with its wheelman in it"); // brief 059 F3 (the engine's MisleadRefusal, mirrored for the card; the order still asks the engine)
+                case "mislead": return CrewLock(by, o); // brief 096 (engine 0.41.0): a member on foot, the engine's CrewMislead mirrored for the card (the order still asks the engine)
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", $"{ValeWord} is not inside");
                 case "take": // brief 059 K3 (the engine's Take, mirrored for the card): round the back with a turned driver, never at the front or on the way
                     if (g.Vale == ValeAt.InCar && !g.PickupService && g.CarInBayTick >= 0) return No("car-not-parked", $"{ValeWord}'s car is driving round: take him once it parks", g.CarInBayTick);
@@ -1374,13 +1373,13 @@ namespace Suborned.Play
                 case "board": place = g.CurStand.Car; break; // brief 018: board within at-reach of the car; brief 059 K6: at the stand it stands at
                 case "watch": tp = o.Target == "car:rivals" ? g.RivalCarPose()?.pos : PosOf(t); reach = R.WatchReachCm(by); break; // brief 031: within the agent's own reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m), on a clear line
                 case "listen": tp = PosOf(t); reach = ReachOf("scout.listen"); break;
-                case "turn": tp = PosOf(t); reach = R.ApproachReachCm; break;
+                case "turn": tp = PosOf(t); reach = IsCrew(o.Target) ? R.ActReachCm : R.ApproachReachCm; break; // engine 0.41.0: a member's Pay is in act reach
                 case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
-                case "mislead": tp = g.RivalCarPose()?.pos; reach = R.ActReachCm; break; // brief 059 F3: at the rival car
+                case "mislead": tp = PosOf(t); reach = R.ActReachCm; break; // engine 0.41.0: a member on foot (the car's tip is retired)
                 case "fire": tp = PosOf(t); if (op.Gun.W == null) return null; reach = op.Gun.W.EffCm; break; // walk into the weapon's effective band
                 case "carry" when IsOpName(o.Target): tp = g.Ops[(int)Op.Parse(o.Target)].Pos; reach = R.ActReachCm; break;
                 case "carry": case "restrain": { var b = g.BodyById(o.Target); if (b == null) return null; tp = g.BodyPos(b); reach = R.ActReachCm; break; }
-                case "takedown": { var p = g.PersonById(o.Target); tp = p == null ? (HostViews.IsCrewId(o.Target) ? g.PosOf(o.Target) : null) : g.PosOfPerson(p); reach = R.TakedownReachCm; break; } // engine 0.33.0: a member on foot
+                case "takedown": { var p = g.PersonById(o.Target); tp = p == null ? (IsCrew(o.Target) ? g.PosOf(o.Target) : null) : g.PosOfPerson(p); reach = R.TakedownReachCm; break; } // engine 0.33.0: a member on foot
                 case "stash": { var st = g.S.Stashes.Find(x => x.Id == o.Target); if (st == null) return null; tp = st.Stand; reach = R.AtReachCm; break; }
                 default: return null; // a call is made from wherever the Fixer stands
             }
@@ -1463,14 +1462,14 @@ namespace Suborned.Play
 
         /// <summary>Engine 0.23.0 (cell.approach): a Watch on a person, a Listen or a turn is given at the click and the engine walks the agent in;
         /// a driven agent is never walked (its order stays the host's walk, then the act).</summary>
-        bool WalksIn(OpId by, Order o) => !(Driving && by == (OpId)dAgent) && (o.Do is "listen" or "turn" || o.Do == "watch" && Game.WatcherKind(o.Target) is not ("camera" or "patrol") && CastOf(o.Target) is Person);
+        bool WalksIn(OpId by, Order o) => !(Driving && by == (OpId)dAgent) && (o.Do is "listen" or "turn" || IsCrew(o.Target) && o.Do is "mislead" or "watch" || o.Do == "watch" && Game.WatcherKind(o.Target) is not ("camera" or "patrol") && CastOf(o.Target) is Person);
 
         /// <summary>The card's walk for a person act (engine 0.23.0): WalkInS for Watch and Listen, Preview's WalkS for the approaches; -1 when the
         /// engine has none (off the street, no route), null when the act is not a walk-in act.</summary>
         int? WalkInSeconds(OpId by, Order o)
         {
             if (Game == null || !WalksIn(by, o)) return null; int s = -1;
-            Guard("walk in", () => s = o.Do == "turn" ? Game.Preview(o.Approach, o.Target, by).WalkS : Game.WalkInS(Op.Name(by), o.Do, o.Target));
+            Guard("walk in", () => s = IsCrew(o.Target) ? CrewWalkS(by, o) : o.Do == "turn" ? Game.Preview(o.Approach, o.Target, by).WalkS : Game.WalkInS(Op.Name(by), o.Do, o.Target));
             return s;
         }
 

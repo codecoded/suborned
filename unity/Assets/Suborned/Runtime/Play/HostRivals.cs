@@ -33,16 +33,6 @@ namespace Suborned.Play
         /// <summary>A rival target's point: the car (car:rivals) or a member by his id.</summary>
         Pt? RivalPos(Target t) => t.Key == "car:rivals" ? Game.RivalCarPose()?.pos : Game.PosOf(t.Key);
 
-        /// <summary>The engine's MisleadRefusal mirrored for the card (the order still asks the engine): the car parked at the park with its wheelman
-        /// aboard, the crew not drawn by gunfire, no final fight.</summary>
-        public bool MisleadOpen()
-        {
-            var g = Game; if (g == null || g.Range || views == null) return false;
-            if (views.RivalCarState != "parked" || g.FightBranch.Length > 0 || g.RivalsDrawn) return false;
-            if (!views.RivalModes.TryGetValue("rival-5", out var wm) || wm != "aboard") return false;
-            var cp = g.RivalCarPose(); return cp.HasValue && g.S.HasPlace(g.S.RivalsPark) && G.Within(cp.Value.pos, g.S.CarStand(g.S.RivalsPark), 300);
-        }
-
         /// <summary>The rival car's next move (RivalNext), guarded; null when none.</summary>
         (string kind, int tick, Pt at)? RivalNextOf(string id) { (string, int, Pt)? r = null; Guard("rival next", () => r = Game.RivalNext(id)); return r; }
 

@@ -182,8 +182,8 @@ namespace Suborned.Play
                     }
                 case "H8":
                     if (g.Tick < 190 * Game.Hz || !g.RivalsPresent || g.Vale == ValeAt.WithEnforcer) return false;
-                    if (Given(o => o.Target is "rivals" or "car:rivals") || !MisleadOpen()) return false; // brief 059 F3: the tip is given at the parked car, its wheelman aboard
-                    ring = At("car/rivals"); return true;
+                    if (Given(o => o.Do == "mislead" || IsCrew(o.Target ?? "")) || LookoutId() is not { Length: > 0 } lk || g.CrewOf(lk) is not CrewMember lm || lm.Mode != CrewMode.Posted || lm.Post != "lookout") return false; // brief 096 (engine 0.41.0): the car's tip is retired; the Scout's word goes to the lookout at his post
+                    ring = At(lk); return true;
                 case "H9":
                     {
                         if (g.Tick < 180 * Game.Hz) return false; // brief 080: 3:00, a minute earlier with the shift (Vale out 4:50, last turn 4:40)

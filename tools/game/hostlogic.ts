@@ -3,7 +3,7 @@
 // Editor tests that need no scene (brief 078; Sky: "a lot of this can be done outside Unity though"). Compiles the player's scripts (runtime-compile), a test-only copy of Unity's assemblies with native
 // calls answering defaults (hostlogic/Patch.cs; cached until Unity's version changes) and the cases (hostlogic/HostLogic.cs), then runs them in plain dotnet. No scene, views, input devices or
 // pictures: those stay in the player's proof. The batch runs this right after `compile`, so a logic slip stops it before the player build.
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { ROOT, compile, managedDir, unityVersion } from './runtime-compile';
 
@@ -37,14 +37,15 @@ ${o.tests.map(f => `    <Compile Include="${f}" />`).join('\n')}
 
 /** The patched copy of Unity's assemblies, once per Unity version. */
 function shim(ver: string): { dir: string; error?: string } {
-  const dir = join(OUT, `unity-${ver}`);
-  if (existsSync(join(dir, 'UnityEngine.CoreModule.dll')) && existsSync(join(dir, 'UnityEditor.CoreModule.dll'))) return { dir };
+  const dir = join(OUT, `unity-${ver}`), stamp = join(dir, 'patch.sha'), sha = new Bun.CryptoHasher('sha256').update(readFileSync(join(DIR, 'Patch.cs'))).digest('hex'); // a changed patcher rebuilds the copy
+  if (existsSync(join(dir, 'UnityEngine.CoreModule.dll')) && existsSync(join(dir, 'UnityEditor.CoreModule.dll')) && existsSync(stamp) && readFileSync(stamp, 'utf8') === sha) return { dir };
   const cecil = cached('com.unity.nuget.mono-cecil', 'Mono.Cecil.dll'), proj = join(OUT, 'patch/patch.csproj');
   if (!cecil) return { dir, error: 'Mono.Cecil is not in unity/Library/PackageCache: the project has to have opened once' };
   mkdirSync(join(OUT, 'patch'), { recursive: true });
   writeFileSync(proj, `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><Nullable>disable</Nullable><InvariantGlobalization>true</InvariantGlobalization><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NoWarn>CS1701;CS1702;MSB3277</NoWarn></PropertyGroup><ItemGroup><Compile Include="${join(DIR, 'Patch.cs')}"/><Reference Include="${cecil}"/></ItemGroup></Project>\n`);
   const editor = `/Applications/Unity/Hub/Editor/${ver}/Unity.app/Contents/Resources/Scripting/Managed/UnityEngine/UnityEditor.CoreModule.dll`;
   const r = run(['dotnet', 'run', '--project', proj, '--', managedDir(ver), dir, editor]);
+  if (r.code === 0) writeFileSync(stamp, sha);
   return r.code === 0 ? { dir } : { dir, error: `the Unity copy failed:\n${r.out.slice(-800)}` };
 }
 

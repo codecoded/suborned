@@ -28,7 +28,7 @@ static class P {
     foreach(var t in mod.GetTypes()){
       bool all=Silent.Contains(t.FullName), host=t.FullName=="Suborned.Play.HandoverHost";
       if(!all&&!host) continue;
-      foreach(var m in t.Methods){ if(!m.HasBody||m.IsStatic&&m.IsConstructor) continue; if(all||(host&&SilentHost.Contains(m.Name))){ Default(m,mod); n++; } }
+      foreach(var m in t.Methods){ if(!m.HasBody||m.IsStatic&&(m.IsConstructor||all)) continue; /* a silent type's static helpers are pure (HostViews.IsCrewId, KeyOf): kept */ if(all||(host&&SilentHost.Contains(m.Name))){ Default(m,mod); n++; } }
     }
     asm.Write(Path.Combine(outDir,"check.dll")); return 0;
   }
