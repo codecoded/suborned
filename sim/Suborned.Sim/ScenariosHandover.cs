@@ -53,7 +53,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>Help a person as route A does (§07: the Fixer helps Inez), reading the card as a player would: Help again while she is
-        /// not yet turned (one Help turns an Idealist; a Fearful person needs Help ×2, a Loyal one trust over time; §04). The cast decides how
+        /// not yet turned (one Help turns an Idealist or, since engine 0.44.0, a Fearful person; a Mercenary takes two visits, a Loyal one trust over time; §04). The cast decides how
         /// many; a card that reads "refused" is not given, and the scenario's check says so.</summary>
         static void HelpUntilTurned(Run r, string role, int most = 4)
         {
@@ -603,7 +603,7 @@ namespace Suborned.Sim
                 r.Is(!g.CanCall(Inez), "an unknown person is not a contact to call");
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.Refused(Fixer, "turn", Inez, "Help needs her need first (a Listen): refused wherever the Fixer stands, walking closer won't cure it", "help");
+                r.Is(g.Preview("help", Inez).Outcome == "small-offer", "engine 0.44.0: before the Listen, Help on her told debt is only a small offer, refused on the card"); r.Refused(Fixer, "turn", GuardR, "Help with no need told at all is refused wherever the Fixer stands, walking closer won't cure it", "help");
                 // engine 0.30.0: Inez's post is the site's stand (-975, -2925; Pulse's re-bake), 2.96 m from the Courtyard, inside Listen's 3 m: the Scout steps
                 // back to 6 m from her first, so the Listen is given out of reach as this case means
                 { var ip = g.PersonPos(g.Inez)!.Value; var d = r.Op(Scout).Pos - ip; long len = Math.Max(1, G.Isqrt((long)d.X * d.X + (long)d.Y * d.Y)); var back = ip + new Pt((int)(d.X * 600 / len), (int)(d.Y * 600 / len)); r.To(r.SendTo(Scout, g.S.Grid.NearestFree(back) ?? back)); }
@@ -632,7 +632,7 @@ namespace Suborned.Sim
                 r.Refused(Fixer, "turn", Inez, "the same failed approach cannot be repeated", "ask");
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.Refused(Fixer, "turn", Inez, "routine alone does not unlock debt relief", "help");
+                r.Eq(g.Preview("help", Inez).Outcome, "small-offer", "routine alone does not unlock debt relief: still the small offer she refuses (engine 0.44.0)");
                 r.To(r.Send(Scout, "beside-inez"));
                 r.Do(Scout, "listen", Inez); r.Done(Scout);
                 // Changed (r016 cast, 2026-10-16): the prototype's Inez took one Help ($50,000, T 3). How many Helps she takes is the cast's
@@ -648,7 +648,7 @@ namespace Suborned.Sim
                     r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); helps++;
                 }
                 r.Is(g.Inez.Turned, $"new information lets the Fixer recover from the refusal ({helps} Help)");
-                r.Eq(g.Cash, before - helps * (help + share + refUsd), "the cold approach raises the debt relief price, on each Help");
+                long shareOf = g.Inez.Temperament == "fearful" ? 0 : share; r.Eq(g.Cash, before - helps * (help + shareOf + refUsd), "the cold approach raises the debt relief price, on each Help (engine 0.44.0: a Fearful Inez takes the full offer once, no share)");
                 r.Eq((long)g.Trail, 1 + helps * (helpT + refT), "the refused approach leaves an extra trail, on each Help");
             });
 
@@ -664,7 +664,7 @@ namespace Suborned.Sim
                 r.Eq(q.Lines[0].Usd, 70000L, "routine unlocks an expensive offer: $70,000");
                 r.Eq(q.Outcome, "?", "before Listen the card shows the outcome as \"?\"");
                 r.Eq(q.WorstUsd, 90000L, "and asks cash for the worst case");
-                r.Refused(Fixer, "turn", Inez, "debt relief is still locked", "help");
+                r.Eq(g.Preview("help", Inez).Outcome, "small-offer", "debt relief is still only the small offer she'd refuse (engine 0.44.0: it was locked)");
                 r.Do(Fixer, "turn", Inez, "pay"); r.Done(Fixer);
                 r.Is(!g.Inez.Turned, "an Idealist refuses the fee");
                 r.Eq(g.Cash, 100000L, "the fee stays with the cell");
@@ -1058,7 +1058,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 var q = g.Preview("help", Inez);
-                r.Eq(q.Lines.Count, 8, "eight line items: base, refused before, one more Help, the visits' share first and later (brief 085), trust over time, and the mood's ready and ready-at-one (brief 054 §4.2)");
+                r.Eq(q.Lines.Count, 9, "nine line items: base, refused before, the small offer (engine 0.44.0), one more Help, the visits' share first and later (brief 085), trust over time, and the mood's ready and ready-at-one (brief 054 §4.2)");
                 r.Eq(q.Lines[0].Line, "base", "the first is the base");
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 var m = g.Inez.Memory.Find(x => x.Act == "help");
@@ -1098,7 +1098,7 @@ namespace Suborned.Sim
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
             Pickup059(); // engine 0.32.0 (brief 059): route B at the service door, the rival crew of five, Drive, Sky's S1–S3 both ways (ScenariosPickup059.cs)
-            Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); Misses096(); // engine 0.43.0 (brief 096): Motive's misses (ScenariosMisses096.cs); engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
+            Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); Misses096(); HelpOffer096(); // engine 0.44.0 (brief 096): the small offer, a Fearful person helped once (ScenariosHelpOffer096.cs); engine 0.43.0 (brief 096): Motive's misses (ScenariosMisses096.cs); engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
             // engine 0.40.0 (brief 096): bribes on camera, box-in and the kerbside stop, the parked car (Scenarios*096.cs); engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
             FightBCases(); // engine 0.35.0 (brief 039 B): Covering fire holding Vale, Talk down on the blocker (ScenariosFightB.cs)
             Pace067(); // engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)

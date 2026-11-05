@@ -76,7 +76,7 @@ namespace Suborned.Sim
                 r.Eq(g.GuardAwayUntil - g.LureTick, 2 * g.VisitWalkTicks + g.R.SummonStayS * 10, "there and back at his walk, and the stay");
             }, Reads("mercenary"));
 
-            Add("P85-MIXED", "085", "Helped once, then pressured (N93): she remembers the Pressure, so the call is pressed.", r =>
+            Add("P85-MIXED", "085", "Helped once, then pressured (N93): she remembers the Pressure, so the call is pressed. A Mercenary Inez by the start (engine 0.44.0: one Help turns a Fearful one).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -86,7 +86,7 @@ namespace Suborned.Sim
                 r.Do(Fixer, "call", Inez);
                 r.Is(g.GuardCallPressed, "any Pressure counts");
                 r.Eq(g.GuardAwayUntil - g.LureTick, w.pressed, "the pressed window");
-            }, Reads());
+            }, Reads("mercenary"));
 
             Add("P85-LATE", "085", "The window is real: an Enter after he is back, with the camera looped and well inside what an unpressed visit would have left, fails on the guard.", r =>
             {
@@ -134,7 +134,7 @@ namespace Suborned.Sim
                 r.Is(G.Dist(p0, p1) > g.R.PeopleWalk / 10 + 2, $"a tick after the alarm he still covers more than a walk ({G.Dist(p0, p1)} cm)");
             }, Reads());
 
-            Add("P85-PRICE", "085", "Both Help routes (Motive §5, checked): Inez (Fearful) and the driver (Mercenary) are each a worse fit on the first visit; on the second the driver's first Help has made him friendly (no longer worse) while Inez stays worse (her own fear keeps her uneasy), and each pays $20,000 either way: $80,000 of the purse, $20,000 left.", r =>
+            Add("P85-PRICE", "085", "Both Help routes (Motive §5, checked; engine 0.44.0, brief 096 Sky's option 1): Inez (Fearful) takes the full offer once after the Listen, $40,000, no share; the driver (Mercenary) is a worse fit on the first visit and his first Help makes him friendly, so the second is no longer worse; $20,000 a visit: $80,000 of the purse, $20,000 left.", r =>
             {
                 var g = r.G;
                 r.Eq((g.Inez.Temperament, g.Driver.Temperament), ("fearful", "mercenary"), "the cast's Inez and driver");
@@ -152,7 +152,9 @@ namespace Suborned.Sim
                     r.Is(p.Turned, who + " turned on the second visit");
                     r.Eq(g.Cash, left, $"${left} left");
                 }
-                Twice(Inez, "d:Courtyard", g.Inez, "uneasy", "yes", 60000L);
+                r.To(r.Send(Fixer, "d:Courtyard")); var qi = g.Preview("help", Inez); string Hi(string line) => qi.Lines.Find(l => l.Line == line)!.Holds;
+                r.Eq((Hi("one-more-help"), Hi("visits-share-first"), Hi("small-offer"), qi.Usd, qi.Orders, qi.Outcome), ("no", "no", "no", 40000L, 1L, "turned"), "Inez: one visit, the full offer, $40,000, turns");
+                r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); r.Is(g.Inez.Turned && g.Cash == 60000L, "Inez turned on the first visit, $60,000 left");
                 Twice(Driver, "d:Boarding pavilion", g.Driver, "friendly", "no", 20000L);
             }, Reads());
 
@@ -160,7 +162,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez);
-                r.Eq(g.Cash, 60000L, "$40,000 over two visits");
+                r.Eq(g.Cash, 60000L, "$40,000: one visit since engine 0.44.0 (two of $20,000 before)");
                 r.To(r.Send(Fixer, "d:Boarding pavilion"));
                 r.Refused(Fixer, "turn", Driver, "$70,000 is over what's left", "pay");
             }, Reads());

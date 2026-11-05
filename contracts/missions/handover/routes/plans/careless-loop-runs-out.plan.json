@@ -71,15 +71,9 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
-  },
-  {
-   "op": "fixer",
-   "do": "turn",
-   "target": "waitress",
-   "approach": "help",
+   "when": "scout.listen.heard",
    "label": "turned",
-   "why": "the second Help: she turns"
+   "why": "the one Help: the card after Listen reads her Fearful and says it turns her; given once the Listen has landed, since before it Help is only the small offer she refuses (engine 0.44.0, brief 096, Sky's option 1: the full offer after the Listen, $40,000, one visit; it was two visits of $20,000)"
   },
   {
    "op": "fixer",

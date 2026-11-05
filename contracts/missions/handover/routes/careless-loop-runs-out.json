@@ -13,7 +13,6 @@
   {"tick":290,"op":"scout","do":"listen","target":"waitress"},
   {"tick":327,"op":"enforcer","do":"move","to":[6925,-4250]},
   {"tick":596,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
-  {"tick":946,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
   {"tick":1560,"op":"fixer","do":"call","target":"waitress"},
   {"tick":1560,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
   {"tick":1579,"op":"enforcer","do":"enter"}

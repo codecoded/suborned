@@ -7,7 +7,7 @@ import { num, type Cond, type Eff, type Event, type Rulebook } from './rulebook.
 
 export type Band = 'hero' | 'neutral' | 'menace';
 export type Fit = 'suits' | 'worse' | 'refused';
-export type Know = 'routine' | 'need' | 'temperament' | 'refused' | 'secret';
+export type Know = 'routine' | 'need' | 'temperament' | 'refused' | 'secret' | 'need-told'; // need-told (engine 0.44.0): the need's kind told, the briefing's word
 export type Mem = { act: string; by: string; place: string; time: number; witnessed: boolean; told?: string[] };
 export type Subject = {
   id: string; tier: 'simulated' | 'background'; temperament: string; need: string;
@@ -76,7 +76,7 @@ export function holds(rb: Rulebook, people: PeopleRules, c: Cond, x: Ctx, ev?: E
   switch (c.k) {
     case 'tier': return s.tier === c.is;
     case 'turned': if (c.of) break; return s.turned === c.is;
-    case 'known': return x.knows.has(c.what) === (c.is ?? true);
+    case 'known': return (c.what === 'need-told' ? x.knows.has('need-told') || x.knows.has('need') : x.knows.has(c.what)) === (c.is ?? true); // need-told: told or heard (engine 0.44.0)
     case 'leverage': {
       const r = people.approaches[c.approach as 'ask'].requires;
       const need = (r === 'nothing' || x.knows.has(r)) && ((people.needs.list[s.need]?.metBy as readonly string[] | undefined)?.includes(c.approach) ?? false);
@@ -173,6 +173,8 @@ function priceLines(rb: Rulebook, people: PeopleRules, ev: Event, x: Ctx): Omit<
   const perOrder = sum(truthOf);
   const worst = { ...sum((q, i) => truthOf(q, i) || q.holds === '?'), usd: sum((q, i) => (q.holds === '?' ? q.usd > 0 : truthOf(q, i))).usd }; // brief 085: a '?' line that would lower the price doesn't lower the cash asked
   const orders = lines.reduce((n, q, i) => n + (truthOf(q, i) ? q.orders : 0), 0) || 1;
+  const alone = lines.findIndex((q, i) => ev.price![i]!.alone === true && truthOf(q, i)); // engine 0.44.0 (turn.help small-offer): that line is the card
+  if (alone >= 0) { const q = lines[alone]!, one = { usd: q.usd, s: q.s, trail: q.trail }; return { lines: lines.map((l, i) => (i === alone ? l : { ...l, holds: false })), perOrder: one, worst: one, orders: 1 }; }
   return { lines, perOrder, worst, orders };
 }
 

@@ -72,21 +72,17 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
-  },
-  {
-   "op": "fixer",
-   "do": "turn",
-   "target": "waitress",
-   "approach": "help",
+   "when": "scout.listen.heard",
    "label": "turned",
-   "why": "the second Help, which the card says turns her"
+   "why": "the one Help: the card after Listen reads her Fearful and says it turns her; given once the Listen has landed, since before it Help is only the small offer she refuses (engine 0.44.0, brief 096, Sky's option 1: the full offer after the Listen, $40,000, one visit; it was two visits of $20,000)"
   },
   {
    "op": "fixer",
    "do": "call",
    "target": "waitress",
-   "label": "call"
+   "label": "call",
+   "when": "rivals.coming",
+   "why": "once the rival car is seen coming (engine 0.44.0, brief 096: one Help turns Inez 35 s sooner; called at once Popovic comes out as the rival car turns in, so a prepared player waits for it and he comes out to a posted crew, as the Pressure pair has since c038)"
   },
   {
    "op": "enforcer",

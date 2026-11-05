@@ -16,7 +16,7 @@ export const Ref = z.string().regex(/^(v:[a-z][a-z0-9-]*|p:[a-zA-Z][a-zA-Z0-9.-]
 export const TAGS = ['B', 'S', 'L'] as const;
 export const BANDS = ['hero', 'neutral', 'menace'] as const;
 export const FITS = ['suits', 'worse', 'refused'] as const;
-export const KNOWS = ['routine', 'need', 'temperament', 'refused', 'secret'] as const; // refused: the cell knows this event's approach is refused by this person
+export const KNOWS = ['routine', 'need', 'temperament', 'refused', 'secret', 'need-told'] as const; // refused: the cell knows this event's approach is refused by this person; need-told (engine 0.44.0): the need's kind told (the briefing's word) or heard
 export const PHASES = ['mission-start', 'mission', 'between-missions'] as const;
 /** Who an event is by; `cell` (brief 031): any of the four operatives (cell.watch). */
 export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'cell', 'contact', 'person', 'investigator', 'city'] as const;
@@ -127,7 +127,7 @@ export const Line = z.strictObject({
   line: id, // the preview label key (K8)
   when: z.array(Cond).optional(),
   usd: Ref.optional(), s: Ref.optional(), trail: Ref.optional(),
-  orders: Ref.optional(), // Help orders this line adds (base: the orders one approach takes)
+  orders: Ref.optional(), alone: z.literal(true).optional(), // Help orders this line adds (base: the orders one approach takes); alone (engine 0.44.0): when it holds the card is this line only
 }).refine((l) => [l.usd, l.s, l.trail, l.orders].some((x) => x !== undefined), { message: 'a price line prices something' });
 export type Line = z.infer<typeof Line>;
 const Outcome = z.strictObject({ id, when: z.array(Cond), changes: z.array(Eff) }); // only the last (the fallback) may change nothing: refined on Event
