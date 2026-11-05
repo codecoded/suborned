@@ -27,7 +27,7 @@ export function digestOfPlan(rows: Row[], replayIdentical: boolean): Digest {
   for (const c of codes) { const v = pool.filter(r => c in r.marks); if (c === 'attention.reporting' && rows.filter(r => c in r.marks).length < LOITER_SHARE * rows.length) continue; if (v.length * 2 >= pool.length || c === 'rivals.wiped') marks[c] = med(v.map(r => r.marks[c]!)); }
   if (loud && home.length) delete marks['captured'];
   const seal = pool.filter(r => 'seal.starts' in r.marks).length * 2 >= pool.length; if (!seal) delete marks['seal.starts'];
-  const free = wins.map(r => { const at = wayFreeAt(r.marks); return at === undefined ? undefined : (r.tick - at) / 10; }), someNoBlocker = free.some(x => x === undefined); // engine 0.43.0 reading (Waymark): car.unboxed under the block, someNoBlocker = free.some(x => x === undefined);
+  const free = wins.map(r => { const at = wayFreeAt(r.marks); return at === undefined ? undefined : (r.tick - at) / 10; }), someNoBlocker = free.some(x => x === undefined); // engine 0.43.0 reading (Waymark): car.unboxed under the block, or a lend win's spring (blocker.ts wayFreeAt)
   // MC-11 over seeds: a hold that didn't come for the car counts once it's more than a stray seed's (as judge.ts reads a hold: an answer to fire, or a walk to a post the mission places)
   const badHold = (r: { marks: Record<string, number> }) => (h: { how: string; who: string; tick: number }) => h.how === 'answer' || (h.how === 'post' && /^(rival|officer)-\d+$/.test(h.who) && !boxCrewHold(r.marks, h));
   const heldShare = rows.filter(r => (r.held ?? []).some(badHold(r))).length / rows.length;

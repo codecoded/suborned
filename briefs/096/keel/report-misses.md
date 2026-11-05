@@ -113,4 +113,11 @@ quiet-b-thinned is in band now (12-24 s).
 - `suborned-sim check`: 459/459 ok, replays exact.
 - `bun run missions:check bands handover --seeds 200` (through `bun run guard`): 1:12; the table above.
 - Mission check on the tree: HOLDS; every MC-* green.
-- `bun run typecheck`: clean. `bun run test`, the C# tests and the record: see the final message.
+- `bun run typecheck`: clean.
+- C# tests (`dotnet test sim/Suborned.Sim.Tests -c Release`): 3135/3135 passed, 6:13. (A Debug run was stopped at my 20-minute limit; Release is
+  the one to use.)
+- `bun run test` (through `bun run guard`): 8:40, 61 fail and 5 errors against the pre-change tree's 60 and 5 (7:45). The 60 are the same on
+  both (out/ files a fresh worktree lacks: people, kit, skyline, dialogue, levels). The one new one was mine (tools/lint/comments: code left
+  in a comment in fromBands.ts), fixed; the lint and the check tests then pass (check.test.ts 36/36, the headless Handover with the new
+  KNOWN_RED and the c038 replay included).
+- Mission record c053, pinned to f82f2c64: HOLDS; `missions:check replay handover c053`: REPLAY OK.
