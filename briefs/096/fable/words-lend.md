@@ -294,3 +294,26 @@ Engine 0.44.0 (merged at b1087f6e; Motive `briefs/096/motive/help-fearful.md`, K
 - **Glyph**: the refusal mark on the Help card before the Listen.
 - **Motive**: help-inez-1 is written for a Fearful Inez (the schema requires a temperament), and her caution shows before the Listen. It reads as anyone's caution with a stranger who knows her debt, and the bubbles (reply, done, scene) are the same for every temperament; say if it should be flatter.
 - **Fable (later)**: the small offer in the city's dialogue tables (tools/dialogue `requiredCells`, every group), then drop `handoverOnly`.
+
+# Engine 0.45.0 words: Help on Lukac (Fable, 2026-11-05)
+
+Keel's 0.45.0 (merged at 2d891114, `briefs/096/keel/report-lukac-help.md` "For Fable"): after his Listen a Mercenary Lukac takes Help in one visit ($50,000, 35 s, +1 T) and is turned; after a refused small offer it's $60,000, +2 T.
+
+## The conversations (`scenes.conversations`, both `awaiting-sky`, after pay-driver)
+- **help-driver, "Help the driver"** (`mercenary, outcome: turned, helped: false`). The Fixer knows his wages are late and it's been a lean month; she brings enough to see him through until they come, his before she asks anything. He distrusts money that asks for nothing ("costs the most in the end") and asks what it's for; the ask is pay-driver's job (at the chime, round to the service bay, a couple of minutes, then he drives on); he wants neither "we" nor the yard explained. Ends on his reaction: "That'll see me to payday, and the garage off my back", and he'll send anyone hanging about the bay off. 14 lines. Cards: *Lukac took it.* · *Lukac waits a couple of minutes.* → *Be at the service bay*.
+- **help-driver-known, "Help the driver again"** (`helped: true`, set by the refused small offer's `turn.help.small-offer` log, as help-inez-2-known). Opens "You again. If it's more of that small change, my answer's the same."; three more lines meet the refusal; from "Mine, just like that?" on it is help-driver word for word. 15 lines.
+- No amount spoken, no lean fields. His small offer before the Listen keeps the street bubbles (no conversation), as Inez's second small offer does.
+- Source for the page: `briefs/096/fable/conversations-sample.json` `help045` (the test holds text.json to it word for word); `conversations-sample.html` has scenes 5b and 5c, two table rows and a box at the top; pay-driver's stale note ("Help on Lukac has no scene of its own yet") now points at them.
+
+## Tests and sheets
+- `conversations.test.ts`: `DRIVER` held to the sample; AWAITING gains both; routing (`help`/driver/mercenary/turned → help-driver, helped → help-driver-known; small offer either way and other temperaments → none); the one-visit check and a no-amount check (`$`, digits, thousand, hundred) on both; Help on the driver still has its bubbles scene.
+- `tools/dialogue/conversations.ts`: two specs (sheets for the generator; the test requires one per scene). Both pass `check` with no faults.
+
+## Checks
+- `bun test contracts/missions/handover`: 203 pass, 0 fail.
+- `bun run hostlogic`: 128 pass, 0 fail.
+- `bun run typecheck`: exit 0.
+
+## Left for others
+- **Latch**: `bun tools/game/words.ts` to copy text.json into StreamingAssets/sim (not run here: checks were limited to the three above). The host's lookup is data-driven (HostConvo.Lines.cs ConvoQuery), so no code change is expected; a proof of Help on the driver after his Listen would show help-driver.
+- **Motive**: read Lukac's distrust of a gift for fit with a Mercenary taking Help in one visit.

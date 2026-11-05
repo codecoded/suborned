@@ -261,5 +261,177 @@
         ]
       }
     ]
+  },
+  "help045": {
+    "note": "Fable, 2026-11-05, after engine 0.45.0 (briefs/096/keel/report-lukac-help.md): after his Listen a Mercenary Lukac takes Help in one visit and is turned; after a refused small offer it is dearer. Until now Help on the driver had no conversation of its own. Both new in text.json, word for word, awaiting Sky's read.",
+    "items": [
+      {
+        "id": "help-driver",
+        "title": "Help the driver",
+        "status": "awaiting-sky",
+        "when": {
+          "verb": "help",
+          "about": "driver",
+          "temperament": "mercenary",
+          "outcome": "turned",
+          "helped": false
+        },
+        "beats": [
+          {
+            "speaker": "fixer",
+            "line": "You're Lukac, the Councillor's driver? I hear your wages are late again, and that it's been a lean month."
+          },
+          {
+            "speaker": "driver",
+            "line": "Who've you been talking to? My wages are my own business."
+          },
+          {
+            "speaker": "fixer",
+            "line": "Nobody who'll mention it again. I've brought enough to see you through until they come, and it's yours."
+          },
+          {
+            "speaker": "driver",
+            "line": "Mine, just like that? In my experience, money that asks for nothing costs the most in the end."
+          },
+          {
+            "speaker": "fixer",
+            "line": "There is something, and it's small. But the money's yours first, whatever you think of what I ask."
+          },
+          {
+            "speaker": "driver",
+            "line": "Then say it plainly. The Councillor's due out soon, and I'm on his time, not mine."
+          },
+          {
+            "speaker": "fixer",
+            "line": "When the chime goes, he'll come out and get in as he always does. Only this time, you don't take him home."
+          },
+          {
+            "speaker": "driver",
+            "line": "Then where does he go?"
+          },
+          {
+            "speaker": "fixer",
+            "line": "Round to the service bay at the back of the Office. You pull in there, and you wait."
+          },
+          {
+            "speaker": "driver",
+            "line": "The east yard. I'll wait a couple of minutes there with him, and then I drive on, whatever's happened."
+          },
+          {
+            "speaker": "fixer",
+            "line": "That's all we need. We'll be at the bay when you pull in."
+          },
+          {
+            "speaker": "driver",
+            "line": "Don't tell me who 'we' are, and don't tell me what happens in that yard. I'd sooner not know either."
+          },
+          {
+            "speaker": "fixer",
+            "line": "Then you'll know nothing anyone could ask you about. I'm glad it came to someone with your sense, Lukac."
+          },
+          {
+            "speaker": "driver",
+            "line": "That'll see me to payday, and the garage off my back. Anyone hanging about that bay, I'll send off, and I won't be looking."
+          }
+        ],
+        "learned": [
+          "Lukac took it.",
+          "Lukac waits a couple of minutes."
+        ],
+        "opens": [
+          "Be at the service bay"
+        ],
+        "notes": [
+          "New. The Fixer knows from the Listen that his wages are late and brings enough to see him through until they come; it is his, before she asks anything. The ask is the same job as pay-driver: at the chime, round to the service bay, wait a couple of minutes.",
+          "Pay hires a driver; Help gives a hard-up driver something first. A Mercenary distrusts a gift more than wages (\"money that asks for nothing costs the most\"), so he asks what it is for, and takes it on the terms of the job.",
+          "Nobody says the amount ($50,000, 35 s, +1 T): the card shows it."
+        ]
+      },
+      {
+        "id": "help-driver-known",
+        "title": "Help the driver again",
+        "status": "awaiting-sky",
+        "when": {
+          "verb": "help",
+          "about": "driver",
+          "temperament": "mercenary",
+          "outcome": "turned",
+          "helped": true
+        },
+        "beats": [
+          {
+            "speaker": "driver",
+            "line": "You again. If it's more of that small change, my answer's the same."
+          },
+          {
+            "speaker": "fixer",
+            "line": "It isn't small change this time. I know what you're short now, and I've brought enough to see you through until your wages come."
+          },
+          {
+            "speaker": "driver",
+            "line": "Last time it was pocket money. Who've you been talking to since?"
+          },
+          {
+            "speaker": "fixer",
+            "line": "Drivers talk while they wait, and I listen. And it's yours, Lukac, all of it."
+          },
+          {
+            "speaker": "driver",
+            "line": "Mine, just like that? In my experience, money that asks for nothing costs the most in the end."
+          },
+          {
+            "speaker": "fixer",
+            "line": "There is something, and it's small. But the money's yours first, whatever you think of what I ask."
+          },
+          {
+            "speaker": "driver",
+            "line": "Then say it plainly. The Councillor's due out soon, and I'm on his time, not mine."
+          },
+          {
+            "speaker": "fixer",
+            "line": "When the chime goes, he'll come out and get in as he always does. Only this time, you don't take him home."
+          },
+          {
+            "speaker": "driver",
+            "line": "Then where does he go?"
+          },
+          {
+            "speaker": "fixer",
+            "line": "Round to the service bay at the back of the Office. You pull in there, and you wait."
+          },
+          {
+            "speaker": "driver",
+            "line": "The east yard. I'll wait a couple of minutes there with him, and then I drive on, whatever's happened."
+          },
+          {
+            "speaker": "fixer",
+            "line": "That's all we need. We'll be at the bay when you pull in."
+          },
+          {
+            "speaker": "driver",
+            "line": "Don't tell me who 'we' are, and don't tell me what happens in that yard. I'd sooner not know either."
+          },
+          {
+            "speaker": "fixer",
+            "line": "Then you'll know nothing anyone could ask you about. I'm glad it came to someone with your sense, Lukac."
+          },
+          {
+            "speaker": "driver",
+            "line": "That'll see me to payday, and the garage off my back. Anyone hanging about that bay, I'll send off, and I won't be looking."
+          }
+        ],
+        "learned": [
+          "Lukac took it.",
+          "Lukac waits a couple of minutes."
+        ],
+        "opens": [
+          "Be at the service bay"
+        ],
+        "notes": [
+          "The same scene when he refused a small offer earlier (helped true, as help-inez-2-known). He recognises the Fixer in the first line; from \"Mine, just like that?\" on it is help-driver word for word.",
+          "The full offer is dearer after a refusal ($60,000 and +2 T, not $50,000): nobody says the amount, the card shows it."
+        ]
+      }
+    ]
   }
 }

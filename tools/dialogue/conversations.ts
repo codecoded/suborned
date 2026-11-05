@@ -128,6 +128,29 @@ The scene must make plain: Lukac is the Councillor's driver and is short of mone
 learned: 1 line. opens: nothing new to press; instead 1 line naming the place to be ("Be at the service bay").
 ${VOICES('driver', 'fixer')}`,
   },
+  // Engine 0.45.0 (briefs/096/keel/report-lukac-help.md): after his Listen a Mercenary driver takes Help in one visit and is turned; after a refused small offer it's dearer.
+  {
+    id: 'help-driver', title: 'Help the driver', kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Lukac', 'Fixer'],
+    query: ['Help full offer once Mercenary driver cash need after Listen', 'route B pickup driver turned service bay waits', 'getaway rivals lookout turned driver warns lookout off', 'world paper records voice calls'],
+    mustSay: [{ what: 'the service bay', re: /service bay|round the back|service drive|round to the/i }, { what: 'the Councillor', re: /councillor/i }, { what: 'that the money is his', re: /it's yours|money's yours/i }],
+    sheet: `${WORLD}
+Situation: after the Scout's Listen, so the cell knows Lukac's wages are late and it's been a lean month. The Fixer finds Popovic's official driver waiting by the official car in the bay on the Office's south side, on Apron Road. Lukac has never seen her. She brings enough to see Lukac through until the wages come: it's Lukac's, given first, before she asks anything (Help, not Pay: a gift for the need, not wages for a job). The game moves the money away from the shot, so no envelope, and nobody says the amount: the card shows it. Lukac distrusts money that asks for nothing more than wages, and asks what it's for; then the ask, which is pay-driver's job exactly.
+${who(DRIVER, 'Lukac', 'Call the driver Lukac, his surname: the Fixer matches his brisk way and adds no Mr; no gendered word. Calls Popovic "the Councillor", always.')}
+The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. Lukac takes the Councillor round to the service bay at the back, the east yard, and waits there with him: a couple of minutes, then drives on. If someone's hanging about the bay, Lukac sends them off; Lukac names nobody. What happens at the bay is the Fixer's people's business; Lukac doesn't want to know.
+The scene ends on Lukac's reaction: what the money does for a lean month, and the bay kept clear.
+learned: 2 lines (Lukac took it; Lukac waits a couple of minutes). opens: 1 line naming the place to be ("Be at the service bay").
+${VOICES('driver', 'fixer')}`,
+  },
+  {
+    id: 'help-driver-known', title: 'Help the driver again', kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Lukac', 'Fixer'],
+    query: ['Help full offer after a refused small offer remembered refusal', 'route B pickup driver turned service bay waits', 'getaway rivals lookout turned driver warns lookout off'],
+    mustSay: [{ what: 'that Lukac knows the Fixer', re: /you again|before|last time/i }, { what: 'the service bay', re: /service bay|round the back|service drive|round to the/i }, { what: 'the Councillor', re: /councillor/i }],
+    sheet: `${WORLD}
+Situation: as help-driver (the full offer after the Listen, enough to see Lukac through, Lukac's own; the ask is the service bay at the chime), but Lukac refused this same Fixer's small offer earlier and recognises her at once. The first lines meet that: last time it was small change; this time it's enough. From "Mine, just like that?" on, the scene is help-driver's.
+${who(DRIVER, 'Lukac', 'Call the driver Lukac, his surname: the Fixer matches his brisk way and adds no Mr; no gendered word. Calls Popovic "the Councillor", always.')}
+learned: 2 lines. opens: "Be at the service bay".
+${VOICES('driver', 'fixer')}`,
+  },
   {
     id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-2'], kind: 'call', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Fixer', 'Inez', 'Arthur'],
     query: ['capstone the call pulls guard off door partners ring side stays 60 s', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
