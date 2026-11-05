@@ -93,7 +93,34 @@ def matte_kit(text):
         text = re.sub(rf"(- {k}: )[0-9.]+\n", rf"\g<1>{v}\n", text)
     m = re.search(r"  m_ValidKeywords:(?: \[\]\n|\n((?:  - \S+\n)*))", text)
     keys = sorted(({*re.findall(r"- (\S+)", m.group(1) or "")} - {"_CLEARCOAT"}) | {"_ENVIRONMENTREFLECTIONS_OFF"})
-    return text[: m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {k}\n" for k in keys) + text[m.end() :]
+    return to_lit(text[: m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {k}\n" for k in keys) + text[m.end() :])
+
+
+def to_lit(text):
+    """Brief 096 item 5 (Redline's render audit rec. 5, Sky "yes"): a .mat with no clear coat moves from DecoKit/Complex Lit Cutaway to DecoKit/Lit Cutaway. Without _CLEARCOAT Complex Lit
+    runs Lit's BRDF, so the picture is the same; one shader family for enamel and stone means fewer SRP-Batcher breaks and variants. The Lit copy reads _ClearCoatMask as a reflection
+    scale (1 - mask, brief 028), so a moved .mat must carry its intended scale there: 0 for the matte enamels (reflections are off anyway). Only the shader guid changes; Unity keeps the
+    Complex Lit-only saved properties (_ClearCoatMap, _BlendOp) unread."""
+    assert "_CLEARCOAT\n" not in text.split("m_InvalidKeywords")[0], "a clear-coated .mat stays on Complex Lit"
+    return text.replace(f"m_Shader: {{fileID: 4800000, guid: {COMPLEX}, type: 3}}", f"m_Shader: {{fileID: 4800000, guid: {LIT}, type: 3}}")
+
+
+# Brief 096 item 3 (Redline's render audit rec. 3, Sky "yes"): the opaque window and lobby stand-ins off clear-coat Complex Lit. With a full coat (mask 1, coat smoothness 0.97) and
+# reflections on they mirrored the play scene's teal-grey street cube twice over (the coat's lobe and the base's). Now the Lit copy: no coat lobe, smoothness `sm` (the sun keeps a small
+# soft glint, so the panes read as glass, not paint), and the probe reflection scaled to `refl` through _ClearCoatMask (Lit copy: reflection x (1 - mask), brief 028). Glint signs off.
+GLASS_096 = {"DK_Window_Film": dict(sm=0.72, refl=0.3), "DK_Window_Tower": dict(sm=0.72, refl=0.3), "DK_Lobby": dict(sm=0.6, refl=0.2)}
+
+
+def glass_096(name, text):
+    """A window or lobby .mat (Complex Lit, full clear coat) as GLASS_096's Lit-copy glass."""
+    g = GLASS_096[name]
+    text = re.sub(r"(- _Smoothness: )[0-9.]+", rf"\g<1>{_f(g['sm'])}", text)
+    for k, v in (("_ClearCoat", "0"), ("_ClearCoatMask", _f(round(1 - g["refl"], 4))), ("_EnvironmentReflections", "1"), ("_SpecularHighlights", "1")):
+        text = re.sub(rf"(- {k}: )[0-9.]+\n", rf"\g<1>{v}\n", text)
+    m = re.search(r"  m_ValidKeywords:(?: \[\]\n|\n((?:  - \S+\n)*))", text)
+    keys = sorted({*re.findall(r"- (\S+)", m.group(1) or "")} - {"_CLEARCOAT", "_ENVIRONMENTREFLECTIONS_OFF", "_SPECULARHIGHLIGHTS_OFF"})
+    kw = "  m_ValidKeywords:" + ("\n" + "".join(f"  - {k}\n" for k in keys) if keys else " []\n")
+    return to_lit(text[: m.start()] + kw + text[m.end() :])
 
 
 def matte_096(name, text):
@@ -423,6 +450,15 @@ def write(table_path, dst, retuned):
         f = Path(dst) / "Materials" / f"{n}.mat"
         if f.exists():
             f.write_text(matte_096(n, f.read_text()))
+    for n in GLASS_096:  # brief 096 item 3: the window and lobby stand-ins on the Lit copy (a legacy-only .mat is brought over with its guid, so the generator's copy wins in the kit)
+        f = Path(dst) / "Materials" / f"{n}.mat"
+        src = f if f.exists() else legacy / f"{n}.mat"
+        if src.exists():
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_text(glass_096(n, src.read_text()))
+            if not (f.parent / f"{n}.mat.meta").exists():
+                (f.parent / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+                out.append(n)
     for f in sorted((Path(dst) / "Materials").glob("*.mat")):  # brief 096 K2: the kit enamels matte (after the colourways, so their variants too)
         if f.name.startswith(MATTE_KIT):
             f.write_text(matte_kit(f.read_text()))
