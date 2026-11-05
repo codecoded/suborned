@@ -110,3 +110,4 @@ quiet-a's Loop timed to the briefing's rival car (99 %, idle 24/43 s), prepared-
 New misses for Motive: L96 A (99 % over 97), L96 B-all (0.69 captured), L96 veteran (39.5 %). Report briefs/096/keel/report-lukac-help.md; GDD text
 gdd-text-lukac-help.md; bands bands-lukac-after-200.txt; record c055. Delta-only checks (Sky's speed call): no full test suite.
 Next: Waymark/Motive (the veteran plans, the three band lines), Fable (help-driver scene), Latch and Glyph (the driver's Help card).
+- Sky (2026-11-05): the grade is A+D+B from Glint's review (briefs/096/glint/grade/index.html: HDR grading, the concept-paintings LUT, B's warm shade fill), then a second round on form and light (SSAO that works at play distance, sun/shade contrast, less gloss, the paintings' warm/cool split); the tight purse is accepted ("yes": refused small offers to both Inez and Lukac leave money to turn only one).
