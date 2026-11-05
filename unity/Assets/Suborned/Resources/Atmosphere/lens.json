@@ -15,7 +15,8 @@
   },
   "teal": { "zenith": "#2f93a8", "mid": "#7fcfc6", "hazeHeight": 0.18, "note": "hazeHeight (Glint 2026-10-23): the teal sky's own haze band, wider than sky.hazeHeight 0.12 so teal eases into the cream haze; cobalt keeps sky.hazeHeight; 0 = use sky.hazeHeight. Sky's 1970s reference as the old DecoKitSky.Apply set it: zenith 88,168,170 and mid 127,218,208, both x 1.5 sky gain, shown here after the gain. Switch: Shift+F9 or -sky teal (AtmosphereSettings)." },
   "sun": {
-    "shadowStrength": 1.0,
+    "shadowStrength": 0.78,
+    "r096": "Glint, brief 096 (Sky picked A+D+B, 2026-11-05): 1.0 -> 0.78, option B's warm shade fill: the sun's own warm light fills about a fifth of the shade, so shaded cream reads warm and light, not olive (shaded paving V 0.45 -> about 0.55; briefs/096/glint/grade/index.html).",
     "r075": "Glint 075-A (2026-10-28): 1.0, the old reel's (its sun's shadow strength 1, the shade lit by its Trilight ambient only, now ported in light.json); was 0.68.",
     "r072": "Glint 072-G (2026-10-27, the grade toward DecoKit): 0.62 -> 0.68, firmer form (DecoKit's sun was 6x its ambient, ours about 2.6x); the sun fills 32 percent of the shade, not 38. Shaded road at office-front yaw 30: (127,145,150) -> (124,141,147), still powder blue (H 196); shaded cream stays cream.",
     "note": "Glint 2026-10-24 (Glyph, 0.2.99: shaded cream reads flat grey, the shaded enamel road falls to deep navy). Light.shadowStrength at runtime by day: a shadow takes 62 percent of the sun out and the sun fills the rest of the shade in its own warm colour. The sunlit side does not move (the sun term is unchanged); shade irradiance on up-facing surfaces x1.9 R, x1.7 G, x1.5 B, so a neutral cream roof shades peach, not grey, and a powder-blue enamel shades to powder blue-grey, not navy. Modelled on the 0.2.99 frame ring-loop-names: road shade #455668 (V 0.41, S 0.33) to about #717b89 (V 0.54, S 0.18), roof slab shade #8c8b8c to about #b5aeaa, paving shade #7e726b to about #a9988c; lit pixels unchanged. 1.0 = the scene as built; night and atmosphere off restore the scene's own value. Allowed 0.2 to 1; 0 or absent = the scene's own."
@@ -47,6 +48,10 @@
       { "type": "circle",  "position": 0.9,  "scale": 3.2,  "intensity": 0.05, "tint": "#ffd9b3", "fallOff": 0.4, "note": "far ghost" }
     ],
     "note": "The old DK_SunFlare on a LensFlareComponentSRP added to the scene's sun at runtime (occlusion on: towers cut it as they pass the sun). Intensity per tier: follow, long; play none (the 38 degree down view never sees the sun). One extra pass only while the sun is in frame."
+  },
+  "play096": {
+    "on": true, "exposure": 0, "contrast": 4, "saturation": 24, "temperature": 0, "tint": 10, "lut": "Atmosphere/concept-lut", "lutContribution": 0.9,
+    "note": "Glint, brief 096 (Sky picked A+D+B, 2026-11-05: briefs/096/glint/grade/index.html). The play camera's grade, read by AtmosphereLens.Play096.cs on the lens's play volume, replacing gradePlay's saturation, lift and exposure step there (its greens curve and bloomPlay stay): graded in HDR (PC_RPAsset colour grading mode HDR; the HDR-grading shaders ship because the asset uses it), ACES as before; post exposure 0, contrast 4, saturation 24 (absolute), white balance tint +10 (magenta, out of the yellow), no lift; a 32^3 Color Lookup authored from the street paintings (Resources/Atmosphere/concept-lut.bytes, a PNG strip read raw and linear; author: out/scratch/glint/096/lut.py, a tone-dependent CIELAB transfer from the play frames to briefs/008/concepts, sky excluded, authored on A's own base (this grade with the LUT off: lit cream rendered H46-48), strength 1.0, lightness 0.2, and a cream anchor (a* +3 on light low-chroma colours, none past chroma 30, so enamels and signals keep their hues)) at 0.9: lit cream H29-31, the paintings' peach. on false = gradePlay alone, as before. No per-pixel cost: all of it is the grading LUT."
   },
   "gradePlay": {
     "saturationPercent": 8,

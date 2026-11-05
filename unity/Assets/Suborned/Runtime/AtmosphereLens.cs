@@ -53,7 +53,7 @@ namespace Suborned
     ///   Long (flyby, free fly): the old look whole: bloom 0.8 / 0.6 / 0.85, Gaussian far blur 300 to 1800 m, the flare at 1.0, the exponential haze.
     /// Night (LightPhase.Night) and AtmosphereSettings.Enabled == false: nothing here applies. The sky inputs are shader globals read by
     /// Suborned/SkyGradient (zero = the sky as built); the far band (a baked strip of the horizon cards) is read from Resources when it exists.</summary>
-    public sealed class AtmosphereLens : MonoBehaviour
+    public sealed partial class AtmosphereLens : MonoBehaviour
     {
         public const string ResourcePath = "Atmosphere/lens";
 
@@ -321,7 +321,7 @@ namespace Suborned
             if (longAdj && Mathf.Abs(longConDelta) > 0.001f) longAdj.contrast.Override(Mathf.Clamp(BaseContrast() + longConDelta, -100f, 100f));
             if (Mathf.Abs(g.exposureDelta) > 0.001f) playSat.postExposure.Override(BaseExposure() + g.exposureDelta); else playSat.postExposure.overrideState = false; // brief 075-A: the play view's own exposure step // only the exposure is overridden; contrast, saturation and filter stay the scene grade's
             baseSaturation = s0;
-            duskK = -1f; // the evening grade is pushed again on the next Update (a scene load re-reads the scene grade)
+            duskK = -1f; ApplyPlay096(); // the evening grade is pushed again on the next Update (a scene load re-reads the scene grade); brief 096: Sky's A+D+B play grade (AtmosphereLens.Play096.cs)
         }
 
         bool LongGrade => Mathf.Abs(longExposureDelta) > 0.001f || Mathf.Abs(longSatDelta) > 0.001f || Mathf.Abs(longConDelta) > 0.001f;
