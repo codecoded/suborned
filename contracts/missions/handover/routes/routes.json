@@ -481,10 +481,10 @@
    "holds": "service-drive",
    "expects": {
     "outcome": "withdrawn",
-    "alert": 3
+    "alert": 2
    },
    "src": "brief 059 Motive briefs/059/motive/rulings.json M059-5.3, M059-5.4 (careless-loud-b-yard; MC-13); Keel P59-LOUD-YARD; GDD v0.26.0 §07 loud (the entry nearest the stand)",
-   "note": "c038 (Waymark, engine 0.34.1): MC-13 (brief 059, Motive M059-5.3; Keel's P59-LOUD-YARD), the service drive's loud-wait twin: route-b-board to the pickup, but the Fixer shoots the pickup camera out as Vale's car parks (gunfire: Alert 2), and the Scout and Fixer get into the car the Tech drove round. The Enforcer takes Vale from the back seat, carries him 3.5 m and boards, and Go is refused: the car is held (the official entrance's officers, the nearest entry to the stand, §07 loud: their blocker on the lane). Nobody of the cell fights, so the car can't leave, and the player withdraws (the free abort). Left to wait, the run seals (9:47.7 under the rulebook's final intent, agent) or, under the control intent every, the police shoot the cell down in the car: the Withdraw keeps the twin to what MC-13 reads, the refusal."
+   "note": "c053 (Keel for Waymark, engine 0.43.0, brief 096): recomposed: since 0.41.0 it lost to the lookout, which is not what it tests. MC-13 (brief 059, Motive M059-5.3), the service drive's loud-wait twin, recomposed on engine 0.43.0 (Keel for Waymark, brief 096: since 0.41.0 it lost to the lookout, which is not what it tests): the drive-round's opening (our car on the service drive by 2:45, before the rival car turns in, so the rival car blocks the drive's mouth: L10), the Fixer's Pay on the driver (taped: a loud twin), the lookout misled; the Fixer shoots the pickup camera out as Popovic's car stops at the kerb (gunfire: Alert 2, the loud fight), and the Scout and the Fixer get into our car on the drive. The Enforcer takes Popovic from the back seat at the kerb and the Take ends with him at its wheel (the lend); its Go is refused: the rival car boxes it (the box is the final fight's gate, Motive K3). Nobody of the cell fights, so it never leaves, and the player withdraws (the free abort): the Withdraw keeps the twin to what MC-13 reads, the refusal."
   },
   {
    "id": "withdraw",
@@ -617,10 +617,10 @@
    "twin": "route-b",
    "expects": {
     "outcome": "success",
-    "alert": 2
+    "alert": 1
    },
    "src": "brief 031 §7 (Waymark 4)",
-   "note": "engine 0.39.0 (Waymark): Careless loiter (brief 031), the twin of route-b: route-b, but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there for the tip. The discreet Listen itself ends out of every cone (engine 0.39.0), so standing there is the carelessness: the camera notices him, grows wary, and reports him at about 2:25 (it lands at about 2:38, Alert 1); the patrol's report of the idling Fixer takes it to Alert 2. The route still wins on this script's seed, one Alert dearer than its twin (Alert 1). As route-b: the Reroute at 4:00, the Enforcer at the square until 4:50, the Scout's lock 0.5 s after the Fixer's."
+   "note": "c053 (Keel for Waymark, engine 0.43.0, brief 096): recomposed on today's route-b (the lend, the lookout misled; since 0.41.0 it lost to the lookout, which is not what it tests). Careless loiter (brief 031), the twin of route-b, recomposed on engine 0.43.0 (Keel for Waymark, brief 096: it lost to the lookout since 0.41.0, which is not what it tests): route-b as today (the lend, the lookout misled), but once the Listen is over the Scout walks back to stand by the driver in the pickup camera's view and waits there before his walk to the lookout. Standing there is the carelessness: the camera notices him and reports him; the route still wins, at a higher Alert than its twin. Alert 1 against route-b's band (Alert 0 across seeds)."
   },
   {
    "id": "careless-g-disable",

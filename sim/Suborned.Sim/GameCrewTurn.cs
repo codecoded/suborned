@@ -3,7 +3,7 @@
 // drawn by his id alone (never the game's seed), no kind over rivals.turn.maxShare of the crew. On a member on foot and posted:
 //  · Watch (any agent): as a Watch on the rival car, the crew's timetable (RivalNext).
 //  · Listen (the Scout; scout.listen's time and reach; private): teaches his temperament (rivals.listen.heard).
-//  · Pay (the Fixer; rivals.turn: $30,000, 35 s, act reach; private): a Mercenary takes it (+2 T) and walks off the map, gone for the mission and
+//  · Pay (the Fixer; rivals.turn: $30,000, 35 s, act reach; private; engine 0.43.0: a Watch on the crew first, rivals.turn.needs): a Mercenary takes it (+2 T) and walks off the map, gone for the mission and
 //    never recalled; a Loyal man refuses, the money stays with the cell, the refusal is remembered and he tells his crew: at the spring every
 //    member counts the Fixer a foe. No need record: Ask, Help and Pressure are refused (crew-no-need).
 //  · Mislead (the Scout; cell.mislead: 30 s, +1 T, act reach): the lookout to the target's other door, a posted man to the lookout's post; he
@@ -100,27 +100,30 @@ namespace Suborned.Sim
         }
 
         /// <summary>A turn on a member: Pay only (rivals.turn); the rest need a need record the crew don't have.</summary>
-        string CrewTurn(Op op, Order o)
+        string CrewTurn(Op op, Order o, bool engage = true) // engage false: CrewActQuery (GameCrewQuery.cs)
         {
             if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer turns people (§03)");
             if (o.Approach != "pay") return No("crew-no-need", $"the rival crew have no need to meet: only Pay is offered on {o.Target}");
             var miss = CrewPresent(o.Target, out var m, out var at); if (miss.Length > 0) return miss;
             if (m.Refused) return No("refused-before", $"{m.Id} refused the money once: he won't take it now");
+            if (Cr.PayNeedsWatch && !RivalsWatched) return No("needs-routine", $"watch the crew first: a Watch on {m.Id} (or any of them, or their car) shows who they are and what they do"); // engine 0.43.0 (rivals.turn.needs; Motive's rivals page)
             if (Cash < Cr.PayUsd) return No("no-cash", $"the cell has ${Usd(Cash)}: the Pay is ${Usd(Cr.PayUsd)}");
-            if (!G.Within(op.Pos, at, actReach)) return CrewWalkIn(op, o, m, actReach, true);
+            if (!G.Within(op.Pos, at, actReach)) return CrewWalkIn(op, o, m, actReach, engage);
+            if (!engage) return "";
             Cash -= Cr.PayUsd; // paid when given; a refusal gives it back
             Engage(op, o, Cr.PayS); op.BusyQuote = CrewQuote(o, m); op.BusyPaid = Cr.PayUsd;
             return "";
         }
 
         /// <summary>The Scout's Mislead: a member on foot (the false tip on the rival car is retired: tip-retired).</summary>
-        string CrewMislead(Op op, Order o)
+        string CrewMislead(Op op, Order o, bool engage = true)
         {
             if (op.Id != OpId.Scout) return No("only-scout", "only the Scout misleads (§03)");
             if (o.Target.Length == 0 || o.Target == "rivals" || o.Target == "car:rivals") return No("tip-retired", "the false tip on the rival car is retired (brief 096): mislead one of the crew on foot");
             if (!IsCrewId(o.Target)) return No("target-unknown", $"Mislead names one of the rival crew on foot (rival-1 to rival-5), not '{o.Target}'");
             var miss = CrewPresent(o.Target, out var m, out var at); if (miss.Length > 0) return miss;
-            if (!G.Within(op.Pos, at, actReach)) return CrewWalkIn(op, o, m, actReach, true);
+            if (!G.Within(op.Pos, at, actReach)) return CrewWalkIn(op, o, m, actReach, engage);
+            if (!engage) return "";
             Engage(op, o, R.MisleadS); op.BusyQuote = CrewQuote(o, m); return "";
         }
 

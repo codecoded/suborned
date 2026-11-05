@@ -44,7 +44,10 @@ veteran's shot is placed only by a gun seen, an agent near the scene in the hold
   2, 2 at 2, 1 at 1.
 - **A broken man [S].** He is out of the fight at once: he puts his gun away and runs off the map by the crew's way off (2.8 m/s). He holds no
   car, is no hostile and never a target of weapons free. An order can still shoot him: a new shooting at a man running away, traced as any.
-  A crew broken before the final fight still makes for its car, holstered and out of every fight.
+  A man who breaks in the final fight, or whose crew's car is gone, never comes back. A crew that breaks before the final fight with its car
+  still able to drive boards it and drives off holstered, out of every fight while away, and comes back to block again
+  security.rivals.retreat later (corrected 2026-11-05, Motive's misses page F2: the code was right, these words were wrong; destroying the
+  car is what ends them).
 
 ## §05 pressure (the gang shooting)
 

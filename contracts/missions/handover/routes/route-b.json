@@ -31,7 +31,7 @@
   {"tick":4656,"op":"fixer","do":"board","target":"car"},
   {"tick":4660,"op":"tech","do":"board","target":"car"},
   {"tick":4662,"op":"scout","do":"board","target":"car"},
-  {"tick":4672,"op":"cell","do":"go"}
+  {"tick":4662,"op":"cell","do":"go"}
  ],
  "until": 4900
 }

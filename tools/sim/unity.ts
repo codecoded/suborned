@@ -32,7 +32,7 @@ const sh = (cmd: string[], cwd = root) => {
 const sha = (b: Buffer | string) => createHash('sha256').update(b).digest('hex');
 const need = (r: { code: number; out: string; err: string }, what: string) => { if (r.code !== 0) { console.error(`${what} failed:\n${r.out}\n${r.err}`); process.exit(1); } return r.out; };
 
-const SCHEMAS = ['contracts/rules/rulebook.schema.ts', 'contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.schema096.ts', 'contracts/rules/rulebook.schema096r.ts', 'contracts/rules/rulebook.schema096l.ts']; // the first two are imported below; the rest are the rulebook schema's own imports (brief 096, engines 0.40.0-0.42.0)
+const SCHEMAS = ['contracts/rules/rulebook.schema.ts', 'contracts/people/people.rules.schema.ts', 'contracts/rules/rulebook.schema096.ts', 'contracts/rules/rulebook.schema096r.ts', 'contracts/rules/rulebook.schema096l.ts', 'contracts/rules/rulebook.schema096m.ts']; // the first two are imported below; the rest are the rulebook schema's own imports (brief 096, engines 0.40.0-0.42.0)
 const depth = (v: unknown): number => Array.isArray(v) ? 1 + Math.max(0, ...v.map(depth)) : v && typeof v === 'object' ? 1 + Math.max(0, ...Object.values(v).map(depth)) : 0;
 const MAX_DEPTH = 24; // the site nests 6 deep today; the engine's JSON reader recurses per level
 // brief 013 E: the provisional facts (security level) and the world's takedown places (stashes, service doors, call boxes, posts, watchers)

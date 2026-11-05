@@ -450,7 +450,7 @@ namespace Suborned.Sim
                 if (op.Act != null) ApproachStep(op); // engine 0.23.0 (rulebook cell.approach): a person act walking in starts once in place (GameApproach.cs)
             }
             foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
-            if (getawayPath != null) foreach (var op in Ops) if (op.InCar) op.Pos = Car; // brief 059 K6: everyone in the getaway car rides its Drive
+            if (getawayPath != null) foreach (var op in Ops) if (op.InCar) op.Pos = Car; if (!Over) GoWaitStep(); // brief 059 K6: everyone in the getaway car rides its Drive; engine 0.43.0 (car.go, Motive G1): a Go waiting for a Board lands the tick it lands (GameGoWaits.cs)
             if (Range) { RangeTick(); return; } // brief 029 (GameRange.cs): the fight range runs the fight and nothing of the mission
             if (!Over) Tether();
             if (!Over) Watchers();

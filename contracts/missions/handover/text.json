@@ -1112,6 +1112,8 @@
   "rivals.block": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the rival car stops across our way out; the ring's Boxed in names it (book.feed.cards.boxed is the crucial card)",
   "rivals.lookout-posted": "engine 0.41.0 (brief 096; Aster's addition, Sky approved): card only (cards.items, Fable 2026-11-05): the rival lookout takes his post watching Popovic's car (book.feed.cards.lookout is the crucial card)",
   "rivals.lookout-follows": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the lookout is going after Popovic's car (Motive's seen table, 5:53); the feed is full of beats, so it is a Journal row",
+  "go.waits": "engine 0.43.0 (car.go, Motive G1): PLACEHOLDER, card (Fable, Glyph): a Go given while one of us climbs in waits for him and goes the moment he is in; the Go's card already counted him aboard",
+  "go.missed": "engine 0.43.0 (car.go, Motive G1): PLACEHOLDER, card (Fable): the Go that waited for a Board didn't land (he was shot down or called off, and the car is now held or empty): the refusal's own words follow",
   "rivals.retarget": "engine 0.41.0 (brief 096): silent: the rival car turns after our car's Drive; the street shows it",
   "rivals.misled-back": "engine 0.41.0 (brief 096): silent: a misled member walks back; the street shows him (the Mislead card said when)",
   "rivals.paid": "engine 0.41.0 (brief 096): silent: the Pay's own card says it (book.crew.paid, HostCrewTurn.CrewFooter)",

@@ -50,6 +50,7 @@ namespace Suborned.Sim
             string who = how == "pay" ? Fixer : Scout; int s = how == "pay" ? g.R.Crew.PayS : g.R.MisleadS;
             r.To(Math.Max(g.Tick, r.SendTo(who, BesideLookout(g))));
             r.Until(() => LookoutAtPost(g), T(330));
+            if (how == "pay") { r.Do(Fixer, "watch", "rival-4"); r.Done(Fixer); } // engine 0.43.0 (rivals.turn.needs): a Watch first
             r.To(Math.Max(g.Tick, T(landS - s)));
             if (how == "pay") r.Do(Fixer, "turn", "rival-4", "pay"); else r.Do(Scout, "mislead", "rival-4");
             r.Done(who);
@@ -248,6 +249,7 @@ namespace Suborned.Sim
             {
                 var g = r.G; r.Until(() => g.Crew[1].Mode == CrewMode.Posted, T(330));
                 var at = g.MemberPos(g.Crew[1], g.Tick); r.To(Math.Max(g.Tick, r.SendTo(Fixer, g.S.Grid.NearestFree(at + new Pt(0, 200)) ?? at)));
+                r.Do(Fixer, "watch", "rival-2"); r.Done(Fixer); // engine 0.43.0 (rivals.turn.needs): a Watch first
                 r.Do(Fixer, "turn", "rival-2", "pay"); r.Done(Fixer);
                 r.Is(g.CrewPaid("rival-2"), "he takes it and walks off");
                 DealLookout(r, "mislead", 300);

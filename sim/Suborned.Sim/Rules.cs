@@ -796,7 +796,7 @@ namespace Suborned.Sim
             // brief 023 (engine 0.8.2): where a car may be. The rule has no numbers; the engine routes every moving car on the site's drive grid
             // only when the rulebook states it (unknown = reject: a rulebook without car.drive is one the engine was not built for)
             var cd = b.Opt("car") ?? throw new FormatException("rulebook has no car section: engine 0.8.2 routes cars by car.drive (brief 023)");
-            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "box", "kerb", "lend", "tag", "src", "proposed", "reason"); ReadCars096(b); ReadRivals096(b); ReadLend(b); // brief 096: camera, car.box, car.kerb (RulesGetaway.cs); the unclaimed shooting and the blast's Standing (RulesRivals.cs)
+            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "box", "kerb", "lend", "go", "tag", "src", "proposed", "reason"); ReadCars096(b); ReadRivals096(b); ReadLend(b); // brief 096: camera, car.box, car.kerb (RulesGetaway.cs); the unclaimed shooting and the blast's Standing (RulesRivals.cs)
             { // engine 0.33.1 (brief 041, Sky: "characters are walking through cars"): a standing car blocks the walk; required (unknown = reject)
                 var fp = cd.Opt("footprint") ?? throw new FormatException("rulebook car.footprint is missing: engine 0.33.1 keeps walkers out of a standing car (brief 041)");
                 fp.Only("len", "w", "clear", "reach", "rule", "ahead"); fp["rule"].Str();

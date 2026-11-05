@@ -121,6 +121,7 @@ static class Adaptive
         {
             case "t>=": { int v = Clock(A(1) + ":" + A(2), where); return k => k.T >= v; }
             case "t<": { int v = Clock(A(1) + ":" + A(2), where); return k => k.T < v; }
+            case "policein<": { int s = N(1) * Game.Hz; return k => k.G.SplitPoliceAt < int.MaxValue / 4 && k.G.SplitPoliceAt - k.T < s; } // engine 0.43.0: the police countdown on the HUD (Game.SplitPoliceAt: vale.out + split-police-s, or the seal, or the close), under s seconds left
             case "done": { int r = RuleIx(A(1)); return k => k.DoneAt[r] >= 0; }
             case "fin": { int r = RuleIx(A(1)); return k => k.Fin[r]; }
             case "since": { int r = RuleIx(A(1)), s = N(2) * Game.Hz; return k => k.DoneAt[r] >= 0 && k.T - k.DoneAt[r] >= s; }
@@ -371,5 +372,5 @@ static class Adaptive
         return w.EndObj().ToString();
     }
     static readonly string[] OpNames = { "scout", "fixer", "tech", "enforcer" };
-    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "vale.out", "lend.lent", "ai.break", "rivals.drives-off", "car.unboxed", "car.exploded", "split.police", "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside" };
+    static readonly HashSet<string> Marks = new HashSet<string>(StringComparer.Ordinal) { "vale.out", "lend.lent", "ai.break", "rivals.drives-off", "car.unboxed", "car.exploded", "split.police", "enter.in", "enter.out", "take.done", "fight.safe", "fight.loud", "fight.ambush", "blocker.out", "car.free", "board.in", "rivals.arrive", "rivals.coming", "attention.reporting", "seal.starts", "captured", "rivals.wiped", "enforcer.warning", "loop.on", "loop.ends", "guard.at-cafe", "guard.back", "call.waitress", "takedown.out", "takedown.seen", "takedown.fails", "fight.over", "camera.recorded", "camera.record-lands", "car.reported", "car.report-lands", "car.kerbside", "rivals.block", "rivals.back" }; // engine 0.43.0: the block's span, for MC-11's reading of the crew's holds (tools/missions/check/blocker.ts)
 }

@@ -74,7 +74,7 @@ export function bands(s: Summary[], rows: Row[], caseEq = 3): Line[] {
   const pl = by('prepared-loud'), ul = by('unprepared-loud');
   if (pl.length && ul.length) { const a = Math.min(...pl.map(loudPct)), b = Math.max(...ul.map(loudPct)); L.push({ id: 'B-6', rule: 'prepared loud clearly above unprepared (≥ 40 points)', ok: a - b >= 40, value: `${a} % against ${b} %` }); }
   const quiet = [...by('prepared-quiet'), ...by('thin-quiet')];
-  for (const x of quiet) L.push({ id: `B-7 ${x.plan}`, rule: 'quiet final fight: median 15-40 s (Sky 2026-10-30), 95 % under 90 s', ok: x.fightMed >= 15 && x.fightMed <= 40 && x.fightP95 < 90, value: `median ${x.fightMed} s, p95 ${x.fightP95} s` });
+  for (const x of quiet) L.push({ id: `B-7 ${x.plan}`, rule: 'quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s', ok: x.fightMed >= 10 && x.fightMed <= 40 && x.fightP95 < 90, value: `median ${x.fightMed} s, p95 ${x.fightP95} s` });
   for (const x of s.filter(x => (REFERENCE as string[]).includes(x.style))) L.push({ id: `B-8 ${x.plan}`, rule: 'no reference plan waits over 45 s with the whole cell idle (p95 of seeds)', ok: x.idleP95 <= 45, value: `median ${x.idleMed} s, p95 ${x.idleP95} s, worst ${x.idleMax} s` });
   for (const x of by('prepared-quiet')) L.push({ id: `B-9 ${x.plan}`, rule: 'agents down per win ≤ 0.5, prepared', ok: x.downPerWin <= 0.5, value: `${x.downPerWin}` });
   for (const x of [...pl, ...ul]) L.push({ id: `B-10 ${x.plan}`, rule: 'agents down per win ≤ 1.5, loud', ok: x.downPerWin <= 1.5, value: x.wins ? `${x.downPerWin}` : 'no win' });
@@ -120,8 +120,9 @@ export function rivals096(s: Summary[], rows: Row[]): Line[] { // retired by eng
   return L;
 }
 
-/** Brief 096's lend round (Motive briefs/096/motive/lend.json bands, engine 0.42.0): 'out' is Popovic out (the win); 'all out' is the share of
- *  wins with nobody captured (stats.captured 0). Reports, never a plan's target (brief 080). A plan that isn't played reads "not played". */
+/** Brief 096's lend round (Motive briefs/096/motive/lend.json bands, engine 0.42.0; engine 0.43.0: Motive's misses.json bands, Sky 2026-11-05 "all
+ *  recommended"): 'out' is Popovic out (the win); 'all out' is the share of wins with nobody captured (stats.captured 0). Reports, never a plan's
+ *  target (brief 080). A plan that isn't played reads "not played"; a report-only line never misses (it shows Motive's expectation). */
 function lend096(s: Summary[], rows: Row[]): Line[] {
   const P = (id: string) => s.find(x => x.plan === id), L: Line[] = [];
   const wins = (id: string) => rows.filter(r => r.plan === id && r.outcome === 'success');
@@ -129,17 +130,18 @@ function lend096(s: Summary[], rows: Row[]): Line[] {
   const capPer = (id: string) => { const w = wins(id); return w.length ? Math.round(w.reduce((n, r) => n + (r.stats.captured ?? 0), 0) * 100 / w.length) / 100 : 0; };
   const band = (id: string, rule: string, plan: string, lo: number, hi: number) => { const x = P(plan); L.push({ id: `L96 ${id}`, rule, ok: !!x && x.winPct >= lo && x.winPct <= hi, value: x ? `${x.winPct}%` : 'not played' }); };
   band('A', 'quiet-a wins 90-97 %', 'quiet-a', 90, 97);
-  band('B', 'quiet-b on the lend: Popovic out 85-95 %', 'quiet-b', 85, 95);
+  band('B', 'quiet-b on the lend: Popovic out >= 85 % (no ceiling: misses.json; the risk is the three, read on B-all)', 'quiet-b', 85, 100);
   { const b = P('quiet-b'); L.push({ id: 'L96 B-all', rule: 'quiet-b: all four out on 60-80 % of wins, captured per win <= 0.6', ok: !!b && allOut('quiet-b') >= 60 && allOut('quiet-b') <= 80 && capPer('quiet-b') <= 0.6, value: b ? `${allOut('quiet-b')} % of wins, ${capPer('quiet-b')} captured per win` : 'not played' }); }
   { const b = P('quiet-b'), t = P('quiet-b-thinned'); L.push({ id: 'L96 B-thinned', rule: 'quiet-b thinned: out within 3 points of quiet-b, all out >= quiet-b + 10 points', ok: !!b && !!t && Math.abs(t.winPct - b.winPct) <= 3 && allOut('quiet-b-thinned') >= allOut('quiet-b') + 10, value: b && t ? `out ${t.winPct} % against ${b.winPct} %; all out ${allOut('quiet-b-thinned')} % against ${allOut('quiet-b')} %` : 'not played' }); }
-  band('G', 'quiet-g wins 70-82 %', 'quiet-g', 70, 82);
+  band('G', 'quiet-g wins >= 75 % (GDD §09; misses.json: never lower a route to meet a guess)', 'quiet-g', 75, 100);
   band('loud', 'prepared-loud out 50-70 % (the reference, today\'s front-door plan: it never uses the lend)', 'prepared-loud', 50, 70);
-  band('loud-lend', 'prepared-loud on the lend (a variant for Motive: L6 gates the lent car) out 50-70 %', 'prepared-loud-lend', 50, 70);
+  { const x = P('prepared-loud-lend'); L.push({ id: 'L96 loud-lend', rule: 'prepared-loud on the lend: report only, expect 30-40 % out (Sky Q3: loud on route B stays the hard way; L6)', ok: true, value: x ? `${x.winPct}% out; all out ${allOut('prepared-loud-lend')} % of wins` : 'not played' }); }
   band('drive-round', 'the drive-round wins 5-20 % (both cars boxed at the mouth, L10)', 'drive-round', 5, 20);
-  band('veteran', "the veteran's shot wins 15-35 %", 'veteran', 15, 35);
+  { const x = P('veteran'); L.push({ id: 'L96 veteran', rule: "the veteran's shot: Popovic out 40-70 %, the other three caught the accepted price (Sky Q2 a); captured per win reported", ok: !!x && x.winPct >= 40 && x.winPct <= 70, value: x ? `${x.winPct}% out; all out ${allOut('veteran')} % of wins, ${capPer('veteran')} captured per win` : 'not played' }); }
+  { const x = P('veteran-drive'); L.push({ id: 'L96 veteran-drive', rule: "the veteran, our car driven round once the rival car burns: report only (Motive's try, misses.json)", ok: true, value: x ? `${x.winPct}% out; all out ${allOut('veteran-drive')} % of wins, ${capPer('veteran-drive')} captured per win` : 'not played' }); }
   band('B-ignored', 'quiet-b with the lookout ignored wins <= 5 %', 'quiet-b-lookout-ignored', 0, 5);
   { const b = P('quiet-b'); L.push({ id: 'L96 B-idle', rule: 'quiet-b: the whole cell idle, median <= 30 s', ok: !!b && b.idleMed <= 30, value: b ? `median ${b.idleMed} s, p95 ${b.idleP95} s` : 'not played' }); }
-  { const a = P('quiet-a'); L.push({ id: 'L96 A-fight', rule: "quiet-a's final fight median 15-40 s (Motive expects 22-35)", ok: !!a && a.fightMed >= 15 && a.fightMed <= 40, value: a ? `median ${a.fightMed} s` : 'not played' }); }
+  { const a = P('quiet-a'); L.push({ id: 'L96 A-fight', rule: "quiet-a's final fight median 10-40 s (Sky Q1; Motive expects 11-16)", ok: !!a && a.fightMed >= 10 && a.fightMed <= 40, value: a ? `median ${a.fightMed} s` : 'not played' }); }
   return L;
 }
 

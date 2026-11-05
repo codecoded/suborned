@@ -21,13 +21,13 @@
   {"tick":1315,"op":"enforcer","do":"enter"},
   {"tick":1315,"op":"tech","do":"move","to":[675,-4625]},
   {"tick":1695,"op":"enforcer","do":"move","to":[2000,-6500]},
-  {"tick":1991,"op":"scout","do":"draw"},
-  {"tick":1991,"op":"fixer","do":"draw"},
-  {"tick":1991,"op":"tech","do":"draw"},
-  {"tick":1991,"op":"enforcer","do":"draw"},
-  {"tick":2067,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":2171,"op":"enforcer","do":"board","target":"car"},
-  {"tick":2211,"op":"cell","do":"go"}
+  {"tick":1997,"op":"scout","do":"draw"},
+  {"tick":1997,"op":"fixer","do":"draw"},
+  {"tick":1997,"op":"tech","do":"draw"},
+  {"tick":1997,"op":"enforcer","do":"draw"},
+  {"tick":2152,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2256,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2256,"op":"cell","do":"go"}
  ],
  "until": 4900
 }

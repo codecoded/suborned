@@ -147,7 +147,7 @@ namespace Suborned.Sim
             if (Over) return No("mission-over", "the mission is over");
             if (!Lent || lentLeft) return No("car-left", $"{Cap(ValeName)}'s car is not ours to drive");
             if (CarDisabled("car:official")) return No("car-disabled", $"{Cap(ValeName)}'s car is disabled");
-            if (!LentHasDriver) return No("car-no-driver", "nobody aboard can drive: only the downed are in the car");
+            if (!LentHasDriver && !GoWouldWait("car:official")) return No("car-no-driver", "nobody aboard can drive: only the downed are in the car");
             var bx = OfficialBoxers(); var hs = LentHolders();
             if (bx.Count > 0) return No("car-boxed", BoxedWords(bx, hs), ids: BoxedIds(bx, hs));
             if (hs.Count > 0) return No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
@@ -161,9 +161,10 @@ namespace Suborned.Sim
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             var a = AnswerOf(why); refusal = saved; return a;
         }
-        string GoLent()
+        string GoLent(Order go)
         {
             var why = LentRefusal(); if (why.Length > 0) { goRefusedAt = Tick; goRefused = refusal.code ?? ""; return why; }
+            if (GoWaitFor(go) is string w) return w; // engine 0.43.0 (G1)
             lentLeft = true;
             var by = CarWatcherAt(CarPos());
             if (by.Length > 0) { LentSeenBy = by; if (incidents.Add("lent-seen")) AddTrail(R.WitnessTrail, "lent-seen:" + by); Note("lent.seen", $"The {by} sees {ValeName}'s car leave: a lead, not our car."); }
@@ -263,7 +264,7 @@ namespace Suborned.Sim
             var l = new List<(string, string, string)>();
             foreach (var o in Ops)
             {
-                if (o.LeftMap || o.InCar) continue;
+                if (o.LeftMap || o.InCar || ClimbingInto(o, "car") || ClimbingInto(o, "car:official")) continue; // engine 0.43.0 (G1)
                 l.Add((Sim.Op.Name(o.Id), ValeOutTick != INF ? "captured" : "stays", o.Down ? "downed" : ValeOutTick != INF ? "police" : "lent"));
             }
             return l;
