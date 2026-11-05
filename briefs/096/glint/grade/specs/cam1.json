@@ -1,0 +1,6 @@
+{ "id": "cam1", "grading": "ldr", "mats": [
+  { "name": "DK_Eye_Ivory", "baseColour": "#F3E1CB", "smoothness": 0.38, "env": 0 },
+  { "name": "DK_Eye_Seafoam", "baseColour": "#7FBCA6", "smoothness": 0.38, "env": 0 },
+  { "name": "DK_Eye_Coral", "baseColour": "#E8735A", "smoothness": 0.38, "env": 0 },
+  { "name": "DK_Eye_Tally", "baseColour": "#4A2400", "emission": "#FF9A1F", "emissionScale": 1.4, "env": 0 },
+  { "name": "DK_Eye_Ring", "baseColour": "#10383C", "emission": "#48D8E0", "emissionScale": 1.6, "env": 0 } ] }

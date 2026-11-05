@@ -1,0 +1,2 @@
+{ "id": "B4", "grading": "hdr", "tonemap": "neutral", "exposure": 0.2, "contrast": 16, "saturation": 32, "temperature": 2, "tint": 14, "lift": [1,1,1,0], "gamma": [1,1,1,0], "gain": [1,1,1,0],
+  "shadows": [1.0, 0.97, 1.04, 0.02], "shEnd": 0.35, "sunShadow": 0.78 }

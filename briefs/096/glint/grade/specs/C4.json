@@ -1,0 +1,5 @@
+{ "id": "C4", "grading": "hdr", "tonemap": "neutral", "exposure": 0.2, "contrast": 12, "saturation": 30, "temperature": 2, "tint": 14, "lift": [1,1,1,0], "gamma": [1,1,1,0], "gain": [1,1,1,0],
+  "shadows": [1.0, 0.97, 1.04, 0.02], "shEnd": 0.35, "sunShadow": 0.75,
+  "master": [0, 0.035, 0.5, 0.52, 1, 0.975], "satVsSat": [0, 0.5, 0.28, 0.5, 0.55, 0.64, 1, 0.64],
+  "bloomThreshold": 1.2, "bloomIntensity": 0.35,
+  "ssao": 1, "ssaoIntensity": 1.2, "ssaoRadius": 0.7, "ssaoFalloff": 400, "ssaoDirect": 0.25, "ssaoDownsample": 1, "ssaoAfterOpaque": 0, "ssaoSamples": 1, "ssaoBlur": 1, "ssaoSource": 1 }

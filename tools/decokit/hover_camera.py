@@ -23,12 +23,12 @@ from kit import asset
 from mats import pal, register
 from signals import FRONT, bezel, puck, slab
 
-register("DK_Eye_Ivory", "ceramic", "#EFE8D6")     # the kit ivory (DK_Enamel_Ivory's hex), satin
-register("DK_Eye_Seafoam", "ceramic", "#72B5A7")   # the kit seafoam (DK_Enamel_Seafoam's hex): the civic block's bands
-register("DK_Eye_Coral", "ceramic", "#E2725B")     # the concept's eye rim: a deeper coral than accent_coral #fc9c84, which washes out on ivory at play zoom
+register("DK_Eye_Ivory", "ceramic", "#F3E1CB")     # Glint 096: peach ivory toward the concept (H28-30; was the kit ivory #EFE8D6, which read khaki-grey in game light); matte (unity_mats.MATTE_096)
+register("DK_Eye_Seafoam", "ceramic", "#7FBCA6")   # Glint 096: a lighter, slightly greener seafoam toward the concept's sage band (was the kit seafoam #72B5A7); matte
+register("DK_Eye_Coral", "ceramic", "#E8735A")     # the concept's eye rim (#E86D4E): a deeper coral than accent_coral #fc9c84, which washes out on ivory at play zoom; matte (Glint 096, was #E2725B)
 register("DK_Eye_Lens", "emit", "#10181E", 0.0)    # dark glass, glossy (emit kind: smoothness 0.8); emission off as built, the host drives it
-register("DK_Eye_Tally", "emit", "#FF9A14", 1.6)   # the tally lamp: a deeper amber than DK_Signal_Amber (#FFB21E x4 burns to yellow), its own material so Glint can trim it alone
-register("DK_Eye_Ring", "emit", "#5FE0C0", 1.8)    # the hover ring: the city's hover glow (the robots' DK_Glow_Seafoam #3FC9A0, lighter); the concept's warm white vanishes on cream stone
+register("DK_Eye_Tally", "emit", "#FF9A1F", 1.4)   # the tally lamp: amber (concept #FBA80B); Glint 096: x1.4 (was #FF9A14 x1.6) on a dark base (unity_mats.EMIT_BASE_096), since the sun on an orange base swamped the glow and it read yellow
+register("DK_Eye_Ring", "emit", "#48D8E0", 1.6)    # the hover ring: turquoise (the HUD's #60E0EA family; Glint 096, was mint #5FE0C0 x1.8) on a dark base; the concept's warm white vanishes on cream stone
 register("DK_Brass_Civic", "brass", mats.BRASS)    # hairline brass (civic_common registers the same row)
 
 # ----------------------------------------------------------------------------- the head's measures (metres, Blender frame: forward = -Y, up = +Z)

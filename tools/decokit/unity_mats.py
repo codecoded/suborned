@@ -71,6 +71,29 @@ def sun_off(text):
     return text[: m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {k}\n" for k in keys) + text[m.end() :]
 
 
+# Glint, brief 096 (Sky: the hovering camera's ivory "reads grey-green" in game light; concepts paid/096-street-camera/codex/A3-hovering.png, A-porthole-eye.png). The camera's
+# enamels are matte: smoothness 0.38 (the ceramic row's 0.62 mirrored the play scene's teal-grey street cube, #7D8785, over the ivory) and no environment reflections (the standard URP Lit
+# toggle, _ENVIRONMENTREFLECTIONS_OFF; the sun's soft sheen stays). Its two emitters glow on a dark base, so the lamp's colour is the emission's, not the sunlit base's. Before / after at play
+# zoom, sun and shade: briefs/096/glint/grade/camera/before-after.png. The lens keeps its gloss.
+MATTE_096 = {"DK_Eye_Ivory": 0.38, "DK_Eye_Seafoam": 0.38, "DK_Eye_Coral": 0.38, "DK_Eye_Tally": None, "DK_Eye_Ring": None}  # smoothness (None = the row's), reflections off for all five
+EMIT_BASE_096 = {"DK_Eye_Tally": "#4A2400", "DK_Eye_Ring": "#10383C"}
+
+
+def matte_096(name, text):
+    """A .mat's text with brief 096's camera finish: smoothness, environment reflections off (float and keyword, keywords sorted as Unity writes them), the emitters' dark base."""
+    if MATTE_096.get(name) is not None:
+        text = re.sub(r"(- _Smoothness: )[0-9.]+", rf"\g<1>{_f(MATTE_096[name])}", text)
+    text = text.replace("- _EnvironmentReflections: 1\n", "- _EnvironmentReflections: 0\n")
+    m = re.search(r"  m_ValidKeywords:(?: \[\]\n|\n((?:  - \S+\n)*))", text)
+    keys = sorted({*re.findall(r"- (\S+)", m.group(1) or ""), "_ENVIRONMENTREFLECTIONS_OFF"})
+    text = text[: m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {k}\n" for k in keys) + text[m.end() :]
+    if name in EMIT_BASE_096:
+        r, g, b = (int(EMIT_BASE_096[name].lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4))
+        for slot in ("_BaseColor", "_Color"):
+            text = re.sub(rf"(- {slot}: )\{{[^}}]*\}}", rf"\g<1>{{r: {_f(r)}, g: {_f(g)}, b: {_f(b)}, a: 1}}", text)
+    return text
+
+
 def _fid(name):
     return -int.from_bytes(hashlib.sha256(f"suborned.decokit.matversion/{name}".encode()).digest()[:8], "big") >> 1 or -1
 
@@ -379,6 +402,10 @@ def write(table_path, dst, retuned):
     out += posters.write_mats(dst, legacy, meta_text, tex_guid)
     import carpaint  # brief 075 roll-out: the 1950s car paints for presentation traffic (body / roof variants of DK_CarEnamel_Ivory), the same recolour
     out += carpaint.write_mats(dst, legacy, meta_text, colourways._recolour)
+    for n in MATTE_096:  # brief 096: the hovering camera's matte finish and dark-based lamps
+        f = Path(dst) / "Materials" / f"{n}.mat"
+        if f.exists():
+            f.write_text(matte_096(n, f.read_text()))
     for n in SUN_OFF:  # brief 079: after the colourways, which keep the base text as it was (only these four changed; the measured set)
         f = Path(dst) / "Materials" / f"{n}.mat"
         if f.exists():
