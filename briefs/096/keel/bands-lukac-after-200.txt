@@ -1,0 +1,80 @@
+engine 0.45.0, bun run missions:check handover --record (200 seeds from 1), 2026-11-05
+
+| plan | wins | fails | fight med (p25-p75, p95) | T | down/win | idle med/p95 |
+| careless | 0 % | entry-seen-camera 200 | 0 s (0-0, 0) | 0 | 0 | 14/46 s |
+| drive-early | 0 % | rivals-reach-vale 200 | 0 s (0-0, 0) | 0 | 0 | 55/73 s |
+| drive-round | 10.5 % | rivals-reach-vale 170, closed-in 9 | 13 s (9-18, 40) | 17 | 1.29 | 56/69 s |
+| prepared-loud-lend | 37 % | closed-in 126 | 81 s (55-85, 88) | 7 | 0.7 | 22/38 s |
+| prepared-loud | 69.5 % | sealed 33, rivals-reach-vale 12, closed-in 7, enforcer-down 8, withdrawn 1 | 26 s (17-91, 125) | 30 | 0.78 | 12/29 s |
+| quiet-a | 99 % | rivals-reach-vale 2 | 15 s (11-30, 40) | 3 | 0.02 | 24/43 s |
+| quiet-b-lookout-ignored | 0 % | rivals-reach-vale 200 | 0 s (0-0, 0) | 0 | 0 | 57/74 s |
+| quiet-b-taped | 0 % | rivals-reach-vale 200 | 0 s (0-0, 0) | 0 | 0 | 144/160 s |
+| quiet-b-thinned | 100 % | - | 18 s (13-24, 38) | 5 | 0.16 | 9/18 s |
+| quiet-b | 100 % | - | 26 s (21-31, 45) | 3 | 0.46 | 23/38 s |
+| quiet-g | 87 % | closed-in 14, sealed 1, rivals-reach-vale 10, cell-down 1 | 25 s (23-36, 75) | 5 | 0.18 | 59/98 s |
+| thin-quiet | 93.5 % | rivals-reach-vale 12, entry-seen-camera 1 | 18 s (13-30, 75) | 7 | 0.31 | 17/52 s |
+| unprepared-loud | 0 % | entry-seen-camera 192, sealed 8 | 4 s (2-8, 38) | 0 | 0 | 5/29 s |
+| veteran-drive | 9 % | sealed 89, enforcer-down 26, closed-in 30, vale-leaves 29, cell-down 7, rivals-reach-vale 1 | 131 s (77-250, 320) | 38 | 1.94 | 59/247 s |
+| veteran | 39.5 % | closed-in 3, enforcer-down 107, sealed 8, cell-down 3 | 112 s (87-297, 326) | 39 | 1.46 | 45/159 s |
+
+ok    R-1  no crash: every play gave its line: 3000 plays, 0 errors
+ok    R-2  no stall: every play reaches a verdict by the close: 0 plays reach the close with no verdict
+ok    R-3  every fail names its cause (fail code and culprit): 1709/1709
+ok    R-4  every order shows its price: each verb given has its line on the card (text.json less.price), each Listen and Turn had its quote when given: 20/20 verbs, 0 unquoted acts
+ok    R-5  a saved run replays exactly from seed + orders (a win and a fail of each plan; the bands' own run gives the same hash): 23/23
+ok    R-6  unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace: 5/5
+FAIL  R-7  no reference window under 30 s at a person's pace: each step 30 s late loses at most 10 points of wins: 9/12
+ok    B-1 quiet-a  prepared quiet wins ≥ 90 %: 99%
+ok    B-1 quiet-b  prepared quiet wins ≥ 80 %: 100%
+ok    B-1 quiet-g  prepared quiet wins ≥ 75 %: 87%
+FAIL  B-2 thin-quiet  thin quiet wins 60-90 %: 93.5%
+ok    B-3 careless  careless wins ≤ 30 %: 0%
+ok    B-4 prepared-loud  prepared loud wins 50-75 %: only wins whose final fight was loud: 63.5%
+ok    B-5 unprepared-loud  unprepared loud wins ≤ 20 %: 0%
+ok    B-6  prepared loud clearly above unprepared (≥ 40 points): 63.5 % against 0 %
+ok    B-7 quiet-a  quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s: median 15 s, p95 40 s
+ok    B-7 quiet-b  quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s: median 26 s, p95 45 s
+ok    B-7 quiet-g  quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s: median 25 s, p95 75 s
+ok    B-7 thin-quiet  quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s: median 18 s, p95 75 s
+ok    B-8 prepared-loud  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 12 s, p95 29 s, worst 194 s
+ok    B-8 quiet-a  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 24 s, p95 43 s, worst 62 s
+ok    B-8 quiet-b  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 23 s, p95 38 s, worst 48 s
+FAIL  B-8 quiet-g  no reference plan waits over 45 s with the whole cell idle (p95 of seeds): median 59 s, p95 98 s, worst 129 s
+ok    B-9 quiet-a  agents down per win ≤ 0.5, prepared: 0.02
+ok    B-9 quiet-b  agents down per win ≤ 0.5, prepared: 0.46
+ok    B-9 quiet-g  agents down per win ≤ 0.5, prepared: 0.18
+ok    B-10 prepared-loud  agents down per win ≤ 1.5, loud: 0.78
+ok    B-10 unprepared-loud  agents down per win ≤ 1.5, loud: no win
+FAIL  B-11 drive-early  variety: middle half of fight lengths spans ≥ 10 s: 0-0 s
+FAIL  B-11 drive-round  variety: middle half of fight lengths spans ≥ 10 s: 9-18 s
+ok    B-11 prepared-loud-lend  variety: middle half of fight lengths spans ≥ 10 s: 55-85 s
+ok    B-11 prepared-loud  variety: middle half of fight lengths spans ≥ 10 s: 17-91 s
+ok    B-11 quiet-a  variety: middle half of fight lengths spans ≥ 10 s: 11-30 s
+FAIL  B-11 quiet-b-lookout-ignored  variety: middle half of fight lengths spans ≥ 10 s: 0-0 s
+FAIL  B-11 quiet-b-taped  variety: middle half of fight lengths spans ≥ 10 s: 0-0 s
+ok    B-11 quiet-b-thinned  variety: middle half of fight lengths spans ≥ 10 s: 13-24 s
+ok    B-11 quiet-b  variety: middle half of fight lengths spans ≥ 10 s: 21-31 s
+ok    B-11 quiet-g  variety: middle half of fight lengths spans ≥ 10 s: 23-36 s
+ok    B-11 thin-quiet  variety: middle half of fight lengths spans ≥ 10 s: 13-30 s
+ok    B-11 veteran-drive  variety: middle half of fight lengths spans ≥ 10 s: 77-250 s
+ok    B-11 veteran  variety: middle half of fight lengths spans ≥ 10 s: 87-297 s
+ok    B-12  at least one prepared quiet route wins on every seed: 200/200
+ok    B-13  loud's Trail at least 3× quiet's in 95 % of the loud wins: 127/127 loud wins ≥ 15 T (3 × quiet's dearest median 5 T); loud median 30 T
+FAIL  B-14  nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling): Enforcer: 0 of 180 falls under 7 s, fastest 10.3 s; others: 20 of 1455 under 5 s, fastest 2 s
+ok    B-15 drive-early  one mistake costs: wins at least 10 points under quiet-b: 0 % against 100 %
+ok    B-15 quiet-b-taped  one mistake costs: wins at least 10 points under quiet-b: 0 % against 100 %
+FAIL  B-16 drive-early  the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds: 0/200
+ok    B-16 quiet-b-taped  the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds: 200/200
+FAIL  L96 A  quiet-a wins 90-97 %: 99%
+ok    L96 B  quiet-b on the lend: Popovic out >= 85 % (no ceiling: misses.json; the risk is the three, read on B-all): 100%
+FAIL  L96 B-all  quiet-b: all four out on 60-80 % of wins, captured per win <= 0.6: 63 % of wins, 0.69 captured per win
+ok    L96 B-thinned  quiet-b thinned: out within 3 points of quiet-b, all out >= quiet-b + 10 points: out 100 % against 100 %; all out 79.5 % against 63 %
+ok    L96 G  quiet-g wins >= 75 % (GDD §09; misses.json: never lower a route to meet a guess): 87%
+ok    L96 loud  prepared-loud out 50-70 % (the reference, today's front-door plan: it never uses the lend): 69.5%
+ok    L96 loud-lend  prepared-loud on the lend: report only, expect 30-40 % out (Sky Q3: loud on route B stays the hard way; L6): 37% out; all out 50 % of wins
+ok    L96 drive-round  the drive-round wins 5-20 % (both cars boxed at the mouth, L10): 10.5%
+FAIL  L96 veteran  the veteran's shot: Popovic out 40-70 %, the other three caught the accepted price (Sky Q2 a); captured per win reported: 39.5% out; all out 2.5 % of wins, 2.84 captured per win
+ok    L96 veteran-drive  the veteran, our car driven round once the rival car burns: report only (Motive's try, misses.json): 9% out; all out 0 % of wins, 2.89 captured per win
+ok    L96 B-ignored  quiet-b with the lookout ignored wins <= 5 %: 0%
+ok    L96 B-idle  quiet-b: the whole cell idle, median <= 30 s: median 23 s, p95 38 s
+ok    L96 A-fight  quiet-a's final fight median 10-40 s (Sky Q1; Motive expects 11-16): median 15 s
