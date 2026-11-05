@@ -13,7 +13,7 @@ namespace Suborned.Play
     ///    stays with the cell and his crew count the Fixer a foe. The card's outcome is "?" until a Listen (or a refusal) taught him.
     ///  · Mislead (the Scout): cell.mislead's time and Trail; he goes to watch elsewhere for rivals.lookout.misled s and walks back, the card says when.
     ///  · Knock out, Kill, then carry, tie and hide: the takedown and body rows as on any person (engine 0.33.0 rivals.peopleRule; HostTakedown).
-    /// Every price is the engine's (CrewQuote, MisleadBackTick); every lock mirrors the engine's own refusal (CrewPresent, CrewTurn, CrewMislead) and the order
+    /// Every price is the engine's (CrewQuote, MisleadBackTick); every lock is the engine's own answer (LearnQuery, CrewActQuery) and the order
     /// still asks the engine. Nothing here is a rule. Words are Fable's to change (text.json book.crew; placeholders below when absent).</summary>
     public sealed partial class HandoverHost
     {
@@ -86,28 +86,13 @@ namespace Suborned.Play
             return true;
         }
 
-        /// <summary>Why a way on a member can't be given now: the engine's CrewPresent, CrewTurn and CrewMislead in their order, mirrored for the card (the engine
-        /// still answers the order). Watch and Listen ask the engine itself (LearnQuery, in Locked).</summary>
+        /// <summary>Why a Pay or Mislead on a member can't be given now: the engine's own answer (Game.CrewActQuery, engine 0.43.0: as Issue would, needs-routine
+        /// on a Pay before a Watch on the crew included). A busy agent the hold queues for (HoldOn) and the mission's end are the host's (Locked), as for LearnQuery.</summary>
         Answer CrewLock(OpId by, Order o)
         {
-            var g = Game; var op = g.Ops[(int)by];
-            Answer No(string code, string why, long usd = -1, int m = -1) => new Answer { ok = false, code = code, why = why, m = m, cm = -1, usd = usd, tick = -1 };
-            var yes = new Answer { ok = true, code = "", why = "" };
-            if (o.Do == "turn" && by != OpId.Fixer) return No("only-fixer", "only the Fixer turns people");
-            if (o.Do == "turn" && o.Approach != "pay") return No("crew-no-need", "only Pay is offered on the rival crew");
-            if (o.Do == "mislead" && by != OpId.Scout) return No("only-scout", "only the Scout misleads");
-            var cm = g.CrewOf(o.Target); if (cm == null) return No("target-unknown", "no one there");
-            if (cm.Gun.Down || cm.Mode == CrewMode.Gone) return cm.Paid ? No("crew-gone", "he took the money and is gone") : cm.Gun.Down ? No("person-down", "he is down") : No("person-away", "not on the street");
-            if (cm.Fight) return No("crew-fighting", "he is in the fight");
-            var at = g.PersonPos(cm.P); if (!at.HasValue) return No("person-away", "in the rival car, off the street");
-            if (cm.Mode != CrewMode.Posted) return No("crew-walking", "on the move: speak to him where he stands");
-            if (o.Do == "turn")
-            {
-                if (cm.Refused) return No("refused-before", "he refused the money once");
-                var q = g.CrewQuote(o, cm); if (g.Cash < q.Usd) return No("no-cash", $"not enough cash (${q.Usd:N0})", q.Usd);
-            }
-            if (!WalksIn(by, o) && !G.Within(op.Pos, at.Value, g.R.ActReachCm)) return No("too-far", $"stand within {g.R.ActReachCm / 100} m of him", m: g.R.ActReachCm / 100); // a driven agent is never walked in
-            return yes;
+            var a = new Answer { ok = true, code = "", why = "" };
+            Guard("crew query", () => a = Game.CrewActQuery(Op.Name(by), o.Do == "turn" ? "pay" : "mislead", o.Target));
+            return a.ok || a.code is "agent-busy" or "mission-over" ? new Answer { ok = true, code = "", why = "" } : a;
         }
 
         /// <summary>The walk in to a member before the act (the engine's CrewWalkIn walks it): the host's walk to within reach, in seconds; 0 in reach.</summary>

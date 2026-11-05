@@ -149,11 +149,20 @@ public class Lend096
         Assert.That(checkedStands, Is.GreaterThan(0), "the service drive is private ground in the patrol's sweep: its Drive card says so");
     }
 
+    [Test] public void TheLentCarsGoSaysPlusOneTrailIfSeenFromTheEnginesWatcher()
+    {
+        var h = Lent(); var g = h.Game; string by = g.LentCarWatcher(); int wt = g.R.WitnessTrail, trail0 = g.Trail;
+        var gv = (HandoverHost.Intent)Host.Call(h, "LentGoIntent", OpId.Enforcer); string seen = h.Text.GoSeen.Replace("{trail}", wt.ToString());
+        Assert.That(gv.Trail, Is.EqualTo(by.Length > 0 ? $"T +{wt}" : "T 0"), $"engine 0.43.0 LentCarWatcher '{by}'");
+        Assert.That(gv.Label.EndsWith(seen), Is.EqualTo(by.Length > 0), gv.Label);
+        Assert.That((string)Host.Call(h, "LentWatcherNow"), Is.EqualTo(by)); Assert.That(g.Trail, Is.EqualTo(trail0), "a read: asking charges nothing");
+    }
+
     [Test] public void TheNewWordsAreAllInTheText()
     {
         var bw = BookWordsFile.Get(); var t = PlayText.Load();
         foreach (var k in new[] { "vale-out", "lent", "lookout", "boxed" }) { Assert.That(bw.FeedCards.ContainsKey(k), k); Assert.That(bw.FeedCards[k].Title, Is.Not.Empty); }
-        foreach (var w in new[] { bw.GoLent, bw.EndWinHead, bw.EndWinLine, bw.LentName, bw.CarLost, bw.LentSeen, bw.PoliceHead, bw.PoliceWhy, bw.PoliceLeft, bw.PoliceClear, bw.PoliceEnd, bw.TapeSeen, bw.TapeMaybe, bw.TapeLoopEnds, bw.ParkedSeen, bw.ParkedMaybe, bw.ParkedBack }) Assert.That(w, Is.Not.Empty);
+        foreach (var w in new[] { bw.GoLent, bw.EndWinHead, bw.EndWinLine, bw.LentName, bw.CarLost, bw.LentSeen, bw.PoliceHead, bw.PoliceWhy, bw.PoliceLeft, bw.PoliceClear, bw.PoliceEnd, bw.TapeSeen, bw.TapeMaybe, bw.TapeLoopEnds, bw.ParkedSeen, bw.ParkedMaybe, bw.ParkedBack, bw.GoOnce, bw.GoWaiting, bw.GoWaitsRoster }) Assert.That(w, Is.Not.Empty);
         Assert.That(t.GoWhy.ContainsKey("police") && t.GoWhy.ContainsKey("lent") && t.GoFate.ContainsKey("stays") && t.GetawayWhy.ContainsKey("police"));
     }
 }

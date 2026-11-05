@@ -1371,8 +1371,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(JSON.stringify(t.locks)).not.toMatch(/serving/);
   });
   test('the timeline marks have a word for Alt', () => {
-    // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) and drop (2:46) are marks; 3:10 is its park (Keel's drafts, Fable words them)
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Rivals park', 'Chime', 'Last chance', 'Popovic exits', 'Popovic at car', 'Close']); // brief 096: "Popovic is out" is the lend's win (vale.out), so his walk out of the Office exits
+    // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) is a mark; brief 096 (engine 0.41.0): its block (2:53) replaces the drop (2:46) and the park (3:10)
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Chime', 'Last chance', 'Popovic exits', 'Popovic at car', 'Close']); // brief 096: "Popovic is out" is the lend's win (vale.out), so his walk out of the Office exits
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);

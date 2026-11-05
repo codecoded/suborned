@@ -37,7 +37,7 @@ namespace Suborned.Play
             {
                 Activity a = null; if (!Guard("activity", () => a = Game.ActivityOf((OpId)k))) return;
                 var d = doing[k]; var op = Game.Ops[k]; var q = pending[k] ?? (op.Busy == null ? op.Act : null); // engine 0.23: the act a walk-in walks to, as the host's own queue
-                d.Verb = a.Verb; d.Phase = a.Phase; d.OnDone = a.OnDone; d.CanCancel = a.CanCancel || q != null;
+                d.Verb = a.Verb; d.Phase = a.Phase; d.OnDone = GoWaitsUnder(k) is { Length: > 0 } gw ? gw : a.OnDone; /* G1: the car waits for him (HostGoWaits) */ d.CanCancel = a.CanCancel || q != null;
                 d.CancelCode = a.CancelCost ?? "";
                 d.CancelText = Text != null && Text.CancelCosts.TryGetValue(a.CancelCost, out var cct) ? cct : a.CancelText;
                 d.Progress = a.TicksLeft < 0 || a.Phase is "idle" or "down" ? -1 : Mathf.Clamp(a.Progress, 0, 1000);

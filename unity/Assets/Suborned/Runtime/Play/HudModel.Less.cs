@@ -66,6 +66,7 @@ namespace Suborned.Play
             {
                 var lf = new PField { Kind = "left" }; foreach (var (who, fate, _) in h.LeftBehindNow()) if (lf.Icons.Count < 3) lf.Icons.Add(who + ":" + fate);
                 if (lf.Icons.Count > 0) l.Add(lf);
+                if (h.GoWaitS(o.Target) is int ws && ws >= 0) l.Add(new PField { Kind = "time", Icon = "p_time", Text = $"{ws} s" }); // engine 0.43.0 (G1): the car goes once the one climbing in is in
                 if (Plus.Match(i.Trail ?? "") is var gp && gp.Success && gp.Groups[1].Value != "0") l.Add(new PField { Kind = "trail", Icon = "p_trail", Text = "+" + gp.Groups[1].Value });
                 return l;
             }

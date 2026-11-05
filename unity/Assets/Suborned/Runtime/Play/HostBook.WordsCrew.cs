@@ -17,7 +17,7 @@ namespace Suborned.Play
         public string CrewBack = "back at his post {t}", CrewFace = "he'll know the Scout's face", CrewSees = "He sees you coming and fires: come from behind", CrewArmed = "Armed: if he sees you coming, he fires";
         public string CrewHeardMercenary = "{who} is in it for the money.", CrewHeardLoyal = "{who} is loyal to his crew.", CrewHeardNothing = "Nothing learned.";
         public string CrewPaid = "{who} takes the money and walks off.", CrewRefused = "{who} won't take it, and tells his crew. The money stays with us.", CrewPayMissed = "{who} was gone before the Fixer paid. The money stays with us.";
-        public string CrewMisled = "He takes the word and walks off. He'll be back.", CrewMisleadMissed = "The word missed.";
+        public string CrewMisled = "He takes the word and walks off. He'll be back.", CrewMisleadMissed = "The word missed him: he'd gone, or was already after Popovic's car.";
 
         void ReadCrew(JNode b)
         {

@@ -45,6 +45,8 @@ public class Crew096
         var mis = Row(h, OpId.Scout, id, "mislead"); Assert.That(mis, Is.Not.Null, "the Scout's word to a man on foot"); Assert.That(mis.Available, mis.Reason);
         var mq = g.CrewQuote(mis.I.Order, m); Assert.That(mis.I.Time, Is.EqualTo($"{mq.S} s")); Assert.That(mis.I.Trail, Is.EqualTo($"T +{mq.Trail}"));
         Assert.That(mis.I.Rows.Exists(x => x.text.Contains(HandoverHost.MissionClock(g.MisleadBackTick(id)))), "it says when he is back at his post: " + string.Join(" | ", mis.I.Rows.Select(x => x.text)));
+        var unwatched = Row(h, OpId.Fixer, id, "pay"); Assert.That(unwatched.Available, Is.False, "engine 0.43.0: Pay on the crew needs a Watch first"); Assert.That(unwatched.Lock.code, Is.EqualTo("needs-routine"));
+        g.RivalsWatched = true; // rivals.turn.needs "watched": the Watch the rules ask for before a Pay
         var pay = Row(h, OpId.Fixer, id, "pay"); Assert.That(pay, Is.Not.Null); Assert.That(pay.Available, pay.Reason);
         var pq = g.CrewQuote(pay.I.Order, m); Assert.That(ContextRank.Num(pay.I.Usd), Is.EqualTo(pq.Usd)); Assert.That(pq.Usd, Is.EqualTo(30000), "Motive's $30,000");
         Assert.That(pay.I.Outcome, Is.EqualTo("?"), "his temperament unknown before a Listen"); Assert.That(pay.I.Trail, Is.EqualTo($"T +{pq.Trail}"));
@@ -85,6 +87,7 @@ public class Crew096
     [Test] public void PayingALoyalManIsRefusedAndTheMoneyStays()
     {
         var h = Posted(); var g = h.Game; var id = PostedMan(h, "loyal"); var m = g.CrewOf(id);
+        g.RivalsWatched = true; // engine 0.43.0 (rivals.turn.needs "watched"): a Pay on one of the crew needs a Watch on them first
         var pay = Row(h, OpId.Fixer, id, "pay"); Assert.That(pay.Available, pay.Reason); long cash = g.Cash;
         Give(h, pay, id); Assert.That(Run(h, () => m.Refused), "the refusal never came");
         Assert.That(g.Cash, Is.EqualTo(cash), "a refusal gives the money back");
@@ -103,7 +106,7 @@ public class Crew096
 
     [Test] public void TheLookoutCardsChipsOpenHisRingForEachAgent()
     {
-        var h = Posted(); var id = Lookout(h);
+        var h = Posted(); var id = Lookout(h); h.Game.RivalsWatched = true; // engine 0.43.0: the Fixer's chip opens a Pay only after a Watch on the crew
         var card = h.CrucialQueue.Single(c => c.Kind == "lookout"); Assert.That(card.View, Is.EqualTo(id), "its line pans to him, not to Popovic's car");
         Assert.That(card.FixBy, Is.EqualTo(new[] { "scout", "fixer", "enforcer" }), "Mislead, Pay, Take: one chip an agent");
         h.CrucialQueue.RemoveAll(c => c != card);

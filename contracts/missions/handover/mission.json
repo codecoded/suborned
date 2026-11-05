@@ -31,21 +31,15 @@
   },
   {
    "at": "2:35",
-   "what": "the rival car turns in from Orbit Walk",
-   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
-   "note": "The engine computes the car's entry back from the 3:10 park (rulebook rivals: the drop stop and the two drives at car.pace on the drive grid), so the park stays exactly 3:10 and this entry is §07's rounding of it (engine 0.32.0: 2:35.6). Nobody of the crew is on the map before it."
+   "what": "the rival car turns in from Orbit Walk and drives to the cell's car",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25); brief 096, engine 0.41.0 (Motive's rivals page, briefs/096/motive/rivals.html, Sky 2026-11-04 'all recommended': the block on arrival on every route; Keel's §07 line, briefs/096/keel/gdd-text-rivals.md)",
+   "note": "The turn-in at rival-car-entry, Orbit Walk's east edge of the window. Its time is data: the engine still computes it back from the rivals' anchor (rivals.anchor, 3:10, read by tools/sim/site.ts as schedule.rivalsArrive) through the retired drop's stop and drives at car.pace on the drive grid (rulebook rivals; GameCrew CrewEntry), 2:35.6 at seed 0 (engine 0.43.0: route-a, route-b, fight-loud-wait-yard), and the seed's rivals band (rulebook seeds.rivals.arrive, v:seed-rivals-arrive-s) moves it and every rival beat after it together, by up to ±15 s. Nobody of the crew is on the map before it. Since engine 0.41.0 it drives to the block point of the stand the cell's car stands at or is driving to (rulebook rivals.block), no longer to a drop and a park; a Drive the cell starts before it stops turns it after our car (rivals.retarget)."
   },
   {
-   "at": "2:46",
-   "what": "it drops three by the cell's car, who post round it",
-   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
-   "note": "The drop stop at rival-drop (engine 0.32.0: 2:46.4); the three step out rivals.step apart and walk to the first rivals.posted spots of the getaway car's stand."
-  },
-  {
-   "at": "3:10",
-   "what": "the rival car parks across from Popovic's car; its lookout watches the official bay",
-   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
-   "note": "The park at rival-park (90.5, -31), Apron Road's south kerb (Vantage, brief 059 §5); the lookout steps out rivals.out later and posts at rival-lookout. Read by tools/sim/site.ts as schedule.rivalsArrive (/rival car parks/)."
+   "at": "2:53",
+   "what": "it stops across the cell's car's way out, boxing it in; three get out and post round it, the lookout walks to watch Popovic's car, the wheelman stays in",
+   "src": "brief 096, engine 0.41.0 (Motive's rivals page, briefs/096/motive/rivals.html, Sky 2026-11-04 'all recommended': the block on arrival on every route; box-in, rulebook car.box, engine 0.40.0); Keel's §07 line, briefs/096/keel/gdd-text-rivals.md",
+   "note": "The engine's beat, not data: the stop is where the drive from the turn-in ends at the block point of the cell's car's stand (rulebook rivals.block: the first point of the stand's exit lane 10 m from the car), so 2:53 is this timeline's rounding of the engine's time and moves with it. With our car at the square, Rocket Lane: 2:52.8 at seed 0 (engine 0.43.0, rivals.block in route-a's and route-b's logs). With our car on the service drive before the turn-in (the drive-round), the drive's mouth on Apron Road: 2:48.4 at seed 0 (fight-loud-wait-yard). The beats after the stop are the engine's too, from the rulebook's values and the walks, so they carry no mark: three step out 5 s after the stop, 2 s apart (2:57.8, 2:59.8, 3:01.8 at the square), and walk to the stand's first three ambush spots (route-b: posted 3:15.2, 3:17.9, 3:40.0; rivals.post); the lookout steps out after them and walks to rival-lookout, posted facing Popovic's car in the official bay at 3:58.6 at the square, 3:09.6 from the drive's mouth (rivals.lookout-posted, a crucial card); the wheelman sits in the blocking car until the final fight springs or his car is shot at or disabled. Replaces two marks of engine 0.32.0 to 0.40.0: 2:46 the drop of three by the cell's car at rival-drop, and 3:10 the park across from Popovic's car at rival-park with the lookout watching the official bay. Both are retired (rulebook rivals: 'Retired by brief 096: the park ...'); 3:10 stays only as the engine's anchor (rivals.anchor)."
   },
   {
    "at": "5:10",
@@ -179,7 +173,12 @@
  "rivals": {
   "public": "menace",
   "src": "Sky 2026-10-16 (via Aster: 'a rival gang that has menace level authority is a +1'); briefs/014/motive-standing.md, a public fight, rule 4: the Handover's rivals are menace",
-  "note": "How the public sees this mission's rival crew: menace (feared) or neutral (not). The rulebook's fight.public reads it: breaking feared rivals in a public fight is +1 Standing, firing first on rivals nobody fears is -1; without it the rulebook's fight.rivalsPublic (menace) stands. Adopted by Waymark 2026-10-16 as Keel wrote it, kept a top-level block rather than a field on a role: the rivals are a crew the mission sends, not people cast from the district (roles names only cast people), so they have no role to carry it. Menace because the Handover's rivals come to take a councillor off the street outside the Records Office, and a crew that takes people off the street is feared (motive-standing rule 4). tools/sim/site.ts reads it into the site (rivals.public); tools/missions/handover/mission.test.ts locks it."
+  "note": "How the public sees this mission's rival crew: menace (feared) or neutral (not). The rulebook's fight.public reads it: breaking feared rivals in a public fight is +1 Standing, firing first on rivals nobody fears is -1; without it the rulebook's fight.rivalsPublic (menace) stands. Adopted by Waymark 2026-10-16 as Keel wrote it, kept a top-level block rather than a field on a role: the rivals are a crew the mission sends, not people cast from the district (roles names only cast people), so they have no role to carry it. Menace because the Handover's rivals come to take a councillor off the street outside the Records Office, and a crew that takes people off the street is feared (motive-standing rule 4). tools/sim/site.ts reads it into the site (rivals.public); tools/missions/handover/mission.test.ts locks it.",
+  "anchor": {
+   "at": "3:10",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25): 3:10, the rival car parks across from Popovic's car; brief 096, engine 0.41.0, which retired the park and kept its time as the reference for the turn-in",
+   "note": "Not a beat on the street and not a timeline mark: the reference the engine times the rival crew from (tools/sim/site.ts reads it as schedule.rivalsArrive; Game.RivalAt, moved by the seed's rivals band). The engine computes the car's turn-in back from it through the retired drop's stop and the drives at car.pace (GameCrew CrewEntry: 2:35.6 at seed 0), so retiming the turn-in means moving this anchor. Moved here from the timeline's '3:10 the rival car parks' entry when engine 0.41.0 retired the park (Waymark 2026-11-05, brief 096); the site's value is unchanged (190 s)."
+  }
  },
  "start": {
   "heat": 0,

@@ -36,7 +36,7 @@ namespace Suborned.Play
             i.Time = "now"; i.Usd = "$0"; i.Alert = "A 0";
             string seen = ""; Guard("car watcher", () => seen = g.CarWatcher());
             i.Trail = seen.Length > 0 ? $"T +{g.R.WitnessTrail}" : "T 0";
-            i.Outcome = g.Vale == ValeAt.Car ? "win" : g.Lent ? "clear" : "withdraw"; // brief 096 (engine 0.42.0): once Popovic's car is lent, ours leaves with whoever is aboard (gets the rest clear), never a withdraw
+            i.Outcome = g.Vale == ValeAt.Car || ValeClimbingIn ? "win" : g.Lent ? "clear" : "withdraw"; // brief 096 (engine 0.42.0): once Popovic's car is lent, ours leaves with whoever is aboard (gets the rest clear), never a withdraw
             i.Label = GoLine(seen.Length > 0); return i;
         }
 
@@ -112,8 +112,8 @@ namespace Suborned.Play
         /// <summary>Brief 067 C3: a Board is ordered and not landed for some agent (the pips show with it).</summary>
         public bool AnyBoardPending { get { if (Game == null) return false; for (int k = 0; k < 4; k++) { var op = Game.Ops[k]; if (!op.InCar && (pending[k]?.Do == "board" || op.Act?.Do == "board" || op.Busy?.Do == "board")) return true; } return false; } }
 
-        /// <summary>Anyone in the car: the car marker offers Go.</summary>
-        public bool GoAvailable => Game != null && !Game.Over && Game.AnyInCar;
+        /// <summary>Anyone in the car, or climbing in (engine 0.43.0 G1): the car marker offers Go.</summary>
+        public bool GoAvailable => Game != null && !Game.Over && (Game.AnyInCar || Climbers("car").Count > 0); // G1: one climbing in counts as in
 
         /// <summary>Go given: with anyone left behind, the going-loud card's 0.5 s hold commits it (no pause); else at once.</summary>
         void GoGive(OpId by, Vector2? screen, string source, string car = "")
@@ -189,8 +189,9 @@ namespace Suborned.Play
                 pn.Rows.Add(new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });
             }
             var by = order.Count > 0 ? (OpId)order[0] : Agent;
-            var gv = GoIntent(by); var goName = gv.Label; Words(gv, t); gv.Name = goName; var gl = GoLock(); // the row is the Go card's one line
+            var gv = GoIntent(by); Words(gv, t); var gl = GoLock(); // the row is the Go card's one line
             if (gv.Outcome == "withdraw" && Text?.GoNoVale is { Length: > 0 } nv) gv.Does = nv; // Fable 067 less.go.noVale: before Vale is aboard, Go calls the attempt off (the engine's Leave: Withdrawn)
+            GoWaitWords(gv, "car"); gv.Name = gv.Label; // engine 0.43.0 (G1): someone climbing in, the Go goes once he is in (HostGoWaits)
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow); // a free Go tops the card
             CarDriveRows(pn, order);

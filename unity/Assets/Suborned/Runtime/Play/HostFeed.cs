@@ -274,29 +274,29 @@ namespace Suborned.Play
         }
 
         // events that get a card of their own when no city scene covers them: kind, title, where it points. Titles and results in the player's
-        // words from Fable's review (messages.html §1 D, 2026-10-16), host placeholders until text.json carries events[id].card; never the
+        // words from Fable's review (messages.html §1 D, 2026-10-16), as text.json cards.items words them (brief 096) for a text without them; never the
         // engine's sentence (its log keeps it).
         static readonly Dictionary<string, (string kind, string title, string place)> FeedEvents = new()
         {
-            ["rivals.arrive"] = ("city", "Rival car arrives", "car/rivals"), ["rivals.misled"] = ("city", "Rivals sent away", "car/rivals"), ["rivals.drawn"] = ("warning", "Rivals heading in", "car/rivals"),
+            ["rivals.misled"] = ("city", "A rival walks off", "car/rivals"), ["rivals.drawn"] = ("warning", "Rivals heading in", "car/rivals"),
             ["guard.at-cafe"] = ("city", "The guard is at the café", "guard"), ["guard.back"] = ("city", "Guard back on the door", "guard"),
             ["vale.exits"] = ("city", "{vale} comes out", "councillor"), ["vale.at-car"] = ("city", "{vale} reaches his car", "councillor"),
-            ["car.leaves"] = ("city", "The official car leaves", "car/official"), // engine 0.32.0: car.blocks is never logged (the driver's Call is retired)
-            ["loop.ends"] = ("warning", "The loop ends", "camera/entrance"), ["security.called"] = ("warning", "Security is coming", "security/0"), ["patrol.breaks"] = ("warning", "The patrol turns on you", "patrol"),
-            ["run.seen"] = ("warning", "Runner seen", ""), ["report"] = ("warning", "Reported", ""), ["fight.loud"] = ("fight", "Police coming in", "security/0"), ["fight.safe"] = ("fight", "The rivals wait at the car", "car/getaway"),
+            ["car.leaves"] = ("city", "{vale}'s car leaves", "car/official"), // engine 0.32.0: car.blocks is never logged (the driver's Call is retired)
+            ["loop.ends"] = ("warning", "The loop ends", "camera/entrance"), ["security.called"] = ("warning", "Police are coming", "security/0"), ["patrol.breaks"] = ("warning", "The patrol turns on you", "patrol"),
+            ["run.seen"] = ("warning", "Seen running", ""), ["report"] = ("warning", "Reported", ""), ["fight.loud"] = ("fight", "Police coming in", "security/0"), ["fight.safe"] = ("fight", "The rivals wait at the car", "car/getaway"),
             ["fight.ambush"] = ("fight", "Ambush", "car/getaway"), ["fight.over"] = ("fight", "The fight is over", "car/getaway"), ["captured"] = ("fight", "Captured", ""),
             ["scout.down"] = ("fight", "Scout is down", "op/scout"), ["fixer.down"] = ("fight", "Fixer is down", "op/fixer"), ["tech.down"] = ("fight", "Tech is down", "op/tech"),
             // engine 0.33.0 (brief 059): the crew's new codes, Fable's titles (cards.items), for a text without them
             ["rivals.recalled"] = ("fight", "Rivals called back", "car/rivals"), ["rivals.wiped"] = ("fight", "The rival crew is finished", "car/getaway"), ["rivals.see-takedown"] = ("warning", "A crewmate saw it", ""),
             ["rivals.wakes"] = ("warning", "A rival is awake", ""), ["rivals.frees"] = ("city", "A rival is untied", ""),
             // engine 0.34.0 (Motive M067-K3 a): hiding in a held car loses; host titles until Fable's cards.items carry them
-            ["rivals.for-car"] = ("warning", "Rivals going for {vale}", "car/getaway"), ["rivals.back-to-cover"] = ("city", "Rivals back in cover", "car/getaway"),
+            ["rivals.for-car"] = ("warning", "Rivals moving on the car", "car/getaway"), ["rivals.back-to-cover"] = ("city", "Rivals back in cover", "car/getaway"),
         };
         /// <summary>City scenes' card titles by the text's event id (Fable's table D).</summary>
-        static readonly Dictionary<string, string> SceneTitles = new() { ["rivals-arrive"] = "Rival car arrives", ["chime"] = "Handover chime", ["guard-at-cafe"] = "The guard is at the café" };
+        static readonly Dictionary<string, string> SceneTitles = new() { ["rivals-arrive"] = "Our car is boxed in", /* engine 0.41.0: the scene plays on rivals.block (text.json cards.items) */ ["chime"] = "Handover chime", ["guard-at-cafe"] = "The guard is at the café" };
 
-        /// <summary>Events that happen at a place: the cell hears of them only in sight (Fable: rivals.arrive, guard.at-cafe "in sight only").</summary>
-        static readonly Dictionary<string, string> SeenAt = new() { ["rivals.arrive"] = "rivals-arrive", ["guard.at-cafe"] = "guard-at-cafe" };
+        /// <summary>Events that happen at a place: the cell hears of them only in sight (Fable: guard.at-cafe "in sight only").</summary>
+        static readonly Dictionary<string, string> SeenAt = new() { ["guard.at-cafe"] = "guard-at-cafe" }; // rivals.arrive is retired (engine 0.41.0)
 
         /// <summary>A log line: the city scenes for its world event (in-sight ones only when an agent can see the place), else its own card, which
         /// keeps the same sight rule: an event whose scenes are all in-sight only, or that happens at a place, makes no card when no agent sees it.</summary>

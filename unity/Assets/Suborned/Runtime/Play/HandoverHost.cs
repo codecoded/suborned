@@ -1305,7 +1305,7 @@ namespace Suborned.Play
                 case "drop": return op.CarryBody.Length == 0 && !op.Carrying.HasValue ? No("not-carrying", "carrying nobody") : yes;
                 case "restrain": case "carry" when !IsOpName(o.Target): return op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "reroute": return g.PatrolAwayUntil > g.Tick ? No("patrol-away", "the patrol is already away", g.PatrolAwayUntil) : yes;
-                case "mislead": return CrewLock(by, o); // brief 096 (engine 0.41.0): a member on foot, the engine's CrewMislead mirrored for the card (the order still asks the engine)
+                case "mislead": return CrewLock(by, o); // brief 096 (engine 0.43.0): a member on foot, the engine's CrewActQuery
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", $"{ValeWord} is not inside");
                 case "take": // brief 059 K3 (the engine's Take, mirrored for the card): round the back with a turned driver, never at the front or on the way
                     if (g.Vale == ValeAt.InCar && !g.PickupService && g.CarInBayTick >= 0) return No("car-not-parked", $"{ValeWord}'s car is driving round: take him once it parks", g.CarInBayTick);

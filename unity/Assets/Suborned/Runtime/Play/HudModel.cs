@@ -241,7 +241,7 @@ namespace Suborned.Play
                         Lock = row.Available ? "" : $"Locked: {row.Reason}{(row.Unlock.Length > 0 ? $"\n{row.Unlock}" : "")}",
                         Verb = row.Key >= 0 ? h.VerbKey(row.Key) : "",
                         Icon = AtlasIcon(row.I.Order.Do, row.I.Order.Approach, ""), Usd = i2.Usd, Time = i2.Time, Trail = i2.Trail.Replace("T ", ""), Alert = i2.Alert.Replace("A ", ""),
-                        Outcome = OutcomeWords(row.I, pn.T.Key), OutcomeMark = i2.Order?.Do == "turn" && i2.Orders > 1 && i2.Outcome == "turned" ? "half" : MarkOf(i2.Outcome),
+                        Outcome = OutcomeWords(row.I, pn.T.Key, h.Text), OutcomeMark = i2.Order?.Do == "turn" && i2.Orders > 1 && i2.Outcome == "turned" ? "half" : MarkOf(i2.Outcome),
                         Walk = i2.WalkS > 0 ? $"walk {i2.WalkS} s" : "", Reason = row.Available ? "" : row.Reason, Unlock = row.Available ? "" : row.Unlock, Role = Op.Name(row.By),
                         Name = row.Verb, Leverage = i2.Leverage, Suggested = hintVerb != null && hintVerb != "turn" && i2.Order != null && i2.Order.Do == hintVerb,
                     });
@@ -432,27 +432,27 @@ namespace Suborned.Play
         static string NeedShort(string need) => need switch { "debt" => "in debt", "cash" => "short of cash", "" => "need unknown", _ => need.Replace('-', ' ') };
 
         /// <summary>A card's outcome in words (Glyph's frame 05): "Works", "Works, one step worse", "They would refuse", "?"; what a Watch or Listen
-        /// learns; the other verbs' own outcome.</summary>
-        static string OutcomeWords(HandoverHost.Intent i, string target)
+        /// learns; the other verbs' own outcome. Fable's words (text.json less.alt.outcome); the placeholders stand only for a text without them.</summary>
+        static string OutcomeWords(HandoverHost.Intent i, string target, PlayText t)
         {
-            var o = i.Order;
+            var o = i.Order; string A(string k, string or) => t != null && t.AltOutcome.TryGetValue(k, out var v) && v.Length > 0 ? v : or;
             if (o == null) return i.Outcome;
             switch (o.Do)
             {
                 case "turn":
                     return i.Outcome switch
                     {
-                        "turned" => i.Orders > 1 ? "Works, one step worse" : "Works", "kept" => "Works", "refused" => "They would refuse", "not-yet" => "Not yet: one more try",
-                        _ => "? until the Scout learns who they are",
+                        "turned" => i.Orders > 1 ? A("worse", "Works, but less well") : A("ok", "Works"), "kept" => A("ok", "Works"), "refused" => A("no", "They would refuse"), "not-yet" => A("half", "Not yet: one more try"),
+                        _ => A("unk", "? until the Scout learns who they are"),
                     };
-                case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
-                case "listen": return "Learns their need and temperament";
-                case "loop": return "Loops the camera for two minutes; the Tech is free to go"; // engine 0.31.0: no tether
+                case "watch": return i.Outcome == "its sight" ? A("learns-sight", "Learns what it sees") : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
+                case "listen": return A("learns-person", "Learns their need and temperament");
+                case "loop": return A("tethered", "Loops the camera for two minutes; the Tech is free to go"); // engine 0.31.0: no tether
                 case "disable": return "Cuts the camera for good; the desk notices";
-                case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
-                case "go": return i.Outcome == "win" ? "Wins the mission" : i.Outcome == "clear" ? BookWordsFile.Get().GoClear : "Withdraws"; // brief 018: who stays is the Go line itself
+                case "call": return i.Outcome == "ready" ? A("call-ready", "They act on the call") : A("call-not-now", "Not now");
+                case "go": return i.Outcome == "win" ? A("wins", "Wins the mission") : i.Outcome == "clear" ? BookWordsFile.Get().GoClear : "Withdraws"; // brief 018: who stays is the Go line itself
                 case "board": return i.Outcome.Length > 0 ? "In the car " + i.Outcome : "In the car";
-                case "fire": return "Goes loud";
+                case "fire": return A("loud", "Goes loud");
                 default: return i.Outcome;
             }
         }

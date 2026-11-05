@@ -65,7 +65,9 @@ namespace Suborned.Play
         Intent LentGoIntent(OpId by)
         {
             var i = new Intent { Slot = -1, Label = BookWordsFile.Get().GoLent, Order = new Order { Op = Op.Name(by), Do = "go", Target = "car:official" } };
-            i.Time = "now"; i.Usd = "$0"; i.Trail = "T 0"; i.Alert = "A 0"; i.Outcome = "win"; // the engine has no read for who would see it leave (lent.seen): Keel
+            i.Time = "now"; i.Usd = "$0"; i.Alert = "A 0"; i.Outcome = "win";
+            bool seen = LentWatcherNow().Length > 0; i.Trail = seen ? $"T +{Game.R.WitnessTrail}" : "T 0"; // engine 0.43.0: who would see it leave (lent.seen), the Go card's "+1 T if seen"
+            if (seen) i.Label += " · " + (Text?.GoSeen ?? "+{trail} T if seen").Replace("{trail}", Game.R.WitnessTrail.ToString());
             return i;
         }
         /// <summary>A Go or Board lock for either car, by the order's target (Locked's go and board).</summary>
@@ -101,7 +103,7 @@ namespace Suborned.Play
                 pn.Rows.Add(new PanelRow { By = (OpId)k, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });
             }
             int w = LentDriver(); var by = w >= 0 ? (OpId)w : order.Count > 0 ? (OpId)order[0] : Agent;
-            var gv = LentGoIntent(by); var goName = gv.Label; Words(gv, t); gv.Name = goName; var gl = LentGoLock();
+            var gv = LentGoIntent(by); Words(gv, t); GoWaitWords(gv, "car:official"); gv.Name = gv.Label; var gl = LentGoLock(); // G1: the climber counted in (HostGoWaits)
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow);
             StepOutRows(pn, true);

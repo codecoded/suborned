@@ -133,8 +133,9 @@ export const Mission = z.strictObject({
   listenPartners: z.array(z.strictObject({ role: id, employer: id, position: id, name: z.string().min(1).describe('the person, by name and post, as the mission holds no person ids (the test resolves it to one person)'), from: z.string().min(1).describe('the destination whose door they step out of'), src, note })).optional(),
   /** Route windows restated against the world (/3, later). */
   windows: z.array(window).optional(),
-  /** The rival role: how the public sees the mission's rival crew (Sky 2026-10-16; rulebook fight.public, default fight.rivalsPublic): read into the site. */
-  rivals: z.strictObject({ public: z.enum(['menace', 'neutral']), src, note }).optional(),
+  /** The rival role: how the public sees the mission's rival crew (Sky 2026-10-16; rulebook fight.public, default fight.rivalsPublic): read into the site.
+   *  `anchor` (brief 096, engine 0.41.0): the offset the engine times the rival crew from (site schedule.rivalsArrive); not a timeline mark. */
+  rivals: z.strictObject({ public: z.enum(['menace', 'neutral']), anchor: z.strictObject({ at, src, note }).optional(), src, note }).optional(),
   /** The mission's own step on the response dial (GDD v0.23 §05; briefs/013/motive-takedowns.md §5.3): the level is the civic area's plan.areas[*].securityBase + open cases + this, 0..4 in all.
    *  A flat number with its reason beside it; tools/sim/site.ts reads both into the sim data. */
   securityBonus: z.number().int().min(-4).max(4).optional(),

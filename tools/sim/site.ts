@@ -137,14 +137,17 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   });
 
   // ---- the mission's schedule, read from mission.json by its words, so a retimed entry (Waymark's close, 8:00 → 8:30) moves the engine
+  const sec = (a: unknown) => { const [m, s] = String(a).split(':').map(Number); return m! * 60 + s!; };
   const at = (_was: string, word: RegExp) => {
     const es = mission.timeline.filter((x: { what: string }) => word.test(x.what));
     if (es.length !== 1) throw new Error(`mission.json timeline: ${es.length} entries read "${word}", the engine needs exactly one`);
-    const [m, s] = String(es[0].at).split(':').map(Number); return m! * 60 + s!;
+    return sec(es[0].at);
   };
+  // brief 096 (engine 0.41.0): the park is retired, so the rivals' anchor (the turn-in is computed back from it) is mission.json rivals.anchor
+  if (!mission.rivals?.anchor?.at) throw new Error('mission.json rivals.anchor: the engine times the rival crew from it');
   // the guard's visit (mission.json windows rule summon) is the engine's: its grid walk and the rulebook's stay; the site writes neither
   const schedule = {
-    rivalsArrive: at('3:10', /rival car parks/), chime: at('4:30', /chime/), driverLast: at('4:40', /turn the driver/), valeExits: at('4:50', /comes out of the official door/), valeAtCar: at('5:10', /at his car, in by/), over: at('7:30', /\(over\)$/), guardMark: 60, // GDD v0.25.0 §07's words (brief 059): each pattern matches one entry
+    rivalsArrive: sec(mission.rivals.anchor.at), chime: at('4:30', /chime/), driverLast: at('4:40', /turn the driver/), valeExits: at('4:50', /comes out of the official door/), valeAtCar: at('5:10', /at his car, in by/), over: at('7:30', /\(over\)$/), guardMark: 60, // GDD v0.25.0 §07's words (brief 059): each pattern matches one entry
     blockMoveS: 8, blockHoldS: 150,
     src: 'guardMark: the door guard\'s first check-in mark, 1:00, fixed when the shift came forward a minute (Sky 2026-10-30, brief 080 pacing: marks 1:00, 2:30, 4:00); mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
   };

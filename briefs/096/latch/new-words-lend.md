@@ -118,3 +118,41 @@ that agent's ways on him; the card stays. Its line now pans to him, not to Popov
 - `hints.items.H8`: "Another crew watches the pickup. The Scout can give them a false tip." H8 now rings the lookout at his post (not their car) and
   goes away once anyone speaks to the crew.
 - `HostFeed.cs` (in code): the `rivals.misled` event card "Rivals sent away" still points at their car.
+
+## Engine 0.43.0, Motive's misses (Latch, 2026-11-05)
+
+Placeholders in `text.json` for Fable. The schema (`book.schema.ts`, `book.cars`) has the three new keys, all optional.
+
+### `book.cars`: G1, a Go that waits for one of us climbing in
+
+A Go on either car while an agent is climbing in (a Board under way) waits and lands the tick his Board lands (rulebook `car.go.waits`). The Go card already
+counts him aboard (`LeftBehind`), the car marker offers Go while he climbs in, and the Go row shows the seconds until he is in (the plain time field, no words).
+
+| key | placeholder | where |
+|---|---|---|
+| `goOnce` | goes once {list} is in | added after " · " to the Go row's line before the click, and capitalised as its Alt does-line. `{list}` the job words of those climbing in ("Tech") |
+| `goWaiting` | Go · waiting for {list} | the Go row's line and Alt does-line once the Go is given, until he is in |
+| `goWaitsRoster` | then the car goes | the climber's roster line under his portrait, after "→", while the Go waits for him |
+
+### Engine log codes with no card yet (Keel's placeholders in `silentLogs`)
+
+- `go.waits`: logged when the Go is given and waits. The Go row and the roster already show it, so it may stay silent.
+- `go.missed`: the waiting Go didn't land (he was shot down or called off, or a holder came, and the car can't leave). The player clicked Go and nothing
+  happened, so it probably needs a card in `cards.items`. I didn't add one: the card count in `text.test.ts` is yours to move, and the fate is your call
+  with Glyph. A beat would take the feed past its eleven beats.
+
+### Also now from the engine (no new words)
+
+- **Pay on one of the crew needs a Watch first** (`rivals.turn.needs`). The row is locked `needs-routine` and uses `locks.needs-routine` as it stands
+  ("Learn {who}'s routine first: Watch them."). You may want a line for the crew ("Watch the crew first").
+- **The "+1 T if seen" on Popovic's car's Go** reads `less.go.seen` as our car's does, from `Game.LentCarWatcher()`.
+
+### Old fallbacks in C# now match text.json
+
+- `HostFeed.cs` FeedEvents: `rivals.misled` "A rival walks off", `car.leaves` "{vale}'s car leaves", `security.called` "Police are coming", `run.seen`
+  "Seen running", `rivals.for-car` "Rivals moving on the car". `rivals.arrive` is gone: the engine stopped logging it in 0.41.0. The `rivals-arrive` scene's
+  card title (it plays on `rivals.block` now) is "Our car is boxed in", from your `rivals.block` card.
+- `HostBook.WordsLend.cs` and `HostBook.WordsCrew.cs`: every default is now `book.cars`, `police`, `tape`, `parked`, `crew` as written.
+- `HudModel.OutcomeWords` (Alt) now reads `less.alt.outcome` (ok, worse, no, half, unk, learns-sight, learns-person, tethered, call-ready, call-not-now,
+  wins, loud). The text's "Works, but less well" replaces the code's "Works, one step worse". Still in code because the text has no key for them yet:
+  the Watch on a person ("Reads their mood"), Disable ("Cuts the camera for good; the desk notices"), Board ("In the car"), and the Go withdraw ("Withdraws").

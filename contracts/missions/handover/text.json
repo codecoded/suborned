@@ -241,15 +241,9 @@
     "known": false
    },
    {
-    "at": "2:46",
+    "at": "2:53",
     "label": "Three rivals take posts round our car",
     "short": "Rivals post",
-    "known": false
-   },
-   {
-    "at": "3:10",
-    "label": "The rival car parks. Its lookout watches the official door",
-    "short": "Rivals park",
     "known": false
    },
    {
@@ -3214,14 +3208,17 @@
     "fix": "Step out and draw · or down them"
    },
    "cars": {
-    "rule": "Brief 096, the lend (engine 0.42.0), placeholders for Fable: `goLent` the Go on Popovic's car once it is ours (its Go takes him out: the win is fixed, the mission runs on); `endWinHead` and `endWinLine` the end card's head and line after a win by that Go; `lentName` Popovic's car once it is ours (our own stays names.targets.car-getaway); the debrief's `carLost` (our car left standing at the end: +{trail} T, the police trace it) and `lentSeen` ({by} saw Popovic's car leave: +{trail} T and a lead, not a hunted car); `goClear` the Alt does-line of our car's Go once Popovic's car is ours (HudModel; was hard-coded).",
+    "rule": "Brief 096, the lend (engine 0.42.0), placeholders for Fable: `goLent` the Go on Popovic's car once it is ours (its Go takes him out: the win is fixed, the mission runs on); `endWinHead` and `endWinLine` the end card's head and line after a win by that Go; `lentName` Popovic's car once it is ours (our own stays names.targets.car-getaway); the debrief's `carLost` (our car left standing at the end: +{trail} T, the police trace it) and `lentSeen` ({by} saw Popovic's car leave: +{trail} T and a lead, not a hunted car); `goClear` the Alt does-line of our car's Go once Popovic's car is ours (HudModel; was hard-coded). G1 (engine 0.43.0, rulebook car.go.waits; Latch), placeholders for Fable: a Go on either car while one of us is climbing in waits for him and goes the moment he is in. `goOnce` added to the Go row's line before the click ({list} who is climbing in), and its Alt does-line capitalised; `goWaiting` the Go row's line and Alt once given, until he is in; `goWaitsRoster` the climber's roster line under his portrait (after an arrow) while the Go waits for him.",
     "goLent": "Go · drive him off",
     "goClear": "Gets the rest clear",
     "lentName": "Popovic's car, now ours",
     "carLost": "We left our car behind, and the police will trace it. Trail +{trail}.",
     "lentSeen": "{by} saw Popovic's car leave: a lead, but not to our car. Trail +{trail}.",
     "endWinHead": "Popovic is out",
-    "endWinLine": "We drove Popovic off in his own car."
+    "endWinLine": "We drove Popovic off in his own car.",
+    "goOnce": "goes once {list} is in",
+    "goWaiting": "Go · waiting for {list}",
+    "goWaitsRoster": "then the car goes"
    },
    "police": {
     "rule": "Brief 096, the lend (engine 0.42.0, Game.SplitPoliceAt), placeholders for Fable: the one countdown plate under the clock once Popovic is out. `head` with {time} (m:ss left), `why` the line under it, `left` who is still out ({list} their names, {n} how many), `clear` when nobody is, `end` the button that ends the mission now (End, in Withdraw's place; everyone not in a car that has left is captured).",
