@@ -85,6 +85,21 @@ public class Book096
         Assert.That(g.ClosingHash(), Is.EqualTo(before), "the queue only reads the run"); _ = hash0;
     }
 
+    [Test] public void TheEnforcerBadlyHurtCarryingPopovicTopsTheQueueUntilHeIsInTheCar()
+    {
+        var h = Host.Fresh(); var g = h.Game; ulong before = g.ClosingHash(); var vale0 = g.Vale; var e = g.Ops[(int)OpId.Enforcer];
+        void Log(string code) => Host.Call(h, "CrucialFromLog", new LogLine { Tick = g.Tick, Code = code, Text = "" });
+        Log("rivals.coming"); Log("vale.out"); g.Vale = ValeAt.WithEnforcer; Log("enforcer.warning"); Host.Call(h, "CrucialTrack");
+        Assert.That(h.CrucialNow.Kind, Is.EqualTo("hurt-carry"), "badly hurt while carrying Popovic outranks even Popovic out (Sky 2026-11-05)");
+        Assert.That(h.CrucialLine(h.CrucialNow), Does.Contain(h.ValeWord).And.Contain($"{e.Gun.Health} health"), "the line names Popovic and the health left, live");
+        g.Vale = ValeAt.Car; Host.Call(h, "CrucialTrack");
+        Assert.That(h.CrucialQueue.Exists(c => c.Kind == "hurt-carry"), Is.False, "Popovic in the car: the card leaves by itself");
+        g.Vale = vale0; Log("enforcer.warning"); Host.Call(h, "CrucialTrack");
+        Assert.That(h.CrucialQueue.Single(c => c.Kind == "hurt").Rank, Is.EqualTo(System.Array.IndexOf(HandoverHost.CrucialOrder, "down")), "not carrying: it ranks with an agent down");
+        e.Gun.Down = true; Host.Call(h, "CrucialTrack"); Assert.That(h.CrucialQueue.Exists(c => c.Kind == "hurt"), Is.False, "down: the down card says it instead");
+        e.Gun.Down = false; Assert.That(g.ClosingHash(), Is.EqualTo(before), "the queue only reads the run");
+    }
+
     [Test] public void TheJournalHoldsEveryRowNewestFirstCrucialMarkedUnreadDotted()
     {
         var h = Host.Fresh(); var g = h.Game;

@@ -66,7 +66,7 @@ public class Lend096
     {
         var h = Out(); var g = h.Game; Host.Call(h, "CrucialTrack");
         var card = h.CrucialLog.Find(c => c.Kind == "vale-out"); Assert.That(card, Is.Not.Null, "vale.out makes a crucial card");
-        Assert.That(card.Rank, Is.EqualTo(0), "the most urgent card"); Assert.That(h.CrucialQueue.Contains(card) || card.Read, "it stays until clicked");
+        Assert.That(card.Rank, Is.EqualTo(System.Array.IndexOf(HandoverHost.CrucialOrder, "vale-out")), "the most urgent card but the Enforcer badly hurt carrying Popovic"); Assert.That(h.CrucialQueue.Contains(card) || card.Read, "it stays until clicked");
         Assert.That(h.CrucialLine(card), Does.Contain(HandoverHost.MissionClock(g.SplitPoliceAt)));
         Assert.That(h.PoliceOn); Assert.That(h.PoliceSpanS, Is.EqualTo((g.SplitPoliceAt - g.ValeOutTick + Game.Hz - 1) / Game.Hz)); Assert.That(h.PoliceLeftS, Is.InRange(1, h.PoliceSpanS));
         Assert.That(h.LeftFlagsOn, "the flags stay up while the countdown runs");
@@ -101,7 +101,7 @@ public class Lend096
         void Log(string code) => Host.Call(h, "CrucialFromLog", new LogLine { Tick = g.Tick, Code = code, Text = "" });
         Log("rivals.coming"); Log("rivals.lookout-posted"); Log("rivals.block"); Log("vale.out");
         var rank = h.CrucialQueue.ToDictionary(c => c.Kind, c => c.Rank);
-        Assert.That(rank["vale-out"], Is.EqualTo(0)); Assert.That(rank["lookout"], Is.EqualTo(Array.IndexOf(HandoverHost.CrucialOrder, "for-car"))); Assert.That(rank["boxed"], Is.EqualTo(rank["lookout"]));
+        Assert.That(rank["vale-out"], Is.EqualTo(Array.IndexOf(HandoverHost.CrucialOrder, "vale-out"))); Assert.That(rank["lookout"], Is.EqualTo(Array.IndexOf(HandoverHost.CrucialOrder, "for-car"))); Assert.That(rank["boxed"], Is.EqualTo(rank["lookout"]));
         Assert.That(h.CrucialQueue.Select(c => c.Kind).ToList(), Is.EqualTo(new List<string> { "vale-out", "lookout", "boxed", "rival-car" }));
         Host.Call(h, "CrucialTrack");
         Assert.That(h.CrucialQueue.Exists(c => c.Kind is "lookout" or "boxed"), Is.False, "no lookout posted and nothing across our way out: both leave by themselves");

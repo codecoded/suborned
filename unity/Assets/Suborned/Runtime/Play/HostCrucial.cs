@@ -17,11 +17,13 @@ namespace Suborned.Play
             public int Id, Tick, Rank, Value, Agent = -1; public string Kind = "", Code = "", Role = "", Title = "", Line = "", Face = "", Icon = "", View = ""; public Vector3? Place; public bool Read, Gone;
             public readonly List<(string icon, string word)> Fixes = new(); public readonly List<string> FixBy = new(); // FixBy: a chip's agent, "" a label (CrucialFix)
         }
+        /// <summary>Sky 2026-11-05 ("yes, crucial card", after his Air run lost to the Enforcer shot down carrying Popovic, the warning only an icon): the Enforcer
+        /// badly hurt (engine enforcer.warning) while he carries Popovic tops the queue (hurt-carry) until he is down or Popovic is in a car; hurt otherwise ranks with down.</summary>
         /// <summary>The kinds in their order of urgency (Sky's call 7); turned and refused share a rank. Brief 096, the lend (engine 0.42.0): Popovic out (vale.out)
         /// tops it, since from then the police countdown runs; the lookout watching Popovic's car and our car boxed in rank with the rivals for our car; Popovic's car
         /// lent to us with Popovic out of the Office.</summary>
-        public static readonly string[] CrucialOrder = { "vale-out", "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
-        static string RankAs(string kind) => kind switch { "refused" => "turned", "lookout" or "boxed" => "for-car", "lent" => "target-out", _ => kind };
+        public static readonly string[] CrucialOrder = { "hurt-carry", "vale-out", "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
+        static string RankAs(string kind) => kind switch { "refused" => "turned", "lookout" or "boxed" => "for-car", "lent" => "target-out", "hurt" => "down", _ => kind };
         /// <summary>Cards waiting to be read, the shown one first; and every crucial card this run, oldest first (the Journal marks them).</summary>
         public readonly List<CrucialCard> CrucialQueue = new(), CrucialLog = new();
         public CrucialCard CrucialNow => CrucialQueue.Count > 0 ? CrucialQueue[0] : null;
@@ -82,6 +84,8 @@ namespace Suborned.Play
         {
             "for-car" => Game.RivalsForCar.Count > 0,
             "down" => c.Agent >= 0 && Game.Ops[c.Agent].Down,
+            "hurt" => !Game.Ops[(int)OpId.Enforcer].Down,
+            "hurt-carry" => !Game.Ops[(int)OpId.Enforcer].Down && Game.Vale == ValeAt.WithEnforcer,
             "boxed" => StillBoxed(),
             "lookout" => LookoutWatching(),
             _ => true,
@@ -97,6 +101,7 @@ namespace Suborned.Play
             else if (code == "lend.lent") { var c = Crucial("lent", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "car/official"; } // L1: Popovic's car is ours, the Enforcer at its wheel
             else if (code == "rivals.lookout-posted") LookoutCard(code); // engine 0.41.0: deal with him, or he reaches Popovic's car
             else if (code is "rivals.block" or "rivals.back") { if (!CrucialQueue.Exists(x => x.Kind == "boxed")) { var c = Crucial("boxed", code); c.Icon = "car"; c.View = "car/rivals"; } } // engine 0.41.0: the rival car across our way out
+            else if (code == "enforcer.warning") { var c = Crucial(Game.Vale == ValeAt.WithEnforcer ? "hurt-carry" : "hurt", code, agent: (int)OpId.Enforcer); c.Face = "portraits/cameo_enforcer_hurt"; c.View = "op/enforcer"; }
             else if (code == "vale.exits") { var c = Crucial("target-out", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "councillor"; }
             else if (code == "rivals.coming") { var c = Crucial("rival-car", code); c.Face = "badges/signal_rival"; c.View = "car/rivals"; }
             else if (code == "report.confirmed") { var c = Crucial("body", code); c.Icon = "body_out"; }
@@ -115,7 +120,7 @@ namespace Suborned.Play
             string line = c.Line;
             if (line.Length > 0)
             {
-                line = line.Replace("{n}", (c.Kind == "for-car" ? Math.Max(1, Game.RivalsForCar.Count) : c.Value).ToString())
+                line = line.Replace("{n}", (c.Kind == "for-car" ? Math.Max(1, Game.RivalsForCar.Count) : c.Kind is "hurt" or "hurt-carry" ? Game.Ops[(int)OpId.Enforcer].Gun.Health : c.Value).ToString()).Replace("{vale}", ValeWord)
                     .Replace("{seal}", Game.Lockdown < int.MaxValue / 8 ? MissionClock(Game.Lockdown) : "?").Replace("{by}", "")
                     .Replace("{s}", RespSoonestS >= 0 ? $"{RespSoonestS} s" : "?").Replace("{police}", Game.SplitPoliceAt < LendInf ? MissionClock(Game.SplitPoliceAt) : "?");
                 line = line.Trim();
