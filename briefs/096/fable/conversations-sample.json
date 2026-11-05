@@ -178,5 +178,88 @@
         "A 1.2 s pause before she speaks to him, as in the call after Help, so the cut between the two calls reads the same. The two street bubbles when he reaches her (\"Someone knows about us\") are unchanged: bubbles keep the 12-word limit."
       ]
     }
-  ]
+  ],
+  "help044": {
+    "note": "Fable, 2026-11-05, after engine 0.44.0 (Sky 2026-11-05 on paying Inez, option 1: \"I think 1 is fine for now\"). These replace help-inez-1 and help-inez-2 in text.json, word for word; help-inez-2-known is new. All awaiting Sky's read. `items` above keeps the second draft Sky read.",
+    "items": [
+      {
+        "id": "help-inez-1", "status": "awaiting-sky", "title": "Help Inez, a small offer",
+        "when": {"verb": "help", "about": "waitress", "temperament": "fearful", "outcome": "small-offer", "helped": false},
+        "beats": [
+          {"speaker": "fixer", "line": "Miss Nikolaou? Forgive me for stopping you, but I hear the Bureau has been hard on you lately."},
+          {"speaker": "waitress", "line": "Who told you that? I've never seen you before."},
+          {"speaker": "fixer", "line": "Nobody who wishes you harm. We'd like to give you a little money toward what you owe them."},
+          {"speaker": "waitress", "line": "A little. How much do you think I owe?"},
+          {"speaker": "fixer", "line": "I couldn't say exactly. Enough to keep them off your back for a month or two, I'd hope."},
+          {"speaker": "waitress", "line": "A month or two. They add more on whatever I pay, so after that I'd be right back where I am now."},
+          {"speaker": "fixer", "line": "Then let it be a start. There's nothing to sign and nothing to pay back."},
+          {"speaker": "waitress", "line": "Nobody gives a stranger money for nothing. What would you want for it?"},
+          {"speaker": "fixer", "line": "Nothing today, Miss Nikolaou. You have my word on that."},
+          {"speaker": "waitress", "line": "Today. And then you'd come back, and I'd owe you as well as the Bureau.", "lean": "Today"},
+          {"speaker": "fixer", "line": "It isn't like that. At least think it over before you say no."},
+          {"speaker": "waitress", "line": "I have thought it over. Please keep your money, and don't come to my tables again."},
+          {"speaker": "fixer", "line": "As you like. I'm sorry to have troubled you."},
+          {"speaker": "waitress", "line": "Go now, please, before anyone asks me who you are."}
+        ],
+        "learned": ["Too little. Inez refused it.", "She knows the Fixer's face."], "opens": ["Listen first: learn what she owes"],
+        "notes": [
+          "Before the Scout's Listen the cell has only the briefing's word, Debt, so the Fixer can't say how much and offers a little. Engine 0.44.0: everyone refuses a small offer; no money changes hands (the card: $0, 35 s, +1 T).",
+          "Why she says no, in her own words: a month's relief, then she'd owe a stranger as well as the Bureau. Her fear shows in her questions and in wanting the Fixer gone before anyone asks.",
+          "She now holds the Fixer's face (a remembered refusal): the second card says so; nobody says it aloud, and she makes no threat."
+        ]
+      },
+      {
+        "id": "help-inez-2", "status": "awaiting-sky", "title": "Help Inez, the full offer",
+        "when": {"verb": "help", "about": "waitress", "temperament": "fearful", "outcome": "turned", "helped": false},
+        "beats": [
+          {"speaker": "fixer", "line": "Miss Nikolaou, I know what you owe the Bureau, and how far behind you are. I've brought enough to clear all of it.", "lean": "all"},
+          {"speaker": "waitress", "line": "All of it? I've told nobody how bad it is, only Milena."},
+          {"speaker": "fixer", "line": "People talk on a terrace, and I listen. It's yours, Miss Nikolaou, and you needn't pay a penny of it back."},
+          {"speaker": "waitress", "line": "Nobody gives that much away for nothing. What is it you want from me?"},
+          {"speaker": "fixer", "line": "A small thing. When I telephone the café, I'd like you to call Arthur over from his door.", "lean": "Arthur"},
+          {"speaker": "waitress", "line": "Arthur. So you know about us as well."},
+          {"speaker": "fixer", "line": "I know it's nobody's business but yours. Nobody will hear it from me."},
+          {"speaker": "waitress", "line": "What happens to him, if I call him over?"},
+          {"speaker": "fixer", "line": "Nothing, if this goes the way it should. He'll be at your side, and he'll never see us."},
+          {"speaker": "waitress", "line": "He won't leave that door for nothing. I'll tell him I've something to say that can't go down a telephone."},
+          {"speaker": "fixer", "line": "Then tell him that. You know him better than anyone does."},
+          {"speaker": "waitress", "line": "And the money's really mine, not another loan I'll owe you for later?"},
+          {"speaker": "fixer", "line": "It's yours. You'll owe nobody anything, and that includes me."},
+          {"speaker": "waitress", "line": "Then I'm with you. I watch that square all day, and if trouble's coming for you, I'll find a way to warn you."}
+        ],
+        "learned": ["Inez took it. She's with us."], "opens": ["Call Inez"],
+        "notes": [
+          "After the Listen. The Fixer knows the debt (what the Scout overheard her tell Milena) and brings enough to clear it, handed to Inez: it's hers, she owes nobody. Nobody pays at the Bureau or stamps anything.",
+          "One visit, and she's with us: the ask (call Arthur off the door when the Fixer telephones), her fright that the Fixer knows about Arthur, what happens to him, her reason for getting him off the door (said aloud, which the call relies on), and her offer to warn of trouble coming.",
+          "Plays when no Help came before (helped false)."
+        ]
+      },
+      {
+        "id": "help-inez-2-known", "status": "awaiting-sky", "title": "Help Inez again, the full offer",
+        "when": {"verb": "help", "about": "waitress", "temperament": "fearful", "outcome": "turned", "helped": true},
+        "beats": [
+          {"speaker": "waitress", "line": "You again. I told you before, I won't take a little money from a stranger."},
+          {"speaker": "fixer", "line": "I know, and you were right to. This time I know what you owe the Bureau, and I've brought all of it.", "lean": "all"},
+          {"speaker": "waitress", "line": "All of it? I've told nobody how bad it is, only Milena."},
+          {"speaker": "fixer", "line": "People talk on a terrace, and I listen. It's yours, Miss Nikolaou, and you needn't pay a penny of it back."},
+          {"speaker": "waitress", "line": "Last time it was a little, and now it's everything. What is it you want from me?"},
+          {"speaker": "fixer", "line": "A small thing. When I telephone the café, I'd like you to call Arthur over from his door.", "lean": "Arthur"},
+          {"speaker": "waitress", "line": "Arthur. So you know about us as well."},
+          {"speaker": "fixer", "line": "I know it's nobody's business but yours. Nobody will hear it from me."},
+          {"speaker": "waitress", "line": "What happens to him, if I call him over?"},
+          {"speaker": "fixer", "line": "Nothing, if this goes the way it should. He'll be at your side, and he'll never see us."},
+          {"speaker": "waitress", "line": "He won't leave that door for nothing. I'll tell him I've something to say that can't go down a telephone."},
+          {"speaker": "fixer", "line": "Then tell him that. You know him better than anyone does."},
+          {"speaker": "waitress", "line": "And the money's really mine, not another loan I'll owe you for later?"},
+          {"speaker": "fixer", "line": "It's yours. You'll owe nobody anything, and that includes me."},
+          {"speaker": "waitress", "line": "Then I'm with you. I watch that square all day, and if trouble's coming for you, I'll find a way to warn you."}
+        ],
+        "learned": ["Inez took it. She's with us."], "opens": ["Call Inez"],
+        "notes": [
+          "The same scene when she refused a small offer earlier (helped true: an earlier turn.help.* log on her, which the scene system already reads). She recognises the Fixer in the first line; from \"A small thing\" on it is help-inez-2 word for word.",
+          "The full offer is dearer after a refusal ($50,000 and +2 T, not $40,000): nobody says the amount, the card shows it."
+        ]
+      }
+    ]
+  }
 }

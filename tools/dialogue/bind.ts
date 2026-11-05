@@ -4,7 +4,7 @@
 // stay in text.json. Nothing here edits text.json.
 import { Entry, type TextFile } from '../../contracts/missions/handover/text.schema';
 import type { Lines } from '../../contracts/dialogue/voices.schema';
-import { CATALOGUE, REFERENCE } from './fixture';
+import { CATALOGUE, handoverOnly, REFERENCE } from './fixture';
 
 export const ROLES = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export type Role = (typeof ROLES)[number];
@@ -43,7 +43,7 @@ export function compareToReference(entries: readonly Entry[], text: Pick<TextFil
     if (!t) continue;
     const speaker = role, group = Object.entries(REFERENCE).find(([, v]) => v === speaker)?.[0];
     if (!group) continue;
-    for (const r of text.dialogue.filter(e => e.speaker === speaker && (CATALOGUE as readonly string[]).includes(e.event) && (!e.temperament || e.temperament === t))) {
+    for (const r of text.dialogue.filter(e => e.speaker === speaker && (CATALOGUE as readonly string[]).includes(e.event) && !handoverOnly(e) && (!e.temperament || e.temperament === t))) {
       const mine = entries.find(e => e.speaker === speaker && e.event === r.event && e.verb === r.verb && e.outcome === r.outcome && e.temperament === r.temperament);
       const key = `${role}/${[r.event, r.verb, r.outcome, r.temperament].filter(Boolean).join('/')}`;
       if (!mine) missing.push(key); else { matched++; if (mine.lines.length < r.lines.length) fewer.push(`${key}: ${mine.lines.length} < ${r.lines.length}`); }

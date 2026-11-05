@@ -60,33 +60,43 @@ Speakers: Inez, Milena, Scout.
 learned: 2 lines (the debt; the lover). opens: "Help" and "Pressure" (both are now open on Inez; they cost what the ring says).
 ${VOICES('waitress', 'scout')}`,
   },
-  // help-inez-1 and help-inez-2 are rewritten after engine 0.44.0 (Sky, 2026-11-05, option 1: a Help before the Scout's Listen is a small offer she refuses, no money
-  // paid; after the Listen, Help clears the whole loan at $40,000 and turns her first time). Until then these two sheets describe today's two visits.
+  // Engine 0.44.0 (Sky, 2026-11-05, option 1): a Help before the Scout's Listen is a small offer everyone refuses, no money paid ($0, 35 s, +1 T, a remembered
+  // refusal); after the Listen a Fearful person takes the full offer once and is turned. help-inez-2-known is the full offer after she refused a small one (helped).
   {
-    id: 'help-inez-1', title: 'Help Inez, first visit', after: ['listen-inez'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
-    query: ['Help clear debt gratitude bravery Fearful needs Help twice', 'Inez capstone call pulls guard off his door', 'approach conversation private no witnesses', 'world paper records optimistic surface coercive underneath'],
-    mustSay: [{ what: 'the Bureau', re: /bureau/i }, { what: 'that she will bring the rest', re: /the rest/i }],
+    id: 'help-inez-1', title: 'Help Inez, a small offer', kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
+    query: ['Help small offer refused before Listen need told not heard', 'Fearful temperament refuses remembered refusal can identify Fixer', 'approach conversation private no witnesses', 'world paper records optimistic surface coercive underneath'],
+    mustSay: [{ what: 'the Bureau', re: /bureau/i }, { what: 'that a little would not free her', re: /month or two|not enough|back where/i }, { what: 'that she won\'t take it', re: /keep your money|won't take|can't take/i }],
     sheet: `${WORLD}
-Situation: the Fixer has come to Inez at the café door and gives her money, half of what she owes the Bureau: it's hers, to pay them with. The game pays it away from the shot; nobody goes to the Bureau, and nothing is stamped or filed (Sky, 2026-11-05: "We give money to Inez"). Fact of the game: this first Help does NOT win her over; she is grateful and scared and not yet willing. One more visit, one more payment, will do it. Nobody calls it a "first Help". The Fixer has not yet said what would be wanted, only hinted.
+Situation: before the Scout has listened. The cell knows only the briefing's word, that Inez is in debt; it doesn't know to whom she owes, how much or how far behind she is. The Fixer comes to Inez at the café door and offers her a little money toward what she owes, without being able to say how much is owed. Fact of the game: she refuses. No money changes hands, and nothing is paid at the Bureau. Why, in her own words: a little would buy a month, and then she'd owe a stranger as well as the Bureau; nobody gives money for nothing.
 ${INEZ_WHO}
-Speakers: Inez, Fixer. She doesn't know the Fixer. Her fear: nobody pays a stranger's debt for nothing; who has been asking about her?
-The scene must make plain: a stranger just gave her half of what she owes; she took it but isn't ready to do anything for it; the Fixer will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way. In the next scene she says "you did bring the rest", so the Fixer says she'll bring the rest, in those words.
-The Fixer is easy with her. She's suspicious and still can't help liking her a bit, which frightens her more. Nobody's cruel here.
-learned: 1 line (she took it; not ready yet). opens: "Help again" as the action's plain name.
+Speakers: Inez, Fixer. She has never seen the Fixer. Her fear shows in her questions and in wanting the Fixer gone before anyone asks who that was. She's polite, and firm in the end.
+Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face. She makes no threat.
+The Fixer is warm, says "we", doesn't push past a polite no, and takes the refusal well. Nobody says what the cell should do next: the cards do.
+learned: 2 lines (she refused, too little; she knows the Fixer's face). opens: 1 line: Listen first, to learn what she owes.
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
+    id: 'help-inez-2', title: 'Help Inez, the full offer', after: ['listen-inez'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery helped Inez warns rivals', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
-    mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /arthur|guard|him/i }],
+    mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /arthur|guard|him/i }, { what: 'the whole debt', re: /all of it|the whole|everything/i }],
     sheet: `${WORLD}
-Situation: the Fixer comes back and gives her the rest of what she owes, enough to clear the whole Bureau loan herself (nobody goes to the Bureau; nothing is stamped). This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_AWAY} ${GUARD_REASON}
+Situation: after the Scout's Listen, so the cell knows what she owes the Bureau and how far behind she is. The Fixer comes to Inez at the café door and gives her enough to clear the whole loan: the money is hers, and she owes nobody for it (nobody goes to the Bureau; nothing is stamped). This one visit wins her over, gratefully and still frightened. Then the Fixer says what's wanted, and it is small: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_AWAY} ${GUARD_REASON}
 ${INEZ_WHO}
 ${INEZ_GUARD}
-She must work out for herself that the Fixer knows about Arthur, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
-Fact of the game: because she was helped, she will warn the cell if she sees trouble coming on the square. Let her offer that, in her own frightened way, near the end.
-The Fixer is good company and Inez starts to believe her, because she did come back with the rest. Let her say so in her own way.
-The scene must make plain: she has all she owes; she's with us now; when we say so, she calls Arthur off the door.
+She asks how the Fixer knows what she owes; the Fixer doesn't explain beyond that people talk and she listens. She must work out for herself that the Fixer knows about Arthur, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer: nothing happens to him if this goes right, and he never sees us.
+Fact of the game: because she was helped, she will warn the cell if she sees trouble coming on the square. Let her offer that, in her own frightened way, at the end.
+The scene must make plain: she has all she owes, and it's hers; she's with us now; when we say so, she calls Arthur off the door.
+learned: 1 line. opens: "Call Inez".
+${VOICES('waitress', 'fixer')}`,
+  },
+  {
+    id: 'help-inez-2-known', title: 'Help Inez again, the full offer', after: ['help-inez-1', 'listen-inez'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
+    query: ['Help clear debt after a refused small offer remembered refusal', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
+    mustSay: [{ what: 'that she knows the Fixer', re: /you again|before|last time/i }, { what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /arthur|guard|him/i }],
+    sheet: `${WORLD}
+Situation: as help-inez-2 (the full offer after the Listen, the whole debt, hers; she's won over and agrees to call Arthur off his door), but she refused this same Fixer's small offer earlier and recognises her at once. The first lines meet that: she said no to a little; this time it's everything. From the ask on, the scene is help-inez-2's. ${GUARD_AWAY} ${GUARD_REASON}
+${INEZ_WHO}
+${INEZ_GUARD}
 learned: 1 line. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
@@ -119,7 +129,7 @@ learned: 1 line. opens: nothing new to press; instead 1 line naming the place to
 ${VOICES('driver', 'fixer')}`,
   },
   {
-    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-1', 'help-inez-2'], kind: 'call', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Fixer', 'Inez', 'Arthur'],
+    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-2'], kind: 'call', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Fixer', 'Inez', 'Arthur'],
     query: ['capstone the call pulls guard off door partners ring side stays 60 s', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'he leaves the door', re: /door|post|step/i }],
     sheet: `${WORLD}

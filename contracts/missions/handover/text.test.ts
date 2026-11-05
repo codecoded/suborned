@@ -575,8 +575,8 @@ describe('scenes', () => {
     for (const cell of replyCells()) {
       const [verb, temp, outcome] = cell.split('/') as [string, (typeof TEMPERAMENTS)[number], string];
       for (const role of ['waitress', 'driver', 'guard']) {
-        if (!allowedTemperaments(people, roleKey[role]!)!.includes(temp)) continue;
-        const sc = items.find((x) => x.kind === 'approach' && x.verb === verb && x.about === role && x.outcome === outcome && x.temperament === temp);
+        if (temp as string !== 'undefined' && !allowedTemperaments(people, roleKey[role]!)!.includes(temp)) continue; // 'undefined': the small offer, one scene for every temperament
+        const sc = items.find((x) => x.kind === 'approach' && x.verb === verb && x.about === role && x.outcome === outcome && String(x.temperament) === temp);
         if (!sc) { bad.push(`${verb} ${role} ${temp} ${outcome}`); continue; }
         for (const v of sc.variants) {
           const last = v.beats.slice(-2);
@@ -720,8 +720,8 @@ function replyCells(): Set<string> {
   const ALL = new Set<R.Know>(['routine', 'need', 'temperament']);
   for (const temp of TEMPERAMENTS) for (const band of ['hero', 'neutral', 'menace'] as const) for (const a of ['ask', 'pay', 'help', 'pressure']) {
     let s: R.Subject = { id: 'x', tier: 'simulated', temperament: temp, need: 'debt', scales: { ...people.temperaments[temp].start }, memory: [], turned: false };
-    const evt = R.event(rb, `turn.${a}`);
-    for (let i = 0; i < 4; i++) {
+    const evt = R.event(rb, `turn.${a}`), told = R.resolve(rb, people, evt, { subject: s, band, knows: new Set<R.Know>(['routine', 'need-told']), given: { reach: true } as never }).outcome;
+    if (told === 'small-offer') cells.add(`${a}/undefined/small-offer`); /* engine 0.44.0: told, not heard; every temperament refuses it (rulebook096h H1), so its words name none */ for (let i = 0; i < 4; i++) {
       const r = R.resolve(rb, people, evt, { subject: s, band, knows: ALL, given: { reach: true } as never });
       const reported = r.changes.some((c) => c.do === 'report');
       cells.add(`${a}/${temp}/${reported ? 'suspicious' : r.outcome}`);
@@ -790,9 +790,9 @@ describe('the dialogue', () => {
     for (const cell of cells) {
       const [verb, temp, outcome] = cell.split('/') as [string, (typeof TEMPERAMENTS)[number], string];
       for (const role of ['waitress', 'driver', 'guard']) {
-        if (!allowedTemperaments(people, roleKey[role]!)!.includes(temp)) continue;
+        if (temp as string !== 'undefined' && !allowedTemperaments(people, roleKey[role]!)!.includes(temp)) continue; // 'undefined': the small offer, one line for every temperament
         const e = lookup(t, { event: 'reply', verb, speaker: role, outcome, temperament: temp });
-        if (!e || e.verb !== verb || e.outcome !== outcome || e.temperament !== temp) bad.push(`${verb} ${role} ${temp} ${outcome}`);
+        if (!e || e.verb !== verb || e.outcome !== outcome || String(e.temperament) !== temp) bad.push(`${verb} ${role} ${temp} ${outcome}`);
       }
     }
     expect(bad).toEqual([]);
@@ -1104,7 +1104,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const GENDER = /\b(he|she|him|her|hers|his|himself|herself|man|men|woman|women|boy|girl|sir|madam|lady|lord)\b/i;
     const NARRATION = /\b(will be remembered|was noticed|and they'll remember|remembered)\b|^A kindness/i;
     const rows = t.dialogue.filter((d) => d.event === 'done' && d.verb === 'turn');
-    expect(rows.length).toBe(5);
+    expect(rows.length).toBe(6); // engine 0.44.0: small-offer
     const bad: string[] = [];
     for (const d of rows) for (const l of d.lines) { if (GENDER.test(l)) bad.push(`gendered: ${l}`); if (NARRATION.test(l)) bad.push(`narration: ${l}`); }
     expect(bad).toEqual([]);

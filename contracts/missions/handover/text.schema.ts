@@ -65,8 +65,8 @@ export const HOST_WAYS = ['step-out'] as const;
  *  `step-target` (brief 067, Glyph F9) is the tip H22 "Scroll to switch": stepping through the things under the cursor is a control, not an order, either. */
 /** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
 export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'step-target', 'extract'] as const;
-/** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
-export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
+/** A target's reply: the rulebook's turn outcomes, `suspicious` when the approach is reported; `small-offer` (0.44.0) is refused by everyone, so its words name no temperament. */
+export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious', 'small-offer'] as const;
 /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. `cell-down` (engine 0.34.0, brief 067): every operative is down. */
 export const FAILS = ['abduction-seen-camera', 'cell-down', 'closed-in', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
   'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;

@@ -255,3 +255,42 @@ help-inez-1 and help-inez-2 are untouched: Sky's option 1 changes the rule (a He
 - `bun run hostlogic`: 124 pass, 0 fail.
 - `bun run typecheck`: exit 0.
 - `bun tools/game/words.ts`: schema, text.test.ts, the proofs' words and the name check pass; text.json copied into StreamingAssets/sim.
+
+# Engine 0.44.0 words: the small offer and the full offer (Fable, 2026-11-05)
+
+Engine 0.44.0 (merged at b1087f6e; Motive `briefs/096/motive/help-fearful.md`, Keel `briefs/096/keel/report-help-fearful.md`): before the Scout's Listen a Help is a small offer everyone refuses ($0, 35 s, +1 T, a remembered refusal); after it a Fearful Inez takes the full offer once ($40,000; $50,000 after a refusal) and is turned.
+
+## The conversations (`scenes.conversations`, all `awaiting-sky`)
+- **help-inez-1, "Help Inez, a small offer"** (`outcome: small-offer, helped: false`). The Fixer has only the briefing's word, so she offers "a little money toward what you owe them" and can't say how much. Inez: a month or two, then "I'd owe you as well as the Bureau"; "Please keep your money, and don't come to my tables again"; "Go now, please, before anyone asks me who you are." No money changes hands. 14 lines. Cards: *Too little. Inez refused it.* · *She knows the Fixer's face.* → *Listen first: learn what she owes*.
+- **help-inez-2, "Help Inez, the full offer"** (`outcome: turned, helped: false`). The Fixer knows what she owes and brings enough to clear all of it, handed to her ("It's yours, Miss Nikolaou, and you needn't pay a penny of it back"). The ask (when I telephone, call Arthur over from his door), her fright at Arthur, what happens to him, her reason aloud (something that can't go down a telephone), "not another loan I'll owe you for later?", her offer to warn of trouble coming. Nobody pays at the Bureau or stamps anything. 14 lines. Cards: *Inez took it. She's with us.* → *Call Inez*.
+- **help-inez-2-known, "Help Inez again, the full offer"** (`outcome: turned, helped: true`): new. `helped` is the host's existing flag (an earlier `turn.help.*` log on her, HostConvo.Lines.cs `ConvoQuery`), so a refused small offer already sets it: no new machinery. She opens "You again. I told you before, I won't take a little money from a stranger."; from "A small thing" on it is help-inez-2 word for word. 15 lines.
+- A second small offer (helped true) has no conversation and plays the bubbles below ("I've never seen you before" would be false).
+- Leans: help-inez-1 line 10 *Today*; help-inez-2 line 1 *all*, line 5 *Arthur*; help-inez-2-known line 2 *all*, line 6 *Arthur*.
+- Source for the page: `briefs/096/fable/conversations-sample.json` `help044` (the test holds text.json to it word for word); `conversations-sample.html` shows each beside the second draft Sky read, with a box at the top.
+
+## `turn.help.small-offer` (bubbles, feed, card)
+- `dialogue`: `reply/help/small-offer` for the waitress, the driver (Lukac) and the guard, **one line set a role with no temperament**: everyone refuses a small offer, so the words must not show a temperament either (Motive H1). `done/turn/small-offer` for the Fixer ("Too little, then. I'll come back with more." and two more).
+- `scenes.items`: `approach/help/<role>/small-offer` for the three roles, no temperament, appended at the end of the list (the style loop pins scenes by index). Result (the feed line): "{who} refused a small offer, and will remember it. Listen first."
+- The card's mark in words: `less.alt.outcome.small-offer` "Refuses a small offer: Listen first". If the card needs a refusal of ≤ 4 words (§14 hold), "Too small: Listen first".
+- `silentLogs.turn.help.small-offer`: PLACEHOLDER gone; says where each word lives. `events.done` lists small-offer. text.schema `OUTCOMES` gains `small-offer` (the plate and gain words were already Keel's).
+- The debrief line `small-offer` (rulebook debrief.lines) has no words in text.json, as `refused` and `not-yet` have none: nothing to word here.
+
+## Tests changed
+- `conversations.test.ts`: the three Bureau lines and the `AFTER_044` allowance are gone (no scene may say it now; every scene passes `check` with no exceptions); the three Help scenes are held to the sample word for word; routing (`small-offer` → help-inez-1, turned → help-inez-2, turned after a Help → help-inez-2-known; a second small offer and a Fearful not-yet play no conversation); the old "two visits" test now checks the rulebook's small offer ($0) and the one-visit full offer through the reference evaluator. AGREED is empty: help-inez-2 was the last agreed scene, and it is rewritten.
+- `text.test.ts` (no new lines): `replyCells` adds `help/undefined/small-offer` when the told-only Help is a small offer; the reply and scene coverage accept that temperament-free cell; done turn rows 5 → 6.
+- `tools/dialogue`: the city tables don't carry the small offer yet, so `fixture.ts` `handoverOnly` keeps it out of the generator's reference (D-12, compareToReference); the waitress set in dialogue.test.ts skips it; seven scene sheets with Inez, not six. Sheets in `conversations.ts` rewritten for the three scenes.
+- `tools/style-agent/briefs.ts`: not mine to break, but it was already red: Keel's 0.44.0 took two scenes out of `scenes.items` and the chain's pinned indices moved. The chain now keeps the archived index when it still fits and otherwise finds the same scene by its key, so all 24 committed runs still verify.
+- `tools/game/hostlogic/HostLogic.cs`: TheHelpRoutePlaysEachScene expects listen-inez, help-inez-2, call-inez to 1600 (route-a's call is at 1556 now); the held-moments test reads step 2's line numbers; OtherTemperaments checks the three Help picks.
+
+## Checks
+- `bun test contracts/missions/handover`: 203 pass, 0 fail.
+- `bun test --timeout=60000 tools/style-agent tools/dialogue`: 91 pass, 0 fail. `bun tools/style-agent/cli.ts verify` on all 24 runs: ok.
+- `bun run typecheck`: exit 0.
+- `bun tools/game/words.ts`: pass; text.json copied into StreamingAssets/sim.
+- `bun run hostlogic`: 123 pass, 1 fail: TheHelpRoutePlaysEachScene. Unity's installed engine is still 0.43.0 (`unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll`, and StreamingAssets/sim/rulebook.json has no small-offer), so Help on route A still lands not-yet. It was red before this pass too (it expected two Help scenes). It turns green once Latch installs 0.44.0.
+
+## Left for others
+- **Latch**: install engine 0.44.0 into Unity (DLL + rulebook), then hostlogic's route test; Proof067 (r067-convo-inez-1/-2) and Proof085Scenes (r085help1/2) still expect two Help visits and help-inez-1 as the first visit's scene; HudModel.OutcomeWords for the small-offer mark (`less.alt.outcome.small-offer`).
+- **Glyph**: the refusal mark on the Help card before the Listen.
+- **Motive**: help-inez-1 is written for a Fearful Inez (the schema requires a temperament), and her caution shows before the Listen. It reads as anyone's caution with a stranger who knows her debt, and the bubbles (reply, done, scene) are the same for every temperament; say if it should be flatter.
+- **Fable (later)**: the small offer in the city's dialogue tables (tools/dialogue `requiredCells`, every group), then drop `handoverOnly`.

@@ -10,13 +10,15 @@ import { TEMPERAMENTS } from './rules';
 export const REFERENCE: Record<string, string> = { counter: 'waitress', driver: 'driver', security: 'guard', official: 'councillor' };
 /** The events of text.json every person can speak (the generator's catalogue). */
 export const CATALOGUE = ['reply', 'confirm', 'questioned', 'saw-gunfire', 'gunfire'] as const;
+/** Lines the Handover has that the city's tables don't carry yet: the small offer (engine 0.44.0, brief 096), one refusal for every temperament. Fable's follow-up. */
+export const handoverOnly = (e: { outcome?: string }) => e.outcome === 'small-offer';
 
 export type Reference = { cells: Cell[]; watch: string[]; scenes: SceneT[] };
 
 export function referenceOf(text: Pick<TextFile, 'dialogue' | 'scenes'>, group: string): Reference | undefined {
   const speaker = REFERENCE[group];
   if (!speaker) return undefined;
-  const cells: Cell[] = text.dialogue.filter(e => e.speaker === speaker && (CATALOGUE as readonly string[]).includes(e.event)).map(e => ({
+  const cells: Cell[] = text.dialogue.filter(e => e.speaker === speaker && (CATALOGUE as readonly string[]).includes(e.event) && !handoverOnly(e)).map(e => ({
     event: e.event, ...(e.verb ? { verb: e.verb } : {}), ...(e.outcome ? { outcome: e.outcome } : {}), ...(e.temperament && (TEMPERAMENTS as readonly string[]).includes(e.temperament) ? { temperament: e.temperament } : {}), lines: [...e.lines],
   }));
   const watch = text.dialogue.find(e => e.event === 'read' && e.verb === 'watch' && e.speaker === 'scout' && e.about === speaker)?.lines ?? [];

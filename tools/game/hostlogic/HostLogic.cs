@@ -357,7 +357,7 @@ public class Conversations
         h.RunTo(until); Assert.That(h.Fault, Is.Null, h.Status); return h;
     }
     static List<string> Play(string route, int until) => PlayHost(route, until).ConvoPicks;
-    [Test] public void TheHelpRoutePlaysEachScene() { var p = Play("route-a", 1300); Assert.That(p, Is.EqualTo(new[] { "listen-inez", "help-inez-1", "help-inez-2", "call-inez" }), string.Join(",", p)); }
+    [Test] public void TheHelpRoutePlaysEachScene() { var p = Play("route-a", 1600); Assert.That(p, Is.EqualTo(new[] { "listen-inez", "help-inez-2", "call-inez" }), string.Join(",", p)); } // engine 0.44.0: one Help after the Listen, the full offer
     /// <summary>Sky 2026-11-04 ("couldn't find a way for Fixer to pressure anyone" · "leave for now if it's there after listen"): Pressure needs the need
     /// known (GDD §04), so before the Scout's Listen the ring shows it locked, and once the Listen has landed the Fixer's ring offers it.</summary>
     [Test] public void PressureIsOfferedOnceTheListenLands()
@@ -376,7 +376,7 @@ public class Conversations
         var t = PlayText.Load(); Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "mercenary", Outcome = "turned", Helped = true }), Is.Null);
         Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "listen", About = "waitress", Temperament = "fearful", Turned = true }), Is.Null, "a turned Inez's Listen keeps today's lines");
         Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "ask", About = "waitress", Temperament = "fearful" }), Is.Null);
-        Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "fearful", Outcome = "turned", Helped = true }).Id, Is.EqualTo("help-inez-2"), "the engine's outcome picks the visit");
+        Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "fearful", Outcome = "turned", Helped = false }).Id, Is.EqualTo("help-inez-2"), "the engine's outcome picks the scene"); Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "fearful", Outcome = "turned", Helped = true }).Id, Is.EqualTo("help-inez-2-known"), "after a refused small offer"); Assert.That(t.LookupConversation(new PlayText.ConvQuery { Verb = "help", About = "waitress", Temperament = "fearful", Outcome = "small-offer" }).Id, Is.EqualTo("help-inez-1"));
         Assert.That(t.ClipService, Is.EqualTo("Service door")); Assert.That(t.DoorField, Is.EqualTo("Door {clock}"));
     }
     [Test] public void AnInterruptedActPlaysNoScene()
@@ -396,8 +396,8 @@ public class Conversations
     [Test] public void ALinesHeldMomentsAreReadCutawayOnly()
     {
         var h = Host.Fresh(); var c = h.Text.Conversations.Find(x => x.Id == "listen-inez"); var call = h.Text.Conversations.Find(x => x.Id == "call-inez");
-        Assert.That(c.Beats[6].RevealS, Is.EqualTo(0.9f).Within(0.001f)); Assert.That(c.Beats[6].Line.StartsWith(c.Beats[6].RevealAfter), Is.True); Assert.That(c.Beats[4].Lean, Is.Not.Empty); Assert.That(c.Beats[4].Line.Contains(c.Beats[4].Lean), Is.True);
-        Assert.That(call.Beats[2].HoldBefore, Is.GreaterThan(0f)); Assert.That(call.Beats[7].HoldAfter, Is.GreaterThan(0f)); Assert.That(call.Beats[7].HoldOn, Is.EqualTo("waitress"));
+        Assert.That(c.Beats[10].RevealS, Is.EqualTo(0.9f).Within(0.001f)); Assert.That(c.Beats[10].Line.StartsWith(c.Beats[10].RevealAfter), Is.True); Assert.That(c.Beats[6].Lean, Is.Not.Empty); Assert.That(c.Beats[6].Line.Contains(c.Beats[6].Lean), Is.True); // brief 096 step 2: the full-sentence lines
+        Assert.That(call.Beats[4].HoldBefore, Is.GreaterThan(0f)); Assert.That(call.Beats[9].HoldAfter, Is.GreaterThan(0f)); Assert.That(call.Beats[9].HoldOn, Is.EqualTo("waitress"));
         Assert.That(h.Text.ShortLock("target-unknown"), Is.EqualTo("Can't act on that")); Assert.That(h.Text.ConvNew, Is.Not.Empty); Assert.That(h.Text.ConvVoices.ContainsKey("milena"), Is.True);
         Assert.That(h.Game.Walkers.Exists(w => w.P.Name.StartsWith(h.Text.ConvName("milena") + " ")), Is.True, "the voice has a person of the street to stand in the doorway");
     }

@@ -37,9 +37,12 @@ export function buildBriefs(read: Read, names: string[], sha?: Sha, version: Gui
   };
   const half = ([min, max]: [number, number]): [number, number] => [Math.ceil(min / 2), Math.floor(max / 2)];
 
-  return CHAIN.map(({ scene: index, verb, temperament: t, outcome }) => {
-    const scene = text.scenes.items[index];
-    if (!scene || scene.about !== 'waitress' || scene.verb !== verb || (scene.temperament ?? null) !== t || (outcome && scene.outcome !== outcome))
+  return CHAIN.map(({ scene: pinned, verb, temperament: t, outcome }) => {
+    type S = { about?: string; verb?: string; temperament?: string; outcome?: string };
+    const is = (x: S | undefined) => !!x && x.about === 'waitress' && x.verb === verb && (x.temperament ?? null) === t && (!outcome || x.outcome === outcome);
+    // The index as it was in the archived text.json; when scenes before it have gone (engine 0.44.0 took two out), the same scene by its key.
+    const index = is(text.scenes.items[pinned]) ? pinned : (text.scenes.items as S[]).findIndex(is), scene = text.scenes.items[index];
+    if (!is(scene))
       throw new Error(`Scene ${index} is no longer Inez's ${verb}${t ? ` (${t})` : ''}; update the chain`);
     const lines = range(seconds[verb]!);
     const current: Line[] = scene.variants[0].beats.map((b: { speaker: string; line?: string; ref?: string }) =>

@@ -36,7 +36,7 @@ describe('what a person would say', () => {
   });
   test('every scene with Inez carries who she is', () => {
     const withInez = specs.filter(s => s.speakers.includes('Inez'));
-    expect(withInez.length).toBe(6);
+    expect(withInez.length).toBe(7); // engine 0.44.0: help-inez-2-known
     for (const s of withInez) expect(s.sheet).toContain('never threatens anyone');
   });
   test('the call after Pressure ends with him coming; she tells him later, in play', () => {
