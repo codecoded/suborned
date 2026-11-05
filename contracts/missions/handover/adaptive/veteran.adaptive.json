@@ -12,7 +12,6 @@
   {"id":"fixer-off","op":"fixer","do":"move","to":[7950,-3850],"when":[]},
   {"id":"listen","op":"scout","do":"listen","target":"driver","after":["scout-to-driver"],"when":["free:scout"]},
   {"id":"help-1","op":"fixer","do":"turn","target":"driver","approach":"help","when":["log:scout.listen.heard","!drawn:fixer"],"retry":5},
-  {"id":"help-2","op":"fixer","do":"turn","target":"driver","approach":"help","when":["log:turn.help.not-yet","!drawn:fixer"],"unless":["log:turn.help.turned"],"retry":5},
   {"id":"tech-corner","op":"tech","do":"move","to":[3300,-5050],"when":["done:reroute-early"],"run":true,"why":"after the early Reroute: the patrol away for the shooting","unless":["log:car.disabled","log:car.disabled"]},
   {"id":"enforcer-corner","op":"enforcer","do":"move","to":[3150,-5200],"when":["t>=:1:40"],"run":true,"unless":["log:car.disabled","log:car.disabled"]},
   {"id":"scout-corner","op":"scout","do":"move","to":[3450,-5000],"when":["log:scout.listen.heard","free:scout"],"run":true,"unless":["log:car.disabled","log:car.disabled"]},

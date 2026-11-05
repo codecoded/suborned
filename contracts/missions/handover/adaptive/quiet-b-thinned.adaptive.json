@@ -12,7 +12,6 @@
   {"id":"enforcer-wait","op":"enforcer","do":"move","to":[8700,-2300],"when":["t>=:3:00"],"why":"behind the lookout's post, off Apron Road, for when he comes"},
   {"id":"listen","op":"scout","do":"listen","target":"driver","after":["scout-to-driver"],"when":["free:scout"]},
   {"id":"help-1","op":"fixer","do":"turn","target":"driver","approach":"help","by":"5:20","when":["log:scout.listen.heard"],"retry":5,"why":"Help after the Listen: private, so the pickup camera records nothing (brief 096)"},
-  {"id":"help-2","op":"fixer","do":"turn","target":"driver","approach":"help","by":"5:20","when":["log:turn.help.not-yet"],"unless":["log:turn.help.turned"],"retry":5},
   {"id":"fixer-away","op":"fixer","do":"move","to":[7950,-3850],"when":["done:help-1"],"unless":["log:turn.help.not-yet"]},
   {"id":"scout-to-square","op":"scout","do":"move","to":[725,-4625],"when":["log:scout.listen.heard","free:scout","t<:3:40"],"why":"after the driver's Listen, to the square where the posted three take their posts (about 3:05-3:30), so the Listen on one starts as he posts"},
   {"id":"listen-rival2","op":"scout","do":"listen","target":"rival-2","when":["posted:rival-2","free:scout","log:scout.listen.heard"],"retry":3,"why":"the posted man by the cafe's terrace, at his post (his ring shows '?'); only if it starts by 3:55, so the Scout is still in time for the lookout (his window opens about 4:16 and closes 5:52)","by":"3:55"},

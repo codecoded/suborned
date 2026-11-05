@@ -142,7 +142,7 @@ namespace Suborned.Sim
                 }
             }, StartingAt(-3));
 
-            Add("N93", "—", "Helped and pressured counts as pressured (briefs/014/motive-standing.md rule 3: a threat outweighs a kindness). Inez, made a Mercenary by the start (since engine 0.44.0 one Help turns a Fearful Inez), takes one Help (not yet turned), then the Fixer presses her with nobody in sight (no crowd in this scenario's world). Nothing moves in the mission; between missions her word is −1 and the Help adds nothing: +1.", r =>
+            Add("N93", "—", "Helped and pressured counts as pressured (briefs/014/motive-standing.md rule 3: a threat outweighs a kindness). Inez, made Loyal by the start (since engine 0.44.0 one Help turns a Fearful Inez, since 0.45.0 a Mercenary one; a Loyal person's trust over time still takes two), takes one Help (not yet turned), then the Fixer presses her with nobody in sight (no crowd in this scenario's world). Nothing moves in the mission; between missions her word is −1 and the Help adds nothing: +1.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -157,7 +157,7 @@ namespace Suborned.Sim
                 var l = OneLine(r, next);
                 r.Is(next.Word.Count == 1 && next.Word[0] == (Inez, "menace"), "she tells it as a threat, never as a kindness");
                 r.Eq((l.Word, l.To, l.Cause, l.Who), (-1, 1, "word-pressured", Inez), "+2 → +1, because a pressured person told her ties");
-            }, Knowing(Inez).Also(s => { s.Crowd = false; s.Temperament[Inez] = "mercenary"; }));
+            }, Knowing(Inez).Also(s => { s.Crowd = false; s.Temperament[Inez] = "loyal"; }));
 
             Add("N94", "—", "The start is +2 (Sky 2026-10-16: 'Hero is kinda the default'; briefs/014/motive-standing.md rule 1): one step short of the Hero band, so the mission's prices are neutral (Inez's Help and Pay cards carry no Hero line) and Heat adds nothing from Standing. A mission where nothing moves it ends steady at +2.", r =>
             {

@@ -1025,14 +1025,14 @@ namespace Suborned.Sim
             }, purse);
 
             var merc = new Start(); merc.Temperament[Inez] = "mercenary"; merc.Known[Inez] = new List<string> { "routine", "need", "temperament" }; merc.Known[Driver] = new List<string> { "routine", "need", "temperament" };
-            Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver twice ($40,000 over two visits, brief 085): the second can't be given.", r =>
+            Add("N09b", "—", "The purse the other way (§04): Pay on a Mercenary Inez ($70,000) leaves too little to Help the driver ($50,000 in one visit since engine 0.45.0; two visits of $20,000 before): the Help can't be given.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "pay"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "a Mercenary takes the fee");
                 r.Eq(g.Cash, 30000L, "$70,000 spent");
                 r.To(r.Send(Fixer, "d:Boarding pavilion"));
-                r.Do(Fixer, "turn", Driver, "help"); r.Done(Fixer); r.Eq(g.Cash, 10000L, "the first visit, $20,000"); r.Refused(Fixer, "turn", Driver, "$90,000 spent, $110,000 was asked: the second visit can't be paid", "help");
+                r.Refused(Fixer, "turn", Driver, "$30,000 left, $50,000 asked (engine 0.45.0: one visit, one step dearer): the Help can't be paid", "help"); r.Eq(g.Cash, 30000L, "nothing charged");
             }, merc);
 
             // the refused approach and the one-step-worse line are the rules under test: the start state makes Inez an Idealist (Pay refused,
@@ -1043,7 +1043,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 var q = g.Preview("help", Inez);
                 r.Eq(q.Outcome, "?", "with the need known but not the temperament, Help's outcome shows \"?\"");
-                r.Eq(q.Lines.Find(l => l.Line == "one-more-help")!.Holds, "?", "and its wrong-approach line shows \"?\"");
+                r.Eq(q.Lines.Find(l => l.Line == "worse-once")!.Holds, "?", "and its wrong-approach line shows \"?\" (engine 0.45.0: worse-once, one visit dearer)");
                 r.Eq(g.Preview("ask", Inez).Outcome, "refused", "Ask in a neutral district reads refused: every temperament refuses it");
                 r.Eq(g.Preview("pay", Inez).Reports, "?", "whether she would report a fee shows \"?\" (a Loyal person would, Motive's review: the risk line)");
                 r.Eq(q.Reports, "no", "Help is reported by no temperament in a neutral district");
@@ -1098,7 +1098,7 @@ namespace Suborned.Sim
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
             Pickup059(); // engine 0.32.0 (brief 059): route B at the service door, the rival crew of five, Drive, Sky's S1–S3 both ways (ScenariosPickup059.cs)
-            Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); Misses096(); HelpOffer096(); // engine 0.44.0 (brief 096): the small offer, a Fearful person helped once (ScenariosHelpOffer096.cs); engine 0.43.0 (brief 096): Motive's misses (ScenariosMisses096.cs); engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
+            Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); Misses096(); HelpOffer096(); HelpOnce096(); // engine 0.45.0 (brief 096): a worse Help once, one step dearer (ScenariosHelpOnce096.cs); engine 0.44.0 (brief 096): the small offer, a Fearful person helped once (ScenariosHelpOffer096.cs); engine 0.43.0 (brief 096): Motive's misses (ScenariosMisses096.cs); engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
             // engine 0.40.0 (brief 096): bribes on camera, box-in and the kerbside stop, the parked car (Scenarios*096.cs); engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
             FightBCases(); // engine 0.35.0 (brief 039 B): Covering fire holding Vale, Talk down on the blocker (ScenariosFightB.cs)
             Pace067(); // engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)

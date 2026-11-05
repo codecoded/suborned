@@ -124,9 +124,9 @@ describe('Sky Q4: the wrong approach works one step worse; a refused one fails',
     expect(grid('loyal')).toEqual(['refused', 'worse', 'suits', 'worse']);
   });
 
-  test('the steps: Pay +$20,000, Help one more order, Pressure +1 T; Pay to an Idealist fails with a remembered refusal', () => {
+  test('the steps: Pay +$20,000, Help +$10,000 in one visit (engine 0.45.0), Pressure +1 T; Pay to an Idealist fails with a remembered refusal', () => {
     expect(card('pay', person('fearful')).perOrder.usd).toBe(90000);
-    expect(card('help', person('mercenary')).orders).toBe(2);
+    expect([card('help', person('mercenary')).orders, card('help', person('mercenary')).perOrder.usd]).toEqual([1, 50000]); // brief 096, Motive Q1 (b): the full offer once, one step dearer
     expect(card('pressure', person('idealist')).perOrder.trail).toBe(4);
     const r = act('pay', person('idealist'));
     expect(r.outcome).toBe('refused');
@@ -134,8 +134,10 @@ describe('Sky Q4: the wrong approach works one step worse; a refused one fails',
     expect(r.after.turned).toBe(false);
   });
 
-  test('a worse Help turns on the second order, and each Help is paid and remembered', () => {
-    const one = act('help', person('mercenary'), 'neutral', 100);
+  test('a worse Help turns on its one visit (engine 0.45.0); a Loyal person\'s repeated Help turns on the second, each paid and remembered', () => {
+    const once = act('help', person('mercenary'), 'neutral', 100);
+    expect([once.outcome, once.after.turned, once.after.memory.map((m) => m.act)]).toEqual(['turned', true, ['help']]);
+    const one = act('help', person('loyal'), 'neutral', 100);
     expect(one.outcome).toBe('not-yet');
     const two = act('help', one.after, 'neutral', 200);
     expect(two.outcome).toBe('turned');
@@ -177,8 +179,8 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
   test('a keeper tip gives the need, not the temperament: Help shows its base, "?" lines and outcome', () => {
     const q = card('help', person('mercenary'), 'neutral', new Set<R.Know>(['need']));
     expect(q.outcome).toBe('?');
-    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['small-offer', false], ['one-more-help', '?'], ['visits-share-first', '?'], ['visits-share-later', false], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2; brief 085: ready reads a mood, which a card with none never has
-    expect(q.worst.usd).toBe(40000);
+    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['small-offer', false], ['worse-once', '?'], ['one-more-help', false], ['visits-share-first', false], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2; brief 085: ready reads a mood, which a card with none never has
+    expect(q.worst.usd).toBe(50000); // engine 0.45.0: worse-once raises the price, so the worst case asks it
   });
 
   test('after Watch alone, Pay on Inez shows "?" and fails when tried (Sky 2026-10-15)', () => {

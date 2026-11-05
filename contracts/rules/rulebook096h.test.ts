@@ -49,9 +49,9 @@ describe('brief 096: Help for a Fearful person (Sky option 1)', () => {
     const refused = person('fearful', { memory: [{ act: 'refusal', by: 'fixer', place: 'cafe-entrance', time: 100, witnessed: false }] });
     expect(card(refused, 'neutral', HEARD).perOrder).toEqual({ usd: 50000, s: 35, trail: 2 });
   });
-  test('H6: everyone else unchanged once heard (neutral: Idealist once, Mercenary two visits at $20,000, Loyal twice at $40,000)', () => {
+  test('H6: everyone else once heard (neutral: Idealist once, Mercenary once at $50,000 since engine 0.45.0, Loyal twice at $40,000)', () => {
     const got = TEMPS.map((t) => { const q = card(person(t), 'neutral', HEARD); return [t, q.orders, q.perOrder.usd]; });
-    expect(got).toEqual([['idealist', 1, 40000], ['mercenary', 2, 20000], ['fearful', 1, 40000], ['loyal', 2, 40000]]);
+    expect(got).toEqual([['idealist', 1, 40000], ['mercenary', 1, 50000], ['fearful', 1, 40000], ['loyal', 2, 40000]]);
   });
   test('H5: Fearful, Menace still folds free on Ask', () => {
     const q = R.quote(rb, people, R.event(rb, 'turn.ask'), { subject: person('fearful'), band: 'menace', knows: HEARD });
