@@ -9,7 +9,7 @@ import crown
 from geo import Shape
 
 REGISTRY = {}
-FAMILIES = ("street", "signals", "booths", "ground", "vehicles", "structures", "plants", "plaza", "paving", "skyline", "landmarks", "rooftop", "skycraft", "facades", "lowrise", "roofdeck", "highrise", "alleys", "furnish", "signage", "skyport", "mobility", "robots", "calib", "regen", "atompunk", "horizon", "liner", "civic008", "crossing009", "crossing_opts", "crossing_lens", "cafe_grand", "cafe_upper", "cars020", "cars067", "cars070", "play020", "street020", "ground_set", "restore026", "cabinet", "lamps026", "road_ribbon", "cafe_fascia", "palms026", "pave026", "cafe_testbed", "pavilion", "fountain_tb", "palms_avenue", "palm_lod", "records_open", "robot_attention", "sides", "records_tower", "shopfill", "streamstack", "tram075", "vista075", "skyrail075", "caps075", "crossing079")
+FAMILIES = ("street", "signals", "booths", "ground", "vehicles", "structures", "plants", "plaza", "paving", "skyline", "landmarks", "rooftop", "skycraft", "facades", "lowrise", "roofdeck", "highrise", "alleys", "furnish", "signage", "skyport", "mobility", "robots", "calib", "regen", "atompunk", "horizon", "liner", "civic008", "crossing009", "crossing_opts", "crossing_lens", "cafe_grand", "cafe_upper", "cars020", "cars067", "cars070", "play020", "street020", "ground_set", "restore026", "cabinet", "lamps026", "road_ribbon", "cafe_fascia", "palms026", "pave026", "cafe_testbed", "pavilion", "fountain_tb", "palms_avenue", "palm_lod", "records_open", "robot_attention", "sides", "records_tower", "shopfill", "streamstack", "tram075", "vista075", "skyrail075", "caps075", "crossing079", "hover_camera")
 
 
 def asset(name, cat, bevel=0.005, lod=0, lean=1.0, cap=0, far=None, near=None, floor=None, retired=None, footprint=None):

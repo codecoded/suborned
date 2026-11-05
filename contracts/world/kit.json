@@ -79571,6 +79571,452 @@
    "source": "generated"
   },
   {
+   "id": "HoverCamera",
+   "category": "Signals",
+   "size": [
+    0.5487,
+    0.7002,
+    1.036
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    -0.262
+   ],
+   "front": "+Z",
+   "tris": 2704,
+   "materials": [
+    "DK_Eye_Seafoam",
+    "DK_Eye_Ivory",
+    "DK_Brass_Civic",
+    "DK_Chrome",
+    "DK_Eye_Coral",
+    "DK_Enamel_Charcoal",
+    "DK_Eye_Lens",
+    "DK_Eye_Ring",
+    "DK_Eye_Tally"
+   ],
+   "parts": [
+    "DK_HoverCamera_Lens",
+    "DK_HoverCamera_Ring",
+    "DK_HoverCamera_Tally"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signals/DK_HoverCamera_L1.fbx",
+     "tris": 674,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signals/DK_HoverCamera_L2.fbx",
+     "tris": 159,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Signals/DK_HoverCamera.fbx",
+     "sha256": "1c013ed346cb48c06d367a009efcbc9b8b7cc987ae0cadba5625707f01d4a415",
+     "bytes": 100380
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Seafoam.mat",
+     "sha256": "b6f638f36026e93e72bc2015ae343bad3b8c7725804a7b48a293509476ee713b",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Seafoam.mat.meta",
+     "sha256": "e7d99421539c3fdf402cba7b17e4f3215c6a6d9194a5536628ec3d45511bfe62",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Ivory.mat",
+     "sha256": "353a49e776ac402e19346dc2cdfc9ccb964e0bf15aee4411b8878f07adb22d3f",
+     "bytes": 4037
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Ivory.mat.meta",
+     "sha256": "377253716606ba4a315da58a2f453cb858eb5d11fddb294f18e6b460032eeedb",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Coral.mat",
+     "sha256": "943fbb0c067389acf6612106cfc9f4dae4b2da37e673bf62856bcf7fe65f9e69",
+     "bytes": 4040
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Coral.mat.meta",
+     "sha256": "4759bfd4daafbe9b5a7630507ec0b5ad0395447e324465980520951e47c58d44",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Charcoal.mat",
+     "sha256": "4f538c712a86dec1250e31fee5c04576ca35c6ece211b326220f7057e560086a",
+     "bytes": 3982
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
+     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Lens.mat",
+     "sha256": "5a37832e921992d5c4b61e941751c01ee3e11ab84a430e12d96d6e2c0f20cf0d",
+     "bytes": 3925
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Lens.mat.meta",
+     "sha256": "8e41e56e83f26410b5be5ff81ca2a931c63b1f499f37cee797fa417de88c72fd",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Ring.mat",
+     "sha256": "4469ceae81b8bdf622f504b87661fd5610053bfd6e2998900a78f18b4ac70552",
+     "bytes": 3946
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Ring.mat.meta",
+     "sha256": "db81d1331f268096fa6f8b71957bcec498d58211f04730195410688b1d6915f4",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Tally.mat",
+     "sha256": "55d94f5218c1654c82524830cd2c36367e20ca00dba3ac25e17c44dca1e0e5b4",
+     "bytes": 3934
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Tally.mat.meta",
+     "sha256": "18c55226696c574a1e2b97286a39c9f3b6cc4c30b377cb2c3e25321686f5b971",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_HoverCamera_L1.fbx",
+     "sha256": "ab8314253a2541c268e8f19900783f3797bb39ba446bab2ebb2d30bd2cddee41",
+     "bytes": 57948
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_HoverCamera_L2.fbx",
+     "sha256": "de3c2e6529ca7cf3efe39d15b76adaac17a9f4d714008793b5adccdf541e8861",
+     "bytes": 38396
+    }
+   ],
+   "tags": {
+    "use": [
+     "street"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "candidate",
+   "source": "generated"
+  },
+  {
+   "id": "HoverCamera_Cradle",
+   "category": "Signals",
+   "size": [
+    0.564,
+    0.64,
+    1.122
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    0.561
+   ],
+   "front": "+Z",
+   "tris": 1842,
+   "materials": [
+    "DK_Eye_Seafoam",
+    "DK_Eye_Ivory",
+    "DK_Brass_Civic",
+    "DK_Chrome"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signals/DK_HoverCamera_Cradle_L1.fbx",
+     "tris": 459,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signals/DK_HoverCamera_Cradle_L2.fbx",
+     "tris": 103,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Signals/DK_HoverCamera_Cradle.fbx",
+     "sha256": "9583809a188590ea07748986dc42a9a985da7e8753bbe339a68f9a41c1771e99",
+     "bytes": 61244
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Seafoam.mat",
+     "sha256": "b6f638f36026e93e72bc2015ae343bad3b8c7725804a7b48a293509476ee713b",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Seafoam.mat.meta",
+     "sha256": "e7d99421539c3fdf402cba7b17e4f3215c6a6d9194a5536628ec3d45511bfe62",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Eye_Ivory.mat",
+     "sha256": "353a49e776ac402e19346dc2cdfc9ccb964e0bf15aee4411b8878f07adb22d3f",
+     "bytes": 4037
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Eye_Ivory.mat.meta",
+     "sha256": "377253716606ba4a315da58a2f453cb858eb5d11fddb294f18e6b460032eeedb",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_HoverCamera_Cradle_L1.fbx",
+     "sha256": "2117d9620ec75fdbcd189feb52cc3799e7c37d7f78fd51b9fc2202cf9677cdf0",
+     "bytes": 35260
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_HoverCamera_Cradle_L2.fbx",
+     "sha256": "67c9a866f69df53bc7085ea47cb77d956639969dcdbbb499e8fb87d5886658b3",
+     "bytes": 23308
+    }
+   ],
+   "tags": {
+    "use": [
+     "street"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "candidate",
+   "source": "generated"
+  },
+  {
    "id": "InlayArc_R2_W06",
    "category": "Ground",
    "size": [
