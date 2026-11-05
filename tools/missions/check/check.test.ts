@@ -67,7 +67,7 @@ describe('variations', () => {
   test('without a contact drops exactly the orders that work through it', () => {
     expect(contactsOf(a, ['waitress', 'driver'])).toEqual(['waitress']);
     const w = withoutContact(a, 'waitress');
-    expect(a.orders.length - w.orders.length).toBe(5); // watch, listen, turn (help) twice (r016: a Fearful Inez, §04), call
+    expect(a.orders.length - w.orders.length).toBe(4); // watch, listen, turn (help), call (engine 0.44.0, brief 096: a Fearful Inez takes the full offer once)
     expect(w.orders.some(o => o.target === 'waitress')).toBe(false);
     expect(withoutContact(a, 'driver').orders).toEqual(a.orders);
   });
@@ -277,6 +277,7 @@ describe('the §09 conditions, each with a failing example', () => {
 const KNOWN_RED = [
   'R-7' /* Waymark and Pulse: quiet-a's call and enter, quiet-g's beside-guard windows under 30 s at a person's pace (briefs/096/motive/misses.json) */,
   'B-2 thin-quiet', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', 'B-11 quiet-b', 'B-14', 'B-16 drive-early' /* engine 0.43.0 (brief 096): Motive's bands, reports */,
+  'B-8 quiet-a', 'B-8 prepared-loud' /* engine 0.44.0 (brief 096, one Help on Inez): route A's wait for the rival car; Motive and Sky, Q3 in briefs/096/keel/report-help-fearful.md */,
 ]; // engine 0.43.0 (Keel for Waymark): MC-0 and MC-13 green (fight-loud-wait-yard and careless-scout-idles-pickup recomposed on the lend, the lookout misled), MC-11 and MC-14 read car.unboxed under the block (blocker.ts); the lend bands (L96) and B-7 quiet-a in band
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.
