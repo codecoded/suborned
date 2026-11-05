@@ -45,7 +45,7 @@ namespace Suborned.Sim
             string why = $"needs {Describe(c)}";
             switch (c.K)
             {
-                case "known": return No("needs-" + c.S("what"), why);
+                case "known": return No(c.S("what") == "need-told" ? "needs-need" : "needs-" + c.S("what"), why); // engine 0.44.0: Help needs the need told (needs-need, "Listen first")
                 case "requires": { var req = R.ApproachRequires(c.S("approach")); return No(req == "need" ? "needs-need" : req == "temperament" ? "needs-temperament" : "needs-routine", why); }
                 case "leverage": return No("no-leverage", why);
                 case "need-met-by": return No("no-act-need", why);
@@ -547,7 +547,7 @@ namespace Suborned.Sim
             q.Outcome = p.KTemperament ? FirstOutcome(ev, x).Id : Agree(p, t => FirstOutcome(ev, WithTemperament(x, t)).Id);
             q.Event = ev.Id;
             if ((ev.Id.StartsWith("scout.", StringComparison.Ordinal) || ev.Id == "cell.watch") && !ScoutTeaches(ev, p)) q.Refused = ev.Id == "scout.listen" ? "already-heard" : WatchRefusal(p);
-            QuoteMood(q, ev, p); // brief 054 §4.3 // the same test Issue refuses by
+            QuoteMood(q, ev, p); QuoteAlone(q, ev, x); // brief 054 §4.3; engine 0.44.0: a line that stands alone (GameHelpOffer.cs) // the same test Issue refuses by
             q.Leverage = ev.Id == "turn.pressure" && p.Knows("secret");
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal) && p.KnownRefused.Contains(ev.Id.Substring(5))) q.Outcome = "refused"; // a refusal seen: ✗
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal))

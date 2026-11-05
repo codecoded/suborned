@@ -93,15 +93,15 @@ describe('the rules', () => {
 });
 
 describe('the situations are derived from the rulebook', () => {
-  test('30 replies in all: approach × temperament × outcome, and the Handover\'s waitress has exactly the cells of the four temperaments', () => {
+  test('29 replies in all: approach × temperament × outcome, and the Handover\'s waitress has exactly the cells of the four temperaments', () => {
     const cells = replyCells(T.rb, T.prules);
-    expect(cells.length).toBe(30);
+    expect(cells.length).toBe(29); // engine 0.44.0 (brief 096): help/fearful/not-yet is gone (a Fearful person takes the full offer once)
     const have = new Set(text.dialogue.filter(e => e.speaker === 'waitress' && e.event === 'reply').map(e => `${e.verb}/${e.temperament}/${e.outcome}`));
     expect([...have].sort()).toEqual(cells.map(c => `${c.verb}/${c.temperament}/${c.outcome}`).sort());
   });
   test('a group\'s cells: its temperaments\' replies and confirmations, questioning, gunfire; a three-temperament group has fewer', () => {
-    expect(requiredCells(T.dr, T.rb, T.prules, 'counter').length).toBe(30 + 4 + 3 + 2);
-    expect(requiredCells(T.dr, T.rb, T.prules, 'security').length).toBe(20 + 3 + 3 + 2);
+    expect(requiredCells(T.dr, T.rb, T.prules, 'counter').length).toBe(29 + 4 + 3 + 2); // engine 0.44.0: 29 replies
+    expect(requiredCells(T.dr, T.rb, T.prules, 'security').length).toBe(19 + 3 + 3 + 2); // engine 0.44.0: its Fearful help/not-yet is gone
     expect(requiredCells(T.dr, T.rb, T.prules, 'counter').some(k => k.event === 'reply' && k.verb === 'pay' && k.outcome === 'turned' && k.temperament === 'idealist')).toBe(false); // an Idealist refuses a bribe
   });
   test('the scenes asked for: Listen by tie (and none) × temperament, the lovers\' call and Watch', () => {

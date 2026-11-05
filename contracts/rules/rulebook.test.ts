@@ -144,7 +144,7 @@ describe('Sky Q4: the wrong approach works one step worse; a refused one fails',
   });
 
   test('§04 temperament × standing, as the GDD words it', () => {
-    expect(card('help', person('fearful'), 'hero').orders).toBe(2); // Fearful, Hero: needs Help ×2
+    expect(card('help', person('fearful'), 'hero').orders).toBe(1); // Fearful, Hero: hesitates; since engine 0.44.0 (brief 096, Sky's option 1) the full offer after the Listen turns her once (rulebook096h.test.ts)
     expect(card('help', person('loyal'), 'hero').orders).toBe(2); // Loyal, Hero: turns after repeated Help
     expect(card('pay', person('mercenary'), 'hero').perOrder.usd).toBe(90000); // Mercenary, Hero: overcharges
     expect(card('pay', person('mercenary'), 'menace').perOrder.usd).toBe(50000); // Mercenary, Menace: discount
@@ -177,7 +177,7 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
   test('a keeper tip gives the need, not the temperament: Help shows its base, "?" lines and outcome', () => {
     const q = card('help', person('mercenary'), 'neutral', new Set<R.Know>(['need']));
     expect(q.outcome).toBe('?');
-    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['visits-share-first', '?'], ['visits-share-later', false], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2; brief 085: ready reads a mood, which a card with none never has
+    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['small-offer', false], ['one-more-help', '?'], ['visits-share-first', '?'], ['visits-share-later', false], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2; brief 085: ready reads a mood, which a card with none never has
     expect(q.worst.usd).toBe(40000);
   });
 

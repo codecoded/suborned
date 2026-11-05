@@ -33,9 +33,9 @@ namespace Suborned.Sim
         public Person? Lover;                       // the other end of a lover tie, when both are cast
         public int Summoned;                        // times this person came to a lover's call this shift
         public readonly SortedSet<string> KnownRefused = new SortedSet<string>(StringComparer.Ordinal); // approaches the cell saw this person refuse: the card's ✗
-        public string Suspected = "";              // a need the briefing names (§07 cast: Inez in debt, the driver needs cash): shown as suspected, unlocks nothing
+        public string Suspected = "";              // a need the briefing names (§07 cast: Inez in debt, the driver needs cash): shown as suspected; since engine 0.44.0 it opens Help as a small offer (known need-told), refused
         public string Place = ""; // the place they stand at for the mission (memory's place)
-        public bool Knows(string what) => what == "routine" ? KRoutine : what == "need" ? KNeed : what == "temperament" ? KTemperament : what == "refused" ? KnownRefused.Count > 0 : what == "secret" ? KSecret && Secret.Length > 0 : throw new FormatException($"knowledge '{what}'");
+        public bool Knows(string what) => what == "routine" ? KRoutine : what == "need" ? KNeed : what == "temperament" ? KTemperament : what == "refused" ? KnownRefused.Count > 0 : what == "secret" ? KSecret && Secret.Length > 0 : what == "need-told" ? KNeed || Suspected.Length > 0 : throw new FormatException($"knowledge '{what}'"); // need-told (engine 0.44.0): the briefing's word, or heard
         /// <summary>Learn a fact. A secret learned on one lover is learned on both, with the tie (people.rules secrets.affair).</summary>
         public void Learn(string what)
         {

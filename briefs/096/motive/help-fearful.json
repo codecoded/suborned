@@ -1,0 +1,43 @@
+{
+  "schema": "suborned.motive.values/1",
+  "id": "096-help-fearful",
+  "by": "Motive (systems designer)",
+  "date": "2026-11-05",
+  "for": "Keel (engine 0.44.0); Waymark (plans); Latch and Glyph (the Help card); Fable (words); Sky through Aster for Q1-Q2",
+  "on": "engine 0.43.0 (work/096 at 46a3a116)",
+  "page": "briefs/096/motive/help-fearful.md",
+  "sky": "2026-11-05, on paying Inez: \"I think 1 is fine for now\" (Aster's option 1: knowledge unlocks the full offer)",
+  "tags": "[S] starting values, tuned by playtest. H1-H8 are decided (Sky's call); Q1-Q2 are not built.",
+  "rules": {
+    "H1-small-offer": {
+      "v": "Help on a person whose need is told but not heard (Person.Suspected set, Knows(need) false) is taken as a small offer; everyone refuses it. With nothing told, Help stays locked needs-need.",
+      "price": { "usd": 0, "s": "p:approaches.help.timeS (35)", "trail": "p:approaches.help.trail (+1)", "alone": "the line alone: no other price line counts" },
+      "outcome": "small-offer: charge s and trail; remember refusal (fixer-face, place-time; refused-before +$10,000 +1 T on later Help and Pay, +1 T on Pressure; Ask closed); debrief small-offer. No learn refused (Help is not marked ✗).",
+      "order": "after kept, before refused: definite on the card in every band",
+      "why": "Sky: she wouldn't take the first payment. One rule for every temperament, so the card before the Listen leaks no temperament (§04 preview)."
+    },
+    "H2-full-offer": {
+      "v": "After the Listen, Help on a Fearful person is one visit: $40,000, 35 s, +1 T, turned, in every band (one-more-help, visits-share-first, visits-share-later leave the Fearful out).",
+      "why": "Sky: once Listen has run, Help is clear the whole loan and turns her first time."
+    },
+    "H3-card": {
+      "before-listen": "$0 · 35 s · +1 T · ✗ refuses a small offer: Listen first (Quote.Outcome small-offer; line small-offer holds; WorstUsd 0)",
+      "after-listen": "Fearful: $40,000 · 35 s · +1 T · turns (Quote.Outcome turned, Orders 1); with a remembered refusal +$10,000, +1 T"
+    },
+    "H4-other-fearful": "Inez is the only Fearful person the Handover can turn (the four cast roles; Arthur, Lukac, Popovic are Mercenary). The 18 other Fearful people in sim/data/handover.people.json are crowd. The rule is general; a scenario makes the driver Fearful by the start state.",
+    "H5-menace": "Fearful, Menace: Ask folds free, unchanged. Help follows H1-H2.",
+    "H6-others": "Unchanged after the Listen (Idealist one Help; Mercenary two visits at $20,000; Loyal two Helps; Menace refusals and reports). Before it: a told need's Help is a refused small offer instead of a lock.",
+    "H7-purse": { "help-inez+help-lukac": 80000, "small-offer-first+help-lukac": 90000, "pay-lukac+help-inez": 110000, "fits": 100000 },
+    "H8-bands": "route A's informed plans one Help shorter (35 s, -1 T); B and G unchanged; Keel measures 200 seeds a plan"
+  },
+  "words-for-fable": {
+    "log": "turn.help.small-offer (the feed: she won't take a small offer; Listen first)",
+    "outcome": "small-offer (the plate and the card's ✗ words)",
+    "debrief": "small-offer (who, approach)",
+    "scenes": "Inez refuses a small offer; the full offer that lands (one visit)"
+  },
+  "questions": {
+    "Q1": { "q": "Lukac (Mercenary) still takes Help as two visits", "options": ["leave for now (built)", "one visit after the Listen at $50,000", "the second visit unlocked by another act"], "recommend": "one visit at $50,000, a later round" },
+    "Q2": { "q": "the Loyal's two Helps", "options": ["leave (built)", "the second Help in a later mission", "one Help at a higher price"], "recommend": "leave for now; between missions once the campaign carries contacts" }
+  }
+}

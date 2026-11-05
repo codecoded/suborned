@@ -784,7 +784,7 @@ describe('the dialogue', () => {
 
   test('every reply the rulebook can produce has a line from each Handover role the temperament allows', () => {
     const cells = replyCells();
-    expect(cells.size).toBeGreaterThanOrEqual(30);
+    expect(cells.size).toBeGreaterThanOrEqual(29); // engine 0.44.0 (brief 096): help/fearful/not-yet is gone (a Fearful person takes the full offer once)
     const roleKey: Record<string, string> = { waitress: 'diner', driver: 'official-driver', guard: 'guard' };
     const bad: string[] = [];
     for (const cell of cells) {

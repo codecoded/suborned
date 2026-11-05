@@ -31,11 +31,11 @@ namespace Suborned.Sim
     }
     public sealed class Line
     {
-        public readonly string Id; public readonly List<Cond> When = new List<Cond>(); public readonly string? Usd, S, Trail, Orders;
+        public readonly string Id; public readonly List<Cond> When = new List<Cond>(); public readonly string? Usd, S, Trail, Orders; public readonly bool Alone; // alone (engine 0.44.0): when it holds, the card is this line only
         public long UsdV, SV, TrailV, OrdersV; // resolved at load
         public Line(JNode n)
         {
-            n.Only("line", "when", "usd", "s", "trail", "orders");
+            n.Only("line", "when", "usd", "s", "trail", "orders", "alone"); Alone = n.Opt("alone") is JNode al && al.Bool();
             Id = n["line"].Str();
             if (n.Opt("when") is JNode w) foreach (var c in w.Items) When.Add(new Cond(c));
             Usd = n.Opt("usd")?.Str(); S = n.Opt("s")?.Str(); Trail = n.Opt("trail")?.Str(); Orders = n.Opt("orders")?.Str();
@@ -100,7 +100,7 @@ namespace Suborned.Sim
     {
         public static readonly string[] ScaleNames = { "bravery", "resentment", "fear", "loyalty" };
         public const int Bravery = 0, Resentment = 1, Fear = 2, Loyalty = 3;
-        static readonly string[] Bands = { "hero", "neutral", "menace" }, Fits = { "suits", "worse", "refused" }, CondFits = { "suits", "worse", "refused", "ready" }, Knows = { "routine", "need", "temperament", "refused", "secret" };
+        static readonly string[] Bands = { "hero", "neutral", "menace" }, Fits = { "suits", "worse", "refused" }, CondFits = { "suits", "worse", "refused", "ready" }, Knows = { "routine", "need", "temperament", "refused", "secret", "need-told" }; // need-told: engine 0.44.0 (turn.help small-offer)
 
         static readonly Dictionary<string, string[]> CondKeys = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {

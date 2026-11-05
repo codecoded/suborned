@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez twice (the cast's Inez is Fearful, §04; two visits at $20,000, $40,000 in all) and has her call the guard away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0.",
+ "note": "Route A, the front door, quiet (GDD v0.26.0 §07; Keel N11), fight it out (brief 018 §5). The Scout watches Inez and listens; the Tech loops the entrance camera at 1:25 (live 1:45 to 3:45, so it still runs at the Enter) and takes no Reroute (brief 067 A: the patrol sweeps the service yard, not the door; informed play doesn't pay 1 T for nothing); the Fixer helps Inez once after the Listen (engine 0.44.0, brief 096, Sky's option 1: the full offer, $40,000; it was two visits of $20,000) and has her call the guard, once the rival car is seen coming, away; the Enforcer enters while the door is unwatched and comes out by the service door with Vale. He holds Vale at (20.0, -65.0), 20.4 m from the car and 20.8 m or more from every ambush spot (Motive's ra-h3, briefs/067/motive.md §1.5), beyond the pistol's 16 m, so the cell's fire springs the ambush; the three fight the rival crew until it breaks (fight.over), then he boards with Vale and the car leaves at once; the three, on a calm street, walk out at no cost. c038 (Waymark, engine 0.34.1): the cell walks at 1.8 m/s and its runs are noticed, never an Alert, so route A ends at Alert 0.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -72,21 +72,17 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help",
-   "why": "the first Help: the card after Listen reads her Fearful, so it says \"not yet\" (§04: a Fearful person needs Help ×2, two visits at $20,000, $40,000 in all)"
-  },
-  {
-   "op": "fixer",
-   "do": "turn",
-   "target": "waitress",
-   "approach": "help",
+   "when": "scout.listen.heard",
    "label": "turned",
-   "why": "the second Help: she turns"
+   "why": "the one Help: the card after Listen reads her Fearful and says it turns her; given once the Listen has landed, since before it Help is only the small offer she refuses (engine 0.44.0, brief 096, Sky's option 1: the full offer after the Listen, $40,000, one visit; it was two visits of $20,000)"
   },
   {
    "op": "fixer",
    "do": "call",
    "target": "waitress",
-   "label": "call"
+   "label": "call",
+   "when": "rivals.coming",
+   "why": "once the rival car is seen coming (engine 0.44.0, brief 096: one Help turns Inez 35 s sooner; called at once Popovic comes out as the rival car turns in, so a prepared player waits for it and he comes out to a posted crew, as the Pressure pair has since c038)"
   },
   {
    "op": "enforcer",

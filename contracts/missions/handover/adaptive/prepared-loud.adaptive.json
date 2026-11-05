@@ -17,7 +17,6 @@
   {"id":"watch-inez","op":"scout","do":"watch","target":"waitress","after":["scout-to-inez"],"when":["free:scout"]},
   {"id":"listen-inez","op":"scout","do":"listen","target":"waitress","when":["log:scout.watch.watched"]},
   {"id":"help-1","op":"fixer","do":"turn","target":"waitress","approach":"help","when":["log:scout.listen.heard"]},
-  {"id":"help-2","op":"fixer","do":"turn","target":"waitress","approach":"help","when":["log:turn.help.not-yet"],"unless":["log:turn.help.turned"]},
   {"id":"scout-to-rivals","op":"scout","do":"move","to":[8600,-3400],"run":true,"when":["log:scout.listen.heard"]},
   {"id":"reroute-car","op":"tech","do":"reroute","target":"patrol","after":["tech-to-cabinet"],"when":["free:tech"],"retry":3,"why":"brief 096 (attention.parked): the car stands on the service drive from about 0:40, a loiterer to the yard's patrol: the first Reroute sends the patrol away while it does (to about 3:00)"},
   {"id":"reroute","op":"tech","do":"reroute","target":"patrol","after":["reroute-car"],"when":["log:rivals.coming","free:tech"],"retry":3},

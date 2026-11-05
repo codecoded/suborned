@@ -231,7 +231,8 @@ describe('which scene plays', () => {
   });
   test('every act a conversation covers still has today\'s scene for bubbles', () => {
     expect(lookupScene(t, { kind: 'overheard', verb: 'listen', about: 'waitress', temperament: 'fearful' })?.about).toBe('waitress');
-    for (const [verb, outcome] of [['help', 'not-yet'], ['help', 'turned'], ['pressure', 'turned']] as const) expect(lookupScene(t, { kind: 'approach', verb, about: 'waitress', outcome, temperament: 'fearful' })?.outcome).toBe(outcome);
+    for (const [verb, outcome] of [['help', 'turned'], ['pressure', 'turned']] as const) // engine 0.44.0 (brief 096): a Fearful Inez's Help never says not yet; help-inez-1 waits for Fable's small-offer scene
+    expect(lookupScene(t, { kind: 'approach', verb, about: 'waitress', outcome, temperament: 'fearful' })?.outcome).toBe(outcome);
     expect(lookupScene(t, { kind: 'approach', verb: 'pay', about: 'driver', outcome: 'turned', temperament: 'mercenary' })?.outcome).toBe('turned');
     expect(lookupScene(t, { kind: 'call', verb: 'call', about: 'waitress', temperament: 'fearful' })?.temperament).toBe('fearful');
   });
