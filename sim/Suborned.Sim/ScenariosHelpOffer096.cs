@@ -62,7 +62,7 @@ namespace Suborned.Sim
             });
 
             var lukacTold = new Start(); lukacTold.Known[Driver] = new List<string> { "routine", "need", "temperament" };
-            Add("096-HELP-3", "096", "H1 + H7: the small offer first leaves a remembered refusal, so the full offer after the Listen is $50,000 and +2 T (refused-before), and still turns her once; the driver then helped (two visits, Mercenary) leaves $10,000: the purse fits.", r =>
+            Add("096-HELP-3", "096", "H1 + H7: the small offer first leaves a remembered refusal, so the full offer after the Listen is $50,000 and +2 T (refused-before), and still turns her once; the driver then helped (one visit at $50,000 since engine 0.45.0) leaves $0: the purse fits, exactly.", r =>
             {
                 var g = r.G;
                 SmallOffer(r, Inez, g.Inez, "d:Courtyard");
@@ -74,8 +74,8 @@ namespace Suborned.Sim
                 r.Is(g.Inez.Turned, "she turns on the full offer");
                 r.Eq((g.Cash, g.Trail), (50000L, 3), "$50,000 left; +1 T for the small offer and +2 T for the full");
                 r.To(r.Send(Fixer, "d:Boarding pavilion")); HelpUntilTurned(r, Driver);
-                r.Is(g.Driver.Turned, "the driver turned (two visits: Help is worse for a Mercenary, unchanged)");
-                r.Eq(g.Cash, 10000L, "$10,000 left: Inez $50,000 + the driver $40,000 fit the $100,000 purse");
+                r.Is(g.Driver.Turned, "the driver turned (one visit, one step dearer: engine 0.45.0)");
+                r.Eq(g.Cash, 0L, "$0 left: Inez $50,000 + the driver $50,000 fit the $100,000 purse, exactly");
             }, lukacTold);
 
             var fearfulDriver = new Start(); fearfulDriver.Temperament[Driver] = "fearful";

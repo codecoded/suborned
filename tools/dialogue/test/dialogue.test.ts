@@ -93,15 +93,15 @@ describe('the rules', () => {
 });
 
 describe('the situations are derived from the rulebook', () => {
-  test('29 replies in all: approach × temperament × outcome, and the Handover\'s waitress has exactly the cells of the four temperaments', () => {
+  test('28 replies in all: approach × temperament × outcome, and the Handover\'s waitress has exactly the cells of the four temperaments', () => {
     const cells = replyCells(T.rb, T.prules);
-    expect(cells.length).toBe(29); // engine 0.44.0 (brief 096): help/fearful/not-yet is gone (a Fearful person takes the full offer once)
+    expect(cells.length).toBe(28); // engine 0.44.0 (brief 096): help/fearful/not-yet is gone (a Fearful person takes the full offer once); 0.45.0: help/mercenary/not-yet too (one visit, one step dearer)
     const have = new Set(text.dialogue.filter(e => e.speaker === 'waitress' && e.event === 'reply' && e.outcome !== 'small-offer').map(e => `${e.verb}/${e.temperament}/${e.outcome}`)); // engine 0.44.0: the small offer is one line for every temperament (text.test.ts)
     expect([...have].sort()).toEqual(cells.map(c => `${c.verb}/${c.temperament}/${c.outcome}`).sort());
   });
   test('a group\'s cells: its temperaments\' replies and confirmations, questioning, gunfire; a three-temperament group has fewer', () => {
-    expect(requiredCells(T.dr, T.rb, T.prules, 'counter').length).toBe(29 + 4 + 3 + 2); // engine 0.44.0: 29 replies
-    expect(requiredCells(T.dr, T.rb, T.prules, 'security').length).toBe(19 + 3 + 3 + 2); // engine 0.44.0: its Fearful help/not-yet is gone
+    expect(requiredCells(T.dr, T.rb, T.prules, 'counter').length).toBe(28 + 4 + 3 + 2); // engine 0.44.0: 29 replies; 0.45.0: 28
+    expect(requiredCells(T.dr, T.rb, T.prules, 'security').length).toBe(18 + 3 + 3 + 2); // engine 0.44.0: its Fearful help/not-yet is gone; 0.45.0: its Mercenary help/not-yet too
     expect(requiredCells(T.dr, T.rb, T.prules, 'counter').some(k => k.event === 'reply' && k.verb === 'pay' && k.outcome === 'turned' && k.temperament === 'idealist')).toBe(false); // an Idealist refuses a bribe
   });
   test('the scenes asked for: Listen by tie (and none) × temperament, the lovers\' call and Watch', () => {
@@ -423,7 +423,7 @@ describe('the Handover bound to generated people', () => {
     const { entries, problems } = bindHandover(lines, binding);
     expect(problems).toEqual([]);
     for (const e of entries) expect(Entry.safeParse(e).success, JSON.stringify(e)).toBe(true);
-    expect(entries.filter(e => e.speaker === 'waitress' && e.event === 'reply').length).toBeGreaterThanOrEqual(6);
+    expect(entries.filter(e => e.speaker === 'waitress' && e.event === 'reply').length).toBeGreaterThanOrEqual(5); // engine 0.45.0: the Mercenary's not-yet Help is gone
     expect(entries.some(e => e.speaker === 'guard' && e.event === 'summon-refused' && e.outcome === 'summon-busy')).toBe(true);
     expect(entries.some(e => e.speaker === 'waitress' && e.event === 'summon-refused' && e.outcome === 'summon-busy')).toBe(true);
     expect(entries.some(e => e.speaker === 'waitress' && e.event === 'guard-recalled')).toBe(true);

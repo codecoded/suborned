@@ -128,9 +128,10 @@ describe('against another cast', () => {
 
 describe('what the rules say of an approach', () => {
   const rules = parseRules(readFileSync('contracts/people/people.rules.json', 'utf8')), rb = JSON.parse(readFileSync('contracts/rules/rulebook.json', 'utf8'));
-  test('Help on a fearful person works one step worse (one more Help), not refused; Pressure suits them', () => {
+  test('Help on a fearful person works one step worse, not refused (her step is the small offer: one Help after the Listen, engine 0.44.0); a Mercenary one visit, one step dearer (0.45.0); Pressure suits them', () => {
     const rows = approachRows(rules, rb, 'fearful', 'debt'), help = rows.find(r => r.a === 'help')!, pressure = rows.find(r => r.a === 'pressure')!;
-    expect(help.fit).toBe('worse'); expect(help.works).toBe(true); expect(help.orders).toBe(2); expect(help.total.usd).toBe(80000);
+    expect(help.fit).toBe('worse'); expect(help.works).toBe(true); expect(help.orders).toBe(1); expect(help.total.usd).toBe(40000);
+    const merc = approachRows(rules, rb, 'mercenary', 'cash').find(r => r.a === 'help')!; expect([merc.orders, merc.total.usd]).toEqual([1, 50000]);
     expect(pressure.fit).toBe('suits');
   });
   test('an Idealist refuses Pay; a Loyal person takes a second Help; Ask is refused cold', () => {

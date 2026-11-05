@@ -10,7 +10,6 @@
   {"id":"fixer-off","op":"fixer","do":"move","to":[7950,-3850],"why":"out of the pickup camera's sight","when":[]},
   {"id":"listen","op":"scout","do":"listen","target":"driver","after":["scout-to-driver"],"when":["free:scout"]},
   {"id":"help-1","op":"fixer","do":"turn","target":"driver","approach":"help","by":"5:20","when":["log:scout.listen.heard"],"retry":5,"why":"Help after the Listen: private, so the pickup camera records nothing (brief 096)"},
-  {"id":"help-2","op":"fixer","do":"turn","target":"driver","approach":"help","by":"5:20","when":["log:turn.help.not-yet"],"unless":["log:turn.help.turned"],"retry":5},
   {"id":"fixer-away","op":"fixer","do":"move","to":[7950,-3850],"when":["done:help-1"],"unless":["log:turn.help.not-yet"]},
   {"id":"tech-to-car","op":"tech","do":"move","to":"d:Getaway bay","when":["t>=:1:30"],"run":true},
   {"id":"tech-in","op":"tech","do":"board","target":"car","when":["t>=:1:50"],"retry":2},

@@ -76,7 +76,7 @@ namespace Suborned.Sim
                 r.Eq(g.GuardAwayUntil - g.LureTick, 2 * g.VisitWalkTicks + g.R.SummonStayS * 10, "there and back at his walk, and the stay");
             }, Reads("mercenary"));
 
-            Add("P85-MIXED", "085", "Helped once, then pressured (N93): she remembers the Pressure, so the call is pressed. A Mercenary Inez by the start (engine 0.44.0: one Help turns a Fearful one).", r =>
+            Add("P85-MIXED", "085", "Helped once, then pressured (N93): she remembers the Pressure, so the call is pressed. A Loyal Inez by the start (engine 0.44.0: one Help turns a Fearful one; 0.45.0 a Mercenary one; trust over time still takes two).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
@@ -86,7 +86,7 @@ namespace Suborned.Sim
                 r.Do(Fixer, "call", Inez);
                 r.Is(g.GuardCallPressed, "any Pressure counts");
                 r.Eq(g.GuardAwayUntil - g.LureTick, w.pressed, "the pressed window");
-            }, Reads("mercenary"));
+            }, Reads("loyal"));
 
             Add("P85-LATE", "085", "The window is real: an Enter after he is back, with the camera looped and well inside what an unpressed visit would have left, fails on the guard.", r =>
             {
@@ -134,28 +134,21 @@ namespace Suborned.Sim
                 r.Is(G.Dist(p0, p1) > g.R.PeopleWalk / 10 + 2, $"a tick after the alarm he still covers more than a walk ({G.Dist(p0, p1)} cm)");
             }, Reads());
 
-            Add("P85-PRICE", "085", "Both Help routes (Motive §5, checked; engine 0.44.0, brief 096 Sky's option 1): Inez (Fearful) takes the full offer once after the Listen, $40,000, no share; the driver (Mercenary) is a worse fit on the first visit and his first Help makes him friendly, so the second is no longer worse; $20,000 a visit: $80,000 of the purse, $20,000 left.", r =>
+            Add("P85-PRICE", "085", "Both Help routes (Motive §5, checked; engine 0.44.0, brief 096 Sky's option 1): Inez (Fearful) takes the full offer once after the Listen, $40,000, no share; the driver (Mercenary) is a worse fit, and since engine 0.45.0 (Motive Q1 (b)) takes the full offer once, one step dearer: $50,000; $90,000 of the purse, $10,000 left.", r =>
             {
                 var g = r.G;
                 r.Eq((g.Inez.Temperament, g.Driver.Temperament), ("fearful", "mercenary"), "the cast's Inez and driver");
-                void Twice(string who, string at, Person p, string mood, string secondStillWorse, long left)
+                void Once(string who, string at, Person p, long left)
                 {
-                    r.To(r.Send(Fixer, at));
-                    string Holds(Quote q, string line) => q.Lines.Find(l => l.Line == line)!.Holds;
-                    var q1 = g.Preview("help", who);
-                    r.Eq((Holds(q1, "one-more-help"), Holds(q1, "visits-share-first"), Holds(q1, "visits-share-later"), q1.Usd, q1.Orders), ("yes", "yes", "no", 20000L, 2L), who + ": first visit, a worse fit, two visits, $20,000");
+                    r.To(r.Send(Fixer, at)); var q1 = g.Preview("help", who);
+                    r.Eq((HoldsOn(q1, "worse-once"), HoldsOn(q1, "one-more-help"), HoldsOn(q1, "visits-share-first"), q1.Usd, q1.Orders), ("yes", "no", "no", 50000L, 1L), who + ": a worse fit, one visit, $50,000");
                     r.Do(Fixer, "turn", who, "help"); r.Done(Fixer);
-                    r.Eq(g.MoodOf(who), mood, who + ": the mood after the first Help");
-                    var q2 = g.Preview("help", who);
-                    r.Eq((Holds(q2, "one-more-help"), Holds(q2, "visits-share-first"), Holds(q2, "visits-share-later"), q2.Usd), (secondStillWorse, "no", "yes", 20000L), who + ": second visit, $20,000 by the later line");
-                    r.Do(Fixer, "turn", who, "help"); r.Done(Fixer);
-                    r.Is(p.Turned, who + " turned on the second visit");
-                    r.Eq(g.Cash, left, $"${left} left");
+                    r.Is(p.Turned, who + " turned on the one visit"); r.Eq(g.Cash, left, $"${left} left");
                 }
                 r.To(r.Send(Fixer, "d:Courtyard")); var qi = g.Preview("help", Inez); string Hi(string line) => qi.Lines.Find(l => l.Line == line)!.Holds;
                 r.Eq((Hi("one-more-help"), Hi("visits-share-first"), Hi("small-offer"), qi.Usd, qi.Orders, qi.Outcome), ("no", "no", "no", 40000L, 1L, "turned"), "Inez: one visit, the full offer, $40,000, turns");
                 r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer); r.Is(g.Inez.Turned && g.Cash == 60000L, "Inez turned on the first visit, $60,000 left");
-                Twice(Driver, "d:Boarding pavilion", g.Driver, "friendly", "no", 20000L);
+                Once(Driver, "d:Boarding pavilion", g.Driver, 10000L);
             }, Reads());
 
             Add("P85-PURSE", "085", "§04's purse: Inez helped twice leaves $60,000, so the driver's Pay ($70,000) is refused for money.", r =>
@@ -171,7 +164,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
-                string Share() { var q = g.Preview("help", Inez); return q.Lines.Find(l => l.Line == "visits-share-first")!.Holds + q.Lines.Find(l => l.Line == "visits-share-later")!.Holds; }
+                string Share() { var q = g.Preview("help", Inez); return HoldsOn(q, "visits-share-first") + HoldsOn(q, "worse-once"); } // engine 0.45.0: visits-share-later is gone; worse-once never reads a Loyal person
                 r.Eq(Share(), "nono", "no share on the first visit"); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 r.Eq(g.Cash, 60000L, "$40,000 in full"); r.Eq(Share(), "nono", "no share on the second visit"); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 r.Is(g.Inez.Turned, "turned on the second visit");
@@ -179,12 +172,12 @@ namespace Suborned.Sim
             }, Reads("loyal"));
 
             var unread = new Start(); unread.Known[Inez] = new List<string> { "routine", "need" };
-            Add("P85-UNKNOWN", "085", "Temperament unread: the visits' share is a \"?\" on the card, and the worst case the purse is held to stays the base price.", r =>
+            Add("P85-UNKNOWN", "085", "Temperament unread: the wrong approach's line is a \"?\" on the card, and the worst case the purse is held to is its dearest (engine 0.45.0: worse-once, $50,000; the visits' share before, which never raised it).", r =>
             {
                 var g = r.G;
                 var q = g.Preview("help", Inez);
-                r.Eq(q.Lines.Find(l => l.Line == "visits-share-first")!.Holds, "?", "the share is a \"?\"");
-                r.Eq(q.WorstUsd, 40000L, "the worst case stays $40,000"); r.Wait(1);
+                r.Eq(HoldsOn(q, "worse-once"), "?", "the one-visit step is a \"?\"");
+                r.Eq(q.WorstUsd, 50000L, "the worst case is $50,000: the cash lock never under-asks"); r.Wait(1);
             }, unread);
         }
     }

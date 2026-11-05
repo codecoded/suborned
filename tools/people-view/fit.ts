@@ -56,9 +56,11 @@ export function approachRows(rules: Rules, rb: Rulebook, temperament: string, ne
     if (a === 'pressure' && fit === 'worse') { const w = val(rb, 'worse-pressure-trail'); if (w !== undefined) { trail += w; lines.push(`wrong approach +${w} T`); } }
     if (a === 'help') {
       orders = val(rb, 'help-orders') ?? 1;
-      if (fit === 'worse') { const w = val(rb, 'worse-help-orders'); if (w !== undefined) { orders += w; lines.push(`wrong approach: +${w} Help order`); } }
+      if (fit === 'worse' && temperament === 'loyal') { const w = val(rb, 'worse-help-orders'); if (w !== undefined) { orders += w; lines.push(`wrong approach: +${w} Help order`); } }
       if (fit === 'suits' && temperament === 'loyal') { const w = val(rb, 'loyal-help-orders'); if (w !== undefined) { orders += w; lines.push(`trust over time: +${w} Help order`); } }
       usdTotal = A.usd * orders; trail = A.trail * orders; timeS = A.timeS * orders;
+      const once = fit === 'worse' && (temperament === 'mercenary' || temperament === 'idealist') ? val(rb, 'worse-help-once-usd') : undefined; // engine 0.45.0 (turn.help worse-once): one visit, one step dearer; a Fearful person's Help is the full offer once (0.44.0)
+      if (once !== undefined) { usdTotal += once; lines.push(`wrong approach: one visit, +${usd(once)}`); }
     }
     const mer = temperament === 'mercenary' && a === 'pay';
     if (mer) { const h = val(rb, 'mercenary-hero-usd'), m = val(rb, 'mercenary-menace-usd'); if (h !== undefined) lines.push(`Hero district ${h >= 0 ? '+' : '−'}${usd(Math.abs(h))}`); if (m !== undefined) lines.push(`Menace district ${m >= 0 ? '+' : '−'}${usd(Math.abs(m))}`); }

@@ -12,7 +12,6 @@
   {"id":"enforcer-wait","op":"enforcer","do":"move","to":[8700,-2300],"when":["t>=:3:00"],"why":"behind the lookout's post, off Apron Road, for when he comes"},
   {"id":"listen","op":"scout","do":"listen","target":"driver","after":["scout-to-driver"],"when":["free:scout"]},
   {"id":"help-1","op":"fixer","do":"turn","target":"driver","approach":"help","by":"5:20","when":["log:scout.listen.heard"],"retry":5,"why":"Help after the Listen: private, so the pickup camera records nothing (brief 096)"},
-  {"id":"help-2","op":"fixer","do":"turn","target":"driver","approach":"help","by":"5:20","when":["log:turn.help.not-yet"],"unless":["log:turn.help.turned"],"retry":5},
   {"id":"fixer-away","op":"fixer","do":"move","to":[7950,-3850],"when":["done:help-1"],"unless":["log:turn.help.not-yet"]},
   {"id":"scout-to-lookout","op":"scout","do":"move","to":[9100,-2700],"when":["log:rivals.lookout-posted","free:scout"],"why":"the lookout's card: walk over to him"},
   {"id":"reroute","op":"tech","do":"reroute","target":"patrol","when":["t>=:5:05","free:tech"],"retry":5,"why":"1:55 away from 5:35: it covers the Take in the yard and the walk out"},
