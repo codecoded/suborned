@@ -91,3 +91,8 @@ rivals page); host reads CrewActQuery, LentCarWatcher, GoWouldWait/GoWaiting. Wa
 thinned plan by a posted man, veteran-drive (17.5 %, report only); MC-0/11/13/14 green. Every L96 band in. Report briefs/096/keel/report-misses.md;
 GDD text gdd-text-misses.md; bands bands-misses-after-200.txt; record c053.
 Next: Latch (CrewActQuery in HostCrewTurn, the "+1 T if seen", G1's card), Fable (go.waits, go.missed), Glyph, Chime; Motive (veteran-drive).
+
+## Sky (2026-11-05): conversations in full sentences
+"I noticed our dialogue is still poor. Too short, abrupt, not proper sentences" → Aster's diagnosis: every spoken line ≤ 12 words / 80 characters (GDD §14 hold, text.schema MAX_WORDS) and a conversation's line count ≤ its act's seconds ÷ 3 were made for bubbles over the live street; the cutaway (brief 085) holds the clock and reads at ~16 characters a second, yet the writing rules and Motive's scoring kept both caps; the few lines carried the plot and some were tutorial lines. Sky: **"And loosen rules in the conversations. Full sentences"**.
+So, for cutaway conversations: full sentences, up to about 25 words or two sentences a line, up to about 16 lines, line count no longer tied to the act's seconds; no tutorial lines in mouths (the cards do it); a naturalness check in the scoring. Street bubbles keep the short limit. Fable writes a sample page first (Inez listened to, Inez paid, Lukac turned) for Sky to read before the rest is rewritten.
+Also (Sky, 2026-11-05): hidden shortcuts out of the player ("need to remove N and P and other odd shortcuts that are hidden to the user, and not of high relevance"): done (2853bf17); borderline keys T, V, C, Shift+H, X wait for Sky.
