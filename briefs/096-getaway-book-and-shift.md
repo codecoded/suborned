@@ -78,3 +78,8 @@ lend and two Go's behind `car.lend.split` (on), the police close in 60 s after P
 lend plans and route-b's reference (c052). Report briefs/096/keel/report-lend.md; GDD text gdd-text-lend.md; bands bands-lend-after-200.txt.
 Next: Motive (the misses and the prepared-loud/L6 conflict), Waymark (MC-0/11/13/14), Fable (words), Glyph and Latch (two Go's, the
 countdown, the left-behind flags), Chime.
+
+## Sky's calls on Motive's misses page (2026-11-05): all recommended
+briefs/096/motive/misses.html, misses.json: (Q1) a quiet final fight may be as short as 10 s when preparation earns it: band 10–40 s · (Q2) the veteran's shot is fair at "Popovic out, the other three caught": V3 (the police count "fired" only for a shot they saw, or once the cell is placed) · (Q3) going loud on route B stays the hard way (30–40 %, a report-only line); the front door is the loud route. With the fixes that follow earlier calls: the police clock after vale.out 60 → 75 s, G1 (a Go waits for an agent climbing in), Waymark's thinned plan and late Go, bands B out ≥ 85 % with no ceiling and G ≥ 75 %.
+Also (Sky, "yes, crucial card", after his Air run, seed 793475664, engine 0.39.0: the Enforcer shot down 2 s into a 4 s board carrying Popovic, the warning only an icon): the Enforcer badly hurt is a crucial card, first while he carries Popovic (65d8bbb7).
+Next: Keel (worktree), engine 0.43.0 with Waymark's plans; Fable's words pass (running); then the Mac build. No Linux.
