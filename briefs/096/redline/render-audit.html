@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redline · render audit of the Handover zone (OldTown, play view) · brief 096</title>
+<style>
+  :root { --ink:#22302f; --muted:#5d6b69; --line:#d8d2c4; --cream:#fbf7ee; --sea:#dcefe9; --coral:#f6ddd3; --amber:#f7ecd0; }
+  body { font: 15px/1.5 -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--cream); margin: 0; }
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 32px 60px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 34px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+  h3 { font-size: 16px; margin: 22px 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 18px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 14px; background: #fff; }
+  th, td { border: 1px solid var(--line); padding: 6px 8px; vertical-align: top; text-align: left; }
+  th { background: #f1ece0; font-weight: 600; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .card { background: #fff; border: 1px solid var(--line); border-left: 6px solid #6fb3a5; border-radius: 6px; padding: 12px 16px; margin: 12px 0; }
+  .card.look { border-left-color: #e39a7f; }
+  .card.both { border-left-color: #d9b45a; }
+  .card h3 { margin-top: 0; }
+  .tags span { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 10px; margin-right: 6px; background: var(--sea); }
+  .tags span.l { background: var(--coral); } .tags span.e { background: var(--amber); }
+  code { background: #f1ece0; padding: 0 4px; border-radius: 3px; font-size: 13px; }
+  .note { color: var(--muted); font-size: 13px; }
+  .top5 { background: #fff; border: 2px solid #6fb3a5; border-radius: 8px; padding: 10px 18px; }
+  .top5 li { margin: 6px 0; }
+  .est { font-style: italic; }
+</style>
+</head>
+<body>
+<main>
+<h1>Render audit: the Handover zone in OldTown, play view</h1>
+<p class="sub">Redline (code and performance), brief 096, 2026-11-05. Sky's question: "what else can we do to improve performance and looks? We using shaders to their fullest on surfaces? What about materials and textures?" Read and measure only: no asset, setting or code was changed. Nothing committed.</p>
+
+<div class="top5">
+<h2 style="border:0;margin-top:6px">Short answer</h2>
+<p>No, the surfaces don't use the shaders to their fullest. Of the 200 materials OldTown draws with, 140 have <b>no base map</b>. The Lit shader they run on can take normal, occlusion, detail and emission maps, but only a few materials use any of them. Draw calls aren't the problem: the play view is about 109 SetPass and 218 renderers. On the Air the frame is limited by the GPU's per-pixel work and the shadows. The best value is to add surface detail that costs almost nothing per pixel, and to remove the per-pixel work nobody can see.</p>
+<ol>
+  <li><b>Baked vertex-colour AO from Blender</b>: soft contact shade in every moulding, band and joint. It gives most of what SSAO promised for about 0 ms. (Vela, plus a small shader change.)</li>
+  <li><b>Fit the shadow map to the play frame</b>: sharper shadows, by about 1.3× now and up to about 2× with a frame-fitted camera stand-off, for the same or lower cost. (Glint, Latch)</li>
+  <li><b>Take the windows and lobbies off clear-coat Complex Lit</b> (3,068 material slots): they stop mirroring the teal-grey probe, which is the problem K2 fixed on the enamels, and lose a second specular lobe per pixel. (Vela, Glint)</li>
+  <li><b>A painted albedo variation</b> (one shared world-space tint texture): breaks up the flat colour that covers about 79 % of wall area, in the "less clean" pastel or comic direction. One texture fetch. Concept art first. (Vela, Glyph)</li>
+  <li><b>Move the 27 matte Complex Lit materials to the Lit copy</b> (14,733 slots, no visible change), then finish brief 095, strip unused variants and prewarm shaders. Fewer variants and fewer first-use hitches. (Vela, Splice, Latch)</li>
+</ol>
+<p class="note">Before any of these: <b>the OldTown play view at zoom 10 has never been measured on the Air</b>. Brief 086's sitting didn't run because the screen was locked, and brief 091 step 0 is still open. Every Air figure below is an estimate from the M5 Max counters and the older Air run (0.2.122); §4 lists what to measure once Sky OKs a sitting.</p>
+</div>
+
+<h2>1 · What the play view draws today (facts)</h2>
+<table>
+<tr><th>Item</th><th>Value</th><th>Source</th></tr>
+<tr><td>Studio (M5 Max) play-opening, 1920×1080, 0.2.231</td><td class="n">3.7 ms mean / 5.3 p99 · gpu 3.2 · render thread 0.9</td><td><code>out/batch/tplong.verdict.json</code> (2 Nov)</td></tr>
+<tr><td>Counters at play</td><td class="n">1.29 M tris · 109 SetPass · 361 shadow casters · 218 renderers</td><td>same</td></tr>
+<tr><td>Air (M4) play-opening, last run (0.2.122, the old district build)</td><td class="n">15.0 ms cold · 21.0 ms warm · main 8 ms</td><td><code>briefs/064/air-0122/README.md</code>: GPU-bound, heats by +6–8 ms</td></tr>
+<tr><td>OldTown scene</td><td class="n">7,926 MeshRenderers · 9,322 prefab instances · 2,192 LODGroups · 28 reflection probes · 1 light</td><td><code>Assets/Scenes/OldTown.unity</code> (scanned)</td></tr>
+<tr><td>Material slots in the scene</td><td class="n">35,917: 18,127 Complex Lit cutaway (47 mats) · 16,427 Lit cutaway (140) · 652 GlassSky · 184 leaf · ~460 signals</td><td>scan of the scene's <code>m_Materials</code></td></tr>
+<tr><td>Shadow casting</td><td class="n">3,017 one-sided · 1,105 two-sided · 3,804 off</td><td>same</td></tr>
+<tr><td>Pipeline</td><td>Forward+, SRP Batcher on, GPU Resident Drawer (instanced) on, static batching off (tiles merged at build), BRG variants kept, MSAA off, HDR on, SSAO feature present but turned off on the ortho camera by <code>TacticalShadows</code></td><td><code>Settings/PC_RPAsset.asset</code>, <code>PC_Renderer.asset</code></td></tr>
+<tr><td>Main light shadow, as the play camera renders</td><td><code>TacticalShadows</code> overrides the asset's 260 m / 1 cascade: focusDepth 160, nearBand 60, farBand 40, <b>2 cascades → distance 200 m, split at 100 m</b>; 4096 atlas → two 2048 tiles; soft shadows High</td><td>scene component, <code>Runtime/TacticalShadows.cs</code></td></tr>
+<tr><td>Quality "PC"</td><td>anisotropic <b>Force On</b> · mip streaming on · LOD bias 1 · vsync off (app caps)</td><td><code>ProjectSettings/QualitySettings.asset</code></td></tr>
+</table>
+<p class="note">Correction to the starting facts: the 260 m single cascade in PC_RPAsset is <i>not</i> what the play view uses. TacticalShadows on the OldTown play camera fits it to 200 m in 2 cascades every frame. The 121 / 249 counts are kit materials on disk. What the scene actually draws with is in the table above: Complex Lit carries half of all slots.</p>
+
+<h2>2 · Shaders</h2>
+<h3>2.1 The cutaway copies</h3>
+<ul>
+<li><code>DK_LitCutaway</code> and <code>DK_ComplexLitCutaway</code> (generated from URP 17 Lit / Complex Lit) are SRP-Batcher compatible: per-material values stay in URP's <code>UnityPerMaterial</code> via <code>LitInput.hlsl</code>, and the cut's values are globals. Both include <code>DOTS.hlsl</code>, so the GPU Resident Drawer can instance them. <b>OK.</b></li>
+<li>The cut is a <code>multi_compile_fragment _ _DK_CUT</code>. Only renderers the cut can reach get the discarding twin (<code>FadeReach</code>), so everything else keeps the GPU's hidden-surface removal. That matters on Apple's tile-based GPUs. <b>Good design; keep it.</b></li>
+<li>Two generations still ship side by side (<code>Shaders/DecoKit/</code> and <code>OldTownArt/DecoKit/Shaders/</code>, different GUIDs and hlsl). Brief 095 records 7,488 variants for the newer cutaway against 1,152 for the old one at a cold compile. That costs build time and causes first-use hitches. It isn't a steady-state cost.</li>
+<li>Unused keyword families still compiled into the forward pass: <code>_LIGHT_COOKIES</code>, <code>_DBUFFER_MRT1/2/3</code> (no decal feature), <code>_SCREEN_SPACE_IRRADIANCE</code>, <code>_ADDITIONAL_LIGHT_SHADOWS</code> (one light), <code>META_QUEST_*</code>, and the soft-shadow LOW and MEDIUM variants when only HIGH is used. They can be stripped with an <code>IPreprocessShaders</code> step or the URP asset's stripping settings. Keep <code>_SCREEN_SPACE_OCCLUSION</code>: the perspective views keep SSAO.</li>
+</ul>
+<h3>2.2 Complex Lit vs Lit, after K2</h3>
+<p>Complex Lit without <code>_CLEARCOAT</code> runs the same BRDF as Lit. The only difference is the <code>UniversalForwardOnly</code> tag, which costs nothing extra under Forward+. So the 27 enamel materials K2 turned matte (clear coat keyword off, mask 0, environment reflections off) render the same on the Lit copy. One trap: the Lit copy reuses <code>_ClearCoatMask</code> as an environment-reflection scale (<code>1 − mask</code>, brief 028). It must stay 0, and it is 0 on all 27.</p>
+<table>
+<tr><th>Complex Lit materials in OldTown</th><th>Slots</th><th>Clear coat</th><th>Move to Lit?</th></tr>
+<tr><td>27 matte enamels (<code>DK_Enamel_Ivory</code> 4,132, <code>_Seafoam</code> 3,755, <code>_Teal__boulevard</code> 2,222, <code>_Charcoal</code> 1,810, <code>_Teal</code> 1,076, <code>_Mustard</code> 704 …)</td><td class="n">14,733</td><td>off (mask 0)</td><td><b>Yes, no visible change</b></td></tr>
+<tr><td>Windows and lobby (<code>DK_Window_Film</code> 1,224, <code>DK_Window_Tower</code> 1,196, <code>DK_Lobby</code> 648)</td><td class="n">3,068</td><td>on, mask 1, smoothness 0.68</td><td>Yes, with a look decision (rec. 3)</td></tr>
+<tr><td>Steel, bakelite, accents, liners, cola, stems, pool, café TB</td><td class="n">~240</td><td>on</td><td>Glint's call: they're small; leave them or do them with the windows</td></tr>
+<tr><td>Hull, billboards, transit decal</td><td class="n">~140</td><td>on</td><td>Billboards and transit: yes (flat print). Hull: keep the coat</td></tr>
+</table>
+<p><b>Frame-time effect:</b> the matte move is about 0 ms on the GPU. The gain is batching (one shader family for enamel and stone, so fewer SRP-Batcher breaks; <span class="est">estimate: 5–20 fewer SetPass</span>), fewer variants and fewer prewarm stalls. The clear-coat move (windows) does save GPU time: no second specular lobe and no second environment sample. <span class="est">Estimate on the Air: 0.1–0.4 ms at 1080, depending on how much of the frame is glass.</span></p>
+
+<h3>2.3 What the surfaces don't use</h3>
+<table>
+<tr><th>Feature the Lit copy offers</th><th>Materials using it (of 200 drawn)</th><th>Comment</th></tr>
+<tr><td>Base map</td><td class="n">60</td><td>140 are flat colour: every enamel and most stone</td></tr>
+<tr><td>Normal map</td><td class="n">36</td><td>Fine: at about 54 px/m, bevels are already geometry</td></tr>
+<tr><td>Occlusion map</td><td class="n">22</td><td>Only the ground and fountain sets. Rec. 1 covers the rest without textures</td></tr>
+<tr><td>Detail albedo and normal (brief 072-F)</td><td class="n">56</td><td>The colourless enamel, limestone and metal pair. Its Air cost (<code>surface-off</code> rows) has never been measured</td></tr>
+<tr><td>Emission</td><td class="n">36</td><td>Signs, lamps, night. Fine</td></tr>
+<tr><td>Vertex colour</td><td class="n">2 (leaf shader only)</td><td><b>The cheap lever:</b> the leaf variant already has <code>_DK_VERTEX_COLOR</code>; the Lit copy doesn't</td></tr>
+<tr><td>Parallax / height</td><td class="n">0</td><td>Don't add: a fetch chain per pixel for little gain at this zoom</td></tr>
+</table>
+
+<h2>3 · Recommendations, ranked</h2>
+<p class="note">Ranking: look gain per frame-time cost, then effort. "Air" figures are estimates at 1920×1080 until measured (§4). Tags: <span style="background:#dcefe9;padding:0 6px;border-radius:8px">perf</span> <span style="background:#f6ddd3;padding:0 6px;border-radius:8px">look</span> <span style="background:#f7ecd0;padding:0 6px;border-radius:8px">effort</span>.</p>
+
+<div class="card look">
+<h3>1. Baked vertex-colour AO on kit pieces (Blender, at build time)</h3>
+<div class="tags"><span class="l">look: high</span><span>Air: ≈ 0 to +0.1 ms</span><span class="e">effort: medium</span></div>
+<p><b>What:</b> <code>tools/decokit</code> bakes ambient occlusion (and optionally a cavity or edge term) into each piece's vertex colour: Cycles AO baked to a colour attribute, or a cheap ray-cast per vertex. The Lit cutaway multiplies albedo or occlusion by <code>vertexColor.r</code> behind a material keyword, as the leaf variant already does with <code>_DK_VERTEX_COLOR</code>.</p>
+<p><b>Look:</b> soft contact shade under cornices, in band joints, round window reveals, at the foot of bollards and benches. This is the "form" Glint wanted from SSAO. It also fits the pastel or comic look, because it's soft, hand-painted shade with no noise. It holds at every yaw, with no screen-space halos and no flicker when the cut opens.</p>
+<p><b>Cost:</b> no texture and no prepass. It adds one vertex attribute (4 bytes per vertex at 1.3 M triangles), and with occlusion on, a multiply in the existing indirect term. Check that <code>DecoKitTileMerge</code> / <code>KitColumns</code> <code>CombineMeshes</code> keep the colour channel when merging (all parts need it, or white is written).</p>
+<p><b>Owner:</b> Vela (bake in the DecoKit generator, pieces), Splice (kit import and hash), Latch (shader keyword in the generator <code>make_cutaway_shaders.py</code>, scene regen), Glint (strength). <b>Done-check:</b> before and after at zoom 10, yaw 30 and 210, sun and shade. Same SetPass, same triangles.</p>
+<p class="note">Baked AO in lightmaps for the static zone tiles is the alternative: higher fidelity across pieces (building-to-pavement contact), but it needs UV2 on every merged tile, lightmap memory (~30–60 MB for the zone at a useful texel density), a bake step in the scene build, and a re-bake whenever the zone moves. Vertex AO first. Try lightmapped AO only on the ground plane if building-to-pavement contact is still missing.</p>
+</div>
+
+<div class="card both">
+<h3>2. Fit the shadow map to the play frame</h3>
+<div class="tags"><span class="l">look: sharper shadows, 1.3×–2×</span><span>Air: 0 to −0.5 ms</span><span class="e">effort: low (A) / medium (B)</span></div>
+<p><b>Now:</b> at play zoom 10 (frame about 35.6 × 20 m) the street cascade covers depth 100–200 m. URP's bounding sphere is r ≈ √(17.8² + 10² + 50²) ≈ 54 m, so 108 m across 2048 texels ≈ <b>5.3 cm per texel ≈ 2.9 screen px at 1080</b>, then blurred by the 7×7 High tent. Cascade 1 (0–100 m) covers air in front of the street and holds only roofs taller than about 37 m.</p>
+<p><b>A (tune, no code):</b> the ground's depth spread across the frame at 38° is only ±12.8 m, so <code>farBand</code> 40 leaves about 27 m of empty depth. farBand 40 → about 16 makes r ≈ 43 m, ≈ 4.2 cm/texel (<b>1.26× sharper</b>) at the same cost. Scale the bands with zoom, so the planning zooms (14–18.5) keep their reach and play zoom 10 gets the tight fit.</p>
+<p><b>B (frame-fitted stand-off):</b> the ortho camera stands 160 m back to clear the tallest roof anywhere. Set the stand-off each frame from the merged tiles' bounds in the frame column (in the Handover zone about 70 m); moving an ortho camera along its axis doesn't change the image or the cut's capsules. Then <b>1 cascade</b> over about 86 m: r ≈ 48 m on the full 4096 ≈ 2.3 cm/texel (<b>about 2.3× sharper</b>), and one shadow pass instead of two (fewer caster draws).</p>
+<p><b>Then:</b> with texels 2× smaller, try soft shadows <b>Medium</b> (9 taps) instead of High (16 taps). The penumbra in metres stays close to today's, and every lit pixel saves 7 shadow taps. <span class="est">Estimate on the Air: 0.2–0.5 ms.</span> That's Glint's eye. Crisp shadows suit the comic look.</p>
+<p><b>Owner:</b> Glint (fit values, soft-shadow call), Latch (TacticalShadows bands per zoom; stand-off for B). <b>Done-check:</b> shots of the café terrace and the Records Office steps at yaw 30 and 210, no shadow swimming while panning (keep the texel snap), casters count, Studio A B A B.</p>
+</div>
+
+<div class="card both">
+<h3>3. Windows and lobbies off clear coat</h3>
+<div class="tags"><span class="l">look: medium (no teal-grey mirror)</span><span>Air: −0.1 to −0.4 ms</span><span class="e">effort: low</span></div>
+<p><code>DK_Window_Film</code>, <code>DK_Window_Tower</code> and <code>DK_Lobby</code> (3,068 slots: the most-drawn surfaces after the enamels) are opaque Complex Lit with a full clear coat (mask 1) and environment reflections on. They mirror the same teal-grey street probe that K2 removed from the enamels. Options: (a) the Lit copy, smoothness about 0.8, reflections on; or (b) the existing <code>DK_GlassSky</code> treatment (already on 652 slots), which paints a sky reflection under the art direction and avoids the probe entirely. A night emission mask (lit and unlit panes) is the same material's next step.</p>
+<p><b>Owner:</b> Vela (rows in <code>unity_mats.py</code> / <code>DecoKitMaterials.cs</code>), Glint (sign-off). <b>Done-check:</b> before and after shots, day and night. Variant count down.</p>
+</div>
+
+<div class="card look">
+<h3>4. Painted albedo variation (one world-space tint texture)</h3>
+<div class="tags"><span class="l">look: high on walls and ground</span><span>Air: +0.1 to +0.3 ms</span><span class="e">effort: medium; concept art first</span></div>
+<p>A single shared 512–1024² tiling texture (soft sun-fade, faint wash, a hand-painted pastel mottle), sampled in world space (XZ on the ground, the face's major axes on walls) at a large scale (about 4–8 m per tile) and multiplied into the base colour by a per-material strength. It sits on the flat colour and the 072-F detail pair, so every enamel and stone face gets broad variation without UVs. It looks painted rather than procedural, the "less clean" direction from the 073 concepts. Keyword-free, behind the same global switch style as <code>_SubornedSurfaceDetailOff</code>, so the Air A/B is clean.</p>
+<p><b>Owner:</b> Vela (texture via Codex stills first, then baked), Glyph (keeps signals readable over it), Latch (shader). <b>Rule:</b> concept art to Sky before any texture is built.</p>
+</div>
+
+<div class="card">
+<h3>5. Matte enamels to the Lit copy; finish brief 095; strip variants; prewarm</h3>
+<div class="tags"><span>Air: ≈ 0 ms steady; fewer hitches</span><span class="l">look: none</span><span class="e">effort: low to medium</span></div>
+<ul>
+<li>The 27 matte Complex Lit materials go to <code>DecoKit/Lit Cutaway</code>: their rows in <code>tools/decokit/unity_mats.py</code> (kit) and <code>DecoKitMaterials.cs</code> (old town) ask for the Lit shader when <code>coat == 0</code>. Check <code>_ClearCoatMask</code> stays 0 (it scales reflections in the Lit copy).</li>
+<li>Brief 095: one canonical shader family. Then a variant-stripping pass (§2.1 list) and a count before and after.</li>
+<li>Prewarm: Unity 6's <code>GraphicsStateCollection</code> (PSO tracing and warm-up) or a <code>ShaderVariantCollection</code> recorded from a proof run, warmed behind the start page. The Air's loud-fight max of 57.7 ms (<code>briefs/064/air-0122</code>) is the kind of spike first-use pipeline compiles cause. Check it with the frames CSV before claiming that.</li>
+</ul>
+<p><b>Owner:</b> Vela (material rows), Splice (stripping step, variant count in the build report), Latch (prewarm, regen). <b>Done-check:</b> identical shots (pixel diff), SetPass at play, variant count, first-fight p99 and max on the Studio.</p>
+</div>
+
+<div class="card both">
+<h3>6. Render-scale policy: test FSR against bilinear at the cap</h3>
+<div class="tags"><span class="l">look: sharper at the same cost</span><span>Air: 0 ms at equal scale</span><span class="e">effort: low</span></div>
+<p><code>RenderCap</code> caps the 3D pass at the Air's pixel count (5.37 Mpx), so Sky's 4812×2706 Studio display draws at 0.65 (3128×1759), and the Air's shipped size draws at 0.75 of 3840×2410. The upscaling filter is <code>Auto</code>, which is bilinear at non-integer scales. FSR 1 (spatial, with sharpening) costs about one full-screen pass and gives crisper edges and HUD-adjacent detail at the same 3D cost. Avoid STP or any temporal upscaler: the cut's dither and the 1 px signal shapes would smear. The 086 kit already holds <code>fsr.rows.json</code> and <code>scale.rows.json</code>: run them in the same Air sitting. Remember the bar is measured at 1920×1080 (2.07 Mpx), while the Air's shipped full screen draws about 5.2 Mpx, 2.5× more pixels. The scale Sky plays at is his look call. <b>Owner:</b> Latch (asset filter switch), Sky (look).</p>
+</div>
+
+<div class="card">
+<h3>7. Smaller items (measure first, low risk)</h3>
+<table>
+<tr><th>Item</th><th>Look</th><th>Air (est.)</th><th>Owner</th></tr>
+<tr><td><b>Two-sided shadow casters</b> (1,105 renderers): make closed meshes one-sided in the shadow pass; keep two-sided only for cards and thin planes</td><td>none (check thin awnings)</td><td class="n">−0.05 to −0.2 ms</td><td>Vela (kit flag), Latch</td></tr>
+<tr><td><b>Anisotropic "Force On"</b> on every texture: per texture instead, 8 on ground and road maps (38° pitch), 2–4 on walls and props, off on UI and atlases</td><td>none visible on walls</td><td class="n">−0.05 to −0.3 ms</td><td>Splice (kit import), Latch (quality)</td></tr>
+<tr><td><b>Reflection probes</b> (28, blending and box projection on): after K2 and rec. 3 most opaque surfaces have reflections off; check probe blending still earns its cost for chrome and cars only</td><td>none</td><td class="n">small</td><td>Glint</td></tr>
+<tr><td><b>Foliage overdraw</b> (leaf shader alpha-test: loses hidden-surface removal on Apple GPUs): the <code>leavesAlpha</code> switch exists; price it on the Air; consider alpha-to-coverage off and tighter cards</td><td>keep the silhouettes</td><td class="n">0.1–0.5 ms where trees fill the frame</td><td>Vela, Latch</td></tr>
+<tr><td><b>Mesh decals</b> at mission points (kerb wear, stains, crossing glyphs): alpha-blended quads like <code>DK_Decal_Transit</code>, not URP's DBuffer decal feature (that needs a prepass)</td><td>medium, local</td><td class="n">overdraw only where placed</td><td>Vela (art), Vantage (places)</td></tr>
+<tr><td><b>Trim sheets</b> (brief 091, already open): the right home for façade detail; it moves geometry into maps; unchanged by this audit</td><td>high</td><td class="n">neutral or better</td><td>Vela, per 091</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>8. Checked and fine: don't spend time here</h3>
+<ul>
+<li><b>Draw calls and instancing:</b> 109 SetPass and 218 renderers at play. The tiles are merged at build time; the GPU Resident Drawer (instanced) is on with static batching off and BRG variants kept; every custom lit shader includes <code>DOTS.hlsl</code>. Street furniture is already instanced or merged.</li>
+<li><b>SRP Batcher:</b> all custom shaders declare <code>UnityPerMaterial</code> (directly or through <code>LitInput.hlsl</code>). <code>FacadeLit</code> takes it from its include.</li>
+<li><b>Texture compression and mips:</b> Standalone overrides are BC7 (colour and masks) and BC5 (normals), mipmaps on. Apple-silicon Metal samples BC natively, so ASTC would change nothing on the Mac. The kit caps 4096 sources at 2048 in the player; that's the import's decision, not a cut (§12 rules: no downscaling without Sky).</li>
+<li><b>LODs:</b> 2,192 LOD groups. At play the triangle count (1.29 M) is far under the 2.5 M gate; the triangle problem is third person (brief 086), not the play view.</li>
+<li><b>People:</b> figures are separate skinned draws (about 20 in the zone), under 1 % of the frame. The crowd at scale is a later question.</li>
+<li><b>CPU, host and HUD (UI Toolkit):</b> main thread 3.7 ms on the Studio, 6–9 ms on the Air against a 15–21 ms frame, so the play view is GPU-bound. Live widgets repaint every frame (<code>HudToolkit.Live.cs</code> <code>MarkDirtyRepaint</code> on the cue, eye and stance per agent); worth one Profiler capture on the Air's development build, but not ahead of the GPU items.</li>
+<li><b>SSAO:</b> rejected by Sky. The feature stays off on the ortho camera (TacticalShadows); not recommended again. Rec. 1 is the cheap substitute.</li>
+</ul>
+</div>
+
+<h2>4 · What to measure on the Air (needs Sky's OK; one sitting, about 45 min, screen unlocked)</h2>
+<p>Use the brief 086 kit (<code>briefs/086/air-0191/kit/run-air.sh</code>), rebuilt on the current player. Its first-row-wait estimate came out at 38–45 minutes.</p>
+<ol>
+<li><b>Baseline</b>: OldTown, zoom 10, yaw 30, 1920×1080, warm (after the 6-minute soak); play, tp-street, tp-worst. This is also brief 091 step 0.</li>
+<li><b>Native shipped size</b> (about 2880×1808 at the cap) for the same play row, then the <code>scale</code> rows (100 / 65) and <code>fsr</code> rows (rec. 6).</li>
+<li><b>A B A B ceilings</b> already in the player: <code>shadows</code> off, <code>softShadows</code> off, <code>surfaceDetail</code> off, <code>leavesAlpha</code>, <code>bloom</code>, <code>planting</code>. Together they show where the Air's milliseconds go, and they rank recs 2, 4 and 7 with real numbers.</li>
+<li><b>gpuSplit</b> on the play row, if the per-pass recorder works on Metal (FrameTimingManager's GPU figure didn't in 0.2.122).</li>
+<li><b>Frames CSV for a loud fight</b>: max and p99, to tell first-use shader hitches (rec. 5) from steady GPU load.</li>
+<li><b>Thermal</b>: macmon GPU MHz and temperature beside every row, since the fanless Air adds 6–8 ms warm.</li>
+</ol>
+<p><b>Studio-side (no Sky OK needed, after a change lands):</b> A B A B per recommendation with <code>bun run guard</code>, pixel diff for rec. 5, SetPass, casters and variant counts.</p>
+
+<h2>5 · Method and limits</h2>
+<ul>
+<li>Scanned <code>Assets/Scenes/OldTown.unity</code> (276 MB YAML) for renderers, material slots, shadow modes, probes, the camera and TacticalShadows. Scanned all 771 <code>.mat</code> files (shader, keywords, textures, clear coat, smoothness) and 673 texture importers (size, mips, aniso, Standalone format). Scripts: <code>/tmp/redline_mats.py</code>, <code>/tmp/redline_scene.py</code>, <code>/tmp/redline_tex.py</code> (scratch, not kept).</li>
+<li>Read <code>DK_Cutaway.hlsl</code>, <code>DK_SurfaceDetail.hlsl</code>, both cutaway shaders' passes, <code>TacticalShadows.cs</code>, <code>RenderCap.cs</code>, PC_RPAsset, PC_Renderer, QualitySettings, the K2 code (<code>unity_mats.py</code> MATTE_KIT, <code>DecoKitMaterials.Matte096</code>), briefs 064, 086, 091, 095.</li>
+<li><b>No scratch capture was taken.</b> The Nov 2 tplong counters (0.2.231) already give the play view's draw numbers, and the Studio's GPU says little about the Air's per-pixel cost. Prefab-instance renderers inside the scene's 9,322 prefab instances are not in the slot counts (their materials live in the prefabs), so the 35,917 slots are a lower bound. The proportions hold.</li>
+<li>Shadow texel figures are geometry estimates from the frame size at zoom 10 (ortho size 10, 16:9) and URP's enclosing-sphere fit; they're for ranking, and a shot settles them.</li>
+</ul>
+<p class="note">Handoff: inputs = this report. Done-check per card. Next owner = Aster, to brief Vela (1, 3, 4, 5), Glint (2, 3, 6's look), Latch (2, 5, 6) and Splice (5, the Air sitting) as Sky chooses.</p>
+</main>
+</body>
+</html>
