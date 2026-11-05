@@ -345,7 +345,7 @@ namespace Suborned.Play
                 var parts = code.Split('.'); string approach = parts.Length > 2 ? parts[1] : "", outcome = parts[^1];
                 foreach (var x in Game.Log) if (x.Tick == l.Tick && x.Code == "report") { outcome = "suspicious"; break; } // reported: the `suspicious` voice
                 var p = Game.PersonByRole(role);
-                var kind = outcome == "turned" || outcome == "kept" ? Feedback.Ok : outcome == "refused" || outcome == "suspicious" ? Feedback.Refused : Feedback.Info;
+                var kind = outcome == "turned" || outcome == "kept" ? Feedback.Ok : outcome is "refused" or "suspicious" or "small-offer" ? Feedback.Refused : Feedback.Info;
                 if (!Beat("reply", approach, role, outcome, p.Temperament, null, Name(role), kind)) Say(role, l.Text, kind);
                 Beat("done", "turn", "fixer", outcome, null, null, Name(role), kind);
                 return;

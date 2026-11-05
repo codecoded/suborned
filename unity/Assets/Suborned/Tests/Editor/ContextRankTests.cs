@@ -51,6 +51,16 @@ namespace Suborned.Play.Tests
             Assert.AreEqual("turn:help", Picked(C("person", cheap), cheap), "the cheapest of two that fit");
         }
 
+        [Test] public void TheSmallOfferBeforeTheListenIsNeverTheBestWay()
+        {   // engine 0.44.0: Help before the Scout's Listen is a $0 small offer everyone refuses: offered, but a refused outcome is no best way
+            var w = new[] { W("turn", "ask", "?"), W("turn", "help", "small-offer", trail: 1) };
+            Assert.AreEqual(ContextRank.Act.Ring, C("person", w).Act, "the Ask's gamble opens the ring; the cheaper small offer is never the pick");
+            var alone = new[] { W("turn", "help", "small-offer", trail: 1) }; var c = C("person", alone);
+            Assert.AreEqual(ContextRank.Act.Ring, c.Act, "alone it still opens the ring, not a quick click"); Assert.AreEqual("no safe way", c.Why);
+            var s = new List<ContextRank.Way> { W("turn", "help", "small-offer"), W("turn", "pay", "turned", usd: 70000) }; for (int i = 0; i < s.Count; i++) s[i].Index = i; s.Sort(ContextRank.Compare);
+            Assert.AreEqual("pay", s[0].Approach, "last of the turns, after a dear way that works"); Assert.IsTrue(ContextRank.Refuses("small-offer"));
+        }
+
         [Test] public void FixerOnATurnedContactCalls() { var w = new[] { W("call") }; Assert.AreEqual("call", Picked(C("person", w), w)); }
 
         [Test] public void EnforcerOnTheGuardOpensTheRing()

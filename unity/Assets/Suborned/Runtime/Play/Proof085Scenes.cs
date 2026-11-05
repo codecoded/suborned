@@ -91,7 +91,7 @@ namespace Suborned.Play
         public static IEnumerator Run(HandoverHost h, string dir, List<string> log, System.Action<string, bool, string> row)
         {
             var keep = h.controls.conversations; var got = new bool[1];
-            // ---- route A: Listen, the two Helps, the Call, each whole at its landing; First time counts by scene, not by person
+            // ---- route A: Listen, the Help (engine 0.44.0: one, after the Listen, the full offer), the Call, each whole at its landing; First time counts by scene, not by person
             yield return Fresh(h, ConversationScenes.FirstEachScene); var g = h.Game; var ra = new RouteRun { Orders = Route("route-a") };
             var cam = h.View; yield return ListenOnStreet(h, ra, dir, log, row); var pos0 = cam.transform.position; var rot0 = cam.transform.rotation; yield return ToScene(h, ra, 900, got); string w = Words(h, "listen-inez"); var c = h.ConvoNow;
             row("r085listenWhole", got[0] && w.Length == 0 && c.HasCards, $"{h.ConvoLast}; {w}; said '{HudToolkit.ConvoSaid}'; picks {string.Join(",", h.ConvoPicks)}");
@@ -114,10 +114,8 @@ namespace Suborned.Play
                 }
             }
             yield return EndScene(h);
-            // the two Helps count as two scenes, the Call as a third, under First time
-            yield return ToScene(h, ra, 1300, got); string w1 = Words(h, "help-inez-1"); var c1 = h.ConvoNow; row("r085help1", got[0] && w1.Length == 0, $"{h.ConvoLast}; {w1}; {string.Join(" / ", c1?.Learned ?? new List<string>())}"); yield return Shoot(dir, "r085-help-1", log); yield return EndScene(h);
-            // a walker in the shot: the Scout, sent across just before the second Help lands (in this proof's run only)
-            Step(h, ra, 1000); int land2 = g.Ops[1].Busy != null ? g.Ops[1].BusyEnd : g.Tick + 300; Step(h, ra, land2 - 6);
+            // the Help is a second scene and the Call a third, under First time; a walker in the Help's shot: the Scout, sent across just before it lands (in this proof's run only)
+            Step(h, ra, 600); for (int k = 0; k < 900 && g.Ops[1].Busy == null && !g.Over && !h.ConvoPending; k++) Step(h, ra, g.Tick + 1); int land2 = g.Ops[1].Busy != null ? g.Ops[1].BusyEnd : g.Tick + 300; Step(h, ra, land2 - 6);
             if (g.Ops[0].Walk == null && g.PersonPos(g.Inez) is Suborned.Sim.Pt ip2)
             {   // the first of eight headings with 8 m of open walk that keeps clear of both speakers: along the pair first, so a profile shot sees her cross it
                 var fx = g.Ops[1].Pos; var sp0 = g.Ops[0].Pos; float a0d = Mathf.Atan2(fx.Y - ip2.Y, fx.X - ip2.X);
@@ -129,7 +127,7 @@ namespace Suborned.Play
                 }
                 if (g.Ops[0].Walk == null) log.Add("r085 the walker: no open heading");
             }
-            yield return ToScene(h, ra, 1300, got); string w2 = Words(h, "help-inez-2"); row("r085help2", got[0] && w2.Length == 0, $"second Help, same person, under First time: {h.ConvoLast}; {w2}");
+            yield return ToScene(h, ra, 1300, got); string w2 = Words(h, "help-inez-2"); row("r085help", got[0] && w2.Length == 0, $"the one Help after the Listen, the full offer, under First time: {h.ConvoLast}; {w2}");
             if (got[0])
             {
                 int tickB = g.Tick; string walker = null, stander = null; float wd = 1e9f, sd = 1e9f;
@@ -147,8 +145,8 @@ namespace Suborned.Play
                     row("r085standing", stander == null || spStand > 0.05f, $"{stander}: {stStand}, anim {spStand:0.00}");
                     yield return EndScene(h); h.SetPaused(true); yield return Frames(3); var back = h.Views.EngineAt(walker); float snap = back.HasValue ? Vector3.Distance(wt.position, back.Value) : 99f; row("r085snapBack", snap < 0.4f, $"{walker} {snap:0.00} m from the engine's place at the cut out");
                 }
-                else { row("r085bystander", false, "no walker at this scene"); yield return Shoot(dir, "r085-help-2", log); }
-                if (h.ConvoOn) yield return Shoot(dir, "r085-help-2", log);
+                else { row("r085bystander", false, "no walker at this scene"); yield return Shoot(dir, "r085-help", log); }
+                if (h.ConvoOn) yield return Shoot(dir, "r085-help", log);
             }
             yield return EndScene(h);
             var callO = new Order { Op = "fixer", Do = "call", Target = "waitress" }; string helpDoor = h.DoorClock(callO); row("r085doorHelpRoute", helpDoor == null, $"the Call way after Help: Door {helpDoor ?? "hidden"}");

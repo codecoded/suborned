@@ -38,8 +38,8 @@ namespace Suborned.Play
         static readonly Color TallyDead = new(0x6B / 255f, 0x4A / 255f, 0x1E / 255f), RingDead = new(0x5E / 255f, 0x6B / 255f, 0x6A / 255f);
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor"), EmissionId = Shader.PropertyToID("_EmissionColor"), StrengthId = Shader.PropertyToID("_Strength");
 
-        /// <summary>The head's uniform scale about the lens point: 1 (Vela's size), else the player's `-hoverScale s` (0.5..3), for the readability shots.</summary>
-        public static readonly float HoverScale = Mathf.Clamp(Arg("-hoverScale", 1f), 0.5f, 3f);
+        /// <summary>The head's uniform scale about the lens point (Sky 2026-11-05: 1.4 × Vela's size, the one line to change), else the player's `-hoverScale s` (0.5..3), for review shots.</summary>
+        public const float DefaultHoverScale = 1.4f; public static readonly float HoverScale = Mathf.Clamp(Arg("-hoverScale", DefaultHoverScale), 0.5f, 3f);
         static float Arg(string name, float or)
         {
             var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, name);

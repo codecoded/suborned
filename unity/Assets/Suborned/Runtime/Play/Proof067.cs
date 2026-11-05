@@ -269,23 +269,16 @@ namespace Suborned.Play
                     bool sOk = idle && facing < 30f && both && back && shotOk; hOk &= sOk;
                     scenes.Add($"{name}: {(sOk ? "ok" : "FAILED")} {shot}{(wantShot.Length > 0 ? " (forced " + wantShot + ")" : "")} {h.ConvoLast}; {ka} {sa}, {kb} {sb}; facing off {F(facing)} deg; in frame {both}");
                 }
-                // Inez: route A's opening (the Scout watches and listens), then the Fixer's Help from the ground view; a second Help from her other side
+                // Inez: route A's opening (the Scout watches and listens), then the Fixer's Help from the ground view (engine 0.44.0: one Help after the Listen turns her)
                 yield return Fresh(h); var g0 = h.Game; List<Order> ra = null; try { ra = Route("route-a"); } catch (Exception e) { scenes.Add("route-a: " + e.Message); hOk = false; }
                 if (ra != null)
                 {
-                    // the route's own Help ticks (c037: 700 and 1210; c038: 710 and 1210): before the first the Scout's Listen has not landed and the Help is refused
-                    var helps = ra.Where(o => o.Op == "fixer" && o.Do == "turn" && o.Approach == "help").Select(o => o.Tick).ToList(); int help1 = helps.Count > 0 ? helps[0] : 700, help2 = helps.Count > 1 ? helps[1] : 1210;
+                    // the route's own Help tick (c054: 596, once the Scout's Listen is heard; before it a Help is only the small offer she refuses)
+                    var helps = ra.Where(o => o.Op == "fixer" && o.Do == "turn" && o.Approach == "help").Select(o => o.Tick).ToList(); int help1 = helps.Count > 0 ? helps[0] : 600;
                     foreach (var o in ra) { if (o.Tick >= help1 || g0.Over) break; if (o.Tick > g0.Tick) To(h, o.Tick); Give(h, o); while (h.ConvoPending || h.ConvoOn) { yield return null; h.ConvoEndNow(); } }
                     To(h, help1); for (int i = 0; i < 10; i++) { h.ConvoEndNow(); yield return null; } // the Scout's Listen scene (route A's opening) is not this proof's
                     h.Select(OpId.Fixer, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.7f);
                     h.GiveScripted(new Order { Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }); yield return Scene("r067-convo-inez-1", "fixer");
-                    yield return WaitSim(h, () => g0.Ops[(int)OpId.Fixer].Busy == null, 120 * Suborned.Sim.Game.Hz);
-                    // her other side: the Fixer walks round her (let go, a move, take him again), then a second Help
-                    h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.8f);
-                    if (g0.PersonPos(g0.Inez) is Pt ip) { var fp = g0.Ops[(int)OpId.Fixer].Pos; var opp = new Pt(ip.X + (ip.X - fp.X), ip.Y + (ip.Y - fp.Y)); var to = g0.Walk.NearestFree(opp) ?? opp; h.Issue(new Order { Op = "fixer", Do = "move", Point = to }); yield return WaitSim(h, () => g0.Ops[(int)OpId.Fixer].Walk == null, 20 * Suborned.Sim.Game.Hz); }
-                    To(h, Math.Max(g0.Tick, help2)); for (int i = 0; i < 10; i++) { h.ConvoEndNow(); yield return null; } // route A's second Help comes at 2:01
-                    h.Select(OpId.Fixer, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.7f);
-                    h.GiveScripted(new Order { Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }); yield return Scene("r067-convo-inez-2", "fixer");
                     h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.8f);
                 }
                 // the driver: route B's opening; the Fixer's Pay from the ground view, then the Scout's Listen (the other side)

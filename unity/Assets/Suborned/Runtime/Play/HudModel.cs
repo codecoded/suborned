@@ -441,7 +441,7 @@ namespace Suborned.Play
                 case "turn":
                     return i.Outcome switch
                     {
-                        "turned" => i.Orders > 1 ? A("worse", "Works, but costs more") : A("ok", "Works"), "kept" => A("ok", "Works"), "refused" => A("no", "They would refuse"), "not-yet" => A("half", "Not yet: one more try"),
+                        "turned" => i.Orders > 1 ? A("worse", "Works, but costs more") : A("ok", "Works"), "kept" => A("ok", "Works"), "refused" => A("no", "They would refuse"), "small-offer" => A("small-offer", "Refuses a small offer: Listen first"), "not-yet" => A("half", "Not yet: one more try"),
                         _ => A("unk", "? until the Scout learns who they are"),
                     };
                 case "watch": return i.Outcome == "its sight" ? A("learns-sight", "Learns what it sees") : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
@@ -466,7 +466,7 @@ namespace Suborned.Play
         };
 
         /// <summary>The kit's outcome mark for a card's outcome: turned or kept ok, refused no, not yet half, unknown "?".</summary>
-        static string MarkOf(string outcome) => outcome.StartsWith("turned") || outcome.StartsWith("kept") || outcome == "win" ? "ok" : outcome.StartsWith("refused") ? "no" : outcome.StartsWith("not-yet") ? "half" : "unk";
+        static string MarkOf(string outcome) => outcome.StartsWith("turned") || outcome.StartsWith("kept") || outcome == "win" ? "ok" : outcome.StartsWith("refused") || outcome == "small-offer" ? "no" : outcome.StartsWith("not-yet") ? "half" : "unk";
 
         /// <summary>The kit's atlas icon for a verb (or an approach, or a phase), Glyph's names (icons_atlas: ask pay help pressure call watch listen …).</summary>
         public static string AtlasIcon(string verb, string approach, string phase) => verb switch

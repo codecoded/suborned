@@ -56,11 +56,14 @@ namespace Suborned.Play
         };
 
         /// <summary>A turn's fit: turned in one order best, then the fewest orders (one step worse), then anything else, refused last.</summary>
-        static long Fit(Way w) => w.Do != "turn" ? 0 : w.Outcome == "turned" ? w.Orders : w.Outcome == "refused" ? 1_000_000 : w.Outcome == "?" ? 500_000 : 100_000;
+        static long Fit(Way w) => w.Do != "turn" ? 0 : w.Outcome == "turned" ? w.Orders : Refuses(w.Outcome) ? 1_000_000 : w.Outcome == "?" ? 500_000 : 100_000;
 
         public static bool Violent(Way w) => w.Do is "takedown" or "fire";
         public static bool Gamble(Way w) => w.Do == "turn" && w.Outcome == "?";
-        static bool Refused(Way w) => w.Do == "turn" && w.Outcome == "refused";
+        static bool Refused(Way w) => w.Do == "turn" && Refuses(w.Outcome);
+        /// <summary>A turn the card says ends in a refusal: refused, or (engine 0.44.0) the small offer before the Listen that everyone refuses.
+        /// Never the best way: no quick click, no hold, last of the turns.</summary>
+        public static bool Refuses(string outcome) => outcome is "refused" or "small-offer";
 
         /// <summary>Best first. The turn's own keys (fit, $, Trail) order only turns; machine acts at one target tie on purpose (both open: the ring).</summary>
         public static int Compare(Way a, Way b)

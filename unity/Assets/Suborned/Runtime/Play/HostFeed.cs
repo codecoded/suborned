@@ -136,7 +136,7 @@ namespace Suborned.Play
                 var p = Game.PersonByRole(c.Target); string outcome = TurnOutcome(c.Target);
                 var sc = Text.LookupScene(new PlayText.SceneQuery { Kind = "approach", Verb = c.Verb, About = c.Target, Outcome = outcome, Temperament = p.Temperament });
                 if (sc != null && sc != c.Scene) { int kept = c.Revealed; c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Revealed = Math.Min(kept, c.Lines.Count); }
-                c.Tone = outcome is "turned" or "kept" ? Feedback.Ok : outcome is "refused" or "suspicious" ? Feedback.Refused : Feedback.Info;
+                c.Tone = outcome is "turned" or "kept" ? Feedback.Ok : outcome is "refused" or "suspicious" or "small-offer" ? Feedback.Refused : Feedback.Info;
             }
             c.NextBeatAt = Game.Tick; // the remaining beats follow one by one
             c.Footer = c.Scene != null ? Result(c.Scene.Result, c) : FooterOf(c);

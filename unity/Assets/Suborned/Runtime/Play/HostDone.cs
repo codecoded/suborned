@@ -123,7 +123,7 @@ namespace Suborned.Play
             if (c.StartsWith("turn.", StringComparison.Ordinal))
             {
                 var parts = c.Split('.'); if (parts.Length < 3) return no; string outcome = parts[^1];
-                if (outcome is not ("turned" or "kept" or "not-yet" or "refused" or "suspicious")) return no;
+                if (outcome is not ("turned" or "kept" or "not-yet" or "refused" or "suspicious" or "small-offer")) return no; // engine 0.44.0: the small offer, refused
                 foreach (var x in g.Log) if (x.Tick == l.Tick && x.Code == "report") { outcome = "suspicious"; break; } // reported: the suspicious voice (SayLanded)
                 return L((int)OpId.Fixer, "turn", outcome, parts[1]);
             }
@@ -298,7 +298,7 @@ namespace Suborned.Play
                     {
                         case "turned": case "kept": Line("turned", DW("gain.contact", "Contact")); break;
                         case "not-yet": Line("asked", DW("gain.not-yet", "Not yet")); tone = "soft"; break;
-                        case "refused": Line("refused", DW("gain.refused", "Refused")); tone = "bad"; break;
+                        case "refused": case "small-offer": Line("refused", DW("gain." + land.Outcome, "Refused")); tone = "bad"; break;
                         default: Line("p_alert", DW("gain.reported", "Reported")); tone = "bad"; break;
                     }
                     break;

@@ -226,7 +226,7 @@ namespace Suborned.Play
             new() { Tick = 54, Op = "scout", Do = "watch", Target = "waitress" }, new() { Tick = 125, Op = "tech", Do = "loop", Target = "entrance" },
             new() { Tick = 254, Op = "scout", Do = "move", To = "beside-inez" }, new() { Tick = 275, Op = "scout", Do = "listen", Target = "waitress" },
             new() { Tick = 695, Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }, new() { Tick = 745, Op = "tech", Do = "reroute", Target = "patrol" },
-            new() { Tick = 1195, Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }, new() { Tick = 1695, Op = "fixer", Do = "call", Target = "waitress" },
+            new() { Tick = 1695, Op = "fixer", Do = "call", Target = "waitress" }, // engine 0.44.0: one Help after the Listen turns a Fearful Inez (the second Help is gone); the call stays at 1695 so the café spot's shot is unchanged
         };
 
         /// <summary>The test follow view at three spots, each a fresh run: the Fixer 8 m out from the café door facing Inez and the front, the Fixer 7 m back from the pickup (the

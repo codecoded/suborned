@@ -164,10 +164,10 @@ describe('the 2x crops', () => {
 const r067 = live.sets.r067!, all067 = r067.frames.map(f => f.name), must067 = r067.frames.filter(f => !f.optional).map(f => f.name);
 
 describe('the r067 set', () => {
-  test('names the thirty-three pictures of Proof067, two of them optional (the crowd and a second rival decide), none twice, each with a line saying what it shows', () => {
+  test('names the thirty-two pictures of Proof067 (engine 0.44.0: one Help on Inez, so one convo-inez picture), two of them optional (the crowd and a second rival decide), none twice, each with a line saying what it shows', () => {
     expect(r067.section).toBe('r067');
-    expect(all067.length).toBe(33);
-    expect(new Set(all067).size).toBe(33);
+    expect(all067.length).toBe(32);
+    expect(new Set(all067).size).toBe(32);
     expect(r067.frames.filter(f => f.optional).map(f => f.name)).toEqual(['r067-stack-tab', 'r067-reticle-handoff']);
     for (const f of r067.frames) expect(f.what.length, f.name).toBeGreaterThan(20);
   });

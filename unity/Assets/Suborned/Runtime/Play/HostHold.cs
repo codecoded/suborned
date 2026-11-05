@@ -72,7 +72,7 @@ namespace Suborned.Play
                 foreach (var w in plan.Choice.Order)
                 {
                     var r = plan.Row(w); if (r == null || !r.Available || r.I?.Order == null) continue; int seq = FreshRank(plan.T, r.I.Order); if (seq < 0) continue;
-                    var o = r.I.Order; if (o.Do is "fire" or "takedown" or "go" || o.Do == "turn" && (o.Approach == "pressure" || r.I.Outcome == "refused")) continue;
+                    var o = r.I.Order; if (o.Do is "fire" or "takedown" or "go" || o.Do == "turn" && (o.Approach == "pressure" || ContextRank.Refuses(r.I.Outcome))) continue;
                     if (pass == 0 && !plan.Givers[w].Contains(Agent)) continue;
                     if (seq > bestSeq) { bestSeq = seq; bestW = w; } // the newest news first, then ContextRank's order
                 }
@@ -83,7 +83,7 @@ namespace Suborned.Play
                 {
                     var r = plan.Row(w); if (r == null || !r.Available || r.I?.Order == null) continue;
                     var o = r.I.Order; if (o.Do is "fire" or "takedown" or "go") continue;
-                    if (o.Do == "turn" && (o.Approach == "pressure" || r.I.Outcome == "refused")) continue;
+                    if (o.Do == "turn" && (o.Approach == "pressure" || ContextRank.Refuses(r.I.Outcome))) continue;
                     if (ContextRank.Tier(new ContextRank.Way { Do = o.Do }) > 5) continue;
                     if (pass == 0 && !plan.Givers[w].Contains(Agent)) continue;
                     return w;

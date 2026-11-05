@@ -78,7 +78,7 @@ namespace Suborned.Play
                 switch (k)
                 {
                     case "usd":
-                        if (i.Usd.Length > 0 && i.Usd != "$0") F("usd", "p_cash", CompactUsd(i.Usd.TrimStart('$').Replace("–$", "–")));
+                        if (i.Usd.Length > 0 && (i.Usd != "$0" || o.Do == "turn" && i.Outcome == "small-offer")) /* engine 0.44.0: the small offer shows its $0 */ F("usd", "p_cash", CompactUsd(i.Usd.TrimStart('$').Replace("–$", "–")));
                         break;
                     case "time":
                         {

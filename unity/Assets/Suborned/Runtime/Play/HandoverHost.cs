@@ -902,7 +902,7 @@ namespace Suborned.Play
                         i.Usd = q.WorstUsd > q.Usd ? $"${q.Usd:N0}–{q.WorstUsd:N0}" : $"${q.Usd:N0}";
                         i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Orders = q.Orders; i.Leverage = q.Leverage; // the walk is the card's own (Walk, WalkS)
                         i.Alert = q.Reports == "no" ? "A 0" : q.Reports == "yes" ? $"A →{q.AlertIfReported}" : $"A ?→{q.AlertIfReported}";
-                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome; i.Seen = SeenWords(q.Seen); Tape(i, q); /* brief 096: a live camera records Pay and Pressure (HostTape) */
+                        i.Outcome = q.Outcome == "?" ? "?" : q.Outcome; i.Seen = SeenWords(q.Seen); Tape(i, q); OfferRows(i, q); /* brief 096: a live camera records Pay and Pressure (HostTape); engine 0.44.0: a remembered refusal's line (HostHelpOffer) */
                         i.Likely = q.Likely; i.Hurt = q.Hurt; i.Exact = CastOf(t.Key)?.KTemperament ?? false; i.Eyes = new List<string>(q.WitnessIds); // engine 0.28
                         return i;
                     }
@@ -1266,8 +1266,8 @@ namespace Suborned.Play
                     {
                         if (IsCrew(o.Target)) return CrewLock(by, o); var p = CastOf(o.Target); if (p == null) return No("target-unknown", "no one to turn"); // brief 096: Pay on a member (HostCrewTurn)
                         if (!g.PersonPos(p).HasValue) return No("person-away", "not out on the street");
-                        var need = g.R.ApproachRequires(o.Approach); // engine 0.28 (brief 054 §2.2): "routine known" = watched, or no Watch to give (the driver is paid at once)
-                        if (need != "nothing" && !(need == "routine" ? p.KRoutine || !g.WatchOffered(o.Target) : p.Knows(need))) return No("needs-" + need, $"needs their {need} — {(need == "routine" ? "Watch" : "Listen (Scout)")} first");
+                        var need = TurnNeeds(o.Approach); var nw = need == "need-told" ? "need" : need; // engine 0.28 (brief 054 §2.2): "routine known" = watched, or no Watch to give (the driver is paid at once); engine 0.44.0: the rulebook's own gate (HostHelpOffer), Help's need told by the briefing
+                        if (need != "nothing" && !(need == "routine" ? p.KRoutine || !g.WatchOffered(o.Target) : p.Knows(need))) return No("needs-" + nw, $"needs their {nw} — {(need == "routine" ? "Watch" : "Listen (Scout)")} first");
                         if (p.KnownRefused.Contains(o.Approach)) return No("refusal-remembered", $"{Cap(Name(o.Target))} refused this already");
                         var q = g.Preview(o.Approach, o.Target, OpId.Fixer); if (q.WorstUsd > g.Cash) return No("no-cash", $"not enough cash (${q.WorstUsd:N0})", -1, q.WorstUsd);
                         return yes;
