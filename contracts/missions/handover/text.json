@@ -1090,6 +1090,8 @@
   "car.leaves-split": "engine 0.42.0 (car.lend): PLACEHOLDER, card (Fable): our car leaves with those aboard; the mission runs on while Popovic is still in the bay",
   "car.lost": "engine 0.42.0 (car.lend L9): PLACEHOLDER, debrief line and card (Fable): our car left behind; the police will trace it (+1 T, hunted)",
   "lend.goes-on": "engine 0.42.0 (car.lend L8): PLACEHOLDER, card (Fable): our car wrecked or the cell down, but Popovic is out (or his car can still go): the mission runs on",
+  "go.waits": "engine 0.43.0 (car.go, Motive G1): PLACEHOLDER, card (Fable, Glyph): a Go given while one of us climbs in waits for him and goes the moment he is in; the Go's card already counted him aboard",
+  "go.missed": "engine 0.43.0 (car.go, Motive G1): PLACEHOLDER, card (Fable): the Go that waited for a Board didn't land (he was shot down or called off, and the car is now held or empty): the refusal's own words follow",
   "rivals.block": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Glyph's crucial list: rivals for our car): the rival car stops across our way out; the ring's Boxed in names it",
   "rivals.lookout-posted": "engine 0.41.0 (brief 096; Aster's addition, Sky approved): PLACEHOLDER, a crucial card that stays until clicked (Latch wires, Fable words): the rival lookout takes his post watching Popovic's car; deal with him before 5:53",
   "rivals.lookout-follows": "engine 0.41.0 (brief 096): PLACEHOLDER, a crucial card that stays until clicked (Motive's seen table, 5:53): the lookout is going after Popovic's car",

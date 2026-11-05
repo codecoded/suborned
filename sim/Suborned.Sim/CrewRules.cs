@@ -27,6 +27,8 @@ namespace Suborned.Sim
         public readonly int LookoutRunCmS, MisledS;
         /// <summary>Engine 0.41.0 (rivals.turn): Pay's price, time and Trail; the cap on one temperament (per cent of the crew); the kinds, in draw order.</summary>
         public readonly int PayUsd, PayS, PayTrail, TemperMaxPct; public readonly string[] Kinds;
+        /// <summary>Engine 0.43.0 (rivals.turn.needs "watched"; Motive's rivals page pay.needs): Pay on a member needs the crew watched first.</summary>
+        public readonly bool PayNeedsWatch;
         /// <summary>Engine 0.33.0 (rivals.free, Motive M059-3.4): a crewmate within this many cm of a tied member unties him.</summary>
         public readonly int FreeCm;
         public readonly CrewLoop PostedLoop, LookoutLoop, WheelmanLoop;
@@ -48,7 +50,9 @@ namespace Suborned.Sim
             lk.Only("follow", "misled", "rule", "tag", "src", "proposed", "reason"); if (lk["rule"].Str().Length == 0) throw new FormatException("rivals.lookout.rule is empty");
             LookoutRunCmS = ri(lk["follow"]); MisledS = ri(lk["misled"]);
             var tn = n.Opt("turn") ?? throw new FormatException("rivals.turn is missing: engine 0.41.0 gives the crew temperaments (brief 096, Motive Q3 a)");
-            tn.Only("pay", "s", "trail", "maxShare", "kinds", "rule", "tag", "src", "proposed", "reason"); if (tn["rule"].Str().Length == 0) throw new FormatException("rivals.turn.rule is empty");
+            tn.Only("pay", "s", "trail", "maxShare", "kinds", "needs", "rule", "tag", "src", "proposed", "reason"); if (tn["rule"].Str().Length == 0) throw new FormatException("rivals.turn.rule is empty");
+            var pn = tn.Opt("needs")?.Str() ?? throw new FormatException("rivals.turn.needs is missing: engine 0.43.0 reads whether Pay on a member needs a Watch first (brief 096, Motive's rivals page)");
+            if (pn != "watched" && pn != "none") throw new FormatException($"rivals.turn.needs: watched or none, not '{pn}'"); PayNeedsWatch = pn == "watched";
             PayUsd = ri(tn["pay"]); PayS = ri(tn["s"]); PayTrail = ri(tn["trail"]); TemperMaxPct = ri(tn["maxShare"]);
             var kinds = new List<string>(); foreach (var k in tn["kinds"].Items) kinds.Add(k.Str()); Kinds = kinds.ToArray();
             if (Kinds.Length != 2 || Kinds[0] != "mercenary" || Kinds[1] != "loyal") throw new FormatException("rivals.turn.kinds: the engine draws mercenary or loyal (Motive Q3 a)");

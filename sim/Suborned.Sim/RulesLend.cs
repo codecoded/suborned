@@ -15,8 +15,14 @@ namespace Suborned.Sim
         /// <summary>car.lend.police: seconds from vale.out until the police close in (the mission ends).</summary>
         public int SplitPoliceS { get; private set; }
 
+        /// <summary>car.go.waits "board" (engine 0.43.0, Motive G1): a Go given while an operative climbs into the car waits for that Board.</summary>
+        public bool GoWaitsBoard { get; private set; }
+
         void ReadLend(JNode b)
         {
+            var go = b["car"].Opt("go") ?? throw new FormatException("car.go is missing: engine 0.43.0 reads whether a Go waits for a Board under way (brief 096, Motive G1)");
+            go.Only("waits", "rule", "tag", "src", "proposed", "reason"); if (go["rule"].Str().Length == 0) throw new FormatException("car.go.rule is empty");
+            var gw = go["waits"].Str(); if (gw != "board" && gw != "none") throw new FormatException($"car.go.waits: board or none, not '{gw}'"); GoWaitsBoard = gw == "board";
             var l = b["car"].Opt("lend") ?? throw new FormatException("car.lend is missing: engine 0.42.0 runs the lend (brief 096, Motive's lend addendum)");
             l.Only("split", "seats", "police", "refuse", "rule", "tag", "src", "proposed", "reason");
             if (l["rule"].Str().Length == 0) throw new FormatException("car.lend.rule is empty");

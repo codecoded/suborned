@@ -1,25 +1,16 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "MC-13 (brief 059, Motive M059-5.3; Keel's P59-LOUD-YARD), the service drive's loud-wait twin: route-b-board to the pickup, but the Fixer shoots the pickup camera out as Vale's car parks (gunfire: Alert 2), and the Scout and Fixer get into the car the Tech drove round. The Enforcer takes Vale from the back seat, carries him 3.5 m and boards, and Go is refused: the car is held (the official entrance's officers, the nearest entry to the stand, §07 loud: their blocker on the lane). Nobody of the cell fights, so the car can't leave, and the player withdraws (the free abort). Left to wait, the run seals (9:47.7 under the rulebook's final intent, agent) or, under the control intent every, the police shoot the cell down in the car: the Withdraw keeps the twin to what MC-13 reads, the refusal.",
+ "note": "MC-13 (brief 059, Motive M059-5.3), the service drive's loud-wait twin, recomposed on engine 0.43.0 (Keel for Waymark, brief 096: since 0.41.0 it lost to the lookout, which is not what it tests): the drive-round's opening (our car on the service drive by 2:45, before the rival car turns in, so the rival car blocks the drive's mouth: L10), the Fixer's Pay on the driver (taped: a loud twin), the lookout misled; the Fixer shoots the pickup camera out as Popovic's car stops at the kerb (gunfire: Alert 2, the loud fight), and the Scout and the Fixer get into our car on the drive. The Enforcer takes Popovic from the back seat at the kerb and the Take ends with him at its wheel (the lend); its Go is refused: the rival car boxes it (the box is the final fight's gate, Motive K3). Nobody of the cell fights, so it never leaves, and the player withdraws (the free abort): the Withdraw keeps the twin to what MC-13 reads, the refusal.",
  "start": {},
  "until": 4900,
  "steps": [
   {
-   "op": "enforcer",
-   "do": "move",
-   "to": "d:Service lane",
-   "at": "5:30",
-   "why": "brief 067 A (the patrol sweeps the service yard): waits at the square until the Reroute has landed (5:45), then walks to the service lane"
-  },
-  {
    "op": "scout",
    "do": "move",
-   "to": [
-    7950,
-    -4000
-   ],
-   "why": "to the Office's south-west corner on the way to the driver, 3.4 m outside the pickup camera's cone and outside the guard's (brief 031, Waymark)"
+   "to": "d:Meet driver",
+   "at": "0:48",
+   "why": "the driver comes on at about 1:00"
   },
   {
    "op": "fixer",
@@ -28,29 +19,20 @@
     7950,
     -3850
    ],
-   "why": "to the corner beside the Scout, 2.2 m outside the pickup camera's cone, on the way to the driver (brief 031, Waymark)"
-  },
-  {
-   "op": "scout",
-   "do": "move",
-   "to": "d:Meet driver",
-   "gap": 62,
-   "why": "the corner is on the way: on to the driver once there (the walk is about 60 s), so the Scout never stands in the guard's cone; brief 054: no Watch on the driver to give first; a Listen within 5 m needs no walk in (engine 0.39.0)"
+   "why": "out of the pickup camera's sight"
   },
   {
    "op": "scout",
    "do": "listen",
    "target": "driver",
    "label": "heard",
-   "gap": 5,
-   "why": "given once the Scout stands at the meeting point (the walk is under 2 s; 5 s covers it), so the Listen starts where he stands; engine 0.23.0 walks an out-of-reach Listen in, so given on the way it would start late"
+   "gap": 5
   },
   {
    "op": "fixer",
    "do": "move",
    "to": "d:Boarding pavilion",
-   "gap": 62,
-   "why": "to the driver once at the corner (the walk is about 60 s, then 6 s on), for the Pay, which holds the pickup camera's clock (an act, Sky L1); waiting idle by the car in its view would be noticed. Brief 054: Pay needs no Watch on the driver"
+   "gap": 62
   },
   {
    "op": "fixer",
@@ -59,41 +41,94 @@
    "approach": "pay",
    "by": "5:20",
    "label": "turned",
-   "why": "the card shows Pay works on this driver (a Mercenary): $70,000 at one order. Help is his wrong approach: two visits at $20,000 is cheaper, at 35 s a visit"
+   "after": [
+    "heard"
+   ],
+   "why": "Pay in the camera's view: taped (a loud twin; the hold is what it tests)"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "run": true,
+   "at": "1:30",
+   "label": "tcar"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tin"
+  },
+  {
+   "op": "tech",
+   "do": "drive-car",
+   "target": "service-drive",
+   "at": "2:15",
+   "label": "drive",
+   "why": "before the rival car turns in (2:35): it will block the drive's mouth (L10)"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true,
+   "when": "car.parked",
+   "label": "tcab"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "rr1",
+   "why": "the car on the drive is a loiterer to the patrol"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "when": "patrol.returns",
+   "label": "rr2",
+   "why": "and again when it comes back: it covers the pickup"
   },
   {
    "op": "scout",
    "do": "move",
    "to": [
-    8600,
-    -3400
+    9100,
+    -2700
    ],
    "after": [
     "heard"
    ],
-   "gap": 52,
-   "why": "once the Listen is over (30 s, and his walk to a spot) and a margin, the margin a player who is a little late needs (engine 0.23.0: a Listen that has to walk in ends later, and a move given while it runs is refused as busy, so the tip at 3:10 was missed); near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"
+   "at": "3:40",
+   "label": "tolk"
   },
   {
    "op": "scout",
    "do": "mislead",
-   "target": "rivals",
-   "at": "3:10",
-   "label": "tip",
-   "why": "a false tip sends the rivals away (3:50) as soon as they park"
+   "target": "rival-4",
+   "at": "4:30",
+   "when": "rivals.lookout-posted",
+   "label": "misled"
   },
   {
    "op": "scout",
    "do": "move",
-   "to": [
-    7300,
-    -1900
-   ],
+   "to": "service-drive",
    "after": [
-    "tip"
+    "misled"
    ],
-   "at": "5:35",
-   "label": "scout-yard"
+   "at": "5:20",
+   "label": "sdr",
+   "why": "the cell waits in the car"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "sin",
+   "every": 0.5
   },
   {
    "op": "fixer",
@@ -105,130 +140,58 @@
    "after": [
     "turned"
    ],
-   "at": "5:35",
-   "label": "fixer-yard"
-  },
-  {
-   "op": "tech",
-   "do": "move",
-   "to": "cabinet",
-   "run": true,
-   "why": "brief 067 A: to the cabinet for the Reroute"
-  },
-  {
-   "op": "tech",
-   "do": "reroute",
-   "target": "patrol",
-   "at": "4:40",
-   "label": "rr",
-   "why": "brief 067 A: ordered at 5:00, it lands 5:45, the patrol away to 7:40: the yard is clear for the Take and the fight (a rerouted patrol never breaks to gunfire)"
-  },
-  {
-   "op": "tech",
-   "do": "move",
-   "to": "d:Getaway bay",
-   "after": [
-    "rr"
-   ],
-   "when": "patrol.rerouted",
-   "run": true
-  },
-  {
-   "op": "tech",
-   "do": "board",
-   "target": "car",
-   "label": "tech-in"
-  },
-  {
-   "op": "tech",
-   "do": "drive-car",
-   "target": "service-drive",
-   "label": "drive",
-   "when": "car.parks"
+   "at": "5:20",
+   "label": "fyard"
   },
   {
    "op": "fixer",
    "do": "fire",
    "target": "camera:pickup",
-   "after": [
-    "fixer-yard"
-   ],
-   "when": "car.parks",
+   "when": "car.kerbside",
    "label": "cam",
-   "why": "the loud shape at the yard (Motive M059-5.4): the pickup camera shot out as Vale's car parks, gunfire before the fight (Alert 2)"
-  },
-  {
-   "op": "scout",
-   "do": "move",
-   "to": "service-drive",
-   "after": [
-    "scout-yard"
-   ],
-   "when": "car.parked",
-   "why": "the cell waits in the car: the Scout gets in once the Tech has driven it round"
-  },
-  {
-   "op": "scout",
-   "do": "board",
-   "target": "car",
-   "label": "scout-in",
-   "every": 0.5
+   "why": "the loud shape at the yard (Motive M059-5.4): the pickup camera shot out as Popovic's car stops at the kerb (Alert 2)"
   },
   {
    "op": "fixer",
    "do": "move",
    "to": "service-drive",
-   "after": [
-    "cam"
-   ],
-   "why": "and the Fixer, after his shot"
+   "label": "fdr"
   },
   {
    "op": "fixer",
    "do": "board",
    "target": "car",
-   "label": "fixer-in",
+   "label": "fin",
    "every": 0.5
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    7900,
+    -1990
+   ],
+   "at": "5:30",
+   "label": "ek",
+   "why": "beside Popovic's kerbside stop"
   },
   {
    "op": "enforcer",
    "do": "take",
-   "when": "car.parks",
-   "label": "take",
-   "at": "6:25",
-   "why": "Vale reaches the car in the service lane at 6:10"
-  },
-  {
-   "op": "enforcer",
-   "do": "move",
-   "to": "service-drive",
-   "after": [
-    "take",
-    "drive"
-   ],
-   "when": "take.done",
-   "label": "out"
-  },
-  {
-   "op": "enforcer",
-   "do": "board",
-   "target": "car",
-   "after": [
-    "out"
-   ],
-   "label": "in",
-   "why": "Vale in first (Board, 4 s carrying)"
+   "when": "car.kerbside",
+   "label": "take"
   },
   {
    "op": "cell",
    "do": "go",
+   "target": "car:official",
    "after": [
-    "in"
+    "take"
    ],
-   "gap": 4.1,
-   "refused": "car-held",
-   "why": "Go with Vale aboard: refused, the car held (the official entrance's officers on their way, then the first at his post): nobody of the cell fights, so it never leaves",
-   "label": "held"
+   "when": "lend.lent",
+   "refused": "car-boxed",
+   "label": "held",
+   "why": "Go on Popovic's car with him in the back: refused, the rival car across the drive's mouth boxes it (the final fight's gate); nobody of the cell fights, so it never leaves"
   },
   {
    "do": "withdraw",
@@ -236,7 +199,7 @@
     "held"
    ],
    "gap": 0.1,
-   "why": "the car held and nobody of the cell fighting, the player gives up: Withdraw, the free abort (§06), ends the attempt"
+   "why": "the car boxed and nobody of the cell fighting, the player gives up: Withdraw, the free abort (§06), ends the attempt"
   }
  ]
 }

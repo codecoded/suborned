@@ -188,7 +188,7 @@ namespace Suborned.Sim
             var l = new List<(string, string, string)>(); bool fighting = FightStillOn(), sealing = Lockdown != INF;
             foreach (var op in Ops)
             {
-                if (op.InCar) continue;
+                if (op.InCar || ClimbingInto(op, "car")) continue; // engine 0.43.0 (G1): climbing in counts as aboard on the card
                 string name = Sim.Op.Name(op.Id);
                 if (op.Down) l.Add((name, "captured", "downed"));
                 else if (fighting) l.Add((name, "captured", "fighting"));
@@ -262,14 +262,16 @@ namespace Suborned.Sim
         string Go(Order o)
         {
             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
-            if (LentTarget(o.Target)) return GoLent(); // engine 0.42.0 (car.lend, L6): the lent car's own Go
+            if (LentTarget(o.Target)) return GoLent(o); // engine 0.42.0 (car.lend, L6): the lent car's own Go
             if (o.Target.Length > 0 && o.Target != "car" && o.Target != "car:getaway") return No("target-unknown", $"go names the getaway car (\"car\") or the lent car (\"car:official\"), not '{o.Target}'");
             if (GetawayGone) return No("car-left", "the getaway car has left");
-            if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
-            if (!CarHasDriver()) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); } // engine 0.34.0 (Motive M067-K3 c)
+            bool climbing = GoWouldWait("car"); // engine 0.43.0 (G1): someone climbing in counts as in, for the Go to wait for
+            if (!AnyInCar && !climbing) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
+            if (!CarHasDriver() && !climbing) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); } // engine 0.34.0 (Motive M067-K3 c)
             var hs = CarHolders(); var bx = GetawayBoxers(); // brief 096 (car.box): boxed in first, the physical fact; the words and ids name the holders too
             if (bx.Count > 0) { goRefusedAt = Tick; goRefused = "car-boxed"; return No("car-boxed", BoxedWords(bx, hs), ids: BoxedIds(bx, hs)); }
             if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; GateHolders(out int until); return No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)); }
+            if (GoWaitFor(o) is string w) return w; // engine 0.43.0 (G1): the Go waits for the Board under way
             if (Lent && Vale != ValeAt.Car) { GetawayLeavesSplit(); return ""; } // engine 0.42.0 (L8, LEND-17): the three out; the mission runs on, or ends after vale.out
             Leave();
             return "";
@@ -283,8 +285,8 @@ namespace Suborned.Sim
             try
             {
                 if (Over) why = No("mission-over", "the mission is over");
-                else if (!AnyInCar) why = No("car-empty", "nobody is in the car");
-                else if (!CarHasDriver()) why = No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); // engine 0.34.0 (Motive M067-K3 c)
+                else if (!AnyInCar && !GoWouldWait("car")) why = No("car-empty", "nobody is in the car");
+                else if (!CarHasDriver() && !GoWouldWait("car")) why = No("car-no-driver", "nobody aboard can drive: only the downed are in the car"); // engine 0.34.0 (Motive M067-K3 c)
                 else if (GetawayBoxers() is var bx && bx.Count > 0) why = No("car-boxed", BoxedWords(bx, CarHolders()), ids: BoxedIds(bx, CarHolders())); // brief 096 (car.box): boxed in before held
                 else { var hs = CarHolders(); GateHolders(out int until); why = hs.Count > 0 ? No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)) : ""; }
             }

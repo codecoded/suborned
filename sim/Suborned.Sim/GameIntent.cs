@@ -55,7 +55,7 @@ namespace Suborned.Sim
             switch (f)
             {
                 case "drawn": return op.Gun.Drawn && !Warned(op); // under a warning nobody fires on the draw yet (the window is the point of it)
-                case "fired": return op.Gun.Fired;
+                case "fired": return op.Gun.Fired && !(R.FiredPlaced && GangPending); // engine 0.43.0 (Motive V3): unplaced, nobody of security knows who fired (a shot it saw places the cell)
                 case "vale": return op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer;
                 case "violence": return markedFoes.Contains(name);
                 case "face": return faces.Contains(name);

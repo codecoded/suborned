@@ -83,3 +83,11 @@ countdown, the left-behind flags), Chime.
 briefs/096/motive/misses.html, misses.json: (Q1) a quiet final fight may be as short as 10 s when preparation earns it: band 10–40 s · (Q2) the veteran's shot is fair at "Popovic out, the other three caught": V3 (the police count "fired" only for a shot they saw, or once the cell is placed) · (Q3) going loud on route B stays the hard way (30–40 %, a report-only line); the front door is the loud route. With the fixes that follow earlier calls: the police clock after vale.out 60 → 75 s, G1 (a Go waits for an agent climbing in), Waymark's thinned plan and late Go, bands B out ≥ 85 % with no ceiling and G ≥ 75 %.
 Also (Sky, "yes, crucial card", after his Air run, seed 793475664, engine 0.39.0: the Enforcer shot down 2 s into a 4 s board carrying Popovic, the warning only an icon): the Enforcer badly hurt is a crucial card, first while he carries Popovic (65d8bbb7).
 Next: Keel (worktree), engine 0.43.0 with Waymark's plans; Fable's words pass (running); then the Mac build. No Linux.
+
+## Motive's misses built (Keel, 2026-11-05)
+Branch `t3/7f898491` (from `work/096` at 7dad862c): engine 0.43.0. V3 (security.unclaimed.fired: "fired" counts only once the cell is placed),
+the police close in 75 s after vale.out, G1 (car.go: a Go waits for a Board under way), F2's words, Pay on a rival needs a Watch first (Motive's
+rivals page); host reads CrewActQuery, LentCarWatcher, GoWouldWait/GoWaiting. Waymark's plans (by Keel): the late Go on the countdown, the
+thinned plan by a posted man, veteran-drive (17.5 %, report only); MC-0/11/13/14 green. Every L96 band in. Report briefs/096/keel/report-misses.md;
+GDD text gdd-text-misses.md; bands bands-misses-after-200.txt; record c053.
+Next: Latch (CrewActQuery in HostCrewTurn, the "+1 T if seen", G1's card), Fable (go.waits, go.missed), Glyph, Chime; Motive (veteran-drive).

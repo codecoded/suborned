@@ -18,9 +18,9 @@ describe('brief 096: the lend in the rulebook', () => {
   test('the live rulebook has every new key (optional in the schema only for pinned runs)', () => {
     expect(rb.car?.lend).toBeDefined(); expect(rb.security.unclaimed?.scene).toBeDefined(); expect(rb.rivals?.block?.brokenPace).toBeDefined();
   });
-  test("Motive's values: the lend on, one seat, the police 60 s after vale.out, the scene 30 m, a broken man's run 280 cm/s", () => {
+  test("Motive's values: the lend on, one seat, the police 75 s after vale.out (0.43.0), the scene 30 m, a broken man's run 280 cm/s", () => {
     const l = rb.car!.lend!;
-    expect([v(l.split), v(l.seats), v(l.police)]).toEqual([1, 1, 60]);
+    expect([v(l.split), v(l.seats)]).toEqual([1, 1]); expect(v(l.police)).toBe(75); // engine 0.43.0: 75 s (Motive's misses page L8; was 60)
     expect(v(rb.security.unclaimed!.scene!)).toBe(30);
     expect(v(rb.rivals!.block!.brokenPace!)).toBe(280);
     expect(l.refuse).toEqual({ board: 'board-lent-full', drive: 'drive-lent', gone: 'car-left' });

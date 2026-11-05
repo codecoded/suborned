@@ -275,11 +275,9 @@ describe('the §09 conditions, each with a failing example', () => {
 });
 
 const KNOWN_RED = [
-  'R-7', 'MC-11', 'MC-14' /* engine 0.41.0's block: the box is the gate (no blocker is picked), so "blocker out" never logs on a route under the block; Waymark: read car.unboxed there */,
-  'MC-0', 'MC-13' /* fight-loud-wait-yard and careless-scout-idles-pickup lose to the lookout (0.41.0: he follows Popovic's car); Waymark recomposes them */,
-  'B-2 thin-quiet', 'B-7 quiet-a', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', 'B-11 quiet-b-thinned', 'B-11 quiet-b', 'B-14', 'B-16 drive-early' /* engine 0.42.0 (brief 096, the lend and F1-F3): Motive's bands, reports */,
-  'L96 B', 'L96 B-all', 'L96 B-thinned', 'L96 G', 'L96 loud-lend', 'L96 veteran', 'L96 A-fight' /* engine 0.42.0: Motive's lend bands missed, causes in briefs/096/keel/report-lend.md; Motive's levers */,
-];
+  'R-7' /* Waymark and Pulse: quiet-a's call and enter, quiet-g's beside-guard windows under 30 s at a person's pace (briefs/096/motive/misses.json) */,
+  'B-2 thin-quiet', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', 'B-11 quiet-b', 'B-14', 'B-16 drive-early' /* engine 0.43.0 (brief 096): Motive's bands, reports */,
+]; // engine 0.43.0 (Keel for Waymark): MC-0 and MC-13 green (fight-loud-wait-yard and careless-scout-idles-pickup recomposed on the lend, the lookout misled), MC-11 and MC-14 read car.unboxed under the block (blocker.ts); the lend bands (L96) and B-7 quiet-a in band
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
   // What's still red has an owner, named in KNOWN_RED; when an owner fixes one, this test fails until it comes off the list.
   test('across seeds the references win as their bands say, the scripts play as the manifest expects, and the check ships but for its named owners', async () => {

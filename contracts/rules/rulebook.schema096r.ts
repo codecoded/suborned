@@ -17,8 +17,8 @@ export const RivalsBlock = ground({ standOff: Ref, wheelmanNear: Ref.optional(),
 /** The lookout's run after the target's car, and how long a misled member watches. */
 export const RivalsLookout = ground({ follow: Ref, misled: Ref, rule: text });
 /** Pay on a member: price, time, Trail; the cap on one temperament; the kinds, in draw order. */
-export const RivalsTurn = ground({ pay: Ref, s: Ref, trail: Ref, maxShare: Ref, kinds: z.tuple([z.literal('mercenary'), z.literal('loyal')]), rule: text });
+export const RivalsTurn = ground({ pay: Ref, s: Ref, trail: Ref, maxShare: Ref, kinds: z.tuple([z.literal('mercenary'), z.literal('loyal')]), needs: z.enum(['watched', 'none']).optional(), rule: text }); // needs: engine 0.43.0 (a Watch first)
 /** The unclaimed shooting: how long the response holds the scene, and (engine 0.42.0, Motive V2 b) how near the scene it places the cell. */
-export const Unclaimed = ground({ hold: Ref, scene: Ref.optional(), rule: text });
+export const Unclaimed = ground({ hold: Ref, scene: Ref.optional(), fired: z.enum(['placed', 'always']).optional(), rule: text }); // fired: engine 0.43.0 (Motive V3)
 /** A blast near city people: the Standing step and its reach. */
 export const BlastStanding = ground({ v: Ref, near: Ref, rule: text });
