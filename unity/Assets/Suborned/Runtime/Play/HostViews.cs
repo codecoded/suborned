@@ -47,7 +47,7 @@ namespace Suborned.Play
                 var pole = Part(root, "camera/" + c.Id, cylinder, Lit(host.carColour), at + Vector3.up * 1.6f, new Vector3(0.25f, 1.6f, 0.25f));
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
-                if (!c.World && host.cctvPole) KitPole(c, pole); // brief 055: Vela's CCTVPole at the plan's 5.5 m mount
+                if (!c.World && (host.hoverCamera || host.cctvPole)) KitPole(c, pole); // brief 055: Vela's CCTVPole at the plan's 5.5 m mount
                 CamHeadFor(c, at); // brief 031: the lens that shows the camera's attention
             }
             // brief 013: the stashes (a bin, a service door) are click targets: a box round each, named stash/<id>

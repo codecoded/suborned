@@ -79830,7 +79830,7 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "candidate",
+   "status": "adopted",
    "source": "generated"
   },
   {
@@ -80013,8 +80013,9 @@
     "squash": 1,
     "wave": 2
    },
-   "status": "candidate",
-   "source": "generated"
+   "status": "rejected",
+   "source": "generated",
+   "why": "Sky, 2026-11-05: \"doesn't need a cradle - this is retro future world\" (brief 096): the camera just floats; nothing holds it up"
   },
   {
    "id": "InlayArc_R2_W06",

@@ -125,7 +125,9 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string, extras: 
   generated.sort((a, b) => a.id.localeCompare(b.id));
   assets.push(...generated);
   // brief 072-D: the every-face pieces' distance class (Redline's plan §3.1), after lodCategory so a piece keeps its category too
-  const classed = assets.map(a => { const c = lodClassOf(a.id); if (!c) return a; const { files, tags, status, ...rest } = a; return { ...rest, lodClass: c, files, tags, status } as KitAsset; });
+  const classed0 = assets.map(a => { const c = lodClassOf(a.id); if (!c) return a; const { files, tags, status, ...rest } = a; return { ...rest, lodClass: c, files, tags, status } as KitAsset; });
+  const why = new Map((prior?.assets ?? []).flatMap(a => (a.why ? [[a.id, a.why] as const] : []))); // brief 096: a status's reason, hand-written like the status, kept after it
+  const classed = classed0.map(a => (why.has(a.id) && !a.why ? { ...a, why: why.get(a.id)! } : a));
   // brief 072-F: kit-wide textures (surface_tex.py's `surface_*`, copied into the generator's Textures/ by export_kit): no material references them by guid,
   // so they ride at the top level. No generator output with them: the prior catalogue's list is kept (copy then needs `bun run decokit`).
   const surf = genTexDir && existsSync(genTexDir) ? readdirSync(genTexDir).filter(n => /^surface_.+\.png$/.test(n)).sort().flatMap(n => pair('texture', `Textures/${n}`)) : [];

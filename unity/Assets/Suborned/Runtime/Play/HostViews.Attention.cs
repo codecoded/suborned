@@ -28,9 +28,9 @@ namespace Suborned.Play
         /// nose-down, so 4.78 m up, 0.89 m out and ~17 deg down once scaled): the rulebook's pole lens is 4.79 m (brief 055).</summary>
         const float LensUp = 4.78f, LensOut = 0.89f, LensDown = 16.7f;
         /// <summary>How high a mission camera's head stands above the ground (the kit pole's lens, or the 3.2 m stand-in's head).</summary>
-        public float CamHeadUp => host.cctvPole ? LensUp : 3.25f;
+        public float CamHeadUp => host.hoverCamera || host.cctvPole ? LensUp : 3.25f;
         /// <summary>A mission camera's drawn height (for the callouts' figure box).</summary>
-        public float CameraTall => host.cctvPole ? 5.5f : 3.4f;
+        public float CameraTall => host.hoverCamera || host.cctvPole ? 5.5f : 3.4f;
 
         /// <summary>The kit pole under the stand-in's transform (kept as the click target and the view's anchor, 1.6 m up): the stand-in's
         /// cylinder is hidden and its collider runs the pole's 5.5 m; the model faces the camera's facing. The parent's scale is equal in x
@@ -39,6 +39,7 @@ namespace Suborned.Play
         {
             if (pole.GetComponent<MeshRenderer>() is MeshRenderer mr) mr.enabled = false;
             var col = pole.GetComponent<CapsuleCollider>(); col.height = 5.5f / 1.6f; col.center = new Vector3(0f, (2.75f - 1.6f) / 1.6f, 0f);
+            if (host.hoverCamera) return; // brief 096: no pole; the hovering head is the camera (HostViews.HoverCam), the collider stays the click target
             var fwd = frame.Dir(c.Facing); fwd.y = 0f; if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
             var m = Object.Instantiate(host.cctvPole, pole, false).transform; m.name = "model";
             m.localPosition = new Vector3(0f, -1f, 0f); m.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
@@ -52,6 +53,7 @@ namespace Suborned.Play
             if (c.World) return; // the world's own masts draw themselves
             var fwd = frame.Dir(c.Facing); if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
             var head = new GameObject("camera/" + c.Id + "/head").transform; head.SetParent(root, false);
+            if (host.hoverCamera) { HoverHead(c, at, head); return; } // brief 096: Sky's hovering camera
             if (host.cctvPole)
             {
                 var f = fwd; f.y = 0f; f.Normalize();
@@ -139,6 +141,7 @@ namespace Suborned.Play
                 if (st == 0 && kv.Value.Nod == 0f && kv.Value.Shown == 0) continue;
                 CamCue(kv.Value, st, st > 0 ? AgentAt(op) : null, t, dt);
             }
+            HoverViews(t, dt); // brief 096: the hovering heads read the engine (HostViews.HoverCam)
             foreach (var kv in stageRobots)
             {
                 var (face, idle) = kv.Value; if (!face) continue;

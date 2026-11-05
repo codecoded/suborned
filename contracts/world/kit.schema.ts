@@ -26,7 +26,7 @@ export type KitLodClassSpec = { distances: [number, number, number] };
 /** pivot 'origin-ground' = the pivot is not the footprint centre (a lamp's pole): `pivotOffset` = [x, z] of the footprint centre from the pivot in kit axes, i.e. the piece's centre sits there when its pivot is placed. */
 export type KitAsset = {
   id: string; category: string; size: [number, number, number]; pivot: 'footprint-centre-ground' | 'origin-ground'; pivotOffset?: [number, number]; front: '+Z';
-  tris: number; materials: string[]; parts?: unknown; lod1?: unknown; lods?: KitLod[]; lodCategory: KitLodCategory; /** brief 072-D: its distance class (lodClasses): the every-face pieces, RecordsTower and (072 F2) the roof crowns */ lodClass?: KitLodClass; files: KitFile[]; tags: KitTags; status: KitStatus;
+  tris: number; materials: string[]; parts?: unknown; lod1?: unknown; lods?: KitLod[]; lodCategory: KitLodCategory; /** brief 072-D: its distance class (lodClasses): the every-face pieces, RecordsTower and (072 F2) the roof crowns */ lodClass?: KitLodClass; files: KitFile[]; tags: KitTags; status: KitStatus; /** brief 096: why the status was set (by hand, as the status; kept by `bun run kit`), e.g. a rejection's reason */ why?: string;
   source?: 'generated'; order?: KitOrder; built?: KitBuilt;
   /** Brief 077: the extra generated root (repo-relative, e.g. out/decokit-077) the piece's 'extra' files come from (tools/kit/extra.ts). */
   extra?: string;
