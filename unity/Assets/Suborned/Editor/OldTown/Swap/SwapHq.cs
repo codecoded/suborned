@@ -41,7 +41,7 @@ namespace Suborned.OldTown.Editor.Swap
                 {
                     if (!mats[i]) continue;
                     var name = Alias.TryGetValue(mats[i].name, out var a) ? a : mats[i].name;
-                    if (!cache.TryGetValue(name, out var m)) cache[name] = m = AssetDatabase.LoadAssetAtPath<Material>($"{DecoKitData.MaterialDir}/{name}.mat");
+                    if (!cache.TryGetValue(name, out var m)) { cache[name] = m = AssetDatabase.LoadAssetAtPath<Material>($"{DecoKitData.MaterialDir}/{name}.mat"); DecoKitMaterials.Matte096(m, name); } // brief 096 K2: the HQ's enamels (DK_Enamel_Butter, copied as-is from the old kit, not a table row) matte too
                     if (m) { mats[i] = m; swapped++; } else missing.Add(mats[i].name);
                 }
                 r.sharedMaterials = mats;

@@ -45,7 +45,7 @@ namespace Suborned.OldTown.Editor.DecoKit
             mat.SetFloat("_EnvironmentReflections", foliage ? 0f : 1f);
             mat.SetFloat("_SpecularHighlights", foliage ? 0f : 1f);
             ApplyCoat(mat, row);
-            Matte096(mat, row);
+            Matte096(mat, row.name);
             ApplySurface(mat, row);
             ApplyTextures(mat, row);
             ApplyEmission(mat, row, srgb);
@@ -82,11 +82,14 @@ namespace Suborned.OldTown.Editor.DecoKit
 
         /// <summary>Glint, brief 096 "K2" (Sky: "k2 is good"): the enamels go matte, as the kit's do (tools/decokit/unity_mats.py MATTE_KIT): smoothness 0.4, no clear coat,
         /// no environment reflections, so they stop mirroring the play scene's teal-grey street cube. The colourway Paint variants copy these properties. Cars keep their gloss.</summary>
-        static void Matte096(Material mat, MaterialRow row)
+        internal static bool Matte096(Material mat, string name)
         {
-            if (!row.name.StartsWith("DK_Enamel_") && !row.name.StartsWith("DK_RobotEnamel_")) return;
+            if (!mat || !name.StartsWith("DK_Enamel_") && !name.StartsWith("DK_RobotEnamel_")) return false;
             mat.SetFloat("_Smoothness", 0.4f); mat.SetFloat("_EnvironmentReflections", 0f);
             if (mat.HasProperty("_ClearCoat")) { mat.SetFloat("_ClearCoat", 0f); mat.SetFloat("_ClearCoatMask", 0f); }
+            BaseShaderGUI.SetMaterialKeywords(mat, LitGUI.SetMaterialKeywords); // _ENVIRONMENTREFLECTIONS_OFF on, _CLEARCOAT off (Build sets them after; SwapHq's copied materials need it here)
+            EditorUtility.SetDirty(mat);
+            return true;
         }
 
         static void ApplySurface(Material mat, MaterialRow row)

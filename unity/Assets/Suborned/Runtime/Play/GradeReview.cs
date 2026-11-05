@@ -34,6 +34,7 @@ namespace Suborned.Play
             public float ssaoIntensity = float.NaN, ssaoRadius = float.NaN, ssaoFalloff = float.NaN, ssaoDirect = float.NaN;
             public float sunIntensity = float.NaN, sunShadow = float.NaN; public float[] ambientScale = { };
             public Mat[] mats = { };
+            public int contact = -1; public float contactBoost = float.NaN; public float contactWidth = 1.2f, contactStrip = 0.45f, contactBlob = 0.55f, contactSpread = 1.35f; public string contactTint = "#807470"; // brief 096 ambient: the Handover zone's contact shade, generated once
             public float standOff = float.NaN; // the play camera's stand-off along its view (HandoverHost.standOff, TacticalShadows.focusDepth): an ortho frame is the same picture at any stand-off, but SSAO's depth bias is not
             public int peek = -1; // 1: hold the detail layer (the cones) as Alt does, through HandoverHost.PeekLatch, for a signal frame
         }
@@ -162,9 +163,11 @@ namespace Suborned.Play
             return $"{m.name} x{hit.Length}";
         }
 
-        HandoverHost peekHost;
+        HandoverHost peekHost; bool contactDone, boosted;
         void Update()
         {
+            if (Has(s.contactBoost) && !boosted && Time.frameCount > 90) boosted = ContactShade096.Boost(s.contactBoost);
+            if (s.contact == 1 && !contactDone && Time.frameCount > 90) contactDone = ContactShade096.Build(s.contactWidth, s.contactStrip, s.contactBlob, s.contactSpread, Hex(s.contactTint));
             if (s.peek == 1 || Has(s.standOff))
             if (s.peek == 1)
             {
