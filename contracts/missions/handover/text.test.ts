@@ -1,6 +1,6 @@
 // Done-check for the Handover's words (Fable, brief 011): contracts/missions/handover/text.json parses as suborned.text/1, every engine
 // verb, refusal and fail has text, every reply the rulebook can produce has a line for each role and temperament, every line fits (≤ 80
-// characters, spoken lines 1–12 words), nobody uncast is named, the tone filters pass, and the pick is deterministic.
+// characters, lines spoken in play 1–12 words; scenes.conversations has its own limits, conversations.test.ts), nobody uncast is named, the tone filters pass, and the pick is deterministic.
 // The engine is read from source (sim/Suborned.Sim/*.cs) so a new refusal, fail or log code with no text fails here, not in play.
 // Run: bun test contracts/missions/handover
 import { describe, expect, test } from 'bun:test';

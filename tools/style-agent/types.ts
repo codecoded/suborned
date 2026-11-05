@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
-/** The style guide's four constraint types. Each rule cites the game sources it is drawn from. */
-export const RuleId = z.enum(['REVEAL', 'VOICE', 'WORLD', 'FORM']);
+/** The style guide's constraint types. Each rule cites the game sources it is drawn from. Guide /2 (brief 054) has the first four; /3 (brief 096, cutaway
+ *  conversations in full sentences) adds NATURAL. A saved run keeps its guide's version, so it replays with the rules and evaluation schema it ran with. */
+const RULES_V2 = ['REVEAL', 'VOICE', 'WORLD', 'FORM'] as const;
+export const RuleId = z.enum([...RULES_V2, 'NATURAL']);
 export type RuleId = z.infer<typeof RuleId>;
+export const GUIDE_VERSIONS = { 2: 'suborned.style-guide/2', 3: 'suborned.style-guide/3' } as const;
+export type GuideVersion = keyof typeof GUIDE_VERSIONS;
+export const guideVersion = (g: Pick<Guide, 'schema'>): GuideVersion => g.schema === GUIDE_VERSIONS[2] ? 2 : 3;
 /** Crew cards (generated from GDD §14). Fable writes and refines; Motive reviews Fable's lines ("Motive reviews", §14 Fable). */
 export const Role = z.enum(['dialogue-designer', 'systems-designer']);
 export type Role = z.infer<typeof Role>;
@@ -11,10 +16,12 @@ export type Stage = 'generate' | 'evaluate' | 'refine';
 export type Source = { id: string; file: string; locator: string; sha256: string; excerpt: string };
 export type Rule = { id: RuleId; kind: string; instruction: string; sources: string[] };
 export type Guide = {
-  schema: 'suborned.style-guide/2'; game: 'The Suborned'; gdd: string;
+  schema: (typeof GUIDE_VERSIONS)[GuideVersion]; game: 'The Suborned'; gdd: string;
   sources: Source[]; rules: Rule[];
   voices: Record<string, string>; avoid: string[]; profanity: string[];
   bubble: { seconds: number; maxWords: number; maxChars: number };
+  /** /3 only: a cutaway conversation's limits (contracts/missions/handover/conversations.schema.ts). */
+  cutaway?: { maxWords: number; maxChars: number; maxSentences: number; maxLines: number };
 };
 
 /** One part of a conversation: who Inez talks to and what that exchange must make plain. */
@@ -33,17 +40,20 @@ export const Line = z.object({ speaker: z.string().min(1), line: z.string().min(
 export type Line = z.infer<typeof Line>;
 export const Conversation = z.object({ lines: z.array(Line).min(1).max(40) }).strict();
 export type Conversation = z.infer<typeof Conversation>;
-export const Evaluation = z.object({
+const evaluation = <R extends z.ZodType>(rule: R) => z.object({
   score: z.number().int().min(1).max(10),
   reason: z.string().min(1).max(3000),
   findings: z.array(z.object({
-    rule: RuleId,
+    rule,
     quote: z.string().max(2000).describe('An exact excerpt of one line; empty only for something missing from the whole conversation.'),
     reason: z.string().min(1).max(1200),
     fix: z.string().min(1).max(1200),
   }).strict()).max(20),
 }).strict();
+export const Evaluation = evaluation(RuleId);
 export type Evaluation = z.infer<typeof Evaluation>;
+/** The schema the evaluator answers in: its guide's rules only, so a /2 run's recorded schema hash still matches. */
+export const evaluationFor = (g: Pick<Guide, 'schema'>): z.ZodType<Evaluation> => guideVersion(g) === 2 ? evaluation(z.enum(RULES_V2)) : Evaluation;
 export type HardIssue = { rule: RuleId; reason: string };
 
 export type Request = { stage: Stage; role: Role; prompt: string; schema: z.ZodType; timeoutMs: number };
@@ -78,11 +88,12 @@ export const BriefSchema = z.object({
   leadsTo: z.string(), result: z.string().nullable(), current: z.array(Line),
 }).strict();
 export const GuideSchema = z.object({
-  schema: z.literal('suborned.style-guide/2'), game: z.literal('The Suborned'), gdd: z.string(),
+  schema: z.enum([GUIDE_VERSIONS[2], GUIDE_VERSIONS[3]]), game: z.literal('The Suborned'), gdd: z.string(),
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
   rules: z.array(z.object({ id: RuleId, kind: z.string(), instruction: z.string(), sources: z.array(z.string()) }).strict()).min(3),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()),
   bubble: z.object({ seconds: z.number().positive(), maxWords: z.number().int().positive(), maxChars: z.number().int().positive() }).strict(),
+  cutaway: z.object({ maxWords: z.number().int().positive(), maxChars: z.number().int().positive(), maxSentences: z.number().int().positive(), maxLines: z.number().int().positive() }).strict().optional(),
 }).strict();
 export const ResultSchema = z.object({
   schema: z.literal('suborned.style-run/2'), mode: z.enum(['live', 'test-fixture']),

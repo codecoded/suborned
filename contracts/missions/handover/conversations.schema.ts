@@ -4,6 +4,8 @@
 // A conversation is written for one person in one situation, so `when` names that situation and every field it names must equal the query's (an absent field answers any value).
 // Nothing here falls back: no match is undefined, and the host plays the act's `scenes.items` scene as it does today. So a different person never gets these words.
 // lookupConversation is the reference Latch ports, as text.schema's lookupScene.
+// Lines (Sky, 2026-11-05, brief 096: "loosen rules in the conversations. Full sentences"): the cutaway holds the clock, so a line is one or two full sentences, at most 25 words,
+// 160 characters and one question, and a conversation runs up to 16 lines however long its act. Street lines play as bubbles with the clock running and keep the bubble limit.
 import { z } from 'zod';
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
 
@@ -12,17 +14,32 @@ export const CONVERSATION_SPEAKERS = ['scout', 'fixer', 'waitress', 'driver', 'g
 export const CONVERSATION_VERBS = ['listen', 'ask', 'pay', 'help', 'pressure', 'call', 'mislead'] as const;
 /** The approaches that can turn a person: how `turnedBy` reads. */
 export const TURNED_BY = ['ask', 'pay', 'help', 'pressure'] as const;
-/** What Sky has read; it gates nothing and the host never reads it. agreed: he read these words and agreed them. awaiting-sky: they play, and he has not read them yet. */
+/** What Sky has agreed; it gates nothing and the host never reads it. agreed: Sky agreed these words. awaiting-sky: they play, and Sky has not agreed them yet (read on a page, agreed in play). */
 export const CONVERSATION_STATUS = ['agreed', 'awaiting-sky'] as const;
-export const CONVERSATION_MAX_BEATS = 10;
+export const CONVERSATION_MAX_BEATS = 16;
+export const CUTAWAY_MAX_WORDS = 25;
+export const CUTAWAY_MAX_LINE = 160;
+export const CUTAWAY_MAX_SENTENCES = 2;
+export const CUTAWAY_MAX_QUESTIONS = 1;
 export const CARD_WORDS = 6;
 
+/** Words as the scene checks count them: runs between spaces. */
+export const lineWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
+/** Sentences: each run of . ? or ! that ends a word before a space or the line's end. A line with none is one sentence. */
+export const sentenceCount = (s: string) => Math.max(1, (s.match(/[.?!…]+(?=\s|$)/g) ?? []).length);
+export const questionCount = (s: string) => (s.match(/\?/g) ?? []).length;
+
+/** A bubble: said over the live street (street beats here; scenes.items, dialogue and events in text.schema). */
 const Spoken = z.string().min(1).max(80).regex(/^[^\n<>{}!]+$/);
+/** A cutaway line: full sentences, said with the clock held. The size is held here; two sentences and one question a line are writing rules, held by the scene
+ *  checks (tools/dialogue/conversations.ts check) and conversations.test.ts, so a scene written before brief 096 still parses until it is rewritten. */
+const Said = z.string().min(1).max(CUTAWAY_MAX_LINE).regex(/^[^\n<>{}!]+$/)
+  .refine((x) => lineWords(x) <= CUTAWAY_MAX_WORDS, `a cutaway line is at most ${CUTAWAY_MAX_WORDS} words`);
 const Seconds = z.number().min(0.1).max(3);
 /** One line of a scene. Its optional fields are view only (GDD §10, look C): nothing the engine records reads them. lean: the one word in SemiBold, whole and once in the line.
  *  holdBefore, holdAfter: seconds of the shot with no line. holdOn: who the camera is on during holdAfter. revealAfter: the part shown first, the line's start; the rest joins it revealS later. */
 export const ConversationBeat = z.strictObject({
-  speaker: z.enum(CONVERSATION_SPEAKERS), line: Spoken,
+  speaker: z.enum(CONVERSATION_SPEAKERS), line: Said,
   lean: z.string().regex(/^[\p{L}'-]+$/u).optional(), holdBefore: Seconds.optional(), holdAfter: Seconds.optional(), holdOn: z.enum(CONVERSATION_SPEAKERS).optional(),
   revealAfter: z.string().min(1).optional(), revealS: Seconds.optional(),
 }).superRefine((b, ctx) => {

@@ -1,5 +1,5 @@
 import { buildGuide, gddNames, gddNamesFromFiles, gddPair, hash, pick, readerFor, readerFromFiles, TEXT_FILE, type Read, type Sha } from './guide';
-import type { Brief, Line } from './types';
+import type { Brief, GuideVersion, Line } from './types';
 
 /** The Inez chain (brief 054): one existing Handover scene per conversation. Scene numbers index text.json scenes.items. */
 const CHAIN: { scene: number; verb: string; temperament: string | null; outcome?: string }[] = [
@@ -13,9 +13,11 @@ const CHAIN: { scene: number; verb: string; temperament: string | null; outcome?
 ];
 const PLAN = 'anything about the cell\'s plan: Vale, the Office door, the Take or the getaway';
 
-export function buildBriefs(read: Read, names: string[], sha?: Sha): Brief[] {
-  const guide = buildGuide(read, names, sha), gdd = read(gddPair(names).agent.path), text = JSON.parse(read(TEXT_FILE));
-  // Act seconds come from the GDD (§04 approaches, §07 route A); each bubble takes guide.bubble.seconds (§10).
+export function buildBriefs(read: Read, names: string[], sha?: Sha, version: GuideVersion = 3): Brief[] {
+  const guide = buildGuide(read, names, sha, version), gdd = read(gddPair(names).agent.path), text = JSON.parse(read(TEXT_FILE));
+  // Act seconds come from the GDD (§04 approaches, §07 route A). Guide /2: each bubble takes guide.bubble.seconds (§10), so the act's seconds size the scene.
+  // Guide /3 (brief 096): the cutaway holds the clock, so every conversation is 10 lines up to the cutaway's limit; the seconds stay as context only.
+  const v3 = version === 3, she = v3 ? 'she' : 'he'; // the Fixer is a woman (Sky, 2026-11-05); a /2 brief keeps the words its runs were given
   const [watch] = pick(gdd, /(?:routine known \(Watch |a Watch first, where one is offered \()(\d+) s/, 'the Watch time (§04)').map(Number);
   const [listen, help] = pick(gdd, /\| Help \(clear debt\) \| need known \(Listen (\d+) s\) \| [\d,]+(?: \([^|]+\))? \| (\d+) s/, 'the Listen and Help times (§04)').map(Number);
   const [pressure] = pick(gdd, /\| Pressure \| need known \| \d+ \| (\d+) s/, 'the Pressure time (§04)').map(Number);
@@ -29,7 +31,10 @@ export function buildBriefs(read: Read, names: string[], sha?: Sha): Brief[] {
     const loyal = t === 'loyal' ? `; ${pick(gdd, /(loyalty to an employer or the civic order is the Loyal temperament)/, 'the Loyal definition (§04)')[0]}` : '';
     return `${t} (GDD §04: responds to ${respondsTo}; with a Hero cell: ${hero}; with a Menace cell: ${menace}${loyal})`;
   };
-  const range = (s: number): [number, number] => { const max = Math.floor(s / guide.bubble.seconds); return [Math.ceil(max * 0.6), max]; };
+  const range = (s: number): [number, number] => {
+    if (guide.cutaway) return [10, guide.cutaway.maxLines];
+    const max = Math.floor(s / guide.bubble.seconds); return [Math.ceil(max * 0.6), max];
+  };
   const half = ([min, max]: [number, number]): [number, number] => [Math.ceil(min / 2), Math.floor(max / 2)];
 
   return CHAIN.map(({ scene: index, verb, temperament: t, outcome }) => {
@@ -60,22 +65,22 @@ export function buildBriefs(read: Read, names: string[], sha?: Sha): Brief[] {
       withholds: [PLAN, 'the affair (that is Pressure\'s lever)'],
       leadsTo: 'Inez is turned: the Fixer can now Call her to pull the guard off the door.' };
     if (verb === 'pressure') return { ...base, kind: 'approach', cast: ['fixer', 'waitress'], parts: [{ with: 'fixer', reveals: [], lines }],
-      reveals: ['the Fixer lets her know he knows about her and the door guard, and what the Office would make of it', ...shows,
+      reveals: [`the Fixer lets her know ${she} knows about her and the door guard, and what the Office would make of it`, ...shows,
         scene.outcome === 'turned' ? 'she gives in, frightened and resentful, and will do as she is asked when called' : 'she refuses and makes plain she will report the approach to the Office'],
       withholds: [PLAN],
       leadsTo: scene.outcome === 'turned' ? 'Inez is turned, under threat: the Fixer can now Call her to pull the guard off the door, but she resents it.'
         : 'Her report raises Alert when it lands; the front door gets harder, and the guard or the pickup are left.' };
     return { ...base, kind: 'call', cast: ['fixer', 'waitress', 'guard'], parts: [
       { with: 'fixer', reveals: ['the Fixer telephones Inez at the café: now is the time'], lines: [2, 4] },
-      { with: 'guard', reveals: ['she calls the guard over from his door', 'a spilled coffee keeps him at her table'], lines: [lines[0] - 2, lines[1] - 2] },
+      { with: 'guard', reveals: ['she calls the guard over from his door', v3 ? 'her reason, something to tell him that can\'t go down a telephone, keeps him at her side' : 'a spilled coffee keeps him at her table'], lines: [lines[0] - 2, lines[1] - 2] },
     ], reveals: ['the guard leaves his door for Inez', ...shows], withholds: [PLAN + ' (the guard never learns why she called)'],
       leadsTo: 'The door is unguarded for about two minutes while he stays: the Enforcer goes in.' };
   });
 }
 
-export const loadBriefs = (base: string) => buildBriefs(readerFor(base), gddNames(base));
-export const briefsFromFiles = (files: Record<string, string>, shas: Record<string, string>) =>
-  buildBriefs(readerFromFiles(files), gddNamesFromFiles(shas), file => shas[file] ?? hash(readerFromFiles(files)(file)));
+export const loadBriefs = (base: string, version: GuideVersion = 3) => buildBriefs(readerFor(base), gddNames(base), undefined, version);
+export const briefsFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: GuideVersion = 3) =>
+  buildBriefs(readerFromFiles(files), gddNamesFromFiles(shas), file => shas[file] ?? hash(readerFromFiles(files)(file)), version);
 
 /** Today's scene as the player sees it, with `ref` beats looked up in the dialogue table. For the report only: briefs keep what the writer was shown. */
 export function todaysLines(read: Read, scene: number): Line[] {

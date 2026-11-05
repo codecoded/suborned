@@ -6,7 +6,7 @@ import { interpretCodex, tokenUsage } from '../goals/codex';
 import { briefsFromFiles } from './briefs';
 import { fingerprintOnly, guideFromFiles, hash } from './guide';
 import { corrected, runLoop } from './loop';
-import { ResultSchema, type Evidence, type Guide, type Result } from './types';
+import { guideVersion, ResultSchema, type Evidence, type Guide, type Result } from './types';
 
 export const RUNS = 'runs/style-agent';
 /** Source snapshots are stored once by content hash, zstd-compressed, and shared by every run. */
@@ -90,10 +90,10 @@ export async function verifyRun(input: unknown, base: string, store = resolve(ba
     const changed = toolingManifest(base).filter(t => r.evidence!.tooling.find(x => x.file === t.file)?.sha256 !== t.sha256).map(t => t.file);
     const notes = changed.length ? [`Replayed with code changed since the run: ${changed.join(', ')}`] : [];
     const files = archivedFiles(r.evidence, store), shas = Object.fromEntries(r.evidence.sources.map(s => [s.file, s.sha256]));
-    const guide = guideFromFiles(files, shas);
+    const version = guideVersion(r.guide), guide = guideFromFiles(files, shas, version); // a run replays with the guide version it ran with
     requireThat(equal(Object.keys(shas).sort(), [...new Set([...guide.sources.map(s => s.file), ...ROLE_FILES])].sort()), 'Unexpected or missing sources');
     requireThat(equal(guide, r.guide), 'The recorded guide differs from its sources');
-    const brief = briefsFromFiles(files, shas).find(b => b.id === r.brief.id);
+    const brief = briefsFromFiles(files, shas, version).find(b => b.id === r.brief.id);
     requireThat(brief && equal(brief, r.brief), 'The recorded brief differs from its sources');
     let previous = r.startedAt;
     for (const call of r.calls) {

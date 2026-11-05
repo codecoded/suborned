@@ -1,4 +1,4 @@
-// Brief 085: full conversation scenes, written through the RAG core at build time. A proposal for Sky to read: nothing here reaches the game; what he agrees is moved by hand into text.json scenes.conversations.
+// Brief 085: full conversation scenes, written through the RAG core at build time. A proposal for Sky to read: nothing here reaches the game; what Sky agrees is moved by hand into text.json scenes.conversations.
 // Each scene: facts bound by code from the sim's people (sheet) + retrieved world and rules + the writer brief -> Fable writes takes -> a script-editor pass ->
 // this file's checks (a fault goes back to the editor once) -> Motive reviews the set for fit with the rules. Every call is saved by runAgent under the run.
 //   bun tools/dialogue/conversations.ts [--only id,id] [--review-also id,id] [--run r002] [--base dir] [--retrieve-only]   then: bun tools/dialogue/conversations-page.ts
@@ -11,6 +11,7 @@ import { runAgent, type Call, type Objective } from '../rag/agent';
 import { root, writeJson } from '../rag/config';
 import { hash, loadCorpus } from '../rag/corpus';
 import { retrieve } from '../rag/retrieval';
+import { CONVERSATION_MAX_BEATS, CUTAWAY_MAX_LINE, CUTAWAY_MAX_QUESTIONS, CUTAWAY_MAX_SENTENCES, CUTAWAY_MAX_WORDS, lineWords, questionCount, sentenceCount } from '../../contracts/missions/handover/conversations.schema.ts';
 
 const read = (p: string) => Bun.file(resolve(root, p)).text();
 const peopleFile = 'sim/data/handover.people.json', textFile = 'contracts/missions/handover/text.json';
@@ -45,68 +46,70 @@ const INEZ_GUARD = `Inez and the door guard are lovers, in secret. He stands the
 type Spec = { id: string; title: string; after?: string[]; kind: 'learn' | 'turn' | 'call'; maxBeats: number; speakers: string[]; query: string[]; sheet: string; mustSay: { what: string; re: RegExp }[] };
 export const specs: Spec[] = [
   {
-    id: 'listen-inez', title: 'Listen to Inez', kind: 'learn', maxBeats: 10, speakers: ['Inez', 'Milena', 'Scout'],
+    id: 'listen-inez', title: 'Listen to Inez', kind: 'learn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Milena', 'Scout'],
     query: ['Inez door guard lovers debt affair Help Pressure secret', 'Fearful temperament hesitates Listen reveals need secret', 'world records paper calls voice orderly city fears disorder', 'conversation scene overheard Listen'],
     mustSay: [{ what: 'the Bureau loan', re: /bureau/i }, { what: 'the guard', re: /arthur|guard/i }],
     sheet: `${WORLD}
 Situation: the Scout has stood two metres away, between the palms, for half a minute. The player hears what the Scout hears. Inez is standing at the café door between tables. Milena is a voice through the open door, from just inside. Neither knows the Scout is listening.
 ${INEZ_WHO}
-${who(MILENA, 'Milena', 'Works the same café, inside this shift; she owes the Bureau too. No secret of hers comes up. She\'s fond of Inez: she teases her, worries whether she\'s eaten, and won\'t tell.')}
+${who(MILENA, 'Milena', 'Works the same café, inside this shift. No debt or secret of hers comes up: she never competes with Inez\'s trouble, she asks about it and is sorry for her (Sky, 2026-11-05: "more empathise"). She\'s fond of Inez: she worries whether she\'s eaten, and won\'t tell.')}
 ${INEZ_GUARD} Milena has noticed where Inez keeps looking; she doesn't know for sure until this talk.
 The scene must make plain, by its end: Inez is a waitress at this café; she owes the Bureau and can't keep up; she is seeing the guard on the Office door; if the Office hears of it, it costs them both; she is nervous by nature.
-Last beat: the Scout, very low, to the cell, terse fragments: what was heard, and what each thing could get you with her: the loan could be cleared, Arthur could be used. Never counts the ways, and gives no verdict on which is better.
+Last beat: the Scout, low, alone, in one or two full sentences: a plain report of what she heard (the debt; Arthur). Nothing about what the cell could do: the cards after the cut say it (Sky, 2026-11-05: "Fables rewrite is better").
 Speakers: Inez, Milena, Scout.
 learned: 2 lines (the debt; the lover). opens: "Help" and "Pressure" (both are now open on Inez; they cost what the ring says).
 ${VOICES('waitress', 'scout')}`,
   },
+  // help-inez-1 and help-inez-2 are rewritten after engine 0.44.0 (Sky, 2026-11-05, option 1: a Help before the Scout's Listen is a small offer she refuses, no money
+  // paid; after the Listen, Help clears the whole loan at $40,000 and turns her first time). Until then these two sheets describe today's two visits.
   {
-    id: 'help-inez-1', title: 'Help Inez, first visit', after: ['listen-inez'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
+    id: 'help-inez-1', title: 'Help Inez, first visit', after: ['listen-inez'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery Fearful needs Help twice', 'Inez capstone call pulls guard off his door', 'approach conversation private no witnesses', 'world paper records optimistic surface coercive underneath'],
-    mustSay: [{ what: 'the Bureau', re: /bureau/i }, { what: 'that he will bring the rest', re: /the rest/i }],
+    mustSay: [{ what: 'the Bureau', re: /bureau/i }, { what: 'that she will bring the rest', re: /the rest/i }],
     sheet: `${WORLD}
-Situation: the Fixer has come to Inez at the café door, and has just paid a first instalment on her Bureau loan. It is a real payment. Fact of the game: this first Help does NOT win her over; she is grateful and scared and not yet willing. One more visit, one more payment, will do it. Nobody calls it a "first Help". The Fixer has not yet said what would be wanted, only hinted.
+Situation: the Fixer has come to Inez at the café door and gives her money, half of what she owes the Bureau: it's hers, to pay them with. The game pays it away from the shot; nobody goes to the Bureau, and nothing is stamped or filed (Sky, 2026-11-05: "We give money to Inez"). Fact of the game: this first Help does NOT win her over; she is grateful and scared and not yet willing. One more visit, one more payment, will do it. Nobody calls it a "first Help". The Fixer has not yet said what would be wanted, only hinted.
 ${INEZ_WHO}
 Speakers: Inez, Fixer. She doesn't know the Fixer. Her fear: nobody pays a stranger's debt for nothing; who has been asking about her?
-The scene must make plain: a stranger just paid part of her Bureau loan; she took it but isn't ready to do anything for it; he will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way. In the next scene she says "You did bring the rest", so he says he'll bring the rest, in those words.
-He's easy with her. She's suspicious and still can't help liking him a bit, which frightens her more. Nobody's cruel here.
+The scene must make plain: a stranger just gave her half of what she owes; she took it but isn't ready to do anything for it; the Fixer will be back with the rest. End in a way that makes it clear coming back is what's next, while not saying it's the only way. In the next scene she says "you did bring the rest", so the Fixer says she'll bring the rest, in those words.
+The Fixer is easy with her. She's suspicious and still can't help liking her a bit, which frightens her more. Nobody's cruel here.
 learned: 1 line (she took it; not ready yet). opens: "Help again" as the action's plain name.
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: 9, speakers: ['Inez', 'Fixer'],
+    id: 'help-inez-2', title: 'Help Inez, second visit', after: ['listen-inez', 'help-inez-1'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
     query: ['Help clear debt gratitude bravery helped Inez warns rivals', 'Inez call guard walks to her side partners stays 60 s', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'calling him over', re: /call|come over|fetch|over here|send for/i }, { what: 'the guard', re: /arthur|guard|him/i }],
     sheet: `${WORLD}
-Situation: the Fixer comes back and clears the rest of the Bureau loan. This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_AWAY} ${GUARD_REASON}
+Situation: the Fixer comes back and gives her the rest of what she owes, enough to clear the whole Bureau loan herself (nobody goes to the Bureau; nothing is stamped). This time she is won over, gratefully and still frightened. Now the Fixer finally says what's wanted, and it is small: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_AWAY} ${GUARD_REASON}
 ${INEZ_WHO}
 ${INEZ_GUARD}
 She must work out for herself that the Fixer knows about Arthur, and be frightened by that; the Fixer is kind about it and makes no threat. She asks what happens to him. The honest answer the Fixer can give: nothing happens to him if this goes right, and he never sees us.
 Fact of the game: because she was helped, she will warn the cell if she sees trouble coming on the square. Let her offer that, in her own frightened way, near the end.
-He's good company and she starts to believe him, because he did come back with the rest. Let her say so in her own way.
-The scene must make plain: the loan is paid; she's with us now; when we say so, she calls Arthur off the door.
+The Fixer is good company and Inez starts to believe her, because she did come back with the rest. Let her say so in her own way.
+The scene must make plain: she has all she owes; she's with us now; when we say so, she calls Arthur off the door.
 learned: 1 line. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'pressure-inez', title: 'Pressure Inez', after: ['listen-inez'], kind: 'turn', maxBeats: 8, speakers: ['Inez', 'Fixer'],
+    id: 'pressure-inez', title: 'Pressure Inez', after: ['listen-inez'], kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Inez', 'Fixer'],
     query: ['Pressure threat fear resentment can identify Fixer seen', 'Inez secret affair Pressure threatens to expose', 'capstone the call that pulls the guard off his door'],
     mustSay: [{ what: 'the affair exposed', re: /office|tell|know|hear/i }, { what: 'calling him over', re: /call|come over|fetch|over here|send for/i }],
     sheet: `${WORLD}
-Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Arthur. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps their voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_REASON_THEN_TELLS} She will warn him when he arrives, and the door is clear about 1:40, so nobody in this scene says how long he's away.
+Situation: the same woman, a different way in. The Fixer comes to Inez at the café door with no money and tells her, gently, that the Office could learn about her and Arthur. She gives in quickly, and hates it. The Fixer is warm in manner, steel underneath, takes no pleasure in it and doesn't pretend otherwise. The Fixer keeps her voice low because a threat can be seen. What's wanted: when the Fixer telephones, she calls Arthur over from his door. ${GUARD_REASON_THEN_TELLS} She will warn him when he arrives, and the door is clear about 1:40, so nobody in this scene says how long he's away.
 ${INEZ_WHO}
 ${INEZ_GUARD}
 Fact of the game, for learned only, and nobody says it aloud: she will remember the Fixer's face, and could describe it if she's ever questioned. She wouldn't threaten a stranger who frightens her, and the Fixer wouldn't remind her.
-He stays good company all through: gentle, unhurried, kind about her shift in the same breath as the threat. No raised voice and no cruelty, and that's what frightens. By the end the threat is plain.
+The Fixer stays good company all through: gentle, unhurried, kind about her shift in the same breath as the threat. No raised voice and no cruelty, and that's what frightens. By the end the threat is plain.
 The scene must make plain, the cards included: we threatened to expose the two of them; she agreed, and hates it, and never says she's scared; when we say so, she calls Arthur off the door.
 learned: 1 line, and it mentions she knows the Fixer's face. opens: "Call Inez".
 ${VOICES('waitress', 'fixer')}`,
   },
   {
-    id: 'pay-driver', title: 'Pay the driver', kind: 'turn', maxBeats: 9, speakers: ['Lukac', 'Fixer'],
+    id: 'pay-driver', title: 'Pay the driver', kind: 'turn', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Lukac', 'Fixer'],
     query: ['route B pickup driver turned Pay service bay waits', 'official driver needs cash Mercenary Pay', 'getaway rivals lookout turned driver warns lookout off', 'world paper records voice calls'],
     mustSay: [{ what: 'the service bay', re: /service bay|round the back|service drive|round to the/i }, { what: 'the Councillor', re: /councillor/i }],
     sheet: `${WORLD}
-Situation: the Fixer finds Popovic's official driver waiting by the official car in the bay on the Office's south side, on Apron Road, and offers money; the game pays it away from the shot, so no envelope. It works. The driver has had a lean month and presses on the terms of the job, never the money, and the conversation is about the exact job, because this is someone who's been paid to be vague before and wants it spelled out.
+Situation: the Fixer finds Popovic's official driver waiting by the official car in the bay on the Office's south side, on Apron Road. Lukac has never seen her. She opens as a stranger who'd rather stay one, says what she has heard (his wages are late again, and waiting costs him: what the Scout's Listen overheard), and offers work for a driver, paid now; then the job (Sky, 2026-11-05: it mustn't open on "it's paid" with no idea what or why). The game pays it away from the shot, so no envelope, and nobody says the amount: the Pay card shows it. It works. The driver has had a lean month and presses on the terms of the job, never the money, because this is someone who's been paid to be vague before and wants it spelled out; Lukac takes the money last.
 ${who(DRIVER, 'Lukac', 'Call the driver Lukac, his surname: the Fixer matches his brisk way and adds no Mr; no gendered word. Calls Popovic "the Councillor", always.')}
 The job, exactly as the game plays it: when the chime goes the Councillor comes out and gets in. A paid Lukac doesn't drive off. Lukac takes the Councillor round to the service bay at the back, the east yard, and waits there with him. Lukac won't wait for ever: a couple of minutes, then drives on. Lukac also says that if someone's hanging about watching the bay, Lukac can send them off; Lukac has noticed nothing specific and names nobody. What happens to the Councillor at the bay is the Fixer's people's business; Lukac doesn't want to see it.
 The Fixer says "we" and never explains who "we" are. Lukac doesn't ask, and says why not, in a line.
@@ -116,7 +119,7 @@ learned: 1 line. opens: nothing new to press; instead 1 line naming the place to
 ${VOICES('driver', 'fixer')}`,
   },
   {
-    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-1', 'help-inez-2'], kind: 'call', maxBeats: 8, speakers: ['Fixer', 'Inez', 'Arthur'],
+    id: 'call-inez', title: 'The call, after Help', after: ['listen-inez', 'help-inez-1', 'help-inez-2'], kind: 'call', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Fixer', 'Inez', 'Arthur'],
     query: ['capstone the call pulls guard off door partners ring side stays 60 s', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'he leaves the door', re: /door|post|step/i }],
     sheet: `${WORLD}
@@ -131,7 +134,7 @@ learned: 1 line ("Door empty a few minutes"). opens: 1 line naming what the door
 ${VOICES('waitress', 'guard', 'fixer')}`,
   },
   {
-    id: 'call-inez-pressure', title: 'The call, after Pressure', after: ['listen-inez', 'pressure-inez'], kind: 'call', maxBeats: 9, speakers: ['Fixer', 'Inez', 'Arthur'],
+    id: 'call-inez-pressure', title: 'The call, after Pressure', after: ['listen-inez', 'pressure-inez'], kind: 'call', maxBeats: CONVERSATION_MAX_BEATS, speakers: ['Fixer', 'Inez', 'Arthur'],
     query: ['pressured Inez tells the guard someone knows, they looked suspicious, he runs back to his door, window shorter', 'Pressure leaves fear resentment can identify Fixer', 'route A front door Call Inez window Enforcer enters', 'calls are voice telephone'],
     mustSay: [{ what: 'the reason she gives him', re: /tell you|can't wait/i }, { what: 'that he is coming', re: /coming/i }],
     sheet: `${WORLD}
@@ -140,7 +143,7 @@ ${INEZ_WHO}
 ${who(GUARD, 'Arthur', 'In speech he is Arthur to the Fixer and to Inez; Inez may call him "love". He has a shift to finish and likes her more than the job. He says nothing about money here, and doesn\'t say how long the door stands empty.')}
 ${INEZ_GUARD}
 It's the same woman the player has just read, and she hates the Fixer. She answers the Fixer as if she's giving way, as she did before. She talks to Arthur the way she always does, an ordinary word about his shift. ${GUARD_REASON_THEN_TELLS} The scene ends with him coming.
-They're glad of each other, here too: he's fond, a little clumsy, pleased to hear her, and she's fond of him and sick about it. With the Fixer she has no warmth left, and he's as kind as ever.
+They're glad of each other, here too: he's fond, a little clumsy, pleased to hear her, and she's fond of him and sick about it. With the Fixer she has no warmth left, and Arthur's as kind as ever.
 Fact of the game, for the cards only: when he reaches her, in play, she tells him someone knows about them and that they looked suspicious, and he runs back to his door, so the door is clear for a much shorter time (Motive: he walks over, stands 5 s with her, runs back). Those two lines aren't in this scene and nothing in it says so aloud: she can't tell him here, because he hasn't walked over yet.
 learned: 1 line: she'll warn him. opens: 1 line truthful about the shorter window and the entrance camera, which still stops an Enter until it's looped or off.
 ${VOICES('waitress', 'guard', 'fixer')}`,
@@ -160,14 +163,23 @@ const NOT_IN_THE_GAME = /\b(saucer|plate|tray|cup|envelope|bonnet|soup|tonight|e
 const ONE_MINUTE = /\b(a|one) minute\b/i;
 const JARGON = /\b(alert|trail|standing|heat|turned|temperament|approach|lever|mission|agent|asset|halcyon|lender)\b/i;
 const avoid: string[] = [...text.tone.avoid, ...text.tone.profanity];
-const words = (s: string) => s.trim().split(/\s+/).length;
-/** The checks a scene must pass. Empty = pass. Word limits are the contract's (12) and the plain-copy limit for the game's own lines (6). */
+const words = lineWords;
+/** Sky, 2026-11-05: nobody explains the game; the cards after the cut say what's now open. A mouth listing options, or naming the actions as moves, fails. */
+export const TUTORIAL = /\bwe could\b[^.?]*\bor\b|\byou can now\b|\b(?:we|you) (?:could|can) (?:now )?(?:help|pressure|pay|call|listen to|watch|mislead|use)\b/i;
+/** Sky, 2026-11-05: "We give money to Inez, not go and pay at the Bureau". The cell hands the money over; nobody pays at a counter, stamps or files. */
+export const PAYS_AT_BUREAU = /\bstamp(?:ed|s|ing)?\b|\bfiled\b|\b(?:at|with) the bureau\b|\bowe the bureau nothing\b|\b(?:paid|pay|settled?|cleared?) (?:part of |off )?(?:your|her|the) (?:bureau )?(?:loan|debt)\b|\bthe rest paid\b/i;
+/** The checks a scene must pass. Empty = pass. Line limits are the cutaway's (conversations.schema.ts, brief 096); the game's own lines (cards) keep 6 words. */
 export function check(s: Spec, f: Pick<Final, 'beats' | 'learned' | 'opens'>): string[] {
   const out: string[] = [], all = f.beats.map(b => b.line).join(' ');
   if (f.beats.length < 4 || f.beats.length > s.maxBeats) out.push(`${f.beats.length} beats: must be 4 to ${s.maxBeats}`);
   for (const b of f.beats) {
     if (!s.speakers.includes(b.speaker)) out.push(`speaker "${b.speaker}" isn't in the scene (${s.speakers.join(', ')})`);
-    if (words(b.line) > 12) out.push(`over 12 words: "${b.line}"`);
+    if (words(b.line) > CUTAWAY_MAX_WORDS) out.push(`over ${CUTAWAY_MAX_WORDS} words: "${b.line}"`);
+    if (b.line.length > CUTAWAY_MAX_LINE) out.push(`over ${CUTAWAY_MAX_LINE} characters: "${b.line}"`);
+    if (sentenceCount(b.line) > CUTAWAY_MAX_SENTENCES) out.push(`over ${CUTAWAY_MAX_SENTENCES} sentences: "${b.line}"`);
+    if (questionCount(b.line) > CUTAWAY_MAX_QUESTIONS) out.push(`asks more than one thing: "${b.line}"`);
+    if (TUTORIAL.test(b.line)) out.push(`explains the game; the cards do that: "${b.line}"`);
+    if (PAYS_AT_BUREAU.test(b.line)) out.push(`pays at the Bureau; the cell gives the money to her: "${b.line}"`);
     if (b.line.includes('!')) out.push(`exclamation mark: "${b.line}"`);
     if (JARGON.test(b.line)) out.push(`design word or "lender": "${b.line}"`);
     if (NOT_IN_THE_GAME.test(b.line)) out.push(`isn't in the game's shot or acts: "${b.line}"`);

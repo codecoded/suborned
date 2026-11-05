@@ -35,7 +35,8 @@ A player who reads only this scene, the Scout's line and the cards included (Sky
 - "The lender" when the game's own label says "Bureau loan". Use the Bureau.
 
 ## Hard limits
-- A line is at most 12 words; aim for 10 or fewer. One sentence or two short ones; each is one speech bubble.
+- A line is one or two full sentences, at most about 25 words (160 characters), and asks one thing at most. People react, hesitate, ask one thing at a time and answer what was just said. Up to 16 lines; the clock is held, so the act's seconds don't count them (brief 096).
+- Nobody explains the game: no line lists what the cell could do; the cards after the cut say it.
 - Spoken, plain, contractions. 1950s manners, no period slang, no modern talk. No exclamation marks. Never cute. Nothing explicit about the affair.
 - Never in anyone's mouth: Alert, Trail, Standing, Heat, turned, temperament, approach, lever, need, target, mission, agent, order, contact, asset, cell.
 - Never name Halcyon. Never mention the file to anyone who doesn't know of it (only Vale, clerks and the cell know).

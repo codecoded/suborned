@@ -14,4 +14,4 @@ Choose the take that's clearest and truest, with one bit of real warmth, and imp
 - Don't pack facts into one line to save room. If the cards say it, nobody needs to; a line that's there to hold a fact, and that this person wouldn't say, comes out.
 - Cut for length last, but do cut: every line must earn its reading time.
 
-Check each fact against the sheet. Remove any power, person, place, number or deadline it doesn't give. All the writer's hard limits still bind: 12 words a line at most, aim for 10; no exclamation marks; never the listed design words; never cute; no one right way implied.
+Check each fact against the sheet. Remove any power, person, place, number or deadline it doesn't give. All the writer's hard limits still bind: full sentences, two at most and about 25 words a line, one question at a time, up to 16 lines; nobody explains the game; no exclamation marks; never the listed design words; never cute; no one right way implied.

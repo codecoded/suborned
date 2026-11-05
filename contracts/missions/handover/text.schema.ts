@@ -32,7 +32,7 @@
 //              Empty since the 059 port (engine 0.32.0, 2026-10-26): the Drive (`drive-car`, its two stands, `ride`), the Watch on the rival crew
 //              (`rivals` in WATCHED), the driver's tail fact, H16 and H20 are live. A stand's text key is `stand-<site getaway.stands id>`.
 //
-// Rules the checker (text.test.ts) holds: every line ≤ 80 characters; a spoken line 1–12 words; no one named but the cast; no
+// Rules the checker (text.test.ts) holds: every line ≤ 80 characters; a line spoken in play (a bubble) 1–12 words (a cutaway conversation's: conversations.schema.ts); no one named but the cast; no
 // modern speech; no strong profanity; every engine verb, refusal and fail has text; every reply the rulebook can produce has a line
 // for each Handover role and each temperament the role allows; every line naming Halcyon is marked pending.
 import { z } from 'zod';
@@ -78,7 +78,7 @@ export const NAMED = ['Inez', 'Popovic'] as const; // the only people the words 
 export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;
 export const SCENE_SPEAKERS = [...SPEAKERS, ...SCENE_ONLY] as const;
 export const MAX_LINE = 80;
-export const MAX_WORDS = 12;
+export const MAX_WORDS = 12; // in play, as bubbles (scenes.items, dialogue, events, street lines); a cutaway line has its own (CUTAWAY_MAX_*, conversations.schema.ts)
 /** brief 014: a short form is a fragment of a few words (a pop, a beat, a mark), at most `max` characters and never a sentence. */
 export const SHORT_MAX = 24;
 export const BEAT_MAX = 24;

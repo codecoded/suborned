@@ -7,7 +7,7 @@ import { CODEX_VERSION, codexArgs, codexConfig, codexOutputSchema, interpretCode
 import { root } from '../rag/config';
 import { loadBriefs } from './briefs';
 import { checkConversation, wordCount } from './checks';
-import { archiveEvidence, verifyRun } from './evidence';
+import { archiveEvidence, readRun, RUN_FILE, verifyRun } from './evidence';
 import { hash, loadGuide, pick } from './guide';
 import { corrected, defaults, roleFor, runLoop } from './loop';
 import { DEMOS, PIPELINE, runHtml, submissionHtml } from './report';
@@ -18,15 +18,15 @@ const guide = loadGuide(root), briefs = loadBriefs(root);
 const listen = briefs.find(b => b.id === 'inez/listen/idealist')!;
 const store = mkdtempSync(join(tmpdir(), 'suborned-style-store-')), evidence = archiveEvidence(root, guide, store);
 const good: Conversation = { lines: [
-  { speaker: 'guard', line: 'Coffee, Inez. Black. I have ten minutes before the relief.' },
+  { speaker: 'guard', line: 'Coffee, Inez, black. I have ten minutes before the relief.' },
   { speaker: 'waitress', line: 'Ten minutes. You said that yesterday and stayed twenty.' },
   { speaker: 'guard', line: 'Yesterday the owner was out. Is he out tonight?' },
   { speaker: 'waitress', line: 'Keep your voice down. People here count everything.' },
   { speaker: 'guard', line: 'Then I will count the hours until you close.' },
   { speaker: 'customer', line: 'Miss, the man in the grey hat was asking for you.' },
-  { speaker: 'waitress', line: 'The lender\'s man. Tell him Friday. Tell him I have it.' },
+  { speaker: 'waitress', line: 'That\'s the lender\'s man. Tell him I\'ll have it by Friday.' },
   { speaker: 'customer', line: 'Do you have it?' },
-  { speaker: 'waitress', line: 'I have half. I will earn the rest. No favours.' },
+  { speaker: 'waitress', line: 'I have half, and I will earn the rest without anyone\'s favours.' },
   { speaker: 'customer', line: 'Half buys you a week with that sort.' },
 ] };
 const bad: Conversation = { lines: [{ speaker: 'waitress', line: 'Oh darling!! You are SO sweet, babe, I could just hug you forever and ever!' }, ...good.lines.slice(1)] };
@@ -48,28 +48,40 @@ const run = (invoke: Invoke, extra: Partial<Parameters<typeof runLoop>[0]> = {})
   guide, brief: listen, steer: DEMOS[0].steer, invoke, limits: { ...defaults }, mode: 'test-fixture', evidence, now: () => clock++, ...extra });
 
 describe('the style guide comes from the game', () => {
-  test('four constraint types, each tied to approved, fingerprinted sources', () => {
-    expect(guide.rules.map(r => r.id)).toEqual(['REVEAL', 'VOICE', 'WORLD', 'FORM']);
+  test('five constraint types, each tied to approved, fingerprinted sources', () => {
+    expect(guide.rules.map(r => r.id)).toEqual(['REVEAL', 'VOICE', 'WORLD', 'FORM', 'NATURAL']);
     for (const rule of guide.rules) for (const id of rule.sources) expect(guide.sources.some(s => s.id === id)).toBe(true);
     expect(guide.sources.every(s => !s.file.includes('/draft/') && /^[a-f0-9]{64}$/.test(s.sha256) && s.excerpt.trim())).toBe(true);
     const all = guide.rules.map(r => r.instruction).join(' ');
     for (const word of ['Inez', 'lender', 'door guard', 'microfilm', 'Watch', 'Listen', 'Pressure', 'Fixer']) expect(all).toContain(word);
     expect(guide.bubble).toEqual({ seconds: 3, maxWords: 12, maxChars: 80 });
+    expect(guide.cutaway).toEqual({ maxWords: 25, maxChars: 160, maxSentences: 2, maxLines: 16 }); // brief 096, from conversations.schema.ts
+    const form = guide.rules.find(r => r.id === 'FORM')!.instruction;
+    expect(form).toContain('cutaway with the clock held'); expect(form).toContain('one or two full sentences'); expect(form).not.toContain('seconds ÷');
+    expect(guide.rules.find(r => r.id === 'NATURAL')!.instruction).toContain('nobody tells the player what they can do next');
+  });
+  test('the brief-054 guide (/2) still builds as its runs used it: four rules, bubbles, no cutaway', () => {
+    const old = loadGuide(root, 2);
+    expect([old.schema, old.rules.map(r => r.id), old.cutaway]).toEqual(['suborned.style-guide/2', ['REVEAL', 'VOICE', 'WORLD', 'FORM'], undefined]);
+    expect(old.rules.find(r => r.id === 'FORM')!.instruction).toContain('at most seconds ÷ 3');
+    expect(loadBriefs(root, 2).find(b => b.id === 'inez/listen/loyal')).toMatchObject({ seconds: 30, lines: [6, 10] });
   });
   test('a moved GDD sentence stops the guide instead of guessing', () => {
     expect(() => pick('no such sentence', /Watch (\d+) s/, 'the Watch time')).toThrow('no longer states the Watch time');
   });
 });
 
-describe('briefs: the Inez chain, sized to each act', () => {
-  test('one brief per chain scene, lengths from the GDD act seconds and the 3 s bubble', () => {
+describe('briefs: the Inez chain, one cutaway conversation per act', () => {
+  test('one brief per chain scene, 10 to 16 lines whatever the act\'s seconds (the clock is held); the seconds stay as context', () => {
     expect(briefs).toHaveLength(17);
     const at = (id: string) => briefs.find(b => b.id === id)!;
-    expect(at('inez/watch/any')).toMatchObject({ seconds: 20, lines: [4, 6], scene: 0 });
-    expect(at('inez/listen/loyal')).toMatchObject({ seconds: 30, lines: [6, 10], scene: 7 });
-    expect(at('inez/help/fearful')).toMatchObject({ seconds: 35, lines: [7, 11], outcome: 'turned' });
-    expect(at('inez/pressure/loyal')).toMatchObject({ seconds: 25, lines: [5, 8], outcome: 'suspicious' });
-    expect(at('inez/call/mercenary')).toMatchObject({ seconds: 60, lines: [12, 20] });
+    expect(at('inez/watch/any')).toMatchObject({ seconds: 20, lines: [10, 16], scene: 0 });
+    expect(at('inez/listen/loyal')).toMatchObject({ seconds: 30, lines: [10, 16], scene: 7 });
+    expect(at('inez/help/fearful')).toMatchObject({ seconds: 35, lines: [10, 16], outcome: 'turned' });
+    expect(at('inez/pressure/loyal')).toMatchObject({ seconds: 25, lines: [10, 16], outcome: 'suspicious' });
+    expect(at('inez/call/mercenary')).toMatchObject({ seconds: 60, lines: [10, 16] });
+    expect(at('inez/pressure/fearful').reveals[0]).toContain('the Fixer lets her know she knows'); // the Fixer is a woman (Sky, 2026-11-05)
+    expect(JSON.stringify(briefs)).not.toMatch(/spill/);
   });
   test('Listen overhears the guard (the affair) and a customer (the debt); Watch reveals neither', () => {
     expect(listen.parts.map(p => p.with)).toEqual(['guard', 'customer']);
@@ -86,15 +98,24 @@ describe('code checks', () => {
     expect(checkConversation(listen, good, guide)).toEqual([]);
     expect(wordCount('Too far · 4 m')).toBe(4);
   });
-  test('length, bubble size, cast, monologues, stage directions and the word filter', () => {
+  test('length, line size, cast, monologues, stage directions and the word filter', () => {
     const issues = (c: Conversation) => checkConversation(listen, c, guide).map(i => i.reason).join('\n');
-    expect(issues({ lines: good.lines.slice(0, 4) })).toContain('holds 6–10 bubbles');
-    expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: 'I will pay the lender back every single penny I owe him by Friday night.' }] })).toContain('15 words');
+    expect(issues({ lines: good.lines.slice(0, 4) })).toContain('a cutaway conversation holds 10–16');
+    expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: 'I will pay the lender back every single penny I owe him by Friday night, and then I will never borrow a penny from anyone again.' }] })).toContain('26 words; a cutaway line holds 25');
+    expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: 'I will pay the lender back every single penny I owe him by Friday night.' }] })).toBe('');
     expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'fixer', line: 'Hello.' }] })).toContain('fixer is not in this scene');
     expect(issues({ lines: [...good.lines.slice(0, 8), { speaker: 'customer', line: 'One.' }, { speaker: 'customer', line: 'Two.' }] })).toContain('three bubbles running');
     expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: '(sighs) Fine.' }] })).toContain('no stage directions');
     expect(issues({ lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: 'Check the app.' }] })).toContain('"app"');
     expect(issues({ lines: good.lines.filter(l => l.speaker !== 'customer') })).toContain('customer never speaks');
+  });
+  test('NATURAL: a line is one or two sentences and asks one thing at a time', () => {
+    const hard = (line: string) => checkConversation(listen, { lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line }] }, guide);
+    expect(hard('Who says? Did Arthur say something? Who else has he told?').map(i => [i.rule, i.reason])).toEqual([
+      ['NATURAL', 'Line 10: 3 sentences; one or two full sentences a line.'], ['NATURAL', 'Line 10: 3 questions; one thing at a time.']]);
+    expect(hard('Has Arthur said something to you?')).toEqual([]);
+    const old = loadGuide(root, 2), oldListen = loadBriefs(root, 2).find(b => b.id === listen.id)!; // a /2 run is checked as it ran: no NATURAL
+    expect(checkConversation(oldListen, { lines: [...good.lines.slice(0, 9), { speaker: 'waitress', line: 'Who says? Did he? Who else?' }] }, old)).toEqual([]);
   });
 });
 
@@ -102,6 +123,7 @@ describe('the loop: generate → score → revise → score again (fixtures)', (
   test('Fable writes, Motive scores, the reasons reach the reviser automatically, and the revision is scored again', async () => {
     const f = fixture([bad, rejected, good, accepted]);
     const r = await run(f.invoke);
+    expect(r.stopReason).toBe('Scored 10/10 with no findings, and the code checks pass');
     expect(r.status).toBe('ACCEPTED');
     expect(f.requests.map(q => `${q.stage}:${q.role}`)).toEqual(['generate:dialogue-designer', 'evaluate:systems-designer', 'refine:dialogue-designer', 'evaluate:systems-designer']);
     expect(roleFor('evaluate')).toBe('systems-designer');
@@ -139,6 +161,10 @@ describe('the loop: generate → score → revise → score again (fixtures)', (
 });
 
 describe('saved runs re-check without a model', () => {
+  test('a committed brief-054 run (guide /2) still rebuilds from its archived sources after the brief-096 rules', async () => {
+    const v = await verifyRun(readRun(join(root, 'runs/style-agent/2026-10-23T15-21-10.240Z-inez-listen-fearful', RUN_FILE)), root);
+    expect([v.errors, v.ok]).toEqual([[], true]);
+  });
   test('a run rebuilds exactly from archived sources; any edit to it fails', async () => {
     const r = await run(fixture([bad, rejected, good, accepted]).invoke);
     expect((await verifyRun(r, root, store)).errors).toEqual([]);

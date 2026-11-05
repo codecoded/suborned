@@ -19,7 +19,7 @@ export const GROUP = 'Dialogue';
 export const RULES_SRC: Record<string, string> = {
   'D-0': 'GDD §09 (nothing hand-authored; unknown = reject): every situation the rulebook and the people rules can produce has a cell, and no cell is for one they cannot; the blocks a scope writes are exactly its own',
   'D-1': 'GDD §04 person = routine + need + temperament + memory; §09 dialogue from person data: every person of the groups in scope has a line for every situation they can be in, a Listen scene and a Watch scene',
-  'D-2': 'dialogue.rules.json limits (the Handover\'s text.test.ts: a line ≤ 80 characters, a spoken line 1–12 words, ends like a sentence, 2–4 variants); GDD §10 text is a light layer',
+  'D-2': 'dialogue.rules.json limits (the Handover\'s text.test.ts: a line ≤ 80 characters, a bubble 1–12 words (a cutaway conversation has its own limits, conversations.schema.ts), ends like a sentence, 2–4 variants); GDD §10 text is a light layer',
   'D-3': 'dialogue.rules.json slots: only the slots the context allows, every slot filled for every person who reaches it, none left in a filled line',
   'D-4': 'GDD §09/§14 history, not backstory: the tables name no one; a scene names only the two people on its tie (the Handover\'s "no uncast names")',
   'D-5': 'GDD §09 tone + rating filters; dialogue.rules.json tone (avoid, profanity, rating, gendered, payload); GDD §14 civilians are never the payload',
@@ -53,7 +53,7 @@ const row = (r: R): Check => ({ id: r.id, group: GROUP, rule: r.rule, value: r.v
 const RULES: Record<string, string> = {
   'D-0': 'Every situation has a cell, and only those; a scope writes only its own blocks',
   'D-1': 'Everyone speaks: every person of the groups in scope has all their lines and scenes',
-  'D-2': 'Every filled line fits: at most 80 characters, spoken lines 1–12 words, sentence ends, 2–4 variants',
+  'D-2': 'Every filled line fits: at most 80 characters, bubbles 1–12 words, sentence ends, 2–4 variants',
   'D-3': 'Slots: only the allowed ones, each filled, none left over',
   'D-4': 'Names: the tables name no one; a scene names only the two people on its tie',
   'D-5': 'Tone: no modern speech, strong profanity, explicit or gory words, no gendered words; civilians are never the payload',

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { checkConversation } from './checks';
 import { hash } from './guide';
 import { prompt } from './prompts';
-import { Conversation, Evaluation, Line, type Authorization, type Brief, type Evidence, type Guide, type Invoke, type Limits,
+import { Conversation, evaluationFor, Line, type Authorization, type Brief, type Evidence, type Guide, type Invoke, type Limits,
   type Result, type Role, type Stage } from './types';
 
 class Exhausted extends Error {}
@@ -57,7 +57,7 @@ export async function runLoop(o: {
     let draft: Conversation = await ask('generate', schema, null, null);
     for (let revision = 0; revision <= o.limits.maxRevisions; revision++) {
       const hardIssues = checkConversation(o.brief, draft, o.guide);
-      const evaluation = await ask('evaluate', Evaluation, draft, null);
+      const evaluation = await ask('evaluate', evaluationFor(o.guide), draft, null);
       const text = draft.lines.map(l => l.line).join('\n');
       if (evaluation.findings.some(f => f.quote && !text.includes(f.quote))) throw new Error('The evaluator quoted words that are not in the conversation');
       result.rounds.push({ conversation: draft, evaluation, hardIssues }); await save();

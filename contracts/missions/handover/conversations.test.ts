@@ -1,11 +1,12 @@
-// Done-check for scenes.conversations (Fable, brief 085): the words are the ones Sky agreed, each plays only for the person and situation it was written for,
-// every other act keeps its scenes.items lines, and the engine can't put these words over a different person. Run: bun test contracts/missions/handover
+// Done-check for scenes.conversations (Fable, brief 085): the words are the ones Sky agreed or read, each plays only for the person and situation it was written for,
+// every other act keeps its scenes.items lines, and the engine can't put these words over a different person. Brief 096: cutaway lines are full sentences
+// (≤ 25 words, 160 characters, two sentences, one question; ≤ 16 lines), nobody explains the game, and nobody pays at the Bureau. Run: bun test contracts/missions/handover
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { check, specs } from '../../../tools/dialogue/conversations.ts';
+import { check, PAYS_AT_BUREAU, specs, TUTORIAL } from '../../../tools/dialogue/conversations.ts';
 import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
-import { CONVERSATION_MAX_BEATS, Conversation, ConversationBeat, conversationLines, lookupConversation, type ConversationQuery } from './conversations.schema.ts';
+import { CONVERSATION_MAX_BEATS, CUTAWAY_MAX_LINE, CUTAWAY_MAX_QUESTIONS, CUTAWAY_MAX_SENTENCES, CUTAWAY_MAX_WORDS, Conversation, ConversationBeat, conversationLines, lineWords, lookupConversation, questionCount, sentenceCount, type ConversationQuery } from './conversations.schema.ts';
 import { MAX_LINE, MAX_WORDS, TextFile, lookupScene, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
@@ -16,8 +17,13 @@ const approved = json('briefs/085/fable/approved.json') as { scenes: { id: strin
 const byId = (id: string) => c.items.find((x) => x.id === id)!;
 const pick = (q: ConversationQuery) => lookupConversation(c, q)?.id;
 const inez = { about: 'waitress', temperament: 'fearful' };
-/** The scenes Sky has read as they play. The rest play too, awaiting his read; approved.json keeps the last words he agreed for them. */
-const AGREED = ['help-inez-2', 'pay-driver', 'call-inez', 'call-inez-pressure'], AWAITING = ['listen-inez', 'help-inez-1', 'pressure-inez'];
+/** The scenes Sky has agreed as they play. The rest play too, awaiting Sky's agreement in play; approved.json keeps the last words Sky agreed for them. */
+const AGREED = ['help-inez-2'], AWAITING = ['listen-inez', 'help-inez-1', 'pressure-inez', 'pay-driver', 'call-inez', 'call-inez-pressure'];
+/** Brief 096 step 2: the sample's second draft, which Sky read on 2026-11-05 ("conversations definitely improved"), moved in word for word. */
+const SAMPLE = ['listen-inez', 'pressure-inez', 'pay-driver', 'call-inez', 'call-inez-pressure'];
+/** Written before brief 096 and rewritten after engine 0.44.0 (Sky's option 1 for Help on a Fearful Inez): until then they keep today's short lines. Empty it then. */
+const AFTER_044 = ['help-inez-1', 'help-inez-2'];
+const sample = json('briefs/096/fable/conversations-sample.json') as { items: { id: string; beats: object[] }[] };
 const shown = (id: string) => conversationLines(c, byId(id)).map((l) => [l.name, l.text]);
 
 describe('the words', () => {
@@ -30,11 +36,21 @@ describe('the words', () => {
     }
     expect(approved.scenes.length).toBe(7);
   });
+  test('the five rewritten scenes are the sample Sky read, word for word, view fields included, and keep the cards Sky agreed', () => {
+    for (const id of SAMPLE) {
+      expect(byId(id).beats, id).toEqual(sample.items.find((x) => x.id === id)!.beats as typeof c.items[number]['beats']);
+      expect(byId(id).status, id).toBe('awaiting-sky');
+      const a = approved.scenes.find((x) => x.id === id)!;
+      expect([byId(id).learned, byId(id).opens], id).toEqual([a.learned, a.opens]);
+    }
+    expect([...SAMPLE, ...AFTER_044].sort()).toEqual(c.items.map((x) => x.id).sort());
+    expect(byId('listen-inez').beats.at(-1)).toEqual({ speaker: 'scout', line: "She's deep in debt to the Bureau and can't keep up. And she's seeing Arthur, the guard on the Office door." }); // Sky: "Fables rewrite is better"
+  });
   test('the scenes he has not read are flagged but gated by nothing; the pressed call ends with the guard coming, and leaves the telling to the street', () => {
     expect(c.items.filter((x) => x.status !== 'agreed').map((x) => x.id).sort()).toEqual([...AWAITING].sort());
     for (const id of AWAITING) expect(lookupConversation(c, { ...byId(id).when, turned: false, helped: id === 'help-inez-2', outcome: byId(id).when.outcome })?.id, id).toBe(id);
     const run = byId('call-inez-pressure');
-    expect(run.status).toBe('agreed');
+    expect(run.status).toBe('awaiting-sky');
     expect(run.beats.at(-1)!.speaker).toBe('guard'); expect(run.beats.at(-1)!.line).toMatch(/I'm coming/);
     expect(run.beats.map((b) => b.line).join(' ')).not.toMatch(/someone knows|suspicious/i);
     expect(run.street!.map((s) => [s.on, s.pressed])).toEqual([['guard.at-cafe', true]]);
@@ -61,21 +77,22 @@ describe('the words', () => {
   test('the three held moments and the leaned-on words, as Sky agreed; every field is on the line it names', () => {
     const fields = c.items.flatMap((sc) => sc.beats.flatMap((b, i) => { const { speaker: _s, line: _l, ...view } = b; return Object.keys(view).length ? [[sc.id, i + 1, view]] : []; }));
     expect(fields).toEqual([
-      ['listen-inez', 5, { lean: 'guard' }],
-      ['listen-inez', 7, { lean: 'yourself', revealAfter: 'He said nothing.', revealS: 0.9 }],
+      ['listen-inez', 7, { lean: 'guard' }],
+      ['listen-inez', 11, { lean: 'yourself', revealAfter: "He's never said a word to me.", revealS: 0.9 }],
       ['help-inez-2', 6, { lean: 'Arthur' }],
       ['help-inez-2', 8, { lean: 'word' }],
-      ['call-inez', 3, { holdBefore: 1.2 }],
-      ['call-inez', 6, { lean: 'you' }],
-      ['call-inez', 8, { holdAfter: 1.5, holdOn: 'waitress' }],
+      ['call-inez', 5, { holdBefore: 1.2 }],
+      ['call-inez', 8, { lean: 'you' }],
+      ['call-inez', 10, { holdAfter: 1.5, holdOn: 'waitress' }],
+      ['call-inez-pressure', 5, { holdBefore: 1.2 }],
     ]);
-    const beat = byId('listen-inez').beats[6]!, bad = (x: object) => ConversationBeat.safeParse({ ...beat, ...x }).success;
+    const beat = byId('listen-inez').beats[10]!, bad = (x: object) => ConversationBeat.safeParse({ ...beat, ...x }).success;
     expect(ConversationBeat.safeParse(beat).success).toBe(true);
     expect(bad({ lean: 'di' })).toBe(false); // not a whole word
     expect(bad({ revealAfter: 'You just did.' })).toBe(false); // not the line's start
     expect(bad({ revealS: undefined })).toBe(false);
     expect(bad({ holdOn: 'waitress' })).toBe(false); // no holdAfter to be on
-    expect(conversationLines(c, byId('call-inez'))[2]).toEqual({ speaker: 'waitress', name: 'Inez', text: "How's your shift, love?", holdBefore: 1.2 });
+    expect(conversationLines(c, byId('call-inez'))[4]).toEqual({ speaker: 'waitress', name: 'Inez', text: "Arthur, it's me. How's your shift going, love?", holdBefore: 1.2 });
   });
   test('look C\'s words and the plain lock reason', () => {
     expect(c.ui).toEqual({ new: 'New', voice: { milena: 'Milena, inside' } });
@@ -108,22 +125,52 @@ describe('the words', () => {
     expect([...reach, ...town, ...said].filter((l) => bad.test(l))).toEqual([]);
     expect(t.actions.call!.onTarget!.waitress).not.toMatch(/spill/);
   });
-  test('each scene passes the generator\'s own checks: the limits, nothing in hand, a few minutes, no lender', () => {
+  test('each scene passes the generator\'s own checks: the limits, nothing in hand, a few minutes, no lender, no lesson, no Bureau counter', () => {
+    // The two Help scenes keep their short pre-096 lines until engine 0.44.0: only the writing rules 096 added may fail on them, and those are listed.
+    const pending = /^(over 2 sentences|asks more than one thing|pays at the Bureau)/;
     for (const s of specs) {
       const sc = byId(s.id), beats = conversationLines(c, sc).map((l) => ({ speaker: l.name, line: l.text }));
-      expect(check(s, { beats, learned: sc.learned, opens: sc.opens }), s.id).toEqual([]);
+      const faults = check(s, { beats, learned: sc.learned, opens: sc.opens });
+      expect(faults.filter((f) => !(AFTER_044.includes(s.id) && pending.test(f))), s.id).toEqual([]);
+      if (!AFTER_044.includes(s.id)) expect(faults, s.id).toEqual([]);
     }
   });
-  test('every line fits a bubble and takes a line from the tone filters', () => {
+  test('every cutaway line is full sentences in the cutaway\'s limits, every street line fits a bubble, and the tone filters pass', () => {
     const avoid = [...t.tone.avoid, ...t.tone.profanity].map((a) => new RegExp(`\\b${a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'));
+    expect([CONVERSATION_MAX_BEATS, CUTAWAY_MAX_WORDS, CUTAWAY_MAX_LINE, CUTAWAY_MAX_SENTENCES, CUTAWAY_MAX_QUESTIONS]).toEqual([16, 25, 160, 2, 1]);
     for (const sc of c.items) {
       expect(sc.beats.length).toBeLessThanOrEqual(CONVERSATION_MAX_BEATS);
       for (const b of sc.beats) {
-        expect(wordCount(b.line), b.line).toBeLessThanOrEqual(MAX_WORDS);
-        expect(b.line.length, b.line).toBeLessThanOrEqual(MAX_LINE);
+        expect(lineWords(b.line), b.line).toBeLessThanOrEqual(CUTAWAY_MAX_WORDS);
+        expect(b.line.length, b.line).toBeLessThanOrEqual(CUTAWAY_MAX_LINE);
+        expect(b.line, b.line).toMatch(/[.?]$/);
+        if (!AFTER_044.includes(sc.id)) {
+          expect(sentenceCount(b.line), b.line).toBeLessThanOrEqual(CUTAWAY_MAX_SENTENCES);
+          expect(questionCount(b.line), b.line).toBeLessThanOrEqual(CUTAWAY_MAX_QUESTIONS);
+        }
         for (const a of avoid) expect(a.test(b.line), b.line).toBe(false);
       }
+      for (const st of sc.street ?? []) for (const b of st.beats) { expect(wordCount(b.line), b.line).toBeLessThanOrEqual(MAX_WORDS); expect(b.line.length, b.line).toBeLessThanOrEqual(MAX_LINE); }
     }
+    for (const id of SAMPLE) expect(byId(id).beats.length, id).toBeGreaterThanOrEqual(10); // full scenes, not today's short ones
+  });
+  test('nobody in a cutaway explains the game: what is learned and what is open is the cards\' job', () => {
+    expect(c.items.flatMap((sc) => sc.beats.map((b) => b.line)).filter((l) => TUTORIAL.test(l))).toEqual([]);
+    for (const l of ['We could clear her Bureau loan, or use Arthur on the door.', 'You can now call Inez.', 'We can pressure her.']) expect(TUTORIAL.test(l), l).toBe(true);
+    for (const l of ["We can wait.", 'Pay what you can with it, and I\'ll come back with the rest.', 'Call Arthur across now.']) expect(TUTORIAL.test(l), l).toBe(false);
+  });
+  test('nobody pays at the Bureau or stamps anything: the cell gives the money to her (Sky, 2026-11-05)', () => {
+    const MOUTHS = new Set(['fixer', 'scout', 'tech', 'enforcer', 'waitress', 'driver']);
+    const items = t.scenes.items.flatMap((s) => s.variants.flatMap((v) => v.beats.flatMap((b) => ('line' in b && MOUTHS.has(b.speaker) ? [b.line] : []))));
+    const said = t.dialogue.filter((e) => MOUTHS.has(e.speaker as string)).flatMap((e) => e.lines);
+    const convo = c.items.flatMap((sc) => [...sc.beats, ...(sc.street ?? []).flatMap((x) => x.beats)].map((b) => `${sc.id}: ${b.line}`));
+    expect([...items, ...said].filter((l) => PAYS_AT_BUREAU.test(l))).toEqual([]);
+    // Only the two Help scenes still say it, until they are rewritten after engine 0.44.0.
+    expect(convo.filter((l) => PAYS_AT_BUREAU.test(l))).toEqual([
+      "help-inez-1: Miss Nikolaou? I've just paid part of your Bureau loan.",
+      "help-inez-1: Nobody to worry about. It's stamped at the Bureau now.",
+      'help-inez-2: That\'s the rest paid. You owe the Bureau nothing, Miss Nikolaou.',
+    ]);
   });
   test('names in speech: the people these scenes are about, and no one else from the city\'s pool', () => {
     const cast = json('contracts/people/harbour-district.cast.json') as { names: { given: { name: string }[]; family: { name: string }[] } };
@@ -132,9 +179,16 @@ describe('the words', () => {
     for (const sc of c.items) for (const s of [...sc.beats.map((b) => b.line), ...sc.learned, ...sc.opens]) for (const w of s.match(/[\p{L}'-]+/gu) ?? []) if (pool.has(w.replace(/'s$/, ''))) said.add(w.replace(/'s$/, ''));
     expect([...said].filter((w) => !['Inez', 'Arthur', 'Lukac', 'Milena', 'Nikolaou'].includes(w))).toEqual([]);
   });
-  test('the schema holds its limits: a long card, a scene with no temperament', () => {
+  test('the schema holds its limits: a long card, a long line, a scene with no temperament; a street line is still a bubble', () => {
     const ok = byId('help-inez-1');
     expect(Conversation.safeParse(ok).success).toBe(true);
+    const line = (l: string) => Conversation.safeParse({ ...ok, beats: [{ speaker: 'fixer', line: l }, ...ok.beats.slice(1)] }).success;
+    expect(line(Array(25).fill('word').join(' ') + '.')).toBe(true);
+    expect(line(Array(26).fill('word').join(' ') + '.')).toBe(false);
+    expect(line('a'.repeat(CUTAWAY_MAX_LINE + 1))).toBe(false);
+    expect(Conversation.safeParse({ ...ok, beats: Array(17).fill(ok.beats[0]) }).success).toBe(false);
+    const run = byId('call-inez-pressure'), longStreet = { ...run.street![0]!, beats: [{ speaker: 'waitress', line: 'Someone knows about us, love, and they looked very suspicious to me just now, Arthur.' }] };
+    expect(Conversation.safeParse({ ...run, street: [longStreet] }).success).toBe(false);
     expect(Conversation.safeParse({ ...ok, learned: ['one two three four five six seven'] }).success).toBe(false);
     const { temperament: _gone, ...noTemper } = ok.when;
     expect(Conversation.safeParse({ ...ok, when: noTemper }).success).toBe(false);
