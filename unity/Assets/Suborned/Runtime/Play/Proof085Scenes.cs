@@ -92,7 +92,7 @@ namespace Suborned.Play
         {
             var keep = h.controls.conversations; var got = new bool[1];
             // ---- route A: Listen, the Help (engine 0.44.0: one, after the Listen, the full offer), the Call, each whole at its landing; First time counts by scene, not by person
-            yield return Fresh(h, ConversationScenes.FirstEachScene); var g = h.Game; var ra = new RouteRun { Orders = Route("route-a") };
+            yield return Fresh(h, ConversationScenes.FirstEachScene); var g = h.Game; var ra = new RouteRun { Orders = Route("route-a") }; int callAt = ra.Orders.Find(o => o.Do == "call")?.Tick ?? 1556, enterAt = ra.Orders.Find(o => o.Do == "enter")?.Tick ?? 1575; /* route A's own Call and Enter (c054: 1556, 1575; the call waits for the rival car) */
             var cam = h.View; yield return ListenOnStreet(h, ra, dir, log, row); var pos0 = cam.transform.position; var rot0 = cam.transform.rotation; yield return ToScene(h, ra, 900, got); string w = Words(h, "listen-inez"); var c = h.ConvoNow;
             row("r085listenWhole", got[0] && w.Length == 0 && c.HasCards, $"{h.ConvoLast}; {w}; said '{HudToolkit.ConvoSaid}'; picks {string.Join(",", h.ConvoPicks)}");
             if (got[0])
@@ -150,13 +150,13 @@ namespace Suborned.Play
             }
             yield return EndScene(h);
             var callO = new Order { Op = "fixer", Do = "call", Target = "waitress" }; string helpDoor = h.DoorClock(callO); row("r085doorHelpRoute", helpDoor == null, $"the Call way after Help: Door {helpDoor ?? "hidden"}");
-            h.Select(OpId.Fixer, false); yield return ToScene(h, ra, 1320, got); string w3 = Words(h, "call-inez"); c = h.ConvoNow; var cuts = new List<string>();
+            h.Select(OpId.Fixer, false); yield return ToScene(h, ra, callAt + 24, got); string w3 = Words(h, "call-inez"); c = h.ConvoNow; var cuts = new List<string>();
             if (got[0]) yield return CallHolds(h, c, cuts, dir, log, row);
             row("r085callCuts", got[0] && w3.Length == 0 && cuts.Contains("guard") && cuts.Contains("fixer") && cuts.Contains("waitress"), $"{w3}; shots {string.Join(",", cuts)}");
             yield return EndScene(h); Step(h, ra, g.Tick + 2); /* the route's other orders at this tick first: the Enter is timed to them */ yield return Frames(3);
             var staleC = h.Callouts.Find(x => x.Speech != null); row("r085callNoStale", staleC == null && !h.Bubbles.Exists(b => b.Speaker == "guard" && Time.unscaledTime - b.Born < b.Life), $"after the Call's scene: inset line '{staleC?.Speech?.Text ?? "none"}'");
             // ---- the capture clip on route A, at Speed 1, real time
-            Step(h, ra, 1330); var en = g.Ops[(int)OpId.Enforcer]; bool enterOn = en.Inside && en.Busy?.Do == "enter"; int end0 = en.BusyEnd; if (enterOn) { h.RunTo(end0 - 102 - 15); } h.SetPaused(false); yield return Frames(2);
+            Step(h, ra, enterAt + 15); var en = g.Ops[(int)OpId.Enforcer]; bool enterOn = en.Inside && en.Busy?.Do == "enter"; int end0 = en.BusyEnd; if (enterOn) { h.RunTo(end0 - 102 - 15); } h.SetPaused(false); yield return Frames(2);
             float wait0 = Time.unscaledTime; while (h.ClipNow != HandoverHost.ClipState.Playing && Time.unscaledTime - wait0 < 6f) yield return null;
             yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); yield return Frames(2); float clipStartAt = g.Tick; yield return Shoot(dir, "r085-clip-start", log); var pic0 = PictureHash(h.ClipTexture); string word = HudToolkit.ClipWordNow; h.SetPaused(false);
             yield return new WaitForSecondsRealtime(4f); h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-clip-mid", log); var pic1 = PictureHash(h.ClipTexture); double vidMid = h.ClipVideoTime, wantMid = h.ClipWantTime;
@@ -175,7 +175,7 @@ namespace Suborned.Play
             yield return new WaitForSecondsRealtime(0.25f); h.SetPaused(true); yield return Frames(2); var pOut = h.ClipNow; double drift = h.ClipDriftAtOut; yield return Shoot(dir, "r085-clip-out", log); h.SetPaused(false); yield return new WaitForSecondsRealtime(1.2f); h.SetPaused(true); yield return Frames(2); yield return Shoot(dir, "r085-clip-hold", log);
             row("r085clipOut", pOut == HandoverHost.ClipState.Holding && drift >= 0 && drift <= 0.2, $"state {pOut}, drift at enter.out {drift:0.000} s at Speed 1; {h.ClipLast}; {g.Vale}");
             // ---- the same at the top speed, at yaw 210: the clip, its drift, a click during the hold finds him
-            yield return Fresh(h, ConversationScenes.Never); g = h.Game; ra = new RouteRun { Orders = Route("route-a") }; Step(h, ra, 1330); en = g.Ops[(int)OpId.Enforcer]; h.RunTo(en.BusyEnd - 102 - 15); h.TurnSnap(2); h.SetSpeed(8); h.SetPaused(false);
+            yield return Fresh(h, ConversationScenes.Never); g = h.Game; ra = new RouteRun { Orders = Route("route-a") }; Step(h, ra, enterAt + 15); en = g.Ops[(int)OpId.Enforcer]; h.RunTo(en.BusyEnd - 102 - 15); h.TurnSnap(2); h.SetSpeed(8); h.SetPaused(false);
             float t8 = Time.unscaledTime; while (h.ClipNow != HandoverHost.ClipState.Holding && Time.unscaledTime - t8 < 8f) yield return null; h.SetPaused(true); yield return Frames(2); double drift8 = h.ClipDriftAtOut;
             row("r085clipTopSpeed", h.ClipNow == HandoverHost.ClipState.Holding && drift8 >= 0 && drift8 <= 0.2, $"state {h.ClipNow}, drift at enter.out {drift8:0.000} s at Speed 8; {h.ClipLast}");
             if (HudToolkit.ClipScreen is Vector2 cs8) { var b8 = cam.transform.position; yield return Click(cs8); yield return new WaitForSecondsRealtime(0.1f); if (cam.transform.position == b8) h.ClipClick(); yield return new WaitForSecondsRealtime(0.8f); } yield return Shoot(dir, "r085-clip-click-yaw210", log);
@@ -210,7 +210,7 @@ namespace Suborned.Play
             h.SetPaused(true); yield return Frames(2);
 
             // ---- route A's guard, every inset line, with callouts pushed over them; the Scout stays by Inez so his arrival is spoken
-            yield return Fresh(h, ConversationScenes.Never); g = h.Game; var rg = new RouteRun { Orders = Route("route-a").FindAll(o => !(o.Tick == 1296 && o.Op == "scout")) }; Step(h, rg, 1300); int nl = g.Log.Count; bool arr = false; for (int i = 0; i < 900 && !arr && !g.Over; i++) { Step(h, rg, g.Tick + 1); for (int j = nl; j < g.Log.Count; j++) if (g.Log[j].Code == "guard.at-cafe") arr = true; nl = g.Log.Count; }
+            yield return Fresh(h, ConversationScenes.Never); g = h.Game; var rg = new RouteRun { Orders = Route("route-a").FindAll(o => !(o.Tick == callAt && o.Op == "scout")) }; Step(h, rg, callAt + 4); int nl = g.Log.Count; bool arr = false; for (int i = 0; i < 900 && !arr && !g.Over; i++) { Step(h, rg, g.Tick + 1); for (int j = nl; j < g.Log.Count; j++) if (g.Log[j].Code == "guard.at-cafe") arr = true; nl = g.Log.Count; }
             h.LookAt(h.Views.Find("op/enforcer").position); h.SetPaused(false); { var seenA = new List<string>(); var okA = new[] { true }; var hitsA = new int[1]; yield return EveryInsetLine(h, 8f, seenA, okA, hitsA, true); row("r085insetRouteA", arr && seenA.Count >= 2 && okA[0], $"at café {arr}: {string.Join("; ", seenA)}"); row("r085plateClear", hitsA[0] == 0, $"most callouts under a speech plate in a frame: {hitsA[0]}"); yield return Shoot(dir, "r085-inset-route-a", log); } h.SetPaused(true); yield return Frames(2);
             // ---- Listen with Never: the agreed words as bubbles, the cards beside the feed, no old lines anywhere
             yield return Fresh(h, ConversationScenes.Never); g = h.Game; var rn = new RouteRun { Orders = Route("route-a") }; var inezN = h.Views.Find("waitress"); h.LookAt(inezN.position); for (int i = 0; i < 700 && !h.ConvoPicks.Contains("listen-inez") && !g.Over; i++) Step(h, rn, g.Tick + 1);
