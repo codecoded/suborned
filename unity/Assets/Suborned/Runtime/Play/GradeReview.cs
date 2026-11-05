@@ -36,8 +36,8 @@ namespace Suborned.Play
             public float sunIntensity = float.NaN, sunShadow = float.NaN; public float[] ambientScale = { };
             public Mat[] mats = { };
             public int contact = -1; public float contactBoost = float.NaN; public float contactWidth = 1.2f, contactStrip = 0.45f, contactBlob = 0.55f, contactSpread = 1.35f; public string contactTint = "#807470"; // brief 096 ambient: the Handover zone's contact shade, generated once
-            public float standOff = float.NaN; // the play camera's stand-off along its view (HandoverHost.standOff, TacticalShadows.focusDepth): an ortho frame is the same picture at any stand-off, but SSAO's depth bias is not
-            public int shadowCascades = -1; // brief 096 option B: the play camera's cascade count for this launch (1 = one cascade over the whole fitted distance)
+            public float standOff = float.NaN; // a fixed stand-off for the play camera (PlayStandOff.Fixed; NaN: from the tallest roof in frame, brief 096 option B): an ortho frame is the same picture at any stand-off, but SSAO's depth bias is not
+            public int shadowCascades = -1; // the play camera's cascade count for this launch (TacticalShadows.orthoCascades; 1 since brief 096 option B, 2 = today's two before it)
             public int shadowFit = -1; // 0: TacticalShadows as before brief 096 item 2 (farBand 40, fade 8, the sun's High soft shadows), for the before frames
             public int peek = -1; // 1: hold the detail layer (the cones) as Alt does, through HandoverHost.PeekLatch, for a signal frame
         }
@@ -172,13 +172,13 @@ namespace Suborned.Play
         {
             if (Has(s.contactBoost) && !boosted && Time.frameCount > 90) boosted = ContactShade096.Boost(s.contactBoost);
             if (s.contact == 1 && !contactDone && Time.frameCount > 90) contactDone = ContactShade096.Build(s.contactWidth, s.contactStrip, s.contactBlob, s.contactSpread, Hex(s.contactTint));
-            if (s.peek == 1 || Has(s.standOff))
             if (s.peek == 1)
             {
                 if (!peekHost) peekHost = FindAnyObjectByType<HandoverHost>();
                 if (peekHost) peekHost.PeekLatch = true;
             }
-            if (Has(s.standOff)) { if (!peekHost) peekHost = FindAnyObjectByType<HandoverHost>(); if (peekHost) peekHost.standOff = s.standOff; foreach (var ts in FindObjectsByType<TacticalShadows>(FindObjectsSortMode.None)) { ts.focusDepth = s.standOff; if (s.shadowCascades > 0) ts.cascades = s.shadowCascades; } if (!standLogged && Time.frameCount > 200 && Camera.main is { } mc && mc.orthographic) { standLogged = true; Debug.Log($"GradeReview: stand-off {s.standOff} m; play camera at height {mc.transform.position.y:0.0} m, pitch {mc.transform.eulerAngles.x:0.0}, near {mc.nearClipPlane}"); } }
+            if (s.shadowCascades > 0) foreach (var ts in FindObjectsByType<TacticalShadows>(FindObjectsSortMode.None)) { ts.cascades = s.shadowCascades; ts.orthoCascades = s.shadowCascades; } // today's look: standOff 160, shadowCascades 2
+            if (Has(s.standOff)) { PlayStandOff.Fixed = s.standOff; /* brief 096: PlayStandOff stands the play camera there and fits the shadows to it */ if (!standLogged && Time.frameCount > 200 && Camera.main is { } mc && mc.orthographic) { standLogged = true; Debug.Log($"GradeReview: stand-off {s.standOff} m; play camera at height {mc.transform.position.y:0.0} m, pitch {mc.transform.eulerAngles.x:0.0}, near {mc.nearClipPlane}"); } }
             if (Time.frameCount % 60 != 1) return;
             if (s.mats.Length > 0 && pending) { pending = false; foreach (var m in s.mats) if (Retune(m).EndsWith(" x0")) pending = true; } // until each is found
             // the play light: OldTownPlayLook (assembly Suborned.OldTown, not referenced here) and TacticalShadows, every frame (the host may make cameras late)

@@ -24,6 +24,9 @@ namespace Suborned
         public float farBand = 40f;
         [Tooltip("Cascade count (1-4).")]
         public int cascades = 4;
+        [Tooltip("Brief 096 option B (Sky 2026-11-05): the cascade count while this camera renders orthographic (the play view), 0 = `cascades`. One: the whole " +
+            "fitted distance on the full map; PlayStandOff keeps the camera only as far back as the tallest roof in frame, so it is short (about 70 m in the Handover zone).")]
+        public int orthoCascades = 1;
         [Tooltip("Shares of the air in front of the street band at which cascades 1 and 2 end (4 cascades).")]
         public Vector2 airSplits = new(0.3f, 0.65f);
         [Tooltip("Metres over which shadows fade out at the shadow distance. URP fades by distance from the camera from (1 - border) of the " +
@@ -47,7 +50,7 @@ namespace Suborned
         [Tooltip("Share of the shadow distance the last cascade fades over (about 30 %).")]
         public float perspectiveFade = 0.3f;
         [Header("SSAO (brief 064 A3 item 1)")]
-        [Tooltip("SSAO while this camera renders orthographic (the play view). Off: the camera stands about 160 m back and the street lies 142 to " +
+        [Tooltip("SSAO while this camera renders orthographic (the play view). Off: the camera stood 160 m back (brief 096: PlayStandOff, about 70 m in the zone) and the street lay 142 to " +
             "178 m along its view, past the SSAO falloff (100 m), so URP's ShouldSkipAO gives no occlusion there and the pass only costs. The " +
             "perspective views (ground, follow) keep the renderer's SSAO. The perf harness turns it back on for its `ssao` A/B (PerfSwitches).")]
         public bool orthoSsao = false;
@@ -56,6 +59,7 @@ namespace Suborned
         State saved;
         SsaoScope ssaoOff;
 
+        int Ortho => orthoCascades > 0 ? orthoCascades : cascades;
         /// <summary>Shadow distance this camera renders with.</summary>
         public float Distance => focusDepth + farBand;
 
@@ -147,10 +151,10 @@ namespace Suborned
             {
                 float s = Mathf.Clamp(-cam.transform.forward.y, 0.2f, 1f), cot = Mathf.Sqrt(1f - s * s) / s; // the view's pitch below the horizon
                 float far = Mathf.Min(farBand, cam.orthographicSize * cot + fitFade + fitMargin);
-                Fit(urp, focusDepth, nearBand, far, cascades, airSplits, fitFade);
+                Fit(urp, focusDepth, nearBand, far, Ortho, airSplits, fitFade);
                 return;
             }
-            Fit(urp, focusDepth, nearBand, farBand, cascades, airSplits, fade);
+            Fit(urp, focusDepth, nearBand, farBand, cam && cam.orthographic ? Ortho : cascades, airSplits, fade);
         }
 
         /// <summary>Brief 048 (Redline's plan item 2, Glint's conditions): a perspective camera's shadows over `distance` m in two cascades, the

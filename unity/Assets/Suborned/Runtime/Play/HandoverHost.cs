@@ -70,7 +70,7 @@ namespace Suborned.Play
         public string playCamera = "cameras/play";
         [Tooltip("Metres the scene stands the plan up Unity z: 0 in HarbourDistrict, 206 in the old town (OldTownSwap.DZ; PlayInstall sets it).")]
         public float worldZ;
-        [Tooltip("The camera stands this far back along its view (m): far enough that no roof in the block crosses the near plane.")]
+        [Tooltip("The camera stands this far back along its view (m); brief 096: PlayStandOff sets it each frame from the tallest roof in the frame's column.")]
         public float standOff = 160f;
         public float panSpeed = 18f;
         [Tooltip("§10: characters 40–60 px tall at 1080p. A 1.75 m capsule is 60 px at ortho size 12.5 and 40 px at 18.5 (14 = play zoom, 53 px).")]
@@ -209,7 +209,7 @@ namespace Suborned.Play
                 focus.y = 0f; PlaceCamera(); TurnInit();
             }
             if (!GetComponent<HudToolkit>()) gameObject.AddComponent<HudToolkit>(); // Glyph's kit on UI Toolkit (off until the kit is imported)
-            if (!GetComponent<CameraLab>()) gameObject.AddComponent<CameraLab>(); // brief 025: the camera lab (P)
+            if (!GetComponent<CameraLab>()) gameObject.AddComponent<CameraLab>(); if (!GetComponent<PlayStandOff>()) gameObject.AddComponent<PlayStandOff>(); // brief 025: the camera lab (P); brief 096: the stand-off from the roofs in frame
             if (!GetComponent<FightLabHud>()) gameObject.AddComponent<FightLabHud>(); // brief 027: the fight playground's freeze and target layer
             CamApply(); // the camera values (CameraLab loads the default preset on its first frame)
             background = GameObject.Find("people");
