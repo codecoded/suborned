@@ -49,7 +49,7 @@ namespace Suborned.Play
         {
             if (!host) host = GetComponent<HandoverHost>();
             var cam = host ? host.View : null;
-            if (!cam || !cam.orthographic || host.Following) return;
+            if (!cam || !cam.orthographic || host.Following) { now = float.NaN; return; } // brief 096: the overhead view resumes at its frame's need (a snap, below), never a stale stand-off eased from
             var t = cam.transform; var fwd = t.forward;
             if (fwd.y > -0.05f) return;
             if (field == null || Time.unscaledTime - builtAt > 3f && builtCount >= 0) Build(cam);
@@ -70,7 +70,16 @@ namespace Suborned.Play
             host.standOff = now;
             t.position = focus - fwd * now;
             cam.farClipPlane = Mathf.Max(cam.farClipPlane, now + 1500f);
-            if (cam.TryGetComponent<TacticalShadows>(out var ts)) ts.focusDepth = now;
+            if (cam.TryGetComponent<TacticalShadows>(out var ts)) { ts.focusDepth = now; ts.uncapped = HandoverHost.FreeZoom; } // brief 096: free zoom (debug) lets the shadow band reach the frame's edge
+        }
+
+        /// <summary>Brief 096: the stand-off (m) an orthographic map frame needs at a ground focus (the glide from third person lands there): the
+        /// frame's own column, the clearance and the least stand-off. 0 before the field is built.</summary>
+        public float NeedAt(Camera cam, Vector3 focus, Quaternion rot, float halfH)
+        {
+            if (field == null || !cam) return 0f;
+            var e = rot.eulerAngles; if (e.x < 3f || e.x > 89.9f) return 0f;
+            return Mathf.Max(field.Need(focus, e.y, e.x, halfH * cam.aspect, halfH, 0f) + margin + cam.nearClipPlane, minStand);
         }
 
         /// <summary>The height field from every mesh the play camera draws: bounds for small ones; triangles for large ones (a merged tile, a band)

@@ -460,8 +460,8 @@ namespace Suborned
             if (baseSaturation < -990f && on) ApplyPlayGrade();
             if (!overlay) SunShade(on);
             if (vNight) vNight.weight = hasUd && ud.renderPostProcessing && !overlay && DistanceHaze.Night && AtmosphereSettings.Enabled ? 1f : 0f;
-            vPlay.weight = post && tier == DistanceHaze.Tier.Play ? 1f : 0f;
-            vFollow.weight = post && tier == DistanceHaze.Tier.Follow ? 1f : 0f;
+            bool one = tier == DistanceHaze.Tier.Follow && PlayGradeInFollow; vPlay.weight = post && (tier == DistanceHaze.Tier.Play || one) ? 1f : 0f; // brief 096 (Sky on 0.2.251): third person and the drive view take the play grade (AtmosphereLens.Play096.cs)
+            vFollow.weight = post && tier == DistanceHaze.Tier.Follow && !one ? 1f : 0f;
             vLong.weight = post && tier == DistanceHaze.Tier.Long ? 1f : 0f;
             float fl = !post ? 0f : tier == DistanceHaze.Tier.Follow ? data.flare.follow : tier == DistanceHaze.Tier.Long ? data.flare.@long : 0f;
             if (fl > 0f) EnsureFlare();

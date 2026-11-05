@@ -38,6 +38,8 @@ namespace Suborned
             "starts past the frame's top edge (no cut-off while panning, turning or zooming) and the cascade's sphere shrinks (zoom 10: farBand 40 → about 17 m).")]
         public bool fitToZoom = true;
         public float fitFade = 3f, fitMargin = 1.5f;
+        [Tooltip("Brief 096 (Sky's free zoom, debug): the frame fit is not capped at farBand, so a frame zoomed far out (ortho 60: ±77 m of ground along the view) keeps shadows to its edge. Set each frame by PlayStandOff.")]
+        public bool uncapped;
         [Tooltip("The main light's soft-shadow quality while this camera renders orthographic (the sun's own setting overrides the asset's): Medium (5×5 tent) " +
             "with the sharper fitted map; the sun's own value comes back after the render.")]
         public SoftShadowQuality orthoSoftShadows = SoftShadowQuality.Medium;
@@ -54,6 +56,9 @@ namespace Suborned
             "178 m along its view, past the SSAO falloff (100 m), so URP's ShouldSkipAO gives no occlusion there and the pass only costs. The " +
             "perspective views (ground, follow) keep the renderer's SSAO. The perf harness turns it back on for its `ssao` A/B (PerfSwitches).")]
         public bool orthoSsao = false;
+        [Tooltip("Brief 096 (Sky on 0.2.251: third person looked different from the map): SSAO while this camera renders perspective (third person, the drive view). " +
+            "Off, as the play view (Sky 2026-11-05: \"no SSAO\"), so the contact shade does not change with the view.")]
+        public bool followSsao = false;
 
         Camera cam;
         State saved;
@@ -96,7 +101,7 @@ namespace Suborned
             saved = new State(urp);
             Apply(urp);
             SoftShadows(true);
-            ssaoOff?.Dispose(); ssaoOff = SsaoScope.For(cam, orthoSsao);
+            ssaoOff?.Dispose(); ssaoOff = SsaoScope.For(cam, cam && cam.orthographic ? orthoSsao : followSsao);
         }
 
         void End(ScriptableRenderContext _, Camera c)
@@ -113,7 +118,7 @@ namespace Suborned
         public IDisposable Use()
         {
             if (UniversalRenderPipeline.asset is not { } urp) return null;
-            var s = new State(urp) { ssao = SsaoScope.For(cam ? cam : GetComponent<Camera>(), orthoSsao) };
+            var s = new State(urp) { ssao = SsaoScope.For(cam ? cam : GetComponent<Camera>(), (cam ? cam : GetComponent<Camera>()) is { orthographic: false } ? followSsao : orthoSsao) };
             Apply(urp);
             return s;
         }
@@ -140,7 +145,7 @@ namespace Suborned
         {
             ScriptableRendererFeature f; readonly bool was;
             SsaoScope(ScriptableRendererFeature f) { this.f = f; was = f.isActive; f.SetActive(false); }
-            public static SsaoScope For(Camera c, bool keep) => c && c.orthographic && !keep && SsaoFeature is { isActive: true } f ? new SsaoScope(f) : null;
+            public static SsaoScope For(Camera c, bool keep) => c && !keep && SsaoFeature is { isActive: true } f ? new SsaoScope(f) : null;
             public void Dispose() { if (f) f.SetActive(was); f = null; }
         }
 
@@ -150,7 +155,7 @@ namespace Suborned
             if (fitToZoom && cam && cam.orthographic)
             {
                 float s = Mathf.Clamp(-cam.transform.forward.y, 0.2f, 1f), cot = Mathf.Sqrt(1f - s * s) / s; // the view's pitch below the horizon
-                float far = Mathf.Min(farBand, cam.orthographicSize * cot + fitFade + fitMargin);
+                float far = cam.orthographicSize * cot + fitFade + fitMargin; if (!uncapped) far = Mathf.Min(farBand, far);
                 Fit(urp, focusDepth, nearBand, far, Ortho, airSplits, fitFade);
                 return;
             }

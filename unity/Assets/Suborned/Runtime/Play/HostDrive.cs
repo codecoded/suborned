@@ -95,7 +95,7 @@ namespace Suborned.Play
         /// <summary>The button's word (Fable's actions.drive.ways.release).</summary>
         public string BackToMapWord => Text != null && Text.Actions.TryGetValue("drive", out var da) && da.Ways.TryGetValue("release", out var rw) ? rw.label : "Back to map";
         /// <summary>The roster's "Back to map" button in third person (the T key's act): the view goes back, the agent's act or walk goes on (a trailed agent has no drive to release; a driven one stands).</summary>
-        public void BackToMap() { if (Driving) DriveLetGoToMap(true); else if (Following) FollowExit(); }
+        public void BackToMap() { if (Driving) DriveLetGoToMap(true); else if (Following) FollowExitGlide(fAgent); } // brief 096: a plain follow view glides back too
 
         void DriveEnter()
         {

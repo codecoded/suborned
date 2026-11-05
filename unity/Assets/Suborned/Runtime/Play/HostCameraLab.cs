@@ -63,7 +63,7 @@ namespace Suborned.Play
             followFov = f.fov; followDistance = Mathf.Clamp(f.distance * FollowDistanceFactor, f.distanceMin, f.distanceMax); /* brief 051: Options, Camera, Camera distance (Close 0.75, Default 1, Far 1.4 of the preset's) */ followMin = Mathf.Min(f.distanceMin, f.distanceMax); followMax = Mathf.Max(f.distanceMin, f.distanceMax);
             followHeight = f.height; followRise = f.rise; followAhead = f.lookAhead; followLookHeight = f.lookHeight; followSmooth = Mathf.Max(0f, f.smoothing);
             if (!cam) return;
-            if (zoomToo) cam.orthographicSize = Mathf.Clamp(o.zoom, zoomMin, zoomMax); else cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, zoomMin, zoomMax);
+            if (zoomToo) cam.orthographicSize = Mathf.Clamp(o.zoom, zoomMin, zoomMax); else cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, WheelMin, WheelMax); // brief 096: free zoom keeps its zoom; off clamps back to play's range
             if (Following) { cam.fieldOfView = f.fov; fDist = Mathf.Clamp(fDist, followMin, followMax); return; }
             if (FailCamOn) return;
             TurnInit(); pitch = Mathf.Clamp(o.pitch, 5f, 89.5f);
@@ -87,12 +87,19 @@ namespace Suborned.Play
         /// <summary>Where the overhead camera stands from the focus: the stand-off (orthographic), or the distance that shows zoom as the half-height.</summary>
         float CamDistance => cam && !cam.orthographic ? cam.orthographicSize / Mathf.Tan(Mathf.Max(1f, cam.fieldOfView) * 0.5f * Mathf.Deg2Rad) : standOff;
 
+        /// <summary>Brief 096 (Sky 2026-11-05, debug): Options, Camera, Free zoom: the map view's wheel and trackpad range (ortho half-height, m) widened
+        /// to FreeZoomMin..FreeZoomMax (play: zoomMin..zoomMax, 8 to 18.5). Pitch, yaw and the quarter steps keep their rules; PlayStandOff and TacticalShadows follow the frame.</summary>
+        public const float FreeZoomMin = 3f, FreeZoomMax = 60f;
+        public static bool FreeZoom => Settings.Current.camera.freeZoom;
+        float WheelMin => FreeZoom ? Mathf.Min(FreeZoomMin, zoomMin) : zoomMin;
+        float WheelMax => FreeZoom ? Mathf.Max(FreeZoomMax, zoomMax) : zoomMax;
+
         /// <summary>The overhead wheel: a notch is a step (the sign only, as before), or the zoom scales with the scroll's size (proportional).</summary>
         void OverheadWheel(float wheel)
         {
             LastScroll = wheel; if (!cam) return; var w = Cam.wheel;
             float size = w.proportional ? cam.orthographicSize * Mathf.Exp(-wheel * w.rate) : cam.orthographicSize - Mathf.Sign(wheel) * w.step;
-            cam.orthographicSize = Mathf.Clamp(size, zoomMin, zoomMax);
+            cam.orthographicSize = Mathf.Clamp(size, WheelMin, WheelMax);
             if (!cam.orthographic) PlaceCamera();
         }
 

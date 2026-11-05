@@ -24,6 +24,13 @@ namespace Suborned
         public static readonly int LensSunShadowId = Shader.PropertyToID("_SubornedLensSunShadow");
         WhiteBalance playWb; ColorLookup playLut;
 
+        /// <summary>Brief 096 (Sky on 0.2.251: "Why is third person totally different rendering / color grade?"): with play096 on, the follow tier
+        /// (third person, the drive view, the conversation and fail cutaways: perspective cameras with the follow far clip) renders with the play
+        /// volume (this grade, the LUT, the play bloom and greens curve) instead of the follow volume, so switching views changes the camera, never
+        /// the colour. The shade fill (lens.json sun.shadowStrength) already reached every day camera (SunShade); the follow tier keeps its distance
+        /// haze from 90 m and its sun flare, which belong to the perspective lens, not the grade. on false = the follow volume as before.</summary>
+        static bool PlayGradeInFollow => Play096Data() is { on: true };
+
         static Play096p Play096Data()
         {
             if (play096Read) return play096;

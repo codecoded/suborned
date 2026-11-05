@@ -299,20 +299,7 @@ namespace Suborned.Play
                     Slider("Voices", 0, 100, 5, () => a.voices, v => { a.voices = Mathf.RoundToInt(v); Save(); }, v => $"{Mathf.RoundToInt(v)}");
                     break;
                 }
-                case "camera":
-                {
-                    var c = S.camera;
-                    GroupHead("Commander view");
-                    Slider("Pan speed", 6, 36, 1, () => c.panSpeed, v => { c.panSpeed = v; Save(); }, v => $"{Mathf.RoundToInt(v)}");
-                    Switch("Edge pan", () => c.edgePan, v => { c.edgePan = v; Save(); });
-                    Slider("Orbit sensitivity", 0.25f, 2f, 0.05f, () => c.orbitSensitivity, v => { c.orbitSensitivity = v; Save(); }, v => v.ToString("0.00", CultureInfo.InvariantCulture));
-                    Switch("Invert orbit", () => c.invertOrbit, v => { c.invertOrbit = v; Save(); });
-                    Switch("Trackpad drag orbit", () => c.trackpadOrbit, v => { c.trackpadOrbit = v; Save(); });
-                    GroupHead("Third person");
-                    Choice("Camera distance", new[] { "Close", "Default", "Far" }, () => c.thirdPersonDistance switch { "close" => 0, "far" => 2, _ => 1 }, i => { c.thirdPersonDistance = i switch { 0 => "close", 2 => "far", _ => "default" }; Save(); });
-                    Switch("Camera settle", () => c.settle, v => { c.settle = v; Save(); });
-                    break;
-                }
+                case "camera": CameraTab(); break; // FrontEnd.CameraTab.cs
                 case "gameplay":
                 {
                     var g = S.gameplay; bool Hold() => g.clickScheme == (int)ControlPreset.HoldActs;

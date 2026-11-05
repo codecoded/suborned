@@ -67,6 +67,7 @@ namespace Suborned.Play
             Following = true; intentKey = "";
             dragging = false; orbiting = false; // batch 0.2.123: a left press made on the map (a drag still open) never orbits the view it enters
             fSwingFromPos = fPivot + (fSwingFromPos - focus).normalized * 60f; // the swing starts high on the overhead view's line through the agent
+            fEnterMap = MapSide(left.focus, left.rot, left.size, left.ortho, left.fov); fEnterSwingStart = fSwingStart; // brief 096: the swing in starts from the map picture itself (HostFollow.Glide096.cs)
             FollowPlace(true);
             Status = $"Follow view: {Suborned.Sim.Op.Name((Suborned.Sim.OpId)fAgent)} ({controls.Label(PlayAction.FollowView)} for the overhead view)";
         }
@@ -75,7 +76,7 @@ namespace Suborned.Play
 
         /// <summary>Seconds the glide back to the map takes (smoothstep), and the share at its end over which the world marks fade back in.</summary>
         public const float FollowExitS = 0.5f, MarksFadeS = 0.2f;
-        float fExitStart = -1f; Vector3 fExitFromPos; Quaternion fExitFromRot; int fExitAgent = -1;
+        float fExitStart = -1f; int fExitAgent = -1;
         /// <summary>The world marks' opacity (the HUD's `marks` layer): hidden through the glide back to the map (the follow view hides them), then
         /// faded in over 0.2 s once the map view stands (so they never pop in, nor draw against the moving perspective camera).</summary>
         public float MarksFade => fExitStart >= 0f ? 0f : Mathf.Clamp01((Time.unscaledTime - marksFadeFrom) / MarksFadeS);
@@ -88,16 +89,16 @@ namespace Suborned.Play
         /// centred on the agent at the play zoom, at the quarter-step yaw it was left at. The world marks fade back in over the glide's last 0.2 s.</summary>
         void FollowExitGlide(int k)
         {
-            if (!Following || !cam) return;
-            fExitStart = Time.unscaledTime; fExitFromPos = cam.transform.position; fExitFromRot = cam.transform.rotation; fExitAgent = k; fDragging = false;
+            if (!Following || !cam || fExitStart >= 0f) return; // a second press while gliding is the same glide
+            fExitStart = Time.unscaledTime; fExitFrom = FollowSide(cam.transform.position, cam.transform.rotation, cam.fieldOfView); fExitAgent = k; fDragging = false;
         }
         /// <summary>Per frame while gliding back (FollowFrame): the camera eased toward the map's line over the agent; at its end the map view.</summary>
         void FollowExitFrame()
         {
             var at = fExitAgent >= 0 && FollowPoint(fExitAgent) is Vector3 p ? p : fPivot;
             float u = Mathf.Clamp01((Time.unscaledTime - fExitStart) / Mathf.Max(0.01f, FollowExitS)), s = u * u * (3f - 2f * u);
-            var toRot = left.rot; var toPos = new Vector3(at.x, 0f, at.z) - toRot * Vector3.forward * 60f; // high on the map view's line through the agent (the swing's start)
-            cam.transform.SetPositionAndRotation(Vector3.Lerp(fExitFromPos, toPos, s), Quaternion.Slerp(fExitFromRot, toRot, s));
+            float playZoom = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax);
+            GlidePlace(fExitFrom, MapSide(new Vector3(at.x, 0f, at.z), left.rot, playZoom, left.ortho, left.fov), s); // brief 096: a matched-frame dolly onto the map picture (HostFollow.Glide096.cs), no wide 60 m frame
             if (u < 1f) return;
             fExitStart = -1f; FollowExit(); marksFadeFrom = Time.unscaledTime;
             if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); centreGoal = null; centreStart = -1f; camFollow = false; LookAt(at); }
@@ -109,7 +110,7 @@ namespace Suborned.Play
         void FollowExit()
         {
             if (!Following) return;
-            fExitStart = -1f;
+            fExitStart = -1f; GlideMatrixOff();
             Following = false; fAgent = -1; fDragging = false; FollowUnhide(); dResume = false; followOnly = false;
             cam.orthographic = left.ortho; cam.orthographicSize = left.size; cam.fieldOfView = left.fov; cam.nearClipPlane = left.near; cam.farClipPlane = left.far;
             cam.transform.SetPositionAndRotation(left.pos, left.rot);
@@ -305,7 +306,7 @@ namespace Suborned.Play
         {
             if (!controls.Down(kb, PlayAction.FollowView)) return false;
             if (controls.HoldActs && Driving && controls.Held(kb, PlayAction.AddToGroup)) { DriveNextAgent(); return true; } // brief 041: Shift+T takes the next agent; T lets go (Esc stays the pause menu)
-            if (Driving) DriveLetGoToMap(true); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter(); // brief 067 G3: T glides back to the map
+            if (Driving) DriveLetGoToMap(true); else if (Following) FollowExitGlide(fAgent); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter(); // brief 067 G3: T glides back to the map
             return true;
         }
 
@@ -357,7 +358,9 @@ namespace Suborned.Play
                 pos = fPivot + Vector3.up * (followLookHeight + followHeight - 1.3f) - rot * Vector3.forward * fDistNow + right;
             }
             float sw = followSwing <= 0f ? 1f : Mathf.Clamp01((Time.unscaledTime - fSwingStart) / followSwing);
-            if (sw < 1f) { float e = sw * sw * (3f - 2f * sw); pos = Vector3.Lerp(fSwingFromPos, pos, e); rot = Quaternion.Slerp(Quaternion.LookRotation(fPivot - fSwingFromPos), rot, e); }
+            if (sw < 1f && fSwingStart == fEnterSwingStart) { float e = sw * sw * (3f - 2f * sw); GlidePlace(FollowSide(pos, rot, followFov), fEnterMap, 1f - e); FollowPeople(); return; } // brief 096: in from the map picture (HostFollow.Glide096.cs)
+            if (glideMatrix) { GlideMatrixOff(); cam.fieldOfView = followFov; }
+            if (sw < 1f) { float e = sw * sw * (3f - 2f * sw); pos = Vector3.Lerp(fSwingFromPos, pos, e); rot = Quaternion.Slerp(Quaternion.LookRotation(fPivot - fSwingFromPos), rot, e); } // a swing from agent to agent (Shift+T)
             cam.transform.SetPositionAndRotation(pos, rot);
             FollowPeople();
         }
