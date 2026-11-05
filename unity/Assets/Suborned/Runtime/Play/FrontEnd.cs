@@ -65,7 +65,7 @@ namespace Suborned.Play
         {
             if (SceneManager.GetActiveScene().name != BootScene) return;
             bool shots = GameBoot.ArgValue("-frontEndShots") != null;
-            if (GameBoot.Automation && !shots) { LoadClock.Begin(false); SceneManager.LoadScene(GameScene); return; } // a proof or batch row: straight to play, as before the front end
+            if (GameBoot.Automation && !shots) { LoadClock.Begin(false); ShaderPrewarm.Begin(); SceneManager.LoadScene(GameScene); return; } // a proof or batch row: straight to play, as before the front end (brief 096: the shader warm-up runs beside it)
             var fe = Ensure(); Settings.Current.ApplyDisplay(); fe.StartCoroutine(fe.LoadGame());
         }
 
@@ -510,14 +510,14 @@ namespace Suborned.Play
             FadeIn(loadingGroup, L.timing.barDelaySeconds, L.timing.barFadeSeconds); FadeIn(buildLabel, L.timing.barDelaySeconds, L.timing.barFadeSeconds);
             float t0 = Time.unscaledTime; yield return null;
             SetProgress(0.02f, "Harbour District");
-            LoadClock.Begin(true);
+            LoadClock.Begin(true); ShaderPrewarm.Begin(); // brief 096: the shader warm-up loads and runs beside the street's load (ShaderPrewarm.cs)
             var op = SceneManager.LoadSceneAsync(GameScene, LoadSceneMode.Single);
             if (op == null) { Debug.LogError("FrontEnd: HarbourDistrict is not in the build"); yield break; }
             while (!op.isDone) { SetProgress(op.progress / 0.9f * 0.8f, "Harbour District"); yield return null; }
             SetProgress(0.85f, "People");
             HandoverHost h = null; float tw = Time.unscaledTime;
             while (((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) && Time.unscaledTime - tw < 60f) { yield return null; }
-            SetProgress(0.95f, "Plan"); yield return null; yield return null;
+            SetProgress(0.95f, "Plan"); yield return null; yield return null; yield return ShaderPrewarm.Wait(v => SetProgress(0.95f + 0.04f * v, "Plan")); // brief 096: what is left of the warm-up
             SetProgress(1f, "Mission");
             if (shotsMode) yield break; // the front-end proof drives the screens from here (FrontEnd.Proof)
             while (barShown < 0.999f || Time.unscaledTime - t0 < L.timing.minShowSeconds) yield return null;

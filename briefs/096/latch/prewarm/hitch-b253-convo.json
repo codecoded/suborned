@@ -1,0 +1,24 @@
+{
+  "schema": "suborned.hitch096/1",
+  "order": "convo", "prewarmS": 27.38,
+  "phases": [
+    {"phase": "warming", "frames": 471, "maxMs": 7988.3, "gc": 72 },
+    {"phase": "warming", "frames": 1, "maxMs": 207.2, "gc": 2 },
+    {"phase": "map", "frames": 60, "maxMs": 5.5, "gc": 2 },
+    {"phase": "map-yaw1", "frames": 30, "maxMs": 6.1, "gc": 3 },
+    {"phase": "map-yaw2", "frames": 30, "maxMs": 4.8, "gc": 3 },
+    {"phase": "map-yaw3", "frames": 30, "maxMs": 4.7, "gc": 3 },
+    {"phase": "map-back", "frames": 30, "maxMs": 4.9, "gc": 4 },
+    {"phase": "setup", "frames": 30, "maxMs": 106.8, "gc": 11 },
+    {"phase": "convo", "frames": 120, "maxMs": 13.0, "gc": 12 },
+    {"phase": "convo-back", "frames": 61, "maxMs": 11.3, "gc": 12 },
+    {"phase": "third", "frames": 90, "maxMs": 11.7, "gc": 13 },
+    {"phase": "walk", "frames": 90, "maxMs": 6.8, "gc": 14 },
+    {"phase": "third-back", "frames": 60, "maxMs": 10.0, "gc": 15 },
+    {"phase": "third2", "frames": 60, "maxMs": 5.9, "gc": 15 },
+    {"phase": "third2-back", "frames": 61, "maxMs": 5.6, "gc": 16 },
+    {"phase": "third-pickup", "frames": 60, "maxMs": 5.4, "gc": 16 },
+    {"phase": "walk-pickup", "frames": 90, "maxMs": 7.1, "gc": 17 },
+    {"phase": "pickup-back", "frames": 60, "maxMs": 7.3, "gc": 18 }
+  ]
+}

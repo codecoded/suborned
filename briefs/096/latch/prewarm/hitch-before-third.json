@@ -1,0 +1,18 @@
+{
+  "schema": "suborned.hitch096/1",
+  "order": "third", "prewarmS": 0.00, "misses": -1,
+  "phases": [
+    {"phase": "boot", "frames": 1, "maxMs": 282.3, "gc": 2, "missesAfter": -1},
+    {"phase": "map", "frames": 60, "maxMs": 7.1, "gc": 2, "missesAfter": -1},
+    {"phase": "map-yaw1", "frames": 30, "maxMs": 986.7, "gc": 3, "missesAfter": -1},
+    {"phase": "map-yaw2", "frames": 30, "maxMs": 4.5, "gc": 3, "missesAfter": -1},
+    {"phase": "map-yaw3", "frames": 30, "maxMs": 561.9, "gc": 3, "missesAfter": -1},
+    {"phase": "map-back", "frames": 31, "maxMs": 4.9, "gc": 4, "missesAfter": -1},
+    {"phase": "third", "frames": 90, "maxMs": 6141.5, "gc": 5, "missesAfter": -1},
+    {"phase": "walk", "frames": 90, "maxMs": 21.5, "gc": 6, "missesAfter": -1},
+    {"phase": "third-back", "frames": 60, "maxMs": 47.5, "gc": 7, "missesAfter": -1},
+    {"phase": "third2", "frames": 60, "maxMs": 455.9, "gc": 7, "missesAfter": -1},
+    {"phase": "third2-back", "frames": 60, "maxMs": 5.1, "gc": 8, "missesAfter": -1},
+    {"phase": "setup", "frames": 150, "maxMs": 111.4, "gc": 40, "missesAfter": -1}
+  ]
+}

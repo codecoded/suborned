@@ -37,7 +37,7 @@ namespace Suborned.World.Play
             Cli();
         }
         /// <summary>A scratch build's folder (CliScratch), else null: the game build's own out/build/play.</summary>
-        static string scratchDir;
+        static string scratchDir; static bool scratchDev;
 
         /// <summary>A scratch player for a proof between batches (Latch, host round 4 of batch 0.2.123): the same build into `-scratchBuild &lt;dir&gt;`
         /// (default out/scratch/latch/build), taking no build number: tools/game/version.json and out/build/play are untouched, the app says
@@ -46,6 +46,7 @@ namespace Suborned.World.Play
         {
             var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-scratchBuild");
             scratchDir = Path.GetFullPath(i >= 0 && i + 1 < a.Length ? a[i + 1] : Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "scratch", "latch", "build"));
+            scratchDev = Array.IndexOf(a, "-scratchDev") >= 0; // brief 096: a development player, for what only it can do (GraphicsStateCollection tracing, ShaderPrewarm)
             Cli();
         }
 
@@ -131,7 +132,7 @@ namespace Suborned.World.Play
                     target = playerTarget,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
-                    options = BuildOptions.None, // release
+                    options = scratchDir != null && scratchDev ? BuildOptions.Development : BuildOptions.None, // release (a scratch build with -scratchDev: development)
                 });
             }
             finally { PlayerSettings.productName = product; PlayerSettings.enableFrameTimingStats = timing; PlayerSettings.bundleVersion = bundleVersion; PlayerSettings.macOS.buildNumber = buildNumber; Version.RemoveStamp(); Version.RemovePresets(); FrontEndBuild.RemoveBriefs(); }
