@@ -35,26 +35,31 @@ namespace Suborned.Play
         public static IEnumerator Run(HandoverHost h, string dir, List<string> log, Action<string, bool, string> Row)
         {
             yield return Fresh(h); var g = h.Game;
+            UnityEngine.Debug.Log("ProofBook: the clock: J stops it, J starts it where it stood;"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the clock: J stops it, J starts it where it stood; a stopped clock stays stopped; Esc and the back control close it too
             yield return Wait(0.4f); int t0 = g.Tick; yield return Press(Key.J); bool up = h.BookOpen && h.Modal == ModalGate.Modal.Book && h.Paused && HudToolkit.BookShown; int t1 = g.Tick; yield return Wait(0.5f); int t2 = g.Tick;
             yield return Press(Key.J); bool shut = !h.BookOpen && !h.Paused && !HudToolkit.BookShown; yield return Wait(0.4f); int t3 = g.Tick;
             Row("bookClock", up && t2 == t1 && shut && t3 > t2 && t1 - t0 >= 0, $"up {up}, ticks {t0} {t1} {t2} {t3}, closed {shut}");
             h.SetPaused(true); yield return Frames(2); yield return Press(Key.J); bool up2 = h.BookOpen; yield return Press(Key.Escape); bool stays = !h.BookOpen && h.Paused && !h.MenuOpen; int t4 = g.Tick; yield return Wait(0.3f);
             Row("bookStopsStopped", up2 && stays && g.Tick == t4, $"opened {up2}, Esc closed and left the clock stopped {stays}, no menu {!h.MenuOpen}"); h.SetPaused(false); yield return Frames(2);
+            UnityEngine.Debug.Log("ProofBook: the modal gate: J does nothing under the briefing "); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the modal gate: J does nothing under the briefing or the pause menu; street keys do nothing under the book
             h.OpenMenu(); yield return Frames(2); yield return Press(Key.J); bool underMenu = h.BookOpen; h.ResumeFromMenu(); yield return Frames(2);
             h.SetPaused(true); h.ShowBriefing = true; yield return Frames(2); bool startBook = h.BookOpen && h.BookStart && h.BookSectionNow == "job"; yield return Press(Key.J); bool underBrief = !(startBook && !h.BookOpen && !h.ShowBriefing && h.Paused); h.SetPaused(false); yield return Frames(2); // brief 096: the start is the book on Job; J shuts it, the clock still stopped
             h.BookOpenNow(); yield return Frames(3); int n0 = g.Orders.Count, w0 = h.WorldPresses; bool i0 = h.IntelOpen; yield return Press(Key.I); yield return Press(Key.F); yield return Press(Key.Space); bool stillOpen = h.BookOpen && h.Paused && h.IntelOpen == i0 && g.Orders.Count == n0; // brief 096: I (Intel) for the old = (speed, no key now)
             h.BookClose(); yield return Frames(2);
             Row("bookModal", !underMenu && !underBrief && stillOpen && h.WorldPresses == w0, $"under the menu {underMenu}, the start book misbehaved {underBrief}, street keys under the book left it up with no order {stillOpen}");
+            UnityEngine.Debug.Log("ProofBook: both views: it opens in third person and the follo"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- both views: it opens in third person and the follow camera stays
             h.DriveEnter083(); yield return Wait(0.5f); bool third = h.Following; yield return Press(Key.J); bool tOpen = h.BookOpen && h.Paused; var cam3 = h.View.transform.position; yield return Wait(0.3f); float moved = (h.View.transform.position - cam3).magnitude; yield return Press(Key.J); bool tShut = !h.BookOpen;
             Row("bookThird", third && tOpen && tShut && moved < 0.01f, $"third {third}, open {tOpen}, the camera moved {moved:0.000} m, shut {tShut}");
             h.DriveLetGoToMap(); if (h.Following) h.FollowToggle(); yield return Wait(0.3f);
+            UnityEngine.Debug.Log("ProofBook: the map view comes back exactly"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the map view comes back exactly
             h.TurnSnap(1); yield return Wait(0.6f); h.View.orthographicSize = 13f; h.LookAt(h.frame.World(g.Ops[3].Pos) + new Vector3(4f, 0f, 2f)); yield return Frames(2); var cp = h.View.transform.position; var cr = h.View.transform.rotation; float cz = h.View.orthographicSize;
             h.BookOpenNow("job"); yield return Wait(0.7f); bool went = (h.View.transform.position - cp).magnitude > 1f; h.BookClose(); yield return Frames(2);
             Row("bookCameraReturns", went && (h.View.transform.position - cp).magnitude < 0.001f && Quaternion.Angle(h.View.transform.rotation, cr) < 0.01f && Mathf.Abs(h.View.orthographicSize - cz) < 0.001f, $"moved to the page's subject {went}, back within {(h.View.transform.position - cp).magnitude:0.0000} m"); h.TurnSnap(0);
+            UnityEngine.Debug.Log("ProofBook: a saved run replays to the same hash with the book"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- a saved run replays to the same hash with the book opened and shut during it
             yield return Fresh(h); g = h.Game; h.controls.planTogether = false; var ra = Route(); int stop = 1400; h.SetPaused(true);
             foreach (var o in ra) { if (o.Tick >= stop) break; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); if (o.Tick % 2 == 0) { h.BookOpenNow("cell", o.Tick % 4); yield return Frames(1); h.BookShow("job"); yield return Frames(1); h.BookClose(); yield return Frames(1); } }
@@ -62,14 +67,17 @@ namespace Suborned.Play
             var sc = Script.Parse(File.ReadAllText(path)); var rg = Engine.New(h.PlayInputs, sc.Start); var rl = new List<(int i, Order o)>(); for (int i = 0; i < sc.Orders.Count; i++) rl.Add((i, sc.Orders[i])); rl.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.i.CompareTo(b.i));
             foreach (var (_, o) in rl) { rg.RunTo(o.Tick); rg.Issue(o); } rg.RunTo(stop); ulong back = Hash.State(rg);
             Row("bookReplay", live == back && g.Tick == stop && rg.Tick == stop, $"tick {g.Tick}, {sc.Orders.Count} orders, live {live:x}, replayed {back:x}, saved {saved}");
+            UnityEngine.Debug.Log("ProofBook: every slot empty takes no room"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- every slot empty takes no room
             var full = new BookPage { HeroFace = "x", Name = "A name", Sub = "a sub", State = "State", FactsHead = "head" }; full.Facts.Add(new BookFact { Word = "fact" }); full.Gear.Add(new BookFact { Word = "gear" }); full.Ways.Add(new BookWay { Word = "way" }); full.Can.Add(new BookCan { Word = "can", Line = "a line" }); full.Scales.Add(new BookScale { Word = "s", Value = 1, Max = 2 }); full.Knows.Add(new BookKnow { Word = "k" }); full.Track.Add(new BookStop { Word = "t", Time = "0:01" }); full.Others.Add(new BookOther { Word = "o" });
             var empty = BookLayout.Place(new BookPage(), Tw); float fb = BookLayout.Place(full, Tw).Bottom; bool noItems = empty.Items.Count == 0 && empty.Bottom == BookLayout.Top && fb > 400f;
             Row("bookEmptySlots", noItems, $"an empty page has {empty.Items.Count} items and ends where it starts; the full one ends at {fb:0}");
+            UnityEngine.Debug.Log("ProofBook: a test section by data alone, the signs re-space"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- a test section by data alone, the signs re-space
             yield return Fresh(h); h.BookOpenNow("job"); yield return Frames(2); int signs0 = HudToolkit.BookSigns; h.BookClose(); yield return Frames(2);
             h.BookSections.Insert(3, TestSection()); h.BookOpenNow("cash"); yield return Frames(3); bool test = h.BookPageNow?.Section == "cash" && HudToolkit.BookSigns == signs0 + 1 && HudToolkit.BookLaidOut != null && !HudToolkit.BookLaidOut.Has(BookSlot.Facts); h.BookClose(); h.BookSections.RemoveAt(3); yield return Frames(2);
             Row("bookTestSection", test, $"signs {signs0} then {signs0 + 1}, its page up, its empty slots absent {test}");
+            UnityEngine.Debug.Log("ProofBook: an agent's page: the same rows at any place and ti"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- an agent's page: the same rows at any place and time, and it names no person; nothing on it is a way
             yield return Fresh(h); g = h.Game; h.controls.planTogether = false; h.SetPaused(true); yield return Frames(2);
             string Shape(int k) { h.BookShow("cell", k); var p = h.BookPageNow; return $"{p.Facts.Count}/{p.Gear.Count}/{p.Scales.Count}/{p.Ways.Count} " + string.Join("|", p.Can.ConvertAll(c => c.Id + ":" + c.Word + ":" + c.Line)); }
@@ -80,6 +88,7 @@ namespace Suborned.Play
             foreach (var o in ras) { if (o.Tick >= 1400) break; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); if (o.Tick > 0 && o.Tick % 3 == 0 || o.Tick == 1195) { seenTick.Add(o.Tick); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) { rowsMoved++; nsaid.Add($"{(OpId)k} at {o.Tick}: {Shape(k)}"); } h.BookClose(); yield return Frames(1); } }
             h.RunTo(1400); h.BookOpenNow("cell", 0); yield return Frames(1); for (int k = 0; k < 4; k++) if (Shape(k) != shapes[k]) rowsMoved++; var counts = new int[4]; for (int k = 0; k < 4; k++) { h.BookShow("cell", k); counts[k] = h.BookPageNow.Can.FindAll(c => c.Id != "car").Count; } h.BookClose(); yield return Frames(1);
             Row("bookAgentRows", rowsMoved == 0 && namedBad == 0 && seenTick.Count >= 2 && counts[0] == h.BookCanOf(0).Count && counts[1] == HandoverHost.Slots[1].Length, $"rows {string.Join(" ", counts)} at tick 0, {string.Join(" ", seenTick)} and 1400; moved {rowsMoved}, named a person {namedBad}, {string.Join("; ", nsaid)}");
+            UnityEngine.Debug.Log("ProofBook: the weapon block's pips are the data scale applied"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the weapon block's pips are the data scale applied to the engine's own values, for each agent's weapon and a test weapon by data
             int wbad = 0; var wsaid = new List<string>(); var scales = BookWordsFile.Get().WeaponStats;
             for (int k = 0; k <= 4; k++)
@@ -94,6 +103,7 @@ namespace Suborned.Play
                 if (!ok) wbad++; wsaid.Add($"{(k < 4 ? ((OpId)k).ToString() : "test")} {w.Id}: {string.Join(", ", got)}");
             }
             Row("bookWeaponFigures", wbad == 0, $"{wbad} wrong; {string.Join(" | ", wsaid)}");
+            UnityEngine.Debug.Log("ProofBook: the job's conditions: each mark equals its live ch"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the job's conditions: each mark equals its live check at points along route A and the pickup route; every check in the data is in the vocabulary; a test condition by data appears
             int nbad = 0, npts = 0; var nmet = new Dictionary<string, int>(); var nsaid2 = new List<string>(); var nw = BookWordsFile.Get().Needs; bool vocab = true;
             foreach (var l in nw.Values) foreach (var n in l) vocab &= h.BookCheck(n.Check) != null && (n.Known.Length == 0 || h.BookCheck(n.Known) != null);
@@ -103,14 +113,14 @@ namespace Suborned.Play
                 for (int at = 300; at <= 4200 && !g.Over; at += 300)
                 {
                     while (oi < ro.Count && ro[oi].Tick <= at && !g.Over) { var o = ro[oi++]; h.RunTo(o.Tick); h.Issue(new Order { Op = o.Op, Do = o.Do, To = o.To, Point = o.Point, Target = o.Target, Approach = o.Approach, How = o.How, Run = o.Run }); }
-                    if (g.Over) break; h.RunTo(at); h.BookOpenNow("job"); yield return Frames(1); npts++;
+                    if (g.Over) break; h.RunTo(at); if (g.Over) break; h.BookOpenNow("job"); yield return Frames(1); npts++;
                     foreach (var n in h.BookPageNow.Needs)
                     {
-                        bool withV = g.Vale == ValeAt.WithEnforcer || g.Vale == ValeAt.Car, unk = n.Id == "pickup-camera" && g.Known("camera:pickup") is not { Sight: true };
+                        bool withV = g.Vale == ValeAt.WithEnforcer || g.Vale == ValeAt.Car, unk = n.Id == "pickup-camera" && g.Known("camera:pickup") is not { Sight: true } || n.Id == "left-safe" && g.Vale is not (ValeAt.Car or ValeAt.Lent or ValeAt.Out); // brief 096 (Fable): left-safe is "?" until Popovic is in a car
                         bool want = n.Id switch { "guard-away" => !g.GuardAtDoor, "door-camera" => g.CameraDark("entrance") || g.LoopOn && g.LoopCam == "entrance", "inside" => g.Ops[3].Inside || withV, "getaway" => g.Vale == ValeAt.Car,
                             "driver" => g.PersonByRole("driver").Turned, "pickup-camera" => !unk && (g.CameraDark("pickup") || g.LoopOn && g.LoopCam == "pickup"), "has-vale" => withV,
                             "guarded" => g.Vale == ValeAt.Car && (!g.CarHeld() || System.Array.Exists(g.Ops, o => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0)), "go" => g.Log.Exists(l => l.Code == "success"), "left-safe" => g.LeftBehind().TrueForAll(x => x.fate == "walked"), _ => !n.Met }; // brief 096: the getaway's conditions, read from the engine
-                        if (n.Met != want || n.Unknown != unk) { nbad++; nsaid2.Add($"{route} {HandoverHost.MissionClock(at)} {n.Group}/{n.Id}: page {n.Met}{(n.Unknown ? "?" : "")}, engine {want}{(unk ? "?" : "")}"); }
+                        want &= !unk; if (n.Met != want || n.Unknown != unk) { nbad++; nsaid2.Add($"{route} {HandoverHost.MissionClock(at)} {n.Group}/{n.Id}: page {n.Met}{(n.Unknown ? "?" : "")}, engine {want}{(unk ? "?" : "")}"); }
                         if (n.Met) nmet[n.Group + "/" + n.Id] = (nmet.TryGetValue(n.Group + "/" + n.Id, out var c) ? c : 0) + 1;
                     }
                     h.BookClose(); yield return Frames(1);
@@ -119,6 +129,7 @@ namespace Suborned.Play
             nw["front-door"].Add(new BookWordsFile.Need { Id = "test-need", Words = "A test condition", Check = "log:start" }); h.BookOpenNow("job"); yield return Frames(2);
             var tneed = h.BookPageNow.Needs.Find(x => x.Id == "test-need"); bool testOk = tneed != null && tneed.Met == g.Log.Exists(x => x.Code == "start") && HudToolkit.BookLaidOut.Has(BookSlot.Needs); h.BookClose(); nw["front-door"].RemoveAll(x => x.Id == "test-need"); yield return Frames(1);
             Row("bookNeeds", nbad == 0 && vocab && testOk && npts >= 10 && nmet.Count >= 5, $"{npts} points on route A and the pickup route, {nbad} wrong; vocabulary {vocab}; test condition {testOk}; ticked at some point: {string.Join(", ", nmet.Keys)} {string.Join("; ", nsaid2)}");
+            UnityEngine.Debug.Log("ProofBook: what is still a way (the job's): closes the book, "); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- what is still a way (the job's): closes the book, opens that thing's ring for the selection as it is, gives no order; the ring is the ring a click on that thing opens; the page shows no price of its own
             yield return Fresh(h); g = h.Game; h.SetPaused(true); yield return Frames(2); int bad = 0, seen = 0; var said = new List<string>(); h.Select(OpId.Scout, false);
             h.BookOpenNow("job"); yield return Frames(2); int nWays = h.BookPageNow.Ways.Count; h.BookClose(); yield return Frames(1);
@@ -130,6 +141,7 @@ namespace Suborned.Play
                 h.CloseRing(); yield return Frames(1);
             }
             Row("bookWayIsTheRing", bad == 0 && seen == 2, $"{seen} ways on the job page, {bad} wrong; {string.Join("; ", said)}");
+            UnityEngine.Debug.Log("ProofBook: no cost while shut: the hook's own cost, nothing i"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- no cost while shut: the hook's own cost, nothing in the panel's tree, and the frames either side of an open
             int e0 = HudToolkit.PanelElementCount; h.BookOpenNow("cell"); yield return Frames(3); int eUp = HudToolkit.PanelElementCount; double build = h.BookBuildMs; h.BookClose(); yield return Frames(3); int e1 = HudToolkit.PanelElementCount; var (msEach, bytes) = h.BookShutProbe(10000);
             Row("bookShutCost", e1 == e0 && eUp > e0 && bytes == 0 && msEach < 0.01, $"panel elements {e0} shut, {eUp} up, {e1} shut again; the shut check {msEach * 1000:0.##} us a frame, {bytes} bytes over 10000; a page builds in {build:0.#} ms (at open, never per frame)");
