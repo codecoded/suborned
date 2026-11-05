@@ -29,6 +29,16 @@ namespace Suborned
         [Tooltip("Metres over which shadows fade out at the shadow distance. URP fades by distance from the camera from (1 - border) of the " +
             "shadow distance, so a share would fade the street itself at 400 m; this keeps the fade past the frame's far ground edge.")]
         public float fade = 8f;
+        [Header("Frame fit (brief 096, Redline's render audit item 2; Glint)")]
+        [Tooltip("Orthographic: the street band's far edge from the frame itself. The ground across the frame spans ±(ortho size × cot pitch) along the view " +
+            "(±12.8 m at play zoom 10, ±23.7 m at the planning zoom 18.5), so the band ends there plus fitFade plus fitMargin (at most farBand): the fade always " +
+            "starts past the frame's top edge (no cut-off while panning, turning or zooming) and the cascade's sphere shrinks (zoom 10: farBand 40 → about 17 m).")]
+        public bool fitToZoom = true;
+        public float fitFade = 3f, fitMargin = 1.5f;
+        [Tooltip("The main light's soft-shadow quality while this camera renders orthographic (the sun's own setting overrides the asset's): Medium (5×5 tent) " +
+            "with the sharper fitted map; the sun's own value comes back after the render.")]
+        public SoftShadowQuality orthoSoftShadows = SoftShadowQuality.Medium;
+
         [Header("Perspective (the third-person follow view; brief 048, Glint's sign-off)")]
         [Tooltip("Shadow distance (m) for a perspective camera: 100 to 120 m (80 showed a hard line; 120 if far-tower shadows are lost).")]
         public float perspectiveDistance = 110f;
@@ -60,9 +70,20 @@ namespace Suborned
         {
             RenderPipelineManager.beginCameraRendering -= Begin;
             RenderPipelineManager.endCameraRendering -= End;
+            SoftShadows(false);
             saved?.Restore();
             saved = null;
             ssaoOff?.Dispose(); ssaoOff = null;
+        }
+
+        UniversalAdditionalLightData softLight; SoftShadowQuality softWas; bool softSet;
+        /// <summary>The main light's soft-shadow quality for this camera's render (orthographic only), and back after it.</summary>
+        void SoftShadows(bool on)
+        {
+            if (!on) { if (softSet && softLight) softLight.softShadowQuality = softWas; softSet = false; return; }
+            if (!cam || !cam.orthographic || orthoSoftShadows == SoftShadowQuality.UsePipelineSettings) return;
+            var sun = RenderSettings.sun; if (!sun || !sun.TryGetComponent(out softLight)) return;
+            softWas = softLight.softShadowQuality; softLight.softShadowQuality = orthoSoftShadows; softSet = true;
         }
 
         void Begin(ScriptableRenderContext _, Camera c)
@@ -70,12 +91,14 @@ namespace Suborned
             if (c != cam || UniversalRenderPipeline.asset is not { } urp) return;
             saved = new State(urp);
             Apply(urp);
+            SoftShadows(true);
             ssaoOff?.Dispose(); ssaoOff = SsaoScope.For(cam, orthoSsao);
         }
 
         void End(ScriptableRenderContext _, Camera c)
         {
             if (c != cam) return;
+            SoftShadows(false);
             saved?.Restore();
             saved = null;
             ssaoOff?.Dispose(); ssaoOff = null;
@@ -120,6 +143,13 @@ namespace Suborned
         void Apply(UniversalRenderPipelineAsset urp)
         {
             if (cam && !cam.orthographic) { FitPerspective(urp, perspectiveDistance, perspectiveSplit, perspectiveFade); return; } // brief 048: the follow view's own fit, not the asset's 260 m single cascade
+            if (fitToZoom && cam && cam.orthographic)
+            {
+                float s = Mathf.Clamp(-cam.transform.forward.y, 0.2f, 1f), cot = Mathf.Sqrt(1f - s * s) / s; // the view's pitch below the horizon
+                float far = Mathf.Min(farBand, cam.orthographicSize * cot + fitFade + fitMargin);
+                Fit(urp, focusDepth, nearBand, far, cascades, airSplits, fitFade);
+                return;
+            }
             Fit(urp, focusDepth, nearBand, farBand, cascades, airSplits, fade);
         }
 

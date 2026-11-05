@@ -37,6 +37,7 @@ namespace Suborned.Play
             public Mat[] mats = { };
             public int contact = -1; public float contactBoost = float.NaN; public float contactWidth = 1.2f, contactStrip = 0.45f, contactBlob = 0.55f, contactSpread = 1.35f; public string contactTint = "#807470"; // brief 096 ambient: the Handover zone's contact shade, generated once
             public float standOff = float.NaN; // the play camera's stand-off along its view (HandoverHost.standOff, TacticalShadows.focusDepth): an ortho frame is the same picture at any stand-off, but SSAO's depth bias is not
+            public int shadowFit = -1; // 0: TacticalShadows as before brief 096 item 2 (farBand 40, fade 8, the sun's High soft shadows), for the before frames
             public int peek = -1; // 1: hold the detail layer (the cones) as Alt does, through HandoverHost.PeekLatch, for a signal frame
         }
 
@@ -196,6 +197,7 @@ namespace Suborned.Play
                     }
                 }
                 else if (b is TacticalShadows ts && s.ssao == 1) ts.orthoSsao = true;
+                if (b is TacticalShadows tf && s.shadowFit == 0) { tf.fitToZoom = false; tf.orthoSoftShadows = UnityEngine.Rendering.Universal.SoftShadowQuality.UsePipelineSettings; }
                 else if (t.Name == "AtmosphereLens" && Has(s.sunShadow) && t.GetField("data", Any)?.GetValue(b) is { } d && d.GetType().GetField("sun")?.GetValue(d) is { } sp)
                     sp.GetType().GetField("shadowStrength").SetValue(sp, s.sunShadow); // the lens sets the sun's shadow strength every render (lens.json sun.shadowStrength)
             }
