@@ -326,7 +326,7 @@ function drawCheck(): { status: string; seconds: number } {
   run('mkdir', ['-p', out]);
   run('rm', ['-f', join(out, 'proof.json')]);
   const t0 = Date.now();
-  spawnSync(bin, ['-drawCheck', out, '-windowed', '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 90000 });
+  spawnSync(bin, ['-drawCheck', out, '-windowed', '-novsync', '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 90000 });
   const f = join(out, 'proof.json');
   return { status: existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')).status : 'no result', seconds: Math.round((Date.now() - t0) / 100) / 10 };
 }
