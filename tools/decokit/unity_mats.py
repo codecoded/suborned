@@ -79,6 +79,23 @@ MATTE_096 = {"DK_Eye_Ivory": 0.38, "DK_Eye_Seafoam": 0.38, "DK_Eye_Coral": 0.38,
 EMIT_BASE_096 = {"DK_Eye_Tally": "#4A2400", "DK_Eye_Ring": "#10383C"}
 
 
+# Glint, brief 096 round 2 "K2" (Sky, 2026-11-05: "k2 is good"; briefs/096/glint/form/index.html): every kit enamel goes matte, as the hovering camera did. Complex Lit with a full clear coat
+# (mask 1, coat smoothness ~0.97) and environment reflections on made each bin, panel and robot mirror the play scene's teal-grey street cube. Now smoothness 0.4, no clear coat (float,
+# mask and keyword off), no environment reflections. Cars (DK_CarEnamel_*), chrome, glass and the camera's lens keep their gloss. The old town's own enamels get the same rule in
+# unity/Assets/Suborned/Editor/OldTown/DecoKit/DecoKitMaterials.cs (Matte096).
+MATTE_KIT = ("DK_Enamel_", "DK_RobotEnamel_")
+
+
+def matte_kit(text):
+    """A kit enamel .mat's text with K2: smoothness 0.4, clear coat off, environment reflections off (floats and keywords, keywords sorted as Unity writes them)."""
+    text = re.sub(r"(- _Smoothness: )[0-9.]+", r"\g<1>0.4", text)
+    for k, v in (("_ClearCoat", "0"), ("_ClearCoatMask", "0"), ("_EnvironmentReflections", "0")):
+        text = re.sub(rf"(- {k}: )[0-9.]+\n", rf"\g<1>{v}\n", text)
+    m = re.search(r"  m_ValidKeywords:(?: \[\]\n|\n((?:  - \S+\n)*))", text)
+    keys = sorted(({*re.findall(r"- (\S+)", m.group(1) or "")} - {"_CLEARCOAT"}) | {"_ENVIRONMENTREFLECTIONS_OFF"})
+    return text[: m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {k}\n" for k in keys) + text[m.end() :]
+
+
 def matte_096(name, text):
     """A .mat's text with brief 096's camera finish: smoothness, environment reflections off (float and keyword, keywords sorted as Unity writes them), the emitters' dark base."""
     if MATTE_096.get(name) is not None:
@@ -406,6 +423,9 @@ def write(table_path, dst, retuned):
         f = Path(dst) / "Materials" / f"{n}.mat"
         if f.exists():
             f.write_text(matte_096(n, f.read_text()))
+    for f in sorted((Path(dst) / "Materials").glob("*.mat")):  # brief 096 K2: the kit enamels matte (after the colourways, so their variants too)
+        if f.name.startswith(MATTE_KIT):
+            f.write_text(matte_kit(f.read_text()))
     for n in SUN_OFF:  # brief 079: after the colourways, which keep the base text as it was (only these four changed; the measured set)
         f = Path(dst) / "Materials" / f"{n}.mat"
         if f.exists():

@@ -352,7 +352,7 @@ namespace Suborned
             if (!on && DistanceHaze.Night && data.night != null && AtmosphereSettings.Enabled) want = data.night.shadowStrength; // the moon fills the shade (the night floor)
             float k = on ? Dusk : 0f; // evening (Glint 2026-10-24): the low sun's own shadow strength, eased in with LightPhase.Dusk
             if (k > 0f && data.evening != null) want = Mathf.Lerp(want, data.evening.sun.shadowStrength, k);
-            if (!Mathf.Approximately(sunLight.shadowStrength, want)) sunLight.shadowStrength = want;
+            if (!Mathf.Approximately(sunLight.shadowStrength, want)) sunLight.shadowStrength = want; Shader.SetGlobalFloat(LensSunShadowId, want); // brief 096: published for OldTownPlayLook, which otherwise forced its baked 1.0 over it
         }
 
         ColorAdjustments SceneAdj()

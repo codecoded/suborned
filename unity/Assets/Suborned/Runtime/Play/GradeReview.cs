@@ -21,7 +21,7 @@ namespace Suborned.Play
     /// It logs "GradeReview effective {...}" (the volume stack the play camera rendered with) so the review records today's values as rendered.</summary>
     public sealed class GradeReview : MonoBehaviour
     {
-        [Serializable] public sealed class Mat { public string name = ""; public string baseColour = ""; public float smoothness = float.NaN, env = float.NaN, spec = float.NaN, bump = float.NaN, detail = float.NaN, emissionScale = float.NaN; public string emission = ""; }
+        [Serializable] public sealed class Mat { public string name = ""; public string baseColour = ""; public float smoothness = float.NaN, coat = float.NaN, env = float.NaN, spec = float.NaN, bump = float.NaN, detail = float.NaN, emissionScale = float.NaN; public string emission = ""; }
         [Serializable] public sealed class Spec
         {
             public string id = "", tonemap = "", grading = "", filter = "", splitShadows = "", splitHighlights = "", lut = "", sunColour = "", vignetteColour = "";
@@ -34,6 +34,8 @@ namespace Suborned.Play
             public float ssaoIntensity = float.NaN, ssaoRadius = float.NaN, ssaoFalloff = float.NaN, ssaoDirect = float.NaN;
             public float sunIntensity = float.NaN, sunShadow = float.NaN; public float[] ambientScale = { };
             public Mat[] mats = { };
+            public float standOff = float.NaN; // the play camera's stand-off along its view (HandoverHost.standOff, TacticalShadows.focusDepth): an ortho frame is the same picture at any stand-off, but SSAO's depth bias is not
+            public int peek = -1; // 1: hold the detail layer (the cones) as Alt does, through HandoverHost.PeekLatch, for a signal frame
         }
 
         Spec s; int frames; bool logged, pending = true;
@@ -138,12 +140,14 @@ namespace Suborned.Play
 
         static string Retune(Mat m)
         {
-            var hit = Resources.FindObjectsOfTypeAll<Material>().Where(x => x.name == m.name || x.name.StartsWith(m.name + " ")).ToArray();
+            bool wild = m.name.EndsWith("*"); var pre = m.name.TrimEnd('*');
+            var hit = Resources.FindObjectsOfTypeAll<Material>().Where(x => wild ? x.name.StartsWith(pre) : x.name == m.name || x.name.StartsWith(m.name + " ")).ToArray();
             foreach (var x in hit)
             {
                 string was = $"{x.name}: base #{ColorUtility.ToHtmlStringRGB(x.GetColor("_BaseColor"))} sm {x.GetFloat("_Smoothness"):0.##} env {(x.HasFloat("_EnvironmentReflections") ? x.GetFloat("_EnvironmentReflections") : -1)} spec {(x.HasFloat("_SpecularHighlights") ? x.GetFloat("_SpecularHighlights") : -1)} emit {x.GetColor("_EmissionColor")}";
                 if (m.baseColour != "") { x.SetColor("_BaseColor", Hex(m.baseColour)); if (x.HasColor("_Color")) x.SetColor("_Color", Hex(m.baseColour)); }
                 if (Has(m.smoothness)) x.SetFloat("_Smoothness", m.smoothness);
+                if (Has(m.coat) && x.HasFloat("_ClearCoatMask")) x.SetFloat("_ClearCoatMask", m.coat); // the enamels' Complex Lit clear coat
                 if (Has(m.env)) { x.SetFloat("_EnvironmentReflections", m.env); if (m.env < .5f) x.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF"); else x.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF"); }
                 if (Has(m.spec)) { x.SetFloat("_SpecularHighlights", m.spec); if (m.spec < .5f) x.EnableKeyword("_SPECULARHIGHLIGHTS_OFF"); else x.DisableKeyword("_SPECULARHIGHLIGHTS_OFF"); }
                 if (Has(m.bump) && x.HasFloat("_BumpScale")) x.SetFloat("_BumpScale", m.bump);
@@ -153,13 +157,21 @@ namespace Suborned.Play
                     var e = m.emission != "" ? Hex(m.emission).linear : x.GetColor("_EmissionColor"); if (Has(m.emissionScale)) e *= m.emissionScale;
                     x.SetColor("_EmissionColor", e); x.EnableKeyword("_EMISSION"); x.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
                 }
-                Debug.Log("GradeReview mat " + was);
+                if (!wild) Debug.Log("GradeReview mat " + was);
             }
             return $"{m.name} x{hit.Length}";
         }
 
+        HandoverHost peekHost;
         void Update()
         {
+            if (s.peek == 1 || Has(s.standOff))
+            if (s.peek == 1)
+            {
+                if (!peekHost) peekHost = FindAnyObjectByType<HandoverHost>();
+                if (peekHost) peekHost.PeekLatch = true;
+            }
+            if (Has(s.standOff)) { if (!peekHost) peekHost = FindAnyObjectByType<HandoverHost>(); if (peekHost) peekHost.standOff = s.standOff; foreach (var ts in FindObjectsByType<TacticalShadows>(FindObjectsSortMode.None)) ts.focusDepth = s.standOff; }
             if (Time.frameCount % 60 != 1) return;
             if (s.mats.Length > 0 && pending) { pending = false; foreach (var m in s.mats) if (Retune(m).EndsWith(" x0")) pending = true; } // until each is found
             // the play light: OldTownPlayLook (assembly Suborned.OldTown, not referenced here) and TacticalShadows, every frame (the host may make cameras late)

@@ -24,6 +24,7 @@ namespace Suborned.OldTown
     {
         /// <summary>The layer the swap puts the old town's baked crowd and traffic on (unnamed in the TagManager; the play camera's culling mask leaves it out).</summary>
         public const int CrowdLayer = 29;
+        static readonly int LensSunShadowId = Shader.PropertyToID("_SubornedLensSunShadow"); // AtmosphereLens.LensSunShadowId (brief 096)
         public Volume playVolume;
         public Volume[] presentationVolumes = new Volume[0];
         public Behaviour[] presentationOnly = new Behaviour[0];
@@ -101,7 +102,7 @@ namespace Suborned.OldTown
             if (presentationLens && Lens() is { } lv) { lensWeight = lv.weight; lv.weight = 1f; }
             if (lightSwap)
             {
-                if (sun) { sunRot0 = sun.transform.rotation; sunCol0 = sun.color; sunInt0 = sun.intensity; sunShadow0 = sun.shadowStrength; sun.transform.rotation = sunRotation; sun.color = sunColour; sun.intensity = sunIntensity; sun.shadowStrength = sunShadowStrength; }
+                if (sun) { sunRot0 = sun.transform.rotation; sunCol0 = sun.color; sunInt0 = sun.intensity; sunShadow0 = sun.shadowStrength; sun.transform.rotation = sunRotation; sun.color = sunColour; sun.intensity = sunIntensity; sun.shadowStrength = Shader.GetGlobalFloat(LensSunShadowId) is var ls and > 0f ? ls : sunShadowStrength; } // brief 096: the lens's shadow strength (lens.json sun.shadowStrength) wins when it is running
                 amb0 = RenderSettings.ambientMode; sky0 = RenderSettings.ambientSkyColor; eq0 = RenderSettings.ambientEquatorColor; gr0 = RenderSettings.ambientGroundColor; ambInt0 = RenderSettings.ambientIntensity; probe0 = RenderSettings.ambientProbe;
                 PlayAmbient();
             }

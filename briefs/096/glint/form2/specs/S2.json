@@ -1,0 +1,1 @@
+{"id": "S2", "ssao": 1, "standOff": 60, "ssaoIntensity": 1.2, "ssaoRadius": 1.0, "ssaoFalloff": 300, "ssaoDirect": 0.25, "ssaoAfterOpaque": 0, "ssaoSamples": 1, "ssaoBlur": 1, "ssaoSource": 0, "ssaoDownsample": 1, "mats": [{"name": "DK_Enamel_*", "smoothness": 0.4, "coat": 0, "env": 0}, {"name": "DK_RobotEnamel_*", "smoothness": 0.4, "coat": 0, "env": 0}]}

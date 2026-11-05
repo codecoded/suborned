@@ -19,6 +19,9 @@ namespace Suborned
         [Serializable] sealed class Play096File { public Play096p play096; }
 
         static Play096p play096; static bool play096Read; static Texture2D play096Lut;
+        /// <summary>Brief 096: the sun's shadow strength the lens wants this render, as a shader global (OldTownPlayLook's assembly cannot see the lens): OldTownPlayLook's play light
+        /// used to force its baked value (1.0) over the lens's, so lens.json sun.shadowStrength (B's 0.78) never reached the play view.</summary>
+        public static readonly int LensSunShadowId = Shader.PropertyToID("_SubornedLensSunShadow");
         WhiteBalance playWb; ColorLookup playLut;
 
         static Play096p Play096Data()
