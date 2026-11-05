@@ -177,11 +177,13 @@ namespace Suborned.Play
 
         /// <summary>One left click at a screen point through the Input System's mouse; what reached the street: presses the host let through
         /// (WorldPresses), move orders, a ring or a box. `pressed` = the street heard the press.</summary>
-        static IEnumerator ClickAt(HandoverHost h, Vector2 sp, (int presses, int moves, bool ring, bool box)[] got)
+        static IEnumerator ClickAt(HandoverHost h, Vector2 sp, (int presses, int moves, bool ring, bool box)[] got, string[] seen = null)
         {
             var g = h.Game; int w0 = h.WorldPresses, n0 = g.Orders.Count;
             MouseAt(sp, false); yield return null; yield return null;
-            MouseAt(sp, true); yield return null; yield return null;
+            MouseAt(sp, true); yield return null;
+            if (seen != null) seen[0] = $"at the press: over HUD {HandoverHost.OverHud(sp)} '{HudToolkit.PickedName(sp)}', pointer world {HandoverHost.PointerWorld.HasValue}, override {HandoverHost.PointerOverride.HasValue}, intel {h.IntelOpen}, following {h.Following}, driving {h.Driving}, modal {h.Modal}, book {h.BookOpen}, screen {Screen.width}x{Screen.height}"; // a press that reached the street says what was on top then
+            yield return null;
             MouseAt(sp, false); yield return null; yield return null; yield return null;
             int moves = 0; for (int i = n0; i < g.Orders.Count; i++) if (g.Orders[i].order.Do == "move") moves++;
             got[0] = (h.WorldPresses - w0, moves, h.Ring != null, h.BoxScreen.HasValue);
@@ -213,16 +215,17 @@ namespace Suborned.Play
                 int heard = -1; var gp = Ground(h, OpId.Scout);
                 if (gp.HasValue) { yield return ClickAt(h, gp.Value, got); heard = got[0].Item1; }
                 h.CloseRing(); h.ClearHover();
-                var pts = HudToolkit.ClickPoints(40); int clicked = 0, through = 0, moves = 0, rings = 0, boxes = 0; var bad = new List<string>(); var movedBy = new List<string>(); var gaveWay = new List<string>();
+                var pts = HudToolkit.ClickPoints(40); int clicked = 0, through = 0, moves = 0, rings = 0, boxes = 0; var bad = new List<string>(); var movedBy = new List<string>(); var gaveWay = new List<string>(); var seen = new string[1];
                 foreach (var (what, sp) in pts)
                 {
                     if (!HandoverHost.OverHud(sp) || h.MenuOpen || h.Modal != ModalGate.Modal.None) continue; // the layout moved under an earlier click (a sheet opened): skip
                     MouseAt(sp, false); yield return null; yield return null; // the pointer rests there first: a piece that gives way to the pointer (it hides under the cursor) is not one a player can click
                     if (!HandoverHost.OverHud(sp)) { gaveWay.Add(what + "@" + (int)sp.x + "," + (int)sp.y + ">" + HudToolkit.PickedName(sp)); continue; }
-                    yield return ClickAt(h, sp, got); clicked++;
+                    string before = HudToolkit.PickedName(sp); yield return ClickAt(h, sp, got, seen); clicked++;
                     var (pr, mv, rg, bx) = got[0]; through += pr; moves += mv; if (rg) rings++; if (bx) boxes++;
-                    if (pr > 0 || rg || bx) bad.Add(what + "@" + (int)sp.x + "," + (int)sp.y); else if (mv > 0) movedBy.Add(what + "@" + (int)sp.x + "," + (int)sp.y);
+                    if (pr > 0 || rg || bx) { bad.Add(what + "@" + (int)sp.x + "," + (int)sp.y); log.Add($"hudClick {view}: {what}@{(int)sp.x},{(int)sp.y} '{before}' reached the street: presses {pr}, moves {mv}, ring {rg}, box {bx}; {seen[0]}"); } else if (mv > 0) movedBy.Add(what + "@" + (int)sp.x + "," + (int)sp.y);
                     h.CloseRing(); if (h.MenuOpen) h.ResumeFromMenu(); if (h.BookOpen) h.BookClose(); // brief 096: the Book key opens the book (a modal page), as the menu
+                    if (!h.Paused) h.SetPaused(true); // 0.2.240's clickable pause starts the clock: the walk the ground click gave then ran, the Scout's busy chip went as he arrived and the next press fell on the street (the full proof on 0.2.243); the world stays still between pieces
                 }
                 bool vok = heard == 1 && clicked >= 3 && through == 0 && rings == 0 && boxes == 0; // a move given by a HUD button's own act (the door or car step mark sends the Enforcer) is the HUD's, not a click through: the gate is pressesThrough
                 ok &= vok;

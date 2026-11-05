@@ -117,8 +117,9 @@ namespace Suborned.Play
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
                 var g = h.Game; int t0 = g.Tick; var izp = g.PersonByRole("waitress"); var start = g.PersonPos(izp);
                 // engine 0.34 (c038, brief 059): with the driver unturned his car drives Vale off at 5:13 and the run ends before her 6:37 round (brief 080: the shift a minute earlier); route B's
-                // opening (the Scout listens to the driver, the Fixer pays him, the false tip, all away from the café) keeps the run going to the close
-                Play(h, Route("route-b").Where(o => o.Op is "scout" or "fixer" && o.Tick <= 1900).ToList(), 1901, 3990); var before = g.PersonPos(izp);
+                // opening (the Scout listens to the driver, the Fixer pays him, all away from the café) keeps the run going to the close. Engine 0.41.0: the
+                // lookout follows Popovic's car when it leaves (5:53) and reaches him first, so the opening runs to the Scout's mislead of him (4:30)
+                Play(h, Route("route-b").Where(o => o.Op is "scout" or "fixer" && o.Tick <= 2700).ToList(), 2701, 3990); var before = g.PersonPos(izp);
                 var iz = h.Views.Find("waitress"); var door = h.frame.World(new Pt(-1030, -2900)); var table = h.frame.World(new Pt(-2017, -4173));
                 var mid = (door + table) * 0.5f; var along = table - door; along.y = 0f; var side = Vector3.Cross(Vector3.up, along.normalized);
                 // the camera stands on the open side (the square, away from the café's walls): the side whose point is farther from the café's centre
@@ -146,7 +147,7 @@ namespace Suborned.Play
                 foreach (var c in added) if (c) UnityEngine.Object.Destroy(c);
                 bool iOk = moved && worstWalk <= 0.05f; ok &= iOk;
                 parts.Add($"\"inezRound\": {{\"ok\": {B(iOk)}, \"startTick\": {t0}, \"startAt\": \"{start}\", \"at4590\": \"{before}\", \"moved\": {B(moved)}, \"frames\": {frames}, \"stills\": {stills}, \"worstFeetToWalkM\": {F(worstWalk)}, \"worstFeetToDrawnM\": {F(worstDrawn)}, \"rays\": {rays}, \"colliders\": {added.Count}, \"unreadable\": {unreadable}, \"over5cm\": \"{J(string.Join(" | ", notes.GetRange(0, Math.Min(8, notes.Count))))}\"}}");
-                log.Add($"r29 inez round: {(iOk ? "ok" : "FAILED")}: start tick {t0} at {start}, at 7:39 {before}; moved {moved} over {frames} frames; feet to the walk file worst {F(worstWalk)} m at {worstAt}; to the drawn mesh worst {F(worstDrawn)} m over {rays} rays ({added.Count} colliders added, {unreadable} meshes not readable); {notes.Count} frames over 5 cm");
+                log.Add($"r29 inez round: {(iOk ? "ok" : "FAILED")}: start tick {t0} at {start}, at 6:39 {before}, over {g.Over} {g.FailCode}; moved {moved} over {frames} frames; feet to the walk file worst {F(worstWalk)} m at {worstAt}; to the drawn mesh worst {F(worstDrawn)} m over {rays} rays ({added.Count} colliders added, {unreadable} meshes not readable); {notes.Count} frames over 5 cm");
             }
 
             // ---- mood (items 19, 23)

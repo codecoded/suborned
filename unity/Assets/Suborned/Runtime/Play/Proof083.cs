@@ -84,9 +84,12 @@ namespace Suborned.Play
                 for (int i = 1; i <= 8; i++) { Btn(ip + new Vector2(0f, 22f * i), true); yield return null; }
                 bool noCharge = h.Charge == null; float moved = (h.View.transform.position - c0).magnitude; Btn(ip + new Vector2(0f, 176f)); yield return Frames(4); var o1 = Since(h, n0);
                 Row("panFromPerson", moved > 1f && noCharge && o1.Count == 0 && h.Ring == null, $"moved {moved:0.0} m, charge gone {noCharge}, orders [{string.Join(",", o1)}]");
+                // the clock paused for the still press (clickWalks left it running): a walking Inez left the projected point before the press landed,
+                // a press on the ground and no charge (the full proof on 0.2.243, "ready False"); a hold's charge fills on the real clock either way
+                bool wasPaused = h.Paused; h.SetPaused(true);
                 h.LookAt(iz.position); yield return Frames(3); ip = h.View.WorldToScreenPoint(iz.position + Vector3.up); Btn(ip); yield return Frames(4); Btn(ip, true); yield return Wait(0.6f);
-                bool ready = h.Charge is { Ready: true }; Btn(ip + new Vector2(0f, -400f)); yield return Frames(1); HandoverHost.PointerOverride = null; h.CancelHoldScripted(); Btn(ip); yield return Frames(3);
-                Row("holdStillHolds", ready, $"ready {ready}");
+                bool ready = h.Charge is { Ready: true }; string why = h.Charge is { } hc ? $"charge {hc.Verb} {hc.Progress:0.00} of {hc.Need:0.00} s" : $"no charge: hover {h.Hover?.Kind}/{h.Hover?.Key}, over HUD {HandoverHost.OverHud(ip)} '{HudToolkit.PickedName(ip)}', ring {h.Ring != null}, modal {h.Modal}, at ({(int)ip.x},{(int)ip.y}) of {Screen.width}x{Screen.height}"; Btn(ip + new Vector2(0f, -400f)); yield return Frames(1); HandoverHost.PointerOverride = null; h.CancelHoldScripted(); Btn(ip); yield return Frames(3);
+                Row("holdStillHolds", ready, $"ready {ready}, {why}"); h.SetPaused(wasPaused);
             }
 
             // ---- busy: the click

@@ -311,7 +311,10 @@ namespace Suborned.Play
 
             // ---- reticle (D): a lasting fire order on a rival walking to his post
             {
-                yield return Fresh(h); var g = h.Game; int drop = g.CrewDropArrive; To(h, drop + 15); yield return Settle(h);
+                // engine 0.41.0: no drop at 2:46; the three step out of the car about 5 s after it boxes ours in (~2:58), so the order waits for
+                // rival-1 on foot, walking to his post
+                yield return Fresh(h); var g = h.Game; To(h, g.CrewEntry); while (g.Tick < g.CrewEntry + 90 * Suborned.Sim.Game.Hz && !g.Over && !(h.Views.RivalModes.TryGetValue("rival-1", out var m1) && m1 == "walking")) h.RunTo(g.Tick + 1);
+                h.RunTo(g.Tick + 5); yield return Settle(h);
                 h.Select(OpId.Enforcer, false); var r1 = ViewAt(h, "rival-1"); bool set = false, follows = false, edge = false, handoff = false; string words = "";
                 if (r1.HasValue)
                 {

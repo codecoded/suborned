@@ -109,7 +109,7 @@ namespace Suborned.Play
         void RivalWindowMarks()
         {
             var g = Game; if (g == null || g.Range || g.Over) return;
-            if (g.RivalsWatched && RivalNextOf("car:rivals") is { } nx && nx.tick >= 0 && nx.tick > g.Tick)
+            if (g.RivalsWatched && RivalsNextMove(g.Tick) is { } nx)
             {
                 string sk = "rivals-next|" + nx.kind; if (!windowSpan.TryGetValue(sk, out var sp) || sp.until != nx.tick) windowSpan[sk] = sp = (nx.tick, Math.Max(1, nx.tick - g.Tick));
                 WindowMarks.Add(new WindowMark { Kind = "rivals-next", Thing = nx.kind, Key = "car/rivals", Until = nx.tick, Left = Math.Max(0, (nx.tick - g.Tick + Game.Hz - 1) / Game.Hz), Total = Math.Max(1, (sp.span + Game.Hz - 1) / Game.Hz) });
@@ -121,6 +121,18 @@ namespace Suborned.Play
                 WindowMarks.Add(new WindowMark { Kind = "vale-car", Thing = "official", Key = "car/official", Until = close, Left = Math.Max(0, (close - g.Tick + Game.Hz - 1) / Game.Hz), Total = Math.Max(1, (span + Game.Hz - 1) / Game.Hz) });
             }
             else if (ValeRoute.On && close > g.Tick) WindowMarks.Add(new WindowMark { Kind = "vale-car", Thing = "official", Key = "car/official", Until = close, Left = -1, Total = -1, Label = MissionClock(close) });
+        }
+
+        /// <summary>The rivals' next timed move (GDD §05 rivals, "a Watch on the rivals shows their next move ..., the lookout's job included";
+        /// §10 the clock pip over their car): their car's while it drives or is away, else the soonest of the five on foot (the lookout following
+        /// Popovic's car, a misled man walking back). Engine 0.41.0: the car blocks with no timed move from the box-in to the break, so a car-only
+        /// pip went dark for the whole wait (Latch, 2026-11-05, the first full proof on 0.43.0).</summary>
+        (string kind, int tick, Pt at)? RivalsNextMove(int now)
+        {
+            if (RivalNextOf("car:rivals") is { } car && car.tick >= 0 && car.tick > now) return car;
+            (string kind, int tick, Pt at)? best = null;
+            foreach (var k in HostViews.RivalKeys) if (RivalNextOf(k) is { } m && m.tick >= 0 && m.tick > now && (best == null || m.tick < best.Value.tick)) best = m;
+            return best;
         }
     }
 }

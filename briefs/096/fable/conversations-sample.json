@@ -1,0 +1,104 @@
+{
+  "note": "Fable, 2026-11-05, brief 096 (Sky: \"loosen rules in the conversations. Full sentences\"). Step 1: a sample for Sky to read. Nothing here is in the game; text.json is unchanged. Same ids, `when`, facts, cards and outcomes as today's scenes.conversations.",
+  "items": [
+    {
+      "id": "listen-inez", "today": 0, "title": "The Scout listens to Inez",
+      "beats": [
+        { "speaker": "milena", "line": "Inez, have you eaten anything since the morning? You've hardly left that doorway all shift." },
+        { "speaker": "waitress", "line": "I'll eat when I've caught up. The Bureau sent another notice this week, and I'm two payments behind already." },
+        { "speaker": "milena", "line": "Only two? I'm three behind, and we'll both still be paying them off when we're old and grey." },
+        { "speaker": "waitress", "line": "Don't, Milena. Some days I'd give anything just to sit down for a little while." },
+        { "speaker": "milena", "line": "You wouldn't sit for long. You'd be up again the moment the guard on the Office door looked this way.", "lean": "guard" },
+        { "speaker": "waitress", "line": "What do you mean by that?" },
+        { "speaker": "milena", "line": "Only that you've looked across that square more often today than you've looked at your own tables." },
+        { "speaker": "waitress", "line": "Has Arthur said something to you?" },
+        { "speaker": "milena", "line": "He's never said a word to me. You've just told me his name yourself, love.", "lean": "yourself", "revealAfter": "He's never said a word to me.", "revealS": 0.9 },
+        { "speaker": "waitress", "line": "Oh, Milena. Yes, it's Arthur, and nobody knows, and nobody can know." },
+        { "speaker": "milena", "line": "Why ever not? He seems a decent enough man, from what I can see of him from here." },
+        { "speaker": "waitress", "line": "Because if the Office hears of it, he'll lose his post, and I'll lose him. I can't afford to lose anything else." },
+        { "speaker": "milena", "line": "Then it won't come from me. But stop looking across at him, or someone else will see what I saw." },
+        { "speaker": "waitress", "line": "I know. I'll keep my eyes on my tables, I promise." },
+        { "speaker": "scout", "line": "She owes the Bureau more than she can pay, and she's seeing Arthur on the Office door. She'd want neither known." }
+      ],
+      "notes": [
+        "Same facts, same order of discovery: the Bureau and being behind; the guard; she gives his name away herself; if the Office hears, it costs them both.",
+        "One question at a time: Inez's \"Who says? Did Arthur say something? Who else has he told?\" becomes \"What do you mean by that?\", then, after Milena answers, \"Has Arthur said something to you?\".",
+        "Milena's reveal keeps its beat (\"He's never said a word to me.\" first, the rest 0.9 s later).",
+        "The Scout's last line says only what was heard. Today's \"We could clear her Bureau loan, or use Arthur on the door.\" is gone: the cards after the cut (Help, Pressure) already say what's open."
+      ]
+    },
+    {
+      "id": "help-inez-1", "today": 1, "title": "The Fixer pays Inez's loan, first visit",
+      "beats": [
+        { "speaker": "fixer", "line": "Forgive me for stopping you between tables, Miss Nikolaou. I've just paid part of your loan at the Bureau." },
+        { "speaker": "waitress", "line": "You've done what?" },
+        { "speaker": "fixer", "line": "Paid part of it. It's stamped and filed, so it'll be on your card at the Bureau by the end of the day." },
+        { "speaker": "waitress", "line": "I don't know you. How do you know what I owe?" },
+        { "speaker": "fixer", "line": "People talk in a square like this one. I listen, and I don't repeat what I hear." },
+        { "speaker": "waitress", "line": "Did anyone see you go in there for me?" },
+        { "speaker": "fixer", "line": "Nobody who'd care. It's a payment at a counter, and they take a hundred of those a day." },
+        { "speaker": "waitress", "line": "Nobody pays a stranger's debts for nothing. What is it you want from me?" },
+        { "speaker": "fixer", "line": "Nothing today. One day soon I may ask you a small favour, and it won't hurt anybody." },
+        { "speaker": "waitress", "line": "Then I'm grateful, truly. But I can't promise you anything for it, not yet." },
+        { "speaker": "fixer", "line": "I haven't asked you to. Take today as it comes, and I'll come back with the rest.", "lean": "rest" },
+        { "speaker": "waitress", "line": "You'd pay all of it? Nobody does that for a stranger." },
+        { "speaker": "fixer", "line": "Then I'll be the first. Go back to your tables, Miss Nikolaou, before anyone wonders who I am." }
+      ],
+      "notes": [
+        "\"Who are you? Who told you about that? Who saw you come?\" becomes three questions in three turns, each answered before the next: How do you know? Did anyone see? What do you want?",
+        "Still says, in these words, that he'll come back with the rest; she took it and isn't ready.",
+        "The last line keeps the steel under the warmth without a threat."
+      ]
+    },
+    {
+      "id": "help-inez-2", "today": 2, "title": "The Fixer pays Inez's loan, second visit",
+      "beats": [
+        { "speaker": "fixer", "line": "That's the rest of it paid, Miss Nikolaou. You don't owe the Bureau a single thing." },
+        { "speaker": "waitress", "line": "Please, not so loud. People can hear you from the terrace." },
+        { "speaker": "fixer", "line": "Forgive me. I forget how far a voice carries out here." },
+        { "speaker": "waitress", "line": "I've owed them for years. I keep waiting to feel lighter, and I don't, not yet." },
+        { "speaker": "fixer", "line": "Give it a day or two. You kept up longer than most people would have managed." },
+        { "speaker": "waitress", "line": "You said you'd bring the rest, and you did. So what is it you want from me?" },
+        { "speaker": "fixer", "line": "A few minutes of someone's time. When I telephone the café, I'd like you to call Arthur over from his door.", "lean": "Arthur" },
+        { "speaker": "waitress", "line": "So you know about us. How long have you known?" },
+        { "speaker": "fixer", "line": "Long enough to know it's nobody's business but yours. Nobody will hear it from me." },
+        { "speaker": "waitress", "line": "What happens to him, if I call him over?" },
+        { "speaker": "fixer", "line": "Nothing, if this goes the way it should. He'll be at your side, and he'll never see us." },
+        { "speaker": "waitress", "line": "He won't leave that door for nothing. I'll tell him I've something to say that can't go down a telephone." },
+        { "speaker": "fixer", "line": "Then tell him that. You know him better than anyone does." },
+        { "speaker": "waitress", "line": "You kept your word to me, so I'll keep mine.", "lean": "word" },
+        { "speaker": "waitress", "line": "I watch that square all day anyway. If I see trouble coming before you telephone, I'll find a way to warn you." }
+      ],
+      "notes": [
+        "Sky agreed today's version on 2026-11-01; this reopens it. The ask, the fright at \"Arthur\", what happens to him, her reason for the guard and her offer to warn are all kept.",
+        "\"Thank you, I mean that. Your turn. What do I owe?\" (three thoughts) becomes a line of relief that doesn't come yet, then one question.",
+        "Her reason for getting him off the door (something that can't go down a telephone) is now hers, said aloud, which the call scene already relies on."
+      ]
+    },
+    {
+      "id": "pay-driver", "today": 4, "title": "The Fixer pays Lukac",
+      "beats": [
+        { "speaker": "driver", "line": "So it's paid. It's been a lean month, and I won't pretend I'm not glad of it." },
+        { "speaker": "fixer", "line": "I'm glad it helps. All we want is one short drive with the Councillor, and an easy one." },
+        { "speaker": "driver", "line": "I've been promised easy drives before. Tell me exactly where it goes." },
+        { "speaker": "fixer", "line": "When the chime goes, he'll come out and get in as he always does. But you don't take him home this time." },
+        { "speaker": "driver", "line": "Then where do I take him?" },
+        { "speaker": "fixer", "line": "Round to the service bay at the back of the Office. You pull in there and wait." },
+        { "speaker": "driver", "line": "The east yard, round the back. And how long am I meant to sit there with him?" },
+        { "speaker": "fixer", "line": "Not long. Just until we've got him." },
+        { "speaker": "driver", "line": "I've heard 'not long' before. I'll give you a couple of minutes, and then I drive on." },
+        { "speaker": "fixer", "line": "That's fair, Lukac. A couple of minutes, and we'll be waiting at the bay when you pull in." },
+        { "speaker": "driver", "line": "And don't tell me who 'we' are. What I don't know, nobody can ask me about later." },
+        { "speaker": "fixer", "line": "I wish everyone I dealt with had your sense, Lukac." },
+        { "speaker": "driver", "line": "Sense doesn't pay the rent. If anyone's hanging about watching that bay, though, I can send them off." },
+        { "speaker": "fixer", "line": "Do that, and we'll take it from there." },
+        { "speaker": "driver", "line": "Whatever happens at that bay, I won't be looking." }
+      ],
+      "notes": [
+        "Sky agreed today's version on 2026-11-02; this reopens it. Same job: at the chime, the service bay (east yard), a couple of minutes, then Lukac drives on; can send off anyone watching the bay; doesn't want to know who \"we\" are, and now says why.",
+        "\"It's paid, then. It's been a lean month. For what, exactly?\" becomes a line of relief and a question in its own turn.",
+        "The Fixer likes Lukac once, out loud."
+      ]
+    }
+  ]
+}

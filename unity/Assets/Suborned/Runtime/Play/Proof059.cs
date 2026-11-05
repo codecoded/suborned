@@ -15,15 +15,18 @@ namespace Suborned.Play
     /// <summary>Batch 0.2.123's 059 proof (brief 059; Sky on 0.2.122: "rivals just suddenly appeared when near car, they should be coming in from
     /// somewhere when the chime comes"), in the built player, one JSON object `r059`:
     ///  · arrive (gated): a fresh run to 2:35, the rival car drawn from its first tick on the map with nobody of the crew on foot, its approach line
-    ///    and the cue `rivals-coming` (Chime) on the rivals.coming tick, the engine loop playing; at 2:46 the three step out at the drop and walk
-    ///    (every member is first drawn within 5 m of the car, never at a post); at 3:10 the car parked across from Vale's car, the lookout posted.
-    ///    Pictures r059-235-turns-in (the car at its entry, at the quarter yaw where the cell's car is not in front of it), r059-235-square (the
-    ///    opening view, the edge chip), r059-246-drop, r059-310-park, r059-320-lookout.
-    ///  · watch: a Watch on the rival car (RivalsWatched), its next-move marker; Alt shows the spring ring round the cell's stand: r059-watch-alt.
-    ///  · pickup (route B's opening, from routes/route-b.json up to the false tip): the turned driver drives Vale round at 6:13 (r059-613-round,
-    ///    the route and its times), parks at about 6:26 (r059-625-parked: the wait marker and the hand-off ring), the Enforcer takes him from the
-    ///    back seat (r059-take-back-seat: Vale is not drawn on the street). With the Tech aboard the getaway car: the yard drawn "after Vale's car"
-    ///    before it parks (r059-yard-after-vale), then the Drive hovered (r059-drive-hover: route preview, the pill) and given; its arrival
+    ///    and the cue `rivals-coming` (Chime) on the rivals.coming tick, the engine loop playing; engine 0.41.0 (briefs/096/waymark/timeline.md):
+    ///    at about 2:53 it stops across our car's way out (blocking, nobody on foot before), then three step out and the lookout after them (every
+    ///    member first drawn within 5 m of the stopped car, never at a post; the wheelman stays in) and the lookout posts. Pictures
+    ///    r059-235-turns-in (the car at its entry, at the quarter yaw where the cell's car is not in front of it), r059-235-square (the opening
+    ///    view, the edge chip), r059-253-box-in, r059-300-step-out, r059-lookout-posted.
+    ///  · watch: a Watch on the rival car (RivalsWatched), its next-move marker (the lookout's follow while the car blocks); Alt shows the spring
+    ///    ring round the cell's stand: r059-watch-alt.
+    ///  · pickup (route B's opening, from routes/route-b.json up to the Scout's mislead of the lookout at 4:30): the turned driver drives Vale round
+    ///    (r059-613-round, the route and its times), parks in the service bay (r059-625-parked: the wait marker and the hand-off ring); our car,
+    ///    boxed in, is refused the Drive into the yard (drive-boxed); the Enforcer takes him from the back seat (r059-take-back-seat: Vale is not
+    ///    drawn on the street). With the Tech aboard the getaway car: the yard drawn "after Vale's car" before it parks (r059-yard-after-vale).
+    ///    The Drive in its own run before the rivals come: hovered (r059-drive-hover: route preview, the pill) and given; its arrival
     ///    (r059-drive-parked: "Parked"). A Drive back to the stand it is at pops drive-here at the stand (r059-drive-here).
     ///  · fight (not gated, logged): if the final fight starts in the pickup run, every member drawn the tick before is drawn the tick after within
     ///    1.5 m of where he was (no vanish, no fresh crew at the ambush spots).
@@ -92,14 +95,14 @@ namespace Suborned.Play
         public static IEnumerator Run(HandoverHost h, string dir, List<string> log, string[] json)
         {
             var parts = new List<string>(); bool ok = true; HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
-            var keys = HostViews.RivalKeys;
 
-            // ---- arrive: 2:35 the car turns in, 2:46 the drop, 3:10 the park (gated)
+            // ---- arrive: 2:35 the car turns in, about 2:53 it boxes our car in, the four step out of it, the lookout posts (gated). Engine 0.41.0
+            // (Waymark's briefs/096/waymark/timeline.md): no drop at 2:46 and no park at 3:10; the car drives to our stand's block point and stops
+            // across its way out, three step out 5 s after (2 s apart) and post round our car, the lookout walks to his post, the wheelman stays in
             {
-                yield return Fresh(h); var g = h.Game; int entry = g.CrewEntry, drop = g.CrewDropArrive, park = g.RivalAt;
-                int carFirst = -1, onFootBefore = 0, cueAt = -1; int cues0 = h.CuesPlayed.Count; bool approach = false, loop = false, edge = false;
-                var firstAt = new Dictionary<string, (int tick, float dDrop, float dPark, string mode)>();
-                Pt dropAt = g.S.CarStand(g.S.RivalCarDrop), parkAt = g.S.CarStand(g.S.RivalsPark);
+                yield return Fresh(h); var g = h.Game; int entry = g.CrewEntry, Hz = Suborned.Sim.Game.Hz;
+                int carFirst = -1, onFootBefore = 0, cueAt = -1, block = -1; int cues0 = h.CuesPlayed.Count; bool approach = false, loop = false, edge = false;
+                var firstAt = new Dictionary<string, (int tick, float dCar, string mode)>(); Pt stopAt = default;
                 To(h, entry - 10);
                 while (g.Tick < entry + 3 && !g.Over)
                 {
@@ -110,29 +113,33 @@ namespace Suborned.Play
                 if (h.CuesPlayed.Count > cues0) cueAt = entry; // the cue's own line names its clock: logged below
                 HandoverHost.PointerOverride = OffStreet; /* an earlier section leaves the mouse mid-screen, and these frames centre on a rival: a hover nobody asked for */ yield return Settle(h, 0.5f); approach = HudToolkit.RivalsShown.Contains("approach"); loop = h.EngineLoopPlaying;
                 yield return FrameRivalCar(h, log, "r059-235-turns-in"); yield return Shoot(h, dir, "r059-235-turns-in", log);
-                h.TurnSnap(0); h.LookAt(h.GetawayWorld); yield return Frames(4); edge = HudToolkit.RivalsShown.Contains("edge"); yield return Shoot(h, dir, "r059-235-square", log); HandoverHost.PointerOverride = null;
-                // the drop: each member's first drawn tick and where (near the car, never at a post)
-                while (g.Tick < drop + 30 * Suborned.Sim.Game.Hz && !g.Over)
+                h.TurnSnap(0); h.LookAt(h.GetawayWorld); yield return Frames(4); edge = HudToolkit.RivalsShown.Contains("edge"); yield return Shoot(h, dir, "r059-235-square", log);
+                // the box-in: the car stops across our car's way out (nobody on foot before it stops)
+                while (g.Tick < entry + 60 * Hz && !g.Over && g.CarSt != Suborned.Sim.CrewCar.Blocking) { h.RunTo(g.Tick + 1); foreach (var _ in h.Views.RivalsDrawn()) onFootBefore++; }
+                if (g.CarSt == Suborned.Sim.CrewCar.Blocking) { block = g.Tick; stopAt = g.RivalCarPose()?.pos ?? default; }
+                h.RunTo(g.Tick + Hz); yield return Settle(h); string carState = h.Views.RivalCarState; var bc = h.Views.Find("car/rivals"); if (bc) { h.TurnSnap(0); h.LookAt(bc.position); } yield return Frames(3); yield return Shoot(h, dir, "r059-253-box-in", log);
+                HandoverHost.PointerOverride = null;
+                // the step-out: each member's first drawn tick and where (within 5 m of the stopped car, never at a post)
+                while (block >= 0 && g.Tick < block + 30 * Hz && !g.Over)
                 {
                     h.RunTo(g.Tick + 1);
                     foreach (var (id, at, mode) in h.Views.RivalsDrawn())
-                        if (!firstAt.ContainsKey(id)) { var e = g.PosOf(id) ?? h.frame.Engine(at); firstAt[id] = (g.Tick, Suborned.Sim.G.Dist(e, dropAt) / 100f, Suborned.Sim.G.Dist(e, parkAt) / 100f, mode); }
-                    if (g.Tick == drop + 2 * Suborned.Sim.Game.Hz) { yield return Settle(h); var dc = h.Views.Find("car/rivals"); if (dc) { h.TurnSnap(0); h.LookAt(dc.position); } yield return Frames(3); yield return Shoot(h, dir, "r059-246-drop", log); }
+                        if (!firstAt.ContainsKey(id)) { var e = g.PosOf(id) ?? h.frame.Engine(at); firstAt[id] = (g.Tick, Suborned.Sim.G.Dist(e, stopAt) / 100f, mode); }
+                    if (g.Tick == block + 7 * Hz) { yield return Settle(h); var dc = h.Views.Find("car/rivals"); if (dc) { h.TurnSnap(2); h.LookAt(dc.position); } yield return Frames(3); yield return Shoot(h, dir, "r059-300-step-out", log); }
                 }
-                To(h, park + Suborned.Sim.Game.Hz); yield return Settle(h);
-                string carAtPark = h.Views.RivalCarState; var pc = h.Views.Find("car/rivals"); if (pc) { h.TurnSnap(2); h.LookAt(pc.position); } yield return Frames(3); yield return Shoot(h, dir, "r059-310-park", log);
-                To(h, park + 10 * Suborned.Sim.Game.Hz); yield return Settle(h); while (g.Tick < park + 40 * Suborned.Sim.Game.Hz && !(h.Views.RivalModes.TryGetValue("rival-4", out var lm) && lm == "posted") && !g.Over) h.RunTo(g.Tick + 5);
-                var lt = h.Views.Find("rival-4"); if (lt) h.LookAt(lt.position); yield return Settle(h); yield return Shoot(h, dir, "r059-320-lookout", log);
+                // the lookout at his post (Motive RIV-1: by 4:20 on every seed)
+                while (block >= 0 && g.Tick < block + 150 * Hz && !(h.Views.RivalModes.TryGetValue("rival-4", out var lm) && lm == "posted") && !g.Over) h.RunTo(g.Tick + 5);
+                var lt = h.Views.Find("rival-4"); if (lt) h.LookAt(lt.position); yield return Settle(h); yield return Shoot(h, dir, "r059-lookout-posted", log);
                 bool lookout = h.Views.RivalModes.TryGetValue("rival-4", out var lmode) && lmode == "posted";
-                // members 1-3 step out at the drop, the lookout at the park: first drawn within 5 m of where the car stopped for them
-                bool nearCar = keys.All(k => !firstAt.ContainsKey(k) || (k == "rival-4" ? firstAt[k].dPark : k == "rival-5" ? 0f : firstAt[k].dDrop) <= 5f);
-                bool threeOut = new[] { "rival-1", "rival-2", "rival-3" }.All(firstAt.ContainsKey);
+                // the four who get out are first drawn within 5 m of the stopped car; the wheelman stays in
+                bool fourOut = new[] { "rival-1", "rival-2", "rival-3", "rival-4" }.All(firstAt.ContainsKey);
+                bool nearCar = firstAt.Where(kv => kv.Key != "rival-5").All(kv => kv.Value.dCar <= 5f);
                 string cueWords = string.Join(",", h.CuesPlayed.Skip(cues0));
-                bool aOk = carFirst >= 0 && Math.Abs(carFirst - entry) <= 1 && onFootBefore == 0 && cueWords.Contains("rivals-coming") && approach && threeOut && nearCar && carAtPark == "parked" && lookout;
+                bool aOk = carFirst >= 0 && Math.Abs(carFirst - entry) <= 1 && onFootBefore == 0 && cueWords.Contains("rivals-coming") && approach && block >= 0 && carState == "blocking" && fourOut && nearCar && lookout;
                 ok &= aOk;
-                string fa = string.Join(", ", firstAt.Select(kv => $"\"{kv.Key}\": {{\"at\": \"{HandoverHost.MissionClock(kv.Value.tick)}\", \"fromDropM\": {F(kv.Value.dDrop)}, \"fromParkM\": {F(kv.Value.dPark)}, \"mode\": \"{kv.Value.mode}\"}}"));
-                parts.Add($"\"arrive\": {{\"ok\": {B(aOk)}, \"entry\": \"{HandoverHost.MissionClock(entry)}\", \"carFirst\": \"{(carFirst < 0 ? "never" : HandoverHost.MissionClock(carFirst))}\", \"onFootBeforeCar\": {onFootBefore}, \"cues\": \"{J(cueWords)}\", \"audio\": \"{h.AudioSourceOf}\", \"loop\": {B(loop)}, \"approach\": {B(approach)}, \"edgeChip\": {B(edge)}, \"drop\": \"{HandoverHost.MissionClock(drop)}\", \"first\": {{{fa}}}, \"nearCar\": {B(nearCar)}, \"park\": \"{carAtPark}\", \"lookout\": {B(lookout)}}}");
-                log.Add($"r059 arrive: {(aOk ? "ok" : "FAILED")}: entry {HandoverHost.MissionClock(entry)} car first {carFirst} on foot before {onFootBefore}; cues [{cueWords}] ({h.AudioSourceOf}) loop {loop}; approach {approach} edge {edge}; first [{fa}]; park {carAtPark}, lookout {lookout}");
+                string fa = string.Join(", ", firstAt.Select(kv => $"\"{kv.Key}\": {{\"at\": \"{HandoverHost.MissionClock(kv.Value.tick)}\", \"fromCarM\": {F(kv.Value.dCar)}, \"mode\": \"{kv.Value.mode}\"}}"));
+                parts.Add($"\"arrive\": {{\"ok\": {B(aOk)}, \"entry\": \"{HandoverHost.MissionClock(entry)}\", \"carFirst\": \"{(carFirst < 0 ? "never" : HandoverHost.MissionClock(carFirst))}\", \"onFootBeforeBlock\": {onFootBefore}, \"cues\": \"{J(cueWords)}\", \"audio\": \"{h.AudioSourceOf}\", \"loop\": {B(loop)}, \"approach\": {B(approach)}, \"edgeChip\": {B(edge)}, \"block\": \"{(block < 0 ? "never" : HandoverHost.MissionClock(block))}\", \"car\": \"{carState}\", \"first\": {{{fa}}}, \"fourOut\": {B(fourOut)}, \"nearCar\": {B(nearCar)}, \"lookout\": {B(lookout)}}}");
+                log.Add($"r059 arrive: {(aOk ? "ok" : "FAILED")}: entry {HandoverHost.MissionClock(entry)} car first {carFirst} on foot before the block {onFootBefore}; cues [{cueWords}] ({h.AudioSourceOf}) loop {loop}; approach {approach} edge {edge}; block {(block < 0 ? "never" : HandoverHost.MissionClock(block))} car {carState}; first [{fa}]; lookout {lookout}");
 
                 // ---- watch: the timetable, the marker, the spring ring with Alt
                 h.GiveWatchScripted(OpId.Scout, "car:rivals");
@@ -150,14 +157,15 @@ namespace Suborned.Play
             {
                 yield return Fresh(h); var g = h.Game; List<Order> rb = null; string why = "";
                 try { rb = Route("route-b"); } catch (Exception e) { why = e.Message; }
-                bool turned = false, driving = false, parked = false, takeOk = false, yardShut = false, hoverRoute = false, driveTaken = false, arrived = false, herePop = false;
-                string roundMarks = "", parkMarks = "", pill = "", stands = "", hereWords = "", parkedChip = "";
+                bool turned = false, driving = false, parked = false, takeOk = false, yardShut = false, hoverRoute = false, driveTaken = false, arrived = false, herePop = false, boxed = false;
+                string roundMarks = "", parkMarks = "", pill = "", stands = "", hereWords = "", parkedChip = "", boxedWhy = "", driveAt = "";
                 int fightAt = -1; var jumps = new List<string>();
                 if (rb != null)
                 {
-                    foreach (var o in rb) { if (o.Tick > 1900 || g.Over) break; if (o.Tick > g.Tick) To(h, o.Tick); Give(h, o); } // up to the false tip (3:10)
+                    foreach (var o in rb) { if (o.Tick > 2400 || g.Over) break; if (o.Tick > g.Tick) To(h, o.Tick); Give(h, o); } // the opening: the listen, the loop, the pay
                     To(h, 2400); h.GiveScripted(new Order { Op = "tech", Do = "board", Target = "car" }); // the Tech aboard the getaway car (for the Drive): as a click gives it (engine 0.33.1: Board is within 1 m of the car's body, so he walks beside it first)
                     for (int i = 0; i < 40 * Suborned.Sim.Game.Hz && !g.Ops[(int)OpId.Tech].InCar && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    foreach (var o in rb) { if (o.Tick <= 2400 || o.Op == "tech") continue; if (o.Tick > 2700 || g.Over) break; if (o.Tick > g.Tick) To(h, o.Tick); Give(h, o); } // engine 0.41.0: the Scout misleads the lookout (4:30), else he follows Popovic's car and reaches him first
                     To(h, Math.Max(g.Tick, 2800)); turned = g.Driver.Turned;
                     // the yard "after Vale's car": the Tech selected aboard (4:40, before Vale's car parks: brief 080, the shift a minute earlier)
                     h.Select(OpId.Tech, false); yield return Settle(h); h.LookAt(h.frame.World(g.S.StandById("service-drive")?.CarAt ?? g.CarPos())); h.TurnSnap(2); yield return Frames(4);
@@ -168,20 +176,10 @@ namespace Suborned.Play
                     for (int i = 0; i < 60 * Suborned.Sim.Game.Hz && !g.ValeCarParked && !g.Over; i++) h.RunTo(g.Tick + 1);
                     parked = g.ValeCarParked; h.RunTo(g.Tick + Suborned.Sim.Game.Hz); yield return Settle(h); oc = h.Views.Find("car/official"); if (oc) h.LookAt(oc.position); yield return Frames(3);
                     parkMarks = HudToolkit.ValeRouteShown + " | " + HudToolkit.WindowWords; yield return Shoot(h, dir, "r059-625-parked", log);
-                    // the Drive: hovered (the route preview, the pill), given, arrived
+                    // engine 0.41.0: the rival car has boxed ours in since about 2:53, so the Drive into the yard after the park is refused drive-boxed,
+                    // naming their car (GDD §05 rivals; Keel's BOX-2); the Drive itself is proven in its own run before they come, below
                     var st = g.S.StandById("service-drive");
-                    if (st != null)
-                    {
-                        h.Select(OpId.Tech, false); HandoverHost.PointerWorld = h.frame.World(st.CarAt) + Vector3.up * 0.3f; h.LookAt(h.frame.World(st.CarAt)); yield return Frames(6); yield return new WaitForSecondsRealtime(0.3f);
-                        pill = h.HoverIntent != null ? $"{h.HoverIntent.Label} · {h.HoverIntent.Time}" : ""; hoverRoute = HudToolkit.StandsShown.Contains("service-drive:hover:route");
-                        yield return Shoot(h, dir, "r059-drive-hover", log, "active"); HandoverHost.PointerWorld = null;
-                        driveTaken = h.Issue(new Order { Op = "tech", Do = "drive-car", Target = "service-drive" });
-                        for (int i = 0; i < 60 * Suborned.Sim.Game.Hz && g.GetawayDriving && !g.Over; i++) h.RunTo(g.Tick + 1);
-                        arrived = g.CurStand == st; h.RunTo(g.Tick + 2); yield return Settle(h, 0.4f); h.LookAt(h.GetawayWorld); yield return Frames(3);
-                        parkedChip = h.LastChip != null ? string.Join(",", h.LastChip.Lines.ConvertAll(x => x.Word)) : ""; yield return Shoot(h, dir, "r059-drive-parked", log, "active");
-                        int pops0 = h.Pops.Count; h.Issue(new Order { Op = "tech", Do = "drive-car", Target = "service-drive" }, null, null); yield return Frames(3);
-                        herePop = h.Pops.Count > pops0 && h.Pops[^1].Icon.Contains("car"); hereWords = h.Pops.Count > 0 ? h.Pops[^1].Text : ""; yield return Shoot(h, dir, "r059-drive-here", log, "active");
-                    }
+                    if (st != null) { int n0 = g.Orders.Count; bool given = h.Issue(new Order { Op = "tech", Do = "drive-car", Target = "service-drive" }); var ans = g.Orders.Count > n0 ? g.Orders[^1] : default; boxed = !given && g.Orders.Count > n0 && ans.code == "drive-boxed" && g.CurStand != st; boxedWhy = g.Orders.Count > n0 ? $"{ans.code}: {ans.why}" : "no order"; }
                     // the Take from the back seat: the Enforcer beside the car (its rear door), then take
                     var vp = g.ValePos(); var e = g.Ops[(int)OpId.Enforcer];
                     if (vp.HasValue && g.ValeCarParked)
@@ -209,10 +207,27 @@ namespace Suborned.Play
                         yield return Settle(h); h.LookAt(h.GetawayWorld); yield return Frames(3); yield return Shoot(h, dir, "r059-fight-start", log, "active"); // brief 080: Vale just taken: the goal line changes here, so this is no resting frame
                     }
                 }
-                bool pOk = rb != null && turned && driving && parked && takeOk && yardShut && hoverRoute && pill.Contains("Drive") && driveTaken && arrived && herePop;
+                // the Drive, in its own run before the rivals turn in (our car not yet boxed, the driver not turned so the yard is open; Keel's
+                // BOX-2 drives there the same way): hovered (the route preview, the pill), given, arrived; a Drive to the stand it is at pops drive-here
+                yield return Fresh(h); g = h.Game; var ds = g.S.StandById("service-drive");
+                if (ds != null)
+                {
+                    h.GiveScripted(new Order { Op = "tech", Do = "board", Target = "car" });
+                    for (int i = 0; i < 60 * Suborned.Sim.Game.Hz && !g.Ops[(int)OpId.Tech].InCar && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    h.Select(OpId.Tech, false); HandoverHost.PointerWorld = h.frame.World(ds.CarAt) + Vector3.up * 0.3f; h.LookAt(h.frame.World(ds.CarAt)); yield return Frames(6); yield return new WaitForSecondsRealtime(0.3f);
+                    pill = h.HoverIntent != null ? $"{h.HoverIntent.Label} · {h.HoverIntent.Time}" : ""; hoverRoute = HudToolkit.StandsShown.Contains("service-drive:hover:route");
+                    yield return Shoot(h, dir, "r059-drive-hover", log, "active"); HandoverHost.PointerWorld = null;
+                    driveAt = HandoverHost.MissionClock(g.Tick); driveTaken = h.Issue(new Order { Op = "tech", Do = "drive-car", Target = "service-drive" });
+                    for (int i = 0; i < 60 * Suborned.Sim.Game.Hz && g.GetawayDriving && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    arrived = g.CurStand == ds && g.Tick < g.CrewEntry; h.RunTo(g.Tick + 2); yield return Settle(h, 0.4f); h.LookAt(h.GetawayWorld); yield return Frames(3);
+                    parkedChip = h.LastChip != null ? string.Join(",", h.LastChip.Lines.ConvertAll(x => x.Word)) : ""; yield return Shoot(h, dir, "r059-drive-parked", log, "active");
+                    int pops0 = h.Pops.Count; h.Issue(new Order { Op = "tech", Do = "drive-car", Target = "service-drive" }, null, null); yield return Frames(3);
+                    herePop = h.Pops.Count > pops0 && h.Pops[^1].Icon.Contains("car"); hereWords = h.Pops.Count > 0 ? h.Pops[^1].Text : ""; yield return Shoot(h, dir, "r059-drive-here", log, "active");
+                }
+                bool pOk = rb != null && turned && driving && parked && boxed && takeOk && yardShut && hoverRoute && pill.Contains("Drive") && driveTaken && arrived && herePop;
                 ok &= pOk;
-                parts.Add($"\"pickup\": {{\"ok\": {B(pOk)}, \"route\": \"{(rb != null ? "route-b to 3:10" : J(why))}\", \"turned\": {B(turned)}, \"driving\": {B(driving)}, \"round\": \"{J(roundMarks)}\", \"parked\": {B(parked)}, \"parkMarks\": \"{J(parkMarks)}\", \"take\": {B(takeOk)}, \"yardShut\": {B(yardShut)}, \"stands\": \"{J(stands)}\", \"pill\": \"{J(pill)}\", \"hoverRoute\": {B(hoverRoute)}, \"drive\": {B(driveTaken)}, \"arrived\": {B(arrived)}, \"chip\": \"{J(parkedChip)}\", \"herePop\": {B(herePop)}, \"hereWords\": \"{J(hereWords)}\", \"fight\": \"{(fightAt < 0 ? "none" : HandoverHost.MissionClock(fightAt))}\", \"jumps\": \"{J(string.Join(" ", jumps))}\"}}");
-                log.Add($"r059 pickup: {(pOk ? "ok" : "FAILED")}: turned {turned}; round {driving} [{roundMarks}]; parked {parked} [{parkMarks}]; take {takeOk}; yard shut {yardShut} [{stands}]; hover [{pill}] route {hoverRoute}; drive {driveTaken} arrived {arrived} chip [{parkedChip}]; drive-here pop {herePop} [{hereWords}]; fight {(fightAt < 0 ? "none" : HandoverHost.MissionClock(fightAt))} jumps [{string.Join(" ", jumps)}]");
+                parts.Add($"\"pickup\": {{\"ok\": {B(pOk)}, \"route\": \"{(rb != null ? "route-b to 4:30" : J(why))}\", \"turned\": {B(turned)}, \"driving\": {B(driving)}, \"round\": \"{J(roundMarks)}\", \"parked\": {B(parked)}, \"parkMarks\": \"{J(parkMarks)}\", \"boxed\": {B(boxed)}, \"boxedWhy\": \"{J(boxedWhy)}\", \"take\": {B(takeOk)}, \"yardShut\": {B(yardShut)}, \"stands\": \"{J(stands)}\", \"pill\": \"{J(pill)}\", \"hoverRoute\": {B(hoverRoute)}, \"drive\": {B(driveTaken)}, \"driveAt\": \"{driveAt}\", \"arrived\": {B(arrived)}, \"chip\": \"{J(parkedChip)}\", \"herePop\": {B(herePop)}, \"hereWords\": \"{J(hereWords)}\", \"fight\": \"{(fightAt < 0 ? "none" : HandoverHost.MissionClock(fightAt))}\", \"jumps\": \"{J(string.Join(" ", jumps))}\"}}");
+                log.Add($"r059 pickup: {(pOk ? "ok" : "FAILED")}: turned {turned}; round {driving} [{roundMarks}]; parked {parked} [{parkMarks}]; boxed {boxed} [{boxedWhy}]; take {takeOk}; yard shut {yardShut} [{stands}]; hover [{pill}] route {hoverRoute}; drive {driveTaken} at {driveAt} arrived {arrived} chip [{parkedChip}]; drive-here pop {herePop} [{hereWords}]; fight {(fightAt < 0 ? "none" : HandoverHost.MissionClock(fightAt))} jumps [{string.Join(" ", jumps)}]");
             }
             h.SetPaused(false);
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
