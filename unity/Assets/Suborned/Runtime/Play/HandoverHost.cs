@@ -111,12 +111,12 @@ namespace Suborned.Play
         public double FrameMsMean => frames == 0 ? 0 : frameEngineMs / frames;
         public string MissionStartsAt { get; private set; } = "17:25:30"; // the site's cast.startsAt replaces it on Begin
         public HostViews Views => views;
-        /// <summary>The kit view's compact strips show only the busy, hurt, down, selected or queued agents; this shows all four (a key).</summary>
-        public bool ShowAllStrips { get => allStrips ??= PlayerPrefs.GetInt(StripsPref, 0) == 1; set { allStrips = value; PlayerPrefs.SetInt(StripsPref, value ? 1 : 0); PlayerPrefs.Save(); } }
+        /// <summary>The kit view's compact strips show only the busy, hurt, down, selected or queued agents; this shows all four (no key since brief 096; not remembered, so an old "on" can't stick).</summary>
+        public bool ShowAllStrips { get; set; }
         /// <summary>Intel (the kit's panel under the objective) open or collapsed to its strip.</summary>
         public bool IntelOpen { get => intelOpen ??= PlayerPrefs.GetInt(IntelPref, 0) == 1; set { if (value == IntelOpen) return; intelOpen = value; PlayerPrefs.SetInt(IntelPref, value ? 1 : 0); PlayerPrefs.Save(); } }
-        bool? intelOpen, allStrips; // the remembered collapse states (PlayerPrefs), read once
-        const string IntelPref = "Suborned.Hud.IntelOpen", StripsPref = "Suborned.Hud.AllStrips";
+        bool? intelOpen; // the remembered collapse state (PlayerPrefs), read once
+        const string IntelPref = "Suborned.Hud.IntelOpen";
         public Camera View => cam;
         /// <summary>The map view's ground focus (the proofs: the camera centred on an agent).</summary>
         public Vector3 Focus => focus;
@@ -250,7 +250,7 @@ namespace Suborned.Play
             SessionPath = SessionFile();
             Save();
             FollowSettingAtStart(); // brief 024: the follow setting, when on, as the engine's logged follow order
-            Status = $"Paused. {controls.Label(PlayAction.Pause)} starts the clock; {controls.Label(PlayAction.Briefing)} shows the briefing again.";
+            Status = $"Paused. {controls.Label(PlayAction.Pause)} starts the clock.";
             if (rangeMode) { ShowBriefing = false; Paused = false; LookAt(frame.World(Game.RangeMark)); Status = "Fight range: spawn from the panel; R restarts"; } // brief 029
             if (FightRunCheckpoint.Length > 0) { ShowBriefing = false; LookAt(frame.World(Game.Ops[(int)OpId.Enforcer].Pos)); Status = $"{FightRunCheckpoint.ToUpperInvariant()} at {Report.Clock(Game.Tick)} ({FightRunPreset}): {controls.Label(PlayAction.Pause)} runs the clock"; } // brief 027: a checkpoint opens on the fight, no briefing
             BriefingCamera(); // brief 062 B: the briefing opens on the street (the mission's briefing frame); Begin glides to the cell
@@ -282,7 +282,7 @@ namespace Suborned.Play
             if (MenuKeys(kb)) return; // the pause menu is up: Esc resumes, its buttons act; nothing else this frame
             if (FailCamFrame()) { FollowFrame(); return; }
             if (ConvoFrame()) return; // brief 032: a conversation scene plays (HostConvo): the clock held, its keys only, the cutaway camera // the fail camera plays (HostFailCam): nothing else this frame but the follow view, if on (Sky 2026-10-20: it plays in the view the player is in)
-            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) BeginSameSeed(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
+            if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); Guard("car fx", CarFxFrame); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
             if (!CameraLab.Typing) Controls(); // brief 025: no keys reach the street while a preset name is typed
             if (Fault == null) Guard("plan", PlanFrame); // brief 041: the pause lifted gives the queued orders on this tick, before the clock steps
             if (Fault != null) return;
@@ -404,11 +404,11 @@ namespace Suborned.Play
         {
             var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current; var c = controls;
             if (StartFrame(kb, mouse)) return; // brief 062 B: the start sequence has the keys (any lands the glide)
-            if (Modal == ModalGate.Modal.Briefing) // modal until Begin: Space or the button begins; B and Esc close it; the camera may look round
+            if (Modal == ModalGate.Modal.Briefing) // modal until Begin: Space or the button begins; Esc closes it; the camera may look round
             {
                 ClearHover(); if (Panel != null) ClosePanel();
                 if (c.Down(kb, PlayAction.Pause)) BriefingBegin(); // brief 062 B: Space is Begin (the glide on a fresh run)
-                else if (c.Down(kb, PlayAction.Briefing) || (kb != null && kb.escapeKey.wasPressedThisFrame)) { ShowBriefing = false; BriefCamLand(); }
+                else if (kb != null && kb.escapeKey.wasPressedThisFrame) { ShowBriefing = false; BriefCamLand(); }
                 CameraOnly(kb, mouse);
                 return;
             }
@@ -417,10 +417,8 @@ namespace Suborned.Play
             if (kb != null)
             {
                 if (c.Down(kb, PlayAction.Pause) && !FightLabSpace()) { Paused = !Paused; Status = Paused ? "Paused." : "Running."; if (!Paused) { if (ShowBriefing) ClockStarted = Time.unscaledTime; ShowBriefing = false; } else Save(); }
-                if (c.Down(kb, PlayAction.Briefing)) BookOpenNow("job"); // brief 096: B opens the book on Job (the briefing is the Job page)
-                if (Frozen && Loud == null && Ring == null && c.Down(kb, PlayAction.Restart)) Release(); // a ring open: Enter takes its lit way (RightFrame) // brief 027: Return releases the queue on the frozen tick
-                if (c.Down(kb, PlayAction.TargetMode)) TargetKey(); // brief 027: target mode (Y)
-                if (c.Down(kb, PlayAction.DialogueLog)) BookOpenNow("journal"); // brief 096: L opens the book's Journal (the history moved there)
+                if (Frozen && Loud == null && Ring == null && c.Down(kb, PlayAction.Restart)) Release(); // the lab (dev keys): Return releases the queue on the frozen tick (brief 027); a ring open: Enter takes its lit way (RightFrame)
+                if (c.Down(kb, PlayAction.TargetMode)) TargetKey(); // the lab (dev keys): target mode (Y, brief 027)
                 if (!HoldOn && c.Down(kb, PlayAction.Cancel)) CancelSelected(); // brief 041 (hold): C is the camera's follow, X stops (HoldKeys)
                 if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
                 if (!HoldOn && !OneInput && c.Down(kb, PlayAction.Cease)) CeaseFire(); // engine 0.35: one input retires X (to stop, holster)
@@ -430,9 +428,7 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.Intel)) IntelOpen = !IntelOpen;
                 if (c.Down(kb, PlayAction.Response)) { if (rangeMode) Begin(); else ResponseOpen = !ResponseOpen; } // brief 029: in the fight range R restarts
                 if (c.Down(kb, PlayAction.Gait) && !Driving && (!HoldOn || OneInput)) ToggleGaitSelected(); // engine 0.35: with weapons free gone, G is walk/run in the hold preset too (GDD §10) // brief 041 (hold): G is weapons free (HoldKeys) // driven: G latches the run (HostDrive)
-                if (c.Down(kb, PlayAction.AllStrips)) ShowAllStrips = !ShowAllStrips;
-                if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit;
-                if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeNewest();
+                if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit; // dev keys only (F11)
                 FollowKey(kb); // T: the test follow view (HostFollow)
                 if (kb.leftCtrlKey.wasPressedThisFrame || kb.leftCtrlKey.wasReleasedThisFrame || kb.rightCtrlKey.wasPressedThisFrame || kb.rightCtrlKey.wasReleasedThisFrame) UpdateAim();
                 // brief 030 §8 (Sky 2026-10-20): 1–4 select the agents (F1–F4 stay as hidden aliases), Shift+1–4 pick the selected agent's action
@@ -446,13 +442,6 @@ namespace Suborned.Play
                 }
                 if (kb.escapeKey.wasPressedThisFrame && Loud == null && !escTaken) { if (Ring != null) { /* the ring closes in RightFrame */ } else if (Frozen && Panel == null) LeaveFreeze(); else if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (SelTarget != null) ClearSel(); else if (Picked >= 0) { Picked = -1; intentKey = ""; } else if (FeedHistoryOpen) FeedHistoryOpen = false; else OpenMenu(); } // nothing nearer to close: the pause menu
                 if (!HoldOn && c.Down(kb, PlayAction.CycleAgent) && Ring == null) CycleAction(shift); // brief 030 §8: Tab steps the selected agent's actions (never the camera or the selection)
-                if (c.Down(kb, PlayAction.StepTarget)) StepTarget(shift); // Z: overlapping things, the picked action's targets, the driven focus
-                if (!Driving && !Frozen) // driven: real time (the controller's pace), no skipping ahead; frozen: no tick runs
-                {
-                    if (c.Down(kb, PlayAction.NextEvent)) NextEvent();
-                    if (c.Down(kb, PlayAction.Faster)) Speed = Mathf.Min(8, Speed * 2);
-                    if (c.Down(kb, PlayAction.Slower)) Speed = Mathf.Max(1, Speed / 2);
-                }
                 var pan = Vector2.zero;
                 if (c.Held(kb, PlayAction.PanUp)) pan.y += 1; if (c.Held(kb, PlayAction.PanDown)) pan.y -= 1;
                 if (c.Held(kb, PlayAction.PanRight)) pan.x += 1; if (c.Held(kb, PlayAction.PanLeft)) pan.x -= 1;
@@ -1085,16 +1074,6 @@ namespace Suborned.Play
             return r.ok;
         }
 
-        /// <summary>Next Event (§10): run the clock to the next change the engine logs or schedules, at most to the close. One tick at a time.</summary>
-        public void NextEvent()
-        {
-            if (Game == null || Game.Over || Fault != null || Frozen) return;
-            int n0 = Game.Log.Count, until = Game.T(Game.S.Over) + 1, next = NextMark();
-            double t0 = Now();
-            while (!Game.Over && Game.Log.Count == n0 && Game.Tick < next && Game.Tick < until) if (!StepOnce()) break;
-            frameEngineMs += Now() - t0; acc = 0f; views.Frame(1f); if (!Game.Over) Save();
-            if (Game.Over && Ending.Length == 0) End();
-        }
 
         /// <summary>Let the clock run to `tick`, one engine step at a time (what time passing does).</summary>
         public void RunTo(int tick)

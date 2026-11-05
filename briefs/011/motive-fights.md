@@ -637,10 +637,12 @@ The engine, with the support sent away before the fight:
 | H5 | a contact is turned and has never been called | Turned people act when you **call** them. Select the Fixer and right-click them to see what they can do. | the contact | a Call order |
 | H6 | an approach was refused | They refused, and they'll remember. Learn who someone is before you choose how to ask. | the refused person | the next order to the Scout or the Fixer |
 | H7 | the patrol's cone will cover the public door within the next 15 s, and the Enforcer stands within 10 m of it, not inside | The patrol sweeps this door on a cycle. **Next Event (N)** shows when it comes round. | the patrol's cone | Enter, Reroute, or the Enforcer moving away |
-| H8 | 3:10 has passed (the rivals have parked) and nobody has acted on them | Another crew is watching Vale's pickup. The **Scout** can send them chasing a **false tip**. | the rival car | a Mislead order, or the Enforcer holding Vale |
+| H8 | the rival lookout stands at his post watching Popovic's car, and no order has gone to their crew yet | Another crew's lookout watches Popovic's car. The **Scout** can **Mislead** him. | the rival lookout | a Mislead order, or the Enforcer holding Vale |
 | H9 | 4:00 has passed, route A isn't under way (no contact turned, no Enter), and the driver is unknown | Vale leaves by car at 5:50. His **driver** waits at the pickup: another way to him. | the driver | any order on the driver, or a contact turned |
 | H10 | the Enforcer holds Vale, and no other armed operative stands within 15 m of the getaway car | Taking Vale to the car will be contested. Who is there to cover him? | the getaway bay | an armed operative within 15 m of the car, or a draw |
 | H11 | an operative is downed, the final fight is on or over, and nobody is carrying them | A downed agent left behind is captured. **C** carries them; bring them to the car before you leave. | the downed operative | a Carry order, or the extract |
+
+_H8 updated 2026-11-05 (brief 096, Fable, from Latch's HostHints and Waymark's timeline note): since engine 0.41.0 the rivals no longer park at 3:10; the hint waits for the lookout at his post and rings him. text.test.ts ties this row to text.json word for word._
 
 **Feedback after the fact, not hints.**
 - **The first run seen by security** (`run.seen`) shows a one-line toast: "Running is noticed: security looks into it (Alert 1)". It goes on the next order.

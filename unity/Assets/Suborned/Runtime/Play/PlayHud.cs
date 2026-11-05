@@ -482,7 +482,7 @@ namespace Suborned.Play
             int unread = m.Unread;
             GUI.Label(new Rect(bar.x + pad, bar.y, 90 * s, bar.height), "SCENES", txtSmallBold);
             if (unread > 0) { var nb = new Rect(bar.x + 78 * s, bar.y + 4 * s, 60 * s, 18 * s); GUI.DrawTexture(nb, ivoryTex); GUI.Label(nb, $"<color=#17302f>{unread} new</color>", smallC); }
-            GUI.Label(new Rect(bar.xMax - 190 * s, bar.y, 182 * s, bar.height), $"{m.AckKey} ack · {m.HistoryKey} history {(m.HistoryOpen ? "▾" : "▴")}", small);
+            GUI.Label(new Rect(bar.xMax - 190 * s, bar.y, 182 * s, bar.height), $"history {(m.HistoryOpen ? "▾" : "▴")}", small);
             if (GUI.Button(new Rect(bar.xMax - 110 * s, bar.y, 110 * s, bar.height), GUIContent.none, GUIStyle.none)) host.FeedHistoryOpen = !host.FeedHistoryOpen;
             float y = bar.y - 6 * s;
             if (m.HistoryOpen) { History(new Rect(area.x, 0, w, y)); return; }
@@ -546,7 +546,7 @@ namespace Suborned.Play
                         GUI.DrawTexture(fr, footerTex); Outline(fr, FooterLine, Mathf.Max(1f, 1.2f * s));
                         var disc = new Rect(fr.x + 5 * s, fr.y + 4 * s, 14 * s, 14 * s); GUI.DrawTexture(disc, discTex); GUI.Label(disc, $"<color=#f7f4ec>{(c.Tone == HandoverHost.Feedback.Refused ? "✕" : "✓")}</color>", iconSmall);
                         GUI.Label(new Rect(fr.x + 24 * s, fr.y, fr.width - 88 * s, fr.height), c.Footer, inkBold);
-                        var tick = new Rect(fr.xMax - 58 * s, fr.y + 2 * s, 54 * s, 18 * s); GUI.DrawTexture(tick, white); Outline(tick, CheckDisc, Mathf.Max(1f, 1.6f * s)); GUI.Label(tick, $"<color=#17302f>✓ {m.AckKey}</color>", iconSmall);
+                        var tick = new Rect(fr.xMax - 58 * s, fr.y + 2 * s, 54 * s, 18 * s); GUI.DrawTexture(tick, white); Outline(tick, CheckDisc, Mathf.Max(1f, 1.6f * s)); GUI.Label(tick, "<color=#17302f>✓</color>", iconSmall);
                         if (!c.Read) { var dot = new Rect(tick.xMax - 4 * s, tick.y - 4 * s, 8 * s, 8 * s); GUI.DrawTexture(dot, white); GUI.DrawTexture(new Rect(dot.x + 2 * s, dot.y + 2 * s, 4 * s, 4 * s), pillTex); }
                         if (GUI.Button(tick, GUIContent.none, GUIStyle.none)) { host.Acknowledge(c, false); continue; }
                     }

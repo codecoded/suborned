@@ -175,3 +175,53 @@ a strict object and debrief.cause replaces it once Latch wires it, so it gets no
   Its lookout watches the official door" wait on that data. I'll word them once the marks move.
 - **Motive:** H8's trigger, rings and goneWhen in briefs/011/motive-fights.md (see §6).
 - **Splice:** the one-word SKIP_KEYS change in tools/names/scan.ts.
+
+# Engine 0.43.0 words: G1's waiting Go, the crew's Watch, the timeline (Fable, 2026-11-05)
+
+From Latch's "Engine 0.43.0, Motive's misses" (briefs/096/latch/new-words-lend.md) and Waymark's notes (briefs/096/waymark/timeline.md).
+
+## 1. G1: a Go that waits for one of us climbing in (`book.cars`)
+
+| key | was (placeholder) | now | why |
+|---|---|---|---|
+| `goOnce` | goes once {list} is in | waits for {list} to get in | Reads right with two climbing in ("waits for Tech, Scout to get in"; "is in" broke on two). Row: "Go · leaves Scout · waits for Tech to get in"; Alt: "Waits for Tech to get in". |
+| `goWaiting` | Go · waiting for {list} | kept | Short and plain on the row. |
+| `goWaitsRoster` | then the car goes | kept | Reads well after the arrow under his portrait. |
+
+## 2. Log codes `go.waits` and `go.missed`
+
+- `go.waits` stays silent: the Go row (`goWaiting`) and the roster (`goWaitsRoster`) already say it. The `silentLogs` entry says so.
+- `go.missed` gets a card (`cards.items`), so a Go that waited and then didn't land no longer shows nothing:
+  `{"kind":"warning","fate":"icon","title":"The car didn't go","result":"The one it waited for never got in, or the way is blocked. Go again."}`
+  It's `icon` (the slim feed card), not a beat: the feed stays at eleven beat lines. No `{agent}` fill, because the log names the car and the refusal, not the climber.
+  It covers both cars and both causes (he was shot down or called off, or a holder came). `silentLogs` says "card only".
+- text.test.ts: the card count goes from 95 to 96.
+
+## 3. Pay on one of the rival crew before a Watch (`locks.needs-routine`)
+
+A new lock variant, `crew` (`text.schema.ts` `LOCK_VARIANTS`), and `needs-routine.byTarget.crew`:
+line "Watch one of their crew first. One Watch covers them all.", short "Watch the crew first". The engine's `RivalsWatched` is one flag for the whole crew,
+so one Watch on any of them unlocks the Pay. The base line ("Learn {who}'s routine first: Watch them.") stays for people.
+Code: one line in `HostLess.cs` `TargetKindOf`: a crew member's id is "crew" (`IsCrew`), so `ShortOf` and `LockLine` pick the variant. No other lock has a `crew` variant, so nothing else changes.
+
+## 4. Waymark's notes
+
+- `briefing.timeline` 2:53: "Three rivals take posts round our car" / "Rivals post" → "The rival car boxes ours in; three post round it" / "Boxed in". Its `at` is unchanged, so mission.json and §07 still match. text.test.ts pins the shorts ('Boxed in').
+- `hints.items.H8`: trigger "3:10 has passed (the rivals have parked)…" → "the rival lookout stands at his post watching Popovic's car, and no order has gone to their crew yet". Rings "the rival car" → "the rival lookout" (as Latch's HostHints rings him). goneWhen kept.
+  text.test.ts ties H1–H11 word for word to Motive's table, so the H8 row in `briefs/011/motive-fights.md` follows (trigger, gist and rings), with a dated note under the table. **Motive:** please look over that row; it's your table.
+- `conversations.rivals-coming.note`: "The 2:46 drop and the 3:10 park stay in sight" → the box-in at about 2:53 and the lookout at his post stay in sight.
+
+## 5. Alt outcome `less.alt.outcome.worse`
+
+"Works, but less well" → "Works, but costs more". HudModel shows it when a turn takes more than one order (GDD §04: a wrong approach still works "one step worse": one more Help, or a higher price). It doesn't work any less well, it costs more, so this says what the player pays.
+
+## Checks
+- `bun test contracts/missions/handover`: 200 pass, 0 fail.
+- `bun test tools/missions/handover`: 38 pass, 0 fail.
+- `bun run hostlogic`: 124 pass, 0 fail.
+- `bun run typecheck`: exit 0.
+
+## Left for others
+- **Latch:** the C# fallbacks still have the old words: `HostBook.WordsLend.cs` `GoOnce` ("goes once {list} is in") and HudModel's "Works, but less well". They only show if text.json has no such key.
+  HostHints H8 still gates on `190 * Game.Hz` (Waymark's note); the trigger text now says what the hint waits for: the lookout at his post.
+- **Motive:** the H8 row in briefs/011/motive-fights.md (above).

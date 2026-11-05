@@ -218,16 +218,6 @@ namespace Suborned.Play
         /// <summary>The target Tab has focused, else null.</summary>
         public Pickable Focused => focusIndex >= 0 && focusIndex < targets.Count ? targets[focusIndex] : null;
 
-        /// <summary>Tab in target mode: the next valid target, nearest the agent first; the view pans to it when off screen; its price shows.</summary>
-        void FocusNext(bool back = false)
-        {
-            var list = TargetMarks; if (list.Count == 0 || !cam) return;
-            focusIndex = back ? (focusIndex <= 0 ? list.Count - 1 : focusIndex - 1) : (focusIndex + 1) % list.Count; var f = list[focusIndex];
-            var vp = cam.WorldToViewportPoint(f.Anchor); if (vp.z <= 0 || vp.x < 0.08f || vp.x > 0.92f || vp.y < 0.08f || vp.y > 0.92f) LookAt(f.Anchor);
-            var sp = cam.WorldToScreenPoint(f.Anchor); intentKey = ""; PointerHover(sp);
-            Status = $"{OneWord(f.T)} ({focusIndex + 1} of {list.Count})";
-        }
-
         /// <summary>A target marker clicked: the picked verb on it, as a right click on the target gives it.</summary>
         public void TargetClick(Pickable p)
         {

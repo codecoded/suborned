@@ -181,7 +181,7 @@ namespace Suborned.Play
                         ring = At("patrol"); return true;
                     }
                 case "H8":
-                    if (g.Tick < 190 * Game.Hz || !g.RivalsPresent || g.Vale == ValeAt.WithEnforcer) return false;
+                    if (!g.RivalsPresent || g.Vale == ValeAt.WithEnforcer) return false;
                     if (Given(o => o.Do == "mislead" || IsCrew(o.Target ?? "")) || LookoutId() is not { Length: > 0 } lk || g.CrewOf(lk) is not CrewMember lm || lm.Mode != CrewMode.Posted || lm.Post != "lookout") return false; // brief 096 (engine 0.41.0): the car's tip is retired; the Scout's word goes to the lookout at his post
                     ring = At(lk); return true;
                 case "H9":

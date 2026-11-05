@@ -41,15 +41,15 @@ namespace Suborned.Play.Tests
         [Test]
         public void OnlyBeginAndTheCameraKeysUnderTheBriefing()
         {
-            var allowed = new[] { PlayAction.Pause, PlayAction.Briefing, PlayAction.Debug, PlayAction.PanUp, PlayAction.PanDown, PlayAction.PanLeft, PlayAction.PanRight, PlayAction.TurnLeft, PlayAction.TurnRight, PlayAction.TurnDrag };
+            var allowed = new[] { PlayAction.Pause, PlayAction.Debug, PlayAction.PanUp, PlayAction.PanDown, PlayAction.PanLeft, PlayAction.PanRight, PlayAction.TurnLeft, PlayAction.TurnRight, PlayAction.TurnDrag };
             foreach (PlayAction a in Enum.GetValues(typeof(PlayAction)))
                 Assert.That(ModalGate.Allows(ModalGate.Modal.Briefing, a), Is.EqualTo(Array.IndexOf(allowed, a) >= 0), $"briefing: {a}");
         }
 
         [Test]
-        public void OnlyRestartAndTheCameraKeysOnTheEndCard()
+        public void OnlyTheCameraKeysOnTheEndCard() // brief 096: Replay is the card's button (Return left the player's keys)
         {
-            var allowed = new[] { PlayAction.Restart, PlayAction.Debug, PlayAction.PanUp, PlayAction.PanDown, PlayAction.PanLeft, PlayAction.PanRight, PlayAction.TurnLeft, PlayAction.TurnRight, PlayAction.TurnDrag };
+            var allowed = new[] { PlayAction.Debug, PlayAction.PanUp, PlayAction.PanDown, PlayAction.PanLeft, PlayAction.PanRight, PlayAction.TurnLeft, PlayAction.TurnRight, PlayAction.TurnDrag };
             foreach (PlayAction a in Enum.GetValues(typeof(PlayAction)))
                 Assert.That(ModalGate.Allows(ModalGate.Modal.EndCard, a), Is.EqualTo(Array.IndexOf(allowed, a) >= 0), $"end card: {a}");
             foreach (PlayAction a in Enum.GetValues(typeof(PlayAction))) Assert.That(ModalGate.Allows(ModalGate.Modal.None, a), Is.True, $"no modal: {a}");

@@ -458,7 +458,5 @@ namespace Suborned.Play
             return c.Place;
         }
 
-        /// <summary>K: the newest finished card.</summary>
-        public void AcknowledgeNewest() { for (int i = Feed.Count - 1; i >= 0; i--) if (!Feed[i].Live) { Acknowledge(Feed[i], false); return; } }
     }
 }

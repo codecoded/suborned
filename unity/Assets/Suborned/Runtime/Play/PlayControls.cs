@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 namespace Suborned.Play
 {
+    /// <summary>Every action the host reads. Members are never removed or reordered (scenes store them as numbers); brief 096 took Faster, Slower,
+    /// NextEvent, Briefing, DialogueLog, Acknowledge, AllStrips and StepTarget out of the table, and Restart, Debug, HudView, CameraLab and
+    /// TargetMode to the dev keys (PlayControls.DevKeys).</summary>
     public enum PlayAction
     {
         PanUp, PanDown, PanLeft, PanRight,
@@ -76,23 +79,13 @@ namespace Suborned.Play
             new() { action = PlayAction.Agent4, keys = new[] { Key.Digit4, Key.Numpad4, Key.F4 }, label = "4" },
             new() { action = PlayAction.CycleAgent, keys = new[] { Key.Tab }, label = "Tab" }, // brief 030 §8: Tab steps the selected agent's actions (the name is kept for saved tables)
             new() { action = PlayAction.Pause, keys = new[] { Key.Space }, label = "Space" },
-            new() { action = PlayAction.Faster, keys = new[] { Key.Equals, Key.NumpadPlus }, label = "=" },
-            new() { action = PlayAction.Slower, keys = new[] { Key.Minus, Key.NumpadMinus }, label = "−" },
-            new() { action = PlayAction.NextEvent, keys = new[] { Key.N }, label = "N" },
-            new() { action = PlayAction.Restart, keys = new[] { Key.Enter, Key.NumpadEnter }, label = "Return" },
-            new() { action = PlayAction.Debug, keys = new[] { Key.F12 }, label = "F12" },
             new() { action = PlayAction.AddToGroup, keys = new[] { Key.LeftShift, Key.RightShift }, label = "Shift", context = "mouse" },
             new() { action = PlayAction.Cancel, keys = new[] { Key.C }, label = "C" },
-            new() { action = PlayAction.Briefing, keys = new[] { Key.B }, label = "B" },
-            new() { action = PlayAction.DialogueLog, keys = new[] { Key.L }, label = "L" },
             new() { action = PlayAction.Draw, keys = new[] { Key.F }, label = "F" },
             new() { action = PlayAction.Cease, keys = new[] { Key.X }, label = "X" },
             new() { action = PlayAction.Stance, keys = new[] { Key.V }, label = "V" },
             new() { action = PlayAction.Force, keys = new[] { Key.LeftCtrl, Key.RightCtrl }, label = "Ctrl", context = "mouse" },
             new() { action = PlayAction.Hints, keys = new[] { Key.H }, label = "H" },
-            new() { action = PlayAction.Acknowledge, keys = new[] { Key.K }, label = "K" },
-            new() { action = PlayAction.AllStrips, keys = new[] { Key.Backquote }, label = "`" },
-            new() { action = PlayAction.HudView, keys = new[] { Key.F11 }, label = "F11" },
             new() { action = PlayAction.Intel, keys = new[] { Key.I }, label = "I" },
             new() { action = PlayAction.Peek, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt" },
             new() { action = PlayAction.Response, keys = new[] { Key.R }, label = "R" }, // brief 013: the response pill's list (Glyph §8)
@@ -101,14 +94,25 @@ namespace Suborned.Play
             new() { action = PlayAction.TurnRight, keys = new[] { Key.E }, label = "E" },
             new() { action = PlayAction.TurnDrag, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt", context = "mouse" }, // held with the middle button: turn freely (Alt alone is Peek; the detail layer stays off while turning)
             new() { action = PlayAction.FollowView, keys = new[] { Key.T }, label = "T" }, // Sky 2026-10-18, a test: the third-person follow view (V is Stance; T was free)
-            new() { action = PlayAction.CameraLab, keys = new[] { Key.P }, label = "P" },
-            new() { action = PlayAction.TargetMode, keys = new[] { Key.Y }, label = "Y" },
-            new() { action = PlayAction.StepTarget, keys = new[] { Key.Z }, label = "Z" }, // brief 030 §8: step the target (Tab's old overlap and target uses; Z was free) // brief 027: target mode (Y was free; Motive proposed it) // brief 025: the camera lab (P was free; no fn needed on a MacBook)
+            // Sky 2026-11-05 (brief 096): N, =, −, Return, B, L, K, `, Z and the dev keys left the player's table (hidden keys nobody learns); see briefs/096/latch/shortcuts.md
             new() { action = PlayAction.Act, keys = new[] { Key.E }, label = "E", context = "third" }, // brief 024 revision: third person's act key (tap acts, hold the options); E is the view's turn on the map, so the two never meet in one mode
             new() { action = PlayAction.Book, keys = new[] { Key.J }, label = "J" }, // brief 088: the book (J was free)
             new() { action = PlayAction.SelectAll, keys = new[] { Key.Digit5, Key.Numpad5 }, label = "5" }, // brief 041 (the playground's squad): 5 selects all four (Ctrl/Cmd+A too)
         };
         static readonly Binding[] defaults = Defaults();
+
+        /// <summary>Brief 096 (Sky 2026-11-05): the crew's lab and debug keys, never in the player's table or the Controls tab: F12 debug, F11 HUD view,
+        /// P camera lab (and the fight lab's panel), Y target mode, Return the lab freeze's go. Read only in the Editor or a player started with -debug (the flag that already shows the lab's options and the Fight Range).</summary>
+        static readonly Binding[] dev =
+        {
+            new() { action = PlayAction.Debug, keys = new[] { Key.F12 }, label = "F12" },
+            new() { action = PlayAction.HudView, keys = new[] { Key.F11 }, label = "F11" },
+            new() { action = PlayAction.CameraLab, keys = new[] { Key.P }, label = "P" },
+            new() { action = PlayAction.TargetMode, keys = new[] { Key.Y }, label = "Y" },
+            new() { action = PlayAction.Restart, keys = new[] { Key.Enter, Key.NumpadEnter }, label = "Return" }, // the lab freeze's go (HostFightLab); the end card's replay is its button
+        };
+        /// <summary>Whether the dev keys are read: the Editor, or a player started with -debug (never a development build on its own: Sky plays those).</summary>
+        public static bool DevKeys => devKeys ??= UnityEngine.Application.isEditor || Array.IndexOf(Environment.GetCommandLineArgs(), "-debug") >= 0; static bool? devKeys;
 
         [UnityEngine.Tooltip("Pan when the mouse is at the screen's edge (off by default).")]
         public bool edgeScroll = false;
@@ -120,7 +124,7 @@ namespace Suborned.Play
         public float edgePixels = 12f;
         [UnityEngine.Tooltip("Where the roster and the verb hotbar sit (Glyph's placements: bottom, left column, corner).")]
         public RosterDock dock = RosterDock.Left; // the kit's default (Glyph round 6: the left column)
-        [UnityEngine.Tooltip("Kit: Glyph's HUD on UI Toolkit (falls back to IMGUI where a piece has not landed, or when the kit is not imported). F11 switches.")]
+        [UnityEngine.Tooltip("Kit: Glyph's HUD on UI Toolkit (falls back to IMGUI where a piece has not landed, or when the kit is not imported). F11 switches (dev keys only).")]
         public HudView view = HudView.Kit;
         [UnityEngine.Tooltip("Pause the clock while the action panel is open (off: real time, Sky's lean).")]
         public bool pauseWithPanel = false;
@@ -178,13 +182,14 @@ namespace Suborned.Play
             st.Save();
         }
 
-        /// <summary>The defaults, then each binding the player changed (settings.json bindings). A name the game no longer has is skipped.</summary>
+        /// <summary>The defaults, then each binding the player changed (settings.json bindings). A name the game no longer has, or an action no longer in
+        /// the player's table (brief 096: N, =, −, Return, B, L, K, `, Z, the dev keys), is skipped: an old file still loads.</summary>
         public void ApplyBindings(Settings st)
         {
             keys = Defaults();
             foreach (var b in st.bindings)
             {
-                if (!Enum.TryParse<PlayAction>(b.action, out var a)) continue;
+                if (b?.keys == null || !Enum.TryParse<PlayAction>(b.action, out var a)) continue;
                 var ks = new System.Collections.Generic.List<Key>(); foreach (var k in b.keys) if (Enum.TryParse<Key>(k, out var kk) && kk != Key.None) ks.Add(kk);
                 if (ks.Count == 0) continue;
                 for (int i = 0; i < keys.Length; i++) if (keys[i].action == a) { keys[i].keys = ks.ToArray(); keys[i].mods = b.mods ?? ""; keys[i].label = ShortLabel(ks[0], keys[i].mods); }
@@ -228,7 +233,13 @@ namespace Suborned.Play
             for (int i = 0; i < keys.Length; i++) foreach (var d in defaults) if (d.action == keys[i].action) { keys[i].mods ??= d.mods ?? ""; if (string.IsNullOrEmpty(keys[i].mods)) keys[i].mods = d.mods ?? ""; if (string.IsNullOrEmpty(keys[i].context)) keys[i].context = d.context ?? ""; }
         }
 
-        Binding Of(PlayAction a) { if (keys != null) foreach (var b in keys) if (b.action == a) return b; foreach (var b in defaults) if (b.action == a) return b; return default; }
+        Binding Of(PlayAction a)
+        {
+            if (keys != null) foreach (var b in keys) if (b.action == a) return b;
+            foreach (var b in defaults) if (b.action == a) return b;
+            if (DevKeys) foreach (var b in dev) if (b.action == a) return b;
+            return default;
+        }
 
         public bool Down(Keyboard kb, PlayAction a) { if (kb == null) return false; var b = Of(a); if (b.keys == null) return false; foreach (var k in b.keys) if (kb[k].wasPressedThisFrame) return true; return false; }
         public bool Held(Keyboard kb, PlayAction a) { if (kb == null) return false; var b = Of(a); if (b.keys == null) return false; foreach (var k in b.keys) if (kb[k].isPressed) return true; return false; }

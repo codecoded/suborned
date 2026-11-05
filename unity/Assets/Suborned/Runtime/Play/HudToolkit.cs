@@ -606,7 +606,7 @@ namespace Suborned.Play
             VisualElement Btn(string text, System.Action act) { var b = E(eb, "s-btn_text_normal btn_text", w: 150, h: 40, pick: true); b.style.marginLeft = 10; b.style.marginRight = 10; b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { act(); e.StopPropagation(); } }); var l = L(b, "button-label"); l.text = text; return b; }
             Btn("Debrief", () => endDetailOpen = !endDetailOpen);
             showAgain = Btn("Show me", () => host.FailCamStart()); // the fail camera again (Sky on the Air: "Show me again" ran past its pill) // the fail camera again (HostFailCam)
-            var rp = Btn("Replay", () => host.BeginSameSeed()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; Return still replays */
+            var rp = Btn("Replay", () => host.BeginSameSeed()); endButtons = eb; endReplayKey = L(null, "keycap"); /* Sky: label only, no keycap; brief 096: the button is the only replay (no Return) */
             // the history (history_panel): above the feed bar; filters, Read all, the rows (the wheel scrolls them)
             history = E(root, "s-panel_dark", pick: true); history.style.position = Position.Absolute; history.style.right = 14; history.style.bottom = 14 + 32 + 6; history.style.width = 384;
             history.style.paddingLeft = 28; history.style.paddingRight = 28; history.style.paddingTop = 14; history.style.paddingBottom = 12; // clear of the frame's corner screws

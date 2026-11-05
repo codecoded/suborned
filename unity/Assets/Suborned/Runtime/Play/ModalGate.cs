@@ -2,9 +2,9 @@ namespace Suborned.Play
 {
     /// <summary>What reaches the world while a modal is up (Sky 2026-10-16, playing the build: "i'm on this screen yet when I move mouse
     /// everything is showing up as label, and responding"). The briefing (until Begin) and the end card are modal: no hover, no price chip, no
-    /// pips or labels reacting, no click or key reaches the street. Allowed: Begin (Space, the button), the briefing key, Esc, the debug key,
+    /// pips or labels reacting, no click or key reaches the street. Allowed: Begin (Space, the button), Esc, the debug key (dev keys),
     /// and looking round: the camera's pan keys, the middle-drag grab, the wheel zoom and the view's turn (Q / E, Alt + middle-drag; brief 016) (Latch's call: a player reading the briefing may want
-    /// to look at the square; looking changes nothing in the run). Restart works on the end card. The history drawer and the Alt layer are
+    /// to look at the square; looking changes nothing in the run). The end card's Replay is its button (brief 096: no Return). The history drawer and the Alt layer are
     /// not modal: the clock runs under them, and the city keeps answering. One table, so a test can read it.</summary>
     public static class ModalGate
     {
@@ -20,8 +20,7 @@ namespace Suborned.Play
             {
                 case PlayAction.PanUp: case PlayAction.PanDown: case PlayAction.PanLeft: case PlayAction.PanRight: case PlayAction.Debug:
                 case PlayAction.TurnLeft: case PlayAction.TurnRight: case PlayAction.TurnDrag: return true;
-                case PlayAction.Pause: case PlayAction.Briefing: return modal == Modal.Briefing;
-                case PlayAction.Restart: return modal == Modal.EndCard;
+                case PlayAction.Pause: return modal == Modal.Briefing;
                 default: return false;
             }
         }

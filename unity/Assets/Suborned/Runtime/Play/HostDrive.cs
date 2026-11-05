@@ -406,7 +406,7 @@ namespace Suborned.Play
                 float score = dist * (1f + ang / 60f) + (t.Kind is "door" or "cabinet" or "stash" && RowRank(t) > 0 ? 2f : 0f); // brief 085: the door with no way for this agent never takes the focus from the guard who stands in it
                 cands.Add((t, p.Anchor, score));
             }
-            // brief 030 §8: Z / Shift+Z step the focus through what is in front, nearest first (dFocusStep; a lost focus starts again)
+            // brief 030 §8: the focus stepped through what is in front, nearest first (dFocusStep; Z left the keys in brief 096, so it stays 0: the nearest)
             cands.Sort((a, b) => a.score.CompareTo(b.score));
             if (cands.Count == 0) dFocusStep = 0;
             else { int pick = ((dFocusStep % cands.Count) + cands.Count) % cands.Count; best = cands[pick].t; bestAt = cands[pick].at; bestScore = cands[pick].score; }

@@ -242,8 +242,8 @@
    },
    {
     "at": "2:53",
-    "label": "Three rivals take posts round our car",
-    "short": "Rivals post",
+    "label": "The rival car boxes ours in; three post round it",
+    "short": "Boxed in",
     "known": false
    },
    {
@@ -455,7 +455,7 @@
   }
  },
  "locks": {
-  "mission-over": {"line":"The mission is over. Press Return to play again.","short":"Mission over","verbs":["*"]},
+  "mission-over": {"line":"The mission is over.","short":"Mission over","verbs":["*"]},
   "engine-error": {"line":"Something broke. Restart the run.","short":"Restart needed","verbs":["*"]},
   "unknown-verb": {"line":"That order isn't available. Pick another.","short":"No such order","verbs":["*"]},
   "agent-down": {"line":"{op} is down. Another agent can carry them to the car.","short":"Down","verbs":["*"]},
@@ -476,7 +476,7 @@
   "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","disable","reroute"]},
   "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take"]},
   "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"]},
-  "needs-routine": {"line":"Learn {who}'s routine first: Watch them.","short":"Watch first","verbs":["listen","pay"]},
+  "needs-routine": {"line":"Learn {who}'s routine first: Watch them.","short":"Watch first","verbs":["listen","pay"],"byTarget":{"crew":{"line":"Watch one of their crew first. One Watch covers them all.","short":"Watch the crew first"}}},
   "needs-need": {"line":"Find out what {who} needs first: have the Scout Listen.","short":"Listen first","verbs":["help","pressure"]},
   "needs-temperament": {"line":"Find out who {who} is first: have the Scout Listen.","short":"Listen first","verbs":["ask","pay","help","pressure"]},
   "no-act-need": {"line":"This won't meet {who}'s need. Try another approach.","short":"Not what they need","verbs":["help","pressure"]},
@@ -632,6 +632,7 @@
    "car.report-lands": {"kind":"warning","fate":"alt","title":"Our car was reported","result":"It was seen parked where cars don't stand. Security will check it."},
    "car.kerbside": {"kind":"city","fate":"alt","title":"Popovic's car pulls in","result":"Our car is on the service drive, so his stops at the kerb. Take him there."},
    "car.boxed-in": {"kind":"warning","fate":"alt","title":"Popovic's car is boxed in","result":"A car is across its way out, so his driver waits."},
+   "go.missed": {"kind":"warning","fate":"icon","title":"The car didn't go","result":"The one it waited for never got in, or the way is blocked. Go again."},
    "car.parks": {"kind":"city","fate":"icon","title":"Popovic's car parks","result":"In the service bay. Take him from the back seat."},
    "car.blocked": {"kind":"warning","fate":"beat","beat":"Popovic's car stops.","title":"Popovic's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
    "board.missed": {"kind":"warning","fate":"alt","title":"Nobody got in","result":"The car drove off first. Wait until it stops."},
@@ -843,7 +844,7 @@
   "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:30"},
   "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"5:50"},
   "rivals-arrive": {"kind":"world","trigger":"the rival car stops across our way out (engine 0.41.0, brief 096: rivals.block)","speakers":["rivals","scout"],"log":["rivals.block"],"clock":"2:53"},
-  "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35","note":"brief 067 (Aster, from Sky on 0.2.122: they should be coming in from somewhere when the chime comes): the car always turns in out of sight, so the beat and the Scout's line show wherever the cell stands (the card's sight is `always`, its `at` still points at the car), and the Scout speaks of what he hears, never of what he sees. The 2:46 drop and the 3:10 park stay in sight."},
+  "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35","note":"brief 067 (Aster, from Sky on 0.2.122: they should be coming in from somewhere when the chime comes): the car always turns in out of sight, so the beat and the Scout's line show wherever the cell stands (the card's sight is `always`, its `at` still points at the car), and the Scout speaks of what he hears, never of what he sees. The box-in at about 2:53 (rivals.block) and the lookout at his post stay in sight (Fable 2026-11-05: the 2:46 drop and the 3:10 park are retired since engine 0.41.0)."},
   "rivals-follow-car": {"kind":"world","trigger":"the getaway car drives off and the posted three go after it","speakers":["scout"],"log":["rivals.follow-car"]},
   "car-parks": {"kind":"world","trigger":"the turned driver parks Vale's car in the service bay","speakers":["driver","fixer"],"log":["car.parks"]},
   "rivals-misled": {"kind":"world","trigger":"a Mislead lands: one of the rival crew on foot walks off for a while (engine 0.41.0)","speakers":["rivals","scout"],"log":["rivals.misled"]},
@@ -1106,8 +1107,8 @@
   "rivals.block": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the rival car stops across our way out; the ring's Boxed in names it (book.feed.cards.boxed is the crucial card)",
   "rivals.lookout-posted": "engine 0.41.0 (brief 096; Aster's addition, Sky approved): card only (cards.items, Fable 2026-11-05): the rival lookout takes his post watching Popovic's car (book.feed.cards.lookout is the crucial card)",
   "rivals.lookout-follows": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the lookout is going after Popovic's car (Motive's seen table, 5:53); the feed is full of beats, so it is a Journal row",
-  "go.waits": "engine 0.43.0 (car.go, Motive G1): PLACEHOLDER, card (Fable, Glyph): a Go given while one of us climbs in waits for him and goes the moment he is in; the Go's card already counted him aboard",
-  "go.missed": "engine 0.43.0 (car.go, Motive G1): PLACEHOLDER, card (Fable): the Go that waited for a Board didn't land (he was shot down or called off, and the car is now held or empty): the refusal's own words follow",
+  "go.waits": "engine 0.43.0 (car.go, Motive G1): silent (Fable 2026-11-05): a Go given while one of us climbs in waits for him and goes the moment he is in; the Go row (book.cars.goWaiting) and his roster line (goWaitsRoster) already say so, and the Go's card already counted him aboard",
+  "go.missed": "engine 0.43.0 (car.go, Motive G1): card only (cards.items, Fable 2026-11-05; icon, not a beat: the feed keeps its eleven): the Go that waited for a Board didn't land (he was shot down or called off, and the car is now held or empty); the player clicked Go, so the card says the car didn't go and what to check",
   "rivals.retarget": "engine 0.41.0 (brief 096): silent: the rival car turns after our car's Drive; the street shows it",
   "rivals.misled-back": "engine 0.41.0 (brief 096): silent: a misled member walks back; the street shows him (the Mislead card said when)",
   "rivals.paid": "engine 0.41.0 (brief 096): silent: the Pay's own card says it (book.crew.paid, HostCrewTurn.CrewFooter)",
@@ -1316,8 +1317,8 @@
     "target": "the rival lookout",
     "line": "Another crew's lookout watches Popovic's car. The Scout can mislead him.",
     "short": "Mislead the rival [lookout].",
-    "trigger": "3:10 has passed (the rivals have parked) and nobody has acted on them",
-    "rings": "the rival car",
+    "trigger": "the rival lookout stands at his post watching Popovic's car, and no order has gone to their crew yet",
+    "rings": "the rival lookout",
     "goneWhen": "a Mislead order, or the Enforcer holding Vale"
    },
    "H9": {
@@ -1495,7 +1496,7 @@
   }
  },
  "less": {
-  "rule": "brief 014 (Sky, 2026-10-16: \"It's the reading, it's too much\"). The play HUD at rest shows no sentences: people speaking (bubbles in the world), icons, numbers, rings, and at most two story beats. Every long line elsewhere in this file stays and is the Alt text (hold Alt, or the history key L) or the debrief; nothing was deleted. `fates` says where each group of text goes; the rest of this block is the short forms and the one-line price grammar. Told/learned holds: a beat or a pop never names what the cell has not been told or has not learned.",
+  "rule": "brief 014 (Sky, 2026-10-16: \"It's the reading, it's too much\"). The play HUD at rest shows no sentences: people speaking (bubbles in the world), icons, numbers, rings, and at most two story beats. Every long line elsewhere in this file stays and is the Alt text (hold Alt, or the book's Journal) or the debrief; nothing was deleted. `fates` says where each group of text goes; the rest of this block is the short forms and the one-line price grammar. Told/learned holds: a beat or a pop never names what the cell has not been told or has not learned.",
   "fates": {
    "briefing.title": "label",
    "briefing.card": "alt",
@@ -1935,7 +1936,7 @@
    "rule": "The outcome marks in words, and what a Watch or Listen learns, for Alt. The host builds these by hand today (HudModel.OutcomeWords).",
    "outcome": {
     "ok": "Works",
-    "worse": "Works, but less well",
+    "worse": "Works, but costs more",
     "no": "They would refuse",
     "half": "Not yet: one more try",
     "unk": "? until the Scout learns who they are",
@@ -3216,7 +3217,7 @@
     "lentSeen": "{by} saw Popovic's car leave: a lead, but not to our car. Trail +{trail}.",
     "endWinHead": "Popovic is out",
     "endWinLine": "We drove Popovic off in his own car.",
-    "goOnce": "goes once {list} is in",
+    "goOnce": "waits for {list} to get in",
     "goWaiting": "Go · waiting for {list}",
     "goWaitsRoster": "then the car goes"
    },

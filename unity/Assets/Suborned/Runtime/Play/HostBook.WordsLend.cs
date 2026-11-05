@@ -9,7 +9,7 @@ namespace Suborned.Play
     public sealed partial class BookWordsFile
     {
         public string GoLent = "Go · drive him off", GoClear = "Gets the rest clear", EndWinHead = "Popovic is out", EndWinLine = "We drove Popovic off in his own car.", LentName = "Popovic's car, now ours";
-        public string GoOnce = "goes once {list} is in", GoWaiting = "Go · waiting for {list}", GoWaitsRoster = "then the car goes"; // engine 0.43.0 (G1): HostGoWaits
+        public string GoOnce = "waits for {list} to get in", GoWaiting = "Go · waiting for {list}", GoWaitsRoster = "then the car goes"; // engine 0.43.0 (G1): HostGoWaits
         public string CarLost = "We left our car behind, and the police will trace it. Trail +{trail}.", LentSeen = "{by} saw Popovic's car leave: a lead, but not to our car. Trail +{trail}.";
         public string PoliceHead = "Police close in {time}", PoliceWhy = "Popovic is out. The rest get clear in our car.", PoliceLeft = "Still here: {list}", PoliceClear = "Everyone is clear", PoliceEnd = "End now";
         public string TapeSeen = "{camera} would tape it: Alert {alert} in {s} s, +{trail} T", TapeMaybe = "A camera might tape this: Watch {camera} to be sure", TapeLoopEnds = "loop ends {t}";

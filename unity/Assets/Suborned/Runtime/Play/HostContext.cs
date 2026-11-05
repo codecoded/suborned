@@ -614,14 +614,6 @@ namespace Suborned.Play
             if (next < 0 || next >= open.Count) { Picked = -1; intentKey = ""; Status = "action: the contextual default"; return; }
             Pick(open[next]);
         }
-
-        /// <summary>Z / Shift+Z: step the target: overlapping things under the cursor, else the picked action's targets, nearest first; driven, the focus.</summary>
-        void StepTarget(bool back)
-        {
-            if (Driving && !TargetMode) { dFocusStep += back ? -1 : 1; dFocusKey = "?"; intentKey = ""; DriveFocusFrame(); return; }
-            if (HoverStackCount > 1 && !TargetMode) { StepStack(back); return; }
-            if (TargetMode) FocusNext(back);
-        }
         int dFocusStep;
     }
 }

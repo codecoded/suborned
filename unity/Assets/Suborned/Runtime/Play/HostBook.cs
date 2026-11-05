@@ -112,8 +112,6 @@ namespace Suborned.Play
             ClearHover();
             if (BookStartKeys(kb)) return true;
             if (controls.Down(kb, PlayAction.Book) || kb != null && kb.escapeKey.wasPressedThisFrame) { BookClose(); return true; }
-            if (controls.Down(kb, PlayAction.Briefing)) BookShow("job"); // brief 096: B opens Job, L the Journal (Glyph's key audit)
-            if (controls.Down(kb, PlayAction.DialogueLog)) BookShow("journal");
             if (BookSectionNow == "journal" && UnityEngine.InputSystem.Mouse.current is { } wm && wm.scroll.ReadValue().y is float wy && wy != 0f) JournalScroll(wy > 0f ? -1 : 1);
             if (controls.Down(kb, PlayAction.CycleAgent)) BookNext();
             if (BookSectionNow == "cell") for (int i = 0; i < 4; i++) if (controls.Down(kb, PlayAction.Agent1 + i)) BookShow("cell", i);

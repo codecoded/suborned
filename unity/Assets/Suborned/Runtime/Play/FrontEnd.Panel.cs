@@ -344,22 +344,19 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- Controls: the one binding table
 
-        /// <summary>The page's rows by tab: (action, friendly name). Debug keys show only in a development build.</summary>
+        /// <summary>The page's rows by tab: (action, friendly name). Brief 096 (Sky 2026-11-05): no hidden or dev keys here (PlayControls.DevKeys).</summary>
         static readonly (string tab, PlayAction a, string name)[] ControlRows =
         {
             ("Command", PlayAction.Agent1, "Select agent 1"), ("Command", PlayAction.Agent2, "Select agent 2"), ("Command", PlayAction.Agent3, "Select agent 3"), ("Command", PlayAction.Agent4, "Select agent 4"),
             ("Command", PlayAction.SelectAll, "Select all"), ("Command", PlayAction.CycleAgent, "Next agent"), ("Command", PlayAction.AddToGroup, "Add to group"),
             ("Command", PlayAction.Verb1, "Pick action 1"), ("Command", PlayAction.Verb2, "Pick action 2"), ("Command", PlayAction.Verb3, "Pick action 3"), ("Command", PlayAction.Verb4, "Pick action 4"),
             ("Command", PlayAction.Cancel, "Cancel"), ("Command", PlayAction.Gait, "Walk or run"),
-            ("Command", PlayAction.Pause, "Pause"), ("Command", PlayAction.Faster, "Faster"), ("Command", PlayAction.Slower, "Slower"), ("Command", PlayAction.NextEvent, "Next event"),
-            ("Command", PlayAction.Briefing, "Briefing"), ("Command", PlayAction.DialogueLog, "History"), ("Command", PlayAction.Intel, "Intel"), ("Command", PlayAction.Book, "The book"), ("Command", PlayAction.Response, "Response list"),
-            ("Command", PlayAction.Hints, "Hints"), ("Command", PlayAction.Acknowledge, "Acknowledge"), ("Command", PlayAction.Peek, "Detail (hold)"), ("Command", PlayAction.AllStrips, "All strips"), ("Command", PlayAction.Restart, "Play again"),
+            ("Command", PlayAction.Pause, "Pause"), ("Command", PlayAction.Intel, "Intel"), ("Command", PlayAction.Book, "The book"), ("Command", PlayAction.Response, "Response list"),
+            ("Command", PlayAction.Hints, "Hints"), ("Command", PlayAction.Peek, "Detail (hold)"),
             ("Camera", PlayAction.PanUp, "Pan up"), ("Camera", PlayAction.PanDown, "Pan down"), ("Camera", PlayAction.PanLeft, "Pan left"), ("Camera", PlayAction.PanRight, "Pan right"),
             ("Camera", PlayAction.TurnLeft, "Turn left"), ("Camera", PlayAction.TurnRight, "Turn right"), ("Camera", PlayAction.TurnDrag, "Free turn (middle drag)"), ("Camera", PlayAction.FollowView, "Follow view"),
             ("Fights", PlayAction.Draw, "Draw or holster"), ("Fights", PlayAction.Force, "Force fire"), // engine 0.35 (one input, GDD v0.30.1 §10): Cease (X) and Stance (V) are retired: no rows
-            ("Fights", PlayAction.TargetMode, "Target mode"), ("Fights", PlayAction.StepTarget, "Step target"),
             ("Third person", PlayAction.Act, "Act"),
-            ("Debug", PlayAction.Debug, "Debug"), ("Debug", PlayAction.HudView, "HUD view"), ("Debug", PlayAction.CameraLab, "Camera lab"),
         };
         public static string FriendlyName(PlayAction a) { foreach (var r in ControlRows) if (r.a == a) return r.name; return a.ToString(); }
 
@@ -371,7 +368,7 @@ namespace Suborned.Play
         {
             model.ApplyBindings(Settings.Current); keycaps.Clear();
             var tabName = F.controlsPage.tabs[Mathf.Clamp(tab, 0, F.controlsPage.tabs.Length - 1)];
-            var rows = ControlRows.Where(r => r.tab == tabName || DebugOptions && tabName == "Command" && r.tab == "Debug").ToList();
+            var rows = ControlRows.Where(r => r.tab == tabName).ToList();
             var cp = F.controlsPage; int perCol = Mathf.CeilToInt(rows.Count / (float)Mathf.Max(1, cp.columns));
             var cols = E(bodyContent); cols.style.flexDirection = FlexDirection.Row;
             var bodyW = SH.wRef - 2 * SH.padX; float gap = SH.colGap; float colW = (bodyW - gap * (cp.columns - 1)) / cp.columns; // light line: two columns, 44 apart

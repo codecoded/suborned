@@ -75,7 +75,7 @@ namespace Suborned.Play
         {
             if (!BookStart || kb == null) return false;
             if (controls.Down(kb, PlayAction.Pause)) { BriefingBegin(); return true; }
-            if (controls.Down(kb, PlayAction.Book) || controls.Down(kb, PlayAction.Briefing) || kb.escapeKey.wasPressedThisFrame) { ShowBriefing = false; return true; }
+            if (controls.Down(kb, PlayAction.Book) || kb.escapeKey.wasPressedThisFrame) { ShowBriefing = false; return true; }
             return false;
         }
 

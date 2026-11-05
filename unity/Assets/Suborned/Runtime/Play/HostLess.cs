@@ -231,11 +231,12 @@ namespace Suborned.Play
         int rivalsHoldTick = -1, rivalsHoldOrders = -1; string rivalsHold = "";
 
         /// <summary>Fable 019's `byTarget` key for an order's target: "machine" for a camera (by its id or "camera:" key), the patrol robot or a
-        /// response robot; else null (the base line, the person case).</summary>
+        /// response robot; "crew" for one of the rival crew (brief 096); else null (the base line, the person case).</summary>
         string TargetKindOf(string target)
         {
             if (string.IsNullOrEmpty(target)) return null;
             if (target == "patrol" || target.StartsWith("camera:") || target.StartsWith("camera/") || target.Contains("robot")) return "machine";
+            if (IsCrew(target)) return "crew"; // brief 096 (Fable): one of the rival crew, worded by byTarget.crew (needs-routine: one Watch on any of them)
             foreach (var p in Pickables()) if (p.T.Kind == "camera" && p.T.Key == target) return "machine";
             return null;
         }

@@ -113,14 +113,14 @@ export const Action = z.strictObject({
 });
 
 /** The wording a lock can have besides its base line (Lock.byTarget). */
-export const LOCK_VARIANTS = ['machine', 'rival-car', 'rival-car-driving'] as const;
+export const LOCK_VARIANTS = ['machine', 'rival-car', 'rival-car-driving', 'crew'] as const;
 export const Lock = z.strictObject({
   parked: Parked,
   line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
   short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
   verbs: z.array(z.union([Verb, z.enum(CONTROL_VERBS), z.literal('*')])).min(1).describe('the verbs that can return it'),
   byTarget: z.partialRecord(z.enum(LOCK_VARIANTS), z.strictObject({ line: Line, short: Short() })).optional()
-    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table). Engine 0.33.0 (brief 059): `rival-car` and `rival-car-driving` are car-held when `car:rivals` is among Answer.ids (the rival car still carries a member): the first when the engine sends a step-out `tick`, the second when it sends none (-1: the car is still driving). `fillLock` and `fillLockShort` pick them'),
+    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table). Engine 0.33.0 (brief 059): `rival-car` and `rival-car-driving` are car-held when `car:rivals` is among Answer.ids (the rival car still carries a member): the first when the engine sends a step-out `tick`, the second when it sends none (-1: the car is still driving). `fillLock` and `fillLockShort` pick them. Brief 096 (engine 0.43.0, Fable): `crew` is the order on one of the rival crew (the caller passes it as ctx.variant; the host\'s TargetKindOf): needs-routine on their crew is one Watch on any of them'),
   tickAs: z.enum(['clock', 'left']).optional().describe('how {tick} is filled: `clock` (default) is the mission clock as ctx.clock says it ("3:03"); `left` is the time still to wait, as ctx.left says it ("18 s"), for a tick that is a moment to count down to (car-held: the rival crew\'s first step-out)'),
 });
 

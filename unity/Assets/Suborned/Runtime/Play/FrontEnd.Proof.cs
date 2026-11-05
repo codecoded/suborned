@@ -55,7 +55,7 @@ namespace Suborned.Play
               fe.SetTab(0); fe.KeyMove(1); fe.KeyMove(1); fe.KeyMove(1); yield return Shot(fe, "options-focus"); d.vsync = vs; } // focus on Quality (the mockup's frame)
             fe.Show(FrontEnd.Screen.Controls); fe.SetTab(0); yield return Shot(fe, "controls-command");
             fe.Listen(PlayAction.Cancel, 0); yield return Shot(fe, "controls-rebind-focus"); // the rebind row: focus fill, tick, "Press a key" in the live ring
-            fe.Offer(PlayAction.Cancel, 0, Key.N); yield return Shot(fe, "controls-clash"); fe.ClashCancel();
+            fe.Offer(PlayAction.Cancel, 0, Key.Q); yield return Shot(fe, "controls-clash"); // Q is Turn left fe.ClashCancel();
             fe.SetTab(1); yield return Shot(fe, "controls-camera"); fe.SetTab(2); yield return Shot(fe, "controls-fights"); fe.SetTab(0);
 
             // ---- settings checks (through the file a relaunch reads)
@@ -97,25 +97,25 @@ namespace Suborned.Play
         IEnumerator SettingsChecks(FrontEnd fe, HandoverHost h)
         {
             var st = Settings.Current;
-            // rebind round trip: Next event → J through the page, then the file read again
-            fe.Show(FrontEnd.Screen.Controls); fe.SetTab(0);
-            fe.Listen(PlayAction.NextEvent, 0); fe.Offer(PlayAction.NextEvent, 0, Key.J); yield return null;
+            // rebind round trip: Turn left → N (free since brief 096) through the page, then the file read again
+            fe.Show(FrontEnd.Screen.Controls); fe.SetTab(1);
+            fe.Listen(PlayAction.TurnLeft, 0); fe.Offer(PlayAction.TurnLeft, 0, Key.N); yield return null;
             var re = new PlayControls(); Settings.Reload(); re.LoadSettings();
-            Check("rebindRoundTrip", re.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault() == Key.J && h.controls.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault() == Key.J,
-                $"file {re.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault()}, game {h.controls.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault()}");
-            // a clash: Cancel → J is Next event's: the strip shows, nothing written; Swap gives Cancel J and Next event C
-            fe.SetTab(0); fe.Listen(PlayAction.Cancel, 0); fe.Offer(PlayAction.Cancel, 0, Key.J); yield return null;
+            Check("rebindRoundTrip", re.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault() == Key.N && h.controls.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault() == Key.N,
+                $"file {re.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault()}, game {h.controls.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault()}");
+            // a clash: Cancel → N is Turn left's: the strip shows, nothing written; Swap gives Cancel N and Turn left C
+            fe.SetTab(0); fe.Listen(PlayAction.Cancel, 0); fe.Offer(PlayAction.Cancel, 0, Key.N); yield return null;
             Settings.Reload(); var c1 = new PlayControls(); c1.LoadSettings();
             bool shown = fe.clash != null, kept = c1.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault() == Key.C;
             fe.ClashSwap(); yield return null;
             Settings.Reload(); var c2 = new PlayControls(); c2.LoadSettings();
-            Check("clash", shown && kept && c2.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault() == Key.J && c2.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault() == Key.C,
-                $"strip {shown}, untouched before Swap {kept}, after: Cancel {c2.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault()}, Next event {c2.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault()}");
+            Check("clash", shown && kept && c2.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault() == Key.N && c2.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault() == Key.C,
+                $"strip {shown}, untouched before Swap {kept}, after: Cancel {c2.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault()}, Turn left {c2.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault()}");
             // Shift + 1 (Pick action 1) is not 1 (Select agent 1); E in third person is not E on the map
-            Check("contexts", c2.ClashOf(PlayAction.Verb1, Key.Digit1, "Shift", "") == null && c2.ClashOf(PlayAction.Act, Key.E, "", "third") == null && c2.ClashOf(PlayAction.Cancel, Key.N, "", "") == null, "");
+            Check("contexts", c2.ClashOf(PlayAction.Verb1, Key.Digit1, "Shift", "") == null && c2.ClashOf(PlayAction.Act, Key.E, "", "third") == null && c2.ClashOf(PlayAction.Cancel, Key.N, "", "") == null && c2.BindingOf(PlayAction.NextEvent).keys == null, ""); // brief 096: a removed action has no binding
             // Reset all
             Settings.Current.ResetPage("controls"); Settings.Reload(); var c3 = new PlayControls(); c3.LoadSettings();
-            Check("resetAll", c3.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault() == Key.C && c3.BindingOf(PlayAction.NextEvent).keys?.FirstOrDefault() == Key.N, "");
+            Check("resetAll", c3.BindingOf(PlayAction.Cancel).keys?.FirstOrDefault() == Key.C && c3.BindingOf(PlayAction.TurnLeft).keys?.FirstOrDefault() == Key.Q, "");
             // the twelve old toggles and the hints: changed, saved, read back as a relaunch would, and in the game's table
             st = Settings.Current; var g = st.gameplay; var cam = st.camera;
             g.clickScheme = (int)ControlPreset.DoubleClick; cam.settle = false; g.conversations = (int)ConversationScenes.Never; g.actionPlate = true; g.quickAction = true; g.clickActs = false;

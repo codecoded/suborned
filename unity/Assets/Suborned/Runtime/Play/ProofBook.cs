@@ -44,7 +44,7 @@ namespace Suborned.Play
             // ---- the modal gate: J does nothing under the briefing or the pause menu; street keys do nothing under the book
             h.OpenMenu(); yield return Frames(2); yield return Press(Key.J); bool underMenu = h.BookOpen; h.ResumeFromMenu(); yield return Frames(2);
             h.SetPaused(true); h.ShowBriefing = true; yield return Frames(2); bool startBook = h.BookOpen && h.BookStart && h.BookSectionNow == "job"; yield return Press(Key.J); bool underBrief = !(startBook && !h.BookOpen && !h.ShowBriefing && h.Paused); h.SetPaused(false); yield return Frames(2); // brief 096: the start is the book on Job; J shuts it, the clock still stopped
-            h.BookOpenNow(); yield return Frames(3); int n0 = g.Orders.Count, w0 = h.WorldPresses; int s0 = h.Speed; yield return Press(Key.Equals); yield return Press(Key.F); yield return Press(Key.Space); bool stillOpen = h.BookOpen && h.Paused && h.Speed == s0 && g.Orders.Count == n0;
+            h.BookOpenNow(); yield return Frames(3); int n0 = g.Orders.Count, w0 = h.WorldPresses; bool i0 = h.IntelOpen; yield return Press(Key.I); yield return Press(Key.F); yield return Press(Key.Space); bool stillOpen = h.BookOpen && h.Paused && h.IntelOpen == i0 && g.Orders.Count == n0; // brief 096: I (Intel) for the old = (speed, no key now)
             h.BookClose(); yield return Frames(2);
             Row("bookModal", !underMenu && !underBrief && stillOpen && h.WorldPresses == w0, $"under the menu {underMenu}, the start book misbehaved {underBrief}, street keys under the book left it up with no order {stillOpen}");
             // ---- both views: it opens in third person and the follow camera stays

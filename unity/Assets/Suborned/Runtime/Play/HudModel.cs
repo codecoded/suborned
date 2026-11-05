@@ -98,7 +98,7 @@ namespace Suborned.Play
             { var (lbl, at) = NextParts(h); NextLabel = lbl; NextTime = at; }
             Cash = $"${g.Cash:N0}"; Trail = $"T {g.Trail}"; Alert = g.Alert; State = h.Paused ? "<color=#ffd27a>PAUSE</color>" : $"x{h.Speed}";
             var c = h.controls;
-            City = $"{h.CityClock()} · {c.Label(PlayAction.Pause)} pause · {c.Label(PlayAction.Briefing)} briefing · {c.Label(PlayAction.DialogueLog)} history · {c.Label(PlayAction.Cancel)} cancel · N next";
+            City = $"{h.CityClock()} · {c.Label(PlayAction.Pause)} pause · {c.Label(PlayAction.Cancel)} cancel"; // brief 096: no B, L or N (hidden keys gone)
             Tracker = h.Text == null ? "" : "▸ " + h.Text.Tracker.Replace("{close}", h.Text.Close);
             if (h.Text != null) { var tr = h.Text.Tracker.Replace("{close}", h.Text.Close); int cut = tr.LastIndexOf(" · ", System.StringComparison.Ordinal); Objective = cut > 0 ? tr[..cut] : tr; ObjectiveTail = cut > 0 ? "  ·  " + tr[(cut + 3)..] : ""; }
             for (int i = 0; i < 4; i++) { var (a, b) = Icons(g, Roles[i]); Cast[i].A = a; Cast[i].B = b; }
@@ -127,7 +127,7 @@ namespace Suborned.Play
             var g = h.Game; Refresh(h);
             goLeft = h.LeftFlagsOn ? h.LeftBehindNow() : noneLeft; // brief 018: the Go card's left-behind flags on the roster
             Fault = h.Fault != null ? h.Status : null; Status = h.Status; Dock = h.controls.dock; Mouse = h.Mouse; Box = h.BoxScreen;
-            AckKey = h.controls.Label(PlayAction.Acknowledge); HistoryKey = h.controls.Label(PlayAction.DialogueLog); HintKey = h.controls.Label(PlayAction.Hints);
+            HintKey = h.controls.Label(PlayAction.Hints);
             bool ended = h.Ending.Length > 0;
             // the roster
             for (int i = 0; i < 4; i++)
@@ -334,7 +334,7 @@ namespace Suborned.Play
             Briefing.Add(("<b>The cell</b>", Part.Body));
             foreach (var k in new[] { "scout", "fixer", "tech", "enforcer" }) if (t.Cell.TryGetValue(k, out var cl)) Briefing.Add(("   " + cl, Part.Small));
             var c = h.controls;
-            Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
+            Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   Esc: close   ·   click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
         }
 
         /// <summary>The end card in the player's words (Fable §1 I): a headline, the result line from the text's fails, the tally, then the debrief
@@ -342,7 +342,6 @@ namespace Suborned.Play
         /// for the debrief ids are host placeholders until Fable's text carries them; an id with no sentence is not shown.</summary>
         void EndCard(HandoverHost h)
         {
-            RestartKey = h.controls.Label(PlayAction.Restart);
             var g = h.Game; var d = h.EndDebrief; Ended = true; EndLines.Clear();
             string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
             string head = h.Text != null && h.Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : ""; // Glyph's 0.2.104 review: the title is less.end.fail's ("District sealed"), so the line under it is the only one about the car
@@ -442,7 +441,7 @@ namespace Suborned.Play
                 case "turn":
                     return i.Outcome switch
                     {
-                        "turned" => i.Orders > 1 ? A("worse", "Works, but less well") : A("ok", "Works"), "kept" => A("ok", "Works"), "refused" => A("no", "They would refuse"), "not-yet" => A("half", "Not yet: one more try"),
+                        "turned" => i.Orders > 1 ? A("worse", "Works, but costs more") : A("ok", "Works"), "kept" => A("ok", "Works"), "refused" => A("no", "They would refuse"), "not-yet" => A("half", "Not yet: one more try"),
                         _ => A("unk", "? until the Scout learns who they are"),
                     };
                 case "watch": return i.Outcome == "its sight" ? A("learns-sight", "Learns what it sees") : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
