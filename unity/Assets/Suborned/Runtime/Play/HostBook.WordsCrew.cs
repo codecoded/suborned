@@ -17,6 +17,7 @@ namespace Suborned.Play
         public string CrewBack = "back at his post {t}", CrewFace = "he'll know the Scout's face", CrewSees = "He sees you coming and fires: come from behind", CrewArmed = "Armed: if he sees you coming, he fires";
         public string CrewHeardMercenary = "{who} is in it for the money.", CrewHeardLoyal = "{who} is loyal to his crew.", CrewHeardNothing = "Nothing learned.";
         public string CrewPaid = "{who} takes the money and walks off.", CrewRefused = "{who} won't take it, and tells his crew. The money stays with us.", CrewPayMissed = "{who} was gone before the Fixer paid. The money stays with us.";
+        public string CrewMisled = "He takes the word and walks off. He'll be back.", CrewMisleadMissed = "The word missed.";
 
         void ReadCrew(JNode b)
         {
@@ -29,7 +30,7 @@ namespace Suborned.Play
             CrewMisleadDoesLookout = S(c, "misleadDoesLookout", CrewMisleadDoesLookout); CrewMisleadDoesPosted = S(c, "misleadDoesPosted", CrewMisleadDoesPosted);
             CrewBack = S(c, "back", CrewBack); CrewFace = S(c, "face", CrewFace); CrewSees = S(c, "sees", CrewSees); CrewArmed = S(c, "armed", CrewArmed);
             CrewHeardMercenary = S(c, "heardMercenary", CrewHeardMercenary); CrewHeardLoyal = S(c, "heardLoyal", CrewHeardLoyal); CrewHeardNothing = S(c, "heardNothing", CrewHeardNothing);
-            CrewPaid = S(c, "paid", CrewPaid); CrewRefused = S(c, "refused", CrewRefused); CrewPayMissed = S(c, "payMissed", CrewPayMissed);
+            CrewPaid = S(c, "paid", CrewPaid); CrewRefused = S(c, "refused", CrewRefused); CrewPayMissed = S(c, "payMissed", CrewPayMissed); CrewMisled = S(c, "misled", CrewMisled); CrewMisleadMissed = S(c, "misleadMissed", CrewMisleadMissed);
         }
     }
 }

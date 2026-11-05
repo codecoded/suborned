@@ -267,7 +267,7 @@
    {
     "at": "5:30",
     "label": "Popovic leaves the Office",
-    "short": "Popovic out",
+    "short": "Popovic exits",
     "known": true
    },
    {
@@ -296,12 +296,12 @@
     "front-door": {"when": "Before 5:30", "line": "Turn her to call him off and loop his camera."},
     "pickup": {"when": "From 5:50", "line": "Turn him before 5:20 and he brings Popovic to the service bay."}
    },
-   "ending": "Both ways end here: Popovic in the getaway car as it leaves.",
+   "ending": "Go gets Popovic out, in the getaway car or in his own.",
    "captions": {"service-bay": "Service bay"},
    "clock": ["2:35", "5:10", "5:20", "5:30", "5:50"],
    "stations": {"5:50": "Popovic's car leaves"},
    "cell": {
-    "scout": "Listens to Inez and the driver. Gives the rivals a false tip.",
+    "scout": "Listens to Inez and the driver. Misleads the rival lookout.",
     "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
     "tech": "Loops the door camera, moves the patrol, drives our car round.",
     "enforcer": "Takes Popovic inside or at his car. Only he can carry him."
@@ -329,7 +329,7 @@
   "stand-square": {"name":"The square's bay","about":"Where the getaway car starts."},
   "stand-service-drive": {"name":"The service drive","about":"The bay in the service drive, nose out. A short carry from Popovic's car."},
   "patrol": {"name":"The patrol","about":"A clockwork patrol sweeps the service yard. Gunfire turns it against you.","watched":"Its cone sweeps the yard and the service door.","routine":"It turns at each end. The service door is clear at the far end."},
-  "rivals": {"name":"Rival crew","about":"Another crew after Popovic, on their own schedule.","watched":"Five in one car. Three post round our car. It follows Popovic's car."},
+  "rivals": {"name":"Rival crew","about":"Another crew after Popovic, on their own schedule.","watched":"Five in one car. It boxes ours in. Their lookout tails Popovic's car."},
   "security": {"name":"Police","about":"Police and robots sent when the alarm goes up."},
   "hostile": {"name":"Hostile","about":"Armed and in the fight. Shoot to stop them."},
   "crowd": {"name":"Passer-by","about":"Just passing. They notice and remember what you do."},
@@ -339,7 +339,7 @@
  "actions": {
   "watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"Learn where they go and when. No Trail, but it takes time.","onTarget":{"waitress":"Learn Inez's rounds: door, tables, and when the guard drops in.","driver":"Learn the driver's routine: when he waits and when he moves.","guard":"Learn the guard's rounds: door, steps, and his coffee break.","councillor":"Learn when Popovic moves. He stays inside until the chime.","camera-entrance":"Watch it from close by to learn what it sees. Needs a clear line.","camera-pickup":"Watch it from close by to learn what it sees. Needs a clear line.","camera-mast-z0":"Watch it from close by to learn what it sees. Needs a clear line.","patrol":"Learn what the patrol sees. Its rounds take longer. Needs a clear line.","rivals":"Watch their car to learn who goes where, and when. Needs a clear line."},"onTargetBy":{"tech":{"camera-entrance":"Study the lens: what it sees, and where it goes blind. Needs a clear line.","camera-pickup":"Study the lens on the pickup: its cone, its blind side. Needs a clear line.","camera-mast-z0":"Study the lens: its cone, and when it turns. Needs a clear line.","patrol":"Time the patrol: its cone first, its turns after. Needs a clear line.","rivals":"Read the rival crew's timetable off their car. Needs a clear line."}},"withTarget":"Watch {target}","then":"watches {target}"},
   "listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"Learn what they need and who they are. Stand close; it takes a while.","onTarget":{"waitress":"Hear what Inez needs and how she'd take an offer.","driver":"Hear what the driver needs and how he'd take an offer. Stand close.","guard":"Hear what the guard wants and whom he answers to. Stand close.","councillor":"Hear what Popovic wants and who he answers to. Stand close."},"withTarget":"Listen to {target}","then":"listens to {target}"},
-  "mislead": {"label":"False tip","by":["scout"],"engine":{"do":"mislead"},"does":"Send the rivals the wrong way for a while. They may come back.","onTarget":{"rivals":"Whisper the rivals a bad address. It buys minutes, not safety."},"withTarget":"Give {target} a false tip","then":"gives {target} a false tip"},
+  "mislead": {"label":"Mislead","by":["scout"],"engine":{"do":"mislead"},"does":"Send one of the rival crew off for a while. He'll know the Scout's face.","onTarget":{"rivals":"Send him off for a while. He comes back knowing the Scout's face."},"withTarget":"Mislead {target}","then":"misleads {target}"},
   "ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"Ask outright. Free, but most refuse, and they remember you asked.","onTarget":{"waitress":"Ask Inez outright. Free, but she'll likely refuse and remember.","driver":"Ask the driver outright. Free, but he'll likely refuse and remember.","guard":"Ask the guard outright. Free, but he may report you."},"withTarget":"Ask {target}","then":"asks {target}"},
   "pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"Slip cash for a favour. They'll owe you, but cash adds Trail.","onTarget":{"waitress":"Slip Inez cash for a favour. She'll owe you, but cash adds Trail.","driver":"Slip the driver cash to bring Popovic round the back. Cash adds Trail.","guard":"Slip the guard cash to look away. Cash adds Trail."},"withTarget":"Pay {target}","then":"pays {target}"},
   "help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"Solve their trouble. Slower and costlier, but they remember it kindly.","onTarget":{"waitress":"Clear Inez's debt. She'll remember it kindly, but it costs real money.","driver":"Cover the driver's cash trouble. He'll bring Popovic round the back.","guard":"Do the guard a kindness. Slow, but it can win him round."},"withTarget":"Help {target}","then":"helps {target}"},
@@ -377,7 +377,7 @@
   "cancel": {"label":"Cancel","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"Stop what this agent is doing. Some stops cost something: check the price."},
   "ring-watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"The ring's word for this verb."},
   "ring-listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"The ring's word for this verb."},
-  "ring-mislead": {"label":"Tip","by":["scout"],"engine":{"do":"mislead"},"does":"The ring's word for this verb."},
+  "ring-mislead": {"label":"Mislead","by":["scout"],"engine":{"do":"mislead"},"does":"The ring's word for this verb."},
   "ring-ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"The ring's word for this verb."},
   "ring-pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"The ring's word for this verb."},
   "ring-help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"The ring's word for this verb."},
@@ -398,7 +398,7 @@
   "ring-restrain": {"label":"Tie","by":["scout","fixer","tech","enforcer"],"engine":{"do":"restrain"},"does":"The ring's word for this verb."},
   "ring-drop": {"label":"Drop","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drop"},"does":"The ring's word for this verb."},
   "ring-more": {"label":"More","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"The ring's last wedge: the full panel."},
-  "end": {"label": "End", "by": ["fixer"], "engine": {"do": "end"}, "does": "Popovic is out: end it now. Anyone not in a car that left is taken."},
+  "end": {"label": "End", "by": ["fixer"], "engine": {"do": "end"}, "does": "Popovic is out. End now: anyone not in a car that has left is captured."},
   "withdraw": {"label":"Withdraw","by":["fixer"],"engine":{"do":"withdraw"},"does":"Call off the attempt. The cell gets away to try again."},
   "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Back to map","does":"Back to the map. Whatever they are doing carries on."}}},
   "trigger": {"label":"Trigger","by":["scout","fixer","tech","enforcer"],"engine":{"do":"trigger"},"does":"Fire by hand from the agent you drive: hold to keep firing, let go to stop."},
@@ -449,7 +449,7 @@
    "loop": "Setting up the loop",
    "disable": "Cutting the line",
    "reroute": "Rerouting the patrol",
-   "mislead": "Giving the rivals a false tip",
+   "mislead": "Misleading a rival",
    "enter": "Inside the Office",
    "take": "Taking Popovic",
    "carry": "Lifting {who}",
@@ -477,7 +477,7 @@
   "run-carrying-vale": {"line":"Nobody can run while carrying Popovic. Walk Popovic to the car.","short":"No running","verbs":["run"]},
   "run-carrying-downed": {"line":"Nobody can run while carrying a downed agent. Walk to the car.","short":"No running","verbs":["run"]},
   "run-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to move him.","short":"Busy looping","verbs":["run","move","watch"]},
-  "only-scout": {"line":"Only the Scout can listen or give a false tip.","short":"Scout only","verbs":["listen","mislead"]},
+  "only-scout": {"line":"Only the Scout can do this. Select the Scout.","short":"Scout only","verbs":["listen","mislead"]},
   "only-fixer": {"line":"Only the Fixer can do this. Select the Fixer.","short":"Fixer only","verbs":["ask","pay","help","pressure","call"]},
   "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","disable","reroute"]},
   "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take"]},
@@ -520,22 +520,22 @@
   "drive-fight": {"line":"The fight has started. Fight it out here, or Go.","short":"Fight or Go","verbs":["*"]},
   "car-empty": {"line":"Nobody is in the car. Board first.","short":"Car is empty","verbs":["go"]},
   "car-no-driver": {"line":"Nobody aboard can drive. Board someone who isn't down, then Go.","short":"Nobody can drive","verbs":["go"]},
-  "tip-retired": {"line":"The false tip is retired. Mislead one of the rival crew on foot.","short":"Tip retired","verbs":["mislead"]},
-  "crew-no-need": {"line":"The rival crew have no need to meet. Only Pay works on them.","short":"Pay only","verbs":["pay"]},
+  "tip-retired": {"line":"Mislead works on one of their crew on foot, not on their car.","short":"Not their car","verbs":["mislead"]},
+  "crew-no-need": {"line":"He's here for the job. Only Pay works on the crew.","short":"Pay only","verbs":["pay"]},
   "stand-at-car": {"line": "Too far from Popovic's car. Walk within {m} m of it, then Board.", "short": "Too far · {m} m", "verbs": ["board"]},
-  "board-lent-full": {"line": "Only one of us drives Popovic's car, and someone is at the wheel.", "short": "At the wheel", "verbs": ["board"]},
-  "drive-lent": {"line": "Popovic's car isn't driven round. Go takes it out.", "short": "Go only", "verbs": ["drive-car"]},
-  "car-left": {"line": "That car has already gone.", "short": "Gone", "verbs": ["board", "go"]},
-  "car-disabled": {"line": "Popovic's car is wrecked. Walk him to ours.", "short": "Wrecked", "verbs": ["board", "go"]},
-  "not-out": {"line": "End comes once Popovic is out. Withdraw calls it off.", "short": "Not yet", "verbs": ["end"]},
-  "agent-gone": {"line": "They've left in a car.", "short": "Gone", "verbs": ["*"]},
-  "crew-gone": {"line":"He took the money and is gone.","short":"Gone","verbs":["listen","pay","mislead","watch"]},
-  "crew-fighting": {"line":"He is in the fight now. No talking.","short":"Fighting","verbs":["listen","pay","mislead","watch"]},
-  "crew-walking": {"line":"He is on the move. Speak to him where he stands.","short":"On the move","verbs":["listen","pay","mislead","watch"]},
-  "refused-before": {"line":"He refused the money once. He won't take it now.","short":"Refused","verbs":["pay"]},
-  "car-boxed": {"line":"Boxed in: a car is across your way out. It must leave or burn first.","short":"Boxed in","verbs":["go"]},
-  "drive-boxed": {"line":"Boxed in: a car is across your way out. It must leave or burn first.","short":"Boxed in","verbs":["*"]},
-  "stand-boxed": {"line":"Can't get in: a car is across that drive.","short":"Can't get in","verbs":["*"]},
+  "board-lent-full": {"line": "Someone is already at the wheel of Popovic's car. The rest leave in ours.", "short": "Seat taken", "verbs": ["board"]},
+  "drive-lent": {"line": "Popovic's car can't be moved to a bay. Press Go to drive him off.", "short": "Go only", "verbs": ["drive-car"]},
+  "car-left": {"line": "That car has already left.", "short": "Already left", "verbs": ["board", "go"]},
+  "car-disabled": {"line": "Popovic's car is wrecked. The Enforcer carries him to ours.", "short": "Wrecked", "verbs": ["board", "go"]},
+  "not-out": {"line": "End works once Popovic is out. To call it off, Withdraw.", "short": "Popovic not out", "verbs": ["end"]},
+  "agent-gone": {"line": "{op} has already left in a car.", "short": "Already left", "verbs": ["*"]},
+  "crew-gone": {"line":"He took the money and left.","short":"Paid off","verbs":["listen","pay","mislead","watch"]},
+  "crew-fighting": {"line":"He's in the fight now. Talking is over.","short":"Fighting","verbs":["listen","pay","mislead","watch"]},
+  "crew-walking": {"line":"He's on the move. Wait until he stops.","short":"On the move","verbs":["listen","pay","mislead","watch"]},
+  "refused-before": {"line":"He refused the money once. He won't take it now.","short":"Refused before","verbs":["pay"]},
+  "car-boxed": {"line":"Boxed in: a car is across the way out. It has to drive off or be blown up.","short":"Boxed in","verbs":["go"]},
+  "drive-boxed": {"line":"Boxed in: a car is across the way out. It has to drive off or be blown up.","short":"Boxed in","verbs":["*"]},
+  "stand-boxed": {"line":"Can't park there: a car is across its way out.","short":"Can't park there","verbs":["*"]},
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
   "in-car": {"line":"That agent is in the car. Walk them out first.","short":"In the car","verbs":["*"]},
@@ -611,7 +611,7 @@
    "enforcer.warning": {"kind":"warning","fate":"icon","title":"The Enforcer is badly hurt","result":"{n} health left. Get him into cover or out of the line."},
    "rivals.coming": {"kind":"city","fate":"beat","beat":"Rival car coming.","title":"A rival car turns in","sight":"always","at":"rival-car","result":"Off Orbit Walk. They are after Popovic too."},
    "rivals.follow-car": {"kind":"warning","fate":"alt","title":"The posted three follow","result":"They have left their posts and are going after our car."},
-   "rivals.back": {"kind":"city","fate":"alt","title":"The rival car is back","sight":"in-sight","at":"rival-car","result":"The false tip wore off. They are after Popovic again."},
+   "rivals.back": {"kind":"city","fate":"alt","title":"The rival car is back","sight":"in-sight","at":"rival-car","result":"It has stopped across our way out again."},
    "rivals.recalled": {"kind":"fight","fate":"alt","title":"Rivals called back","result":"Rivals who were away are coming back for the fight."},
    "rivals.wiped": {"kind":"fight","fate":"alt","title":"The rival crew is finished","result":"None of them can fight. Nothing holds the car. Go when you are ready."},
    "rivals.see-takedown": {"kind":"warning","fate":"icon","title":"A crewmate saw it","result":"A rival saw his crewmate go down and opened fire. It's loud now."},
@@ -619,14 +619,33 @@
    "rivals.frees": {"kind":"city","fate":"alt","title":"A rival is untied","sight":"in-sight","at":"victim","result":"A crewmate found him tied and untied him."},
    "rivals.for-car": {"kind":"warning","fate":"icon","title":"Rivals moving on the car","result":"Nobody outside the car has a gun drawn. Step out and draw, or down them."},
    "rivals.back-to-cover": {"kind":"city","fate":"alt","title":"Rivals back in cover","result":"They fall back to cover: a gun is drawn by the car, or nothing blocks it."},
+   "rivals.block": {"kind":"warning","fate":"icon","title":"Our car is boxed in","result":"The rival car stopped across our way out, and their crew got out."},
+   "car.unboxed": {"kind":"city","fate":"icon","title":"Our way out is clear","result":"Nothing stands across it now."},
+   "rivals.drives-off": {"kind":"fight","fate":"alt","title":"The rival car drives off","result":"Their wheelman gave up and left. Our way out is clear."},
+   "rivals.lookout-posted": {"kind":"warning","fate":"icon","title":"Rival lookout posted","result":"He watches Popovic's car. If it goes round the back, he follows it."},
+   "rivals.lookout-follows": {"kind":"warning","fate":"alt","title":"The lookout follows","result":"He's going after Popovic's car on foot. Stop him before he reaches it."},
+   "lend.lent": {"kind":"city","fate":"icon","title":"Popovic's car is ours","result":"His driver walked off. The Enforcer is at the wheel, Popovic in the back."},
+   "vale.out": {"kind":"city","fate":"icon","title":"Popovic is out","result":"{agent} drove him off in his own car. Now get the rest clear."},
+   "split.police": {"kind":"warning","fate":"icon","title":"Police closing in","result":"Anyone not in a car that has left when they arrive is captured."},
+   "lend.spring": {"kind":"fight","fate":"alt","title":"The rivals turn on our car","result":"They saw Popovic's car go, and now they're coming for ours."},
+   "lent.seen": {"kind":"warning","fate":"debrief","title":"Popovic's car was seen","result":"Security saw it leave. It's a lead for them, but it isn't our car."},
+   "car.leaves-split": {"kind":"city","fate":"alt","title":"Our car leaves","result":"Everyone aboard is clear."},
+   "car.lost": {"kind":"warning","fate":"debrief","title":"Our car was left behind","result":"The police will trace it."},
+   "lend.goes-on": {"kind":"warning","fate":"alt","title":"The job goes on","result":"Popovic is out, or his car can still go, so it isn't over."},
+   "security.gang": {"kind":"warning","fate":"alt","title":"Filed as a gang shooting","result":"Nobody saw who fired. Police come, but seal nothing unless they tie it to us."},
+   "security.gang-claimed": {"kind":"warning","fate":"alt","title":"Tied to the shooting","result":"The police know the cell was at the shooting. The seal comes next."},
+   "camera.record-lands": {"kind":"warning","fate":"alt","title":"Caught on camera","result":"A camera taped the Fixer with {who}. Security has it now."},
+   "car.report-lands": {"kind":"warning","fate":"alt","title":"Our car was reported","result":"It was seen parked where cars don't stand. Security will check it."},
+   "car.kerbside": {"kind":"city","fate":"alt","title":"Popovic's car pulls in","result":"Our car is on the service drive, so his stops at the kerb. Take him there."},
+   "car.boxed-in": {"kind":"warning","fate":"alt","title":"Popovic's car is boxed in","result":"A car is across its way out, so his driver waits."},
    "car.parks": {"kind":"city","fate":"icon","title":"Popovic's car parks","result":"In the service bay. Take him from the back seat."},
    "car.blocked": {"kind":"warning","fate":"beat","beat":"Popovic's car stops.","title":"Popovic's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
    "board.missed": {"kind":"warning","fate":"alt","title":"Nobody got in","result":"The car drove off first. Wait until it stops."},
-   "rivals.misled": {"kind":"city","fate":"alt","title":"Rivals sent away","result":"They may be back."},
+   "rivals.misled": {"kind":"city","fate":"alt","title":"A rival walks off","result":"He took the Scout's word. He'll be back, and he'll know her face."},
    "rivals.drawn": {"kind":"warning","fate":"alt","title":"Rivals heading in","result":"They heard the shots."},
    "guard.at-cafe": {"kind":"city","fate":"alt","title":"The guard is at the café","sight":"in-sight","result":"Away from the door."},
    "guard.back": {"kind":"city","fate":"icon","title":"Guard back on the door","result":"Watching the door again."},
-   "vale.exits": {"kind":"city","fate":"beat","beat":"Popovic is out.","title":"Popovic comes out","result":"Walking to his car."},
+   "vale.exits": {"kind":"city","fate":"beat","beat":"Popovic comes out.","title":"Popovic comes out","result":"Walking to his car."},
    "vale.at-car": {"kind":"city","fate":"icon","title":"Popovic reaches his car","result":"At his car, under the pickup camera."},
    "car.leaves": {"kind":"city","fate":"alt","title":"Popovic's car leaves","result":"Driving Popovic round the back."},
    "loop.ends": {"kind":"warning","fate":"icon","title":"The loop ends","result":"The tape has stopped."},
@@ -717,7 +736,7 @@
     "on-foot": {"head": "Time ran out on foot", "line": "Popovic was still on foot when the district closed in."},
     "no-driver": {"head": "Nobody left to drive", "line": "Popovic was aboard, but everyone in the car was down.", "story": ["no-driver"]},
     "car-held": {"head": "The car was blocked", "line": "{by} blocked the car, so Go wouldn't work, and time ran out.", "story": ["blocked"]},
-    "boxed": {"head": "The car was boxed in", "line": "{by} stood across the way out, and time ran out."},
+    "boxed": {"head": "The car was boxed in", "line": "{by} boxed the car in, and the district closed in."},
     "no-go": {"head": "Nobody pressed Go", "line": "Popovic was aboard and the car was free, but nobody pressed Go in time.", "story": ["no-go"]}
    },
    "sealed": {
@@ -829,11 +848,11 @@
   "last-turn": {"kind":"world","trigger":"the 5:20 last chance to turn the driver","speakers":["scout","fixer"],"clock":"5:20"},
   "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:30"},
   "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"5:50"},
-  "rivals-arrive": {"kind":"world","trigger":"the rival car stops across our way out (engine 0.41.0, brief 096: rivals.block; PLACEHOLDER words, Keel: Fable to re-word for the block)","speakers":["rivals","scout"],"log":["rivals.block"],"clock":"2:53"},
+  "rivals-arrive": {"kind":"world","trigger":"the rival car stops across our way out (engine 0.41.0, brief 096: rivals.block)","speakers":["rivals","scout"],"log":["rivals.block"],"clock":"2:53"},
   "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35","note":"brief 067 (Aster, from Sky on 0.2.122: they should be coming in from somewhere when the chime comes): the car always turns in out of sight, so the beat and the Scout's line show wherever the cell stands (the card's sight is `always`, its `at` still points at the car), and the Scout speaks of what he hears, never of what he sees. The 2:46 drop and the 3:10 park stay in sight."},
   "rivals-follow-car": {"kind":"world","trigger":"the getaway car drives off and the posted three go after it","speakers":["scout"],"log":["rivals.follow-car"]},
   "car-parks": {"kind":"world","trigger":"the turned driver parks Vale's car in the service bay","speakers":["driver","fixer"],"log":["car.parks"]},
-  "rivals-misled": {"kind":"world","trigger":"a false tip lands: the rivals leave","speakers":["rivals","scout"],"log":["rivals.misled"]},
+  "rivals-misled": {"kind":"world","trigger":"a Mislead lands: one of the rival crew on foot walks off for a while (engine 0.41.0)","speakers":["rivals","scout"],"log":["rivals.misled"]},
   "rivals-retreat": {"kind":"world","trigger":"the rivals are driven back","speakers":["rivals"],"log":["rivals.retreat"]},
   "rivals-drawn": {"kind":"world","trigger":"gunfire draws the rivals","speakers":["rivals","scout"],"log":["rivals.drawn"]},
   "guard-lured": {"kind":"world","trigger":"Inez calls the guard: he leaves the door","speakers":["guard"],"log":["call.waitress"]},
@@ -1069,42 +1088,42 @@
  },
  "silentLogs": {
   "camera.recorded": "engine 0.40.0 (brief 096; rulebook camera): silent for now, pending Fable and Glyph: a camera has the Pay or Pressure on tape; the card comes when the record lands (camera.record-lands)",
-  "camera.record-lands": "engine 0.40.0 (brief 096): pending Fable's card (crucial: Alert up): the camera's record reaches the desk, e.g. \"The pickup camera caught the Fixer paying Lukac.\"",
-  "car.kerbside": "engine 0.40.0 (brief 096; rulebook car.kerb): pending Fable's card: Popovic pulls in at the kerb because our car is on the service drive (replaces car.blocked's stop at the mouth, which stays only for the tick's window after he passes the kerbside point)",
-  "car.boxed-in": "engine 0.40.0 (brief 096; rulebook car.box): pending Fable: Popovic's car is boxed in (at the pickup he waits; at the close he stays, closed-in)",
+  "camera.record-lands": "engine 0.40.0 (brief 096): card only (cards.items, Fable 2026-11-05): the camera's record reaches the desk (Alert up), or is on file at the end",
+  "car.kerbside": "engine 0.40.0 (brief 096; rulebook car.kerb): card only (cards.items, Fable 2026-11-05): Popovic pulls in at the kerb because our car is on the service drive (replaces car.blocked's stop at the mouth, which stays only for the tick's window after he passes the kerbside point)",
+  "car.boxed-in": "engine 0.40.0 (brief 096; rulebook car.box): card only (cards.items, Fable 2026-11-05): Popovic's car is boxed in (at the pickup he waits; at the close he stays, closed-in)",
   "car.noticed": "engine 0.40.0 (brief 096; rulebook attention.parked): silent: a watcher has noticed our car on private ground; the watcher's cue and the car's stage mark show it (Glyph)",
   "car.wary": "engine 0.40.0 (brief 096): silent: the watcher is wary of our car for the mission; the cue shows it",
   "car.reported": "engine 0.40.0 (brief 096): silent: the watcher reports our car; the card comes when it lands (car.report-lands)",
-  "car.report-lands": "engine 0.40.0 (brief 096): pending Fable's card (crucial: Alert up): \"The patrol reported your car on the service drive.\"",
+  "car.report-lands": "engine 0.40.0 (brief 096): card only (cards.items, Fable 2026-11-05): the watcher's report of our car lands (Alert up)",
   "car.report-stopped": "engine 0.40.0 (brief 096): silent: the watcher was downed before its report of our car landed",
   "car.blocked": "engine 0.32.0 (brief 059): card only: Vale's car stops at the road because our car is on the service drive; the Take still works from the back seat",
   "car.parks": "engine 0.32.0 (brief 059): event car-parks and a card: the turned driver parks Vale's car in the service bay",
   "car.parked": "engine 0.32.0 (brief 059): silent: the getaway car has stopped. The street shows it, the Drive's price line gave the time and the riders leave \"Driving\"; a line would only repeat that",
   "board.missed": "engine 0.32.0 (brief 059): card only: the car drove off while an agent walked up to board it",
   "rivals.coming": "engine 0.32.0 (brief 059): event rivals-coming and a card (the beat \"Rival car coming.\"): the 2:35 entry, and the drawn and late entries with it",
-  "lend.lent": "engine 0.42.0 (brief 096, car.lend L1): PLACEHOLDER, a crucial card (Fable words, Glyph's list: Popovic in our hands): the driver gets out and walks off; Popovic's car is ours, the Enforcer at its wheel; its own Go",
-  "vale.out": "engine 0.42.0 (car.lend L5): PLACEHOLDER, a crucial card that stays (Fable): Popovic is out, the job is done; now get the others out before the police come",
-  "split.police": "engine 0.42.0 (car.lend L8): PLACEHOLDER, the police countdown's plate (Glyph; Game.SplitPoliceAt): anyone not in a car that has left by then is taken",
-  "lend.spring": "engine 0.42.0 (car.lend L7): PLACEHOLDER, card (Fable): the rival crew sees Popovic's car go and turns on ours",
-  "lent.seen": "engine 0.42.0 (car.lend L9): PLACEHOLDER, card (Fable): security saw Popovic's car leave: a lead, not our car",
-  "car.leaves-split": "engine 0.42.0 (car.lend): PLACEHOLDER, card (Fable): our car leaves with those aboard; the mission runs on while Popovic is still in the bay",
-  "car.lost": "engine 0.42.0 (car.lend L9): PLACEHOLDER, debrief line and card (Fable): our car left behind; the police will trace it (+1 T, hunted)",
-  "lend.goes-on": "engine 0.42.0 (car.lend L8): PLACEHOLDER, card (Fable): our car wrecked or the cell down, but Popovic is out (or his car can still go): the mission runs on",
-  "rivals.block": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Glyph's crucial list: rivals for our car): the rival car stops across our way out; the ring's Boxed in names it",
-  "rivals.lookout-posted": "engine 0.41.0 (brief 096; Aster's addition, Sky approved): PLACEHOLDER, a crucial card that stays until clicked (Latch wires, Fable words): the rival lookout takes his post watching Popovic's car; deal with him before 5:53",
-  "rivals.lookout-follows": "engine 0.41.0 (brief 096): PLACEHOLDER, a crucial card that stays until clicked (Motive's seen table, 5:53): the lookout is going after Popovic's car",
+  "lend.lent": "engine 0.42.0 (brief 096, car.lend L1): card only (cards.items, Fable 2026-11-05): the driver gets out and walks off; Popovic's car is ours, the Enforcer at its wheel; its own Go (book.feed.cards.lent is the crucial card)",
+  "vale.out": "engine 0.42.0 (car.lend L5): card only (cards.items, Fable 2026-11-05): Popovic is out, the job is done; now the rest get clear before the police (book.feed.cards.vale-out is the crucial card)",
+  "split.police": "engine 0.42.0 (car.lend L8): card only (cards.items, Fable 2026-11-05): the police close in: anyone not in a car that has left by then is captured (the countdown plate is book.police, Game.SplitPoliceAt)",
+  "lend.spring": "engine 0.42.0 (car.lend L7): card only (cards.items, Fable 2026-11-05): the rival crew sees Popovic's car go and turns on ours",
+  "lent.seen": "engine 0.42.0 (car.lend L9): card only (cards.items, Fable 2026-11-05): security saw Popovic's car leave: a lead, not our car (the debrief line is book.cars.lentSeen)",
+  "car.leaves-split": "engine 0.42.0 (car.lend): card only (cards.items, Fable 2026-11-05): our car leaves with those aboard; the mission runs on while Popovic is still in the bay",
+  "car.lost": "engine 0.42.0 (car.lend L9): card only (cards.items, Fable 2026-11-05): our car left behind; the police will trace it (+1 T, hunted; the debrief line is book.cars.carLost)",
+  "lend.goes-on": "engine 0.42.0 (car.lend L8): card only (cards.items, Fable 2026-11-05): our car wrecked or the cell down, but Popovic is out (or his car can still go): the mission runs on",
+  "rivals.block": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the rival car stops across our way out; the ring's Boxed in names it (book.feed.cards.boxed is the crucial card)",
+  "rivals.lookout-posted": "engine 0.41.0 (brief 096; Aster's addition, Sky approved): card only (cards.items, Fable 2026-11-05): the rival lookout takes his post watching Popovic's car (book.feed.cards.lookout is the crucial card)",
+  "rivals.lookout-follows": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the lookout is going after Popovic's car (Motive's seen table, 5:53); the feed is full of beats, so it is a Journal row",
   "rivals.retarget": "engine 0.41.0 (brief 096): silent: the rival car turns after our car's Drive; the street shows it",
   "rivals.misled-back": "engine 0.41.0 (brief 096): silent: a misled member walks back; the street shows him (the Mislead card said when)",
-  "rivals.paid": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Fable): a Mercenary of the crew takes the money and walks off",
-  "rivals.refuses": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Fable): a Loyal member refuses the money and tells his crew about the Fixer",
-  "rivals.listen.heard": "engine 0.41.0 (brief 096): PLACEHOLDER, the Listen's card (Fable): the member's temperament, shown on his ring after",
+  "rivals.paid": "engine 0.41.0 (brief 096): silent: the Pay's own card says it (book.crew.paid, HostCrewTurn.CrewFooter)",
+  "rivals.refuses": "engine 0.41.0 (brief 096): silent: the Pay's own card says it (book.crew.refused)",
+  "rivals.listen.heard": "engine 0.41.0 (brief 096): silent: the Listen's own card says it (book.crew.heardMercenary, heardLoyal), and his ring shows it after",
   "rivals.listen-missed": "engine 0.41.0 (brief 096): silent: the member walked off before the Listen landed; the agent's pop says it",
   "rivals.pay-missed": "engine 0.41.0 (brief 096): silent: the member walked off before the Pay landed; the money stays (the agent's pop says it)",
-  "rivals.drives-off": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Fable): the beaten crew's wheelman drives the rival car off, our way out is clear",
+  "rivals.drives-off": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the beaten crew's wheelman drives the rival car off, our way out is clear",
   "rivals.away": "engine 0.41.0 (brief 096): silent: the rival car has left the district (after a pre-fight break, or for good); the street showed it go",
-  "car.unboxed": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Glyph): nothing stands across our way out now; the ring's Boxed in clears",
-  "security.gang": "engine 0.41.0 (brief 096, Motive Q1 a): PLACEHOLDER, card pending (Fable): the shooting is filed as a gang shooting: the police come, no seal unless they place the cell",
-  "security.gang-claimed": "engine 0.41.0 (brief 096): PLACEHOLDER, card pending (Fable): the cell is placed at the gang shooting; seal.starts follows with the clock",
+  "car.unboxed": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): nothing stands across our way out now; the ring's Boxed in clears",
+  "security.gang": "engine 0.41.0 (brief 096, Motive Q1 a): card only (cards.items, Fable 2026-11-05): the shooting is filed as a gang shooting: the police come, no seal unless they place the cell",
+  "security.gang-claimed": "engine 0.41.0 (brief 096): card only (cards.items, Fable 2026-11-05): the cell is placed at the gang shooting; seal.starts follows with the clock",
   "standing.blast": "engine 0.41.0 (brief 096): silent: a blast near city people moved Standing; the debrief's Standing line says it (blast-near)",
   "rivals.post": "engine 0.32.0 (brief 059): silent: each man takes his post on the street, where the player sees him walk and stop. rivals.drop and rivals.arrive already say it",
   "rivals.follow-car": "engine 0.32.0 (brief 059): event rivals-follow-car and a card: the posted three go after our car when it drives",
@@ -1298,9 +1317,9 @@
     "priority": 8,
     "agent": "scout",
     "verb": "mislead",
-    "target": "the rival car",
-    "line": "Another crew watches the pickup. The Scout can give them a false tip.",
-    "short": "Give the [rivals] a false tip.",
+    "target": "the rival lookout",
+    "line": "Another crew's lookout watches Popovic's car. The Scout can mislead him.",
+    "short": "Mislead the rival [lookout].",
     "trigger": "3:10 has passed (the rivals have parked) and nobody has acted on them",
     "rings": "the rival car",
     "goneWhen": "a Mislead order, or the Enforcer holding Vale"
@@ -2019,7 +2038,7 @@
    "fate": {
     "captured": "{who} would be captured.",
     "walked": "{who} would walk out.",
-    "stays": "{who} stays to get clear."
+    "stays": "{who} stays behind for now."
    },
    "noVale": "Calls off the attempt; try again"
   },
@@ -2075,6 +2094,7 @@
     "closed-in": {
      "no-driver": "Nobody left who can drive.",
      "car-held": "{by} blocked the car.",
+     "boxed": "{by} boxed us in.",
      "on-foot": "Popovic was still on foot.",
      "no-go": "Car ready, and nobody said Go."
     },
@@ -2129,6 +2149,7 @@
     "closed-in": {
      "no-driver": "Keep one agent fit to drive.",
      "car-held": "Clear the car before the close.",
+     "boxed": "Break the crew; their car leaves.",
      "on-foot": "Get Popovic aboard before the close.",
      "no-go": "Press Go once Popovic is aboard."
     },
@@ -2221,7 +2242,7 @@
  "dialogue": [
   {"event":"ack","verb":"watch","speaker":"scout","lines":["On it, I'm watching.","Watching now. I won't miss a thing.","Got it. Eyes on them."]},
   {"event":"ack","verb":"listen","speaker":"scout","lines":["On my way. I'll hear every word.","Getting close enough to listen.","Listening now. Leave it to me."]},
-  {"event":"ack","verb":"mislead","speaker":"scout","lines":["On it. I'll send them the wrong way.","Right, a false tip for the rivals.","I'll point them somewhere else."]},
+  {"event":"ack","verb":"mislead","speaker":"scout","lines":["On it. I'll send him somewhere else.","Right. A word in his ear.","I'll give him somewhere better to be."]},
   {"event":"ack","verb":"ask","speaker":"fixer","lines":["Just a word. Friendly.","Let me ask nicely.","No harm in asking."]},
   {"event":"ack","verb":"pay","speaker":"fixer","lines":["Everyone likes a fair offer.","A price, then.","Let the money do the talking."]},
   {"event":"ack","verb":"help","speaker":"fixer","lines":["Their trouble becomes ours.","Let's lift that weight.","A kindness. Leave it with me."]},
@@ -2318,7 +2339,7 @@
   {"event":"arrive","verb":"watch","speaker":"tech","lines":["In line. Timing it.","Clear view. Logging.","Eyes on the lens."]},
   {"event":"arrive","verb":"watch","speaker":"scout","lines":["I'm in place. Good view from here.","Great sightline. I'm watching.","Settled in. I'm counting everything."]},
   {"event":"arrive","verb":"listen","speaker":"scout","lines":["Close enough to hear them now.","Right beside them. Listening.","I can hear every word from here."]},
-  {"event":"arrive","verb":"mislead","speaker":"scout","lines":["I'm near their car now.","They haven't noticed me yet.","Right next to the rivals now."]},
+  {"event":"arrive","verb":"mislead","speaker":"scout","lines":["I'm close to him now.","He hasn't clocked me yet.","Right beside him now."]},
   {"event":"arrive","verb":"ask","speaker":"fixer","lines":["Excuse me. A moment?","Hello. A small question.","Have you a moment?"]},
   {"event":"arrive","verb":"pay","speaker":"fixer","lines":["There's money in this for you.","A small payment. No strings.","The money's yours, if you'll have it."]},
   {"event":"arrive","verb":"help","speaker":"fixer","lines":["I hear you're in a spot.","May I help? Truly.","Let me take that worry off you."]},
@@ -2329,7 +2350,7 @@
   {"event":"arrive","verb":"take","speaker":"enforcer","lines":["Beside the car.","He's right there.","Close enough."]},
   {"event":"arrive","verb":"takedown","speaker":"enforcer","lines":["From behind.","Now.","Steady."]},
   {"event":"arrive","verb":"takedown","speaker":"enforcer","outcome":"struggle","lines":["Hold still!","Keep it down!","Quiet! Quiet!"]},
-  {"event":"done","verb":"mislead","speaker":"scout","lines":["Tip's given. They're moving off.","They believed me. Off they go.","They've gone, for now at least."]},
+  {"event":"done","verb":"mislead","speaker":"scout","lines":["He bought it. He's walking off.","He believed me. Off he goes.","He's gone, for now. He'll be back."]},
   {"event":"done","verb":"loop","speaker":"tech","lines":["Looped. I'm free to go.","Spliced. It runs by itself.","Tape's rolling. Let's move."]},
   {"event":"done","verb":"reroute","speaker":"tech","lines":["Patrol's off its sweep. Not for long.","Rerouted. It will be back.","Gone the long way. Briefly."]},
   {"event":"done","verb":"enter","speaker":"enforcer","lines":["Inside. Looking for him.","In. Quiet halls.","Inside. Tell me if that changes."]},
@@ -2366,8 +2387,8 @@
   {"event":"read","verb":"watch","speaker":"tech","about":"camera-mast-z0","lines":["Mast camera. Three views, one lens.","It pans the square. I have the turns.","One lens on a slow pan. I know its views."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"sight","lines":["Cone mapped. The turns need more time.","I have its sight. The timing, not yet.","Sweeps the yard. Give me longer for the turns."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"routine","lines":["Clockwork. I have the full round.","Turns at each end. Timing logged.","Full round logged. Service door's clear at the far end."]},
-  {"event":"read","verb":"watch","speaker":"scout","about":"rivals","lines":["Five in one car. Three will post round ours.","Their car follows Popovic's. I've got the timings.","Three posted, a lookout and a wheelman. All timed."]},
-  {"event":"read","verb":"watch","speaker":"tech","about":"rivals","lines":["Five aboard. They tail Popovic's car round.","I have their timetable. Three go for our car.","Timed to the minute. Their car follows Popovic's."]},
+  {"event":"read","verb":"watch","speaker":"scout","about":"rivals","lines":["Five in one car. They'll box ours in.","Their lookout follows Popovic's car on foot. All timed.","Three posted, a lookout and a wheelman. All timed."]},
+  {"event":"read","verb":"watch","speaker":"tech","about":"rivals","lines":["Five aboard. They'll stop across our way out.","I have their timetable. Three go for our car.","Timed to the minute. Their lookout follows Popovic's car."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"idealist","about":"waitress","lines":["She's in debt, and seeing the door guard. Proud, too.","She owes a lender, meets the guard quietly, and won't be bought."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"mercenary","about":"waitress","lines":["She's in debt and meets the door guard. Money talks to her.","She owes a lender, sees the guard quietly, and sells her time."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"fearful","about":"waitress","lines":["She's in debt, and the guard visits her quietly. She's jumpy.","She owes money and sees the guard in secret. Very nervous."]},
@@ -2476,13 +2497,13 @@
   {"event":"vale-at-car","speaker":"scout","lines":["He's at his car. It's now or never.","Popovic's at the car. Move now."]},
   {"event":"vale-at-car","speaker":"councillor","lines":["Home, please. It's been a long day.","Drive on. I'm expected."]},
   {"event":"rivals-arrive","speaker":"rivals","lines":["That's their car. Box it in.","Across their way out. Nobody drives it off.","Nobody touches him but us."]},
-  {"event":"rivals-arrive","speaker":"scout","lines":["They've stopped across our car. We're boxed in.","Rival car right across our way out. We're not driving out."]},
+  {"event":"rivals-arrive","speaker":"scout","lines":["They've parked right across our car. We're boxed in.","Rival car across our way out. We can't drive off."]},
   {"event":"rivals-coming","speaker":"scout","lines":["A car's turning in off Orbit Walk. Not one of ours.","I can hear an engine on Orbit Walk. It's not ours."]},
   {"event":"rivals-follow-car","speaker":"scout","lines":["The three are coming after our car.","They've left their posts, and they're coming for us."]},
   {"event":"car-parks","speaker":"driver","lines":["Here we are, Councillor. The back way.","Service door, Councillor. Mind the step."]},
   {"event":"car-parks","speaker":"fixer","lines":["Popovic's car is round the back. Bring ours.","Popovic's parked. Back seat. Quickly now."]},
-  {"event":"rivals-misled","speaker":"rivals","lines":["Wrong street? Turn it round.","That tip stank. Go back."]},
-  {"event":"rivals-misled","speaker":"scout","lines":["They believed it. They've gone.","The tip worked. The rivals are leaving."]},
+  {"event":"rivals-misled","speaker":"rivals","lines":["Fine. I'll go and look.","Right. Back in a minute."]},
+  {"event":"rivals-misled","speaker":"scout","lines":["He believed it. He's gone.","It worked. He's walking off."]},
   {"event":"rivals-retreat","speaker":"rivals","lines":["Pull back. Regroup.","Too hot. We'll be back."]},
   {"event":"rivals-drawn","speaker":"rivals","lines":["Shots! That's the Office. Move!","Gunfire. Our man's in there."]},
   {"event":"rivals-drawn","speaker":"scout","lines":["The shooting woke the rivals. They're coming.","The rivals heard that. Watch the east side."]},
@@ -2854,7 +2875,7 @@
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"mercenary","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer! A word. It's worth your while."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"You came. Stay a little."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, love. I've something for you."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Thank you. Stay with me."}]}]},
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"fearful","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Please, come over. Quietly. It can't wait."},{"speaker":"guard","line":"Inez calling me over? A few minutes."},{"speaker":"waitress","line":"Thank you. I'll tell you when you're here."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Come over, please. I've something to tell you."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Thank you. It won't go by telephone."}]}]},
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"loyal","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer. A moment at the café, please."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Sit with me a moment."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, if you've a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"You came. Stay a little."}]}]},
-   {"kind":"city","title":"Rival car arrives","event":"rivals-arrive","sight":"in-sight","result":"A rival car has stopped across our way out. They are after Popovic too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. The file comes out that door."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
+   {"kind":"city","title":"Rivals box our car in","event":"rivals-arrive","sight":"in-sight","result":"A rival car has stopped across our way out. They are after Popovic too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. The file comes out that door."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
    {"kind":"city","title":"Handover chime","event":"chime","sight":"always","result":"The handover chime. Popovic leaves the Office soon.","variants":[{"beats":[{"speaker":"crowd","line":"There is the chime. Time to go home."},{"speaker":"crowd","line":"Mind the steps, everyone."},{"speaker":"crowd","line":"Handover already? The day flew."}]},{"beats":[{"speaker":"crowd","line":"Chime! Shift's over at the Office."},{"speaker":"crowd","line":"Doors open. Here come the clerks."},{"speaker":"crowd","line":"Walk, please. No running."}]}]},
    {"kind":"city","title":"Shift change at the Office","event":"chime","sight":"in-sight","result":"The Office is changing shift. The driver is ready at the pickup.","variants":[{"beats":[{"speaker":"clerk","line":"Chime, driver. The Councillor is coming down."},{"speaker":"driver","line":"Engine's warm. Tell him I'm ready."},{"speaker":"clerk","line":"He's finishing the file."},{"speaker":"driver","line":"He always is."}]},{"beats":[{"speaker":"clerk","line":"Shift's over. The door is yours, officer."},{"speaker":"guard","line":"Quiet day. Quiet door."},{"speaker":"clerk","line":"Mind the patrol, if you go round the back."},{"speaker":"guard","line":"I know. It sweeps the yard."}]}]},
    {"kind":"city","title":"The guard is at the café","event":"guard-at-cafe","sight":"in-sight","result":"The guard is at the café, away from the door.","variants":[{"beats":[{"speaker":"guard","line":"You said it couldn't wait."},{"speaker":"waitress","line":"It can, a little. Stand here with me."},{"speaker":"guard","line":"Quiet on the door. The patrol is out in the yard."},{"speaker":"waitress","line":"Then stay. A few minutes."}]},{"beats":[{"speaker":"waitress","line":"You came. I wasn't sure you would."},{"speaker":"guard","line":"You said it couldn't wait. What is it?"},{"speaker":"waitress","line":"Give me a moment. Let me look at you."},{"speaker":"guard","line":"Yes, ma'am."}]}]},
@@ -2968,7 +2989,7 @@
        }
      ],
      "needs": {
-    "rule": "What each way in needs, as conditions, never methods: any act that makes one true ticks it. check and known use the host's vocabulary (HostBook.Needs.cs): guard-away, camera-blind:<camera>, inside:<agent>, vale:<state>, turned:<role>, log:<code>, sight:<watcher>, car-guarded (Popovic aboard and the car not blocked, or an agent outside it with a gun drawn: the engine's guard), left-safe (nobody a Go now leaves behind would be captured); ' | ' is any of. known keeps the condition at '?' until it holds. Words may carry {t:valeExits} {t:valeAtCar} {t:driverLast} {t:chime}. Brief 096: `pending` holds conditions written ahead of their check word (the host reads none of it); once Latch adds the word, each moves into its ways after `after` (car-guarded and left-safe moved in, 2026-11-04).",
+    "rule": "What each way in needs, as conditions, never methods: any act that makes one true ticks it. check and known use the host's vocabulary (HostBook.Needs.cs): guard-away, camera-blind:<camera>, inside:<agent>, vale:<state>, turned:<role>, log:<code>, sight:<watcher>, car-guarded (Popovic aboard and the car not blocked, or an agent outside it with a gun drawn: the engine's guard), left-safe (nobody a Go now leaves behind would be captured); ' | ' is any of. known keeps the condition at '?' until it holds. Words may carry {t:valeExits} {t:valeAtCar} {t:driverLast} {t:chime}. Brief 096: `pending` holds conditions written ahead of their check word (the host reads none of it); once Latch adds the word, each moves into its ways after `after` (car-guarded and left-safe moved in, 2026-11-04). Fable 2026-11-05 (engine 0.42.0, the lend): the pickup's getaway is Popovic in our car or in his own with the Enforcer driving (vale:Car,Lent,Out), so its guard line (our car held with Popovic aboard) is the front door's alone; go ticks on either Go (log:vale.out, log:success); left-safe stays '?' until Popovic is in a car, as nobody is left behind at 0:00.",
     "ways": {
      "front-door": [
       { "id": "guard-away", "words": "The guard is off the door", "check": "guard-away" },
@@ -2976,17 +2997,16 @@
       { "id": "inside", "words": "The Enforcer is inside before {t:valeExits}", "check": "inside:enforcer | vale:WithEnforcer,Car" },
       { "id": "getaway", "words": "Popovic reaches the getaway car", "check": "vale:Car" },
       { "id": "guarded", "words": "While blocked, someone guards the car outside, gun drawn", "check": "car-guarded" },
-      { "id": "go", "words": "Go gets Popovic out, and the job's done", "check": "log:success" },
-      { "id": "left-safe", "words": "Anyone left outside walks out, if no fight or seal is on", "check": "left-safe" }
+      { "id": "go", "words": "Go gets Popovic out, and the job's done", "check": "log:vale.out | log:success" },
+      { "id": "left-safe", "words": "Nobody left behind gets caught by the police", "check": "left-safe", "known": "vale:Car,Lent,Out" }
      ],
      "pickup": [
-      { "id": "driver", "words": "The driver is turned", "check": "turned:driver" },
+      { "id": "driver", "words": "The driver is turned by {t:driverLast}", "check": "turned:driver" },
       { "id": "pickup-camera", "words": "The pickup camera can't see Popovic's car", "check": "camera-blind:pickup", "known": "sight:camera:pickup" },
-      { "id": "has-vale", "words": "The Enforcer has Popovic", "check": "vale:WithEnforcer,Car" },
-      { "id": "getaway", "words": "Popovic reaches the getaway car", "check": "vale:Car" },
-      { "id": "guarded", "words": "While blocked, someone guards the car outside, gun drawn", "check": "car-guarded" },
-      { "id": "go", "words": "Go gets Popovic out, and the job's done", "check": "log:success" },
-      { "id": "left-safe", "words": "Anyone left outside walks out, if no fight or seal is on", "check": "left-safe" }
+      { "id": "has-vale", "words": "The Enforcer has Popovic", "check": "vale:WithEnforcer,Car,Lent,Out" },
+      { "id": "getaway", "words": "Popovic is in our car, or in his with the Enforcer driving", "check": "vale:Car,Lent,Out" },
+      { "id": "go", "words": "Go gets Popovic out, and the job's done", "check": "log:vale.out | log:success" },
+      { "id": "left-safe", "words": "Nobody left behind gets caught by the police", "check": "left-safe", "known": "vale:Car,Lent,Out" }
      ]
     }
    },
@@ -3059,11 +3079,11 @@
    "start": {
     "rule": "Brief 096, placeholders for Fable (Glyph's mock briefs/096/glyph/1-start-job.png; Sky 2026-11-04: \"all. recommended\"). The start briefing is the book's Job page with the clock stopped: `begin` where Back is, `shared` the line under the ways (both end at our car), `cell` one line under each face in the cell strip (replaces briefing.page.cell on the page; the false tip is dropped), `purse` and `heat` beside the folded ways to fail. The way names, their when, the conditions and the clock are the Job page's own data.",
     "begin": "Begin",
-    "shared": "Both end at our car: Popovic in · Go · the rest clear before the seal",
+    "shared": "Go gets Popovic out. If he leaves in his car, the rest follow in ours.",
     "purse": "Purse",
     "heat": "Heat",
     "cell": {
-     "scout": "Watches from furthest; listens in.",
+     "scout": "Watches and listens; misleads the rival lookout.",
      "fixer": "Turns Inez or the driver; calls Inez.",
      "tech": "Loops cameras, moves the patrol, drives our car.",
      "enforcer": "Takes Popovic. Only he can carry him."
@@ -3121,8 +3141,16 @@
      "down": {
       "title": "{agent} is down"
      },
+     "hurt-carry": {
+      "title": "Enforcer badly hurt",
+      "line": "{n} health, carrying Popovic: cover him"
+     },
+     "hurt": {
+      "title": "Enforcer badly hurt",
+      "line": "{n} health left: get him into cover"
+     },
      "for-car": {
-      "title": "Rivals for our car",
+      "title": "Rivals going for our car",
       "line": "{n} rivals",
       "fixes": [
        {
@@ -3143,7 +3171,7 @@
       "line": "by {by}"
      },
      "target-out": {
-      "title": "Popovic is out",
+      "title": "Popovic comes out",
       "line": "official door"
      },
      "rival-car": {
@@ -3161,59 +3189,60 @@
      },
      "vale-out": {
       "title": "Popovic is out",
-      "line": "rest clear by {police}"
+      "line": "get the rest clear by {police}"
      },
      "lent": {
       "title": "Popovic's car is ours",
-      "line": "Go when the way is clear"
+      "line": "Go once the way out is clear"
      },
      "lookout": {
       "title": "Rival lookout posted",
-      "line": "watching Popovic's car",
+      "line": "follows Popovic's car if it goes",
       "fixes": [{"icon": "mislead", "word": "Mislead", "agent": "scout"}, {"icon": "pay", "word": "Pay", "agent": "fixer"}, {"icon": "takedown", "word": "Take", "agent": "enforcer"}]
      },
      "boxed": {
       "title": "Our car boxed in",
-      "line": "rival car across the way"
+      "line": "their car is across our way out"
      }
     }
    },
    "heldGo": {
     "rule": "Brief 096 objective 7, placeholders for Fable (Glyph's mock 4c-car-ring-2x.png): Go on the car's ring while rivals hold the car: `heldBy` before a badge per holder, `fix` the line under it.",
-    "heldBy": "held by",
+    "heldBy": "blocked by",
     "fix": "Step out and draw · or down them"
    },
    "cars": {
-    "rule": "Brief 096, the lend (engine 0.42.0), placeholders for Fable: `goLent` the Go on Popovic's car once it is ours (its Go takes him out: the win is fixed, the mission runs on); `endWinHead` and `endWinLine` the end card's head and line after a win by that Go; `lentName` Popovic's car once it is ours (our own stays names.targets.car-getaway); the debrief's `carLost` (our car left standing at the end: +{trail} T, the police trace it) and `lentSeen` ({by} saw Popovic's car leave: +{trail} T and a lead, not a hunted car).",
-    "goLent": "Go · Popovic out",
-    "lentName": "Popovic's car, ours now",
-    "carLost": "We left our car behind. The police will trace it. Trail +{trail}.",
-    "lentSeen": "{by} saw Popovic's car leave: a lead, not our car. Trail +{trail}.",
+    "rule": "Brief 096, the lend (engine 0.42.0), placeholders for Fable: `goLent` the Go on Popovic's car once it is ours (its Go takes him out: the win is fixed, the mission runs on); `endWinHead` and `endWinLine` the end card's head and line after a win by that Go; `lentName` Popovic's car once it is ours (our own stays names.targets.car-getaway); the debrief's `carLost` (our car left standing at the end: +{trail} T, the police trace it) and `lentSeen` ({by} saw Popovic's car leave: +{trail} T and a lead, not a hunted car); `goClear` the Alt does-line of our car's Go once Popovic's car is ours (HudModel; was hard-coded).",
+    "goLent": "Go · drive him off",
+    "goClear": "Gets the rest clear",
+    "lentName": "Popovic's car, now ours",
+    "carLost": "We left our car behind, and the police will trace it. Trail +{trail}.",
+    "lentSeen": "{by} saw Popovic's car leave: a lead, but not to our car. Trail +{trail}.",
     "endWinHead": "Popovic is out",
-    "endWinLine": "Popovic is out in his own car."
+    "endWinLine": "We drove Popovic off in his own car."
    },
    "police": {
     "rule": "Brief 096, the lend (engine 0.42.0, Game.SplitPoliceAt), placeholders for Fable: the one countdown plate under the clock once Popovic is out. `head` with {time} (m:ss left), `why` the line under it, `left` who is still out ({list} their names, {n} how many), `clear` when nobody is, `end` the button that ends the mission now (End, in Withdraw's place; everyone not in a car that has left is captured).",
     "head": "Police close in {time}",
-    "why": "Popovic is out. Get the rest clear.",
-    "left": "Still out: {list}",
+    "why": "Popovic is out. The rest get clear in our car.",
+    "left": "Still here: {list}",
     "clear": "Everyone is clear",
     "end": "End now"
    },
    "tape": {
     "rule": "Brief 096 (engine 0.40.0, bribes on camera), placeholders for Fable: the Pay or Pressure card's camera line, its eye's hover and the panel row. `seen` a camera the cell has watched would record it ({camera} its name, {alert} the Alert, {s} seconds until its desk sees it, {trail} the Trail); `maybe` one the cell hasn't watched; `loopEnds` added when a loop on it runs out inside the act ({t} the clock).",
     "seen": "{camera} would tape it: Alert {alert} in {s} s, +{trail} T",
-    "maybe": "A camera might see this: watch {camera} first",
+    "maybe": "A camera might tape this: Watch {camera} to be sure",
     "loopEnds": "loop ends {t}"
    },
    "parked": {
     "rule": "Brief 096 (engine 0.40.0, the parked car), placeholders for Fable: the Drive card's line where our car would stand on private ground. `seen` a watcher the cell knows would see it ({who} the watchers, {s} the seconds in sight before they report it); `maybe` one it doesn't know yet; `back` added while the patrol is rerouted ({t} when it is back).",
-    "seen": "Parked here, {who} would see it: reported after {s} s",
-    "maybe": "Parked here, {who} might see it: watch first",
+    "seen": "Parked here, {who} would see it and report it in {s} s",
+    "maybe": "Parked here, {who} might see it: Watch first to be sure",
     "back": "patrol back {t}"
    },
    "crew": {
-    "rule": "Brief 096, placeholders for Fable (Latch; engine 0.41.0 rivals.turn): the cards of Watch, Listen, Pay and Mislead on a member of the rival crew on foot, and their feed footers. {usd} the Pay, {t} a clock, {who} the man. The lookout is named by his job (`lookout`); the others by names.holders.rival.",
+    "rule": "Brief 096, placeholders for Fable (Latch; engine 0.41.0 rivals.turn): the cards of Watch, Listen, Pay and Mislead on a member of the rival crew on foot, and their feed footers. {usd} the Pay, {t} a clock, {who} the man. The lookout is named by his job (`lookout`); the others by names.holders.rival. `misled` and `misleadMissed` are the Mislead card's result (HostFeed; were hard-coded).",
     "lookout": "the lookout",
     "timetable": "their timetable",
     "temperament": "money or loyalty",
@@ -3236,7 +3265,9 @@
     "heardNothing": "Nothing learned.",
     "paid": "{who} takes the money and walks off.",
     "refused": "{who} won't take it, and tells his crew. The money stays with us.",
-    "payMissed": "{who} was gone before the Fixer paid. The money stays with us."
+    "payMissed": "{who} was gone before the Fixer paid. The money stays with us.",
+    "misled": "He takes the word and walks off. He'll be back.",
+    "misleadMissed": "The word missed him: he'd gone, or was already after Popovic's car."
    }
  },
  "pending": {

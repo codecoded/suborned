@@ -185,7 +185,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Popovic', 'Bureau', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'X', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon', 'Security', 'Disable', 'Drive', 'Orbit', 'Walk']); // Disable and Drive: briefs 058, 059; Orbit Walk: the street the rival car turns in from (brief 059); X: the cease-fire key H21 teaches (brief 067)
+      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'X', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon', 'Security', 'Disable', 'Drive', 'Orbit', 'Walk', 'Mislead', 'Withdraw', 'End']); // Mislead, Withdraw and End: the ring's and the menu's verbs (brief 096); Disable and Drive: briefs 058, 059; Orbit Walk: the street the rival car turns in from (brief 059); X: the cease-fire key H21 teaches (brief 067)
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -289,7 +289,7 @@ describe('times and numbers agree with the mission', () => {
   test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 5:50 station is one fragment', () => {
     const p = t.briefing.page; const m = json('contracts/missions/handover/mission.json') as { points: { id: string }[]; destinations: Record<string, unknown> };
     expect(p.ways['front-door'].line).toBe('Turn her to call him off and loop his camera.'); // Aster 2026-10-26: the page cut to 220 words
-    expect(p.cell.scout).toMatch(/false tip/); expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
+    expect(p.cell.scout).toMatch(/Misleads the rival lookout/); expect(p.cell.scout).not.toMatch(/false tip/); // brief 096: the false tip on the rival car is retired; Mislead is the Scout's word to a rival on foot expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
     expect(p.ways['front-door'].line).not.toMatch(/\s\S{1,3}\.$/); // never ends on a lone short word ("it.")
     expect(p.captions).toEqual({ 'service-bay': 'Service bay' }); // Glyph R6 on 0.2.133: still 4 and its legend; within the page's 5-word caption cap
     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
@@ -490,7 +490,7 @@ describe('training hints, the run toast, the going-loud card', () => {
     for (const [id, h] of items.filter(([id]) => motiveIds(id))) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
   });
   test('each hint fits 110 characters, names an agent, a verb and a target, and introduces only its own verb', () => {
-    const word: Record<string, string> = { turn: 'turn', mislead: 'false tip', move: 'run', 'turn-view': 'turn', 'step-target': 'switch', 'drive-car': 'drive' };
+    const word: Record<string, string> = { turn: 'turn', mislead: 'mislead', move: 'run', 'turn-view': 'turn', 'step-target': 'switch', 'drive-car': 'drive' };
     const labels = ['Watch', 'Listen', 'Loop', 'Call', 'Reroute', 'Fire', 'Carry', 'Enter', 'Take', 'Board', 'Go', 'Drive'];
     const bad: string[] = [];
     for (const [id, h] of items) {
@@ -1164,7 +1164,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Walk)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'drive-car': /^Drive\b/, 'turn-view': /^Turn (the view|twice)\b/, holster: /^Holster to stop firing: press F\.$/, 'step-target': /^Scroll to switch\.$/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Walk)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Mislead\b/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'drive-car': /^Drive\b/, 'turn-view': /^Turn (the view|twice)\b/, holster: /^Holster to stop firing: press F\.$/, 'step-target': /^Scroll to switch\.$/ };
     const bad: string[] = [];
     const forms = Object.entries(t.hints.items).flatMap(([id, h]) => [{ id, h, short: h.short, line: h.line, ring: id === 'H13' || id === 'H19' || id === 'H21' || id === 'H22' ? 0 : 1 }, ...(h.door ? [{ id: `${id}.door`, h, short: h.door.short, line: h.door.line, ring: 0 }] : [])]);
     for (const { id, h, short, line, ring } of forms) {
@@ -1346,7 +1346,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
       'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car', 'lookout'], 'vale-leaves': ['driven-away', 'too-late'], 'vale-dead': ['killed', 'shot'],
-      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'on-foot', 'no-go'], 'engine-error': ['error'] };
+      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'closed-in': ['no-driver', 'car-held', 'boxed', 'on-foot', 'no-go'], 'engine-error': ['error'] }; // brief 096 (engine 0.40.0): closed-in, boxed
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
     for (const f of FAILS) expect(f in F.caption, f).toBe(true);
@@ -1372,7 +1372,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('the timeline marks have a word for Alt', () => {
     // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) and drop (2:46) are marks; 3:10 is its park (Keel's drafts, Fable words them)
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Rivals park', 'Chime', 'Last chance', 'Popovic out', 'Popovic at car', 'Close']);
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Rivals park', 'Chime', 'Last chance', 'Popovic exits', 'Popovic at car', 'Close']); // brief 096: "Popovic is out" is the lend's win (vale.out), so his walk out of the Office exits
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
@@ -1386,7 +1386,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(76); // brief 096 (engine 0.41.0): less the six of the retired routine (rivals.arrive, drop, follows, warned, no-warning, at-vale); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
+    expect(Object.keys(t.cards.items).length).toBe(95); // brief 096 (engines 0.40.0-0.42.0, Fable 2026-11-05): plus nineteen for the new codes (camera.record-lands, car.kerbside, car.boxed-in, car.report-lands; rivals.block, car.unboxed, rivals.drives-off, rivals.lookout-posted, rivals.lookout-follows, security.gang, security.gang-claimed; lend.lent, vale.out, split.police, lend.spring, lent.seen, car.leaves-split, car.lost, lend.goes-on); 76 in engine 0.41.0: less the six of the retired routine (rivals.arrive, drop, follows, warned, no-warning, at-vale); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
   });
@@ -1707,7 +1707,7 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
   });
   test('a verb with a target reads as English with every name its target can have (Suture 2026-10-26: the hold pill said "Listen the guard")', () => {
     // verbs that take their target straight after them; every other verb that takes one carries its preposition in the template, so "{label} {target}" is never the label
-    const DIRECT = ['watch', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'take', 'board', 'carry', 'takedown', 'restrain'];
+    const DIRECT = ['watch', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'take', 'board', 'carry', 'takedown', 'restrain'];
     const PREP: Record<string, string> = { listen: 'to', enter: 'by', go: 'in', 'drive-car': 'into', fire: 'at', volley: 'at', stash: 'in', move: 'to', run: 'to' };
     const PREPS = ['to', 'at', 'in', 'by', 'into', 'on', 'for', 'with', 'from', 'behind', 'about', 'of'];
     const before = (s: string) => s.slice(0, s.indexOf(' {target}')).split(' ').at(-1)!; // the word just before {target}
@@ -1716,7 +1716,6 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
     for (const [k, a] of Object.entries(t.actions)) {
       if (!a.withTarget) continue;
       const [w, th] = [a.withTarget, a.then!];
-      if (k === 'mislead') { if (w !== 'Give {target} a false tip' || th !== 'gives {target} a false tip') bad.push(`${k}: "${w}" / "${th}"`); continue; } // the one verb that takes its target in the middle
       if (DIRECT.includes(k)) { for (const f of [w, th]) if (PREPS.includes(before(f))) bad.push(`${k}: "${f}" puts a preposition before the target`); }
       else if (k in PREP) { for (const f of [w, th]) if (before(f) !== PREP[k]) bad.push(`${k}: "${f}" must read "… ${PREP[k]} {target}"`); if (w === `${a.label} {target}`) bad.push(`${k}: the label and the name run together`); }
       else bad.push(`${k}: "${w}" is a verb with a target that this test has not classified (direct, or with its preposition)`);
@@ -2028,12 +2027,17 @@ describe('brief 096: Step out and the getaway in the book', () => {
     expect(a.label).toBe('Step out'); expect(a.engine.do).toBe('move'); expect(a.by.slice().sort()).toEqual([...AGENTS].sort());
     expect(a.does).toMatch(/Popovic stays in/);
   });
-  test('the book\'s getaway lines: on both ways the car, the guard while blocked, Go, then the walk-out (Latch\'s check words car-guarded and left-safe are live; never a check the host can\'t read)', () => {
+  test('the book\'s getaway lines: the car on both ways (the pickup\'s is ours or Popovic\'s, lent), the guard while blocked on the front door\'s, then Go and nobody caught, shared (Latch\'s check words car-guarded and left-safe are live; never a check the host can\'t read)', () => {
     const N = t.book.job.needs;
     const vocab = /^(guard-away|camera-blind:[a-z]+|inside:[a-z]+|vale:[A-Za-z,]+|turned:[a-z]+|log:[a-z.-]+|sight:[a-z:-]+|car-guarded|left-safe)$/;
+    const tail: Record<string, string[]> = { 'front-door': ['getaway', 'guarded', 'go', 'left-safe'], pickup: ['getaway', 'go', 'left-safe'] }; // engine 0.42.0: the lend never needs our car guarded with Popovic aboard
     for (const [way, list] of Object.entries(N.ways)) {
-      const ids = list.map((n) => n.id), at = ids.indexOf('getaway'); expect(at, way).toBeGreaterThanOrEqual(0); expect(ids.slice(at), way).toEqual(['getaway', 'guarded', 'go', 'left-safe']);
-      expect(list.find((n) => n.id === 'guarded')!.check).toBe('car-guarded'); expect(list.find((n) => n.id === 'left-safe')!.check).toBe('left-safe');
+      const ids = list.map((n) => n.id), at = ids.indexOf('getaway'); expect(at, way).toBeGreaterThanOrEqual(0); expect(ids.slice(at), way).toEqual(tail[way]!);
+      if (ids.includes('guarded')) expect(list.find((n) => n.id === 'guarded')!.check).toBe('car-guarded');
+      const go = list.find((n) => n.id === 'go')!, left = list.find((n) => n.id === 'left-safe')!;
+      expect(go.check, way).toBe('log:vale.out | log:success'); // either Go wins: ours with Popovic aboard, or his lent car's
+      expect(left.check).toBe('left-safe'); expect(left.known, `${way}: nobody is left behind at 0:00, so it waits at '?' until Popovic is in a car`).toBe('vale:Car,Lent,Out');
+      expect(left.words + go.words, way).not.toMatch(/seal/); // the lend's end is the police, not the seal
       for (const n of list) for (const part of [n.check, ...(n.known ? [n.known] : [])].flatMap((c) => c.split('|'))) expect(part.trim(), `${way}.${n.id}`).toMatch(vocab);
     }
     for (const p of N.pending ?? []) { expect(p.check).not.toMatch(vocab); for (const w of p.ways) expect(N.ways[w]!.some((n) => n.id === p.after) || (N.pending ?? []).some((q) => q.id === p.after), `${p.id} after ${p.after}`).toBe(true); }

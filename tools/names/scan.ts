@@ -18,7 +18,7 @@ export type Source = { id: string; file: string; optional: boolean; strings: (ro
 
 /** text.json keys whose strings are never shown: authoring notes, rules, sources, triggers, engine state and ids (text.schema.ts). */
 export const SKIP_KEYS = new Set(['schema', 'mission', 'author', 'gdd', 'rule', 'rules', 'note', 'notes', 'src', 'source', 'from', 'trigger', 'rings',
-  'goneWhen', 'shows', 'hiddenWhen', 'pick', 'log', 'tone', 'events', 'exchange', 'silentStates', 'silentLogs', 'fates', 'named', 'status', 'check',
+  'goneWhen', 'shows', 'hiddenWhen', 'pick', 'log', 'tone', 'events', 'exchange', 'silentStates', 'silentLogs', 'fates', 'named', 'status', 'check', 'known', /* the book's needs: `known` is the same check vocabulary (vale:Car), never shown */
   'id', 'seed', 'key', 'guess', 'brief', 'on']);
 /** Paths whose key is shown elsewhere but not here: an objective step's `when` is engine state (a way's `when`, "Before 4:50", is shown). */
 const SKIP_PATHS = [/^less\.objective\.steps\.\d+\.when$/, /\.pending$/];

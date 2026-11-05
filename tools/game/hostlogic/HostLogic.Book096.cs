@@ -39,9 +39,9 @@ public class Book096
         Assert.That(faces["pickup"], Is.EqualTo(new List<string> { "driver" }));
         Assert.That(p.Shared, Is.EqualTo(bw.Shared).And.Not.Empty);
         var tail = p.Needs.Where(n => n.Group == BookLayout.Tail).Select(n => n.Id).ToList();
-        Assert.That(tail, Is.EqualTo(new List<string> { "guarded", "go", "left-safe" }), "the shared conditions after the getaway sit once under the shared line");
+        Assert.That(tail, Is.EqualTo(new List<string> { "go", "left-safe" }), "the shared conditions after the getaway sit once under the shared line (engine 0.42.0: the guard line is the front door's own)");
         foreach (var w in p.Ways) Assert.That(p.Needs.Count(n => n.Group == w.Verb && n.Id == "getaway"), Is.EqualTo(1), $"{w.Verb} keeps its own 'reaches the car'");
-        Assert.That(p.Needs.Where(n => n.Group != BookLayout.Tail).All(n => !n.Met), "no way's own condition is met at 0:00 (left-safe is honestly true: no fight or seal yet)");
+        Assert.That(p.Needs.Where(n => n.Group != BookLayout.Tail).All(n => !n.Met), "no way's own condition is met at 0:00"); var ls = p.Needs.Single(n => n.Id == "left-safe"); Assert.That(ls.Unknown && !ls.Met, "nobody is left behind at 0:00, so left-safe waits at ? until Popovic is in a car, never ticked at the start");
         Assert.That(p.Crew.Select(c => c.Line).ToArray(), Is.EqualTo(new[] { "scout", "fixer", "tech", "enforcer" }.Select(r => bw.StartCell[r]).ToArray()), "the cell strip's lines are book.start.cell");
         Assert.That(string.Join(" ", p.Crew.Select(c => c.Line)), Does.Not.Contain("false tip"), "the stale false tip is gone");
         Assert.That(p.Track.Select(t => t.Time).ToArray(), Is.EqualTo(new[] { "2:35", "5:10", "5:20", "5:30", "5:50" }), "the 5:30 shift's clock, the rivals' 2:35 shown (Sky's call 2)");

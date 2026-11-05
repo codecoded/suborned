@@ -450,7 +450,7 @@ namespace Suborned.Play
                 case "loop": return "Loops the camera for two minutes; the Tech is free to go"; // engine 0.31.0: no tether
                 case "disable": return "Cuts the camera for good; the desk notices";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
-                case "go": return i.Outcome == "win" ? "Wins the mission" : i.Outcome == "clear" ? "Gets the rest clear" : "Withdraws"; // brief 018: who stays is the Go line itself
+                case "go": return i.Outcome == "win" ? "Wins the mission" : i.Outcome == "clear" ? BookWordsFile.Get().GoClear : "Withdraws"; // brief 018: who stays is the Go line itself
                 case "board": return i.Outcome.Length > 0 ? "In the car " + i.Outcome : "In the car";
                 case "fire": return "Goes loud";
                 default: return i.Outcome;

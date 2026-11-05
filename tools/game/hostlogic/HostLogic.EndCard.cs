@@ -104,7 +104,7 @@ public class BookGetaway
         foreach (var way in new[] { "front-door", "pickup" })
         {
             var ids = needs[way].Select(x => x.Id).ToList(); int at = ids.IndexOf("getaway");
-            Assert.That(ids.Skip(at), Is.EqualTo(new[] { "getaway", "guarded", "go", "left-safe" }), way);
+            Assert.That(ids.Skip(at), Is.EqualTo(way == "front-door" ? new[] { "getaway", "guarded", "go", "left-safe" } : new[] { "getaway", "go", "left-safe" }), way); // engine 0.42.0: the lend never needs our car guarded with Popovic aboard
         }
     }
 }
