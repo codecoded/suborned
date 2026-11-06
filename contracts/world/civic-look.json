@@ -1646,6 +1646,13 @@
     ]
    },
    {
+    "material": "DK_Enamel_Teal__boulevard",
+    "unlit": "#C8553D",
+    "used_by": [
+     "BollardSphere"
+    ]
+   },
+   {
     "material": "DK_Face_Teal",
     "unlit": "#3FC9A0",
     "used_by": [
