@@ -171,3 +171,9 @@ unity/Assets/Suborned/Generated/Review075/
 unity/Assets/Suborned/Generated/Review075.meta
 unity/Assets/Suborned/Generated/OldTownFoliage075/
 unity/Assets/Suborned/Generated/OldTownFoliage075.meta
+# Rebuilt by every player build (GameBuild -> RangeScene.Build, brief 029), like OldTown.unity: the fight range scene and its graybox materials
+# (each rebuild reshuffles their file ids; nothing tracked points at them)
+unity/Assets/Scenes/FightRange.unity
+unity/Assets/Scenes/FightRange.unity.meta
+unity/Assets/Suborned/Generated/Range/
+unity/Assets/Suborned/Generated/Range.meta
