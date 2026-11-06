@@ -13,7 +13,7 @@ namespace Suborned
         public static Fx097 Live { get; private set; }
         ParticleSystem sparks, smoke; readonly List<Renderer> postLamps = new(); bool police; float policeT;
         static readonly int EmissionId = Shader.PropertyToID("_EmissionColor"), BaseId = Shader.PropertyToID("_BaseColor");
-        static MaterialPropertyBlock lampMpb;
+        Material pulseMat;
 
         void Awake() { Live = this; }
         void OnDestroy() { if (Live == this) Live = null; }
@@ -26,8 +26,14 @@ namespace Suborned
             var r = sparks.GetComponent<ParticleSystemRenderer>(); r.renderMode = ParticleSystemRenderMode.Stretch; r.velocityScale = 0.1f; r.lengthScale = 2f;
             smoke = Make("smoke", blend, 60, 1.4f, 2.4f, new Vector2(0.25f, 0.45f), new Color(0.45f, 0.44f, 0.43f, 0.35f), -0.05f);
             var sz = smoke.sizeOverLifetime; sz.enabled = true; sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0, 0.5f), new Keyframe(1, 2.6f)));
+            // every renderer of every police post, at every LOD (the dome is its own part at L0 only; L1 and L2 carry it in the body mesh), whose
+            // materials hold the dome's DK_Lamp slot
             foreach (var mr in FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
-                if (mr.name.Contains("PolicePost") && mr.name.Contains("Lamp")) postLamps.Add(mr);
+            {
+                bool post = false; for (var t = mr.transform; t && !post; t = t.parent) post = t.name.StartsWith("DK_PolicePost");
+                if (!post) continue;
+                foreach (var m in mr.sharedMaterials) if (m && m.name.StartsWith("DK_Lamp")) { postLamps.Add(mr); break; }
+            }
         }
 
         /// <summary>A hover camera's state changed: 0 live, 1 looped, 2 dark.</summary>
@@ -47,7 +53,7 @@ namespace Suborned
             f.Burst(head, hot ? 18 : 14, hot ? new Color(1f, 0.8f, 0.5f, 1f) : new Color(0.7f, 0.9f, 1f, 1f), hot ? 1.8f : 1.2f);
         }
 
-        public static void PoliceCalled() { var f = Live; if (f && !f.police) { f.police = true; f.policeT = 0f; Debug.Log($"Fx097: police called: {f.postLamps.Count} police-post domes pulse"); } }
+        public static void PoliceCalled() { var f = Live; if (f && !f.police) { f.police = true; f.policeT = 0f; Debug.Log($"Fx097: police called: {f.postLamps.Count} police-post renderers (every LOD) pulse"); } }
 
         void Burst(Vector3 at, int n, Color c, float speed)
         {
@@ -85,14 +91,20 @@ namespace Suborned
         {
             DemoTick(dt);
             if (!police || postLamps.Count == 0) return;
-            policeT += dt; lampMpb ??= new MaterialPropertyBlock();
-            float k = 0.5f + 0.5f * Mathf.Sin(policeT * Mathf.PI * 2f * 0.9f); k = k * k;
-            var amber = new Color(1f, 0.62f, 0.16f) * Mathf.Lerp(0.4f, 3.2f, k);
-            foreach (var r in postLamps)
+            policeT += dt;
+            // one runtime copy of the dome's material, emission on, shared by every post and animated once a frame (a property block per renderer is
+            // not drawn by the GPU Resident Drawer's instanced path, and the opal material ships without _EMISSION)
+            if (!pulseMat)
             {
-                if (!r) continue;
-                lampMpb.Clear(); lampMpb.SetColor(BaseId, new Color(1f, 0.86f, 0.62f)); lampMpb.SetColor(EmissionId, amber); r.SetPropertyBlock(lampMpb);
+                Material lamp = null; foreach (var r in postLamps) if (r) foreach (var m in r.sharedMaterials) if (m && m.name.StartsWith("DK_Lamp")) { lamp = m; break; }
+                if (!lamp) return;
+                pulseMat = new Material(lamp) { name = lamp.name + " (police pulse)" };
+                pulseMat.EnableKeyword("_EMISSION"); pulseMat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                pulseMat.SetColor(BaseId, new Color(0.78f, 0.36f, 0.08f)); // a deep amber glass once the police are called, so the swing reads in sun
+                foreach (var r in postLamps) { if (!r) continue; var ms = r.sharedMaterials; for (int i = 0; i < ms.Length; i++) if (ms[i] && ms[i].name.StartsWith("DK_Lamp")) ms[i] = pulseMat; r.sharedMaterials = ms; }
             }
+            float k = 0.5f + 0.5f * Mathf.Sin(policeT * Mathf.PI * 2f * 0.9f); k = k * k;
+            pulseMat.SetColor(EmissionId, new Color(1f, 0.55f, 0.12f) * Mathf.Lerp(0.05f, 5f, k));
         }
     }
 }

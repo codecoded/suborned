@@ -33,7 +33,9 @@ ASSETS (Vela, Blender DecoKit, Codex concepts first, palette materials, AO on)
 LIFE AND JUICE (all looks; nothing in the sim reads them)
   Pigeons and doves on the square that scatter from people (one instanced draw); petals off the beds; steam from the three grates nearest
   the square. A camera put out: a hot flash, spark streaks and smoke, sparks again where it lands; a looped camera crackles blue-white;
-  once the police are called every police post's dome pulses amber. -nofx; -fxdemo fires the camera moments for captures.
+  once the police are called every police post's dome swings between deep amber glass and a white-hot glow (1.1 s; one shared runtime
+  material on the dome's slot at every LOD). -nofx; -fxdemo fires the camera moments and the call for captures.
+  Seen in captures: out/scratch/main097/shots/fxfull4 (flash, spark streaks, smoke), post7 (the dome's pulse), full4 (the baked zone).
 
 COST (Studio M5 Max, 1920x1080, final full OldTown scratch build vs the round's starting player 0.2.253, GPU ms medians, other sessions'
   jobs kept the load at 8-24, so 0.1 ms is noise): office y210 1.70 vs 1.65; office y300 1.98 vs 2.10; square 1.89 vs 1.85. The lightmaps
