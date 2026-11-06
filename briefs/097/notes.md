@@ -61,9 +61,10 @@ DECALS (Sky: "URP Decal projector sounds interesting")
   grit and dust; a shot that cover takes throws chips off the prop.
 
 CAFÉ GLASS (Sky: "the cafes window look bad")
-  The film over the rooms was too thin (the blue sky and its streaks came through and the rooms' grid ran across curved glass). GlassSky now
-  keeps a thicker film where rooms show and gates the rooms out where the glass curves (screen-space curvature), so the bowed café front
-  reads as glass with warm rooms behind it, not as a grid.
+  The white diagonal scratches were modelled: cafe_upper.py lays two painted reflection streaks a pane (DK_Glass_Sheen, alpha 0.2), made when
+  the glass was flat enamel; over GlassSky's own sheen and rooms they read as scratches. Now a faint glint (alpha 0.06, a look097.json row).
+  The glaze is warm amber-brown (was dark teal, which read mauve under the grade), the film thinner at grazing (_Edge 0.92 -> 0.72) so the
+  rooms show from the play camera, and the rooms fade out where the glass curves (screen-space curvature) instead of smearing into stripes.
 
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,
