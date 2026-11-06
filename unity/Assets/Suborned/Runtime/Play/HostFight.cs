@@ -470,7 +470,7 @@ namespace Suborned.Play
             string shotSide = by is "scout" or "fixer" or "tech" or "enforcer" ? "cell" : by.StartsWith("rival") ? "rival" : "guard";
             bool covered = !hit && coveredNow.Contains((by, t));
             if (covered) { dst = toD - aim * 0.75f; dst.y = toD.y + 0.6f; } // engine 0.35 (ShotEvent.Covered): cover took it: the chips fly off the prop, between him and the shooter
-            ShotFx.Add((src, dst, hit, shotSide, Time.unscaledTime, covered)); CueShot(by, t, hit, aim); while (ShotFx.Count > 24) ShotFx.RemoveAt(0); // brief 024 Firing: the flash and the spark (HudToolkit.Fire), both views
+            ShotFx.Add((src, dst, hit, shotSide, Time.unscaledTime, covered)); Suborned.Fx097.Shot(dst, hit, covered); CueShot(by, t, hit, aim); // brief 097: a miss's chip mark and dust, cover's chips while (ShotFx.Count > 24) ShotFx.RemoveAt(0); // brief 024 Firing: the flash and the spark (HudToolkit.Fire), both views
             { var e = frame.Engine(from.Value); views.LastShotFrom = new Pt((int)System.Math.Round(e.X / 100.0) * 100, (int)System.Math.Round(e.Y / 100.0) * 100); } // brief 023: the startled turn away from it (1 m, so a frame's easing never moves it)
             if (hit) { Pulses.Add((toD, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: its puff is enough
         }

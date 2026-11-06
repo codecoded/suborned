@@ -21,6 +21,11 @@ from mats import pal, register
 from signals import puck
 
 register("DK_Brass_Civic", "brass", mats.BRASS)
+# Sky 2026-11-06 ("why you reduce the colors ... converging on blue"): the old town's colourway enamels, each piece in its old colour family (no new material where a colourway .mat exists)
+register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")   # boulevard coral
+register("DK_Enamel_Teal__southside", "enamel", "#D9962B")   # southside marigold
+register("DK_Enamel_Seafoam__gardens", "enamel", "#8FA88A")  # gardens sage
+
 register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")
 
 
@@ -44,9 +49,9 @@ def _twin(name, base, swaps, extra=None):
     asset(name, spec["cat"], bevel=spec["bevel"], lean=spec.get("lean", 1.0))(finish(base, swaps, extra))
 
 
-_twin("Streetlamp_Play", "Streetlamp", {"DK_Enamel_Red": "Enamel_Seafoam", "DK_Enamel_Teal": "Enamel_Ivory"})
-_twin("Bollard_Play", "Bollard", {"DK_Enamel_Red": "Enamel_Seafoam", "DK_Steel": "Chrome"})
-_twin("SandwichBoard_Play", "SandwichBoard", {"DK_Enamel_Red": "Enamel_Teal", "DK_Enamel_Mustard": "Enamel_Ivory"})
+_twin("Streetlamp_Play", "Streetlamp", {"DK_Enamel_Red": "Enamel_Teal__boulevard"})   # Sky 2026-11-06: keep the old lamp's colours, the red softened to the boulevard coral
+_twin("Bollard_Play", "Bollard", {"DK_Enamel_Red": "Enamel_Teal__boulevard", "DK_Steel": "Chrome"})
+_twin("SandwichBoard_Play", "SandwichBoard", {"DK_Enamel_Red": "Enamel_Teal__southside", "DK_Enamel_Mustard": "Enamel_Ivory"})
 _twin("Tile_Tactile_Play", "Tile_Tactile", {"DK_Tile_Red": "Enamel_Teal__boulevard", "DK_Tile_Blue": "Ground_TileTeal"})
 
 
@@ -63,8 +68,8 @@ def roof_tank_play(s):
     for z in (1.4, 2.6, 3.8):
         s.lathe(ring_prof(1.5, 1.56, z, z + 0.18), pal.Chrome, seg=32, cap_bottom=False, cap_top=False)                  # chrome bands
     _ball(s, (0, 0, 6.6), 2.4, pal.Hull_Ivory)
-    for z in (6.4, 7.6):
-        s.lathe([(2.4 - 0.25 * (z > 7), z), (2.42 - 0.25 * (z > 7), z + 0.2), (2.4 - 0.25 * (z > 7), z + 0.4)], pal.Enamel_Teal, seg=32, cap_bottom=False, cap_top=False)
+    for z, band in ((6.4, pal.Enamel_Teal__boulevard), (7.6, pal.Enamel_Teal__southside)):
+        s.lathe([(2.4 - 0.25 * (z > 7), z), (2.42 - 0.25 * (z > 7), z + 0.2), (2.4 - 0.25 * (z > 7), z + 0.4)], band, seg=32, cap_bottom=False, cap_top=False)
     with s.at((0, 0, 8.95)):
         s.lathe([(0.6, -0.05), (0.62, 0.06)] + dome(0.62, 0.06, 0.28, n=4)[1:], pal.Chrome, seg=20, cap_bottom=False)    # chrome cap
     s.lathe([(0.0, 9.2), (0.08, 9.2), (0.02, 10.4), (0.0, 10.4)], pal.Chrome, seg=8)                                     # spire
@@ -73,12 +78,12 @@ def roof_tank_play(s):
 @asset("Roof_Mast_Play", "Rooftop", bevel=0.0)
 def roof_mast_play(s):
     s.lathe([(1.8, 0.0), (1.8, 1.0), (0.0, 1.0)], pal.Limestone, seg=24, cap_bottom=False)
-    s.lathe([(1.83, 0.55), (1.83, 0.8)], pal.Enamel_Teal, seg=24, cap_bottom=False, cap_top=False)
+    s.lathe([(1.83, 0.55), (1.83, 0.8)], pal.Enamel_Teal__southside, seg=24, cap_bottom=False, cap_top=False)
     s.lathe([(0.75, 1.0), (0.55, 4.0), (0.38, 10.0), (0.22, 17.0)], pal.Enamel_Ivory, seg=20, cap_bottom=False, cap_top=False)  # tapering column
     for z, r in ((6.0, 1.7), (10.5, 1.3), (14.5, 0.9)):                                                                     # rings at the old lens heights
         col = 0.55 - (0.55 - 0.38) * (z - 4.0) / 6.0 if z < 10 else 0.38 - 0.16 * (z - 10.0) / 7.0
         s.lathe([(col, z - 0.1), (r, z - 0.04), (r, z + 0.04), (col, z + 0.1)], pal.Chrome, seg=24, cap_bottom=False, cap_top=False)
-        s.lathe(ring_prof(col, col + 0.03, z - 0.6, z - 0.3), pal.Enamel_Seafoam, seg=20, cap_bottom=False, cap_top=False)
+        s.lathe(ring_prof(col, col + 0.03, z - 0.6, z - 0.3), pal.Enamel_Teal__boulevard, seg=20, cap_bottom=False, cap_top=False)
     s.lathe([(0.0, 17.0), (0.12, 17.0), (0.03, 20.6), (0.0, 20.6)], pal.Chrome, seg=8)
     _ball(s, (0, 0, 17.3), 0.28, pal.Signal_Red, seg=12, n=6)
 

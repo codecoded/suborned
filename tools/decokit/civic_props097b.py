@@ -21,6 +21,13 @@ from mats import pal, register
 from signals import FRONT, puck, slab
 
 register("DK_Brass_Civic", "brass", mats.BRASS)
+# Sky 2026-11-06 ("why you reduce the colors ... converging on blue"): the old town's colourway enamels, each piece in its old colour family (no new material where a colourway .mat exists)
+register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")   # boulevard coral
+register("DK_Enamel_Teal__southside", "enamel", "#D9962B")   # southside marigold
+register("DK_Enamel_Seafoam__gardens", "enamel", "#8FA88A")  # gardens sage
+register("DK_Enamel_Cobalt", "enamel", "#2F84E8")             # the old town's cobalt (first-wins: the kit row stands)
+register("DK_Enamel_Sunshine", "enamel", "#FDEB8C")
+
 
 
 # ----------------------------------------------------------------------------- lockers
@@ -32,7 +39,7 @@ def lockers_play(s):
     rloft(s, [(LW, LD, 0.14, 0.0), (LW, LD, 0.14, 0.075), (LW - 0.02, LD - 0.02, 0.13, 0.095), (LW - 0.06, LD - 0.06, 0.12, 0.1)], pal.Limestone, n=4)  # plinth
     bw, bd, br = LW - 0.08, LD - 0.1, 0.2
     rband(s, bw, bd, br, 0.1, 0.114, pal.Brass_Civic, n=4, lip=0.005)                                     # brass hairline at the foot
-    rloft(s, [(bw, bd, br, 0.114), (bw, bd, br, 1.76)], pal.Enamel_Teal, n=4, cap_top=False)               # the teal bank, rounded ends
+    rloft(s, [(bw, bd, br, 0.114), (bw, bd, br, 1.76)], pal.Enamel_Cobalt, n=4, cap_top=False)               # the teal bank, rounded ends
     rloft(s, [(bw - 0.01, bd - 0.01, br, 1.755), (LW, LD, 0.24, 1.78), (LW, LD, 0.24, 1.86), (LW - 0.04, LD - 0.04, 0.22, 1.89),
               (LW - 0.16, LD - 0.16, 0.16, LH)], pal.Limestone, n=4)                                      # the honed limestone bullnose cap
     yf = -bd / 2
@@ -41,7 +48,7 @@ def lockers_play(s):
         for x in cols:
             for k, (z0, z1) in enumerate(((0.2, 0.68), (0.72, 1.2), (1.24, 1.7))):
                 with s.at((x, (z0 + z1) / 2, 0.0)):
-                    slab(s, 0.34, z1 - z0, 0.05, 0.0, 0.016, pal.Enamel_Teal, e=0.006, n=2, m=1)
+                    slab(s, 0.34, z1 - z0, 0.05, 0.0, 0.016, pal.Enamel_Teal__boulevard if x == 0.42 else pal.Enamel_Cobalt, e=0.006, n=2, m=1)
                     s.sweep([(0.11, -0.06, 0.02), (0.12, -0.03, 0.03), (0.12, 0.03, 0.03), (0.11, 0.06, 0.02)], 0.008, pal.Chrome, seg=5)   # pull
         with s.at((0.0, 0.95, 0.0)):                                                                      # the ivory control column
             slab(s, 0.3, 1.52, 0.1, 0.0, 0.02, pal.Enamel_Ivory, e=0.008, n=4, m=2)
@@ -74,7 +81,7 @@ def _bin(s, mat):
 @asset("RecyclingBins_Play", "Street", bevel=0.0)
 def recycling_bins_play(s):
     rloft(s, [(1.06, 0.42, 0.2, 0.0), (1.06, 0.42, 0.2, 0.06), (1.02, 0.4, 0.19, 0.08), (0.98, 0.38, 0.18, 0.085)], pal.Limestone, n=5)   # plinth
-    for x, mat in ((-BX, pal.Enamel_Teal), (BX, pal.Enamel_Seafoam)):
+    for x, mat in ((-BX, pal.Enamel_Teal), (BX, pal.Enamel_Teal__southside)):
         with s.at((x, 0, 0)):
             s.lathe(ring_prof(BR - 0.012, BR - 0.006, 0.085, 0.1), pal.Brass_Civic, seg=20, cap_bottom=False, cap_top=False)            # brass hairline
             _bin(s, mat)
@@ -137,16 +144,16 @@ def _vbody(s, w, d, h, z0, body, band, low):
 
 @asset("VendingMachine_Cola_Play", "Street", bevel=0.0)
 def vending_cola_play(s):
-    _vending(s, 0.9532, 0.832, 1.978, pal.Enamel_Ivory, pal.Enamel_Coral, pal.Enamel_Coral)
+    _vending(s, 0.9532, 0.832, 1.978, pal.Enamel_Ivory, pal.Enamel_Vermilion, pal.Enamel_Vermilion)
 
 
 @asset("VendingMachine_Snack_Play", "Street", bevel=0.0)
 def vending_snack_play(s):
-    _vending(s, 1.0031, 0.85, 1.86, pal.Enamel_Teal, pal.Enamel_Ivory, pal.Enamel_Seafoam)
+    _vending(s, 1.0031, 0.85, 1.86, pal.Enamel_Teal__southside, pal.Enamel_Ivory, pal.Enamel_Sunshine)
 
 
 # ----------------------------------------------------------------------------- pass 3: the twin phone booth's finish, the potted topiary's pot
-register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")  # the old town's boulevard coral: the kit's colourway enamel (colourways.py BOULEVARD_FASCIA), no new colour
+# (the boulevard coral is registered above): the kit's colourway enamel (colourways.py BOULEVARD_FASCIA), no new colour
 
 
 @asset("PhoneBooth_Play", "Booths", bevel=0.0)

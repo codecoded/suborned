@@ -19,6 +19,13 @@ from mats import pal, register
 from signals import FRONT, puck, slab
 
 register("DK_Brass_Civic", "brass", mats.BRASS)
+# Sky 2026-11-06 ("why you reduce the colors ... converging on blue"): the old town's colourway enamels, each piece in its old colour family (no new material where a colourway .mat exists)
+register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")   # boulevard coral
+register("DK_Enamel_Teal__southside", "enamel", "#D9962B")   # southside marigold
+register("DK_Enamel_Seafoam__gardens", "enamel", "#8FA88A")  # gardens sage
+register("DK_Enamel_Cobalt", "enamel", "#2F84E8")             # the old town's cobalt (first-wins: the kit row stands)
+register("DK_Enamel_Sunshine", "enamel", "#FDEB8C")
+
 register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")   # the boulevard coral (civic_props097b.py)
 
 
@@ -47,7 +54,7 @@ def hydrant_play(s):
 def bike_rack_play(s):
     rloft(s, [(1.38, 0.62, 0.3, 0.0), (1.38, 0.62, 0.3, 0.07), (1.35, 0.59, 0.28, 0.09), (1.3, 0.54, 0.26, 0.1)], pal.Limestone, n=5)   # the honed plinth
     rband(s, 1.36, 0.6, 0.29, 0.03, 0.042, pal.Brass_Civic, n=5, lip=0.004)                                                      # brass hairline
-    rloft(s, [(1.24, 0.14, 0.07, 0.1), (1.24, 0.14, 0.07, 0.15), (1.2, 0.1, 0.05, 0.17)], pal.Enamel_Teal, n=4)                 # the teal rail
+    rloft(s, [(1.24, 0.14, 0.07, 0.1), (1.24, 0.14, 0.07, 0.15), (1.2, 0.1, 0.05, 0.17)], pal.Enamel_Cobalt, n=4)                 # the teal rail
     for x in (-0.48, -0.16, 0.16, 0.48):                                                                                    # four chrome hoops over the rail
         arch = [(x, -0.24 * math.cos(a), 0.6 + 0.24 * math.sin(a)) for a in (math.pi * k / 10 for k in range(1, 10))]
         s.sweep([(x, -0.24, 0.1), (x, -0.24, 0.6)] + arch + [(x, 0.24, 0.6), (x, 0.24, 0.1)], 0.022, pal.Chrome, seg=8)
@@ -68,10 +75,10 @@ def bench_play(s):
         s.sweep([(-0.82, 0.0, 0.38), (0.82, 0.0, 0.38)], 0.022, pal.Chrome, seg=8)                                              # chrome frame rail
         s.sweep([(0.0, -0.15, 0.022), (0.0, -0.05, 0.36), (0.0, 0.05, 0.36), (0.0, 0.15, 0.022)], 0.022, pal.Chrome, seg=8)         # centre leg
         for x in (-0.41, 0.41):
-            s.rbox((x - 0.4, -0.26, 0.4), (x + 0.4, 0.18, 0.46), 0.025, pal.Enamel_Ivory, seg=2)                                # seat shell
-            s.rbox((x - 0.4, -0.27, 0.43), (x + 0.4, -0.2, 0.47), 0.02, pal.Enamel_Ivory, seg=2)                                # its rolled front lip
+            s.rbox((x - 0.4, -0.26, 0.4), (x + 0.4, 0.18, 0.46), 0.025, pal.Enamel_Teal__boulevard, seg=2)                                # seat shell
+            s.rbox((x - 0.4, -0.27, 0.43), (x + 0.4, -0.2, 0.47), 0.02, pal.Enamel_Teal__boulevard, seg=2)                                # its rolled front lip
             with s.at((x, 0.2, 0.46), (-14, 0, 0)):
-                s.rbox((-0.4, -0.03, 0.0), (0.4, 0.03, 0.385), 0.025, pal.Enamel_Teal, seg=2)                                     # teal back
+                s.rbox((-0.4, -0.03, 0.0), (0.4, 0.03, 0.385), 0.025, pal.Enamel_Teal__boulevard, seg=2)                                     # teal back
         s.sweep([(-0.86, 0.12, 0.42), (-0.85, 0.27, 0.8), (-0.8, 0.29, 0.845), (0.8, 0.29, 0.845), (0.85, 0.27, 0.8), (0.86, 0.12, 0.42)], 0.016, pal.Chrome, seg=8)  # the back frame
         for x in (-0.86, 0.86):
             s.sweep([(x, -0.22, 0.42), (x, -0.21, 0.6), (x, -0.15, 0.63), (x, 0.18, 0.63)], 0.014, pal.Chrome, seg=6)        # arm loops
@@ -87,7 +94,7 @@ def utility_cabinet_play(s):
     rloft(s, [(UW, UD, 0.12, 0.0), (UW, UD, 0.12, 0.06), (UW - 0.02, UD - 0.02, 0.11, 0.075), (UW - 0.05, UD - 0.05, 0.1, 0.08)], pal.Limestone, n=4)
     bw, bd = UW - 0.07, UD - 0.08
     rband(s, bw, bd, 0.14, 0.08, 0.092, pal.Brass_Civic, n=4, lip=0.004)
-    rloft(s, [(bw, bd, 0.14, 0.092), (bw, bd, 0.14, 1.15)], pal.Enamel_Teal, n=4, cap_top=False)
+    rloft(s, [(bw, bd, 0.14, 0.092), (bw, bd, 0.14, 1.15)], pal.Enamel_Powder, n=4, cap_top=False)
     rloft(s, [(bw - 0.01, bd - 0.01, 0.14, 1.145), (UW, UD, 0.17, 1.17), (UW, UD, 0.17, 1.24), (UW - 0.04, UD - 0.04, 0.15, 1.27),
               (UW - 0.14, UD - 0.14, 0.1, UH)], pal.Limestone, n=4)                                                       # the bullnose cap
     with s.at((0, -bd / 2, 0), FRONT):
@@ -98,6 +105,7 @@ def utility_cabinet_play(s):
                     s.box((-0.17, 0.12 + 0.05 * k, 0.018), (0.17, 0.135 + 0.05 * k, 0.03), pal.Enamel_Mustard)  # mustard: civic-look.json draws the civic cabinets' mustard as seafoam
                 hx = -0.2 if x > 0 else 0.2                                                                                  # the handle at the doors' meeting edge
                 s.sweep([(hx, -0.08, 0.025), (hx, 0.08, 0.025)], 0.01, pal.Chrome, seg=5)
+        s.box((-0.025, 0.12, 0.0), (0.025, 1.08, 0.022), pal.Enamel_Teal__southside)                                       # the marigold strip between the doors (the old orange)
         with s.at((0, 0.9, 0.0)):
             s.lathe(puck(0.06, 0.0, 0.02, 0.007, n=1), pal.Chrome, seg=16)                                                     # the dial
             s.lathe(puck(0.045, 0.014, 0.024, 0.003, n=1), pal.Enamel_Ivory, seg=16)
@@ -128,5 +136,5 @@ def bollard_sphere(s):
     s.lathe(ring_prof(0.148, 0.156, 0.05, 0.062), pal.Brass_Civic, seg=20, cap_bottom=False, cap_top=False)                    # brass hairline
     s.lathe([(0.15, 0.055), (0.105, 0.085), (0.105, 0.72)], pal.Enamel_Ivory, seg=20, cap_bottom=False, cap_top=False)        # ivory post
     s.lathe([(0.105, 0.72), (0.125, 0.735), (0.125, 0.775), (0.09, 0.8)], pal.Chrome, seg=20, cap_bottom=False, cap_top=False) # chrome collar
-    s.lathe(ring_prof(0.104, 0.114, 0.42, 0.58), pal.Enamel_Seafoam, seg=20, cap_bottom=False, cap_top=False)                 # seafoam band
+    s.lathe(ring_prof(0.104, 0.114, 0.42, 0.58), pal.Enamel_Teal__boulevard, seg=20, cap_bottom=False, cap_top=False)                 # seafoam band
     sphere(s, (0, 0, 0.945), 0.145, pal.Chrome, seg=20, n=8)

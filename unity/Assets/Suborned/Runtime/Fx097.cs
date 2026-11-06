@@ -36,6 +36,7 @@ namespace Suborned
             float groundY = Physics.Raycast(centre + new Vector3(9f, 30f, 0f), Vector3.down, out var gh, 40f) ? gh.point.y : water - 0.38f;
             gameObject.AddComponent<Birds097>().Init(new Vector3(centre.x, groundY, centre.z), groundY);
             Life(add, blend);
+            Decals(); // brief 097: the fountain's wet halo, petals under the beds (Fx097.Decals)
             Debug.Log($"Fx097: fountain at {centre} (water {water:F2} m, square {groundY:F2} m): {Jets} landings, spray and mist; birds; {vents.Count} vents, {beds.Count} beds shedding petals");
         }
 
@@ -94,7 +95,7 @@ namespace Suborned
 
         void Update()
         {
-            PolicePulse(Time.deltaTime);
+            PolicePulse(Time.deltaTime); PockFade();
             if (!fountain) return;
             if (steam && vents.Count > 0)
             {

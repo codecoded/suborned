@@ -15,8 +15,8 @@ float _DKInteriorOff097; // global: 1 = no rooms in the GlassSky film (the Air's
 float DKRoomHash(float3 p) { return frac(sin(dot(p, float3(127.1, 311.7, 74.7))) * 43758.5453); }
 
 half3 DKRoomPalette(float h)
-{   // cream, mint, peach, pale blue, butter: the city's interiors (GDD §15 base pastels, deepened a little to read behind glass)
-    half3 c0 = half3(0.93, 0.87, 0.76), c1 = half3(0.70, 0.86, 0.79), c2 = half3(0.95, 0.78, 0.68), c3 = half3(0.72, 0.82, 0.90), c4 = half3(0.96, 0.90, 0.62);
+{   // cream, apricot, butter, rose, mint: the city's interiors, warm with one cool room in five (Sky 2026-11-06: "everything converging on blue")
+    half3 c0 = half3(0.95, 0.87, 0.72), c1 = half3(0.97, 0.76, 0.56), c2 = half3(0.97, 0.89, 0.58), c3 = half3(0.94, 0.72, 0.66), c4 = half3(0.74, 0.87, 0.76);
     return h < 0.2 ? c0 : h < 0.4 ? c1 : h < 0.6 ? c2 : h < 0.8 ? c3 : c4;
 }
 
@@ -52,7 +52,7 @@ half3 DKInterior(float3 positionWS, half3 normalWS, half3 viewWS)
     float2 edge = min(h.xy, R.xy - h.xy);
     col *= 0.75 + 0.25 * saturate(min(edge.x, edge.y) * 1.6);
     // the ceiling's light panel, in the middle of the room
-    if (tHit == ty && rd.y > 0) { float2 q = abs(float2(h.x - R.x * 0.5, h.z - R.z * 0.5)); col += half3(1.0, 0.95, 0.82) * 0.9 * step(q.x, R.x * 0.28) * step(q.y, 0.35); }
+    if (tHit == ty && rd.y > 0) { float2 q = abs(float2(h.x - R.x * 0.5, h.z - R.z * 0.5)); col += half3(1.0, 0.9, 0.72) * 0.9 * step(q.x, R.x * 0.28) * step(q.y, 0.35); }
     // a desk's dark band along the back wall in some rooms
     if (tHit == tz && frac(id * 11.3) > 0.45) col *= (h.y > 0.72 && h.y < 0.78) ? 0.55 : 1.0;
     // venetian blinds: from the top of the window down to a height per room, slats every 6 cm, a little light between them

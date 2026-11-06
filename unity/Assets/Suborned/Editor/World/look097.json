@@ -18,7 +18,8 @@
   "bake": {
     "note": "ZoneBake097: the baked sky and bounce scaled so the lightmapped zone sits near the unbaked play look's exposure (the flat trilight lit every corner fully; the baked sky is occluded). sky x the play look's ambient intensity; bounce = LightingSettings.indirectScale",
     "sky": 1.0,
-    "bounce": 1.0
+    "skyWarm": 1.0,
+    "bounce": 1.3
   },
   "interior": {
     "note": "windows that show a room behind the glass (_DK_INTERIOR, DK_Interior097.hlsl); smoothness is the glass's reflection over the room",
@@ -76,7 +77,16 @@
     "DK_GlassDark": {
       "shader": "Suborned/DecoKit/GlassSky",
       "floats": {
-        "_Rooms": 1
+        "_Rooms": 1,
+        "_Edge": 0.72
+      },
+      "colours": {
+        "_BaseColor": [
+          0.36,
+          0.29,
+          0.22,
+          0.5
+        ]
       }
     },
     "DK_Fountain_Foam": {
@@ -90,6 +100,18 @@
           0.929,
           0.875,
           0.42
+        ]
+      }
+    },
+    "DK_Glass_Sheen": {
+      "note": "the café's painted reflection streaks (cafe_upper.py, two a pane), made when the glass was flat enamel; over GlassSky's own sheen and rooms they read as white scratches (Sky 2026-11-06: \"the cafes window look bad\"), so they stay only as a faint glint",
+      "shader": "DecoKit/Lit Cutaway",
+      "colours": {
+        "_BaseColor": [
+          0.957,
+          0.984,
+          0.98,
+          0.06
         ]
       }
     }

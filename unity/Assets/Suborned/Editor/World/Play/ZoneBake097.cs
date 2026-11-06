@@ -88,7 +88,8 @@ namespace Suborned.World.Play
                 lsun.transform.rotation = look.sunRotation; lsun.color = look.sunColour; lsun.intensity = look.sunIntensity;
                 float k = Tune("sky", 1f); // Unity's ambient intensity multiplier only scales a skybox source: a trilight is scaled through its colours, in linear
                 Color Up(Color c) => (c.linear * k).gamma;
-                RenderSettings.ambientMode = look.ambientMode; RenderSettings.ambientSkyColor = Up(look.ambientSky); RenderSettings.ambientEquatorColor = Up(look.ambientEquator); RenderSettings.ambientGroundColor = Up(look.ambientGround); RenderSettings.ambientIntensity = look.ambientIntensity;
+                float warm = Tune("skyWarm", 0f); // Sky 2026-11-05 "keep the warm shade": the baked sky leans to the trilight's warm equator, or the shade drifts blue (2026-11-06)
+                RenderSettings.ambientMode = look.ambientMode; RenderSettings.ambientSkyColor = Up(Color.Lerp(look.ambientSky, look.ambientEquator, warm)); RenderSettings.ambientEquatorColor = Up(look.ambientEquator); RenderSettings.ambientGroundColor = Up(look.ambientGround); RenderSettings.ambientIntensity = look.ambientIntensity;
             }
             Debug.Log($"ZoneBake097: {(lsun ? "the play light" : "the scene's light (no OldTownPlayLook light swap)")}: ambient {RenderSettings.ambientMode} sky {RenderSettings.ambientSkyColor} equator {RenderSettings.ambientEquatorColor} ground {RenderSettings.ambientGroundColor} x{RenderSettings.ambientIntensity}; skybox {(RenderSettings.skybox ? RenderSettings.skybox.shader.name : "none")}; sun {(RenderSettings.sun ? RenderSettings.sun.intensity.ToString() : "none")}");
             // emission does not bake: the kit's emitters are Realtime Emissive (m_LightmapFlags 1), which a baked-GI pass leaves out. Do not touch their GI

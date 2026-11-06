@@ -86,8 +86,11 @@ Shader "Suborned/DecoKit/GlassSky"
                 mirror = lerp(mirror, _SkyHorizon.rgb * 1.2, glow);
                 half fres = pow(1 - ndv, _Fresnel);
                 half sheen = smoothstep(0.35, 0.5, frac((i.wp.x + i.wp.z) * 0.07 + i.wp.y * 0.05)) * _Sheen * (1 + 2.0 * fres * saturate(glow * 2));
-                half rooms = _Rooms * (1.0h - half(_DKInteriorOff097)) * saturate((0.6h - abs(n.y)) * 5.0h); // walls only: a dome, roof light or canopy keeps its sky film
-                half cover = lerp(lerp(_BaseColor.a, 0.3h, rooms), _Edge, fres); // brief 097: with rooms the film is clearer, so the room reads through it
+                // walls only (a dome, roof light or canopy keeps its sky film), and flat ones: where the normal turns fast across the glass (the café's ribbon bends,
+                // a curved bay) a room grid smears into stripes, so it fades out by the normal's change per metre (Sky 2026-11-06: "the cafes window look bad")
+                float curve = length(fwidth(float3(n))) / max(length(fwidth(i.wp)), 1e-4);
+                half rooms = _Rooms * (1.0h - half(_DKInteriorOff097)) * saturate((0.6h - abs(n.y)) * 5.0h) * saturate(1.0h - half(curve) * 6.0h);
+                half cover = lerp(_BaseColor.a, _Edge, fres); // the film as it was: a room shows only through its clear share, faint depth behind tinted glass
                 half3 col = (lerp(_BaseColor.rgb, mirror, saturate(0.4 + fres)) + sheen) * day;
                 half3 pm = col * cover;
                 if (_Lit > 0.0001)
@@ -103,8 +106,8 @@ Shader "Suborned/DecoKit/GlassSky"
                 if (rooms > 0.001)
                 {
                     half3 room = DKInterior(i.wp, n, v) * (half(0.35) + half(0.65) * day);
-                    pm += room * (1.0h - cover) * rooms;
-                    cover = lerp(cover, 1.0h, rooms);
+                    pm += room * (1.0h - cover) * rooms * half(0.8);
+                    cover = lerp(cover, 1.0h, rooms * half(0.85));
                 }
                 pm = MixFogColor(pm, unity_FogColor.rgb * cover, i.fog);
                 return half4(pm, cover);

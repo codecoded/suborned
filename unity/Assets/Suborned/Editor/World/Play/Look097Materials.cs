@@ -68,6 +68,7 @@ namespace Suborned.World.Play
                     if (dirty) { EditorUtility.SetDirty(m); changed++; } moved++;
                 }
             changed += Fx097Assets.Ensure();
+            changed += Decals097.Ensure(); // brief 097: URP decals (Screen Space) and their materials
             // the old opt-in vertex-AO keyword is dead (the AO is keyword-free in DK_Forward097): off everywhere, so no colourway or poster variant differs from
             // its base by it (the world builder refuses a variant whose keywords differ: a new keyword set is a new SetPass)
             int stale = 0;

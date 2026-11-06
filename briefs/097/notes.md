@@ -9,7 +9,7 @@ LIGHT
     shadows and the cloud cookie stay realtime; the lightmaps hold the sky's occlusion and the bounce: soft shade at every wall foot, kerb,
     planter, bench and step, warm bounce into the shade. 5,302 renderers, 13 maps of 2048 (8 texels/m, 768 samples), a light-probe grid at
     feet and heads so people and props pick up the same light. Calibrated to the round's starting look (means 173/140/168 vs 176/134/169;
-    sun-to-shade on the road 1.47 vs 1.49): sky x1, bounce x1, play exposure +0.6 EV and contact strips x0.55 when the scene is lightmapped.
+    sun-to-shade on the road 1.47 vs 1.49): sky x1 pulled to the warm equator colour, bounce x1.3, play exposure +0.4 EV and contact strips x0.55 when the scene is lightmapped (see COLOUR).
     Four causes fixed on the way: Automatic lightmap stripping read EditorBuildSettings (SampleScene only) and stripped LIGHTMAP_ON (Custom
     stripping now keeps the plain lightmap variants); the bake lit the zone with the old stage's sun (3, other heading) instead of the play
     light; Lightmapping.Bake re-rendered the baked reflection probes from the raw editor scene and flooded the square white (probes now kept
@@ -47,6 +47,23 @@ COST (Studio M5 Max, 1920x1080, final full OldTown scratch build vs the round's 
   Shader warm-up re-recorded (briefs/096/latch/prewarm.md's steps; Resources/Prewarm/play-metal.graphicsstate: 151 variants / 199 states, was
     103 / 130). Cold Metal cache, Studio: first third person 27.6 ms (0.2.253: 28.6), quarter turns 5-7.5 ms, cutaway 13.2 ms (13.0); the
     warm-up behind the loading bar on a build's first launch 33.4 s, worst frame 10.2 s (0.2.253: 27.3 s, 8.0 s): +6 s once per build.
+
+COLOUR (Sky 2026-11-06: "why you reduce the colors, and made them washed out again? Everything seems to be converging on blue")
+  Measured against the round's start: saturation down, shade cooler. Causes: the baked sky was the trilight's blue top lighting every shade;
+  the exposure lift (+0.6 EV) washed colour out; the rooms' palette was cool. Fixed: the bake's sky colour is pulled to the warm equator
+  colour (look097.json bake.skyWarm), warm bounce x1.3, exposure in a lightmapped scene +0.4 EV, the rooms cream/apricot/butter/rose/mint;
+  Vela recoloured the zone's props toward the boulevard palette.
+
+DECALS (Sky: "URP Decal projector sounds interesting")
+  URP's Decal renderer feature on the play renderer (Decals097, Screen Space: no DBuffer prepass, no new lit variants, decal layers off,
+  120 m). Three projected looks made at build time: the fountain's wet halo on the paving, fallen petals under each flower bed, and a chip
+  mark where a missed shot lands (pool of 32, fading out over a minute, so a long fight never adds draws without end). A miss also throws
+  grit and dust; a shot that cover takes throws chips off the prop.
+
+CAFÉ GLASS (Sky: "the cafes window look bad")
+  The film over the rooms was too thin (the blue sky and its streaks came through and the rooms' grid ran across curved glass). GlassSky now
+  keeps a thicker film where rooms show and gates the rooms out where the glass curves (screen-space curvature), so the bowed café front
+  reads as glass with warm rooms behind it, not as a grid.
 
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,

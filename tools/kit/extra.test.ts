@@ -63,8 +63,9 @@ describe('kit: extra generated roots (brief 077)', () => {
 describe('kit.json: the brief 077 pieces (adopted 2026-10-30 on Sky\'s yes to the Unity capture)', () => {
   const kit = JSON.parse(require('node:fs').readFileSync(join(import.meta.dir, '../../contracts/world/kit.json'), 'utf8')) as { assets: KitAsset[] };
   const extra = kit.assets.filter(a => a.extra);
+  // 28: brief 097 pass 3 added ShrubMound_TB (Vela, from the testbed planting)
   test('every extra-root piece is adopted; each rebuild names the dome piece it replaces, which is rejected, and BedTuft_A/B/C are rejected', () => {
-    expect(extra.length).toBe(27); expect(extra.every(a => a.status === 'adopted')).toBe(true);
+    expect(extra.length).toBe(28); expect(extra.every(a => a.status === 'adopted')).toBe(true);
     for (const a of extra.filter(x => x.replaces)) { expect(a.id).toBe(`${a.replaces}_TB`); expect(kit.assets.find(x => x.id === a.replaces)?.status).toBe('rejected'); }
     for (const id of ['BedTuft_A', 'BedTuft_B', 'BedTuft_C']) expect(kit.assets.find(x => x.id === id)?.status).toBe('rejected');
   });
