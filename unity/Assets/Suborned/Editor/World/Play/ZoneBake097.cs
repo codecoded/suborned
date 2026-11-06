@@ -89,7 +89,7 @@ namespace Suborned.World.Play
                 float k = Tune("sky", 1f); // Unity's ambient intensity multiplier only scales a skybox source: a trilight is scaled through its colours, in linear
                 Color Up(Color c) => (c.linear * k).gamma;
                 float warm = Tune("skyWarm", 0f); // Sky 2026-11-05 "keep the warm shade": the baked sky leans to the trilight's warm equator, or the shade drifts blue (2026-11-06)
-                RenderSettings.ambientMode = look.ambientMode; RenderSettings.ambientSkyColor = Up(Color.Lerp(look.ambientSky, look.ambientEquator, warm)); RenderSettings.ambientEquatorColor = Up(look.ambientEquator); RenderSettings.ambientGroundColor = Up(look.ambientGround); RenderSettings.ambientIntensity = look.ambientIntensity;
+                RenderSettings.ambientMode = look.ambientMode; RenderSettings.ambientSkyColor = Up(Warm(look.ambientSky, look.ambientEquator, warm)); RenderSettings.ambientEquatorColor = Up(look.ambientEquator); RenderSettings.ambientGroundColor = Up(look.ambientGround); RenderSettings.ambientIntensity = look.ambientIntensity;
             }
             Debug.Log($"ZoneBake097: {(lsun ? "the play light" : "the scene's light (no OldTownPlayLook light swap)")}: ambient {RenderSettings.ambientMode} sky {RenderSettings.ambientSkyColor} equator {RenderSettings.ambientEquatorColor} ground {RenderSettings.ambientGroundColor} x{RenderSettings.ambientIntensity}; skybox {(RenderSettings.skybox ? RenderSettings.skybox.shader.name : "none")}; sun {(RenderSettings.sun ? RenderSettings.sun.intensity.ToString() : "none")}");
             // emission does not bake: the kit's emitters are Realtime Emissive (m_LightmapFlags 1), which a baked-GI pass leaves out. Do not touch their GI
@@ -116,6 +116,9 @@ namespace Suborned.World.Play
 
         static bool Solid(Material m) => m && m.renderQueue < 2450 && m.shader && !m.shader.name.Contains("Leaf") && !m.shader.name.Contains("Fountain") && !m.shader.name.Contains("Signal")
             && !m.shader.name.Contains("Contact") && !m.name.Contains("Glass") && !m.name.StartsWith("DK_Leaf") && !m.name.StartsWith("DK_Petal");
+
+        /// <summary>The baked sky leaned to the warm equator; past 1 it goes beyond it, away from the blue (each channel kept at or above 0).</summary>
+        static Color Warm(Color sky, Color eq, float k) { var c = Color.LerpUnclamped(sky, eq, k); return new Color(Mathf.Max(0f, c.r), Mathf.Max(0f, c.g), Mathf.Max(0f, c.b), 1f); }
 
         static bool Near(Bounds b, float margin) => b.max.x >= ZoneXZ.xMin - margin && b.min.x <= ZoneXZ.xMax + margin && b.max.z >= ZoneXZ.yMin - margin && b.min.z <= ZoneXZ.yMax + margin;
 

@@ -18,7 +18,7 @@
   "bake": {
     "note": "ZoneBake097: the baked sky and bounce scaled so the lightmapped zone sits near the unbaked play look's exposure (the flat trilight lit every corner fully; the baked sky is occluded). sky x the play look's ambient intensity; bounce = LightingSettings.indirectScale",
     "sky": 1.0,
-    "skyWarm": 1.0,
+    "skyWarm": 1.35,
     "bounce": 1.6
   },
   "interior": {
