@@ -50,7 +50,7 @@ describe('the takedown places of the civic block', () => {
   test('one Dumpster stands beside the Office service door, on the side away from the play camera, against the wall; the café\'s kitchen door says why it has none', () => {
     const boxes = base.w.street.filter(s => s.stash), door = t.entrances.find(e => e.id === 'office-service-door')!;
     expect(boxes.map(s => s.id)).toEqual(['street/civic/stash/office-service-door']);
-    expect(boxes[0]).toMatchObject({ kind: 'dumpster', stash: { holds: 1 }, sight: 'blocks', source: 'procedural' }); // a candidate piece is never drawn: Vela adopts the Dumpster, the item then takes its kit ref
+    expect(boxes[0]).toMatchObject({ kind: 'dumpster', stash: { holds: 1 }, sight: 'blocks', source: 'kit', kit: { id: 'Dumpster_Civic' } }); // brief 097: Vela's Dumpster_Civic adopted, so the item takes its kit ref (the store Dumpster stays a candidate)
     const c = boxes[0]!, cam = cameraDir(QUIET.cameraYaw), side = (c.at[0] - door.at[0]) * cam[0] + (c.at[1] - door.at[1]) * cam[1];
     expect(side).toBeLessThan(0); // away from the camera, so it does not stand between the camera and the door
     expect(Math.hypot(c.at[0] - door.at[0], c.at[1] - door.at[1])).toBeGreaterThan(QUIET.doorHalf + QUIET.doorClear); // clear of the jamb
@@ -85,7 +85,7 @@ describe('the takedown places of the civic block', () => {
     const bin = failing(w => { w.street.find(s => s.kind === 'bin')!.stash = { holds: 1 }; });
     expect(bin['R-HIDE']).toMatch(/carries no stash tag/);
     const holds = failing(w => { w.street.find(s => s.stash)!.stash!.holds = 3; });
-    expect(holds['R-HIDE']).toMatch(/holds 3, its piece Dumpster holds 1/);
+    expect(holds['R-HIDE']).toMatch(/holds 3, its piece Dumpster_Civic holds 1/);
     const ghost = failing(w => { w.takedown!.stashes.find(s => s.kind === 'container')!.item = 'street/no-such-item'; });
     expect(ghost['R-HIDE']).toMatch(/is no container/);
     const door = failing(w => { w.takedown!.stashes.find(s => s.kind === 'door')!.of = 'cafe-entrance'; });

@@ -35,9 +35,9 @@ test('the street kinds Vela picked now draw their kit pieces; the _Play copies a
   expect(ids('mailbox')).toEqual(new Set(['PneumaticPost_Play'])); expect(ids('public-clock')).toEqual(new Set(['StreetClock']));
   expect(ids('tram-shelter')).toEqual(new Set(['BusShelter_Play', 'TramCanopy_Play'])); expect(ids('newsstand')).toEqual(new Set(['Newsstand'])); expect(ids('kiosk-food')).toEqual(new Set(['CoffeeCart_Play']));
   expect([...ids('tub-palm')].sort()).toEqual(['FanPalm_Play', 'PottedFern']);
-  expect(ids('phone-booth')).toEqual(new Set(['PhoneBooth_Single', 'PhoneBooth'])); // the twin pod serves the 11 booth pairs (brief 026), the one-hood single the rest
+  expect(ids('phone-booth')).toEqual(new Set(['PhoneBooth_Single', 'PhoneBooth_Play'])); // the twin pod serves the 11 booth pairs (brief 026; brief 097: Vela's finished PhoneBooth_Play, the store pod's size), the one-hood single the rest
   expect(ids('kiosk-pavilion')).toEqual(new Set(['CurvedKiosk']));
-  const ph = by.get('PhoneBooth')!, slot = slotOf(ctx, kinds('phone-booth').find(x => !x.variant)!)!;
+  const ph = by.get('PhoneBooth_Play')!, slot = slotOf(ctx, kinds('phone-booth').find(x => !x.variant)!)!;
   expect(ph.size[0]).toBeGreaterThan(slot.along!); expect(fit(ph, slot)).toBeNull(); // the 2.6 m twin pod does not fit a one-booth slot (it needs a pair of items, brief 026); the one-hood single does
   for (const id of ['FanPalm', 'Planter_Urn', 'PneumaticPost', 'CurvedKiosk_Play']) expect(w.street.some(s => s.kit?.id === id), `${id} is retired from the street slots`).toBe(false);
 });
