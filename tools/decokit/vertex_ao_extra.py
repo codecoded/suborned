@@ -107,4 +107,5 @@ def main():
     print(f"[DK-AO] {len(report)} rows -> {DST}")
 
 
-main()
+if __name__ == "__main__":  # shrub097_extra.py imports load / export
+    main()

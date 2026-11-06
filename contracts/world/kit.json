@@ -57954,7 +57954,7 @@
     0.248
    ],
    "front": "+Z",
-   "tris": 4320,
+   "tris": 4520,
    "materials": [
     "DK_Enamel_Teal",
     "DK_Chrome",
@@ -57966,7 +57966,9 @@
     "DK_Limestone_Tex",
     "DK_Enamel_Mustard",
     "DK_Gold",
-    "DK_Enamel_Seafoam"
+    "DK_Enamel_Seafoam",
+    "DK_Limestone",
+    "DK_Brass_Civic"
    ],
    "lods": [
     {
@@ -57988,8 +57990,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_3.fbx",
-     "sha256": "ada35db26b765ad52ee4a3db266e9ad156409c6a63268923d8a7c09fc9a79ac3",
-     "bytes": 136652
+     "sha256": "935117d5890223896451d9ecb8abc5ae85013103f2c242f284b60de5f7e4a681",
+     "bytes": 143996
     },
     {
      "root": "generated",
@@ -58139,6 +58141,34 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Seafoam.mat.meta",
      "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -58303,7 +58333,7 @@
     0.49
    ],
    "front": "+Z",
-   "tris": 5306,
+   "tris": 5474,
    "materials": [
     "DK_Enamel_Charcoal",
     "DK_Enamel_Mustard",
@@ -58315,7 +58345,9 @@
     "DK_Limestone_Tex",
     "DK_Window_Tower",
     "DK_Gold",
-    "DK_Enamel_Seafoam"
+    "DK_Enamel_Seafoam",
+    "DK_Limestone",
+    "DK_Brass_Civic"
    ],
    "lods": [
     {
@@ -58337,8 +58369,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_3D.fbx",
-     "sha256": "697436473ec3446cb7080c2c1018fbab52858160290da8cf787f535b360a2cb1",
-     "bytes": 156924
+     "sha256": "543f5db058441f8ad4a89f345fcac9aa14e1d60792b8ed6b9973aa97e9d69a16",
+     "bytes": 163388
     },
     {
      "root": "generated",
@@ -58488,6 +58520,34 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Seafoam.mat.meta",
      "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -58652,7 +58712,7 @@
     0.248
    ],
    "front": "+Z",
-   "tris": 5080,
+   "tris": 5258,
    "materials": [
     "DK_Enamel_Teal",
     "DK_Chrome",
@@ -58664,7 +58724,9 @@
     "DK_Limestone_Tex",
     "DK_Enamel_Mustard",
     "DK_Gold",
-    "DK_Enamel_Seafoam"
+    "DK_Enamel_Seafoam",
+    "DK_Limestone",
+    "DK_Brass_Civic"
    ],
    "lods": [
     {
@@ -58686,8 +58748,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_4.fbx",
-     "sha256": "a41b1a7484e6abde4d07e9e1ca96bba51fc137b991190ce943f5b58acdb06337",
-     "bytes": 154076
+     "sha256": "22266164eaaae1984885922e8c89039818cf1bd8a7351c902b0c6b8560270d14",
+     "bytes": 160940
     },
     {
      "root": "generated",
@@ -58837,6 +58899,34 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Seafoam.mat.meta",
      "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -59001,7 +59091,7 @@
     0.49
    ],
    "front": "+Z",
-   "tris": 6030,
+   "tris": 6218,
    "materials": [
     "DK_Enamel_Charcoal",
     "DK_Enamel_Mustard",
@@ -59013,7 +59103,9 @@
     "DK_Limestone_Tex",
     "DK_Window_Tower",
     "DK_Gold",
-    "DK_Enamel_Seafoam"
+    "DK_Enamel_Seafoam",
+    "DK_Limestone",
+    "DK_Brass_Civic"
    ],
    "lods": [
     {
@@ -59035,8 +59127,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_4D.fbx",
-     "sha256": "274423445c5b074447a45707cf99533387a00def05f384076c6a78ba2457da34",
-     "bytes": 173564
+     "sha256": "81533fb35f2cf59b06fa4d2ef3349db6ed652f2d3cafa908702e7f3da244acf4",
+     "bytes": 180556
     },
     {
      "root": "generated",
@@ -59186,6 +59278,34 @@
      "role": "material-meta",
      "path": "Materials/DK_Enamel_Seafoam.mat.meta",
      "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Brass_Civic.mat",
+     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
+     "bytes": 4042
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Brass_Civic.mat.meta",
+     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -103577,6 +103697,158 @@
     "wave": 2
    },
    "status": "adopted"
+  },
+  {
+   "id": "ShrubMound_TB",
+   "category": "Plaza",
+   "size": [
+    0.9524,
+    0.7281,
+    0.9874
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 3344,
+   "materials": [
+    "DK_Leaf_TB",
+    "DK_Petal_TB"
+   ],
+   "lods": [
+    {
+     "file": "Models/Plaza/DK_ShrubMound_TB_L1.fbx",
+     "tris": 2198,
+     "screen": 0.2963
+    },
+    {
+     "file": "Models/Plaza/DK_ShrubMound_TB_L2.fbx",
+     "tris": 1273,
+     "screen": 0.1667
+    }
+   ],
+   "lodCategory": "street",
+   "lodSize": 4,
+   "lodAtPlay": true,
+   "objects": [
+    {
+     "name": "DK_ShrubMound_L1",
+     "materials": [
+      "DK_Leaf_TB",
+      "DK_Petal_TB"
+     ],
+     "shadows": "on"
+    }
+   ],
+   "files": [
+    {
+     "root": "extra",
+     "role": "fbx",
+     "path": "Models/Plaza/DK_ShrubMound_TB.fbx",
+     "src": "Models/Plaza/DK_ShrubMound.fbx",
+     "sha256": "139b9588ff02efda750bc184759b8367976a69a2da39b992e911297469e4d8d5",
+     "bytes": 289020
+    },
+    {
+     "root": "extra",
+     "role": "lod",
+     "path": "Models/Plaza/DK_ShrubMound_TB_L1.fbx",
+     "src": "Models/Plaza/DK_ShrubMound_L1.fbx",
+     "sha256": "c7320e686a3172af6af6ea1f724b35391f739f5d2352779670b4774fc82047d3",
+     "bytes": 197852
+    },
+    {
+     "root": "extra",
+     "role": "lod",
+     "path": "Models/Plaza/DK_ShrubMound_TB_L2.fbx",
+     "src": "Models/Plaza/DK_ShrubMound_L2.fbx",
+     "sha256": "b439267b3351e9db45305ac67152f508016d10b036cbd9be1ac423bd1131f640",
+     "bytes": 124668
+    },
+    {
+     "root": "extra",
+     "role": "material",
+     "path": "Materials/DK_Leaf_TB.mat",
+     "sha256": "d9990c6cf42e3d061f6b60a02a820c194342136c8a4e97166bc5b2f0efd700eb",
+     "bytes": 3768
+    },
+    {
+     "root": "extra",
+     "role": "material-meta",
+     "path": "Materials/DK_Leaf_TB.mat.meta",
+     "sha256": "46daa84309cb905edc76a3703525de6ee65a2bc3a1513412c9f861e53b93781e",
+     "bytes": 188
+    },
+    {
+     "root": "extra",
+     "role": "texture",
+     "path": "Textures/botanical-atlas-v2.png",
+     "sha256": "da2573c3f98e3e502ad1a6acd9e786ae43ae0961f0b8dd7a80dc1a75fa2f9bbe",
+     "bytes": 3141423
+    },
+    {
+     "root": "extra",
+     "role": "texture-meta",
+     "path": "Textures/botanical-atlas-v2.png.meta",
+     "sha256": "72a52e134b92dca9cf831234b01288986e4e07c9dc94a06010fc1f3bff33e9d6",
+     "bytes": 2714
+    },
+    {
+     "root": "extra",
+     "role": "texture",
+     "path": "Textures/botanical-mask-v2.png",
+     "sha256": "60e8924e90089ed7ec4dffb953706bdde3ff6df2a156771de24a55df57cd82a9",
+     "bytes": 846893
+    },
+    {
+     "root": "extra",
+     "role": "texture-meta",
+     "path": "Textures/botanical-mask-v2.png.meta",
+     "sha256": "1f98b2bd86e0059c0159069bd9f066514a8a4e64708e6d0ab20b7753edccbe9b",
+     "bytes": 2714
+    },
+    {
+     "root": "extra",
+     "role": "texture",
+     "path": "Textures/botanical-normal-v2.png",
+     "sha256": "9c95555b3906cf72a04fe28927dad2a6e6b0b97d84e770261f55819c65a29b79",
+     "bytes": 1376172
+    },
+    {
+     "root": "extra",
+     "role": "texture-meta",
+     "path": "Textures/botanical-normal-v2.png.meta",
+     "sha256": "ce3e45d6f10f6d4455a8f2cf4da9e08aa679c82c1994a15f4da6c016d8deff86",
+     "bytes": 2714
+    },
+    {
+     "root": "extra",
+     "role": "material",
+     "path": "Materials/DK_Petal_TB.mat",
+     "sha256": "61abf9a2b7aaf49bf0da4e8217a8f0e126dd2d31bbb66f8b3f2eac3b159c7afa",
+     "bytes": 3718
+    },
+    {
+     "root": "extra",
+     "role": "material-meta",
+     "path": "Materials/DK_Petal_TB.mat.meta",
+     "sha256": "79e11850a7c606a28b56f9d8c46e7fd3e905334aea7ffe6d954305f3e69b223c",
+     "bytes": 188
+    }
+   ],
+   "tags": {
+    "use": [
+     "planter-bed:shrub"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated",
+   "extra": "out/decokit-097-extra",
+   "replaces": "ShrubMound"
   },
   {
    "id": "SideBay_3",

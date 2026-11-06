@@ -62,7 +62,7 @@ export const RULES = {
   /** Planting (Vela round 2, the old city's siting): a flower trough and topiary at each run end of a frontage; urns flanking every fourth tenancy seam; shrub mounds in a garden's border every `every` m; window boxes on the sills of shop trades. */
   runEnd: { bed: 'FlowerBed', cone: 'TopiaryCone', palm: 'PottedPalm_Small', in: 0.15 },
   urn: { piece: 'Planter_Urn_Play', everyNth: 4 },
-  shrub: { piece: 'ShrubMound', every: 10, beyond: 1.0 },
+  shrub: { piece: 'ShrubMound_TB', every: 10, beyond: 1.0 },
   windowBox: { piece: 'WindowBox', trades: ['florist', 'grocer', 'diner', 'soda-fountain', 'barber', 'beauty-salon', 'tailor', 'record-shop', 'camera-shop'], pitch: 3, doorClear: 1.7, sill: 0.95, minW: 6 },
   roundBench: { piece: 'RoundBench', everyTree: 3 },
 };

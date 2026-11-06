@@ -15,8 +15,8 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | WindowBox | 48 | 2298 | store | 4 | 4 | at the bar in the r3 frames; keep |
 | Tile_Terrazzo | 40 | 918 | store | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | CoconutPalm | 40 | 6310 | store | 4 | 4 | cards read well in the r3 frames (magenta in the sheet = textures not loaded in Blender); no Tripo needed |
-| AlleyWall_4 | 35 | 4418 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
-| AlleyWall_3 | 31 | 3776 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
+| AlleyWall_4 | 35 | 4418 | generated | 3 | 4 | final pass: AO cuts, a honed limestone base course with a brass hairline (broken at the door or dock) and a limestone cornice under the coping, both inset inside the measured bounds (bounds and volumes unchanged); the downpipe, vent grille, meter and caged lamp were already there |
+| AlleyWall_3 | 31 | 3776 | generated | 3 | 4 | final pass: AO cuts, a honed limestone base course with a brass hairline (broken at the door or dock) and a limestone cornice under the coping, both inset inside the measured bounds (bounds and volumes unchanged); the downpipe, vent grille, meter and caged lamp were already there |
 | StreamBay_4 | 28 | 1706 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | ShopFill_3 | 26 | 1024 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | ShopFill_4 | 24 | 1174 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
@@ -27,12 +27,12 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | InlayArc_R2_W06 | 16 | 64 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | SidePilaster_4 | 15 | 652 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | SidePilaster_Top | 13 | 152 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| ShrubMound | 13 | 2526 | store | 3 | 3 | not done: the testbed 077 cards come through domes077.ts/domes077_final.py (Splice's pipeline, the beds' path), not a Blender builder; needs that pass run for a ShrubMound bed |
+| ShrubMound | 13 | 2526 | store | 3 | 4 | final pass: ShrubMound_TB (extra root, tools/decokit/shrub097_extra.py): a 0.95 x 0.99 m patch of the testbed bed planting (077 cards, see-through materials) at the old size and height, from the bed's close level down (3344 / 2198 / 1273 tris); capstone `shrub` routed to it; old volumes pinned |
 | SideBayStack_Top | 12 | 494 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| AlleyWall_3D | 12 | 4614 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
+| AlleyWall_3D | 12 | 4614 | generated | 3 | 4 | final pass: AO cuts, a honed limestone base course with a brass hairline (broken at the door or dock) and a limestone cornice under the coping, both inset inside the measured bounds (bounds and volumes unchanged); the downpipe, vent grille, meter and caged lamp were already there |
 | BollardSphere | 12 | 555 | generated | 3 | 4 | rebuilt: BollardSphere (finish). an all-chrome post: reads grey at play zoom |
 | StreamBay_3 | 11 | 1444 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| AlleyWall_4D | 11 | 5254 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
+| AlleyWall_4D | 11 | 5254 | generated | 3 | 4 | final pass: AO cuts, a honed limestone base course with a brass hairline (broken at the door or dock) and a limestone cornice under the coping, both inset inside the measured bounds (bounds and volumes unchanged); the downpipe, vent grille, meter and caged lamp were already there |
 | TopiaryCone | 11 | 2484 | store | 4 | 4 | cards read well in the r3 frames (magenta in the sheet = textures not loaded in Blender); no Tripo needed |
 | Roof_Tank | 10 | 2136 | store | 3 | 4 | final pass: Roof_Tank_Play: the sphere on a streamline ivory drum with chrome bands, two teal bands, chrome cap and spire (2136 → 2448) |
 | SidePilaster_3 | 10 | 572 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
@@ -122,6 +122,6 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | CivicBedPlanting_office-north | 1 | 21426 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | CivicBedPlanting_office-west | 1 | 52252 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 
-Scored 113 (4 robots not scored): before mean 3.80, ≤3: 21; after mean 3.96, ≤3: 5 (final pass, 2026-11-06).
+Scored 113 (4 robots not scored): before mean 3.80, ≤3: 21; after mean 4.00, ≤3: 0 (final pass, 2026-11-06).
 
 Collision (Keel's rule): every brief-097 piece declares the replaced piece's volumes and catalogue size (tools/decokit/collide097.py, collide097.json from kit.collide.json at 693495c5). Checked: with the pieces catalogued (scratch withKit), the site's grid rows, occluders, places, getaway and takedown equal the committed; only `grid.collide` (a digest naming the pieces) and `cast` (the people update) differ.

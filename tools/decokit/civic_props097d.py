@@ -106,3 +106,28 @@ def tree_pit_pearl(s):
     for x, y in ((-1, -1), (1, -1), (1, 1), (-1, 1)):                                          # opal light studs in the pearl surround's corners
         with s.at((x * 0.54, y * 0.54, z - 0.004)):
             s.lathe(puck(0.026, 0.0, 0.006, 0.002, n=1), pal.Lamp, seg=8)
+
+
+# ----------------------------------------------------------------------------- the play-street service walls (same ids): a base course and a cornice, inset
+def _alley(base, ground):
+    spec, fn = REGISTRY[base], REGISTRY[base]["fn"]
+
+    def build(s):
+        """The wall as built (alleys.py service_wall, its own LODs), plus a honed limestone base course (0.55 m, 5 cm proud, broken at the door or the dock) and a
+        limestone cornice under the coping (8 cm proud, under the coping's 14): both inside the wall's measured bounds, so the facade solids do not move."""
+        from alleys_parts import HW, SKIN
+        from skyline import top_of
+        fn(s)
+        n = int(base.split("_")[1][0])
+        zt = top_of(n)
+        gap = (-1.55, -0.25) if ground == "door" else (-2.15, 1.35)
+        for x0, x1 in ((-HW, gap[0]), (gap[1], HW)):
+            s.rbox((x0, SKIN - 0.05, 0.0), (x1, SKIN + 0.01, 0.55), 0.012, pal.Limestone, seg=1)
+            s.box((x0, SKIN - 0.056, 0.55), (x1, SKIN - 0.03, 0.565), pal.Brass_Civic)            # brass hairline on the course
+        s.rbox((-HW, SKIN - 0.08, zt + 0.66), (HW, SKIN + 0.01, zt + 0.93), 0.02, pal.Limestone, seg=1)   # the cornice band under the coping
+    asset(base, spec["cat"], bevel=spec["bevel"], near=spec.get("near"), far=spec.get("far"))(build)
+
+
+for _n in (3, 4):
+    _alley(f"AlleyWall_{_n}", "door")
+    _alley(f"AlleyWall_{_n}D", "dock")
