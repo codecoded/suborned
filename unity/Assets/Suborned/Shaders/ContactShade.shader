@@ -32,7 +32,7 @@ Shader "Suborned/Contact Shade"
             #pragma fragment frag
             #pragma multi_compile_fog
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            // brief 097: one hard shadow tap (no _SHADOWS_SOFT variants): the strips are a soft multiply already, and the 9-tap soft filter over every strip pixel cost GPU time on the square
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 

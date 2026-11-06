@@ -30,3 +30,10 @@ Office y210: GPU 1.56 ms, mean 4.18 ms on the Studio. Findings at play zoom and 
 
 ## Unity features considered
 Used: light cookies (in the URP asset already), GPU lightmapper + light probes, reflection probes, Shuriken. Not used: Surface Cache GI (experimental, realtime ray-traced: too heavy for the Air); On-Tile post (no bloom); VFX Graph (its graphs can't be authored headless from code; Shuriken covers the particle counts here); SSAO (Sky rejected it for cost).
+
+## Round 1 landed (main session, 2026-11-06; commit 117d59d6 + this one)
+What is in, what it costs and what is parked: briefs/097/notes.md; pictures (today / 097 / the concept bar, self-contained, on disk): briefs/097/index.html.
+Parked: the zone lightmap bake (ZoneBake097, -bake: bakes fine, draws wrong; needs an Editor session), the painted albedo variation (audit
+item 4: concept art first, then Sky), the PhoneBooth finish (Glint), the café's interior and the night look in OldTown (none in the played scene yet).
+For Sky: the look in a build; the Air sitting with the switches above. For Keel and Motive: Dumpster_Civic carries the stash tag the procedural
+dumpster stood for (same site, holds 1). For Latch: the camera FX and the police-post pulse are coded and compile, not yet seen in a capture.

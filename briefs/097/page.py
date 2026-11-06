@@ -33,7 +33,9 @@ def main(argv):
     for d, label in rounds:
         rows = json.loads((d / "shots.json").read_text()).get("shots", [])
         shots[label] = {r["name"]: r for r in rows}
-    names = [n for n in shots[rounds[0][1]] if (only is None or n in only)]
+    names = []
+    for _, label in rounds:
+        names += [n for n in shots[label] if n not in names and (only is None or n in only)]
     css = "body{font:14px/1.45 -apple-system,Helvetica,sans-serif;background:#f6f1e7;color:#2a2622;margin:24px}h1{font-size:22px}h2{font-size:16px;margin:28px 0 8px}" \
           ".row{display:grid;grid-template-columns:repeat(%d,1fr);gap:10px}.row figure{margin:0}.row img{width:100%%;border-radius:4px;cursor:zoom-in}" \
           "figcaption{font-size:12px;color:#6b6258;margin-top:4px}table{border-collapse:collapse;margin:8px 0}td,th{border:1px solid #d8cfc2;padding:3px 8px;font-size:12px;text-align:right}" \

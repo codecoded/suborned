@@ -22,7 +22,11 @@ namespace Suborned.World.Play
     /// when it bakes) and the player drew the lightmapped zone blown out white with per-slab noise, the signature of missing or mis-sampled LIGHTMAP_ON
     /// variants (suspects: the GPU Resident Drawer's lightmap path for the 719 instanced paving slabs, URP's lightmap prefilters). Needs an Editor session
     /// to read one renderer's lightmap index and scale/offset and the variant it draws with. The kit model importers it switched to generate UV2 were
-    /// put back (generateSecondaryUV 0) so no kit mesh carries an unused channel. Off by default: only -bake runs it.</summary>
+    /// put back (generateSecondaryUV 0) so no kit mesh carries an unused channel. Off by default: only -bake runs it.
+    /// Second run (same day): the bake saw a sane sky (trilight 0.71/0.72/0.80, sun 3) and wrote sane lightmap scale/offsets; the player drew the same
+    /// per-slab noise with the GPU Resident Drawer off (-nogrd), so it is not the drawer. The noise is per texel at the scale of a metre-tiling texture:
+    /// the lightmapped meshes are sampled through UVs that are not the ones the baker used (suspect: the player's mesh-data optimisation or the
+    /// combined zone tiles' UV2). Next: in the Editor, compare one Pave_Slab's UV2 in the scene and in a development player.</summary>
     public static class ZoneBake097
     {
         const string ZoneRoot = "Ours (Handover zone + network, our pipeline)";
