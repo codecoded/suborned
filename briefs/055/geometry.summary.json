@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "3334af1d17f1e92cc6a2c0c8b8a55b0a04ed0311e7a3117417c7f98da3ae5f33",
+    "sha256": "0342bc14bf1cff10d9e978a1e7be9786ca49588a68452110d4683f44a2806f19",
     "stale": false
   },
   "window": {
@@ -40,8 +40,8 @@
     "invisibleWall": 118
   },
   "sight": {
-    "drawnAtEye": 473,
-    "drawnAtChest": 715,
+    "drawnAtEye": 485,
+    "drawnAtChest": 721,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -73,9 +73,12 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 413,
-    "offPivotOrSize": 19,
-    "placedHere": []
+    "measured": 424,
+    "offPivotOrSize": 21,
+    "placedHere": [
+      "BikeRack_Play: size 0.32 m off the catalogue",
+      "ShrubMound_TB: size 0.24 m off the catalogue"
+    ]
   },
   "rules": [
     {
@@ -124,7 +127,7 @@
       "id": "G-3a",
       "count": 59,
       "unit": "objects",
-      "example": "street:phone-booth: 9 objects, 65.25 m²"
+      "example": "street:phone-booth: 9 objects, 68.25 m²"
     },
     {
       "id": "G-3b",
@@ -134,9 +137,9 @@
     },
     {
       "id": "K-1",
-      "count": 0,
+      "count": 2,
       "unit": "pieces",
-      "example": "none"
+      "example": "BikeRack_Play: size 0.32 m off the catalogue"
     }
   ],
   "ifHostReadsWalkFile": {
