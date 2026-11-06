@@ -1,0 +1,57 @@
+{
+  "schema": "suborned.rules.population/1",
+  "author": "Keel (brief 098 step 0, 2026-11-07)",
+  "gdd": "the-suborned-agent-gdd-v0.39.0-2026-11-05.md",
+  "rule": "The dial (brief 098 step 0; Sky 2026-11-07: \"I should say, add 3 more guards, take some away, bring in more cars etc - the game then just does that, no long processing, and I play and get a feel\"). A start sets how many of each kind the zone has (start.counts, the whole zone's count of that kind, the cast included); the engine builds that world when the game starts, from the seed and these rules, with no generator run. A kind the start does not set plays the people file exactly, and a start that sets none hashes and plays as before: this file is read only when a start sets counts, and then its text is hashed into that start, so seed + counts + orders replay exactly against it. Part of Keel's rulebook (contracts/rules/rulebook.json keeps its own bytes, so no recorded run moves). Unknown = reject.",
+  "kinds": {
+    "guards": {
+      "of": ["guard"],
+      "role": "guard",
+      "job": "guard",
+      "id": "x-guard-",
+      "name": "Guard",
+      "max": 400,
+      "src": "brief 098 step 0: the people file's guards (job guard; 16 in the Handover, the door guard among them) plus any the dial adds; people.rules temperamentsBy.roles.guard (Loyal or Mercenary, never Idealist or Fearful)",
+      "proposed": true,
+      "reason": "an added guard is named by a stand-in (Guard 1, Guard 2, ...): the engine has no name rules (the names are drawn by the people generator from contracts/people/names at build time). 400 keeps a hopeless setting playable in time."
+    },
+    "people": {
+      "of": "rest",
+      "role": "visitor",
+      "job": "visitor",
+      "id": "x-person-",
+      "name": "Passer-by",
+      "max": 2000,
+      "src": "brief 098 step 0: everyone else in the people file (114 in the Handover, Inez, the driver and Popovic among them) plus any the dial adds; people.rules temperamentsBy.roles.visitor (a simulated person who neither lives nor works in the district)",
+      "proposed": true,
+      "reason": "an added person is a passer-by named by a stand-in (Passer-by 1, ...), for the reason above. They carry no need record (the cell turns only the cast: Ask, Help and Pressure are never offered to the crowd) and no ties."
+    }
+  },
+  "fewer": {
+    "salt": "leave",
+    "src": "brief 098 step 0: people above the count leave by a stable order, never a tenet; GDD §05 security: a post is one person's, a relief waits beside it and keeps its marks",
+    "proposed": true,
+    "reason": "the order is a hash of each person's id (fnv1a32 of id/salt, ties by id), the same every game and every seed, so a count is one world shape and the seed moves only its timings, and taking one more away never brings anyone back. Never a tenet: the mission's cast (the site's cast) and anyone a cast member's lover tie names. Guards leave off-post ones first; then a post's reliefs, the latest shift first, the one before standing the post on to the end of the shift that left; then the posts themselves: a post is staffed for its whole shift or not at all, never half."
+  },
+  "beat": {
+    "points": ["door", "post", "call-box"],
+    "size": 3,
+    "pauseS": [20, 40],
+    "doorOutCm": 200,
+    "shiftBeforeS": 600,
+    "shiftAfterS": 600,
+    "src": "brief 098 step 0: an added guard is on shift, on a beat between post points the engine finds in the site: its staffed doors (a point doorOutCm out of the door, so the door's own post stays its holder's), its police posts (the takedown file's street posts) and its call boxes (which stand at the corners, R-REPORT); GDD §05 every staff post checks in by voice every 90 s from the start of its shift (rulebook check-in-period-s)",
+    "proposed": true,
+    "reason": "a beat is size points: the guard's first post point (spread over the points in a seeded order, one guard to a point before any shares) and the size - 1 nearest to it, walked in a loop at the city's walk (crowd.walk), pausing pauseS at each, facing out of the door or to the kerb. His shift runs from shiftBeforeS before 0:00 to shiftAfterS after the close, at a seeded phase; his marks run every check-in period from it. The site carries no gates yet (the plan's gates are not in the sim site), so a beat finds none. Pulse to tune."
+  },
+  "passers": {
+    "enterS": [-240, 450],
+    "dest": { "seat": 4, "door": 3, "edge": 3 },
+    "lingerS": { "seat": [60, 240], "door": [60, 300] },
+    "edgeMinCells": 2,
+    "edgeSpanCells": 40,
+    "src": "brief 098 step 0: an added city person is a passer-by who enters at the site's edges at a seeded time, walks to a seeded destination, lingers and leaves",
+    "proposed": true,
+    "reason": "the edges are the runs of free cells on the walk grid's border (a street or a path leaving the window), at least edgeMinCells wide, entered at the middle of each; a run longer than edgeSpanCells (a street along the border) is split evenly, so people come in along it, not at one point. A passer-by enters at a seeded second in enterS (mission seconds; before 0:00 they are already walking when the mission starts) and goes to a destination by these weights: a café seat (the people file's chairs) free for the whole linger, sitting there lingerS.seat; a public door of the site's buildings (the café, the Office), inside for lingerS.door; or another edge, walking straight through. Then out by a seeded edge. The site has no benches or transit stops yet, so neither is a destination. Temperament: the role's allow list (people.rules temperamentsBy.roles), weighted by the zone's own mix of that kind, no temperament above temperamentsBy.mix.rowMaxShare. Pulse to tune."
+  }
+}

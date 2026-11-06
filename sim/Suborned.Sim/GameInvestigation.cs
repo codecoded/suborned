@@ -222,7 +222,7 @@ namespace Suborned.Sim
         Pt PlaceAt(string place, Person p)
         {
             if (S.HasPlace(place)) return S.Stand(place);
-            if (People2 != null && People2.Places.TryGetValue(place, out var c)) return c;
+            if (People2 != null && TryCrowdPlace(place, out var c)) return c;
             return PersonPos(p) ?? S.Stand(S.GuardPost);
         }
         /// <summary>The simulated people within witness range of `at` at tick `t` on a clear sightline: the crowd where their routine had
@@ -284,7 +284,7 @@ namespace Suborned.Sim
                 else if (c.Temperament == "mercenary" && R.BandOf(Standing) == Band.Menace && c.Sc[Rules.Loyalty] <= R.ScaleMin[Rules.Loyalty]) { b.Ambush = true; b.AmbushBy.Add(c.Role.Length > 0 ? c.Role : c.Id); line("sold", p, "a Mercenary in a Menace district who owes the cell nothing sells a route"); }
             }
             // debtor.lapses: a met debt ends the ties that carried it
-            var ties = People2?.Ties;
+            var ties = People2 != null ? LiveTies : null; // brief 098: less the ties to anyone the dial took away
             foreach (var p in everyone)
             {
                 if (!p.NeedMet || p.Need != "debt" || ties == null || !ties.TryGetValue(p.Id, out var ts)) continue;
@@ -426,7 +426,7 @@ namespace Suborned.Sim
             // ties: grief for a found killing (a turned contact takes the saw-violence move; everyone else fear +1), worry for a missing person
             void ties(TdAct a, string what)
             {
-                if (People2 == null || !People2.Ties.TryGetValue(a.P.Id, out var ts)) return;
+                if (People2 == null || !LiveTies.TryGetValue(a.P.Id, out var ts)) return;
                 var ids = new List<string>(); foreach (var (k, id) in ts) if (R.CloseTies.Contains(k) && !ids.Contains(id)) ids.Add(id);
                 ids.Sort(StringComparer.Ordinal);
                 foreach (var id in ids)
@@ -458,7 +458,7 @@ namespace Suborned.Sim
         /// until the people export carries each person's cast-row need weights (Splice; rulebook streams.weights).</summary>
         string ReplacementNeed(Person p, int mission)
         {
-            var t = R.Temp(p.Temperament); var ties = People2?.Ties; var myTies = ties != null && ties.TryGetValue(p.Id, out var ts) ? ts : new List<(string, string)>();
+            var t = R.Temp(p.Temperament); var ties = People2 != null ? LiveTies : null; var myTies = ties != null && ties.TryGetValue(p.Id, out var ts) ? ts : new List<(string, string)>();
             bool home = People2 != null && People2.HasHome.TryGetValue(p.Id, out var h) && h, work = People2 != null && People2.HasWork.TryGetValue(p.Id, out var wk) && wk;
             var cands = new List<(string item, int weight)>();
             foreach (var id in R.NeedIds)

@@ -16,6 +16,8 @@ namespace Suborned.Sim
         // in a fight (Pulse §4): "" routine, startled, fleeing, sheltered, returning; where they stand or run, and since when
         public string St = ""; public int Until, RunStart; public Pt At; public Path? Run; public string Refuge = "";
         public int Pace; // brief 013: the pace of a report's walk or a check (mm a tick); 0 for the crowd machine's own states
+        /// <summary>Brief 098 step 0: added by the dial at the start (not in the people file): its routine is the dial's, its draws its own.</summary>
+        public bool Added;
         public int PacePct = -1; // brief 023 (engine 0.8.2): the extra per cent this person walks a routine leg at (rulebook crowd.pace), from their id; -1 until first read
         public Walker Fresh()
         {
@@ -59,6 +61,10 @@ namespace Suborned.Sim
         /// routine leg goes round; computed once per crowd (the same for every game on these inputs).</summary>
         public bool[]? Home(Site site, Rules rules) { if (!homeDone) { home = Game.HomeCars(site, rules); homeDone = true; } return home; }
         bool[]? home; bool homeDone;
+        /// <summary>Brief 098 step 0: the walks of the dial's added people (an end of each is a point the dial found), built once on first use and
+        /// shared by every game on this crowd, as the people file's legs are (Warm): a leg's route never depends on the game.</summary>
+        readonly Dictionary<string, Path> xLegs = new Dictionary<string, Path>(StringComparer.Ordinal);
+        internal Path XLeg(Site site, Rules rules, string key, Pt a, Pt b) { var home = Home(site, rules); lock (xLegs) { if (!xLegs.TryGetValue(key, out var p)) { p = Leg(site, a, b, home); xLegs[key] = p; } return p; } }
         internal static Path Leg(Site site, Pt pa, Pt pb, bool[]? cars = null) => Leg(site, pa, pb, out _, cars);
         /// <summary>A routine leg: from pa onto the walk grid, the grid's route, and off it to pb. Engine 0.33.0 (brief 060, Suture's cause A): an
         /// end with no free cell within 6 m (off the window, as t1-records, or deep in a solid) joins the grid at the free cell nearest it with no
@@ -173,13 +179,14 @@ namespace Suborned.Sim
             return RoutinePos(w, tick);
         }
         /// <summary>Where the routine puts a person of the crowd at this tick (no fight).</summary>
-        Pt? RoutinePos(Walker w, int tick)
+        Pt? RoutinePos(Walker w, int tick) => w.P.Down ? null : RoutineAt(w, tick);
+        /// <summary>Where the routine has a person at this tick, down or not (brief 098: where an added guard's beat has him when his mark is missed).</summary>
+        Pt? RoutineAt(Walker w, int tick)
         {
-            if (w.P.Down) return null;
             var c = People2!;
             for (int i = 0; i < w.Place.Length; i++)
             {
-                if (tick >= w.From[i] && tick < w.To[i]) return w.Out[i] ? c.Places[w.Place[i]] : (Pt?)null;
+                if (tick >= w.From[i] && tick < w.To[i]) return w.Out[i] ? CrowdPlace(w.Place[i]) : (Pt?)null;
                 if (i + 1 < w.Place.Length && tick >= w.To[i] && tick < w.From[i + 1])
                 {
                     if (w.Place[i] == "beyond" || w.Place[i + 1] == "beyond") return null;
@@ -218,11 +225,11 @@ namespace Suborned.Sim
             var key = a + "→" + b;
             var c = People2!;
             var ep = CarEpochAt(from);
-            if (!c.Legs.TryGetValue(key, out var p) && !crowdPaths.TryGetValue(key, out p)) { p = Crowd.Leg(S, c.Places[a], c.Places[b], c.Home(S, R)); crowdPaths[key] = p; } // built at load (Crowd.Warm), else once here
+            if (!c.Legs.TryGetValue(key, out var p) && !crowdPaths.TryGetValue(key, out p)) { p = Crowd.Leg(S, CrowdPlace(a), CrowdPlace(b), c.Home(S, R)); crowdPaths[key] = p; } // built at load (Crowd.Warm), else once here
             if (ep.home) return p;
             var ek = ep.id.ToString(System.Globalization.CultureInfo.InvariantCulture) + "|" + key;
             if (crowdPaths.TryGetValue(ek, out var q)) return q;
-            q = Crosses(p, ep.mask) ? Crowd.Leg(S, c.Places[a], c.Places[b], ep.mask) : p;
+            q = Crosses(p, ep.mask) ? Crowd.Leg(S, CrowdPlace(a), CrowdPlace(b), ep.mask) : p;
             crowdPaths[ek] = q; return q;
         }
         /// <summary>Whether a walk passes over ground the mask's cars cover (sampled every 10 cm, as Grid.LineFree).</summary>

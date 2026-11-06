@@ -44,10 +44,11 @@ namespace Suborned.Sim
                 if (!f.HasValue) throw new FormatException($"people faces.{id}: '{rule}' finds no facing on this site (brief 054 §3.3: unknown = reject)");
                 stopFace[id] = f.Value;
             }
+            foreach (var kv in xFaces) stopFace[kv.Key] = kv.Value; // brief 098 step 0: the points the dial found (a beat's, an edge) face as it found them
             // every on-street stop has a facing (Pulse's stop facings; unknown = reject)
             foreach (var w in Walkers)
                 for (int i = 0; i < w.Place.Length; i++)
-                    if (w.Out[i] && w.Place[i] != "beyond" && !stopFace.ContainsKey(w.Place[i]) && !OffSheet(c.Places[w.Place[i]]))
+                    if (w.Out[i] && w.Place[i] != "beyond" && !stopFace.ContainsKey(w.Place[i]) && !OffSheet(CrowdPlace(w.Place[i])))
                         throw new FormatException($"{w.P.Id}: stop {w.Place[i]} is on the street and has no facing (people faces; brief 054 §3.3: a stop with no facing is rejected)");
         }
 

@@ -100,7 +100,7 @@ namespace Suborned.Sim
         List<string> TiesBetween(Person a, Person b)
         {
             var l = new List<string>();
-            if (People2 != null && People2.Ties.TryGetValue(a.Id, out var ts)) foreach (var (k, w) in ts) if (w == b.Id && !l.Contains(k)) l.Add(k);
+            if (People2 != null && LiveTies.TryGetValue(a.Id, out var ts)) foreach (var (k, w) in ts) if (w == b.Id && !l.Contains(k)) l.Add(k);
             if (a.Lover == b && !l.Contains("lover")) l.Add("lover");
             return l;
         }
@@ -673,7 +673,7 @@ namespace Suborned.Sim
         /// (a told person never retells it). A told Loyal person reports it from where they are. True if someone was told.</summary>
         bool Tell(TdAct a, Person p, Pt from, bool atPhone)
         {
-            if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts)) return false;
+            if (People2 == null || !LiveTies.TryGetValue(p.Id, out var ts)) return false;
             if (a.Told.Contains(p.Id)) return false; // one hop: what you were told you keep (rulebook memory: a told entry is never retold)
             if (IsCellPerson(p) && !IsKin(p, a.P)) return false; // a person who owes the cell passes nothing on
             var (q, kind, indoors) = TieToTell(a, ts, from, atPhone);
@@ -716,7 +716,7 @@ namespace Suborned.Sim
         {
             bool atPhone = AtPhone(from);
             if (Tell(a, p, from, atPhone) || atPhone) return;
-            if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts) || a.Told.Contains(p.Id) || (IsCellPerson(p) && !IsKin(p, a.P))) return;
+            if (People2 == null || !LiveTies.TryGetValue(p.Id, out var ts) || a.Told.Contains(p.Id) || (IsCellPerson(p) && !IsKin(p, a.P))) return;
             if (TieToTell(a, ts, from, true).q == null) return; // nobody indoors to call either
             if (fled && w != null) { AddRep(a, "tell", p.Id, p, from, INF, "flee"); return; }
             WalkToPhone(a, p, w, "tell", from, peopleWalk, Tick + T(R.WitnessReactS), from, "");
@@ -921,7 +921,7 @@ namespace Suborned.Sim
             q.IfNeverFound = rival ? "" : kill ? "missing" : "comes-home"; // engine 0.33.0 (Motive M059-3.2): a rival never found costs nothing and is never missed
             if (!kill) q.WakesAt = Tick + T((kill ? R.KillS : R.KoS) + R.WakeS);
             if (IsStaff(p) && p.KRoutine) q.NextMark = NextMarkOf(p, Tick);
-            if (kill && People2 != null && People2.Ties.TryGetValue(p.Id, out var ts)) foreach (var (k, _) in ts) if (R.CloseTies.Contains(k)) q.Ties++;
+            if (kill && People2 != null && LiveTies.TryGetValue(p.Id, out var ts)) foreach (var (k, _) in ts) if (R.CloseTies.Contains(k)) q.Ties++;
             // the response, were the body found here now by staff: the forecast landing, the level's dispatch, the officers' walk (rev 4
             // R4.1: a found body brings a unit at any Alert, from the nearest post, else the response entry; at Alert 2 the response unit)
             var lv = DialNow; int alertThen = q.AlertIfFound;
