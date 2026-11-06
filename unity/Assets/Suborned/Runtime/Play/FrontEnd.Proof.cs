@@ -55,7 +55,7 @@ namespace Suborned.Play
               fe.SetTab(0); fe.KeyMove(1); fe.KeyMove(1); fe.KeyMove(1); yield return Shot(fe, "options-focus"); d.vsync = vs; } // focus on Quality (the mockup's frame)
             fe.Show(FrontEnd.Screen.Controls); fe.SetTab(0); yield return Shot(fe, "controls-command");
             fe.Listen(PlayAction.Cancel, 0); yield return Shot(fe, "controls-rebind-focus"); // the rebind row: focus fill, tick, "Press a key" in the live ring
-            fe.Offer(PlayAction.Cancel, 0, Key.Q); yield return Shot(fe, "controls-clash"); // Q is Turn left fe.ClashCancel();
+            fe.Offer(PlayAction.Cancel, 0, Key.Q); yield return Shot(fe, "controls-clash"); fe.ClashCancel(); // Q is Turn left (the cancel had slipped into this comment)
             fe.SetTab(1); yield return Shot(fe, "controls-camera"); fe.SetTab(2); yield return Shot(fe, "controls-fights"); fe.SetTab(0);
 
             // ---- settings checks (through the file a relaunch reads)
