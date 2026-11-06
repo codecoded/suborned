@@ -66,6 +66,17 @@ CAFÉ GLASS (Sky: "the cafes window look bad")
   The glaze is warm amber-brown (was dark teal, which read mauve under the grade), the film thinner at grazing (_Edge 0.92 -> 0.72) so the
   rooms show from the play camera, and the rooms fade out where the glass curves (screen-space curvature) instead of smearing into stripes.
 
+AIR (15-inch MacBook Air M4, Sky's OK 2026-11-06; briefs/097/air/: run.sh, rows, air-perf.json)
+  1920x1080 windowed, vsync off, on AC, after a warm-up launch; order base, final, all-switches-off, base, final. GPU / mean ms:
+    square y030   0.2.253 5.1-5.7 / 7.3-7.9   097 6.0-6.7 / 7.6-8.4   097 switches off 6.1 / 7.7
+    office y210   4.2-5.3 / 5.2-6.7           5.0-5.8 / 6.3-7.4       5.3 / 7.0
+    office y300   5.0-6.8 / 6.4-8.8           6.0-6.7 / 7.6-8.5       6.1 / 7.9
+    third person  8.2-9.5 / 11.5-13.6         10.1-10.8 / 13.7-15.1   10.2 / 11.7
+  The Air warms through the run (base's second pass is up to 1.8 ms slower than its first), so each build's two passes give its range.
+  Play zoom: about +0.5-1 ms GPU, 120-160 fps, far inside 60. Third person: about +1.5 ms GPU, mean 66-73 fps for 097 (73-87 for 0.2.253);
+  p99 23-30 ms in both builds (the follow camera's own hitches, not this round's). The switches barely move the GPU: the cost is the baked
+  lighting itself (lightmap fetches and probes), which has no runtime switch.
+
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,
   glows) before it was put back. Restored from the catalogue's sources; the bake no longer touches GI flags. A dead keyword from an early AO

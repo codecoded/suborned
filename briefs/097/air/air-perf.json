@@ -1,0 +1,175 @@
+{
+ "note": "brief 097 on the 15-inch MacBook Air M4, 2026-11-06, 1920x1080 windowed, vsync off, AC power; run order base1, final1, off1 (every 097 switch off: -nofx -noclouds -norooms -nowind -novariation -noao; the lightmaps stay), base2, final2 after one warm-up launch. base = 0.2.253 (the round's start), final = 0.2.254-scratch at 6fb25c1f+ (the 097 look). Per view: gpuMs, meanMs, p99Ms, fps over 8 s.",
+ "runs": {
+  "base1": {
+   "build": "Build 0.2.253 · c055 · sim 0.45.0 · 84dc9ce1+",
+   "screen": "1920x1080",
+   "views": {
+    "square-y030": {
+     "count": 1016,
+     "meanMs": 7.881,
+     "fps": 126.88,
+     "p99Ms": 14.798,
+     "gpuMs": 5.09
+    },
+    "office-y210": {
+     "count": 1537,
+     "meanMs": 5.208,
+     "fps": 192.027,
+     "p99Ms": 9.086,
+     "gpuMs": 4.156
+    },
+    "office-y300": {
+     "count": 1253,
+     "meanMs": 6.385,
+     "fps": 156.623,
+     "p99Ms": 9.906,
+     "gpuMs": 4.978
+    },
+    "follow-scout": {
+     "count": 698,
+     "meanMs": 11.463,
+     "fps": 87.24,
+     "p99Ms": 21.519,
+     "gpuMs": 8.184
+    }
+   }
+  },
+  "final1": {
+   "build": "Build 0.2.254-scratch · c055 · sim 0.45.0 · 6fb25c1f+",
+   "screen": "1920x1080",
+   "views": {
+    "square-y030": {
+     "count": 1055,
+     "meanMs": 7.59,
+     "fps": 131.754,
+     "p99Ms": 12.704,
+     "gpuMs": 6.045
+    },
+    "office-y210": {
+     "count": 1266,
+     "meanMs": 6.32,
+     "fps": 158.219,
+     "p99Ms": 10.201,
+     "gpuMs": 5.026
+    },
+    "office-y300": {
+     "count": 1055,
+     "meanMs": 7.584,
+     "fps": 131.849,
+     "p99Ms": 11.605,
+     "gpuMs": 6.009
+    },
+    "follow-scout": {
+     "count": 584,
+     "meanMs": 13.706,
+     "fps": 72.961,
+     "p99Ms": 23.484,
+     "gpuMs": 10.093
+    }
+   }
+  },
+  "off1": {
+   "build": "Build 0.2.254-scratch · c055 · sim 0.45.0 · 6fb25c1f+",
+   "screen": "1920x1080",
+   "views": {
+    "square-y030": {
+     "count": 1037,
+     "meanMs": 7.716,
+     "fps": 129.609,
+     "p99Ms": 12.722,
+     "gpuMs": 6.097
+    },
+    "office-y210": {
+     "count": 1145,
+     "meanMs": 6.992,
+     "fps": 143.017,
+     "p99Ms": 12.272,
+     "gpuMs": 5.326
+    },
+    "office-y300": {
+     "count": 1016,
+     "meanMs": 7.876,
+     "fps": 126.974,
+     "p99Ms": 12.039,
+     "gpuMs": 6.05
+    },
+    "follow-scout": {
+     "count": 689,
+     "meanMs": 11.648,
+     "fps": 85.851,
+     "p99Ms": 30.183,
+     "gpuMs": 10.146
+    }
+   }
+  },
+  "base2": {
+   "build": "Build 0.2.253 · c055 · sim 0.45.0 · 84dc9ce1+",
+   "screen": "1920x1080",
+   "views": {
+    "square-y030": {
+     "count": 1091,
+     "meanMs": 7.338,
+     "fps": 136.271,
+     "p99Ms": 13.115,
+     "gpuMs": 5.721
+    },
+    "office-y210": {
+     "count": 1188,
+     "meanMs": 6.738,
+     "fps": 148.418,
+     "p99Ms": 11.492,
+     "gpuMs": 5.26
+    },
+    "office-y300": {
+     "count": 906,
+     "meanMs": 8.838,
+     "fps": 113.147,
+     "p99Ms": 14.502,
+     "gpuMs": 6.808
+    },
+    "follow-scout": {
+     "count": 589,
+     "meanMs": 13.587,
+     "fps": 73.597,
+     "p99Ms": 25.512,
+     "gpuMs": 9.467
+    }
+   }
+  },
+  "final2": {
+   "build": "Build 0.2.254-scratch · c055 · sim 0.45.0 · 6fb25c1f+",
+   "screen": "1920x1080",
+   "views": {
+    "square-y030": {
+     "count": 951,
+     "meanMs": 8.413,
+     "fps": 118.861,
+     "p99Ms": 14.589,
+     "gpuMs": 6.712
+    },
+    "office-y210": {
+     "count": 1088,
+     "meanMs": 7.356,
+     "fps": 135.951,
+     "p99Ms": 11.791,
+     "gpuMs": 5.773
+    },
+    "office-y300": {
+     "count": 942,
+     "meanMs": 8.496,
+     "fps": 117.702,
+     "p99Ms": 12.799,
+     "gpuMs": 6.729
+    },
+    "follow-scout": {
+     "count": 531,
+     "meanMs": 15.088,
+     "fps": 66.276,
+     "p99Ms": 29.81,
+     "gpuMs": 10.837
+    }
+   }
+  }
+ }
+}

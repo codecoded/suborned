@@ -1,0 +1,40 @@
+{
+ "schema": "suborned.shots/1",
+ "defaults": {
+  "hud": false,
+  "format": "jpg"
+ },
+ "shots": [
+  {
+   "name": "square-y030",
+   "script": "route-a-board",
+   "tick": 40,
+   "perf": 8
+  },
+  {
+   "name": "office-y210",
+   "script": "route-a-board",
+   "tick": 1200,
+   "focus": "camera/entrance",
+   "yaw": 2,
+   "perf": 8
+  },
+  {
+   "name": "office-y300",
+   "script": "route-a-board",
+   "tick": 1300,
+   "focus": "camera/entrance",
+   "yaw": 3,
+   "perf": 8
+  },
+  {
+   "name": "follow-scout",
+   "script": "route-a-board",
+   "tick": 1230,
+   "view": "follow",
+   "agent": "scout",
+   "face": "waitress",
+   "perf": 8
+  }
+ ]
+}
