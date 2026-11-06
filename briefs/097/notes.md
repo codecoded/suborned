@@ -77,6 +77,20 @@ AIR (15-inch MacBook Air M4, Sky's OK 2026-11-06; briefs/097/air/: run.sh, rows,
   p99 23-30 ms in both builds (the follow camera's own hitches, not this round's). The switches barely move the GPU: the cost is the baked
   lighting itself (lightmap fetches and probes), which has no runtime switch.
 
+TOWER WINDOW FLICKER (Sky 2026-11-06, on the Air: "a lot of artifacting / flickering ... it's these windows")
+  Cause: each Records Office tower slot's charcoal backing lay flush on the limestone (0 mm, since brief 072; the right tower flickered in
+  0.2.253 too, dark on dark); the AO pass cut the two surfaces into different triangles, so they z-fought in light tan with diagonal hatching.
+  Fix (Vela, tools/decokit/records_tower.py SLOT_BACK): the backing 10 mm proud, re-exported with AO, collision unchanged. Still-camera clip,
+  mean frame-to-frame change in the slots: left 1.0 / right 0.9 (0.2.253: 1.4 / 10.5; stone beside them 0.6 in both). Found on the way and
+  kept: rooms behind the glass off on every pane (narrow slots showed random room slices and shimmering blinds; the rooms code is filtered
+  and fenced to its own variants for when they come back on wide glass), window panes probe-lit in the zone bake (their kit UV2 overlaps),
+  the GlassSky film as thick as 0.2.253's with the warm glaze, -nolightmaps (every lightmapped renderer back to probes, for A/B).
+
+DEMO CUT (Sky 2026-11-06: "remove everything but the district office region perhaps to show it's a demo game whilst we iterate")
+  out/scratch/main097/build.sh 30: LeanScene keeps the Handover zone and 30 m round it (8,618 objects dropped, 1.03 GB, build 8 s); at play
+  zoom every heading reads as the full town. On the Air: ~/suborned-perf/097/demo2. Open for Sky: a sea round the margin; the cut as the
+  default player build. The west was the plan's filler (SwapWest, brief 075), not this round's work.
+
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,
   glows) before it was put back. Restored from the catalogue's sources; the bake no longer touches GI flags. A dead keyword from an early AO
