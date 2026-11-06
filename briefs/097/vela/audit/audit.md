@@ -10,13 +10,13 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | Kerb_Pearl_1 | 280 | 324 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | RoadMark_Dash_2m | 72 | 2 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | HangingBasket | 65 | 2140 | store | 4 | 4 | at the bar in the r3 frames; keep |
-| TreePit_Pearl | 60 | 244 | generated | 3 | 3 | a flat dark square: no grille or ring; next: a chrome grille and a brass hairline frame (generated, cheap) |
+| TreePit_Pearl | 60 | 244 | generated | 3 | 4 | final pass: chrome grille with a trunk ring over the soil, the brass hairline frame, four opal light studs; 244 → 764 tris |
 | DrainGrate | 50 | 4068 | store | 4 | 4 | reads at play zoom; 4k tris for a grate x50 is heavy (Redline: a 1k cut needs Sky's OK) |
 | WindowBox | 48 | 2298 | store | 4 | 4 | at the bar in the r3 frames; keep |
 | Tile_Terrazzo | 40 | 918 | store | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | CoconutPalm | 40 | 6310 | store | 4 | 4 | cards read well in the r3 frames (magenta in the sheet = textures not loaded in Blender); no Tripo needed |
-| AlleyWall_4 | 35 | 4418 | generated | 3 | 3 | service-side walls: not in the r3 play views, so not judged in play light; next round (AO cuts and a stone base course) |
-| AlleyWall_3 | 31 | 3776 | generated | 3 | 3 | service-side walls: not in the r3 play views, so not judged in play light; next round (AO cuts and a stone base course) |
+| AlleyWall_4 | 35 | 4418 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
+| AlleyWall_3 | 31 | 3776 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
 | StreamBay_4 | 28 | 1706 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | ShopFill_3 | 26 | 1024 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | ShopFill_4 | 24 | 1174 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
@@ -27,17 +27,17 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | InlayArc_R2_W06 | 16 | 64 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | SidePilaster_4 | 15 | 652 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | SidePilaster_Top | 13 | 152 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| ShrubMound | 13 | 2526 | store | 3 | 3 | a soft card blob; reads as a hedge cushion at play zoom; Tripo wouldn't beat the testbed cards at this size; next: the testbed planting (077 cards) |
+| ShrubMound | 13 | 2526 | store | 3 | 3 | not done: the testbed 077 cards come through domes077.ts/domes077_final.py (Splice's pipeline, the beds' path), not a Blender builder; needs that pass run for a ShrubMound bed |
 | SideBayStack_Top | 12 | 494 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| AlleyWall_3D | 12 | 4614 | generated | 3 | 3 | service-side walls: not in the r3 play views, so not judged in play light; next round (AO cuts and a stone base course) |
+| AlleyWall_3D | 12 | 4614 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
 | BollardSphere | 12 | 555 | generated | 3 | 4 | rebuilt: BollardSphere (finish). an all-chrome post: reads grey at play zoom |
 | StreamBay_3 | 11 | 1444 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| AlleyWall_4D | 11 | 5254 | generated | 3 | 3 | service-side walls: not in the r3 play views, so not judged in play light; next round (AO cuts and a stone base course) |
+| AlleyWall_4D | 11 | 5254 | generated | 3 | 3 | final pass: contact cuts and AO only (+15 % tris); the stone base course, cornice band and service pipes not built yet: the walls' bounds feed the facade solids, so new parts must stay inside them (next round) |
 | TopiaryCone | 11 | 2484 | store | 4 | 4 | cards read well in the r3 frames (magenta in the sheet = textures not loaded in Blender); no Tripo needed |
-| Roof_Tank | 10 | 2136 | store | 3 | 3 | roof programme pieces, mostly out of the play view; store; next round |
+| Roof_Tank | 10 | 2136 | store | 3 | 4 | final pass: Roof_Tank_Play: the sphere on a streamline ivory drum with chrome bands, two teal bands, chrome cap and spire (2136 → 2448) |
 | SidePilaster_3 | 10 | 572 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | Bench | 10 | 3412 | store | 3 | 4 | rebuilt: Bench_Play. red shell seats on mint legs, no base |
-| SandwichBoard | 10 | 2116 | store | 3 | 3 | plain A-frame, but its face carries the poster sheet (billboards.ts): a rebuild must keep that face; next round |
+| SandwichBoard | 10 | 2116 | store | 3 | 4 | final pass: SandwichBoard_Play (capstone board): teal panels, ivory kick panel, chrome frame; the poster faces and UVs untouched (posters.py SHEET_PIECES) |
 | BikeRack | 10 | 7572 | store | 2 | 4 | rebuilt: BikeRack_Play. present-day hoops with blue feet |
 | InlayBand_12_2 | 10 | 10 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | RecyclingBins_Play | 9 | 1910 | generated | 4 | 4 | built in brief 097 passes 1-3; collision now the replaced box or store piece exactly |
@@ -58,28 +58,28 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | PlazaSphereLamp | 5 | 7932 | store | 4 | 4 | at the bar in the r3 frames; keep |
 | CoconutPalm_Street | 5 | 8230 | generated | 4 | 4 | cards read well in the r3 frames (magenta in the sheet = textures not loaded in Blender); no Tripo needed |
 | PlanterRun_4_A_TB | 5 | 6139 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
-| Streetlamp | 4 | 5782 | store | 3 | 3 | the old town's red lamp and bollard: the old piece wins outside the zone; inside, a finish pass (Glint) rather than a rebuild |
+| Streetlamp | 4 | 5782 | store | 3 | 4 | final pass: Streetlamp_Play, the zone twin (kitrefs.ts zoneTwin): seafoam pole, ivory dish; the red lamp stays outside the zone |
 | SignalLens | 4 | 822 | generated | 4 | 4 | at the bar in the r3 frames; keep |
 | PlanterArc_TB | 4 | 12284 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | GlobeLamp_TB | 4 | 1016 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | PlanterRun_4_B_TB | 4 | 5393 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | InlayArc_R4_W06 | 4 | 88 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
 | InlayArc_R9_W12 | 4 | 124 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
-| Roof_Mast | 3 | 1792 | store | 3 | 3 | roof programme pieces, mostly out of the play view; store; next round |
+| Roof_Mast | 3 | 1792 | store | 3 | 4 | final pass: Roof_Mast_Play: a tapering ivory column with seafoam bands and chrome rings at the old lens heights (1792 → 1360) |
 | StreamCorner_4 | 3 | 14170 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | StreamBay_3W | 3 | 1444 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | RoundBench | 3 | 2512 | store | 4 | 4 | at the bar in the r3 frames; keep |
 | CafeLamp_Testbed_Coral | 3 | 760 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | PlanterRun_4_C_TB | 3 | 6476 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
-| Tile_Tactile | 2 | 14844 | store | 3 | 3 | red tactile at 14.8k tris x2; store; keep the look, triangle cut needs Sky's OK |
+| Tile_Tactile | 2 | 14844 | store | 3 | 4 | final pass: Tile_Tactile_Play (capstone G5): blister strip in boulevard coral, the panel in the ground teal; same mesh (14.8k → 15.0k with AO cuts) |
 | StreamCorner_3 | 2 | 12302 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
-| Bollard | 2 | 5116 | store | 3 | 3 | the old town's red lamp and bollard: the old piece wins outside the zone; inside, a finish pass (Glint) rather than a rebuild |
+| Bollard | 2 | 5116 | store | 3 | 4 | final pass: Bollard_Play, the zone twin: seafoam bands, chrome ring; the old one stays outside |
 | RobotShopkeeper | 2 | 14642 | store | n/a | n/a | cast (Forma), not an environment piece: not scored |
 | RobotButler | 2 | 16216 | store | n/a | n/a | cast (Forma), not an environment piece: not scored |
 | Automat | 2 | 3967 | store | 4 | 4 | at the bar in the r3 frames; keep |
 | Lockers_Play | 2 | 2918 | generated | 4 | 4 | built in brief 097 passes 1-3; collision now the replaced box or store piece exactly |
 | Planter_Urn_Play | 2 | 3642 | generated | 4 | 4 | at the bar in the r3 frames; keep |
-| InfoLightbox | 2 | 5370 | store | 3 | 3 | black frame round the lightbox; store; next round (_Play at the same size) |
+| InfoLightbox | 2 | 5370 | store | 3 | 4 | re-judged in EEVEE (Workbench drew its chrome black): chrome shell, teal plinth, the travel poster face; keep |
 | RobotNanny | 2 | 19688 | store | n/a | n/a | cast (Forma), not an environment piece: not scored |
 | PhoneBooth_Single | 2 | 9298 | generated | 3 | 4 | rebuilt: PhoneBooth_Single (finish). saturated coral drum, thin rims, no foot |
 | LightDotRow_1 | 2 | 168 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
@@ -87,7 +87,7 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | OvalPlanter | 2 | 3336 | store | 4 | 4 | at the bar in the r3 frames; keep |
 | CafeLamp_Testbed_Amber | 2 | 760 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | InlayBand_06_2 | 2 | 10 | generated | 4 | 4 | ground set at the testbed finish (textured; AO on the kerbs); keep |
-| Roof_Pool | 1 | 2136 | store | 3 | 3 | roof programme pieces, mostly out of the play view; store; next round |
+| Roof_Pool | 1 | 2136 | store | 3 | 4 | re-judged in EEVEE: pool, loungers and parasols read; the magenta coping is its stone texture; keep |
 | StreamEnd_3 | 1 | 10820 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | BalconyBay_3 | 1 | 3340 | store | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
 | PortholeBay_3L | 1 | 4322 | generated | 4 | 4 | judged in the r3 play frames (FacadeLit layers and colourways don't render outside Unity): streamline bands, rounded corners, kit on every face; keep |
@@ -122,6 +122,6 @@ Every distinct kit piece the zone draws (out/world/harbour-district.world.json, 
 | CivicBedPlanting_office-north | 1 | 21426 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 | CivicBedPlanting_office-west | 1 | 52252 | generated | 4 | 4 | testbed-finish civic piece (077 / 026 rebuilds), AO baked; keep |
 
-Scored 113 (4 robots not scored): before mean 3.80, ≤3: 21; after mean 3.88, ≤3: 14.
+Scored 113 (4 robots not scored): before mean 3.80, ≤3: 21; after mean 3.96, ≤3: 5 (final pass, 2026-11-06).
 
 Collision (Keel's rule): every brief-097 piece declares the replaced piece's volumes and catalogue size (tools/decokit/collide097.py, collide097.json from kit.collide.json at 693495c5). Checked: with the pieces catalogued (scratch withKit), the site's grid rows, occluders, places, getaway and takedown equal the committed; only `grid.collide` (a digest naming the pieces) and `cast` (the people update) differ.

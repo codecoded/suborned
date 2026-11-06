@@ -35,7 +35,7 @@ export const RULES = {
   drain: { piece: 'DrainGrate', every: 20, first: 10, off: 0.62 },
   manhole: { piece: 'ManholeCover', lane: 36, walk: 48, clear: 1.2 },
   /** G5: Tile_Tactile, two across, at every crossing landing (blister paving where the kerb drops); Tile_Terrazzo, two across by one deep, at the entrance of every lobby and bureau tenancy. */
-  tactile: { piece: 'Tile_Tactile' },
+  tactile: { piece: 'Tile_Tactile_Play' },
   terrazzo: { piece: 'Tile_Terrazzo', trades: ['lobby', 'hotel-lobby', 'credit-bureau', 'employment-bureau', 'hiring-hall'], across: 2 },
   /** The Handover points stay clear: nothing standing within this of one (CD-1's 1.2 m; flat pieces other than inlay too). */
   pointClear: 1.2,
@@ -54,7 +54,7 @@ export const RULES = {
   /** Kerb programme: bike racks at frontages people leave a bike at, one per `every` m of one street side; lightboxes at junction corners; boards, baskets and lockers by trade. */
   bikeRack: { trades: ['diner', 'soda-fountain', 'newsstand', 'employment-bureau', 'launderette', 'lobby', 'credit-bureau'], every: 40, piece: 'BikeRack_Play', off: 0.45 },
   lightbox: { piece: 'InfoLightbox', from: 8, to: 20, apart: 24 /* between lightboxes and from a call box */ },
-  board: { trades: ['diner', 'soda-fountain', 'florist', 'grocer', 'automat'], minW: 9, piece: 'SandwichBoard', out: 1.4 },
+  board: { trades: ['diner', 'soda-fountain', 'florist', 'grocer', 'automat'], minW: 9, piece: 'SandwichBoard_Play', out: 1.4 },
   basket: { trades: ['diner', 'soda-fountain', 'florist', 'grocer'], piece: 'HangingBasket', pitch: 3, minW: 6 },
   lockers: { trades: ['employment-bureau', 'credit-bureau'], piece: 'Lockers_Play' },
   planters: { trades: ['lobby', 'hotel-lobby', 'employment-bureau', 'credit-bureau'], pieces: ['PottedTopiary_Play', 'TopiaryCone'], minW: 9 },

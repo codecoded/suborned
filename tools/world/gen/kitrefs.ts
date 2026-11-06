@@ -52,6 +52,10 @@ export function cataloguedFor(use: string): KitAsset | undefined {
   return everything.get(file)!.find(a => a.tags.use.includes(use));
 }
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
+/** Brief 097 (Vela): a piece's Handover-zone twin, an adopted piece tagged `zone:<id>` (the same size and collision, the zone's finish), or undefined. Inside the zone an
+ *  item that takes `id` draws the twin; outside it the old piece stays (the old town is the base). `zoneBase` maps a twin id back, so a zone pin may name either. */
+export const zoneTwin = (id: string): KitAsset | undefined => adopted().find(a => a.tags.use.includes(`zone:${id}`));
+export const zoneBase = (id: string): string => adopted().find(a => a.id === id)?.tags.use.find(u => u.startsWith('zone:'))?.slice(5) ?? id;
 const posterSets = new Map<string, unknown>();
 /** Brief 075-F: the kit's poster variants (kit.json `posters`, Vela 075-F1) of the catalogue `withKit` names; undefined where it has none (a pinned digest from before). */
 export function kitPosters<T = any>(): T | undefined {
@@ -167,11 +171,13 @@ export function streetKit(ctx: Ctx, items: StreetItem[], log?: PinLog): StreetIt
     const close = (near[0] ? gap(near[0]) : Infinity) * 1.25; // adjacent = within 25% of the nearest, nearest first
     // a piece and a palm's turn are seeded by where the item stands (its kind, edge and position), never by its id: brief 075 roll-out (palms) and stable zone (all)
     const seed = placeKey(it), options = slot ? fitting(use, slot) : [];
-    const key = placeKey(it), pinned = inZ(it.at) ? pins.get(key) : undefined, held = pinned ? options.find(o => o.a.id === pinned) : undefined;
+    const key = placeKey(it), pin0 = inZ(it.at) ? pins.get(key) : undefined, pinned = pin0 && zoneBase(pin0), held = pinned ? options.find(o => o.a.id === pinned) : undefined;
     if (log && inZ(it.at) && options.length) { log.chosen!.push(key); if (held) { log.used++; usedPins.add(key); } else if (pinned) { log.refit.push(`${it.id} (${pinned})`); usedPins.add(key); } else if (pins.size) log.unpinned.push(it.id); }
-    const pick = held ?? (slot ? choose(seed, options, near.map(o => o.id), near.filter(o => gap(o) <= close).map(o => o.id)) : null);
+    const pick0 = held ?? (slot ? choose(seed, options, near.map(o => o.id), near.filter(o => gap(o) <= close).map(o => o.id)) : null);
+    const twin = pick0 && inZ(it.at) ? zoneTwin(pick0.a.id) : undefined, tk = twin && slot ? fit(twin, slot) : null;
+    const pick = twin && tk ? { a: twin, k: tk } : pick0;
     if (!pick) return { ...it, source: 'procedural' as const };
-    g.add({ at: it.at, id: pick.a.id });
+    g.add({ at: it.at, id: pick0!.a.id }); // the base piece's id: neighbour contrast chooses as it did before the zone twins
     const reach = pick.a.tags.reach;
     const yaw = it.kind === 'tree' || it.kind === 'tub-palm' ? r4(rng(`kit/${seed}/yaw`).f() * Math.PI * 2) : reach ? reachYaw(it.yaw, reach.axis) : undefined;
     const kit: KitRef = { id: pick.a.id, scale: pick.k, ...(yaw === undefined ? {} : { yaw }) };

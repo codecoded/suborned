@@ -17,7 +17,7 @@ const USE: Record<string, string[]> = {
 /** The kinds and slots the world gives the pieces brief 020 adopted (Vela's pick, Splice's wiring): street kinds by the street item kind, roof pieces by the part of a programme they stand for (tools/world/gen/roofs.ts), the café and the cars by their place. */
 const USE_020: Record<string, string[]> = {
   CafeBay_v2: ['frontage:cafe-bay'], CafeInterior: ['frontage:cafe-interior'], Sedan_Official: ['vehicle:car-official'], Sedan_Getaway: ['vehicle:car-getaway'], Sedan_Rival: ['vehicle:car-rivals'], Sedan_Getaway_v2: [], CafeUpper_3: ['frontage:cafe-upper'], CafeUpper_4: ['frontage:cafe-upper'], // brief 066 (Vela): the café's body over CafeBay_v2 at 3 or 4 storeys (civic-look.json `upper` places the one of the block's height); brief 070 (Vela): the getaway car finished; adopted 2026-10-27 in place as Sedan_Getaway (and Sedan_Official), so Sedan_Getaway_v2 is retired: no use tag, status rejected (the host loads the car by path, never by this tag); brief 067 (Vela): the rival crew's car, drawn by the host (HostViews.Rivals.cs), never placed by the world
-  Roof_Tank: ['roof:water-sphere'], Roof_Mast: ['roof:antenna-mast'], Roof_LatticeMast: ['roof:antenna-mast'], Roof_Pool: ['roof:pool'], Roof_LapPool: ['roof:pool'], Roof_Tennis: ['roof:tennis-court'],
+  Roof_Tank: ['roof:water-sphere:full'], Roof_Mast: ['roof:antenna-mast:full'], Roof_Tank_Play: ['roof:water-sphere'], Roof_Mast_Play: ['roof:antenna-mast'], // brief 097: the streamline drums (civic_props097d.py); the lattice pieces keep a retired tag Roof_LatticeMast: ['roof:antenna-mast'], Roof_Pool: ['roof:pool'], Roof_LapPool: ['roof:pool'], Roof_Tennis: ['roof:tennis-court'],
   Roof_Conservatory: ['roof:garden-house'], Roof_Cabana: ['roof:garden-shade'], Roof_Planter: ['roof:garden-bed'],
   Planter_Trough: ['planter', 'planter:planted'], Planter_Urn: ['planter:full'], Planter_Urn_Play: ['planter', 'planter-bed:urn'], PottedFern: ['tub-palm'], PneumaticPost: ['mailbox:tall'], PneumaticPost_Play: ['mailbox'], // the _Play copies (1.1-1.4k triangles, the plan's 1.3 m box for the mailbox) take the slots; the full pieces keep a retired tag
   FanPalm_Play: ['tub-palm', 'tub-palm:planted'], PhoneBooth_Single: ['phone-booth'], Newsstand: ['newsstand'], CurvedKiosk: ['kiosk-pavilion'], StreetClock: ['public-clock'], BusShelter_Play: ['tram-shelter'], TramCanopy_Play: ['tram-shelter'], CurvedKiosk_Play: ['newsstand:scaled'], // retired from the newsstand slot for Newsstand (3.2 x 1.9 x 2.8 m, no scaling)
@@ -40,7 +40,7 @@ const USE_026: Record<string, string[]> = {
   Pave_Flags_0: ['ground:flags'], Pave_Flags_1: ['ground:flags'], Pave_Flags_2: ['ground:flags'], Pave_Flags_3: ['ground:flags'],
   TreePit_Flags_0: ['ground:tree-pit'], TreePit_Flags_1: ['ground:tree-pit'], TreePit_Flags_2: ['ground:tree-pit'], TreePit_Flags_3: ['ground:tree-pit'],
   Ground_Swatches: ['ground:materials'], // carries the DK_Ground_* materials and textures (Vela round 1): the ground's look is those materials on world-space-UV meshes, not tiles
-  ManholeCover: ['ground:manhole'], DrainGrate: ['ground:drain'], Tile_Tactile: ['ground:tactile'], Tile_Terrazzo: ['ground:terrazzo'], Tile_TerrazzoArc: ['ground:terrazzo-arc'],
+  ManholeCover: ['ground:manhole'], DrainGrate: ['ground:drain'], Tile_Tactile: ['ground:tactile:full'], Tile_Tactile_Play: ['ground:tactile'], Tile_Terrazzo: ['ground:terrazzo'], Tile_TerrazzoArc: ['ground:terrazzo-arc'],
   InlayArc_R6: ['ground:inlay-arc'], InlayArc_R10: ['ground:inlay-arc'], InlayArc_R16: ['ground:inlay-arc'],
   RobotPorter: ['robot:porter', 'cast'], RobotPorter_Play: ['robot:porter', 'cast'], RobotWaiter: ['robot:waiter', 'cast'], RobotWaiter_Play: ['robot:waiter', 'cast'],
   RobotNanny: ['robot:nanny', 'cast'], RobotNanny_Play: ['robot:nanny', 'cast'], RobotShopkeeper: ['robot:shopkeeper', 'cast'], RobotShopkeeper_Play: ['robot:shopkeeper', 'cast'],
@@ -48,7 +48,7 @@ const USE_026: Record<string, string[]> = {
   VendingMachine_Cola: ['vending:full'], VendingMachine_Snack: ['vending:full'], Automat: ['automat'], DrinkingFountain: ['drinking-fountain'], RoundBench: ['round-bench'], HangingBasket: ['hanging-basket'], WindowBox: ['window-box'], TerraceScreen: ['terrace-screen'], Deckchair: ['deckchair'],
   CoffeeCart: ['kiosk-food:full'], Lockers: ['lockers:full'], // the full 24.9k-triangle cart: retired from the kiosk-food slot for CoffeeCart_Play, like PneumaticPost
   Billboard_Rooftop_A: ['billboard:rooftop'], Billboard_Rooftop_B: ['billboard:rooftop'], Billboard_Rooftop_C: ['billboard:rooftop'], Billboard_Pylon_A: ['billboard:pylon'], Billboard_Pylon_B: ['billboard:pylon'],
-  Billboard_Wall_A: ['billboard:wall'], Billboard_Wall_B: ['billboard:wall'], Billboard_Wall_C: ['billboard:wall'], Marquee_Cinema: ['marquee:cinema'], SandwichBoard: ['sandwich-board'],
+  Billboard_Wall_A: ['billboard:wall'], Billboard_Wall_B: ['billboard:wall'], Billboard_Wall_C: ['billboard:wall'], Marquee_Cinema: ['marquee:cinema'], SandwichBoard: ['sandwich-board:full'], SandwichBoard_Play: ['sandwich-board'],
   TopiaryCone: ['planter-bed:topiary'], ShrubMound: ['planter-bed:shrub'], FlowerBed: ['planter-bed:flowers'], PottedTopiary: ['planter-bed:potted'], // not 'tree': the street-tree slot would pick them
   PottedPalm_Small: ['planter-bed:palm'], BikeRack: ['bike-rack:full'], Barrier: ['barrier'], FacetedPot: ['planter-bed:pot'], InfoLightbox: ['info-lightbox'],
 };
@@ -87,10 +87,10 @@ const SCALE: Record<string, [number, number]> = {
   SphereStation: [0.4, 1.5], Skyport_Tower: [0.4, 1.5], CircusMonument: [0.4, 1.5],
   // brief 020: built to their places, scale 1 (the café, the cars, the roof pieces: regenerate rather than stretch)
   CafeBay_v2: [1, 1], CafeInterior: [1, 1], Sedan_Official: [1, 1], Sedan_Getaway: [1, 1], Sedan_Rival: [1, 1], Sedan_Getaway_v2: [1, 1], CafeUpper_3: [1, 1], CafeUpper_4: [1, 1],
-  Roof_Tank: [1, 1], Roof_Mast: [1, 1], Roof_LatticeMast: [1, 1], Roof_Pool: [1, 1], Roof_LapPool: [1, 1], Roof_Tennis: [1, 1], Roof_Conservatory: [1, 1], Roof_Cabana: [1, 1], Roof_Planter: [1, 1],
+  Roof_Tank: [1, 1], Roof_Mast: [1, 1], Roof_Tank_Play: [1, 1], Roof_Mast_Play: [1, 1], Roof_LatticeMast: [1, 1], Roof_Pool: [1, 1], Roof_LapPool: [1, 1], Roof_Tennis: [1, 1], Roof_Conservatory: [1, 1], Roof_Cabana: [1, 1], Roof_Planter: [1, 1],
   // brief 026: ground pieces are refit to the plot edge they lie on (a kerb module to its edge's length, a flag cell to its plot, the kerb stone up to the pavement's 0.185 face): 0.75-1.25; the rest stand at scale 1
   Kerb_Granite_0: [0.75, 1.25], Kerb_Granite_1: [0.75, 1.25], Pave_Flags_0: [0.75, 1.25], Pave_Flags_1: [0.75, 1.25], Pave_Flags_2: [0.75, 1.25], Pave_Flags_3: [0.75, 1.25],
-  TreePit_Flags_0: [1, 1], TreePit_Flags_1: [1, 1], TreePit_Flags_2: [1, 1], TreePit_Flags_3: [1, 1], Tile_Tactile: [1, 1], Tile_Terrazzo: [1, 1], ManholeCover: [1, 1], DrainGrate: [1, 1],
+  TreePit_Flags_0: [1, 1], TreePit_Flags_1: [1, 1], TreePit_Flags_2: [1, 1], TreePit_Flags_3: [1, 1], Tile_Tactile: [1, 1], Tile_Tactile_Play: [1, 1], SandwichBoard_Play: [1, 1], Streetlamp_Play: [0.7, 1.6], Bollard_Play: [0.8, 1.4], Tile_Terrazzo: [1, 1], ManholeCover: [1, 1], DrainGrate: [1, 1],
   RobotPorter: [1, 1], RobotPorter_Play: [1, 1], RobotWaiter: [1, 1], RobotWaiter_Play: [1, 1], RobotNanny: [1, 1], RobotNanny_Play: [1, 1], RobotShopkeeper: [1, 1], RobotShopkeeper_Play: [1, 1],
   VendingMachine_Cola: [1, 1], VendingMachine_Snack: [1, 1], Automat: [1, 1], BikeRack: [1, 1], InfoLightbox: [1, 1], SandwichBoard: [1, 1], HangingBasket: [1, 1], Lockers: [1, 1], Lockers_Play: [1, 1], VendingMachine_Cola_Play: [1, 1], VendingMachine_Snack_Play: [1, 1], RoundBench: [1, 1], DrinkingFountain: [1, 1],
   PottedTopiary: [1, 1], TopiaryCone: [1, 1], ShrubMound: [1, 1], FlowerBed: [1, 1], FacetedPot: [1, 1],
@@ -99,9 +99,9 @@ const SCALE: Record<string, [number, number]> = {
 };
 /** Pieces that can hold a body (brief 013): a closed container big enough to lie a person in. Only the Dumpster today; adopting a piece is Vela's call, tagging it is not. */
 const STASH: Record<string, KitStash> = { Dumpster: { holds: 1 }, Dumpster_Civic: { holds: 1 } }; // brief 097: the civic container holds what the old one did (quiet.ts reads the first catalogued dumpster, the store's, for the size and holds)
-const SQUASH: Record<string, number> = { Streetlamp: 0.7, CCTVPole: 0.5 };
+const SQUASH: Record<string, number> = { Streetlamp: 0.7, Streetlamp_Play: 0.7, CCTVPole: 0.5 };
 /** Where the working end reaches from the pivot: the streetlamp's pole is at the pivot, its head 1.25 m out along local -X. */
-const REACH: Record<string, KitReach> = { Streetlamp: { axis: '-x', m: 1.25 } };
+const REACH: Record<string, KitReach> = { Streetlamp: { axis: '-x', m: 1.25 }, Streetlamp_Play: { axis: '-x', m: 1.25 } };
 const USE_BY_CATEGORY: Record<string, string> = { Street: 'street', Signals: 'street', Booths: 'street', Furnish: 'street', Plants: 'tree', Rooftop: 'roof', Signage: 'sign', Facades: 'facade', Skyline: 'skyline', Highrise: 'tower', Landmarks: 'landmark', Skyport: 'landmark', Ground: 'ground', Alleys: 'alley', Plaza: 'plaza', Structures: 'structure', Sky: 'sky', Vehicles: 'vehicle', Robots: 'cast', Calibration: 'calibration', Crowns: 'crown', Horizon: 'horizon' };
 
 const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmark:liner-berth'], OceanLiner: ['landmark:ocean-liner'],
@@ -119,6 +119,7 @@ const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmar
   // brief 097 (Vela): the Handover zone's props that drew as procedural boxes (tools/decokit/civic_props097.py), placed by the street item kind (kitrefs.ts slotOf)
   // brief 097 pass 2 (Vela, civic_props097b.py): play-zoom rebuilds of the zone's weakest store pieces at the store pieces' sizes; the store pieces keep a retired tag (bin:full, vending:full, lockers:full), as PneumaticPost / CoffeeCart
   // brief 097 full pass (Vela, civic_props097c.py): the audit's rebuilds at the store pieces' sizes; the store pieces keep retired tags (bench:full, hydrant:full, bike-rack:full)
+  Streetlamp_Play: ['zone:Streetlamp'], Bollard_Play: ['zone:Bollard'], // brief 097 final pass: zone twins (kitrefs.ts streetKit): inside the Handover zone an item that took Streetlamp or Bollard draws its twin; outside, the old piece
   Hydrant_Play: ['hydrant'], Bench_Play: ['bench'], BikeRack_Play: ['bike-rack'], UtilityCabinet_Play: ['street'],
   Lockers_Play: ['lockers'], RecyclingBins_Play: ['bin'], VendingMachine_Cola_Play: ['vending'], VendingMachine_Snack_Play: ['vending'],
   PolicePost: ['police-post'], MastCamera: ['mast-camera'], CivicRobotDock: ['civic-robot-dock'], Dumpster_Civic: ['dumpster'],

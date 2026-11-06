@@ -29,7 +29,8 @@ import signage_art as sa
 BASES = ("DK_Billboard_Ads", "DK_Billboard_Ads_Lit")
 AD_PIECES = ("Billboard_Rooftop_A", "Billboard_Rooftop_B", "Billboard_Rooftop_C", "Billboard_Wall_A", "Billboard_Wall_B", "Billboard_Wall_C")  # base DK_Billboard_Ads
 LIT_PIECES = ("Billboard_Pylon_A", "Billboard_Pylon_B")  # base DK_Billboard_Ads_Lit (front + back)
-SHEET_PIECES = {"AdColumn": "DK_Billboard_Ads", "SandwichBoard": "DK_Billboard_Ads", "Marquee_Cinema": "DK_Billboard_Ads_Lit"}
+SHEET_PIECES = {"AdColumn": "DK_Billboard_Ads", "SandwichBoard": "DK_Billboard_Ads", "SandwichBoard_Play": "DK_Billboard_Ads",  # brief 097: the zone-finish copy keeps the poster faces
+                "Marquee_Cinema": "DK_Billboard_Ads_Lit"}
 DEFAULTS = {"Billboard_Rooftop_A": "mars", "Billboard_Rooftop_B": "fizz", "Billboard_Rooftop_C": "skyrail", "Billboard_Pylon_A": "planetarium",
             "Billboard_Pylon_B": "cruise", "Billboard_Wall_A": "cinema", "Billboard_Wall_B": "robot", "Billboard_Wall_C": "aircar"}  # = signage.py DEFAULTS (the old cells)
 CANON = sa.ADS[0]

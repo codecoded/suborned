@@ -1802,6 +1802,7 @@
   "sheetPieces": {
    "AdColumn": "DK_Billboard_Ads",
    "SandwichBoard": "DK_Billboard_Ads",
+   "SandwichBoard_Play": "DK_Billboard_Ads",
    "Marquee_Cinema": "DK_Billboard_Ads_Lit"
   },
   "defaults": {
@@ -7561,7 +7562,7 @@
    ],
    "tags": {
     "use": [
-     "ground:tactile"
+     "ground:tactile:full"
     ],
     "scale": [
      1,
@@ -22010,7 +22011,7 @@
    ],
    "tags": {
     "use": [
-     "roof:antenna-mast"
+     "roof:antenna-mast:full"
     ],
     "scale": [
      1,
@@ -22727,7 +22728,7 @@
    ],
    "tags": {
     "use": [
-     "roof:water-sphere"
+     "roof:water-sphere:full"
     ],
     "scale": [
      1,
@@ -30235,7 +30236,7 @@
    ],
    "tags": {
     "use": [
-     "sandwich-board"
+     "sandwich-board:full"
     ],
     "scale": [
      1,
@@ -53672,7 +53673,7 @@
    ],
    "tags": {
     "use": [
-     "roof:pool"
+     "roof"
     ],
     "scale": [
      1,
@@ -54533,7 +54534,7 @@
    ],
    "tags": {
     "use": [
-     "roof:antenna-mast"
+     "roof"
     ],
     "scale": [
      1,
@@ -57729,7 +57730,7 @@
    ],
    "tags": {
     "use": [
-     "roof:pool"
+     "roof"
     ],
     "scale": [
      1,
@@ -57928,7 +57929,7 @@
    ],
    "tags": {
     "use": [
-     "roof:tennis-court"
+     "roof"
     ],
     "scale": [
      1,
@@ -57953,7 +57954,7 @@
     0.248
    ],
    "front": "+Z",
-   "tris": 3776,
+   "tris": 4320,
    "materials": [
     "DK_Enamel_Teal",
     "DK_Chrome",
@@ -57987,8 +57988,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_3.fbx",
-     "sha256": "9d05b25bdd219a244fc988f212402d0e20beeb9292c61f4c0b37a8cff6b6cba0",
-     "bytes": 116252
+     "sha256": "ada35db26b765ad52ee4a3db266e9ad156409c6a63268923d8a7c09fc9a79ac3",
+     "bytes": 136652
     },
     {
      "root": "generated",
@@ -58264,15 +58265,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_3_L1.fbx",
-     "sha256": "a6b9978492fc8306feee2ffccb6241fd18dcbdfd0cfb1a99fc03f5a096eef6e0",
-     "bytes": 28828
+     "sha256": "b750b6b423c7d2724a1ec989de81540c8cccb88cef4dca27771079627cf6b61b",
+     "bytes": 30172
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_3_L2.fbx",
-     "sha256": "a7b9c2ec05b3417ac6bc14b864c1242961c3627bb7827d07d6d12e1d9a79bfed",
-     "bytes": 29100
+     "sha256": "bee2a2d516baa1dab14538a7a95e513872e17ae2c406190f7a7406422cb5795a",
+     "bytes": 30444
     }
    ],
    "tags": {
@@ -58302,7 +58303,7 @@
     0.49
    ],
    "front": "+Z",
-   "tris": 4614,
+   "tris": 5306,
    "materials": [
     "DK_Enamel_Charcoal",
     "DK_Enamel_Mustard",
@@ -58336,8 +58337,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_3D.fbx",
-     "sha256": "1660195e3196b285d485d08a0a0a3ec313da08f3280079b68083308ea72016cd",
-     "bytes": 132540
+     "sha256": "697436473ec3446cb7080c2c1018fbab52858160290da8cf787f535b360a2cb1",
+     "bytes": 156924
     },
     {
      "root": "generated",
@@ -58613,15 +58614,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_3D_L1.fbx",
-     "sha256": "288ef72aea525e180b0da1bd060d4c6c07ed029b583216c04a2081a1e7715150",
-     "bytes": 30012
+     "sha256": "e4a777a196e02ff03068f390d10a52648acd4351dbd60b5448bf730b60d1880b",
+     "bytes": 31436
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_3D_L2.fbx",
-     "sha256": "3b427caaa3157f04939f6130c234616914e23133d41e3092ab47114f2bfb4e33",
-     "bytes": 30396
+     "sha256": "6c3c82cd5ac599e0da704b7a15e7409efba30505f42fb0f9b17c884c1fc4ce38",
+     "bytes": 31820
     }
    ],
    "tags": {
@@ -58651,7 +58652,7 @@
     0.248
    ],
    "front": "+Z",
-   "tris": 4418,
+   "tris": 5080,
    "materials": [
     "DK_Enamel_Teal",
     "DK_Chrome",
@@ -58685,8 +58686,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_4.fbx",
-     "sha256": "c779ae0829fc1586ff5b518297cd18f259ff6de87a75dcc6a3d885bcae5eff0c",
-     "bytes": 129820
+     "sha256": "a41b1a7484e6abde4d07e9e1ca96bba51fc137b991190ce943f5b58acdb06337",
+     "bytes": 154076
     },
     {
      "root": "generated",
@@ -58962,15 +58963,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_4_L1.fbx",
-     "sha256": "bcbdd8f2fcf9be343c66446fb5a403711843b2d6e38833c0bad0d16b35269633",
-     "bytes": 29244
+     "sha256": "f2e374b3c5dc446225e07ea5d7f83ecae5f0c93b72c58a3247117381be52c9a1",
+     "bytes": 30620
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_4_L2.fbx",
-     "sha256": "e3569ef567dd266c863d36438eadf33332c3c010f4a5468d62ae1fc2d36c341a",
-     "bytes": 29932
+     "sha256": "b55b89d895f263c377aeb98c0426ca32fcda209d479520ecd9e75dbccd3d0cb6",
+     "bytes": 31388
     }
    ],
    "tags": {
@@ -59000,7 +59001,7 @@
     0.49
    ],
    "front": "+Z",
-   "tris": 5254,
+   "tris": 6030,
    "materials": [
     "DK_Enamel_Charcoal",
     "DK_Enamel_Mustard",
@@ -59034,8 +59035,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Alleys/DK_AlleyWall_4D.fbx",
-     "sha256": "d366bdf83499c496f67714abe5d6d78f7208976b8b1a0b8d2663efd54a042126",
-     "bytes": 145980
+     "sha256": "274423445c5b074447a45707cf99533387a00def05f384076c6a78ba2457da34",
+     "bytes": 173564
     },
     {
      "root": "generated",
@@ -59311,15 +59312,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_4D_L1.fbx",
-     "sha256": "e7e2aa123130a3b3aa0d95098654b5b48777f8b4b5da9259318837e9a2400724",
-     "bytes": 30412
+     "sha256": "05d568f25f83d3a3040f9c9457c0eb1b62807271d5cde1a6f7eb57d3b0aa2500",
+     "bytes": 31916
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Alleys/DK_AlleyWall_4D_L2.fbx",
-     "sha256": "9c73679521b5c7f3714ea332ab6365a7613522dbbcd9d85aaeb36ff9e9e37bdc",
-     "bytes": 31228
+     "sha256": "4a8735c7127ccc73df7c232c50924020c9230f31ee9c108568ac1774008144dc",
+     "bytes": 32748
     }
    ],
    "tags": {
@@ -62253,6 +62254,155 @@
     "scale": [
      0.99,
      1.01
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "Bollard_Play",
+   "category": "Street",
+   "size": [
+    0.54,
+    0.82,
+    0.54
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 5116,
+   "materials": [
+    "DK_Chrome",
+    "DK_Enamel_Seafoam"
+   ],
+   "lods": [
+    {
+     "file": "Models/Street/DK_Bollard_Play_L1.fbx",
+     "tris": 1278,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Street/DK_Bollard_Play_L2.fbx",
+     "tris": 306,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Street/DK_Bollard_Play.fbx",
+     "sha256": "325d19bc3ee16a0126ccbbdfe8f069e7c02367e4777e7820d6571988b20411d5",
+     "bytes": 126604
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "693d320e5bf86ff129cdf6ea45e266a918771c223ef2e03885edeaf76ddff5c5",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Street/DK_Bollard_Play_L1.fbx",
+     "sha256": "779c3dbc2b9e503a076b599adbd682e2c6a8011dfbe85a9e1174e8d217bec9d0",
+     "bytes": 57292
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Street/DK_Bollard_Play_L2.fbx",
+     "sha256": "96d4f400c560687f1844e15bc6fba9b3bdeee1de3ed356b8b11702ddaa8a966d",
+     "bytes": 28364
+    }
+   ],
+   "tags": {
+    "use": [
+     "zone:Bollard"
+    ],
+    "scale": [
+     0.8,
+     1.4
     ],
     "squash": 1,
     "wave": 2
@@ -100325,6 +100475,719 @@
    "source": "generated"
   },
   {
+   "id": "Roof_Mast_Play",
+   "category": "Rooftop",
+   "size": [
+    3.66,
+    20.6,
+    3.66
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 1360,
+   "materials": [
+    "DK_Limestone",
+    "DK_Enamel_Teal",
+    "DK_Enamel_Ivory",
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Beacon_Rose"
+   ],
+   "lods": [
+    {
+     "file": "Models/Rooftop/DK_Roof_Mast_Play_L1.fbx",
+     "tris": 296,
+     "screen": 0.2
+    }
+   ],
+   "lodCategory": "facades",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Rooftop/DK_Roof_Mast_Play.fbx",
+     "sha256": "bde47218907f23001bb772c4b02772106803b36a456167f016ea745170c18398",
+     "bytes": 50732
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "fd4f3e7f59113515d131ba8312662e349d9e21d2527ee2173cb57b2290d921c6",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "48bde31de20cde1b1de10c7dd56d55ae30d7a22ed2dca86b9b8179bb880f7bec",
+     "bytes": 3999
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "693d320e5bf86ff129cdf6ea45e266a918771c223ef2e03885edeaf76ddff5c5",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Rooftop/DK_Roof_Mast_Play_L1.fbx",
+     "sha256": "de4daf104bb4884bcb36846592e6ab73a86ad6f53d23f58d6edc2b9931c29d34",
+     "bytes": 32700
+    }
+   ],
+   "tags": {
+    "use": [
+     "roof:antenna-mast"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "Roof_Tank_Play",
+   "category": "Rooftop",
+   "size": [
+    4.84,
+    10.425,
+    4.84
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 2448,
+   "materials": [
+    "DK_Limestone",
+    "DK_Enamel_Ivory",
+    "DK_Chrome",
+    "DK_Hull_Ivory",
+    "DK_Enamel_Teal"
+   ],
+   "lods": [
+    {
+     "file": "Models/Rooftop/DK_Roof_Tank_Play_L1.fbx",
+     "tris": 533,
+     "screen": 0.2
+    },
+    {
+     "file": "Models/Rooftop/DK_Roof_Tank_Play_L2.fbx",
+     "tris": 126,
+     "screen": 0.07
+    }
+   ],
+   "lodCategory": "facades",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Rooftop/DK_Roof_Tank_Play.fbx",
+     "sha256": "479267fdf7b9702ccc2e03679390f810904c699cfe148725c0a5dc5d7b6ed84f",
+     "bytes": 74236
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Limestone.mat",
+     "sha256": "69c15802976b0194879f4ccc4c4192f04f5c92acfcd82bd465bced1897669e2b",
+     "bytes": 4066
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Limestone.mat.meta",
+     "sha256": "2ece29d5bdcf2d9b9e809027be59b34eb121a6161d03128032e61ec246c2660a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "48bde31de20cde1b1de10c7dd56d55ae30d7a22ed2dca86b9b8179bb880f7bec",
+     "bytes": 3999
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Hull_Ivory.mat",
+     "sha256": "cebe6f0d6b03c302ad80c68438c2a683b5fdb1c43eba4c0539edc689c70f1be9",
+     "bytes": 4134
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Hull_Ivory.mat.meta",
+     "sha256": "393363b2a41129e279c1170247fa548860345afb304aec9ef57514f69c20f631",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "fd4f3e7f59113515d131ba8312662e349d9e21d2527ee2173cb57b2290d921c6",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/hull_panels_v1.png",
+     "sha256": "4f0d70bf2ee055a38609d635056506400882eb645ab43edd97af6ae56beda2fc",
+     "bytes": 37249
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/hull_panels_v1.png.meta",
+     "sha256": "9152e2415ed64f5cf7697ebd029434a686c70a7260929c7199a6669affd9827e",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/hull_panels_v1_mask.png",
+     "sha256": "d8e088bb09177cd9655d3323dfb3aca7ae4aa7c64f5155066149c6f0a4427e88",
+     "bytes": 24324
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/hull_panels_v1_mask.png.meta",
+     "sha256": "7341dc02bbc7828ece7c86047b9e73ea2f380dabf887d59db3730005ca0c8ad1",
+     "bytes": 2714
+    },
+    {
+     "role": "texture",
+     "path": "Textures/hull_panels_v1_normal.png",
+     "sha256": "212d1215d78042da3bdff4e36e685a89c5e7640ea90a6899d257c6bd062aa8fb",
+     "bytes": 2105345
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/hull_panels_v1_normal.png.meta",
+     "sha256": "d5593dd03e1ac3ca4ebb7f44c4b2d9d1e9c6492a2a0d608793651e2f386ac183",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Rooftop/DK_Roof_Tank_Play_L1.fbx",
+     "sha256": "a1c9b22b4c416213628d43eed2924dee5d1403f805146bcd2865b30af24913d2",
+     "bytes": 42012
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Rooftop/DK_Roof_Tank_Play_L2.fbx",
+     "sha256": "728b6d798f2f881e9f379defecc0ebd76ce1c99d5f13cf7a457ab01b1fd119ea",
+     "bytes": 29324
+    }
+   ],
+   "tags": {
+    "use": [
+     "roof:water-sphere"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "SandwichBoard_Play",
+   "category": "Signage",
+   "size": [
+    0.62,
+    1.1694,
+    0.6176
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 2244,
+   "materials": [
+    "DK_Enamel_Teal",
+    "DK_Chrome",
+    "DK_Billboard_Ads",
+    "DK_Enamel_Ivory",
+    "DK_Rubber"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signage/DK_SandwichBoard_Play_L1.fbx",
+     "tris": 529,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Signage/DK_SandwichBoard_Play_L2.fbx",
+     "tris": 114,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Signage/DK_SandwichBoard_Play.fbx",
+     "sha256": "24f299bbbbce7fc68ddae0dbd9121971fa81f3aa6fae25a58e4deaff684a767e",
+     "bytes": 85660
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal.mat",
+     "sha256": "fd4f3e7f59113515d131ba8312662e349d9e21d2527ee2173cb57b2290d921c6",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal.mat.meta",
+     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Billboard_Ads.mat",
+     "sha256": "461b85b29804e1be8e233781094c918e0d05cea49c7c255106909ad81cbd231b",
+     "bytes": 3885
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Billboard_Ads.mat.meta",
+     "sha256": "7df097eeca15f2fe884fcd7af42b9558eaf35e158787d46974b583e0b7a625f9",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "48bde31de20cde1b1de10c7dd56d55ae30d7a22ed2dca86b9b8179bb880f7bec",
+     "bytes": 3999
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Rubber.mat",
+     "sha256": "d38865723bd283275ecdefdb2038cbaeb74d896eddf15d0c617d58190b4d32bd",
+     "bytes": 4068
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Rubber.mat.meta",
+     "sha256": "b1ac403a36b061bae1b6683811948d4dd6dd4ff7395606a5899c6ca2d8d649a0",
+     "bytes": 188
+    },
+    {
+     "role": "texture",
+     "path": "Textures/billboard_ads_v1.png",
+     "sha256": "7bda772ffcec34121ff23efceddb0e7d27ae6768c9dc0f4bfa6744a95be42c9a",
+     "bytes": 7764084
+    },
+    {
+     "role": "texture-meta",
+     "path": "Textures/billboard_ads_v1.png.meta",
+     "sha256": "927750aef01bb598cc476174c5329a4df88f5e6c93f959518aaddfe32662259c",
+     "bytes": 2714
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_SandwichBoard_Play_L1.fbx",
+     "sha256": "8d732d7ed412177c3781a8cb47f2cf103a846ac7c896801d415ac865ca4e6e66",
+     "bytes": 43900
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signage/DK_SandwichBoard_Play_L2.fbx",
+     "sha256": "39a03aebe83498264b6161751331007b0390af47201ed8e0a9d63fa5da927a2b",
+     "bytes": 28476
+    }
+   ],
+   "tags": {
+    "use": [
+     "sandwich-board"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
    "id": "Sedan_Getaway",
    "category": "Vehicles",
    "size": [
@@ -116397,6 +117260,191 @@
    "status": "adopted"
   },
   {
+   "id": "Streetlamp_Play",
+   "category": "Street",
+   "size": [
+    2.07,
+    3.93,
+    1.16
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -0.795,
+    0
+   ],
+   "front": "+Z",
+   "tris": 5782,
+   "materials": [
+    "DK_Chrome",
+    "DK_Enamel_Seafoam",
+    "DK_Enamel_Ivory",
+    "DK_Lamp"
+   ],
+   "lods": [
+    {
+     "file": "Models/Street/DK_Streetlamp_Play_L1.fbx",
+     "tris": 1445,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Street/DK_Streetlamp_Play_L2.fbx",
+     "tris": 345,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Street/DK_Streetlamp_Play.fbx",
+     "sha256": "8d7a858fc2fc51395b4fc98e22b09afca84f4baa78c8b7778cd5b5225fa5a0e7",
+     "bytes": 152476
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Seafoam.mat",
+     "sha256": "693d320e5bf86ff129cdf6ea45e266a918771c223ef2e03885edeaf76ddff5c5",
+     "bytes": 4001
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
+     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ivory.mat",
+     "sha256": "48bde31de20cde1b1de10c7dd56d55ae30d7a22ed2dca86b9b8179bb880f7bec",
+     "bytes": 3999
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ivory.mat.meta",
+     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Lamp.mat",
+     "sha256": "f35da018b5d56f91e64049c4ce70c3d48a7b76cc78bd3ebefab87c41661f016e",
+     "bytes": 3939
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Lamp.mat.meta",
+     "sha256": "58fc02cb67741a67edfc68661fe4d37c611506e5ea562b4ec40ca0cb422bf945",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Street/DK_Streetlamp_Play_L1.fbx",
+     "sha256": "e750cbe79d58ed286ce837c1bc920fd18bf63eac44f496a64ac6e296332a659d",
+     "bytes": 67660
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Street/DK_Streetlamp_Play_L2.fbx",
+     "sha256": "ae6ed9b5687a00b1b0dc14c96c6b234eaa14e6e5497d6a206a3a93b1348ff2f3",
+     "bytes": 33756
+    }
+   ],
+   "tags": {
+    "use": [
+     "zone:Streetlamp"
+    ],
+    "reach": {
+     "axis": "-x",
+     "m": 1.25
+    },
+    "scale": [
+     0.7,
+     1.6
+    ],
+    "squash": 0.7,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
    "id": "StreetLampGlobe",
    "category": "Street",
    "size": [
@@ -116700,6 +117748,285 @@
    "tags": {
     "use": [
      "kiosk-tickets"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "Tile_Tactile_Play",
+   "category": "Ground",
+   "size": [
+    2,
+    0.165,
+    2
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 15044,
+   "materials": [
+    "DK_Stone_Dark",
+    "DK_Tile_Ivory",
+    "DK_Ground_TileTeal",
+    "DK_Steel_Satin",
+    "DK_Steel",
+    "DK_Enamel_Teal__boulevard"
+   ],
+   "lods": [
+    {
+     "file": "Models/Ground/DK_Tile_Tactile_Play_L1.fbx",
+     "tris": 3710,
+     "screen": 0.008
+    },
+    {
+     "file": "Models/Ground/DK_Tile_Tactile_Play_L2.fbx",
+     "tris": 886,
+     "screen": 0.003
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Ground/DK_Tile_Tactile_Play.fbx",
+     "sha256": "e29a33b37b65d3c0c749897c3e12afa2058f1ed323f5a17406534d8b66114abd",
+     "bytes": 307388
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Stone_Dark.mat",
+     "sha256": "4885ec7fa5d343f65b414d79e0aed172e8fa8b204ebed001fe13d839cabe0dc8",
+     "bytes": 4068
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Stone_Dark.mat.meta",
+     "sha256": "bdc4995270128e90866a2b2b838d236f22c2ca47a79debff8e33869ed88f6fad",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Tile_Ivory.mat",
+     "sha256": "f1802df824c3e6fd62b6085d00862f0be0674e9f8e72e6579adac78cca4a99e4",
+     "bytes": 4058
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Tile_Ivory.mat.meta",
+     "sha256": "b7d964094b19c651dd790f3719724b2b1110f805755bf8d341777632ddaadcdd",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Ground_TileTeal.mat",
+     "sha256": "37062a69ce597ca7696a42b91ab056da175b9829cc238ff449cbf9e5ea21e777",
+     "bytes": 4282
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Ground_TileTeal.mat.meta",
+     "sha256": "d443325c3763413c4c3b85ccbbe757ee8639c538b13f4f164be311009dc7dd73",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Steel_Satin.mat",
+     "sha256": "25e118536f679db8247b240e21313b6e37a40009e9f77d780a70040240f7d1db",
+     "bytes": 4058
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Steel_Satin.mat.meta",
+     "sha256": "0b9691d372dec3dc1e83178d1007e2d3b6d57d560bbcd1b5cd1f203a5fdb342d",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Steel.mat",
+     "sha256": "37f7a34655d2b15c26978e3832174b539e1f1156c70d107169404d06e28081c8",
+     "bytes": 4080
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Steel.mat.meta",
+     "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Teal__boulevard.mat",
+     "sha256": "537c93525b1bf5c848dbd4003b39e8a387a7fb70bee75f38445945b7e5205f8c",
+     "bytes": 4012
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Teal__boulevard.mat.meta",
+     "sha256": "ab81415e4709cef8c593485c77cae4aeec1947a305298ace875a5bcec656e37c",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_tileteal_v1.png",
+     "sha256": "9f9da7904f18a0632c41016f1a39dc48ace4cf1b0f93497b8f861816d8f8b3ba",
+     "bytes": 18147
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_tileteal_v1.png.meta",
+     "sha256": "4db9bab0535f794e81334cc270f41b6196b6e36374ea35be68add24b1998f725",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_tileteal_v1_mask.png",
+     "sha256": "49022c034bf003b9f992ece8e57145e26180c03a5a2d91359305cd2d69c207b8",
+     "bytes": 2248
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_tileteal_v1_mask.png.meta",
+     "sha256": "48a8d68eb5acb911714a1b0f366e7e29f20d46fb03ba508c43a5d661c65e4828",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_tileteal_v1_normal.png",
+     "sha256": "a66f09bd29f7c3acea78e1e93ba3337a63cd6441f8d3c04e50f7899b66040d73",
+     "bytes": 2410
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_tileteal_v1_normal.png.meta",
+     "sha256": "9b0cf49f6cebe7a5f030457eb6f5dcaf29da3deb1baf47705b998686666c9d25",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1.png",
+     "sha256": "a8dbee7fa54175ca65d121a2c9f26845b277011c3e46322f5c8a1d7ddb4c0fa1",
+     "bytes": 886792
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1.png.meta",
+     "sha256": "f2a2621861633f71259aa27ec765333390c198302ff40887d8a13894580ce3c3",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_limestone_detail_v1_normal.png",
+     "sha256": "c35393574e0aafc33677535adad7890499f177090f42071d993199ca6acfd8f9",
+     "bytes": 2674711
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_limestone_detail_v1_normal.png.meta",
+     "sha256": "82938cc6e790f442a64f634fb847462a50ef174b137374a34a03f1461ac6e686",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1.png",
+     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
+     "bytes": 491305
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1.png.meta",
+     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/surface_metal_detail_v1_normal.png",
+     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
+     "bytes": 1613297
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
+     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Ground/DK_Tile_Tactile_Play_L1.fbx",
+     "sha256": "c939ba2c63db9b3df75addb53cdd215270e42289302746452ccfe6047c56bfac",
+     "bytes": 159292
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Ground/DK_Tile_Tactile_Play_L2.fbx",
+     "sha256": "102fb14d2580764e991d24e4f598205ef7d242ad0e828e03c1bf762baa19a86d",
+     "bytes": 70844
+    }
+   ],
+   "tags": {
+    "use": [
+     "ground:tactile"
     ],
     "scale": [
      1,
@@ -121306,12 +122633,21 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 244,
+   "tris": 764,
    "materials": [
     "DK_Ground_PaveLimestone",
     "DK_Ground_RoadPearl",
     "DK_Brass_Civic",
-    "DK_Soil"
+    "DK_Soil",
+    "DK_Chrome",
+    "DK_Lamp"
+   ],
+   "lods": [
+    {
+     "file": "Models/Ground/DK_TreePit_Pearl_L1.fbx",
+     "tris": 176,
+     "screen": 0.008
+    }
    ],
    "lodCategory": "street",
    "files": [
@@ -121319,8 +122655,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_TreePit_Pearl.fbx",
-     "sha256": "dcfbc1f73fdd7ad6b63e09f4b6cdf077fb70daffc781e91a2b613faa34c3a9ca",
-     "bytes": 30348
+     "sha256": "46ed900f67bbaf56431fa2d4017b3b8095ee93e2fb361d9c9f8b3daeae9cf5e8",
+     "bytes": 41612
     },
     {
      "root": "generated",
@@ -121376,6 +122712,32 @@
      "role": "material-meta",
      "path": "Materials/DK_Soil.mat.meta",
      "sha256": "04d3e01e1330d0db324fa74bc1c1cbd6b70ee169d670331ccf62ac56d76b7b5a",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "4d00216eee2409526c05925143e3f77ef430cbd1915900d9ac5bd6de5b4278d2",
+     "bytes": 4084
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Lamp.mat",
+     "sha256": "f35da018b5d56f91e64049c4ce70c3d48a7b76cc78bd3ebefab87c41661f016e",
+     "bytes": 3939
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Lamp.mat.meta",
+     "sha256": "58fc02cb67741a67edfc68661fe4d37c611506e5ea562b4ec40ca0cb422bf945",
      "bytes": 188
     },
     {
@@ -121517,6 +122879,13 @@
      "path": "Textures/surface_metal_detail_v1_normal.png.meta",
      "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
      "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Ground/DK_TreePit_Pearl_L1.fbx",
+     "sha256": "55977031a94e2bc04bcf3be36de89acdb92e5ce104e5a12f9dbf87df3d703875",
+     "bytes": 32732
     }
    ],
    "tags": {
