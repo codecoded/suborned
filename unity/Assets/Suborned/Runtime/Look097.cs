@@ -16,10 +16,11 @@ namespace Suborned
         [Serializable] sealed class WindCfg { public float dirDeg = 35, height = 4, speed = 1.1f, gust = 0.55f, gustScale = 0.045f, flutter = 9, strength = 1; }
         [Serializable] sealed class CloudCfg { public bool enabled = true; public float size = 90, drift = 1.4f, cover = 0.38f, soft = 0.2f, shade = 0.3f; public int seed = 97, res = 256; }
         [Serializable] sealed class RoomCfg { public float width = 3.6f, storey = 3.4f, depth = 4.5f, day = 0.55f, nightShare = 0f, night = 0f; }
-        [Serializable] sealed class Cfg { public WindCfg wind = new(); public CloudCfg clouds = new(); public RoomCfg rooms = new(); public float bakedContact = 0.55f; }
+        [Serializable] sealed class Cfg { public WindCfg wind = new(); public CloudCfg clouds = new(); public RoomCfg rooms = new(); public float bakedContact = 0.55f, bakedExposure = 0.4f; public float variation = 0.85f, variationTile = 9f; }
 
         static readonly int WindId = Shader.PropertyToID("_DKWind"), GustId = Shader.PropertyToID("_DKWindGust");
         static Look097 instance;
+        Volume exposureVolume;
         Cfg cfg; Texture2D cookie; Light sun; UniversalAdditionalLightData sunData; Vector2 dir; bool noWind, noClouds;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -42,6 +43,10 @@ namespace Suborned
             var rc = cfg.rooms; Shader.SetGlobalVector("_DKRooms", new Vector4(rc.width, rc.storey, rc.depth, rc.day)); Shader.SetGlobalVector("_DKRoomsNight", new Vector4(rc.nightShare, rc.night, 0, 0)); // DK_Interior097.hlsl
             if (Array.IndexOf(args, "-norooms") >= 0) { Shader.SetGlobalFloat("_DKInteriorOff", 1f); Shader.SetGlobalFloat("_DKInteriorOff097", 1f); }
             if (Array.IndexOf(args, "-noao") >= 0) Shader.SetGlobalFloat("_DKVertexAOOff", 1f);
+            var vtex = Resources.Load<Texture2D>("Fx097/variation"); // DK_Variation097: the painted wash (stored /1.1, so 1.1 x the sample is the multiplier)
+            bool noVar = Array.IndexOf(args, "-novariation") >= 0 || !vtex;
+            if (vtex) Shader.SetGlobalTexture("_DKVariation097", vtex);
+            Shader.SetGlobalVector("_DKVariationParams097", new Vector4(1f / Mathf.Max(cfg.variationTile, 0.5f), noVar ? 0f : cfg.variation, 0f, 0f));
             if (Array.IndexOf(args, "-nogrd") >= 0 && GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp) { urp.gpuResidentDrawerMode = GPUResidentDrawerMode.Disabled; Debug.Log("Look097: GPU Resident Drawer off (-nogrd)"); }
             SceneManager.sceneLoaded += (_, _) => { sun = null; Fx097.Install(); Baked(); };
             Baked();
@@ -54,6 +59,16 @@ namespace Suborned
         {
             bool baked = LightmapSettings.lightmaps != null && LightmapSettings.lightmaps.Length > 0;
             Shader.SetGlobalFloat("_ContactScale097", baked ? cfg.bakedContact : 1f);
+            // the baked zone keeps its sun-to-shade contrast in the lightmaps; the level the flat ambient used to add everywhere comes back as exposure
+            // (post exposure only, overriding nothing else in the play grade; signals draw outside the grade)
+            if (baked && cfg.bakedExposure != 0f && !exposureVolume)
+            {
+                var go = new GameObject("Look097 baked exposure"); var v = go.AddComponent<Volume>(); v.isGlobal = true; v.priority = 1000f;
+                foreach (var other in FindObjectsByType<Volume>()) if (other != v && other.isGlobal) { go.layer = other.gameObject.layer; break; }
+                var prof = ScriptableObject.CreateInstance<VolumeProfile>(); var ca = prof.Add<ColorAdjustments>(false); ca.postExposure.Override(cfg.bakedExposure);
+                v.sharedProfile = prof; exposureVolume = v;
+                Debug.Log($"Look097: the zone is lightmapped: contact x{cfg.bakedContact}, exposure +{cfg.bakedExposure} EV");
+            }
         }
 
         void LateUpdate()

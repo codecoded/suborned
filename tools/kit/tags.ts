@@ -5,7 +5,8 @@ export const WAVE1 = new Set(['SphereStation', 'Skyport_Tower', 'CircusMonument'
 
 const USE: Record<string, string[]> = {
   Dumpster: ['alley', 'dumpster'], // the world places it as the street item `dumpster` beside a service door (tools/world/civic/quiet.ts)
-  Streetlamp: ['lamp'], PlazaSphereLamp: ['lamp'], Bollard: ['bollard'], Bench: ['bench'], Hydrant: ['hydrant'], RecyclingBins: ['bin:full'], PhoneBooth: ['phone-booth:twin'], // the 2.6 m twin cabinet: retired from the phone-booth slot for PhoneBooth_Single (brief 020 follow-up)
+  Streetlamp: ['lamp'], PlazaSphereLamp: ['lamp'], Bollard: ['bollard'], Bench: ['bench'], Hydrant: ['hydrant'], RecyclingBins: ['bin:full'], PhoneBooth: ['phone-booth:twin:full'], PhoneBooth_Play: ['phone-booth:twin'], // brief 097 pass 3: the twin booth's finish (civic_props097b.py) takes the slot; the store piece keeps a retired tag
+  // the 2.6 m twin cabinet: retired from the phone-booth slot for PhoneBooth_Single (brief 020 follow-up)
   TicketMachine: ['ticket-machine'],
   CCTVPole: ['pole-camera'], DomeCamera: ['canopy-camera'], CoconutPalm: ['tree', 'tub-palm', 'tree:coconut'], FanPalm: ['tub-palm:full'], // the 4.2k-triangle palm: retired from the tub-palm slot for FanPalm_Play (brief 020 follow-up); a bare palm with no pot, so it can stand in a planter's bed (a potted fern cannot)
   Cypress: ['planter-bed:cypress'], Cypress_Play: ['planter-bed:cypress'], PottedTopiary_Play: ['planter-bed:potted'], CoconutPalm_Street: ['tree', 'tree:coconut-median'], WashingtoniaPalm_Street: ['tree:retired'], // brief 028 Palm (Sky 2026-10-22 "old palms"): the avenue slot `tree:coconut` is CoconutPalm (the old city's boulevard palm, 7.9 m) and the median cut `tree:coconut-median` CoconutPalm_Street (10.6 m); the phoenix slots keep taking any `tree` piece. WashingtoniaPalm_Street (15.6 m, Vela 20 Oct) is retired: no slot names it (status candidate in the catalogue) // brief 026 (Sky: street trees are palms, not topiary): the street-tree slot is the palms'; cypress and topiary stay for beds and the civic block (named by id)
@@ -63,7 +64,7 @@ const USE_075R: Record<string, string[]> = {
   PipeBundle_6: ['alley:pipe-bundle'], SteamVent: ['alley:steam-vent'], TrashCans: ['alley:trash-cans'], BackDoorLamp: ['alley:back-door-lamp'],
 };
 /** What the play camera sees through the pieces that state it (KitSight). */
-const SIGHT: Record<string, 'open' | 'glazed'> = { PhoneBooth: 'glazed', PhoneBooth_Single: 'glazed', Newsstand: 'glazed', CafeBay_v2: 'glazed', CafeInterior: 'glazed', Sedan_Official: 'open', Sedan_Getaway: 'open', Sedan_Rival: 'open', Sedan_Getaway_v2: 'open' };
+const SIGHT: Record<string, 'open' | 'glazed'> = { PhoneBooth: 'glazed', PhoneBooth_Play: 'glazed', PhoneBooth_Single: 'glazed', Newsstand: 'glazed', CafeBay_v2: 'glazed', CafeInterior: 'glazed', Sedan_Official: 'open', Sedan_Getaway: 'open', Sedan_Rival: 'open', Sedan_Getaway_v2: 'open' };
 const TRADE: Record<string, string[]> = {
   BladeSign_Cafe: ['diner', 'soda-fountain', 'automat', 'grocer', 'tiki-bar', 'cocktail-lounge'], BladeSign_Hotel: ['hotel-lobby', 'travel-bureau'],
   BladeSign_Cinema: ['cinema', 'dance-hall', 'jazz-club', 'bowling'],
@@ -79,7 +80,7 @@ const SCALE: Record<string, [number, number]> = {
  
   Crown_Needle: [0.8, 1.4], Crown_Finial: [0.8, 1.4], Crown_Atom: [0.8, 1.4], Crown_Starburst: [0.8, 1.4], Crown_Saucer: [0.8, 1.4], Crown_Antenna: [0.8, 1.4], Crown_Dish: [0.8, 1.4], // grammar §6
   Horizon_Spire_A: [0.6, 4], Horizon_Spire_B: [0.6, 4], Horizon_Spire_C: [0.6, 4], Horizon_Spire_D: [0.6, 4], Horizon_Massif: [0.6, 4], Horizon_RocketPad: [0.6, 4], Horizon_RocketAscent: [0.6, 4], Horizon_PlanetRinged: [0.6, 5], Horizon_Moon: [0.6, 5], // grammar §9 rings
-  Streetlamp: [0.7, 1.6], PlazaSphereLamp: [0.7, 1.6], Bollard: [0.8, 1.4], Bench: [0.9, 1.25], Hydrant: [0.9, 1.3], RecyclingBins: [0.8, 1.3], RecyclingBins_Play: [0.8, 1.3], PhoneBooth: [0.9, 1.1], TicketMachine: [0.9, 1.15],
+  Streetlamp: [0.7, 1.6], PlazaSphereLamp: [0.7, 1.6], Bollard: [0.8, 1.4], Bench: [0.9, 1.25], Hydrant: [0.9, 1.3], RecyclingBins: [0.8, 1.3], RecyclingBins_Play: [0.8, 1.3], PhoneBooth_Play: [0.9, 1.1], PhoneBooth: [0.9, 1.1], TicketMachine: [0.9, 1.15],
   CCTVPole: [0.8, 1.8], DomeCamera: [0.6, 1.2], CoconutPalm: [0.5, 2.2], FanPalm: [0.5, 2.2], Cypress: [0.6, 2.2], AdColumn: [0.9, 1.2],
   BladeSign_Cafe: [0.5, 1], BladeSign_Hotel: [0.5, 1], BladeSign_Cinema: [0.5, 1], NeonStar_Wall: [0.4, 1.2],
   SignalLens: [1, 1], HaloRing: [1, 1], LightBar_4: [1, 1], LightDotRow_2: [1, 1], LightDotRow_1: [1, 1], // crossing parts: pinned to the plan's numbers, scale 1 (the retired SignalEye, KerbStud, CrossEdgeLine, CrossInlayArc and LightField keep the category default: nothing places them)

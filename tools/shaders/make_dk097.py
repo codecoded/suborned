@@ -50,6 +50,8 @@ def forward(check=False):
          "    surfaceData.occlusion *= dkAO;\n"
          "    surfaceData.albedo *= lerp(half(1.0), dkAO, half(DK_VERTEX_AO_DIRECT));\n"
          "#endif\n"
+         "    // DK 097: the painted variation (DK_Variation097.hlsl), world space, one fetch; off unless Suborned.Look097 sets it\n"
+         "    surfaceData.albedo *= DKVariation(ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(input.positionCS), input.positionCS.z, UNITY_MATRIX_I_VP), normalize(input.normalWS));\n"
          "#if defined(_DK_INTERIOR)\n"
          "    { // DK 097: a room behind the glass (DK_Interior097.hlsl), as emission under the glass's Fresnel; the pane's own colour darkened to tinted glass\n"
          "        float3 dkP = ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(input.positionCS), input.positionCS.z, UNITY_MATRIX_I_VP);\n"
@@ -70,7 +72,7 @@ def forward(check=False):
             "#define DK_VERTEX_AO_DIRECT 0.45      // the share of the AO that also darkens direct light (contact shade in sun)\n"
             "float _DKInteriorOff;                 // global: 1 = no rooms behind the glass (the Air's A/B); unset = 0 = on\n"
             "#define DK_INTERIOR_GLASS 0.35        // what stays of the pane's colour over a room (tinted glass)\n#endif\n"
-            "#include \"DK_Interior097.hlsl\"\n")
+            "#include \"DK_Interior097.hlsl\"\n#include \"DK_Variation097.hlsl\"\n")
     text = head + src + "\n"
     if check:
         ok = (SH / "DK_Forward097.hlsl").read_text() == text

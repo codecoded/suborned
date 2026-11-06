@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "89f5e417d5b19440a47b8fc2a47e45a74260e5cbebad2ae1be9634c0721b4eb0",
+    "sha256": "3334af1d17f1e92cc6a2c0c8b8a55b0a04ed0311e7a3117417c7f98da3ae5f33",
     "stale": false
   },
   "window": {
@@ -40,8 +40,8 @@
     "invisibleWall": 118
   },
   "sight": {
-    "drawnAtEye": 459,
-    "drawnAtChest": 680,
+    "drawnAtEye": 473,
+    "drawnAtChest": 715,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -73,7 +73,7 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 412,
+    "measured": 413,
     "offPivotOrSize": 19,
     "placedHere": []
   },
@@ -124,7 +124,7 @@
       "id": "G-3a",
       "count": 59,
       "unit": "objects",
-      "example": "street:phone-booth: 9 objects, 61.75 m²"
+      "example": "street:phone-booth: 9 objects, 65.25 m²"
     },
     {
       "id": "G-3b",

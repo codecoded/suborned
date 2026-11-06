@@ -75,8 +75,14 @@ namespace Suborned
                 if (!petals) foreach (var m in r.sharedMaterials) if (m && m.name.StartsWith("DK_Petal")) { petals = true; break; }
                 if (petals && b.size.x < 30f && b.size.z < 30f) beds.Add(new Vector3(b.center.x, b.max.y, b.center.z));
             }
+            var vt = Resources.Load<TextAsset>("Fx097/vents"); // Editor Fx097Assets: the three grates nearest the square, from the world export (the grates are merged into the ground tiles)
+            if (vt) foreach (var part in vt.text.Split(';'))
+            {
+                var xy = part.Split(','); if (xy.Length != 2 || !float.TryParse(xy[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var x) || !float.TryParse(xy[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var z)) continue;
+                float y = Physics.Raycast(new Vector3(x, 30f, z), Vector3.down, out var gh, 40f) ? gh.point.y : 0f; vents.Add(new Vector3(x, y, z));
+            }
             grates.Sort((x, y) => (x.x * 31f + x.z).CompareTo(y.x * 31f + y.z));
-            for (int i = 0; i < grates.Count && vents.Count < 3; i += Mathf.Max(1, grates.Count / 3)) vents.Add(grates[i]);
+            for (int i = 0; i < grates.Count && vents.Count < 3; i += Mathf.Max(1, grates.Count / 3)) vents.Add(grates[i]); // only when the export gave none
             steam = Make("steam", blend, 160, 2.6f, 4.2f, new Vector2(0.25f, 0.45f), new Color(0.96f, 0.95f, 0.93f, 0.16f), -0.015f);
             var sz = steam.sizeOverLifetime; sz.enabled = true; sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0, 0.6f), new Keyframe(1, 4.5f)));
             petals = Make("petals", blend, 90, 5f, 8f, new Vector2(0.04f, 0.07f), new Color(0.98f, 0.55f, 0.45f, 0.95f), 0.012f);

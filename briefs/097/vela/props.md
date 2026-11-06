@@ -67,3 +67,14 @@ Subject: a city police call post standing on the pavement kerb, about 1 m square
 | VendingMachine_Snack | VendingMachine_Snack_Play | 3246 | 2256 (466/104) |
 
 None of these needs Tripo: each is a hard-surface prop. Renders: props2/before, props2/after (`_34` three-quarter, `_play` play zoom).
+
+## Pass 3 (2026-11-06)
+
+- **PhoneBooth_Play** (twin, ×7 in the zone; the `phone-booth:twin` slot moves to it and the store PhoneBooth keeps `phone-booth:twin:full`): the store booth's own builder (booths.booth_body), the same hoods, size and siting. Changes:
+  - the drum moves off DK_Enamel_Coral #E07560 onto the old town's boulevard coral #C8553D. That's the kit's colourway enamel `DK_Enamel_Teal__boulevard` (the boulevard set swaps teal for coral, hence the name). No new colour; #9C2E2B exists only as the sphere station's hull livery, not as an enamel.
+  - thicker chrome rims at the drum's foot and shoulder.
+  - a brass hairline foot ring on a honed limestone plinth.
+  - AO on.
+  - L0 17776 → 19344 tris (L1 4756, L2 1124).
+- **PottedTopiary_Play pot:** a bellied ivory enamel pot with a wide teal band, a chrome rolled rim and a brass hairline on a limestone foot. The topiary is the same builder with the same seed and size. Ivory, not DK_Enamel_Cream: Cream isn't in the civic look palette (CD-4 fails it). L0 4720 → 4272.
+- Renders: props3/before, props3/after.

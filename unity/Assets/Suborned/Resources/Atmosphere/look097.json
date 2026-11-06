@@ -2,6 +2,9 @@
   "note": "Brief 097: the city's wind (DK_Wind097.hlsl's globals) and the cloud shadows (a tiling cookie on the sun, drifting with the wind), set by Suborned.Look097 in every scene with a sun. A look only: no rule reads them. Off for an A/B with -nowind / -noclouds on the player's command line.",
   "wind": { "dirDeg": 35, "height": 4.0, "speed": 1.1, "gust": 0.55, "gustScale": 0.045, "flutter": 9.0, "strength": 1.0 },
   "bakedContact": 0.55,
+  "bakedExposure": 0.6,
+  "variation": 0.5,
+  "variationTile": 9,
   "rooms": { "width": 4.2, "storey": 3.4, "depth": 5.0, "day": 0.62, "nightShare": 0, "night": 0 },
   "clouds": { "enabled": true, "size": 90, "drift": 1.4, "cover": 0.38, "soft": 0.2, "shade": 0.3, "seed": 97, "res": 256 }
 }

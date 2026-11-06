@@ -52,6 +52,7 @@ async function oldTown(t0: number): Promise<string | null> {
     ?? await run('unity-swap-verify.log', '-executeMethod', `${S}.Verify`, '-swapOurs', 'Assets/Scenes/HarbourDistrict.unity', '-swapScene', 'OldTown', '-swapOut', swapOut)
     ?? zoneProblem(readJson(join(swapOut, 'zone-regression-OldTown.json')))
     ?? await run('unity-town-host.log', '-executeMethod', 'Suborned.World.Play.OldTownPlay.Install')
+    ?? await run('unity-town-bake.log', '-executeMethod', 'Suborned.World.Play.ZoneBake097.BakeTown') // brief 097: the Handover zone's lightmaps and light probes (Baked Indirect: the sun stays realtime)
     ?? (existsSync(TOWN) && statSync(TOWN).mtimeMs > t0 ? null : `${TOWN} was not written`);
 }
 /** The gate on the old town's scene: the Handover zone only (Sky: the plan-match's mismatches outside the zone need not count; tools/world/oldmatch is not a batch step). The zone holds what our own scene holds: the same kit renderers, each within 2 cm (the swap's move lands on a float: two of the 906 round 1 cm apart), the same drawn area and material counts, and no old renderer standing in it. Old sky traffic flying over at 70 m is not standing in it, and OldTownPlay.Install turns it off. Null when it holds, else why. */
@@ -245,7 +246,7 @@ export const STEPS: Step[] = [
     id: 'unity-world', when: c => gated(c, 'unity-world'), title: 'Unity reimport + world rebuild',
     plan: c => c.mode === 'editor'
       ? ['unity cmd editor status  (must be stopped, not compiling)', 'unity cmd editor invoke_menu --path "Assets/Refresh"', 'unity cmd editor invoke_menu --path "Suborned/World/Build Harbour District (Export)"  (waits for unity/Assets/Scenes/HarbourDistrict.unity to be written)']
-      : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -logFile out/batch/logs/unity-world.unity.log`, 'then the old town: OldTownSwap.Build, OldTownSwap.Verify, OldTownPlay.Install (OldTown.unity, the played scene)'],
+      : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -logFile out/batch/logs/unity-world.unity.log`, 'then the old town: OldTownSwap.Build, OldTownSwap.Verify, OldTownPlay.Install (OldTown.unity, the played scene), ZoneBake097.BakeTown (the zone\'s lightmaps)'],
     async run(c) {
       const t0 = Date.now();
       if (c.mode === 'editor') {

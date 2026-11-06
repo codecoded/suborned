@@ -15,7 +15,7 @@ import math
 
 import mats
 from civic_props097 import rband, rloft, ring_prof
-from geo import arc, dome, fillet, rrect
+from geo import arc, circle, dome, fillet, rrect
 from kit import asset
 from mats import pal, register
 from signals import FRONT, puck, slab
@@ -143,3 +143,41 @@ def vending_cola_play(s):
 @asset("VendingMachine_Snack_Play", "Street", bevel=0.0)
 def vending_snack_play(s):
     _vending(s, 1.0031, 0.85, 1.86, pal.Enamel_Teal, pal.Enamel_Ivory, pal.Enamel_Seafoam)
+
+
+# ----------------------------------------------------------------------------- pass 3: the twin phone booth's finish, the potted topiary's pot
+register("DK_Enamel_Teal__boulevard", "enamel", "#C8553D")  # the old town's boulevard coral: the kit's colourway enamel (colourways.py BOULEVARD_FASCIA), no new colour
+
+
+@asset("PhoneBooth_Play", "Booths", bevel=0.0)
+def phone_booth_play(s):
+    """The twin-pod booth Sky asked back (booths.booth_body, the store PhoneBooth's builder, same size and hoods), finished to the bar: the drum off the
+    saturated coral onto the boulevard coral, thicker chrome rims at the drum's foot and shoulder, a brass hairline foot ring on a honed limestone plinth."""
+    from booths import booth_body
+    booth_body(s)
+    old = mats.get("DK_Enamel_Coral")
+    if old in s.mats:
+        s.mats[s.mats.index(old)] = pal.Enamel_Teal__boulevard
+    s.lathe([(0.0, 0.0), (0.612, 0.0), (0.612, 0.07), (0.606, 0.088), (0.596, 0.097), (0.0, 0.1)], pal.Limestone, seg=48)   # honed limestone plinth (over the kick ring)
+    s.lathe(ring_prof(0.578, 0.588, 0.1, 0.114), pal.Brass_Civic, seg=48, cap_bottom=False, cap_top=False)                  # the brass hairline foot ring
+    s.lathe(ring_prof(0.578, 0.6, 0.118, 0.172), pal.Chrome, seg=48, cap_bottom=False, cap_top=False)                          # thicker chrome rims
+    s.lathe(ring_prof(0.578, 0.598, 0.885, 0.94), pal.Chrome, seg=48, cap_bottom=False, cap_top=False)
+
+
+@asset("PottedTopiary_Play", "Plants", bevel=0.0)   # loaded after restore026 (kit.FAMILIES), so this pot replaces the store copy's; the topiary is unchanged
+def potted_topiary_play(s):
+    """A cream enamel pot with a bellied streamline profile, a teal band, a chrome rolled rim and a brass hairline over a honed limestone foot; the store
+    PottedTopiary's topiary exactly (same seed, same z0, h, r, size), its soil disc where it was."""
+    import random
+    from plants import Cards, topiary
+    rng = random.Random(4707)
+    cd = Cards(s)
+    s.lathe([(0.0, 0.0), (0.3, 0.0), (0.31, 0.012), (0.31, 0.04), (0.296, 0.052), (0.0, 0.052)], pal.Limestone, seg=40)                 # stone foot
+    s.lathe(ring_prof(0.286, 0.294, 0.052, 0.064), pal.Brass_Civic, seg=40, cap_bottom=False, cap_top=False)                          # brass hairline
+    body = [(0.284, 0.06), (0.3, 0.12), (0.325, 0.25), (0.336, 0.38), (0.33, 0.5), (0.322, 0.53)]
+    s.lathe(body, pal.Enamel_Ivory, seg=40, cap_bottom=False, cap_top=False)                                                          # the cream (ivory) pot: DK_Enamel_Cream is not in the civic look palette (CD-4)
+    s.lathe([(0.3, 0.13), (0.314, 0.15), (0.33, 0.25), (0.336, 0.29), (0.329, 0.29)], pal.Enamel_Teal, seg=40, cap_bottom=False, cap_top=False)  # teal band
+    s.lathe([(0.32, 0.525), (0.338, 0.535), (0.348, 0.555), (0.344, 0.575), (0.33, 0.582), (0.312, 0.575), (0.305, 0.56)], pal.Chrome, seg=40,
+            cap_bottom=False, cap_top=False)                                                                                         # chrome rolled rim
+    s.extrude(circle(0.306, 40), 0.54, 0.575, pal.Soil)
+    topiary(cd, rng, z0=0.56, h=1.38, r=0.37, size=0.33)

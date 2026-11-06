@@ -15,6 +15,11 @@
     "DK_Flower_CoralSoft": 0.035,
     "DK_Flower_Flamingo": 0.035
   },
+  "bake": {
+    "note": "ZoneBake097: the baked sky and bounce scaled so the lightmapped zone sits near the unbaked play look's exposure (the flat trilight lit every corner fully; the baked sky is occluded). sky x the play look's ambient intensity; bounce = LightingSettings.indirectScale",
+    "sky": 1.0,
+    "bounce": 1.0
+  },
   "interior": {
     "note": "windows that show a room behind the glass (_DK_INTERIOR, DK_Interior097.hlsl); smoothness is the glass's reflection over the room",
     "DK_Window_Tower": 0.86,
