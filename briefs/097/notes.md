@@ -91,6 +91,15 @@ DEMO CUT (Sky 2026-11-06: "remove everything but the district office region perh
   zoom every heading reads as the full town. On the Air: ~/suborned-perf/097/demo2. Open for Sky: a sea round the margin; the cut as the
   default player build. The west was the plan's filler (SwapWest, brief 075), not this round's work.
 
+COLDER LOOK (Sky 2026-11-06: "feels colder now. some pics very different others not at all")
+  Cause: the painted wash (DK_Variation097) was made at boot as a bare local texture; the play scene's load unloaded it (UnloadUnusedAssets),
+  so the shader sampled Unity's default grey and the wash darkened the zone by about a quarter (frame ratio with/without 0.73 on the square,
+  0.69 at the Office) instead of averaging 1, and pulled the shade toward green (shade a* -3.4 vs -0.4 at the start). The +0.6, then +0.4 EV
+  "baked exposure" had been calibrated against that darkened frame and flattened the colour further. Fixed: the wash is kept (field,
+  DontUnloadUnusedAsset, re-bound on every scene load; now 1.000 with/without), and the baked exposure is gone (0). Five views, start ->
+  before the fix -> now: sun L* 82.8 / 82.2 / 85.3, shade L* 41.4 / 44.5 / 46.7, shade a* 2.1 / 0.6 / 1.9, colour richness (chroma)
+  17.5 / 19.6 / 22.2.
+
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,
   glows) before it was put back. Restored from the catalogue's sources; the bake no longer touches GI flags. A dead keyword from an early AO

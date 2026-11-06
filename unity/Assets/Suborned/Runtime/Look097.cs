@@ -21,7 +21,7 @@ namespace Suborned
         static readonly int WindId = Shader.PropertyToID("_DKWind"), GustId = Shader.PropertyToID("_DKWindGust");
         static Look097 instance;
         Volume exposureVolume;
-        Cfg cfg; Texture2D cookie; Light sun; UniversalAdditionalLightData sunData; Vector2 dir; bool noWind, noClouds;
+        Cfg cfg; Texture2D cookie, wash; Light sun; UniversalAdditionalLightData sunData; Vector2 dir; bool noWind, noClouds;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -43,12 +43,15 @@ namespace Suborned
             var rc = cfg.rooms; Shader.SetGlobalVector("_DKRooms", new Vector4(rc.width, rc.storey, rc.depth, rc.day)); Shader.SetGlobalVector("_DKRoomsNight", new Vector4(rc.nightShare, rc.night, 0, 0)); // DK_Interior097.hlsl
             if (Array.IndexOf(args, "-norooms") >= 0) { Shader.SetGlobalFloat("_DKInteriorOff", 1f); Shader.SetGlobalFloat("_DKInteriorOff097", 1f); }
             if (Array.IndexOf(args, "-noao") >= 0) Shader.SetGlobalFloat("_DKVertexAOOff", 1f);
-            var vtex = Wash(); // DK_Variation097: the painted wash, made here in linear (an imported PNG went through sRGB and darkened the city ~9 %)
-            bool noVar = Array.IndexOf(args, "-novariation") >= 0 || !vtex;
-            if (vtex) Shader.SetGlobalTexture("_DKVariation097", vtex);
+            // DK_Variation097: the painted wash, made here in linear (an imported PNG went through sRGB and darkened the city ~9 %). Kept in a field and
+            // marked DontUnloadUnusedAsset: as a bare local it was unloaded with the play scene's load (UnloadUnusedAssets), the global then sampled
+            // Unity's default grey and the wash darkened the whole zone by about a quarter instead of averaging 1 (Sky 2026-11-06: "feels colder")
+            wash = Wash(); if (wash) wash.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            bool noVar = Array.IndexOf(args, "-novariation") >= 0 || !wash;
+            if (wash) Shader.SetGlobalTexture("_DKVariation097", wash);
             Shader.SetGlobalVector("_DKVariationParams097", new Vector4(1f / Mathf.Max(cfg.variationTile, 0.5f), noVar ? 0f : cfg.variation, 0f, 0f));
             if (Array.IndexOf(args, "-nogrd") >= 0 && GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp) { urp.gpuResidentDrawerMode = GPUResidentDrawerMode.Disabled; Debug.Log("Look097: GPU Resident Drawer off (-nogrd)"); }
-            SceneManager.sceneLoaded += (_, _) => { sun = null; Fx097.Install(); Baked(); };
+            SceneManager.sceneLoaded += (_, _) => { sun = null; if (wash) Shader.SetGlobalTexture("_DKVariation097", wash); Fx097.Install(); Baked(); };
             Baked();
             Fx097.Install(); // the scene already open at boot
             Debug.Log($"Look097: wind {(noWind ? "off" : $"{cfg.wind.strength} from {cfg.wind.dirDeg} deg")}, clouds {(noClouds ? "off" : $"{cfg.clouds.size} m tiles, shade {cfg.clouds.shade}")}");
