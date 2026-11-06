@@ -1,0 +1,87 @@
+#### sheet 60,55,50,50,60,65 rivalHP 3
+
+## route-a base Success  end 4:38 fight 23s hp-lost 1 down 0 T 4 A 0
+roll    win 60/60 [] end 4:38..4:38 fight 18..37 med 22s hp 0..17 med 2 downs/run 0.03 log-differs med 4:03 (60/60)
+sheet   win 56/60 [rivals-reach-vale×4] end 4:38..8:28 fight 36..267 med 68s hp 0..19 med 7 downs/run 0.52 log-differs med 4:03 (60/60)
+
+## route-b base Success  end 7:32 fight 9s hp-lost 6 down 0 T 4 A 0
+roll    win 60/60 [] end 7:32..7:40 fight 6..16 med 9s hp 3..11 med 7 downs/run 0.28 log-differs med 7:25 (60/60)
+sheet   win 0/60 [None×58,rivals-reach-vale×2] end 8:14..8:30 fight 51..67 med 67s hp 5..13 med 9 downs/run 0.88 log-differs med 7:25 (60/60)
+
+## route-g base Success  end 3:58 fight 9s hp-lost 3 down 0 T 5 A 1
+roll    win 59/60 [rivals-reach-vale×1] end 3:58..4:05 fight 7..20 med 13s hp 2..12 med 5 downs/run 0.02 log-differs med 3:47 (60/60)
+sheet   win 42/60 [None×18] end 4:49..8:30 fight 64..285 med 179s hp 2..22 med 10 downs/run 0.68 log-differs med 3:46 (60/60)
+
+## route-a-board base Success  end 4:15 fight 14s hp-lost 0 down 0 T 4 A 0
+roll    win 56/60 [rivals-reach-vale×4] end 4:15..4:19 fight 9..18 med 14s hp 0..6 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 4:19..4:19 fight 18..18 med 18s hp 0..2 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+
+## route-b-board base Success  end 7:35 fight 9s hp-lost 6 down 0 T 4 A 0
+roll    win 34/60 [rivals-reach-vale×26] end 7:35..7:44 fight 6..21 med 10s hp 3..13 med 7 downs/run 0.32 log-differs med 7:25 (60/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 7:43..7:43 fight 20..20 med 20s hp 2..6 med 3 downs/run 0.00 log-differs med 7:25 (60/60)
+
+## route-g-fast-board base Success  end 3:02 fight 21s hp-lost 1 down 0 T 5 A 1
+roll    win 7/60 [rivals-reach-vale×53] end 3:02..3:14 fight 21..33 med 33s hp 0..7 med 3 downs/run 0.00 log-differs med 2:54 (58/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 3:14..3:14 fight 33..33 med 33s hp 0..2 med 0 downs/run 0.00 log-differs med 2:54 (60/60)
+
+## loud-fight base Success  end 5:12 fight -1s hp-lost 11 down 0 T 26 A 2
+roll    win 21/60 [entry-seen-guard×18,enforcer-down×14,sealed×6,cell-down×1] end 2:37..5:41 fight -s hp 0..23 med 9 downs/run 0.90 log-differs med 3:46 (60/60)
+sheet   win 0/60 [entry-seen-guard×60] end 2:37..2:37 fight -s hp 0..0 med 0 downs/run 0.00 log-differs med 2:33 (60/60)
+#### sheet 60,55,50,50,60,65 rivalHP 4
+
+## route-a base Success  end 4:38 fight 23s hp-lost 1 down 0 T 4 A 0
+roll    win 60/60 [] end 4:38..4:38 fight 18..37 med 22s hp 0..17 med 2 downs/run 0.03 log-differs med 4:03 (60/60)
+sheet   win 35/60 [rivals-reach-vale×25] end 4:38..8:19 fight 37..257 med 106s hp 0..20 med 14 downs/run 1.53 log-differs med 4:03 (60/60)
+
+## route-b base Success  end 7:32 fight 9s hp-lost 6 down 0 T 4 A 0
+roll    win 60/60 [] end 7:32..7:40 fight 6..16 med 9s hp 3..11 med 7 downs/run 0.28 log-differs med 7:25 (60/60)
+sheet   win 0/60 [None×56,rivals-reach-vale×4] end 8:14..8:30 fight 51..67 med 67s hp 5..13 med 9 downs/run 1.02 log-differs med 7:25 (60/60)
+
+## route-g base Success  end 3:58 fight 9s hp-lost 3 down 0 T 5 A 1
+roll    win 59/60 [rivals-reach-vale×1] end 3:58..4:05 fight 7..20 med 13s hp 2..12 med 5 downs/run 0.02 log-differs med 3:47 (60/60)
+sheet   win 29/60 [None×29,cell-down×2] end 5:01..8:30 fight 76..285 med 271s hp 4..23 med 12 downs/run 1.13 log-differs med 3:46 (60/60)
+
+## route-a-board base Success  end 4:15 fight 14s hp-lost 0 down 0 T 4 A 0
+roll    win 56/60 [rivals-reach-vale×4] end 4:15..4:19 fight 9..18 med 14s hp 0..6 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 4:19..4:19 fight 18..18 med 18s hp 0..2 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+
+## route-b-board base Success  end 7:35 fight 9s hp-lost 6 down 0 T 4 A 0
+roll    win 34/60 [rivals-reach-vale×26] end 7:35..7:44 fight 6..21 med 10s hp 3..13 med 7 downs/run 0.32 log-differs med 7:25 (60/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 7:43..7:43 fight 20..20 med 20s hp 2..6 med 3 downs/run 0.00 log-differs med 7:25 (60/60)
+
+## route-g-fast-board base Success  end 3:02 fight 21s hp-lost 1 down 0 T 5 A 1
+roll    win 7/60 [rivals-reach-vale×53] end 3:02..3:14 fight 21..33 med 33s hp 0..7 med 3 downs/run 0.00 log-differs med 2:54 (58/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 3:14..3:14 fight 33..33 med 33s hp 0..2 med 0 downs/run 0.00 log-differs med 2:54 (60/60)
+
+## loud-fight base Success  end 5:12 fight -1s hp-lost 11 down 0 T 26 A 2
+roll    win 21/60 [entry-seen-guard×18,enforcer-down×14,sealed×6,cell-down×1] end 2:37..5:41 fight -s hp 0..23 med 9 downs/run 0.90 log-differs med 3:46 (60/60)
+sheet   win 0/60 [entry-seen-guard×60] end 2:37..2:37 fight -s hp 0..0 med 0 downs/run 0.00 log-differs med 2:33 (60/60)
+#### sheet 65,60,55,50,60,70 rivalHP 4
+
+## route-a base Success  end 4:38 fight 23s hp-lost 1 down 0 T 4 A 0
+roll    win 60/60 [] end 4:38..4:38 fight 18..37 med 22s hp 0..17 med 2 downs/run 0.03 log-differs med 4:03 (60/60)
+sheet   win 43/60 [rivals-reach-vale×17] end 4:38..7:23 fight 37..202 med 89s hp 1..20 med 8 downs/run 1.10 log-differs med 4:03 (60/60)
+
+## route-b base Success  end 7:32 fight 9s hp-lost 6 down 0 T 4 A 0
+roll    win 60/60 [] end 7:32..7:40 fight 6..16 med 9s hp 3..11 med 7 downs/run 0.28 log-differs med 7:25 (60/60)
+sheet   win 0/60 [None×55,rivals-reach-vale×5] end 8:14..8:30 fight 51..67 med 67s hp 5..13 med 10 downs/run 1.08 log-differs med 7:25 (60/60)
+
+## route-g base Success  end 3:58 fight 9s hp-lost 3 down 0 T 5 A 1
+roll    win 59/60 [rivals-reach-vale×1] end 3:58..4:05 fight 7..20 med 13s hp 2..12 med 5 downs/run 0.02 log-differs med 3:47 (60/60)
+sheet   win 29/60 [None×28,cell-down×2,rivals-reach-vale×1] end 5:01..8:30 fight 76..285 med 269s hp 4..23 med 12 downs/run 1.10 log-differs med 3:46 (60/60)
+
+## route-a-board base Success  end 4:15 fight 14s hp-lost 0 down 0 T 4 A 0
+roll    win 56/60 [rivals-reach-vale×4] end 4:15..4:19 fight 9..18 med 14s hp 0..6 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 4:19..4:19 fight 18..18 med 18s hp 0..2 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+
+## route-b-board base Success  end 7:35 fight 9s hp-lost 6 down 0 T 4 A 0
+roll    win 34/60 [rivals-reach-vale×26] end 7:35..7:44 fight 6..21 med 10s hp 3..13 med 7 downs/run 0.32 log-differs med 7:25 (60/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 7:43..7:43 fight 20..20 med 20s hp 2..7 med 3 downs/run 0.00 log-differs med 7:25 (60/60)
+
+## route-g-fast-board base Success  end 3:02 fight 21s hp-lost 1 down 0 T 5 A 1
+roll    win 7/60 [rivals-reach-vale×53] end 3:02..3:14 fight 21..33 med 33s hp 0..7 med 3 downs/run 0.00 log-differs med 2:54 (58/60)
+sheet   win 0/60 [rivals-reach-vale×60] end 3:14..3:14 fight 33..33 med 33s hp 0..2 med 0 downs/run 0.00 log-differs med 2:54 (60/60)
+
+## loud-fight base Success  end 5:12 fight -1s hp-lost 11 down 0 T 26 A 2
+roll    win 21/60 [entry-seen-guard×18,enforcer-down×14,sealed×6,cell-down×1] end 2:37..5:41 fight -s hp 0..23 med 9 downs/run 0.90 log-differs med 3:46 (60/60)
+sheet   win 0/60 [entry-seen-guard×60] end 2:37..2:37 fight -s hp 0..0 med 0 downs/run 0.00 log-differs med 2:33 (60/60)

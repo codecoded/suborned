@@ -1,0 +1,18 @@
+{
+ "schema": "suborned.fightreel/1",
+ "build": "Editor · sim 0.37.0",
+ "script": "/Users/sky/Projects/suborned/briefs/080/fight/seed-B.script.json",
+ "fps": 30,
+ "frames": 1435,
+ "repeatedFrames": 23,
+ "firstTick": 2860,
+ "lastTick": 3218,
+ "overTick": 3218,
+ "overFrame": 1075,
+ "outcome": "Failure",
+ "failCode": "rivals-reach-vale",
+ "finalHash": "b59990fb9e2397bc",
+ "ordersGiven": 32,
+ "ordersRefused": 0,
+ "error": ""
+}

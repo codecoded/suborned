@@ -1,0 +1,25 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.211 · c048 · sim 0.39.0 · a9dc194b+
+[0.0s tick 596] skipped a scene: 
+[0.0s tick 846] pack 28 cues, 28 clips, 16 voices; 80/80/60
+[0.0s tick 846] capture 1600x900 RGBA32
+[10.0s tick 946] help-1: playing: help waitress, 8 beats, profile, help-inez-1; 8 lines, walkers 2
+[10.0s tick 946]   line 0: 
+[13.5s tick 946]   line 1: Fixer: Miss Nikolaou? I've just paid part of your Bureau loan.
+[17.0s tick 946]   line 2: Inez: Who are you? Who told you about that? Who saw you come?
+[20.4s tick 946]   line 3: Fixer: Nobody to worry about. It's stamped at the Bureau now.
+[24.2s tick 946]   line 4: Inez: Nobody pays a stranger's loan for nothing. What do you want?
+[27.7s tick 946]   line 5: Fixer: Nothing today. Later, one small thing that hurts nobody.
+[31.3s tick 946]   line 6: Inez: Thank you, then. But I can't do anything for it. Not yet.
+[34.8s tick 946]   line 7: Fixer: We can wait. You've enough on today. I'll bring the rest.
+[37.1s tick 946] help-1: 27.2 s; walkers 2, turned 5, stopped 1
+[37.4s tick 949]   card: Inez took it. Not ready yet. New Help again, docked False
+[41.5s tick 989] after the Help: peak in -16.6, out -16.6, taken 0.0 dB, RMS -35.6
+[41.5s tick 989] the Scout runs for the Office door (mine)
+[62.3s tick 1198] attention.noticed: guard notices the scout running in its sight.
+[65.4s tick 1296] skipped a scene: ended; view back bit-identical
+[66.8s tick 1324] fire on the guard: True
+[76.1s tick 1417] guard.down
+[90.8s tick 1564] fight: 5 shots; peak in -8.7, out -8.7, taken 0.0 dB, hard stops 0, RMS -25.3
+[90.8s tick 1564] cues: cut_in,cut_out,card_new,notice_1,notice_2,fire_carbine,miss,hit_body,down_body,rivals-coming
+[90.8s tick 1564] audio 90.98 s at 44100
+[90.8s tick 1568] frames 2725, repeated 97

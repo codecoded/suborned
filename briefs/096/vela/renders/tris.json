@@ -1,0 +1,65 @@
+{
+ "counts": {
+  "HoverCamera": {
+   "DK_HoverCamera": 1826,
+   "DK_HoverCamera_Lens": 210,
+   "DK_HoverCamera_Ring": 336,
+   "DK_HoverCamera_Tally": 112
+  },
+  "HoverCamera_Cradle": {
+   "DK_HoverCamera_Cradle": 1786
+  }
+ },
+ "totals": {
+  "HoverCamera": 2484,
+  "HoverCamera_Cradle": 1786
+ },
+ "data": {
+  "head": {
+   "piece": "HoverCamera",
+   "pivot": "the body's turn centre (hover point), not the ground",
+   "forward": "+Z",
+   "length": 1.035,
+   "width": 0.534,
+   "lensCentre": [
+    0.0,
+    0.0,
+    0.23
+   ],
+   "tallyTop": [
+    0.0,
+    0.372,
+    0.03
+   ],
+   "ringCentre": [
+    0.0,
+    -0.328,
+    -0.06
+   ],
+   "lowest": -0.328,
+   "ringRadius": [
+    0.13,
+    0.25
+   ],
+   "parts": {
+    "Lens": "DK_HoverCamera_Lens",
+    "Tally": "DK_HoverCamera_Tally",
+    "Ring": "DK_HoverCamera_Ring"
+   }
+  },
+  "cradle": {
+   "piece": "HoverCamera_Cradle",
+   "pivot": "bottom centre of the wall plate, back face on the wall",
+   "forward": "+Z (out of the wall)",
+   "dock": [
+    0.0,
+    0.47,
+    0.9
+   ],
+   "plate": [
+    0.36,
+    0.64
+   ]
+  }
+ }
+}

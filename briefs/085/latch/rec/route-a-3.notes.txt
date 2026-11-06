@@ -1,0 +1,65 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.208 · c048 · sim 0.39.0 · 9df59d45+
+[0.0s tick 0] mine, not the route's: the Scout goes 4 m off rather than to beside-inez
+[0.0s tick 291] Listen given; spot ((-575,-2625), , waitress, False)
+[0.0s tick 291] capture 1600x900 RGBA32
+[1.0s tick 302] under way, Scout 4.9 m from Inez
+[13.0s tick 422] cut: most of the 30 s
+[17.0s tick 602] listen-inez: playing: listen waitress, 10 beats, profile, listen-inez; 10 lines, walkers 0
+[17.0s tick 602]   line 0: 
+[21.0s tick 602]   line 1: Milena: Have you eaten? You've looked at that Office door all shift.
+[24.9s tick 602]   line 2: Inez: Eat? With the Bureau after me? Waiting tables, I can't keep up.
+[28.8s tick 602]   line 3: Milena: I owe them too. We'll be buried with those cards half stamped.
+[31.2s tick 602]   line 4: Inez: Then bury me somewhere I can sit down.
+[34.6s tick 602]   line 5: Milena: You'd get up to look at that door. Is it so handsome?
+[38.1s tick 602]   line 6: Inez: Who says? Did Okafor say something? Who else has he told?
+[41.6s tick 602]   line 7: Milena: He said nothing, you goose. You just did.
+[45.3s tick 602]   line 8: Inez: Yes, I'm seeing him. If the Office hears, it costs us both.
+[49.5s tick 602]   line 9: Milena: Not from me, they won't. Stop looking, though. You can't afford it.
+[54.7s tick 602] listen-inez: 37.7 s; walkers 0, turned 0, stopped 0
+[55.0s tick 605]   card: Debt: Bureau loan, and she's behind. / Secret: seeing Okafor, the door guard. New Help: clear her Bureau loan. / Pressure: threaten to expose the affair., docked False
+[66.6s tick 966] help-1: playing: help waitress, 8 beats, profile, help-inez-1; 8 lines, walkers 2
+[66.6s tick 966]   line 0: 
+[70.2s tick 966]   line 1: Fixer: Miss Nikolaou? I've just paid part of your Bureau loan.
+[73.7s tick 966]   line 2: Inez: Who are you? Who told you about that? Who saw you come?
+[77.1s tick 966]   line 3: Fixer: Nobody to worry about. It's stamped at the Bureau now.
+[80.8s tick 966]   line 4: Inez: Nobody pays a stranger's loan for nothing. What do you want?
+[84.3s tick 966]   line 5: Fixer: Nothing today. Later, one small thing that hurts nobody.
+[87.9s tick 966]   line 6: Inez: Thank you, then. But I can't do anything for it. Not yet.
+[91.5s tick 966]   line 7: Fixer: We can wait. You've enough on today. I'll bring the rest.
+[93.8s tick 966] help-1: 27.2 s; walkers 2, turned 9, stopped 0
+[94.1s tick 969]   card: Inez took it. Not ready yet. New Help again, docked False
+[100.2s tick 1308] the Scout walks across the shot (mine, not the route's)
+[101.0s tick 1316] help-2: playing: help waitress, 9 beats, profile, help-inez-2; 9 lines, walkers 3
+[101.0s tick 1316]   line 0: 
+[105.1s tick 1316]   line 1: Fixer: That's the rest paid. You owe the Bureau nothing, Miss Nikolaou.
+[108.5s tick 1316]   line 2: Inez: Not so loud. I've owed them since my last good shoes.
+[112.1s tick 1316]   line 3: Fixer: Then buy shoes first, Miss Nikolaou. We'll wait our turn.
+[115.1s tick 1316]   line 4: Inez: Thank you, I mean that. Your turn. What do I owe?
+[119.2s tick 1316]   line 5: Fixer: A few minutes. When I telephone, call Okafor off the Office door.
+[122.5s tick 1316]   line 6: Inez: Okafor. You know about us, then. What happens to him?
+[126.4s tick 1316]   line 7: Fixer: Easy, now. Nothing, if this goes right. And he never sees us.
+[130.0s tick 1316]   line 8: Inez: You did bring the rest. I'll say it won't go by telephone.
+[134.6s tick 1316] help-2: 33.6 s; walkers 3, turned 55, stopped 0
+[134.6s tick 1316]   card: , docked False
+[134.6s tick 1316]   recording only: the clock paused while the Help's card shows; the route's Call lands a tick after this scene
+[138.9s tick 1317] call-inez: playing: call waitress, 8 beats, intercut, call-inez; 8 lines, walkers 3
+[138.9s tick 1317]   line 0: 
+[143.1s tick 1317]   line 1: Fixer: It's time, Miss Nikolaou. Call Okafor across now. You'll do fine.
+[146.0s tick 1317]   line 2: Inez: Now? With the terrace looking? Yes. All right.
+[148.7s tick 1317]   line 3: Inez: How's your shift, love?
+[152.6s tick 1317]   line 4: Okafor: Long. This door's said nothing all day. It's good to hear you.
+[156.7s tick 1317]   line 5: Inez: Come across. I've something to tell you, and not down a telephone.
+[160.1s tick 1317]   line 6: Okafor: I've this door till shift's end. For you, it can wait.
+[163.1s tick 1317]   line 7: Inez: Walk, love. Don't run. Let me keep you a while.
+[166.5s tick 1317] call-inez: 27.5 s; walkers 3, turned 46, stopped 0
+[166.5s tick 1317]   card: , docked False
+[167.0s tick 1322] after the call: on the Enforcer at the door
+[167.8s tick 1330] line by inset: guard: Hold it! No running in the square!, docked False
+[177.5s tick 1618] clip Playing: 
+[181.5s tick 1658] clip clicked: to the door
+[187.7s tick 1720] out: out at tick 1720, 10.21 s in, video 10.04, drift 0.083
+[188.7s tick 1730] clip clicked: to him
+[193.7s tick 1888] guard after the exit: guard.at-cafe
+[193.7s tick 1888] line by inset: guard: I'm here, Inez. What is it?, docked True
+[195.2s tick 1903] line by inset: guard: You said it couldn't wait. What is it?, docked True
+[200.7s tick 1958] frames 6021, repeated 234

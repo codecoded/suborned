@@ -1,0 +1,21 @@
+size 10, heads 35
+cafe: crossing/starline-street/0 at -151,-198 size 4.18 x 11.18, 12 modules, cross length 12
+  DK_SignalLens_Rim: DK_Signal_RimLens (Suborned/Signal Dots, q3000)
+  DK_HaloRing: DK_Signal_Ring (DecoKit/Lit Cutaway, q2450)
+  DK_HaloRing: DK_Cross_Housing (DecoKit/Lit Cutaway, q2000)
+  DK_SignalLens_Beam: DK_Cross_Beam (Suborned/Cross Glow, q3000, mode 4)
+  DK_SignalLens_Halo: DK_Cross_Halo (Suborned/Cross Glow, q3000, mode 5)
+  DK_LightDotRow_2: HarbourDistrict-crossdots (Suborned/Signal Dots, q3000)
+  cafe turn 1 stop: head state stop, ring lit 24
+  cafe turn 1 walk: head state walk, ring lit 24
+  cafe turn 1 clearing: head state clearing, ring lit 14
+  cafe turn 3 stop: head state stop, ring lit 24
+  cafe turn 3 walk: head state walk, ring lit 24
+  cafe turn 3 clearing: head state clearing, ring lit 14
+office: crossing/orbit-walk/0 at -160,-267.5 size 4.18 x 12.18, 12 modules, cross length 13
+  office turn 0 stop: head state stop, ring lit 24
+  office turn 0 walk: head state walk, ring lit 24
+  office turn 0 clearing: head state clearing, ring lit 12
+  office turn 2 stop: head state stop, ring lit 24
+  office turn 2 walk: head state walk, ring lit 24
+  office turn 2 clearing: head state clearing, ring lit 12

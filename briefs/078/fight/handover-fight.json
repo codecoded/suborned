@@ -1,0 +1,18 @@
+{
+ "schema": "suborned.fightreel/1",
+ "build": "Editor · sim 0.35.2",
+ "script": "/Users/sky/Projects/suborned/runs/missions/handover/c045/routes/loud-fight.json",
+ "fps": 30,
+ "frames": 2908,
+ "repeatedFrames": 17,
+ "firstTick": 2200,
+ "lastTick": 3068,
+ "overTick": 3068,
+ "overFrame": 2608,
+ "outcome": "Success",
+ "failCode": "",
+ "finalHash": "43b2b7a2fce65008",
+ "ordersGiven": 46,
+ "ordersRefused": 0,
+ "error": ""
+}

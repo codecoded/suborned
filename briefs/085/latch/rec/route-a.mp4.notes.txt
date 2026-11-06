@@ -1,0 +1,58 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.191 · c047 · sim 0.38.0 · cbce637a+
+[0.0s tick 560] capture 1600x900 RGBA32
+[3.0s tick 590] listen-inez: playing: listen waitress, 10 beats, profile, listen-inez; 10 lines, walkers 0
+[3.0s tick 590]   line 0: 
+[6.6s tick 590]   line 1: Milena: You've been looking at the Office door all shift, Inez.
+[9.9s tick 590]   line 2: Inez: Who else has noticed? I've got the terrace to see to.
+[13.5s tick 590]   line 3: Milena: You jump at everything. Nobody watches a door for nothing.
+[17.7s tick 590]   line 4: Inez: It's the Bureau, that's all. Waiting tables here, I can't keep up.
+[20.9s tick 590]   line 5: Milena: I owe them too. I don't keep looking at that guard.
+[23.8s tick 590]   line 6: Inez: Did Okafor say something? Who else has he told?
+[25.7s tick 590]   line 7: Milena: He said nothing. You just did.
+[29.4s tick 590]   line 8: Inez: Yes, I'm seeing him. If the Office hears, it costs us both.
+[31.9s tick 590]   line 9: Milena: Then stop looking. You can't afford it.
+[36.5s tick 590]   cards up
+[46.0s tick 590] listen-inez: 43.0 s; walkers 0, turned 0, stopped 0
+[52.0s tick 940] help-1: playing: help waitress, 7 beats, profile, help-inez-1; 7 lines, walkers 2
+[52.0s tick 940]   line 0: 
+[55.3s tick 940]   line 1: Fixer: I've paid part of your Bureau loan, Miss Nikolaou.
+[59.2s tick 940]   line 2: Inez: Wrong girl, mister. Have it sent back before the terrace sees.
+[62.5s tick 940]   line 3: Fixer: It's stamped at the Bureau now. It doesn't come back.
+[65.8s tick 940]   line 4: Inez: Who's been asking about me? What's it going to cost?
+[69.3s tick 940]   line 5: Fixer: Nothing today. Later, one small thing that hurts nobody.
+[72.6s tick 940]   line 6: Inez: Thank you, then. But I can't do anything for it yet.
+[75.1s tick 940]   cards up
+[78.4s tick 940] help-1: 26.4 s; walkers 2, turned 8, stopped 0
+[83.1s tick 1282] the Scout walks across the shot (mine, not the route's)
+[83.9s tick 1290] help-2: playing: help waitress, 8 beats, profile, help-inez-2; 8 lines, walkers 3
+[83.9s tick 1290]   line 0: 
+[88.0s tick 1290]   line 1: Fixer: That's the rest paid. You owe the Bureau nothing, Miss Nikolaou.
+[90.9s tick 1290]   line 2: Inez: Not so loud. Thank you. Now what do I owe you?
+[95.0s tick 1290]   line 3: Fixer: A few minutes. When I telephone, call Okafor off the Office door.
+[98.3s tick 1290]   line 4: Inez: Okafor. You know about us, then. What happens to him?
+[102.1s tick 1290]   line 5: Fixer: Easy, now. Nothing, if this goes right. And he never sees us.
+[105.4s tick 1290]   line 6: Inez: I'll say I've news that won't wait. Not on the line.
+[108.5s tick 1290]   line 7: Fixer: Not a word that anyone knows. You're with us now.
+[112.7s tick 1290]   cards up
+[116.0s tick 1290] help-2: 32.1 s; walkers 3, turned 4, stopped 1
+[118.5s tick 1291] call-inez: playing: call waitress, 7 beats, intercut, call-inez; 7 lines, walkers 3
+[118.5s tick 1291]   line 0: Fixer: It's time, Miss Nikolaou. Call Okafor across now.
+[119.2s tick 1291]   line 1: Fixer: It's time, Miss Nikolaou. Call Okafor across now.
+[122.1s tick 1291]   line 2: Inez: Now? With the terrace looking? Yes. All right.
+[126.1s tick 1291]   line 3: Inez: How's your shift, love? Come across. I've something to tell you.
+[129.3s tick 1291]   line 4: Okafor: Long. I've this door till shift's end. Say it here.
+[132.1s tick 1291]   line 5: Inez: Not down a telephone. It can't wait. Please.
+[134.8s tick 1291]   line 6: Okafor: Then the door can wait. I'm leaving it now.
+[137.8s tick 1291]   cards up
+[141.9s tick 1291] call-inez: 23.5 s; walkers 3, turned 20, stopped 0
+[142.5s tick 1296] after the call: on the Enforcer at the door
+[142.5s tick 1296] line by inset: guard: Inez needs me? I'm coming., docked True
+[143.2s tick 1304] line by inset: guard: Hold it! No running in the square!, docked False
+[153.0s tick 1592] clip Playing: 
+[157.0s tick 1632] clip clicked: to the door
+[163.2s tick 1694] out: out at tick 1694, 10.20 s in, video 10.04, drift 0.083
+[164.2s tick 1704] clip clicked: to him
+[169.2s tick 1862] guard after the exit: guard.at-cafe
+[169.2s tick 1862] line by inset: guard: I'm here, Inez. What is it?, docked True
+[170.7s tick 1877] line by inset: guard: You said it couldn't wait. What is it?, docked True
+[176.2s tick 1932] frames 5285, repeated 188

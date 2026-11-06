@@ -1,0 +1,15 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 416, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 890, "y": 1026, "w": 141, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "pop", "x": 883, "y": 361, "w": 161, "h": 36, "text": "Click again to stop"},
+  {"kind": "image", "x": 14, "y": 438, "w": 86, "h": 30, "text": "squad button"},
+  {"kind": "image", "x": 949, "y": 401, "w": 36, "h": 36, "text": "act mark"},
+  {"kind": "image", "x": 986, "y": 408, "w": 42, "h": 22, "text": "act seconds"},
+  {"kind": "bar", "x": 1465, "y": 14, "w": 441, "h": 44},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

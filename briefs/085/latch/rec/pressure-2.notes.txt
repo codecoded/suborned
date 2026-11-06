@@ -1,0 +1,38 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.202 · c047 · sim 0.38.0 · 247a37c8+
+[0.0s tick 590] skipped a scene: 
+[0.0s tick 590] capture 1600x900 RGBA32
+[1.5s tick 590] ring, Pressure way: ring True | turn/pay: 90k 35 s +2   | turn/help: 20k 35 s +1   | turn/ask: 20 s +1   | turn/pressure: 25 s +3 Door 1:40  
+[10.2s tick 840] pressure-inez: playing: pressure waitress, 8 beats, profile, pressure-inez; 8 lines, walkers 0
+[10.2s tick 840]   line 0: 
+[13.9s tick 840]   line 1: Inez: Bureau sent you? Tell them my feet are still good for it.
+[17.9s tick 840]   line 2: Fixer: Not the Bureau, no. The Office could learn about you and Okafor.
+[21.0s tick 840]   line 3: Inez: Who told you? Who can see us? Whatever it is, yes.
+[24.7s tick 840]   line 4: Fixer: Softly. You've been on your feet all shift. Hear it first.
+[26.9s tick 840]   line 5: Inez: Say it, then. My tables are waiting.
+[30.0s tick 840]   line 6: Fixer: When I telephone, call Okafor over from his door.
+[33.7s tick 840]   line 7: Inez: I'll say it can't wait, not on the line. He'll be pleased.
+[38.3s tick 840] pressure-inez: 28.1 s; walkers 0, turned 0, stopped 0
+[38.6s tick 843]   card: Threatened, she agreed; knows Fixer's face. New Call Inez, docked False
+[43.4s tick 882] ring, Call way: ring True | call/: +1 Door 1:40 
+[46.7s tick 882] call-inez-pressure: playing: call waitress, 9 beats, intercut, call-inez-pressure; 9 lines, walkers 0
+[46.7s tick 882]   line 0: 
+[51.2s tick 882]   line 1: Fixer: It's time, Miss Nikolaou. Call Okafor over, and the Office never hears.
+[54.3s tick 882]   line 2: Inez: Yes, I'll call. Who picked up? Did they hear you?
+[57.8s tick 882]   line 3: Fixer: You're all right. Nobody heard. Not a word of me to him.
+[61.4s tick 882]   line 4: Inez: It's me, love. Still guarding that door from the public?
+[65.0s tick 882]   line 5: Okafor: Inez, you'll have me written up in triplicate. Hello, you.
+[68.5s tick 882]   line 6: Inez: I've something to tell you. It's not for the telephone.
+[71.8s tick 882]   line 7: Okafor: Can it keep till I'm off? This door's mine till then.
+[75.4s tick 882]   line 8: Inez: It won't keep, love. I wouldn't ring the door if it would.
+[79.8s tick 882] call-inez-pressure: 33.1 s; walkers 0, turned 0, stopped 0
+[79.8s tick 882]   card: , docked False
+[80.3s tick 1423] bubble tech: Looped. I'm free to go.
+[83.3s tick 1454] guard.at-cafe
+[83.3s tick 1454] bubble waitress: Someone knows about us, love. Whoever it was looked suspicious.
+[87.3s tick 1493] bubble guard: And my door's standing empty. Stay here, Inez.
+[88.3s tick 1504] guard.leaves-cafe
+[88.3s tick 1504] bubble scout: He's heading back. Be quick.
+[88.3s tick 1504] running back
+[93.5s tick 1556] bubble scout: Car turning in. Orbit Walk, by the sound.
+[96.4s tick 1584] clip at the end run 0.87; at café True
+[96.4s tick 1585] frames 2891, repeated 111

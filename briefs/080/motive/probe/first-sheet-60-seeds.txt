@@ -1,0 +1,71 @@
+$ bun tools/game/playing.ts dotnet "out/scratch/motive/080/probe/bin/Release/net10.0/probe080.dll" /Users/sky/Projects/suborned contracts/missions/handover/routes "60" "route-a-board,route-b-board,route-g-fast-board,route-a,route-b,route-g,loud-fight"
+
+## route-a-board base Success  end 4:15 fight 14s hp-lost 0 down 0 T 4 A 0
+acc     win 60/60 [] end 4:15..4:15 fight 14..14 med 14s hp 0..3 med 1 downs/run 0.00 log-differs med 4:03 (58/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=- 6:00=- 7:00=-
+roll    win 56/60 [rivals-reach-vale×4] end 4:15..4:19 fight 9..18 med 14s hp 0..6 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=- 6:00=- 7:00=-
+sheet   win 0/60 [rivals-reach-vale×60] end 4:19..4:19 fight 18..18 med 18s hp 0..2 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=- 6:00=- 7:00=-
+crowd+sheet win 0/60 [rivals-reach-vale×60] end 4:19..4:19 fight 18..18 med 18s hp 0..2 med 0 downs/run 0.00 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/1c 4:00=0a/4c 5:00=- 6:00=- 7:00=-
+
+## route-b-board base Success  end 7:35 fight 9s hp-lost 6 down 0 T 4 A 0
+acc     win 50/60 [rivals-reach-vale×10] end 7:35..7:43 fight 6..20 med 9s hp 2..11 med 6 downs/run 0.17 log-differs med 7:24 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=0a/0c 6:00=0a/0c 7:00=0a/0c
+roll    win 34/60 [rivals-reach-vale×26] end 7:35..7:44 fight 6..21 med 10s hp 3..13 med 7 downs/run 0.32 log-differs med 7:25 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=0a/0c 6:00=0a/0c 7:00=0a/0c
+sheet   win 0/60 [rivals-reach-vale×60] end 7:43..7:43 fight 20..20 med 20s hp 2..7 med 3 downs/run 0.00 log-differs med 7:25 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=0a/0c 6:00=0a/0c 7:00=0a/0c
+crowd+sheet win 0/60 [rivals-reach-vale×60] end 7:43..7:43 fight 20..20 med 20s hp 2..7 med 3 downs/run 0.00 log-differs med 7:23 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/1c 4:00=0a/4c 5:00=0a/4c 6:00=0a/11c 7:00=0a/24c
+
+## route-g-fast-board base Success  end 3:02 fight 21s hp-lost 1 down 0 T 5 A 1
+acc     win 8/60 [rivals-reach-vale×52] end 3:02..3:14 fight 21..33 med 33s hp 0..6 med 3 downs/run 0.00 log-differs med 2:54 (55/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=- 5:00=- 6:00=- 7:00=-
+roll    win 7/60 [rivals-reach-vale×53] end 3:02..3:14 fight 21..33 med 33s hp 0..7 med 3 downs/run 0.00 log-differs med 2:54 (58/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=- 5:00=- 6:00=- 7:00=-
+sheet   win 0/60 [rivals-reach-vale×60] end 3:14..3:14 fight 33..33 med 33s hp 0..2 med 0 downs/run 0.00 log-differs med 2:54 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=- 5:00=- 6:00=- 7:00=-
+crowd+sheet win 0/60 [rivals-reach-vale×60] end 3:14..3:14 fight 33..33 med 33s hp 0..2 med 0 downs/run 0.00 log-differs med 2:46 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/1c 4:00=- 5:00=- 6:00=- 7:00=-
+
+## route-a base Success  end 4:38 fight 23s hp-lost 1 down 0 T 4 A 0
+acc     win 60/60 [] end 4:38..4:38 fight 21..32 med 23s hp 0..10 med 2 downs/run 0.03 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=- 6:00=- 7:00=-
+roll    win 60/60 [] end 4:38..4:38 fight 18..37 med 22s hp 0..17 med 2 downs/run 0.03 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=- 6:00=- 7:00=-
+sheet   win 6/60 [rivals-reach-vale×42,None×12] end 4:38..8:30 fight 37..268 med 121s hp 1..19 med 16 downs/run 2.52 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=- 6:00=- 7:00=-
+crowd+sheet win 6/60 [rivals-reach-vale×42,None×12] end 4:38..8:30 fight 37..268 med 121s hp 1..19 med 16 downs/run 2.52 log-differs med 4:03 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/1c 4:00=0a/4c 5:00=- 6:00=- 7:00=-
+
+## route-b base Success  end 7:32 fight 9s hp-lost 6 down 0 T 4 A 0
+acc     win 33/60 [None×27] end 7:32..8:30 fight 6..13 med 9s hp 2..12 med 6 downs/run 0.25 log-differs med 7:24 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=0a/0c 6:00=0a/0c 7:00=0a/0c
+roll    win 27/60 [None×33] end 7:32..8:30 fight 6..16 med 9s hp 3..11 med 7 downs/run 0.28 log-differs med 7:25 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=0a/0c 6:00=0a/0c 7:00=0a/0c
+sheet   win 0/60 [None×52,rivals-reach-vale×8] end 8:10..8:30 fight 47..67 med 67s hp 6..13 med 10 downs/run 1.27 log-differs med 7:25 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=0a/0c 6:00=0a/0c 7:00=0a/0c
+crowd+sheet win 0/60 [None×52,rivals-reach-vale×8] end 8:10..8:30 fight 47..67 med 67s hp 6..13 med 11 downs/run 1.27 log-differs med 7:23 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/1c 4:00=0a/4c 5:00=0a/4c 6:00=0a/11c 7:00=0a/24c
+
+## route-g base Success  end 3:58 fight 9s hp-lost 3 down 0 T 5 A 1
+acc     win 60/60 [] end 3:58..3:58 fight 9..14 med 12s hp 3..8 med 5 downs/run 0.00 log-differs med 3:45 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=- 5:00=- 6:00=- 7:00=-
+roll    win 51/60 [None×8,rivals-reach-vale×1] end 3:58..8:30 fight 7..28 med 13s hp 2..13 med 5 downs/run 0.02 log-differs med 3:47 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=- 5:00=- 6:00=- 7:00=-
+sheet   win 0/60 [None×50,cell-down×8,rivals-reach-vale×2] end 6:19..8:30 fight 138..285 med 285s hp 5..23 med 15 downs/run 1.92 log-differs med 3:46 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=- 5:00=- 6:00=- 7:00=-
+crowd+sheet win 0/60 [None×42,sealed×11,cell-down×6,rivals-reach-vale×1] end 6:13..8:30 fight 138..285 med 285s hp 5..23 med 15 downs/run 1.72 log-differs med 3:37 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/1c 4:00=- 5:00=- 6:00=- 7:00=-
+
+## loud-fight base Success  end 5:12 fight -1s hp-lost 11 down 0 T 26 A 2
+acc     win 40/60 [enforcer-down×13,entry-seen-guard×6,sealed×1] end 2:37..5:41 fight -s hp 0..23 med 9 downs/run 1.37 log-differs med 2:35 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=3a/3c 5:00=1a/0c 6:00=- 7:00=-
+roll    win 21/60 [entry-seen-guard×18,enforcer-down×14,sealed×6,cell-down×1] end 2:37..5:41 fight -s hp 0..23 med 9 downs/run 0.90 log-differs med 3:46 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=0a/0c 4:00=0a/0c 5:00=1a/0c 6:00=- 7:00=-
+sheet   win 0/60 [entry-seen-guard×60] end 2:37..2:37 fight -s hp 0..0 med 0 downs/run 0.00 log-differs med 2:33 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-
+crowd+sheet win 0/60 [entry-seen-guard×60] end 2:37..2:37 fight -s hp 0..0 med 0 downs/run 0.00 log-differs med 2:33 (60/60)
+        moved>1m median 1:00=0a/0c 2:00=0a/0c 3:00=- 4:00=- 5:00=- 6:00=- 7:00=-

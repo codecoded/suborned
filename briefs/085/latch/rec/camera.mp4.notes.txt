@@ -1,0 +1,19 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.191 · c047 · sim 0.38.0 · cbce637a+
+[0.0s tick 590] skipped a scene: 
+[0.0s tick 800] Today: orthographic 10, 38° · Office door
+[0.0s tick 800] capture 1600x900 RGBA32
+[9.8s tick 590] skipped a scene: 
+[9.8s tick 800] Orthographic 8, 38° · Office door
+[19.8s tick 590] skipped a scene: 
+[19.8s tick 800] Orthographic 10, 32° · Office door
+[29.7s tick 590] skipped a scene: 
+[29.7s tick 800] Perspective FOV 30, 38° · Office door
+[39.7s tick 590] skipped a scene: 
+[39.7s tick 800] Today: orthographic 10, 38° · Café terrace
+[49.7s tick 590] skipped a scene: 
+[49.7s tick 800] Orthographic 8, 38° · Café terrace
+[59.6s tick 590] skipped a scene: 
+[59.6s tick 800] Orthographic 10, 32° · Café terrace
+[69.6s tick 590] skipped a scene: 
+[69.6s tick 800] Perspective FOV 30, 38° · Café terrace
+[79.6s tick 900] frames 2387, repeated 84

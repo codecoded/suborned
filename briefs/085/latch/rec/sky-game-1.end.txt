@@ -1,0 +1,5 @@
+Failure (vale-leaves) at 5:13.0 · final b3b7e9626de0 · replay identical
+Vale leaves the district in the official car.
+seed 2066612318
+engine working tree on a9dc194b2369 dll 7c7caa4bd2ddf048c4ddb198f8bcd9446ebcfdc0a16096c219badc00d7061965
+step mean 0.2180 ms, max 11.268 ms over 3130 steps; engine per frame 0.1703 ms over 9098 frames

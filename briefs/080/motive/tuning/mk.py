@@ -1,0 +1,43 @@
+import json,sys
+head=[
+ {"id":"e-car","op":"enforcer","do":"move","to":"d:Getaway bay","why":"the Enforcer is idle till the door: he brings the car round first"},
+ {"id":"e-in","op":"enforcer","do":"board","target":"car","when":["near:enforcer:d%Getaway bay:3"],"retry":1},
+ {"id":"drive","op":"enforcer","do":"drive-car","target":"service-drive","when":["fin:e-in"],"retry":1},
+ {"id":"e-wait","op":"enforcer","do":"move","to":[5650,-4750],"when":["since:drive:31"],"retry":2,"why":"out of the car, behind the entrance camera's cone, outside the guard's"},
+ {"id":"e-side","op":"enforcer","do":"move","to":[6925,-4250],"when":["log:loop.on"],"unless":["log:call.waitress"]},
+ {"id":"scout-to-inez","op":"scout","do":"move","to":"beside-inez","run":True},
+ {"id":"tech-to-cabinet","op":"tech","do":"move","to":"cabinet","run":True},
+ {"id":"fixer-to-court","op":"fixer","do":"move","to":"d:Courtyard","run":True},
+ {"id":"watch-inez","op":"scout","do":"watch","target":"waitress","after":["scout-to-inez"],"when":["free:scout"]},
+ {"id":"listen-inez","op":"scout","do":"listen","target":"waitress","when":["log:scout.watch.watched"]},
+ {"id":"help-1","op":"fixer","do":"turn","target":"waitress","approach":"help","when":["log:scout.listen.heard"]},
+ {"id":"help-2","op":"fixer","do":"turn","target":"waitress","approach":"help","when":["log:turn.help.not-yet"],"unless":["log:turn.help.turned"]},
+ {"id":"scout-to-rivals","op":"scout","do":"move","to":[8600,-3400],"run":True,"when":["log:scout.listen.heard"]},
+ {"id":"tip","op":"scout","do":"mislead","target":"rivals","when":["log:rivals.arrive","free:scout"],"retry":3},
+ {"id":"reroute","op":"tech","do":"reroute","target":"patrol","after":["tech-to-cabinet"],"when":["log:rivals.coming","free:tech"],"retry":3},
+ {"id":"loop","op":"tech","do":"loop","target":"entrance","when":["log:patrol.rerouted","free:tech"],"retry":3},
+ {"id":"call","op":"fixer","do":"call","target":"waitress","when":["log:turn.help.turned","log:loop.on","log:rivals.arrive"],"retry":2},
+ {"id":"to-door","op":"enforcer","do":"move","to":"d:Office entrance","when":["log:call.waitress"],"run":True},
+ {"id":"enter","op":"enforcer","do":"enter","when":["done:to-door","free:enforcer","loopleft>=:3"],"retry":1},
+ {"id":"s-y","op":"scout","do":"move","to":[7300,-1900],"run":True,"when":["log:rivals.misled"]},
+ {"id":"f-y","op":"fixer","do":"move","to":[7300,-1100],"run":True,"when":["log:call.waitress"]},
+ {"id":"t-y","op":"tech","do":"move","to":[7300,-1500],"run":True,"when":["log:loop.on"]},
+]
+fire=[
+ {"id":"d-s","op":"scout","do":"draw","when":["log:enter.in","left<=:enforcer:%d"%int(sys.argv[2])]},{"id":"d-f","op":"fixer","do":"draw","with":"d-s"},{"id":"d-t","op":"tech","do":"draw","with":"d-s"},
+ {"id":"fire-s","op":"scout","do":"fire","target":"$nearest:scout","when":["since:d-s:1"],"retry":2,"tries":20},
+ {"id":"fire-f","op":"fixer","do":"fire","target":"$nearest:fixer","with":"fire-s"},
+ {"id":"fire-t","op":"tech","do":"fire","target":"$nearest:tech","with":"fire-s"},
+ {"id":"focus-f","op":"fixer","do":"fire","target":"$blocker","when":["blocker"],"retry":1},{"id":"focus-t","op":"tech","do":"fire","target":"$blocker","with":"focus-f"},{"id":"focus-s","op":"scout","do":"fire","target":"$blocker","with":"focus-f"},
+ {"id":"to-car","op":"enforcer","do":"move","to":[6620,-1500],"when":["log:enter.out"],"retry":1,"interrupt":True},
+ {"id":"board","op":"enforcer","do":"board","target":"car","when":["log:enter.out","near:enforcer:6620,-1500:1"],"retry":1},
+ {"id":"s-c","op":"scout","do":"move","to":"service-drive","when":["log:enter.out","log:blocker.out"],"run":True,"interrupt":True,"retry":1},
+ {"id":"f-c","op":"fixer","do":"move","to":"service-drive","when":["log:enter.out","log:blocker.out"],"run":True,"interrupt":True,"retry":1},
+ {"id":"t-c","op":"tech","do":"move","to":"service-drive","when":["log:enter.out","log:blocker.out"],"run":True,"interrupt":True,"retry":1},
+ {"id":"s-in","op":"scout","do":"board","target":"car","when":["fin:s-c","near:scout:service-drive:4"],"retry":1},
+ {"id":"f-in","op":"fixer","do":"board","target":"car","when":["fin:f-c","near:fixer:service-drive:4"],"retry":1},
+ {"id":"t-in","op":"tech","do":"board","target":"car","when":["fin:t-c","near:tech:service-drive:4"],"retry":1},
+ {"id":"go","op":"cell","do":"go","when":["since:board:5","fin:s-in","fin:f-in","fin:t-in"],"retry":1},
+ {"id":"go2","op":"cell","do":"go","when":["log:blocker.out","since:board:%d"%int(sys.argv[3])],"retry":1}]
+d={"schema":"suborned.mission.adaptive/1","mission":"handover","style":"prepared-loud","pace":"human","id":sys.argv[1],"note":"x","rules":head+fire}
+json.dump(d,open(f'out/scratch/motive/tune/{sys.argv[1]}.adaptive.json','w'),indent=0)

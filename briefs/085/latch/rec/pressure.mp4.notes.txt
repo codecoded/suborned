@@ -1,0 +1,35 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.191 · c047 · sim 0.38.0 · cbce637a+
+[0.0s tick 590] skipped a scene: 
+[0.0s tick 590] capture 1600x900 RGBA32
+[1.5s tick 590] ring, Pressure way: ring True | turn/pay: 90k 35 s +2   | turn/help: 20k 35 s +1   | turn/ask: 20 s +1   | turn/pressure: 25 s +3 Door 1:40  
+[10.2s tick 840] pressure-inez: playing: pressure waitress, 8 beats, profile, pressure-inez; 8 lines, walkers 0
+[10.2s tick 840]   line 0: 
+[12.6s tick 840]   line 1: Inez: Is it the Bureau? I know I'm behind.
+[16.9s tick 840]   line 2: Fixer: Not the Bureau. Softly. The Office could learn about you and Okafor.
+[20.5s tick 840]   line 3: Inez: All right. Yes. Whatever it is, yes. Just not the Office.
+[24.4s tick 840]   line 4: Fixer: Hear it first. When I telephone, you call Okafor off the door.
+[27.2s tick 840]   line 5: Inez: He'd come. I'd say it can't go by telephone.
+[30.6s tick 840]   line 6: Fixer: Keep Okafor with you a few minutes. That's all we ask.
+[34.1s tick 840]   line 7: Inez: You're very polite about it. Go, before someone sees you.
+[37.1s tick 840]   cards up
+[41.4s tick 840] pressure-inez: 31.2 s; walkers 0, turned 0, stopped 0
+[44.3s tick 860] ring, Call way: ring True | call/: +1 Door 1:40 
+[47.5s tick 860] call-inez-pressure: playing: call waitress, 6 beats, intercut, call-inez-pressure; 6 lines, walkers 0
+[47.5s tick 860]   line 0: 
+[52.1s tick 860]   line 1: Fixer: It's time, Miss Nikolaou. Okafor hears what we agreed, and nothing else.
+[55.3s tick 860]   line 2: Inez: Yes, I'll call him. Did anyone hear you ask for me?
+[57.8s tick 860]   line 3: Inez: It's me, love. How long till the change?
+[60.8s tick 860]   line 4: Okafor: Long enough. That's not your voice. What is it?
+[64.6s tick 860]   line 5: Inez: I've something to tell you that can't wait. Not on the line.
+[67.1s tick 860]   cards up
+[72.0s tick 860] call-inez-pressure: 24.5 s; walkers 0, turned 0, stopped 0
+[72.5s tick 1401] bubble tech: Looped. I'm free to go.
+[75.6s tick 1432] guard.at-cafe
+[75.6s tick 1432] bubble waitress: Someone knows about us, love. Whoever it was looked suspicious.
+[79.5s tick 1471] bubble guard: And my door's standing empty. Stay here, Inez.
+[80.6s tick 1482] guard.leaves-cafe
+[80.6s tick 1482] bubble scout: He's heading back. Be quick.
+[80.6s tick 1482] running back
+[88.0s tick 1556] bubble scout: Car turning in. Orbit Walk, by the sound.
+[88.6s tick 1562] clip at the end run 0.87; at café True
+[88.6s tick 1563] frames 2658, repeated 114

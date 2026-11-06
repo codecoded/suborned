@@ -1,0 +1,71 @@
+sky-game-2: handover-20261102-024844, seed 2066612318, build 0.2.212. Failure (enforcer-down) at 4:07.5, final d6c0c947bb7e, his final d6c0c947bb7e: SAME.
+Not the same as Sky's screen (the game itself is: same seed, same orders at the same ticks, every 100-tick checkpoint and the final hash equal to his saved script):
+- Camera: chosen by the recorder, his is not recorded. Play zoom 10 at 38 degrees, opening yaw 30, one eased turn to yaw 210 at the first fight at the Office, then it stays. It follows the last ordered agent, a ring's thing (from 2.5 s before it opens), or the shots of the last 3.5 s. No cuts; long pans are smooth.
+- Third person: not shown. His drive orders play at their ticks in the overhead view.
+- Start: no front end, briefing or Begin glide; 1.2 s on the opening view, then the clock runs.
+- Rings: opened at his logged ticks on his logged things with his selection; each ring's wedges match the log. The pointer moves to the wedge he took 0.7 s before he took it. The order itself comes from the script at the same tick, so the ring just closes. A take of "..." shows no panel.
+- Not replayed: his pointer between rings (the hover pills), click marks on the ground. Order voice lines are said when the order goes, in the "On it" form, so some may differ from his or come early.
+- Scenes: his setting (first of each). A scene he left early ends after the same seconds his clock was held, whichever way he left it; if he clicked through lines he saw more lines than this shows. Scene framing can differ, since the shot depends on the street at that moment.
+- Hints follow this machine's learned-hints state, not his.
+- Speed: real time throughout, no cuts or speed-ups (his log shows 1x). The end card holds about 6 s.
+- Sound: the game's own mix at his volumes, not boosted; it is quiet on a phone (mean about -35 dB, peak about -4.6 dB).
+---- the run's log (video seconds and engine ticks)
+[0.0s tick 0] screen 1600x900, Build 0.2.212 · c048 · sim 0.39.0 · 80aea1e5+
+[0.0s tick 0] host record: 420 lines, 11 ring opens, his holds of the clock over 1 s: ticks 0-10 5.2 s, ticks 346-359 2.5 s, ticks 1177-1178 6.5 s
+[0.0s tick 0] seed 2066612318, scenes FirstEachScene, session /Users/sky/Projects/suborned/out/scratch/latch/rec/raw6/sky-2/handover-20261102-031302.script.json, 35 orders; Automation hints True
+[0.0s tick 0] capture 1600x900 RGBA32
+[1.1s tick 0] clock runs
+[1.1s tick 0] on tick 0: focus (-174.30, 0.00, -22.40), zone 0, sel scout, shots near 0
+[4.3s tick 31] ring open on person/waitress, sel fixer: [Watch | Ask | ...] until tick 44 (take Ask)
+[10.5s tick 93] ring open on camera/entrance, sel tech: [Loop | Watch | Disable | Fire] until tick 107 (take Disable)
+[11.2s tick 100] on tick 100: focus (-174.50, 0.00, -76.93), zone 0, sel tech, shots near 0
+[21.2s tick 200] on tick 200: focus (-179.15, 0.00, -28.92), zone 0, sel enforcer, shots near 0
+[31.1s tick 300] on tick 300: focus (-180.75, 0.00, -46.65), zone 0, sel enforcer, shots near 0
+[36.1s tick 349] scene at tick 349: playing: ask waitress, 5 beats, profile; 5 lines, about 9.1 s whole; Sky's clock was held 2.5 s here
+[36.1s tick 349]   line 0: 
+[37.5s tick 349]   line 1: Fixer: Excuse me. A moment?
+[38.4s tick 349]   ended at his 2.5 s, as he left it
+[38.5s tick 349]   scene over after 2.4 s
+[43.5s tick 400] on tick 400: focus (-174.50, 0.00, -70.50), zone 0, sel enforcer, shots near 0
+[52.4s tick 488] ring open on person/waitress, sel fixer: [Watch | ...] until tick 501 (take Watch)
+[53.5s tick 500] on tick 500: focus (-159.26, 0.00, -14.27), zone 0, sel fixer, shots near 0
+[59.1s tick 554] ring open on person/waitress, sel scout: [Watch | ...] until tick 567 (take ...)
+[63.6s tick 600] on tick 600: focus (-173.17, 0.00, -22.32), zone 0, sel scout, shots near 0
+[73.6s tick 700] on tick 700: focus (-161.92, 0.00, -21.56), zone 0, sel enforcer, shots near 0
+[83.6s tick 800] on tick 800: focus (-161.92, 0.00, -21.56), zone 0, sel enforcer, shots near 0
+[93.5s tick 900] on tick 900: focus (-160.75, 0.00, -18.96), zone 0, sel scout, shots near 0
+[103.5s tick 1000] on tick 1000: focus (-160.75, 0.00, -18.95), zone 0, sel fixer, shots near 0
+[113.5s tick 1100] on tick 1100: focus (-160.75, 0.00, -18.95), zone 0, sel fixer, shots near 0
+[121.4s tick 1178] scene at tick 1178: playing: listen waitress, 10 beats, profile, listen-inez; 10 lines, about 35.9 s whole; Sky's clock was held 6.5 s here
+[121.4s tick 1178]   line 0: 
+[125.3s tick 1178]   line 1: Milena: Have you eaten? You've looked at that Office door all shift.
+[127.6s tick 1178]   ended at his 6.5 s, as he left it
+[127.7s tick 1178]   scene over after 6.3 s
+[129.9s tick 1200] on tick 1200: focus (-160.75, 0.00, -18.95), zone 0, sel enforcer, shots near 0
+[134.0s tick 1242] camera turns once to view 2 (yaw 210)
+[136.7s tick 1267] ring open on patrol/patrol, sel enforcer: [Watch | Fire | ...] until tick 1282 (take Fire)
+[139.9s tick 1300] on tick 1300: focus (-176.17, 0.00, -79.69), zone 2, sel enforcer, shots near 0
+[146.8s tick 1369] ring open on body/guard, sel tech: [Carry | ...] until tick 1378 (take ...)
+[149.9s tick 1400] on tick 1400: focus (-175.06, 0.00, -82.30), zone 2, sel tech, shots near 0
+[157.8s tick 1478] ring open on body/guard, sel enforcer: [Carry | ...] until tick 1492 (shut )
+[159.9s tick 1500] on tick 1500: focus (-173.17, 0.00, -77.65), zone 2, sel enforcer, shots near 0
+[166.9s tick 1569] his order refused as it was for him? enforcer enter 
+[169.9s tick 1600] on tick 1600: focus (-171.62, 0.00, -88.28), zone 2, sel fixer, shots near 8
+[179.9s tick 1700] on tick 1700: focus (-171.25, 0.00, -88.75), zone 2, sel enforcer, shots near 0
+[189.9s tick 1800] on tick 1800: focus (-173.72, 0.00, -84.16), zone 2, sel tech, shots near 0
+[191.3s tick 1814] ring open on rivals/rival-2, sel tech: [Fire | ...] until tick 1831 (take Fire)
+[199.9s tick 1900] on tick 1900: focus (-173.66, 0.00, -75.34), zone 2, sel scout+fixer, shots near 9
+[204.9s tick 1949] ring open on camera/entrance, sel scout+fixer: [Watch | Fire] until tick 1969 (take Fire)
+[209.9s tick 2000] on tick 2000: focus (-175.53, 0.00, -69.96), zone 2, sel scout+fixer, shots near 0
+[219.9s tick 2100] on tick 2100: focus (-175.26, 0.00, -80.22), zone 2, sel scout+fixer, shots near 2
+[228.1s tick 2182] ring open on rivals/rival-2, sel scout+fixer: [Fire | ...] until tick 2194 (take Fire)
+[229.9s tick 2200] on tick 2200: focus (-172.81, 0.00, -92.16), zone 2, sel scout+fixer, shots near 8
+[236.4s tick 2265] ring open on rivals/rival-3, sel scout+fixer: [Fire | ...] until tick 2278 (take Fire)
+[239.9s tick 2300] on tick 2300: focus (-174.03, 0.00, -86.28), zone 2, sel scout+fixer, shots near 2
+[249.8s tick 2400] on tick 2400: focus (-173.59, 0.00, -87.21), zone 2, sel scout+fixer, shots near 0
+[257.4s tick 2475] over: fail cam False, Failure (enforcer-down) at 4:07.5 · final d6c0c947bb7e · replay checking
+[269.9s tick 2475] audio 270.02 s at 44100
+[269.9s tick 2475] END: Failure (enforcer-down) at 4:07.5 · final d6c0c947bb7e · replay identical
+[269.9s tick 2475] final hash d6c0c947bb7e (his d6c0c947bb7e): SAME
+[269.9s tick 2475] rings: opened 11, not opened 0, ways same as his 11, other 0; wedge not found 0; click pops replayed 3; acks said 7; orders given 35/35
+[269.9s tick 2475] frames 8098, repeated 258

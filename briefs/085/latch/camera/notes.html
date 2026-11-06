@@ -1,0 +1,9 @@
+<div class="n"><h2>What I can see from these stills</h2><ul>
+<li><b>The cut stops under perspective.</b> The architecture cut only runs on an orthographic camera (ArchitectureFade). At the door at yaw 210 the guard is simply behind the wall under all three perspective views: his marks float on the facade, and there is no cut or silhouette. That is the biggest thing that breaks; a perspective camera needs that work first.</li>
+<li><b>Ground marks are sized for the orthographic view.</b> Under perspective they take a fixed scale from a stand-in zoom (HudToolkit.Ground), so they don't shrink with distance. See the Tech's cabinet mark and the signal's road ring in the corner row.</li>
+<li><b>The tactical shadow fit is off under perspective</b> (CamProjection turns it off), and the shadows differ from today's.</li>
+<li><b>Triangles rise a lot.</b> 2.8 to 5.7 M under perspective against 0.8 to 1.4 M today, and the play view's gate is 2.5 M. Each figure is one frame's Triangles Count at the paused moment, not a performance run.</li>
+<li><b>Verticals lean under perspective,</b> most at FOV 40: the door's towers and the café's sign. The figure is the same size only near the middle of the frame.</li>
+<li><b>32° keeps today's cut, marks and triangles</b> and is the only change here that needs no other work. It shows more facade and less paving; a figure stands about 82 px.</li>
+<li><b>Orthographic 8</b> gives about 96 px figures with no other change, and shows a fifth less of the street in each direction.</li>
+</ul><p>Figure pixels are a 1.8 m person projected at the spot's centre. Perspective uses half-height 8.9 (the lab's zoom value), which gives about 90 px at FOV 30 and 38°. Not compared side by side with Sky's Desperados III and Shadow Tactics shots; nothing in the game has changed.</p></div>

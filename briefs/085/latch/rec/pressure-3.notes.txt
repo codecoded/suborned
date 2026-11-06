@@ -1,0 +1,38 @@
+[0.0s tick 0] screen 1600x900, Build 0.2.208 · c048 · sim 0.39.0 · 9df59d45+
+[0.0s tick 596] skipped a scene: 
+[0.0s tick 596] capture 1600x900 RGBA32
+[1.5s tick 596] ring, Pressure way: ring True | turn/pay: 90k 35 s +2   | turn/help: 20k 35 s +1   | turn/ask: 20 s +1   | turn/pressure: 25 s +3 Door 1:40  
+[10.3s tick 846] pressure-inez: playing: pressure waitress, 8 beats, profile, pressure-inez; 8 lines, walkers 0
+[10.3s tick 846]   line 0: 
+[12.6s tick 846]   line 1: Inez: Is it the Bureau? I know I'm behind.
+[16.7s tick 846]   line 2: Fixer: No, not the Bureau. The Office could learn about you and Okafor.
+[20.4s tick 846]   line 3: Inez: Who told you? Please. What do you want? Whatever it is, yes.
+[24.5s tick 846]   line 4: Fixer: Hear it first, Miss Nikolaou. Get your breath. We're in no hurry.
+[26.6s tick 846]   line 5: Inez: Just say it. I've tables waiting.
+[30.5s tick 846]   line 6: Fixer: When I telephone, call Okafor off his door. That's all we ask.
+[33.7s tick 846]   line 7: Inez: He'd come if I asked. He trusts me. And if I don't?
+[38.0s tick 846] pressure-inez: 27.7 s; walkers 0, turned 0, stopped 0
+[38.3s tick 849]   card: Threatened, she agreed; knows Fixer's face. New Call Inez, docked False
+[43.1s tick 888] ring, Call way: ring True | call/: +1 Door 1:40 
+[46.4s tick 888] call-inez-pressure: playing: call waitress, 9 beats, intercut, call-inez-pressure; 9 lines, walkers 0
+[46.4s tick 888]   line 0: 
+[49.2s tick 888]   line 1: Fixer: It's time, Miss Nikolaou. Call Okafor over.
+[50.8s tick 888]   line 2: Inez: Yes. I said I would. Yes.
+[53.5s tick 888]   line 3: Fixer: You're doing well. Not a word of us to him.
+[56.0s tick 888]   line 4: Inez: It's me, love. How long till the change?
+[58.5s tick 888]   line 5: Okafor: Too long. You sound done in. What is it?
+[61.9s tick 888]   line 6: Inez: I've something to tell you. It can't go by telephone.
+[65.4s tick 888]   line 7: Okafor: Can it wait till I'm off? I've this door till the change.
+[66.8s tick 888]   line 8: Inez: It can't wait. Please.
+[69.9s tick 889] call-inez-pressure: 23.5 s; walkers 0, turned 0, stopped 0
+[69.9s tick 889]   card: , docked False
+[70.4s tick 1429] bubble tech: Looped. I'm free to go.
+[72.4s tick 1449] guard.at-cafe
+[72.4s tick 1449] bubble waitress: Someone knows about us, love. They looked suspicious.
+[75.7s tick 1482] bubble guard: Then my door's standing empty. Stay here, Inez.
+[77.4s tick 1499] guard.leaves-cafe
+[77.4s tick 1499] bubble scout: He's heading back. Be quick.
+[77.4s tick 1499] running back
+[83.1s tick 1556] bubble scout: Car turning in. Orbit Walk, by the sound.
+[85.4s tick 1579] clip at the end run 0.87; at café True
+[85.4s tick 1580] frames 2563, repeated 109

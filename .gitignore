@@ -143,3 +143,31 @@ unity/Assets/Suborned/Resources/Fx097/
 unity/Assets/Suborned/Resources/Fx097.meta
 unity/Assets/Scenes/HarbourDistrict-glow-*
 briefs/097/index.html
+
+# Brief leftovers that stay on disk, out of git (Sky 2026-11-07: "clean up the branch"): logs, compiler output, audio reviews, build, shot,
+# game and smoke folders, ready markers, the 075 recovery's large manifests and reports; the test runner's run files, the Unity pipeline
+# bridge's local config and the review-only generated assets (rebuilt by their tools).
+briefs/**/*.log
+briefs/**/*.dll
+briefs/**/*.pdb
+briefs/**/*.cache
+briefs/**/*.mp3
+briefs/**/*.wav
+briefs/**/bin/
+briefs/**/obj/
+briefs/**/TestResults/
+briefs/**/build/
+briefs/**/shots/
+briefs/**/logs/
+briefs/**/video/
+briefs/**/game-0*/
+briefs/**/smoke-0*/
+briefs/**/air-0*/
+briefs/**/READY-*
+briefs/075/recovery/
+unity/Assets/Resources/PerformanceTestRun*
+unity/ProjectSettings/Packages/com.unity.pipeline/
+unity/Assets/Suborned/Generated/Review075/
+unity/Assets/Suborned/Generated/Review075.meta
+unity/Assets/Suborned/Generated/OldTownFoliage075/
+unity/Assets/Suborned/Generated/OldTownFoliage075.meta
