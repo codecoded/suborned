@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Brief 098 step 0: the dial (Keel)</title>
+<style>body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1080px;margin:2em auto;padding:0 1em;color:#222}table{border-collapse:collapse;margin:.6em 0 1.2em}td,th{border:1px solid #ccc;padding:.25em .6em;text-align:left;font-variant-numeric:tabular-nums}th{background:#f3f1ec}code{background:#f3f1ec;padding:0 .25em}pre{background:#f3f1ec;padding:.8em;overflow:auto}h2{border-bottom:1px solid #ddd;margin-top:1.6em}</style></head><body>
+<h1>Brief 098 step 0: the dial</h1><p>Keel, suborned.sim/0.45.0, 2026-11-07. Engine side only: Latch adds the start page's panel, Waymark sweeps the shipped settings.</p>
+<h2>What it is</h2>
+<p>A start setting, <code>start.counts</code>, sets how many of each kind the zone has. The engine builds that world at the start of the game, from the seed and the dial's rules. There is no generator run and nothing baked, and a game starts in about 5 ms (11–13 ms at ×4).</p>
+<ul>
+<li><b>Unset</b> (no <code>counts</code>, or a kind left out): the people file plays exactly. Every scenario's and route script's checkpoint hashes are byte-identical to before (<code>suborned-sim hashes</code>, 518 runs, compared with <code>cmp</code>).</li>
+<li><b>Set</b>: the counts, and the dial's rules' text, are hashed into the start and saved with the run, so seed + counts + orders replay exactly.</li>
+<li>Any setting runs, hopeless ones included (guards up to 400, people up to 2000; the most per kind is in the rules).</li>
+</ul>
+<pre>{"schema": "suborned.sim.script/1", "mission": "handover",
+ "start": { "seed": 1234, "counts": { "guards": 19, "people": 150 } }, "orders": [ ... ] }</pre>
+<p>A count is the whole zone's count of that kind, the cast included. Today the zone has 16 guards (the door guard among them) and 114 people (Inez, the driver and Popovic among them). Kinds today: <code>guards</code> and <code>people</code>. Patrol robots, cameras and cars join the same object when their rules exist. Until then any other kind is rejected (unknown = reject).</p>
+<p>The rules live in <code>contracts/rules/population.json</code>, a new file in Keel's rulebook (zod schema <code>population.schema.ts</code>). They are a separate file so that <code>rulebook.json</code> keeps its bytes: the inputs hash, and with it every recorded run, does not move. Each value is marked proposed, with its reason, for Pulse and Motive to tune.</p>
+
+<h2>Fewer</h2>
+<ul>
+<li>People above a kind's count leave in a stable order: a hash of each person's id, the same for every seed. A count is one world shape and the seed moves only its timings. Taking one more away never brings anyone back.</li>
+<li><b>Never a tenet:</b> the site's cast (Inez, the door guard, the driver, Popovic), and anyone a cast member's lover tie names. A count below that floor plays the floor: guards 1, people 3. <code>Game.Census</code> says so in plain words.</li>
+<li><b>Posts stay whole</b> (GDD §05: a post is one person's; a relief keeps its marks). Guards leave in three stages:
+  <ol>
+  <li>Off-post guards (off shift, inside, at the café, or a relief beside a post the door guard holds all mission).</li>
+  <li>A post's reliefs, the latest shift first. The one before stands the post on to the end of the shift that left.</li>
+  <li>The posts themselves.</li>
+  </ol>
+  So a post is staffed for its whole shift or not at all. Today this matters at the official entrance: Anders Gabrielsson holds it to 5:10 and John Lockett relieves him. At guards 2, John leaves and Anders holds the door all mission. At guards 1, the door has nobody.</li>
+<li><b>Ties:</b> nobody left keeps a tie to someone gone. Whoever they would tell, grieve for, miss or send the response to is someone still in the zone (<code>LiveTies</code>).</li>
+</ul>
+
+<h2>More</h2>
+<ul>
+<li><b>An added guard</b> (<code>x-guard-001</code>, named "Guard 1") is on shift for the whole mission, on a beat of post points the engine finds in the site:
+  <ul>
+  <li>a point 2 m out of each staffed door (the café, the Office public door, the official entrance; the door's own post stays its holder's);</li>
+  <li>the 8 street police posts;</li>
+  <li>the 9 call boxes, which stand at corners.</li>
+  </ul>
+  The guards take the 20 points in a seeded order, one guard to a point before any shares. Each beat is that point and its 2 nearest, walked in a loop at the city's walk with a seeded 20–40 s pause at each, facing out of the door or toward the kerb.
+  <ul>
+  <li>His post is his beat: he checks in every 90 s from his shift's seeded start, and down, held or hidden at a mark, he misses it, reported where his beat had him.</li>
+  <li>He is staff under every rule that reads a job in <code>witness.staff</code>: sight all round to 13 m, a radio report by row 2, run sightings.</li>
+  </ul>
+  The site has no gates yet, so no beat has one.</li>
+<li><b>An added person</b> (<code>x-person-0001</code>, "Passer-by 1", job <code>visitor</code>) comes in at one of the site's 23 edges at a seeded second between −4:00 and 7:30. The edges are the runs of free cells on the walk grid's border; long runs are split every 20 m. They then do one of three things by the rules' weights:
+  <ul>
+  <li>sit at a café seat free for the whole stay (1–4 min);</li>
+  <li>go in at a public door (the café, the Office) for 1–5 min;</li>
+  <li>walk through to another edge.</li>
+  </ul>
+  Then they leave by a seeded edge. The site has no benches or transit stops, so neither is offered.</li>
+<li><b>Temperaments</b> come from the role's allow list in <code>people.rules temperamentsBy.roles</code>: guards Loyal or Mercenary, visitors all four. They are weighted by the zone's own mix of that kind and capped at <code>mix.rowMaxShare</code> (60%).</li>
+<li><b>Names</b> are stand-ins (Guard 1, Passer-by 1): the engine has no name rules, since names are drawn at build time from contracts/people/names.</li>
+<li><b>No need record and no ties.</b> The cell turns only the cast, so Ask, Help and Pressure are never offered to the crowd anyway.</li>
+<li>Every added person is a walker like the people file's. They see by their cone (a guard all round), witness, report by their nature, scatter at shots and drawn guns, block sight, and appear in <code>Game.Walkers</code>, which the host already draws.</li>
+<li>Each draw is a pure function of (seed, id, stage, index). Adding more never changes anyone already there, and at seed 0 an added person's draws come from their id alone, so the neutral start spreads them too.</li>
+</ul>
+
+<h2>Host API (for Latch)</h2>
+<ul>
+<li><code>Engine.Load</code> reads the rules if <code>contracts/rules/population.json</code> exists. For Unity, add <code>population.json</code> to <code>tools/sim/unity.ts</code>'s exported inputs and to <code>SimBundle.Files</code>, and pass it to <code>Engine.FromTexts(..., rounds, population)</code> (the new 8th argument). Without it, a start that sets counts is rejected with a clear message.</li>
+<li><code>Population.Today(inputs)</code>: the panel's numbers before any game. Per kind it gives <code>Kind</code>, <code>Today</code>, <code>Floor</code> and <code>Max</code>. <code>Population.Kinds</code> lists the kinds the dial builds.</li>
+<li><code>start.Counts["guards"] = 19;</code> (a <code>SortedDictionary&lt;string,int&gt;</code> on <code>Start</code>), then <code>Engine.New(inputs, start)</code>. Clear a kind to put it back to today's.</li>
+<li><code>game.Census</code> (empty when no counts are set): per kind <code>Asked</code>, <code>Count</code> (what plays), <code>Today</code>, <code>Floor</code>, <code>Max</code>, <code>Removed</code> and <code>Added</code> (ids), and <code>Note</code> in plain words (for example "1 is the fewest: the cast never leave"). <code>game.DialOn</code> is the dial being on.</li>
+<li><code>Walker.Added</code>: added by the dial. Added people's jobs are <code>guard</code> or <code>visitor</code>; <code>HostViews.FamilyOf</code> already maps these to the guard and passer-by figures. Their ids are in no baked table such as seats or figures.</li>
+<li>Reads: <code>game.StopsNow(id)</code>, <code>game.PostNow(id, tick)</code> (a door, or <code>beat:&lt;id&gt;</code>) and <code>game.TiesNow(id)</code>.</li>
+<li>CLI: <code>suborned-sim dial census</code>; <code>play &lt;script&gt; --counts guards=20,people=200</code>; batch items take <code>#counts=guards:20,people:200</code>, and <code>batch ... --counts ...</code> applies counts to every item; <code>dial sweep</code> and <code>dial perf</code>.</li>
+</ul>
+
+<h2>Tests (<code>sim/Suborned.Sim.Tests/Dial.cs</code>, laws, none pinned to a moment)</h2>
+<ul>
+<li>Unset is today, with the same start hash as a game made with no dial rules at all. Counts at today's numbers play the same world as unset (outcome, log, every walker's place) with their own start hash.</li>
+<li>A removal never takes a tenet: for guards 0–15 × people 0–113, the cast and the lover tie stand, nobody keeps a tie to someone gone, and each count plays as asked or at its floor.</li>
+<li>Every door's post is staffed all mission or not at all, for every guards count from 1 to 16.</li>
+<li>Added guards hold a beat post all mission with a mark every 90 s from their shift's start, one to a point. A downed one still down at his mark misses it (four seeds; one where the patrol found him and brought him round first has no mark to miss).</li>
+<li>A passer-by who notices a drawn gun (the engine's own notice test) startles for their nature's time (Fearful longer), remembers the face, then runs for shelter (four seeds × three moments).</li>
+<li>Adding more changes nobody already there.</li>
+<li>Counts replay exactly, through a saved script too.</li>
+<li>A small sweep (3 routes × 3 seeds × 4 settings) plays to an end with no engine error.</li>
+</ul>
+
+
+<h2>Checks run (2026-11-07, Apple M5 Max)</h2>
+<ul>
+<li><b>Unset changes nothing.</b> <code>suborned-sim hashes</code> (518 runs: every scenario, route script and motive-fights script) is byte-identical before and after (unset-hashes.md). The 15 adaptive plans × 10 seeds play byte-identically to the base build too (150 digest lines, replays checked).</li>
+<li><code>suborned-sim check</code>: 472/473 scenarios pass, replays included. The one failure, DP1 (a recorded drive session that needs re-recording), fails identically on the base build.</li>
+<li><code>dotnet test</code>, one Release process per test class: every class passes except RulesTests.Q4GridMatchesTheTypeScriptEvaluator (mercenary, help) and ScenarioTests DP1, which fail identically on the base commit. DialTests passes 18/18. Run as one Debug process, the suite outlasts 30 minutes (ScenarioTests 463 s, Redline 743 s as shards): over the 10-minute rule before this work.</li>
+<li>bun: <code>contracts/rules/</code> (the new population.test.ts among them) and <code>tools/sim/sim.test.ts</code>: 115 pass, 0 fail; <code>bun run typecheck</code> clean. The whole <code>bun run test</code>: 2,529 pass, 57 fail, 3 errors in 14 min, none of them about the dial:
+  <ul>
+  <li>some need git-ignored generated assets this fresh worktree lacks (out/people, the kit's models, the cover and world builds);</li>
+  <li>the rest compare against records older than the base commit (simview's c055 final hash; the base build gives this branch's hash).</li>
+  </ul></li>
+<li>The sweep, 2,700 runs (15 plans × 20 seeds × 9 settings): 0 errors, 0 replay differences.</li>
+</ul>
+<h2>Open questions</h2>
+<ol>
+<li><b>Added guards don't engage a drawn gun</b>, because no crowd guard does today. A drawn weapon is "seen by security" only for the door guard, the patrol, the cameras and the response. Crowd guards also keep no attention clocks and startle at a drawn gun like civilians. Should an on-shift guard on a beat be a security watcher (engage, call it in, keep a loiter clock)? That is Motive's rule, with step 2's witness laws.</li>
+<li><b>What a "people" count counts.</b> It counts the whole zone, as the people file does, and today most of those 114 spend the mission indoors (about 22 on the street at a time). Every added person is a passer-by on the street, so ×2 people puts about 3× as many on the street (63), and ×4 about 6× (127). If Sky's "more pedestrians" means people on the street, the dial could count street presence instead. That is Sky's call.</li>
+<li><b>The removal order is the same every seed</b> (a count is one world shape). A seeded order would make each game's cast different. That is Sky's call; it is one line.</li>
+<li><b>The guards' beat and the passers-by's visits are first rules</b>, all proposed: the post-point kinds, 3 points, 20–40 s pauses, the 4:3:3 seat, door and through weights, the stays. Pulse to tune; gates, benches and transit stops wait for the site to carry them.</li>
+<li><b>DP1 fails before and after this work, identically:</b> its recorded drive session predates a later input change (re-record with <code>suborned-sim drive-session</code>).</li>
+</ol>
+
+<h2>Today's census</h2><table><tr><th>kind</th><th>today</th><th>floor (tenets)</th><th>most</th></tr><tr><td>guards</td><td>16</td><td>1</td><td>400</td></tr><tr><td>people</td><td>114</td><td>3</td><td>2000</td></tr></table>
+<h2>The sweep: the Handover's outcomes by setting (information, not a gate)</h2>
+<p>15 adaptive plans (contracts/missions/handover/adaptive) × 20 seeds (from 1) × 9 settings, every run replayed: 2700 runs, 0 errors, 0 replay differences, 133 s on one process. "On the street" is the mean number of the crowd on the street by routine, sampled every 30 s.</p>
+<table><tr><th>setting</th><th>counts</th><th>runs</th><th>wins</th><th>win %</th><th>on the street (mean)</th><th>Alert (mean)</th><th>Trail (mean)</th><th>fails, most first</th></tr><tr><td>unset</td><td>the people file</td><td>300</td><td>128</td><td>42.7</td><td>21.9</td><td>1.0</td><td>10.3</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12, sealed 12</td></tr><tr><td>today</td><td>guards:16,people:114</td><td>300</td><td>128</td><td>42.7</td><td>21.9</td><td>1.0</td><td>10.3</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12, sealed 12</td></tr><tr><td>guards=1,people=3</td><td>guards:1,people:3</td><td>300</td><td>131</td><td>43.7</td><td>0.0</td><td>1.0</td><td>9.6</td><td>rivals-reach-vale 77, entry-seen-camera 40, closed-in 25, sealed 12, enforcer-down 11</td></tr><tr><td>x0.5</td><td>guards:8,people:57</td><td>300</td><td>128</td><td>42.7</td><td>10.8</td><td>1.0</td><td>10.3</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12, sealed 12</td></tr><tr><td>x2</td><td>guards:32,people:228</td><td>300</td><td>102</td><td>34.0</td><td>63.1</td><td>1.3</td><td>11.8</td><td>rivals-reach-vale 102, entry-seen-camera 24, enforcer-down 22, closed-in 21, sealed 16</td></tr><tr><td>x4</td><td>guards:64,people:456</td><td>300</td><td>98</td><td>32.7</td><td>126.7</td><td>1.2</td><td>11.0</td><td>rivals-reach-vale 121, vale-leaves 20, closed-in 19, sealed 19, entry-seen-camera 17</td></tr><tr><td>x8</td><td>guards:128,people:912</td><td>300</td><td>95</td><td>31.7</td><td>241.4</td><td>1.3</td><td>11.4</td><td>rivals-reach-vale 126, vale-leaves 20, closed-in 19, sealed 19, entry-seen-camera 11</td></tr><tr><td>guards=32</td><td>guards:32,people:114</td><td>300</td><td>112</td><td>37.3</td><td>37.9</td><td>1.2</td><td>9.7</td><td>rivals-reach-vale 95, entry-seen-camera 39, closed-in 23, vale-leaves 14, sealed 9</td></tr><tr><td>people=228</td><td>guards:16,people:228</td><td>300</td><td>112</td><td>37.3</td><td>47.1</td><td>1.3</td><td>12.8</td><td>rivals-reach-vale 88, enforcer-down 31, entry-seen-camera 24, sealed 23, closed-in 20</td></tr></table><h3>Wins by plan (of 20 seeds)</h3><table><tr><th>plan</th><th>unset</th><th>today</th><th>guards=1,people=3</th><th>x0.5</th><th>x2</th><th>x4</th><th>x8</th><th>guards=32</th><th>people=228</th></tr><tr><td>careless</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>drive-early</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>drive-round</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td></tr><tr><td>prepared-loud</td><td>14</td><td>14</td><td>14</td><td>14</td><td>14</td><td>12</td><td>9</td><td>14</td><td>14</td></tr><tr><td>prepared-loud-lend</td><td>5</td><td>5</td><td>5</td><td>5</td><td>4</td><td>4</td><td>4</td><td>5</td><td>4</td></tr><tr><td>quiet-a</td><td>20</td><td>20</td><td>20</td><td>20</td><td>19</td><td>19</td><td>19</td><td>19</td><td>20</td></tr><tr><td>quiet-b</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr><tr><td>quiet-b-lookout-ignored</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>quiet-b-taped</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>quiet-b-thinned</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr><tr><td>quiet-g</td><td>14</td><td>14</td><td>17</td><td>14</td><td>1</td><td>0</td><td>0</td><td>3</td><td>8</td></tr><tr><td>thin-quiet</td><td>20</td><td>20</td><td>20</td><td>20</td><td>19</td><td>19</td><td>19</td><td>20</td><td>19</td></tr><tr><td>unprepared-loud</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>veteran</td><td>10</td><td>10</td><td>10</td><td>10</td><td>0</td><td>0</td><td>0</td><td>6</td><td>2</td></tr><tr><td>veteran-drive</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr></table>
+<h2>The tick's cost</h2><p>One thread, Apple M5 Max (the Studio), warm (every setting played three times first), 10 plays each. The engine steps at 10 Hz, so 0.05 ms a tick is 0.5 ms of every second.</p><h3>route-a</h3><table><tr><th>setting</th><th>walkers</th><th>start (ms)</th><th>ms a tick</th><th>p99 tick (ms)</th></tr><tr><td>unset</td><td>126</td><td>4.7</td><td>0.0134</td><td>0.067</td></tr><tr><td>today</td><td>126</td><td>4.4</td><td>0.0133</td><td>0.063</td></tr><tr><td>x2</td><td>256</td><td>6.4</td><td>0.0223</td><td>0.127</td></tr><tr><td>x4</td><td>516</td><td>13.0</td><td>0.0369</td><td>0.277</td></tr></table><h3>loud-fight</h3><table><tr><th>setting</th><th>walkers</th><th>start (ms)</th><th>ms a tick</th><th>p99 tick (ms)</th></tr><tr><td>unset</td><td>126</td><td>5.3</td><td>0.0103</td><td>0.039</td></tr><tr><td>today</td><td>126</td><td>4.3</td><td>0.0094</td><td>0.037</td></tr><tr><td>x2</td><td>256</td><td>5.5</td><td>0.025</td><td>0.118</td></tr><tr><td>x4</td><td>516</td><td>11.5</td><td>0.0465</td><td>0.232</td></tr></table>
+</body></html>
