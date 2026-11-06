@@ -42,7 +42,8 @@ static class BatchCli
     static Played PlayBounded(Engine.Inputs inputs, string root, string what, bool replay)
     {
         var p = new Played { Replayed = replay }; string record = "";
-        var sc = Scenarios.Find(what);
+        var counts = DialCli.Strip(ref what); string tag = counts != null ? "#counts=" + DialCli.Tag(counts) : ""; // brief 098: `file.json#counts=guards:20` plays those counts, its record dropped
+        var sc = Scenarios.Find(what); if (sc != null && counts != null) throw new ArgumentException($"{what}: counts play scripts and plans; a scenario fixes its own start");
         if (sc != null) { var run = Scenarios.Run(inputs, sc); p.G = run.G; p.Checks = run.Checks; p.Id = sc.Id; }
         else
         {
@@ -52,13 +53,14 @@ static class BatchCli
             if (path.EndsWith(".adaptive.json", StringComparison.Ordinal)) // brief 080: an adaptive plan: the driver plays it and its orders are the run (Adaptive.cs)
             {
                 var plan = Adaptive.Load(path, root);
-                p.G = Adaptive.Play(inputs, plan, seed >= 0 ? seed : 1, out var extra); p.Extra = extra; p.Id = System.IO.Path.GetFileName(path) + "#" + p.G.Seed.ToString(CultureInfo.InvariantCulture);
+                p.G = Adaptive.Play(inputs, plan, seed >= 0 ? seed : 1, out var extra, counts); p.Extra = extra; p.Id = System.IO.Path.GetFileName(path) + "#" + p.G.Seed.ToString(CultureInfo.InvariantCulture) + tag;
                 p.Same = replay ? Same(p.G, Engine.Replay(inputs, p.G)) : true;
                 return p;
             }
             var script = Script.Parse(File.ReadAllText(path));
             if (seed >= 0) { script.Start.Seed = seed; script.Expect = null; }
-            p.G = Engine.Play(inputs, script.Start, script.Orders, script.Until); p.Id = System.IO.Path.GetFileName(path) + (seed >= 0 ? "#" + seed.ToString(CultureInfo.InvariantCulture) : "");
+            if (counts != null) { DialCli.Apply(script.Start, counts); script.Expect = null; }
+            p.G = Engine.Play(inputs, script.Start, script.Orders, script.Until); p.Id = System.IO.Path.GetFileName(path) + (seed >= 0 ? "#" + seed.ToString(CultureInfo.InvariantCulture) : "") + tag;
             if (script.Expect != null) { record = script.Verify(p.G, inputs.Hash); p.Checks.Add((record.Length == 0, record.Length == 0 ? "the replay matches its record (inputs, engine, start, every checkpoint, outcome)" : "record: " + record)); }
         }
         p.Same = replay ? Same(p.G, Engine.Replay(inputs, p.G)) : true;
@@ -120,7 +122,7 @@ static class BatchCli
         {
             var a = args[i];
             if (a == "--no-replay" || a == "--serve" || a == "--digest") continue;
-            if (a == "--jobs" || a == "--out" || a == "--timeout" || a == "--seeds" || a == "--seed-from") { i++; continue; }
+            if (a == "--jobs" || a == "--out" || a == "--timeout" || a == "--seeds" || a == "--seed-from" || a == "--counts") { i++; continue; }
             if (a == "--list")
             {
                 if (i + 1 >= args.Length) throw new ArgumentException("--list which file?");
@@ -157,7 +159,7 @@ static class BatchCli
 
     static int Batch(Engine.Inputs inputs, string root, string[] args, int jobs)
     {
-        var items = Seeded(Items(args), args); bool replay = Array.IndexOf(args, "--no-replay") < 0, digest = Array.IndexOf(args, "--digest") > 0;
+        var items = DialCli.WithCounts(Seeded(Items(args), args), args); bool replay = Array.IndexOf(args, "--no-replay") < 0, digest = Array.IndexOf(args, "--digest") > 0;
         int oi = Array.IndexOf(args, "--out");
         using var file = oi > 0 ? new FileStream(args[oi + 1], FileMode.Create, FileAccess.Write, FileShare.Read, 1 << 16) : null;
         using var stream = file != null ? (Stream)file : Console.OpenStandardOutput();
