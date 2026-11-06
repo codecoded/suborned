@@ -183,7 +183,7 @@ export function lampsOnSets(masses: Mass[]): Mass[] {
  *  plinth: a monument piece shorter than its mass stands on a plinth of the mass ring up to kit.base. */
 const CIVIC_KIT: [RegExp, string, 'fit' | 'person' | 'plinth' | 'arc'][] = [[/\/atom-fountain$/, 'AtomFountain', 'fit'], [/\/fountain-garden-[a-z-]+$/, 'PlanterArc', 'arc'], [/\/cafe-table-\d+$/, 'CafeSet_Tulip', 'person'], [/\/cafe-palm-\d+$/, 'PottedPalm_Small', 'person'],
   [/\/office-boarding-pavilion$/, 'BoardingPavilion_Office', 'fit'], [/\/square-boarding-pavilion$/, 'BoardingPavilion_Square', 'fit'],
-  [/\/office-pavilion-support-\d+$/, 'PavilionPier_Office', 'fit'], [/\/square-pavilion-support-\d+$/, 'PavilionPier_Square', 'fit'], [/\/civic-control-cabinet/, 'CivicCabinet', 'fit'], [/\/civic-service-cabinet/, 'UtilityCabinet', 'fit'],
+  [/\/office-pavilion-support-\d+$/, 'PavilionPier_Office', 'fit'], [/\/square-pavilion-support-\d+$/, 'PavilionPier_Square', 'fit'], [/\/civic-control-cabinet/, 'CivicCabinet', 'fit'], [/\/civic-service-cabinet/, 'UtilityCabinet_Play', 'fit'],
   [/\/civic-monument-(west|east)$/, 'OvalPlanter', 'fit'], [/\/foreground-civic-robot$/, 'RobotButler', 'plinth']];
 const FILL = 0.85;
 /** arc: a curved bed about the fountain (the four `fountain-garden-*`, Vela brief 007 round 3). PlanterArc is built to the bed's band (r 5.36-7.06): its pivot

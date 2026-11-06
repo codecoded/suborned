@@ -62,7 +62,7 @@
    "usd": 0.0
   },
   "2026-11-06": {
-   "calls": 7,
+   "calls": 12,
    "usd": 0.0
   }
  },
@@ -88,7 +88,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 165,
+   "calls": 170,
    "usd": 0.0
   },
   "fishaudio:s2.1@pro": {
@@ -140,7 +140,7 @@
    "usd": 2.8
   }
  },
- "calls": 729,
+ "calls": 734,
  "failed": 26,
  "jobs": {
   "007-concepts": {
@@ -1216,13 +1216,13 @@
    "blocked": 0,
    "by_day": {
     "2026-11-06": {
-     "calls": 5,
+     "calls": 10,
      "usd": 0.0
     }
    },
    "by_model": {
     "codex:image_gen": {
-     "calls": 5,
+     "calls": 10,
      "usd": 0.0
     }
    },
@@ -1230,12 +1230,16 @@
     "1": {
      "calls": 5,
      "usd": 0.0
+    },
+    "2": {
+     "calls": 5,
+     "usd": 0.0
     }
    },
-   "calls": 5,
+   "calls": 10,
    "cost_per_used": null,
    "failed": 0,
-   "ok": 5,
+   "ok": 10,
    "total_usd": 0.0,
    "unknown_cost_calls": 0,
    "used": 0,

@@ -27,6 +27,7 @@ import regen  # noqa: E402
 import tables  # noqa: E402
 import unity_mats  # noqa: E402
 import vertex_ao  # noqa: E402
+import collide097  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DST = Path(os.environ.get("DECOKIT_OUT") or REPO / "out/decokit")  # generated binaries are never committed
@@ -236,6 +237,10 @@ def main():
         if src.get("dk_volumes"):  # volumes the builder declared (geo.Shape.solid), builder frame -> kit frame
             row["collide"] = [dict(shape="box", min=[round(-v["max"][0], 4), round(v["min"][2], 4), round(-v["max"][1], 4)], max=[round(-v["min"][0], 4), round(v["max"][2], 4), round(-v["min"][1], 4)],
                                    **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]
+        cv = collide097.volumes(n, d.z)  # brief 097: the collision of what the piece replaced, exactly (collide097.py), and its catalogue size, so the fit scale is the same
+        if cv is not None:
+            row["collide"] = cv
+            row["size"] = collide097.AS.get(n, {}).get("size", row["size"])
         if n in regen.ORDERS:  # a regen order's piece: which order, and what was built (fit table)
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
         if kit.REGISTRY[n].get("retired"):  # brief 061: marked for retirement (kit.asset retired=); the builder stays until Splice has re-cut the export

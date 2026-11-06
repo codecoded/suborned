@@ -5,7 +5,7 @@ export const WAVE1 = new Set(['SphereStation', 'Skyport_Tower', 'CircusMonument'
 
 const USE: Record<string, string[]> = {
   Dumpster: ['alley', 'dumpster'], // the world places it as the street item `dumpster` beside a service door (tools/world/civic/quiet.ts)
-  Streetlamp: ['lamp'], PlazaSphereLamp: ['lamp'], Bollard: ['bollard'], Bench: ['bench'], Hydrant: ['hydrant'], RecyclingBins: ['bin:full'], PhoneBooth: ['phone-booth:twin:full'], PhoneBooth_Play: ['phone-booth:twin'], // brief 097 pass 3: the twin booth's finish (civic_props097b.py) takes the slot; the store piece keeps a retired tag
+  Streetlamp: ['lamp'], PlazaSphereLamp: ['lamp'], Bollard: ['bollard'], Bench: ['bench:full'], Hydrant: ['hydrant:full'], RecyclingBins: ['bin:full'], PhoneBooth: ['phone-booth:twin:full'], PhoneBooth_Play: ['phone-booth:twin'], // brief 097 pass 3: the twin booth's finish (civic_props097b.py) takes the slot; the store piece keeps a retired tag
   // the 2.6 m twin cabinet: retired from the phone-booth slot for PhoneBooth_Single (brief 020 follow-up)
   TicketMachine: ['ticket-machine'],
   CCTVPole: ['pole-camera'], DomeCamera: ['canopy-camera'], CoconutPalm: ['tree', 'tub-palm', 'tree:coconut'], FanPalm: ['tub-palm:full'], // the 4.2k-triangle palm: retired from the tub-palm slot for FanPalm_Play (brief 020 follow-up); a bare palm with no pot, so it can stand in a planter's bed (a potted fern cannot)
@@ -50,7 +50,7 @@ const USE_026: Record<string, string[]> = {
   Billboard_Rooftop_A: ['billboard:rooftop'], Billboard_Rooftop_B: ['billboard:rooftop'], Billboard_Rooftop_C: ['billboard:rooftop'], Billboard_Pylon_A: ['billboard:pylon'], Billboard_Pylon_B: ['billboard:pylon'],
   Billboard_Wall_A: ['billboard:wall'], Billboard_Wall_B: ['billboard:wall'], Billboard_Wall_C: ['billboard:wall'], Marquee_Cinema: ['marquee:cinema'], SandwichBoard: ['sandwich-board'],
   TopiaryCone: ['planter-bed:topiary'], ShrubMound: ['planter-bed:shrub'], FlowerBed: ['planter-bed:flowers'], PottedTopiary: ['planter-bed:potted'], // not 'tree': the street-tree slot would pick them
-  PottedPalm_Small: ['planter-bed:palm'], BikeRack: ['bike-rack'], Barrier: ['barrier'], FacetedPot: ['planter-bed:pot'], InfoLightbox: ['info-lightbox'],
+  PottedPalm_Small: ['planter-bed:palm'], BikeRack: ['bike-rack:full'], Barrier: ['barrier'], FacetedPot: ['planter-bed:pot'], InfoLightbox: ['info-lightbox'],
 };
 /** Brief 075 remap (Vela, Sky 2026-10-28 "And old props"): the old pieces the old rooftop programmes (DecoKitRoofThemes / Decks), Orbit Gardens (DecoKitGardens), the plaza (DecoKitPlazaLayout),
  *  the seaside and the alleys (DecoKitDistrictDressing, DecoKitSouthsideLife) name, adopted at their own size (scale [1, 1]) through the generator. Their own tags, never the category's generic
@@ -80,7 +80,7 @@ const SCALE: Record<string, [number, number]> = {
  
   Crown_Needle: [0.8, 1.4], Crown_Finial: [0.8, 1.4], Crown_Atom: [0.8, 1.4], Crown_Starburst: [0.8, 1.4], Crown_Saucer: [0.8, 1.4], Crown_Antenna: [0.8, 1.4], Crown_Dish: [0.8, 1.4], // grammar §6
   Horizon_Spire_A: [0.6, 4], Horizon_Spire_B: [0.6, 4], Horizon_Spire_C: [0.6, 4], Horizon_Spire_D: [0.6, 4], Horizon_Massif: [0.6, 4], Horizon_RocketPad: [0.6, 4], Horizon_RocketAscent: [0.6, 4], Horizon_PlanetRinged: [0.6, 5], Horizon_Moon: [0.6, 5], // grammar §9 rings
-  Streetlamp: [0.7, 1.6], PlazaSphereLamp: [0.7, 1.6], Bollard: [0.8, 1.4], Bench: [0.9, 1.25], Hydrant: [0.9, 1.3], RecyclingBins: [0.8, 1.3], RecyclingBins_Play: [0.8, 1.3], PhoneBooth_Play: [0.9, 1.1], PhoneBooth: [0.9, 1.1], TicketMachine: [0.9, 1.15],
+  Streetlamp: [0.7, 1.6], PlazaSphereLamp: [0.7, 1.6], Bollard: [0.8, 1.4], Bench: [0.9, 1.25], Hydrant: [0.9, 1.3], RecyclingBins: [0.8, 1.3], RecyclingBins_Play: [0.8, 1.3], Hydrant_Play: [0.9, 1.3], Bench_Play: [0.9, 1.25], BikeRack_Play: [1, 1], UtilityCabinet_Play: [0.6, 1.4], PhoneBooth_Play: [0.9, 1.1], PhoneBooth: [0.9, 1.1], TicketMachine: [0.9, 1.15],
   CCTVPole: [0.8, 1.8], DomeCamera: [0.6, 1.2], CoconutPalm: [0.5, 2.2], FanPalm: [0.5, 2.2], Cypress: [0.6, 2.2], AdColumn: [0.9, 1.2],
   BladeSign_Cafe: [0.5, 1], BladeSign_Hotel: [0.5, 1], BladeSign_Cinema: [0.5, 1], NeonStar_Wall: [0.4, 1.2],
   SignalLens: [1, 1], HaloRing: [1, 1], LightBar_4: [1, 1], LightDotRow_2: [1, 1], LightDotRow_1: [1, 1], // crossing parts: pinned to the plan's numbers, scale 1 (the retired SignalEye, KerbStud, CrossEdgeLine, CrossInlayArc and LightField keep the category default: nothing places them)
@@ -118,6 +118,8 @@ const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmar
   // the dot rows are the re-cut LightDotRow (no brass frame). SignalEye, KerbStud, CrossEdgeLine_1/2, CrossInlayArc_R24_W08 and LightField_1/2 are retired (status rejected in kit.json, no use tag: nothing places them).
   // brief 097 (Vela): the Handover zone's props that drew as procedural boxes (tools/decokit/civic_props097.py), placed by the street item kind (kitrefs.ts slotOf)
   // brief 097 pass 2 (Vela, civic_props097b.py): play-zoom rebuilds of the zone's weakest store pieces at the store pieces' sizes; the store pieces keep a retired tag (bin:full, vending:full, lockers:full), as PneumaticPost / CoffeeCart
+  // brief 097 full pass (Vela, civic_props097c.py): the audit's rebuilds at the store pieces' sizes; the store pieces keep retired tags (bench:full, hydrant:full, bike-rack:full)
+  Hydrant_Play: ['hydrant'], Bench_Play: ['bench'], BikeRack_Play: ['bike-rack'], UtilityCabinet_Play: ['street'],
   Lockers_Play: ['lockers'], RecyclingBins_Play: ['bin'], VendingMachine_Cola_Play: ['vending'], VendingMachine_Snack_Play: ['vending'],
   PolicePost: ['police-post'], MastCamera: ['mast-camera'], CivicRobotDock: ['civic-robot-dock'], Dumpster_Civic: ['dumpster'],
   SignalLens: ['signal:lens'], HaloRing: ['signal:halo'], LightBar_4: ['crossing:bar'], LightDotRow_2: ['crossing:dots'], LightDotRow_1: ['crossing:dots'] };

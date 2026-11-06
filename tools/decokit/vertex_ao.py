@@ -28,6 +28,7 @@ PIECES = frozenset({
     "Kerb_Pearl_0", "Kerb_Pearl_1", "TreePit_Pearl", "HoverCamera",
     "PolicePost", "MastCamera", "CivicRobotDock", "Dumpster_Civic",  # brief 097 props (civic_props097.py)
     "Lockers_Play", "RecyclingBins_Play", "VendingMachine_Cola_Play", "VendingMachine_Snack_Play", "PhoneBooth_Play",  # brief 097 passes 2-3 (civic_props097b.py)
+    "Hydrant_Play", "BikeRack_Play", "Bench_Play", "UtilityCabinet_Play", "PhoneBooth_Single", "BollardSphere",  # brief 097 full pass (civic_props097c.py)
 })
 # The zone's 077 rows, and the other trough rows: their stone shares one object (and its colour attribute) with the testbed leaves, and the
 # stone corners hold black there; baked, the stone reads AO wherever DK_Limestone takes the keyword.
