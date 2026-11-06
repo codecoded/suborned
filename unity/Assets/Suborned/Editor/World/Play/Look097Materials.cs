@@ -14,6 +14,9 @@ namespace Suborned.World.Play
         const string Dir = "Assets/Suborned/Kit/Materials";
         const string Config = "unity/Assets/Suborned/Editor/World/look097.json";
 
+        /// <summary>Batch: the rows applied with nothing else (before the world build, which checks the kit's variants against their bases).</summary>
+        public static void Cli() { try { Debug.Log(Apply()); EditorApplication.Exit(0); } catch (System.Exception e) { Debug.LogException(e); EditorApplication.Exit(1); } }
+
         public static string Apply()
         {
             var path = Path.Combine(HarbourWorldBuilder.RepoRoot, Config);
@@ -65,6 +68,19 @@ namespace Suborned.World.Play
                     if (dirty) { EditorUtility.SetDirty(m); changed++; } moved++;
                 }
             changed += Fx097Assets.Ensure();
+            // the old opt-in vertex-AO keyword is dead (the AO is keyword-free in DK_Forward097): off everywhere, so no colourway or poster variant differs from
+            // its base by it (the world builder refuses a variant whose keywords differ: a new keyword set is a new SetPass)
+            int stale = 0;
+            foreach (var guid in AssetDatabase.FindAssets("t:Material", new[] { Dir }))
+            {
+                var m = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid)); if (!m) continue;
+                if (m.IsKeywordEnabled("_DK_VERTEX_AO") || System.Array.IndexOf(m.shaderKeywords, "_DK_VERTEX_AO") >= 0) { m.DisableKeyword("_DK_VERTEX_AO"); EditorUtility.SetDirty(m); stale++; changed++; }
+                int cut = m.name.IndexOf("__", System.StringComparison.Ordinal); if (cut <= 0) continue; // a variant takes its base's 097 keywords and floats
+                var bm = AssetDatabase.LoadAssetAtPath<Material>($"{Dir}/{m.name.Substring(0, cut)}.mat"); if (!bm) continue;
+                foreach (var k in new[] { "_DK_WIND", "_DK_INTERIOR" })
+                    if (bm.IsKeywordEnabled(k) != m.IsKeywordEnabled(k)) { if (bm.IsKeywordEnabled(k)) m.EnableKeyword(k); else m.DisableKeyword(k); if (k == "_DK_WIND") m.SetFloat("_Parallax", bm.GetFloat("_Parallax")); EditorUtility.SetDirty(m); changed++; }
+            }
+            if (stale > 0) Debug.Log($"Look097Materials: the dead _DK_VERTEX_AO keyword off on {stale} materials");
             if (changed > 0) AssetDatabase.SaveAssets();
             return $"Look097Materials: wind on {wind} materials, vertex AO on {ao}, {moved} on 097 shaders, rooms behind {rooms}; {changed} changed";
         }

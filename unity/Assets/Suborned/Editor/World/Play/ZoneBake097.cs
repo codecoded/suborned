@@ -91,11 +91,8 @@ namespace Suborned.World.Play
                 RenderSettings.ambientMode = look.ambientMode; RenderSettings.ambientSkyColor = Up(look.ambientSky); RenderSettings.ambientEquatorColor = Up(look.ambientEquator); RenderSettings.ambientGroundColor = Up(look.ambientGround); RenderSettings.ambientIntensity = look.ambientIntensity;
             }
             Debug.Log($"ZoneBake097: {(lsun ? "the play light" : "the scene's light (no OldTownPlayLook light swap)")}: ambient {RenderSettings.ambientMode} sky {RenderSettings.ambientSkyColor} equator {RenderSettings.ambientEquatorColor} ground {RenderSettings.ambientGroundColor} x{RenderSettings.ambientIntensity}; skybox {(RenderSettings.skybox ? RenderSettings.skybox.shader.name : "none")}; sun {(RenderSettings.sun ? RenderSettings.sun.intensity.ToString() : "none")}");
-            // no emitter lights the bake: the zone's lamps, the fountain's ring, signs and signals glow as a realtime look only (GDD §15: glow on its own
-            // material). Baked emission flooded the square white in the first play-light bake. Every material's GI flag is put back after.
-            var gi = new Dictionary<Material, MaterialGlobalIlluminationFlags>();
-            foreach (var r in Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include)) foreach (var m in r.sharedMaterials)
-                if (m && !gi.ContainsKey(m)) { gi[m] = m.globalIlluminationFlags; m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.EmissiveIsBlack; }
+            // emission does not bake: the kit's emitters are Realtime Emissive (m_LightmapFlags 1), which a baked-GI pass leaves out. Do not touch their GI
+            // flags: setting EmissiveIsBlack for a bake (tried 2026-11-06) let URP's material validation strip _EMISSION from 23 kit materials (lamps, signals)
             // the reflection probes keep the cubemaps they have (Glint's street canyon, the play look's): Lightmapping.Bake re-renders every Baked probe from
             // the editor's raw scene (no play grade, the old stage's light), which flooded the square's box-projected probe white in the 2026-11-06 bakes
             int frozen = 0;
@@ -103,7 +100,6 @@ namespace Suborned.World.Play
                 if (rp.mode == UnityEngine.Rendering.ReflectionProbeMode.Baked && rp.bakedTexture) { var tex = rp.bakedTexture; rp.mode = UnityEngine.Rendering.ReflectionProbeMode.Custom; rp.customBakedTexture = tex; frozen++; }
             Debug.Log($"ZoneBake097: {frozen} reflection probes kept as they are (Custom, their current cubemaps)");
             bool ok = Lightmapping.Bake();
-            foreach (var kv in gi) if (kv.Key) kv.Key.globalIlluminationFlags = kv.Value;
             if (lsun) { lsun.transform.rotation = r0; lsun.color = c0; lsun.intensity = i0; RenderSettings.ambientMode = am0; RenderSettings.ambientSkyColor = s0; RenderSettings.ambientEquatorColor = e0; RenderSettings.ambientGroundColor = g0; RenderSettings.ambientIntensity = ai0; }
             foreach (var r in root.GetComponentsInChildren<MeshRenderer>(true).Where(x => x.lightmapIndex >= 0).Take(4)) Debug.Log($"ZoneBake097: {r.name} lightmap {r.lightmapIndex} st {r.lightmapScaleOffset}");
             var scene = EditorSceneManager.GetActiveScene(); EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);

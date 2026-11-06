@@ -42,7 +42,7 @@ namespace Suborned.World
         public static void BuildMenu() => Batch(() => { if (MayReplaceScene()) BuildFrom(SamplePath); });
 
         /// <summary>Batchmode entry: -world &lt;path&gt; or the sample.</summary>
-        public static void Build() => Batch(() => BuildFrom(Arg("-world", SamplePath)));
+        public static void Build() => Batch(() => { Debug.Log(Suborned.World.Play.Look097Materials.Apply()); BuildFrom(Arg("-world", SamplePath)); }); // brief 097: the kit materials' 097 rows first, so the build sees the kit the player draws
 
         public static bool MayReplaceScene() =>
             Application.isBatchMode || EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();

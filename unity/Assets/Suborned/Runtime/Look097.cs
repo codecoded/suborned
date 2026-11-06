@@ -43,7 +43,7 @@ namespace Suborned
             var rc = cfg.rooms; Shader.SetGlobalVector("_DKRooms", new Vector4(rc.width, rc.storey, rc.depth, rc.day)); Shader.SetGlobalVector("_DKRoomsNight", new Vector4(rc.nightShare, rc.night, 0, 0)); // DK_Interior097.hlsl
             if (Array.IndexOf(args, "-norooms") >= 0) { Shader.SetGlobalFloat("_DKInteriorOff", 1f); Shader.SetGlobalFloat("_DKInteriorOff097", 1f); }
             if (Array.IndexOf(args, "-noao") >= 0) Shader.SetGlobalFloat("_DKVertexAOOff", 1f);
-            var vtex = Resources.Load<Texture2D>("Fx097/variation"); // DK_Variation097: the painted wash (stored /1.1, so 1.1 x the sample is the multiplier)
+            var vtex = Wash(); // DK_Variation097: the painted wash, made here in linear (an imported PNG went through sRGB and darkened the city ~9 %)
             bool noVar = Array.IndexOf(args, "-novariation") >= 0 || !vtex;
             if (vtex) Shader.SetGlobalTexture("_DKVariation097", vtex);
             Shader.SetGlobalVector("_DKVariationParams097", new Vector4(1f / Mathf.Max(cfg.variationTile, 0.5f), noVar ? 0f : cfg.variation, 0f, 0f));
@@ -92,6 +92,31 @@ namespace Suborned
             if (!cookie) cookie = Clouds(cfg.clouds);
             sun.cookie = cookie;
             sunData.lightCookieSize = new Vector2(cfg.clouds.size, cfg.clouds.size);
+        }
+
+        /// <summary>The painted wash: a soft sun-faded mottle (periodic value noise, four octaves, broad streaks), linear, its mean exactly 1 / 1.1 so the
+        /// shader's x 1.1 averages to 1 (no surface gets darker on the whole), 256 px with mips. Deterministic.</summary>
+        static Texture2D Wash()
+        {
+            const int N = 256; var rnd = new System.Random(4097); int[] cells = { 4, 8, 16, 32 }; var lat = new float[cells.Length][];
+            for (int o = 0; o < cells.Length; o++) { int k = cells[o]; lat[o] = new float[k * k]; for (int i = 0; i < k * k; i++) lat[o][i] = (float)rnd.NextDouble(); }
+            var g = new float[N * N]; double sum = 0;
+            for (int y = 0; y < N; y++) for (int x = 0; x < N; x++)
+            {
+                float v = 0, amp = 0.55f, tot = 0;
+                for (int o = 0; o < cells.Length; o++)
+                {
+                    int k = cells[o]; float fx = (float)x / N * k, fy = (float)y / N * k; int x0 = (int)fx, y0 = (int)fy; float tx = fx - x0, ty = fy - y0; tx = tx * tx * (3 - 2 * tx); ty = ty * ty * (3 - 2 * ty);
+                    float a = lat[o][(y0 % k) * k + x0 % k], b = lat[o][(y0 % k) * k + (x0 + 1) % k], c = lat[o][((y0 + 1) % k) * k + x0 % k], d = lat[o][((y0 + 1) % k) * k + (x0 + 1) % k];
+                    v += amp * Mathf.Lerp(Mathf.Lerp(a, b, tx), Mathf.Lerp(c, d, tx), ty); tot += amp; amp *= 0.5f;
+                }
+                v /= tot; float streak = 0.5f + 0.5f * Mathf.Sin((x + y * 0.35f) / N * Mathf.PI * 6f + v * 4f);
+                g[y * N + x] = Mathf.Lerp(0.9f, 1.08f, Mathf.SmoothStep(0f, 1f, v)) * Mathf.Lerp(0.985f, 1.015f, streak); sum += g[y * N + x];
+            }
+            float norm = (float)(N * N / sum) / 1.1f; var px = new Color32[N * N];
+            for (int i = 0; i < px.Length; i++) { byte b8 = (byte)Mathf.Clamp(Mathf.RoundToInt(g[i] * norm * 255f), 0, 255); px[i] = new Color32(b8, b8, b8, 255); }
+            var t = new Texture2D(N, N, TextureFormat.RGBA32, true, true) { name = "Look097 wash", wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Trilinear, anisoLevel = 2 };
+            t.SetPixels32(px); t.Apply(true, true); return t;
         }
 
         /// <summary>A tiling soft cloud mask: periodic value-noise fBm (5 octaves), cover and softness as a smoothstep, shade = what the sun keeps
