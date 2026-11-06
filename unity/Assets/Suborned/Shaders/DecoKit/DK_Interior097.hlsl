@@ -7,6 +7,9 @@
 // brightness by day; the glass's own reflections (URP's, from the material's smoothness and the street probe) lie over it by Fresnel.
 #ifndef DK_INTERIOR097_INCLUDED
 #define DK_INTERIOR097_INCLUDED
+// only where a room is drawn (the cutaway's _DK_INTERIOR variants, GlassSky's DK_INTERIOR_ALWAYS): every other variant's source stays the same,
+// so a change here recompiles the room variants only, not the whole cutaway family
+#if defined(_DK_INTERIOR) || defined(DK_INTERIOR_ALWAYS)
 
 float4 _DKRooms;       // global: x width, y storey height, z depth (m), w daytime brightness (unset: 3.6, 3.4, 4.5, 0.32)
 float4 _DKRoomsNight;  // global: x lit share of rooms (0..1), y night brightness, z,w spare (Suborned.Look097; unset: day)
@@ -53,12 +56,17 @@ half3 DKInterior(float3 positionWS, half3 normalWS, half3 viewWS)
     col *= 0.75 + 0.25 * saturate(min(edge.x, edge.y) * 1.6);
     // the ceiling's light panel, in the middle of the room
     if (tHit == ty && rd.y > 0) { float2 q = abs(float2(h.x - R.x * 0.5, h.z - R.z * 0.5)); col += half3(1.0, 0.9, 0.72) * 0.9 * step(q.x, R.x * 0.28) * step(q.y, 0.35); }
-    // a desk's dark band along the back wall in some rooms
-    if (tHit == tz && frac(id * 11.3) > 0.45) col *= (h.y > 0.72 && h.y < 0.78) ? 0.55 : 1.0;
-    // venetian blinds: from the top of the window down to a height per room, slats every 6 cm, a little light between them
+    // the fine detail is filtered by its size on screen (Sky 2026-11-06: "a lot of artifacting / flickering"): at play zoom a pixel is ~3 cm, so
+    // 6 cm slats and a 6 cm desk edge alias, and the least camera move flips their moire across a whole blind. pxW: metres of wall per pixel
+    float pxW = max(fwidth(positionWS.y), 1e-4);
+    // a desk's dark band along the back wall in some rooms (a box filter over the pixel's footprint on the back wall)
+    if (tHit == tz && frac(id * 11.3) > 0.45) { float bw = max(fwidth(h.y), 1e-4); float cover = saturate((min(h.y - 0.72, 0.78 - h.y) + bw * 0.5) / bw); col *= lerp(1.0, 0.55, cover * saturate(0.06 / bw)); }
+    // venetian blinds: from the top of the window down to a height per room, slats every 6 cm, a little light between them; the slats fade to their
+    // mean shade (0.91) once a slat pair is under ~4 pixels, so at play zoom a blind reads as a pale band, in third person as slats
     float blind = frac(id * 5.9) * 0.65;                         // share of the storey covered from the top
     float fromTop = (R.y - f.y) / R.y;
-    if (fromTop < blind) { float slat = frac(f.y / 0.06); col = lerp(half3(0.92, 0.9, 0.84), col, 0.25) * (0.82 + 0.18 * step(0.5, slat)); }
+    float slatK = saturate((0.5 - pxW / 0.06) * 4.0);
+    if (fromTop < blind) { float slat = frac(f.y / 0.06); col = lerp(half3(0.92, 0.9, 0.84), col, 0.25) * lerp(0.91, 0.82 + 0.18 * step(0.5, slat), slatK); }
     // lamps: a share of the rooms lit brighter (and at night most of the light there is)
     half lit = frac(id * 17.7) < 0.3 ? 1.6h : 1.0h;
     half nightLit = frac(id * 23.1) < _DKRoomsNight.x ? 1.0h : 0.0h;
@@ -66,4 +74,5 @@ half3 DKInterior(float3 positionWS, half3 normalWS, half3 viewWS)
     return col * bright * lit + col * warm * nightLit * _DKRoomsNight.y;
 }
 
+#endif
 #endif

@@ -51,6 +51,7 @@ Shader "Suborned/DecoKit/GlassSky"
             // pane over the street behind; FadeReach gives this material a twin only because the keyword exists here. The plain variant is as it was.
             #pragma multi_compile_fragment _ _DK_CUT
             #include "DK_Cutaway.hlsl"
+            #define DK_INTERIOR_ALWAYS
             #include "DK_Interior097.hlsl"
 
             CBUFFER_START(UnityPerMaterial)

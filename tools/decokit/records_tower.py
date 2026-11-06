@@ -37,6 +37,7 @@ WINGS, ORDER0, ORDER1, CROWN = 15.5, 0.45, 12.45, 38.0
 GL0, GL1, GU0, GU1 = 1.0, 4.8, 6.4, 12.2           # ground and upper glazing
 FLOOR2 = 0.45 + 5.2 + 3.6                           # the upper glazing's transom: the third floor line (plan standards)
 RECESS, ROOM = 0.3, 0.7                             # glass behind the face line, the dark room behind the glass
+SLOT_BACK = 0.01                                    # the tower slot's dark backing stands this far off the stone (its glass is 0.02 off): never coplanar
 DOOR_X = -1.5                                       # office-service-door (block x 62.5)
 ENTRANCE = (-4.1, 4.1, 12.75)                       # the public entrance's flat wall: x range on the front, top
 
@@ -302,8 +303,8 @@ def tower(s, key, lod):
         with s.at((fc[0], fc[1], 0), (0, 0, yaw)):
             # local frame: face plane y = 0, outward -Y
             s.box((-0.9, -0.02, z0), (0.9, 0.0, zt - 0.8), pal.GlassDark)
-            if lod < 2:
-                s.box((-0.9, 0.0, z0), (0.9, 0.02, zt - 0.8), pal.Enamel_Charcoal)
+            if lod < 2:  # the dark backing 1 cm proud of the stone, 1 cm behind the glass (brief 097: at 0..0.02 its face lay on the stone's, z-fighting)
+                s.box((-0.9, -SLOT_BACK, z0), (0.9, 0.0, zt - 0.8), pal.Enamel_Charcoal)
             for xa in (-1.12, 0.9):
                 s.box((xa, -0.24, z0 - 0.5), (xa + 0.22, 0.0, zt), pal.Enamel_Seafoam)
             if lod == 0:

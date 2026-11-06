@@ -45,13 +45,17 @@ namespace Suborned.World.Play
             var t0 = DateTime.UtcNow;
             var root = GameObject.Find(ZoneRoot) ?? throw new InvalidOperationException($"ZoneBake097: no \"{ZoneRoot}\"");
             var zone = new HashSet<Renderer>(root.GetComponentsInChildren<MeshRenderer>(true));
-            int mapped = 0, contrib = 0, probesOnly = 0, uv2 = 0; var meshesDone = new HashSet<Mesh>();
+            int mapped = 0, contrib = 0, probesOnly = 0, uv2 = 0, panes = 0; var meshesDone = new HashSet<Mesh>();
             foreach (var r in Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
                 var go = r.gameObject; var mf = r.GetComponent<MeshFilter>(); var mesh = mf ? mf.sharedMesh : null;
                 var flags = GameObjectUtility.GetStaticEditorFlags(go) & ~StaticEditorFlags.ContributeGI;
                 bool solid = mesh && r.enabled && go.activeInHierarchy && r.sharedMaterials.All(Solid);
                 bool near = Near(r.bounds, 60f);
+                // window panels (the opaque pane behind a glass film) take probe light: their kit UV2 overlaps, and the bake laid other surfaces' light on
+                // them as tan blocks and hatching behind the Records Office tower's glass (Sky 2026-11-06: "artifacting ... it's these windows")
+                bool pane = r.sharedMaterials.Any(m => m && (m.name.StartsWith("DK_Window_") || m.name.StartsWith("DK_Lobby")));
+                if (zone.Contains(r) && solid && pane) { GameObjectUtility.SetStaticEditorFlags(go, flags | StaticEditorFlags.ContributeGI); r.receiveGI = ReceiveGI.LightProbes; contrib++; panes++; continue; }
                 if (zone.Contains(r) && solid && mesh.vertexCount > 0)
                 {
                     if (!HasUV2(mesh) && meshesDone.Add(mesh)) { if (MakeUV2(mesh)) uv2++; }
@@ -104,7 +108,7 @@ namespace Suborned.World.Play
             if (lsun) { lsun.transform.rotation = r0; lsun.color = c0; lsun.intensity = i0; RenderSettings.ambientMode = am0; RenderSettings.ambientSkyColor = s0; RenderSettings.ambientEquatorColor = e0; RenderSettings.ambientGroundColor = g0; RenderSettings.ambientIntensity = ai0; }
             foreach (var r in root.GetComponentsInChildren<MeshRenderer>(true).Where(x => x.lightmapIndex >= 0).Take(4)) Debug.Log($"ZoneBake097: {r.name} lightmap {r.lightmapIndex} st {r.lightmapScaleOffset}");
             var scene = EditorSceneManager.GetActiveScene(); EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
-            return $"ZoneBake097: {(ok ? "baked" : "FAILED")} in {(DateTime.UtcNow - t0).TotalSeconds:F0} s: {mapped} lightmapped ({uv2} meshes given UV2), {contrib} contributing by probes, {probesOnly} probes only; {LightmapSettings.lightmaps.Length} lightmaps";
+            return $"ZoneBake097: {(ok ? "baked" : "FAILED")} in {(DateTime.UtcNow - t0).TotalSeconds:F0} s: {mapped} lightmapped ({uv2} meshes given UV2), {contrib} contributing by probes ({panes} window panes), {probesOnly} probes only; {LightmapSettings.lightmaps.Length} lightmaps";
         }
 
         /// <summary>A bake setting from Editor/World/look097.json "bake" (the default when it is not there).</summary>

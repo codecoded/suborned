@@ -96546,8 +96546,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Landmarks/DK_RecordsTower.fbx",
-     "sha256": "609a163aeb9a93626e2f97f01a97e8a2ad60839520966b0f596f51585237cfca",
-     "bytes": 1011052
+     "sha256": "d8e811c667fd83bc8f07b5b5825daa94df51ca0189fbaf67d6d0cd011eba062a",
+     "bytes": 1011020
     },
     {
      "root": "generated",
@@ -96819,8 +96819,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Landmarks/DK_RecordsTower_L1.fbx",
-     "sha256": "d15845c34e05d29cff36c9ff332174f385401c99c00bfa8507ce5b8b180d98e6",
-     "bytes": 184764
+     "sha256": "517ae19f0e618d9a9a7f5bf664cfc4b3d43b558fd8c18d4014ad14ba0634c4bb",
+     "bytes": 184668
     },
     {
      "root": "generated",
@@ -97131,16 +97131,16 @@
      "role": "fbx",
      "path": "Models/Landmarks/DK_RecordsTower_TB.fbx",
      "src": "Models/Landmarks/DK_RecordsTower.fbx",
-     "sha256": "a23e2fa13e532a8fcf53926594e12cef0e60dedd4ebe2d3c90ecb1303297c3a7",
-     "bytes": 992364
+     "sha256": "3ac7a5d01a32165556faa069a8ff5e0af686caae1af6b3f8eae5b83b881d7c71",
+     "bytes": 992220
     },
     {
      "root": "extra",
      "role": "lod",
      "path": "Models/Landmarks/DK_RecordsTower_TB_L1.fbx",
      "src": "Models/Landmarks/DK_RecordsTower_L1.fbx",
-     "sha256": "2bbbab70a54224765b0bcad4c467d20c27b6c316078dac9db3c4d58632f083b3",
-     "bytes": 196556
+     "sha256": "369428b979e6a69243b92bf70ab2f7fd8dbc80a92940b05a781db82b562210e2",
+     "bytes": 196524
     },
     {
      "root": "extra",

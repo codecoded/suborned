@@ -1,6 +1,9 @@
 """Brief 077 (Sky 2026-10-30 "go", Vela): the final pieces under the original ids, testbed planting on the existing stonework, testbed LODs.
 
-bun run guard /Applications/Blender.app/Contents/MacOS/Blender -b -P tools/decokit/domes077_final.py
+bun run guard /Applications/Blender.app/Contents/MacOS/Blender -b -P tools/decokit/domes077_final.py [-- --only RecordsTower,...]
+  --only ids (brief 097): rebuild just these rows (a large parent id rebuilds the parent's own levels, not its planting companion unless that is
+  listed too) and merge them into the root's manifest, stone.json and checks.json; every other file in the root is left as it is (this script's
+  FBX bytes are not reproducible run to run, so a full rerun would rehash every row). DOMES077_DST=dir writes to another root.
   needs: bun tools/decokit/domes077.ts (writes out/decokit/troughs077/final_*.bin + domes077.manifest.json `finals`)
   reads: the adopted generated FBX of each parent (out/decokit/Models/<cat>/DK_<id>[_L1|_L2].fbx, sha256 checked against contracts/world/kit.json)
   -> out/decokit-077/ (a DECOKIT_OUT-style root): Models/<cat>/DK_<id>.fbx + DK_<id>_L1/_L2/_L3.fbx, decokit_manifest.json (rows in export_kit's
@@ -24,6 +27,7 @@ Collide: every rebuilt id declares its current measured volumes (contracts/world
 they are; the planting companions and civic bed plantings declare none (render-only: the kerbs and troughs are what block). The lamp is measured."""
 import hashlib
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -40,12 +44,14 @@ DM = json.loads((L.SRC / "domes077.manifest.json").read_text())
 KIT = {a["id"]: a for a in json.loads((REPO / "contracts/world/kit.json").read_text())["assets"]}
 COL = json.loads((REPO / "contracts/world/kit.collide.json").read_text())["pieces"]
 GEN = REPO / "out/decokit"
-DST = REPO / "out/decokit-077"
+DST = REPO / os.environ.get("DOMES077_DST", "out/decokit-077")  # brief 097: a scratch root to prove a rerun leaves the other rows byte-identical
 PLANT = re.compile(r"Leaf|Bloom|Flower|GroundCover|CoreShrub")
 ORDER = {4: ["inspection", "close", "near", "gameplay"], 3: ["close", "near", "gameplay"], 1: ["gameplay"]}
 PPM = {"cafe": [180.0, 80.0, 45.0], "fountain": [80.0, 24 / 0.55]}  # px per m at the level switches (garden-runtime.js 72/32/18 px per 0.4 m; fountain 44/24 px per 0.55 m)
 LOD_SIZE = 4.0
 rows, stone_log, checks, PARENT_FP = [], {}, {}, {}
+ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+ONLY = set(ARGS[ARGS.index("--only") + 1].split(",")) if "--only" in ARGS else None
 WORLD = json.loads((REPO / 'out/world/harbour-district.world.json').read_text())
 
 
@@ -227,6 +233,8 @@ for pid, fin in DM["finals"].items():
     a = KIT.get(parent) if parent else None
     cat = a["category"] if a else "Plaza"
     row = dict(name=pid, category=cat, source="generated", status="candidate", provenance=None)
+    if ONLY is not None and pid not in ONLY and not (parent in ONLY and not fin["embed"]):
+        continue
     if fin["embed"]:
         # ---------------- original id: stone (as adopted) + testbed planting, one file per LOD
         f0 = next(x for x in a["files"] if x["role"] == "fbx")
@@ -307,6 +315,9 @@ for pid, fin in DM["finals"].items():
             prow["provenance"] = prov({"path": f"out/decokit/{files[0]['path']}", "sha256": files[0]["sha256"]})
             prow["replaces"] = {"id": parent, "fbx_sha256": files[0]["sha256"], "tris": a["tris"], "materials": a["materials"]}
             rows.append(prow)
+            print(f"[077 final] {parent}: L0 {prow['tris']}" + "".join(f", L{k + 1} {l['tris']}" for k, l in enumerate(plods)))
+        if ONLY is not None and pid not in ONLY:
+            continue
         # ---------------- planting-only piece (companion, civic bed or lamp)
         lods = []
         for n, level in enumerate(order):
@@ -346,6 +357,12 @@ for pid, fin in DM["finals"].items():
         rows.append(row)
     print(f"[077 final] {pid}: L0 {row['tris']}" + "".join(f", {l['level']} {l['tris']}@{l['screen']}" for l in row.get("lods", [])))
 
+if ONLY is not None:  # merge: the rebuilt rows replace theirs in place, everything else stays as the last full run wrote it
+    old = json.loads((DST / "decokit_manifest.json").read_text())["assets"]
+    new = {r["name"]: r for r in rows}
+    rows = [new.pop(r["name"], r) for r in old] + list(new.values())
+    stone_log = {**json.loads((DST / "stone.json").read_text()), **stone_log}
+    checks = {**json.loads((DST / "checks.json").read_text()), **checks}
 (DST / "decokit_manifest.json").write_text(json.dumps({"assets": rows, "schema_note": "export_kit.py row format + status, lods[].level/sha256/mesh_sha256, lodSize, lodRule, stone, collide_note, replaces, provenance"}, indent=1) + "\n")
 (DST / "stone.json").write_text(json.dumps(stone_log, indent=1) + "\n")
 (DST / "checks.json").write_text(json.dumps(checks, indent=1) + "\n")

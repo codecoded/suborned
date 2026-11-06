@@ -7,6 +7,8 @@ stonework is the adopted FBX with the domes stripped, built by domes077_final.py
   and a fixed header (reproducible bytes), and rewrites the row's tris, sha256 and bytes in dst/decokit_manifest.json (row `ao`: tris before/after;
   `mesh_sha256` dropped: it proved the 077 stonework unchanged, which the cuts change on purpose). The planting objects (<id>_soil, the leaves and
   petals) keep their meshes and colours; they still occlude the stone. --no-ao: the same round trip without AO (proves the round trip itself).
+  --only a,b (brief 097): copies just those rows' files from src and merges their rows into dst's manifest and vertex_ao.json; the rest of dst
+  (the other rows, shrub097_extra's ShrubMound_TB) stays as it is. With no --only: the full copy and rewrite above (then rerun shrub097_extra.py).
   Import: bun run kit --extra out/decokit-097-extra (in place of out/decokit-077)."""
 import datetime
 import hashlib
@@ -26,6 +28,7 @@ REPO = HERE.parents[1]
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 opt = lambda k, d: ARGS[ARGS.index(k) + 1] if k in ARGS else d  # noqa: E731
 SRC, DST = REPO / opt("--src", "out/decokit-077"), REPO / opt("--dst", "out/decokit-097-extra")
+PARTIAL = "--only" in ARGS
 ONLY = [n for n in opt("--only", ",".join(V.EXTRA)).split(",") if n]
 NO_AO = "--no-ao" in ARGS
 
@@ -78,10 +81,16 @@ def tris(objs):
 
 
 def main():
-    shutil.copytree(SRC, DST, dirs_exist_ok=True)
     man_path = DST / "decokit_manifest.json"
     man = json.loads((SRC / "decokit_manifest.json").read_text())
     rows = {r["name"]: r for r in man["assets"]}
+    if PARTIAL:
+        for n in ONLY:
+            for lv in [rows[n]["files"][0]] + rows[n].get("lods", []):
+                (DST / lv["file"]).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(SRC / lv["file"], DST / lv["file"])
+    else:
+        shutil.copytree(SRC, DST, dirs_exist_ok=True)
     report = []
     for n in ONLY:
         row = rows[n]
@@ -102,6 +111,13 @@ def main():
         if not NO_AO:
             row["ao"] = dict(ao, brief="097", generator="tools/decokit/vertex_ao.py", sha256=hashlib.sha256((HERE / "vertex_ao.py").read_bytes()).hexdigest())
         report.append(dict(name=n, **ao))
+    if PARTIAL:  # the rebuilt rows replace theirs in dst's own manifest, in place
+        dman = json.loads(man_path.read_text())
+        dman["assets"] = [rows[r["name"]] if r["name"] in ONLY else r for r in dman["assets"]]
+        dman["assets"] += [rows[n] for n in ONLY if n not in {r["name"] for r in dman["assets"]}]
+        man = dman
+        new = {r["name"]: r for r in report}
+        report = [new.pop(r["name"], r) for r in json.loads((DST / "vertex_ao.json").read_text())["pieces"]] + list(new.values())
     man_path.write_text(json.dumps(man, indent=1))
     (DST / "vertex_ao.json").write_text(json.dumps({"pieces": report}, indent=1))
     print(f"[DK-AO] {len(report)} rows -> {DST}")

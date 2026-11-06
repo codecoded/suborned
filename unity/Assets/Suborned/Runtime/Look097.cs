@@ -58,6 +58,11 @@ namespace Suborned
         void Baked()
         {
             bool baked = LightmapSettings.lightmaps != null && LightmapSettings.lightmaps.Length > 0;
+            if (baked && Array.IndexOf(Environment.GetCommandLineArgs(), "-nolightmaps") >= 0)
+            {   // A/B (and the Air's switch): every lightmapped renderer back to probe light, the look as before the zone bake
+                int n = 0; foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Include)) if (r.lightmapIndex >= 0 && r.lightmapIndex < 0xFFFE) { r.lightmapIndex = -1; n++; }
+                Debug.Log($"Look097: -nolightmaps: {n} renderers back to probe light"); baked = false;
+            }
             Shader.SetGlobalFloat("_ContactScale097", baked ? cfg.bakedContact : 1f);
             // the baked zone keeps its sun-to-shade contrast in the lightmaps; the level the flat ambient used to add everywhere comes back as exposure
             // (post exposure only, overriding nothing else in the play grade; signals draw outside the grade)
