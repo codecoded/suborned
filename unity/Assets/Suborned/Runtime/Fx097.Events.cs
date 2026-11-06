@@ -84,6 +84,8 @@ namespace Suborned
             if (!seenHead) return; var at = lastHead; // the head of the last camera whose state the host reported (each run's start reports them all)
             if (demoK++ % 2 == 0) Burst(at, 46, new Color(1f, 0.78f, 0.45f, 1f), 3.2f); else Burst(at, 14, new Color(0.7f, 0.9f, 1f, 1f), 1.6f);
             if (demoK % 4 == 1) Puff(at, 8);
+            // and a missed round's chip mark on the ground below it each beat, so a capture shows the decal pool (Fx097.Decals)
+            Shot(new Vector3(at.x + R(-2.5f, 2.5f), groundY + 0.05f, at.z + R(-2.5f, 2.5f)), false, false); // the player has no ground colliders: the square's height
             if (!police) PoliceCalled();
         }
 

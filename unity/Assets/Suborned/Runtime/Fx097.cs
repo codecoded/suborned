@@ -33,7 +33,7 @@ namespace Suborned
             spray = Make("spray", blend, 420, 0.35f, 0.75f, new Vector2(0.025f, 0.06f), new Color(0.86f, 0.95f, 0.97f, 0.75f), 1.6f);
             mist = Make("mist", add, 90, 1.4f, 2.6f, new Vector2(0.35f, 0.8f), new Color(0.75f, 0.9f, 0.92f, 0.07f), -0.03f);
             var sz = mist.sizeOverLifetime; sz.enabled = true; sz.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0, 0.5f), new Keyframe(1, 1.6f)));
-            float groundY = Physics.Raycast(centre + new Vector3(9f, 30f, 0f), Vector3.down, out var gh, 40f) ? gh.point.y : water - 0.38f;
+            groundY = Physics.Raycast(centre + new Vector3(9f, 30f, 0f), Vector3.down, out var gh, 40f) ? gh.point.y : water - 0.38f;
             gameObject.AddComponent<Birds097>().Init(new Vector3(centre.x, groundY, centre.z), groundY);
             Life(add, blend);
             Decals(); // brief 097: the fountain's wet halo, petals under the beds (Fx097.Decals)
@@ -61,7 +61,7 @@ namespace Suborned
         Vector3 Ball() { Vector3 v; do v = new Vector3(R(-1f, 1f), R(-1f, 1f), R(-1f, 1f)); while (v.sqrMagnitude > 1f); return v; }
 
         // the street's small life: steam breathing from a few drain grates near the square, petals drifting off the flower beds down-wind
-        readonly List<Vector3> vents = new(), beds = new(); ParticleSystem steam, petals; float steamAcc, petalAcc; Vector3 wind = new(0.82f, 0f, 0.57f);
+        readonly List<Vector3> vents = new(), beds = new(); readonly List<Vector2> bedSize = new(); float groundY; ParticleSystem steam, petals; float steamAcc, petalAcc; Vector3 wind = new(0.82f, 0f, 0.57f);
 
         void Life(Material add, Material blend)
         {
@@ -74,7 +74,7 @@ namespace Suborned
                 if (beds.Count >= 10 || n.EndsWith("_soil")) continue;
                 bool petals = n.Contains("BedPlanting") || n.EndsWith("_Planting");
                 if (!petals) foreach (var m in r.sharedMaterials) if (m && m.name.StartsWith("DK_Petal")) { petals = true; break; }
-                if (petals && b.size.x < 30f && b.size.z < 30f) beds.Add(new Vector3(b.center.x, b.max.y, b.center.z));
+                if (petals && b.size.x < 30f && b.size.z < 30f) { beds.Add(new Vector3(b.center.x, b.max.y, b.center.z)); bedSize.Add(new Vector2(b.size.x, b.size.z)); }
             }
             var vt = Resources.Load<TextAsset>("Fx097/vents"); // Editor Fx097Assets: the three grates nearest the square, from the world export (the grates are merged into the ground tiles)
             if (vt) foreach (var part in vt.text.Split(';'))

@@ -78,7 +78,7 @@ namespace Suborned.World.Play
             float core = Mathf.Clamp01(1f - r / 0.32f); core = core * core;
             float spokes = Mathf.Pow(Mathf.Clamp01(Mathf.Cos(a * 7f + H(x / 9, y / 9, 1) * 2f)), 12f) * Mathf.Clamp01(1f - r / 0.85f) * 0.6f;
             float alpha = Mathf.Clamp01(core * 0.85f + spokes + H(x, y, 2) * 0.06f * Mathf.Clamp01(1f - r));
-            return new Color(0.16f, 0.14f, 0.12f, alpha * 0.8f);
+            return new Color(0.13f, 0.11f, 0.1f, Mathf.Clamp01(alpha * 1.1f));
         }
 
         static Color Wet(int x, int y)
