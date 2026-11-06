@@ -116,6 +116,8 @@ namespace Suborned.World.Play
             string playScene = OldTownPlay.ScenePath; float lean = scratchDir != null ? LeanScene.MarginFromArgs() : -1f;
             if (lean >= 0f) playScene = LeanScene.Make(lean); // brief 097: a scratch build of the zone only (-lean [margin]); the real scene is untouched
             if (scratchDir != null && ZoneBake097.Asked) Debug.Log(ZoneBake097.Bake()); // brief 097: the zone's lightmaps on the scene being built (-bake)
+            bool tod = scratchDir != null && TimeOfDay097Bake.Asked; // brief 097 time-of-day test: probe volumes on the lean copy (-lean m -todBuild)
+            if (tod) { if (lean < 0f) throw new InvalidOperationException("Game: -todBuild needs -lean (it bakes the lean copy only)"); Debug.Log(TimeOfDay097Bake.Make()); }
 
             Directory.CreateDirectory(Dir); builtThisDomain = true;
             var ver = Version.Next(); // Sky 2026-10-19: "need to be upping build numbers now": 0.2.<build>, counted in tools/game/version.json
@@ -130,6 +132,7 @@ namespace Suborned.World.Play
                 FrontEndBuild.CopyBriefs(); FrontEndBuild.EnsureScene(); // brief 051: the missions' briefs (StreamingAssets/missions, this build only) and the boot scene
                 PlayerSettings.enableFrameTimingStats = true; // brief 020: the proof reads the GPU's frame time (FrameTimingManager); the project's setting comes back after
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
+                using var todPipeline = tod ? TimeOfDay097Bake.UsePipeline() : null; // the player built on the probe-volume pipeline copy, the project's put back after
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
                     scenes = new[] { FrontEndBuild.ScenePath, playScene }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu

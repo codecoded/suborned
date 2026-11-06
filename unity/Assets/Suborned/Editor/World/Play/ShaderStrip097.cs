@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor.Build;
@@ -18,12 +19,15 @@ namespace Suborned.World.Play
     public sealed class ShaderStrip097 : IPreprocessShaders
     {
         public int callbackOrder => 10;
-        static readonly string[] Strip =
+        // brief 097 time-of-day test (-todBuild): the lean copy is lit by probe volumes, nothing samples a lightmap, and probe volumes run at L1
+        static readonly bool Tod = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-todBuild") >= 0;
+        static readonly string[] TodStrip = { "LIGHTMAP_ON", "DYNAMICLIGHTMAP_ON", "DIRLIGHTMAP_COMBINED", "LIGHTMAP_SHADOW_MIXING", "SHADOWS_SHADOWMASK", "PROBE_VOLUMES_L2" };
+        static readonly string[] Strip = new[]
         {
             "_ADDITIONAL_LIGHTS_VERTEX", "_MAIN_LIGHT_SHADOWS_SCREEN", "_DBUFFER_MRT1", "_DBUFFER_MRT2", "_DBUFFER_MRT3",
             "_SCREEN_SPACE_IRRADIANCE", "_SCREEN_SPACE_REFLECTION", "_SHADOWS_SOFT_LOW", "META_QUEST_LIGHTUNROLL", "META_QUEST_ORTHO_PROJ",
             "META_QUEST_NO_SPOTLIGHTS_LIGHT_LOOP",
-        };
+        }.Concat(Tod ? TodStrip : new string[0]).ToArray();
         static readonly ShaderKeyword[] Keys = System.Array.ConvertAll(Strip, k => new ShaderKeyword(k));
         static readonly bool Off = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-keepVariants") >= 0;
         static int seen, stripped; static readonly Dictionary<string, int> byKey = new();

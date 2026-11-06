@@ -112,7 +112,7 @@ namespace Suborned.World.Play
         }
 
         /// <summary>A bake setting from Editor/World/look097.json "bake" (the default when it is not there).</summary>
-        static float Tune(string key, float fallback)
+        internal static float Tune(string key, float fallback)
         {
             var p = System.IO.Path.Combine(HarbourWorldBuilder.RepoRoot, "unity/Assets/Suborned/Editor/World/look097.json"); if (!System.IO.File.Exists(p)) return fallback;
             return J.Get(J.Get(Json.Parse(System.IO.File.ReadAllText(p)), "bake"), key) is double d ? (float)d : fallback;

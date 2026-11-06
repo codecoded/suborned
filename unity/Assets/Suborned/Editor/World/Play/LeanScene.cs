@@ -19,7 +19,7 @@ namespace Suborned.World.Play
     {
         public const string LeanPath = "Assets/Scenes/Lean/OldTown.unity";
         // OldTownSwap.ZonePlan (plan x, plan y) moved by OldTownSwap.DZ along Unity z: x -226..-84, z -166..58 in the old town's frame
-        static readonly Rect ZoneXZ = Rect.MinMaxRect(-226f, -372f + 206f, -84f, -148f + 206f);
+        internal static readonly Rect ZoneXZ = Rect.MinMaxRect(-226f, -372f + 206f, -84f, -148f + 206f);
         static readonly HashSet<Type> Geometry = new() { typeof(Transform), typeof(MeshFilter), typeof(MeshRenderer), typeof(LODGroup), typeof(MeshCollider), typeof(BoxCollider), typeof(SphereCollider), typeof(CapsuleCollider) };
 
         public static float MarginFromArgs()
