@@ -3,9 +3,10 @@
   "sun": {
     "palette": "light.sun",
     "value": 1,
-    "intensity": 1.8,
-    "pitch": 44.7,
+    "intensity": 1.65,
+    "pitch": 31,
     "yaw": 330,
+    "r097": "Sky 2026-11-07 (brief 097 time-of-day test): late afternoon, around 16:00, on today's heading (Glint's composition keeps the square and the café front lit; by the compass 16:00 would come from the west-southwest and shade them): the sun 44.7 -> 31 degrees high, warmer (light.sun #ffedcc -> #ffddb5), 1.8 -> 1.65 (a lower sun lights the ground less by its angle alone; 8 % for the longer path through the air).",
     "exposureMatch": "Glint, brief 075-A: the whole old light rig is ported at our sun's level. The old reel ran sun 3 under post exposure -0.8; every light value of it is here multiplied by 0.6 (= 1.8 / 3) in linear and the exposure raised by log2(3 / 1.8) = +0.737 EV to -0.063. For everything the sun, ambient and sky light (the stone, the sea, the sky, the fog) the displayed frame is the same as the old reel's, while the things the game calibrated at our exposure (the crossing heads, the silhouette ink and rim that must stay under the bloom, the day emissives, the night look) keep their values. Scaled: sun 3 -> 1.8, ambient (value 0.79 on the old colours, about 0.6 in linear), the sky's stored colours (spaceSky, each channel solved through Unity's sRGB step so the shader sees exactly 0.6 x the old), the long haze, the bloom threshold 0.8 -> 0.48.",
     "r075": "Glint, brief 075-A (2026-10-28; Sky: 'back to the old world'). The old reel's sun (DecoKitStreet, old-keys.json light dump): intensity 3 (here 1.8, see exposureMatch), colour (1, 0.93, 0.8) = #ffedcc, 44.7 degrees up. The yaw stays 330: the old azimuth (-135 from the old boulevard's +z) belongs to the old street's frame; 330 keeps the civic square and the cafe terrace lit in the home frame (008 B5).",
     "honest": "Glint, 008 light-honest (2026-10-15). Retuned on honest frames (Capture: ARGBHalf, the player's HDR chain). Honest frames showed B5's orange came from the grade, not the sun: the highlights tint (1, 0.85, 0.66) is a full-strength multiplier above luma 0.55 and the colour filter warmed everything. Both are neutral now, the sun keeps the warmth (colour unchanged, #ffe0d0), and the intensity rises 1.35 -> 1.6 to pay back what the tint took (1.7 puts 11 percent of the home frame at R 246 or more, 1.6 puts 4 percent), with the ambient down 10 percent so shade stays shade. Sun paving (238, 206, 169) -> about (237, 217, 198), the paintings' lit paving (mean of four: 240, 220, 201). Evidence: briefs/008/light-honest/.",
@@ -290,7 +291,8 @@
     "night.lampGlobe": { "hex": "#fff1d8", "note": "Glint 077: the testbed's globe lamp light (fountain-garden-lights.js)" },
     "night.uplight": { "hex": "#e4efc7" },
     "light.sun": {
-      "hex": "#ffedcc",
+      "hex": "#ffddb5",
+      "r097": "Sky 2026-11-07: around 16:00 (warmer late-afternoon sun); was #ffedcc",
       "r075": "Glint 075-A: the old reel's sun colour (1, 0.93, 0.8); was #ffe4c8",
       "note": "Glint 072-G: #ffe0d0 -> #ffe4c8, toward the old DecoKit sun #ffedcc (see post.colour.r072)"
     },

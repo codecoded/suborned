@@ -144,8 +144,8 @@
         "why": "As built: unity/Assets/Suborned/Resources/Atmosphere/haze.json colour and light.json light.haze, the one value for fog and the sky horizon by day (Glint, brief 048; was #ecd9b4, which rendered dun). The long tier is #ebdbba, the old reel's fog (Sky 2026-10-29, 'where's the haze effect?'); the play camera has no fog. looks/harbour.json and tools/world/gen/horizon.ts still hold #f3e8d4."
       },
       "sun": {
-        "hex": "#ffedcc",
-        "why": "As built: light.json light.sun, the old rig (Glint, brief 075-A). looks/harbour.json still holds #ffe9bc, look.json #ffd9a0."
+        "hex": "#ffddb5",
+        "why": "As built: light.json light.sun, the late-afternoon sun (Sky 2026-11-07, around 16:00: 31 degrees high on the same heading; was #ffedcc, the old rig, Glint, brief 075-A). looks/harbour.json still holds #ffe9bc, look.json #ffd9a0."
       },
       "road": {
         "hex": "#817b75",

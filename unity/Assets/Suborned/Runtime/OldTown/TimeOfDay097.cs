@@ -28,21 +28,24 @@ namespace Suborned
         /// <summary>The light at one hour.</summary>
         public struct State { public Quaternion rot; public Color sun, sky, eq, ground; public float intensity, ev, reflect, elevation; public bool moon; }
 
+        /// <summary>The hour the play look's own sun stands for: Sky 2026-11-07, "around 16:00" (light.json: 31 degrees high, on Glint's heading).</summary>
+        public const float PlayHour = 16f;
+
         public static Base BaseFrom(Quaternion sunRot, Color sun, float intensity, Color sky, Color eq, Color ground)
         {
             var toSun = -(sunRot * Vector3.forward);
-            float el = Mathf.Asin(Mathf.Clamp(toSun.y, -1f, 1f)) * Mathf.Rad2Deg, az = Mathf.Atan2(toSun.x, toSun.z) * Mathf.Rad2Deg;
-            float hour = 6f + 12f / Mathf.PI * Mathf.Asin(Mathf.Clamp(el / NoonElevation, -1f, 1f)); // the morning side: Glint's sun is from the south-east
-            return new Base { rot = sunRot, sun = sun, intensity = intensity, sky = sky, eq = eq, ground = ground, hour = hour, azimuth = az };
+            float az = Mathf.Atan2(toSun.x, toSun.z) * Mathf.Rad2Deg;
+            return new Base { rot = sunRot, sun = sun, intensity = intensity, sky = sky, eq = eq, ground = ground, hour = PlayHour, azimuth = az };
         }
 
         static float Smooth(float a, float b, float x) { float t = Mathf.Clamp01((x - a) / (b - a)); return t * t * (3f - 2f * t); }
         static Color Mul(Color c, float r, float g, float b) => new Color(c.r * r, c.g * g, c.b * b, 1f);
 
-        public static State Evaluate(float hour, in Base b)
+        /// <summary>keepAzimuth: the hour sets the sun's height, colour and strength only; it keeps the play look's own heading (Glint's composition).</summary>
+        public static State Evaluate(float hour, in Base b, bool keepAzimuth = false)
         {
             float el = NoonElevation * Mathf.Sin(Mathf.PI * (hour - 6f) / 12f); // 0 at 6 and 18, the noon height at 12, below the horizon at night
-            float az = b.azimuth + Lat * (hour - b.hour);
+            float az = keepAzimuth ? b.azimuth : b.azimuth + Lat * (hour - b.hour);
             var s = new State { elevation = el };
             float er = el * Mathf.Deg2Rad, ar = az * Mathf.Deg2Rad;
             var toSun = new Vector3(Mathf.Sin(ar) * Mathf.Cos(er), Mathf.Sin(er), Mathf.Cos(ar) * Mathf.Cos(er));
@@ -50,7 +53,8 @@ namespace Suborned
             float baseEl = NoonElevation * Mathf.Sin(Mathf.PI * (b.hour - 6f) / 12f);
             var low = new Color(1f, 0.55f, 0.32f); var mid = new Color(1f, 0.76f, 0.56f);
             var col = el < 12f ? Color.Lerp(low, mid, Smooth(1f, 12f, el)) : Color.Lerp(mid, b.sun, Smooth(12f, Mathf.Max(baseEl, 24f), el));
-            float strength = b.intensity * Mathf.Clamp(Mathf.Sin(Mathf.Max(el, 0f) * Mathf.Deg2Rad) / Mathf.Max(Mathf.Sin(baseEl * Mathf.Deg2Rad), 0.2f), 0f, 1f); // never brighter than the play look's own sun
+            // the ground already gets less from a lower sun by its angle (the lighting's N.L); the beam itself only weakens through the longer air path
+            float strength = b.intensity * Mathf.Lerp(0.55f, 1f, Mathf.Clamp01(Mathf.Sin(Mathf.Max(el, 0f) * Mathf.Deg2Rad) / Mathf.Max(Mathf.Sin(baseEl * Mathf.Deg2Rad), 0.2f)));
             strength *= Smooth(-1.5f, 6f, el);
             // the moon once the sun is well down: a cool weak light from high in the opposite sky (its own shadows)
             float moon = Smooth(-5f, -12f, el);
@@ -102,7 +106,7 @@ namespace Suborned
         }
 
         // ---- the runtime clock ----
-        static float fixedHour = -1f, fromHour = -1f, speed = 0.75f;
+        static float fixedHour = -1f, fromHour = -1f, speed = 0.75f; static bool keepAz;
         OldTownPlayLook look; Base b; bool bound; float clock, nextLog; bool started; string scenarioA;
         Volume evVolume; ColorAdjustments ev; readonly List<(ReflectionProbe p, float i)> probes = new();
         readonly List<(Light l, float i)> lamps = new(); static readonly string[] LampNames = { "Streetlamp", "SphereLamp", "GlobeLamp", "BackDoorLamp", "CafeLamp" };
@@ -111,7 +115,7 @@ namespace Suborned
         static void Boot()
         {
             var a = Environment.GetCommandLineArgs();
-            fixedHour = Arg(a, "-tod", -1f); fromHour = Arg(a, "-todFrom", -1f); speed = Arg(a, "-todSpeed", 0.75f);
+            fixedHour = Arg(a, "-tod", -1f); fromHour = Arg(a, "-todFrom", -1f); speed = Arg(a, "-todSpeed", 0.75f); keepAz = Array.IndexOf(a, "-todKeepAz") >= 0;
             if (fixedHour < 0f && fromHour < 0f) return;
             var go = new GameObject("TimeOfDay097") { hideFlags = HideFlags.HideInHierarchy | HideFlags.DontSave };
             DontDestroyOnLoad(go); go.AddComponent<TimeOfDay097>();
@@ -166,7 +170,7 @@ namespace Suborned
                 if (started) clock += speed * Time.deltaTime;
             }
             float h = Mathf.Repeat(clock, 24f);
-            var s = Evaluate(h, b);
+            var s = Evaluate(h, b, keepAz);
             look.sunRotation = s.rot; look.sunColour = s.sun; look.sunIntensity = s.intensity;
             look.ambientSky = s.sky; look.ambientEquator = s.eq; look.ambientGround = s.ground; look.ambientProbe = Probe(s.sky, s.eq, s.ground);
             if (ev) ev.postExposure.Override(s.ev);

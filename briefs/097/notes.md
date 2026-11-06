@@ -100,6 +100,18 @@ COLDER LOOK (Sky 2026-11-06: "feels colder now. some pics very different others 
   before the fix -> now: sun L* 82.8 / 82.2 / 85.3, shade L* 41.4 / 44.5 / 46.7, shade a* 2.1 / 0.6 / 1.9, colour richness (chroma)
   17.5 / 19.6 / 22.2.
 
+TIME OF DAY (Sky 2026-11-07: "Test time of day and show me"; "around 16:00"; "up to u")
+  Prototype (scratch builds only, -lean m -todBuild; a43d0261): the lean scene lit by Adaptive Probe Volumes baked at four times (morning,
+  noon, evening, night) with sky occlusion, blended by a runtime clock (TimeOfDay097: -tod H, -todFrom H -todSpeed S) that also drives the
+  sun, the trilight, exposure after dark, reflections and 11 lamp lights; on a copy of the pipeline asset (PC_RPAsset_TOD), swapped in for
+  the bake and the build and restored byte for byte. Studio: GPU within 0.4 ms of the lightmaps; ~63 MB of probes at 2 m, ~30 s a bake.
+  Lightmaps cannot follow a clock (at 18:20 and 21:30 they keep the morning's sky and bounce); dusk reads teal under the play grade (open).
+  Decision: no running clock for now; the game's light is late afternoon, around 16:00, on Glint's heading (by the compass the 16:00 sun
+  comes from the west-southwest and shades the square, the café front and the pickup): light.json sun 44.7 -> 31 degrees, light.sun
+  #ffedcc -> #ffddb5, 1.8 -> 1.65 (a lower sun lights the ground less by its angle; 8 % for the air path); the zone re-baked under it.
+  Eleven views, today -> 16:00: L* 67.3 -> 61.0, sun L* 85.2 -> 79.2, shade L* 46.9 -> 40.2, yellow b* 17.3 -> 19.3, shade a* 2.10 -> 4.25,
+  chroma 22.1 -> 24.4. On the Air: ~/suborned-perf/097/now (full town), demo2, demo-sea.
+
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,
   glows) before it was put back. Restored from the catalogue's sources; the bake no longer touches GI flags. A dead keyword from an early AO
