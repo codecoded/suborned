@@ -26,13 +26,14 @@ import mats  # noqa: E402
 import regen  # noqa: E402
 import tables  # noqa: E402
 import unity_mats  # noqa: E402
+import vertex_ao  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DST = Path(os.environ.get("DECOKIT_OUT") or REPO / "out/decokit")  # generated binaries are never committed
 SRC = mats.SOURCE_ART
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 MATS_ONLY = "--mats-only" in ARGS  # brief 072-F: no piece is built; the textures, the materials table (merged, never shrunk) and the Unity .mat set are rewritten
-LODS_ONLY, NO_LODS = "--lods-only" in ARGS, "--no-lods" in ARGS  # lods-only: adopted pieces keep their binaries, only LOD files are written
+LODS_ONLY, NO_LODS, NO_AO = "--lods-only" in ARGS, "--no-lods" in ARGS, "--no-ao" in ARGS  # lods-only: adopted pieces keep their binaries, only LOD files are written
 # LOD1 ~25% and LOD2 ~6% of the triangles; a level is skipped when the piece is too light to be worth it. screen = Unity LOD transition height [S].
 LOD_SPEC = [("L1", 0.25, 0.35, 400), ("L2", 0.06, 0.12, 1500)]
 
@@ -79,6 +80,8 @@ def make_lods(n, cat, src, srcs, tris):
         lo = [b for _, b in far]
         for b in lo:
             _split_warped_ngons(b.data)
+        if not NO_AO and n in vertex_ao.PIECES:  # brief 097: the LODs take the AO too, without the contact cuts
+            vertex_ao.bake(lo, "SRGB", cut_contacts=False, separate=True)
         for b in lo:  # decimate leaves ~1 ulp noise in a few UVs between runs; snap to 1e-3 (a texel at 1k) so the file is reproducible
             for layer in b.data.uv_layers:
                 for d in layer.data:
@@ -209,7 +212,7 @@ def main():
     if cats:
         only = only + [n for n, spec in reg.items() if spec["cat"] in cats]
     names = [] if MATS_ONLY else (only or list(reg))
-    manifest = []
+    manifest, ao_rows = [], []
     for n in names:
         src = kit.build(n)
         cat, srcs = src["dk_cat"], [src, *src.children_recursive]
@@ -218,6 +221,8 @@ def main():
         d = Vector([max(v[i] for v in box) - min(v[i] for v in box) for i in range(3)])  # Blender (x, y, z) -> Unity
         full = baked_tree(src, lambda nm: nm)                                            # size (x, z, y), checks scale
         objs = [b for _, b in full]
+        if not NO_AO and n in vertex_ao.PIECES:  # brief 097: contact cuts + baked vertex-colour AO (vertex_ao.py), L0 within +15 % triangles
+            ao_rows.append(dict(name=n, tris_before=tri_count(objs), tris_after=vertex_ao.bake(objs, "SRGB", separate=True)[1]))
         tris = tri_count(objs)
         row = dict(name=n, category=cat, fbx=f"Models/{cat}/DK_{n}.fbx", tris=tris,
                    size=[round(d.x, 4), round(d.z, 4), round(d.y, 4)],
@@ -254,6 +259,8 @@ def main():
               + (f" parts={','.join(row['parts'])}" if "parts" in row else ""))
         for b in objs:
             bpy.data.meshes.remove(b.data)
+    if ao_rows:
+        tables.write_merged(DST / "vertex_ao.json", "pieces", ao_rows, True)
     tex = copy_textures()
     copy_ground()
     if "SignalLens" in names:  # brief 061: the head's look data (state colours, cues, blink, the cycle, the atlas and ring tables) rides beside the manifest for Latch's SignalHead and Glint

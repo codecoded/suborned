@@ -20,6 +20,9 @@
 #define DK_CUTAWAY_INCLUDED
 
 #define DK_CUT_LAYER (1u << 20)  // Suborned.ArchitectureFade.Layer
+#ifndef DK_WIND_OS
+#define DK_WIND_OS(p) // brief 097: DK_Wind097.hlsl's wind, where a shader includes it
+#endif
 
 float4 _DKCutFocus;  // xyz the focus on the ground (world); w the disc's radius (m), 0 = off
 float4 _DKCutView;   // xyz the camera's forward (world, unit); w the floor (m): nothing lower is cut
@@ -224,6 +227,7 @@ struct DKShadowVaryings
 
 DKShadowVaryings DKShadowPassVertex(Attributes input)
 {
+    DK_WIND_OS(input.positionOS.xyz); // brief 097: the same wind as the camera's passes
     Varyings v = ShadowPassVertex(input);
     DKShadowVaryings output = (DKShadowVaryings)0;
     UNITY_SETUP_INSTANCE_ID(input);

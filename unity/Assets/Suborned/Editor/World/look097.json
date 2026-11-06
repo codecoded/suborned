@@ -1,0 +1,92 @@
+{
+  "note": "Brief 097: material rows Look097Materials.Apply sets on the kit's generated materials (unity/Assets/Suborned/Kit/Materials, git-ignored) before every game build. wind: material -> the sway's reach in metres (URP Lit's _Parallax slot; negative = weighted by the distance from the piece's axis too, for palms) with _DK_WIND on. vertexAO: name prefixes whose materials take _DK_VERTEX_AO (the baked AO in the vertex colour's R; a mesh without colours reads white = no change). Shaders: DK_Wind097.hlsl, DK_Forward097.hlsl.",
+  "wind": {
+    "DK_Leaf_Cypress": 0.07,
+    "DK_Leaf_CypressOlive": 0.07,
+    "DK_Leaf_CoreConifer": 0.05,
+    "DK_Leaf_PalmFeather": -0.16,
+    "DK_Leaf_PalmFan": -0.06,
+    "DK_Leaf_Shrub": 0.03,
+    "DK_Leaf_CoreShrub": 0.03,
+    "DK_Cafe_Leaf": 0.025,
+    "DK_Leaf_TB": 0.035,
+    "DK_Petal_TB": 0.04,
+    "DK_Flower_Coral": 0.035,
+    "DK_Flower_CoralSoft": 0.035,
+    "DK_Flower_Flamingo": 0.035
+  },
+  "interior": {
+    "note": "windows that show a room behind the glass (_DK_INTERIOR, DK_Interior097.hlsl); smoothness is the glass's reflection over the room",
+    "DK_Window_Tower": 0.86,
+    "DK_Window_Film": 0.86,
+    "DK_Window_Teal": 0.84,
+    "DK_Lobby": 0.8
+  },
+  "vertexAO": {
+    "prefixes": [],
+    "exclude": [
+      "DK_Leaf_",
+      "DK_Petal_",
+      "DK_Flower_",
+      "DK_Glass",
+      "DK_Fountain_Jet",
+      "DK_Fountain_Foam",
+      "DK_Fountain_Water"
+    ]
+  },
+  "shaders": {
+    "note": "a kit material moved to a brief 097 shader (its texture slots of the same name are kept), with the floats and colours given",
+    "DK_Fountain_Water": {
+      "shader": "Suborned/Fountain Water",
+      "floats": {
+        "_PoolTile": 2.0,
+        "_Smoothness": 0.92,
+        "_Impact": 2.02,
+        "_Contact": 0.55,
+        "_Caustic": 1.0
+      },
+      "colours": {
+        "_BaseColor": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "DK_Fountain_Jet": {
+      "shader": "Suborned/Fountain Jet",
+      "floats": {
+        "_Mode": 0
+      },
+      "colours": {
+        "_BaseColor": [
+          0.741,
+          0.894,
+          0.91,
+          0.5
+        ]
+      }
+    },
+    "DK_GlassDark": {
+      "shader": "Suborned/DecoKit/GlassSky",
+      "floats": {
+        "_Rooms": 1
+      }
+    },
+    "DK_Fountain_Foam": {
+      "shader": "Suborned/Fountain Jet",
+      "floats": {
+        "_Mode": 1
+      },
+      "colours": {
+        "_BaseColor": [
+          0.827,
+          0.929,
+          0.875,
+          0.42
+        ]
+      }
+    }
+  }
+}

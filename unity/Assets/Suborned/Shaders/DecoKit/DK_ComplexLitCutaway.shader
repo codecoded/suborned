@@ -115,7 +115,7 @@ Shader "DecoKit/Complex Lit Cutaway"
 
             // -------------------------------------
             // Shader Stages
-            #pragma vertex LitPassVertex
+            #pragma vertex DKLitPassVertex // brief 097: DK_Wind097.hlsl's wrapper
             #pragma fragment DKLitPassFragment
 
             // -------------------------------------
@@ -191,9 +191,11 @@ Shader "DecoKit/Complex Lit Cutaway"
             // Includes
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "DK_SurfaceDetail.hlsl" // brief 072-F: the surface-detail switch (a global float, keyword-free)
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
+            #include_with_pragmas "DK_Forward097.hlsl" // brief 097: URP's LitForwardPass.hlsl, or with _DK_VERTEX_AO its copy
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_FORWARD
+            #pragma shader_feature_local _DK_WIND // brief 097 (not _vertex: a stage-only keyword paired the leaf copy vertex and fragment programs wrongly on Metal)
+            #include "DK_Wind097.hlsl"
             #include "DK_Cutaway.hlsl"
             ENDHLSL
         }
@@ -244,6 +246,8 @@ Shader "DecoKit/Complex Lit Cutaway"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_SHADOW
+            #pragma shader_feature_local _DK_WIND // brief 097 (not _vertex: a stage-only keyword paired the leaf copy vertex and fragment programs wrongly on Metal)
+            #include "DK_Wind097.hlsl"
             #include "DK_Cutaway.hlsl"
             ENDHLSL
         }
@@ -361,7 +365,7 @@ Shader "DecoKit/Complex Lit Cutaway"
 
             // -------------------------------------
             // Shader Stages
-            #pragma vertex DepthOnlyVertex
+            #pragma vertex DKDepthOnlyVertex // brief 097
             #pragma fragment DKDepthOnlyFragment
 
             // -------------------------------------
@@ -385,6 +389,8 @@ Shader "DecoKit/Complex Lit Cutaway"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_DEPTH
+            #pragma shader_feature_local _DK_WIND // brief 097 (not _vertex: a stage-only keyword paired the leaf copy vertex and fragment programs wrongly on Metal)
+            #include "DK_Wind097.hlsl"
             #include "DK_Cutaway.hlsl"
             ENDHLSL
         }
@@ -408,7 +414,7 @@ Shader "DecoKit/Complex Lit Cutaway"
 
             // -------------------------------------
             // Shader Stages
-            #pragma vertex DepthNormalsVertex
+            #pragma vertex DKDepthNormalsVertex // brief 097
             #pragma fragment DKDepthNormalsFragment
 
             // -------------------------------------
@@ -444,6 +450,8 @@ Shader "DecoKit/Complex Lit Cutaway"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             #pragma multi_compile_fragment _ _DK_CUT
             #define DK_CUT_DEPTH_NORMALS
+            #pragma shader_feature_local _DK_WIND // brief 097 (not _vertex: a stage-only keyword paired the leaf copy vertex and fragment programs wrongly on Metal)
+            #include "DK_Wind097.hlsl"
             #include "DK_Cutaway.hlsl"
             ENDHLSL
         }

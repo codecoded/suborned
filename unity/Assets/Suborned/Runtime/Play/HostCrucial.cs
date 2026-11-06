@@ -96,7 +96,7 @@ namespace Suborned.Play
             string code = l.Code ?? "";
             // Sky 2026-11-05 ("sure"): the seal is never a feed card; its plate under the clock (brief 093) carries the countdown, in the Journal like every event
             if (code is "security.called" or "fight.loud" || code.StartsWith("alarm.dispatches", StringComparison.Ordinal))
-            { if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; } }
+            { Suborned.Fx097.PoliceCalled(); if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; } } // brief 097: the police posts' domes pulse
             else if (code == "vale.out") { var c = Crucial("vale-out", code); c.Icon = "car"; c.View = "car/getaway"; } // brief 096 (car.lend L5): Popovic is out; the rest to our car before the police
             else if (code == "lend.lent") { var c = Crucial("lent", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "car/official"; } // L1: Popovic's car is ours, the Enforcer at its wheel
             else if (code == "rivals.lookout-posted") LookoutCard(code); // engine 0.41.0: deal with him, or he reaches Popovic's car

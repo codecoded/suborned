@@ -9,6 +9,7 @@
 // in world space (the facade bays are 6 m wide and a floor is 3.6 m: the cell is not tied to the individual bay, so the share is what it promises, not which window); each cell has its own
 // hash, lit when the hash is under _Lit, with a soft edge so the share can ease in; about one in five lit panes is cooler (a screen, not a lamp). The glow is added to the film's premultiplied
 // colour before the fog, so distance haze takes it too; it does not depend on the sun or the ambient.
+// Brief 097: _Rooms 1 draws a room behind the pane (DK_Interior097.hlsl's interior mapping) where the bay's dark back wall showed; _DKInteriorOff097 (global) turns it off.
 // Premultiplied blend (One OneMinusSrcAlpha), no depth write, no shadow, no depth-only pass. Fog (the atmosphere's distance haze) mixes toward the fog colour.
 Shader "Suborned/DecoKit/GlassSky"
 {
@@ -24,6 +25,7 @@ Shader "Suborned/DecoKit/GlassSky"
         _Glow("Horizon glow (reflection when the view runs along the street)", Range(0, 1)) = 0.85
         _Lit("Share of panes lit (evening and night; 0 = none)", Range(0, 1)) = 0
         _LitColour("Interior light", Color) = (1.0, 0.72, 0.4, 1)
+        _Rooms("Rooms behind the glass (brief 097; 0 = the back wall as before)", Range(0, 1)) = 0
         [HideInInspector] _Cull("__cull", Float) = 2.0
     }
     SubShader
@@ -49,9 +51,10 @@ Shader "Suborned/DecoKit/GlassSky"
             // pane over the street behind; FadeReach gives this material a twin only because the keyword exists here. The plain variant is as it was.
             #pragma multi_compile_fragment _ _DK_CUT
             #include "DK_Cutaway.hlsl"
+            #include "DK_Interior097.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-                half4 _BaseColor; half4 _SkyHorizon; half4 _SkyZenith; half4 _Street; half _Edge; half _Fresnel; half _Sheen; half _Glow; half _Lit; half4 _LitColour;
+                half4 _BaseColor; half4 _SkyHorizon; half4 _SkyZenith; half4 _Street; half _Edge; half _Fresnel; half _Sheen; half _Glow; half _Lit; half4 _LitColour; half _Rooms;
             CBUFFER_END
 
             struct A { float4 pos : POSITION; float3 nrm : NORMAL; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -83,7 +86,8 @@ Shader "Suborned/DecoKit/GlassSky"
                 mirror = lerp(mirror, _SkyHorizon.rgb * 1.2, glow);
                 half fres = pow(1 - ndv, _Fresnel);
                 half sheen = smoothstep(0.35, 0.5, frac((i.wp.x + i.wp.z) * 0.07 + i.wp.y * 0.05)) * _Sheen * (1 + 2.0 * fres * saturate(glow * 2));
-                half cover = lerp(_BaseColor.a, _Edge, fres);
+                half rooms = _Rooms * (1.0h - half(_DKInteriorOff097)) * saturate((0.6h - abs(n.y)) * 5.0h); // walls only: a dome, roof light or canopy keeps its sky film
+                half cover = lerp(lerp(_BaseColor.a, 0.3h, rooms), _Edge, fres); // brief 097: with rooms the film is clearer, so the room reads through it
                 half3 col = (lerp(_BaseColor.rgb, mirror, saturate(0.4 + fres)) + sheen) * day;
                 half3 pm = col * cover;
                 if (_Lit > 0.0001)
@@ -94,6 +98,13 @@ Shader "Suborned/DecoKit/GlassSky"
                     half lit = smoothstep(_Lit, _Lit - 0.12, h);
                     half3 lc = _LitColour.rgb * lerp(half3(1, 1, 1), half3(0.78, 0.94, 1.1), step(0.8, h2));
                     pm += lc * (lit * cover);
+                }
+                // brief 097: the room behind the pane (DK_Interior097.hlsl) where the back wall used to show; the pane is then opaque (the room is the bay's inside)
+                if (rooms > 0.001)
+                {
+                    half3 room = DKInterior(i.wp, n, v) * (half(0.35) + half(0.65) * day);
+                    pm += room * (1.0h - cover) * rooms;
+                    cover = lerp(cover, 1.0h, rooms);
                 }
                 pm = MixFogColor(pm, unity_FogColor.rgb * cover, i.fog);
                 return half4(pm, cover);

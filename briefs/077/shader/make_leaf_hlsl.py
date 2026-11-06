@@ -112,7 +112,7 @@ src = edit(src, [
      "// Brief 077 (Latch): DecoKit/Lit Cutaway for the testbed's leaves and petals. Identical to it but for the four pass includes below, which add two\n"
      "// opt-in keywords (_DK_VERTEX_COLOR, _DK_TWO_SIDED; see DK_LeafForward.hlsl). Same properties and UnityPerMaterial, so SRP Batcher compatible.\n"
      'Shader "DecoKit/Lit Cutaway Leaf"\n'),
-    ('            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"\n',
+    ('            #include_with_pragmas "DK_Forward097.hlsl" // brief 097: URP\'s LitForwardPass.hlsl, or with _DK_VERTEX_AO its copy\n',  # brief 097: the Lit forward include is DK_Forward097 (vertex AO); the leaves keep their own
      '            #include_with_pragmas "DK_LeafForward.hlsl" // brief 077: URP\'s LitForwardPass.hlsl, or with _DK_VERTEX_COLOR / _DK_TWO_SIDED its leaf copy\n'),
     ('            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"\n',
      '            #include_with_pragmas "DK_LeafGBuffer.hlsl" // brief 077: URP\'s LitGBufferPass.hlsl, or with _DK_VERTEX_COLOR / _DK_TWO_SIDED its leaf copy\n'),

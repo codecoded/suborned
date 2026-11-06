@@ -112,6 +112,10 @@ namespace Suborned.World.Play
             var scene = EditorSceneManager.GetActiveScene();
             if (GameObject.Find(PlayInstall.RootName) is null || Object.FindAnyObjectByType<HandoverHost>() is null) OldTownPlay.InstallOpen();
             else if (scene.isDirty) EditorSceneManager.SaveScene(scene);
+            Debug.Log(Look097Materials.Apply()); // brief 097: the kit materials' wind and vertex-AO rows
+            string playScene = OldTownPlay.ScenePath; float lean = scratchDir != null ? LeanScene.MarginFromArgs() : -1f;
+            if (lean >= 0f) playScene = LeanScene.Make(lean); // brief 097: a scratch build of the zone only (-lean [margin]); the real scene is untouched
+            if (scratchDir != null && ZoneBake097.Asked) Debug.Log(ZoneBake097.Bake()); // brief 097: the zone's lightmaps on the scene being built (-bake)
 
             Directory.CreateDirectory(Dir); builtThisDomain = true;
             var ver = Version.Next(); // Sky 2026-10-19: "need to be upping build numbers now": 0.2.<build>, counted in tools/game/version.json
@@ -128,7 +132,7 @@ namespace Suborned.World.Play
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
-                    scenes = new[] { FrontEndBuild.ScenePath, OldTownPlay.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
+                    scenes = new[] { FrontEndBuild.ScenePath, playScene }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
                     target = playerTarget,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
@@ -141,6 +145,7 @@ namespace Suborned.World.Play
             AssetDatabase.SaveAssets();
             var s = report.summary; bool ok = s.result == BuildResult.Succeeded;
             OldTownPlay.WriteContents(report, Dir);
+            Debug.Log(ShaderStrip097.Report(Dir)); // brief 097: the variant strip's counts (strip097.json)
             string post = ok ? playerTarget == BuildTarget.StandaloneLinux64 ? "Linux x86-64 Mono player; native Linux playtest pending" : Finish(ver) : "";
             if (ok && scratchDir == null) ver.Commit(); // only a build that succeeded takes the number (a scratch build never does)
             var line = $"Game: build {ver.Full} ({ver.Recording}, sim {BuildStamp.Sim}, {ver.Sha}{(ver.Dirty ? "+" : "")}) {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; engine {b.Source}, DLL {b.DllSha[..12]}; {post}";

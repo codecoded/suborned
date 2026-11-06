@@ -78,6 +78,10 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'phone-booth': if (s.variant === 'twin') return { h, maxH: ctx.S.catalogue['phone-booth'].cap, along: w * 1.1, depth: d * 1.3 }; return { h, maxH: ctx.S.catalogue['phone-booth'].cap, along: w * 1.4, depth: d * 1.3 }; // the item's footprint is the plan's K6 capsule 1 × 1 m; brief 026: Sky wants the old booth back, so the room is the one-hood PhoneBooth_Single (1.32 × 1.26 m). The twin pod (2.58 m) takes two items, see twinBooths
     case 'dumpster': return { h, hTol: 0.25, along: w * 1.1, depth: d * 1.2 }; // brief 013: the stash container beside a service door; only an adopted Dumpster (status adopted) is ever drawn
     case 'ticket-machine': return { h, along: 1.1, depth: 0.8 };
+    // brief 097 (Vela, civic_props097.py): pieces built to the item's own size, so the slot is about the item
+    case 'police-post': return { h, hTol: 0.05, along: w * 1.05, depth: d * 1.05 }; // quiet.ts QUIET.size 1.0 x 1.0 x 2.8: PolicePost 0.98 x 0.98 x 2.80
+    case 'mast-camera': return { h, hTol: 0.1, along: 1.2, depth: 1.2 }; // the 0.4 m mast's footprint; its camera pod (1.15 m long) turns above head height
+    case 'civic-robot-dock': return { h, hTol: 0.1, along: w * 1.05, depth: d * 1.12 }; // 1.2 x 1.2 x 2.6: the hood's lip and light strip stand 6 cm proud of the front
     case 'pole-camera': return { h, along: 0.8, depth: kerb };
     case 'canopy-camera': return { h, hTol: 0.5, along: 0.6, depth: 0.6 };
     case 'advertising-column': return { h, along: w * 1.3, depth: d * 1.3 };

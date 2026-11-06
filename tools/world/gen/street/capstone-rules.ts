@@ -49,14 +49,14 @@ export const RULES = {
     porter: { reach: 100, note: 'at the tram stop or the boarding pavilion (the civic square pavilion)' },
   },
   /** Vending machines in pairs (Cola + Snack, alternating) backed on the frontage wall of a tenancy that people wait at, at the tenancy's end nearer a junction; the Automat on an automat tenancy's wall. */
-  vending: { trades: ['diner', 'soda-fountain', 'launderette', 'bowling', 'cinema', 'dance-hall'], minW: 12, pair: ['VendingMachine_Cola', 'VendingMachine_Snack'], backGap: 0.06 },
+  vending: { trades: ['diner', 'soda-fountain', 'launderette', 'bowling', 'cinema', 'dance-hall'], minW: 12, pair: ['VendingMachine_Cola_Play', 'VendingMachine_Snack_Play'], backGap: 0.06 },
   automat: { trades: ['automat'], piece: 'Automat', backGap: 0.06 },
   /** Kerb programme: bike racks at frontages people leave a bike at, one per `every` m of one street side; lightboxes at junction corners; boards, baskets and lockers by trade. */
   bikeRack: { trades: ['diner', 'soda-fountain', 'newsstand', 'employment-bureau', 'launderette', 'lobby', 'credit-bureau'], every: 40, piece: 'BikeRack', off: 0.45 },
   lightbox: { piece: 'InfoLightbox', from: 8, to: 20, apart: 24 /* between lightboxes and from a call box */ },
   board: { trades: ['diner', 'soda-fountain', 'florist', 'grocer', 'automat'], minW: 9, piece: 'SandwichBoard', out: 1.4 },
   basket: { trades: ['diner', 'soda-fountain', 'florist', 'grocer'], piece: 'HangingBasket', pitch: 3, minW: 6 },
-  lockers: { trades: ['employment-bureau', 'credit-bureau'], piece: 'Lockers' },
+  lockers: { trades: ['employment-bureau', 'credit-bureau'], piece: 'Lockers_Play' },
   planters: { trades: ['lobby', 'hotel-lobby', 'employment-bureau', 'credit-bureau'], pieces: ['PottedTopiary', 'TopiaryCone'], minW: 9 },
   fountain: { piece: 'DrinkingFountain', every: 80 },
   /** Planting (Vela round 2, the old city's siting): a flower trough and topiary at each run end of a frontage; urns flanking every fourth tenancy seam; shrub mounds in a garden's border every `every` m; window boxes on the sills of shop trades. */

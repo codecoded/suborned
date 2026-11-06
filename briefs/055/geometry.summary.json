@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "b4c862677d812b39f8f3c61a836c7abb46631584fdeffbd3f9e70d0471932c7f",
+    "sha256": "89f5e417d5b19440a47b8fc2a47e45a74260e5cbebad2ae1be9634c0721b4eb0",
     "stale": false
   },
   "window": {
@@ -40,8 +40,8 @@
     "invisibleWall": 118
   },
   "sight": {
-    "drawnAtEye": 463,
-    "drawnAtChest": 685,
+    "drawnAtEye": 459,
+    "drawnAtChest": 680,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -73,8 +73,8 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 410,
-    "offPivotOrSize": 17,
+    "measured": 412,
+    "offPivotOrSize": 19,
     "placedHere": []
   },
   "rules": [

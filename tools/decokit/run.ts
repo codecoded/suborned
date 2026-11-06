@@ -1,4 +1,4 @@
-// bun run decokit [--only a,b] [--cats X] [--mats-only] [--out dir]: (--mats-only builds no piece: textures, the merged materials table and the Unity .mat set only) run the Blender DecoKit generator (export_kit.py) from this repo.
+// bun run decokit [--only a,b] [--cats X] [--mats-only] [--no-ao] [--out dir]: (--mats-only builds no piece: textures, the merged materials table and the Unity .mat set only) run the Blender DecoKit generator (export_kit.py) from this repo.
 // Output: $DECOKIT_OUT, else out/decokit/ (never committed). Regen orders are read from the plan (orders.ts) and passed as --orders.
 // Env: BLENDER (default /Applications/Blender.app/Contents/MacOS/Blender), SUBORNED_STORE (source-art textures).
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -11,8 +11,8 @@ import { usageGate } from '../gen/flags';
 const repo = resolve(import.meta.dir, '../..');
 const argv = process.argv.slice(2), opt = (k: string) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : undefined; };
 // Brief 079 (Splice): an unknown flag never builds. A stray `--version` ran a full export into the shared out/decokit (2026-10-30), overwriting files the catalogue pins.
-usageGate(argv, { flags: ['--mats-only', '--lods-only', '--no-lods'], valued: [{ flag: '--only', required: true }, { flag: '--cats', required: true }, { flag: '--out', required: true }] },
-  'usage: bun run decokit [--only a,b] [--cats X] [--mats-only] [--lods-only] [--no-lods] [--out dir]\n  no flag: a full export into out/decokit ($DECOKIT_OUT, or --out); a review build belongs in its own --out\n  --help, -h or any unknown option prints this and does nothing', 'decokit');
+usageGate(argv, { flags: ['--mats-only', '--lods-only', '--no-lods', '--no-ao'], valued: [{ flag: '--only', required: true }, { flag: '--cats', required: true }, { flag: '--out', required: true }] },
+  'usage: bun run decokit [--only a,b] [--cats X] [--mats-only] [--lods-only] [--no-lods] [--no-ao] [--out dir]\n  --no-ao: skip the baked vertex AO of brief 097 (vertex_ao.py PIECES) for this run\n  no flag: a full export into out/decokit ($DECOKIT_OUT, or --out); a review build belongs in its own --out\n  --help, -h or any unknown option prints this and does nothing', 'decokit');
 const out = resolve(opt('--out') ?? process.env.DECOKIT_OUT ?? resolve(repo, 'out/decokit'));
 mkdirSync(out, { recursive: true });
 const orders = resolve(out, 'orders.json'); writeOrders(orders);

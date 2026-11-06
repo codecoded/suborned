@@ -1,0 +1,265 @@
+{
+ "brief": "097",
+ "note": "L0 triangles before/after the contact cuts (tools/decokit/vertex_ao.py, budget +15 %); LOD triangles unchanged",
+ "pieces": [
+  {
+   "piece": "Kerb_Pearl_0",
+   "before": 216,
+   "after": 216,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "RecordsEntrance",
+   "before": 7348,
+   "after": 8450,
+   "root": "generated (out/decokit-097)",
+   "pct": 15.0
+  },
+  {
+   "piece": "RecordsEntrance_Official",
+   "before": 1988,
+   "after": 2284,
+   "root": "generated (out/decokit-097)",
+   "pct": 14.9
+  },
+  {
+   "piece": "CivicCabinet",
+   "before": 8734,
+   "after": 9054,
+   "root": "generated (out/decokit-097)",
+   "pct": 3.7
+  },
+  {
+   "piece": "CafeBay_v2",
+   "before": 5032,
+   "after": 5786,
+   "root": "generated (out/decokit-097)",
+   "pct": 15.0
+  },
+  {
+   "piece": "Parasol_Testbed",
+   "before": 3008,
+   "after": 3008,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "CafeSet_Tulip_Play",
+   "before": 3984,
+   "after": 3984,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "CafeLamp_Testbed_Amber",
+   "before": 760,
+   "after": 760,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "CafeLamp_Testbed_Coral",
+   "before": 760,
+   "after": 760,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "CafeLamp_Testbed_Lilac",
+   "before": 760,
+   "after": 760,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "CafeLamp_Testbed_Peach",
+   "before": 760,
+   "after": 760,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "CafeLamp_Testbed_Teal",
+   "before": 760,
+   "after": 760,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "AtomFountain_Testbed",
+   "before": 41888,
+   "after": 41888,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "BoardingPavilion_TB_Square",
+   "before": 28766,
+   "after": 28766,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "PlazaSphereLamp_Play",
+   "before": 7932,
+   "after": 7932,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "Cypress_Play",
+   "before": 5004,
+   "after": 5004,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "PottedTopiary_Play",
+   "before": 4720,
+   "after": 4720,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "Kerb_Pearl_1",
+   "before": 324,
+   "after": 324,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "TreePit_Pearl",
+   "before": 244,
+   "after": 244,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "HoverCamera",
+   "before": 2704,
+   "after": 2704,
+   "root": "generated (out/decokit-097)",
+   "pct": 0.0
+  },
+  {
+   "piece": "RecordsTower_TB",
+   "before": 34895,
+   "after": 39691,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 13.7
+  },
+  {
+   "piece": "CafeUpper_3_TB",
+   "before": 13543,
+   "after": 15573,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 15.0
+  },
+  {
+   "piece": "CafeTerrace_TB",
+   "before": 312,
+   "after": 352,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 12.8
+  },
+  {
+   "piece": "PlanterRun_4_A_TB",
+   "before": 5655,
+   "after": 6139,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 8.6
+  },
+  {
+   "piece": "PlanterRun_4_B_TB",
+   "before": 4909,
+   "after": 5393,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 9.9
+  },
+  {
+   "piece": "PlanterRun_4_C_TB",
+   "before": 5976,
+   "after": 6476,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 8.4
+  },
+  {
+   "piece": "PlanterArc_TB",
+   "before": 12284,
+   "after": 12284,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 0.0
+  },
+  {
+   "piece": "GlobeLamp_TB",
+   "before": 1016,
+   "after": 1016,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 0.0
+  },
+  {
+   "piece": "PlanterRun_2_A_TB",
+   "before": 2522,
+   "after": 2758,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 9.4
+  },
+  {
+   "piece": "PlanterRun_2_B_TB",
+   "before": 2725,
+   "after": 2985,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 9.5
+  },
+  {
+   "piece": "PlanterRun_2_C_TB",
+   "before": 2564,
+   "after": 2808,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 9.5
+  },
+  {
+   "piece": "PlanterRun_Corner_A_TB",
+   "before": 4463,
+   "after": 5109,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 14.5
+  },
+  {
+   "piece": "PlanterRun_Corner_B_TB",
+   "before": 5103,
+   "after": 5711,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 11.9
+  },
+  {
+   "piece": "PlanterRun_Corner_C_TB",
+   "before": 4692,
+   "after": 5338,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 13.8
+  },
+  {
+   "piece": "PlanterRun_End_A_TB",
+   "before": 1737,
+   "after": 1959,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 12.8
+  },
+  {
+   "piece": "PlanterRun_End_B_TB",
+   "before": 1877,
+   "after": 2115,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 12.7
+  },
+  {
+   "piece": "PlanterRun_End_C_TB",
+   "before": 1207,
+   "after": 1379,
+   "root": "extra (out/decokit-097-extra)",
+   "pct": 14.3
+  }
+ ]
+}

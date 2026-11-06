@@ -105,6 +105,9 @@ namespace Suborned.Play
                 bool lampOn = state == 0 || state == 1 && Mathf.Repeat(t, 1f) < 0.5f;
                 if (h.Tally && (state != h.State || state == 1)) Lamp(h.Tally, lampOn ? (Color?)null : TallyDead);
                 if (h.Ring) { if (dead) { if (h.State != 2) Lamp(h.Ring, RingDead); } else Glow(h.Ring, h.RingEmit * (0.88f + 0.12f * bob)); }
+                if (state != h.State) Suborned.Fx097.Camera(h.Cue.Head.position, h.State, state); // brief 097: sparks, smoke, the loop's crackle
+                else if (state == 1 && Mathf.Repeat(t + h.Phase * 2.3f, 2.3f) < dt) Suborned.Fx097.Crackle(h.Cue.Head.position, false);
+                else if (state == 2 && h.Down > 0.97f && h.Down - dt / SinkS <= 0.97f) Suborned.Fx097.Crackle(h.Cue.Head.position, true);
                 h.State = state;
                 if (h.Blob)
                 {

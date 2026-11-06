@@ -134,7 +134,8 @@ test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 31
 
 test('brief 013 (Vantage, Motive §2.5): only a piece tagged `stash` can hold a body, and today that is the Dumpster, still a candidate until Vela adopts it', () => {
   const stash = kit.assets.filter(a => a.tags.stash);
-  expect(stash.map(a => `${a.id} ${a.tags.stash!.holds} ${a.status}`)).toEqual(['Dumpster 1 candidate']);
+  // brief 097 (Vela): the zone's dumpster is drawn by Dumpster_Civic, the same stash (holds 1) at the same site that the procedural box stood for; the rule is unchanged (Keel, Motive to confirm)
+  expect(stash.map(a => `${a.id} ${a.tags.stash!.holds} ${a.status}`).sort()).toEqual(['Dumpster 1 candidate', 'Dumpster_Civic 1 adopted']);
   expect(stash[0]!.tags.use).toContain('dumpster'); // the street item kind the world places it as
   // size does not decide it: pieces as big as a Dumpster that must not hold a body (a booth, a lamp, a crate stack, a coffee cart)
   for (const id of ['PhoneBooth', 'Streetlamp', 'CrateStack', 'UtilityCabinet', 'RecyclingBins']) expect(kit.assets.find(a => a.id === id)!.tags.stash, id).toBeUndefined();
