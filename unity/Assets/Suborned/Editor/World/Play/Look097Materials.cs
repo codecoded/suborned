@@ -36,8 +36,14 @@ namespace Suborned.World.Play
             if (J.Get(cfg, "interior") is Dictionary<string, object> ins)
                 foreach (var kv in ins)
                 {
-                    if (kv.Value is not double sm) continue;
                     var m = AssetDatabase.LoadAssetAtPath<Material>($"{Dir}/{kv.Key}.mat"); if (!m) continue;
+                    if (kv.Value is Dictionary<string, object> offRow) // {"rooms": false, "smoothness": s}: no room, the glass as the kit made it
+                    {
+                        float s0 = System.Convert.ToSingle(J.Get(offRow, "smoothness") ?? 0.72, System.Globalization.CultureInfo.InvariantCulture);
+                        if (m.IsKeywordEnabled("_DK_INTERIOR") || !Mathf.Approximately(m.GetFloat("_Smoothness"), s0)) { m.DisableKeyword("_DK_INTERIOR"); m.SetFloat("_Smoothness", s0); EditorUtility.SetDirty(m); changed++; }
+                        continue;
+                    }
+                    if (kv.Value is not double sm) continue;
                     if (!m.IsKeywordEnabled("_DK_INTERIOR") || !Mathf.Approximately(m.GetFloat("_Smoothness"), (float)sm))
                     { m.EnableKeyword("_DK_INTERIOR"); m.SetFloat("_Smoothness", (float)sm); m.SetFloat("_EnvironmentReflections", 1f); m.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF"); EditorUtility.SetDirty(m); changed++; }
                     rooms++;

@@ -19,11 +19,15 @@
     "note": "ZoneBake097: the baked sky and bounce scaled so the lightmapped zone sits near the unbaked play look's exposure (the flat trilight lit every corner fully; the baked sky is occluded). sky x the play look's ambient intensity; bounce = LightingSettings.indirectScale",
     "sky": 1.0,
     "skyWarm": 1.0,
-    "bounce": 1.3
+    "bounce": 1.6
   },
   "interior": {
     "note": "windows that show a room behind the glass (_DK_INTERIOR, DK_Interior097.hlsl); smoothness is the glass's reflection over the room",
-    "DK_Window_Tower": 0.86,
+    "DK_Window_Tower": {
+      "rooms": false,
+      "smoothness": 0.72,
+      "why": "the tower's slot windows are narrower than a room cell (3.6 m), so they showed random slices of rooms that read as glitches and their 6 cm blinds shimmered (Sky 2026-11-06: \"a lot of artifacting / flickering ... it's these windows\"); the kit's glass as in 0.2.253"
+    },
     "DK_Window_Film": 0.86,
     "DK_Window_Teal": 0.84,
     "DK_Lobby": 0.8
