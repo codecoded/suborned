@@ -24,9 +24,9 @@
   {"tick":2301,"op":"fixer","do":"draw"},
   {"tick":2301,"op":"tech","do":"draw"},
   {"tick":2301,"op":"enforcer","do":"draw"},
-  {"tick":2649,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":2753,"op":"enforcer","do":"board","target":"car"},
-  {"tick":2753,"op":"cell","do":"go"}
+  {"tick":2745,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2849,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2849,"op":"cell","do":"go"}
  ],
  "until": 4900
 }

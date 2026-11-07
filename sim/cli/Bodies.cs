@@ -6,7 +6,9 @@
 //     pace, BodyCheck.Moves; with its own place jumping too, or the law's); tick-pairs inside two radii (a body not a tenet in it, not a counted
 //     squeeze: the law's failures; tenet with tenet: the tenets' own; squeezes, which must stand two squeeze widths apart); how long bodies are held
 //     (spells of ticks got nowhere: p50, p95, max) and held where they stood; the give and take (made room, squeezed, changed plans, by what); a
-//     body leaving the street far from its own place; the farthest from its own place; outcomes. SUBORNED_JUMP_LOG=f appends each jump over 1 m.
+//     body leaving the street far from its own place; the farthest from its own place; outcomes; engine 0.47.1, the law's own speed: drawn moves
+//     faster than a walk (the city's) and than its own place moved that tick, by the law's why, and moves straight back while its own place did
+//     not turn (information, no gate). SUBORNED_JUMP_LOG=f appends each jump over 1 m.
 //     Exit 1 if any run errs, any body jumps or any pair with a body not a tenet stands inside two radii outside a counted squeeze.
 using System;
 using System.Collections.Generic;
@@ -25,7 +27,16 @@ static class BodiesCli
         public readonly List<string> First = new List<string>(), TenetFirst = new List<string>(), JumpFirst = new List<string>();
         public readonly SortedDictionary<string, int> JumpKinds = new SortedDictionary<string, int>(StringComparer.Ordinal), ReplansBy = new SortedDictionary<string, int>(StringComparer.Ordinal), LeaveKinds = new SortedDictionary<string, int>(StringComparer.Ordinal);
         public readonly List<int> Spells = new List<int>(), SpellsCity = new List<int>(), SpellsCell = new List<int>(), SpellsArmed = new List<int>(); public int LongSpell; public string LongWhat = ""; public readonly List<(int cm, string what)> Big = new List<(int, string)>();
+        /// <summary>Engine 0.47.1, the law's own speed: drawn moves faster than a walk and than its own place moved that tick (by class, by the law's
+        /// why), the worst; moves straight back the way it moved the tick before while its own place did not turn (and those faster than a walk).</summary>
+        public int Fast, FastCity, FastCell, FastArmed, FastWorst, Back, BackFast; public string FastWhat = ""; public readonly SortedDictionary<string, int> FastBy = new SortedDictionary<string, int>(StringComparer.Ordinal);
+        /// <summary>Drawn as a run by the host (over RunDrawnCmT a tick) while its own place moved no faster: a run the law made (by class, by why).</summary>
+        public int Run, RunCity, RunCell, RunArmed; public readonly SortedDictionary<string, int> RunBy = new SortedDictionary<string, int>(StringComparer.Ordinal);
     }
+    /// <summary>The host draws a figure running above 2.0 m/s (unity HostViews.Figures.cs, the walk and run clips' switch): 20 cm a tick.</summary>
+    const int RunDrawnCmT = 20;
+    /// <summary>Two moves more than 150° apart.</summary>
+    static bool Opposed(Pt a, Pt b) { long dot = (long)a.X * b.X + (long)a.Y * b.Y, la = G.Isqrt(G.D2(a, default)), lb = G.Isqrt(G.D2(b, default)); return dot * 1000 < -866L * la * lb; }
 
     public static int Run(Engine.Inputs inputs, string root, string[] args)
     {
@@ -50,6 +61,8 @@ static class BodiesCli
                 t.Ticks += r.Ticks; t.Bad += r.Bad; t.Tenet += r.Tenet; t.Sqz += r.Sqz; t.SqzMin = Math.Min(t.SqzMin, r.SqzMin); t.LawOverlap += r.LawOverlap; t.LawTenet += r.LawTenet; t.Far5 += r.Far5; t.Jumps += r.Jumps; t.JumpsOwn += r.JumpsOwn; t.WorstOver = Math.Max(t.WorstOver, r.WorstOver);
                 t.Sidesteps += r.Sidesteps; t.Squeezes += r.Squeezes; t.Replans += r.Replans; t.Leaves += r.Leaves; t.LeavesFar += r.LeavesFar; bodies += r.Bodies; held += r.Held; cellHeld += r.CellHeld; moves += r.Moves; spells.AddRange(r.Spells); byCls[0].AddRange(r.SpellsCity); byCls[1].AddRange(r.SpellsCell); byCls[2].AddRange(r.SpellsArmed);
                 foreach (var kv in r.JumpKinds) t.JumpKinds[kv.Key] = t.JumpKinds.GetValueOrDefault(kv.Key) + kv.Value; foreach (var kv in r.ReplansBy) t.ReplansBy[kv.Key] = t.ReplansBy.GetValueOrDefault(kv.Key) + kv.Value; foreach (var kv in r.LeaveKinds) t.LeaveKinds[kv.Key] = t.LeaveKinds.GetValueOrDefault(kv.Key) + kv.Value;
+                t.Run += r.Run; t.RunCity += r.RunCity; t.RunCell += r.RunCell; t.RunArmed += r.RunArmed; foreach (var kv in r.RunBy) t.RunBy[kv.Key] = t.RunBy.GetValueOrDefault(kv.Key) + kv.Value;
+                t.Fast += r.Fast; t.FastCity += r.FastCity; t.FastCell += r.FastCell; t.FastArmed += r.FastArmed; t.Back += r.Back; t.BackFast += r.BackFast; foreach (var kv in r.FastBy) t.FastBy[kv.Key] = t.FastBy.GetValueOrDefault(kv.Key) + kv.Value; if (r.FastWorst > t.FastWorst) { t.FastWorst = r.FastWorst; t.FastWhat = $"{r.FastWhat} ({tag})"; }
                 foreach (var f in r.JumpFirst) if (jfirst.Count < show * 4) jfirst.Add($"{tag}: {f}"); foreach (var bj in r.Big) big.Add((bj.cm, $"{tag}: {bj.what}"));
                 if (r.Far > t.Far) { t.Far = r.Far; t.FarWhat = $"{r.FarWhat} ({tag})"; }
                 if (r.LongSpell > t.LongSpell) { t.LongSpell = r.LongSpell; t.LongWhat = $"{r.LongWhat} ({tag})"; }
@@ -68,6 +81,8 @@ static class BodiesCli
                 $"               held spells {spells.Count}: p50 {Pct(50):0.0} s, p95 {Pct(95):0.0} s, max {smax / (double)Game.Hz:0.0} s ({t.LongWhat}); {over5} of 5 s or more, {over10} of 10 s or more; held where it stood {(double)held / Math.Max(1, t.Ticks):0.000} a tick (cell {(double)cellHeld / Math.Max(1, runs) / Game.Hz:0.00} s a run)\n" +
                 $"               held by class: the city's people {ClsLine(byCls[0])}; the cell {ClsLine(byCls[1])}; the armed and the cast {ClsLine(byCls[2])}\n" +
                 $"               made room {t.Sidesteps} ({(double)t.Sidesteps / Math.Max(1, runs):0.0} a run), squeezed {t.Squeezes} ({(double)t.Squeezes / Math.Max(1, runs):0.0}), changed plans {t.Replans} ({(double)t.Replans / Math.Max(1, runs):0.0}: {string.Join(", ", t.ReplansBy.Select(kv => kv.Key + " " + kv.Value))})\n" +
+                $"               faster than a walk and its own step: {t.Fast} moves (the city's {t.FastCity}, the cell {t.FastCell}, the armed and the cast {t.FastArmed}), worst {t.FastWorst} cm a tick over ({t.FastWhat}); by the law's why: {string.Join(", ", t.FastBy.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal).Take(8).Select(kv => kv.Key + " " + kv.Value))}; straight back {t.Back} ({t.BackFast} both ways faster than a walk)\n" +
+                $"               drawn as a run (over {RunDrawnCmT} cm a tick) by the law, its own place slower: {t.Run} moves (the city's {t.RunCity}, the cell {t.RunCell}, the armed and the cast {t.RunArmed}); by the law's why: {string.Join(", ", t.RunBy.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal).Take(8).Select(kv => kv.Key + " " + kv.Value))}\n" +
                 $"               left the street (not over the sheet's edge) {t.Leaves} times, {t.LeavesFar} more than two radii, a step and its pace from its own place ({string.Join(", ", t.LeaveKinds.Select(kv => kv.Key + " " + kv.Value))}) (farthest {t.LeaveMax} cm {t.LeaveWhat}); farthest from its own place {t.Far / 100.0:0.0} m {t.FarWhat}; ticks with someone 5 m behind {t.Far5}"));
             if (t.Jumps > 0) Console.Error.WriteLine("               jumps by kind: " + string.Join(", ", t.JumpKinds.Select(kv => kv.Key + " " + kv.Value)));
             foreach (var f in firsts.Take(show * 3)) Console.Error.WriteLine("    " + f);
@@ -78,7 +93,11 @@ static class BodiesCli
                 .Prop("insideTwoRadii", t.Bad).Prop("tenetPairs", t.Tenet).Prop("squeezePairTicks", t.Sqz).Prop("squeezeClosestCm", t.SqzMin == int.MaxValue ? -1 : t.SqzMin).Prop("lawOverlaps", t.LawOverlap).Prop("lawTenetTicks", t.LawTenet).Prop("closestCm", t.Min == int.MaxValue ? -1 : t.Min).Prop("closest", t.MinWhat)
                 .Prop("heldSpells", spells.Count).Prop("heldP50S10", (int)Math.Round(Pct(50) * 10)).Prop("heldP95S10", (int)Math.Round(Pct(95) * 10)).Prop("heldMaxS10", smax * 10 / Game.Hz).Prop("held5sOrMore", over5).Prop("held10sOrMore", over10).Prop("heldLongest", t.LongWhat).Prop("heldCity", ClsLine(byCls[0])).Prop("heldCell", ClsLine(byCls[1])).Prop("heldArmedAndCast", ClsLine(byCls[2])).Prop("heldBodyTicks", held).Prop("cellHeldTicks", cellHeld)
                 .Prop("madeRoom", t.Sidesteps).Prop("squeezes", t.Squeezes).Prop("changedPlans", t.Replans).Prop("leftTheStreet", t.Leaves).Prop("leftFarFromOwnPlace", t.LeavesFar).Prop("leftFarthestCm", t.LeaveMax).Prop("leftFarthest", t.LeaveWhat)
-                .Prop("farthestCm", t.Far).Prop("farthest", t.FarWhat).Prop("ticks5mBehind", t.Far5);
+                .Prop("farthestCm", t.Far).Prop("farthest", t.FarWhat).Prop("ticks5mBehind", t.Far5)
+                .Prop("lawFast", t.Fast).Prop("lawFastCity", t.FastCity).Prop("lawFastCell", t.FastCell).Prop("lawFastArmed", t.FastArmed).Prop("lawFastWorstOverCm", t.FastWorst).Prop("lawFastWorst", t.FastWhat).Prop("straightBack", t.Back).Prop("straightBackFast", t.BackFast)
+                .Prop("lawRun", t.Run).Prop("lawRunCity", t.RunCity).Prop("lawRunCell", t.RunCell).Prop("lawRunArmed", t.RunArmed);
+            w.Open("lawRunBy"); foreach (var kv in t.RunBy.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal)) w.Prop(kv.Key, kv.Value); w.EndObj();
+            w.Open("lawFastBy"); foreach (var kv in t.FastBy.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal)) w.Prop(kv.Key, kv.Value); w.EndObj();
             w.Open("leftFarByKind"); foreach (var kv in t.LeaveKinds) w.Prop(kv.Key, kv.Value); w.EndObj();
             w.Open("changedPlansBy"); foreach (var kv in t.ReplansBy) w.Prop(kv.Key, kv.Value); w.EndObj();
             w.Open("fails"); foreach (var kv in fails) w.Prop(kv.Key, kv.Value); w.EndObj();
@@ -124,10 +143,25 @@ static class BodiesCli
         var upLast = new Dictionary<string, (Pt at, Pt raw, string kind)>(StringComparer.Ordinal); var upNow = new Dictionary<string, (Pt at, Pt raw, string kind)>(StringComparer.Ordinal);
         string? jlog = Environment.GetEnvironmentVariable("SUBORNED_JUMP_LOG"), hlog = Environment.GetEnvironmentVariable("SUBORNED_HELD_LOG"), llog = Environment.GetEnvironmentVariable("SUBORNED_LEAVE_LOG");
         var orders = sc.Orders.Select((o, k) => (o, k)).OrderBy(x => x.o.Tick).ThenBy(x => x.k).Select(x => x.o).ToList(); int oi = 0, until = sc.Until > 0 ? sc.Until : Game.T(inputs.SiteData.Over);
+        var atLast = new Dictionary<string, Pt>(StringComparer.Ordinal); var atNow = new Dictionary<string, Pt>(StringComparer.Ordinal); int walkT = Math.Max(1, g.R.PeopleWalk / Game.Hz); // a walk: the city's, cm a tick
+        var mvLast = new Dictionary<string, (Pt drawn, Pt own, int tick)>(StringComparer.Ordinal); // each body's last move of 5 cm or more: drawn, its own place's, when
         void look()
         {
             var up = BodyCheck.Of(g); r.Ticks++; r.Bodies += up.Count; bool any = false, ten = false, sq = false;
             (raw0, raw1) = (raw1, raw0); g.BodyRawsInto(raw1); mv.Look(g, up, int.MaxValue);
+            atNow.Clear(); // engine 0.47.1, the law's own speed (Latch at people=128: one about to squeeze slid at the city's run, once straight back)
+            foreach (var u in up)
+            {
+                atNow[u.Id] = u.At; if (!atLast.TryGetValue(u.Id, out var p0) || !raw0.TryGetValue(u.Id, out var o0) || !raw1.TryGetValue(u.Id, out var o1)) continue; // new on the street, or not laid: no move
+                Pt dm = u.At - p0, om = o1 - o0; int d = G.Dist(u.At, p0), own = G.Dist(o1, o0), lim = Math.Max(walkT, own) + BodyCheck.RoundCm;
+                char k = u.Kind == "cell" ? 'c' : (u.Kind == "crowd" || u.Kind == "dial-person") && !u.Tenet && !g.BodyKeepsPlace(u.Id) ? 'p' : 'a';
+                if (d > RunDrawnCmT && own <= RunDrawnCmT) { r.Run++; if (k == 'p') r.RunCity++; else if (k == 'c') r.RunCell++; else r.RunArmed++; var rw = g.BodyWhy(u.Id); r.RunBy[rw] = r.RunBy.GetValueOrDefault(rw) + 1; } // the host draws it running; its own rules walk it (or stand it)
+                if (d > lim) { r.Fast++; if (k == 'p') r.FastCity++; else if (k == 'c') r.FastCell++; else r.FastArmed++; var why = g.BodyWhy(u.Id); r.FastBy[why] = r.FastBy.GetValueOrDefault(why) + 1; if (d - lim > r.FastWorst) { r.FastWorst = d - lim; r.FastWhat = $"{Report.Clock(g.Tick)} {u.Id} ({u.Kind}) {d} cm a tick, its own place {own}: {g.BodyTrace(u.Id)}"; } }
+                if (d < 5) continue;
+                if (mvLast.TryGetValue(u.Id, out var m0) && g.Tick - m0.tick <= 3 && Opposed(m0.drawn, dm) && (long)m0.own.X * om.X + (long)m0.own.Y * om.Y >= 0) { r.Back++; if (d > lim && G.Dist(m0.drawn, default) > Math.Max(walkT, G.Dist(m0.own, default)) + BodyCheck.RoundCm) r.BackFast++; } // straight back the way it last moved (a wait or two between included), its own place not turning
+                mvLast[u.Id] = (dm, om, g.Tick);
+            }
+            (atLast, atNow) = (atNow, atLast);
             for (; seenJ < mv.First.Count; seenJ++) // each jump: its own place's move too (its own rules jumped it, or the law did)
             {
                 var jx = mv.First[seenJ]; Pt ra = default, rb = default; bool own = raw0.TryGetValue(jx.id, out ra) && raw1.TryGetValue(jx.id, out rb) && G.Dist(ra, rb) > jx.pace + BodyCheck.RoundCm;
@@ -173,7 +207,8 @@ static class BodiesCli
         }
         while (oi < orders.Count && orders[oi].Tick == g.Tick) g.Issue(orders[oi++]);
         g.Finish(); r.Outcome = g.Result.ToString().ToLowerInvariant(); r.Fail = g.FailCode;
-        if (r.Outcome == "none" && Environment.GetEnvironmentVariable("SUBORNED_NONE_LOG") is string nlog) lock (JumpLock) File.AppendAllText(nlog, $"{Name(item)}\t{seed}\t{g.Tick}\tuntil {until}\tover {g.Over}\n"); // a run with no outcome r.LawOverlap = (int)g.BodyOverlapTicks; r.LawTenet = g.BodyTenetTicks;
+        if (r.Outcome == "none" && Environment.GetEnvironmentVariable("SUBORNED_NONE_LOG") is string nlog) lock (JumpLock) File.AppendAllText(nlog, $"{Name(item)}\t{seed}\t{g.Tick}\tuntil {until}\tover {g.Over}\n"); // a run with no outcome
+        r.LawOverlap = (int)g.BodyOverlapTicks; r.LawTenet = g.BodyTenetTicks; // the law's own counts: laid still inside two radii (BodyRepair's leftovers), two tenets inside two radii
         foreach (var kv in stuck) { r.Spells.Add(kv.Value); (cls.GetValueOrDefault(kv.Key, 'a') == 'p' ? r.SpellsCity : cls.GetValueOrDefault(kv.Key, 'a') == 'c' ? r.SpellsCell : r.SpellsArmed).Add(kv.Value); if (kv.Value > r.LongSpell) { r.LongSpell = kv.Value; r.LongWhat = $"{kv.Key} to the end, {g.BodyTrace(kv.Key)}"; } }
         r.Sidesteps = g.BodySidesteps; r.Squeezes = g.BodySqueezes; r.Replans = g.BodyReplans; foreach (var kv in g.BodyReplansBy) r.ReplansBy[kv.Key] = kv.Value;
         return r;

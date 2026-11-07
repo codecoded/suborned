@@ -33,6 +33,9 @@ namespace Suborned.Sim
         }
         /// <summary>For a probe (never hashed): each body the law laid this tick, id → its own place (where its own rules put it).</summary>
         public void BodyRawsInto(Dictionary<string, Pt> into) { into.Clear(); for (int i = 0; i < bdN; i++) into[bds[i].Id] = bds[i].Raw; }
+        /// <summary>For a probe (never hashed): why the law laid a body where it did this tick, as BodyTrace writes it: its goal, its move and any fix
+        /// ("side>next", "room>slide", "follow>next>off-ground"); "" when the law did not lay it.</summary>
+        public string BodyWhy(string id) => bdIx.TryGetValue(id, out var i) ? WhyGoal[bds[i].Why & 15] + WhyMove[bds[i].Why >> 4] + WhyFix[bds[i].Fix] + (bds[i].Urgent ? ">urgent" : "") : "";
         /// <summary>For a probe (never hashed): each body the law laid this tick that is held (short of its goal and not got on), id → the ticks it
         /// has got nowhere (across its tries; 0 once it gets on).</summary>
         public void BodyStuckInto(Dictionary<string, int> into) { into.Clear(); for (int i = 0; i < bdN; i++) if (bds[i].StuckN > 0) into[bds[i].Id] = bds[i].StuckN; }
