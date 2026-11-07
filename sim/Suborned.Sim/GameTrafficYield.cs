@@ -29,7 +29,9 @@ namespace Suborned.Sim
                 foreach (var c in Traffic)
                 {
                     if (ForGood(c)) continue; var (at, h) = TrafficPose(c); if (!CarGeo.PolysMeet(me, CarGeo.Rect(at, h, c.HalfLen, c.HalfW))) continue;
-                    meets = true; if (c.WaitsFor == id) cap = Math.Min(cap, T(tr.PassWaitS)); // a driver waiting for this very car: it goes first after waitS
+                    meets = true;
+                    if (c.WaitsFor == id) cap = Math.Min(cap, T(tr.PassWaitS)); // a driver waiting for this very car: it goes first after waitS
+                    else if (c.V == 0 && c.Mode != TrafficMode.Duck) cap = Math.Min(cap, 5 * T(tr.PassWaitS)); // one stopped for something else: not long (a moving car, or a ducked driver who sits up when it is quiet, it waits out)
                 } // a ducked driver's car it waits out; a wreck it never would
                 int held = missionHeld.TryGetValue(id, out var n) ? n : 0;
                 if (!meets || held >= cap) { if (!meets) missionHeld.Remove(id); else missionHeld[id] = held + 1; continue; } // past its cap it drives on: never held for good

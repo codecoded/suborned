@@ -23,10 +23,12 @@ namespace Suborned.Sim
             public Pt At, H, From; public int HL, HW; public TrafficCar? Car; public bool Moving, Still, Sweep; public int X0, Y0, X1, Y1; public long N; public string Id = ""; // From: a sweep's mission car where it is now; Id: a mission car's
             public TBox(Pt at, Pt h, int hl, int hw) { At = at; H = h.X == 0 && h.Y == 0 ? new Pt(0, 100) : h; HL = hl; HW = hw; N = Math.Max(1, G.Isqrt((long)H.X * H.X + (long)H.Y * H.Y)); int r = hl + hw; X0 = at.X - r; X1 = at.X + r; Y0 = at.Y - r; Y1 = at.Y + r; }
             /// <summary>p within `r` cm of the footprint (an exact integer test in its own frame).</summary>
-            public bool Near(Pt p, long r)
+            public bool Near(Pt p, long r) => Gap2(p) <= r * r;
+            /// <summary>The squared distance (cm²) from p to the footprint (0 inside it).</summary>
+            public long Gap2(Pt p)
             {
                 long dx = p.X - At.X, dy = p.Y - At.Y, along = Math.Abs(dx * H.X + dy * H.Y) / N, across = Math.Abs(dx * H.Y - dy * H.X) / N;
-                long ox = Math.Max(0, along - HL), oy = Math.Max(0, across - HW); return ox * ox + oy * oy <= r * r;
+                long ox = Math.Max(0, along - HL), oy = Math.Max(0, across - HW); return ox * ox + oy * oy;
             }
         }
         sealed class TrafficWorld { public readonly List<Pt> People = new List<Pt>(), Bodies = new List<Pt>(); public readonly List<TBox> Cars = new List<TBox>(); }
@@ -39,6 +41,7 @@ namespace Suborned.Sim
             foreach (var c in Traffic) { var (at, h) = TrafficPose(c); w.Cars.Add(new TBox(at, h, c.HalfLen, c.HalfW) { Car = c, Moving = c.V > 0, Still = TrafficStill(c) }); }
             int hl = R.CarLenCm / 2, hw = R.CarWCm / 2;
             foreach (var (id, at, h, moving) in MissionCarsNow()) w.Cars.Add(new TBox(at, h, hl, hw) { Moving = moving, Still = !moving, Id = id });
+            if (MissionCarAt("car:rivals", Tick + T(tr!.EntryS)) is var due && due.HasValue && !RivalCarPose().HasValue) w.Cars.Add(new TBox(due.Value.at, due.Value.h, hl, hw) { Moving = true, Sweep = true, Id = "car:rivals", From = due.Value.at }); // its turn-in point, kept clear entryS before it comes
             foreach (var id in CarIds) // where each will be: its leg, or the one its timetable starts soon
             {
                 Pt from = default; bool on = false; foreach (var (mid, at, _, _) in MissionCarsNow()) if (mid == id) { from = at; on = true; }
@@ -83,7 +86,7 @@ namespace Suborned.Sim
                       officialOut ??= new Path(S.CarServicePath); officialProf ??= CarProfile(officialOut); int k = Math.Min(t - due, officialProf.Length - 1); return (officialOut.At(officialProf[k]), officialOut.Heading(officialProf[k])); }
                 case "car:rivals":
                     if (CarMoving) { long mm = CcMm(t); return (ccPath!.At(mm), ccPath.Heading(mm)); }
-                    if ((CarSt == CrewCar.Off && t >= CrewEntryNow && Tick <= CrewEntryNow && CrewEntryNow < INF) || (CarSt == CrewCar.Away && crewNext == "back" && t >= crewNextAt && Tick <= crewNextAt)) return (S.CarStand(S.RivalCarEntry), S.RivalFacingEntry); // due, not yet past: an entry that did not happen is no car coming
+                    if ((CarSt == CrewCar.Off && t >= CrewEntryNow && Tick <= CrewEntryNow && CrewEntryNow < INF) || (CarSt == CrewCar.Away && crewNext == "back" && t >= crewNextAt && Tick <= crewNextAt)) return (S.CarStand(S.RivalCarEntry), S.RivalFacingEntry); // due, not yet past: an entry that did not happen is no car coming (the lead, traffic.yield.entryS: TrafficWorldAt)
                     return null;
             }
             return null;
@@ -147,6 +150,26 @@ namespace Suborned.Sim
             }
             return true;
         }
+        /// <summary>The car stands where a mission car's next seconds (or its due turn-in) will be: in its way.</summary>
+        bool InMissionWay(TrafficCar c, TrafficWorld w)
+        {
+            for (long mm = c.Rear; mm <= c.Front; mm += TStep) { var q = c.Route.Path.At(mm); foreach (var b in w.Cars) if (b.Sweep && b.Near(q, c.HalfW)) return true; }
+            return false;
+        }
+        /// <summary>The squared distance (cm²) from the car's line over its body, at offset `lat`, to the nearest other car, person or body (a person
+        /// or a body counts their own half width less): how clear the car would stand there.</summary>
+        long BodyGap2(TrafficCar c, TrafficWorld w, int lat)
+        {
+            long best = long.MaxValue; int pr = R.CrowdOccludeCm;
+            for (long mm = c.Rear; mm <= c.Front; mm += TStep)
+            {
+                var q = c.Route.Path.At(mm); if (lat != 0) { var h = c.Route.Path.Heading(mm); long hn = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y)); q = new Pt(q.X + (int)(h.Y * lat / hn), q.Y + (int)(-h.X * lat / hn)); }
+                foreach (var b in w.Cars) if (b.Car != c && b.X1 >= q.X - 600 && b.X0 <= q.X + 600 && b.Y1 >= q.Y - 600 && b.Y0 <= q.Y + 600) best = Math.Min(best, b.Gap2(q));
+                foreach (var p in w.People) { long d = Math.Max(0, G.Isqrt(G.D2(p, q)) - pr); best = Math.Min(best, d * d); }
+                foreach (var p in w.Bodies) { long d = Math.Max(0, G.Isqrt(G.D2(p, q)) - pr); best = Math.Min(best, d * d); }
+            }
+            return best;
+        }
         /// <summary>Somebody stands inside the car's own footprint (stepped into it while it stood): it does not move until they are out.</summary>
         bool SomeoneIn(TrafficCar c, TrafficWorld w)
         {
@@ -169,17 +192,23 @@ namespace Suborned.Sim
             foreach (var o in Traffic) { int li = o.Route.LaneAt(o.Mm); if (li < 0 || o.Route.Lanes[li].lane != lane) continue; if (o.Rear - o.Route.Lanes[li].from < len) return false; }
             return true;
         }
-        /// <summary>A moving mission car comes within c's corridor between [from, to] of its route over the next `ticks` (its own timetable).</summary>
+        /// <summary>A mission car comes within c's corridor between [from, to] of its route over the next `ticks` (its own timetable), unless it comes up
+        /// from behind c (it follows c through, so c goes first).</summary>
         bool MissionCrosses(TrafficCar c, long from, long to, int now, int ticks)
         {
             int hl = R.CarLenCm / 2, hw = R.CarWCm / 2, r = c.HalfW + tr!.ClearCm;
+            var ch = c.Route.Path.Heading(c.Mm); var cf = c.Route.Path.At(Math.Min(c.Route.Path.Length, c.Front));
             foreach (var id in CarIds)
+            {
+                bool behind = false; foreach (var (mid, at, _, _) in MissionCarsNow()) if (mid == id && (long)(at.X - cf.X) * ch.X + (long)(at.Y - cf.Y) * ch.Y < 0) behind = true;
+                if (behind) continue;
                 for (int dt = 0; dt <= ticks; dt += 5)
                 {
                     if (!(MissionCarAt(id, Tick + dt) is var f) || !f.HasValue) continue; // not driving then (a leg may yet start within the time)
                     var b = new TBox(f.Value.at, f.Value.h, hl, hw);
                     for (long mm = from; mm <= to; mm += TStep) if (b.Near(c.Route.Path.At(mm), r)) return true;
                 }
+            }
             return false;
         }
 
@@ -202,6 +231,7 @@ namespace Suborned.Sim
             c.WaitsFor = kind == 4 || kind == 6 ? lastHit : "";
             if (d != long.MaxValue) { best = Math.Max(0, d - TStep); gapKind = kind; still = st; aheadV = av; }
             if (SomeoneIn(c, w)) { best = 0; gapKind = 1; }
+            if (lane != null && LaneLeader(c, li) is long lead && lead < best) { best = Math.Max(0, lead); gapKind = 3; still = false; } // never past a car on its way in its own lane, wherever across it rides
             long allowedMm = best == long.MaxValue ? long.MaxValue : best - Gap(c, gapKind);
             int k = NextTurn(c);
             if (k >= 0 && k != c.Turn) allowedMm = Math.Min(allowedMm, c.Route.Turns[k].enter - c.Front - 100);
@@ -210,8 +240,9 @@ namespace Suborned.Sim
             int v = Math.Min(Math.Min(c.V + accel, vmax), allowed);
             if (c.Mode == TrafficMode.Brake) v = Math.Min(v, Math.Max(0, c.V - hard));
             c.V = Math.Max(0, v); c.Mm += c.V;
-            if (c.V > 0 && c.Lat != c.LatGoal) // sideways only where the whole car is clear at the new offset (someone may have come alongside since it chose)
-            { int sideways = Math.Max(1, c.V * tr.LatCmS / (tr.PassCmS * 10)), gap = c.LatGoal - c.Lat, nl = c.Lat + Math.Sign(gap) * Math.Min(Math.Abs(gap), sideways); if (Corridor(c, w, c.Rear, c.Front - c.Rear, nl, latFrom: nl).d == long.MaxValue) c.Lat = nl; }
+            if (c.Lat != c.LatGoal && c.Mode != TrafficMode.Brake) // sideways only where the whole car is clear at the new offset (someone may have come alongside since it chose); stopped, it creeps
+            { int sideways = c.V > 0 ? Math.Max(1, c.V * tr.LatCmS / (tr.PassCmS * 10)) : Math.Max(1, tr.LatCmS / 40), gap = c.LatGoal - c.Lat, nl = c.Lat + Math.Sign(gap) * Math.Min(Math.Abs(gap), sideways);
+              long now2 = BodyGap2(c, w, c.Lat), next2 = BodyGap2(c, w, nl), r2 = (long)(c.HalfW + tr.ClearCm) * (c.HalfW + tr.ClearCm); if (next2 > r2 || next2 > now2) c.Lat = nl; } // clear there, or at least farther from what it touches
             if (c.Mode == TrafficMode.Brake && c.V == 0 && now - c.ModeTick >= (c.Driver.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks))
             { c.Mode = c.Flees ? TrafficMode.Flee : TrafficMode.Duck; c.ModeTick = now; if (!c.Flees) c.Quiet = Math.Max(c.Quiet, now); }
             // held up behind something that will not move on: ease round it; once the whole car is past, back to the line (GameTrafficPass.cs)
@@ -225,9 +256,22 @@ namespace Suborned.Sim
             }
             else if (c.V > 0) c.BlockedAt = -1;
             if (c.LatGoal != 0 && lane != null && (!(c.V == 0 && still) || LineWithin(c, StopMm(c.V) + c.V + Math.Abs(c.Lat) * (long)tr.PassCmS * 10 / Math.Max(1, tr.LatCmS) + 1000))
-                && Corridor(c, w, c.Rear, (c.Front - c.Rear) + 2000, 0, latFrom: 0).d == long.MaxValue && (LineWithin(c, look) || Corridor(c, w, c.Rear, look + 2L * c.HalfLen * 10, 0, latFrom: 0).d == long.MaxValue)) c.LatGoal = 0; // back on its line once the whole car is clear there (before a junction, as soon as it is)
+                && Corridor(c, w, c.Rear, c.Front - c.Rear, 0, latFrom: 0).d == long.MaxValue && Corridor(c, w, c.Front, LineWithin(c, look) ? 2000 : look, 0, latFrom: 0).d == long.MaxValue) c.LatGoal = 0; // back on its line once the whole car is clear there and the way on from its front, as the corridor samples it (before a junction, as soon as the car is)
             if (c.Refused >= 0 && c.V == 0 && now - c.RefusedAt >= T(tr.PassWaitS)) Reroute(c, c.Refused, w, now);
             if (c.Front >= c.Route.Path.Length) c.Gone = true; // at its runway's end, 30 m out of the zone: it has left
+        }
+        /// <summary>The gap (mm, along the lane) from c's front to the rear of the nearest car ahead of it in its own lane that is on its way (not one
+        /// standing for good, which it may go round), or null.</summary>
+        long? LaneLeader(TrafficCar c, int li)
+        {
+            var (lane, from, _) = c.Route.Lanes[li]; long me = c.Mm - from; long? best = null;
+            foreach (var o in Traffic)
+            {
+                if (o == c || TrafficStill(o)) continue; int oi = o.Route.LaneAt(o.Mm); if (oi < 0 || o.Route.Lanes[oi].lane != lane) continue;
+                long along = (o.Mm - o.Route.Lanes[oi].from) - me; if (along <= 0) continue;
+                long gap = along - (o.HalfLen + c.HalfLen) * 10L; if (best == null || gap < best) best = gap;
+            }
+            return best;
         }
         /// <summary>The gap a driver keeps behind what is ahead (mm): a person or a body peopleGapCm, a car gapCm plus headwayDs of its own speed.</summary>
         long Gap(TrafficCar c, int kind) => kind == 1 || kind == 2 ? tr!.PeopleGapCm * 10L : kind == 3 || kind == 6 ? tr!.GapCm * 10L + (long)c.V * tr.HeadwayDs : kind == 4 ? tr!.GapCm * 10L : 0;

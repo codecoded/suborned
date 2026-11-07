@@ -23,7 +23,7 @@ namespace Suborned.Sim
             int maxIn = lane.Offset - c.HalfW - tr!.ClearCm, maxOut = lane.Half - lane.Offset - c.HalfW - tr.ClearCm;
             long stretch = ahead + 1500 + 2L * c.HalfLen * 10;
             if (LineWithin(c, stretch + ReturnMm(c, lane))) return; // too near a junction to go round and be back on the line before its stop line: it waits
-            bool Clear(int lat) { var (d, kind, _, _) = Corridor(c, w, c.Front, stretch, lat, Math.Max(100, lane.Speed / 2), true, null, wide); return d == long.MaxValue || ((kind == 3 || kind == 6) && d > ahead + 1000); }
+            bool Clear(int lat) { var (d, kind, _, _) = Corridor(c, w, c.Front, stretch, lat, Math.Max(100, lane.Speed / 2), true, c.V == 0 ? lat : (int?)null, wide); return d == long.MaxValue || ((kind == 3 || kind == 6) && d > ahead + 1000); } // stopped, it creeps across first: the way from there
             for (int s = 25; s <= Math.Max(maxIn, maxOut); s += 25)
                 foreach (var lat in new[] { s, -s })
                 {

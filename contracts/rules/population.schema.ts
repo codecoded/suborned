@@ -24,7 +24,7 @@ export const Traffic = z.strictObject({
   trips: z.strictObject({ offS: band, warmS: n(0, 600), ...why }).refine(proposed),
   stand: z.strictObject({ standS: n(0), settleS: n(0), ...why }).refine(proposed).refine((x) => x.settleS >= x.standS, { message: 'settleS no less than standS' }),
   pass: z.strictObject({ waitS: n(0), latCmS: n(1), passCmS: n(10), backCm: n(0, 2000), ...why }).refine(proposed),
-  yield: z.strictObject({ aheadS: n(0, 30), holdS: n(0, 60), ...why }).refine(proposed),
+  yield: z.strictObject({ aheadS: n(0, 30), holdS: n(0, 60), entryS: n(0, 60), ...why }).refine(proposed),
   react: z.strictObject({ duck: z.array(temperament), flee: z.array(temperament), fleePm: n(1000, 4000), ...why }).refine(proposed).refine((x) => !x.duck.some((t) => x.flee.includes(t)), { message: 'a nature ducks or flees, never both' }),
   lockdown: z.strictObject({ alert: n(1, 3), then: z.enum(['leave', 'stop']), ...why }).refine(proposed),
   driver: z.strictObject({ role: text, job: text, id: text.refine((s) => !s.startsWith('p-'), { message: "a driver's id prefix is not the people file's (p-)" }), name: text, ...why }).refine(proposed),

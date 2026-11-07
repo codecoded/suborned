@@ -24,6 +24,7 @@ namespace Suborned.Sim
             foreach (var c in StandingCars())
             {
                 if (c.Id == self || (CarOf(c.Id) is CarTarget t && t.Blown)) continue;
+                if (TrafficCarById(c.Id) is TrafficCar tc && !ForGood(tc)) continue; // brief 098 step 1: a passing car waiting in traffic boxes nobody in (its driver moves up or lets you out); a wreck, an abandoned car, one pulled up at a lockdown does
                 if (CarGeo.OnWay(CarGeo.Rect(c.At, c.Heading, c.Hl(R), c.Hw(R)), way, half)) l.Add(c.Id); // brief 098 step 1: a passing car's own footprint
             }
             return l;

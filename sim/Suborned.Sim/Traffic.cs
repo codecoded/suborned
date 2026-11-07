@@ -15,7 +15,7 @@ namespace Suborned.Sim
         /// <summary>The kinds of vehicle (the kit's at-budget set), their share of trips (per cent), footprints (cm) and whether they give cover.</summary>
         public readonly string[] Models; public readonly int[] Share, LenCm, WCm; public readonly bool[] Cover;
         public readonly int AccelCmS2, BrakeCmS2, HardBrakeCmS2, GapCm, HeadwayDs, LookCm, ClearCm, PeopleGapCm;
-        public readonly int OffMinS, OffMaxS, WarmS, StandS, SettleS, PassWaitS, LatCmS, PassCmS, BackCm, AheadS, HoldS, FleePm, LockAlert;
+        public readonly int OffMinS, OffMaxS, WarmS, StandS, SettleS, PassWaitS, LatCmS, PassCmS, BackCm, AheadS, HoldS, EntryS, FleePm, LockAlert;
         public readonly bool LockStop;
         public readonly string[] Duck, Flee;
         public readonly string DriverRole, DriverJob, DriverId, DriverName; public readonly string[] DriverAllow;
@@ -53,8 +53,8 @@ namespace Suborned.Sim
             if (StandS < 0 || SettleS < StandS) throw new FormatException("traffic.stand: standS 0 or more, settleS no less");
             var ps = t["pass"]; ps.Only("waitS", "latCmS", "passCmS", "backCm", "src", "proposed", "reason"); PassWaitS = ps["waitS"].Int(); LatCmS = ps["latCmS"].Int(); PassCmS = ps["passCmS"].Int(); BackCm = ps["backCm"].Int();
             if (PassWaitS < 0 || LatCmS < 1 || PassCmS < 10 || BackCm < 0 || BackCm > 2000) throw new FormatException("traffic.pass: waitS 0 or more, latCmS and passCmS positive, backCm 0..2000");
-            var y = t["yield"]; y.Only("aheadS", "holdS", "src", "proposed", "reason"); AheadS = y["aheadS"].Int(); HoldS = y["holdS"].Int();
-            if (AheadS < 0 || AheadS > 30 || HoldS < 0 || HoldS > 60) throw new FormatException("traffic.yield: aheadS 0..30 s, holdS 0..60 s");
+            var y = t["yield"]; y.Only("aheadS", "holdS", "entryS", "src", "proposed", "reason"); AheadS = y["aheadS"].Int(); HoldS = y["holdS"].Int(); EntryS = y["entryS"].Int();
+            if (AheadS < 0 || AheadS > 30 || HoldS < 0 || HoldS > 60 || EntryS < 0 || EntryS > 60) throw new FormatException("traffic.yield: aheadS 0..30 s, holdS 0..60 s, entryS 0..60 s");
             var re = t["react"]; re.Only("duck", "flee", "fleePm", "src", "proposed", "reason"); Duck = re["duck"].Strs().ToArray(); Flee = re["flee"].Strs().ToArray(); FleePm = re["fleePm"].Int();
             if (FleePm < 1000 || FleePm > 4000) throw new FormatException("traffic.react.fleePm: 1000..4000 per mille");
             var lk = t["lockdown"]; lk.Only("alert", "then", "src", "proposed", "reason"); LockAlert = lk["alert"].Int(); var then = lk["then"].Str();

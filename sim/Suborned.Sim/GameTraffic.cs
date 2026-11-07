@@ -188,7 +188,7 @@ namespace Suborned.Sim
             if (still) return "still";
             if (hit) return "room";
             int cross = (int)Math.Min(T(20), (room - c.Front) / Math.Max(Math.Max(100, c.V), t.To.Speed / 2) + 1); // the ticks to clear it, pulling away to half its lane's speed
-            if (MissionCrosses(c, enter, room, now, T(tr.AheadS) + cross)) return "mission";
+            if (!InMissionWay(c, w) && MissionCrosses(c, enter, room, now, T(tr.AheadS) + cross)) return "mission"; // one already standing in a mission car's coming way is let through to clear it
             return "";
         }
     }
