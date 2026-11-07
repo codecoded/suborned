@@ -1,0 +1,33 @@
+import { runRounds, validateLimits } from './core';
+import { checkShort } from './short-checks';
+import { shortPrompt } from './short-prompts';
+import { SHORT_RUN, ShortEvaluation, shortGuideVersion, shortSetSchema, type ShortBrief, type ShortGuide, type ShortIssue, type ShortResult, type ShortRound, type ShortSet } from './short-types';
+import type { Authorization, Evidence, Invoke, Limits } from './types';
+
+/** All the lines of a family, for the evaluator's quotes. */
+export const setText = (s: ShortSet) => s.items.flatMap(i => i.fields.flatMap(f => f.lines)).join('\n');
+
+/** A short-line family through the same loop as a conversation: Fable writes, Motive scores, Fable revises; only 10/10 with no findings
+ *  and clean code checks is accepted. `base` is what the checks merge into (the why block), from the same sources as the brief. */
+export async function runShort(o: {
+  guide: ShortGuide; brief: ShortBrief; invoke: Invoke; limits: Limits; mode: ShortResult['mode']; base?: { why?: unknown; dialogue?: unknown };
+  now?: () => number; checkpoint?: (result: ShortResult) => Promise<void>; evidence?: Evidence; authorization?: Authorization;
+}): Promise<ShortResult> {
+  validateLimits(o.limits);
+  if (o.mode === 'live' && (!o.evidence || !o.authorization?.approvedBy.trim() || !o.authorization.model.trim()))
+    throw new Error('Live runs need archived sources and a recorded approval');
+  const now = o.now ?? Date.now, started = now();
+  const result: ShortResult = { schema: SHORT_RUN, mode: o.mode, status: 'INCOMPLETE', stopReason: 'Not finished', brief: o.brief, guide: o.guide,
+    limits: { ...o.limits }, rounds: [], calls: [], startedAt: started, finishedAt: null, evidence: o.evidence ?? null, authorization: o.authorization ?? null };
+  await runRounds<ShortSet, ShortEvaluation, ShortIssue, ShortRound>({ result, limits: o.limits, invoke: o.invoke, now, started,
+    save: () => o.checkpoint?.(result) ?? Promise.resolve(),
+    prompt: (stage, candidate, feedback) => shortPrompt(stage, o.guide, o.brief, candidate, feedback),
+    draftSchema: shortSetSchema(o.brief), evaluationSchema: ShortEvaluation,
+    check: draft => checkShort(o.brief, draft, o.guide, o.base ?? {}), text: setText,
+    quoteError: 'The evaluator quoted words that are not in the lines',
+    round: (set, evaluation, hardIssues) => ({ set, evaluation, hardIssues }), history: shortGuideVersion(o.guide) >= 2 });
+  return result;
+}
+
+/** The accepted lines of a run: its last round when accepted, else nothing. */
+export const accepted = (r: ShortResult): ShortSet | null => r.status === 'ACCEPTED' ? r.rounds.at(-1)!.set : null;

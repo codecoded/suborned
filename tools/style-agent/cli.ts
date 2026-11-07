@@ -8,6 +8,11 @@ import { loadGuide, readerFor } from './guide';
 import { liveCaller } from './live';
 import { corrected, defaults, runLoop, validateLimits } from './loop';
 import { DEMOS, runHtml, submissionHtml, WHO } from './report';
+import { applyShort } from './short-apply';
+import { loadShortBriefs } from './short-briefs';
+import { acceptedByFamily, listShort, liveShort, replayShort } from './short-cli';
+import { verifyShort } from './short-evidence';
+import { SHORT_RUN } from './short-types';
 import type { Brief, Result } from './types';
 
 const COURSE = 'out/style-agent';
@@ -19,11 +24,15 @@ Offline (no model, no login):
   bun run style:replay RUN            play a saved run step by step (tone | lore | length | a brief id | a run folder)
   bun run style:verify RUN            rebuild a saved run from its archived sources and check it (a run folder or file)
   bun run style:report                check every saved run and write ${COURSE}/index.html and the proposals
+  bun tools/style-agent/cli.ts shorts the short-line families: barks, the why block, the debrief page
+  bun tools/style-agent/cli.ts apply  write every family's accepted lines into text.json (--dry to only show them; --skip a,b leaves those families out; --restore a,b puts their lines back as their runs found them)
 
 Live (Codex subscription; needs SUBORNED_LIVE=1 and a recorded approval):
   bun run style:demo tone|lore|length LIVE
   bun run style:run BRIEF_ID LIVE
   bun run style:chain LIVE [--concurrency N] [--again]
+  bun run style:run FAMILY LIVE       one short-line family (bark/…, why/…, debrief/…; see shorts)
+  bun run style:chain --short LIVE [--kind bark|why|debrief] [--only a,b] [--concurrency N] [--again]
   LIVE = --model MODEL --approved-by NAME --max-calls N --max-tokens N [--max-revisions N]
 
 Runs are saved in ${RUNS}/<time>-<brief>/; nothing in the game is changed.`;
@@ -152,13 +161,22 @@ async function main() {
     for (const b of loadBriefs(root)) console.log(`${b.id.padEnd(22)} scene ${String(b.scene).padStart(2)} · ${b.seconds} s · ${b.lines[0]}–${b.lines[1]} lines · ${b.reveals.join(' · ')}`);
     return;
   }
+  if (command === 'shorts') return listShort();
+  if (command === 'apply') {
+    const list = (flag: string) => new Set((args.includes(flag) ? args[args.indexOf(flag) + 1] ?? '' : '').split(',').filter(Boolean));
+    return applyShort(args.includes('--dry'), { runs: await acceptedByFamily(list('--skip')), restore: args.includes('--restore') ? list('--restore') : undefined });
+  }
   if (command === 'verify') {
     if (args.length !== 1) throw new Error(help);
-    const { result: _, ...v } = await verifyRun(readRun(runFile(args[0]!)), root);
+    const input = readRun(runFile(args[0]!)) as { schema?: string };
+    const { result: _, ...v } = input.schema === SHORT_RUN ? await verifyShort(input, root) : await verifyRun(input, root);
     console.log(JSON.stringify(v, null, 2)); process.exitCode = v.ok ? 0 : 1; return;
   }
   if (command === 'report') return report();
-  if (command === 'replay') return replay(args);
+  if (command === 'replay') {
+    if (args.length === 1 && !/^(inez\/|tone$|lore$|length$)/.test(args[0]!) && (readRun(runFile(args[0]!)) as { schema?: string }).schema === SHORT_RUN) return replayShort(runFile(args[0]!));
+    return replay(args);
+  }
   const briefs = loadBriefs(root), byId = (id: string) => briefs.find(b => b.id === id) ?? (() => { throw new Error(`No brief ${id}; see bun run style:briefs`); })();
   const tag = (b: Brief, suffix = '') => b.id.replaceAll('/', '-') + suffix;
   if (command === 'demo') {
@@ -166,10 +184,26 @@ async function main() {
     if (!demo || positional.length !== 1) throw new Error(`demo needs one of ${DEMOS.map(d => d.id).join(', ')}`);
     return live(options, [{ brief: byId(demo.brief), steer: demo.steer, tag: tag(byId(demo.brief), `-demo-${demo.id}`) }]);
   }
+  if (command === 'run' && /^(bark|why|debrief)\//.test(args.find(a => !a.startsWith('--') && /\//.test(a)) ?? '')) {
+    const { options, positional } = parse(args, LIVE), family = loadShortBriefs(root).find(b => b.id === positional[0]);
+    if (positional.length !== 1 || !family) throw new Error(`No family ${positional[0]}; see: bun tools/style-agent/cli.ts shorts`);
+    return liveShort(options, [family]);
+  }
   if (command === 'run') {
     const { options, positional } = parse(args, LIVE);
     if (positional.length !== 1) throw new Error(help);
     return live(options, [{ brief: byId(positional[0]!), steer: null, tag: tag(byId(positional[0]!)) }]);
+  }
+  if (command === 'chain' && args.includes('--short')) {
+    const { options } = parse(args.filter(a => a !== '--short'), [...LIVE, '--concurrency', '--kind', '--only'], ['--again']);
+    const only = options.has('--only') ? new Set(options.get('--only')!.split(',')) : null; // --only a,b: these families, accepted or not
+    const done = options.has('--again') || only ? new Set<string>() : new Set((await acceptedByFamily()).keys()), kind = options.get('--kind');
+    const concurrency = Number(options.get('--concurrency') ?? 3);
+    if (!Number.isSafeInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new Error('--concurrency must be 1..4');
+    const families = loadShortBriefs(root).filter(b => !done.has(b.id) && (!kind || b.kind === kind) && (!only || only.has(b.id)));
+    if (only && families.length !== only.size) throw new Error(`No such family in --only: ${[...only].filter(id => !families.some(b => b.id === id)).join(', ')}`);
+    for (const k of ['--concurrency', '--again', '--kind', '--only']) options.delete(k);
+    return liveShort(options, families, concurrency);
   }
   if (command === 'chain') {
     const { options } = parse(args, [...LIVE, '--concurrency'], ['--again']);

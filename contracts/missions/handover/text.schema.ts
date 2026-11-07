@@ -41,6 +41,8 @@ import { fnv1a32 } from '../../rules/rulebook.ref.ts';
 import { CaptureClip, Conversations } from './conversations.schema.ts';
 import { Book } from './book.schema.ts';
 import { Why } from './why.schema.ts';
+import { Debrief } from './debrief.schema.ts';
+export { Debrief, DebriefPage } from './debrief.schema.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
@@ -201,41 +203,6 @@ export const Card = z.strictObject({
   pick: z.string().optional().describe('when `result` is a record: the engine state that chooses the key'),
   fate: z.enum(CARD_FATES).describe('brief 014: where the card goes now. beat = a one-line feed beat (`beat`); icon = the street shows it (a marker, a ring, a lock, a pip) and the card text is history only; alt = history only (behind L) and Alt; debrief = the debrief says it'),
   beat: z.union([Short(BEAT_MAX), z.record(code, Short(BEAT_MAX))]).optional().describe('brief 014: the feed line of a beat card (at most four words), or one per `pick` key (a key with no line shows none); only on fate beat; shown when no bubble of the event\'s speech is on screen'),
-});
-
-/** The end card's words by the debrief's ids (sim Debrief.cs). Placeholders: {clock} {usd} {trail} {n} {hits} {who} {cause} {list}. */
-export const Debrief = z.strictObject({
-  rule: z.string().min(1),
-  headline: z.strictObject({ win: Line, withdraw: Line, fail: Line }).describe('a failure with a text in briefing.fails uses that line\'s first sentence instead'),
-  result: z.strictObject({ win: Line }),
-  tally: Line,
-  security: z.strictObject({ calm: Line, raised: Line, high: Line }),
-  investigation: z.strictObject({ little: Line, early: Line, active: Line, activeBecause: Line }),
-  causes: z.record(code, Line).describe('Debrief.InvestigationCause (and the engine\'s named-witness:<role>, whose {who} is the role as names.targets says it)'),
-  fight: z.strictObject({ loud: Line, safe: Line }),
-  fightWhy: z.record(code, Line).describe('engine 0.33.0 (brief 059): one clause for each id the debrief\'s finalFight.why can carry (sim FightWhy.Add), each a plain sentence that follows the Final fight line on the end card and in the history'),
-  cause: z.record(code, z.record(code, z.strictObject({
-    head: Short(32).describe('the end card\'s title for this cause (the card wraps it to two lines at most: HudToolkit EndCardAudit)'),
-    line: Line.describe('the line under it: what happened and why, in everyday words; {by} {agent} {holders} as less.failcam and names.holders'),
-    story: z.array(code).optional().describe('keys of debrief.story, in order: the debrief\'s route lines after "Popovic reached the getaway car.", so the story runs to the end'),
-  }))).describe('brief 096 (Sky 2026-11-04: "the End card needs to be plain english and clear but not too formal"): the end card by cause, not by code: cause[Game.FailCode][key], the key FailCause.Why, except `sealed`, keyed by FailCause.Car (held, ready, empty; `unknown` when none), and `withdraw`, keyed by the withdrawal\'s why. A cause with no entry (why `unresolved`) falls back to less.end.fail and briefing.fails'),
-  story: z.record(code, Line).describe('brief 096: the lines that finish the story after "Popovic reached the getaway car." on the debrief, named by debrief.cause[..].story; {holders} is names.holders as holdersPhrase says Game.CarHolders() at the end (a line with {holders} and no holders is left out)'),
-  kept: Line,
-  route: z.record(code, Line),
-  assets: z.record(code, Line),
-  between: z.record(code, Line).describe('brief 013 and brief 018: the between-missions lines a takedown or the getaway leaves (rulebook debrief.lines: volunteer, statement, missing, grief, worry, area-watch, case, left-behind, captive, car-seen), keyed by the rulebook id; each line carries every field the rulebook lists for it'),
-  getaway: z.strictObject({
-    holdsOut: Line.describe('brief 018: the `captive` line for a captive who does not talk inside the rescue window (the projection has no talk); the host picks it instead of `between.captive`. Fields {who} {held-at} {rescue-until}'),
-    fate: z.record(code, Line).describe('brief 018 {fate} of `left-behind`: captured, walked (the engine\'s LeftBehind fate)'),
-    why: z.record(code, Line).describe('brief 018 {why} of `left-behind`: downed, fighting, sealed, walked (the engine\'s why), as a clause that follows ": "'),
-    by: z.record(code, Line).describe('brief 018 {by} of `car-seen`, by the role of the id the engine names (roleOfId): officer, robot, patrol'),
-    post: Line.describe('brief 018 {held-at} of `captive` when the host has no better name for the district\'s police post'),
-  }).describe('brief 018 (the getaway; rulebook debrief.lines left-behind, captive, car-seen): the words the host puts in those three lines. {fate} and {why} follow the engine\'s LeftBehind fate and why; {by} the role of the id CarSeenBy names; {held-at} is the host\'s name for the district\'s police post, else `post`; {holds} and {rescue-until} are a number with its unit ("1 mission", "3 missions"); {held-at} is at most 8 characters, "the post" by default'),
-  standing: z.strictObject({
-    line: Line.describe('brief 014: the Standing line (rulebook debrief.lines.standing). Placeholders {district} {band} {from} {to} {cause}; the host fills {from} and {to} signed (+3, 0, -1) and {cause} from `causes` with {who} filled'),
-    bands: z.strictObject({ hero: Line, neutral: Line, menace: Line }).describe('{band}: the band id as a word'),
-    causes: z.record(code, Line).describe('one short sentence per rulebook standing.causes id; the word causes are rumour (told, not learned) and carry {who}'),
-  }),
 });
 
 export const EventDef = z.strictObject({

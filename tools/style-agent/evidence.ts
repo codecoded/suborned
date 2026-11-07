@@ -6,7 +6,7 @@ import { interpretCodex, tokenUsage } from '../goals/codex';
 import { briefsFromFiles } from './briefs';
 import { fingerprintOnly, guideFromFiles, hash } from './guide';
 import { corrected, runLoop } from './loop';
-import { guideVersion, ResultSchema, type Evidence, type Guide, type Result } from './types';
+import { guideVersion, ResultSchema, type Authorization, type Call, type Evidence, type Result, type Source } from './types';
 
 export const RUNS = 'runs/style-agent';
 /** Source snapshots are stored once by content hash, zstd-compressed, and shared by every run. */
@@ -16,14 +16,14 @@ export const RUN_FILE = 'run.json.zst';
 const pack = (text: string) => Bun.zstdCompressSync(Buffer.from(text), { level: 19 });
 const unpack = (path: string) => Bun.zstdDecompressSync(readFileSync(path)).toString('utf8');
 export const readRun = (path: string): unknown => JSON.parse(path.endsWith('.zst') ? unpack(path) : readFileSync(path, 'utf8'));
-export function writeRun(dir: string, r: Result) {
+export function writeRun(dir: string, r: unknown) {
   writeFileSync(resolve(dir, `${RUN_FILE}.tmp`), pack(JSON.stringify(r)));
   renameSync(resolve(dir, `${RUN_FILE}.tmp`), resolve(dir, RUN_FILE));
 }
 export const ROLE_FILES = ['.codex/agents/dialogue-designer.toml', '.codex/agents/systems-designer.toml'];
 const normalized = (value: unknown) => JSON.parse(JSON.stringify(value));
 export const equal = (a: unknown, b: unknown) => isDeepStrictEqual(normalized(a), normalized(b));
-function requireThat(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
+export function requireThat(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
 
 /** Hash the tooling that produced a run. A record only: the replay below is the check, since any change that alters a prompt, check or score fails it. */
 export function toolingManifest(base: string) {
@@ -33,7 +33,7 @@ export function toolingManifest(base: string) {
 }
 
 /** Snapshot every source the guide and briefs read, plus the role cards, into the shared store. */
-export function archiveEvidence(base: string, guide: Guide, store = resolve(base, STORE)): Evidence {
+export function archiveEvidence(base: string, guide: { sources: Source[] }, store = resolve(base, STORE)): Evidence {
   mkdirSync(store, { recursive: true });
   const sources = [...new Set([...guide.sources.map(s => s.file), ...ROLE_FILES])].sort().map(file => {
     const text = readFileSync(resolve(base, file), 'utf8'), sha256 = hash(text), path = resolve(store, `${sha256}.zst`);
@@ -55,7 +55,8 @@ export function archivedFiles(evidence: Evidence, store: string): Record<string,
   }));
 }
 
-function verifyProvider(r: Result, files: Record<string, string>) {
+/** Every live call is bound to its Codex transcript, the archived role card, the model and the approval (conversations and short lines alike). */
+export function verifyProvider(r: { authorization: Authorization | null; calls: Call[]; status: string }, files: Record<string, string>) {
   requireThat(r.authorization, 'Missing live approval');
   for (const call of r.calls) {
     // A call that failed before the adapter ran has no transcript and cannot lead to acceptance.

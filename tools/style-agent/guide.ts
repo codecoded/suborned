@@ -34,13 +34,13 @@ export function pick(text: string, pattern: RegExp, what: string): string[] {
   if (!m) throw new Error(`GDD no longer states ${what}; update the style guide extraction`);
   return m.slice(1);
 }
-const lineOf = (text: string, start: string | string[], what: string) => {
+export const lineOf = (text: string, start: string | string[], what: string) => {
   const starts = Array.isArray(start) ? start : [start];
   const line = text.split('\n').find(l => starts.some(prefix => l.startsWith(prefix)));
   if (!line) throw new Error(`GDD no longer has ${what}`);
   return line;
 };
-const block = (gdd: string, heading: string) => {
+export const block = (gdd: string, heading: string) => {
   const m = gdd.match(new RegExp(`${heading}[^\\n]*\\n[\\s\\S]*?(?=\\n### |\\n## |$)`));
   if (!m) throw new Error(`GDD no longer has ${heading}`);
   return m[0];
