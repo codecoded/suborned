@@ -51,7 +51,7 @@ namespace Suborned.World.Play
             foreach (var o in pieces) { var k = J.S(o, "kind") ?? ""; if ((k == "drain" || k == "manhole") && J.Get(o, "at") != null) { var at = J.P(o, "at"); float d = (at - c).magnitude; if (d >= 9f && d < 45f) found.Add(at); } }
             found.Sort((a, b) => (a - c).sqrMagnitude.CompareTo((b - c).sqrMagnitude));
             var parts = new System.Collections.Generic.List<string>();
-            for (int i = 0; i < found.Count && parts.Count < 3; i++) parts.Add(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F2},{1:F2}", found[i].x, found[i].y + 206f));
+            for (int i = 0; i < found.Count && parts.Count < 3; i++) parts.Add(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F2},{1:F2}", found[i].x, found[i].y + Suborned.OldTown.OldTownFrame.DZ));
             var text = string.Join(";", parts); var path = $"{Dir}/vents.txt"; var full = Path.Combine(Application.dataPath, "..", path);
             if (File.Exists(full) && File.ReadAllText(full) == text) return 0;
             File.WriteAllText(full, text); AssetDatabase.ImportAsset(path); return 1;

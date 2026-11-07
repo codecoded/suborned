@@ -39,7 +39,7 @@ namespace Suborned.OldTown.Editor.Swap
     {
         const BindingFlags Any = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
         /// <summary>Plan (x, y) = old Unity (x, z - 206).</summary>
-        internal const float DZ = 206f;
+        internal const float DZ = Suborned.OldTown.OldTownFrame.DZ;
         /// <summary>The Handover zone, plan standards.blocks.zone [x0, x1, y0, y1] = [-226, -84, -372, -148].</summary>
         internal static readonly Rect ZonePlan = Rect.MinMaxRect(-226f, -372f, -84f, -148f);
         internal static Rect ZoneOld => new(ZonePlan.x, ZonePlan.y + DZ, ZonePlan.width, ZonePlan.height);

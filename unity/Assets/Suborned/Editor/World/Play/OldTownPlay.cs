@@ -19,7 +19,7 @@ namespace Suborned.World.Play
     {
         public const string ScenePath = "Assets/Scenes/OldTown.unity";
         const string PlayCam = "Play camera (our play look)";
-        const float DZ = 206f; // OldTownSwap.DZ
+        const float DZ = Suborned.OldTown.OldTownFrame.DZ; // OldTownSwap.DZ
         const string Export = "out/world/harbour-district.world.json";
 
         public static void Install()

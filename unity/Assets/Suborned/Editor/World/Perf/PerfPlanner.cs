@@ -176,7 +176,7 @@ namespace Suborned.World.Perf
         }
 
         public const string OldTownScene = "Assets/Scenes/OldTown.unity", OldCamera = "Play camera (our play look)";  // SwapPlayLook.Name (was the study camera, "DK street study camera")
-        const float OldDZ = 206f, OldStandOff = 160f;
+        const float OldDZ = Suborned.OldTown.OldTownFrame.DZ, OldStandOff = 160f;
 
         /// <summary>A polyline (flattened [x, y, z] triples) sampled every PathStep metres, its corners kept.</summary>
         static PerfPathPoint[] Sample(PointDto[] points, Func<Vector3, float> standOff)
