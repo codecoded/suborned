@@ -41,9 +41,10 @@ namespace Suborned.Sim
             foreach (var c in Traffic) { var (at, h) = TrafficPose(c); w.Cars.Add(new TBox(at, h, c.HalfLen, c.HalfW) { Car = c, Moving = c.V > 0, Still = TrafficStill(c) }); }
             int hl = R.CarLenCm / 2, hw = R.CarWCm / 2;
             foreach (var (id, at, h, moving) in MissionCarsNow()) w.Cars.Add(new TBox(at, h, hl, hw) { Moving = moving, Still = !moving, Id = id });
-            if (MissionCarAt("car:rivals", Tick + T(tr!.EntryS)) is var due && due.HasValue && !RivalCarPose().HasValue) w.Cars.Add(new TBox(due.Value.at, due.Value.h, hl, hw) { Moving = true, Sweep = true, Id = "car:rivals", From = due.Value.at }); // its turn-in point, kept clear entryS before it comes
+            if (RivalDue(Tick + T(tr!.EntryS)) >= 0 && !RivalCarPose().HasValue) { var at0 = S.CarStand(S.RivalCarEntry); w.Cars.Add(new TBox(at0, S.RivalFacingEntry, hl, hw) { Moving = true, Sweep = true, Id = "car:rivals", From = at0 }); } // its turn-in point, kept clear entryS before it comes
             foreach (var id in CarIds) // where each will be: its leg, or the one its timetable starts soon
             {
+                if (MissionHeldLong(id)) continue; // brief 098 step 1b: one held in a jam is not coming: its body stands in the way, its road ahead does not
                 Pt from = default; bool on = false; foreach (var (mid, at, _, _) in MissionCarsNow()) if (mid == id) { from = at; on = true; }
                 for (int dt = 5; dt <= T(tr!.AheadS); dt += 5) if (MissionCarAt(id, Tick + dt) is var f && f.HasValue) { var b = new TBox(f.Value.at, f.Value.h, hl, hw) { Moving = true, Sweep = true, Id = id }; b.From = on ? from : f.Value.at; w.Cars.Add(b); }
             }
@@ -86,12 +87,16 @@ namespace Suborned.Sim
                       officialOut ??= new Path(S.CarServicePath); officialProf ??= CarProfile(officialOut); int k = Math.Min(t - due, officialProf.Length - 1); return (officialOut.At(officialProf[k]), officialOut.Heading(officialProf[k])); }
                 case "car:rivals":
                     if (CarMoving) { long mm = CcMm(t); return (ccPath!.At(mm), ccPath.Heading(mm)); }
-                    if ((CarSt == CrewCar.Off && t >= CrewEntryNow && Tick <= CrewEntryNow && CrewEntryNow < INF) || (CarSt == CrewCar.Away && crewNext == "back" && t >= crewNextAt && Tick <= crewNextAt)) return (S.CarStand(S.RivalCarEntry), S.RivalFacingEntry); // due, not yet past: an entry that did not happen is no car coming (the lead, traffic.yield.entryS: TrafficWorldAt)
-                    return null;
+                    { int e = RivalDue(t); if (e < 0) return null; // due, not yet past: an entry that did not happen is no car coming (the lead, traffic.yield.entryS: TrafficWorldAt)
+                      long d = Math.Min((long)T(tr!.AheadS) * R.CarRoadSpeed, (long)(t - e) * R.CarRoadSpeed) / 10; // brief 098 step 1b: and its first seconds on from the turn-in, the way it faces, as a driver sees it coming
+                      return (CarGeo.Ahead(S.CarStand(S.RivalCarEntry), S.RivalFacingEntry, d), S.RivalFacingEntry); }
             }
             return null;
         }
         Path? officialOut; long[]? officialProf; // the turned driver's way round from the pickup (car.parks), for the street to see it coming
+        /// <summary>The tick the rival car turns in by its timetable (its entry, or its return after a break), when that is at or before `t` and not yet
+        /// past; else -1.</summary>
+        int RivalDue(int t) => CarSt == CrewCar.Off && t >= CrewEntryNow && Tick <= CrewEntryNow && CrewEntryNow < INF ? CrewEntryNow : CarSt == CrewCar.Away && crewNext == "back" && t >= crewNextAt && Tick <= crewNextAt ? crewNextAt : -1;
 
         // ---------------------------------------------------------------- the corridor
 
@@ -200,6 +205,7 @@ namespace Suborned.Sim
             var ch = c.Route.Path.Heading(c.Mm); var cf = c.Route.Path.At(Math.Min(c.Route.Path.Length, c.Front));
             foreach (var id in CarIds)
             {
+                if (MissionHeldLong(id)) continue; // held in a jam: it crosses nothing soon
                 bool behind = false; foreach (var (mid, at, _, _) in MissionCarsNow()) if (mid == id && (long)(at.X - cf.X) * ch.X + (long)(at.Y - cf.Y) * ch.Y < 0) behind = true;
                 if (behind) continue;
                 for (int dt = 0; dt <= ticks; dt += 5)

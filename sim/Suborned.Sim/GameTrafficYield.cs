@@ -62,6 +62,9 @@ namespace Suborned.Sim
                 }
             }
         }
+        /// <summary>The mission car has been held by traffic traffic.pass.waitS in a row: it is not coming soon, so the road it would drive is no car in
+        /// anyone's way and crosses no junction (its body still is, and does): the jam it waits in can clear.</summary>
+        bool MissionHeldLong(string id) => missionHeld.TryGetValue(id, out var n) && n >= T(tr!.PassWaitS);
         /// <summary>A passing car that has been shot: disabled (burning and blown are disabled too), or abandoned by its driver at the shot. It can be
         /// got past: it boxes nobody in, and a mission car pushes it aside (Sky 2026-11-07: "shot cars can get past, others block").</summary>
         internal bool Shot(TrafficCar c) => CarDisabled(c.Id) || c.Mode == TrafficMode.Abandoned;
