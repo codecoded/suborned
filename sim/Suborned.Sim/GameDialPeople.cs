@@ -16,19 +16,21 @@ namespace Suborned.Sim
         SitePoints? dialPoints; uint[]? beatOrder;
 
         /// <summary>Add the k-th person of kind d (from 1): a guard on a beat, or a passer-by. Returns the id.</summary>
-        string AddPerson(DialKind d, int k, Crowd crowd)
+        string AddPerson(DialKind d, int k, Crowd crowd) { var w = MakePerson(d, k, crowd, out var stops); Register(w, stops); return w.P.Id; }
+        /// <summary>The k-th person of kind d as the dial would add them (their draws are their own), not yet in the zone (Register puts them there).</summary>
+        Walker MakePerson(DialKind d, int k, Crowd crowd, out List<(string place, int from, int to, bool outside)> stops)
         {
             dialPoints ??= Population.PointsOf(S, dial!);
-            string id = d.IdPrefix + k.ToString(d.Max >= 1000 ? "0000" : "000", System.Globalization.CultureInfo.InvariantCulture);
+            string id = d.IdPrefix + k.ToString(d.Max >= 1000 || d.Street ? "0000" : "000", System.Globalization.CultureInfo.InvariantCulture); // brief 098 step 1b: a street count can take thousands of passers-by
             var p = new Person { Id = id, Name = d.Name + " " + k.ToString(System.Globalization.CultureInfo.InvariantCulture), Job = d.Job, Temperament = DialTemperament(d, id, crowd) };
             var t = R.Temp(p.Temperament); for (int q = 0; q < 4; q++) p.Sc[q] = t.Start[q];
             var w = new Walker { P = p, Added = true };
-            var stops = R.StaffJobs.Contains(d.Job) ? Beat(w, k, crowd) : Passing(w, crowd);
+            stops = R.StaffJobs.Contains(d.Job) ? Beat(w, k, crowd) : Passing(w, crowd);
             w.Place = new string[stops.Count]; w.From = new int[stops.Count]; w.To = new int[stops.Count]; w.Out = new bool[stops.Count];
             for (int i = 0; i < stops.Count; i++) { (w.Place[i], w.From[i], w.To[i], w.Out[i]) = stops[i]; }
-            xStops[id] = stops; Walkers.Add(w);
-            return id;
+            return w;
         }
+        void Register(Walker w, List<(string place, int from, int to, bool outside)> stops) { xStops[w.P.Id] = stops; Walkers.Add(w); }
 
         /// <summary>The role's allowed temperaments (people.rules temperamentsBy.roles), weighted by the zone's own mix of that kind (the people file's
         /// and the cast's), no one holding more than temperamentsBy.mix.rowMaxShare; equal weights if the zone has none of that kind.</summary>

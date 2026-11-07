@@ -10,7 +10,13 @@ namespace Suborned.Sim
 {
     /// <summary>One kind on the dial (population.json kinds.&lt;kind&gt;): which jobs of the people file it counts ("rest": every job no other kind
     /// names), the people.rules role an added one takes its temperament from, the job, id prefix and stand-in name it carries, and the most a start may ask.</summary>
-    public sealed class DialKind { public string Kind = "", Role = "", Job = "", IdPrefix = "", Name = ""; public string[] Of = Array.Empty<string>(); public bool Rest; public int Max; public string[] Allow = Array.Empty<string>(); }
+    public sealed class DialKind
+    {
+        public string Kind = "", Role = "", Job = "", IdPrefix = "", Name = ""; public string[] Of = Array.Empty<string>(); public bool Rest; public int Max; public string[] Allow = Array.Empty<string>();
+        /// <summary>Brief 098 step 1b (Sky 2026-11-07: "people counter is for street"): the kind's count is of people on the street at a time on average
+        /// (measure street), not of everyone in the zone (measure zone).</summary>
+        public bool Street;
+    }
 
     /// <summary>contracts/rules/population.json (suborned.rules.population/1), checked against the people rules' roles and mix (unknown = reject).</summary>
     public sealed class PopulationRules
@@ -38,8 +44,9 @@ namespace Suborned.Sim
             {
                 if (Array.IndexOf(Population.Kinds, kv.Key) < 0) throw new FormatException($"{kv.Value.Path}: '{kv.Key}' is not a kind the engine builds ({string.Join(", ", Population.Kinds)})");
                 if (kv.Key == Population.Cars) { Traffic = new TrafficRules(kv.Value, n["traffic"], pr); continue; } // brief 098 step 1: cars are no people kind (Traffic.cs)
-                var k = kv.Value; k.Only("of", "role", "job", "id", "name", "max", "src", "proposed", "reason");
+                var k = kv.Value; k.Only("of", "role", "job", "id", "name", "max", "measure", "src", "proposed", "reason");
                 var d = new DialKind { Kind = kv.Key, Role = k["role"].Str(), Job = k["job"].Str(), IdPrefix = k["id"].Str(), Name = k["name"].Str(), Max = k["max"].Int() };
+                var measure = k.Opt("measure")?.Str() ?? "zone"; if (measure != "zone" && measure != "street") throw new FormatException($"{k["measure"].Path}: zone or street (unknown = reject)"); d.Street = measure == "street"; // brief 098 step 1b
                 if (k["of"].Kind == JKind.Str) { if (k["of"].Str() != "rest") throw new FormatException($"{k["of"].Path}: a list of jobs, or \"rest\""); d.Rest = true; }
                 else d.Of = k["of"].Strs().ToArray();
                 if (d.Max < 0 || d.Max > Population.CountCap) throw new FormatException($"{k["max"].Path}: 0..{Population.CountCap}");
@@ -77,6 +84,13 @@ namespace Suborned.Sim
     {
         public string Kind = ""; public int Today, Floor, Max, Count; public int? Asked;
         public readonly List<string> Removed = new List<string>(), Added = new List<string>();
+        /// <summary>Brief 098 step 1b: what the kind's numbers count: "street" (people on the street at a time on average: Today, Floor, Max, Asked and
+        /// Count are street numbers), "zone" (everyone of the kind in the zone) or "roads" (cars on the zone's roads at a time on average). Street10:
+        /// the street at a time on average, in tenths, as the game holds it (for a street kind, what the count achieved). Total and TotalToday: how many of
+        /// the kind are in the zone in this game and today, the cast included.</summary>
+        public string Measure = ""; public int Street10, Total, TotalToday;
+        /// <summary>Brief 098 step 1b: of Street10, the cast's share (tenths): they are played by role and never leave, so the fewest a street count plays.</summary>
+        public int CastStreet10;
         /// <summary>Plain words when the count plays other than asked (below the floor, above the most), else "".</summary>
         public string Note = "";
     }
@@ -93,20 +107,51 @@ namespace Suborned.Sim
         public const int CountCap = 100000;
         public const string RulesFile = "contracts/rules/population.json";
 
-        /// <summary>Today's census from the data alone, for a host's dial before any game: per kind, the people file's count, the floor and the most.</summary>
+        /// <summary>Today's census from the data alone, for a host's dial before any game: per kind, today's number, the floor and the most (brief
+        /// 098 step 1b: for the people, on the street at a time on average; Total, everyone of the kind in the zone).</summary>
         public static List<KindCensus> Today(Engine.Inputs i)
         {
             var l = new List<KindCensus>();
             var pop = i.Population ?? throw new FormatException($"the dial needs its rules ({RulesFile})");
             foreach (var kind in Kinds)
             {
-                if (kind == Cars) { l.Add(new KindCensus { Kind = kind, Max = pop.Traffic.Max }); continue; } // brief 098 step 1: no traffic today (0, floor 0)
-                var d = pop.Kinds[kind]; var c = new KindCensus { Kind = kind, Max = d.Max };
+                if (kind == Cars) { l.Add(new KindCensus { Kind = kind, Max = pop.Traffic.Max, Measure = "roads" }); continue; } // brief 098 step 1: no traffic today (0, floor 0)
+                var d = pop.Kinds[kind]; var c = new KindCensus { Kind = kind, Max = d.Max, Measure = d.Street ? "street" : "zone" };
                 if (i.Crowd != null) foreach (var w in i.Crowd.Walkers) if (KindOf(pop, w.P.Job) == kind) c.Today++;
                 foreach (var cr in i.SiteData.Cast) if (KindOf(pop, CastJob(cr.Role)) == kind) { c.Today++; c.Floor++; }
+                c.Total = c.TotalToday = c.Today;
+                if (i.Crowd != null) { var (sum, cast) = StreetToday(i.SiteData, i.Crowd, i.Rules, pop, kind); int over = Game.T(i.SiteData.Over); c.Street10 = (int)((sum * 20 + over) / (2L * over)); c.CastStreet10 = (int)((cast * 20 + over) / (2L * over)); if (d.Street) { c.Today = (int)((sum * 2 + over) / (2L * over)); c.Floor = (int)((cast * 2 + over) / (2L * over)); } }
                 c.Count = c.Today; l.Add(c);
             }
             return l;
+        }
+        static readonly ConditionalWeakTable<Crowd, Dictionary<string, (long, long)>> streetToday = new ConditionalWeakTable<Crowd, Dictionary<string, (long, long)>>();
+        /// <summary>Brief 098 step 1b: a kind's street ticks today, summed over the mission's clock (Street.Ticks): the people file's walkers of the kind
+        /// at the neutral start (no seeded shift of their day, paces from the id), and of that the cast's, by the people file's stops for them. Once per crowd.</summary>
+        public static (long sum, long cast) StreetToday(Site s, Crowd crowd, Rules r, PopulationRules pop, string kind)
+        {
+            lock (streetToday)
+            {
+                var m = streetToday.GetOrCreateValue(crowd); if (m.TryGetValue(kind, out var v)) return v;
+                int over = Game.T(s.Over); long sum = 0, cast = 0;
+                long Of(string id, IReadOnlyList<(string place, int from, int to, bool outside)> st)
+                {
+                    int pace = (int)(Streams.Fnv1a32(id + "/pace") % (uint)(r.CrowdPaceSpreadPct + 1));
+                    return Street.Ticks(st, over, s.Grid, p => crowd.Places[p], (k, t, span) =>
+                    {
+                        var key = st[k].place + "→" + st[k + 1].place; var path = crowd.Legs.TryGetValue(key, out var lp) ? lp : Crowd.Leg(s, crowd.Places[st[k].place], crowd.Places[st[k + 1].place], crowd.Home(s, r));
+                        long mm = span <= 0 ? path.Length : Math.Min(path.Length, path.Length * t * (100 + pace) / (100L * span)); return path.At(mm);
+                    });
+                }
+                foreach (var w in crowd.Walkers)
+                {
+                    if (KindOf(pop, w.P.Job) != kind) continue;
+                    var st = new List<(string, int, int, bool)>(); for (int k = 0; k < w.Place.Length; k++) st.Add((w.Place[k], w.From[k], w.To[k], w.Out[k]));
+                    sum += Of(w.P.Id, st);
+                }
+                foreach (var cr in s.Cast) if (KindOf(pop, CastJob(cr.Role)) == kind && crowd.Stops.TryGetValue(cr.Id, out var cs)) { long n = Of(cr.Id, cs); sum += n; cast += n; }
+                m[kind] = (sum, cast); return (sum, cast);
+            }
         }
         /// <summary>The kind a job counts as: the kind that names it, else the "rest" kind.</summary>
         public static string KindOf(PopulationRules pop, string job)

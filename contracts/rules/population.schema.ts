@@ -1,4 +1,5 @@
-// Brief 098 step 0 (Keel): the dial's rules, contracts/rules/population.json (suborned.rules.population/1), as the engine reads them; step 1, the cars kind and traffic (law L8)
+// Brief 098 step 0 (Keel): the dial's rules, contracts/rules/population.json (suborned.rules.population/1), as the engine reads them; step 1, the cars kind and traffic (law L8);
+// step 1b, jams (ordinary traffic boxes, a wreck is shoved aside) and the people kind counted on the street
 // (sim/Suborned.Sim/Population.cs PopulationRules: unknown = reject). Read by the engine only when a start sets counts (start.counts), so
 // the rulebook keeps its own bytes and no recorded run moves.
 import { z } from 'zod';
@@ -11,7 +12,9 @@ const proposed = (v: { proposed?: true; reason?: string }) => !v.proposed || !!v
 export const DialKind = z.strictObject({
   of: z.union([z.array(text).min(1), z.literal('rest')]), role: text, job: text,
   id: text.refine((s) => !s.startsWith('p-'), { message: "an added person's id prefix is not the people file's (p-)" }),
-  name: text, max: z.number().int().min(0).max(100000), ...why,
+  name: text, max: z.number().int().min(0).max(100000),
+  /** Brief 098 step 1b (Sky 2026-11-07: "people counter is for street"): what the count counts: everyone of the kind in the zone, or people on the street at a time on average. */
+  measure: z.enum(['zone', 'street']).optional(), ...why,
 }).refine(proposed, { message: 'a proposed rule needs a reason' });
 
 /** Brief 098 step 1 (law L8): the cars kind (no people kind: no role or job; its id is the slot ids' prefix) and the traffic's rules. */
@@ -24,7 +27,9 @@ export const Traffic = z.strictObject({
   trips: z.strictObject({ offS: band, warmS: n(0, 600), ...why }).refine(proposed),
   stand: z.strictObject({ standS: n(0), settleS: n(0), ...why }).refine(proposed).refine((x) => x.settleS >= x.standS, { message: 'settleS no less than standS' }),
   pass: z.strictObject({ waitS: n(0), latCmS: n(1), passCmS: n(10), backCm: n(0, 2000), ...why }).refine(proposed),
-  yield: z.strictObject({ aheadS: n(0, 30), holdS: n(0, 60), entryS: n(0, 60), ...why }).refine(proposed),
+  yield: z.strictObject({ aheadS: n(0, 30), entryS: n(0, 60), ...why }).refine(proposed),
+  /** Brief 098 step 1b (Sky 2026-11-07: "shot cars can get past, others block"): how a mission car pushes a wreck in its way aside. */
+  shove: z.strictObject({ cmS: n(10, 1000), maxCm: n(50, 2000), ...why }).refine(proposed),
   react: z.strictObject({ duck: z.array(temperament), flee: z.array(temperament), fleePm: n(1000, 4000), ...why }).refine(proposed).refine((x) => !x.duck.some((t) => x.flee.includes(t)), { message: 'a nature ducks or flees, never both' }),
   lockdown: z.strictObject({ alert: n(1, 3), then: z.enum(['leave', 'stop']), ...why }).refine(proposed),
   driver: z.strictObject({ role: text, job: text, id: text.refine((s) => !s.startsWith('p-'), { message: "a driver's id prefix is not the people file's (p-)" }), name: text, ...why }).refine(proposed),

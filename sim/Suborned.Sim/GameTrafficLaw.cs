@@ -8,8 +8,9 @@
 //  · A car is a car (rulebook car.target, both presets): a passing car is a target by its id, car:<slot>-<trip>. Hit, its driver gets out on
 //    the kerb side and runs (the crowd's flight from the shot); it stands abandoned where it stopped. Disabled it stops for good; burning, its
 //    driver (if still in) gets out at once; it blows as any car does. A standing car (stopped traffic.stand.standS, or for good) is ground
-//    nobody walks through (car.footprint), boxes a way out it stands on (car.box) and, if its kind gives cover, is cover on its four sides (its
-//    sides' and ends' points as the site's cars have them) until it blows.
+//    nobody walks through (car.footprint) and, if its kind gives cover, is cover on its four sides (its
+//    sides' and ends' points as the site's cars have them) until it blows. Brief 098 step 1b (Sky 2026-11-07: "shot cars can get past, others
+//    block"): a car that has not been shot boxes a way out it stands on (car.box); a shot one never does: a mission car pushes it aside.
 //  · A lockdown (traffic.lockdown.alert): no car comes in (GameTraffic.cs); with then stop, the cars in the zone pull up for good.
 using System;
 using System.Collections.Generic;
@@ -73,18 +74,14 @@ namespace Suborned.Sim
         /// <summary>The end of each traffic tick: who stands and who is settled, and the cover the standing ones give (rebuilt only when it changes).</summary>
         void TrafficFlags(int now)
         {
-            var key = new List<long>();
             foreach (var c in Traffic)
             {
                 if (c.V == 0) { if (c.StoppedAt < 0) c.StoppedAt = now; } else c.StoppedAt = -1;
                 bool still = TrafficStill(c), stood = c.StoppedAt >= 0;
                 c.Standing = still || (stood && now - c.StoppedAt >= T(tr!.StandS)); c.Settled = still || (stood && now - c.StoppedAt >= T(tr!.SettleS));
-                if (c.Standing && c.Cover && !(CarOf(c.Id) is CarTarget ct && ct.Blown)) { var (at, h) = TrafficPose(c); key.Add(c.Slot * 100000L + c.Trip); key.Add(at.X); key.Add(at.Y); key.Add((long)h.X * 4_000_037L + h.Y); }
             }
             standingAt = -1; // the standing cars are read afresh after the flags
-            var k = key.ToArray(); if (SameKey(k, trafficCoverKey)) return;
-            trafficCoverKey = k; trafficCoverVer++; trafficCover.Clear();
-            foreach (var c in Traffic) if (c.Standing && c.Cover && !(CarOf(c.Id) is CarTarget ct && ct.Blown)) trafficCover.AddRange(CoverOf(c));
+            TrafficCoverRefresh(); // their cover, rebuilt only when it changes (GameTrafficShove.cs)
         }
         /// <summary>A standing car's cover: a point off each side and each end, facing the car, as the site's car points stand (sides 105 cm off
         /// the body, ends 90 cm), on free ground of the site.</summary>

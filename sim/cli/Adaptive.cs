@@ -280,7 +280,7 @@ static class Adaptive
             }
             else
             {
-                x.Refused++; var key = r.Do + ":" + a.code; x.Refusals.TryGetValue(key, out var c); x.Refusals[key] = c + 1;
+                x.Refused++; var key = r.Do + ":" + a.code + (a.ids != null && a.ids.Contains("car:t-") ? ":traffic" : ""); x.Refusals.TryGetValue(key, out var c); x.Refusals[key] = c + 1; // brief 098 step 1b: a refusal naming a passing car is the traffic's
                 if (++refused[i] >= r.Tries) { dead[i] = true; x.GiveUps++; }
                 retryAt[i] = t + r.RetryT;
             }

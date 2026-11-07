@@ -88,9 +88,9 @@ namespace Suborned.Sim
         void BackStep(TrafficCar c, TrafficWorld w, int now)
         {
             long step = Math.Min(50, c.Back);
-            if (!BehindClear(c, w, step + tr!.GapCm * 10L)) { c.Back = 0; return; }
+            if (!BehindClear(c, w, step + (c.Clears.Length > 0 ? RoomKeepMm : tr!.GapCm * 10L))) { c.Back = 0; return; } // brief 098 step 1b: making room for a mission car, it backs into the gap behind it
             c.Mm -= step; c.Back -= step; c.V = 0;
-            if (c.Back == 0) c.BlockedAt = now - T(tr.PassWaitS) * 5; // ready to plan at once
+            if (c.Back == 0) c.BlockedAt = now - T(tr!.PassWaitS) * 5; // ready to plan at once
         }
         /// <summary>The stretch `len` mm behind the car's rear on its route is clear of people, bodies and cars.</summary>
         bool BehindClear(TrafficCar c, TrafficWorld w, long len)

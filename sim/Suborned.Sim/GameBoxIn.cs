@@ -3,7 +3,8 @@
 // the official car's from the pickup and out of the service bay; from its kerbside stop, fight-block-m straight on), swept at the car's
 // half-width plus car.box.side. The cars that stand are StandingCars() less any that has exploded, less the leaving car: a driving car boxes
 // nothing, a disabled or burning one still does. Read on demand from the cars' state (nothing kept, nothing hashed): the way clears the tick
-// the car in it leaves or explodes.
+// the car in it leaves or explodes. Brief 098 step 1b (Sky 2026-11-07): of the passing cars, every one standing boxes (a queue can box the
+// cell in) except one that has been shot, which never does: the leaving car pushes it aside.
 //  · the getaway car boxed: Go is refused car-boxed (after car-no-driver, before car-held; ids: the cars in the way, then any holders), its
 //    Drive drive-boxed (after drive-held); a Drive to a stand whose way out is boxed is stand-boxed;
 //  · the official car boxed: it waits at the pickup, and stays at the close (closed-in, cause boxed: GameKerb.cs);
@@ -24,7 +25,7 @@ namespace Suborned.Sim
             foreach (var c in StandingCars())
             {
                 if (c.Id == self || (CarOf(c.Id) is CarTarget t && t.Blown)) continue;
-                if (TrafficCarById(c.Id) is TrafficCar tc && !ForGood(tc)) continue; // brief 098 step 1: a passing car waiting in traffic boxes nobody in (its driver moves up or lets you out); a wreck, an abandoned car, one pulled up at a lockdown does
+                if (TrafficCarById(c.Id) is TrafficCar tc && Shot(tc)) continue; // brief 098 step 1b (Sky 2026-11-07: "shot cars can get past, others block"): a passing car standing on the way boxes it in, queued or waiting as much as pulled up; a wreck never does (a mission car pushes it aside: GameTrafficShove.cs)
                 if (CarGeo.OnWay(CarGeo.Rect(c.At, c.Heading, c.Hl(R), c.Hw(R)), way, half)) l.Add(c.Id); // brief 098 step 1: a passing car's own footprint
             }
             return l;

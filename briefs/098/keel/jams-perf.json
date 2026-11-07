@@ -1,0 +1,137 @@
+{
+ "engine": "suborned.sim/0.45.0",
+ "machine": "Apple M5 Max (the Studio), one thread, warm, 10 plays a setting",
+ "note": "base = step 1 (ea15dc2e) on its own data (git archive), the same machine and hour",
+ "now": {
+  "route-a": [
+   {
+    "setting": "unset",
+    "walkers": 126,
+    "startMs": 2.6,
+    "msPerTick": 0.0082,
+    "p99TickMs": 0.038
+   },
+   {
+    "setting": "cars=8",
+    "walkers": 126,
+    "startMs": 5.6,
+    "msPerTick": 0.021,
+    "p99TickMs": 0.067
+   },
+   {
+    "setting": "cars=16",
+    "walkers": 126,
+    "startMs": 9.9,
+    "msPerTick": 0.0362,
+    "p99TickMs": 0.097
+   },
+   {
+    "setting": "people=32",
+    "walkers": 190,
+    "startMs": 3.4,
+    "msPerTick": 0.0104,
+    "p99TickMs": 0.054
+   },
+   {
+    "setting": "people=32,cars=16",
+    "walkers": 190,
+    "startMs": 10.0,
+    "msPerTick": 0.0424,
+    "p99TickMs": 0.109
+   },
+   {
+    "setting": "people=64,cars=16",
+    "walkers": 365,
+    "startMs": 11.8,
+    "msPerTick": 0.0526,
+    "p99TickMs": 0.164
+   }
+  ],
+  "loud-fight": [
+   {
+    "setting": "unset",
+    "walkers": 126,
+    "startMs": 3.1,
+    "msPerTick": 0.0059,
+    "p99TickMs": 0.028
+   },
+   {
+    "setting": "cars=8",
+    "walkers": 126,
+    "startMs": 5.8,
+    "msPerTick": 0.0174,
+    "p99TickMs": 0.046
+   },
+   {
+    "setting": "cars=16",
+    "walkers": 126,
+    "startMs": 10.5,
+    "msPerTick": 0.0315,
+    "p99TickMs": 0.071
+   },
+   {
+    "setting": "people=32",
+    "walkers": 190,
+    "startMs": 3.6,
+    "msPerTick": 0.0082,
+    "p99TickMs": 0.037
+   },
+   {
+    "setting": "people=32,cars=16",
+    "walkers": 190,
+    "startMs": 10.3,
+    "msPerTick": 0.0373,
+    "p99TickMs": 0.084
+   },
+   {
+    "setting": "people=64,cars=16",
+    "walkers": 365,
+    "startMs": 13.8,
+    "msPerTick": 0.0566,
+    "p99TickMs": 0.206
+   }
+  ]
+ },
+ "base": {
+  "route-a": [
+   {
+    "setting": "unset",
+    "startMs": 3.6,
+    "msPerTick": 0.0083,
+    "p99TickMs": 0.038
+   },
+   {
+    "setting": "cars=8",
+    "startMs": 5.1,
+    "msPerTick": 0.0206,
+    "p99TickMs": 0.067
+   },
+   {
+    "setting": "cars=16",
+    "startMs": 9.1,
+    "msPerTick": 0.0335,
+    "p99TickMs": 0.091
+   }
+  ],
+  "loud-fight": [
+   {
+    "setting": "unset",
+    "startMs": 3.5,
+    "msPerTick": 0.0071,
+    "p99TickMs": 0.024
+   },
+   {
+    "setting": "cars=8",
+    "startMs": 5.9,
+    "msPerTick": 0.0186,
+    "p99TickMs": 0.045
+   },
+   {
+    "setting": "cars=16",
+    "startMs": 9.4,
+    "msPerTick": 0.0294,
+    "p99TickMs": 0.067
+   }
+  ]
+ }
+}

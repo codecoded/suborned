@@ -1,0 +1,70 @@
+  hold  328.2 s car:rivals queued by car:t-015-03 from 2:41.9 (to the end): veteran-drive #4 cars 16
+  hold  161.6 s car:rivals queued by car:t-009-03 from 3:00.4 (to the end): veteran-drive #17 cars 16
+  hold  105.0 s car:rivals moving by car:t-002-03 from 3:57.6 (to the end): veteran-drive #17 cars 16
+  hold   90.0 s car:rivals ducked by car:t-004-06 from 5:57.1: prepared-loud #11 cars 16
+  hold   88.5 s car:rivals ducked by car:t-012-05 from 5:15.0: prepared-loud #6 cars 8
+  hold   66.2 s car:rivals ducked by car:t-015-01 from 0:39.4 (to the end): unprepared-loud #18 cars 16
+  hold   63.7 s car:rivals queued by car:t-003-02 from 0:42.6 (to the end): unprepared-loud #18 cars 8
+  hold   48.4 s car:rivals queued by car:t-007-07 from 6:28.7: quiet-g #9 cars 4
+  hold   48.1 s car:rivals queued by car:t-019-06 from 7:18.6 (to the end): quiet-b #9 cars 16
+  hold   47.7 s car:rivals queued by car:t-002-03 from 2:57.0: veteran-drive #17 cars 16
+  hold   44.7 s car:rivals ducked by car:t-003-05 from 6:29.7: quiet-g #9 cars 8
+  hold   43.2 s car:rivals ducked by car:t-012-05 from 4:46.5: prepared-loud #19 cars 8
+  hold   39.6 s car:rivals ducked by car:t-011-04 from 5:20.6: prepared-loud #20 cars 16
+  hold   39.5 s car:rivals ducked by car:t-013-04 from 5:02.7: prepared-loud #9 cars 16
+  hold   38.9 s car:rivals ducked by car:t-018-08 from 5:22.4: prepared-loud #20 cars 8
+  hold   37.7 s car:rivals ducked by car:t-003-03 from 4:55.0: prepared-loud #14 cars 16
+  hold   35.2 s car:rivals ducked by car:t-022-05 from 4:46.4: prepared-loud #19 cars 16
+  hold   34.4 s car:rivals ducked by car:t-023-03 from 5:47.3: prepared-loud #5 cars 16
+  hold   33.8 s car:rivals ducked by car:t-014-06 from 5:26.1: prepared-loud #12 cars 8
+  hold   32.5 s car:rivals ducked by car:t-007-05 from 5:09.4: prepared-loud #15 cars 8
+  hold   29.6 s car:rivals ducked by car:t-014-03 from 5:19.3 (to the end): prepared-loud #6 cars 16
+  hold   29.3 s car:rivals fleeing by car:t-029-04 from 4:37.8 (to the end): prepared-loud #17 cars 16
+  hold   29.2 s car:getaway person by car:t-002-07 from 5:28.7: veteran-drive #14 cars 4
+  hold   29.0 s car:rivals ducked by car:t-017-04 from 7:23.0: drive-round #4 cars 16
+  hold   28.5 s car:rivals junction by car:t-020-03 from 5:37.0 (to the end): prepared-loud #2 cars 16
+  hold   27.3 s car:rivals junction by car:t-015-05 from 7:42.8 (to the end): drive-round #13 cars 16
+  hold   26.8 s car:rivals junction by car:t-016-05 from 5:34.2 (to the end): prepared-loud #1 cars 16
+  hold   26.1 s car:rivals ducked by car:t-024-05 from 5:13.6: prepared-loud #7 cars 16
+  hold   25.9 s car:rivals ducked by car:t-006-06 from 4:06.3: quiet-a #16 cars 4
+  hold   25.2 s car:official yields by car:t-018-06 from 6:05.6: prepared-loud-lend #6 cars 8
+  hold   24.6 s car:getaway yields by car:t-017-03 from 2:40.6: drive-round #10 cars 16
+  hold   24.4 s car:rivals junction by car:t-015-04 from 5:18.5 (to the end): prepared-loud #12 cars 16
+  hold   22.6 s car:rivals ducked by car:t-007-07 from 5:20.3 (to the end): prepared-loud #12 cars 4
+  hold   21.8 s car:rivals yields by car:t-021-04 from 4:53.6 (to the end): quiet-a #14 cars 16
+  hold   20.7 s car:rivals stopped by car:t-009-05 from 5:38.6: prepared-loud #2 cars 16
+  hold   19.6 s car:rivals ducked by car:t-012-01 from 0:58.8 (to the end): unprepared-loud #7 cars 16
+  hold   19.6 s car:rivals ducked by car:t-006-06 from 4:24.4 (to the end): quiet-a #2 cars 4
+  hold   19.3 s car:getaway queued by car:t-014-01 from 0:47.7: prepared-loud #15 cars 16
+  hold   19.3 s car:getaway queued by car:t-014-01 from 0:47.7: prepared-loud #15 cars 16
+  hold   18.7 s car:getaway yields by car:t-009-03 from 2:44.4: drive-round #9 cars 16
+  hold   18.4 s car:rivals ducked by car:t-007-05 from 5:26.5 (to the end): prepared-loud #8 cars 16
+  hold   17.7 s car:rivals junction by car:t-019-05 from 7:38.6: prepared-loud #11 cars 16
+  hold   17.6 s car:rivals ducked by car:t-009-06 from 5:46.7: prepared-loud #3 cars 8
+  hold   17.6 s car:rivals ducked by car:t-005-04 from 7:28.6: quiet-b #7 cars 16
+  hold   17.5 s car:rivals ducked by car:t-017-03 from 2:37.6: veteran-drive #16 cars 8
+  hold   17.3 s car:rivals ducked by car:t-036-03 from 5:49.6: quiet-g #18 cars 16
+  hold   16.5 s car:rivals person by car:t-031-02 from 2:38.3: veteran-drive #16 cars 16
+  hold   16.2 s car:rivals person by car:t-003-08 from 4:59.3: prepared-loud #19 cars 4
+  hold   16.0 s car:rivals person by car:t-003-08 from 4:59.3: prepared-loud #19 cars 4
+  hold   15.7 s car:rivals yields by car:t-006-05 from 4:58.4: prepared-loud #14 cars 8
+  hold   15.6 s car:rivals ducked by car:t-012-03 from 4:58.6: prepared-loud #19 cars 16
+  hold   14.3 s car:rivals moving by car:t-004-07 from 6:11.4: prepared-loud #20 cars 8
+  hold   14.2 s car:rivals ducked by car:t-028-05 from 5:58.1 (to the end): quiet-g #3 cars 16
+  hold   14.1 s car:rivals ducked by car:t-016-04 from 5:57.4 (to the end): quiet-g #19 cars 16
+  hold   14.0 s car:official yields by car:t-018-08 from 5:58.7: veteran #16 cars 8
+  hold   13.9 s car:rivals ducked by car:t-013-04 from 4:46.1 (to the end): quiet-a #13 cars 16
+  hold   13.9 s car:getaway person by car:t-009-06 from 5:29.1: veteran-drive #3 cars 4
+  hold   13.8 s car:rivals ducked by car:t-013-04 from 4:46.2 (to the end): quiet-a #13 cars 8
+  hold   13.6 s car:rivals ducked by car:t-029-04 from 2:48.6: veteran-drive #10 cars 16
+  hold   13.6 s car:official yields by car:t-005-08 from 5:58.9: quiet-b-thinned #16 cars 4
+  hold   13.6 s car:official yields by car:t-005-08 from 5:58.9: quiet-b #16 cars 4
+  hold   13.6 s car:official yields by car:t-005-08 from 5:58.9: prepared-loud-lend #16 cars 4
+  hold   12.3 s car:rivals yields by car:t-002-07 from 7:26.3: drive-round #3 cars 8
+  hold   12.3 s car:official person by car:t-023-04 from 6:01.5: quiet-b #8 cars 16
+  hold   12.3 s car:getaway person by car:t-014-06 from 5:35.5: veteran-drive #4 cars 16
+  hold   12.0 s car:official yields by car:t-005-08 from 5:58.4: veteran #16 cars 4
+  hold   11.9 s car:rivals junction by car:t-004-08 from 7:54.2: drive-round #16 cars 4
+  hold   11.6 s car:rivals yields by car:t-009-06 from 7:58.5 (to the end): drive-round #6 cars 8
+  hold   10.5 s car:official yields by car:t-016-06 from 6:01.1: quiet-b #9 cars 8
+  hold   10.4 s car:rivals junction by car:t-002-05 from 5:44.4: prepared-loud #18 cars 16

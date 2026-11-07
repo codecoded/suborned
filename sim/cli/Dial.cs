@@ -3,10 +3,12 @@
 //   dial sweep [plans | scripts | dirs] [--seeds n] [--seed-from k] [--settings "s;s;..."] [--no-replay] [--jobs n] [--out f]
 //       every item on every seed under every setting, in one process on every core: the Handover's outcomes per setting, as information (no gate).
 //       Items default to contracts/missions/handover/adaptive (Waymark's adaptive plans: they play what they see, so a changed world moves their orders).
-//       A setting is "unset" (the start sets no counts), "today" (counts at today's numbers), or kind=n pairs ("guards=32,people=228"); x0.5, x2, x4
-//       scale today's. Default: unset;today;x0.5;x2;x4. Exit 1 if any run errs or fails its replay; the outcomes never fail it.
+//       A setting is "unset" (the start sets no counts), "today" (counts at today's numbers), or kind=n pairs ("guards=32,people=32"); x0.5, x2, x4
+//       scale today's (brief 098 step 1b: people count the street, about 16 today). Default: unset;today;x0.5;x2;x4. Exit 1 if any run errs or
+//       fails its replay; the outcomes never fail it. "street" is the people on the street at a time on average (the people count's measure).
 //   dial perf [script] [--settings ...] [--runs n]      the tick's cost per setting on one thread: ms a tick, sim-seconds a wall-second, the start's cost
 //   dial traffic [script] [--counts cars=8] [--seed n]  brief 098 step 1: one script under the dial's cars, every tick watched (Traffic.cs)
+//   dial street [--settings "people=16;..."] [--seeds n] brief 098 step 1b: the people on the street, as the census builds it and as the game shows it (Street.cs)
 //   (a setting may name cars too: "cars=16" is today's guards and people with 16 cars; the sweep reports the mean cars on the zone's roads)
 //   play <script> --counts guards=20,people=200         one script under those counts (its record is dropped); batch items take `#counts=guards:20,people:200`
 //       and `batch ... --counts guards=20` gives every item those counts.
@@ -61,6 +63,7 @@ static class DialCli
             case "sweep": return Sweep(inputs, root, args);
             case "perf": return Perf(inputs, root, args);
             case "traffic": return TrafficCli.Run(inputs, root, args); // brief 098 step 1: a script under the dial's cars, every tick watched (Traffic.cs)
+            case "street": return StreetCli.Run(inputs, root, args); // brief 098 step 1b: the people count on the street, built and observed (Street.cs)
             default: Console.Error.WriteLine("usage: dial census | dial sweep [items] [--seeds n] [--settings s;s] | dial perf [script] [--settings s;s] [--runs n] | dial traffic [script] [--counts cars=8] [--seed n]"); return 2;
         }
     }
@@ -68,7 +71,7 @@ static class DialCli
     static string CensusJson(List<KindCensus> l)
     {
         var w = new JWriter().Obj().Prop("engine", Engine.Version).OpenArr("kinds");
-        foreach (var c in l) w.Obj().Prop("kind", c.Kind).Prop("today", c.Today).Prop("floor", c.Floor).Prop("max", c.Max).EndObj();
+        foreach (var c in l) w.Obj().Prop("kind", c.Kind).Prop("measure", c.Measure).Prop("today", c.Today).Prop("floor", c.Floor).Prop("max", c.Max).Prop("street10", c.Street10).Prop("inZone", c.Total).EndObj();
         return w.EndArr().EndObj().ToString();
     }
 
@@ -93,7 +96,47 @@ static class DialCli
 
     static int Arg(string[] args, string name, int dflt) { int k = Array.IndexOf(args, name); return k > 0 && k + 1 < args.Length ? int.Parse(args[k + 1], CultureInfo.InvariantCulture) : dflt; }
 
-    sealed class Row { public int Runs, Wins, Errors, ReplayBad, EndSum, AlertSum, TrailSum, Street, StreetN; public long CarSum, CarN, MissionWait; public readonly SortedDictionary<string, int> Fails = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanWins = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanRuns = new SortedDictionary<string, int>(StringComparer.Ordinal); public string Counts = ""; }
+    sealed class Row { public int Runs, Wins, Errors, ReplayBad, EndSum, AlertSum, TrailSum, Street, StreetN; public long CarSum, CarN, MissionWait; public readonly SortedDictionary<string, int> Fails = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanWins = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanRuns = new SortedDictionary<string, int>(StringComparer.Ordinal); public string Counts = ""; public readonly Jams J = new Jams(); }
+    /// <summary>Brief 098 step 1b: what traffic did to the mission's cars across a setting's runs: the spells a mission car was held (by car and by
+    /// what held it), the longest, the spells still held when the game ended; the spells a passing car boxed a mission car in, and those ticks with
+    /// someone aboard; Go refused car-boxed by a passing car; closed-in with a passing car in the way.</summary>
+    sealed class Jams
+    {
+        public int HoldRuns, Holds, HoldTicks, Longest, Over10s, OpenAtEnd, BoxRuns, Boxes, BoxTicks, BoxAboard, GoBoxed, GoBoxedRuns, ClosedIn, Shoves; public string LongestWhat = "";
+        public readonly SortedDictionary<string, int> ByWhy = new SortedDictionary<string, int>(StringComparer.Ordinal), WhyTicks = new SortedDictionary<string, int>(StringComparer.Ordinal), ByCar = new SortedDictionary<string, int>(StringComparer.Ordinal), BoxCar = new SortedDictionary<string, int>(StringComparer.Ordinal);
+        public static Jams Of(Game g, Adaptive.Extra? x, string plan) { var j = new Jams(); j.Add(g, x, plan); return j; }
+        public void Merge(Jams o)
+        {
+            HoldRuns += o.HoldRuns; Holds += o.Holds; HoldTicks += o.HoldTicks; Over10s += o.Over10s; OpenAtEnd += o.OpenAtEnd; BoxRuns += o.BoxRuns; Boxes += o.Boxes; BoxTicks += o.BoxTicks; BoxAboard += o.BoxAboard;
+            GoBoxed += o.GoBoxed; GoBoxedRuns += o.GoBoxedRuns; ClosedIn += o.ClosedIn; Shoves += o.Shoves; if (o.Longest > Longest) { Longest = o.Longest; LongestWhat = o.LongestWhat; }
+            foreach (var (a, b) in new[] { (ByWhy, o.ByWhy), (WhyTicks, o.WhyTicks), (ByCar, o.ByCar), (BoxCar, o.BoxCar) }) foreach (var kv in b) a[kv.Key] = a.GetValueOrDefault(kv.Key) + kv.Value;
+        }
+        void Add(Game g, Adaptive.Extra? x, string plan)
+        {
+            if (g.MissionHolds.Count > 0) HoldRuns++;
+            foreach (var h in g.MissionHolds)
+            {
+                Holds++; HoldTicks += h.Ticks; if (h.Ticks >= Game.T(10)) Over10s++; if (h.Open) OpenAtEnd++;
+                ByWhy[h.Why] = ByWhy.GetValueOrDefault(h.Why) + 1; WhyTicks[h.Why] = WhyTicks.GetValueOrDefault(h.Why) + h.Ticks; ByCar[h.Car] = ByCar.GetValueOrDefault(h.Car) + 1;
+                if (h.Ticks > Longest) { Longest = h.Ticks; LongestWhat = $"{h.Car} {h.Why} by {h.By} from {Report.Clock(h.From)} ({plan} #{g.Seed})"; }
+                if (h.Ticks >= Game.T(10) && Environment.GetEnvironmentVariable("SUBORNED_SIM_HOLDS") == "1") Console.Error.WriteLine(string.Create(CultureInfo.InvariantCulture, $"  hold {h.Ticks / 10.0,6:0.0} s {h.Car} {h.Why} by {h.By} from {Report.Clock(h.From)}{(h.Open ? " (to the end)" : "")}: {plan} #{g.Seed} cars {g.Census.Find(c => c.Kind == Population.Cars)?.Count}")); // the long ones, for the law's evidence
+            }
+            if (g.MissionBoxes.Count > 0) BoxRuns++;
+            foreach (var b in g.MissionBoxes) { Boxes++; BoxTicks += b.Ticks; BoxAboard += b.Aboard; BoxCar[b.Car] = BoxCar.GetValueOrDefault(b.Car) + 1; }
+            int gb = x != null ? x.Refusals.GetValueOrDefault("go:car-boxed:traffic") : 0; GoBoxed += gb; if (gb > 0) GoBoxedRuns++;
+            if (g.FailCode == "closed-in" && g.FailText.Contains("car:t-", StringComparison.Ordinal)) ClosedIn++;
+            foreach (var l in g.Log) if (l.Code == "traffic.shoved") Shoves++;
+        }
+        public void Write(JWriter w, int runs)
+        {
+            w.Open("jams").Prop("runsHeld", HoldRuns).Prop("holds", Holds).Prop("holdS10", HoldTicks).Prop("longestS10", Longest).Prop("longest", LongestWhat).Prop("holds10sOrMore", Over10s).Prop("heldAtEnd", OpenAtEnd)
+                .Prop("runsBoxed", BoxRuns).Prop("boxSpells", Boxes).Prop("boxedS10", BoxTicks).Prop("boxedAboardS10", BoxAboard).Prop("goBoxedByTraffic", GoBoxed).Prop("runsGoBoxedByTraffic", GoBoxedRuns).Prop("closedInByTraffic", ClosedIn).Prop("wrecksShoved", Shoves);
+            w.Open("holdsByWhy"); foreach (var kv in ByWhy) w.Prop(kv.Key, kv.Value); w.EndObj(); w.Open("holdS10ByWhy"); foreach (var kv in WhyTicks) w.Prop(kv.Key, kv.Value); w.EndObj();
+            w.Open("holdsByCar"); foreach (var kv in ByCar) w.Prop(kv.Key, kv.Value); w.EndObj(); w.Open("boxSpellsByCar"); foreach (var kv in BoxCar) w.Prop(kv.Key, kv.Value); w.EndObj(); w.EndObj();
+        }
+        public string Line(int runs) => runs == 0 || (Holds == 0 && Boxes == 0) ? "" : string.Create(CultureInfo.InvariantCulture,
+            $"    held: {HoldRuns}/{runs} runs, {Holds} spells, {HoldTicks / 10.0 / runs:0.0} s a run, longest {Longest / 10.0:0} s ({LongestWhat}), {Over10s} of 10 s or more, {OpenAtEnd} still held at the end; by what: {string.Join(", ", ByWhy.OrderByDescending(kv => kv.Value).Select(kv => kv.Key + " " + kv.Value))}\n    boxed in by traffic: {BoxRuns}/{runs} runs, {Boxes} spells, {BoxTicks / 10.0 / runs:0.0} s a run ({BoxAboard / 10.0 / runs:0.0} s with someone aboard); Go refused by traffic {GoBoxed} times in {GoBoxedRuns} runs; closed-in by traffic {ClosedIn}; wrecks shoved {Shoves}");
+    }
 
     static int Sweep(Engine.Inputs inputs, string root, string[] args)
     {
@@ -116,10 +159,12 @@ static class DialCli
         {
             var (s, it, sd) = jobs[j]; var c = settings[s].counts;
             var p = BatchCli.PlayOne(inputs, root, it + "#seed=" + sd.ToString(CultureInfo.InvariantCulture) + (c != null ? "#counts=" + Tag(c) : ""), replay);
-            var g = p.G; int street = 0, n = 0;
-            for (int t = 0; t <= Game.T(inputs.SiteData.Over); t += Game.T(30)) { foreach (var w in g.Walkers) if (g.CrowdPos(w, t).HasValue) street++; n++; } // on the street by routine, every 30 s
+            var g = p.G; int street = 0, n = 0; var pop = inputs.Population!;
+            var pc = g.Census.Find(c => c.Kind == "people") ?? Population.Today(inputs).Single(c => c.Kind == "people");
+            for (int t = 0; t < Game.T(inputs.SiteData.Over); t += Game.Hz) { foreach (var w in g.Walkers) if (Population.KindOf(pop, w.P.Job) == "people" && g.CrowdPos(w, t) is Pt wp && g.S.Grid.InGrid(wp)) street++; n++; } // brief 098 step 1b: the people on the street by routine every second (the crowd in the window), and the cast's share below
+            street += pc.CastStreet10 * n / 10;
             return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "",
-                cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum()); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them
+                cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum(), jams: Jams.Of(g, p.Extra, System.IO.Path.GetFileName(it).Replace(".adaptive.json", ""))); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them; step 1b: its jams
         });
         var rows = new Row[settings.Count]; for (int s = 0; s < rows.Length; s++) rows[s] = new Row();
         int bad = 0;
@@ -132,6 +177,7 @@ static class DialCli
             if (!x.ok) { r.ReplayBad++; bad++; }
             if (x.res == Outcome.Success) { r.Wins++; r.PlanWins[plan] = r.PlanWins.GetValueOrDefault(plan) + 1; } else { var key = x.fail.Length > 0 ? x.fail : x.res.ToString().ToLowerInvariant(); r.Fails[key] = r.Fails.GetValueOrDefault(key) + 1; }
             r.EndSum += x.tick; r.AlertSum += x.alert; r.TrailSum += x.trail; r.Street += x.street; r.StreetN += x.n; if (x.census.Length > 0) r.Counts = x.census; r.CarSum += x.cars; r.CarN += x.carN; r.MissionWait += x.wait;
+            r.J.Merge(x.jams);
         }
         var w = new JWriter().Obj().Prop("engine", Engine.Version).Prop("seeds", seeds).Prop("seedFrom", from).Prop("replay", replay).Prop("items", items.Count).Prop("wallS", (long)sw.Elapsed.TotalSeconds).OpenArr("settings");
         Console.Error.WriteLine($"dial sweep: {jobs.Count} runs ({settings.Count} settings x {items.Count} items x {seeds} seeds) in {sw.Elapsed.TotalSeconds:0.0} s; {bad} errors or replay differences");
@@ -142,9 +188,10 @@ static class DialCli
             w.Obj().Prop("setting", settings[s].name).Prop("counts", r.Counts).Prop("runs", r.Runs).Prop("wins", r.Wins).Prop("errors", r.Errors).Prop("replayDiffers", r.ReplayBad)
                 .Prop("streetMean10", r.StreetN > 0 ? r.Street * 10L / r.StreetN : 0).Prop("carsMean10", r.CarN > 0 ? r.CarSum * 10L / r.CarN : 0).Prop("missionWaitMeanS10", r.MissionWait * 10L / ok / Game.Hz).Prop("endMeanS", r.EndSum / ok / Game.Hz).Prop("alertMean10", r.AlertSum * 10L / ok).Prop("trailMean10", r.TrailSum * 10L / ok);
             w.Open("fails"); foreach (var kv in r.Fails.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal)) w.Prop(kv.Key, kv.Value); w.EndObj();
-            w.Open("planWins"); foreach (var kv in r.PlanRuns) w.Prop(kv.Key, r.PlanWins.GetValueOrDefault(kv.Key)); w.EndObj(); w.EndObj();
+            w.Open("planWins"); foreach (var kv in r.PlanRuns) w.Prop(kv.Key, r.PlanWins.GetValueOrDefault(kv.Key)); w.EndObj(); r.J.Write(w, r.Runs); w.EndObj();
             var fails = string.Join(", ", r.Fails.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal).Take(4).Select(kv => kv.Key + " " + kv.Value));
             Console.Error.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{settings[s].name,-12} {(r.Counts.Length > 0 ? r.Counts : "(the people file)"),-30} {r.Runs,4} {r.Wins,5} {100.0 * r.Wins / Math.Max(1, r.Runs),6:0.0} {(r.StreetN > 0 ? (double)r.Street / r.StreetN : 0),6:0.0} {(r.CarN > 0 ? (double)r.CarSum / r.CarN : 0),5:0.0} {r.EndSum / ok / Game.Hz,5} {(double)r.AlertSum / ok,5:0.0} {(double)r.TrailSum / ok,5:0.0}  {fails}"));
+            var jl = r.J.Line(ok); if (jl.Length > 0) Console.Error.WriteLine(jl);
         }
         var json = w.EndArr().EndObj().ToString();
         int oi = Array.IndexOf(args, "--out"); if (oi > 0) File.WriteAllText(args[oi + 1], json + "\n"); else Console.WriteLine(json);

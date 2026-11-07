@@ -5,6 +5,7 @@
 //    AddedPeopleReactToADrawnGunByNature          a passer-by who notices a drawn gun (the engine's own test) startles for their nature's time, remembers the face, then flees
 //    AnAddedPersonBlocksASightline                an added passer-by alone on a clear line between two eyes blocks it, as the crowd does
 //    AddingMovesNobodyAlreadyThere                more people never changes the ones already added, nor anyone else's draws
+// Brief 098 step 1b: the people count is of the street (DialStreetTests); these laws read it so.
 //    CountsReplayAndASmallSweepRunsClean          seed + counts + orders replay exactly; fewer, today, more and many more play to an end on several seeds
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ public class DialTests
         return Engine.Play(Repo.Inputs, s.Start, s.Orders, s.Until);
     }
     static int Over => Game.T(Repo.Inputs.SiteData.Over);
+    /// <summary>Brief 098 step 1b: the people count is of the street (about 16 today, of the zone's 114).</summary>
+    static int PeopleToday => Population.Today(Repo.Inputs).Single(c => c.Kind == "people").Today;
     static string[] CastIds => Repo.Inputs.SiteData.Cast.Select(c => c.Id).ToArray();
 
     [Fact]
@@ -42,14 +45,14 @@ public class DialTests
         Assert.Equal(Repo.Inputs.Crowd!.Walkers.Select(w => w.P.Id), g.Walkers.Select(w => w.P.Id));
         var today = Population.Today(Repo.Inputs);
         Assert.Equal(16, today.Single(c => c.Kind == "guards").Today); Assert.Equal(1, today.Single(c => c.Kind == "guards").Floor);
-        Assert.Equal(114, today.Single(c => c.Kind == "people").Today); Assert.Equal(3, today.Single(c => c.Kind == "people").Floor);
+        Assert.Equal(114, today.Single(c => c.Kind == "people").Total); Assert.Equal(PeopleToday, today.Single(c => c.Kind == "people").Today); Assert.True(today.Single(c => c.Kind == "people").Floor >= 1); // brief 098 step 1b: the street's today, of the zone's 114
     }
 
     [Theory]
     [InlineData("route-a", 0)] [InlineData("route-a", 5)] [InlineData("route-b", 9)] [InlineData("loud-fight", 2)]
     public void TodayCountsPlayTheSameWorld(string route, int seed)
     {
-        var a = Play(route, seed); var b = Play(route, seed, 16, 114);
+        var a = Play(route, seed); var b = Play(route, seed, 16, PeopleToday);
         Assert.True(b.DialOn); Assert.All(b.Census, c => { Assert.Empty(c.Added); Assert.Empty(c.Removed); });
         Assert.NotEqual(a.StartHash, b.StartHash); // the counts are hashed into the start
         Assert.Equal(a.Result, b.Result); Assert.Equal(a.FailCode, b.FailCode); Assert.Equal(a.Tick, b.Tick);
@@ -61,7 +64,7 @@ public class DialTests
     public void RemovalNeverTakesATenet()
     {
         foreach (var guards in new[] { 0, 1, 2, 3, 9, 15 })
-            foreach (var people in new[] { 0, 3, 4, 40, 113 })
+            foreach (var people in new[] { 0, 3, 4, 9, PeopleToday - 1 }) // brief 098 step 1b: street counts
             {
                 var g = Engine.New(Repo.Inputs, With(7, guards, people));
                 foreach (var role in new[] { "waitress", "driver", "guard", "councillor" }) Assert.NotNull(g.PersonByRole(role));
@@ -71,7 +74,7 @@ public class DialTests
                 Assert.All(g.Walkers, w => Assert.DoesNotContain(w.P.Id, gone));
                 foreach (var c in g.Census) Assert.Equal(Math.Max(c.Floor, c.Asked!.Value), c.Count);
                 Assert.Equal(g.Census.Single(c => c.Kind == "guards").Count, 1 + g.Walkers.Count(w => w.P.Job == "guard"));
-                Assert.Equal(g.Census.Single(c => c.Kind == "people").Count, 3 + g.Walkers.Count(w => w.P.Job != "guard"));
+                Assert.Equal(g.Census.Single(c => c.Kind == "people").Total, 3 + g.Walkers.Count(w => w.P.Job != "guard")); // the zone's people (the street's count is DialStreetTests')
                 // nobody left keeps a tie to someone gone: who they'd tell, grieve for or miss is someone still in the zone
                 foreach (var w in g.Walkers) foreach (var other in gone) Assert.DoesNotContain(other, g.TiesNow(w.P.Id).Select(t => t.with));
             }
@@ -146,7 +149,7 @@ public class DialTests
         int seen = 0;
         foreach (var at in new[] { 40, 120, 200 })
         {
-            var g = Engine.New(Repo.Inputs, With(seed, null, 114 + 80)); g.RunTo(Game.T(at));
+            var g = Engine.New(Repo.Inputs, With(seed, null, PeopleToday + 25)); g.RunTo(Game.T(at));
             Assert.All(g.Walkers.Where(w => w.Added), w => { Assert.True(w.P.Civilian); Assert.Equal("visitor", w.P.Job); Assert.Contains(w.P.Temperament, new[] { "idealist", "mercenary", "fearful", "loyal" }); });
             var op = g.Ops.First(o => o.Gun.W != null && o.Id != OpId.Enforcer);
             foreach (var w in g.Walkers.Where(w => w.Added && w.St.Length == 0))
@@ -172,7 +175,7 @@ public class DialTests
     [Fact]
     public void AnAddedPersonBlocksASightline()
     {
-        var g = Engine.New(Repo.Inputs, With(6, null, 114 + 60)); g.RunTo(Game.T(90)); int lines = 0;
+        var g = Engine.New(Repo.Inputs, With(6, null, PeopleToday + 20)); g.RunTo(Game.T(90)); int lines = 0;
         foreach (var w in g.Walkers.Where(w => w.Added))
         {
             if (!(g.CrowdPos(w) is Pt at) || g.Walkers.Any(o => o != w && g.CrowdPos(o) is Pt q && G.Within(q, at, 400))) continue; // alone on their bit of street
@@ -185,7 +188,7 @@ public class DialTests
     [Fact]
     public void AddingMovesNobodyAlreadyThere()
     {
-        var few = Engine.New(Repo.Inputs, With(17, 16 + 3, 114 + 10)); var many = Engine.New(Repo.Inputs, With(17, 16 + 12, 114 + 60));
+        var few = Engine.New(Repo.Inputs, With(17, 16 + 3, PeopleToday + 3)); var many = Engine.New(Repo.Inputs, With(17, 16 + 12, PeopleToday + 15));
         foreach (var w in few.Walkers)
         {
             var m = many.Walkers.Single(x => x.P.Id == w.P.Id);
@@ -200,15 +203,15 @@ public class DialTests
     [Fact]
     public void CountsReplayAndASmallSweepRunsClean()
     {
-        var a = Play("route-a", 8, 32, 228); var b = Play("route-a", 8, 32, 228); var c = Play("route-a", 8, 33, 228);
+        int p2 = 2 * PeopleToday; var a = Play("route-a", 8, 32, p2); var b = Play("route-a", 8, 32, p2); var c = Play("route-a", 8, 33, p2);
         Assert.Equal(a.Checkpoints, b.Checkpoints); Assert.Equal(a.Checkpoints, Engine.Replay(Repo.Inputs, a).Checkpoints);
         Assert.NotEqual(a.StartHash, c.StartHash);
-        var saved = Script.Parse(Script.Write(a, Repo.Inputs.Hash)); Assert.Equal(32, saved.Start.Counts["guards"]); Assert.Equal(228, saved.Start.Counts["people"]); // the counts are saved with the run
+        var saved = Script.Parse(Script.Write(a, Repo.Inputs.Hash)); Assert.Equal(32, saved.Start.Counts["guards"]); Assert.Equal(p2, saved.Start.Counts["people"]); // the counts are saved with the run
         Assert.Equal("", saved.Verify(Engine.Play(Repo.Inputs, saved.Start, saved.Orders, saved.Until), Repo.Inputs.Hash)); // and a saved run replays to its own record
         var outcomes = new List<string>();
         foreach (var route in new[] { "route-a", "route-b", "loud-fight" })
             foreach (var seed in new[] { 1, 2, 3 })
-                foreach (var (guards, people) in new[] { (8, 57), (16, 114), (32, 228), (64, 456) })
+                foreach (var (guards, people) in new[] { (8, PeopleToday / 2), (16, PeopleToday), (32, 2 * PeopleToday), (64, 4 * PeopleToday) })
                 {
                     var g = Play(route, seed, guards, people);
                     Assert.NotEqual("engine-error", g.FailCode); Assert.True(g.Over || g.Tick >= Over, $"{route} #{seed} {guards}/{people} plays to an end");
