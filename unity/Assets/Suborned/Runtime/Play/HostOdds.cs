@@ -15,6 +15,9 @@ namespace Suborned.Play
 
         static string Signed(int n) => n > 0 ? "+" + n : n < 0 ? "−" + (-n) : "0";
 
+        /// <summary>A price rested on before the order (Sky 2026-11-07: "what's with all this text?"): the sum alone, one line. "" with no rolled chance.</summary>
+        public string OddsSumLine() { var l = OddsAltLine(); int n = l.IndexOf('\n'); return n < 0 ? l : l.Substring(0, n); }
+
         /// <summary>Alt on the fire chip (Fable's less.odds): the sum, its limits, the streak note. "" with no rolled chance to explain.</summary>
         public string OddsAltLine()
         {

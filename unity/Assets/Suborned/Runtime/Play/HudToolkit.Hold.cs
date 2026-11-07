@@ -46,10 +46,19 @@ namespace Suborned.Play
         /// <summary>Brief 067 E3: with Alt, the locked pill's long line (Fable's lock `line`) on a plate_dark under the pill; "" hides it.</summary>
         void LockAltFrame(string line)
         {
-            if (lockAlt == null) { if (line.Length == 0) return; lockAlt = PlateDark(marks, 26f, 0.3f); lockAlt.style.position = Position.Absolute; lockAlt.style.paddingLeft = 12; lockAlt.style.paddingRight = 12; lockAltText = Words(lockAlt, 12.5f); lockAltText.style.whiteSpace = WhiteSpace.Normal; lockAltText.style.maxWidth = 420; manifest.Add((lockAlt, "altline", () => lockAltText.text)); } // Glyph budget §4: an Alt line, its own kind
+            // Sky 2026-11-07 ("but even then it's ugly"): the plate was a fixed one-line height, so a breakdown of several lines spilled over its edges onto
+            // the street, and it sat under the pill, on the shooter's bark and the target's marks. Now it grows with its lines and sits beside the pill.
+            if (lockAlt == null)
+            {
+                if (line.Length == 0) return;
+                lockAlt = PlateDark(marks, 26f, 0.3f); lockAlt.style.position = Position.Absolute; lockAlt.style.height = StyleKeyword.Auto; lockAlt.style.minHeight = 26; lockAlt.style.alignItems = Align.FlexStart;
+                lockAlt.style.paddingLeft = 12; lockAlt.style.paddingRight = 12; lockAlt.style.paddingTop = 7; lockAlt.style.paddingBottom = 7;
+                lockAltText = Words(lockAlt, 12.5f); lockAltText.style.whiteSpace = WhiteSpace.Normal; lockAltText.style.maxWidth = 380; manifest.Add((lockAlt, "altline", () => lockAltText.text)); // Glyph budget §4: an Alt line, its own kind
+            }
             bool on = line.Length > 0 && vpill != null && vpill.resolvedStyle.display != DisplayStyle.None; Show(lockAlt, on); if (!on) return;
             Text(lockAltText, line); float pl = vpill.style.left.value.value, pt = vpill.style.top.value.value, pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, aw = float.IsNaN(lockAlt.resolvedStyle.width) ? 300f : lockAlt.resolvedStyle.width;
-            lockAlt.style.left = pl + pw / 2f - aw / 2f; lockAlt.style.top = pt + PillH + TailH + 4f; lockAlt.BringToFront();
+            var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x;
+            lockAlt.style.left = pl + pw + 10f + aw <= W - 8f ? pl + pw + 10f : Mathf.Max(8f, pl - aw - 10f); lockAlt.style.top = pt; lockAlt.BringToFront();
         }
 
         static string LowerFirst(string s) => string.IsNullOrEmpty(s) ? s : char.ToLowerInvariant(s[0]) + s[1..];
@@ -130,7 +139,10 @@ namespace Suborned.Play
             stepsWas = h.StackSteps; pillWas = (state, t);
             float lapse = Mathf.Clamp01((nowP - lockLapseAt) / 0.15f), lapseA = state == "offer" && lapse < 1f ? Mathf.Lerp(LockPillAlpha * 0.45f, 1f, 1f - (1f - lapse) * (1f - lapse)) : 1f;
             vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : state == "lock" ? LockPillAlpha : lapseA; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px); brief 067 E3: the locked pill at 80 % (nothing to hold)
-            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : (state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire) && (h.Peeking || h.PricePeek) ? h.OddsAltLine() : ""); // brief 080: Alt on the fire chip: the sum and the streak note
+            // brief 080: Alt on the fire chip: the sum, its limits and the streak note. Sky 2026-11-07 ("what's with all this text?"): a rested price shows the one-line sum only, and only before
+            // the order is given; while the shot is aimed or fired nothing comes up unless Alt is held
+            bool fireish0 = state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire;
+            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : !fireish0 ? "" : h.Peeking ? h.OddsAltLine() : h.PricePeek && state == "offer" ? h.OddsSumLine() : "");
             vpill.style.scale = state == "ready" ? new Scale(new Vector3(ReadyScale, ReadyScale, 1f)) : new Scale(Vector3.one); // full: the pill pops while it says "Let go"
             float glide = Mathf.Clamp01((nowP - glideAt) / 0.12f); if (glide < 1f) q = Vector2.Lerp(glideFrom, q, 1f - (1f - glide) * (1f - glide));
             pillQWas = q;
