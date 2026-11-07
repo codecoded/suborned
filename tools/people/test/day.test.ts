@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { Cast } from '../../../contracts/people/cast.schema';
 import type { People, Person } from '../../../contracts/people/people.schema';
 import { sha256 } from '../../gen/sha';
+import { windowOf } from '../../missions/handover/cast';
 import { overlay } from '../../missions/handover/overlay';
 import { civic } from '../../plan/civic';
 import type { V } from '../../plan/geom';
@@ -135,12 +136,17 @@ describe('the Handover fix', () => {
     expect(c.ok, c.detail).toBe(true);
     expect(checkPeople(promoted, w.mission, w.plan, promGen).checks.filter(x => !x.ok).map(x => `${x.id} ${x.detail}`)).toEqual([]);
   });
-  test('the r013 cast cannot: the driver has no tie to a councillor, 11 guards stand the door, the councillor goes to a café table', () => {
-    const c = m2(r013Gen.people);
+  test('the r013 cast cannot: the waitress has no affair, the driver has no tie to a councillor, 11 guards stand the door, the councillor goes to a café table', () => {
+    // the windows and times are the mission's own (mission.json roles and clock), which briefs 080 and 096 moved (the guard's window 1:52-5:30 -> 5:10, the meet 6:10 -> 5:50,
+    // 0:00 17:24:30 -> 17:24:50); the reasons and their counts are r013's
+    const c = m2(r013Gen.people), mission = JSON.parse(texts.mission), roleOf = (id: string) => mission.roles.find((r: { id: string }) => r.id === id);
+    const guard = roleOf('guard'), meetBy: string = roleOf('councillor').leavesTo.by, [t0] = windowOf(mission, guard);
+    const s = Math.round(t0 * 60), at = `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}${s % 60 ? `:${String(s % 60).padStart(2, '0')}` : ''}`;
     expect(c.ok).toBe(false);
+    expect(c.detail).toMatch(/waitress: none of the 5 who fit .* has secret affair/); // the lovers' canon (brief 011, r016): the waitress carries the affair, and r013 drew no secrets
     expect(c.detail).toMatch(/driver: none of the 7/);
-    expect(c.detail).toMatch(/at most one guard of records-office at Office entrance in 1:52-5:30: 11 at 17:26:22/);
-    expect(c.detail).toMatch(/councillor: none of the 11 who fit .* has a routine that reaches Meet driver by 6:10/);
+    expect(c.detail).toContain(`at most one guard of records-office at Office entrance in ${guard.shift.from}-${guard.shift.to}: 11 at ${at} (`); // 11 already there when the window opens
+    expect(c.detail).toMatch(new RegExp(`councillor: none of the 11 who fit .* has a routine that reaches Meet driver by ${meetBy} `));
   });
 
   test('one guard at the public door every minute from 17:20 to 17:35: the day\'s until 17:30, the watch\'s from 17:30 (beside the door: the cast guard holds it through the mission, brief 067 L)', () => {

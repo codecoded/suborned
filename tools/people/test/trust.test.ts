@@ -39,7 +39,9 @@ describe('the people file carries what it was made from', () => {
     expect(People.safeParse({ ...gen.people, inputs: { ...gen.people.inputs, tools: 'x' } }).success).toBe(true); // `bun run people` adds the tools hash
   });
   test('another mission or plan text is another file', () => {
-    const other = world({ ...texts, mission: texts.mission.replace('"startsAt": "17:24:30"', '"startsAt": "17:00"') }, 'civic-block');
+    const at = JSON.parse(texts.mission).clock.startsAt as string, moved = texts.mission.replace(`"startsAt": "${at}"`, '"startsAt": "17:00"');
+    expect(moved).not.toBe(texts.mission); // the mission's own start, whatever it is now (it was 17:24:30 when this was written; briefs 080 and 096 moved it, and the old text matched nothing)
+    const other = world({ ...texts, mission: moved }, 'civic-block');
     expect(other.hashes('x').mission).not.toBe(w.hashes('x').mission);
     const v = JSON.parse(texts.plan).version as string, bumped = texts.plan.replace(`"version": "${v}"`, `"version": "${v}-x"`);
     expect(bumped).not.toBe(texts.plan); // the plan's own version, whatever it is now (it was 0.3.0 when this was written)
