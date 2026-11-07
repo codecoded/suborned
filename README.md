@@ -62,7 +62,7 @@ Needs [Bun](https://bun.sh) 1.4+ and Docker. Generation and the crew need [Claud
 
 ```sh
 bun install
-bun run check                 # typecheck + tests + plan checker; no Docker, no model calls
+bun run check                 # typecheck + tests + plan checker + the C# engine suite; no Docker, no model calls
 bun run up                    # local SurrealDB + embedding service (first start downloads the model)
 bun run ingest                # index the GDD and the district plan
 bun run retrieve "tram stop spacing and station reach"
@@ -77,6 +77,7 @@ claude --agent lead-producer  # the crew, led by the lead producer (Aster in the
 | `bun run life` | Generate `contracts/world/harbour-district.life.json` (city-life rules: transit, traffic, deliveries, footfall) from `tools/life/`, the plan and the r008 timetable |
 | `bun run kit` | Write `contracts/world/kit.json` from the DecoKit manifest; copy only `adopted` pieces into `unity/Assets/Suborned/Kit/` (git-ignored), checked by hash |
 | `bun run decokit` | Run the Blender DecoKit generator (`tools/decokit`) → `out/decokit/` (needs Blender) |
+| `bun run sim:test` | The C# engine suite (`sim/Suborned.Sim.Tests`) built once in Release and run in shards (by class, method and theory case, the longest first; `tools/sim/shards.ts`): about 2 minutes on the Studio, where one Debug `dotnet test` outlasts 30. TRX and a summary in `out/sim-tests/`; `--class A,B`, `--plan`, `--jobs N` |
 | `bun run crew` | Regenerate `.claude/agents/` from the agent GDD |
 | `bun run ingest` / `retrieve` | Build / query the retrieval index (HNSW + BM25, reciprocal rank fusion) |
 | `bun run levels transit` | The A04 transit pipeline (retrieval → crew → checker → Keel); `levels:replay`, `levels:sheets`, `levels:ranks` |

@@ -28,7 +28,7 @@ test('identity: our world as suborned.oldbuilt/1 matches itself (0 mismatches, 0
 });
 
 test('footprints: a building moved 1 m outside the zone is reported both ways and proposed as a block rect for Datum; 0.3 m is within tolerance', () => {
-  const host = 'bld/east-wall-s/3';
+  const host = 'bld/east-wall-s/0'; // re-pinned 2026-11-07 (brief 098): 097's audit re-laid the block and /3 now stands beside its twin /2 (both 14 x 32 m), so a moved /3 pairs with /2
   const near = self(); for (const x of near.buildings) if ((x.building ?? '') === host) x.ring = shift(x.ring, 0, 0.3);
   expect(run(near).r.mismatches.filter(m => m.kind === 'footprint')).toEqual([]);
   const b = self(); for (const x of b.buildings) if ((x.building ?? '') === host) x.ring = shift(x.ring, 0, -1);

@@ -98,6 +98,7 @@ namespace Suborned.World.Play
             using var linuxVideo = playerTarget == BuildTarget.StandaloneLinux64 ? new LinuxVideoImport() : null;
             Debug.Log(Suborned.World.UI.KitImport.LivePortraits()); // brief 033: Forma's live portraits as they are now (a re-cut rides with the next build)
             var b = SimBundle.Load(); SimScenarios.CheckDll(b); // the DLL Unity builds is the bundle's
+            ShaderTrace098.Check(scratchDir != null); // brief 098: -scratchVariants traced, scratch builds only (its traces must load)
             // brief 029: the fight range is rebuilt from Keel's range sites every build (seconds), so a new layout or piece never ships stale
             if (EditorSceneManager.GetActiveScene().isDirty) throw new InvalidOperationException($"Game: save or close {EditorSceneManager.GetActiveScene().path} first (the build rebuilds {RangeScene.ScenePath})");
             RangeScene.Build();
@@ -122,7 +123,7 @@ namespace Suborned.World.Play
 
             Directory.CreateDirectory(Dir); builtThisDomain = true;
             var ver = Version.Next(); // Sky 2026-10-19: "need to be upping build numbers now": 0.2.<build>, counted in tools/game/version.json
-            if (scratchDir != null) ver.Suffix = "-scratch"; // a scratch build takes no number (CliScratch)
+            if (scratchDir != null) ver.Suffix = ShaderTrace098.On ? "-scratch-traced" : "-scratch"; // a scratch build takes no number (CliScratch); a traced one says so
             BuildReport report; var product = PlayerSettings.productName; bool timing = PlayerSettings.enableFrameTimingStats;
             var bundleVersion = PlayerSettings.bundleVersion; var buildNumber = PlayerSettings.macOS.buildNumber;
             try
@@ -134,13 +135,14 @@ namespace Suborned.World.Play
                 PlayerSettings.enableFrameTimingStats = true; // brief 020: the proof reads the GPU's frame time (FrameTimingManager); the project's setting comes back after
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 using var todPipeline = tod ? TimeOfDay097Bake.UsePipeline() : null; // the player built on the probe-volume pipeline copy, the project's put back after
+                using var strictVariants = ShaderTrace098.Strict(); // brief 098: a traced scratch player with -strictVariants draws a missing variant with the error shader
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
                     scenes = new[] { FrontEndBuild.ScenePath, playScene }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
                     target = playerTarget,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
-                    options = scratchDir != null && scratchDev ? BuildOptions.Development : BuildOptions.None, // release (a scratch build with -scratchDev: development)
+                    options = scratchDir != null && (scratchDev || ShaderTrace098.On) ? BuildOptions.Development : BuildOptions.None, // release (a scratch build with -scratchDev, or a traced one: development)
                 });
             }
             finally { PlayerSettings.productName = product; PlayerSettings.enableFrameTimingStats = timing; PlayerSettings.bundleVersion = bundleVersion; PlayerSettings.macOS.buildNumber = buildNumber; Version.RemoveStamp(); Version.RemovePresets(); FrontEndBuild.RemoveBriefs(); }

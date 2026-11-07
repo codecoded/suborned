@@ -1,11 +1,13 @@
 import { test, expect } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { needs } from '../needs';
+const hasWorld = needs('out/world/harbour-district.world.json', 'bun run world');
 import { captureTram, topology, outputPath, DEFAULT_INPUTS } from './tram-topology';
 import { tramGround, newTramLog } from './gen/street/tramstreet';
 import { FLAT_FOOT } from './gen/common';
 const read = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
 
-test('opt-in capture is deterministic and leaves default ground/log byte-identical to pinned rails', () => {
+test.skipIf(!hasWorld)('opt-in capture is deterministic and leaves default ground/log byte-identical to pinned rails', () => {
   const p = read(DEFAULT_INPUTS.plan), b = read(DEFAULT_INPUTS.block);
   const a = captureTram(p, b), log = newTramLog(), plain = tramGround(a.ctx, log, FLAT_FOOT);
   expect(JSON.stringify(plain)).toBe(JSON.stringify(a.ground));
@@ -14,7 +16,7 @@ test('opt-in capture is deterministic and leaves default ground/log byte-identic
   expect(plain!.rails).toEqual(read(DEFAULT_INPUTS.world).ground.pieces.filter((x: any) => x.kind === 'tram-rail'));
 });
 
-test('complete pinned mapping, source topology and analytical rounding/cap bounds', () => {
+test.skipIf(!hasWorld)('complete pinned mapping, source topology and analytical rounding/cap bounds', () => {
   const t = topology();
   expect(t.counts).toMatchObject({ parents: 454, tiles: 1584, omitted: 0, classified: 188, parallel: 178 });
   expect(new Set(t.tiles.map(x => x.id)).size).toBe(1584);

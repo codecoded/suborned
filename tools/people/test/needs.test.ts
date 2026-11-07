@@ -2,6 +2,8 @@
 // The proof that nothing moved: the same cast expanded with and without the catalogue gives the same people apart from the record ids.
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { needs } from '../../needs';
+const hasPeople = needs('out/people/harbour-district.people.json', 'bun run people');
 import { Cast } from '../../../contracts/people/cast.schema';
 import { Catalogue, NeedsRules } from '../../../contracts/people/needs.schema';
 import type { People } from '../../../contracts/people/people.schema';
@@ -55,7 +57,7 @@ describe('nothing moved', () => {
     }
     expect(Object.keys(w.needs!.rules.kinds).sort()).toEqual(Object.keys(w.rules.needs.list).filter(k => k !== 'secret').sort());
   });
-  test('the record ids are the only difference in the written people file', () => {
+  test.skipIf(!hasPeople)('the record ids are the only difference in the written people file', () => {
     const only = JSON.parse(readFileSync('out/people/harbour-district.people.json', 'utf8')) as People;
     // the written file answers only for the inputs it was made from: a plan or life.json that moved since `bun run people` (brief 075 remap) leaves it
     // stale, and rewriting it moves the Handover's people extract (sim:site), so that is Aster's call, not this test's; it says so instead of failing

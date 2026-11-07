@@ -1,0 +1,129 @@
+{
+ "schema": "suborned.shots/1",
+ "defaults": {
+  "hud": false,
+  "format": "jpg"
+ },
+ "shots": [
+  {
+   "name": "square-y030",
+   "script": "route-a-board",
+   "tick": 40
+  },
+  {
+   "name": "square-close-y030",
+   "script": "route-a-board",
+   "tick": 45,
+   "zoom": 5
+  },
+  {
+   "name": "cafe-y030",
+   "script": "route-a-board",
+   "tick": 600,
+   "focus": "waitress",
+   "yaw": 0
+  },
+  {
+   "name": "cafe-y120",
+   "script": "route-a-board",
+   "tick": 605,
+   "focus": "waitress",
+   "yaw": 1
+  },
+  {
+   "name": "office-y210",
+   "script": "route-a-board",
+   "tick": 1200,
+   "focus": "camera/entrance",
+   "yaw": 2
+  },
+  {
+   "name": "office-y300",
+   "script": "route-a-board",
+   "tick": 1205,
+   "focus": "camera/entrance",
+   "yaw": 3
+  },
+  {
+   "name": "office-close-y210",
+   "script": "route-a-board",
+   "tick": 1210,
+   "focus": "camera/entrance",
+   "yaw": 2,
+   "zoom": 5
+  },
+  {
+   "name": "pickup-y030",
+   "script": "route-a-board",
+   "tick": 1215,
+   "focus": "camera/pickup",
+   "yaw": 0
+  },
+  {
+   "name": "fountain-hero",
+   "script": "route-a-board",
+   "tick": 1220,
+   "pose": {
+    "pos": [
+     -149,
+     7.5,
+     -41
+    ],
+    "look": [
+     -160,
+     1.0,
+     -30.5
+    ],
+    "fov": 42
+   }
+  },
+  {
+   "name": "office-hero",
+   "script": "route-a-board",
+   "tick": 1225,
+   "pose": {
+    "view": "camera/entrance",
+    "offset": [
+     -14,
+     3.5,
+     -10
+    ],
+    "lookOffset": [
+     0,
+     2.0,
+     0
+    ],
+    "fov": 50
+   }
+  },
+  {
+   "name": "follow-scout",
+   "script": "route-a-board",
+   "tick": 1230,
+   "view": "follow",
+   "agent": "scout",
+   "face": "waitress"
+  },
+  {
+   "name": "fight-loud",
+   "script": "tools/game/pins/loud.seed3.json",
+   "tick": 2280,
+   "focus": "car/getaway",
+   "yaw": 0
+  },
+  {
+   "name": "night-square-y030",
+   "script": "route-a-board",
+   "tick": 40,
+   "night": true
+  },
+  {
+   "name": "night-office-y210",
+   "script": "route-a-board",
+   "tick": 1200,
+   "focus": "camera/entrance",
+   "yaw": 2,
+   "night": true
+  }
+ ]
+}

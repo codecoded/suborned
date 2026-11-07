@@ -1,6 +1,7 @@
 // Brief 077 (Splice): extra generated roots (tools/kit/extra.ts). A synthetic root with a rebuild of an adopted piece and a new companion: the rebuild joins as <id>_TB,
 // a candidate with its own Kit/ file names, LOD screens and lodSize; the adopted piece is untouched; a row that would take an adopted id fails; a hash that moved fails.
 import { describe, expect, test } from 'bun:test';
+import { needs } from '../needs';
 import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -75,7 +76,7 @@ describe('kit.json: the brief 077 pieces (adopted 2026-10-30 on Sky\'s yes to th
     expect(extra.filter(a => a.lods?.length).every(a => a.lodAtPlay === true)).toBe(true);
     expect(extra.filter(a => !a.lods?.length).map(a => [a.id, a.lodAtPlay])).toEqual([['GlobeLamp_TB', undefined]]);
   });
-  test('each keeps its manifest\'s own LOD screens, never the category pair', () => {
+  test.skipIf(!needs('out/decokit-097-extra/decokit_manifest.json', 'the brief 097 extra DecoKit run (Vela)'))('each keeps its manifest\'s own LOD screens, never the category pair', () => {
     for (const a of extra) {
       const r = (JSON.parse(require('node:fs').readFileSync(join(import.meta.dir, '../..', a.extra!, 'decokit_manifest.json'), 'utf8')).assets as { name: string; replaces?: { id: string }; lods?: { screen: number }[] }[]).find(x => (x.replaces?.id ? `${x.replaces.id}_TB` : x.name) === a.id);
       if (!r) continue; // its root has moved on: the entry is kept as catalogued

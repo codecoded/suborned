@@ -2,6 +2,8 @@
 // Run: bun test tools/sim/solids.test.ts
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { needs } from '../needs';
+const hasPeople = needs('out/people/harbour-district.people.json', 'bun run people'); // the site build reads it
 import { join } from 'node:path';
 import { civic, toPlanFn } from '../plan/civic';
 import { derive } from '../plan/plan';
@@ -150,7 +152,7 @@ describe('brief 077: render-only planting (Sky 2026-10-30, "yeah, see through"):
     const piece = base.solids.find((s) => s.piece && s.piece !== 'CCTVPole')!.piece!, cut = structuredClone(collide); cut.pieces[piece].volumes = cut.pieces[piece].volumes.slice(1);
     expect(drawnSolids(plan, civ, w, WINDOW, 2, cut).solidSha).not.toBe(base.solidSha);
   });
-  test('the site keeps the digest it was built with: off, a rebuild is byte-identical; on (sim:site --solid-digest), only grid.collide and grid.drawn.digest differ', () => {
+  test.skipIf(!hasPeople)('the site keeps the digest it was built with: off, a rebuild is byte-identical; on (sim:site --solid-digest), only grid.collide and grid.drawn.digest differ', () => {
     const committed = readFileSync(join(root, 'sim/data/handover.site.json'), 'utf8'), opts = optionsOfSite();
     const off = buildSite(sourceOfSite(), { ...opts, solidDigest: false }).json, on = JSON.parse(buildSite(sourceOfSite(), { ...opts, solidDigest: true }).json);
     if (!opts.solidDigest) expect(off).toBe(committed);

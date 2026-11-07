@@ -2,6 +2,7 @@
 // `volumes: []`), and measures a piece that mixes stone and planting without its see-through materials (kit.json `seeThrough`), so G-3a counts only what stops sight.
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
+import { needs } from '../needs';
 import { resolve } from 'node:path';
 import type { World } from '../../contracts/world/world.schema';
 import { BLENDER, PIECE_DIR, ROOT, loadPieces, seeThroughMaterials, type PieceData } from './pieces';
@@ -39,7 +40,7 @@ describe('render-only pieces are not stamped (visible.ts)', () => {
 });
 
 // The real piece (Blender, or the measurement cache): PlanterRun_4_A_TB's testbed planting reaches 1.67 m; measured without the see-through materials, its solid is the trough.
-const canMeasure = existsSync(BLENDER) || existsSync(resolve(PIECE_DIR, 'PlanterRun_4_A_TB.json'));
+const canMeasure = (existsSync(BLENDER) && needs('unity/Assets/Suborned/Kit', 'bun run kit')) || existsSync(resolve(PIECE_DIR, 'PlanterRun_4_A_TB.json')); // Blender measures the copied models (git-ignored)
 describe.skipIf(!canMeasure)('mixed pieces are measured on their stonework (pieces.ts, pieces.py)', () => {
   test('kit.json declares the testbed leaf, petal and soil see-through', () => {
     expect([...seeThroughMaterials()].sort()).toEqual(['DK_Leaf_TB', 'DK_Petal_TB', 'DK_Soil_TB']);

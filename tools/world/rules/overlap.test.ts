@@ -41,14 +41,24 @@ test('separating axes: touching quads have no depth, a 0.5 m overlap is 0.5 deep
   expect(quadDepth(sq(0, 0), sq(3, 0))).toBeLessThan(0);
 });
 
+// Two unprotected masses of the live export that touch along an east-west edge, n to the south of m (re-pinned 2026-11-07, brief 098: the pair was
+// east-wall-s/2 and /3 until 097's audit re-laid that block; now it is the first such pair the export holds, e.g. east-wall-s/2 under /1)
+const box = (b: World['buildings'][number]) => { const xs = b.ring.map(p => p[0]), ys = b.ring.map(p => p[1]); return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) }; };
+const touching = () => {
+  const bodies = base.w.buildings.filter(b => b.id.endsWith('/body') && !kept(b.id.slice(0, -5)));
+  for (const n of bodies) for (const m of bodies) {
+    const a = box(n), c = box(m);
+    if (n !== m && Math.abs(a.y1 - c.y0) < 1e-6 && Math.min(a.x1, c.x1) - Math.max(a.x0, c.x0) >= 4) return { n, m };
+  }
+  throw new Error('no two unprotected masses touch along an east-west edge');
+};
+
 test('failing example: a building mass pushed 2 m into its neighbour', () => {
-  const m = base.w.buildings.find(b => b.id === 'bld/east-wall-s/3/body')!, n = base.w.buildings.find(b => b.id === 'bld/east-wall-s/2/body')!;
-  // east-wall-s/2 stands south of /3 (y -234..-184 against -184..-152): push /3 2 m south, into /2
-  expect(Math.max(...n.ring.map(p => p[1]))).toBeCloseTo(Math.min(...m.ring.map(p => p[1])), 2);
+  const { n, m } = touching(); // push m 2 m south, into n
   const w = { ...base.w, buildings: base.w.buildings.map(b => (b === m ? { ...b, ring: b.ring.map(p => [p[0], p[1] - 2] as [number, number]) } : b)) } as World;
-  const r = ov1(w), f = outside(w).find(x => x.kind === 'mass-mass');
+  const r = ov1(w), f = outside(w).find(x => x.kind === 'mass-mass' && [x.a, x.b].includes(m.id));
   expect(r.ok).toBe(false);
-  expect(f && [f.a, f.b].sort()).toEqual(['bld/east-wall-s/2/body', 'bld/east-wall-s/3/body']);
+  expect(f && [f.a, f.b].sort()).toEqual([n.id, m.id].sort());
   expect(f!.depth).toBeGreaterThan(1.5);
 });
 
@@ -68,7 +78,9 @@ test('failing example: the old Bays rule put back (a taller segment\'s StreamEnd
   const bad = outside(w), ends = bad.filter(f => f.kind === 'piece-mass' && /StreamEnd/.test(w.facades.find(x => x.id === f.a)?.kit.id ?? ''));
   expect(ov1(w).ok).toBe(false);
   expect(ends.length).toBeGreaterThan(30);
-  // east-wall-s/2 (4 storeys, 19.88 m) beside /3 (3 storeys, 16.48 m) on the harbour side: its end's eyebrows wrap 1.6 m into /3's wall
-  const e = ends.find(f => f.hosts[0] === 'bld/east-wall-s/2' && f.hosts[1] === 'bld/east-wall-s/3');
-  expect(e?.depth).toBeCloseTo(1.6, 1);
+  // a taller segment's end (4 storeys, 19.88 m) wraps its eyebrows 1.6 m into its lower neighbour's wall (3 storeys, 16.48 m), every one of them
+  // (re-pinned 2026-11-07, brief 098: no longer one pinned pair; on the harbour side today east-wall-s/2 into /1 and /3 into /4)
+  const height = (id: string) => w.buildings.find(b => b.id === `${id}/body`)?.height ?? NaN;
+  for (const e of ends) { expect(e.depth).toBeCloseTo(1.6, 1); expect(height(e.hosts[0])).toBeGreaterThan(height(e.hosts[1])); }
+  expect(ends.some(f => f.hosts[0].startsWith('bld/east-wall-s/'))).toBe(true);
 });

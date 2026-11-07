@@ -102,8 +102,9 @@ describe('skyline apply', () => {
     const only = (id: string) => (over: Record<string, unknown>) =>
       texts(run(datum({ signatures: [signature(plan, id, over)] })));
     const hq = only('space-hq');
-    test('SpaceHQ is rejected and SpaceHQ_Portal adopted: restating the plan as it stands is clean', () => {
-      expect(rejected('SpaceHQ')).toBe(true); expect(kit.get('SpaceHQ_Portal')).toBe('adopted');
+    // SpaceHQ is adopted again since the 075 swap (8196b35a, the old gold SpaceHQ live); the rejected example is RecordsTower (re-pinned 2026-11-07, brief 098)
+    test('SpaceHQ and SpaceHQ_Portal are adopted: restating the plan as it stands is clean', () => {
+      expect(kit.get('SpaceHQ')).toBe('adopted'); expect(kit.get('SpaceHQ_Portal')).toBe('adopted'); expect(rejected('RecordsTower')).toBe(true);
       expect(hq({ kit: 'SpaceHQ' })).toEqual([]);
       expect(hq({})).toEqual([]);
     });
@@ -111,8 +112,8 @@ describe('skyline apply', () => {
       const regen = (variant: string) => ({ regen: { variant } });
       expect(hq(regen('SpaceHQ_Nowhere')))
         .toEqual(['Datum: signature space-hq: regen.variant SpaceHQ_Nowhere is not a piece in the kit catalogue']);
-      expect(hq({ kit: 'SpaceHQ', ...regen('SpaceHQ') }))
-        .toEqual(['Datum: signature space-hq: regen.variant SpaceHQ is rejected in the kit catalogue']);
+      expect(hq({ kit: 'SpaceHQ', ...regen('RecordsTower') }))
+        .toEqual(['Datum: signature space-hq: regen.variant RecordsTower is rejected in the kit catalogue']);
     });
     test('without a regen the kit itself is judged, unknown or rejected', () => {
       const liner = only('ocean-liner');

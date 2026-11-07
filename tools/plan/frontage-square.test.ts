@@ -16,12 +16,13 @@ const REACH = { reach: 45, source: 'Approved Document B B5' };
 const add = (p: any, host: [number, number, number, number], use = 'square') => p.plots.push({ id: 'test-square', use, area: 'southside', rect: [12, 44, -290, -258] }, { id: 'test-host', use: 'mixed', area: 'southside', rect: host });
 
 describe('R-F1 square frontage', () => {
-  test('the committed plan passes with and without the clause', () => {
+  test('the committed plan passes with and without the clause', () => { // the plan carries the clause since 075 (re-pinned 2026-11-07, brief 098)
     expect(rf1(() => {}).ok).toBe(true);
+    expect(rf1(p => { delete p.standards.roads.frontageSquare; }).ok).toBe(true);
     expect(rf1(p => { p.standards.roads.frontageSquare = REACH; }).ok).toBe(true);
   });
   test('a plot behind a square on an access road, all within 45 m of its kerb, passes only with the clause', () => {
-    expect(rf1(p => add(p, [12, 44, -300, -290])).detail).toMatch(/test-host/);
+    expect(rf1(p => { delete p.standards.roads.frontageSquare; add(p, [12, 44, -300, -290]); }).detail).toMatch(/test-host/);
     const ok = rf1(p => { p.standards.roads.frontageSquare = REACH; add(p, [12, 44, -300, -290]); });
     expect([ok.ok, ok.detail]).toEqual([true, undefined]);
   });

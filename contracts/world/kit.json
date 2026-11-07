@@ -53673,7 +53673,7 @@
    ],
    "tags": {
     "use": [
-     "roof"
+     "roof:pool"
     ],
     "scale": [
      1,
@@ -54534,7 +54534,7 @@
    ],
    "tags": {
     "use": [
-     "roof"
+     "roof:antenna-mast:full"
     ],
     "scale": [
      1,
@@ -57730,7 +57730,7 @@
    ],
    "tags": {
     "use": [
-     "roof"
+     "roof:pool"
     ],
     "scale": [
      1,
@@ -57929,7 +57929,7 @@
    ],
    "tags": {
     "use": [
-     "roof"
+     "roof:tennis-court"
     ],
     "scale": [
      1,

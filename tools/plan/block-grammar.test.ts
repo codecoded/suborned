@@ -25,7 +25,7 @@ describe('BG', () => {
     const leave = (p: any, id: string, why = 'massing: the old CityMass fills it') => { p.standards.blocks.plots = p.standards.blocks.plots.filter((x: string) => x !== id); p.standards.blocks.exempt[id] = why; p.blocks = p.blocks.filter((b: any) => b.plot !== id); };
     const ok = one('BG-1', p => { p.standards.blocks.massing = MASSING; leave(p, 'west-row-w1'); leave(p, 'lantern-west'); });
     expect([ok.ok, ok.detail]).toEqual([true, undefined]);
-    expect(one('BG-1', p => { leave(p, 'west-row-w1'); }).detail).toMatch(/west-row-w1: "massing: the old CityMass fills it" does not hold \(standards\.blocks\.massing needs composed/);
+    expect(one('BG-1', p => { delete p.standards.blocks.massing; leave(p, 'west-row-w1'); }).detail).toMatch(/west-row-w1: "massing: the old CityMass fills it" does not hold \(standards\.blocks\.massing needs composed/); // the committed plan carries massing since 075: without it
     expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; leave(p, 'n1'); }).detail).toMatch(/n1: .* reaches into the old composed district \[-112,400,-508,194\]/);
     expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; p.standards.blocks.exempt['lamplight-south-w'] = 'massing: old CityMass'; }).detail).toMatch(/lamplight-south-w: .* reaches into the Handover zone/);
     expect(one('BG-1', p => { p.standards.blocks.massing = MASSING; leave(p, 'west-row-w1'); p.plots.find((x: any) => x.id === 'west-row-w1').use = 'industrial'; }).detail).toMatch(/massing is for town plots, not industrial/);

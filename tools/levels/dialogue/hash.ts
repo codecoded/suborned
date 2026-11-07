@@ -16,7 +16,12 @@ export const VERDICT_FILES = [
   'tools/rag/config.ts', 'tools/rag/corpus.ts', 'tools/rag/gdd-sources.ts', 'tools/rag/corpus-html.ts', 'tools/rag/people-corpus.ts', 'tools/rag/plan-corpus.ts', 'tools/rag/plan-skyline.ts', 'tools/rag/kit-corpus.ts',
   'tools/levels/dialogue/cast.ts', 'tools/levels/dialogue/pins.ts', 'tools/levels/dialogue/hash.ts',
 ];
-export const dialogueFiles = (base: string = root): string[] => [...ts(base, 'contracts/dialogue'), ...VERDICT_FILES];
+/** The Handover text schema's own schemas and the rulebook schema's split files (text.schema.ts and rulebook.schema.ts import them; a new one joins by its name). */
+const schemas = (base: string): string[] => [
+  ...ts(base, 'contracts/missions/handover').filter(f => f.endsWith('.schema.ts')),
+  ...ts(base, 'contracts/rules').filter(f => /\/rulebook\.schema\w*\.ts$/.test(f)),
+];
+export const dialogueFiles = (base: string = root): string[] => [...new Set([...ts(base, 'contracts/dialogue'), ...VERDICT_FILES, ...schemas(base)])];
 
 export async function dialogueHash(base: string = root): Promise<string> {
   const text = async (f: string) => `${f}\n${await Bun.file(resolve(base, f)).text()}`;

@@ -139,15 +139,22 @@ describe('standards.skyrail.pylonClear', () => {
     expect(now.pylons.filter(p => p.path === 'loop').map(p => p.p)).toEqual(had.pylons.filter(p => p.path === 'loop').map(p => p.p));
   });
 
-  test('walk (brief 075): S2\'s pylons step out of the Skyport and Market piers\' clear walks; without it two stand in them; nothing else moves', () => {
-    const cur: Plan = read('contracts/world/harbour-district.plan.json'), on: Plan = structuredClone(cur);
+  test('walk (brief 075): S1\'s and S2\'s pylons step out of the clear walks (Crown Circus, the Skyport and Market piers); without it four stand in them; nothing else moves', () => {
+    // the committed plan has carried the clause since 345b1e19 (brief 075); `off` is it without (re-pinned 2026-11-07, brief 098)
+    const cur: Plan = read('contracts/world/harbour-district.plan.json'), off: Plan = structuredClone(cur), on: Plan = structuredClone(cur);
+    delete (off.standards.skyrail as any).pylonClear.walk;
     (on.standards.skyrail as any).pylonClear = { ...(on.standards.skyrail as any).pylonClear, walk: { post: 1.6 } };
     const inWalk = (pl: Plan) => { const f = pylonWalkBlock({ ...pl, standards: { ...pl.standards, skyrail: { ...pl.standards.skyrail, pylonClear: { walk: { post: 1.6 } } } } } as Plan)!; return derive(pl).pylons.filter(p => f(p.p)).map(p => `${p.line}/${p.path} ${p.p.map(v => +v.toFixed(2)).join(',')}`); };
-    expect(pylonWalkBlock(cur)).toBeUndefined();
-    expect(inWalk(cur)).toEqual(['S2/trunk 117,-140', 'S2/loop 114,1.5']); // failing example: the committed plan's pier pylons (SK-T2's two bare-shaft gaps)
+    expect(pylonWalkBlock(off)).toBeUndefined();
+    expect(pylonWalkBlock(cur)).toBeDefined();
+    // failing example: the plan without it. S2's pier pylons (SK-T2's two bare-shaft gaps) and, since S1 runs through the SpaceHQ drum (8196b35a), two of
+    // S1's trunk pylons by Crown Circus stand in clear walks
+    expect(inWalk(off)).toEqual(['S1/trunk -42.81,241.83', 'S1/trunk 43,244', 'S2/trunk 117,-140', 'S2/loop 114,1.5']);
     expect(inWalk(on)).toEqual([]);
-    const a = derive(cur).pylons, b = derive(on).pylons;
-    expect(b.filter(p => p.line !== 'S2').map(p => p.p)).toEqual(a.filter(p => p.line !== 'S2').map(p => p.p));
+    expect(inWalk(cur)).toEqual([]);
+    expect(derive(cur).pylons.map(p => p.p)).toEqual(derive(on).pylons.map(p => p.p));
+    const a = derive(off).pylons, b = derive(on).pylons;
+    expect(b.filter(p => p.line !== 'S1' && p.line !== 'S2').map(p => p.p)).toEqual(a.filter(p => p.line !== 'S1' && p.line !== 'S2').map(p => p.p)); // nothing else moves
     expect(derive(on).pylonGaps).toEqual([]);
     expect(b.some(p => p.line === 'S2' && Math.abs(p.p[0] - 114) < 1e-6 && Math.abs(p.p[1] - 5.5) < 1e-6)).toBe(true); // the Skyport pier's north edge band (walk |y| < 4, post half-diagonal 1.13)
   });

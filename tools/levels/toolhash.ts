@@ -17,6 +17,7 @@ export const transitFiles = (base: string = root): string[] => [
   ...ts(base, 'tools/world'),
   // rule M-2 (the overlay) expands the promoted cast with the people tools when it runs on a live plan (Redline H1, 2026-10-15); a recorded run has no roles, so it never does
   ...ts(base, 'tools/people'), ...ts(base, 'contracts/people'), 'tools/gen/sha.ts',
+  'tools/names/ban.ts', // brief 089: tools/people's names skip the ban list (tools/people/names.ts), as tools/levels/people/hash.ts has it
 ];
 
 export async function toolsHash(base: string = root): Promise<string> {

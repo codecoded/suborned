@@ -7,17 +7,19 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 import { GEN_ROOT } from '../kit/store';
+import { needs } from '../needs';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const piece = (id: string) => kit.assets.find(a => a.id === id)!;
 type Row = { name: string; kind: string; color: number[]; emission: number; robotDetail?: { detail: string; detailNormal: string; tile: number[]; bump: number } };
-const mats = new Map((JSON.parse(readFileSync(join(GEN_ROOT, 'decokit_materials.json'), 'utf8')).materials as Row[]).map(m => [m.name, m]));
+const hasGen = needs(join(GEN_ROOT, 'decokit_materials.json'), 'bun run decokit'); // the generated pieces (git-ignored)
+const mats = new Map((hasGen ? JSON.parse(readFileSync(join(GEN_ROOT, 'decokit_materials.json'), 'utf8')).materials as Row[] : []).map(m => [m.name, m]));
 // the old sedans' (cars020) catalogued size, pivot and triangles: the footprint the sim's car and the host's 1.8 x 1.4 x 4.6 m box were fitted to
 const SIZE = [1.8142, 1.288, 4.7288], PIVOT_OFFSET = [0, 0.083], OLD_TRIS = 3408;
 const CARS = { Sedan_Getaway: { use: 'vehicle:car-getaway', livery: [['DK_CarEnamel_Coral', 'DK_Accent_Coral'], ['DK_CarEnamel_Seafoam', 'DK_Enamel_Seafoam']] }, Sedan_Official: { use: 'vehicle:car-official', livery: [['DK_CarEnamel_Teal', 'DK_Enamel_Teal'], ['DK_CarEnamel_Ivory', 'DK_Enamel_Ivory']] } } as const;
 
 for (const [id, car] of Object.entries(CARS)) {
-  test(`${id} is the finished sedan, adopted in place: the old car's size, pivot and front, full detail (no LODs), files hash-checked`, () => {
+  test.skipIf(!hasGen)(`${id} is the finished sedan, adopted in place: the old car's size, pivot and front, full detail (no LODs), files hash-checked`, () => {
     const v = piece(id);
     expect(v).toBeDefined(); expect(v.category).toBe('Vehicles'); expect(v.source).toBe('generated'); expect(v.status).toBe('adopted');
     expect(v.tags.use).toEqual([car.use]); expect(v.tags.scale).toEqual([1, 1]); expect(v.tags.sight).toBe('open');
@@ -30,7 +32,7 @@ for (const [id, car] of Object.entries(CARS)) {
     for (const t of ['Textures/car_enamel_detail_v1.png', 'Textures/car_enamel_detail_v1_normal.png']) expect(v.files.some(f => f.path === t), `${t} travels with it`).toBe(true);
   });
 
-  test(`${id}'s livery is its own: the car enamels are its base rows with the car detail pair; chrome, no brass or gold, nothing lit beyond the sedans' lamps`, () => {
+  test.skipIf(!hasGen)(`${id}'s livery is its own: the car enamels are its base rows with the car detail pair; chrome, no brass or gold, nothing lit beyond the sedans' lamps`, () => {
     const v = piece(id);
     for (const [c0, base] of car.livery) {
       expect(v.materials).toContain(c0);
@@ -57,7 +59,7 @@ test('Sedan_Getaway_v2, the candidate, is retired: no use tag, status rejected, 
   expect(v.status).toBe('rejected'); expect(v.tags.use).toEqual([]);
 });
 
-test('the robot enamels keep their own detail pair (the car pair is added beside it, not over it)', () => {
+test.skipIf(!hasGen)('the robot enamels keep their own detail pair (the car pair is added beside it, not over it)', () => {
   const r = mats.get('DK_RobotEnamel_Cream')!;
   expect(r.robotDetail?.detail).toBe('robot_enamel_detail_v1.png'); expect(r.robotDetail?.tile).toEqual([0.5, 2.0]);
 });

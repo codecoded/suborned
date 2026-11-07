@@ -6,10 +6,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 import { GEN_ROOT } from '../kit/store';
+import { needs } from '../needs';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const piece = (id: string) => kit.assets.find(a => a.id === id)!;
-const mats = new Map((JSON.parse(readFileSync(join(GEN_ROOT, 'decokit_materials.json'), 'utf8')).materials as { name: string; kind: string; color: number[] }[]).map(m => [m.name, m]));
+const hasGen = needs(join(GEN_ROOT, 'decokit_materials.json'), 'bun run decokit'); // the generated pieces (git-ignored)
+const mats = new Map(((hasGen ? JSON.parse(readFileSync(join(GEN_ROOT, 'decokit_materials.json'), 'utf8')).materials : []) as { name: string; kind: string; color: number[] }[]).map(m => [m.name, m]));
 
 /** sRGB (0..1) to CIE L*a*b* (D65, 2 degrees), the maths of tools/decokit/deltae.py. */
 function lab([r, g, b]: number[]): [number, number, number] {
@@ -44,7 +46,7 @@ test('the CIEDE2000 used here is the standard one (Sharma, Wu and Dalal, pair 1:
   expect(de2000([50, 2.6772, -79.7751], [50, 0, -82.7485])).toBeCloseTo(2.0425, 3);
 });
 
-test('Sedan_Rival is catalogued beside the other two: a generated Vehicles piece, built to their footprint at scale 1, at full detail (no decimated levels), never placed by the world', () => {
+test.skipIf(!hasGen)('Sedan_Rival is catalogued beside the other two: a generated Vehicles piece, built to their footprint at scale 1, at full detail (no decimated levels), never placed by the world', () => {
   const r = piece('Sedan_Rival'), o = piece('Sedan_Official');
   expect(r).toBeDefined(); expect(r.category).toBe('Vehicles'); expect(r.source).toBe('generated'); expect(['candidate', 'adopted']).toContain(r.status);
   expect(r.tags.use).toEqual(['vehicle:car-rivals']); expect(r.tags.scale).toEqual([1, 1]); expect(r.tags.sight).toBe('open');
@@ -56,7 +58,7 @@ test('Sedan_Rival is catalogued beside the other two: a generated Vehicles piece
   for (const m of ['DK_Enamel_Plum', 'DK_Enamel_Ink', 'DK_Enamel_Pearl']) expect(r.files.some(f => f.path === `Materials/${m}.mat` && f.root === 'generated'), m).toBe(true); // its own livery travels with it into Unity
 });
 
-test('livery: the rival body and roof are far from the official and getaway cars\' (CIEDE2000), and the roof is darker than the body, as neither of theirs is', () => {
+test.skipIf(!hasGen)('livery: the rival body and roof are far from the official and getaway cars\' (CIEDE2000), and the roof is darker than the body, as neither of theirs is', () => {
   const dB = (a: keyof typeof CARS, b: keyof typeof CARS) => de2000(body(a), body(b)), dR = (a: keyof typeof CARS, b: keyof typeof CARS) => de2000(roof(a), roof(b));
   expect(dB('rival', 'official'), 'body vs Vale\'s teal').toBeGreaterThanOrEqual(30); expect(dB('rival', 'getaway'), 'body vs the cell\'s coral').toBeGreaterThanOrEqual(40);
   expect(dR('rival', 'official'), 'roof vs Vale\'s ivory').toBeGreaterThanOrEqual(60); expect(dR('rival', 'getaway'), 'roof vs the cell\'s seafoam').toBeGreaterThanOrEqual(40);
@@ -65,7 +67,7 @@ test('livery: the rival body and roof are far from the official and getaway cars
   expect(Math.abs(read('rival') - read('getaway')), 'a value pattern the getaway car does not have').toBeGreaterThanOrEqual(8);
 });
 
-test('livery: the rivals\' own colour (their figure\'s jacket, #422F42 in its albedo), never the other cars\' paints, nothing gold or brass, nothing lit beyond the sedans\' lamps', () => {
+test.skipIf(!hasGen)('livery: the rivals\' own colour (their figure\'s jacket, #422F42 in its albedo), never the other cars\' paints, nothing gold or brass, nothing lit beyond the sedans\' lamps', () => {
   expect(de2000(body('rival'), hex('#422F42')), 'plum vs the figures\' jacket').toBeLessThanOrEqual(12);
   expect(de2000(body('rival'), hex('#8A4FD0')), 'the body is not the rivals\' violet signal (those marks draw over the car, unlit)').toBeGreaterThanOrEqual(20);
   const used = piece('Sedan_Rival').materials;

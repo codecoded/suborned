@@ -2,6 +2,8 @@
 // shipped site and fail, each with its reason, on deliberately wrong ones. Run: bun test tools/sim/stands.test.ts
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { needs } from '../needs';
+const hasPeople = needs('out/people/harbour-district.people.json', 'bun run people'); // the site build reads it
 import { join } from 'node:path';
 import { derive } from '../plan/plan';
 import { civic } from '../plan/civic';
@@ -24,14 +26,14 @@ const sx2 = (s: unknown, pl = places) => checkStands(s as never, plan, d, pl, ru
 const sx3 = (r: unknown, pl = places059, arrive = site.schedule.rivalsArrive) => checkRivals(r as never, plan, d, pl, rulebook, arrive, free, drivable);
 
 describe('the second file (the engine reads the site, not this, until Keel\'s 059 round)', () => {
-  test('sim/data/handover.stands.json is what the site build makes today, and the site keeps the shape the engine reads: no getaway.stands, no rivals.car / posts', () => {
+  test.skipIf(!hasPeople)('sim/data/handover.stands.json is what the site build makes today, and the site keeps the shape the engine reads: no getaway.stands, no rivals.car / posts', () => {
     const { stands: text } = buildSite(sourceOfSite(), { ...optionsOfSite(), foldStands: false });
     if (!site.getaway.stands) expect(readFileSync(join(root, STANDS_FILE), 'utf8')).toBe(text);
     const f = JSON.parse(text);
     expect(f.schema).toBe('suborned.sim.stands/1'); expect(Object.keys(f)).toEqual(['schema', 'mission', 'frame', 'from', 'src', 'getaway', 'rivals']);
     if (!site.getaway.stands) { expect(Object.keys(site.getaway)).toEqual(['car', 'exit', 'src']); expect(Object.keys(site.rivals)).toEqual(['park', 'entry', 'front', 'public', 'src']); }
   }, 60000);
-  test('folded into the site (bun run sim:site --fold-stands) the same data stands under getaway.stands, rivals.car and rivals.posts', () => {
+  test.skipIf(!hasPeople)('folded into the site (bun run sim:site --fold-stands) the same data stands under getaway.stands, rivals.car and rivals.posts', () => {
     const { site: folded } = buildSite(sourceOfSite(), { ...optionsOfSite(), foldStands: true }) as { site: any };
     expect(folded.getaway.stands).toEqual(s059.getaway.stands); expect(folded.rivals.car).toEqual(s059.rivals.car); expect(folded.rivals.posts).toEqual(s059.rivals.posts);
   }, 60000);

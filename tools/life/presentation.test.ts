@@ -12,7 +12,9 @@ test('the sim, its site builder and the mission tools never read the presentatio
   const walk = (d: string, ext: RegExp, out: string[] = []) => { if (!existsSync(d)) return out; for (const f of readdirSync(d)) { if (['bin', 'obj', 'node_modules'].includes(f)) continue; const p = join(d, f); if (statSync(p).isDirectory()) walk(p, ext, out); else if (ext.test(f)) out.push(p); } return out; };
   const files = [...walk(join(ROOT, 'tools/sim'), /\.ts$/), ...walk(join(ROOT, 'tools/missions'), /\.ts$/), ...walk(join(ROOT, 'sim'), /\.(cs|json)$/)];
   expect(files.length).toBeGreaterThan(10);
-  const bad = files.filter(f => /presentation\.json|life\/presentation|PRESENTATION_FILE|suborned\.presentation/.test(readFileSync(f, 'utf8')));
+  // code, not comments: a doc comment may name the file (GameTrafficHost.cs names its car models' kinds after it) without reading it (brief 098, Splice)
+  const code = (f: string) => readFileSync(f, 'utf8').split('\n').filter(l => !/^\s*(\/\/|\*|\/\*)/.test(l)).map(l => l.replace(/\s\/\/.*$/, '')).join('\n');
+  const bad = files.filter(f => /presentation\.json|life\/presentation|PRESENTATION_FILE|suborned\.presentation/.test(code(f)));
   expect(bad).toEqual([]);
   // and the generator writes only under out/ (its default and the CLI's), never sim/data or contracts/
   const src = readFileSync(join(import.meta.dir, 'presentation.ts'), 'utf8');

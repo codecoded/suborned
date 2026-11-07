@@ -12,11 +12,14 @@ import { GEN_ROOT, kitRoot } from './store';
 import { WAVE1 } from './tags';
 import { LOD_BY_ID, LOD_CATEGORIES } from './lod';
 import { decodePng } from '../hud-budget/png';
+import { needs } from '../needs';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const root = kitRoot();
+// the copy and most checks read the generated pieces (git-ignored) and the old repo's kit store (outside the repo): a checkout without them skips those
+const has = needs([join(GEN_ROOT, 'decokit_manifest.json'), root], 'bun run decokit; the old repo at $SUBORNED_OLD');
 
-test('kit.json is the manifest, normalised, and rebuilding it changes nothing', () => {
+test.skipIf(!has)('kit.json is the manifest, normalised, and rebuilding it changes nothing', () => {
   expect(kit.assets.filter(a => a.source !== 'generated').length).toBe(202);
   expect(JSON.stringify(buildCatalogue(root, kit, GEN_ROOT))).toBe(JSON.stringify(kit));
   for (const a of kit.assets) { expect(['footprint-centre-ground', 'origin-ground']).toContain(a.pivot); expect(a.front).toBe('+Z'); expect(a.size.every(n => n >= 0)).toBe(true); expect(a.files.some(f => f.role === 'fbx')).toBe(true); }
@@ -27,7 +30,7 @@ test('wave 1 is exactly the adopted set', () => {
   for (const id of WAVE1) expect(adopted.has(id), id).toBe(true); // wave 1 stays adopted; later waves (facades, civic square, signatures) are adopted on top by their briefs, generated pieces too (decokit/fit.test.ts)
 });
 
-test('copy verifies hashes, is idempotent, and refuses a tampered source', () => {
+test.skipIf(!has)('copy verifies hashes, is idempotent, and refuses a tampered source', () => {
   const dest = mkdtempSync(join(tmpdir(), 'kit-')), a = copyAdopted(kit, root, dest, GEN_ROOT), b = copyAdopted(kit, root, dest, GEN_ROOT);
   try {
     expect(a.errors).toEqual([]); expect(a.copied.length).toBeGreaterThan(100);
@@ -38,7 +41,7 @@ test('copy verifies hashes, is idempotent, and refuses a tampered source', () =>
   } finally { rmSync(dest, { recursive: true, force: true }); }
 });
 
-test('a rejected piece\'s model files are removed from the copy, with their metas; what an adopted piece lists, and the Unity prefabs, stay', () => {
+test.skipIf(!has)('a rejected piece\'s model files are removed from the copy, with their metas; what an adopted piece lists, and the Unity prefabs, stay', () => {
   const dest = mkdtempSync(join(tmpdir(), 'kit-')), a = copyAdopted(kit, root, dest, GEN_ROOT);
   try {
     expect(a.errors).toEqual([]); expect(a.pruned).toEqual([]);
@@ -95,7 +98,7 @@ test('Vela\'s street props are the generator\'s binaries; since brief 026 (old d
   }
 });
 
-test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted; every LOD asks only for its piece\'s materials', () => {
+test.skipIf(!has)('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted; every LOD asks only for its piece\'s materials', () => {
   const by = (id: string) => kit.assets.find(a => a.id === id)!;
   expect(by('SpaceHQ_Portal').status).toBe('adopted');
   // brief 075 remap step 2 (the SpaceHQ switch, form "old"): the base SpaceHQ is adopted as the old builders' own piece (OLD_PIECES), never the generator's
@@ -117,7 +120,7 @@ test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and Pla
     }
 });
 
-test('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 31 crown and skyline pieces (27 + the four mirrored skyline caps, brief 075 old buildings) keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
+test.skipIf(!has)('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 31 crown and skyline pieces (27 + the four mirrored skyline caps, brief 075 old buildings) keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
   const adopted = kit.assets.filter(a => a.status === 'adopted');
   const crown = adopted.filter(a => a.materials.some(m => /^DK_Crown_Gold/.test(m)));
   expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'DiscTower@crown-vista', 'LinerDock@liner-berth', 'ParabolicArch', 'ParabolicArch@crown-avenue', 'SpaceHQ_Portal', 'Skyport_Tower', 'Skyport_Tower_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9', 'StreamCorner_9_M',
@@ -143,7 +146,7 @@ test('brief 013 (Vantage, Motive §2.5): only a piece tagged `stash` can hold a 
 
 // Batch 0.2.118: signal_atlas_v1 and signal_ring_v1 carry their picture in the alpha channel (the glyph / the ring segment IS the alpha). Imported with Alpha Source None, Unity drops it and every
 // lens face draws as a solid square and every clock ring as a full one. The meta the kit copies must say `alphaUsage: 1` (Alpha Source = input texture alpha), at the generator, in the catalogue and in the copy.
-test('signal textures carry real alpha and their metas import it (Alpha Source = input texture alpha)', () => {
+test.skipIf(!has)('signal textures carry real alpha and their metas import it (Alpha Source = input texture alpha)', () => {
   const dest = mkdtempSync(join(tmpdir(), 'kit-')), a = copyAdopted(kit, root, dest, GEN_ROOT);
   try {
     expect(a.errors).toEqual([]);
@@ -162,7 +165,7 @@ test('signal textures carry real alpha and their metas import it (Alpha Source =
   } finally { rmSync(dest, { recursive: true, force: true }); }
 });
 
-test('brief 072-F: the surface-detail array and the three detail pairs ride as kit-wide textures, each with its meta, and the copy keeps them', () => {
+test.skipIf(!has)('brief 072-F: the surface-detail array and the three detail pairs ride as kit-wide textures, each with its meta, and the copy keeps them', () => {
   const t = kit.textures ?? [], paths = new Set(t.map(f => f.path));
   for (const n of ['surface_detail_v1', 'surface_enamel_detail_v1', 'surface_enamel_detail_v1_normal', 'surface_limestone_detail_v1', 'surface_limestone_detail_v1_normal', 'surface_metal_detail_v1', 'surface_metal_detail_v1_normal'])
     for (const p of [`Textures/${n}.png`, `Textures/${n}.png.meta`]) expect(paths.has(p), p).toBe(true);
@@ -193,7 +196,7 @@ test('brief 072 F2: every roof crown switches by the crown distance class, L1 be
   expect(l1).toBeGreaterThan(36); expect(l2).toBeGreaterThan(350);
 });
 
-test('brief 075 old palette: the old DecoKitColourways scheme (five ensembles + the Soft high street) over wall, fascia, sills and trim, each a recolour of its base matching the old Paint .mat, copied with their metas', () => {
+test.skipIf(!has)('brief 075 old palette: the old DecoKitColourways scheme (five ensembles + the Soft high street) over wall, fascia, sills and trim, each a recolour of its base matching the old Paint .mat, copied with their metas', () => {
   const cw = kit.colourways!, fac = JSON.parse(readFileSync(resolve(import.meta.dir, '../../unity/Assets/Suborned/Editor/World/facade.json'), 'utf8')) as { families: Record<string, string[]> };
   expect(cw.families).toEqual(['boulevard', 'circus', 'harbour', 'gardens', 'southside', 'soft-apricot', 'soft-celadon', 'soft-rose', 'soft-ochre']);
   expect(Object.keys(fac.families).filter(f => f !== 'civic').sort()).toEqual([...cw.families].sort()); // one colourway per facade.json family; civic keeps the base
@@ -234,7 +237,7 @@ test('brief 075 old palette: the old DecoKitColourways scheme (five ensembles + 
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
 
-test('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion lattices, the brick sphere, SpaceHQ gold; each a recolour of its base, mapped per piece, copied with their metas', () => {
+test.skipIf(!has)('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion lattices, the brick sphere, SpaceHQ gold; each a recolour of its base, mapped per piece, copied with their metas', () => {
   const lv = kit.landmarks!;
   expect(lv.schema).toBe('suborned.livery/1');
   expect(Object.fromEntries(Object.entries(lv.keys).map(([k, v]) => [k, [v.base, v.material, v.hex]]))).toEqual({
@@ -261,7 +264,7 @@ test('brief 075-C: landmark livery (old DecoKitColourways `livery`): vermilion l
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
 
-test('brief 075-F1: billboard and poster variants: 16 ads on two sheets in one layout, every billboard bakes the canonical cell, each variant only re-points the texture and its offset', () => {
+test.skipIf(!has)('brief 075-F1: billboard and poster variants: 16 ads on two sheets in one layout, every billboard bakes the canonical cell, each variant only re-points the texture and its offset', () => {
   const ps = kit.posters!;
   expect(ps.schema).toBe('suborned.posters/1');
   expect(ps.adOrder.length).toBe(16);
@@ -289,7 +292,7 @@ test('brief 075-F1: billboard and poster variants: 16 ads on two sheets in one l
   finally { rmSync(dest, { recursive: true, force: true }); }
 });
 
-test('brief 075 roll-out: the old sky track kit and the presentation vehicles adopted at their own size; the gate towers carry no crane; 1950s car paints are base-colour recolours, copied with their metas', () => {
+test.skipIf(!has)('brief 075 roll-out: the old sky track kit and the presentation vehicles adopted at their own size; the gate towers carry no crane; 1950s car paints are base-colour recolours, copied with their metas', () => {
   const byId = new Map(kit.assets.map(a => [a.id, a]));
   for (const id of ['SkyRail_Beam_4m', 'SkyRail_Pylon_HeadTwin', 'SkyRail_Pylon_Head', 'SkyRail_Pylon_Foot', 'SkyRail_Pylon_Shaft', 'SkyRail_Pylon_Tall', 'SkyRail_Car_Head', 'SkyRail_Car_Mid', 'AirCar_Coral', 'AirCar_Teal', 'AirCar_Saucer', 'HoverScooter']) {
     const a = byId.get(id)!; expect(a.status, id).toBe('adopted'); expect(a.tags.scale, id).toEqual([1, 1]); expect(a.tags.use.some(u => u === 'vehicle' || u === 'sky' || u === 'landmark'), id).toBe(false);
@@ -326,7 +329,7 @@ test('brief 075 remap: the old roof, garden, plaza, seaside and alley pieces ado
   expect(kit.assets.find(x => x.id === 'Dumpster')!.status).toBe('candidate'); // the stash piece stays Keel's and Motive's call
 });
 
-test('what Unity rewrites stays until the catalogue moves; a real change, and a damaged model, still copy (brief 078)', () => {
+test.skipIf(!has)('what Unity rewrites stays until the catalogue moves; a real change, and a damaged model, still copy (brief 078)', () => {
   const a = kit.assets.find(x => x.id === 'Bollard')!, only = { ...kit, assets: [a], textures: [], colourways: undefined, landmarks: undefined, posters: undefined, carPaints: undefined } as typeof kit;
   const dest = mkdtempSync(join(tmpdir(), 'kit-')), settled = join(dest + '-settled', 'copied.json'), meta = a.files.find(f => f.path.endsWith('.fbx.meta'))!, model = a.files.find(f => f.path.endsWith('.fbx'))!;
   try {
