@@ -119,6 +119,12 @@
    "crowd": "a passer-by",
    "crowd-guard": "a guard",
    "crowd-officer": "an officer",
+   "crowd-clerk": "a clerk",
+   "crowd-resident": "a local",
+   "crowd-server": "a server",
+   "crowd-cook": "a cook",
+   "crowd-attendant": "a kiosk attendant",
+   "crowd-keeper": "a shopkeeper",
    "stash-bin": "the bin",
    "stash-door": "the service door"
   },
@@ -599,7 +605,7 @@
   "door-held": {"line":"Police are at this door. Nobody goes in until they leave.","short":"Police at door","verbs":["enter"]}
  },
  "cards": {
-  "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` in-sight shows only when an agent can see the place, as a city scene does; `sight` always shows wherever the cell stands (brief 067: the rival car turning in off Orbit Walk is heard, never seen), and its `at` then only says what the card points at. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden. Brief 014 (less reading): every card has a `fate`: beat (a one-line feed beat, `beat`; at most ten distinct lines in the file), icon (the street shows it: a marker, ring, lock or pip), alt (history only, behind L), debrief (the end says it). A card with no beat is never a card on screen; its title and result are the history lines.",
+  "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` in-sight shows only when an agent can see the place, as a city scene does; `sight` always shows wherever the cell stands (brief 067: the rival car turning in off Orbit Walk is heard, never seen), and its `at` then only says what the card points at. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden. Brief 014 (less reading): every card has a `fate`: beat (a one-line feed beat, `beat`; at most ten distinct lines in the file), icon (the street shows it: a marker, ring, lock or pip), alt (history only, behind L), debrief (the end says it). A card with no beat is never a card on screen; its title and result are the history lines. Brief 100 (Sky 2026-11-07, \"explain why an alert raised, or why police came\"): the cause of every Alert rise and police call now rides beside these cards, worded by the `why` block from the engine's alert history; a city's-answer card's own result still says only that it came (kind 3 above).",
   "items": {
    "close.warning": {"kind":"warning","fate":"beat","beat":"Popovic's been missed.","title":"Popovic has been missed","result":"The district closes in {n} s. Get Popovic away."},
    "enforcer.warning": {"kind":"warning","fate":"icon","title":"The Enforcer is badly hurt","result":"{n} health left. Get him into cover or out of the line."},
@@ -696,7 +702,95 @@
    "patrol.alarm": {"kind":"warning","fate":"icon","title":"The patrol leaves its sweep","sight":"in-sight","at":"patrol","result":"Off its round, toward the alarm."},
    "patrol.stands-down": {"kind":"city","fate":"alt","title":"The patrol stands down","sight":"in-sight","at":"patrol","result":"Back to its sweep."},
    "stash.serviced": {"kind":"warning","fate":"beat","beat":"Body found.","title":"The bin is emptied","sight":"in-sight","at":"stash","result":"The bin round found {who}."},
-   "stash.opened": {"kind":"warning","fate":"beat","beat":{"found":"Body found."},"title":"A hiding place is opened","sight":"in-sight","at":"stash","result":{"found":"{who} opened the hiding place and found a body.","empty":"{who} opened the hiding place. Nothing."},"pick":"found when the engine's text says a person is inside, else empty"}
+   "stash.opened": {"kind":"warning","fate":"beat","beat":{"found":"Body found."},"title":"A hiding place is opened","sight":"in-sight","at":"stash","result":{"found":"{who} opened the hiding place and found a body.","empty":"{who} opened the hiding place. Nothing."},"pick":"found when the engine's text says a person is inside, else empty"},
+   "attention.reporting": {"kind":"warning","fate":"icon","title":"Seen hanging about","result":"{agent} stood in sight too long. A report is on its way."},
+   "attention.landed": {"kind":"warning","fate":"alt","title":"Reported for hanging about","result":"{agent} was reported for hanging about. Alert {alert}."},
+   "attention.stopped": {"kind":"city","fate":"alt","title":"A report stopped","result":"The report on {agent} never landed."},
+   "car.reported": {"kind":"warning","fate":"icon","title":"Our car spotted","result":"Our car is parked where cars don't stand. A report is on its way."},
+   "car.report-stopped": {"kind":"city","fate":"alt","title":"A report stopped","result":"The report on our car never landed."},
+   "camera.recorded": {"kind":"warning","fate":"icon","title":"On camera","result":"A camera is taping the Fixer. The desk will see it soon."},
+   "drawn.seen": {"kind":"warning","fate":"alt","title":"Weapon seen","result":"Security saw a gun out. Alert {alert}."},
+   "witness.weapon-drawn": {"kind":"warning","fate":"alt","title":"Weapon seen","result":"People saw a gun out. Alert {alert}."}
+  }
+ },
+ "why": {
+  "rule": "Brief 100 (Sky 2026-11-07, playing: \"It would be good to explain why an alert raised, or why police came\"): the cause of every Alert rise and every police call, and the reporter while a report is still on its way, in the player's words, never the engine's sentence. The host reads the engine's alert history (Game.Ledger's alert rows today, keyed by the cause's first part; Keel's structured read to come: cause, who, what, where, when) and the log of the same tick. `alert` is keyed by the ledger cause: report:<kind> by its kind (seen, carry, dead, down, woken, noise, mark, missing, cut), report:<role> approach, report:office-staff staff, report:councillor let-go, then confirmed, gunfire, violence-seen violence, drawn-seen drawn, drawn-seen:people drawn-people, drawn-warned warned, takedown-fails fought, loiter, recorded, car-reported car, entry, sighting. `police` is keyed by what brought them, `onWay` by how a report travels. Each cause has a `title` (at most four words: its card and Journal row), a `short` (at most six words, lower case: the crucial card's dim line, followed by {where}, and the meter's row) and a `line` (one sentence: the Journal, Alt, the meter's hover, the debrief's timeline, brief 099). `again` follows a cause whose Alert came from the count of incidents (alert.byIncident: a second report means a search), and `effect` says what each Alert sets off. Fills: {who} the reporter or witness (a person as names.targets says them: the cast by name, a crowd person by job, crowd-<job>, else crowd; a watcher or unit as `by`; `by.another` when they share a job with {about}), {about} who or what it is about, {agent} the agent (the Scout), {where} the nearest of `places` within 13 m, else nearby, {to} `onWay.to`, {alert}, {clock} m:ss, {s} seconds, {cause} a cause's short. A cause the cell can't know yet uses its `unknown` variant (a check-in it hasn't watched). Not less.why, which is a hostile's fire cause. The city's answer cards keep their own results (brief 013); the why rides beside them.",
+  "by": {"camera":"a street camera","robot":"a police robot","police":"an officer","desk":"the desk","round":"the bin round","witness":"a witness","another":"another {job}"},
+  "places": {"d:Courtyard":"in the courtyard","d:Café door":"at the café door","d:Behind café":"behind the café","d:West side":"beside the café","d:East side":"beside the café","d:Terrace gate":"at the terrace gate","d:Between tables":"among the tables","d:Under parasol":"on the café terrace","d:Fountain":"by the fountain","d:Plaza east":"in the square","d:Plaza west":"in the square","d:Getaway bay":"at the square's bay","d:South walkway":"on the south walk","d:Office approach":"at the Office steps","d:Office entrance":"at the Office door","d:Official entrance":"at the official door","d:Meet Vale":"at the official door","d:Official drop-off":"at the pickup","d:Boarding pavilion":"at the pickup","d:Meet driver":"at the pickup","d:Service lane":"in the service lane","service-bay":"in the service yard","service-drive":"on the service drive","cabinet":"by the control cabinet","security-entry":"on the north street","nearby":"nearby"},
+  "alert": {
+   "seen": {"title":"Takedown seen","short":"{who} saw a takedown","line":"{who} saw {about} taken down {where}.","variants":{"vale":{"short":"{who} saw Popovic taken","line":"{who} saw Popovic taken {where}."}},"pick":"vale when the act is the Take, else the base"},
+   "carry": {"title":"Seen carrying a body","short":"{who} saw a body carried","line":"{who} saw {about} carried off {where}.","variants":{"vale":{"short":"{who} saw Popovic led off","line":"{who} saw Popovic led off {where}."}},"pick":"vale when it is Popovic held on foot (the Take's escort), else the base"},
+   "dead": {"title":"Body found","short":"{who} spotted {about}'s body","line":"{who} spotted {about}'s body {where}."},
+   "down": {"title":"Body found","short":"{who} spotted {about} lying","line":"{who} spotted {about} lying {where}."},
+   "woken": {"title":"Woke and reported it","short":"{about} woke and reported it","line":"{about} came round {where} and reported the attack.","variants":{"vale":{"title":"Popovic reported it","short":"Popovic got free and told","line":"The Enforcer let Popovic go, and he reported it."}},"pick":"vale when the report is Popovic's own after a Take let go (reporter councillor), else the base"},
+   "noise": {"title":"A voice heard","short":"{who} heard someone hidden","line":"{who} heard {about} calling out from a hiding place."},
+   "mark": {"title":"The post went quiet","short":"{about} missed a check-in","line":"{about} missed the {clock} check-in. The post is reported empty.","variants":{"unknown":{"short":"{about} was missed","line":"Someone noticed {about} was gone from the post."}},"pick":"unknown until a Watch has taught the person's routine (as the post.missed card's `needs`), else the base"},
+   "missing": {"title":"Someone was missed","short":"{who} missed {about}","line":"{who} expected {about} and raised the alarm."},
+   "cut": {"title":"Dead camera noticed","short":"the desk saw {about} go dead","line":"The desk saw {about} go dead and sent someone to look."},
+   "approach": {"title":"Offer reported","short":"{who} reported the Fixer","line":"{who} turned the Fixer down and told security."},
+   "staff": {"title":"Staff reported it","short":"the staff reported the Enforcer","line":"The Enforcer left without Popovic, and the Office staff reported it."},
+   "let-go": {"title":"Popovic reported it","short":"Popovic got free and told","line":"The Enforcer let Popovic go, and he reported it."},
+   "confirmed": {"title":"Killing confirmed","short":"police found {about} dead","line":"Police checked {about}: dead, not knocked out."},
+   "gunfire": {"title":"Shots fired","short":"shots fired","line":"{agent} fired at {about}, and the street heard it.","variants":{"other":{"short":"{who} opened fire","line":"{who} opened fire, and the street heard it."}},"pick":"other when the shooter is not the cell (the guard, an officer), else the base"},
+   "violence": {"title":"Shooting seen","short":"{who} saw {about} fired on","line":"{who} saw {about} fired on {where}.","variants":{"shot":{"short":"{about} was fired on","line":"{about} was fired on {where}, in front of people."},"blast":{"title":"Car blown up","short":"a car blew up","line":"A car blew up {where}, close to people."}},"pick":"shot when a civilian or contact was shot at and no witness is named, blast when a car blew up near people, else the base"},
+   "drawn": {"title":"Weapon seen","short":"{who} saw {agent}'s gun","line":"{who} saw {agent} with a gun out {where}."},
+   "drawn-people": {"title":"Weapon seen","short":"people saw {agent}'s gun","line":"People {where} saw {agent} with a gun out."},
+   "warned": {"title":"Told to drop it","short":"{who} told {agent} to drop it","line":"{who} told {agent} to drop it. Holster, or it's called in."},
+   "fought": {"title":"Takedown failed","short":"{about} saw the Enforcer coming","line":"{about} saw the Enforcer coming, drew and called it in."},
+   "loiter": {"title":"Seen hanging about","short":"{who} saw {agent} hanging about","line":"{who} saw {agent} hanging about {where}."},
+   "recorded": {"title":"Caught on camera","short":"{who} saw the Fixer pay {about}","line":"{who} taped the Fixer paying {about}, and the desk saw it.","variants":{"pressure":{"short":"{who} saw the Fixer threaten {about}","line":"{who} taped the Fixer threatening {about}, and the desk saw it."}},"pick":"pressure when the act was a Pressure, else (a Pay) the base"},
+   "car": {"title":"Our car reported","short":"{who} reported our parked car","line":"{who} saw our car parked where cars don't stand."},
+   "entry": {"title":"The entry was seen","short":"the patrol saw the entry","line":"The patrol saw the Enforcer go in at the Office door and radioed it."},
+   "sighting": {"title":"Spotted as trouble","short":"{who} spotted {agent}","line":"This district fears us, so {who} reported {agent} on sight."},
+   "start": {"title":"On edge already","short":"on edge from the start","line":"Security was already on edge when the job began."}
+  },
+  "again": {"short":"the second report","line":"It was the second report, so security started a search."},
+  "effect": {"1":"Robots come to look.","2":"Police come to search, hiding places too.","3":"The doors lock, police close the exits and the roads shut."},
+  "police": {
+   "heard": {"title":"Police coming","short":"shots heard","line":"Shots were heard {where}, so the police are coming."},
+   "witness": {"title":"Police coming","short":"{who} saw the shooting","line":"{who} saw the shooting and called the police."},
+   "shot-at": {"title":"Police coming","short":"{about} was fired on","line":"{about} was shot at, and people called the police."},
+   "patrol": {"title":"Police coming","short":"the patrol was fired on","line":"The patrol was shot at {where} and called it in."},
+   "rivals": {"title":"Police coming","short":"the fight with the rivals","line":"Someone called in the fight with the rival crew {where}."},
+   "gang": {"title":"Police coming","short":"a shooting nobody saw","line":"Nobody saw who fired. Police come, but don't seal the district yet."},
+   "drawn": {"title":"Police coming","short":"{who} saw {agent}'s gun","line":"{who} saw {agent} with a gun out and called the police."},
+   "attack": {"title":"Police coming","short":"{about} called in an attack","line":"{about} fought the Enforcer off and called the police."},
+   "post": {"title":"Police coming","short":"the guard's post went quiet","line":"The guard missed his check-in, so police come to the empty post.","variants":{"unknown":{"short":"the guard was missed","line":"The guard was missed at his post, so the police are coming."}},"pick":"unknown until a Watch has taught the guard's routine, else the base"},
+   "report": {"title":"Police coming","short":"{cause}","line":"A report reached the desk, so the police are coming."},
+   "body": {"title":"Police coming","short":"a body was found","line":"A body was found, so police come to hold the doors near it."},
+   "robots": {"title":"Robots coming","short":"{cause}","line":"A report reached the desk, so robots are coming to look."},
+   "more": {"title":"More police","short":"the search goes on","line":"The search goes on, so the desk keeps sending more police."},
+   "cordon": {"title":"Lockdown","short":"the district locks down","line":"At Alert 3 the doors lock and police close the district's exits."},
+   "loud": {"title":"Police coming in","short":"shots earlier","line":"There were shots earlier, so police come in for the fight.","variants":{"alert":{"short":"security was searching","line":"Security was already searching, so police come in for the fight."}},"pick":"alert when no shot came before the final fight (Alert 2 made it loud), else the base"},
+   "split": {"title":"Police closing in","short":"Popovic is gone","line":"Popovic is gone, so police close in on whoever is left."},
+   "seal": {"title":"District sealing","short":"{cause}","line":"The police are on the street, so the district seals at {clock}."}
+  },
+  "onWay": {
+   "rule": "The marked reporter (brief 100, part 2): while a report is still to land, whoever makes it carries a `plate` (at most six words, then the seconds to its landing) and its `line` on Alt and in the Journal, by how it travels: radio (staff, from where they stand), walk or run (to the nearest report point, a staffed door or a call box: {to}), look (an Idealist checks the body first, so no landing yet), camera (on a watcher's tape: it lands at the desk's next scan), screen (a camera the Tech cut: the desk sees the dead screen at its next scan), robot (the patrol or the bin round rings the desk), checkin (a downed staff member's next mark, once their routine is known), tell (a call to a friend: no report, though a Loyal friend may make one). `fix` follows a plate the cell can still stop (a reporter downed first drops it), `nofix` one it can't (a tape, a dead screen, a robot's ring, a check-in). `stopped` is the pop when one never lands.",
+   "to": {"door:cafe-entrance":"the café phone","door:office-entrance":"the Office door","door:official-entrance":"the official door","call-box":"the call box","phone":"a phone"},
+   "ways": {
+    "radio": {"plate":"Radioing it in · {s} s","line":"{who} is radioing it in. It lands in {s} s."},
+    "walk": {"plate":"Going to {to} · {s} s","line":"{who} walks to {to} to report it. It lands in {s} s."},
+    "run": {"plate":"Running to {to} · {s} s","line":"{who} runs to {to} to report it. It lands in {s} s."},
+    "look": {"plate":"Going to look","line":"{who} is going to look first, then report it."},
+    "camera": {"plate":"On tape · desk in {s} s","line":"{who} has it on tape. The desk sees it in {s} s."},
+    "screen": {"plate":"Dead screen · desk in {s} s","line":"The desk sees {about} is dead in {s} s."},
+    "robot": {"plate":"Ringing the desk · {s} s","line":"{who} is ringing the desk. It lands in {s} s."},
+    "checkin": {"plate":"Check-in due · {s} s","line":"{about} is due to check in. When they don't, the desk knows."},
+    "tell": {"plate":"Going to tell someone","line":"{who} is going to {to} to tell a friend."}
+   },
+   "fix": "Stop them before it lands",
+   "nofix": "Too late to stop it",
+   "stopped": {"plate":"Report stopped","line":"{who} won't be making that report."}
+  },
+  "meter": {
+   "rule": "The Alert meter remembers (brief 100, part 3): a click or a hover on the Alert lamps lists each rise so far, newest first, each on two lines: `when` (the clock and the Alert it set) over `what` (its cause's short and where); a police call is listed the same way with `police` for its first line. `head` heads the list, `empty` shows at Alert 0 with nothing raised, `start` for an Alert set at the start. {where} is left out for a cause with no place (start, more, cordon, loud, split). Glyph lays it out; a row's hover is its cause's `line`.",
+   "head": "Why it's Alert {alert}",
+   "when": "{clock} · Alert {alert}",
+   "police": "{clock} · {title}",
+   "what": "{short} {where}",
+   "empty": "Nobody has raised the alarm",
+   "start": "Alert {alert} from the start"
   }
  },
  "debrief": {
@@ -838,7 +932,6 @@
   "confirm": {"kind":"reply","trigger":"the Fixer calls a turned contact: the contact confirms aloud (Chime voices it)","speakers":["waitress"],"log":["call.waitress"],"verbs":["call"]},
   "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
   "taken": {"kind":"reply","trigger":"Vale is brought out (the Enforcer takes him at the car, or comes out of the Office with him)","speakers":["councillor"],"log":["take.done","enter.out"],"verbs":["enter","take"]},
-  "start": {"kind":"world","trigger":"the mission starts, cell at the getaway car","speakers":["scout","fixer","tech","enforcer"],"log":["start"]},
   "chime": {"kind":"world","trigger":"the 5:10 handover chime","speakers":["scout","fixer"],"clock":"5:10"},
   "last-turn": {"kind":"world","trigger":"the 5:20 last chance to turn the driver","speakers":["scout","fixer"],"clock":"5:20"},
   "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:30"},
@@ -1082,15 +1175,15 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
-  "camera.recorded": "engine 0.40.0 (brief 096; rulebook camera): silent for now, pending Fable and Glyph: a camera has the Pay or Pressure on tape; the card comes when the record lands (camera.record-lands)",
+  "camera.recorded": "engine 0.40.0 (brief 096; rulebook camera): card only (cards.items, brief 100): a camera has the Pay or Pressure on tape; the marked reporter shows it until the record lands (camera.record-lands)",
   "camera.record-lands": "engine 0.40.0 (brief 096): card only (cards.items, Fable 2026-11-05): the camera's record reaches the desk (Alert up), or is on file at the end",
   "car.kerbside": "engine 0.40.0 (brief 096; rulebook car.kerb): card only (cards.items, Fable 2026-11-05): Popovic pulls in at the kerb because our car is on the service drive (replaces car.blocked's stop at the mouth, which stays only for the tick's window after he passes the kerbside point)",
   "car.boxed-in": "engine 0.40.0 (brief 096; rulebook car.box): card only (cards.items, Fable 2026-11-05): Popovic's car is boxed in (at the pickup he waits; at the close he stays, closed-in)",
   "car.noticed": "engine 0.40.0 (brief 096; rulebook attention.parked): silent: a watcher has noticed our car on private ground; the watcher's cue and the car's stage mark show it (Glyph)",
   "car.wary": "engine 0.40.0 (brief 096): silent: the watcher is wary of our car for the mission; the cue shows it",
-  "car.reported": "engine 0.40.0 (brief 096): silent: the watcher reports our car; the card comes when it lands (car.report-lands)",
+  "car.reported": "engine 0.40.0 (brief 096): card only (cards.items, brief 100): the watcher reports our car; the car's stage mark and the marked reporter show it until it lands (car.report-lands)",
   "car.report-lands": "engine 0.40.0 (brief 096): card only (cards.items, Fable 2026-11-05): the watcher's report of our car lands (Alert up)",
-  "car.report-stopped": "engine 0.40.0 (brief 096): silent: the watcher was downed before its report of our car landed",
+  "car.report-stopped": "engine 0.40.0 (brief 096): card only (cards.items, brief 100): the watcher was downed before its report of our car landed",
   "car.blocked": "engine 0.32.0 (brief 059): card only: Vale's car stops at the road because our car is on the service drive; the Take still works from the back seat",
   "car.parks": "engine 0.32.0 (brief 059): event car-parks and a card: the turned driver parks Vale's car in the service bay",
   "car.parked": "engine 0.32.0 (brief 059): silent: the getaway car has stopped. The street shows it, the Drive's price line gave the time and the riders leave \"Driving\"; a line would only repeat that",
@@ -1151,8 +1244,8 @@
   "scout.": "scout.watch.watched and scout.listen.heard: spoken by `read`",
   "attention.noticed": "a watcher notices a loiterer or, since engine 0.34.0, a runner in its sight: its cue shows it, and hint H19 teaches it once",
   "attention.wary": "a watcher turns wary: its cue shows it",
-  "attention.stopped": "a watcher cools: its cue shows it",
-  "attention.landed": "the loiterer report reaches the desk: report.landed speaks",
+  "attention.stopped": "card only (cards.items, brief 100): the watcher was downed before its report of a loiterer landed, so it never lands",
+  "attention.landed": "card only (cards.items, brief 100): the loiterer report reaches the desk (Alert up); no report.landed is logged for it, and why.alert.loiter words the cause",
   "fixer.watch.container": "a container Watch: the card says the round",
   "tech.watch.container": "a container Watch: the card says the round",
   "enforcer.watch.container": "a container Watch: the card says the round",
@@ -1202,7 +1295,7 @@
   "board.in": "an agent is in the car: the order's ack spoke, and the car marker's pip fills",
   "board.out": "an agent steps out of the car as part of a walk; walks are silent",
   "horizon.open": "engine bookkeeping at the close",
-  "start": "spoken by `start`",
+  "start": "silent: Sky 2026-11-07 (\"what is this stupid words at the start of every game?\") cut the four start barks, so the game opens on the street with no chatter",
   "success": "spoken by `win`",
   "withdraw": "spoken by `withdraw`",
   "fight.guard": "spoken by `fight-guard`",
@@ -1220,7 +1313,11 @@
   "carry.down": "the drop order's ack covers it; the feed card says where the body lies",
   "restrain.freed": "card only: someone untied the body",
   "report.stopped": "card only: the reporter was taken down before the call",
-  "victim.statement": "card only: the response brought the victim round"
+  "victim.statement": "card only: the response brought the victim round",
+  "traffic.shoved": "brief 098 (law L8): a car pushes a wrecked passing car aside: the street shows it",
+  "traffic.closed": "brief 098 (law L8): at Alert 3 the roads into the district close and no car comes in: the street shows it, and why.effect says it",
+  "traffic.brakes": "brief 098 (law L8): passing cars brake hard at gunfire nearby or a gun drawn in a driver's sight: the street shows it",
+  "traffic.driver-out": "brief 098 (law L8): a passing car's driver gets out and runs from the gunfire or the gun, a passer-by from then on: the street shows it"
  },
  "hints": {
   "rules": {
@@ -2234,7 +2331,7 @@
    "walk": {
     "plate": "→ {who}",
     "line": "to {target} · {verb}",
-    "who": {"waitress": "Inez", "driver": "driver", "guard": "guard", "councillor": "Popovic", "door": "door", "cabinet": "cabinet", "camera-entrance": "camera", "camera-pickup": "camera", "camera-mast-z0": "camera", "car-getaway": "car", "car-official": "car", "patrol": "patrol", "rivals": "rivals", "crowd": "passer-by", "crowd-guard": "guard", "crowd-officer": "officer"}
+    "who": {"waitress": "Inez", "driver": "driver", "guard": "guard", "councillor": "Popovic", "door": "door", "cabinet": "cabinet", "camera-entrance": "camera", "camera-pickup": "camera", "camera-mast-z0": "camera", "car-getaway": "car", "car-official": "car", "patrol": "patrol", "rivals": "rivals", "crowd": "passer-by", "crowd-guard": "guard", "crowd-officer": "officer", "crowd-clerk": "clerk", "crowd-resident": "local", "crowd-server": "server", "crowd-cook": "cook", "crowd-attendant": "attendant", "crowd-keeper": "shopkeeper"}
    }
   }
  },

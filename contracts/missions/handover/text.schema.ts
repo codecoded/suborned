@@ -40,6 +40,7 @@ import { TEMPERAMENTS } from '../../people/people.rules.schema.ts';
 import { fnv1a32 } from '../../rules/rulebook.ref.ts';
 import { CaptureClip, Conversations } from './conversations.schema.ts';
 import { Book } from './book.schema.ts';
+import { Why } from './why.schema.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
@@ -491,6 +492,7 @@ export const TextFile = z.strictObject({
   scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1), conversations: Conversations.optional().describe('brief 085: conversations.schema.ts'), clip: CaptureClip.optional().describe('brief 085: the capture clip\'s plate') }),
   book: Book.describe('brief 088: the book\'s own words (book.schema.ts)'),
   less: Less.describe('brief 014 (less reading): the short forms and grammar the HUD reads at rest; the long lines above are the Alt and debrief text'),
+  why: Why.optional().describe('brief 100: the cause of every Alert rise and police call, and the reporter on the way (why.schema.ts)'),
   pending: Pending.optional().describe('briefs 058 and 059: words for engine changes that are approved but not built; nothing here is read by the host until its entry moves to its live place'),
 });
 export type TextFile = z.infer<typeof TextFile>;
