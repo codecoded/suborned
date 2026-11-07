@@ -57,6 +57,7 @@ Each law is one plain rule that holds everywhere, for everyone, in every mission
 | L6 | **Crowds.** People flee danger, take cover, gather to look once it's quiet, and drift back to their routines. | how far a shot clears a street; how long until people return |
 | L7 | **Memory.** People remember faces and what they saw. Questioning later works through memory and nature (the Talker test). | what a witness keeps; the Talker test (exists) |
 | L8 | **Traffic.** Drivers keep to their lanes, stop for people in the road and for cars ahead, pull over for police, and brake or flee at gunfire. Roads close in a lockdown. A car is a car: it can be shot, hidden behind or blown up. | lane headways from the plan; how traffic reacts to shots and Alert |
+| L9 | **Bodies.** People have real bodies: no two ever overlap, they keep a little space and step round each other, a place holds one body and the next takes the spot beside it, and armed groups stand apart covering different angles (Sky 2026-11-07: "ensuring NPC's don't overlap each, they have real boundaries"; "we need to think about real tactics from this"). | body radius; personal space at rest and walking; a crew's spacing |
 
 What it replaces: per-person and per-mission timings in the design text (a waitress's seconds, a report's seconds, "reported in 45–60 s"). Those become what the laws produce in a place, not what we write down.
 
