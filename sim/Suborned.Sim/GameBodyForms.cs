@@ -74,13 +74,20 @@ namespace Suborned.Sim
             if (b.RoomFor != null) { goal = b.RoomAt; why = WhyRoom; form = false; } // making room for one it held (GameBodyGive.cs)
             else if (b.GiveEnd > Tick) { goal = b.GiveAt; why = WhyGive; form = false; } // giving way to one it held (GameBodyDetours.cs)
             else if (DetourAim(ref b, from) is Pt way) { goal = way; why = b.Catch ? WhyCatch : WhyDetour; form = false; } // on its way round what held it, or back to where it makes for
-            bool urgent = !Fits(i, from, false); // someone stands inside two radii of where it stood (a tenet walked on it), or a car stood on it: it steps clear now
+            bool urgent = !Fits(i, from, false); b.Urgent = urgent; // someone stands inside two radii of where it stood (a tenet walked on it), or a car stood on it: it steps clear now
             int rate = b.Fresh ? int.MaxValue : urgent || onCar || (why == WhyRoom && RoomForTenet(in b)) ? R.BodyShoveCmT : why == WhyDetour || why == WhyGive || why == WhyRoom ? WalkCmT : why == WhyCatch ? Math.Max(R.BodyBackCmT, WalkCmT) : b.Moving && goal != b.Aim ? R.BodyShoveCmT : behind && goal == b.Aim ? Math.Max(R.BodyBackCmT, WalkCmT) : goal == b.Raw ? R.BodyBackCmT : Math.Max(R.BodyBackCmT, WalkCmT); // behind, it hurries
-            int reach = b.Fresh ? int.MaxValue : b.SqzId != null ? Math.Min(b.Pace, R.BodySqueezeCmT) : Math.Min(b.Pace, rate + (int)G.Isqrt(G.D2(b.Head, default))); // its own step this tick and the law's pace on top, never over its own pace (nobody jumps); squeezing past, slower
-            int most = b.Fresh ? R.BodySearchCm : Math.Min(b.Pace, R.BodyShoveCmT); // the farthest it may step aside this tick when it must
+            // engine 0.47.1 (Latch at people=128: one about to squeeze was slid at the city's run, once straight back; drawn, a dash): the law's own moves go no
+            // faster than a walk (the city's), or the body's own step this tick when that is faster: a sidestep, making room (for a tenet too), giving way, a way
+            // round or back, a stop's form, a ring round its own place, stepping off ground no body stands on, sliding round whoever is in its way. Only its own
+            // way keeps the law's pace (its own place, catching it up, a change of plans' place), and stepping clear of one already inside two radii (urgent).
+            int head = (int)G.Isqrt(G.D2(b.Head, default)), walk = Math.Min(b.Pace, Math.Max(WalkCmT, head));
+            bool ownWay = !onCar && goal == b.Aim && (why == WhyOwn || why == WhyFollow || why == WhyAlt);
+            int reach = b.Fresh ? int.MaxValue : b.SqzId != null ? Math.Min(b.Pace, R.BodySqueezeCmT) : Math.Min(urgent || ownWay ? b.Pace : walk, rate + head); // its own step this tick and the law's pace on top, never over its own pace (nobody jumps); squeezing past, slower
+            int slide = b.Fresh || urgent ? reach : Math.Min(reach, walk); // round whoever is in its way: a step aside, at a walk
+            int most = b.Fresh ? R.BodySearchCm : Math.Min(b.Pace, R.BodyShoveCmT); // the farthest it may step aside this tick when it must (where it stood is not clear: urgent)
             var next = Toward(from, goal, reach); Pt at; bool clear = Fits(i, next, false); if (!clear) b.Blk = Blocker(i, next, false); // who holds its step (GameBodyDetours.cs)
             if (clear) { at = next; why |= 1 << 4; }
-            else if (Slide(i, from, goal, reach, out var sl) && (long)(sl.X - from.X) * b.SlideV.X + (long)(sl.Y - from.Y) * b.SlideV.Y >= 0) { at = sl; why |= 2 << 4; } // round whoever is in the way, toward where it is going; never straight back the way it slid last tick (no dancing: it waits, then asks, gives way or walks round)
+            else if (Slide(i, from, goal, slide, out var sl) && (long)(sl.X - from.X) * b.SlideV.X + (long)(sl.Y - from.Y) * b.SlideV.Y >= 0) { at = sl; why |= 2 << 4; } // round whoever is in the way, toward where it is going; never straight back the way it slid last tick (no dancing: it waits, then asks, gives way or walks round)
             else if (cur != next && G.Within(cur, from, reach) && Fits(i, cur, false)) { at = cur; why |= 3 << 4; }
             else if (!b.Fresh && Fits(i, from, false)) { at = from; why |= 4 << 4; } // a walker waits a moment where it stood
             else if (NearClear(i, from, most, out var nc)) { at = nc; why |= 5 << 4; } // or steps aside from there

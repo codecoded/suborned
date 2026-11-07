@@ -65,7 +65,7 @@ namespace Suborned.Sim
         /// <summary>One body this tick. At: where it stands now (laid this tick, or where it stood last tick while waiting its turn: Prev).</summary>
         struct Bd
         {
-            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm; // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street
+            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm, Urgent; // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street; Urgent: one laid before it this tick stands inside two radii of where it stood (a probe read, never stored)
             public Pt Raw, Own, Lay, At, Prev, Head, Face, LayFace, Aim; public long Key, PathMm; public int StuckN, HeldN, DetEnd, DetTries, Slot, Blk, GiveEnd; public Path? Det; public bool Catch; public Pt HeldAt, GiveAt; public string? BlkId; public byte Why, Fix; public object? BRef; public int BN; public Pt BAt; public Path? Path; public bool PathBack; public string? Stop; // Path, PathMm: the walk its own place is on, how far along, and walked end to start (a kite's way back); Own: where it makes for (its own place, or its change of plans)
             public string? RoomFor, SqzId, AltStop, RoomDone; public Pt RoomAt, RoomFrom, RoomDir, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil, RoomDoneUntil; public bool AltOn; // GameBodyGive.cs; SlideV: last tick's slide (GameBodyForms.cs)
         }
@@ -135,7 +135,7 @@ namespace Suborned.Sim
         {
             bdN = 0; bdIx.Clear(); seatSeen.Clear();
             // the tenets: the cast where their rules put them, the patrol on its sweep
-            for (int i = 0; i < People.Count && i < 4; i++) { var at = CastOnFoot(People[i]); if (at.HasValue) AddBd(People[i].Id, BkCast, BcFixed, i, at.Value, castLay[i], FmNone, default, CastPlan(i), !(People[i] == ValeP && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking))); } // Vale held or being seized goes with whoever holds him
+            for (int i = 0; i < People.Count && i < 4; i++) { var at = CastOnFoot(People[i]); if (at.HasValue) AddBd(People[i].Id, BkCast, BcFixed, i, at.Value, castLay[i], FmNone, default, CastPlan(i), !(People[i] == ValeP && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) || !castLay[i].Live(Tick) || castLay[i].Lay != default); } // Vale held or being seized goes with whoever holds him; engine 0.47.1: stepping out (of the Office door) where someone stands, he steps out beside them first, as the rest of the cast do, and joins his holder as a tenet walking does (0.47.0 laid him on a passer-by)
             if (!PatrolDown && PatrolPoseRaw() is var pp && pp.HasValue)
             {
                 AddBd("patrol", BkPatrol, BcFirm, 0, pp.Value.pos, patrolLay, FmNone, default, PatrolPlan());

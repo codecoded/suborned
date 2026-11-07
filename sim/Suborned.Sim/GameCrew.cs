@@ -388,7 +388,7 @@ namespace Suborned.Sim
         void MemberHit(CrewMember m, bool down, string by)
         {
             if (!down) { Note("rivals.hit", $"{m.Id} of the rival crew is hit."); return; }
-            m.DownAt = !m.Fight && m.N >= 1 && m.N <= crewLay.Length ? Laid(RawMemberPos(m, Tick), crewLay[m.N - 1], Tick, CrewPlan(m)) : RawMemberPos(m, Tick); // brief 098 L9: he falls where he stood, laid m.Disp = null; m.Until = INF; ReleaseCover(m.Gun); LoseTarget(m.Gun);
+            m.DownAt = !m.Fight && m.N >= 1 && m.N <= crewLay.Length ? Laid(RawMemberPos(m, Tick), crewLay[m.N - 1], Tick, CrewPlan(m)) : RawMemberPos(m, Tick); m.Disp = null; m.Until = INF; ReleaseCover(m.Gun); LoseTarget(m.Gun); // brief 098 L9: he falls where he stood, laid; engine 0.47.1: and his kite walk, his clock, his cover and his aim go with him (0.46.0's comment had swallowed them)
             Note("rivals.down", $"{m.Id} of the rival crew is down."); Chain.Add(m.Id + "-down");
             CrewBreakCheck();
         }

@@ -115,9 +115,10 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "beside-inez"), r.Send(Fixer, "d:Courtyard")));
                 r.To(T(20)); r.Do(Fixer, "call", Inez);
-                var arrive = g.LureTick + g.VisitWalkTicks; r.To(arrive + 1);
-                var gp = g.GuardPose()!.Value; var stops = g.S.Rounds!.GuardStops;
-                r.Is(gp.phase == "at café" && G.Within(gp.pos, stops[0], 5), $"he stands at the first stop {stops[0]} (at {gp.pos})");
+                var arrive = g.LureTick + g.VisitWalkTicks; r.To(arrive + 1); var stops = g.S.Rounds!.GuardStops;
+                // brief 098 L9 (engine 0.47.1): a tenet walking steps round people at a walk, so he may come to stand on the stop a moment after his walk's clock
+                r.Is(r.Until(() => g.GuardPose() is { } p && p.phase == "at café" && G.Within(p.pos, stops[0], 5), T(3)), $"he comes to stand at the first stop {stops[0]} (at {g.GuardPose()?.pos}, {Report.Clock(g.Tick)})");
+                var gp = g.GuardPose()!.Value;
                 var scout = r.Op(Scout).Pos; int d = G.Dist(gp.pos, scout);
                 r.Is(d >= 140, $"he is {d} cm from the Scout, not on top of him (was 90 cm at the old stop)");
                 r.Is(G.Dist(gp.pos, g.S.Stand(g.Inez.Place)) >= g.R.PartnersCloseCm - 5 && G.Dist(gp.pos, g.S.Stand(g.Inez.Place)) <= g.R.PartnersCloseCm + 5, "1.2 m from her post");

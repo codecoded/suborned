@@ -61,7 +61,7 @@ public class BodiesGiveTests
                     now.Add(u.Id); if (!since.ContainsKey(u.Id)) { since[u.Id] = g.Tick; orders++; }
                     if (!City(g, u)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) made room, but it keeps its place");
                     if (g.Tick - since[u.Id] > Game.T(6) + 1) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} has stood aside for {m.RoomFor} over 6 s");
-                    if (up.Exists(x => x.Id == m.RoomFor) && up.First(x => x.Id == m.RoomFor) is var a && G.Within(a.At, u.At, g.R.BodyMinCm) && !BodyCheck.Squeezing(g, a, u, G.Dist(a.At, u.At))) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} made room for {m.RoomFor} inside two radii of it");
+                    if (up.Exists(x => x.Id == m.RoomFor) && up.First(x => x.Id == m.RoomFor) is var a && G.D2(a.At, u.At) < (long)g.R.BodyMinCm * g.R.BodyMinCm && !BodyCheck.Squeezing(g, a, u, G.Dist(a.At, u.At))) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} made room for {m.RoomFor} inside two radii of it"); // closer than two radii (BodyCheck.Closer's measure; two radii apart is allowed: engine 0.47.1 met it exactly, route-a at 6:34.3)
                 }
                 foreach (var id in since.Keys.Where(k => !now.Contains(k)).ToList()) since.Remove(id); // stepped back (or left the street): the next ask is a new one
             });

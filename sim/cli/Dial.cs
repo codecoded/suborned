@@ -164,11 +164,14 @@ static class DialCli
             var pc = g.Census.Find(c => c.Kind == "people") ?? Population.Today(inputs).Single(c => c.Kind == "people");
             for (int t = 0; t < Game.T(inputs.SiteData.Over); t += Game.Hz) { foreach (var w in g.Walkers) if (Population.KindOf(pop, w.P.Job) == "people" && g.CrowdPos(w, t) is Pt wp && g.S.Grid.InGrid(wp)) street++; n++; } // brief 098 step 1b: the people on the street by routine every second (the crowd in the window), and the cast's share below
             street += pc.CastStreet10 * n / 10;
-            return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "",
+            return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "", downs: g.Log.Count(l => l.Code == "rivals.down"),
                 cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum(), jams: Jams.Of(g, p.Extra, System.IO.Path.GetFileName(it).Replace(".adaptive.json", ""))); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them; step 1b: its jams
         });
         var rows = new Row[settings.Count]; for (int s = 0; s < rows.Length; s++) rows[s] = new Row();
         int bad = 0;
+        if (Environment.GetEnvironmentVariable("SUBORNED_SWEEP_RUNS") is string rlog) // engine 0.47.1: one line a run (setting, plan, seed, outcome, end tick, rival crew members down on the street), to compare two engines run by run
+            File.WriteAllLines(rlog, Enumerable.Range(0, jobs.Count).Select(j => string.Join("\t", settings[jobs[j].set].name, System.IO.Path.GetFileName(jobs[j].item).Replace(".adaptive.json", "").Replace(".json", ""), jobs[j].seed.ToString(CultureInfo.InvariantCulture),
+                res[j].error != null ? "error" : res[j].value.res == Outcome.Success ? "success" : res[j].value.fail.Length > 0 ? res[j].value.fail : res[j].value.res.ToString().ToLowerInvariant(), res[j].error != null ? "-" : res[j].value.tick.ToString(CultureInfo.InvariantCulture), res[j].error != null ? "-" : res[j].value.downs.ToString(CultureInfo.InvariantCulture))));
         for (int j = 0; j < jobs.Count; j++)
         {
             var r = rows[jobs[j].set]; var plan = System.IO.Path.GetFileName(jobs[j].item).Replace(".adaptive.json", "").Replace(".json", ""); r.Runs++;
