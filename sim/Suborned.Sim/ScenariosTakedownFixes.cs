@@ -204,14 +204,16 @@ namespace Suborned.Sim
                 r.Is(!a.Noticed.Contains("camera:pickup") && !g.Reps.Exists(x => x.Act == a.Id && x.By == "camera:pickup"), "the looped pickup camera does not report it");
             });
 
-            Add("N73", "—", "A Take seen is a takedown seen (Aster 2026-10-16; Waymark §5.2: guard 74 stood 4 m from Vale at 6:10 and did nothing): the pickup camera looped and the rivals sent away, the Enforcer takes Vale at his car at 6:10 in front of guard 74 at the official entrance. At sight: the witnesses' reactions, +1 witness Trail and one step toward Menace, no Alert; guard 74 (staff) radios it, and when the first report lands, Alert 3 (a takedown seen) and the response. One incident; no assault Trail (the Take keeps its own, +2 T on an unturned driver, when it lands). An unseen Take opens nothing (N57b).", r =>
+            Add("N73", "—", "A Take seen is a takedown seen (Aster 2026-10-16; Waymark §5.2: guard 74 stood 4 m from Vale at 6:10 and did nothing): the pickup camera looped, the patrol rerouted and the rivals sent away, the Enforcer takes Vale at his car at 6:10 in front of guard 74 at the official entrance. At sight: the witnesses' reactions, +1 witness Trail and one step toward Menace, no Alert; guard 74 (staff) radios it, and when the first report lands, Alert 3 (a takedown seen) and the response. One incident; no assault Trail (the Take keeps its own, +2 T on an unturned driver, when it lands). An unseen Take opens nothing (N57b).", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, new Pt(8600, -3400)))); // c025 (brief 031): the tip waits outside the pickup camera's cone
                 r.To(T(g.S.RivalsArrive) + 1); /* brief 096: the false tip is retired; no crew here (NoCrew) */ 
                 r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); // engine 0.48.0: and the patrol sent away over the Take, so only a person sees it (Vale's car 0.5 m out, brief 098: the patrol's sweep saw the Take itself, Alert 2 at once, another rule)
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
                 r.To(T(g.ClockValeAtCar));
+                r.Is(g.PatrolAwayUntil > g.Tick, "the patrol is away over the Take");
                 var w74 = WalkerById(r, "p-records-office-74");
                 r.Is(g.CrowdPos(w74) is Pt p74 && G.Within(p74, g.ValePos()!.Value, g.R.WitnessRangeCm), "guard 74 stands within witness range of Vale at his car");
                 int trail = g.Trail, standing = g.Standing;

@@ -78,7 +78,7 @@ public class BodiesTests
                     foreach (var x in l) if (was.TryGetValue(x.id, out var xw) && xw == x.at && !g.BodyHeld(x.id) && !G.Within(x.at, x.raw, reach)) bad.Add($"{x.id} at {kv.Key} stands {G.Dist(x.at, x.raw)} cm from it ({Report.Clock(g.Tick)})"); // at rest, settled (one still on his way is behind; one held on it, engine 0.47.0, is not yet there)
                     if (crew) // armed at one post, at rest: the holder and those at crew spots bodies.crew apart, each to his sector; one with no spot free, personal space (one just come, stepping to his spot, is on his way)
                     {
-                        bool still(int k) => was.TryGetValue(l[k].id, out var p) && p == l[k].at && !g.BodyHeld(l[k].id); // settled, not held on its way
+                        bool still(int k) => was.TryGetValue(l[k].id, out var p) && p == l[k].at && !g.BodyHeld(l[k].id) && g.BodyMove(l[k].id) == null; // settled, not held on its way, not in the give and take (engine 0.48.0: a guard making room for a mate who has just come is neither)
                         for (int i = 0; i < l.Count; i++) for (int j = i + 1; j < l.Count; j++)
                         {
                             if (!still(i) || !still(j)) continue; bool both = l[i].slot >= 0 && l[j].slot >= 0; int d = G.Dist(l[i].at, l[j].at);
@@ -108,7 +108,7 @@ public class BodiesTests
                     for (int i = 0; i < l.Count; i++) for (int j = i + 1; j < l.Count; j++)
                     {
                         pairs++; // at rest: neither moved since the tick before (one just come, stepping to his crew spot, is on his way)
-                        if (!(was.TryGetValue(l[i].Id, out var pi) && pi == l[i].info.at && was.TryGetValue(l[j].Id, out var pj) && pj == l[j].info.at) || h.BodyHeld(l[i].Id) || h.BodyHeld(l[j].Id)) continue; // settled: neither moved, neither held on his way
+                        if (!(was.TryGetValue(l[i].Id, out var pi) && pi == l[i].info.at && was.TryGetValue(l[j].Id, out var pj) && pj == l[j].info.at) || h.BodyHeld(l[i].Id) || h.BodyHeld(l[j].Id) || h.BodyMove(l[i].Id) != null || h.BodyMove(l[j].Id) != null) continue; // settled: neither moved, neither held on his way, neither making room (engine 0.48.0: the armed make room for their own side)
                         still++; int d = G.Dist(l[i].info.at, l[j].info.at);
                         if (d < h.R.BodySpaceCm) bad.Add($"{l[i].Id} and {l[j].Id} share {grp.Key}: {d} cm ({Report.Clock(h.Tick)})");
                     }

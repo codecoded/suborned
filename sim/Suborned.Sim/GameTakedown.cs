@@ -488,7 +488,7 @@ namespace Suborned.Sim
 
         /// <summary>The nearest report point by the grid walk (ties on id): the site's staffed doors and its call boxes. Returns its stand and
         /// the walk there, or null if none can be walked to.</summary>
-        (string id, Pt at, Path path)? ReportPoint(Pt from)
+        internal (string id, Pt at, Path path)? ReportPoint(Pt from)
         {
             (string id, Pt at, Path path)? best = null;
             var pts = new List<(string, Pt)>();

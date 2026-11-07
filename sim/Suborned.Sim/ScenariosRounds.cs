@@ -27,13 +27,16 @@ namespace Suborned.Sim
 
         static void RoundsCases()
         {
-            Add("N130", "—", "A Listen while she serves is taken (engine 0.23.0, rulebook cell.approach; Sky 2026-10-22: \"we shouldn't block actions whilst Inez is moving about\"): Inez's round takes her to table 3 at 0:34 (serving 0:42 to 0:57). The Scout at beside-inez (her routine known from the briefing) is 3 m from her post, about 8 m from the table: a Listen at 0:45 is taken, not refused too-far. The card shows the walk first (WalkInS; the HUD's RoundNext still says when she is back at her post); the Scout walks to her (a walk; the activity says listen), the Listen starts the first tick he stands within 3 m, within 2 s of the card's walk, and from then she is held where she is, at the table, until it lands plus the linger.", r =>
+            Add("N130", "—", "A Listen while she serves is taken (engine 0.23.0, rulebook cell.approach; Sky 2026-10-22: \"we shouldn't block actions whilst Inez is moving about\"): Inez's round takes her to a table out of the Scout's reach. The Scout at beside-inez (her routine known from the briefing) is 3 m from her post: a Listen a third into her serving there is taken, not refused too-far. The card shows the walk first (WalkInS; the HUD's RoundNext still says when she is back at her post); the Scout walks to her (a walk; the activity says listen), the Listen starts in reach, never later than the card said (and no sooner than its look-ahead step and its whole seconds allow), and from then she is held where she is, at the table, until it lands plus the linger. Engine 0.48.0: the table is her round's (the first she serves out of the Scout's reach), not table 3 at 0:34; the round was baked anew on today's clock.", r =>
             {
                 var g = r.G;
                 r.Is(g.RoundsOn, "the mission's data plays her round");
+                var sv = g.S.Rounds!.Servers[g.Inez.Id]; var beside = g.S.Stand("beside-inez");
+                var ex = sv.Exc.FirstOrDefault(x => !G.Within(beside, x.At, g.R.ListenReachCm) && x.Serve >= 6);
+                if (!r.Is(ex != null, "her round serves a table out of the Scout's reach")) return;
                 r.To(r.Send(Scout, "beside-inez"));
-                r.To(T(45));
-                r.Eq(PhaseOf(g), "serving", "at 0:45 she serves a table");
+                r.To(Math.Max(g.Tick, T(sv.Origin + ex!.Start + ex.Out) + T(ex.Serve) / 3));
+                r.Eq(PhaseOf(g), "serving", $"at {Report.Clock(g.Tick)} she serves {ex.Table}");
                 int n = g.RoundNext(g.Inez); r.Is(n > 0 && n < T(60), $"the HUD's read: back at her post in {n / Game.Hz} s");
                 var her = g.PersonPos(g.Inez)!.Value; int reach = g.R.ListenReachCm;
                 r.Is(!G.Within(r.Op(Scout).Pos, her, reach), $"the Scout is out of reach ({G.Dist(r.Op(Scout).Pos, her) / 100} m; Listen {reach / 100} m)");
@@ -50,7 +53,7 @@ namespace Suborned.Sim
                 int startT = g.Tick, took = startT - given;
                 var at = g.PersonPos(g.Inez)!.Value;
                 r.Is(G.Within(r.Op(Scout).Pos, at, reach), $"it starts within {reach / 100} m of her ({G.Dist(r.Op(Scout).Pos, at)} cm)");
-                r.Is(Math.Abs(took - T(walkS)) <= T(2), $"after {took / Game.Hz}.{took % Game.Hz} s of walking (the card said {walkS} s)");
+                r.Is(took <= T(walkS) && took >= T(walkS) - T(g.R.ListenStepS) - T(1), $"after {took / Game.Hz}.{took % Game.Hz} s of walking (the card said {walkS} s: it looks ahead {g.R.ListenStepS} s at a time, in whole seconds)");
                 r.Is(G.Dist(at, her) <= 100, "she is still at her table: the Scout came to her");
                 g.Step(); r.Eq(PhaseOf(g), "held", "spoken to, she stands still");
                 int lands = r.Op(Scout).BusyEnd; bool still = true;
@@ -59,7 +62,7 @@ namespace Suborned.Sim
                 r.Is(g.Inez.KNeed, "the Listen landed: her need is known");
             }, KnowingRoutine());
 
-            Add("N131", "—", "The chain hold (brief 022, rounds.holds and linger): the Scout listens to Inez at 0:20 (her routine known from the briefing); the Fixer's Help is given at the tick the Listen lands. One hold from the Listen's start to the Help's landing plus 3 s: she stands still the whole way, though her round would have taken her to table 3 at 0:34; the round clock stopped, so she goes out what was left of it after the hold.", r =>
+            Add("N131", "—", "The chain hold (brief 022, rounds.holds and linger): the Scout listens to Inez at 0:20 (her routine known from the briefing); the Fixer's Help is given at the tick the Listen lands. One hold from the Listen's start to the Help's landing plus 3 s: she stands still the whole way, though her round would have taken her out to a table meanwhile; the round clock stopped, so she goes out what was left of it after the hold. Engine 0.48.0: the excursion is her round's next after the hold began, not table 3 at 0:34.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "beside-inez"), r.Send(Fixer, "d:Courtyard")));
@@ -68,11 +71,15 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => r.Op(Scout).Busy != null, T(60)), "the Scout takes a spot and the Listen starts (engine 0.39.0: the hold starts with it, not with the order)"); int from = g.Tick; r.Done(Scout);
                 a = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "turn", Target = Inez, Approach = "help" }); r.Is(a.ok, $"Help at the Listen's landing ({a.why})");
                 int lands = r.Op(Fixer).BusyEnd;
+                var sv = g.S.Rounds!.Servers[g.Inez.Id]; var ex = sv.Exc.FirstOrDefault(x => T(sv.Origin + x.Start) >= from);
+                if (!r.Is(ex != null, "her round has an excursion after the hold begins")) return;
+                int due = T(sv.Origin + ex!.Start);
+                r.Is(due < lands + T(g.R.RoundsLingerS), $"her round was due out to {ex.Table} at {Report.Clock(due)}, inside the hold");
                 bool still = true; while (g.Tick < lands + T(g.R.RoundsLingerS)) { if (PhaseOf(g) != "held") still = false; g.Step(); }
-                r.Is(still, $"held from {Report.Clock(from)} to {Report.Clock(lands)} + 3 s, through 0:34 when her round was due out");
+                r.Is(still, $"held from {Report.Clock(from)} to {Report.Clock(lands)} + 3 s, through {Report.Clock(due)} when her round was due out");
                 int back = g.Tick;
                 r.Eq(PhaseOf(g), "at post", "the hold over, she stands her post");
-                r.Is(r.Until(() => PhaseOf(g) == "to table", T(30)) && Math.Abs(g.Tick - back - (T(34) - from)) <= 1, $"her round goes on where it stopped: out {(g.Tick - back) / Game.Hz} s later ({(T(34) - from) / Game.Hz} s: her clock stood at {Report.Clock(from)}, her round due out at 0:34)");
+                r.Is(r.Until(() => PhaseOf(g) == "to table", T(30)) && Math.Abs(g.Tick - back - (due - from)) <= 1, $"her round goes on where it stopped: out {(g.Tick - back) / Game.Hz} s later ({(due - from) / Game.Hz} s: her clock stood at {Report.Clock(from)}, her round due out at {Report.Clock(due)})");
             }, KnowingRoutine());
 
             Add("N132", "—", "The call from mid-walk (brief 022, the summons): Inez turned, the Fixer calls at 0:36, 2 s into her walk to table 3. She turns back and walks to her post; the guard walks the route he always walked to her post and stops 1.2 m short of it, facing her (his walk 1.2 m shorter than to the post); from his arrival they stand together until he turns to go, plus 2 s; then her round resumes at the start of its next rest.", r =>

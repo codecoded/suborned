@@ -121,6 +121,7 @@ namespace Suborned.Sim
         bool ChairFree(string name, int from, int to)
         {
             foreach (var w in Walkers) for (int i = 0; i < w.Place.Length; i++) if (w.Place[i] == name && w.From[i] < to && w.To[i] > from) return false;
+            foreach (var c in S.Cast) if (People2 != null && People2.Stops.TryGetValue(c.Id, out var cs)) foreach (var (place, f, t, _) in cs) if (place == name && f < to && t > from) return false; // brief 098 L9: a chair a cast member's stops name over the stay (the cast are played by role, not as walkers)
             return true;
         }
 

@@ -359,6 +359,7 @@ namespace Suborned.Sim
                 }
                 var gun = SecGuns[k]; gun.Engaged = true; gun.St = "advance"; LoseTarget(gun);
                 var h = new Hostile { Id = gun.Id, At = from, Speed = secSpeed, Present = true, Gun = gun, Home = home };
+                if (k < secLay.Length && secLay[k].Live(Tick)) h.Body = secLay[k]; // engine 0.48.0 (L9, nobody jumps): the same body, already on the street: the law walks it from where it stood (0.47 placed it afresh on its fight walk's first cell, up to half a metre off)
                 Hostiles.Add(h); secJoined[k] = true;
                 if (cov.Length > 0) TakeCover(gun, CoverById(cov)!);
                 MoveToFight(h, home); // engine 0.34.0 (Motive M067-SQ1): to its stand round the car's hold (h.Why "post")

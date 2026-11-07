@@ -102,15 +102,15 @@ namespace Suborned.Sim
         {
             long mine = G.D2(me, shooter), max2 = (long)R.CrowdFleeMaxCm * R.CrowdFleeMaxCm;
             (string id, Pt at) best = ("", me); long bd = long.MaxValue;
-            foreach (var (id, at, _) in S.Refuges)
+            foreach (var (id, door, _) in S.Refuges)
             {
-                long d = G.D2(me, at);
+                var at = ShelterAt(id, door); long d = G.D2(me, at); // brief 098 L9: at a door the cast hold, in from beside the holder
                 if (d > max2 || G.D2(at, shooter) <= mine) continue;
                 if (d < bd || (d == bd && string.CompareOrdinal(id, best.id) < 0)) { bd = d; best = (id, at); }
             }
             if (best.id.Length > 0) return best;
             long far = -1;
-            foreach (var (id, at, _) in S.Refuges) { long d = G.D2(at, shooter); if (d > far || (d == far && string.CompareOrdinal(id, best.id) < 0)) { far = d; best = (id, at); } }
+            foreach (var (id, door, _) in S.Refuges) { var at = ShelterAt(id, door); long d = G.D2(at, shooter); if (d > far || (d == far && string.CompareOrdinal(id, best.id) < 0)) { far = d; best = (id, at); } }
             return best;
         }
 

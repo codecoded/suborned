@@ -137,9 +137,9 @@ namespace Suborned.Sim
                 long Of(string id, IReadOnlyList<(string place, int from, int to, bool outside)> st)
                 {
                     int pace = (int)(Streams.Fnv1a32(id + "/pace") % (uint)(r.CrowdPaceSpreadPct + 1));
-                    return Street.Ticks(st, over, s.Grid, p => crowd.Places[p], (k, t, span) =>
+                    return Street.Ticks(st, over, s.Grid, p => crowd.PlaceOf(p), (k, t, span) =>
                     {
-                        var key = st[k].place + "→" + st[k + 1].place; var path = crowd.Legs.TryGetValue(key, out var lp) ? lp : Crowd.Leg(s, crowd.Places[st[k].place], crowd.Places[st[k + 1].place], crowd.Home(s, r));
+                        var key = st[k].place + "→" + st[k + 1].place; var path = crowd.Legs.TryGetValue(key, out var lp) ? lp : Crowd.Leg(s, crowd.PlaceOf(st[k].place), crowd.PlaceOf(st[k + 1].place), crowd.Home(s, r));
                         long mm = span <= 0 ? path.Length : Math.Min(path.Length, path.Length * t * (100 + pace) / (100L * span)); return path.At(mm);
                     });
                 }
@@ -163,9 +163,10 @@ namespace Suborned.Sim
         /// <summary>The cast are played by role, not as the crowd: the door guard is a guard; the waitress, the driver and the councillor are the rest.</summary>
         public static string CastJob(string role) => role == "guard" ? "guard" : role;
 
-        static readonly ConditionalWeakTable<Site, SitePoints> points = new ConditionalWeakTable<Site, SitePoints>();
-        /// <summary>The site's post points and edges (computed once per site, shared by every game on it: read-only after).</summary>
-        public static SitePoints PointsOf(Site s, PopulationRules pop) { lock (points) { if (!points.TryGetValue(s, out var p)) { p = new SitePoints(s, pop); points.Add(s, p); } return p; } }
+        static readonly ConditionalWeakTable<Site, Dictionary<int, SitePoints>> points = new ConditionalWeakTable<Site, Dictionary<int, SitePoints>>();
+        /// <summary>The site's post points and edges (computed once per site and clearance, shared by every game on it: read-only after).
+        /// `clearCm`: brief 098 L9, no post point within it of a cast stand (bodies.space with L9 on; 0: as the site has them).</summary>
+        public static SitePoints PointsOf(Site s, PopulationRules pop, int clearCm = 0) { lock (points) { if (!points.TryGetValue(s, out var byClear)) { byClear = new Dictionary<int, SitePoints>(); points.Add(s, byClear); } if (!byClear.TryGetValue(clearCm, out var p)) { p = new SitePoints(s, pop, clearCm); byClear[clearCm] = p; } return p; } }
     }
 
     /// <summary>What the engine finds in a site for the people it adds. Post points: each staffed door (a point doorOutCm out of it, so the door's
@@ -176,7 +177,7 @@ namespace Suborned.Sim
     {
         public readonly List<(string id, Pt at, Pt face)> Posts = new List<(string, Pt, Pt)>(), Edges = new List<(string, Pt, Pt)>();
         public readonly int MainPiece;
-        public SitePoints(Site s, PopulationRules pop)
+        public SitePoints(Site s, PopulationRules pop, int clearCm = 0)
         {
             var g = s.Grid;
             // the main ground: the largest piece of free cells (the street network), so nobody is put on a pocket walled off from it
@@ -199,7 +200,7 @@ namespace Suborned.Sim
             if (Array.IndexOf(pop.BeatPoints, "post") >= 0) foreach (var (id, at) in s.Posts) if (!id.StartsWith("door:", StringComparison.Ordinal) && main(at)) raw.Add(("beat:" + id, at, default));
             if (Array.IndexOf(pop.BeatPoints, "call-box") >= 0) foreach (var (id, at) in s.CallBoxes) if (main(at)) raw.Add(("beat:" + id, at, default));
             raw.Sort((a, b) => string.CompareOrdinal(a.id, b.id));
-            foreach (var x in raw) if (!Posts.Exists(y => y.id == x.id)) Posts.Add(x);
+            foreach (var x in raw) if (!Posts.Exists(y => y.id == x.id) && CastStands.Clear(s, x.at, clearCm, main) is Pt cp) Posts.Add((x.id, cp, x.face)); // brief 098 L9: none on a cast member's place (CastStands.cs)
             // the edges: four sides of the window, each run of free main cells along it
             void side(string name, int n, Func<int, (int i, int j)> cell, Pt inward)
             {

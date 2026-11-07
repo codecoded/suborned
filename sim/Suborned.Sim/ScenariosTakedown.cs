@@ -387,54 +387,7 @@ namespace Suborned.Sim
                 r.Eq(w.P.Sc[Rules.Fear], Math.Min(fear + 1, g.R.ScaleMax[Rules.Fear]), "his fear rises");
             }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
-            Add("N65", "—", "A witness stopped before the report lands (Pulse §3.2): guard 73 is killed unseen crossing the square at 4:00 and carried to the bins on Rocket Lane's west pavement (nobody passes them); at 5:30, when the café's walkers are home and before the clerks leave, he is carried on to the north edge, unseen. At 6:47 clerk 34 (Loyal, and 73's workmate: he runs, Pulse row 2), walking home ahead of his group, finds the body and runs to the nearest phone (a call box) to report it. The Enforcer meets him on the way and takes him down: his report never lands. The next finder's report lands later: the incident still reaches the desk, by the next earliest.", r =>
-            {
-                var g = r.G;
-                var w73 = WalkerById(r, "p-records-office-73");
-                int t = T(245); // brief 055: 4:05, was 4:00, as N56 (p-pylon-row-east-04 now walks into view at 4:00)
-                r.To(t - T(25)); MeetFromBehind(r, w73, t); r.To(t);
-                r.Takedown("p-records-office-73", "kill"); r.Done(Enf);
-                var a = ActOn(r, "p-records-office-73");
-                r.Body(Enf, "carry", "p-records-office-73"); r.Done(Enf);
-                // Pulse's café fix (c013): the terrace's residents walk home past the Office side 3:30-5:30, on the carry's way north. Wait
-                // them out at the bins (Vantage K5, as N56), then carry on at 5:30: they are home, and the clerks have not left yet.
-                r.To(r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(740, -6180))!.Value));
-                r.Body(Enf, "drop"); r.Done(Enf);
-                r.To(T(330));
-                r.Body(Enf, "carry", "p-records-office-73"); r.Done(Enf);
-                var spot = new Pt(4201, 1066); // the probe's spot: first found by clerk 34 alone (6:47), 28 m from a door
-                r.To(r.SendTo(Enf, spot));
-                r.Body(Enf, "drop"); r.Done(Enf);
-                r.Is(!a.Witnessed, "unseen: the kill and the carry");
-                r.SendTo(Enf, new Pt(4600, -700)); // where clerk 34 will pass on his way home
-                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.By == "p-records-office-34"), T(200)), "clerk 34 finds the body and goes to report it");
-                var rep = g.Reps.First(x => x.Act == a.Id && x.By == "p-records-office-34");
-                r.Is(rep.Phase == "walk" && rep.LandAt > g.Tick + T(10), "he walks to a door: the report is in transit");
-                var w34 = WalkerById(r, "p-records-office-34");
-                // meet him on his walk: the point of his route the Enforcer reaches first
-                Pt meet = w34.Run!.End; int meetT = int.MaxValue;
-                for (long mm = 0; mm <= w34.Run.Length; mm += 200)
-                {
-                    var q = w34.Run.At(mm); int his = w34.RunStart + (int)(mm / w34.Pace);
-                    var route = g.S.Grid.Route(r.Op(Enf).Pos, g.S.Grid.NearestFree(q) ?? q); if (route == null) continue;
-                    int mine = g.Tick + (int)(new Path(route).Length / g.R.RunSpeed) + T(2);
-                    if (mine < his) { meet = q; meetT = his; break; }
-                }
-                r.Is(meetT < rep.LandAt, "the Enforcer can be on his way before he reaches the door");
-                g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = g.S.Grid.NearestFree(meet) ?? meet, Run = true });
-                r.Until(() => g.CrowdPos(w34) is Pt p34 && G.Within(p34, r.Op(Enf).Pos, g.R.TakedownReachCm), T(60));
-                r.Takedown("p-records-office-34", "knockout");
-                r.Is(rep.Phase == "stopped" && g.Tick < rep.LandAt, "taken down before his report lands: it is dropped");
-                var a34 = ActOn(r, "p-records-office-34");
-                r.Is(a34.Aware && g.Log.Exists(l => l.Code == "witness.scream" && l.Text.StartsWith("p-records-office-34")), "he saw the Enforcer coming: he struggles (+3 s) and screams");
-                // engine 0.30.0 (the face margin's walks): clerk 26 now sees the knockout and radios it (Alert 3), so the response comes and police-1 finds and
-                // confirms the dead guard at 7:25 before any other walker's report lands: the body is still found by someone else, later
-                r.Is(r.Until(() => a.Confirmed || g.Reps.Exists(x => x.Act == a.Id && x.Phase == "landed"), T(150)), $"the body is found by the next finder or a unit ({Report.Clock(g.Tick)})");
-                var next = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.Phase == "landed");
-                r.Is(a.Confirmed || (next != null && next.By != "p-records-office-34"), $"by someone else, later ({(next != null ? next.By : "a unit's confirmation")})");
-                // the Mercenary check (Sky merged call 4) moved to N68 on 2026-10-19 (Keel, brief 023): with Pulse's leave stagger no Mercenary passes this body
-                r.Is(g.PersonById("p-records-office-34")!.Has("attacked-aware") && g.FactsOf(g.PersonById("p-records-office-34")!).Contains("enforcer-face"), "clerk 34 holds the Enforcer's face");
-            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
+            Add("N65", "—", "A witness stopped before the report lands (Pulse §3.2): guard 73 is killed unseen crossing the square at 4:05 and carried, unseen, to a spot on the way home of people of the city who must walk to a phone to report a body (not staff, who radio it), far from every phone (straight on from the kill, else after waiting out the café's walkers at the bins). The first of them to walk to a phone is met on the way by the Enforcer and taken down: his report never lands. The next finder's report, or a unit, still brings the incident to the desk. Engine 0.48.0 (Pulse's people rebuilt on today's plan, brief 098: clerk 34 now lives in rocket-west and never passed the old spot on the north edge): the spot and the finder are found from today's walks by the rule, not named.", WitnessStopped, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only); the body: ScenariosWitnessStopped.cs
 
             Add("N66", "—", "The search opens a stash (Motive §2.3): the patrol rerouted but the entrance camera live, the guard is killed at his post and put in the Dumpster 18 m away. The camera's watcher reports it (Alert 3); the unit finds no body at the post (unfounded) and, at Alert 2 or more, searches 60 s, opening every stash within 30 m, nearest first, 10 s each: the Dumpster. He is found and confirmed; the seal starts then.", r =>
             {

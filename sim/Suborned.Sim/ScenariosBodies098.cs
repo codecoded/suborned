@@ -60,7 +60,8 @@ namespace Suborned.Sim
                 r.To(when - T(75)); r.SendTo(Enf, spot); r.Until(() => r.Op(Enf).Walk == null, T(75)); r.To(Math.Max(g.Tick, when - T(4))); // he walks in late, so the camera has no time to mark him loitering
                 r.Is(g.Alert == 0, "no Alert before the takedown");
                 bool inView() => g.CrowdPos(w) is Pt p && g.CameraWatching("pickup", p, false);
-                r.Is(r.CloseOn(Victim, T(20)), $"guard 57 walks into reach ({Report.Clock(g.Tick)})"); // the law lays him round the Enforcer as he walks by
+                bool inReach() => g.CrowdPos(w) is Pt p && G.Within(p, r.Op(Enf).Pos, g.R.TakedownReachCm - 10);
+                r.Is(r.Until(() => inView() && inReach(), T(20)) || r.CloseOn(Victim, T(20)), $"guard 57 walks into reach in the camera's view ({Report.Clock(g.Tick)})"); // the law lays him round the Enforcer as he walks by (engine 0.48.0: the case takes him when both hold, its rule, not at the first tick he is in reach)
                 r.Is(inView(), "guard 57 is in the pickup camera's view as he is taken");
                 r.Takedown(Victim, "knockout");
                 var a = ActOn(r, Victim);

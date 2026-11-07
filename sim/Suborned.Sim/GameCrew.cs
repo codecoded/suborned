@@ -364,7 +364,7 @@ namespace Suborned.Sim
         bool JoinFightOnFoot(CrewMember m, Pt from, string joins = "")
         {
             var st = FightStand;
-            var h = m.H; if (h == null) { var g = m.Gun; g.St = "routine"; h = new Hostile { Id = m.Id, Gun = g, Speed = rivSpeed }; m.H = h; Hostiles.Add(h); Note(joins.Length > 0 ? "rivals.recalled" : "rivals.joins", joins.Length > 0 ? joins : $"{m.Id} gets out of the rival car and joins the fight."); }
+            var h = m.H; if (h == null) { var g = m.Gun; g.St = "routine"; h = new Hostile { Id = m.Id, Gun = g, Speed = rivSpeed }; int ci = Crew.IndexOf(m); if (ci >= 0 && ci < crewLay.Length && crewLay[ci].Live(Tick)) h.Body = crewLay[ci]; m.H = h; Hostiles.Add(h); Note(joins.Length > 0 ? "rivals.recalled" : "rivals.joins", joins.Length > 0 ? joins : $"{m.Id} gets out of the rival car and joins the fight."); } // engine 0.48.0 (L9, nobody jumps): one already on foot keeps his body (the law walks him on from where he stood)
             m.Fight = true; m.Mode = CrewMode.Walking; m.ModeTick = Tick; m.Disp = null;
             h.Present = true; h.At = from; h.Run = null; var spot = SpotFor(m, st); h.Home = spot; MoveToFight(h, spot);
             if (FightSprung != INF)

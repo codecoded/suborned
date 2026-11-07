@@ -20,7 +20,7 @@ namespace Suborned.Sim
         /// <summary>The k-th person of kind d as the dial would add them (their draws are their own), not yet in the zone (Register puts them there).</summary>
         Walker MakePerson(DialKind d, int k, Crowd crowd, out List<(string place, int from, int to, bool outside)> stops)
         {
-            dialPoints ??= Population.PointsOf(S, dial!);
+            dialPoints ??= Population.PointsOf(S, dial!, R.BodiesOn ? R.BodySpaceCm : 0); // brief 098 L9: no beat point on a cast member's place
             string id = d.IdPrefix + k.ToString(d.Max >= 1000 || d.Street ? "0000" : "000", System.Globalization.CultureInfo.InvariantCulture); // brief 098 step 1b: a street count can take thousands of passers-by
             var p = new Person { Id = id, Name = d.Name + " " + k.ToString(System.Globalization.CultureInfo.InvariantCulture), Job = d.Job, Temperament = DialTemperament(d, id, crowd) };
             var t = R.Temp(p.Temperament); for (int q = 0; q < 4; q++) p.Sc[q] = t.Start[q];
@@ -105,7 +105,7 @@ namespace Suborned.Sim
             if (e2 == e1 && edges.Count > 1) e2 = (e2 + 1) % edges.Count;
             string inAt = DialPlace(edges[e1].id, edges[e1].at, edges[e1].face), outAt = DialPlace(edges[e2].id, edges[e2].at, edges[e2].face);
             int t0 = T(XBand(id, "enter", r.EnterMinS, r.EnterMaxS));
-            var doors = new List<string>(); foreach (var e in S.Entrances) if (e.kind == "public" && crowd.Places.ContainsKey(e.id)) doors.Add(e.id);
+            var doors = new List<string>(); foreach (var e in S.Entrances) if (e.kind == "public" && crowd.Places.ContainsKey(e.id) && !crowd.DoorShut.Contains(e.id)) doors.Add(e.id); // brief 098 L9: a door the cast hold with nowhere beside them to go in is shut to the dial (CastStands.cs)
             var seats = crowd.Chairs;
             int sum = (seats.Count > 0 ? r.DestSeat : 0) + (doors.Count > 0 ? r.DestDoor : 0) + r.DestEdge, pick = (int)(XDraw(id, "dest") % (uint)sum);
             var stops = new List<(string, int, int, bool)> { (inAt, t0, t0, true) };

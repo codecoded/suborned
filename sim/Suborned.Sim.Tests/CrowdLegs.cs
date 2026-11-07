@@ -39,9 +39,11 @@ public class CrowdLegTests
     public void TheClerksLegToTheT1StopWalksTheGridAndLeavesAtItsCorner()
     {
         var c = Repo.Inputs.Crowd!; var site = Repo.Inputs.SiteData; var g = site.Grid;
-        Assert.True(c.Places.ContainsKey("office-entrance") && c.Places.ContainsKey("t1-records"), "the people file's places");
-        var t1 = c.Places["t1-records"];
-        Assert.False(g.InGrid(t1), $"t1-records {t1} lies off the window");
+        // engine 0.48.0 (Pulse's people rebuilt on today's plan, brief 098: the stop the clerks walk to is t1-rocket now, not t1-records): the T1 stop by its place, whatever its name
+        var t1Name = c.Places.Keys.Where(k => k.StartsWith("t1-", StringComparison.Ordinal) && !k.Contains("-stand-", StringComparison.Ordinal)).OrderBy(k => k, StringComparer.Ordinal).FirstOrDefault();
+        Assert.True(c.Places.ContainsKey("office-entrance") && t1Name != null, "the people file's places: the Office entrance and a T1 stop");
+        var t1 = c.Places[t1Name!];
+        Assert.False(g.InGrid(t1), $"{t1Name} {t1} lies off the window");
         Assert.Null(g.NearestFree(t1)); // NearestFree's 6 m search finds nothing there (the cause)
         var any = g.NearestFreeAny(t1);
         Assert.True(any.HasValue && g.Free(any.Value), "NearestFreeAny finds a free cell with no cap");

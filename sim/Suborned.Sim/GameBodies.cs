@@ -35,7 +35,7 @@ namespace Suborned.Sim
         /// <summary>Ticks it has got nowhere, across its tries (a person of the city changes plans at bodies.replan).</summary>
         public int StuckN;
         /// <summary>Making room (GameBodyGive.cs): for whom, the spot it stepped to, where it stood when asked, the asker's way then, until when.</summary>
-        public string? RoomFor; public Pt RoomAt, RoomFrom, RoomDir; public int RoomEnd;
+        public string? RoomFor; public Pt RoomAt, RoomFrom, RoomDir, RoomRaw; public int RoomEnd; // RoomRaw: its own place when asked (engine 0.48.0: once that has moved on, it goes its own way)
         /// <summary>The last it made room for and until when it is not asked again by them (it stood aside once; they did not get past).</summary>
         public string? RoomDone; public int RoomDoneUntil;
         /// <summary>Squeezing past (GameBodyGive.cs): with whom, until when at most, and the way it was going when the squeeze began.</summary>
@@ -43,8 +43,12 @@ namespace Suborned.Sim
         /// <summary>A change of plans (GameBodyGive.cs): the place it went instead (another chair, another spot, its next stop the other way), the
         /// chair it took (null: none), and the tick the step of its routine it replaced ends.</summary>
         public bool AltOn; public Pt Alt; public string? AltStop; public int AltUntil;
-        /// <summary>Its last tick's slide round someone ((0, 0): it did not slide): it never slides straight back next tick (no dancing).</summary>
-        public Pt SlideV;
+        /// <summary>Its last slide round someone ((0, 0): none) and the tick until which it keeps to that side (engine 0.48.0, no shuffling: it never
+        /// slides back the other way before then; GameBodyForms.cs).</summary>
+        public Pt SlideV; public int SlideUntil;
+        /// <summary>Engine 0.48.0: the spot the law picked for it (a sidestep, a ring, a queue's spot; WhyGoal), as an offset from where it makes
+        /// for, kept until PickUntil while it stays clear (GameBodySides.cs).</summary>
+        public byte PickWhy; public Pt PickOff; public int PickUntil; public bool PickComfort; // PickComfort: picked with personal space, kept only while it keeps it
         /// <summary>A guard's crew spot at a post another holds (0–4 the inner ring, 5–10 the outer; −1: none): his while he stays there, so two never make for one.</summary>
         public int Slot;
         /// <summary>The plan its own rules had when it was laid (a walk, a stand, a state, and the tick and place they started from). Once its rules
@@ -65,9 +69,9 @@ namespace Suborned.Sim
         /// <summary>One body this tick. At: where it stands now (laid this tick, or where it stood last tick while waiting its turn: Prev).</summary>
         struct Bd
         {
-            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm, Urgent; // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street; Urgent: one laid before it this tick stands inside two radii of where it stood (a probe read, never stored)
+            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm, Urgent, Laden; // Laden: an operative carrying someone (never asked to make room: GameBodyGive.cs) // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street; Urgent: one laid before it this tick stands inside two radii of where it stood (a probe read, never stored)
             public Pt Raw, Own, Lay, At, Prev, Head, Face, LayFace, Aim; public long Key, PathMm; public int StuckN, HeldN, DetEnd, DetTries, Slot, Blk, GiveEnd; public Path? Det; public bool Catch; public Pt HeldAt, GiveAt; public string? BlkId; public byte Why, Fix; public object? BRef; public int BN; public Pt BAt; public Path? Path; public bool PathBack; public string? Stop; // Path, PathMm: the walk its own place is on, how far along, and walked end to start (a kite's way back); Own: where it makes for (its own place, or its change of plans)
-            public string? RoomFor, SqzId, AltStop, RoomDone; public Pt RoomAt, RoomFrom, RoomDir, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil, RoomDoneUntil; public bool AltOn; // GameBodyGive.cs; SlideV: last tick's slide (GameBodyForms.cs)
+            public string? RoomFor, SqzId, AltStop, RoomDone; public Pt RoomAt, RoomFrom, RoomDir, RoomRaw, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil, RoomDoneUntil, SlideUntil, PickUntil; public bool AltOn, PickComfort; public byte PickWhy; public Pt PickOff; // GameBodyGive.cs; SlideV, SlideUntil: its last slide and how long it keeps to that side; PickWhy, PickOff, PickUntil: the law's kept pick (GameBodySides.cs)
         }
         Bd[] bds = new Bd[128]; int bdN; int[] bdOrder = new int[128]; long[] bdKeys = new long[128];
         readonly Dictionary<long, int> bhHead = new Dictionary<long, int>();
@@ -150,7 +154,7 @@ namespace Suborned.Sim
                 var raw = fixedOp ? op.Pos : op.Walk != null ? op.Walk.At(op.WalkMm) : op.Body.Live(Tick) && op.Pos == op.Body.Raw + op.Body.Lay ? op.Body.Raw : op.Pos; // at work or leading Vale he stands where he stands
                 bool anew = fixedOp || (op.Walk != null ? !walkSame : raw == op.Pos); // a new walk or a set place starts where he stands
                 AddBd(Sim.Op.Name(op.Id), BkOp, fixedOp ? BcFixed : BcFirm, i, raw, op.Body, FmNone, default, (null, 0, default), false, anew); // his plan is his walk and his place (above)
-                if (op.Walk != null && bdN > 0 && bds[bdN - 1].Id == Sim.Op.Name(op.Id)) { bds[bdN - 1].Path = op.Walk; bds[bdN - 1].PathMm = op.WalkMm; }
+                if (bdN > 0 && bds[bdN - 1].Id == Sim.Op.Name(op.Id)) { if (op.Walk != null) { bds[bdN - 1].Path = op.Walk; bds[bdN - 1].PathMm = op.WalkMm; } bds[bdN - 1].Laden = op.Carrying.HasValue || op.CarryBody.Length > 0; }
             }
             // the armed: fight bodies, the rival crew on foot, the response unit's officers, police units and robots
             for (int i = 0; i < Hostiles.Count; i++) { var h = Hostiles[i]; if (!h.Present || h.Down || h.Gun.St == "gone") continue; AddBd(h.Id, BkHostile, BcFirm, i, h.RawPos(Tick), h.Body, FmNone, default, h.Plan); if (h.Run != null) OnPath(h.Id, h.Run, (long)Math.Max(0, Tick - h.RunStart) * h.Speed); }
@@ -191,10 +195,11 @@ namespace Suborned.Sim
             b.BRef = plan.r; b.BN = plan.n; b.BAt = plan.at;
             bool keep = live && same; b.HeldN = keep ? prev.HeldN : 0; b.DetTries = keep ? prev.DetTries : 0; b.HeldAt = prev.HeldAt; b.StuckN = keep ? prev.StuckN : 0; b.Blk = -1; b.BlkId = keep ? prev.BlkId : null; b.GiveEnd = keep ? prev.GiveEnd : 0; b.GiveAt = prev.GiveAt; b.Det = keep ? prev.Det : null; b.Catch = b.Det != null && prev.Catch; b.DetEnd = keep ? prev.DetEnd : 0; b.Slot = keep && prev.At1 > 0 ? prev.Slot : -1; // a new plan: no way round, no crew spot
             if (live && prev.RoomDone != null && Tick < prev.RoomDoneUntil) { b.RoomDone = prev.RoomDone; b.RoomDoneUntil = prev.RoomDoneUntil; }
-            if (keep && prev.RoomFor != null && Tick < prev.RoomEnd) { b.RoomFor = prev.RoomFor; b.RoomAt = prev.RoomAt; b.RoomFrom = prev.RoomFrom; b.RoomDir = prev.RoomDir; b.RoomEnd = prev.RoomEnd; } // making room, while its own plan stands
+            if (keep && prev.RoomFor != null && Tick < prev.RoomEnd) { b.RoomFor = prev.RoomFor; b.RoomAt = prev.RoomAt; b.RoomFrom = prev.RoomFrom; b.RoomDir = prev.RoomDir; b.RoomRaw = prev.RoomRaw; b.RoomEnd = prev.RoomEnd; } // making room, while its own plan stands
             else if (live && prev.RoomFor != null) { b.RoomDone = prev.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; } // its time up, or its own plan changed: it stood aside once (not asked again by them a while)
             if (live && prev.SqzId != null) { b.SqzId = prev.SqzId; b.SqzEnd = prev.SqzEnd; b.SqzDir = prev.SqzDir; } // squeezing past someone: a body's state, whatever its plan, until the two stand apart
-            if (live) b.SlideV = prev.SlideV;
+            if (live && Tick < prev.SlideUntil) { b.SlideV = prev.SlideV; b.SlideUntil = keep ? prev.SlideUntil : Tick + 1; } // engine 0.48.0: it keeps to the side it slid to for a moment, while its plan stands (a new plan: only the next tick's, as 0.47 had)
+            if (keep && Tick < prev.PickUntil) { b.PickWhy = prev.PickWhy; b.PickOff = prev.PickOff; b.PickUntil = prev.PickUntil; b.PickComfort = prev.PickComfort; } // and the spot the law picked for it, while its plan stands
             if (keep && prev.AltOn) { b.AltOn = true; b.Alt = prev.Alt; b.AltStop = prev.AltStop; b.AltUntil = prev.AltUntil; if (prev.AltStop == null || cls != BcFixed) b.Own = prev.Alt; } // a change of plans, while its step of the routine lasts (BodyGather)
             bdIx[id] = bdN; bdN++;
         }
@@ -288,7 +293,8 @@ namespace Suborned.Sim
         {
             ref var b = ref bds[i];
             var lay = b.At - b.Raw; var bl = new BodyLay { Lay = lay, Raw = b.Raw, Face = b.LayFace, At1 = Tick + 1, Held = b.Moving && b.At == b.Prev, BRef = b.BRef, BN = b.BN, BAt = b.BAt, HeldN = b.HeldN, DetTries = b.DetTries, HeldAt = b.HeldAt, StuckN = b.StuckN, Det = b.Det, Catch = b.Det != null && b.Catch, DetEnd = b.DetEnd, BlkId = b.Blk >= 0 ? bds[b.Blk].Id : null, GiveEnd = b.GiveEnd, GiveAt = b.GiveAt, Slot = b.Mate ? b.Slot : -1,
-                RoomFor = b.RoomFor, RoomAt = b.RoomAt, RoomFrom = b.RoomFrom, RoomDir = b.RoomDir, RoomEnd = b.RoomEnd, SqzId = b.SqzId, SqzEnd = b.SqzEnd, SqzDir = b.SqzDir, AltOn = b.AltOn, Alt = b.Alt, AltStop = b.AltStop, AltUntil = b.AltUntil, SlideV = (b.Why >> 4) == 2 ? b.At - b.Prev : default, RoomDone = b.RoomDone, RoomDoneUntil = b.RoomDoneUntil };
+                RoomFor = b.RoomFor, RoomAt = b.RoomAt, RoomFrom = b.RoomFrom, RoomDir = b.RoomDir, RoomRaw = b.RoomRaw, RoomEnd = b.RoomEnd, SqzId = b.SqzId, SqzEnd = b.SqzEnd, SqzDir = b.SqzDir, AltOn = b.AltOn, Alt = b.Alt, AltStop = b.AltStop, AltUntil = b.AltUntil, RoomDone = b.RoomDone, RoomDoneUntil = b.RoomDoneUntil };
+            (bl.SlideV, bl.SlideUntil) = SideAfter(in b); bl.PickWhy = Tick + 1 < b.PickUntil ? b.PickWhy : (byte)0; bl.PickOff = bl.PickWhy != 0 ? b.PickOff : default; bl.PickUntil = bl.PickWhy != 0 ? b.PickUntil : 0; bl.PickComfort = bl.PickWhy != 0 && b.PickComfort; // engine 0.48.0: the side it keeps to, the spot kept (GameBodySides.cs)
             switch (b.Kind)
             {
                 case BkCast: castLay[b.Ix] = bl; break;
@@ -384,11 +390,12 @@ namespace Suborned.Sim
             {
                 if (!b.Live(Tick)) return;
                 if (b.Lay != default || b.Face != default) h.S(id).P(b.Lay).P(b.Face).P(b.Raw).I(b.DetEnd).I(b.GiveEnd).P(b.GiveAt);
-                if (b.RoomFor != null) h.S("room").S(id).S(b.RoomFor).P(b.RoomAt).I(b.RoomEnd);
+                if (b.RoomFor != null) h.S("room").S(id).S(b.RoomFor).P(b.RoomAt).P(b.RoomRaw).I(b.RoomEnd);
                 if (b.RoomDone != null) h.S("roomed").S(id).S(b.RoomDone).I(b.RoomDoneUntil);
                 if (b.SqzId != null) h.S("squeeze").S(id).S(b.SqzId).I(b.SqzEnd);
                 if (b.AltOn) h.S("alt").S(id).P(b.Alt).S(b.AltStop ?? "").I(b.AltUntil);
-                if (b.SlideV != default) h.S("slid").S(id).P(b.SlideV);
+                if (b.SlideV != default) h.S("slid").S(id).P(b.SlideV).I(b.SlideUntil);
+                if (b.PickWhy != 0) h.S("pick").S(id).I(b.PickWhy).P(b.PickOff).I(b.PickUntil).I(b.PickComfort ? 1 : 0);
             }
             for (int i = 0; i < 4; i++) put(Sim.Op.Name(Ops[i].Id), Ops[i].Body);
             for (int i = 0; i < Crew.Count; i++) put(Crew[i].Id, crewLay[i]);
