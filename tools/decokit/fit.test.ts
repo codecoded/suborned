@@ -1,15 +1,16 @@
-// The generated pieces in kit.json that carry an order fit their sites: one per plan regen order, current hash, adopted, source generated, footprint and tip inside the order.
+// The generated pieces in kit.json that carry an order fit their sites: one per regen order (the plan's, or one re-homed in the plan before the remap), current hash,
+// adopted, source generated, footprint and tip inside the order.
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 import { NARROW, fitRow, printTable, type Built } from './fit';
-import { BUILD, readOrders } from './orders';
+import { BUILD, REHOMED, allOrders, readOrders } from './orders';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
-const orders = readOrders(), gen = kit.assets.filter(a => a.source === 'generated' && a.order); // pieces built to a plan order; generated pieces without one (crowns, horizon, civic, stations) have no site to fit
+const orders = allOrders(), live = readOrders(), gen = kit.assets.filter(a => a.source === 'generated' && a.order); // pieces built to a plan order; generated pieces without one (crowns, horizon, civic, stations) have no site to fit
 
-test('every regen order in the plan has a generated, adopted piece in kit.json with its current hash', () => {
+test('every regen order (the plan\'s, and the re-homed ones) has a generated, adopted piece in kit.json with its current hash', () => {
   expect(gen.map(a => a.id).sort()).toEqual(orders.pieces.map(p => p.id).sort());
   for (const a of gen) {
     expect(a.status).toBe('adopted');
@@ -17,6 +18,23 @@ test('every regen order in the plan has a generated, adopted piece in kit.json w
     const fbx = a.files.find(f => f.role === 'fbx')!;
     expect(fbx.root).toBe('generated'); expect(fbx.sha256).toMatch(/^[0-9a-f]{64}$/);
   }
+});
+
+// Brief 098 (Vela): the remap dropped the tower sites and the Skyport tower from the live plan; their pieces stay adopted for the rule tests that still generate the
+// plan before the remap, retired from the live plan, their orders re-homed there (orders.ts REHOMED). The list is exactly the generated pieces the live plan no longer
+// orders, each row says why it is retired, and a bare `bun run decokit` builds none of them.
+test('the re-homed orders are the generated pieces the live plan no longer orders; each lives in the plan before the remap and its row says why it is retired', () => {
+  const liveIds = new Set(live.pieces.map(p => p.id)), rehomed: readonly string[] = REHOMED.pieces;
+  expect(gen.filter(a => !liveIds.has(a.id)).map(a => a.id).sort()).toEqual([...rehomed].sort());
+  for (const id of rehomed) {
+    expect(liveIds.has(id), `${id} is ordered by the live plan again: drop it from REHOMED`).toBe(false);
+    expect(BUILD, id).not.toContain(id); // with the live check above: not in a bare run's --only list (run.ts: the live orders and BUILD)
+    expect(orders.pieces.find(p => p.id === id)?.home, id).toBe(REHOMED.plan);
+    const why = kit.assets.find(a => a.id === id)!.why ?? '';
+    expect(why, id).toContain('Retired from the live plan');
+    expect(why, id).toContain(REHOMED.plan);
+  }
+  expect(live.pieces.every(p => p.home === undefined)).toBe(true);
 });
 
 test('fit table: each piece fits its site (footprint, setback, crown, tip ≤ the order and crownTip)', () => {

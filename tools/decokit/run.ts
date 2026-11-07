@@ -1,10 +1,10 @@
 // bun run decokit [--only a,b] [--cats X] [--mats-only] [--no-ao] [--out dir]: (--mats-only builds no piece: textures, the merged materials table and the Unity .mat set only) run the Blender DecoKit generator (export_kit.py) from this repo.
-// Output: $DECOKIT_OUT, else out/decokit/ (never committed). Regen orders are read from the plan (orders.ts) and passed as --orders.
+// Output: $DECOKIT_OUT, else out/decokit/ (never committed). Regen orders are read from the plan, with the re-homed ones (orders.ts REHOMED: built only by --only), and passed as --orders.
 // Env: BLENDER (default /Applications/Blender.app/Contents/MacOS/Blender), SUBORNED_STORE (source-art textures).
 import { mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { type Built, fitRow, printTable } from './fit';
-import { BUILD, readOrders, writeOrders } from './orders';
+import { BUILD, allOrders, readOrders, writeOrders } from './orders';
 import { WAVE1 } from '../kit/tags';
 import { usageGate } from '../gen/flags';
 
@@ -37,7 +37,7 @@ const rf = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_face_stage.
 // Default: the plan's generated pieces and the plain pieces in orders.ts BUILD (full export + LODs), then LODs only for the adopted DecoKit pieces (their binaries stay the store's).
 const passes = pass.length ? [pass] : [['--only', [...readOrders().pieces.map(o => o.id), ...BUILD].join(',')], ['--lods-only', '--only', [...WAVE1].join(',')]];
 for (const a of passes) { const c = run(a); if (c) process.exit(c); }
-// The fit table for every generated piece in this run's manifest.
+// The fit table for every generated piece in this run's manifest, each held to its order: the live plan's, or its re-homed one (orders.ts REHOMED).
 const manifest = JSON.parse(readFileSync(resolve(out, 'decokit_manifest.json'), 'utf8')).assets as { name: string; order?: { hash: string }; built?: Built }[];
-const orderSet = readOrders(), rows = manifest.filter(a => a.order && a.built).map(a => fitRow(orderSet, a.name, a.order!, a.built!));
+const orderSet = allOrders(), rows = manifest.filter(a => a.order && a.built).map(a => fitRow(orderSet, a.name, a.order!, a.built!));
 if (rows.length) { console.log('\n' + printTable(rows)); if (rows.some(r => !r.fits)) process.exit(1); }
