@@ -85,7 +85,7 @@ namespace Suborned.Sim
                 Traffic.RemoveAt(i);
             }
             TrafficFlags(now);
-            if (!warm) { foreach (var c in Traffic) if (InZone(c)) TrafficZoneSum++; TrafficZoneTicks++; }
+            if (!warm) { foreach (var c in Traffic) if (InZone(c)) TrafficZoneSum++; TrafficZoneTicks++; TrafficBoxWatch(); } // brief 098 step 1b: and who boxes a mission car in (a record: GameTrafficBoxes.cs)
         }
 
         /// <summary>A slot's next trip: a seeded mouth in and another out, a seeded kind, a driver of their own; it starts only where the lane in is clear
@@ -124,13 +124,15 @@ namespace Suborned.Sim
         /// <summary>Brief 098 step 1 (host read): the slots the count runs (more than the count: some of each slot's time is off the zone's roads).</summary>
         public int TrafficSlots => slots.Length;
 
-        /// <summary>The car's centre and heading now: on its route's line, `Lat` cm to its right.</summary>
-        internal (Pt at, Pt h) TrafficPose(TrafficCar c)
+        /// <summary>The car's centre and heading now: on its route's line, `Lat` cm to its right; a wreck pushed aside, where it was pushed.</summary>
+        internal (Pt at, Pt h) TrafficPose(TrafficCar c) => c.Moved ? (c.MovedAt, c.MovedH) : PoseOn(c, c.Mm, c.Lat); // brief 098 step 1b: a wreck pushed aside stands where it was pushed (GameTrafficShove.cs)
+        /// <summary>Where the car's centre would be `mm` along its route, `lat` cm right of the route's line, and its heading there.</summary>
+        internal (Pt at, Pt h) PoseOn(TrafficCar c, long at, int lat)
         {
-            var p = c.Route.Path; long mm = Math.Max(0, Math.Min(p.Length, c.Mm)); var on = p.At(mm); var h = p.Heading(mm);
-            if (c.Lat == 0) return (on, h);
+            var p = c.Route.Path; long mm = Math.Max(0, Math.Min(p.Length, at)); var on = p.At(mm); var h = p.Heading(mm);
+            if (lat == 0) return (on, h);
             long n = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y));
-            return (new Pt(on.X + (int)(h.Y * c.Lat / n), on.Y + (int)(-h.X * c.Lat / n)), h); // the block frame's right of h is (h.y, -h.x)
+            return (new Pt(on.X + (int)(h.Y * lat / n), on.Y + (int)(-h.X * lat / n)), h); // the block frame's right of h is (h.y, -h.x)
         }
         /// <summary>The car's centre lies inside the window: it is on the zone's roads (the count's sense).</summary>
         bool InZone(TrafficCar c) => c.Mm >= c.Route.InMm && c.Mm <= c.Route.OutMm;

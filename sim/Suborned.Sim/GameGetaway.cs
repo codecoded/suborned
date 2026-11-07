@@ -299,7 +299,7 @@ namespace Suborned.Sim
 
         void Leave()
         {
-            RecordsAtEnd(); SeenLeaving(); // brief 096: a camera record still to land is charged at the end
+            RecordsAtEnd(); SeenLeaving(); ShoveOffGetaway(); // brief 096: a camera record still to land is charged at the end; brief 098 step 1b: a wreck on the way out is pushed aside as it goes
             var lb = LeftBehind(); LeftBehindAtGo.AddRange(lb);
             foreach (var (name, fate, why) in lb)
             {

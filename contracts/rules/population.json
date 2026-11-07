@@ -92,9 +92,9 @@
     "stand": {
       "standS": 3,
       "settleS": 20,
-      "src": "brief 098 step 1, L8 a car is a car: a car stopped standS is standing (rulebook car.footprint: ground nobody walks through; cover where it stands; car.box: on a way out it boxes it in only once it stands for good, a wreck, abandoned or pulled up at a lockdown: a driver waiting in traffic moves up or lets you out); one stopped settleS (or disabled, burning, abandoned, its driver ducked) is settled: the crowd's routine legs set out round it, as round the mission's standing cars",
+      "src": "brief 098 step 1, L8 a car is a car: a car stopped standS is standing (rulebook car.footprint: ground nobody walks through; cover where it stands); one stopped settleS (or disabled, burning, abandoned, its driver ducked) is settled: the crowd's routine legs set out round it, as round the mission's standing cars. Brief 098 step 1b (Sky 2026-11-07, on Keel's open question \"a queue boxes nobody in\": \"should be opposite - shot cars can get past, others block\"): a standing car that has not been shot (queued, waiting at a junction or for a person, its driver ducked or pulled up) boxes a way out it stands on (car.box), as any solid car does; a car that has been shot (disabled, burning, blown, or abandoned by a driver who got out at the shot) never boxes anyone in: a mission car pushes it aside (traffic.shove)",
       "proposed": true,
-      "reason": "a car pausing for someone crossing is not yet a wall; a queue that waits is. The crowd's legs are walked again only for settled cars, so a queue's stop and go does not re-walk the city each second."
+      "reason": "a car pausing for someone crossing is not yet a wall; a queue that waits is, and it boxes the cell's car in until it moves on, so a jam can trap a mission car and shooting the car in the way clears it. The crowd's legs are walked again only for settled cars, so a queue's stop and go does not re-walk the city each second."
     },
     "pass": {
       "waitS": 2,
@@ -107,11 +107,17 @@
     },
     "yield": {
       "aheadS": 3,
-      "holdS": 40,
       "entryS": 15,
-      "src": "brief 098 step 1: the mission's cars (the getaway car, the official car, the rival car) drive their own timetables (tenets); traffic yields to them by the same law: a moving mission car's next aheadS of road is a car in the way (unless it comes up from behind: the driver ahead drives on), a driver it comes at pulls aside within their half where there is room, and no junction is entered that it will cross within aheadS; the rival car's turn-in point (on the street from its timetable, mid-junction at Orbit Walk's mouth) is kept clear from entryS before it comes; and a mission car is a car: one whose next place would meet a passing car on its way holds that tick (its leg's clock waits), at most holdS in a row, then drives on",
+      "src": "brief 098 step 1: the mission's cars (the getaway car, the official car, the rival car) drive their own timetables (tenets); traffic yields to them by the same law: a moving mission car's next aheadS of road is a car in the way (unless it comes up from behind: the driver ahead drives on), a driver it comes at pulls aside within their half where there is room, and no junction is entered that it will cross within aheadS; the rival car's turn-in point (on the street from its timetable, mid-junction at Orbit Walk's mouth) is kept clear from entryS before it comes. Brief 098 step 1b (Sky 2026-11-07: \"shot cars can get past, others block\"): a mission car is a car: one whose next place on its leg would meet a passing car that has not been shot holds there, its leg's clock waiting, for as long as that car is in its way (no limit: a jam can hold it); one that would meet a wreck pushes it aside (traffic.shove). A passing car that stands in a mission car's way waiting for that very car gets out of its way: sideways within its half where there is room, else backing off up to pass.backCm where the road behind is clear",
       "proposed": true,
-      "reason": "3 s at 5 m/s is 15 m: a driver sees a car coming and lets it by. A mission car waits for a passing car at most holdS at a time: a car on its way clears in seconds, a ducked driver sits up crowd.quiet (30 s) after the last shot, so 40 s outlasts both and no seed or jam holds it for good; for a car stopped for something else (a person in front of it, a queue) it waits five pass.waitS (10 s), for a driver waiting for it one, then goes first. It never waits for a car that stands for good (a wreck, an abandoned car): a leg it starts goes round those (the drive grid's route round their ground), and one shot to a wreck across a leg already under way it passes, as the mission's cars pass one another's wrecks today."
+      "reason": "3 s at 5 m/s is 15 m: a driver sees a car coming and lets it by. A mission car no longer drives on through a car after a while (step 1's holdS, 40 s, is gone): ordinary traffic is solid, so it waits behind a queue until the queue moves, and two cars that would wait for each other are untied by the passing car making room. A leg a mission car starts goes round the passing cars standing then (the drive grid's route round their ground) where it can."
+    },
+    "shove": {
+      "cmS": 150,
+      "maxCm": 600,
+      "src": "brief 098 step 1b (Sky 2026-11-07: \"shot cars can get past, others block\"; the brief: \"Make it visible and physical, not a ghost: for example the wreck is pushed toward the kerb as the car goes by\"): a mission car whose next place on its leg would meet a passing car that has been shot (disabled, burning, blown, or abandoned) pushes it aside: away from its own line, toward the side the wreck's centre is on (its right, the kerb, at a tie), at cmS, never into a building, street furniture or another car; it holds while it pushes (its leg's clock waits) and drives on once the wreck is clear of its next place. A wreck is pushed maxCm at most in all; one that cannot be pushed further either way (pinned against a wall or a car) holds the car as any car does. A Go (or the lent car's) whose way out a wreck stands on is taken: the wreck is pushed off the way as the car leaves",
+      "proposed": true,
+      "reason": "1.5 m/s is a car nudging a wreck at a crawl: a sedan in the middle of a lane is clear of a passing car's line in about a second and a half, which the player sees. 6 m keeps a wreck on the street: far enough to clear a lane and the next, never across the district. Pulse to tune."
     },
     "react": {
       "duck": ["fearful", "loyal"],
@@ -124,9 +130,8 @@
     "lockdown": {
       "alert": 3,
       "then": "leave",
-      "src": "brief 098 step 1, L8 roads close: from this Alert (3, lockdown) no car comes in: an inbound car stops short of the window's edge; the cars already in the zone carry on out (leave) or pull up where they are (stop)",
-      "proposed": true,
-      "reason": "leave: a sealed street empties of cars, so traffic never boxes the cell's car in for the rest of the mission; stop is the other reading of Sky's \"roads close\"."
+      "src": "brief 098 step 1, L8 roads close: from this Alert (3, lockdown) no car comes in: an inbound car stops short of the window's edge; the cars already in the zone carry on out (leave) or pull up where they are (stop). Sky 2026-11-07, on Keel's open question (leave or stop): \"Drive out\": leave",
+      "reason": "Sky's decision: a sealed street empties of cars, so after a lockdown traffic boxes nobody in. stop (they pull up for good, boxing whatever they stand on) stays built for a later mission."
     },
     "driver": {
       "role": "visitor",

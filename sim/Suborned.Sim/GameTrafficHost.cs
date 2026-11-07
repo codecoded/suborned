@@ -13,6 +13,12 @@ namespace Suborned.Sim
     public sealed class TrafficView
     {
         public string Id = "", Model = "", State = "", Mode = "", Driver = ""; public Pt At, Heading; public int Length, Width, Speed; public bool DriverIn, InZone, Standing;
+        /// <summary>Brief 098 step 1b (Sky 2026-11-07: "shot cars can get past, others block"): Shot, the car has been shot (disabled, burning, blown,
+        /// or abandoned at a shot): it boxes nobody in, and a mission car pushes it aside; ShovedBy, the mission car that pushed it last ("" never),
+        /// ShovedAt the tick it last moved under a push (-1 never; At is already where it was pushed: draw it sliding there), Shoved how far in all (cm);
+        /// Boxes, it stands in a way out now and boxes that mission car in ("" none: car:getaway, car:official); MakingRoom, the mission car it is
+        /// getting out of the way of ("" none: it pulls aside or backs off).</summary>
+        public bool Shot; public string ShovedBy = "", Boxes = "", MakingRoom = ""; public int ShovedAt = -1, Shoved;
     }
 
     public sealed partial class Game
@@ -21,11 +27,13 @@ namespace Suborned.Sim
         public List<TrafficView> TrafficNow()
         {
             var l = new List<TrafficView>(Traffic.Count);
+            var boxes = new List<(string car, string by)>(); if (tr != null) { foreach (var x in GetawayBoxers()) boxes.Add((x, "car:getaway")); foreach (var x in OfficialBoxers()) if (!boxes.Exists(b => b.car == x)) boxes.Add((x, "car:official")); }
             foreach (var c in Traffic)
             {
                 var (at, h) = TrafficPose(c); var t = CarOf(c.Id);
                 string state = t != null && t.Blown ? "blown" : t != null && t.BurningAt >= 0 ? "burning" : t != null && t.DisabledAt >= 0 ? "disabled" : c.V > 0 ? "moving" : "stopped";
-                l.Add(new TrafficView { Id = c.Id, Model = c.Model, State = state, Mode = c.Mode.ToString().ToLowerInvariant(), Driver = c.Driver.Id, At = at, Heading = h, Length = 2 * c.HalfLen, Width = 2 * c.HalfW, Speed = c.V, DriverIn = c.Out == null, InZone = InZone(c), Standing = c.Standing });
+                l.Add(new TrafficView { Id = c.Id, Model = c.Model, State = state, Mode = c.Mode.ToString().ToLowerInvariant(), Driver = c.Driver.Id, At = at, Heading = h, Length = 2 * c.HalfLen, Width = 2 * c.HalfW, Speed = c.V, DriverIn = c.Out == null, InZone = InZone(c), Standing = c.Standing,
+                    Shot = Shot(c), ShovedBy = c.ShovedBy, ShovedAt = c.ShovedAt, Shoved = c.ShovedCm, MakingRoom = c.Clears, Boxes = c.Standing && !Shot(c) ? boxes.Find(x => x.car == c.Id).by ?? "" : "" });
             }
             return l;
         }
@@ -59,6 +67,7 @@ namespace Suborned.Sim
             {
                 h.S(c.Id).S(c.Model).S(c.Route.Id).I(c.Mm).I(c.V).I(c.Lat).I(c.LatGoal).I((int)c.Mode).I(c.ModeTick).I(c.StoppedAt).I(c.Quiet).I(c.Turn).I(c.AskedAt).I(c.Refused).I(c.RefusedAt).I(c.BlockedAt);
                 h.Z(c.Flees).P(c.Alarm).S(c.Driver.Temperament).Z(c.Out != null).Z(c.Standing).Z(c.Settled).S(c.WaitsFor).I(c.Back).I(c.BackedAt).I(c.PlannedAt);
+                if (c.Moved || c.Clears.Length > 0) h.S("1b").Z(c.Moved).P(c.MovedAt).P(c.MovedH).S(c.ShovedBy).I(c.ShovedAt).I(c.ShovedCm).I(c.ShoveSide).S(c.Clears); // brief 098 step 1b: a wreck pushed aside, a car making room
             }
             HashYield(h);
         }

@@ -165,7 +165,7 @@ namespace Suborned.Sim
         {
             var why = LentRefusal(); if (why.Length > 0) { goRefusedAt = Tick; goRefused = refusal.code ?? ""; return why; }
             if (GoWaitFor(go) is string w) return w; // engine 0.43.0 (G1)
-            lentLeft = true;
+            ShoveOffWay(OfficialWay(), "car:official"); lentLeft = true; // brief 098 step 1b: a wreck on its way out is pushed aside as it goes
             var by = CarWatcherAt(CarPos());
             if (by.Length > 0) { LentSeenBy = by; if (incidents.Add("lent-seen")) AddTrail(R.WitnessTrail, "lent-seen:" + by); Note("lent.seen", $"The {by} sees {ValeName}'s car leave: a lead, not our car."); }
             var names = new List<string>(); foreach (var o in Ops) if (o.InLent) { o.LeftMap = true; names.Add(Sim.Op.Name(o.Id)); }
@@ -205,7 +205,7 @@ namespace Suborned.Sim
         /// <summary>The cell's car leaves while the target is lent (LEND-17: the mission goes on) or after vale.out (it ends: no car is left).</summary>
         void GetawayLeavesSplit()
         {
-            SeenLeaving(); CarLeftTick = Tick;
+            SeenLeaving(); CarLeftTick = Tick; ShoveOffGetaway(); // brief 098 step 1b: a wreck on the way out is pushed aside as it goes
             var names = new List<string>(); foreach (var o in Ops) if (o.InCar && !o.InLent) { o.LeftMap = true; names.Add(Sim.Op.Name(o.Id)); }
             Chain.Add("getaway-car-leaves"); Note("car.leaves-split", $"The getaway car leaves with the {string.Join(", the ", names)}.");
             if (ValeOutTick != INF || NobodyLeft()) SplitEnd("car-left");

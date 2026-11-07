@@ -15,7 +15,10 @@ namespace Suborned.Sim
         /// <summary>The kinds of vehicle (the kit's at-budget set), their share of trips (per cent), footprints (cm) and whether they give cover.</summary>
         public readonly string[] Models; public readonly int[] Share, LenCm, WCm; public readonly bool[] Cover;
         public readonly int AccelCmS2, BrakeCmS2, HardBrakeCmS2, GapCm, HeadwayDs, LookCm, ClearCm, PeopleGapCm;
-        public readonly int OffMinS, OffMaxS, WarmS, StandS, SettleS, PassWaitS, LatCmS, PassCmS, BackCm, AheadS, HoldS, EntryS, FleePm, LockAlert;
+        public readonly int OffMinS, OffMaxS, WarmS, StandS, SettleS, PassWaitS, LatCmS, PassCmS, BackCm, AheadS, EntryS, FleePm, LockAlert;
+        /// <summary>Brief 098 step 1b (Sky 2026-11-07: "shot cars can get past, others block"): how fast a mission car pushes a wreck in its way
+        /// aside (cm/s), and how far at most it pushes one wreck in all (cm).</summary>
+        public readonly int ShoveCmS, ShoveMaxCm;
         public readonly bool LockStop;
         public readonly string[] Duck, Flee;
         public readonly string DriverRole, DriverJob, DriverId, DriverName; public readonly string[] DriverAllow;
@@ -27,7 +30,7 @@ namespace Suborned.Sim
             IdPrefix = kind["id"].Str(); Max = kind["max"].Int();
             if (IdPrefix.Length == 0 || IdPrefix.Contains(':')) throw new FormatException($"{kind["id"].Path}: a car's id prefix, no colon (a car is car:<prefix><slot>-<trip>)");
             if (Max < 0 || Max > 1000) throw new FormatException($"{kind["max"].Path}: 0..1000");
-            t.Only("lanes", "mix", "size", "cover", "src", "proposed", "reason", "drive", "trips", "stand", "pass", "yield", "react", "lockdown", "driver"); t["src"].Str();
+            t.Only("lanes", "mix", "size", "cover", "src", "proposed", "reason", "drive", "trips", "stand", "pass", "yield", "shove", "react", "lockdown", "driver"); t["src"].Str();
             LanesFile = t["lanes"].Str();
             var mix = t["mix"]; var size = t["size"]; var models = new List<string>(); var share = new List<int>(); var len = new List<int>(); var w = new List<int>();
             foreach (var kv in mix.Entries)
@@ -53,8 +56,10 @@ namespace Suborned.Sim
             if (StandS < 0 || SettleS < StandS) throw new FormatException("traffic.stand: standS 0 or more, settleS no less");
             var ps = t["pass"]; ps.Only("waitS", "latCmS", "passCmS", "backCm", "src", "proposed", "reason"); PassWaitS = ps["waitS"].Int(); LatCmS = ps["latCmS"].Int(); PassCmS = ps["passCmS"].Int(); BackCm = ps["backCm"].Int();
             if (PassWaitS < 0 || LatCmS < 1 || PassCmS < 10 || BackCm < 0 || BackCm > 2000) throw new FormatException("traffic.pass: waitS 0 or more, latCmS and passCmS positive, backCm 0..2000");
-            var y = t["yield"]; y.Only("aheadS", "holdS", "entryS", "src", "proposed", "reason"); AheadS = y["aheadS"].Int(); HoldS = y["holdS"].Int(); EntryS = y["entryS"].Int();
-            if (AheadS < 0 || AheadS > 30 || HoldS < 0 || HoldS > 60 || EntryS < 0 || EntryS > 60) throw new FormatException("traffic.yield: aheadS 0..30 s, holdS 0..60 s, entryS 0..60 s");
+            var y = t["yield"]; y.Only("aheadS", "entryS", "src", "proposed", "reason"); AheadS = y["aheadS"].Int(); EntryS = y["entryS"].Int();
+            if (AheadS < 0 || AheadS > 30 || EntryS < 0 || EntryS > 60) throw new FormatException("traffic.yield: aheadS 0..30 s, entryS 0..60 s");
+            var sh = t["shove"]; sh.Only("cmS", "maxCm", "src", "proposed", "reason"); ShoveCmS = sh["cmS"].Int(); ShoveMaxCm = sh["maxCm"].Int();
+            if (ShoveCmS < 10 || ShoveCmS > 1000 || ShoveMaxCm < 50 || ShoveMaxCm > 2000) throw new FormatException("traffic.shove: cmS 10..1000 cm/s, maxCm 50..2000 cm");
             var re = t["react"]; re.Only("duck", "flee", "fleePm", "src", "proposed", "reason"); Duck = re["duck"].Strs().ToArray(); Flee = re["flee"].Strs().ToArray(); FleePm = re["fleePm"].Int();
             if (FleePm < 1000 || FleePm > 4000) throw new FormatException("traffic.react.fleePm: 1000..4000 per mille");
             var lk = t["lockdown"]; lk.Only("alert", "then", "src", "proposed", "reason"); LockAlert = lk["alert"].Int(); var then = lk["then"].Str();
@@ -95,6 +100,12 @@ namespace Suborned.Sim
         public bool Standing, Settled;
         public Person Driver = null!; public Walker? Out;
         public bool Gone;
+        /// <summary>Brief 098 step 1b: a wreck a mission car has pushed aside stands where it was pushed (its pose off its route from then on, never driven
+        /// again): the mission car that pushed it last, when, and how far it has been pushed in all (cm).</summary>
+        public bool Moved; public Pt MovedAt, MovedH; public string ShovedBy = ""; public int ShovedAt = -1, ShovedCm, ShoveSide;
+        /// <summary>Brief 098 step 1b: the mission car this car stands in the way of while waiting for it (they would wait for each other): it gets
+        /// out of the way, sideways within its half or backing off; "" when it is in nobody's way.</summary>
+        public string Clears = "";
         public long Front => Mm + HalfLen * 10L; public long Rear => Mm - HalfLen * 10L;
     }
     /// <summary>One slot of the count: a car at a time, its next trip's earliest tick, and how many trips it has run.</summary>

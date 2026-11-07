@@ -125,7 +125,7 @@ namespace Suborned.Sim
             foreach (var b in w.Cars)
             {
                 if (b.Car == c || b.X1 < x0 - m || b.X0 > x1 + m || b.Y1 < y0 - m || b.Y0 > y1 + m || (b.Car != null && b.Car.V >= skipFast)) continue;
-                if (b.Sweep && ((long)(b.From.X - cf.X) * ch.X + (long)(b.From.Y - cf.Y) * ch.Y < 0 || c.Turn >= 0)) continue; // a mission car coming up from behind, or the driver already given a junction: they drive on (out of its way)
+                if (b.Sweep && ((long)(b.From.X - cf.X) * ch.X + (long)(b.From.Y - cf.Y) * ch.Y < 0 || c.Turn >= 0 || b.Id == c.Clears)) continue; // a mission car coming up from behind, or the driver already given a junction, or making room for it (brief 098 step 1b): they drive on (out of its way)
                 nearC.Add(b);
             }
             long pr2 = (long)pr * pr, br2 = (long)br * br;
@@ -157,14 +157,14 @@ namespace Suborned.Sim
             return false;
         }
         /// <summary>The squared distance (cm²) from the car's line over its body, at offset `lat`, to the nearest other car, person or body (a person
-        /// or a body counts their own half width less): how clear the car would stand there.</summary>
+        /// or a body counts their own half width less): how clear the car would stand there. A mission car's coming places are not bodies.</summary>
         long BodyGap2(TrafficCar c, TrafficWorld w, int lat)
         {
             long best = long.MaxValue; int pr = R.CrowdOccludeCm;
             for (long mm = c.Rear; mm <= c.Front; mm += TStep)
             {
                 var q = c.Route.Path.At(mm); if (lat != 0) { var h = c.Route.Path.Heading(mm); long hn = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y)); q = new Pt(q.X + (int)(h.Y * lat / hn), q.Y + (int)(-h.X * lat / hn)); }
-                foreach (var b in w.Cars) if (b.Car != c && b.X1 >= q.X - 600 && b.X0 <= q.X + 600 && b.Y1 >= q.Y - 600 && b.Y0 <= q.Y + 600) best = Math.Min(best, b.Gap2(q));
+                foreach (var b in w.Cars) if (b.Car != c && !b.Sweep && b.X1 >= q.X - 600 && b.X0 <= q.X + 600 && b.Y1 >= q.Y - 600 && b.Y0 <= q.Y + 600) best = Math.Min(best, b.Gap2(q)); // bodies only: a mission car's next seconds are no thing to touch (brief 098 step 1b)
                 foreach (var p in w.People) { long d = Math.Max(0, G.Isqrt(G.D2(p, q)) - pr); best = Math.Min(best, d * d); }
                 foreach (var p in w.Bodies) { long d = Math.Max(0, G.Isqrt(G.D2(p, q)) - pr); best = Math.Min(best, d * d); }
             }
@@ -229,6 +229,7 @@ namespace Suborned.Sim
             long look = tr.LookCm * 10L, best = long.MaxValue; int gapKind = 0; bool still = false; int aheadV = 0;
             var (d, kind, st, av) = Corridor(c, w, c.Front, look, c.LatGoal);
             c.WaitsFor = kind == 4 || kind == 6 ? lastHit : "";
+            if (c.Clears.Length > 0) ClearFor(c, w, lane); // brief 098 step 1b: standing in a mission car's way, waiting for it: it makes room (GameTrafficShove.cs)
             if (d != long.MaxValue) { best = Math.Max(0, d - TStep); gapKind = kind; still = st; aheadV = av; }
             if (SomeoneIn(c, w)) { best = 0; gapKind = 1; }
             if (lane != null && LaneLeader(c, li) is long lead && lead < best) { best = Math.Max(0, lead); gapKind = 3; still = false; } // never past a car on its way in its own lane, wherever across it rides
@@ -242,7 +243,7 @@ namespace Suborned.Sim
             c.V = Math.Max(0, v); c.Mm += c.V;
             if (c.Lat != c.LatGoal && c.Mode != TrafficMode.Brake) // sideways only where the whole car is clear at the new offset (someone may have come alongside since it chose); stopped, it creeps
             { int sideways = c.V > 0 ? Math.Max(1, c.V * tr.LatCmS / (tr.PassCmS * 10)) : Math.Max(1, tr.LatCmS / 40), gap = c.LatGoal - c.Lat, nl = c.Lat + Math.Sign(gap) * Math.Min(Math.Abs(gap), sideways);
-              long now2 = BodyGap2(c, w, c.Lat), next2 = BodyGap2(c, w, nl), r2 = (long)(c.HalfW + tr.ClearCm) * (c.HalfW + tr.ClearCm); if (next2 > r2 || next2 > now2) c.Lat = nl; } // clear there, or at least farther from what it touches
+              long now2 = BodyGap2(c, w, c.Lat), next2 = BodyGap2(c, w, nl), r2 = (long)(c.HalfW + tr.ClearCm) * (c.HalfW + tr.ClearCm); if (c.Clears.Length > 0 ? FootprintFree(c, c.Mm, nl, w) : next2 > r2 || next2 > now2) c.Lat = nl; } // clear there, or at least farther from what it touches; making room for a mission car, wherever its body meets nobody (brief 098 step 1b)
             if (c.Mode == TrafficMode.Brake && c.V == 0 && now - c.ModeTick >= (c.Driver.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks))
             { c.Mode = c.Flees ? TrafficMode.Flee : TrafficMode.Duck; c.ModeTick = now; if (!c.Flees) c.Quiet = Math.Max(c.Quiet, now); }
             // held up behind something that will not move on: ease round it; once the whole car is past, back to the line (GameTrafficPass.cs)
@@ -255,7 +256,7 @@ namespace Suborned.Sim
                 if (lane != null && now - c.BlockedAt >= T(tr.PassWaitS) * (gapKind == 1 ? 5 : 1)) { PlanPass(c, w, lane, best, gapKind == 1 ? R.CrowdOccludeCm * 2 : 0, true); if (c.LatGoal == 0) BackOff(c, lane, w); }
             }
             else if (c.V > 0) c.BlockedAt = -1;
-            if (c.LatGoal != 0 && lane != null && (!(c.V == 0 && still) || LineWithin(c, StopMm(c.V) + c.V + Math.Abs(c.Lat) * (long)tr.PassCmS * 10 / Math.Max(1, tr.LatCmS) + 1000))
+            if (c.LatGoal != 0 && lane != null && c.Clears.Length == 0 && (!(c.V == 0 && still) || LineWithin(c, StopMm(c.V) + c.V + Math.Abs(c.Lat) * (long)tr.PassCmS * 10 / Math.Max(1, tr.LatCmS) + 1000))
                 && Corridor(c, w, c.Rear, c.Front - c.Rear, 0, latFrom: 0).d == long.MaxValue && Corridor(c, w, c.Front, LineWithin(c, look) ? 2000 : look, 0, latFrom: 0).d == long.MaxValue) c.LatGoal = 0; // back on its line once the whole car is clear there and the way on from its front, as the corridor samples it (before a junction, as soon as the car is)
             if (c.Refused >= 0 && c.V == 0 && now - c.RefusedAt >= T(tr.PassWaitS)) Reroute(c, c.Refused, w, now);
             if (c.Front >= c.Route.Path.Length) c.Gone = true; // at its runway's end, 30 m out of the zone: it has left
