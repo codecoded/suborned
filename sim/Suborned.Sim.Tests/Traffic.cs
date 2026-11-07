@@ -126,28 +126,36 @@ public class TrafficTests
     [Theory] [InlineData(1)] [InlineData(3)] [InlineData(6)]
     public void GunfireNearACarMakesItStop(int seed)
     {
-        var g = New(seed, 16); TrafficCar? target = null; Pt? spot = null;
-        for (int t = 20; t <= 200 && spot == null; t++) { g.RunTo(Game.T(t)); target = Cruising(g, 15000); if (target != null) spot = SpotNear(g, g.Enforcer.Pos, g.TrafficNow().Single(v => v.Id == target.Id).At, 600, 1000); }
-        Assert.NotNull(spot);
-        Stand(g, OpId.Enforcer, spot!.Value); g.Issue(new Order { Tick = g.Tick, Op = "enforcer", Do = "draw" });
-        for (int k = 0; k < Game.T(2); k++) { g.Step(); Stand(g, OpId.Enforcer, spot.Value); }
-        int shot0 = g.LastShotTick; var a = g.Issue(new Order { Tick = g.Tick, Op = "enforcer", Do = "fire", Target = target!.Id }); Assert.True(a.ok, a.code);
-        var near = new List<TrafficCar>();
-        for (int k = 0; k < Game.T(10) && near.Count == 0; k++)
+        // the setup needs another car near the shot; a moment where none passes says nothing about the law, so the next moment is tried (a fresh game)
+        int tried = 0;
+        for (int t0 = 20; t0 <= 200; t0 += 15)
         {
-            g.Step(); Stand(g, OpId.Enforcer, spot.Value);
-            if (g.LastShotTick > shot0) foreach (var c in g.Traffic) if (c != target && c.Out == null && G.Within(View(g, c.Id).At, spot.Value, g.R.CrowdScatterCm - 200) && c.Mode != TrafficMode.Abandoned) near.Add(c);
+            var g = New(seed, 16); TrafficCar? target = null; Pt? spot = null;
+            for (int t = t0; t <= 200 && spot == null; t++) { g.RunTo(Game.T(t)); target = Cruising(g, 15000); if (target != null) spot = SpotNear(g, g.Enforcer.Pos, g.TrafficNow().Single(v => v.Id == target.Id).At, 600, 1000); }
+            if (spot == null) break;
+            Stand(g, OpId.Enforcer, spot!.Value); g.Issue(new Order { Tick = g.Tick, Op = "enforcer", Do = "draw" });
+            for (int k = 0; k < Game.T(2); k++) { g.Step(); Stand(g, OpId.Enforcer, spot.Value); }
+            int shot0 = g.LastShotTick; var a = g.Issue(new Order { Tick = g.Tick, Op = "enforcer", Do = "fire", Target = target!.Id }); Assert.True(a.ok, a.code);
+            var near = new List<TrafficCar>();
+            for (int k = 0; k < Game.T(10) && near.Count == 0; k++)
+            {
+                g.Step(); Stand(g, OpId.Enforcer, spot.Value);
+                if (g.LastShotTick > shot0) foreach (var c in g.Traffic) if (c != target && c.Out == null && G.Within(View(g, c.Id).At, spot.Value, g.R.CrowdScatterCm - 200) && c.Mode != TrafficMode.Abandoned) near.Add(c);
+            }
+            if (near.Count == 0) continue;
+            tried++;
+            var stoppedAt = new Dictionary<string, int>();
+            for (int k = 0; k < Game.T(6); k++) { g.Step(); foreach (var c in near) if (c.V == 0 && !stoppedAt.ContainsKey(c.Id)) stoppedAt[c.Id] = g.Tick; }
+            foreach (var c in near)
+            {
+                Assert.True(stoppedAt.ContainsKey(c.Id) || c.Mode == TrafficMode.Flee, $"{c.Id} brakes and stops at the gunfire");
+                if (c.Out != null) continue; // a stray round on it: its driver got out
+                var nature = Tr.Ducks(c.Driver.Temperament) ? TrafficMode.Duck : TrafficMode.Flee;
+                Assert.True(c.Mode == nature || (nature == TrafficMode.Duck && c.Mode == TrafficMode.Drive), $"{c.Id}'s {c.Driver.Temperament} driver: {nature}, not {c.Mode}");
+            }
+            break;
         }
-        Assert.NotEmpty(near);
-        var stoppedAt = new Dictionary<string, int>();
-        for (int k = 0; k < Game.T(6); k++) { g.Step(); foreach (var c in near) if (c.V == 0 && !stoppedAt.ContainsKey(c.Id)) stoppedAt[c.Id] = g.Tick; }
-        foreach (var c in near)
-        {
-            Assert.True(stoppedAt.ContainsKey(c.Id) || c.Mode == TrafficMode.Flee, $"{c.Id} brakes and stops at the gunfire");
-            if (c.Out != null) continue; // a stray round on it: its driver got out
-            var nature = Tr.Ducks(c.Driver.Temperament) ? TrafficMode.Duck : TrafficMode.Flee;
-            Assert.True(c.Mode == nature || (nature == TrafficMode.Duck && c.Mode == TrafficMode.Drive), $"{c.Id}'s {c.Driver.Temperament} driver: {nature}, not {c.Mode}");
-        }
+        Assert.True(tried > 0, "some moment had another car near the shot");
     }
 
     [Fact]
@@ -192,17 +200,24 @@ public class TrafficTests
     [Theory] [InlineData(1)] [InlineData(2)] [InlineData(5)]
     public void ADriverWhoSeesADrawnGunReactsByNature(int seed)
     {
-        var g = New(seed, 16); TrafficCar? c = null;
-        for (int t = 20; t <= 200 && c == null; t++) { g.RunTo(Game.T(t)); c = Cruising(g, 20000); }
-        Assert.NotNull(c);
-        var spot = g.S.Grid.NearestFree(Ahead(c!, 7000)) ?? Ahead(c!, 7000); Stand(g, OpId.Fixer, spot);
-        g.Issue(new Order { Tick = g.Tick, Op = "fixer", Do = "draw" });
-        var seen = new List<TrafficMode>(); int shots = g.LastShotTick;
-        for (int k = 0; k < Game.T(5); k++) { g.Step(); Stand(g, OpId.Fixer, spot); seen.Add(c!.Mode); }
-        Assert.Equal(shots, g.LastShotTick); // no shot: the gun alone
-        Assert.Contains(TrafficMode.Brake, seen);
-        var nature = Tr.Ducks(c!.Driver.Temperament) ? TrafficMode.Duck : TrafficMode.Flee;
-        Assert.True(seen.Contains(nature), $"a {c.Driver.Temperament} driver: {nature} (saw {string.Join(",", seen.Distinct())})");
+        // the gun alone: a moment where someone fires (security seeing the drawn gun) says nothing about the driver's law, so the next is tried
+        int tried = 0;
+        for (int t0 = 20; t0 <= 200 && tried == 0; t0 += 15)
+        {
+            var g = New(seed, 16); TrafficCar? c = null;
+            for (int t = t0; t <= 200 && c == null; t++) { g.RunTo(Game.T(t)); c = Cruising(g, 20000); }
+            if (c == null) break;
+            var spot = g.S.Grid.NearestFree(Ahead(c!, 7000)) ?? Ahead(c!, 7000); Stand(g, OpId.Fixer, spot);
+            g.Issue(new Order { Tick = g.Tick, Op = "fixer", Do = "draw" });
+            var seen = new List<TrafficMode>(); int shots = g.LastShotTick;
+            for (int k = 0; k < Game.T(5); k++) { g.Step(); Stand(g, OpId.Fixer, spot); seen.Add(c!.Mode); }
+            if (g.LastShotTick != shots) continue;
+            tried++;
+            Assert.Contains(TrafficMode.Brake, seen);
+            var nature = Tr.Ducks(c!.Driver.Temperament) ? TrafficMode.Duck : TrafficMode.Flee;
+            Assert.True(seen.Contains(nature), $"a {c.Driver.Temperament} driver: {nature} (saw {string.Join(",", seen.Distinct())})");
+        }
+        Assert.True(tried > 0, "some moment let the gun be drawn with no shot");
     }
 
     [Fact]

@@ -4,7 +4,7 @@
 //  · a junction is a plan node two or more roads share inside the window, its box cut back along every road by the widest other road's half
 //    width plus a margin; two boxes closer than `minLink` along a road are one junction (Orbit Walk's two T's with Garden Row and Pylon Row);
 //  · each road between junctions (or a junction and a mouth) carries, per direction, life.json's lanes (floor((w - median) / 2 / laneWidth),
-//    at least 1), each the middle of its share of the half carriageway, on the driver's right (the block frame's right of a heading h is
+//    at least 1), on the driver's right: one lane KERB_SIDE m off the kerb (keeping right), two or more each the middle of its share of the half carriageway (the block frame's right of a heading h is
 //    (h.y, -h.x): the site's own rule, Game.BesideCar);
 //  · a turn joins every lane into a junction to every lane out of it but its own road's other way (no U-turns): along the lane, a corner of
 //    radius `turnRadius` (or less where the lanes leave less) at each crossing of two lane lines, on along the next.
@@ -24,6 +24,17 @@ export const PLAN_FILE = 'contracts/world/harbour-district.plan.json', LIFE_FILE
 /** m: how far a lane runs past the window's edge; a box's margin past the widest other road's half width; the shortest road between two
  *  boxes (a van, 6.56 m, and its gap) before they are one junction; a turn's corner radius. */
 export const RUNWAY = 30, MARGIN = 0.5, MIN_LINK = 10, TURN_R = 6;
+/** m: where a road with one lane each way carries it: its line this far off the kerb, keeping right, not the middle of the half (Sky 2026-11-07:
+ *  "Why are cars driving in middle of road rather than in a lane?": a 12 m access road's lane sat 3 m off the centre line, mid-half, and from the
+ *  play camera a near-side car's roof sat on the dashes); the old town's own lanes ran 4.2 m off theirs (DecoKitDistrictLife). Never nearer the
+ *  centre than the middle of the half. A road with two or more lanes each way keeps the even split. */
+export const KERB_SIDE = 1.8;
+/** m: a lane's line off the road's centreline (k of n lanes per direction). */
+export function laneOffset(w: number, median: number, k: number, n: number, laneW: number): number {
+  const half = (w - median) / 2, share = half / n;
+  if (n === 1) return median / 2 + Math.max(share / 2, half - KERB_SIDE);
+  return median / 2 + (k + 0.5) * share;
+}
 const SEDAN = { len: 4.73, w: 1.82 }; // rulebook car-len-cm, car-w-cm: the footprint every lane must carry on the drive grid
 
 type Road = { id: string; cls: string; w: number; median: number; nodes: string[]; pts: V[] };
@@ -132,10 +143,10 @@ export function buildLanes(plan: Plan, life: any, drive: { x0: number; y0: numbe
     if (l.internal) continue;
     const from = isJ.has(l.a) ? l.sa + cutOf(l.a, l.road.id) : l.sa, to = isJ.has(l.b) ? l.sb - cutOf(l.b, l.road.id) : l.sb;
     if (to - from < 1) throw new Error(`lanes: ${l.id} is ${(to - from).toFixed(1)} m between its boxes`);
-    const centre = stretch(l.run, from, to), n = Math.max(1, Math.floor((l.road.w - l.road.median) / 2 / laneW)), share = (l.road.w - l.road.median) / 2 / n;
+    const centre = stretch(l.run, from, to), n = Math.max(1, Math.floor((l.road.w - l.road.median) / 2 / laneW));
     for (const dir of ['+', '-'] as const)
       for (let k = 0; k < n; k++) {
-        const pts = dir === '+' ? centre : [...centre].reverse(), o = l.road.median / 2 + (k + 0.5) * share;
+        const pts = dir === '+' ? centre : [...centre].reverse(), o = laneOffset(l.road.w, l.road.median, k, n, laneW);
         lanes.push({ id: `${l.id}${dir}${k}`, road: l.road.id, class: l.road.cls, dir, k, from: ref(dir === '+' ? l.a : l.b), to: ref(dir === '+' ? l.b : l.a), speed: speedOf(l.road.cls), offset: Math.round(o * 100), half: Math.round((l.road.w / 2) * 100), line: offset(pts, o).map(cm) });
       }
   }
@@ -187,7 +198,7 @@ function route(la: Link, a: Lane, lb: Link, b: Lane, links: Link[], nodes: strin
   while (q.length) { const n = q.shift()!; if (n === goal) break; for (const l of links) if (l.internal && (l.a === n || l.b === n)) { const o = l.a === n ? l.b : l.a; if (!nodes.includes(o) || prev.has(o)) continue; prev.set(o, { link: l, from: n }); q.push(o); } }
   if (!prev.has(goal)) return null;
   const mid: { p: V; h: V }[] = []; for (let n = goal; prev.get(n); n = prev.get(n)!.from) {
-    const { link, from } = prev.get(n)!, fwd = link.a === from, o = link.road.median / 2 + 0.5 * ((link.road.w - link.road.median) / 2 / Math.max(1, Math.floor((link.road.w - link.road.median) / 2 / laneW)));
+    const { link, from } = prev.get(n)!, fwd = link.a === from, o = laneOffset(link.road.w, link.road.median, 0, Math.max(1, Math.floor((link.road.w - link.road.median) / 2 / laneW)), laneW);
     const c = along(link.run.pts, link.run.s, (link.sa + link.sb) / 2), h = fwd ? c.h : mul(c.h, -1);
     mid.unshift({ p: add(c.p, mul(right(h), o)), h });
   }
