@@ -183,6 +183,7 @@ namespace Suborned.Sim
             else Note("start", $"{Cap(ValeName)} is inside. His official car will collect him later. The city is already moving.");
             CarEpochStep(); // engine 0.33.1 (car.footprint): the cars standing at the start (the crowd's legs built at load go round them)
             if (!Range) SeedStart(); // brief 080 (GameSeed.cs): the crowd's phases, the patrol's, the rivals' posts; nothing at seed 0
+            InitTraffic(); // brief 098 step 1 (GameTraffic.cs): passing cars, when the start sets cars; nothing otherwise
         }
 
         public Person PersonByRole(string role)
@@ -231,7 +232,7 @@ namespace Suborned.Sim
 
         void StepInner()
         {
-            Tick++;
+            Tick++; MissionYieldStep(); // brief 098 step 1 (GameTrafficYield.cs): a mission car meeting a passing car on its way holds a tick; nothing without traffic
             CarStandStep(); // engine 0.36.0 (car.footprint): a car that has come to stand clears its ground
             CarAheadStep(); // engine 0.37.0 (car.footprint.ahead; brief 081): and an agent steps off the ground it is about to stop on
             CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
@@ -262,6 +263,7 @@ namespace Suborned.Sim
             if (!Over) Combat();
             if (!Over) CarsStep(); // tuning.md §10.7: a burning car blows (GameCars.cs; nothing while no car is named)
             if (!Over) GetawayAfterFire(); // brief 018: the blocker picked among those still standing after this tick's fire; blocker.out, car.free
+            if (!Over) TrafficStep(); // brief 098 step 1 (GameTraffic.cs): passing cars hear this tick's shots before the crowd does; nothing without traffic
             if (!Over) CrowdStep();
             if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
             if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
@@ -276,29 +278,6 @@ namespace Suborned.Sim
         public void RunTo(int tick) { while (Tick < tick && !Over) Step(); }
         public void Advance(int ticks) => RunTo(Tick + ticks);
 
-        void GuardTimeline()
-        {
-            if (LureTick < 0 || GuardHeld || GuardDown) return;
-            // Alert above summon.alertMax ends the visit: he heads straight back at a guard's pace (guardSpeed; Motive, motive-lovers.md §1.3)
-            if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax && !GuardRunningBack) // brief 085 (ruling): a pressed run back keeps its pace
-            {
-                var from = GuardPose()!.Value.pos;
-                guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
-                guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + guardSpeed - 1) / guardSpeed);
-                Note("guard.recalled", "The alarm is up: the guard heads back to his post.");
-                return;
-            }
-            if (guardRunning) { if (Tick == GuardAwayUntil) { guardRunning = false; Note("guard.back", "The guard is back at the office entrance."); } return; }
-            if (Tick == LureTick + walkT) { GuardReachedCafe = true; Note("guard.at-cafe", GuardCallPressed ? $"The guard reaches {InezName} at the café. She tells him someone knows about them." : $"The guard reaches {InezName} at the café. She keeps him talking, away from the door."); }
-            if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", GuardCallPressed ? "The guard leaves the café and runs back toward his post." : "The guard leaves the café and walks back toward his post.");
-            if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
-        }
-        /// <summary>engine 0.24.0 (brief 043 §6): the rerouted patrol's false orders run out and it is back on its entrance sweep (PatrolPose
-        /// returns to the sweep on this tick); before, only PatrolAwayUntil passing said so. The window marker's closing code.</summary>
-        void PatrolTimeline()
-        {
-            if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on its sweep."); // engine 0.34.0: no place named (brief 067 A)
-        }
         void ValeTimeline()
         {
             // the car waits for its driver: shot (security pulls Vale away, as before), or taken down and the city knows it, Vale stays in;

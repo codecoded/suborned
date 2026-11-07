@@ -158,6 +158,7 @@ namespace Suborned.Sim
             if (g.Lab) g.HashLab(h);
             else { g.HashKiteToday(h); g.HashCloseToday(h); } // tuning.md §7.9 the kite in today; brief 030 the walk-in in today // brief 027: only a run with the fight lab on adds bytes
             if (g.Range) g.HashRange(h); // brief 029: only a run on the fight range adds bytes
+            g.HashTraffic(h); // brief 098 step 1: no bytes unless the start set cars
             g.HashRounds(h); // brief 022: no bytes unless the round is played // brief 018: no bytes until someone boards, a blocker is picked or the car leaves // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
             return h.V;
         }

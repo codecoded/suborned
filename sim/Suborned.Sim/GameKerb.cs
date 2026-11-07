@@ -80,7 +80,7 @@ namespace Suborned.Sim
             while (mm > nowMm)
             {
                 var me = CarGeo.Rect(at, k.Heading, hl, hw); bool clear = true;
-                foreach (var c in StandingCars()) if (c.Id != "car:official" && !(CarOf(c.Id) is CarTarget t && t.Blown) && CarGeo.PolysMeet(me, CarGeo.Rect(c.At, c.Heading, hl, hw))) { clear = false; break; }
+                foreach (var c in StandingCars()) if (c.Id != "car:official" && !(CarOf(c.Id) is CarTarget t && t.Blown) && CarGeo.PolysMeet(me, CarGeo.Rect(c.At, c.Heading, c.Hl(R), c.Hw(R)))) { clear = false; break; }
                 if (clear) break;
                 mm = Math.Max(nowMm, mm - 500); at = carToService.At(mm) + off;
             }

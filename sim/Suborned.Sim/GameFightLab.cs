@@ -179,7 +179,7 @@ namespace Suborned.Sim
         public bool TargetRunning(string id)
         {
             if (IsOpId(id)) { var o = OpOf(Sim.Op.Parse(id)); return o.Running && (o.Walk != null || o.DriveMoved); }
-            var h = HostileOf(id); if (h != null) return h.Gun.St == "break" && h.Present && h.Moving(Tick); if (id == "car:rivals" && !Range) return CarMoving; // brief 096 (engine 0.41.0, Motive veteran.movingTarget): a car driving past is a running target
+            var h = HostileOf(id); if (h != null) return h.Gun.St == "break" && h.Present && h.Moving(Tick); if (id == "car:rivals" && !Range) return CarMoving; if (TrafficCarById(id) is TrafficCar tcar) return tcar.V > 0; // brief 096 (engine 0.41.0, Motive veteran.movingTarget): a car driving past is a running target (brief 098 step 1: a passing car too)
             if (Range && RangeCivOf(id) is RangeCiv rc) return rc.St == "fleeing" && rc.Moving(Tick); // a fleeing bystander runs at the crowd's run
             if (Start.Crowd && CivilianOf(id) is Person p && !p.Down && WalkerOf(p) is Walker w && w.Run != null && Tick >= w.RunStart)
             {

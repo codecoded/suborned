@@ -20,11 +20,11 @@ namespace Suborned.Sim
         List<string> CarsOn(Pt[] way, string self)
         {
             var l = new List<string>(); if (Range || way.Length == 0) return l;
-            long half = S.GroundOf(R).Half, hl = R.CarLenCm / 2, hw = R.CarWCm / 2;
+            long half = S.GroundOf(R).Half;
             foreach (var c in StandingCars())
             {
                 if (c.Id == self || (CarOf(c.Id) is CarTarget t && t.Blown)) continue;
-                if (CarGeo.OnWay(CarGeo.Rect(c.At, c.Heading, hl, hw), way, half)) l.Add(c.Id);
+                if (CarGeo.OnWay(CarGeo.Rect(c.At, c.Heading, c.Hl(R), c.Hw(R)), way, half)) l.Add(c.Id); // brief 098 step 1: a passing car's own footprint
             }
             return l;
         }

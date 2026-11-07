@@ -16,9 +16,16 @@ describe('brief 098: the dial', () => {
     for (const k of [r.kinds.guards, r.kinds.people]) expect(Object.keys(people.temperamentsBy.roles)).toContain(k.role);
     expect(r.kinds.guards.of).toEqual(['guard']); expect(r.kinds.people.of).toBe('rest');
   });
+  test('brief 098 step 1: the drivers are a people.rules role, every nature they can have ducks or flees, and the lanes file is the engine\'s', () => {
+    const r = PopulationRules.parse(raw), allow: string[] = people.temperamentsBy.roles[r.traffic.driver.role]?.allow ?? [];
+    expect(allow.length).toBeGreaterThan(1);
+    for (const t of allow) expect(r.traffic.react.duck.includes(t as never) !== r.traffic.react.flee.includes(t as never)).toBe(true);
+    expect(r.traffic.lanes).toBe('sim/data/handover.lanes.json'); expect(r.kinds.cars.max).toBeGreaterThan(0);
+  });
   test('unknown = reject', () => {
     for (const edit of [(r: any) => { r.kinds.cars = r.kinds.guards; }, (r: any) => { r.beat.points.push('gate'); }, (r: any) => { r.passers.dest.bench = 1; },
-      (r: any) => { r.kinds.people.of = ['clerk']; }, (r: any) => { r.kinds.guards.id = 'p-guard-'; }, (r: any) => { r.passers.lingerS.seat = [90, 30]; }]) {
+      (r: any) => { r.kinds.people.of = ['clerk']; }, (r: any) => { r.kinds.guards.id = 'p-guard-'; }, (r: any) => { r.passers.lingerS.seat = [90, 30]; },
+      (r: any) => { r.traffic.mix.lorry = 5; }, (r: any) => { r.traffic.react.duck.push('mercenary'); }, (r: any) => { r.traffic.lockdown.then = 'vanish'; }, (r: any) => { r.kinds.cars.id = 'car:t-'; }]) {
       const bad = structuredClone(raw); edit(bad); expect(PopulationRules.safeParse(bad).success).toBe(false);
     }
   });
