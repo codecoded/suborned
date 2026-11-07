@@ -120,12 +120,12 @@ test.skipIf(!has)('brief 007 round 3 wrap-up: the concept-B liner (hand-built fa
     }
 });
 
-test.skipIf(!has)('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 31 crown and skyline pieces (27 + the four mirrored skyline caps, brief 075 old buildings) keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
+test.skipIf(!has)('brass over gold (Sky, 14 Oct): street level and facades draw brass, the 24 adopted crown and skyline pieces (20 + the four mirrored skyline caps, brief 075 old buildings) keep the old golds as DK_Crown_Gold and DK_Crown_Gold17', () => {
   const adopted = kit.assets.filter(a => a.status === 'adopted');
   const crown = adopted.filter(a => a.materials.some(m => /^DK_Crown_Gold/.test(m)));
-  expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'DiscTower@crown-vista', 'LinerDock@liner-berth', 'ParabolicArch', 'ParabolicArch@crown-avenue', 'SpaceHQ_Portal', 'Skyport_Tower', 'Skyport_Tower_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9', 'StreamCorner_9_M',
-    'StreamEnd_6', 'StreamEnd_9', 'StreamEnd_9W', 'StreamEnd_6_M', 'StreamEnd_9_M', 'StreamEnd_9W_M', 'Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Needle', 'Tower_Needle@avenue-needle', 'Tower_Saucer@harbour-hotel', 'Tower_Starburst', 'Tower_Starburst@avenue-starburst', 'Tower_Terrace', 'Tower_Terrace@crescent-terrace'].sort());
-  for (const a of crown) expect(a.materials.filter(m => /^DK_(Gold|Gold17|Accent_Gold)$/.test(m)), `${a.id} draws a brass beside its crown gold`).toEqual([]); // the swap is whole: one gold per piece
+  // brief 098: the seven retired towers that carried the crown gold (Skyport_Tower_Portal and the six @site towers) are rejected; the pre-remap rule tests keep them on their pin
+  expect(crown.map(a => a.id).sort()).toEqual(['Crown_Atom', 'Crown_Finial', 'Crown_Starburst', 'DecoBay_10', 'DiscTower@crown-vista', 'LinerDock@liner-berth', 'ParabolicArch', 'ParabolicArch@crown-avenue', 'Skyport_Tower', 'SpaceHQ_Portal', 'StreamBay_6', 'StreamBay_9', 'StreamBay_9W', 'StreamCorner_9',
+    'StreamCorner_9_M', 'StreamEnd_6', 'StreamEnd_6_M', 'StreamEnd_9', 'StreamEnd_9W', 'StreamEnd_9W_M', 'StreamEnd_9_M', 'Tower_Needle', 'Tower_Starburst', 'Tower_Terrace']); // the swap is whole: one gold per piece
   const palette = new Map((JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/civic-look.json'), 'utf8')) as { palette: { materials: { material: string; unlit: string }[] } }).palette.materials.map(m => [m.material, m.unlit]));
   // the dE gate reads the palette rows; the .mat the generator wrote is what Unity draws: they must say the same colour
   const hexOf = (name: string) => { const c = /_BaseColor: \{r: ([\d.e-]+), g: ([\d.e-]+), b: ([\d.e-]+)/.exec(readFileSync(join(GEN_ROOT, `Materials/${name}.mat`), 'utf8'))!; return '#' + [c[1]!, c[2]!, c[3]!].map(x => Math.round(+x * 255).toString(16).padStart(2, '0')).join('').toUpperCase(); };
@@ -243,7 +243,8 @@ test.skipIf(!has)('brief 075-C: landmark livery (old DecoKitColourways `livery`)
   expect(Object.fromEntries(Object.entries(lv.keys).map(([k, v]) => [k, [v.base, v.material, v.hex]]))).toEqual({
     vermilion: ['DK_Steel_Ivory', 'DK_Steel_Ivory__vermilion', '#B8432E'], brick: ['DK_Hull_Ivory', 'DK_Hull_Ivory__brick', '#9C2E2B'], gold: ['DK_Crown_Gold', 'DK_Crown_Gold__gold', '#F2C14E'] });
   expect(lv.pieces.SphereStation).toEqual({ DK_Steel_Ivory: 'vermilion', DK_Hull_Ivory: 'brick' });
-  expect(lv.pieces.Skyport_Tower_Portal).toEqual({ DK_Steel_Ivory: 'vermilion' });
+  expect(lv.pieces.Skyport_Tower).toEqual({ DK_Steel_Ivory: 'vermilion' }); // the Skyport tower the old town stands (landmarks.skyport-tower)
+  expect(lv.pieces.Skyport_Tower_Portal).toBeUndefined(); // brief 098: retired with the Skyport tower megastructure and rejected; a rejected piece takes no livery
   expect(lv.pieces.SpaceHQ_Portal).toEqual({ DK_Crown_Gold: 'gold' });
   const byId = new Map(kit.assets.map(a => [a.id, a]));
   for (const [id, slots] of Object.entries(lv.pieces)) for (const [base, key] of Object.entries(slots)) {

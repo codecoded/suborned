@@ -10,7 +10,7 @@ export type CopyResult = { copied: string[]; skipped: string[]; bytes: number; e
 /** What Unity owns once it has imported a copy: a .meta (import settings it fills in; a new guid when the old town's copy of the art already holds the catalogue's: SpaceHQ's model and prefab, facade_panel) and a .mat (it re-serialises).
  *  Copying those back on every run only made Unity re-roll the guids and re-import them, and read as a kit change to the delta (brief 078). So they are copied when the catalogue's own hash moves, a real change in the source;
  *  models, textures and prefabs stay byte-checked against it. `settled` (out/kit/copied.json): path -> the catalogue hash last in place. No such file yet: what is on disk stands, once. */
-const unityOwned = (path: string) => /\.(meta|mat)$/.test(path);
+export const unityOwned = (path: string) => /\.(meta|mat)$/.test(path); // the batch's snapshot reads these by their catalogue hash too (tools/game/proofdelta.ts kitFiles)
 const readSettled = (file: string | undefined) => { if (!file || !existsSync(file)) return { first: !!file, was: {} as Record<string, string> }; return { first: false, was: JSON.parse(readFileSync(file, 'utf8')) as Record<string, string> }; };
 
 export function copyAdopted(kit: Kit, root: string, dest: string, gen?: string, repo?: string, settledFile?: string): CopyResult {

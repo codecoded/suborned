@@ -13,17 +13,16 @@ export type Order = {
   /** A re-homed order (REHOMED): the plan it lives in, repo-relative. Absent: the live plan's. */
   home?: string;
 };
-/** Brief 098 (Vela, 2026-11-07): orders the brief 075 remap dropped from the live plan (the old town has no tower sites and no Skyport tower megastructure), re-homed
- *  in the plan as it stood before the remap (`plan`, committed). Nothing in the live world or the old town places these pieces, but the world and plan rule tests
- *  still generate that plan with today's code and kit (K-2 tower tips, T-K1 stand-ins, LV-1 the Skyport tower's livery, NP-1 and the census examples), and it places
- *  every one at its site. So each stays adopted, retired from the live plan (its kit.json `why` says so): a bare `bun run decokit` no longer builds it, `--only <id>`
- *  rebuilds it to its order there, and the fit table holds it to that order. Rejecting them empties this list; that waits on those tests pinning their kit
- *  (tools/world/gen/kitrefs.ts withKit). A piece the live plan orders again takes the live order. */
-export const REHOMED = {
+/** Brief 098 (Vela, 2026-11-07): orders the brief 075 remap dropped from the live plan, re-homed in the plan as it stood before the remap (`plan`, committed), so a
+ *  piece only that plan places could stay adopted while the world and plan rule tests generated it with the live kit. Those tests now pin their own catalogue
+ *  (tools/world/test/preremap.ts, Splice 2026-11-08), so the eleven retired towers (Tower_Stepped@parade-gate-n/s, Tower_Saucer@harbour-hotel, Tower_Atom@crescent-tower,
+ *  Tower_Lantern@lantern-beacon, Tower_Needle@avenue-needle, Tower_Starburst@avenue-starburst, DiscTower@avenue-gate-w/e, Tower_Terrace@crescent-terrace,
+ *  Skyport_Tower_Portal) are rejected in kit.json with their reasons and the list is empty. A piece put here again keeps its order (and `--only <id>`) from that
+ *  plan; a piece the live plan orders again takes the live order. */
+export const REHOMED: { plan: string; pieces: readonly string[] } = {
   plan: 'briefs/075/remap/base.plan.json',
-  pieces: ['Tower_Stepped@parade-gate-n', 'Tower_Stepped@parade-gate-s', 'Tower_Saucer@harbour-hotel', 'Tower_Atom@crescent-tower', 'Tower_Lantern@lantern-beacon', 'Tower_Needle@avenue-needle',
-    'Tower_Starburst@avenue-starburst', 'DiscTower@avenue-gate-w', 'DiscTower@avenue-gate-e', 'Tower_Terrace@crescent-terrace', 'Skyport_Tower_Portal'],
-} as const;
+  pieces: [],
+};
 /** The plain pieces (no regen order) a bare `bun run decokit` also builds, beside the plan's regen orders (brief 061, Sky 2026-10-25; Splice): the crossing signal head and its clock ring, the dot rows the plan's lightsFit is fitted to, and the kerb and road ribbon cut without
  *  their brass. Each is a builder in tools/decokit (crossing_lens.py, crossing_flat.py, pave026.py, road_ribbon.py); the plan's sizes (signal.halo/top/hover/size, lights.dots) are fitted to what they build, and K-1 holds the export to them. A piece that is retired
  *  (kit.asset retired=) is not listed: its builder stays, `bun run decokit --only <id>` rebuilds it, and the catalogue keeps its last bytes until it is rejected. */

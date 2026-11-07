@@ -13,7 +13,8 @@
 // Both folders are generated (git-ignored). Run: bun tools/sim/unity.ts [--tree] [--routes]   (--routes: also play the route scripts in
 // contracts/missions/handover/routes/ headless, for the hand-played comparison; they are read from the working tree; --dll <file>: use those
 // exact engine bytes (e.g. Keel's Release build) in place of this build's, for the CLI and for Unity alike: the SDK stamps the git commit into
-// the DLL's informational version, so a build made before a commit differs from one made after it in those bytes only)
+// the DLL's informational version, so a build made before a commit differs from one made after it in those bytes only. This step's own build leaves the
+// stamp out (brief 098): the same engine source gives the same DLL after any commit, so a step run for a copied view file is no engine change to the proof)
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, posix, resolve } from 'node:path';
@@ -81,7 +82,7 @@ if (tree) {
 }
 
 // 2. one Release build: the CLI references the engine project, so both hosts load the bytes built here
-need(sh(['dotnet', 'build', join(work, 'sim/cli/cli.csproj'), '-c', 'Release', '-nologo', '-v', 'q']), 'dotnet build');
+need(sh(['dotnet', 'build', join(work, 'sim/cli/cli.csproj'), '-c', 'Release', '-nologo', '-v', 'q', '-p:IncludeSourceRevisionInInformationalVersion=false']), 'dotnet build'); // brief 098: no commit in the DLL, so its bytes move only with the engine's source (the delta proof reads them)
 const cliDir = join(work, 'sim/cli/bin/Release/net10.0');
 let dll = join(work, 'sim/Suborned.Sim/bin/Release/netstandard2.1/Suborned.Sim.dll');
 if (dllArg) { const given = join(root, dllArg); cpSync(given, join(cliDir, 'Suborned.Sim.dll')); cpSync(given, dll); dll = join(cliDir, 'Suborned.Sim.dll'); }

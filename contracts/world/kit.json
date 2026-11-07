@@ -1467,9 +1467,6 @@
    "Skyport_Tower": {
     "DK_Steel_Ivory": "vermilion"
    },
-   "Skyport_Tower_Portal": {
-    "DK_Steel_Ivory": "vermilion"
-   },
    "SkyRail_Pylon_Head": {
     "DK_Steel_Ivory": "vermilion"
    },
@@ -77053,7 +77050,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "DiscTower@avenue-gate-e",
@@ -77079,7 +77076,7 @@
     "tipPlan": 165.63,
     "tiers": null
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site avenue-gate-e, and nothing in the live world or the old town places it (the live gate pair, landmarks disc-west and disc-east, stands the plain DiscTower). It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site avenue-gate-e, and nothing in the live world or the old town places it (the live gate pair, landmarks disc-west and disc-east, stands the plain DiscTower). The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "DiscTower@avenue-gate-w",
@@ -77356,7 +77353,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "DiscTower@avenue-gate-w",
@@ -77382,7 +77379,7 @@
     "tipPlan": 165.63,
     "tiers": null
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site avenue-gate-w, and nothing in the live world or the old town places it (the live gate pair, landmarks disc-west and disc-east, stands the plain DiscTower). It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site avenue-gate-w, and nothing in the live world or the old town places it (the live gate pair, landmarks disc-west and disc-east, stands the plain DiscTower). The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "DiscTower@crown-vista",
@@ -107274,7 +107271,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Skyport_Tower_Portal",
@@ -107300,7 +107297,7 @@
     "tipPlan": 108,
     "tiers": null
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap took the Skyport tower megastructure, whose kit.regen ordered it, out of the plan, and nothing in the live world or the old town places it (landmarks.skyport-tower stands the store's Skyport_Tower). It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap took the Skyport tower megastructure, whose kit.regen ordered it, out of the plan, and nothing in the live world or the old town places it (landmarks.skyport-tower stands the store's Skyport_Tower). The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "SkyRail_Beam_4m",
@@ -119753,7 +119750,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Atom@crescent-tower",
@@ -119797,7 +119794,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site crescent-tower, and nothing in the live world or the old town places it. It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site crescent-tower, and nothing in the live world or the old town places it. The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Lantern@lantern-beacon",
@@ -120176,7 +120173,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Lantern@lantern-beacon",
@@ -120220,7 +120217,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site lantern-beacon, and nothing in the live world or the old town places it. It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site lantern-beacon, and nothing in the live world or the old town places it. The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Needle@avenue-needle",
@@ -120527,7 +120524,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Needle@avenue-needle",
@@ -120553,7 +120550,7 @@
     "tipPlan": 167.83,
     "tiers": null
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site avenue-needle, and nothing in the live world or the old town places it. It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site avenue-needle, and nothing in the live world or the old town places it. The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Saucer@harbour-hotel",
@@ -120803,7 +120800,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Saucer@harbour-hotel",
@@ -120843,7 +120840,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site harbour-hotel, and nothing in the live world or the old town places it (the old builders stand the store's Tower_Saucer in the old skyline). It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site harbour-hotel, and nothing in the live world or the old town places it (the old builders stand the store's Tower_Saucer in the old skyline). The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Starburst@avenue-starburst",
@@ -121226,7 +121223,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Starburst@avenue-starburst",
@@ -121274,7 +121271,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site avenue-starburst, and nothing in the live world or the old town places it. It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site avenue-starburst, and nothing in the live world or the old town places it. The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Stepped@parade-gate-n",
@@ -121487,7 +121484,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Stepped@parade-gate-n",
@@ -121531,7 +121528,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site parade-gate-n, and nothing in the live world or the old town places it (the old builders stand the store's Tower_Stepped in the old skyline). It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site parade-gate-n, and nothing in the live world or the old town places it (the old builders stand the store's Tower_Stepped in the old skyline). The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Stepped@parade-gate-s",
@@ -121744,7 +121741,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Stepped@parade-gate-s",
@@ -121788,7 +121785,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site parade-gate-s, and nothing in the live world or the old town places it (the old builders stand the store's Tower_Stepped in the old skyline). It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site parade-gate-s, and nothing in the live world or the old town places it (the old builders stand the store's Tower_Stepped in the old skyline). The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "Tower_Terrace@crescent-terrace",
@@ -122167,7 +122164,7 @@
     "squash": 1,
     "wave": 1
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated",
    "order": {
     "id": "Tower_Terrace@crescent-terrace",
@@ -122219,7 +122216,7 @@
      ]
     ]
    },
-   "why": "Retired from the live plan (brief 098, Vela, 2026-11-07): the brief 075 remap left the plan no tower site crescent-terrace, and nothing in the live world or the old town places it. It stays adopted because the plan before the remap (briefs/075/remap/base.plan.json), which the world and plan rule tests still generate, stands it at its site; its order is re-homed there (tools/decokit/orders.ts REHOMED). Reject it once those tests pin their kit."
+   "why": "Rejected (brief 098, Splice for Vela, 2026-11-08; Sky: \"Do all\"): retired from the live plan by Vela on 2026-11-07, as the brief 075 remap left the plan no tower site crescent-terrace, and nothing in the live world or the old town places it. The world and plan rule tests that still generate the plan before the remap (briefs/075/remap/base.plan.json) now do so on their own pinned catalogue (tools/world/test/preremap.kit.json, where it stays adopted), so rejecting it here moves none of them, and its order is no longer re-homed (tools/decokit/orders.ts REHOMED is empty)."
   },
   {
    "id": "TramCanopy_Play",
