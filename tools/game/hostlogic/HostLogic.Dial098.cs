@@ -26,7 +26,12 @@ public class Dial098
         Assert.That(g.Start.Counts, Is.Empty, "no counts: the start hashes as before the dial"); Assert.That(g.DialOn, Is.False); Assert.That(g.Census, Is.Empty);
         Assert.That(g.Walkers.Any(w => w.Added), Is.False, "nobody added");
         Assert.That(h.DialToday.Select(c => c.Kind), Is.EqualTo(Population.Kinds), "the panel's kinds are the engine's");
-        foreach (var c in h.DialToday) { Assert.That(h.DialShown(c.Kind), Is.EqualTo(c.Today)); Assert.That(c.Floor, Is.InRange(1, c.Today)); Assert.That(c.Max, Is.GreaterThan(c.Today)); }
+        foreach (var c in h.DialToday)
+        {
+            Assert.That(h.DialShown(c.Kind), Is.EqualTo(c.Today)); Assert.That(c.Max, Is.GreaterThan(c.Today));
+            if (c.Kind == Population.Cars) Assert.That((c.Today, c.Floor), Is.EqualTo((0, 0)), "step 1: no passing traffic today, and no car is a tenet: today 0, the fewest 0");
+            else Assert.That(c.Floor, Is.InRange(1, c.Today), "the cast never leave: each people kind has a floor of at least 1");
+        }
         Assert.That(h.DialPending, Is.False);
     }
 
@@ -133,7 +138,8 @@ public class Dial098
     {
         Assert.That(HandoverHost.ParseCounts("guards=19,people=150"), Is.EqualTo(Counts(("guards", 19), ("people", 150))));
         Assert.That(HandoverHost.ParseCounts(" guards:0 "), Is.EqualTo(Counts(("guards", 0))));
-        Assert.Throws<FormatException>(() => HandoverHost.ParseCounts("cars=3"), "unknown = reject");
+        Assert.That(HandoverHost.ParseCounts("cars=16"), Is.EqualTo(Counts(("cars", 16))), "step 1: cars are a kind of the dial (passing traffic)");
+        Assert.Throws<FormatException>(() => HandoverHost.ParseCounts("trucks=3"), "unknown = reject");
         Assert.Throws<FormatException>(() => HandoverHost.ParseCounts("guards=-1"));
         Assert.Throws<FormatException>(() => HandoverHost.ParseCounts("guards"));
         try

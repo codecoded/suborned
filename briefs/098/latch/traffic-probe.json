@@ -1,0 +1,75 @@
+{
+ "schema": "suborned.traffic-probe/1",
+ "ok": true,
+ "checks": [
+  {
+   "what": "a new game with no counts has no traffic and draws no car",
+   "ok": true,
+   "detail": "seed 1440488202"
+  },
+  {
+   "what": "the Cars row is on the panel with its buttons",
+   "ok": true,
+   "detail": "today 0, 0\u201364"
+  },
+  {
+   "what": "the clicks set 8 cars and build nothing",
+   "ok": true,
+   "detail": "Changed: Play builds this street"
+  },
+  {
+   "what": "Play builds traffic on the same seed",
+   "ok": true,
+   "detail": "built in 71 ms; 11 cars at 0:00"
+  },
+  {
+   "what": "every passing car is drawn by one view, none left over",
+   "ok": true,
+   "detail": "cars 15, drawn 15, views 15, active in the scene 15, built 17"
+  },
+  {
+   "what": "each car in its kit model, a sedan in a paint of the palette, never one kept off its body (it would pass for a mission car)",
+   "ok": true,
+   "detail": "sedan-g 4, sedan-o 8, van 3; paints sedan-g cream-turquoise, sedan-g matador-red, sedan-o canary-yellow, sedan-o cream-turquoise, sedan-o harbor-blue, sedan-o matador-red, sedan-o orchid; look-alikes 0"
+  },
+  {
+   "what": "hover: a passing car is a car target and the pill says what it is doing",
+   "ok": true,
+   "detail": "car:t-006-02 (sedan, 0 cm/s, why 'a car 8.5 m ahead; turn j:r_garden_s+r_pylon_n:garden-row.0+0>orbit-walk.2+0 0.1 m ahead: held:car:t-011-01; [car:t-011-01 at (3973,-107) v 500 Drive: clear ahead]'): pill 'Passing car \u00b7 queuing behind a car' (info)"
+  },
+  {
+   "what": "a shot car stands, its driver out and drawn as one of the crowd",
+   "ok": true,
+   "detail": "car:t-018-02: fired at 0:39.3, disabled 0:50.8, driver x-driver-018-02 walker 126, crowd views added 1"
+  },
+  {
+   "what": "its smoke is drawn in the world and its hover says so",
+   "ok": true,
+   "detail": "fx True, words 'wrecked, the driver ran'"
+  },
+  {
+   "what": "passing cars are heard (at most the voice cap)",
+   "ok": true,
+   "detail": "most voices at once 4 (cap 4)"
+  },
+  {
+   "what": "cars back to none: today's world, no car drawn",
+   "ok": true,
+   "detail": "start 69454031f128b302"
+  }
+ ],
+ "after the shot": [
+  "car:t-002-02 sedan flee moving",
+  "car:t-005-02 sedan duck stopped",
+  "car:t-008-02 sedan duck stopped",
+  "car:t-010-02 scooter flee stopped",
+  "car:t-012-01 sedan duck stopped",
+  "car:t-016-02 van duck stopped",
+  "car:t-018-02 sedan abandoned disabled"
+ ],
+ "shots": [
+  "traffic-1-panel.png (queued)",
+  "traffic-2-hover.png (queued)",
+  "traffic-3-shot.png (queued)"
+ ]
+}

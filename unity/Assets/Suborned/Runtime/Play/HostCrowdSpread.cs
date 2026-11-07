@@ -35,10 +35,10 @@ namespace Suborned.Play
 
         void SpreadInit(Game g)
         {
-            int n = g.Walkers.Count; spreadGame = g;
-            prevAt = new Pt?[n]; atNow = new Pt?[n]; offCur = new Vector2[n]; offWant = new Vector2[n]; since = new int[n]; sincePt = new Pt?[n]; faceWant = new Vector2?[n]; spot = new Vector2?[n]; spotSince = new int[n]; spotPt = new Pt?[n];
-            idHash = new uint[n]; for (int i = 0; i < n; i++) { uint h = 2166136261; foreach (var c in g.Walkers[i].P.Id) { h ^= c; h *= 16777619; } idHash[i] = h; }
-            LastShotFrom = null;
+            int n = g.Walkers.Count, had = spreadGame == g && n > prevAt.Length ? prevAt.Length : 0; spreadGame = g; // brief 098 step 1: a driver out of a passing car joins the walkers mid-game; everyone else keeps their spread
+            if (had == 0) { prevAt = new Pt?[n]; atNow = new Pt?[n]; offCur = new Vector2[n]; offWant = new Vector2[n]; since = new int[n]; sincePt = new Pt?[n]; faceWant = new Vector2?[n]; spot = new Vector2?[n]; spotSince = new int[n]; spotPt = new Pt?[n]; idHash = new uint[n]; LastShotFrom = null; }
+            else { System.Array.Resize(ref prevAt, n); System.Array.Resize(ref atNow, n); System.Array.Resize(ref offCur, n); System.Array.Resize(ref offWant, n); System.Array.Resize(ref since, n); System.Array.Resize(ref sincePt, n); System.Array.Resize(ref faceWant, n); System.Array.Resize(ref spot, n); System.Array.Resize(ref spotSince, n); System.Array.Resize(ref spotPt, n); System.Array.Resize(ref idHash, n); }
+            for (int i = had; i < n; i++) { uint h = 2166136261; foreach (var c in g.Walkers[i].P.Id) { h ^= c; h *= 16777619; } idHash[i] = h; }
         }
 
         static uint Mix(uint h, uint a) { h ^= a * 0x9E3779B9u; h ^= h >> 16; h *= 0x7FEB352Du; h ^= h >> 15; h *= 0x846CA68Bu; h ^= h >> 16; return h; }

@@ -123,6 +123,7 @@ namespace Suborned.World.Play
             host.hoverCamera = Kit("Signals/DK_HoverCamera.fbx"); host.contactTemplate = Template("PlayContact", "Suborned/Contact Shade"); if (!host.hoverCamera) Debug.LogWarning("Play: Kit/Models/Signals/DK_HoverCamera.fbx missing (run `bun run kit`): the mission cameras stay on their poles"); // brief 096: Sky's hovering camera (Vela's HoverCamera, adopted 2026-11-05)
             host.robotRigs = RobotKit.Table; host.robotGlyphs = RobotKit.Glyphs; // brief 026: the patrol and response robots' live faces (view only)
             host.carFx = CarFxBuild.Ensure(); // brief 078: the cars' smoke, fire and blast (Generated/Fx/CarFx.prefab)
+            Debug.Log(TrafficKit.Apply(host)); // brief 098 step 1: the passing cars' van, scooter and Pulse's paints (the sedans are sedanOfficial and sedanGetaway, repainted)
             host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
         }
 

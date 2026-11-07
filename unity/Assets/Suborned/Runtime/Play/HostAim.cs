@@ -559,7 +559,7 @@ namespace Suborned.Play
         public int FireLineDownS(int k) => k is >= 0 and < 4 && FireNow[k].Firing ? lineDown[k] : -1;
 
         /// <summary>A fire target's name in the line: a car by the text's car names ("Vale's car"), else the usual name.</summary>
-        string FireName(string id) => id.StartsWith("car:") ? Text?.TargetName("car-" + id[4..], "the car") ?? "the car"
+        string FireName(string id) => id.StartsWith("car:") ? TrafficFireName(id) ?? Text?.TargetName("car-" + id[4..], "the car") ?? "the car" /* brief 098 step 1: a passing car by its kind */
             : id.StartsWith("bystander") ? "a passer-by" : id.StartsWith("rival") && id != "rivals" ? "a rival" : id.StartsWith("robot") ? "a robot" : id.StartsWith("police") || id.StartsWith("officer") || id.StartsWith("security-") || id.StartsWith("unit") ? "an officer" : Name(id); // a fight hostile by what it is, never its id
 
         /// <summary>The agent whose line shows: the driven one, else the selected agent (the commander's), else none.</summary>
@@ -571,12 +571,12 @@ namespace Suborned.Play
 
         /// <summary>Car effects the HUD draws (shape cues, no text): each car's state and when the host first saw it blow.</summary>
         public readonly Dictionary<string, float> CarBlownAt = new();
-        /// <summary>The cars that can be shot now: the Handover's three, or the fight range's spawned cars (engine 0.18).</summary>
+        /// <summary>The cars that can be shot now: the Handover's three and the passing cars (brief 098 step 1), or the fight range's spawned cars (engine 0.18).</summary>
         public IEnumerable<string> CarIdsNow()
         {
             var g = Game; if (g == null) yield break;
             if (g.Range) { foreach (var c in g.RangeCars()) yield return c.Id; yield break; }
-            foreach (var id in Game.CarIds) yield return id;
+            foreach (var id in Game.CarIds) yield return id; if (views?.TrafficNow is { } tn) foreach (var v in tn) yield return v.Id; // brief 098 step 1: and the passing cars (HostViews.Traffic)
         }
         void CarFrame()
         {

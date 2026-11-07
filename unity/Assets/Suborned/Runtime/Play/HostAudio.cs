@@ -98,7 +98,7 @@ namespace Suborned.Play
         {
             if (Game == null || views == null) return; AudioInit();
             if (listener) { listener.position = focus; if (cam) listener.rotation = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f); } // brief 087: 3D left and right turn with the camera (they came out reversed at yaw 210)
-            PackFrame(); if (Game.Range) return;
+            PackFrame(); if (Game.Range) return; TrafficAudioFrame(); // brief 098 step 1: the passing cars' engines (HostAudio.Traffic)
             if (SoundOff) { if (loopSource && loopSource.isPlaying) loopSource.Stop(); return; } if (Time.frameCount % 60 == 0) foreach (var l in FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude)) if (l.transform != listener && l.enabled) l.enabled = false; // one listener: the ground focus's (a camera rebuilt by Begin brings its own)
             var car = views.Find("car/rivals"); bool shown = car && car.gameObject.activeInHierarchy;
             if (engineLoop == null) return;

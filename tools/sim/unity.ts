@@ -2,7 +2,7 @@
 // engine and its three inputs at a commit (default HEAD: the committed engine; --tree: the working tree), builds the CLI against that very
 // project (Release), plays every scenario headless through it, and copies into the Unity project:
 //   unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll   the DLL the CLI ran (same bytes, checked)
-//   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json, handover.provisional.json, handover.takedown.json, handover.rounds.json, population.json (the inputs it ran on),
+//   unity/Assets/StreamingAssets/sim/                     rulebook.json, people.rules.json, handover.site.json, handover.people.json, handover.provisional.json, handover.takedown.json, handover.rounds.json, population.json, handover.lanes.json (the inputs it ran on),
 //                                                         headless.json (every scenario's outcome, checks and checkpoint hashes), engine.json; and the host's own content, never an engine input:
 //                                                         text.json (the mission's words), handover.seats.json (who sits where), cues.json (which sound plays on which event; Chime, brief 059), handover.listen-partners.json (who a Listen's person talks to, from mission.json)
 // Unity's Suborned/Sim/Run Scenarios plays the same scenarios with the same DLL and inputs and must give the same hashes (§11).
@@ -37,7 +37,7 @@ const depth = (v: unknown): number => Array.isArray(v) ? 1 + Math.max(0, ...v.ma
 const MAX_DEPTH = 24; // the site nests 6 deep today; the engine's JSON reader recurses per level
 // brief 013 E: the provisional facts (security level) and the world's takedown places (stashes, service doors, call boxes, posts, watchers)
 // are inputs too: without them the engine runs at level 1 with no stashes, and its records differ from every headless run of the repo.
-const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json', 'handover.provisional.json': 'sim/data/handover.provisional.json', 'handover.takedown.json': 'sim/data/handover.takedown.json', 'handover.rounds.json': 'sim/data/handover.rounds.json', 'population.json': 'contracts/rules/population.json' } as const; // rounds: brief 022 (Keel), the mission's data plays the round in the host too; population: brief 098 step 0 (Keel), the dial's rules, read only by a start that sets counts (never in the inputs hash): without them the host rejects any count
+const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json', 'handover.provisional.json': 'sim/data/handover.provisional.json', 'handover.takedown.json': 'sim/data/handover.takedown.json', 'handover.rounds.json': 'sim/data/handover.rounds.json', 'population.json': 'contracts/rules/population.json', 'handover.lanes.json': 'sim/data/handover.lanes.json' } as const; // rounds: brief 022 (Keel), the mission's data plays the round in the host too; population: brief 098 step 0 (Keel), the dial's rules, read only by a start that sets counts (never in the inputs hash): without them the host rejects any count; lanes: brief 098 step 1 (Keel, tools/sim/lanes.ts), the passing cars' lanes, read only by a start that sets cars: without them the host rejects any cars
 // brief 029 (Keel): the fight range's two sites, its own inputs beside the Handover's (a range run never loads the Handover's files, and the
 // Handover's inputs and hashes are untouched by these). Copied to StreamingAssets/sim/, hashed in engine.json `range`, and R01..R10 played
 // headless into headless.json `range` for the Unity match.
@@ -75,8 +75,9 @@ if (tree) {
   }
   if (read(INPUTS['handover.rounds.json']).schema !== 'suborned.sim.rounds/1') { console.error('handover.rounds.json is not suborned.sim.rounds/1'); process.exit(1); } // brief 022: the round has no mission key, the site names it
   const { PopulationRules } = await import(join(work, SCHEMAS[SCHEMAS.length - 1]!)); PopulationRules.parse(read(INPUTS['population.json'])); // brief 098 step 0: the dial's rules
+  if (read(INPUTS['handover.lanes.json']).schema !== 'suborned.sim.lanes/1') { console.error('handover.lanes.json is not suborned.sim.lanes/1 (tools/sim/lanes.ts)'); process.exit(1); } // brief 098 step 1: the passing cars' lanes (the engine checks every lane and turn on the drive grid at load)
   for (const rel of Object.values(INPUTS)) { const d = depth(read(rel)); if (d > MAX_DEPTH) { console.error(`${rel} nests ${d} deep (> ${MAX_DEPTH})`); process.exit(1); } }
-  console.log('bun: rulebook.json, people.rules.json and population.json parse with their schemas and every ref resolves; the site, people, provisional and takedown files parse with their schema ids; nesting within bounds');
+  console.log('bun: rulebook.json, people.rules.json and population.json parse with their schemas and every ref resolves; the site, people, provisional, takedown and lanes files parse with their schema ids; nesting within bounds');
 }
 
 // 2. one Release build: the CLI references the engine project, so both hosts load the bytes built here

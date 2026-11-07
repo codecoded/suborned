@@ -58,7 +58,7 @@ namespace Suborned.Play
         public static string PillState { get; private set; } = "";
 
         /// <summary>Per frame (the hold preset): what the pill says and where. A charge first, then the live words (fire, then the orders on
-        /// the thing under the cursor or the focus), then the offer of the hovered thing's main act.</summary>
+        /// the thing under the cursor or the focus), then the offer of the hovered thing's main act; a lock; a passing car's state (brief 098).</summary>
         /// <summary>The top (panel y) of what stands over a camera: its window marker (as DoneMarks places it, before any lift for speech) or its dead
         /// disc (as StreetLess places it); +inf when neither.</summary>
         float CameraMarkTop(string camKey)
@@ -106,6 +106,10 @@ namespace Suborned.Play
                     {   // brief 067 E3 (Glyph; Suture's 0.2.122 findings §2a): the locked pill: the lock disc, the way with its target in cream, a dim dot and
                         // the short lock in --text-dim, the doer's face; no "Hold" head, no sweep; 80 %. Alt: the long line under it (LockAltFrame)
                         state = "lock"; t = on; icon = "lock"; text = lk.Label + (lk.LockShort.Length > 0 ? "\u0001" + lk.LockShort : ""); if (lk.Doer >= 0) faces.Add(lk.Doer);
+                    }
+                    else if (on != null && h.TrafficPill(on) is { Length: > 0 } tp)
+                    {   // brief 098 step 1: a passing car with no way offered on it: what it is and what it is doing, in plain words (HostTraffic.TrafficPill); the car icon, nothing to hold
+                        state = "info"; t = on; icon = "car"; text = tp;
                     }
                 }
             }

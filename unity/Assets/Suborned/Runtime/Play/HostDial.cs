@@ -8,8 +8,8 @@ using UnityEngine;
 namespace Suborned.Play
 {
     /// <summary>Brief 098 step 0, the dial (Sky 2026-11-07: "I should say, add 3 more guards, take some away, bring in more cars etc - the game then just does that, no long
-    /// processing, and I play and get a feel"): the host's side of Keel's start.counts (sim Start.cs, GamePopulation.cs). How many guards and people the next game has, by
-    /// kind (Population.Kinds), set on the start page's dev panel (HudToolkit.Dial) or by `-counts guards=19,people=150` (the shot rig, perf runs). The engine builds that
+    /// processing, and I play and get a feel"): the host's side of Keel's start.counts (sim Start.cs, GamePopulation.cs). How many guards, people and (step 1) passing cars the
+    /// next game has, by kind (Population.Kinds), set on the start page's dev panel (HudToolkit.Dial) or by `-counts guards=19,people=150,cars=16` (the shot rig, perf runs). The engine builds that
     /// world at the start from the seed and contracts/rules/population.json (in the bundle); the counts are part of the start, so the saved session carries them beside the
     /// seed (Script.Write) and seed + counts + orders replay. A kind at today's number is left unset, and a start that sets none is today's game byte for byte.
     /// Which counts a game plays:

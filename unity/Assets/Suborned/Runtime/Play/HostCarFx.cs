@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Game = Suborned.Sim.Game;
@@ -33,6 +34,7 @@ namespace Suborned.Play
             foreach (var id in CarIdsNow())
             {
                 Game.CarTarget c = null; try { c = g.CarOf(id); } catch { }
+                if (c == null && !g.Range && Array.IndexOf(Game.CarIds, id) < 0) continue; // brief 098 step 1: a passing car never hit has no char to clear (a view taken again was cleared when its car left)
                 var key = "car/" + id.Substring(4);
                 if (c == null || c.DisabledAt < 0 && c.BurningAt < 0 && !c.Blown) { views.CarTint(key, 1f); continue; }
                 var vt = views.Find(key); bool shown = vt && vt.gameObject.activeInHierarchy;

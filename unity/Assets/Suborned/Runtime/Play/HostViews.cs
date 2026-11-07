@@ -168,7 +168,7 @@ namespace Suborned.Play
             Set("car/getaway", g.GetawayCarPos()); // brief 059 K6: its stand, or along its Drive
             // the crowd: people the engine puts on one point are spread for the eye only (HostCrowdSpread: hash-seeded spots 0.7 m apart, a
             // loose column when walking, drawn up to a wall when standing; the engine is not told)
-            Spread(g);
+            TrafficViews(g); GrowCrowd(g); Spread(g); // brief 098 step 1: the passing cars, and a crowd view for each driver who got out (HostViews.Traffic)
             for (int i = 0; i < g.Walkers.Count; i++)
             {
                 if (ListenOwns(crowdKeys[i])) continue; /* brief 085: a Listen's partner, drawn by the view alone */ if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
@@ -361,12 +361,11 @@ namespace Suborned.Play
         /// <summary>A car's paint darkened by `k` (1 = as built): every renderer under its view, by a property block (shared materials untouched).</summary>
         void Scorch(string key, float k)
         {
-            carMpb ??= new MaterialPropertyBlock();
+            carMpb ??= new MaterialPropertyBlock(); // brief 098 step 1: a block per material slot (one per renderer gave every slot slot 0's colour: the kit cars are one renderer of ~10 slots, so tyres, glass and chrome took the body's)
             foreach (var r in things[key].t.GetComponentsInChildren<Renderer>(true))
             {
-                if (k >= 1f) { r.SetPropertyBlock(null); continue; }
-                r.GetPropertyBlock(carMpb); var baseC = r.sharedMaterial && r.sharedMaterial.HasProperty("_BaseColor") ? r.sharedMaterial.GetColor("_BaseColor") : Color.white;
-                carMpb.SetColor("_BaseColor", new Color(baseC.r * k, baseC.g * k, baseC.b * k, baseC.a)); r.SetPropertyBlock(carMpb);
+                var ms = r.sharedMaterials; r.SetPropertyBlock(null); if (k >= 1f) { carMpb.Clear(); for (int i = 0; i < ms.Length; i++) r.SetPropertyBlock(carMpb, i); continue; } // as built: no overrides
+                for (int i = 0; i < ms.Length; i++) { var baseC = ms[i] && ms[i].HasProperty("_BaseColor") ? ms[i].GetColor("_BaseColor") : Color.white; carMpb.Clear(); carMpb.SetColor("_BaseColor", new Color(baseC.r * k, baseC.g * k, baseC.b * k, baseC.a)); r.SetPropertyBlock(carMpb, i); }
             }
         }
 
@@ -433,7 +432,7 @@ namespace Suborned.Play
         public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
-            GetawayLeaving(); LentLeaving(); // brief 079: the car that left drives away (HostViews.Leaving); brief 096: Popovic's car too (HostViews.LeavingLent)
+            GetawayLeaving(); LentLeaving(); TrafficFrame(alpha); // brief 098 step 1: the passing cars' headings, eased; brief 079: the car that left drives away (HostViews.Leaving); brief 096: Popovic's car too (HostViews.LeavingLent)
             FallenSilhouettes();
             foreach (var kv in things)
             {

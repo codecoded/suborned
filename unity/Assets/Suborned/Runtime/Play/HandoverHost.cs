@@ -787,7 +787,7 @@ namespace Suborned.Play
                 if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
                 if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = OfficialCarName() }; // Fable 067 (the glossary): $"{ValeWord}'s car"; brief 096: ours once lent (HostLent)
                 if (n.StartsWith("stand/")) return StandTarget(n); // brief 059 K6: a stand of the getaway car (its Drive)
-                if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
+                if (n.StartsWith("car/") && views?.TrafficOf("car:" + n[4..]) != null) return TrafficTarget(n); /* brief 098 step 1: a passing car (HostTraffic) */ if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
                 if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a passer-by" }; } // engine 0.18: a range bystander
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = GetawayCarName() }; // brief 096: "our car" (names.targets.car-getaway)
                 if (n == "marker/door") return new Target { Kind = "door", Key = "door", Label = "the public door" };
@@ -968,7 +968,7 @@ namespace Suborned.Play
             Pt? to = place.Length > 0 ? s.Stand(place) : t.Kind switch
             {
                 "person" => CastOf(t.Key) is Person cp ? g.PersonPos(cp) : null, "patrol" => g.PatrolPose()?.pos, "rivals" => RivalPos(t), "security" => g.SecurityPose()?.pos,
-                "car" => g.CarPos(), "camera" => CameraAt(t.Key), _ => null,
+                "car" => IsTrafficCar(t) ? g.CarAt("car:" + t.Key) : g.CarPos(), "camera" => CameraAt(t.Key), _ => null, // brief 098 step 1: a passing car where it is
             };
             if (!to.HasValue) return null;
             if (place.Length == 0) to = CarWalk.NearestFree(to.Value); if (!to.HasValue) return null; // engine 0.33.1: never onto a standing car's ground
@@ -1405,7 +1405,7 @@ namespace Suborned.Play
             "person" => CastOf(t.Key) is Person pp ? Game.PersonPos(pp) : null, "patrol" => Game.PatrolPose()?.pos, "rivals" => RivalPos(t),
             "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key),
             "crowd" => Game.PersonById(t.Id) is Person cp ? Game.PosOfPerson(cp) : null, "body" => Game.BodyById(t.Key) is Body b ? Game.BodyPos(b) : null,
-            "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, "bystander" => Game.PosOf(t.Key), "car" when Game.Range => Game.CarAt("car:" + t.Key), _ => null,
+            "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, "bystander" => Game.PosOf(t.Key), "car" when Game.Range || IsTrafficCar(t) => Game.CarAt("car:" + t.Key), _ => null, // brief 098 step 1: a passing car where it drives
         };
 
         int ReachOf(string ev)
