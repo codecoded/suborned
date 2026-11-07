@@ -1,0 +1,29 @@
+{
+ "method": "share of the 1920x1080 screen where the HUD layer alone has alpha >= 24 (tools/hud-budget HUD_ALPHA, its hud mask); shadows and halos count",
+ "today": {
+  "rest (start-overhead-day)": 4.8,
+  "loud (why-loud-police)": 8.8,
+  "quiet (why-quiet-radio)": 6.6,
+  "aim (fight-loud-checkpoint)": 5.0
+ },
+ "rest": {
+  "A": 7.5,
+  "B": 5.4,
+  "C": 2.9
+ },
+ "A": {
+  "loud": 14.4,
+  "quiet": 12.2,
+  "aim": 10.6
+ },
+ "B": {
+  "loud": 9.3,
+  "quiet": 9.3,
+  "aim": 8.7
+ },
+ "C": {
+  "loud": 10.9,
+  "quiet": 4.5,
+  "aim": 4.0
+ }
+}
