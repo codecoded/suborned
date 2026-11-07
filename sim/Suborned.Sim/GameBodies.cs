@@ -244,7 +244,7 @@ namespace Suborned.Sim
                 case BkOp:
                     {
                         var op = Ops[b.Ix];
-                        if (op.Walk != null && b.Cls != BcFixed) // his walk waits for him: held back, he has not got as far along it as its clock says, so it ends when he arrives
+                        if (op.Walk != null && b.Cls != BcFixed && !G.Within(b.At, op.Walk.End, R.BodyMinCm + R.BodySpaceCm)) // his walk waits for him: held back, he has not got as far along it as its clock says, so it ends when he arrives; within two radii and a step of its end it ends where the bodies there (a car pulled in on it) let him stand
                         {
                             long got = op.Walk.NearestMm(b.At, op.WalkMm - 10L * G.Dist(b.At, b.Raw) - 1000, op.WalkMm);
                             if (got + WalkSlackMm < op.WalkMm) { op.WalkMm = got; bl.Raw = op.Walk.At(got); bl.Lay = b.At - bl.Raw; }
