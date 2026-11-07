@@ -27,11 +27,15 @@ describe('brief 098: the dial', () => {
     expect(r.traffic.lockdown.then).toBe('leave'); expect(r.traffic.lockdown.proposed).toBeUndefined(); expect(r.traffic.lockdown.src).toContain('Drive out');
     expect(r.traffic.shove.cmS).toBeGreaterThan(0); expect('holdS' in r.traffic.yield).toBe(false);
   });
+  test('brief 098 step 1b: the people count is of the street, the guards of the zone', () => {
+    const r = PopulationRules.parse(raw);
+    expect(r.kinds.people.measure).toBe('street'); expect(r.kinds.guards.measure).toBe('zone'); expect(r.kinds.people.max).toBeLessThanOrEqual(1000);
+  });
   test('unknown = reject', () => {
     for (const edit of [(r: any) => { r.kinds.cars = r.kinds.guards; }, (r: any) => { r.beat.points.push('gate'); }, (r: any) => { r.passers.dest.bench = 1; },
       (r: any) => { r.kinds.people.of = ['clerk']; }, (r: any) => { r.kinds.guards.id = 'p-guard-'; }, (r: any) => { r.passers.lingerS.seat = [90, 30]; },
       (r: any) => { r.traffic.mix.lorry = 5; }, (r: any) => { r.traffic.react.duck.push('mercenary'); }, (r: any) => { r.traffic.lockdown.then = 'vanish'; }, (r: any) => { r.kinds.cars.id = 'car:t-'; },
-      (r: any) => { r.traffic.yield.holdS = 40; }, (r: any) => { r.traffic.shove.cmS = 0; }, (r: any) => { delete r.traffic.shove; }]) {
+      (r: any) => { r.traffic.yield.holdS = 40; }, (r: any) => { r.traffic.shove.cmS = 0; }, (r: any) => { delete r.traffic.shove; }, (r: any) => { r.kinds.people.measure = 'sky'; }]) {
       const bad = structuredClone(raw); edit(bad); expect(PopulationRules.safeParse(bad).success).toBe(false);
     }
   });

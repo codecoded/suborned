@@ -3,10 +3,12 @@
 //   dial sweep [plans | scripts | dirs] [--seeds n] [--seed-from k] [--settings "s;s;..."] [--no-replay] [--jobs n] [--out f]
 //       every item on every seed under every setting, in one process on every core: the Handover's outcomes per setting, as information (no gate).
 //       Items default to contracts/missions/handover/adaptive (Waymark's adaptive plans: they play what they see, so a changed world moves their orders).
-//       A setting is "unset" (the start sets no counts), "today" (counts at today's numbers), or kind=n pairs ("guards=32,people=228"); x0.5, x2, x4
-//       scale today's. Default: unset;today;x0.5;x2;x4. Exit 1 if any run errs or fails its replay; the outcomes never fail it.
+//       A setting is "unset" (the start sets no counts), "today" (counts at today's numbers), or kind=n pairs ("guards=32,people=32"); x0.5, x2, x4
+//       scale today's (brief 098 step 1b: people count the street, about 16 today). Default: unset;today;x0.5;x2;x4. Exit 1 if any run errs or
+//       fails its replay; the outcomes never fail it. "street" is the people on the street at a time on average (the people count's measure).
 //   dial perf [script] [--settings ...] [--runs n]      the tick's cost per setting on one thread: ms a tick, sim-seconds a wall-second, the start's cost
 //   dial traffic [script] [--counts cars=8] [--seed n]  brief 098 step 1: one script under the dial's cars, every tick watched (Traffic.cs)
+//   dial street [--settings "people=16;..."] [--seeds n] brief 098 step 1b: the people on the street, as the census builds it and as the game shows it (Street.cs)
 //   (a setting may name cars too: "cars=16" is today's guards and people with 16 cars; the sweep reports the mean cars on the zone's roads)
 //   play <script> --counts guards=20,people=200         one script under those counts (its record is dropped); batch items take `#counts=guards:20,people:200`
 //       and `batch ... --counts guards=20` gives every item those counts.
@@ -61,6 +63,7 @@ static class DialCli
             case "sweep": return Sweep(inputs, root, args);
             case "perf": return Perf(inputs, root, args);
             case "traffic": return TrafficCli.Run(inputs, root, args); // brief 098 step 1: a script under the dial's cars, every tick watched (Traffic.cs)
+            case "street": return StreetCli.Run(inputs, root, args); // brief 098 step 1b: the people count on the street, built and observed (Street.cs)
             default: Console.Error.WriteLine("usage: dial census | dial sweep [items] [--seeds n] [--settings s;s] | dial perf [script] [--settings s;s] [--runs n] | dial traffic [script] [--counts cars=8] [--seed n]"); return 2;
         }
     }
@@ -68,7 +71,7 @@ static class DialCli
     static string CensusJson(List<KindCensus> l)
     {
         var w = new JWriter().Obj().Prop("engine", Engine.Version).OpenArr("kinds");
-        foreach (var c in l) w.Obj().Prop("kind", c.Kind).Prop("today", c.Today).Prop("floor", c.Floor).Prop("max", c.Max).EndObj();
+        foreach (var c in l) w.Obj().Prop("kind", c.Kind).Prop("measure", c.Measure).Prop("today", c.Today).Prop("floor", c.Floor).Prop("max", c.Max).Prop("street10", c.Street10).Prop("inZone", c.Total).EndObj();
         return w.EndArr().EndObj().ToString();
     }
 
@@ -156,8 +159,10 @@ static class DialCli
         {
             var (s, it, sd) = jobs[j]; var c = settings[s].counts;
             var p = BatchCli.PlayOne(inputs, root, it + "#seed=" + sd.ToString(CultureInfo.InvariantCulture) + (c != null ? "#counts=" + Tag(c) : ""), replay);
-            var g = p.G; int street = 0, n = 0;
-            for (int t = 0; t <= Game.T(inputs.SiteData.Over); t += Game.T(30)) { foreach (var w in g.Walkers) if (g.CrowdPos(w, t).HasValue) street++; n++; } // on the street by routine, every 30 s
+            var g = p.G; int street = 0, n = 0; var pop = inputs.Population!;
+            var pc = g.Census.Find(c => c.Kind == "people") ?? Population.Today(inputs).Single(c => c.Kind == "people");
+            for (int t = 0; t < Game.T(inputs.SiteData.Over); t += Game.Hz) { foreach (var w in g.Walkers) if (Population.KindOf(pop, w.P.Job) == "people" && g.CrowdPos(w, t) is Pt wp && g.S.Grid.InGrid(wp)) street++; n++; } // brief 098 step 1b: the people on the street by routine every second (the crowd in the window), and the cast's share below
+            street += pc.CastStreet10 * n / 10;
             return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "",
                 cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum(), jams: Jams.Of(g, p.Extra, System.IO.Path.GetFileName(it).Replace(".adaptive.json", ""))); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them; step 1b: its jams
         });

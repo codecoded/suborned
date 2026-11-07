@@ -68,10 +68,12 @@ namespace Suborned.Sim
             var gone = new HashSet<string>(StringComparer.Ordinal);
             foreach (var kind in Population.PeopleKinds)
             {
-                var d = dial.Kinds[kind]; var c = new KindCensus { Kind = kind, Max = d.Max };
+                var d = dial.Kinds[kind]; var c = new KindCensus { Kind = kind, Max = d.Max, Measure = d.Street ? "street" : "zone" };
                 var mine = fresh.FindAll(w => Population.KindOf(dial, w.P.Job) == kind);
                 foreach (var cr in S.Cast) if (Population.KindOf(dial, Population.CastJob(cr.Role)) == kind) { c.Today++; c.Floor++; }
                 c.Today += mine.Count; foreach (var w in mine) if (tenets.Contains(w.P.Id)) c.Floor++;
+                c.Total = c.TotalToday = c.Today;
+                if (d.Street) { StreetCensus(d, c, mine, tenets, cast, crowd, gone); Census.Add(c); continue; } // brief 098 step 1b: the people on the street (GameDialStreet.cs)
                 int want = c.Today;
                 if (Start.Counts.TryGetValue(kind, out var asked))
                 {
@@ -89,7 +91,15 @@ namespace Suborned.Sim
                 liveTies = new Dictionary<string, List<(string, string)>>(StringComparer.Ordinal);
                 foreach (var kv in crowd.Ties) if (!gone.Contains(kv.Key)) liveTies[kv.Key] = kv.Value.FindAll(t => !gone.Contains(t.with));
             }
-            foreach (var c in Census) { var d = dial.Kinds[c.Kind]; int add = c.Count - c.Today; for (int k = 1; k <= add; k++) c.Added.Add(AddPerson(d, k, crowd)); }
+            foreach (var c in Census)
+            {
+                var d = dial.Kinds[c.Kind];
+                if (d.Street) { AddStreet(d, c, crowd); continue; } // brief 098 step 1b: passers-by until the street holds the count asked
+                int add = c.Count - c.Today; for (int k = 1; k <= add; k++) c.Added.Add(AddPerson(d, k, crowd));
+                c.Total = c.Count; long st = 0; foreach (var w in Walkers) if (Population.KindOf(dial, w.P.Job) == c.Kind) st += StreetTicks(w);
+                long castSt = 0; foreach (var cr in S.Cast) if (Population.KindOf(dial, Population.CastJob(cr.Role)) == c.Kind) castSt += CastStreetTicks(cr.Id);
+                int over = T(S.Over); c.Street10 = (int)(((st + castSt) * 20 + over) / (2L * over)); c.CastStreet10 = (int)((castSt * 20 + over) / (2L * over)); // and how many of them the street holds (information)
+            }
             CensusCars(); // brief 098 step 1: the traffic's count (GameTraffic.cs); the cars themselves start at the end of the constructor
         }
 

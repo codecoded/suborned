@@ -12,7 +12,9 @@ const proposed = (v: { proposed?: true; reason?: string }) => !v.proposed || !!v
 export const DialKind = z.strictObject({
   of: z.union([z.array(text).min(1), z.literal('rest')]), role: text, job: text,
   id: text.refine((s) => !s.startsWith('p-'), { message: "an added person's id prefix is not the people file's (p-)" }),
-  name: text, max: z.number().int().min(0).max(100000), ...why,
+  name: text, max: z.number().int().min(0).max(100000),
+  /** Brief 098 step 1b (Sky 2026-11-07: "people counter is for street"): what the count counts: everyone of the kind in the zone, or people on the street at a time on average. */
+  measure: z.enum(['zone', 'street']).optional(), ...why,
 }).refine(proposed, { message: 'a proposed rule needs a reason' });
 
 /** Brief 098 step 1 (law L8): the cars kind (no people kind: no role or job; its id is the slot ids' prefix) and the traffic's rules. */

@@ -2,7 +2,7 @@
   "schema": "suborned.rules.population/1",
   "author": "Keel (brief 098 step 0, 2026-11-07)",
   "gdd": "the-suborned-agent-gdd-v0.39.0-2026-11-05.md",
-  "rule": "The dial (brief 098 step 0; Sky 2026-11-07: \"I should say, add 3 more guards, take some away, bring in more cars etc - the game then just does that, no long processing, and I play and get a feel\"). A start sets how many of each kind the zone has (start.counts: guards and people, the whole zone's count of that kind, the cast included; cars, how many are on the zone's roads at a time on average); the engine builds that world when the game starts, from the seed and these rules, with no generator run. A kind the start does not set plays the people file exactly, and a start that sets none hashes and plays as before: this file is read only when a start sets counts, and then its text is hashed into that start, so seed + counts + orders replay exactly against it. Part of Keel's rulebook (contracts/rules/rulebook.json keeps its own bytes, so no recorded run moves). Unknown = reject.",
+  "rule": "The dial (brief 098 step 0; Sky 2026-11-07: \"I should say, add 3 more guards, take some away, bring in more cars etc - the game then just does that, no long processing, and I play and get a feel\"). A start sets how many of each kind the zone has (start.counts: guards, the whole zone's count of them, the cast included; people, how many are on the street at a time on average, the cast included (brief 098 step 1b, Sky 2026-11-07: \"people counter is for street\"); cars, how many are on the zone's roads at a time on average); the engine builds that world when the game starts, from the seed and these rules, with no generator run. A kind the start does not set plays the people file exactly, and a start that sets none hashes and plays as before: this file is read only when a start sets counts, and then its text is hashed into that start, so seed + counts + orders replay exactly against it. Part of Keel's rulebook (contracts/rules/rulebook.json keeps its own bytes, so no recorded run moves). Unknown = reject.",
   "kinds": {
     "guards": {
       "of": ["guard"],
@@ -11,6 +11,7 @@
       "id": "x-guard-",
       "name": "Guard",
       "max": 400,
+      "measure": "zone",
       "src": "brief 098 step 0: the people file's guards (job guard; 16 in the Handover, the door guard among them) plus any the dial adds; people.rules temperamentsBy.roles.guard (Loyal or Mercenary, never Idealist or Fearful)",
       "proposed": true,
       "reason": "an added guard is named by a stand-in (Guard 1, Guard 2, ...): the engine has no name rules (the names are drawn by the people generator from contracts/people/names at build time). 400 keeps a hopeless setting playable in time."
@@ -21,10 +22,11 @@
       "job": "visitor",
       "id": "x-person-",
       "name": "Passer-by",
-      "max": 2000,
-      "src": "brief 098 step 0: everyone else in the people file (114 in the Handover, Inez, the driver and Popovic among them) plus any the dial adds; people.rules temperamentsBy.roles.visitor (a simulated person who neither lives nor works in the district)",
+      "max": 500,
+      "measure": "street",
+      "src": "brief 098 step 0: everyone else in the people file (114 in the Handover, Inez, the driver and Popovic among them) plus any the dial adds; people.rules temperamentsBy.roles.visitor (a simulated person who neither lives nor works in the district). Brief 098 step 1b (Sky 2026-11-07: \"people counter is for street\"): the count is of people on the street (in the zone, out of doors) at a time on average over the mission's clock, the cast included: about 19 today, of the zone's 114",
       "proposed": true,
-      "reason": "an added person is a passer-by named by a stand-in (Passer-by 1, ...), for the reason above. They carry no need record (the cell turns only the cast: Ask, Help and Pressure are never offered to the crowd) and no ties."
+      "reason": "measure street: a person's street time is the ticks their routine has them out of doors inside the window from 0:00 to the close (the people file's stops and legs, with the game's seeded shift of their day; an added passer-by's visit; the cast by the people file's stops for them); the count is the sum over the clock. More adds passers-by in id order until the street holds the count (the nearest a whole passer-by allows; one whose visit misses the clock is not added); fewer takes street time away (fewer). An added person is a passer-by named by a stand-in (Passer-by 1, ...): the engine has no name rules. They carry no need record (the cell turns only the cast: Ask, Help and Pressure are never offered to the crowd) and no ties. 500 on the street (about 2,000 passers-by) keeps a hopeless setting playable in time."
     },
     "cars": {
       "id": "t-",
@@ -36,9 +38,9 @@
   },
   "fewer": {
     "salt": "leave",
-    "src": "brief 098 step 0: people above the count leave by a stable order, never a tenet; GDD §05 security: a post is one person's, a relief waits beside it and keeps its marks",
+    "src": "brief 098 step 0: people above the count leave by a stable order, never a tenet; GDD §05 security: a post is one person's, a relief waits beside it and keeps its marks. Brief 098 step 1b (Sky 2026-11-07, who leaves when a count is lowered: \"same for now\"): the people (measure street) leave by the same order, and only those whose routine brings them out",
     "proposed": true,
-    "reason": "the order is a hash of each person's id (fnv1a32 of id/salt, ties by id), the same every game and every seed, so a count is one world shape and the seed moves only its timings, and taking one more away never brings anyone back. Never a tenet: the mission's cast (the site's cast) and anyone a cast member's lover tie names. Guards leave off-post ones first; then a post's reliefs, the latest shift first, the one before standing the post on to the end of the shift that left; then the posts themselves: a post is staffed for its whole shift or not at all, never half."
+    "reason": "the order is a hash of each person's id (fnv1a32 of id/salt, ties by id), the same every game and every seed, so a count is one world shape and the seed moves only its timings, and taking one more away never brings anyone back. Never a tenet: the mission's cast (the site's cast) and anyone a cast member's lover tie names. Guards leave off-post ones first; then a post's reliefs, the latest shift first, the one before standing the post on to the end of the shift that left; then the posts themselves: a post is staffed for its whole shift or not at all, never half. People leave in the order until the street holds the count (the nearest a whole person allows), passing over anyone whose routine keeps them indoors all mission (the clerks at their desks, the cooks: they change nothing on the street and stay); the cast never leave, so the fewest on the street is the cast's own street time."
   },
   "beat": {
     "points": ["door", "post", "call-box"],
@@ -57,7 +59,7 @@
     "lingerS": { "seat": [60, 240], "door": [60, 300] },
     "edgeMinCells": 2,
     "edgeSpanCells": 40,
-    "src": "brief 098 step 0: an added city person is a passer-by who enters at the site's edges at a seeded time, walks to a seeded destination, lingers and leaves",
+    "src": "brief 098 step 0: an added city person is a passer-by who enters at the site's edges at a seeded time, walks to a seeded destination, lingers and leaves. Brief 098 step 1b: they are added until the street holds the people count asked",
     "proposed": true,
     "reason": "the edges are the runs of free cells on the walk grid's border (a street or a path leaving the window), at least edgeMinCells wide, entered at the middle of each; a run longer than edgeSpanCells (a street along the border) is split evenly, so people come in along it, not at one point. A passer-by enters at a seeded second in enterS (mission seconds; before 0:00 they are already walking when the mission starts) and goes to a destination by these weights: a café seat (the people file's chairs) free for the whole linger, sitting there lingerS.seat; a public door of the site's buildings (the café, the Office), inside for lingerS.door; or another edge, walking straight through. Then out by a seeded edge. The site has no benches or transit stops yet, so neither is a destination. Temperament: the role's allow list (people.rules temperamentsBy.roles), weighted by the zone's own mix of that kind, no temperament above temperamentsBy.mix.rowMaxShare. Pulse to tune."
   },

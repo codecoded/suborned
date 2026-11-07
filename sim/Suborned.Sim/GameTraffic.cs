@@ -31,7 +31,7 @@ namespace Suborned.Sim
         void CensusCars()
         {
             if (!Start.Counts.TryGetValue(Population.Cars, out var asked)) return;
-            var t = dial!.Traffic; var c = new KindCensus { Kind = Population.Cars, Max = t.Max, Asked = asked, Count = Math.Min(t.Max, asked) };
+            var t = dial!.Traffic; var c = new KindCensus { Kind = Population.Cars, Max = t.Max, Asked = asked, Count = Math.Min(t.Max, asked), Measure = "roads" };
             if (asked > t.Max) c.Note = $"{t.Max} is the most the dial allows";
             Census.Add(c);
             if (c.Count > 0 && dial.Lanes == null) throw new FormatException($"start.counts.cars: the dial's cars need their lanes ({LaneNet.File}); this host loaded none (brief 098 step 1)");
