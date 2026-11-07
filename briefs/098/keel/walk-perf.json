@@ -1,0 +1,513 @@
+{
+ "schema": "suborned.keel.walk-perf/1",
+ "brief": "098 L9 follow-up, engine 0.47.1",
+ "note": "suborned-sim dial perf, 10 runs a setting, one thread, the Studio, rounds alternating engines. loudFight: the base commit 433cc692's loud-fight script (ends 2:37.1 on both). routeA: each engine's own route A (0.47.0 HEAD's, 0.47.1 recomposed) played 0:00 to 4:10 (until 2500), so both cover the same phase: the base commit's route A wins on 0.47.0 but plays to 8:10 on 0.47.1, and at x4 and guards=64 the recomposed one does too, so a mean over the whole run compares different missions (routeAWholeRun, kept for that reason)",
+ "loudFight": {
+  "before": [
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "perf-loud-fight.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.3,
+      "msPerTick": 0.0108,
+      "p99TickMs": 0.034
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.5,
+      "msPerTick": 0.0985,
+      "p99TickMs": 0.29
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.3,
+      "msPerTick": 0.0515,
+      "p99TickMs": 0.179
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.3,
+      "msPerTick": 0.0523,
+      "p99TickMs": 0.096
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "perf-loud-fight.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.3,
+      "msPerTick": 0.0108,
+      "p99TickMs": 0.034
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.4,
+      "msPerTick": 0.0979,
+      "p99TickMs": 0.285
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.3,
+      "msPerTick": 0.0507,
+      "p99TickMs": 0.177
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.2,
+      "msPerTick": 0.0515,
+      "p99TickMs": 0.09
+     }
+    ]
+   }
+  ],
+  "after": [
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "perf-loud-fight.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.3,
+      "msPerTick": 0.011,
+      "p99TickMs": 0.034
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.4,
+      "msPerTick": 0.0918,
+      "p99TickMs": 0.251
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.4,
+      "msPerTick": 0.0503,
+      "p99TickMs": 0.172
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.3,
+      "msPerTick": 0.0519,
+      "p99TickMs": 0.093
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "perf-loud-fight.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.2,
+      "msPerTick": 0.0108,
+      "p99TickMs": 0.034
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.1,
+      "msPerTick": 0.0913,
+      "p99TickMs": 0.252
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.2,
+      "msPerTick": 0.0502,
+      "p99TickMs": 0.177
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.2,
+      "msPerTick": 0.0516,
+      "p99TickMs": 0.094
+     }
+    ]
+   }
+  ]
+ },
+ "routeA": {
+  "before": [
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "route-a-047-410.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.1,
+      "msPerTick": 0.0138,
+      "p99TickMs": 0.048
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.8,
+      "msPerTick": 0.0937,
+      "p99TickMs": 0.31
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.2,
+      "msPerTick": 0.0468,
+      "p99TickMs": 0.164
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.2,
+      "msPerTick": 0.0493,
+      "p99TickMs": 0.149
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "route-a-047-410.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.3,
+      "msPerTick": 0.0145,
+      "p99TickMs": 0.05
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.3,
+      "msPerTick": 0.0911,
+      "p99TickMs": 0.27
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.2,
+      "msPerTick": 0.0479,
+      "p99TickMs": 0.153
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.3,
+      "msPerTick": 0.0497,
+      "p99TickMs": 0.143
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "route-a-047-410.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.3,
+      "msPerTick": 0.0146,
+      "p99TickMs": 0.053
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.1,
+      "msPerTick": 0.0904,
+      "p99TickMs": 0.28
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 7.1,
+      "msPerTick": 0.0555,
+      "p99TickMs": 0.229
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.4,
+      "msPerTick": 0.054,
+      "p99TickMs": 0.207
+     }
+    ]
+   }
+  ],
+  "after": [
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "route-a-fin-410.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.4,
+      "msPerTick": 0.0146,
+      "p99TickMs": 0.051
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.3,
+      "msPerTick": 0.0875,
+      "p99TickMs": 0.288
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.0,
+      "msPerTick": 0.053,
+      "p99TickMs": 0.178
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.3,
+      "msPerTick": 0.0495,
+      "p99TickMs": 0.133
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "route-a-fin-410.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.5,
+      "msPerTick": 0.0155,
+      "p99TickMs": 0.054
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.4,
+      "msPerTick": 0.0894,
+      "p99TickMs": 0.296
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.1,
+      "msPerTick": 0.0547,
+      "p99TickMs": 0.185
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.2,
+      "msPerTick": 0.0496,
+      "p99TickMs": 0.135
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "route-a-fin-410.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.4,
+      "msPerTick": 0.0155,
+      "p99TickMs": 0.064
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.5,
+      "msPerTick": 0.0901,
+      "p99TickMs": 0.316
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.5,
+      "msPerTick": 0.0562,
+      "p99TickMs": 0.246
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.3,
+      "msPerTick": 0.051,
+      "p99TickMs": 0.16
+     }
+    ]
+   }
+  ]
+ },
+ "routeAWholeRun": {
+  "before": [
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "route-a-047.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.4,
+      "msPerTick": 0.0145,
+      "p99TickMs": 0.054
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.2,
+      "msPerTick": 0.0883,
+      "p99TickMs": 0.277
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.3,
+      "msPerTick": 0.0469,
+      "p99TickMs": 0.154
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.4,
+      "msPerTick": 0.0496,
+      "p99TickMs": 0.142
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.0",
+    "script": "route-a-047.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.2,
+      "msPerTick": 0.0145,
+      "p99TickMs": 0.052
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.0,
+      "msPerTick": 0.0907,
+      "p99TickMs": 0.276
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.1,
+      "msPerTick": 0.0476,
+      "p99TickMs": 0.155
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.5,
+      "msPerTick": 0.0505,
+      "p99TickMs": 0.145
+     }
+    ]
+   }
+  ],
+  "after": [
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "route-a-fin.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.4,
+      "msPerTick": 0.0147,
+      "p99TickMs": 0.054
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.1,
+      "msPerTick": 0.1376,
+      "p99TickMs": 0.703
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.1,
+      "msPerTick": 0.054,
+      "p99TickMs": 0.192
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.3,
+      "msPerTick": 0.072,
+      "p99TickMs": 0.259
+     }
+    ]
+   },
+   {
+    "engine": "suborned.sim/0.47.1",
+    "script": "route-a-fin.json",
+    "runs": 10,
+    "settings": [
+     {
+      "setting": "unset",
+      "walkers": 126,
+      "startMs": 3.4,
+      "msPerTick": 0.0148,
+      "p99TickMs": 0.055
+     },
+     {
+      "setting": "x4",
+      "walkers": 413,
+      "startMs": 7.3,
+      "msPerTick": 0.1384,
+      "p99TickMs": 0.694
+     },
+     {
+      "setting": "people=64",
+      "walkers": 365,
+      "startMs": 6.1,
+      "msPerTick": 0.0526,
+      "p99TickMs": 0.171
+     },
+     {
+      "setting": "guards=64",
+      "walkers": 174,
+      "startMs": 4.4,
+      "msPerTick": 0.0722,
+      "p99TickMs": 0.257
+     }
+    ]
+   }
+  ]
+ }
+}

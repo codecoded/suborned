@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route A with Pressure for Help (Keel S25; Sky Q4), fight it out: Pressure leans on Inez's affair, learned by Listen ($0, +3 T); the cast's Inez is Fearful, so it is also her own approach and one order turns her, and she calls the guard at about 1:25. Pressed, she warns him (engine 0.38.0): he reaches her at about 2:21, stays 5 s and runs back at 2.2 m/s, on his door at about 3:02, so the door is clear for about 1:37 of the call, not the walk both ways a helped Inez buys. No Reroute (brief 067 A). This script sends the Enforcer to the door from 2:40: in at about 2:42, about 20 s before the guard is back, and out at about 3:20, after the crew has posted; he holds Vale at (20.0, -65.0) as route-a does while the three break the crew, then boards; the car leaves at once and the three walk out. The 2:40 is this script's, not the route's: played across seeds at a person's pace, going at once wins more than going 80 s after the call, when the guard is often back first (briefs/085/motive/probe/plans press-late0, press-late80). Slower than route-a (Go at about 4:19 against 3:41) because it waits for the posts, at 2 T more (6 against 4) and no money (route-a pays $40,000).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"scout","do":"move","to":"beside-inez","run":true},
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Courtyard","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":90,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":290,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":596,"op":"fixer","do":"turn","target":"waitress","approach":"pressure"},
+  {"tick":846,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":846,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":846,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":850,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":1050,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":1600,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1619,"op":"enforcer","do":"enter"},
+  {"tick":1619,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1999,"op":"enforcer","do":"move","to":[2000,-6500]},
+  {"tick":2301,"op":"scout","do":"draw"},
+  {"tick":2301,"op":"fixer","do":"draw"},
+  {"tick":2301,"op":"tech","do":"draw"},
+  {"tick":2301,"op":"enforcer","do":"draw"},
+  {"tick":2745,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2849,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2849,"op":"cell","do":"go"}
+ ],
+ "until": 4900
+}

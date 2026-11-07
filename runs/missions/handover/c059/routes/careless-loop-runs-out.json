@@ -1,0 +1,21 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless timing (brief 058 §6; Loop v2: a loop runs 2:00 from its landing), the twin of route-a: the loop planted first, as soon as the Tech reaches the cabinet (live 0:33 to 2:33), and the Call left until 2:36 though Help is done at about 2:10: it has run out about 5 s before the Enter at about 2:38, and the entrance camera sees it (entry seen by a live camera). A first-planted loop still covers a prompt call, so the carelessness here is both steps together.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"scout","do":"move","to":"beside-inez","run":true},
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Courtyard","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":90,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":127,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":290,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":327,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":596,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
+  {"tick":1560,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":1560,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1579,"op":"enforcer","do":"enter"}
+ ],
+ "until": 4900
+}
