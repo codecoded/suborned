@@ -8,7 +8,7 @@ code{background:#efe9dc;padding:0 .25em;border-radius:3px;font-size:12.5px}ul{pa
 </style></head><body>
 <h1>Brief 098, law L9: Bodies</h1>
 <p>Keel, 2026-11-07, engine <code>suborned.sim/0.46.0</code>, branch <code>t3/simulation-body-spacing</code>. Sky (2026-11-07, three guards inside one another on a call box and the rival crew on one spot): <i>"our people bunch up together too much - we need to think about real tactics from this, and ensuring NPC's don't overlap each, they have real boundaries."</i></p>
-<div class="note"><b>In short.</b> Every person on the street has a body, and in no tick of the law's tests or of 315 probe runs across the dial did two bodies on their feet stand inside two radii. A stop holds one person and the next queues or stands beside it. Guards sharing a post take crew spots 2.5 m out, each facing his own sector. The rival crew at the Office front spreads 2.5 m apart, fanned over the street. The game's balance barely moves: wins by dial setting change by &minus;1.3 to +1.7 points. The tick costs about 0.11 ms at the dial's x4 (it was 0.02&ndash;0.03). Mission record c056 holds. Some calls are Sky's; they are listed at the end.</div>
+<div class="note"><b>In short.</b> Every person on the street has a body, and in no tick of the law's tests or of 315 probe runs across the dial did two bodies on their feet stand inside two radii. A stop holds one person and the next queues or stands beside it. Guards sharing a post take crew spots 2.5 m out, each facing his own sector. The rival crew at the Office front spreads 2.5 m apart, fanned over the street. The game's balance barely moves: wins by dial setting change by &minus;1.3 to +1.7 points. The tick costs about 0.1 ms at the dial's x4 (it was 0.02&ndash;0.03). Mission record c057 holds. Some calls are Sky's; they are listed at the end.</div>
 
 <h2>How the law works</h2>
 <h3>Bodies</h3>
@@ -37,6 +37,7 @@ code{background:#efe9dc;padding:0 .25em;border-radius:3px;font-size:12.5px}ul{pa
 <ul>
 <li><b>The rival crew drawn to the Office front</b> stands 250 cm apart along one line (it was 90 cm). The middle man faces out from the front to the street, the next ones turn 45&deg; out to their side, the flanks 90&deg;.</li>
 <li><b>The response unit</b> at the end of its walk and <b>police units</b> at their destination stand at crew spots round the place, each facing his own sector.</li>
+<li><b>A crowd round a scene</b> (people who come to look at a body or a fight) has no special formation. Each stands where its own rules send it and the law rings them round the scene by personal space, 80 cm apart where there is room and never closer than two radii.</li>
 <li><b>Fights</b> keep brief 081's rules: the kite's step off the line, cover and <code>fight.spacing</code>. A man stepping off the line of fire is the fight's.</li>
 </ul>
 <h3>The tenets, which win where they conflict</h3>
@@ -54,12 +55,12 @@ code{background:#efe9dc;padding:0 .25em;border-radius:3px;font-size:12.5px}ul{pa
 <tr><td>One hop as a law, across 6 routes &times; 4 seeds (replaces N82)</td><td><code>&hellip; --filter FullyQualifiedName~OneHopTests</code></td><td class=ok>1/1</td></tr>
 <tr><td>Every scenario, its checks and its replay, in one process</td><td><code>suborned-sim check</code></td><td class=ok>472/472 (47 s)</td></tr>
 <tr><td>Every scenario's checkpoints, in one process</td><td><code>suborned-sim hashes</code></td><td class=ok>exit 0</td></tr>
-<tr><td>The C# suite, sharded by class (ScenarioTests by method), 30 shards, 8 at a time</td><td><code>dotnet test &hellip; --filter FullyQualifiedName~&lt;Class&gt;.</code></td><td>29/30 shards pass. The 30th is <b>RulesTests.Q4GridMatchesTheTypeScriptEvaluator(mercenary, help)</b>, which <b>fails at HEAD too</b> (0.45.0's one-visit Help against the TypeScript grid; Motive). RedlineTests passed but took 12 m 51 s sharing the cores with 7 other shards; it should be split by test if it must stay under 10 minutes</td></tr>
+<tr><td>The C# suite, sharded by class (ScenarioTests by method), 30 shards, 8 at a time</td><td><code>dotnet test &hellip; --filter FullyQualifiedName~&lt;Class&gt;.</code></td><td>29/30 shards pass. The 30th is <b>RulesTests.Q4GridMatchesTheTypeScriptEvaluator(mercenary, help)</b>, which <b>fails at HEAD too</b> (0.45.0's one-visit Help against the TypeScript grid; Motive). Rerun on the final engine (b2ea7c46) with the same result. RedlineTests passed but took 10&ndash;13 minutes sharing the cores with 7 other shards (10 m 19 s on the final run); it should be split by test if it must stay under 10 minutes</td></tr>
 <tr><td>The independent body probe: every adaptive plan &times; 3 seeds &times; 7 settings, every tick</td><td><code>suborned-sim dial bodies</code></td><td class=ok>315 runs, 0 pairs inside two radii</td></tr>
 <tr><td>Overflow checks: every scenario on a Debug build</td><td>Debug probe (<code>CheckForOverflowUnderflow</code>)</td><td class=ok>0 overflows (a cell-key cast fixed)</td></tr>
 <tr><td>Rulebook (the <code>bodies</code> section)</td><td><code>bun test contracts/rules</code></td><td class=ok>116/116</td></tr>
 <tr><td>The mission check's tests, the headless Handover among them</td><td><code>bun test tools/missions/check/check.test.ts</code></td><td class=ok>36/36</td></tr>
-<tr><td>The bun tests that play the engine</td><td><code>bun test tools/sim tools/simview tools/missions contracts/missions tools/route-diff tools/game/closing-hash.test.ts tools/game/proofdelta.test.ts</code></td><td>All pass but 6, every one failing at HEAD too or needing a file this worktree lacks: <b>text.test</b> (four traffic log codes with no line; the opening barks removed in 433cc692); three <b>site</b> tests that need <code>out/people/harbour-district.people.json</code> (not generated here); <b>route-diff</b> (route-a-board loses at HEAD too). simview's dump and <code>Game.ClosingHash</code> agree with c056</td></tr>
+<tr><td>The bun tests that play the engine</td><td><code>bun test tools/sim tools/simview tools/missions contracts/missions tools/route-diff tools/game/closing-hash.test.ts tools/game/proofdelta.test.ts</code></td><td>All pass but 6, every one failing at HEAD too or needing a file this worktree lacks: <b>text.test</b> (four traffic log codes with no line; the opening barks removed in 433cc692); three <b>site</b> tests that need <code>out/people/harbour-district.people.json</code> (not generated here); <b>route-diff</b> (route-a-board loses at HEAD too). simview's dump and <code>Game.ClosingHash</code> agree with c057</td></tr>
 <tr><td>Types</td><td><code>bun run typecheck</code></td><td class=ok>clean</td></tr>
 </table>
 
@@ -81,7 +82,8 @@ code{background:#efe9dc;padding:0 .25em;border-radius:3px;font-size:12.5px}ul{pa
 <tr><td>DP1 (drive session)</td><td>re-recorded</td><td>Its pinned session replays on 0.46.0.</td></tr>
 <tr><td>N19, N134, BOARD-REACH and the other 450-odd</td><td>kept</td><td>They still hold.</td></tr>
 <tr><td>Route scripts</td><td>recomposed from their plans</td><td>route-a, route-a-disable, route-a-pressure, route-b, route-g, careless-g-disable and careless-scout-idles-pickup re-time; seven more compose to the same ticks. Fourteen plans do not compose. <b>Thirteen fail at HEAD too</b> (the Mislead on the rival car retired by brief 096; fight endings the plans wait for), which is Waymark's to re-plan. <b>route-g-kill</b> won at HEAD with the Enforcer on 1 health, carrying Vale and not firing; under the law he falls one shot before the crew breaks. Its script is kept and not tuned to win.</td></tr>
-<tr><td>Mission record</td><td>c056 (HOLDS)</td><td>MC-0 23/23 and MC-1 to MC-15 pass. Every band is as at c055 except B-11 quiet-b, now green and taken off the known-red list. L96 drive-round 11 % (10.5 % at c055).</td></tr>
+<tr><td>Mission record</td><td>c056, then c057 (HOLDS)</td><td>MC-0 23/23 and MC-1 to MC-15 pass. Every band is as at c055 except B-11 quiet-b, now green and taken off the known-red list. L96 drive-round 11 % (10.5 % at c055). c057 is c056 with the break fix below.</td></tr>
+<tr><td>SeedTests.NoFighterJumps</td><td>engine fixed (it predates the law)</td><td>route-g seed 9 on the recomposed script: rival-4 jumped 2.75 m when the crew broke. The broken man's running pace was set before his place was read, and his place is a function of time and pace along the walk he was on, so it jumped to the walk's end. He now leaves from where he stands and takes the pace after. This moves SQ2-CLOSES and four Handover route replays; check stays 472/472.</td></tr>
 </table>
 
 <h2>Bands before and after</h2>
@@ -98,20 +100,20 @@ code{background:#efe9dc;padding:0 .25em;border-radius:3px;font-size:12.5px}ul{pa
 
 <h2>Tick cost</h2>
 <p><code>suborned-sim dial perf</code>, 10 runs a setting, with the base commit's route-a and loud-fight scripts on both engines (the same orders). Evidence: <code>bodies-perf.json</code>.</p>
-<table><tr><th colspan=6>route-a</th></tr><tr><th>Setting</th><th>Walkers</th><th>ms a tick before</th><th>after</th><th>p99 before</th><th>p99 after</th></tr><tr><td>unset</td><td>126</td><td>0.009</td><td>0.0187</td><td>0.047</td><td>0.083</td></tr>
-<tr><td>x4</td><td>413</td><td>0.0226</td><td>0.1106</td><td>0.145</td><td>0.376</td></tr>
-<tr><td>people=64</td><td>365</td><td>0.0159</td><td>0.0564</td><td>0.093</td><td>0.221</td></tr>
-<tr><td>guards=64</td><td>174</td><td>0.0154</td><td>0.0636</td><td>0.082</td><td>0.23</td></tr></table>
-<table><tr><th colspan=6>loud-fight</th></tr><tr><th>Setting</th><th>Walkers</th><th>ms a tick before</th><th>after</th><th>p99 before</th><th>p99 after</th></tr><tr><td>unset</td><td>126</td><td>0.006</td><td>0.0149</td><td>0.023</td><td>0.053</td></tr>
-<tr><td>x4</td><td>413</td><td>0.0286</td><td>0.124</td><td>0.132</td><td>0.37</td></tr>
-<tr><td>people=64</td><td>365</td><td>0.0162</td><td>0.0661</td><td>0.101</td><td>0.267</td></tr>
-<tr><td>guards=64</td><td>174</td><td>0.0183</td><td>0.0879</td><td>0.05</td><td>0.311</td></tr></table>
-<p>At the dial's x4 the law costs about 0.09 ms a tick (p99 0.37 ms), on a 100 ms tick. That is cheap, but it is 4&ndash;5 times the old tick. Most of it is the spatial hash and the candidate checks, and it grows with the people on the street.</p>
+<table><tr><th colspan=6>route-a</th></tr><tr><th>Setting</th><th>Walkers</th><th>ms a tick before</th><th>after</th><th>p99 before</th><th>p99 after</th></tr><tr><td>unset</td><td>126</td><td>0.009</td><td>0.0148</td><td>0.047</td><td>0.065</td></tr>
+<tr><td>x4</td><td>413</td><td>0.0226</td><td>0.091</td><td>0.145</td><td>0.309</td></tr>
+<tr><td>people=64</td><td>365</td><td>0.0159</td><td>0.0468</td><td>0.093</td><td>0.188</td></tr>
+<tr><td>guards=64</td><td>174</td><td>0.0154</td><td>0.0521</td><td>0.082</td><td>0.204</td></tr></table>
+<table><tr><th colspan=6>loud-fight</th></tr><tr><th>Setting</th><th>Walkers</th><th>ms a tick before</th><th>after</th><th>p99 before</th><th>p99 after</th></tr><tr><td>unset</td><td>126</td><td>0.006</td><td>0.011</td><td>0.023</td><td>0.038</td></tr>
+<tr><td>x4</td><td>413</td><td>0.0286</td><td>0.1004</td><td>0.132</td><td>0.344</td></tr>
+<tr><td>people=64</td><td>365</td><td>0.0162</td><td>0.0547</td><td>0.101</td><td>0.228</td></tr>
+<tr><td>guards=64</td><td>174</td><td>0.0183</td><td>0.0552</td><td>0.05</td><td>0.135</td></tr></table>
+<p>At the dial's x4 the law adds about 0.07 ms a tick (0.09&ndash;0.10 ms a tick, p99 0.31&ndash;0.34 ms), on a 100 ms tick. That is cheap, but it is 4&ndash;5 times the old tick. Most of it is the spatial hash and the candidate checks, and it grows with the people on the street.</p>
 
 <h2>The law's strain (probe)</h2>
 <p><code>suborned-sim dial bodies</code>: every adaptive plan &times; 3 seeds &times; 7 settings, every tick read by an independent check. Evidence: <code>bodies-probe.json</code>. The A/B that chose the way-round rules is in <code>bodies-ways.json</code>.</p>
 <table><tr><th>Setting</th><th>Runs</th><th>Ticks</th><th>Bodies a tick</th><th>Pairs inside two radii</th><th>Tenet pairs</th><th>Last resorts</th><th>Held a tick</th><th>Cell held (ticks, all runs)</th><th>Farthest from own place</th></tr><tr><td>unset</td><td>45</td><td>161062</td><td>24.9</td><td><b>0</b></td><td>0</td><td>1</td><td>0.009</td><td>1</td><td>18.9 m</td></tr>
-<tr><td>people=32</td><td>45</td><td>158912</td><td>40.6</td><td><b>0</b></td><td>0</td><td>66</td><td>0.011</td><td>1</td><td>18.9 m</td></tr>
+<tr><td>people=32</td><td>45</td><td>158912</td><td>40.6</td><td><b>0</b></td><td>0</td><td>67</td><td>0.011</td><td>1</td><td>18.9 m</td></tr>
 <tr><td>people=64</td><td>45</td><td>158752</td><td>70.8</td><td><b>0</b></td><td>0</td><td>315</td><td>0.069</td><td>2</td><td>27.9 m</td></tr>
 <tr><td>guards=32</td><td>45</td><td>160394</td><td>40.4</td><td><b>0</b></td><td>0</td><td>3</td><td>0.014</td><td>1</td><td>18.9 m</td></tr>
 <tr><td>guards=64</td><td>45</td><td>153125</td><td>71.1</td><td><b>0</b></td><td>0</td><td>14</td><td>0.07</td><td>6</td><td>34.4 m</td></tr>

@@ -463,7 +463,7 @@
   "seedFrom": 1,
   "replay": true,
   "items": 15,
-  "wallS": 107,
+  "wallS": 88,
   "settings": [
    {
     "setting": "unset",
@@ -815,8 +815,8 @@
      "heldAtEnd": 12,
      "runsBoxed": 146,
      "boxSpells": 517,
-     "boxedS10": 56419,
-     "boxedAboardS10": 22501,
+     "boxedS10": 56437,
+     "boxedAboardS10": 22519,
      "goBoxedByTraffic": 173,
      "runsGoBoxedByTraffic": 38,
      "closedInByTraffic": 6,

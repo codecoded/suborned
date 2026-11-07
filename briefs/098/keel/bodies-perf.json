@@ -46,30 +46,30 @@
     {
      "setting": "unset",
      "walkers": 126,
-     "startMs": 4.4,
-     "msPerTick": 0.0187,
-     "p99TickMs": 0.083
+     "startMs": 3.6,
+     "msPerTick": 0.0148,
+     "p99TickMs": 0.065
     },
     {
      "setting": "x4",
      "walkers": 413,
-     "startMs": 9.6,
-     "msPerTick": 0.1106,
-     "p99TickMs": 0.376
+     "startMs": 7.5,
+     "msPerTick": 0.091,
+     "p99TickMs": 0.309
     },
     {
      "setting": "people=64",
      "walkers": 365,
-     "startMs": 8.3,
-     "msPerTick": 0.0564,
-     "p99TickMs": 0.221
+     "startMs": 6.5,
+     "msPerTick": 0.0468,
+     "p99TickMs": 0.188
     },
     {
      "setting": "guards=64",
      "walkers": 174,
-     "startMs": 5.5,
-     "msPerTick": 0.0636,
-     "p99TickMs": 0.23
+     "startMs": 4.5,
+     "msPerTick": 0.0521,
+     "p99TickMs": 0.204
     }
    ]
   }
@@ -118,30 +118,30 @@
     {
      "setting": "unset",
      "walkers": 126,
-     "startMs": 4.4,
-     "msPerTick": 0.0149,
-     "p99TickMs": 0.053
+     "startMs": 3.5,
+     "msPerTick": 0.011,
+     "p99TickMs": 0.038
     },
     {
      "setting": "x4",
      "walkers": 413,
-     "startMs": 9.1,
-     "msPerTick": 0.124,
-     "p99TickMs": 0.37
+     "startMs": 7.4,
+     "msPerTick": 0.1004,
+     "p99TickMs": 0.344
     },
     {
      "setting": "people=64",
      "walkers": 365,
-     "startMs": 8.1,
-     "msPerTick": 0.0661,
-     "p99TickMs": 0.267
+     "startMs": 6.6,
+     "msPerTick": 0.0547,
+     "p99TickMs": 0.228
     },
     {
      "setting": "guards=64",
      "walkers": 174,
-     "startMs": 7.1,
-     "msPerTick": 0.0879,
-     "p99TickMs": 0.311
+     "startMs": 4.6,
+     "msPerTick": 0.0552,
+     "p99TickMs": 0.135
     }
    ]
   }
