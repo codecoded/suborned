@@ -200,7 +200,7 @@ namespace Suborned.Play
         void LessFrame()
         {
             if (!lessBuilt) BuildLess();
-            if (host.Game != runSeen) { runSeen = host.Game; hintShows.Clear(); objWas = ""; markAt = -100f; lastTickSeen = -1; pulseAt.Clear(); } // a new run (Begin, Replay): the HUD's per-run memory starts again
+            if (host.Game != runSeen) { runSeen = host.Game; hintShows.Clear(); pulseAt.Clear(); } // a new run (Begin, Replay): the HUD's per-run memory starts again
             var g = host.Game; bool alt = host.Peeking, ended = m.Ended; var cam = host.View;
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? 1080 : size.y;
             // what is cut at rest (Glyph §6 "cut at rest"): strips, ticker, the feed stack, the objective bar, the NEXT STEP plate, toasts, the old
@@ -367,23 +367,17 @@ namespace Suborned.Play
         /// <summary>The hint line now: its fade (0 = folded), the verb's glyph and the noun's marker colour, which its ring in the street shares.</summary>
         Game runSeen; float hintAlpha; bool hintQOn; string hintVerbGlyph = ""; Color hintNounColour = TurqLight; VisualElement hintQ;
         static bool show0(string l) => l != null;
-        string objWas = ""; float objChanged = -100f, markAt = -100f; int lastTickSeen = -1;
 
         void GoalLine(float W)
         {
             var t = host.Text; var g = host.Game; float now = Time.unscaledTime;
             if (t == null || m.Ended || m.BriefingOpen) { Show(goal, false); goalText = ""; return; }
-            string obj = host.ObjectiveKey switch { "go" => t.ObjGo, "carry" => t.ObjCarry, "bring" => t.ObjBring, _ => t.ObjTake }; // brief 018: then go // Fable's steps: take, bring, carry
-            if (obj != objWas) { objWas = obj; objChanged = now; }
-            // the marks where a window opens: the chime and Vale out (the site's schedule)
-            foreach (var mk in new[] { g.S.Chime * Game.Hz, g.ClockValeExits * Game.Hz }) if (lastTickSeen >= 0 && lastTickSeen < mk && g.Tick >= mk) markAt = now;
-            lastTickSeen = g.Tick;
-            float showS = t.ObjShowS;
-            bool objOn = now - host.ClockStarted < showS || now - objChanged < showS && host.ClockStarted > 0 || now - markAt < showS || pillHover;
+            // Sky 2026-11-07 ("don't understand this thing here - what's the triangle about? And surely they know the mission - seeing this
+            // through makes no sense and takes up valuable space"): the objective is no longer shown in play (it lives on the start page and the
+            // book's Job page); this line carries only the range's hint, the hints and the first act's hint
             string line = null, cameo = null, glyph = null; hintAlpha = 0f; hintQOn = false;
             if (host.RangeHint is string rh) { line = rh; glyph = HudModel.AtlasIcon("fire", "fire", ""); } // engine 0.18 (the fight range): over a bystander, how to fire on one
             else if (host.rangeMode) { } // brief 029 (Sky on 0.2.34): the range has no mission, so no Handover goal, hint or first-act line; only its own hint above
-            else if (objOn) line = obj;
             else if (host.HintNow != null && t.Hints2.Find(x => x.Id == host.HintNow.Id) is PlayText.Hint h && h.Short.Length > 0)
             {
                 if (!hintShows.TryGetValue(h.Id, out var hs)) { hs = (now, 1, -1f); hintShows[h.Id] = hs; }
