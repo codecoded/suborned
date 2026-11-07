@@ -58,7 +58,7 @@ namespace Suborned.Sim
             foreach (var c in Traffic)
             {
                 h.S(c.Id).S(c.Model).S(c.Route.Id).I(c.Mm).I(c.V).I(c.Lat).I(c.LatGoal).I((int)c.Mode).I(c.ModeTick).I(c.StoppedAt).I(c.Quiet).I(c.Turn).I(c.AskedAt).I(c.Refused).I(c.RefusedAt).I(c.BlockedAt);
-                h.Z(c.Flees).P(c.Alarm).S(c.Driver.Temperament).Z(c.Out != null).Z(c.Standing).Z(c.Settled).S(c.WaitsFor).I(c.Back).I(c.BackedAt);
+                h.Z(c.Flees).P(c.Alarm).S(c.Driver.Temperament).Z(c.Out != null).Z(c.Standing).Z(c.Settled).S(c.WaitsFor).I(c.Back).I(c.BackedAt).I(c.PlannedAt);
             }
             HashYield(h);
         }

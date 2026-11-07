@@ -19,6 +19,7 @@ namespace Suborned.Sim
         /// centreline as far as the oncoming lane's line, when that lane holds no car that could meet it before it is past (an overtake); none: it waits.</summary>
         void PlanPass(TrafficCar c, TrafficWorld w, Lane lane, long ahead, int wide = 0, bool overtake = false)
         {
+            if (Tick - c.PlannedAt < Hz) return; c.PlannedAt = Tick; // a way round found none: look again in a second
             int maxIn = lane.Offset - c.HalfW - tr!.ClearCm, maxOut = lane.Half - lane.Offset - c.HalfW - tr.ClearCm;
             long stretch = ahead + 1500 + 2L * c.HalfLen * 10;
             if (LineWithin(c, stretch + ReturnMm(c, lane))) return; // too near a junction to go round and be back on the line before its stop line: it waits
@@ -27,10 +28,10 @@ namespace Suborned.Sim
                 foreach (var lat in new[] { s, -s })
                 {
                     if (lat > maxOut || -lat > maxIn || !Clear(lat)) continue;
-                    c.LatGoal = lat; c.BlockedAt = -1; return;
+                    c.LatGoal = lat; c.BlockedAt = -1; c.PlannedAt = -100; return;
                 }
             if (!overtake || lane.Twin == null || OncomingNear(c, lane, stretch)) return;
-            for (int s = maxIn + 25; s <= 2 * lane.Offset; s += 25) if (Clear(-s)) { c.LatGoal = -s; c.BlockedAt = -1; return; }
+            for (int s = maxIn + 25; s <= 2 * lane.Offset; s += 25) if (Clear(-s)) { c.LatGoal = -s; c.BlockedAt = -1; c.PlannedAt = -100; return; }
         }
         /// <summary>A car on the lane the other way that could meet an overtake of `stretch` before it is past (at its own speed or its lane's).</summary>
         bool OncomingNear(TrafficCar c, Lane lane, long stretch)
@@ -97,7 +98,7 @@ namespace Suborned.Sim
             int r = c.HalfW + tr!.ClearCm; long pr2 = (long)(r + R.CrowdOccludeCm) * (r + R.CrowdOccludeCm);
             for (long mm = c.Rear; mm >= Math.Max(0, c.Rear - len); mm -= TStep)
             {
-                var q = c.Route.Path.At(mm);
+                var q = c.Route.Path.At(mm); if (c.Lat != 0) { var h = c.Route.Path.Heading(mm); long hn = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y)); q = new Pt(q.X + (int)(h.Y * c.Lat / hn), q.Y + (int)(-h.X * c.Lat / hn)); } // at the offset it rides
                 foreach (var p in w.People) if (G.D2(q, p) <= pr2) return false;
                 foreach (var p in w.Bodies) if (G.D2(q, p) <= pr2) return false;
                 foreach (var b in w.Cars) if (b.Car != c && b.Near(q, r)) return false;

@@ -51,7 +51,7 @@ namespace Suborned.Sim
             var hs = CarHolders(); if (hs.Count > 0) return No("drive-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
             var bx = GetawayBoxers(); if (bx.Count > 0) return No("drive-boxed", BoxedWords(bx), ids: string.Join(",", bx)); // brief 096 (car.box): boxed in where it stands
             var sb = StandBoxers(st.Id); if (sb.Count > 0) return No("stand-boxed", $"can't get in: {string.Join(", ", sb)} {(sb.Count == 1 ? "is" : "are")} across the way out of {st.Id}", ids: string.Join(",", sb)); // and where it would go
-            var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm, TrafficStillMask()) ?? new[] { CurStand.CarCell, st.CarCell }); // brief 098 step 1: round passing cars standing for good
+            var tf = TrafficField(); var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm, TrafficStillMask(), tf?.fx, tf?.fy) ?? new[] { CurStand.CarCell, st.CarCell }); // brief 098 step 1: keeping right, round passing cars standing
             var prof = CarProfile(path); int ticks = Math.Max(1, prof.Length - 1);
             getawayPath = path; getawayProf = prof; getawayStart = Tick; GetawayDest = st;
             foreach (var x in Ops)
@@ -80,7 +80,7 @@ namespace Suborned.Sim
         public int DriveTicks(string standId)
         {
             var st = S.StandById(standId); if (st == null || Range) return -1;
-            var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm, TrafficStillMask()) ?? new[] { CurStand.CarCell, st.CarCell });
+            var tf = TrafficField(); var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm, TrafficStillMask(), tf?.fx, tf?.fy) ?? new[] { CurStand.CarCell, st.CarCell });
             return Math.Max(1, CarProfile(path).Length - 1);
         }
 

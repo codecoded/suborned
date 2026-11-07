@@ -97,13 +97,16 @@ namespace Suborned.Sim
         public int ClearanceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? Clearance()[i * Ny + j] : 0; }
 
         /// <summary>The car's route from a to b on this drive grid (see above); `laneCm` the carriageway's keep-off. Null if b is unreachable.
-        /// Brief 098 step 1: `m` the cells passing cars stand on for good (Game: wrecks, abandoned, a ducked driver's), driven round; null, the grid as built.</summary>
-        public Pt[]? CarRoute(Pt a, Pt b, int laneCm, bool[]? m = null)
+        /// Brief 098 step 1, with traffic only: `m` the cells passing cars stand on, driven round; `fx, fy` each carriageway cell's way of travel
+        /// (×100; 0 for none: a junction, a bay, both halves): a cell driven against it costs three cells more, and no pulled line runs against
+        /// one, so a mission car keeps to the right as the street does. Null for both: the grid as built.</summary>
+        public Pt[]? CarRoute(Pt a, Pt b, int laneCm, bool[]? m = null, short[]? fx = null, short[]? fy = null)
         {
-            if (m != null && CarRoute(a, b, laneCm, m, out var r)) return r;
-            return CarRoute(a, b, laneCm, null, out var r0) ? r0 : null;
+            if ((m != null || fx != null) && CarRoute(a, b, laneCm, m, fx, fy, out var r)) return r;
+            return CarRoute(a, b, laneCm, null, null, null, out var r0) ? r0 : null;
         }
-        bool CarRoute(Pt a, Pt b, int laneCm, bool[]? m, out Pt[]? result)
+        static bool Against(short[]? fx, short[]? fy, int k, long dx, long dy) => fx != null && (fx[k] != 0 || fy![k] != 0) && dx * fx[k] + dy * fy![k] < 0;
+        bool CarRoute(Pt a, Pt b, int laneCm, bool[]? m, short[]? fx, short[]? fy, out Pt[]? result)
         {
             result = null;
             Pt? s0 = NearestFree(a); if (!s0.HasValue || !Free(b)) return false;
@@ -126,7 +129,7 @@ namespace Suborned.Sim
                     if (!Open(ni, nj, m) && !(ni == ti && nj == tj)) continue;
                     if (d >= 4 && (!Open(i + DI[d], j, m) || !Open(i, j + DJ[d], m))) continue; // no corner cutting
                     int nk = ni * Ny + nj; if (P.IsClosed(nk)) continue;
-                    int ng = P.G(k) + (d < 4 ? orth : diag) + per * Short(nk);
+                    int ng = P.G(k) + (d < 4 ? orth : diag) + per * Short(nk) + (Against(fx, fy, nk, DI[d], DJ[d]) ? 3 * orth : 0);
                     if (ng < P.G(nk)) { P.Set(nk, ng, k); heap.Push(ng + H(ni, nj, ti, tj), nk); }
                 }
             }
@@ -146,18 +149,18 @@ namespace Suborned.Sim
                 while (to > at + 1)
                 {
                     int keep = int.MaxValue; for (int q = at; q <= to; q++) keep = Math.Min(keep, rc[q]);
-                    if (LineKeeps(raw[at], raw[to], keep, c, m)) break;
+                    if (LineKeeps(raw[at], raw[to], keep, c, m, fx, fy)) break;
                     to--;
                 }
                 path.Add(raw[to]); at = to;
             }
             result = path.ToArray(); return true;
         }
-        /// <summary>The straight segment a→b stays on cells of clearance ≥ keep (sampled every 10 cm), and off the mask's cells.</summary>
-        bool LineKeeps(Pt a, Pt b, int keep, int[] c, bool[]? m = null)
+        /// <summary>The straight segment a→b stays on cells of clearance ≥ keep (sampled every 10 cm), off the mask's cells and not against their way.</summary>
+        bool LineKeeps(Pt a, Pt b, int keep, int[] c, bool[]? m = null, short[]? fx = null, short[]? fy = null)
         {
             int n = Math.Max(1, G.Dist(a, b) / 10);
-            for (int k = 0; k <= n; k++) { var p = G.Lerp(a, b, k, n); int i = CI(p.X), j = CJ(p.Y); if (!FreeCell(i, j) || c[i * Ny + j] < keep || (m != null && m[i * Ny + j] && k > 0 && k < n)) return false; }
+            for (int k = 0; k <= n; k++) { var p = G.Lerp(a, b, k, n); int i = CI(p.X), j = CJ(p.Y); if (!FreeCell(i, j) || c[i * Ny + j] < keep || (m != null && m[i * Ny + j] && k > 0 && k < n) || Against(fx, fy, i * Ny + j, b.X - a.X, b.Y - a.Y)) return false; }
             return true;
         }
         public bool FreeCell(int i, int j) => i >= 0 && j >= 0 && i < Nx && j < Ny && free[i * Ny + j];

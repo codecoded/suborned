@@ -229,6 +229,39 @@ namespace Suborned.Sim
             lock (routes) routes[key] = route;
             return route;
         }
+        (short[] fx, short[] fy)? field;
+        /// <summary>Each drive cell's way of travel (×100): the direction of the lane whose half of the road its centre lies in (from the centreline
+        /// to the kerb, along the lane); none (0, 0) on both halves, in a junction's box, off the carriageway. Built once per net (lock).</summary>
+        public (short[] fx, short[] fy) Field(Grid g)
+        {
+            lock (routes)
+            {
+                if (field.HasValue) return field.Value;
+                int n = g.Nx * g.Ny; var fx = new short[n]; var fy = new short[n]; var both = new bool[n];
+                foreach (var l in Lanes.Values)
+                    for (int s = 1; s < l.Line.P.Length; s++)
+                    {
+                        Pt a = l.Line.P[s - 1], b = l.Line.P[s]; long ux = b.X - a.X, uy = b.Y - a.Y, len = G.Isqrt(ux * ux + uy * uy); if (len == 0) continue;
+                        int r = l.Half + g.Cell; short dx = (short)(ux * 100 / len), dy = (short)(uy * 100 / len);
+                        for (int i = Math.Max(0, g.CI(Math.Min(a.X, b.X) - r)); i <= Math.Min(g.Nx - 1, g.CI(Math.Max(a.X, b.X) + r)); i++)
+                            for (int j = Math.Max(0, g.CJ(Math.Min(a.Y, b.Y) - r)); j <= Math.Min(g.Ny - 1, g.CJ(Math.Max(a.Y, b.Y) + r)); j++)
+                            {
+                                var q = g.Centre(i, j); if (g.SurfaceAt(q) != 'r') continue;
+                                long px = q.X - a.X, py = q.Y - a.Y, along = (px * ux + py * uy) / len, across = (px * uy - py * ux) / len; // + to the right of travel
+                                if (along < 0 || along > len || across < -l.Offset || across > l.Half - l.Offset) continue;
+                                int k = i * g.Ny + j;
+                                if ((fx[k] != 0 || fy[k] != 0) && fx[k] * dx + fy[k] * dy < 0) both[k] = true; else { fx[k] = dx; fy[k] = dy; }
+                            }
+                    }
+                for (int k = 0; k < n; k++)
+                {
+                    var q = g.Centre(k / g.Ny, k % g.Ny); bool inBox = false; foreach (var j in Junctions) if (G.InPoly(q, j.Box)) { inBox = true; break; }
+                    if (both[k] || inBox) { fx[k] = 0; fy[k] = 0; }
+                }
+                field = (fx, fy); return field.Value;
+            }
+        }
+
         /// <summary>The first (in) or last (out) mm of a path inside the window.</summary>
         long Cross(Polyline p, bool first)
         {

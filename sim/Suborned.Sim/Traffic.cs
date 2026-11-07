@@ -84,6 +84,8 @@ namespace Suborned.Sim
         public int Turn = -1, Refused = -1, RefusedAt = -1;
         /// <summary>Backing off: the mm still to go back, and the blockage (BlockedAt) it backed off for (once a blockage).</summary>
         public long Back; public int BackedAt = -2;
+        /// <summary>The last tick it looked for a way round and found none: it looks again a second later, not every tick.</summary>
+        public int PlannedAt = -100;
         public bool Flees; public Pt Alarm;
         /// <summary>The mission car this car waits for now (its first thing ahead is that car or its next seconds), else "": a mission car never waits
         /// long for a driver who waits for it.</summary>

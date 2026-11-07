@@ -94,7 +94,7 @@ namespace Suborned.Sim
         {
             int trip = s.Trips + 1; var (route, kind) = TripDraws(s.Index, trip);
             int hl = tr!.LenCm[kind] / 2, hw = tr.WCm[kind] / 2;
-            if (!LaneClear(route, 0, 2L * hl * 10 + tr.GapCm * 10L, hw, -1)) return;
+            if (!LaneClear(route.Lanes[0].lane, 2L * hl * 10 + tr.GapCm * 10L)) { s.Next = now + Hz; return; } // its mouth's lane is full: it tries again in a second
             var id = CarIdOf(s, trip);
             var p = new Person { Id = tr.DriverId + id.Substring(4 + tr.IdPrefix.Length), Job = tr.DriverJob };
             p.Name = tr.DriverName + " " + s.Index.ToString(System.Globalization.CultureInfo.InvariantCulture) + "." + trip.ToString(System.Globalization.CultureInfo.InvariantCulture);

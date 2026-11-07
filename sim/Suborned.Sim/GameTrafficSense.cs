@@ -106,10 +106,12 @@ namespace Suborned.Sim
         {
             qs.Clear(); hs.Clear(); nearC.Clear(); nearP.Clear(); nearB.Clear();
             int n = (int)(len / TStep) + 1, x0 = int.MaxValue, y0 = int.MaxValue, x1 = int.MinValue, y1 = int.MinValue, lat0 = latFrom ?? c.Lat; long front = c.Front;
+            Pt lastH = default; long hn = 1;
             c.Route.Path.Walk(from, TStep, n, (k, p, h) =>
             {
-                int lat = LatAt(lat0, goal, from - front + (long)k * TStep); long hn = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y));
-                var q = lat == 0 ? p : new Pt(p.X + (int)(h.Y * lat / hn), p.Y + (int)(-h.X * lat / hn)); qs.Add(q); hs.Add(h);
+                int lat = lat0 == 0 && goal == 0 ? 0 : LatAt(lat0, goal, from - front + (long)k * TStep);
+                if (lat != 0 && h != lastH) { hn = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y)); lastH = h; } // a segment's length, once a segment
+                var q = lat == 0 ? p : new Pt(p.X + (int)(h.Y * lat / hn), p.Y + (int)(-h.X * lat / hn)); qs.Add(q); if (grid) hs.Add(h);
                 x0 = Math.Min(x0, q.X); y0 = Math.Min(y0, q.Y); x1 = Math.Max(x1, q.X); y1 = Math.Max(y1, q.Y); return false;
             });
             if (qs.Count == 0) return (long.MaxValue, 0, false, 0); // past its route's end: the road runs on beyond the runway
@@ -160,15 +162,11 @@ namespace Suborned.Sim
             if (d == long.MaxValue || kind == 1) return (false, false); // people move: the box waits for them, not the ask
             return (true, still);
         }
-        /// <summary>The stretch [from, to] of a route is clear of every passing car (a trip's start: nobody is put on top of another).</summary>
-        bool LaneClear(TrafficRoute route, long from, long to, int hw, int except)
+        /// <summary>The first `len` mm of a mouth's lane in hold no passing car (a trip's start: nobody is put on top of another). Only a car on that
+        /// lane can be there (it starts on a runway, 30 m out of the window, lanes 6 m apart): its rear along the lane says.</summary>
+        bool LaneClear(Lane lane, long len)
         {
-            int r = hw + tr!.ClearCm;
-            for (long mm = from; mm <= to; mm += TStep)
-            {
-                var q = route.Path.At(mm);
-                foreach (var o in Traffic) { var (at, h) = TrafficPose(o); if (new TBox(at, h, o.HalfLen, o.HalfW).Near(q, r)) return false; }
-            }
+            foreach (var o in Traffic) { int li = o.Route.LaneAt(o.Mm); if (li < 0 || o.Route.Lanes[li].lane != lane) continue; if (o.Rear - o.Route.Lanes[li].from < len) return false; }
             return true;
         }
         /// <summary>A moving mission car comes within c's corridor between [from, to] of its route over the next `ticks` (its own timetable).</summary>
@@ -212,7 +210,8 @@ namespace Suborned.Sim
             int v = Math.Min(Math.Min(c.V + accel, vmax), allowed);
             if (c.Mode == TrafficMode.Brake) v = Math.Min(v, Math.Max(0, c.V - hard));
             c.V = Math.Max(0, v); c.Mm += c.V;
-            if (c.V > 0 && c.Lat != c.LatGoal) { int sideways = Math.Max(1, c.V * tr.LatCmS / (tr.PassCmS * 10)); int gap = c.LatGoal - c.Lat; c.Lat += Math.Sign(gap) * Math.Min(Math.Abs(gap), sideways); }
+            if (c.V > 0 && c.Lat != c.LatGoal) // sideways only where the whole car is clear at the new offset (someone may have come alongside since it chose)
+            { int sideways = Math.Max(1, c.V * tr.LatCmS / (tr.PassCmS * 10)), gap = c.LatGoal - c.Lat, nl = c.Lat + Math.Sign(gap) * Math.Min(Math.Abs(gap), sideways); if (Corridor(c, w, c.Rear, c.Front - c.Rear, nl, latFrom: nl).d == long.MaxValue) c.Lat = nl; }
             if (c.Mode == TrafficMode.Brake && c.V == 0 && now - c.ModeTick >= (c.Driver.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks))
             { c.Mode = c.Flees ? TrafficMode.Flee : TrafficMode.Duck; c.ModeTick = now; if (!c.Flees) c.Quiet = Math.Max(c.Quiet, now); }
             // held up behind something that will not move on: ease round it; once the whole car is past, back to the line (GameTrafficPass.cs)

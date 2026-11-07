@@ -84,7 +84,7 @@ namespace Suborned.Sim
         Path CarRoute(string from, string to) => CarRouteP(S.CarStand(from), S.CarStand(to));
         /// <summary>A read (scenarios, the debug view; never hashed): the ticks of the rival car's drive between two of its points (the profile's length).</summary>
         public int CarProfileTicks(string from, string to) => CarProfile(CarRoute(from, to)).Length;
-        Path CarRouteP(Pt from, Pt to) => new Path(S.Drive.CarRoute(from, to, S.DriveLaneCm, TrafficStillMask()) ?? new[] { from, to }); // brief 098 step 1: round passing cars standing for good (none without traffic)
+        Path CarRouteP(Pt from, Pt to) { var f = TrafficField(); return new Path(S.Drive.CarRoute(from, to, S.DriveLaneCm, TrafficStillMask(), f?.fx, f?.fy) ?? new[] { from, to }); } // brief 098 step 1: keeping right, round passing cars standing (none of it without traffic)
 
         /// <summary>One tick of the crew (the car first, then its riders, then the others, in id order). Called in the schedule's place.</summary>
         void CrewStep()

@@ -61,6 +61,8 @@ namespace Suborned.Sim
             foreach (var c in Traffic) if (TrafficStill(c) || c.V == 0) { var (at, h) = TrafficPose(c); CoverCells(g, R, at, h, grow, (i, j) => { if (g.FreeCell(i, j)) (m ??= new bool[g.Nx * g.Ny])[i * g.Ny + j] = true; }, c.HalfLen, c.HalfW); }
             return m;
         }
+        /// <summary>With traffic, the drive cells' way of travel (the lanes'), for a mission car's new leg to keep right; null without.</summary>
+        (short[] fx, short[] fy)? TrafficField() => tr == null ? ((short[], short[])?)null : net!.Field(S.Drive);
         internal void HashYield(Hash.H h) { if (missionHeld.Count == 0) return; h.S("yield"); foreach (var kv in missionHeld) h.S(kv.Key).I(kv.Value); }
     }
 }

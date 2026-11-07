@@ -39,6 +39,8 @@ public class TrafficTests
         }
         return null;
     }
+    /// <summary>A car moving on its lane's line in the zone with `ahead` mm of the lane still before it.</summary>
+    static bool Cruising1(Game g, TrafficCar c, long ahead) { var v = View(g, c.Id); int li = c.Route.LaneAt(c.Mm); return v.InZone && c.V >= 100 && c.Lat == 0 && c.LatGoal == 0 && li >= 0 && c.Route.Lanes[li].to - c.Front >= ahead; }
     static Pt Ahead(TrafficCar c, long mm) => c.Route.Path.At(Math.Min(c.Route.Path.Length, c.Front + mm));
     static void Stand(Game g, OpId who, Pt at) { var op = g.OpOf(who); op.Walk = null; op.WalkMm = 0; op.Pos = at; }
     /// <summary>A free walk spot `minCm`..`maxCm` from `at` with a clear eye line to it.</summary>
@@ -99,15 +101,15 @@ public class TrafficTests
     [Theory] [InlineData(2)] [InlineData(5)] [InlineData(7)]
     public void ACarQueuesBehindAStandingCar(int seed)
     {
-        var g = New(seed, 24); TrafficCar? lead = null, next = null;
+        var g = New(seed, 16); TrafficCar? lead = null, next = null;
         for (int t = 1; t <= 400 && next == null; t++)
         {
-            g.RunTo(Game.T(t)); lead = Cruising(g, 25000); if (lead == null) continue;
+            g.RunTo(Game.T(t)); lead = g.Traffic.FirstOrDefault(c => Cruising1(g, c, 20000) && c.Mode == TrafficMode.Drive && c.Route.Lanes[c.Route.LaneAt(c.Mm)].lane.To.StartsWith("j:", StringComparison.Ordinal) && g.S.Grid.InGrid(Ahead(c, 14000))); if (lead == null) continue;
             int li = lead.Route.LaneAt(lead.Mm); var lane = lead.Route.Lanes[li].lane; long leadOn = lead.Mm - lead.Route.Lanes[li].from; // where along the lane, whatever the route
             next = g.Traffic.FirstOrDefault(o => o != lead && o.Route.LaneAt(o.Mm) is int oi && oi >= 0 && o.Route.Lanes[oi].lane == lane && o.Lat == 0 && o.Mode == TrafficMode.Drive
                 && (leadOn - lead.HalfLen * 10L) - (o.Mm - o.Route.Lanes[oi].from + o.HalfLen * 10L) is long gap && gap > 0 && gap < 30000);
         }
-        Assert.NotNull(next);
+        Assert.True(next != null, $"a pair on one lane (cars {g.Traffic.Count}, cruising {g.Traffic.Count(c => Cruising1(g, c, 25000))})");
         var spot = Ahead(lead!, 14000); Stand(g, OpId.Scout, spot);
         bool queued = false;
         for (int k = 0; k < Game.T(14); k++)

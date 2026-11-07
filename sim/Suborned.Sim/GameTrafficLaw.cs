@@ -81,6 +81,7 @@ namespace Suborned.Sim
                 c.Standing = still || (stood && now - c.StoppedAt >= T(tr!.StandS)); c.Settled = still || (stood && now - c.StoppedAt >= T(tr!.SettleS));
                 if (c.Standing && c.Cover && !(CarOf(c.Id) is CarTarget ct && ct.Blown)) { var (at, h) = TrafficPose(c); key.Add(c.Slot * 100000L + c.Trip); key.Add(at.X); key.Add(at.Y); key.Add((long)h.X * 4_000_037L + h.Y); }
             }
+            standingAt = -1; // the standing cars are read afresh after the flags
             var k = key.ToArray(); if (SameKey(k, trafficCoverKey)) return;
             trafficCoverKey = k; trafficCoverVer++; trafficCover.Clear();
             foreach (var c in Traffic) if (c.Standing && c.Cover && !(CarOf(c.Id) is CarTarget ct && ct.Blown)) trafficCover.AddRange(CoverOf(c));
@@ -109,11 +110,14 @@ namespace Suborned.Sim
             return coverWith;
         }
 
-        /// <summary>The passing cars standing now (StandingCars; `settled`: only those the crowd's legs go round), in id order, with their footprints.</summary>
+        /// <summary>The passing cars standing now (StandingCars; `settled`: only those the crowd's legs go round), in id order, with their footprints:
+        /// built once a tick at the traffic's flags (and again when a car is shot to a stand), read by every walk the tick makes.</summary>
         void TrafficStanding(List<StandingCar> l, bool settled)
         {
             if (tr == null) return;
-            foreach (var c in Traffic) if (settled ? c.Settled : c.Standing) { var (at, h) = TrafficPose(c); l.Add(new StandingCar(c.Id, at, h, c.HalfLen, c.HalfW)); }
+            if (standingAt != Tick || standingFor != trafficCoverVer) { standing.Clear(); settledCars.Clear(); foreach (var c in Traffic) { if (!c.Standing) continue; var (at, h) = TrafficPose(c); var s = new StandingCar(c.Id, at, h, c.HalfLen, c.HalfW); standing.Add(s); if (c.Settled) settledCars.Add(s); } standingAt = Tick; standingFor = trafficCoverVer; }
+            l.AddRange(settled ? settledCars : standing);
         }
+        readonly List<StandingCar> standing = new List<StandingCar>(), settledCars = new List<StandingCar>(); int standingAt = -1, standingFor = -1; // a cache of the flags' reading (derived, never hashed)
     }
 }
