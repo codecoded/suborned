@@ -40,7 +40,7 @@ const ADDED_ROUTES = ['getaway-service', 'rivals'];
 const places = (s: string) => ADDED_ROUTES.reduce((t, id) => t.replace(new RegExp(`,\\n  \\{\\n   "id": "${id}",[\\s\\S]*?\\n  \\}(?=,\\n  \\{|\\n \\])`), ''), s.slice(s.indexOf('\n "destinations": ['))).replace(/(?:,\n {3}"(?:yaw|hidden|level|on|floor)": (?:-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"))+(?=\n)/g, '');
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
-const PLACES = '63af1d5f7ff52e2858fdf6ba91237222f0462196ae6d18cba06aa134ef000e13'; // sha256 of places() now: WAS with MOVED and RENAMED applied
+const PLACES = 'c0b7299757f3e129de2688f0c6373491e7f459a648e3115eb356e5514817a2e8'; // sha256 of places() now: WAS with MOVED and RENAMED applied
 /** Every point re-sited since WAS: name, from, to (block frame, m). */
 const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   // door option b (Sky 2026-10-19; Vantage, brief 023): the public door and forecourt moved from tower-public's north face onto the Office wing's west face, onto Rocket Lane
@@ -61,6 +61,9 @@ const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   // the two points that stood on that ground move off it, both still in officeBay and 100 % seen (V-1). The names stay: routes and scenarios read them (briefs/067/vantage.md L)
   ['Meet driver', [78.1, -33.7], [78.1, -34.2]], // 0.84 m off the parked car's tail corner (it was 0.34 m)
   ['Boarding pavilion', [78.3, -31], [76.75, -34.25]], // from the middle of the car to the pavement at its tail, 1.35 m from the driver; a free cell now (it loses its `on` and `floor` keys, which PLACES leaves out)
+  // brief 098 L9 Bodies (Vantage 2026-11-08, Keel's bodies report): with bodies 60 cm apart, Vale's car at the pickup left one row of walk cells (49 cm of ground) between its
+  // side and the official door's pilasters, where the shift change files out at 5:10; 0.5 m out in its 3 m lay-by it leaves two (1 m). The pickup camera turns 2.6° with it
+  ['Official drop-off', [78.2, -31], [78.7, -31]],
 ];
 /** Every point renamed since WAS, in place: from, to. */
 const RENAMED: [from: string, to: string][] = [['Steps', 'Terrace gate']];
