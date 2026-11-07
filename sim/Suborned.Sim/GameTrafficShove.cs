@@ -106,9 +106,12 @@ namespace Suborned.Sim
             bool ClearAt(long mm, int lat) { var (at, h) = PoseOn(c, mm, lat); var me = CarGeo.Rect(at, h, c.HalfLen, c.HalfW); foreach (var r in coming) if (CarGeo.PolysMeet(me, r)) return false; return true; }
             if (ClearAt(c.Mm, c.Lat)) return; // out of its way already: it stays there until it has gone by (the line can wait)
             if (c.LatGoal != c.Lat && ClearAt(c.Mm, c.LatGoal)) return; // on its way aside to where it clears: it carries on
-            for (int pass = 0; pass < 2; pass++, coming.RemoveRange(4, Math.Max(0, coming.Count - 4))) // its next second of road; failing that its next few places (it comes on as the way clears)
+            for (int pass = 0; pass < 2; pass++) // its next second of road; failing that its next few places (it comes on as the way clears)
+            {
+                if (pass == 1) { if (coming.Count <= 4) break; coming.RemoveRange(4, coming.Count - 4); }
                 for (long b = 250; b <= tr.BackCm * 10L && c.Rear - b >= 500; b += 250)
                     if (ClearAt(c.Mm - b, c.Lat)) { if (BehindClear(c, w, b + RoomKeepMm)) { c.Back = b; return; } break; } // into the gap behind it, keeping RoomKeepMm (BackStep)
+            }
             if (lane == null) return;
             var (me0, h0) = TrafficPose(c); long hn = Math.Max(1, G.Isqrt((long)h0.X * h0.X + (long)h0.Y * h0.Y));
             int away = ((long)(them!.Value.X - me0.X) * h0.Y - (long)(them.Value.Y - me0.Y) * h0.X) / hn >= 0 ? -1 : 1; // they are on its right: it moves left, and the other way round
