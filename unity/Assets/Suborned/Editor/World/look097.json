@@ -15,6 +15,10 @@
     "DK_Flower_CoralSoft": 0.035,
     "DK_Flower_Flamingo": 0.035
   },
+  "cloth": {
+    "note": "Sky 2026-11-07: \"I like idea of motion - we have a lot of banners\": banners hung between two arms belly in the wind, most at mid-height, the hems fixed on the arms (DK_Wind097.hlsl _DK_WIND_CLOTH; the art's v runs 0 at the bottom hem to 1 at the top). material -> the belly's reach in metres at mid-height. DK_Banner_Comet: the lamp posts' comet banners (the zone's seven lamps, merged, and the old town's 27).",
+    "DK_Banner_Comet": 0.16
+  },
   "bake": {
     "note": "ZoneBake097: the baked sky and bounce scaled so the lightmapped zone sits near the unbaked play look's exposure (the flat trilight lit every corner fully; the baked sky is occluded). sky x the play look's ambient intensity; bounce = LightingSettings.indirectScale",
     "sky": 1.0,

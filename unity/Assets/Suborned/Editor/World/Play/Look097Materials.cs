@@ -32,6 +32,17 @@ namespace Suborned.World.Play
                 if (!on) { m.EnableKeyword("_DK_WIND"); m.SetFloat("_Parallax", reach); EditorUtility.SetDirty(m); changed++; }
                 wind++;
             }
+            // cloth (Sky 2026-11-07: "we have a lot of banners"): material -> the belly's reach in metres, _DK_WIND_CLOTH on (DK_Wind097.hlsl; one keyword set with _DK_WIND)
+            if (J.Get(cfg, "cloth") is Dictionary<string, object> cloths)
+                foreach (var kv in cloths)
+                {
+                    if (kv.Key == "note") continue;
+                    var m = AssetDatabase.LoadAssetAtPath<Material>($"{Dir}/{kv.Key}.mat"); if (!m) { Debug.LogWarning($"Look097Materials: cloth {kv.Key} missing"); continue; }
+                    float reach = System.Convert.ToSingle(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
+                    bool on = m.IsKeywordEnabled("_DK_WIND_CLOTH") && !m.IsKeywordEnabled("_DK_WIND") && Mathf.Approximately(m.GetFloat("_Parallax"), reach);
+                    if (!on) { m.DisableKeyword("_DK_WIND"); m.EnableKeyword("_DK_WIND_CLOTH"); m.SetFloat("_Parallax", reach); EditorUtility.SetDirty(m); changed++; }
+                    wind++;
+                }
             int rooms = 0;
             if (J.Get(cfg, "interior") is Dictionary<string, object> ins)
                 foreach (var kv in ins)
@@ -84,12 +95,12 @@ namespace Suborned.World.Play
                 if (m.IsKeywordEnabled("_DK_VERTEX_AO") || System.Array.IndexOf(m.shaderKeywords, "_DK_VERTEX_AO") >= 0) { m.DisableKeyword("_DK_VERTEX_AO"); EditorUtility.SetDirty(m); stale++; changed++; }
                 int cut = m.name.IndexOf("__", System.StringComparison.Ordinal); if (cut <= 0) continue; // a variant takes its base's 097 keywords and floats
                 var bm = AssetDatabase.LoadAssetAtPath<Material>($"{Dir}/{m.name.Substring(0, cut)}.mat"); if (!bm) continue;
-                foreach (var k in new[] { "_DK_WIND", "_DK_INTERIOR" })
-                    if (bm.IsKeywordEnabled(k) != m.IsKeywordEnabled(k)) { if (bm.IsKeywordEnabled(k)) m.EnableKeyword(k); else m.DisableKeyword(k); if (k == "_DK_WIND") m.SetFloat("_Parallax", bm.GetFloat("_Parallax")); EditorUtility.SetDirty(m); changed++; }
+                foreach (var k in new[] { "_DK_WIND", "_DK_WIND_CLOTH", "_DK_INTERIOR" })
+                    if (bm.IsKeywordEnabled(k) != m.IsKeywordEnabled(k)) { if (bm.IsKeywordEnabled(k)) m.EnableKeyword(k); else m.DisableKeyword(k); if (k.StartsWith("_DK_WIND")) m.SetFloat("_Parallax", bm.GetFloat("_Parallax")); EditorUtility.SetDirty(m); changed++; }
             }
             if (stale > 0) Debug.Log($"Look097Materials: the dead _DK_VERTEX_AO keyword off on {stale} materials");
             if (changed > 0) AssetDatabase.SaveAssets();
-            return $"Look097Materials: wind on {wind} materials, vertex AO on {ao}, {moved} on 097 shaders, rooms behind {rooms}; {changed} changed";
+            return $"Look097Materials: wind or cloth on {wind} materials, vertex AO on {ao}, {moved} on 097 shaders, rooms behind {rooms}; {changed} changed";
         }
     }
 }

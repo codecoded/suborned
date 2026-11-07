@@ -23,6 +23,9 @@
 #ifndef DK_WIND_OS
 #define DK_WIND_OS(p) // brief 097: DK_Wind097.hlsl's wind, where a shader includes it
 #endif
+#ifndef DK_CLOTH_OS
+#define DK_CLOTH_OS(p, n, uv) // brief 097: DK_Wind097.hlsl's cloth, where a shader includes it
+#endif
 
 float4 _DKCutFocus;  // xyz the focus on the ground (world); w the disc's radius (m), 0 = off
 float4 _DKCutView;   // xyz the camera's forward (world, unit); w the floor (m): nothing lower is cut
@@ -227,7 +230,9 @@ struct DKShadowVaryings
 
 DKShadowVaryings DKShadowPassVertex(Attributes input)
 {
+    UNITY_SETUP_INSTANCE_ID(input); // first: under the GPU Resident Drawer (DOTS instancing) it loads the material caches the wind reads (_Parallax) and the instance's matrix
     DK_WIND_OS(input.positionOS.xyz); // brief 097: the same wind as the camera's passes
+    DK_CLOTH_OS(input.positionOS.xyz, input.normalOS, input.texcoord);
     Varyings v = ShadowPassVertex(input);
     DKShadowVaryings output = (DKShadowVaryings)0;
     UNITY_SETUP_INSTANCE_ID(input);

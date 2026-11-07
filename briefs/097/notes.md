@@ -112,6 +112,19 @@ TIME OF DAY (Sky 2026-11-07: "Test time of day and show me"; "around 16:00"; "up
   Eleven views, today -> 16:00: L* 67.3 -> 61.0, sun L* 85.2 -> 79.2, shade L* 46.9 -> 40.2, yellow b* 17.3 -> 19.3, shade a* 2.10 -> 4.25,
   chroma 22.1 -> 24.4. On the Air: ~/suborned-perf/097/now (full town), demo2, demo-sea.
 
+BANNERS IN THE WIND, AND THE WIND THAT NEVER SHOWED (Sky 2026-11-07: "I like idea of motion - we have a lot of banners")
+  The lamp posts' comet banners (DK_Banner_Comet: the zone's seven lamps, merged, and the old town's 27) take a cloth mode of the wind
+  (DK_Wind097 _DK_WIND_CLOTH, one keyword set with _DK_WIND; look097.json "cloth", reach 0.16 m): each banner moves as a sheet pinned on
+  its four edges (sin(pi u) sin(pi v) on the art's uv), so the hems stay on the arms; pushed down-wind by the gusts with a ripple and
+  flapped across the wind, in the wind's own direction. Two cuts read the vertex normal (its sign folded onto the wind, then even in it)
+  and both tore hairline seams: a banner is five panels with their own turned normals (the kit's static wave) and a back face, so any
+  direction taken from the normal pulls them apart; the sheet uses position and uv only. Clip: out/scratch/main097/compare/banners/.
+  Found on the way: no vertex wind had ever moved in a player. Under the GPU Resident Drawer (DOTS instancing) URP reads every material
+  property through caches filled by UNITY_SETUP_INSTANCE_ID (LitInput.hlsl: _Parallax is unity_DOTS_Sampled_Parallax), and the wind's
+  wrappers ran before it, so they read a reach of 0 and returned (and would have used the wrong instance's matrix). With -nogrd the
+  same build moved; with the drawer on, nothing did, even at 1.2 m. The wrappers (ForwardLit, DepthOnly, DepthNormals) and the shadow
+  vertex now set the instance up first, so the planting's wind shows in the game for the first time (cypress, palms, shrubs, beds).
+
 DAMAGE FOUND AND REPAIRED IN THIS ROUND
   A bake attempt set every material's GI flag for the bake; URP's validation stripped _EMISSION from 23 kit materials (lamps, signals,
   glows) before it was put back. Restored from the catalogue's sources; the bake no longer touches GI flags. A dead keyword from an early AO
