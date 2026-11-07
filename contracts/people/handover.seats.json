@@ -516,14 +516,6 @@
     "from": 8710,
     "to": 11710
    }
-  ],
-  "p-t1-records-kiosk-02": [
-   {
-    "table": "cafe-table-5",
-    "chair": 0,
-    "from": 3610,
-    "to": 6310
-   }
   ]
  }
 }

@@ -64,34 +64,34 @@
   "official-entrance": [7625,-3000],
   "official-entrance-stand-00": [7625,-3120],
   "official-entrance-stand-01": [7625,-2880],
-  "s1-gardens": [-23000,-3000],
+  "s1-gardens": [-23000,-6100],
   "service-bay": [6375,-1500],
   "square-bay": [850,-4850],
-  "t1-records": [15000,13000],
-  "t1-records-stand-00": [15000,13000],
-  "t1-records-stand-01": [15120,13000],
-  "t1-records-stand-02": [14880,13000],
-  "t1-records-stand-03": [15000,12880],
-  "t1-records-stand-04": [15000,13120],
-  "t1-records-stand-05": [15120,12880],
-  "t1-records-stand-06": [14880,12880],
-  "t1-records-stand-07": [15120,13120],
-  "t1-records-stand-08": [14880,13120],
-  "t1-records-stand-09": [15240,13000],
-  "t1-records-stand-10": [14760,13000],
-  "t1-records-stand-11": [15000,12760],
-  "t1-records-stand-12": [15000,13240],
-  "t1-records-stand-13": [15240,12880],
-  "t1-records-stand-14": [14760,12880],
-  "t1-records-stand-15": [15240,13120],
-  "t1-records-stand-16": [14760,13120],
-  "t1-records-stand-17": [15120,12760],
-  "t1-records-stand-18": [14880,12760],
-  "t1-records-stand-19": [15120,13240],
-  "t1-records-stand-20": [14880,13240],
-  "t1-records-stand-21": [15240,12760],
-  "t1-records-stand-22": [14760,12760],
-  "t1-records-stand-23": [15240,13240]
+  "t1-rocket": [18000,-13950],
+  "t1-rocket-stand-00": [18000,-13950],
+  "t1-rocket-stand-01": [18000,-14070],
+  "t1-rocket-stand-02": [18120,-13950],
+  "t1-rocket-stand-03": [17880,-13950],
+  "t1-rocket-stand-04": [18000,-13830],
+  "t1-rocket-stand-05": [18120,-14070],
+  "t1-rocket-stand-06": [17880,-14070],
+  "t1-rocket-stand-07": [18120,-13830],
+  "t1-rocket-stand-08": [17880,-13830],
+  "t1-rocket-stand-09": [18000,-14190],
+  "t1-rocket-stand-10": [18240,-13950],
+  "t1-rocket-stand-11": [17760,-13950],
+  "t1-rocket-stand-12": [18000,-13710],
+  "t1-rocket-stand-13": [18120,-14190],
+  "t1-rocket-stand-14": [17880,-14190],
+  "t1-rocket-stand-15": [18240,-14070],
+  "t1-rocket-stand-16": [17760,-14070],
+  "t1-rocket-stand-17": [18240,-13830],
+  "t1-rocket-stand-18": [17760,-13830],
+  "t1-rocket-stand-19": [18120,-13710],
+  "t1-rocket-stand-20": [17880,-13710],
+  "t1-rocket-stand-21": [18240,-14190],
+  "t1-rocket-stand-22": [17760,-14190],
+  "t1-rocket-stand-23": [18240,-13710]
  },
  "faces": {
   "cafe-entrance": "door",
@@ -153,31 +153,31 @@
   "s1-gardens": "kerb",
   "service-bay": "kerb",
   "square-bay": "kerb",
-  "t1-records": "kerb",
-  "t1-records-stand-00": "kerb",
-  "t1-records-stand-01": "kerb",
-  "t1-records-stand-02": "kerb",
-  "t1-records-stand-03": "kerb",
-  "t1-records-stand-04": "kerb",
-  "t1-records-stand-05": "kerb",
-  "t1-records-stand-06": "kerb",
-  "t1-records-stand-07": "kerb",
-  "t1-records-stand-08": "kerb",
-  "t1-records-stand-09": "kerb",
-  "t1-records-stand-10": "kerb",
-  "t1-records-stand-11": "kerb",
-  "t1-records-stand-12": "kerb",
-  "t1-records-stand-13": "kerb",
-  "t1-records-stand-14": "kerb",
-  "t1-records-stand-15": "kerb",
-  "t1-records-stand-16": "kerb",
-  "t1-records-stand-17": "kerb",
-  "t1-records-stand-18": "kerb",
-  "t1-records-stand-19": "kerb",
-  "t1-records-stand-20": "kerb",
-  "t1-records-stand-21": "kerb",
-  "t1-records-stand-22": "kerb",
-  "t1-records-stand-23": "kerb"
+  "t1-rocket": "kerb",
+  "t1-rocket-stand-00": "kerb",
+  "t1-rocket-stand-01": "kerb",
+  "t1-rocket-stand-02": "kerb",
+  "t1-rocket-stand-03": "kerb",
+  "t1-rocket-stand-04": "kerb",
+  "t1-rocket-stand-05": "kerb",
+  "t1-rocket-stand-06": "kerb",
+  "t1-rocket-stand-07": "kerb",
+  "t1-rocket-stand-08": "kerb",
+  "t1-rocket-stand-09": "kerb",
+  "t1-rocket-stand-10": "kerb",
+  "t1-rocket-stand-11": "kerb",
+  "t1-rocket-stand-12": "kerb",
+  "t1-rocket-stand-13": "kerb",
+  "t1-rocket-stand-14": "kerb",
+  "t1-rocket-stand-15": "kerb",
+  "t1-rocket-stand-16": "kerb",
+  "t1-rocket-stand-17": "kerb",
+  "t1-rocket-stand-18": "kerb",
+  "t1-rocket-stand-19": "kerb",
+  "t1-rocket-stand-20": "kerb",
+  "t1-rocket-stand-21": "kerb",
+  "t1-rocket-stand-22": "kerb",
+  "t1-rocket-stand-23": "kerb"
  },
  "facesFrame": "face = how a person stands at the place (brief 054 §3.3): [x, y] a direction (a seat, its chair's face), \"door\" out of the place's entrance, \"to:<place>\" toward that place, \"kerb\" toward the nearest carriageway; a home has none (inside)",
  "beside": {
@@ -204,7 +204,7 @@
  "people": [
   {
    "id": "p-cafe-01",
-   "name": "Kristin Simpson",
+   "name": "Yetunde Iheanacho",
    "job": "cook",
    "temperament": "idealist",
    "need": "cash",
@@ -249,7 +249,7 @@
   },
   {
    "id": "p-cafe-04",
-   "name": "Christina Jakobsson",
+   "name": "Christine Gray",
    "job": "server",
    "temperament": "fearful",
    "need": "debt",
@@ -264,7 +264,7 @@
   },
   {
    "id": "p-cafe-05",
-   "name": "Ana Serna",
+   "name": "Jennifer Cochet",
    "job": "server",
    "temperament": "mercenary",
    "need": "debt",
@@ -275,7 +275,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-cafe-14"],["lover","p-records-office-75"]],
-   "stops": [["beyond",-62690,-41810,0],["t1-records",-41810,-41690,1],["cafe-entrance",-41090,-29330,1],["cafe-entrance",-29330,-27530,1],["cafe-entrance",-27530,-19490,1],["t1-records",-19190,-19070,1],["beyond",-19070,23710,0]]
+   "stops": [["beyond",-62690,-41810,0],["t1-rocket",-41810,-41690,1],["cafe-entrance",-41090,-29330,1],["cafe-entrance",-29330,-27530,1],["cafe-entrance",-27530,-19490,1],["t1-rocket",-19190,-19070,1],["beyond",-19070,23710,0]]
   },
   {
    "id": "p-cafe-06",
@@ -290,11 +290,11 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-cafe-20"]],
-   "stops": [["beyond",-62690,-41510,0],["t1-records",-41510,-41390,1],["cafe-entrance",-41090,-30710,0],["cafe-entrance",-30710,-28910,0],["cafe-entrance",-28910,-19190,0],["t1-records",-18890,-18770,1],["beyond",-18770,23710,0]]
+   "stops": [["beyond",-62690,-41510,0],["t1-rocket",-41510,-41390,1],["cafe-entrance",-41090,-30710,0],["cafe-entrance",-30710,-28910,0],["cafe-entrance",-28910,-19190,0],["t1-rocket",-18890,-18770,1],["beyond",-18770,23710,0]]
   },
   {
    "id": "p-cafe-07",
-   "name": "Monica Svensson",
+   "name": "Heidi Lee",
    "job": "server",
    "temperament": "loyal",
    "need": "debt",
@@ -304,12 +304,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-73"]],
+   "ties": [["family","p-records-office-68"]],
    "stops": [["home-rocket-west",-62690,-41510,0],["cafe-entrance",-41090,-30530,0],["cafe-entrance",-30530,-28730,0],["cafe-entrance",-28730,-19490,0],["home-rocket-west",-19370,23710,0]]
   },
   {
    "id": "p-cafe-08",
-   "name": "Kristy Brown",
+   "name": "Tamunotonye Adebowale",
    "job": "cook",
    "temperament": "mercenary",
    "need": "cash",
@@ -354,7 +354,7 @@
   },
   {
    "id": "p-cafe-11",
-   "name": "Indrani Ahluwalia",
+   "name": "Alva Nilsson",
    "job": "server",
    "temperament": "idealist",
    "need": "papers",
@@ -364,7 +364,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["workmate","p-cafe-09"]],
+   "ties": [["workmate","p-cafe-09"],["family","p-records-office-30"]],
    "stops": [["home-rocket-west",-62690,-19730,0],["cafe-entrance",-19490,-7490,0],["cafe-entrance",-7490,-5690,0],["cafe-entrance",-5690,2110,0],["cafe-table-0-seat-0",2230,4930,1],["home-rocket-west",5050,23710,0]]
   },
   {
@@ -379,7 +379,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-cafe-21"]],
+   "ties": [["workmate","p-cafe-21"],["family","p-rocket-west-08"]],
    "stops": [["home-rocket-west",-62690,-19850,0],["cafe-entrance",-19490,-8450,0],["cafe-entrance",-8450,-6650,0],["cafe-entrance",-6650,2110,0],["cafe-table-7-seat-2",2230,4930,1],["home-rocket-west",5050,23710,0]]
   },
   {
@@ -410,11 +410,11 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-cafe-05"],["workmate","p-cafe-21"],["lover","p-records-office-01"]],
-   "stops": [["beyond",-62690,-20030,0],["t1-records",-20030,-19910,1],["cafe-entrance",-19490,-8450,1],["cafe-entrance",-8450,-6650,1],["cafe-entrance",-6650,2110,1],["t1-records",2410,2530,1],["beyond",2530,23710,0]]
+   "stops": [["beyond",-62690,-20030,0],["t1-rocket",-20030,-19910,1],["cafe-entrance",-19490,-8450,1],["cafe-entrance",-8450,-6650,1],["cafe-entrance",-6650,2110,1],["t1-rocket",2410,2530,1],["beyond",2530,23710,0]]
   },
   {
    "id": "p-cafe-15",
-   "name": "Kikelomo Oluwole",
+   "name": "Ann Nilsson",
    "job": "server",
    "temperament": "loyal",
    "need": "care",
@@ -424,12 +424,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-cafe-20"]],
-   "stops": [["home-garden-row-east",-62690,-19790,0],["cafe-entrance",-19490,-7550,0],["cafe-entrance",-7550,-5750,0],["cafe-entrance",-5750,2110,0],["home-garden-row-east",2230,23710,0]]
+   "ties": [["family","p-pylon-row-east-07"],["family","p-pylon-row-east-04"]],
+   "stops": [["home-pylon-row-east",-62690,-19790,0],["cafe-entrance",-19490,-7550,0],["cafe-entrance",-7550,-5750,0],["cafe-entrance",-5750,2110,0],["home-pylon-row-east",2230,23710,0]]
   },
   {
    "id": "p-cafe-16",
-   "name": "Hanna Olofsson",
+   "name": "Erica Mitchell",
    "job": "server",
    "temperament": "loyal",
    "need": "cash",
@@ -444,7 +444,7 @@
   },
   {
    "id": "p-cafe-17",
-   "name": "Tamara Zafra",
+   "name": "Nathalie Rashid",
    "job": "cook",
    "temperament": "loyal",
    "need": "cash",
@@ -469,7 +469,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["workmate","p-cafe-24"],["family","p-rocket-west-03"],["workmate","p-cafe-22"]],
+   "ties": [["workmate","p-cafe-24"],["family","p-records-office-76"],["workmate","p-cafe-22"]],
    "stops": [["cafe-entrance",-62690,-62630,0],["home-rocket-west",-62510,1870,0],["cafe-entrance",2110,12790,0],["cafe-entrance",12790,14590,0],["cafe-entrance",14590,23710,0]]
   },
   {
@@ -489,7 +489,7 @@
   },
   {
    "id": "p-cafe-20",
-   "name": "Ellen Barnes",
+   "name": "Titilola Babatunde",
    "job": "server",
    "temperament": "loyal",
    "need": "debt",
@@ -499,12 +499,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-cafe-24"],["workmate","p-cafe-06"],["workmate","p-cafe-15"]],
+   "ties": [["workmate","p-cafe-24"],["workmate","p-cafe-06"]],
    "stops": [["home-rocket-west",-62570,1990,0],["cafe-entrance",2110,12970,1],["cafe-entrance",12970,14770,1],["cafe-entrance",14770,23710,1]]
   },
   {
    "id": "p-cafe-21",
-   "name": "Catherine Boutet",
+   "name": "Leila Uppal",
    "job": "server",
    "temperament": "idealist",
    "need": "debt",
@@ -514,7 +514,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["workmate","p-cafe-14"],["family","p-t1-records-kiosk-01"],["workmate","p-cafe-12"]],
+   "ties": [["workmate","p-cafe-14"],["workmate","p-cafe-12"]],
    "stops": [["home-rocket-west",-62570,1930,0],["cafe-entrance",2110,12610,0],["cafe-entrance",12610,14410,0],["cafe-entrance",14410,23710,0]]
   },
   {
@@ -549,7 +549,7 @@
   },
   {
    "id": "p-cafe-24",
-   "name": "Cathy Guibert",
+   "name": "Antonia Quintana",
    "job": "server",
    "temperament": "mercenary",
    "need": "debt",
@@ -564,7 +564,7 @@
   },
   {
    "id": "p-garden-row-east-01",
-   "name": "Billy Wilkerson",
+   "name": "Björn Cederberg",
    "job": "resident",
    "temperament": "fearful",
    "need": "housing",
@@ -575,11 +575,11 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["family","p-garden-row-east-06"]],
-   "stops": [["home-garden-row-east",-62690,-36710,0],["cafe-table-1-seat-0",-36590,-33950,1],["home-garden-row-east",-33830,-29210,0],["cafe-table-5-seat-0",-29090,-27050,1],["home-garden-row-east",-26930,-25970,0],["t1-records-stand-00",-25730,-24830,1],["home-garden-row-east",-24590,-14510,0],["cafe-stand-00",-14390,-14030,1],["home-garden-row-east",-13910,-1310,0],["cafe-stand-00",-1190,-830,1],["home-garden-row-east",-710,1390,0],["cafe-stand-00",1510,1870,1],["home-garden-row-east",1990,2890,0],["cafe-stand-00",3010,3370,1],["home-garden-row-east",3490,14290,0],["cafe-table-7-seat-0",14410,17110,1],["home-garden-row-east",17230,23710,0]]
+   "stops": [["home-garden-row-east",-62690,-36710,0],["cafe-table-1-seat-0",-36590,-33950,1],["home-garden-row-east",-33830,-29210,0],["cafe-table-5-seat-0",-29090,-27050,1],["home-garden-row-east",-26930,-25970,0],["t1-rocket-stand-00",-25730,-24830,1],["home-garden-row-east",-24590,-14510,0],["cafe-stand-00",-14390,-14030,1],["home-garden-row-east",-13910,-1310,0],["cafe-stand-00",-1190,-830,1],["home-garden-row-east",-710,1390,0],["cafe-stand-00",1510,1870,1],["home-garden-row-east",1990,2890,0],["cafe-stand-00",3010,3370,1],["home-garden-row-east",3490,14290,0],["cafe-table-7-seat-0",14410,17110,1],["home-garden-row-east",17230,23710,0]]
   },
   {
    "id": "p-garden-row-east-02",
-   "name": "Adrian Frąckowiak",
+   "name": "Johannes Opsahl",
    "job": "resident",
    "temperament": "idealist",
    "need": "debt",
@@ -590,7 +590,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["regular","p-cafe-20"],["family","p-garden-row-east-07"]],
-   "stops": [["home-garden-row-east",-62690,-27050,0],["t1-records-stand-00",-26810,-25910,1],["home-garden-row-east",-25670,-23210,0],["cafe-table-4-seat-0",-23090,-20990,1],["home-garden-row-east",-20870,-11810,0],["cafe-stand-00",-11690,-11330,1],["home-garden-row-east",-11210,-6410,0],["cafe-stand-00",-6290,-5930,1],["home-garden-row-east",-5810,-5210,0],["cafe-table-0-seat-0",-5090,-2510,1],["home-garden-row-east",-2390,-110,0],["cafe-table-6-seat-1",10,2350,1],["home-garden-row-east",2470,6490,0],["cafe-table-2-seat-0",6610,10210,1],["home-garden-row-east",10330,15790,0],["cafe-table-0-seat-0",15910,18850,1],["home-garden-row-east",18970,23710,0]]
+   "stops": [["home-garden-row-east",-62690,-27050,0],["t1-rocket-stand-00",-26810,-25910,1],["home-garden-row-east",-25670,-23210,0],["cafe-table-4-seat-0",-23090,-20990,1],["home-garden-row-east",-20870,-11810,0],["cafe-stand-00",-11690,-11330,1],["home-garden-row-east",-11210,-6410,0],["cafe-stand-00",-6290,-5930,1],["home-garden-row-east",-5810,-5210,0],["cafe-table-0-seat-0",-5090,-2510,1],["home-garden-row-east",-2390,-110,0],["cafe-table-6-seat-1",10,2350,1],["home-garden-row-east",2470,6490,0],["cafe-table-2-seat-0",6610,10210,1],["home-garden-row-east",10330,15790,0],["cafe-table-0-seat-0",15910,18850,1],["home-garden-row-east",18970,23710,0]]
   },
   {
    "id": "p-garden-row-east-03",
@@ -605,11 +605,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["family","p-garden-row-east-05"]],
-   "stops": [["home-garden-row-east",-62690,-39110,0],["cafe-stand-00",-38990,-38630,1],["home-garden-row-east",-38510,-35510,0],["cafe-stand-00",-35390,-35030,1],["home-garden-row-east",-34910,-33110,0],["cafe-stand-00",-32990,-32630,1],["home-garden-row-east",-32510,-27770,0],["t1-records-stand-01",-27530,-26630,1],["home-garden-row-east",-26390,-17810,0],["cafe-table-2-seat-0",-17690,-15590,1],["home-garden-row-east",-15470,-6110,0],["cafe-table-0-seat-1",-5990,-3230,1],["home-garden-row-east",-3110,-110,0],["cafe-table-3-seat-1",10,2590,1],["home-garden-row-east",2710,6490,0],["cafe-table-0-seat-0",6610,9070,1],["home-garden-row-east",9190,23710,0]]
+   "stops": [["home-garden-row-east",-62690,-39110,0],["cafe-stand-00",-38990,-38630,1],["home-garden-row-east",-38510,-35510,0],["cafe-stand-00",-35390,-35030,1],["home-garden-row-east",-34910,-33110,0],["cafe-stand-00",-32990,-32630,1],["home-garden-row-east",-32510,-27770,0],["t1-rocket-stand-01",-27530,-26630,1],["home-garden-row-east",-26390,-17810,0],["cafe-table-2-seat-0",-17690,-15590,1],["home-garden-row-east",-15470,-6110,0],["cafe-table-0-seat-1",-5990,-3230,1],["home-garden-row-east",-3110,-110,0],["cafe-table-3-seat-1",10,2590,1],["home-garden-row-east",2710,6490,0],["cafe-table-0-seat-0",6610,9070,1],["home-garden-row-east",9190,23710,0]]
   },
   {
    "id": "p-garden-row-east-04",
-   "name": "Abike Oyenuga",
+   "name": "Marta Arcos",
    "job": "resident",
    "temperament": "fearful",
    "need": "debt",
@@ -619,8 +619,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["family","p-records-office-67"]],
-   "stops": [["home-garden-row-east",-62690,-38510,0],["cafe-stand-00",-38390,-38030,1],["home-garden-row-east",-37910,-36710,0],["cafe-stand-00",-36590,-36230,1],["home-garden-row-east",-36110,-24530,0],["t1-records-stand-00",-24290,-23390,1],["home-garden-row-east",-23150,3490,0],["cafe-table-3-seat-0",3610,6070,1],["home-garden-row-east",6190,19390,0],["cafe-table-5-seat-0",19510,21670,1],["home-garden-row-east",21790,23710,0]]
+   "ties": [["family","p-t1-rocket-kiosk-03"]],
+   "stops": [["home-garden-row-east",-62690,-38510,0],["cafe-stand-00",-38390,-38030,1],["home-garden-row-east",-37910,-36710,0],["cafe-stand-00",-36590,-36230,1],["home-garden-row-east",-36110,-24530,0],["t1-rocket-stand-00",-24290,-23390,1],["home-garden-row-east",-23150,3490,0],["cafe-table-3-seat-0",3610,6070,1],["home-garden-row-east",6190,19390,0],["cafe-table-5-seat-0",19510,21670,1],["home-garden-row-east",21790,23710,0]]
   },
   {
    "id": "p-garden-row-east-05",
@@ -634,12 +634,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-garden-row-east-03"]],
-   "stops": [["home-garden-row-east",-62690,-32810,0],["cafe-stand-01",-32690,-32330,1],["home-garden-row-east",-32210,-28490,0],["t1-records-stand-00",-28250,-27350,1],["home-garden-row-east",-27110,-10910,0],["cafe-table-3-seat-0",-10790,-8090,1],["home-garden-row-east",-7970,-710,0],["cafe-stand-00",-590,-230,1],["home-garden-row-east",-110,3790,0],["cafe-table-4-seat-0",3910,5770,1],["home-garden-row-east",5890,12490,0],["cafe-table-1-seat-0",12610,14890,1],["home-garden-row-east",15010,23710,0]]
+   "ties": [["family","p-garden-row-east-03"],["family","p-records-office-38"]],
+   "stops": [["home-garden-row-east",-62690,-32810,0],["cafe-stand-01",-32690,-32330,1],["home-garden-row-east",-32210,-28490,0],["t1-rocket-stand-00",-28250,-27350,1],["home-garden-row-east",-27110,-10910,0],["cafe-table-3-seat-0",-10790,-8090,1],["home-garden-row-east",-7970,-710,0],["cafe-stand-00",-590,-230,1],["home-garden-row-east",-110,3790,0],["cafe-table-4-seat-0",3910,5770,1],["home-garden-row-east",5890,12490,0],["cafe-table-1-seat-0",12610,14890,1],["home-garden-row-east",15010,23710,0]]
   },
   {
    "id": "p-garden-row-east-06",
-   "name": "Katherine Wilkerson",
+   "name": "Moa Cederberg",
    "job": "resident",
    "temperament": "loyal",
    "need": "cash",
@@ -649,12 +649,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-garden-row-east-01"],["family","p-records-office-38"]],
-   "stops": [["home-garden-row-east",-62690,-27650,0],["t1-records-stand-02",-27410,-26510,1],["home-garden-row-east",-26270,-11510,0],["cafe-stand-01",-11390,-11030,1],["home-garden-row-east",-10910,-8210,0],["cafe-table-4-seat-0",-8090,-5150,1],["home-garden-row-east",-5030,-4010,0],["cafe-table-1-seat-0",-3890,-950,1],["home-garden-row-east",-830,-110,0],["cafe-stand-00",10,370,1],["home-garden-row-east",490,790,0],["cafe-stand-00",910,1270,1],["home-garden-row-east",1390,5890,0],["cafe-stand-00",6010,6370,1],["home-garden-row-east",6490,16690,0],["cafe-stand-00",16810,17170,1],["home-garden-row-east",17290,23710,0]]
+   "ties": [["family","p-garden-row-east-01"]],
+   "stops": [["home-garden-row-east",-62690,-27650,0],["t1-rocket-stand-02",-27410,-26510,1],["home-garden-row-east",-26270,-11510,0],["cafe-stand-01",-11390,-11030,1],["home-garden-row-east",-10910,-8210,0],["cafe-table-4-seat-0",-8090,-5150,1],["home-garden-row-east",-5030,-4010,0],["cafe-table-1-seat-0",-3890,-950,1],["home-garden-row-east",-830,-110,0],["cafe-stand-00",10,370,1],["home-garden-row-east",490,790,0],["cafe-stand-00",910,1270,1],["home-garden-row-east",1390,5890,0],["cafe-stand-00",6010,6370,1],["home-garden-row-east",6490,16690,0],["cafe-stand-00",16810,17170,1],["home-garden-row-east",17290,23710,0]]
   },
   {
    "id": "p-garden-row-east-07",
-   "name": "Oleh Frąckowiak",
+   "name": "Børge Opsahl",
    "job": "resident",
    "temperament": "fearful",
    "need": "housing",
@@ -665,7 +665,7 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["family","p-garden-row-east-02"]],
-   "stops": [["home-garden-row-east",-62690,-27830,0],["t1-records-stand-03",-27590,-26690,1],["home-garden-row-east",-26450,-15410,0],["cafe-stand-00",-15290,-14930,1],["home-garden-row-east",-14810,-1910,0],["cafe-table-2-seat-0",-1790,190,1],["home-garden-row-east",310,10390,0],["cafe-stand-00",10510,10870,1],["home-garden-row-east",10990,15190,0],["cafe-table-0-seat-1",15310,17170,1],["home-garden-row-east",17290,17590,0],["cafe-stand-00",17710,18070,1],["home-garden-row-east",18190,19090,0],["cafe-table-3-seat-0",19210,21970,1],["home-garden-row-east",22090,23710,0]]
+   "stops": [["home-garden-row-east",-62690,-27830,0],["t1-rocket-stand-03",-27590,-26690,1],["home-garden-row-east",-26450,-15410,0],["cafe-stand-00",-15290,-14930,1],["home-garden-row-east",-14810,-1910,0],["cafe-table-2-seat-0",-1790,190,1],["home-garden-row-east",310,10390,0],["cafe-stand-00",10510,10870,1],["home-garden-row-east",10990,15190,0],["cafe-table-0-seat-1",15310,17170,1],["home-garden-row-east",17290,17590,0],["cafe-stand-00",17710,18070,1],["home-garden-row-east",18190,19090,0],["cafe-table-3-seat-0",19210,21970,1],["home-garden-row-east",22090,23710,0]]
   },
   {
    "id": "p-garden-row-east-08",
@@ -680,7 +680,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-23"]],
-   "stops": [["home-garden-row-east",-62690,-38210,0],["cafe-table-5-seat-0",-38090,-35570,1],["home-garden-row-east",-35450,-24350,0],["t1-records-stand-01",-24110,-23210,1],["home-garden-row-east",-22970,-19910,0],["cafe-stand-00",-19790,-19430,1],["home-garden-row-east",-19310,-15110,0],["cafe-table-6-seat-0",-14990,-12110,1],["home-garden-row-east",-11990,-10010,0],["cafe-stand-00",-9890,-9530,1],["home-garden-row-east",-9410,-3410,0],["cafe-table-1-seat-1",-3290,-1250,1],["home-garden-row-east",-1130,3490,0],["cafe-table-0-seat-1",3610,5830,1],["home-garden-row-east",5950,6790,0],["cafe-table-5-seat-0",6910,10510,1],["home-garden-row-east",10630,12490,0],["cafe-stand-00",12610,12970,1],["home-garden-row-east",13090,23710,0]]
+   "stops": [["home-garden-row-east",-62690,-38210,0],["cafe-table-5-seat-0",-38090,-35570,1],["home-garden-row-east",-35450,-24350,0],["t1-rocket-stand-01",-24110,-23210,1],["home-garden-row-east",-22970,-19910,0],["cafe-stand-00",-19790,-19430,1],["home-garden-row-east",-19310,-15110,0],["cafe-table-6-seat-0",-14990,-12110,1],["home-garden-row-east",-11990,-10010,0],["cafe-stand-00",-9890,-9530,1],["home-garden-row-east",-9410,-3410,0],["cafe-table-1-seat-1",-3290,-1250,1],["home-garden-row-east",-1130,3490,0],["cafe-table-0-seat-1",3610,5830,1],["home-garden-row-east",5950,6790,0],["cafe-table-5-seat-0",6910,10510,1],["home-garden-row-east",10630,12490,0],["cafe-stand-00",12610,12970,1],["home-garden-row-east",13090,23710,0]]
   },
   {
    "id": "p-pylon-row-east-01",
@@ -694,8 +694,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-pylon-row-east-07"],["family","p-records-office-30"],["family","p-pylon-row-east-04"]],
-   "stops": [["home-pylon-row-east",-62690,-28490,0],["t1-records-stand-04",-28250,-27350,1],["home-pylon-row-east",-27110,-23570,0],["cafe-table-5-seat-0",-23390,-21230,1],["home-pylon-row-east",-21050,-15110,0],["cafe-table-6-seat-1",-14990,-12530,1],["home-pylon-row-east",-12410,-8810,0],["cafe-table-7-seat-0",-8690,-6530,1],["home-pylon-row-east",-6410,-2210,0],["cafe-table-3-seat-0",-2090,190,1],["home-pylon-row-east",310,6310,0],["cafe-table-6-seat-0",6430,10030,1],["home-pylon-row-east",10150,12490,0],["cafe-table-7-seat-1",12610,15010,1],["home-pylon-row-east",15130,17890,0],["cafe-table-3-seat-1",18010,19990,1],["home-pylon-row-east",20110,23710,0]]
+   "ties": [["family","p-pylon-row-east-05"],["family","p-pylon-row-east-03"]],
+   "stops": [["home-pylon-row-east",-62690,-28490,0],["t1-rocket-stand-04",-28250,-27350,1],["home-pylon-row-east",-27110,-23570,0],["cafe-table-5-seat-0",-23390,-21230,1],["home-pylon-row-east",-21050,-15110,0],["cafe-table-6-seat-1",-14990,-12530,1],["home-pylon-row-east",-12410,-8810,0],["cafe-table-7-seat-0",-8690,-6530,1],["home-pylon-row-east",-6410,-2210,0],["cafe-table-3-seat-0",-2090,190,1],["home-pylon-row-east",310,6310,0],["cafe-table-6-seat-0",6430,10030,1],["home-pylon-row-east",10150,12490,0],["cafe-table-7-seat-1",12610,15010,1],["home-pylon-row-east",15130,17890,0],["cafe-table-3-seat-1",18010,19990,1],["home-pylon-row-east",20110,23710,0]]
   },
   {
    "id": "p-pylon-row-east-02",
@@ -709,8 +709,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["family","p-records-office-34"],["family","p-pylon-row-east-03"],["family","p-pylon-row-east-07"]],
-   "stops": [["home-pylon-row-east",-62690,-27230,0],["t1-records-stand-04",-26990,-26090,1],["home-pylon-row-east",-25850,-13010,0],["cafe-table-2-seat-0",-12890,-10430,1],["home-pylon-row-east",-10310,-7610,0],["cafe-stand-00",-7490,-7130,1],["home-pylon-row-east",-7010,-4610,0],["cafe-table-1-seat-2",-4490,-1550,1],["home-pylon-row-east",-1430,3850,0],["cafe-table-4-seat-1",4030,7630,1],["home-pylon-row-east",7810,17530,0],["cafe-table-4-seat-0",17710,20530,1],["home-pylon-row-east",20710,23710,0]]
+   "ties": [["family","p-pylon-row-east-08"]],
+   "stops": [["home-pylon-row-east",-62690,-27230,0],["t1-rocket-stand-04",-26990,-26090,1],["home-pylon-row-east",-25850,-13010,0],["cafe-table-2-seat-0",-12890,-10430,1],["home-pylon-row-east",-10310,-7610,0],["cafe-stand-00",-7490,-7130,1],["home-pylon-row-east",-7010,-4610,0],["cafe-table-1-seat-2",-4490,-1550,1],["home-pylon-row-east",-1430,3850,0],["cafe-table-4-seat-1",4030,7630,1],["home-pylon-row-east",7810,17590,0],["cafe-table-4-seat-0",17710,20530,1],["home-pylon-row-east",20650,23710,0]]
   },
   {
    "id": "p-pylon-row-east-03",
@@ -724,12 +724,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-pylon-row-east-02"],["family","p-pylon-row-east-08"]],
-   "stops": [["home-pylon-row-east",-62690,-37010,0],["cafe-stand-01",-36890,-36530,1],["home-pylon-row-east",-36410,-28130,0],["t1-records-stand-05",-27890,-26990,1],["home-pylon-row-east",-26750,-25910,0],["cafe-stand-00",-25790,-25430,1],["home-pylon-row-east",-25310,-10610,0],["cafe-table-7-seat-1",-10490,-7970,1],["home-pylon-row-east",-7850,130,0],["cafe-table-5-seat-1",310,3310,1],["home-pylon-row-east",3490,6070,0],["cafe-table-7-seat-0",6190,9790,1],["home-pylon-row-east",9910,12190,0],["cafe-table-3-seat-0",12310,14290,1],["home-pylon-row-east",14410,23710,0]]
+   "ties": [["family","p-pylon-row-east-01"],["family","p-pylon-row-east-08"]],
+   "stops": [["home-pylon-row-east",-62690,-37010,0],["cafe-stand-01",-36890,-36530,1],["home-pylon-row-east",-36410,-28130,0],["t1-rocket-stand-05",-27890,-26990,1],["home-pylon-row-east",-26750,-25910,0],["cafe-stand-00",-25790,-25430,1],["home-pylon-row-east",-25310,-10610,0],["cafe-table-7-seat-1",-10490,-7970,1],["home-pylon-row-east",-7850,130,0],["cafe-table-5-seat-1",310,3310,1],["home-pylon-row-east",3490,6070,0],["cafe-table-7-seat-0",6190,9790,1],["home-pylon-row-east",9910,12190,0],["cafe-table-3-seat-0",12310,14290,1],["home-pylon-row-east",14410,23710,0]]
   },
   {
    "id": "p-pylon-row-east-04",
-   "name": "Guy Dupont",
+   "name": "Rolf Nilsson",
    "job": "resident",
    "temperament": "idealist",
    "need": "care",
@@ -739,12 +739,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["family","p-pylon-row-east-01"]],
-   "stops": [["home-pylon-row-east",-62690,-34610,0],["cafe-stand-00",-34490,-34130,1],["home-pylon-row-east",-34010,-26090,0],["t1-records-stand-01",-25850,-24950,1],["home-pylon-row-east",-24710,-19610,0],["cafe-stand-01",-19490,-19130,1],["home-pylon-row-east",-19010,-1910,0],["cafe-table-0-seat-0",-1790,190,1],["home-pylon-row-east",310,2290,0],["cafe-stand-00",2410,2770,1],["home-pylon-row-east",2890,5830,0],["cafe-table-0-seat-1",5950,9550,1],["home-pylon-row-east",9670,10390,0],["cafe-table-6-seat-0",10510,12490,1],["home-pylon-row-east",12610,15490,0],["cafe-stand-00",15610,15970,1],["home-pylon-row-east",16090,18190,0],["cafe-table-6-seat-0",18310,21250,1],["home-pylon-row-east",21370,23710,0]]
+   "ties": [["family","p-cafe-15"]],
+   "stops": [["home-pylon-row-east",-62690,-34610,0],["cafe-stand-00",-34490,-34130,1],["home-pylon-row-east",-34010,-26090,0],["t1-rocket-stand-01",-25850,-24950,1],["home-pylon-row-east",-24710,-19610,0],["cafe-stand-01",-19490,-19130,1],["home-pylon-row-east",-19010,-1910,0],["cafe-table-0-seat-0",-1790,190,1],["home-pylon-row-east",310,2290,0],["cafe-stand-00",2410,2770,1],["home-pylon-row-east",2890,5830,0],["cafe-table-0-seat-1",5950,9550,1],["home-pylon-row-east",9670,10390,0],["cafe-table-6-seat-0",10510,12490,1],["home-pylon-row-east",12610,15490,0],["cafe-stand-00",15610,15970,1],["home-pylon-row-east",16090,18190,0],["cafe-table-6-seat-0",18310,21250,1],["home-pylon-row-east",21370,23710,0]]
   },
   {
    "id": "p-pylon-row-east-05",
-   "name": "Grace Harris",
+   "name": "Kelly Dupont",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -754,12 +754,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-pylon-row-east-06"]],
-   "stops": [["home-pylon-row-east",-62690,-35810,0],["cafe-stand-01",-35690,-35330,1],["home-pylon-row-east",-35210,-27470,0],["t1-records-stand-06",-27230,-26330,1],["home-pylon-row-east",-26090,-10310,0],["cafe-stand-01",-10190,-9830,1],["home-pylon-row-east",-9710,-2210,0],["cafe-stand-00",-2090,-1730,1],["home-pylon-row-east",-1610,-110,0],["cafe-table-2-seat-1",10,2350,1],["home-pylon-row-east",2470,6070,0],["cafe-table-7-seat-1",6190,9790,1],["home-pylon-row-east",9910,11890,0],["cafe-table-2-seat-0",12010,14710,1],["home-pylon-row-east",14830,15730,0],["cafe-table-5-seat-0",15910,18670,1],["home-pylon-row-east",18850,21790,0],["cafe-stand-00",21910,22270,1],["home-pylon-row-east",22390,23710,0]]
+   "ties": [["family","p-pylon-row-east-01"]],
+   "stops": [["home-pylon-row-east",-62690,-35810,0],["cafe-stand-01",-35690,-35330,1],["home-pylon-row-east",-35210,-27470,0],["t1-rocket-stand-06",-27230,-26330,1],["home-pylon-row-east",-26090,-10310,0],["cafe-stand-01",-10190,-9830,1],["home-pylon-row-east",-9710,-2210,0],["cafe-stand-00",-2090,-1730,1],["home-pylon-row-east",-1610,-110,0],["cafe-table-2-seat-1",10,2350,1],["home-pylon-row-east",2470,6070,0],["cafe-table-7-seat-1",6190,9790,1],["home-pylon-row-east",9910,11890,0],["cafe-table-2-seat-0",12010,14710,1],["home-pylon-row-east",14830,15730,0],["cafe-table-5-seat-0",15910,18670,1],["home-pylon-row-east",18850,21790,0],["cafe-stand-00",21910,22270,1],["home-pylon-row-east",22390,23710,0]]
   },
   {
    "id": "p-pylon-row-east-06",
-   "name": "Deborah Harris",
+   "name": "Catherine Dupont",
    "job": "resident",
    "temperament": "mercenary",
    "need": "debt",
@@ -769,12 +769,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-pylon-row-east-05"]],
-   "stops": [["home-pylon-row-east",-62690,-35210,0],["cafe-table-0-seat-0",-35090,-32270,1],["home-pylon-row-east",-32150,-28610,0],["t1-records-stand-02",-28370,-27470,1],["home-pylon-row-east",-27230,-22310,0],["cafe-table-3-seat-0",-22190,-19250,1],["home-pylon-row-east",-19130,-14810,0],["cafe-stand-01",-14690,-14330,1],["home-pylon-row-east",-14210,-10610,0],["cafe-table-1-seat-0",-10490,-8030,1],["home-pylon-row-east",-7910,7150,0],["cafe-table-7-seat-2",7270,10870,1],["home-pylon-row-east",10990,23710,0]]
+   "ties": [["family","p-pylon-row-east-08"]],
+   "stops": [["home-pylon-row-east",-62690,-35210,0],["cafe-table-0-seat-0",-35090,-32270,1],["home-pylon-row-east",-32150,-28610,0],["t1-rocket-stand-02",-28370,-27470,1],["home-pylon-row-east",-27230,-22310,0],["cafe-table-3-seat-0",-22190,-19250,1],["home-pylon-row-east",-19130,-14810,0],["cafe-stand-01",-14690,-14330,1],["home-pylon-row-east",-14210,-10610,0],["cafe-table-1-seat-0",-10490,-8030,1],["home-pylon-row-east",-7910,7150,0],["cafe-table-7-seat-2",7270,10870,1],["home-pylon-row-east",10990,23710,0]]
   },
   {
    "id": "p-pylon-row-east-07",
-   "name": "Mélanie Dupont",
+   "name": "Emelie Nilsson",
    "job": "resident",
    "temperament": "fearful",
    "need": "housing",
@@ -784,8 +784,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["family","p-pylon-row-east-01"],["family","p-pylon-row-east-02"]],
-   "stops": [["home-pylon-row-east",-62690,-39110,0],["cafe-table-2-seat-0",-38990,-36470,1],["home-pylon-row-east",-36350,-33710,0],["cafe-table-0-seat-1",-33590,-31310,1],["home-pylon-row-east",-31190,-27050,0],["t1-records-stand-05",-26810,-25910,1],["home-pylon-row-east",-25670,-19370,0],["cafe-table-4-seat-0",-19190,-17030,1],["home-pylon-row-east",-16850,-6410,0],["cafe-table-2-seat-0",-6290,-3410,1],["home-pylon-row-east",-3290,4390,0],["cafe-table-3-seat-1",4510,8110,1],["home-pylon-row-east",8230,10690,0],["cafe-table-2-seat-1",10810,12670,1],["home-pylon-row-east",12790,14890,0],["cafe-stand-00",15010,15370,1],["home-pylon-row-east",15490,23710,0]]
+   "ties": [["family","p-cafe-15"]],
+   "stops": [["home-pylon-row-east",-62690,-39110,0],["cafe-table-2-seat-0",-38990,-36470,1],["home-pylon-row-east",-36350,-33710,0],["cafe-table-0-seat-1",-33590,-31310,1],["home-pylon-row-east",-31190,-27050,0],["t1-rocket-stand-05",-26810,-25910,1],["home-pylon-row-east",-25670,-19310,0],["cafe-table-4-seat-0",-19190,-17030,1],["home-pylon-row-east",-16910,-6410,0],["cafe-table-2-seat-0",-6290,-3410,1],["home-pylon-row-east",-3290,4390,0],["cafe-table-3-seat-1",4510,8110,1],["home-pylon-row-east",8230,10690,0],["cafe-table-2-seat-1",10810,12670,1],["home-pylon-row-east",12790,14890,0],["cafe-stand-00",15010,15370,1],["home-pylon-row-east",15490,23710,0]]
   },
   {
    "id": "p-pylon-row-east-08",
@@ -799,8 +799,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["family","p-pylon-row-east-03"]],
-   "stops": [["home-pylon-row-east",-62690,-25850,0],["t1-records-stand-02",-25610,-24710,1],["home-pylon-row-east",-24470,-20210,0],["cafe-stand-01",-20090,-19730,1],["home-pylon-row-east",-19610,-12410,0],["cafe-stand-00",-12290,-11930,1],["home-pylon-row-east",-11810,-4010,0],["cafe-stand-00",-3890,-3530,1],["home-pylon-row-east",-3410,490,0],["cafe-stand-01",610,970,1],["home-pylon-row-east",1090,7390,0],["cafe-stand-00",7510,7870,1],["home-pylon-row-east",7990,23710,0]]
+   "ties": [["family","p-pylon-row-east-02"],["family","p-pylon-row-east-03"],["family","p-pylon-row-east-06"]],
+   "stops": [["home-pylon-row-east",-62690,-25850,0],["t1-rocket-stand-02",-25610,-24710,1],["home-pylon-row-east",-24470,-20210,0],["cafe-stand-01",-20090,-19730,1],["home-pylon-row-east",-19610,-12410,0],["cafe-stand-00",-12290,-11930,1],["home-pylon-row-east",-11810,-4010,0],["cafe-stand-00",-3890,-3530,1],["home-pylon-row-east",-3410,490,0],["cafe-stand-01",610,970,1],["home-pylon-row-east",1090,7390,0],["cafe-stand-00",7510,7870,1],["home-pylon-row-east",7990,23710,0]]
   },
   {
    "id": "p-records-office-01",
@@ -830,11 +830,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-49"]],
-   "stops": [["beyond",-62690,-28970,0],["t1-records",-28970,-28850,1],["office-entrance",-28490,-13010,0],["office-entrance",-13010,-11210,0],["office-entrance",-11210,670,0],["t1-records",910,1030,1],["beyond",1030,23710,0]]
+   "stops": [["beyond",-62690,-28970,0],["t1-rocket",-28970,-28850,1],["office-entrance",-28490,-13010,0],["office-entrance",-13010,-11210,0],["office-entrance",-11210,670,0],["t1-rocket",910,1030,1],["beyond",1030,23710,0]]
   },
   {
    "id": "p-records-office-03",
-   "name": "Simon Hedén",
+   "name": "Samuel Goldberg",
    "job": "clerk",
    "temperament": "idealist",
    "need": "debt",
@@ -844,12 +844,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["workmate","p-records-office-53"],["workmate","p-records-office-63"]],
+   "ties": [["workmate","p-records-office-53"]],
    "stops": [["home-rocket-west",-62690,-28670,0],["office-entrance",-28490,-13910,0],["cafe-table-7-seat-0",-13730,-11930,1],["office-entrance",-11750,550,0],["home-rocket-west",670,23710,0]]
   },
   {
    "id": "p-records-office-04",
-   "name": "Ulrika Lundberg",
+   "name": "Virginie Schmitt",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -859,12 +859,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-68"],["family","p-rocket-west-01"]],
+   "ties": [["family","p-records-office-64"]],
    "stops": [["home-rocket-west",-62690,-28670,0],["office-entrance",-28490,-13430,0],["cafe-table-7-seat-1",-13250,-11450,1],["office-entrance",-11270,550,0],["home-rocket-west",670,23710,0]]
   },
   {
    "id": "p-records-office-05",
-   "name": "Pedro Font",
+   "name": "Rickard Kristoffersson",
    "job": "clerk",
    "temperament": "loyal",
    "need": "papers",
@@ -875,11 +875,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-76"],["workmate","p-records-office-51"]],
-   "stops": [["beyond",-62690,-28910,0],["t1-records",-28910,-28790,1],["office-entrance",-28490,-14270,0],["office-entrance",-14270,-12470,0],["office-entrance",-12470,310,0],["t1-records",550,670,1],["beyond",670,23710,0]]
+   "stops": [["beyond",-62690,-28910,0],["t1-rocket",-28910,-28790,1],["office-entrance",-28490,-14270,0],["office-entrance",-14270,-12470,0],["office-entrance",-12470,310,0],["t1-rocket",550,670,1],["beyond",670,23710,0]]
   },
   {
    "id": "p-records-office-06",
-   "name": "Manuela Vaquero",
+   "name": "Amy Medina",
    "job": "clerk",
    "temperament": "loyal",
    "need": "care",
@@ -889,7 +889,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-41"]],
+   "ties": [["family","p-rocket-west-01"]],
    "stops": [["home-rocket-west",-62690,-28610,0],["office-entrance",-28490,-13370,0],["cafe-table-0-seat-0",-13190,-11390,1],["office-entrance",-11210,550,0],["home-rocket-west",670,23710,0]]
   },
   {
@@ -909,7 +909,7 @@
   },
   {
    "id": "p-records-office-08",
-   "name": "Żaneta Rak",
+   "name": "Lidia Aranda",
    "job": "clerk",
    "temperament": "idealist",
    "need": "advancement",
@@ -920,7 +920,7 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-14"]],
-   "stops": [["beyond",-62690,-28910,0],["t1-records",-28910,-28790,1],["office-entrance",-28490,-13010,0],["office-entrance",-13010,-11210,0],["office-entrance",-11210,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-28910,0],["t1-rocket",-28910,-28790,1],["office-entrance",-28490,-13010,0],["office-entrance",-13010,-11210,0],["office-entrance",-11210,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-09",
@@ -935,11 +935,11 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-76"]],
-   "stops": [["beyond",-62690,-29210,0],["t1-records",-29210,-29090,1],["office-entrance",-28490,-14030,0],["office-entrance",-14030,-12230,0],["office-entrance",-12230,310,0],["t1-records",550,670,1],["beyond",670,23710,0]]
+   "stops": [["beyond",-62690,-29210,0],["t1-rocket",-29210,-29090,1],["office-entrance",-28490,-14030,0],["office-entrance",-14030,-12230,0],["office-entrance",-12230,310,0],["t1-rocket",550,670,1],["beyond",670,23710,0]]
   },
   {
    "id": "p-records-office-10",
-   "name": "James Pierce",
+   "name": "Magnus Sundberg",
    "job": "clerk",
    "temperament": "loyal",
    "need": "cash",
@@ -950,7 +950,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-40"]],
-   "stops": [["beyond",-62690,-29030,0],["t1-records",-29030,-28910,1],["office-entrance",-28490,-13190,0],["office-entrance",-13190,-11390,0],["office-entrance",-11390,490,0],["t1-records",730,850,1],["beyond",850,23710,0]]
+   "stops": [["beyond",-62690,-29030,0],["t1-rocket",-29030,-28910,1],["office-entrance",-28490,-13190,0],["office-entrance",-13190,-11390,0],["office-entrance",-11390,490,0],["t1-rocket",730,850,1],["beyond",850,23710,0]]
   },
   {
    "id": "p-records-office-11",
@@ -965,11 +965,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-27"]],
-   "stops": [["beyond",-62690,-28910,0],["t1-records",-28910,-28790,1],["office-entrance",-28490,-14990,0],["office-entrance",-14990,-13190,0],["office-entrance",-13190,430,0],["t1-records",670,790,1],["beyond",790,23710,0]]
+   "stops": [["beyond",-62690,-28910,0],["t1-rocket",-28910,-28790,1],["office-entrance",-28490,-14990,0],["office-entrance",-14990,-13190,0],["office-entrance",-13190,430,0],["t1-rocket",670,790,1],["beyond",790,23710,0]]
   },
   {
    "id": "p-records-office-12",
-   "name": "Alberto Jimenez",
+   "name": "Kristian Henriksen",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -980,7 +980,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-26"],["workmate","p-records-office-48"]],
-   "stops": [["beyond",-62690,-28850,0],["t1-records",-28850,-28730,1],["office-entrance",-28490,-14330,0],["office-entrance",-14330,-12530,0],["office-entrance",-12530,310,0],["t1-records",550,670,1],["beyond",670,23710,0]]
+   "stops": [["beyond",-62690,-28850,0],["t1-rocket",-28850,-28730,1],["office-entrance",-28490,-14330,0],["office-entrance",-14330,-12530,0],["office-entrance",-12530,310,0],["t1-rocket",550,670,1],["beyond",670,23710,0]]
   },
   {
    "id": "p-records-office-13",
@@ -995,11 +995,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-53"]],
-   "stops": [["beyond",-62690,-28970,0],["t1-records",-28970,-28850,1],["office-entrance",-28490,-15050,0],["office-entrance",-15050,-13250,0],["office-entrance",-13250,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-28970,0],["t1-rocket",-28970,-28850,1],["office-entrance",-28490,-15050,0],["office-entrance",-15050,-13250,0],["office-entrance",-13250,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-14",
-   "name": "Tomasz Jaworski",
+   "name": "Daniel Svensson",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1010,11 +1010,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-08"],["workmate","p-records-office-62"]],
-   "stops": [["home-garden-row-east",-62690,-28970,0],["office-entrance",-28490,-13790,0],["cafe-table-1-seat-0",-13670,-11870,1],["office-entrance",-11750,550,0],["home-garden-row-east",670,23710,0]]
+   "stops": [["home-rocket-west",-62690,-28970,0],["office-entrance",-28490,-13790,0],["cafe-table-1-seat-0",-13670,-11870,1],["office-entrance",-11750,550,0],["home-rocket-west",670,23710,0]]
   },
   {
    "id": "p-records-office-15",
-   "name": "Anneli Olofsson",
+   "name": "Melissa Mitchell",
    "job": "clerk",
    "temperament": "loyal",
    "need": "papers",
@@ -1029,7 +1029,7 @@
   },
   {
    "id": "p-records-office-16",
-   "name": "Richard Zimmerman",
+   "name": "Jonas Sandberg",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1044,7 +1044,7 @@
   },
   {
    "id": "p-records-office-17",
-   "name": "Pernille Dahl",
+   "name": "Nuria Martin",
    "job": "clerk",
    "temperament": "fearful",
    "need": "papers",
@@ -1054,8 +1054,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["workmate","p-records-office-43"]],
-   "stops": [["beyond",-62690,-29150,0],["t1-records",-29150,-29030,1],["office-entrance",-28490,-14990,0],["office-entrance",-14990,-13190,0],["office-entrance",-13190,310,0],["t1-records",550,670,1],["beyond",670,23710,0]]
+   "ties": [["workmate","p-records-office-42"]],
+   "stops": [["beyond",-62690,-29150,0],["t1-rocket",-29150,-29030,1],["office-entrance",-28490,-14990,0],["office-entrance",-14990,-13190,0],["office-entrance",-13190,310,0],["t1-rocket",550,670,1],["beyond",670,23710,0]]
   },
   {
    "id": "p-records-office-18",
@@ -1100,7 +1100,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-35"]],
-   "stops": [["beyond",-62690,-29210,0],["t1-records",-29210,-29090,1],["office-entrance",-28490,-14870,0],["office-entrance",-14870,-13070,0],["office-entrance",-13070,430,0],["t1-records",670,790,1],["beyond",790,23710,0]]
+   "stops": [["beyond",-62690,-29210,0],["t1-rocket",-29210,-29090,1],["office-entrance",-28490,-14870,0],["office-entrance",-14870,-13070,0],["office-entrance",-13070,430,0],["t1-rocket",670,790,1],["beyond",790,23710,0]]
   },
   {
    "id": "p-records-office-21",
@@ -1115,11 +1115,11 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-70"],["workmate","p-records-office-36"],["workmate","p-records-office-46"]],
-   "stops": [["beyond",-62690,-28850,0],["t1-records",-28850,-28730,1],["office-entrance",-28490,-15110,0],["office-entrance",-15110,-13310,0],["office-entrance",-13310,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-28850,0],["t1-rocket",-28850,-28730,1],["office-entrance",-28490,-15110,0],["office-entrance",-15110,-13310,0],["office-entrance",-13310,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-22",
-   "name": "Lene Sande",
+   "name": "Monika Żurek",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1130,11 +1130,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-50"]],
-   "stops": [["beyond",-62690,-28850,0],["t1-records",-28850,-28730,1],["office-entrance",-28490,-15290,0],["office-entrance",-15290,-13490,0],["office-entrance",-13490,610,0],["t1-records",850,970,1],["beyond",970,23710,0]]
+   "stops": [["beyond",-62690,-28850,0],["t1-rocket",-28850,-28730,1],["office-entrance",-28490,-15290,0],["office-entrance",-15290,-13490,0],["office-entrance",-13490,610,0],["t1-rocket",850,970,1],["beyond",970,23710,0]]
   },
   {
    "id": "p-records-office-23",
-   "name": "Francisco Iglesias",
+   "name": "Richard Kelley",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1144,12 +1144,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-52"],["family","p-rocket-west-06"]],
+   "ties": [["workmate","p-records-office-52"]],
    "stops": [["home-rocket-west",-62690,-28730,0],["office-entrance",-28490,-13190,0],["cafe-table-3-seat-1",-13010,-11210,1],["office-entrance",-11030,490,0],["home-rocket-west",610,23710,0]]
   },
   {
    "id": "p-records-office-24",
-   "name": "Camilla Lundberg",
+   "name": "Magdalena Skiba",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1159,7 +1159,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-26"],["family","p-records-office-68"]],
+   "ties": [["workmate","p-records-office-26"],["family","p-records-office-63"]],
    "stops": [["home-rocket-west",-62690,-28670,0],["office-entrance",-28490,-14390,0],["cafe-table-3-seat-2",-14210,-12410,1],["office-entrance",-12230,430,0],["home-rocket-west",550,23710,0]]
   },
   {
@@ -1190,11 +1190,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-12"],["workmate","p-records-office-24"],["workmate","p-records-office-44"]],
-   "stops": [["home-garden-row-east",-62690,-28790,0],["office-entrance",-28490,-14510,0],["cafe-table-0-seat-1",-14330,-12530,1],["office-entrance",-12350,310,0],["home-garden-row-east",430,23710,0]]
+   "stops": [["home-rocket-west",-62690,-28790,0],["office-entrance",-28490,-14510,0],["cafe-table-0-seat-1",-14330,-12530,1],["office-entrance",-12350,310,0],["home-rocket-west",430,23710,0]]
   },
   {
    "id": "p-records-office-27",
-   "name": "Oskar Mierzejewski",
+   "name": "Ruben Olivares",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1205,7 +1205,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-11"]],
-   "stops": [["beyond",-62690,-28910,0],["t1-records",-28910,-28790,1],["office-entrance",-28490,-13430,0],["office-entrance",-13430,-11630,0],["office-entrance",-11630,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-28910,0],["t1-rocket",-28910,-28790,1],["office-entrance",-28490,-13430,0],["office-entrance",-13430,-11630,0],["office-entrance",-11630,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-28",
@@ -1224,7 +1224,7 @@
   },
   {
    "id": "p-records-office-29",
-   "name": "Anders Gabrielsson",
+   "name": "Olivier Comte",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1234,12 +1234,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-05"],["family","p-records-office-47"],["workmate","p-records-office-18"]],
+   "ties": [["regular","p-cafe-05"],["family","p-records-office-45"],["workmate","p-records-office-18"],["workmate","p-records-office-55"]],
    "stops": [["home-rocket-west",-62690,-29870,0],["cafe-table-1-seat-1",-29570,-28670,1],["official-entrance-stand-00",-28550,-28490,1],["official-entrance",-28490,-12890,1],["official-entrance",-12890,-11090,1],["official-entrance",-11090,310,1],["cafe-table-2-seat-0",490,3190,1],["home-rocket-west",3310,23710,0]]
   },
   {
    "id": "p-records-office-30",
-   "name": "Frédéric Dupont",
+   "name": "Magnus Nilsson",
    "job": "guard",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1249,8 +1249,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-02"],["workmate","p-records-office-28"],["family","p-pylon-row-east-01"]],
-   "stops": [["home-pylon-row-east",-62690,-29930,0],["cafe-table-1-seat-2",-29570,-28670,1],["official-entrance",-28490,-14450,0],["official-entrance",-14450,-12650,0],["official-entrance",-12650,430,0],["cafe-table-7-seat-0",610,3310,1],["home-pylon-row-east",3430,23710,0]]
+   "ties": [["regular","p-cafe-02"],["workmate","p-records-office-28"],["family","p-cafe-11"]],
+   "stops": [["home-rocket-west",-62690,-29930,0],["cafe-table-1-seat-2",-29570,-28670,1],["official-entrance",-28490,-14450,0],["official-entrance",-14450,-12650,0],["official-entrance",-12650,430,0],["cafe-table-7-seat-0",610,3310,1],["home-rocket-west",3430,23710,0]]
   },
   {
    "id": "p-records-office-31",
@@ -1299,7 +1299,7 @@
   },
   {
    "id": "p-records-office-34",
-   "name": "Guillaume Dupont",
+   "name": "Marc Medina",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1309,12 +1309,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-pylon-row-east-02"],["workmate","p-records-office-61"],["workmate","p-records-office-73"]],
-   "stops": [["home-pylon-row-east",-62690,-28610,0],["office-entrance",-28490,-13310,0],["cafe-table-0-seat-2",-13130,-11330,1],["office-entrance",-11150,310,0],["home-pylon-row-east",430,23710,0]]
+   "ties": [["family","p-records-office-37"],["workmate","p-records-office-61"],["workmate","p-records-office-73"]],
+   "stops": [["home-rocket-west",-62690,-28610,0],["office-entrance",-28490,-13310,0],["cafe-table-0-seat-2",-13130,-11330,1],["office-entrance",-11150,310,0],["home-rocket-west",430,23710,0]]
   },
   {
    "id": "p-records-office-35",
-   "name": "Tonje Høie",
+   "name": "Klaudia Semeniuk",
    "job": "clerk",
    "temperament": "idealist",
    "need": "cash",
@@ -1324,12 +1324,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["workmate","p-records-office-19"],["family","p-records-office-45"],["workmate","p-records-office-38"],["workmate","p-records-office-20"]],
+   "ties": [["workmate","p-records-office-19"],["family","p-records-office-43"],["workmate","p-records-office-38"],["workmate","p-records-office-20"]],
    "stops": [["home-rocket-west",-62690,-28730,0],["office-entrance",-28490,-14750,0],["cafe-table-4-seat-1",-14570,-12770,1],["office-entrance",-12590,370,0],["home-rocket-west",490,23710,0]]
   },
   {
    "id": "p-records-office-36",
-   "name": "Gregory Richard",
+   "name": "Adam Medina",
    "job": "guard",
    "temperament": "mercenary",
    "need": "cash",
@@ -1339,12 +1339,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-04"],["workmate","p-records-office-21"],["family","p-records-office-49"],["family","p-records-office-37"]],
+   "ties": [["regular","p-cafe-04"],["workmate","p-records-office-21"],["family","p-records-office-46"]],
    "stops": [["home-rocket-west",-62690,-29750,0],["cafe-table-0-seat-0",-29570,-28670,1],["official-entrance",-28490,-13850,0],["official-entrance",-13850,-12050,0],["official-entrance",-12050,670,0],["cafe-table-5-seat-0",850,3550,1],["home-rocket-west",3670,23710,0]]
   },
   {
    "id": "p-records-office-37",
-   "name": "Karine Richard",
+   "name": "Silvia Medina",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1354,12 +1354,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-68"],["family","p-records-office-36"],["workmate","p-records-office-64"]],
+   "ties": [["workmate","p-records-office-68"],["family","p-records-office-34"],["workmate","p-records-office-64"]],
    "stops": [["home-rocket-west",-62690,-28790,0],["office-entrance",-28490,-15290,0],["cafe-table-4-seat-2",-15110,-13310,1],["office-entrance",-13130,670,0],["home-rocket-west",790,23710,0]]
   },
   {
    "id": "p-records-office-38",
-   "name": "Bryan Wilkerson",
+   "name": "Frank Nordnes",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1369,7 +1369,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-35"],["family","p-garden-row-east-06"]],
+   "ties": [["workmate","p-records-office-35"],["family","p-garden-row-east-05"]],
    "stops": [["home-garden-row-east",-62690,-28730,0],["office-entrance",-28490,-14630,0],["cafe-table-5-seat-0",-14450,-12650,1],["office-entrance",-12470,670,0],["home-garden-row-east",790,23710,0]]
   },
   {
@@ -1400,7 +1400,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-10"]],
-   "stops": [["beyond",-62690,-29030,0],["t1-records",-29030,-28910,1],["office-entrance",-28490,-13310,0],["office-entrance",-13310,-11510,0],["office-entrance",-11510,490,0],["t1-records",730,850,1],["beyond",850,23710,0]]
+   "stops": [["beyond",-62690,-29030,0],["t1-rocket",-29030,-28910,1],["office-entrance",-28490,-13310,0],["office-entrance",-13310,-11510,0],["office-entrance",-11510,490,0],["t1-rocket",730,850,1],["beyond",850,23710,0]]
   },
   {
    "id": "p-records-office-41",
@@ -1414,12 +1414,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-70"],["workmate","p-records-office-06"],["workmate","p-records-office-16"]],
+   "ties": [["workmate","p-records-office-70"],["workmate","p-records-office-16"]],
    "stops": [["home-rocket-west",-62690,-28670,0],["office-entrance",-28490,-14150,0],["cafe-table-5-seat-1",-13970,-12170,1],["office-entrance",-11990,490,0],["home-rocket-west",610,23710,0]]
   },
   {
    "id": "p-records-office-42",
-   "name": "Mille Strand",
+   "name": "Angelika Sadowska",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1429,12 +1429,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["workmate","p-records-office-32"]],
+   "ties": [["workmate","p-records-office-32"],["family","p-records-office-71"],["workmate","p-records-office-17"],["family","p-rocket-west-07"]],
    "stops": [["home-rocket-west",-62690,-28790,0],["office-entrance",-28490,-14390,0],["cafe-table-5-seat-2",-14210,-12410,1],["office-entrance",-12230,370,0],["home-rocket-west",490,23710,0]]
   },
   {
    "id": "p-records-office-43",
-   "name": "Jarosław Wróblewski",
+   "name": "Jarosław Semeniuk",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1444,7 +1444,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-71"],["workmate","p-records-office-17"],["family","p-rocket-west-07"]],
+   "ties": [["family","p-records-office-35"]],
    "stops": [["home-rocket-west",-62690,-28850,0],["office-entrance",-28490,-12890,0],["cafe-table-2-seat-1",-12710,-10910,1],["office-entrance",-10730,730,0],["home-rocket-west",850,23710,0]]
   },
   {
@@ -1460,11 +1460,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-26"],["workmate","p-records-office-54"]],
-   "stops": [["beyond",-62690,-29150,0],["t1-records",-29150,-29030,1],["office-entrance",-28490,-13190,0],["office-entrance",-13190,-11390,0],["office-entrance",-11390,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-29150,0],["t1-rocket",-29150,-29030,1],["office-entrance",-28490,-13190,0],["office-entrance",-13190,-11390,0],["office-entrance",-11390,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-45",
-   "name": "Christoffer Høie",
+   "name": "Clément Comte",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1474,12 +1474,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-35"],["workmate","p-records-office-60"]],
+   "ties": [["family","p-records-office-29"],["workmate","p-records-office-60"]],
    "stops": [["home-rocket-west",-62690,-28790,0],["office-entrance",-28490,-12950,0],["cafe-table-4-seat-1",-12770,-10970,1],["office-entrance",-10790,310,0],["home-rocket-west",430,23710,0]]
   },
   {
    "id": "p-records-office-46",
-   "name": "Loïc Leveque",
+   "name": "Timothy Medina",
    "job": "guard",
    "temperament": "mercenary",
    "need": "cash",
@@ -1489,12 +1489,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-21"],["family","p-records-office-55"]],
-   "stops": [["home-garden-row-east",-62690,-29750,0],["cafe-table-4-seat-1",-29570,-28670,1],["official-entrance",-28490,-14990,0],["official-entrance",-14990,-13190,0],["official-entrance",-13190,370,0],["cafe-table-0-seat-1",550,3250,1],["home-garden-row-east",3370,23710,0]]
+   "ties": [["family","p-records-office-36"],["workmate","p-records-office-21"],["family","p-rocket-west-01"]],
+   "stops": [["home-rocket-west",-62690,-29750,0],["cafe-table-4-seat-1",-29570,-28670,1],["official-entrance",-28490,-14990,0],["official-entrance",-14990,-13190,0],["official-entrance",-13190,370,0],["cafe-table-0-seat-1",550,3250,1],["home-rocket-west",3370,23710,0]]
   },
   {
    "id": "p-records-office-47",
-   "name": "Björn Gabrielsson",
+   "name": "Björn Skoglund",
    "job": "clerk",
    "temperament": "loyal",
    "need": "advancement",
@@ -1504,12 +1504,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-29"],["workmate","p-records-office-39"]],
+   "ties": [["workmate","p-records-office-39"]],
    "stops": [["home-rocket-west",-62690,-28730,0],["office-entrance",-28490,-14510,0],["cafe-stand-01",-14330,-12530,1],["office-entrance",-12350,490,0],["home-rocket-west",610,23710,0]]
   },
   {
    "id": "p-records-office-48",
-   "name": "Silvia Alonso",
+   "name": "Moa Jakobsson",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1524,7 +1524,7 @@
   },
   {
    "id": "p-records-office-49",
-   "name": "Cyril Richard",
+   "name": "Cyril Boulanger",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1534,12 +1534,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-36"],["workmate","p-records-office-02"]],
+   "ties": [["family","p-records-office-61"],["workmate","p-records-office-02"],["family","p-rocket-west-05"]],
    "stops": [["home-rocket-west",-62690,-28730,0],["office-entrance",-28490,-14990,0],["cafe-table-3-seat-1",-14810,-13010,1],["office-entrance",-12830,430,0],["home-rocket-west",550,23710,0]]
   },
   {
    "id": "p-records-office-50",
-   "name": "Roberto Martinez",
+   "name": "Hervé Morel",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1549,7 +1549,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-22"],["workmate","p-records-office-71"],["family","p-rocket-west-05"]],
+   "ties": [["workmate","p-records-office-22"],["workmate","p-records-office-71"]],
    "stops": [["home-rocket-west",-62690,-28850,0],["office-entrance",-28490,-15050,0],["cafe-table-2-seat-0",-14870,-13070,1],["office-entrance",-12890,610,0],["home-rocket-west",730,23710,0]]
   },
   {
@@ -1565,11 +1565,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-05"]],
-   "stops": [["beyond",-62690,-28850,0],["t1-records",-28850,-28730,1],["office-entrance",-28490,-13070,0],["office-entrance",-13070,-11270,0],["office-entrance",-11270,670,0],["t1-records",910,1030,1],["beyond",1030,23710,0]]
+   "stops": [["beyond",-62690,-28850,0],["t1-rocket",-28850,-28730,1],["office-entrance",-28490,-13070,0],["office-entrance",-13070,-11270,0],["office-entrance",-11270,670,0],["t1-rocket",910,1030,1],["beyond",1030,23710,0]]
   },
   {
    "id": "p-records-office-52",
-   "name": "Andrew Gray",
+   "name": "Mathias Simonsen",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1579,7 +1579,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["family","p-records-office-61"],["workmate","p-records-office-23"]],
+   "ties": [["workmate","p-records-office-23"]],
    "stops": [["home-rocket-west",-62690,-28670,0],["office-entrance",-28490,-15050,0],["cafe-table-1-seat-1",-14930,-13130,1],["office-entrance",-13010,430,0],["home-rocket-west",550,23710,0]]
   },
   {
@@ -1595,11 +1595,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-03"],["workmate","p-records-office-67"],["workmate","p-records-office-13"]],
-   "stops": [["beyond",-62690,-29030,0],["t1-records",-29030,-28910,1],["office-entrance",-28490,-13910,0],["office-entrance",-13910,-12110,0],["office-entrance",-12110,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-29030,0],["t1-rocket",-29030,-28910,1],["office-entrance",-28490,-13910,0],["office-entrance",-13910,-12110,0],["office-entrance",-12110,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-54",
-   "name": "Christian Rønneberg",
+   "name": "Tomasz Kukla",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1610,11 +1610,11 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-records-office-44"],["workmate","p-records-office-56"]],
-   "stops": [["beyond",-62690,-29090,0],["t1-records",-29090,-28970,1],["office-entrance",-28490,-14510,0],["office-entrance",-14510,-12710,0],["office-entrance",-12710,670,0],["t1-records",910,1030,1],["beyond",1030,23710,0]]
+   "stops": [["beyond",-62690,-29090,0],["t1-rocket",-29090,-28970,1],["office-entrance",-28490,-14510,0],["office-entrance",-14510,-12710,0],["office-entrance",-12710,670,0],["t1-rocket",910,1030,1],["beyond",1030,23710,0]]
   },
   {
    "id": "p-records-office-55",
-   "name": "Céline Leveque",
+   "name": "Raquel Pavon",
    "job": "clerk",
    "temperament": "fearful",
    "need": "debt",
@@ -1624,8 +1624,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["family","p-records-office-46"]],
-   "stops": [["home-garden-row-east",-62690,-28910,0],["office-entrance",-28490,-13310,0],["cafe-table-4-seat-2",-13130,-11330,1],["office-entrance",-11150,310,0],["home-garden-row-east",430,23710,0]]
+   "ties": [["workmate","p-records-office-29"]],
+   "stops": [["home-rocket-west",-62690,-28910,0],["office-entrance",-28490,-13310,0],["cafe-table-4-seat-2",-13130,-11330,1],["office-entrance",-11150,310,0],["home-rocket-west",430,23710,0]]
   },
   {
    "id": "p-records-office-56",
@@ -1644,7 +1644,7 @@
   },
   {
    "id": "p-records-office-57",
-   "name": "Olunloyo Nduka",
+   "name": "Seth Lawson",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1659,7 +1659,7 @@
   },
   {
    "id": "p-records-office-58",
-   "name": "Torbjørn Solvang",
+   "name": "Pablo Rivas",
    "job": "clerk",
    "temperament": "idealist",
    "need": "papers",
@@ -1669,7 +1669,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["workmate","p-records-office-15"]],
+   "ties": [["workmate","p-records-office-15"],["family","p-rocket-west-02"]],
    "stops": [["home-rocket-west",-62690,-28610,0],["office-entrance",-28490,-13010,0],["cafe-stand-04",-12830,-11030,1],["office-entrance",-10850,310,0],["home-rocket-west",430,23710,0]]
   },
   {
@@ -1689,7 +1689,7 @@
   },
   {
    "id": "p-records-office-60",
-   "name": "Celia Ortega",
+   "name": "Anaelle Grondin",
    "job": "clerk",
    "temperament": "loyal",
    "need": "cash",
@@ -1699,12 +1699,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-45"],["workmate","p-records-office-68"],["family","p-rocket-west-02"]],
+   "ties": [["workmate","p-records-office-45"],["workmate","p-records-office-68"]],
    "stops": [["home-rocket-west",-62690,-28850,0],["office-entrance",-28490,-14510,0],["cafe-stand-06",-14330,-12530,1],["office-entrance",-12350,550,0],["home-rocket-west",670,23710,0]]
   },
   {
    "id": "p-records-office-61",
-   "name": "Daniel Gray",
+   "name": "Geoffrey Boulanger",
    "job": "guard",
    "temperament": "mercenary",
    "need": "advancement",
@@ -1714,7 +1714,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-04"],["workmate","p-records-office-34"],["family","p-records-office-52"]],
+   "ties": [["regular","p-cafe-04"],["workmate","p-records-office-34"],["family","p-records-office-49"]],
    "stops": [["home-rocket-west",-62690,-29690,0],["cafe-table-2-seat-0",-29570,-28670,1],["official-entrance",-28490,-14750,0],["official-entrance",-14750,-12950,0],["official-entrance",-12950,310,0],["cafe-table-1-seat-1",490,3190,1],["home-rocket-west",3310,23710,0]]
   },
   {
@@ -1734,7 +1734,7 @@
   },
   {
    "id": "p-records-office-63",
-   "name": "Tomasz Rosa",
+   "name": "Tomasz Skiba",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "debt",
@@ -1744,12 +1744,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-03"]],
+   "ties": [["family","p-records-office-24"]],
    "stops": [["home-rocket-west",-62690,-28850,0],["office-entrance",-28490,-13790,0],["cafe-stand-07",-13610,-11810,1],["office-entrance",-11630,670,0],["home-rocket-west",790,23710,0]]
   },
   {
    "id": "p-records-office-64",
-   "name": "Tyler Moses",
+   "name": "Anthony Schmitt",
    "job": "guard",
    "temperament": "mercenary",
    "need": "cash",
@@ -1759,12 +1759,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-37"]],
+   "ties": [["family","p-records-office-04"],["workmate","p-records-office-37"]],
    "stops": [["home-rocket-west",-62690,-29930,0],["cafe-table-4-seat-2",-29570,-28670,1],["official-entrance",-28490,-15110,0],["official-entrance",-15110,-13310,0],["official-entrance",-13310,370,0],["cafe-table-0-seat-2",550,3250,1],["home-rocket-west",3370,23710,0]]
   },
   {
    "id": "p-records-office-65",
-   "name": "Evan Moore",
+   "name": "Omodiagbe Adepoju",
    "job": "guard",
    "temperament": "loyal",
    "need": "advancement",
@@ -1790,11 +1790,11 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-records-office-57"]],
-   "stops": [["beyond",-62690,-29150,0],["t1-records",-29150,-29030,1],["office-entrance",-28490,-13910,0],["office-entrance",-13910,-12110,0],["office-entrance",-12110,370,0],["t1-records",610,730,1],["beyond",730,23710,0]]
+   "stops": [["beyond",-62690,-29150,0],["t1-rocket",-29150,-29030,1],["office-entrance",-28490,-13910,0],["office-entrance",-13910,-12110,0],["office-entrance",-12110,370,0],["t1-rocket",610,730,1],["beyond",730,23710,0]]
   },
   {
    "id": "p-records-office-67",
-   "name": "Osaretin Oyenuga",
+   "name": "Christian Lockett",
    "job": "guard",
    "temperament": "loyal",
    "need": "debt",
@@ -1804,12 +1804,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-05"],["workmate","p-records-office-53"],["family","p-garden-row-east-04"]],
-   "stops": [["home-garden-row-east",-62690,-29690,0],["cafe-table-2-seat-2",-29570,-28670,1],["official-entrance",-28490,-14030,0],["official-entrance",-14030,-12230,0],["official-entrance",-12230,430,0],["cafe-table-6-seat-0",610,3310,1],["home-garden-row-east",3430,23710,0]]
+   "ties": [["regular","p-cafe-05"],["workmate","p-records-office-53"]],
+   "stops": [["home-rocket-west",-62690,-29690,0],["cafe-table-2-seat-2",-29570,-28670,1],["official-entrance",-28490,-14030,0],["official-entrance",-14030,-12230,0],["official-entrance",-12230,430,0],["cafe-table-6-seat-0",610,3310,1],["home-rocket-west",3430,23710,0]]
   },
   {
    "id": "p-records-office-68",
-   "name": "Viktor Lundberg",
+   "name": "Dustin Lee",
    "job": "guard",
    "temperament": "loyal",
    "need": "cash",
@@ -1819,7 +1819,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-04"],["family","p-records-office-04"],["family","p-records-office-24"],["workmate","p-records-office-33"],["workmate","p-records-office-37"],["workmate","p-records-office-60"]],
+   "ties": [["regular","p-cafe-04"],["family","p-cafe-07"],["workmate","p-records-office-33"],["workmate","p-records-office-37"],["workmate","p-records-office-60"]],
    "stops": [["home-rocket-west",-62690,-29690,0],["cafe-table-4-seat-0",-29570,-28670,1],["official-entrance",-28490,-15110,0],["official-entrance",-15110,-13310,0],["official-entrance",-13310,370,0],["cafe-table-1-seat-2",550,3250,1],["home-rocket-west",3370,23710,0]]
   },
   {
@@ -1835,7 +1835,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-19"]],
-   "stops": [["beyond",-62690,-28910,0],["t1-records",-28910,-28790,1],["office-entrance",-28490,-12950,0],["office-entrance",-12950,-11150,0],["office-entrance",-11150,310,0],["t1-records",550,670,1],["beyond",670,23710,0]]
+   "stops": [["beyond",-62690,-28910,0],["t1-rocket",-28910,-28790,1],["office-entrance",-28490,-12950,0],["office-entrance",-12950,-11150,0],["office-entrance",-11150,310,0],["t1-rocket",550,670,1],["beyond",670,23710,0]]
   },
   {
    "id": "p-records-office-70",
@@ -1850,11 +1850,11 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-21"],["workmate","p-records-office-41"]],
-   "stops": [["beyond",-62690,-29090,0],["t1-records",-29090,-28970,1],["office-entrance",-28490,-14450,0],["office-entrance",-14450,-12650,0],["office-entrance",-12650,550,0],["t1-records",790,910,1],["beyond",910,23710,0]]
+   "stops": [["beyond",-62690,-29090,0],["t1-rocket",-29090,-28970,1],["office-entrance",-28490,-14450,0],["office-entrance",-14450,-12650,0],["office-entrance",-12650,550,0],["t1-rocket",790,910,1],["beyond",910,23710,0]]
   },
   {
    "id": "p-records-office-71",
-   "name": "Ilona Wróblewska",
+   "name": "Ilona Sadowska",
    "job": "clerk",
    "temperament": "mercenary",
    "need": "cash",
@@ -1864,7 +1864,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-25"],["workmate","p-records-office-50"],["family","p-records-office-43"]],
+   "ties": [["workmate","p-records-office-25"],["workmate","p-records-office-50"],["family","p-records-office-42"]],
    "stops": [["home-rocket-west",-62690,-28910,0],["office-entrance",-28490,-14510,0],["cafe-stand-08",-14330,-12530,1],["office-entrance",-12350,370,0],["home-rocket-west",490,23710,0]]
   },
   {
@@ -1884,7 +1884,7 @@
   },
   {
    "id": "p-records-office-73",
-   "name": "Jonas Svensson",
+   "name": "Daniel Harper",
    "job": "guard",
    "temperament": "mercenary",
    "need": "debt",
@@ -1894,7 +1894,7 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-16"],["regular","p-cafe-11"],["family","p-cafe-07"],["workmate","p-records-office-34"]],
+   "ties": [["regular","p-cafe-16"],["regular","p-cafe-11"],["workmate","p-records-office-34"]],
    "stops": [["office-entrance-stand-00",-62690,-57290,1],["cafe-table-4-seat-0",-57110,-54410,1],["home-rocket-west",-54290,-950,0],["cafe-table-1-seat-0",-710,190,1],["office-entrance-stand-00",310,13870,1],["office-entrance-stand-00",13870,15670,1],["office-entrance-stand-00",15670,23710,1]]
   },
   {
@@ -1929,7 +1929,7 @@
   },
   {
    "id": "p-records-office-76",
-   "name": "Adeniran Adeola",
+   "name": "Jean Roussel",
    "job": "guard",
    "temperament": "loyal",
    "need": "advancement",
@@ -1939,12 +1939,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["workmate","p-records-office-05"],["workmate","p-records-office-09"],["workmate","p-records-office-75"]],
+   "ties": [["family","p-cafe-18"],["workmate","p-records-office-05"],["workmate","p-records-office-09"],["workmate","p-records-office-75"]],
    "stops": [["home-rocket-west",-62690,-57470,0],["official-entrance-stand-00",-57350,-57290,1],["official-entrance",-57290,-42830,1],["official-entrance",-42830,-41030,1],["official-entrance",-41030,-28490,1],["cafe-table-4-seat-0",-28310,-25610,1],["home-rocket-west",-25490,23710,0]]
   },
   {
    "id": "p-rocket-west-01",
-   "name": "Ingrid Lundberg",
+   "name": "Carol Medina",
    "job": "resident",
    "temperament": "mercenary",
    "need": "debt",
@@ -1954,12 +1954,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-04"]],
-   "stops": [["home-rocket-west",-62690,-35210,0],["cafe-table-3-seat-0",-35090,-33170,1],["home-rocket-west",-33050,-31910,0],["cafe-table-3-seat-0",-31790,-28850,1],["home-rocket-west",-28730,-25190,0],["t1-records-stand-03",-24950,-24050,1],["home-rocket-west",-23810,-19610,0],["cafe-table-7-seat-0",-19490,-17390,1],["home-rocket-west",-17270,-12110,0],["cafe-table-7-seat-2",-11990,-9110,1],["home-rocket-west",-8990,-5510,0],["cafe-table-0-seat-2",-5390,-3350,1],["home-rocket-west",-3230,5890,0],["cafe-table-4-seat-0",6010,8890,1],["home-rocket-west",9010,13090,0],["cafe-table-4-seat-0",13210,15730,1],["home-rocket-west",15850,23710,0]]
+   "ties": [["family","p-records-office-46"],["family","p-records-office-06"]],
+   "stops": [["home-rocket-west",-62690,-35210,0],["cafe-table-3-seat-0",-35090,-33170,1],["home-rocket-west",-33050,-31910,0],["cafe-table-3-seat-0",-31790,-28850,1],["home-rocket-west",-28730,-25190,0],["t1-rocket-stand-03",-24950,-24050,1],["home-rocket-west",-23810,-19610,0],["cafe-table-7-seat-0",-19490,-17390,1],["home-rocket-west",-17270,-12110,0],["cafe-table-7-seat-2",-11990,-9110,1],["home-rocket-west",-8990,-5510,0],["cafe-table-0-seat-2",-5390,-3350,1],["home-rocket-west",-3230,5890,0],["cafe-table-4-seat-0",6010,8890,1],["home-rocket-west",9010,13090,0],["cafe-table-4-seat-0",13210,15730,1],["home-rocket-west",15850,23710,0]]
   },
   {
    "id": "p-rocket-west-02",
-   "name": "Paula Ortega",
+   "name": "Paula Rivas",
    "job": "resident",
    "temperament": "idealist",
    "need": "cash",
@@ -1969,12 +1969,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["family","p-records-office-60"]],
-   "stops": [["home-rocket-west",-62690,-38210,0],["cafe-table-1-seat-1",-38090,-35810,1],["home-rocket-west",-35690,-33710,0],["cafe-stand-00",-33590,-33230,1],["home-rocket-west",-33110,-26810,0],["t1-records-stand-03",-26570,-25670,1],["home-rocket-west",-25430,-13910,0],["cafe-stand-10",-13790,-11270,1],["home-rocket-west",-11150,-9410,0],["cafe-stand-00",-9290,-8930,1],["home-rocket-west",-8810,-1610,0],["cafe-table-2-seat-2",-1490,430,1],["home-rocket-west",550,2890,0],["cafe-stand-01",3010,3370,1],["home-rocket-west",3490,6490,0],["cafe-table-2-seat-1",6610,9490,1],["home-rocket-west",9610,23710,0]]
+   "ties": [["family","p-records-office-58"]],
+   "stops": [["home-rocket-west",-62690,-38210,0],["cafe-table-1-seat-1",-38090,-35810,1],["home-rocket-west",-35690,-33710,0],["cafe-stand-00",-33590,-33230,1],["home-rocket-west",-33110,-26810,0],["t1-rocket-stand-03",-26570,-25670,1],["home-rocket-west",-25430,-13910,0],["cafe-stand-10",-13790,-11270,1],["home-rocket-west",-11150,-9410,0],["cafe-stand-00",-9290,-8930,1],["home-rocket-west",-8810,-1610,0],["cafe-table-2-seat-2",-1490,430,1],["home-rocket-west",550,2890,0],["cafe-stand-01",3010,3370,1],["home-rocket-west",3490,6490,0],["cafe-table-2-seat-1",6610,9490,1],["home-rocket-west",9610,23710,0]]
   },
   {
    "id": "p-rocket-west-03",
-   "name": "Richard Roussel",
+   "name": "Waldemar Szostak",
    "job": "resident",
    "temperament": "loyal",
    "need": "housing",
@@ -1984,12 +1984,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["regular","p-cafe-17"],["family","p-cafe-18"]],
-   "stops": [["home-rocket-west",-62690,-26330,0],["t1-records-stand-04",-26090,-25190,1],["home-rocket-west",-24950,-21110,0],["cafe-table-1-seat-0",-20990,-18890,1],["home-rocket-west",-18770,-17810,0],["cafe-stand-00",-17690,-17330,1],["home-rocket-west",-17210,-4310,0],["cafe-table-5-seat-0",-4190,-2330,1],["home-rocket-west",-2210,4090,0],["cafe-table-1-seat-0",4210,7810,1],["home-rocket-west",7930,9490,0],["cafe-stand-00",9610,9970,1],["home-rocket-west",10090,15490,0],["cafe-table-6-seat-0",15610,17530,1],["home-rocket-west",17650,21190,0],["cafe-table-0-seat-0",21310,23110,1],["home-rocket-west",23230,23710,0]]
+   "ties": [["regular","p-cafe-17"]],
+   "stops": [["home-rocket-west",-62690,-26330,0],["t1-rocket-stand-04",-26090,-25190,1],["home-rocket-west",-24950,-21110,0],["cafe-table-1-seat-0",-20990,-18890,1],["home-rocket-west",-18770,-17810,0],["cafe-stand-00",-17690,-17330,1],["home-rocket-west",-17210,-4310,0],["cafe-table-5-seat-0",-4190,-2330,1],["home-rocket-west",-2210,4090,0],["cafe-table-1-seat-0",4210,7810,1],["home-rocket-west",7930,9490,0],["cafe-stand-00",9610,9970,1],["home-rocket-west",10090,15490,0],["cafe-table-6-seat-0",15610,17530,1],["home-rocket-west",17650,21190,0],["cafe-table-0-seat-0",21310,23110,1],["home-rocket-west",23230,23710,0]]
   },
   {
    "id": "p-rocket-west-04",
-   "name": "Mikaela Brodin",
+   "name": "Su-bin Bae",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -1999,12 +1999,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-rocket-west-08"]],
-   "stops": [["home-rocket-west",-62690,-25310,0],["t1-records-stand-04",-25070,-24170,1],["home-rocket-west",-23930,-10610,0],["cafe-table-6-seat-0",-10490,-8270,1],["home-rocket-west",-8150,-7910,0],["cafe-table-0-seat-0",-7790,-5870,1],["home-rocket-west",-5750,-1610,0],["cafe-stand-01",-1490,-1130,1],["home-rocket-west",-1010,3490,0],["cafe-stand-00",3610,3970,1],["home-rocket-west",4090,23710,0]]
+   "ties": [["family","p-rocket-west-06"]],
+   "stops": [["home-rocket-west",-62690,-25310,0],["t1-rocket-stand-04",-25070,-24170,1],["home-rocket-west",-23930,-10610,0],["cafe-table-6-seat-0",-10490,-8270,1],["home-rocket-west",-8150,-7910,0],["cafe-table-0-seat-0",-7790,-5870,1],["home-rocket-west",-5750,-1610,0],["cafe-stand-01",-1490,-1130,1],["home-rocket-west",-1010,3490,0],["cafe-stand-00",3610,3970,1],["home-rocket-west",4090,23710,0]]
   },
   {
    "id": "p-rocket-west-05",
-   "name": "Ramon Martinez",
+   "name": "François Boulanger",
    "job": "resident",
    "temperament": "idealist",
    "need": "housing",
@@ -2014,12 +2014,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["family","p-records-office-50"]],
-   "stops": [["home-rocket-west",-62690,-35510,0],["cafe-stand-02",-35390,-35030,1],["home-rocket-west",-34910,-27710,0],["t1-records-stand-07",-27470,-26570,1],["home-rocket-west",-26330,-8210,0],["cafe-stand-00",-8090,-7730,1],["home-rocket-west",-7610,-3410,0],["cafe-table-2-seat-1",-3290,-530,1],["home-rocket-west",-410,9190,0],["cafe-table-2-seat-2",9310,11830,1],["home-rocket-west",11950,19990,0],["cafe-table-0-seat-1",20110,22990,1],["home-rocket-west",23110,23710,0]]
+   "ties": [["family","p-records-office-49"]],
+   "stops": [["home-rocket-west",-62690,-35510,0],["cafe-stand-02",-35390,-35030,1],["home-rocket-west",-34910,-27710,0],["t1-rocket-stand-07",-27470,-26570,1],["home-rocket-west",-26330,-8210,0],["cafe-stand-00",-8090,-7730,1],["home-rocket-west",-7610,-3410,0],["cafe-table-2-seat-1",-3290,-530,1],["home-rocket-west",-410,9190,0],["cafe-table-2-seat-2",9310,11830,1],["home-rocket-west",11950,19990,0],["cafe-table-0-seat-1",20110,22990,1],["home-rocket-west",23110,23710,0]]
   },
   {
    "id": "p-rocket-west-06",
-   "name": "Tania Iglesias",
+   "name": "Ok-ja Bae",
    "job": "resident",
    "temperament": "idealist",
    "need": "housing",
@@ -2029,12 +2029,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["family","p-records-office-23"]],
-   "stops": [["home-rocket-west",-62690,-37610,0],["cafe-table-7-seat-0",-37490,-34490,1],["home-rocket-west",-34370,-28910,0],["cafe-stand-00",-28790,-28430,1],["home-rocket-west",-28310,-24830,0],["t1-records-stand-02",-24590,-23690,1],["home-rocket-west",-23450,-19010,0],["cafe-stand-00",-18890,-18530,1],["home-rocket-west",-18410,-1310,0],["cafe-stand-02",-1190,-830,1],["home-rocket-west",-710,13990,0],["cafe-table-4-seat-1",14110,16930,1],["home-rocket-west",17050,23710,0]]
+   "ties": [["family","p-rocket-west-04"]],
+   "stops": [["home-rocket-west",-62690,-37610,0],["cafe-table-7-seat-0",-37490,-34490,1],["home-rocket-west",-34370,-28910,0],["cafe-stand-00",-28790,-28430,1],["home-rocket-west",-28310,-24830,0],["t1-rocket-stand-02",-24590,-23690,1],["home-rocket-west",-23450,-19010,0],["cafe-stand-00",-18890,-18530,1],["home-rocket-west",-18410,-1310,0],["cafe-stand-02",-1190,-830,1],["home-rocket-west",-710,13990,0],["cafe-table-4-seat-1",14110,16930,1],["home-rocket-west",17050,23710,0]]
   },
   {
    "id": "p-rocket-west-07",
-   "name": "Iwona Wróblewska",
+   "name": "Iwona Sadowska",
    "job": "resident",
    "temperament": "mercenary",
    "need": "cash",
@@ -2044,12 +2044,12 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,0,0],
-   "ties": [["family","p-records-office-43"]],
-   "stops": [["home-rocket-west",-62690,-27830,0],["t1-records-stand-08",-27590,-26690,1],["home-rocket-west",-26450,-10010,0],["cafe-stand-02",-9890,-9530,1],["home-rocket-west",-9410,1990,0],["cafe-stand-01",2110,2470,1],["home-rocket-west",2590,6190,0],["cafe-table-2-seat-2",6310,8830,1],["home-rocket-west",8950,16390,0],["cafe-table-0-seat-2",16510,18670,1],["home-rocket-west",18790,23710,0]]
+   "ties": [["family","p-records-office-42"]],
+   "stops": [["home-rocket-west",-62690,-27830,0],["t1-rocket-stand-08",-27590,-26690,1],["home-rocket-west",-26450,-10010,0],["cafe-stand-02",-9890,-9530,1],["home-rocket-west",-9410,1990,0],["cafe-stand-01",2110,2470,1],["home-rocket-west",2590,6190,0],["cafe-table-2-seat-2",6310,8830,1],["home-rocket-west",8950,16390,0],["cafe-table-0-seat-2",16510,18670,1],["home-rocket-west",18790,23710,0]]
   },
   {
    "id": "p-rocket-west-08",
-   "name": "Madeleine Brodin",
+   "name": "Madeleine Rask",
    "job": "resident",
    "temperament": "fearful",
    "need": "papers",
@@ -2059,8 +2059,8 @@
    "size": "standard",
    "holder": "beyond",
    "start": [0,0,1,0],
-   "ties": [["family","p-rocket-west-04"]],
-   "stops": [["home-rocket-west",-62690,-40910,0],["cafe-stand-00",-40790,-40430,1],["home-rocket-west",-40310,-37610,0],["cafe-stand-00",-37490,-37130,1],["home-rocket-west",-37010,-32210,0],["cafe-stand-00",-32090,-31730,1],["home-rocket-west",-31610,-31010,0],["cafe-stand-00",-30890,-30530,1],["home-rocket-west",-30410,-24530,0],["t1-records-stand-05",-24290,-23390,1],["home-rocket-west",-23150,-10610,0],["cafe-table-4-seat-0",-10490,-8390,1],["home-rocket-west",-8270,7090,0],["cafe-stand-01",7210,7570,1],["home-rocket-west",7690,8590,0],["cafe-table-5-seat-1",8710,11710,1],["home-rocket-west",11830,23710,0]]
+   "ties": [["family","p-cafe-12"]],
+   "stops": [["home-rocket-west",-62690,-40910,0],["cafe-stand-00",-40790,-40430,1],["home-rocket-west",-40310,-37610,0],["cafe-stand-00",-37490,-37130,1],["home-rocket-west",-37010,-32210,0],["cafe-stand-00",-32090,-31730,1],["home-rocket-west",-31610,-31010,0],["cafe-stand-00",-30890,-30530,1],["home-rocket-west",-30410,-24530,0],["t1-rocket-stand-05",-24290,-23390,1],["home-rocket-west",-23150,-10610,0],["cafe-table-4-seat-0",-10490,-8390,1],["home-rocket-west",-8270,7090,0],["cafe-stand-01",7210,7570,1],["home-rocket-west",7690,8590,0],["cafe-table-5-seat-1",8710,11710,1],["home-rocket-west",11830,23710,0]]
   },
   {
    "id": "p-s1-gardens-kiosk-01",
@@ -2075,11 +2075,11 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-s1-gardens-kiosk-03"],["workmate","p-s1-gardens-kiosk-02"]],
-   "stops": [["beyond",-62690,-45350,0],["t1-records",-45350,-45230,1],["s1-gardens",-44690,-33710,0],["s1-gardens",-33710,-31910,0],["s1-gardens",-31910,-20630,0],["t1-records",-20210,-20090,1],["beyond",-20090,23710,0]]
+   "stops": [["beyond",-62690,-45350,0],["t1-rocket",-45350,-45230,1],["s1-gardens",-44690,-33710,0],["s1-gardens",-33710,-31910,0],["s1-gardens",-31910,-20630,0],["t1-rocket",-20210,-20090,1],["beyond",-20090,23710,0]]
   },
   {
    "id": "p-s1-gardens-kiosk-02",
-   "name": "Irena Kozioł",
+   "name": "Lise Christensen",
    "job": "attendant",
    "temperament": "fearful",
    "need": "debt",
@@ -2090,11 +2090,11 @@
    "holder": "beyond",
    "start": [0,0,1,0],
    "ties": [["workmate","p-s1-gardens-kiosk-01"]],
-   "stops": [["beyond",-62690,-21290,0],["t1-records",-21290,-21170,1],["s1-gardens",-20690,-7490,1],["s1-gardens",-7490,-5690,1],["s1-gardens",-5690,3310,1],["t1-records",3730,3850,1],["beyond",3850,23710,0]]
+   "stops": [["beyond",-62690,-21290,0],["t1-rocket",-21290,-21170,1],["s1-gardens",-20690,-7490,1],["s1-gardens",-7490,-5690,1],["s1-gardens",-5690,3310,1],["t1-rocket",3730,3850,1],["beyond",3850,23710,0]]
   },
   {
    "id": "p-s1-gardens-kiosk-03",
-   "name": "Igor Marzec",
+   "name": "Erlend Solbakken",
    "job": "attendant",
    "temperament": "idealist",
    "need": "cash",
@@ -2105,27 +2105,12 @@
    "holder": "beyond",
    "start": [1,0,0,0],
    "ties": [["workmate","p-s1-gardens-kiosk-01"]],
-   "stops": [["s1-gardens",-62690,-59090,1],["t1-records",-58670,-58550,1],["beyond",-58550,2770,0],["t1-records",2770,2890,1],["s1-gardens",3310,14290,1],["s1-gardens",14290,16090,1],["s1-gardens",16090,23710,1]]
+   "stops": [["s1-gardens",-62690,-59090,1],["t1-rocket",-58670,-58550,1],["beyond",-58550,2770,0],["t1-rocket",2770,2890,1],["s1-gardens",3310,14290,1],["s1-gardens",14290,16090,1],["s1-gardens",16090,23710,1]]
   },
   {
-   "id": "p-t1-records-kiosk-01",
-   "name": "Vincent Boutet",
+   "id": "p-t1-rocket-kiosk-01",
+   "name": "Roberto Bernabe",
    "job": "keeper",
-   "temperament": "idealist",
-   "need": "advancement",
-   "home": 1,
-   "work": 1,
-   "record": "day-shift",
-   "size": "standard",
-   "holder": "beyond",
-   "start": [1,0,0,0],
-   "ties": [["family","p-cafe-21"],["workmate","p-t1-records-kiosk-02"]],
-   "stops": [["home-rocket-west",-62690,-45170,0],["t1-records",-44690,-32570,0],["t1-records",-32570,-30770,0],["t1-records",-30770,-20450,0],["home-rocket-west",-20210,23710,0]]
-  },
-  {
-   "id": "p-t1-records-kiosk-02",
-   "name": "John Haile",
-   "job": "attendant",
    "temperament": "idealist",
    "need": "cash",
    "home": 0,
@@ -2134,23 +2119,38 @@
    "size": "standard",
    "holder": "beyond",
    "start": [1,0,0,0],
-   "ties": [["workmate","p-t1-records-kiosk-01"],["workmate","p-t1-records-kiosk-03"]],
-   "stops": [["beyond",-62690,-21170,0],["t1-records",-21170,-21050,1],["t1-records",-20690,-9770,1],["t1-records",-9770,-7970,1],["t1-records",-7970,3310,1],["cafe-table-5-seat-0",3610,6310,1],["t1-records",6610,6730,1],["beyond",6730,23710,0]]
+   "ties": [["workmate","p-t1-rocket-kiosk-03"]],
+   "stops": [["beyond",-62690,-44870,0],["t1-rocket",-44870,-44750,1],["t1-rocket",-44690,-32330,0],["t1-rocket",-32330,-30530,0],["t1-rocket",-30530,-20630,0],["cafe-table-4-seat-1",-20330,-17630,1],["t1-rocket",-17330,-17210,1],["beyond",-17210,23710,0]]
   },
   {
-   "id": "p-t1-records-kiosk-03",
-   "name": "Marte Nygård",
+   "id": "p-t1-rocket-kiosk-02",
+   "name": "Denys Biernat",
    "job": "attendant",
-   "temperament": "fearful",
-   "need": "papers",
+   "temperament": "mercenary",
+   "need": "cash",
    "home": 1,
    "work": 1,
-   "record": "concourse-pass",
+   "record": "lean-month",
    "size": "standard",
    "holder": "beyond",
-   "start": [0,0,1,0],
-   "ties": [["workmate","p-t1-records-kiosk-02"]],
-   "stops": [["t1-records",-62690,-59090,1],["home-rocket-west",-58850,2950,0],["t1-records",3310,15250,1],["t1-records",15250,17050,1],["t1-records",17050,23710,1]]
+   "start": [0,0,0,0],
+   "ties": [["workmate","p-t1-rocket-kiosk-03"]],
+   "stops": [["home-garden-row-east",-62690,-21290,0],["t1-rocket",-20690,-7670,1],["t1-rocket",-7670,-5870,1],["t1-rocket",-5870,3310,1],["home-garden-row-east",3550,23710,0]]
+  },
+  {
+   "id": "p-t1-rocket-kiosk-03",
+   "name": "Esther Arcos",
+   "job": "attendant",
+   "temperament": "mercenary",
+   "need": "debt",
+   "home": 1,
+   "work": 1,
+   "record": "bureau-loan",
+   "size": "standard",
+   "holder": "beyond",
+   "start": [0,0,0,0],
+   "ties": [["family","p-garden-row-east-04"],["workmate","p-t1-rocket-kiosk-01"],["workmate","p-t1-rocket-kiosk-02"]],
+   "stops": [["t1-rocket",-62690,-59090,1],["home-garden-row-east",-58850,2950,0],["t1-rocket",3310,15310,1],["t1-rocket",15310,17110,1],["t1-rocket",17110,23710,1]]
   }
  ]
 }
