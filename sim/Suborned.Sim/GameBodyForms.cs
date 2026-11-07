@@ -1,15 +1,17 @@
 // L9 Bodies, the placing (GameBodies.cs gathers and stores): one body laid where its own rules put it when that is clear, else at the first clear
-// goal of a fixed list, moved to at the law's paces. And the armed groups' spread at their source (brief 098: "groups spread, with real tactics"):
-// a crew spot round a place, bodies.crew apart, each facing its own sector, for the rival crew drawn to the Office front, the response unit at the
-// end of its walk and police units at their destination.
-//  · the goal: its own place (raw, the lay easing back); at a stop another holds, the first free spot of the stop's form (a queue behind it at
-//    bodies.queue, then an arc round it; a guard at a post another guard holds, the nearest free crew spot in sight of it, bodies.crew out,
-//    facing that spot's sector, his until he leaves); holding its lay; a walker's sidestep (right, then left); rings round its own place, first
-//    by choice (personal space), then by need (two radii); a body new to the street in a press (a crowd coming back out of one door) the
-//    nearest room by walk within twice bodies.search; a body held a second walks round what holds it (GameBodyDetours.cs).
+// goal of a fixed list, moved to at the law's paces and never over its own (nobody jumps). And the armed groups' spread at their source (brief
+// 098: "groups spread, with real tactics"): a crew spot round a place, bodies.crew apart, each facing its own sector, for the rival crew drawn to
+// the Office front, the response unit at the end of its walk and police units at their destination.
+//  · the goal: where it makes for (its own place, the lay easing back; or a change of plans); at a stop another holds, the first free spot of the
+//    stop's form (a queue behind it at bodies.queue, then an arc round it; a guard at a post another guard holds, the nearest free crew spot in
+//    sight of it, bodies.crew out, facing that spot's sector, his until he leaves); holding its lay; a walker's sidestep (right, then left);
+//    rings round its own place, first by choice (personal space), then by need (two radii); a body new to the street in a press (a crowd coming
+//    back out of one door) the nearest room by walk within twice bodies.search; making room for one it holds, giving way, a way round or back
+//    (GameBodyGive.cs, GameBodyDetours.cs).
 //  · the move: straight at the goal, at bodies.shove when it must make room now (it stands inside two radii of someone it must respect, or walks),
-//    back at bodies.back to its own place, at the city's walk to a spot it chose; a body new to the street is laid at its goal at once.
-//  · if that step is not clear: hold where it stands, wait where it stood last tick (a walker), or the nearest clear place within a shove; if
+//    back at bodies.back to its own place, at the city's walk to a spot it chose, slower squeezing past; each never over the body's own pace
+//    (BodyPace). Only a body new to the street is placed at its goal at once.
+//  · if that step is not clear: hold where it stands, wait where it stood last tick (a walker), or the nearest clear place within its pace; if
 //    none, it is laid at the step and counted (BodyOverlapsNow): the law's tests read that count as a failure.
 using System;
 using System.Collections.Generic;
@@ -33,51 +35,57 @@ namespace Suborned.Sim
         int tenetTick = -1; readonly List<int> crowded = new List<int>();
         /// <summary>The city's walk in cm a tick (crowd.walk is cm a second).</summary>
         int WalkCmT => Math.Max(1, peopleWalk / Hz);
-        const byte WhyOwn = 1, WhyFollow = 2, WhyRejoin = 3, WhyForm = 4, WhyHold = 5, WhySide = 6, WhyRing = 7, WhyRing2 = 8, WhyWide = 9, WhyNone = 10, WhyDetour = 11, WhyGive = 12;
-        static readonly string[] WhyGoal = { "", "own", "follow", "rejoin", "form", "hold", "side", "ring", "ring2", "wide", "none", "detour", "give" }, WhyMove = { "", ">next", ">slide", ">cur", ">wait", ">near", ">crowded" }, WhyFix = { "", ">room", ">gave-way", ">OVERLAP" };
+        const byte WhyOwn = 1, WhyFollow = 2, WhyCatch = 3, WhyForm = 4, WhyHold = 5, WhySide = 6, WhyRing = 7, WhyRing2 = 8, WhyWide = 9, WhyNone = 10, WhyDetour = 11, WhyGive = 12, WhyRoom = 13, WhyAlt = 14;
+        static readonly string[] WhyGoal = { "", "own", "follow", "catch", "form", "hold", "side", "ring", "ring2", "wide", "none", "detour", "give", "room", "alt" }, WhyMove = { "", ">next", ">slide", ">cur", ">wait", ">near", ">crowded" }, WhyFix = { "", ">room", ">gave-way", ">OVERLAP", ">off-ground" };
+        /// <summary>A body's Fix: laid again by BodyRepair (room, gave way), still overlapping (counted), or stepping off ground no body stands on
+        /// (a car's, or a solid cell its own place left it on).</summary>
+        const byte FixOff = 4;
         /// <summary>A body more than this behind its own place follows its own walk, aiming FollowAheadMm along it past the point nearest it.</summary>
         const int FollowCm = 120; const long FollowAheadMm = 1500;
-        /// <summary>A body this far behind its own place with a wall between it and its walk is lost: it rejoins its own place as one new to the street.</summary>
-        const int LostCm = 500;
+        /// <summary>A body this far from where it makes for with a wall between walks back to it by the walk grid, at once (GameBodyDetours.cs).</summary>
+        const int CatchCm = 150;
 
         void LayOne(int i)
         {
             ref var b = ref bds[i];
+            if (b.Cls == BcFixed && b.Fresh && b.WalksFirm && Blocker(i, b.Own, false) is int on && on >= 0 && bds[on].Cls != BcFixed) b.Cls = BcFirm; // one of the cast coming out where someone stands (Vale out of the Office door onto a guard at its post) steps out beside them, then walks to its place as a tenet walking does
             if (b.Cls == BcFixed)
             {
-                b.At = b.Raw; b.LayFace = default; b.Placed = true;
+                b.At = b.Own; b.LayFace = default; b.Placed = true;
                 if (tenetTick != Tick && Blocker(i, b.At, false) is int t && t >= 0 && bds[t].Cls == BcFixed) { tenetTick = Tick; BodyTenetTicks++; } // two tenets inside two radii: the tenet wins
-                HashAdd(i, b.At); return;
+                HashAdd(i, b.At); if (b.Head != default) ClearAhead(i); return; // a tenet walking (the Enforcer leading Vale): the city ahead of it makes room before it comes (GameBodyGive.cs)
             }
+            GiveStart(i); // GameBodyGive.cs: making room or a squeeze ends once the other has passed
             Pt cur = b.Raw + b.Lay, from = b.Prev, goal, gface = b.LayFace; bool form = false; byte why; // cur: holding its lay; from: where it stood; why: the goal and the move (BodyTrace reads them)
-            bool behind = b.Path != null && !b.Fresh && G.D2(b.Raw, from) > (long)FollowCm * FollowCm; // fallen behind its own place: it follows its own walk, not a line through walls
-            bool onCar = !b.Fresh && from != b.Raw && !OffCars(from); // a car came to stand where it stood (the engine steps the cell off a car's ground the same way)
-            b.Aim = behind ? FollowAim(in b, from) : b.Raw;
-            bool lost = behind && G.D2(b.Raw, from) > (long)LostCm * LostCm && !S.Grid.LineFree(from, b.Aim); // walled off from its own walk (a routine leg through a building): it rejoins its own place (tried 2026-11-07: a way round first left more behind)
-            if (b.Rejoin) { lost = true; b.Rejoin = false; b.Det = null; } // the law's last resort (GameBodyDetours.cs)
-            if (lost && BodyGround(in b, b.Raw) && Blocker(i, b.Raw, false) < 0) { goal = b.Raw; why = WhyRejoin; }
-            else if (!onCar && !lost && BodyGround(in b, b.Aim) && Blocker(i, b.Aim, true) < 0) { goal = b.Aim; gface = default; why = behind ? WhyFollow : WhyOwn; }
-            else if (FormGoal(i, out goal, out var ff)) { gface = ff; form = true; why = WhyForm; }
-            else if (b.Lay != default && Fits(i, cur, true)) { goal = cur; why = WhyHold; }
+            bool behind = !b.AltOn && b.Path != null && !b.Fresh && G.D2(b.Raw, from) > (long)FollowCm * FollowCm; // fallen behind its own place: it follows its own walk, not a line through walls
+            if (!b.Fresh && from != b.Raw && (!OffCars(from) || !S.Grid.Free(from))) b.Fix = FixOff; // a car came to stand where it stood, or its own place left it on ground no body stands on (a door point in a facade): it walks off it (BodyGround)
+            bool onCar = b.Fix == FixOff;
+            b.Aim = behind ? FollowAim(in b, from) : b.Own;
+            if (!b.Fresh && b.Det == null && Tick >= b.DetEnd && !G.Within(from, b.Aim, CatchCm) && !S.Grid.LineFree(from, b.Aim)) PlanCatch(i, from, b.Aim); // walled off from where it makes for (a routine leg through a building, its own place jumped behind a wall): it walks back by the walk grid (GameBodyDetours.cs)
+            if (!onCar && BodyGround(in b, b.Aim) && Blocker(i, b.Aim, true) < 0) { goal = b.Aim; gface = default; why = b.AltOn ? WhyAlt : behind ? WhyFollow : WhyOwn; }
+            else if (!b.AltOn && FormGoal(i, out goal, out var ff)) { gface = ff; form = true; why = WhyForm; }
+            else if (b.Lay != default && !b.AltOn && Fits(i, cur, true)) { goal = cur; why = WhyHold; }
             else if (b.Moving && SideGoal(i, cur, out goal)) why = WhySide;
             else if (RingGoal(i, true, out goal)) why = WhyRing;
             else if (RingGoal(i, false, out goal)) why = WhyRing2;
-            else if ((b.Fresh || onCar || lost || (Blocker(i, from, false) is int fj && fj >= 0 && bds[fj].Fresh)) && bodyWalk.Nearest(onCar ? from : b.Raw, c => Fits(i, c, false), 2 * R.BodySearchCm) is Pt wide) { goal = wide; why = WhyWide; } // new on the street in a press (a crowd back out of one door), or a car came to stand on it: the nearest room by walk
+            else if ((b.Fresh || onCar) && bodyWalk.Nearest(onCar ? from : b.Raw, c => Fits(i, c, false), 2 * R.BodySearchCm) is Pt wide) { goal = wide; why = WhyWide; } // new on the street in a press (a crowd back out of one door), or standing where no body stands (a car came to stand on it): the nearest room by walk
             else { goal = cur; why = WhyNone; }
-            if (b.GiveEnd > Tick) { goal = b.GiveAt; why = WhyGive; form = false; } // giving way to one it held (GameBodyDetours.cs)
-            else if (DetourAim(ref b, from) is Pt way) { goal = way; why = WhyDetour; form = false; } // on its way round what held it
-            bool urgent = !Fits(i, from, false), jump = b.Fresh || onCar || lost || (Blocker(i, from, false) is int bj && bj >= 0 && bds[bj].Fresh); // someone appeared on it, or a car stopped on it: it steps clear at once
-            int rate = jump ? int.MaxValue : urgent ? R.BodyShoveCmT : why == WhyDetour || why == WhyGive ? WalkCmT : b.Moving && goal != b.Aim ? R.BodyShoveCmT : behind && goal == b.Aim ? Math.Max(R.BodyBackCmT, WalkCmT) : goal == b.Raw ? R.BodyBackCmT : Math.Max(R.BodyBackCmT, WalkCmT); // behind, it hurries
-            int reach = rate == int.MaxValue ? rate : rate + (int)G.Isqrt(G.D2(b.Head, default)); // its own step this tick, and the law's pace on top
+            if (b.RoomFor != null) { goal = b.RoomAt; why = WhyRoom; form = false; } // making room for one it held (GameBodyGive.cs)
+            else if (b.GiveEnd > Tick) { goal = b.GiveAt; why = WhyGive; form = false; } // giving way to one it held (GameBodyDetours.cs)
+            else if (DetourAim(ref b, from) is Pt way) { goal = way; why = b.Catch ? WhyCatch : WhyDetour; form = false; } // on its way round what held it, or back to where it makes for
+            bool urgent = !Fits(i, from, false); // someone stands inside two radii of where it stood (a tenet walked on it), or a car stood on it: it steps clear now
+            int rate = b.Fresh ? int.MaxValue : urgent || onCar ? R.BodyShoveCmT : why == WhyDetour || why == WhyGive || why == WhyRoom ? WalkCmT : why == WhyCatch ? Math.Max(R.BodyBackCmT, WalkCmT) : b.Moving && goal != b.Aim ? R.BodyShoveCmT : behind && goal == b.Aim ? Math.Max(R.BodyBackCmT, WalkCmT) : goal == b.Raw ? R.BodyBackCmT : Math.Max(R.BodyBackCmT, WalkCmT); // behind, it hurries
+            int reach = b.Fresh ? int.MaxValue : b.SqzId != null ? Math.Min(b.Pace, R.BodySqueezeCmT) : Math.Min(b.Pace, rate + (int)G.Isqrt(G.D2(b.Head, default))); // its own step this tick and the law's pace on top, never over its own pace (nobody jumps); squeezing past, slower
+            int most = b.Fresh ? R.BodySearchCm : Math.Min(b.Pace, R.BodyShoveCmT); // the farthest it may step aside this tick when it must
             var next = Toward(from, goal, reach); Pt at; bool clear = Fits(i, next, false); if (!clear) b.Blk = Blocker(i, next, false); // who holds its step (GameBodyDetours.cs)
             if (clear) { at = next; why |= 1 << 4; }
-            else if (Slide(i, from, goal, reach, out var sl)) { at = sl; why |= 2 << 4; } // round whoever is in the way, toward where it is going
+            else if (Slide(i, from, goal, reach, out var sl) && (long)(sl.X - from.X) * b.SlideV.X + (long)(sl.Y - from.Y) * b.SlideV.Y >= 0) { at = sl; why |= 2 << 4; } // round whoever is in the way, toward where it is going; never straight back the way it slid last tick (no dancing: it waits, then asks, gives way or walks round)
             else if (cur != next && G.Within(cur, from, reach) && Fits(i, cur, false)) { at = cur; why |= 3 << 4; }
             else if (!b.Fresh && Fits(i, from, false)) { at = from; why |= 4 << 4; } // a walker waits a moment where it stood
-            else if (NearClear(i, from, jump ? R.BodySearchCm : R.BodyShoveCmT, out var nc)) { at = nc; why |= 5 << 4; } // or steps aside from there
-            else { at = LeastCrowded(i, from, next, cur, jump ? R.BodySearchCm : R.BodyShoveCmT); why |= 6 << 4; crowded.Add(i); } // none clear: where it overlaps least (BodyRepair tries again)
-            b.Why = why; b.Fix = 0;
-            b.At = at; b.Placed = true; b.Reach = jump ? R.BodySearchCm : Math.Max(R.BodyShoveCmT, reach == int.MaxValue ? R.BodySearchCm : reach); b.LayFace = form ? gface : at == b.Raw ? default : b.LayFace;
+            else if (NearClear(i, from, most, out var nc)) { at = nc; why |= 5 << 4; } // or steps aside from there
+            else { at = LeastCrowded(i, from, next, cur, most); why |= 6 << 4; crowded.Add(i); } // none clear: where it overlaps least (BodyRepair tries again)
+            b.Why = why; if (b.Fix != FixOff) b.Fix = 0;
+            b.At = at; b.Placed = true; b.Reach = b.Fresh ? R.BodySearchCm : most; b.LayFace = form ? gface : at == b.Raw ? default : b.LayFace;
             HashAdd(i, at); DetourAfter(i, from, goal, reach);
         }
         bool Fits(int i, Pt c, bool comfort) => BodyGround(in bds[i], c) && Blocker(i, c, comfort) < 0;
@@ -147,7 +155,7 @@ namespace Suborned.Sim
             long best = long.MaxValue; int cx = FloorDiv(c.X, 100), cy = FloorDiv(c.Y, 100); ref var b = ref bds[i];
             for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++)
                 if (bhHead.TryGetValue(CellKey(cx + dx, cy + dy), out var e))
-                    for (; e >= 0; e = bhNext[e]) { int j = bhBody[e]; if (j == i) continue; ref var o = ref bds[j]; if (!o.Placed && Yields(in b, in o)) continue; long d = G.Isqrt(G.D2(c, o.At)) - R.BodyMinCm; if (d < best) best = d; }
+                    for (; e >= 0; e = bhNext[e]) { int j = bhBody[e]; if (j == i) continue; ref var o = ref bds[j]; long d = G.Isqrt(G.D2(c, o.At)) - Need(in b, in o, false); if (d < best) best = d; }
             return best;
         }
         /// <summary>A step from where it stood toward its goal, turned 22.5° at a time to either side (the nearer turn first, to 90°), as long as

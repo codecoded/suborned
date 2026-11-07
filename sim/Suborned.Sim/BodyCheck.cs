@@ -30,6 +30,41 @@ namespace Suborned.Sim
             return l;
         }
 
+        /// <summary>The fastest a body of this kind goes on its own feet, cm a tick (rounded up): the rulebook's run paces (Game.BodyPaceCmS: the
+        /// cell's and the cast's run, the city's run, a rival's following pace, security's for officers and police, a robot's).</summary>
+        public static int PaceCmT(Game g, string kind) => (g.BodyPaceCmS(kind) + Game.Hz - 1) / Game.Hz;
+        /// <summary>A tick-to-tick move this far over its pace is rounding (integer cm off a walk in mm), not a jump.</summary>
+        public const int RoundCm = 2;
+
+        /// <summary>Law L9's "nobody jumps" (brief 098, Sky 2026-11-07: "the jumping back to spot should be better to dealt with"): each body upright on
+        /// the street in two ticks running, read as the host reads it, moved no farther than its own pace (PaceCmT). One appearing (out of a door,
+        /// a car, a refuge) or leaving the street has no move. Read-only; never hashed.</summary>
+        public sealed class Moves
+        {
+            Dictionary<string, Pt> last = new Dictionary<string, Pt>(StringComparer.Ordinal), now = new Dictionary<string, Pt>(StringComparer.Ordinal);
+            /// <summary>Moves looked at, jumps (over the pace), the longest move over the pace, and the first jumps (who, how far, when).</summary>
+            public long Looks; public int Jumps, WorstOverCm; public readonly List<(string id, string kind, int cm, int pace, int tick, Pt from, Pt to)> First = new List<(string, string, int, int, int, Pt, Pt)>();
+            public readonly SortedDictionary<string, int> ByKind = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            public void Look(Game g, List<Upright> up, int keep = 8)
+            {
+                now.Clear();
+                foreach (var u in up)
+                {
+                    if (last.TryGetValue(u.Id, out var p))
+                    {
+                        Looks++; int d = G.Dist(u.At, p), pace = PaceCmT(g, u.Kind);
+                        if (d > pace + RoundCm) { Jumps++; ByKind[u.Kind] = ByKind.GetValueOrDefault(u.Kind) + 1; WorstOverCm = Math.Max(WorstOverCm, d - pace); if (First.Count < keep) First.Add((u.Id, u.Kind, d, pace, g.Tick, p, u.At)); }
+                    }
+                    now[u.Id] = u.At;
+                }
+                (last, now) = (now, last);
+            }
+        }
+
+        /// <summary>Whether a pair inside two radii is a squeeze the law counts (engine 0.47.0): each squeezes past the other, and they stand at least
+        /// two squeeze widths apart. Any other pair inside two radii is the law's failure.</summary>
+        public static bool Squeezing(Game g, in Upright a, in Upright b, int cm) => cm >= 2 * g.R.BodySqueezeCm && g.BodySqueeze(a.Id) is var sa && sa.HasValue && sa.Value.with == b.Id && g.BodySqueeze(b.Id) is var sb && sb.HasValue && sb.Value.with == a.Id;
+
         /// <summary>Every pair of upright bodies closer than `minCm` centre to centre, nearest first (a 1 m bucket grid: cheap at hundreds).</summary>
         public static List<(Upright a, Upright b, int cm)> Closer(List<Upright> l, int minCm)
         {

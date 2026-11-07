@@ -77,7 +77,7 @@ static class DialCli
     }
 
     /// <summary>The settings a sweep or a perf plays: (name, counts or null for unset).</summary>
-    static List<(string name, SortedDictionary<string, int>? counts)> Settings(Engine.Inputs inputs, string[] args, string fallback)
+    internal static List<(string name, SortedDictionary<string, int>? counts)> Settings(Engine.Inputs inputs, string[] args, string fallback)
     {
         int k = Array.IndexOf(args, "--settings"); var spec = k > 0 && k + 1 < args.Length ? args[k + 1] : fallback;
         var today = Population.Today(inputs); var l = new List<(string, SortedDictionary<string, int>?)>();

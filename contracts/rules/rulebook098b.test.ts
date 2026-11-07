@@ -22,6 +22,13 @@ describe('brief 098: law L9, Bodies, in the rulebook', () => {
     expect([v(b.back), v(b.shove), v(b.search)]).toEqual([60, 400, 200]);
     for (const k of ['body-radius-cm', 'body-space-cm', 'body-queue-cm', 'body-crew-cm', 'body-back-cm-s', 'body-shove-cm-s', 'body-search-cm']) expect(raw.values[k].proposed).toBe(true);
   });
+  test("engine 0.47.0's give and take: a squeeze of 20 cm a side (under a radius), squeezing at 0.5 m/s (no more than a shove), changing plans after 5 s held", () => {
+    const b = rb.bodies!;
+    expect(b.squeeze && b.squeezePace && b.replan).toBeTruthy();
+    expect([v(b.squeeze!), v(b.squeezePace!), v(b.replan!)]).toEqual([20, 50, 5]);
+    expect(v(b.squeeze!)).toBeLessThan(v(b.radius)); expect(v(b.squeezePace!)).toBeLessThanOrEqual(v(b.shove));
+    for (const k of ['body-squeeze-cm', 'body-squeeze-cm-s', 'body-replan-s']) expect(raw.values[k].proposed).toBe(true);
+  });
   test('the fight agrees with the law: fight.spacing.clear is two radii', () => {
     expect(v(rb.fight.spacing!.clear)).toBe(2 * v(rb.bodies!.radius));
   });

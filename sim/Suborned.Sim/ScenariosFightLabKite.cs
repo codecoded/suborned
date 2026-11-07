@@ -22,15 +22,15 @@ namespace Suborned.Sim
             r.To(r.SendTo(Scout, spot.Value)); r.Do(Scout, "draw"); r.Wait(g.DrawT + 1); r.Fire(Scout, GuardR);
             if (!r.Until(() => g.GuardDown, T(10))) return null;
             r.Do(Scout, "holster"); r.Send(Scout, "d:Getaway bay");
-            Pt? last1 = null; int still = 0;
+            Pt? last1 = null, last2 = null; int still = 0; // brief 098 L9 (engine 0.47.0): the unit stands when both officers are at rest a second (each settles on his crew spot at his own pace)
             r.Until(() =>
             {
                 var a = g.SecOfficerPose(0)?.pos; var b = g.SecOfficerPose(1)?.pos;
                 if (!a.HasValue || !b.HasValue) { still = 0; return false; }
-                still = last1 == a ? still + 1 : 0; last1 = a; return still >= 2;
+                still = last1 == a && last2 == b ? still + 1 : 0; last1 = a; last2 = b; return still >= T(1);
             }, T(150));
             var p1 = g.SecOfficerPose(0)?.pos; var p2 = g.SecOfficerPose(1)?.pos;
-            return p1.HasValue && p2.HasValue && still >= 2 ? (p1.Value, p2.Value) : ((Pt, Pt)?)null;
+            return p1.HasValue && p2.HasValue && still >= T(1) ? (p1.Value, p2.Value) : ((Pt, Pt)?)null;
         }
         /// <summary>A free point `lo`..`hi` cm from `a` with a line to it, and beyond `away` cm of every point in `far`.</summary>
         static Pt? KiteSpot(Game g, Pt a, int lo, int hi, int away, params Pt[] far) =>

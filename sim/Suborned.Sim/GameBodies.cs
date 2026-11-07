@@ -1,17 +1,20 @@
 // Brief 098, law L9 Bodies (Sky 2026-11-07, playing, three guards inside one another on a call box and the rival crew on one spot: "our people
 // bunch up together too much - we need to think about real tactics from this, and ensuring NPC's don't overlap each, they have real boundaries";
-// rulebook `bodies`, engine 0.46.0). Every person on the street has a body, and no two bodies on their feet overlap. Each tick, after every rule
-// has moved its people, the bodies are laid (BodyStep):
+// rulebook `bodies`, engine 0.46.0; give and take, engine 0.47.0: Sky 2026-11-07 on the last resort, "Do all but the jumping back to spot should be
+// better to dealt with"). Every person on the street has a body, no two bodies on their feet overlap, and nobody jumps: no body the law lays moves
+// farther in a tick than its own pace (BodyPace). Each tick, after every rule has moved its people, the bodies are laid (BodyStep):
 //  · gathered: everyone upright on the street inside the walk window, once each, with the place their own rules give them now ("raw") and last
-//    tick's displacement ("lay"). A body on the ground is left where it fell; a person carried, or in a car, is off the street.
-//  · ordered: the tenets (fixed: the cast, the patrol, a person in a café chair, an operative at work, the Enforcer leading Vale), then the armed
-//    (firm: the cell, the rival crew, fight bodies, officers, police units), then the city's people (soft); standing before walking; kind; id.
+//    tick's displacement ("lay"). A body on the ground is left where it fell; a person carried, or in a car, is off the street. One new to the
+//    street (out of a door, a car) is placed; one already on it whose own place jumped (a fright's end, a leg timed faster than a run, a new walk)
+//    walks there from where it stood, at its pace.
+//  · ordered: the tenets (fixed: the cast, a person in a café chair, an operative at work, the Enforcer leading Vale), then the armed (firm: the
+//    cell, the patrol, the rival crew, fight bodies, officers, police units), then the city's people (soft); standing before walking; kind; id.
 //  · laid one by one (GameBodyForms.cs): where its own rules put it when that is clear of every body it must respect (one laid this tick, or one
-//    of its own class or above still where it stood), else a goal (holding its lay, a queue or a crew spot at a stop held, a sidestep or a wait,
-//    rings round its place) it moves to at bodies.shove when it must, at a walk when it chooses, and back at bodies.back; on free ground.
+//    still where it stood), else a goal (holding its lay, a queue or a crew spot at a stop held, a sidestep or a wait, rings round its place), at
+//    the law's paces, never over its own; a body held asks a person of the city in its way to make room, two people of the city face to face in a
+//    gap squeeze past, and a person of the city who still cannot get through changes plans (GameBodyGive.cs); the ways round (GameBodyDetours.cs).
 //  · stored: each body's lay, read by its pose (CrowdPos, MemberPose, Hostile.Pos, SecOfficerPose, UnitPose, an operative's Pos) through the next
-//    tick's rules, so the rules and the host read the same laid bodies. Hashed (HashBodies). The fixed are never moved: two tenets placed within
-//    two radii stay so (counted, BodyTenetTicks).
+//    tick's rules, so the rules and the host read the same laid bodies. Hashed (HashBodies). The fixed are never moved.
 // Integer cm, no floats; a fixed order and fixed candidate lists: the same seed and orders lay the same bodies.
 using System;
 using System.Collections.Generic;
@@ -24,12 +27,22 @@ namespace Suborned.Sim
     public struct BodyLay
     {
         public Pt Lay, Raw, Face; public int At1; public bool Held; // Held: it could not move last tick (it waited): those who would have it make way walk round it instead
-        /// <summary>Ticks it has been held running; its way round what held it (GameBodyDetours.cs) and the tick that way runs out.</summary>
-        public int HeldN, DetEnd, DetTries; public Path? Det; public Pt HeldAt;
+        /// <summary>Ticks it has been held running; its way round what held it (GameBodyDetours.cs), the tick that way runs out, and whether it is a
+        /// way back to its own place (Catch: walled off from it, or its own place jumped off its walk).</summary>
+        public int HeldN, DetEnd, DetTries; public Path? Det; public Pt HeldAt; public bool Catch;
         /// <summary>Who held its step last (id), and its giving way to them: until GiveEnd, back to GiveAt (GameBodyDetours.cs).</summary>
         public string? BlkId; public int GiveEnd; public Pt GiveAt;
-        /// <summary>Ticks it has got nowhere, across its tries; and the law's last resort, due (GameBodyDetours.cs).</summary>
-        public int StuckN; public bool Rejoin;
+        /// <summary>Ticks it has got nowhere, across its tries (a person of the city changes plans at bodies.replan).</summary>
+        public int StuckN;
+        /// <summary>Making room (GameBodyGive.cs): for whom, the spot it stepped to, where it stood when asked, the asker's way then, until when.</summary>
+        public string? RoomFor; public Pt RoomAt, RoomFrom, RoomDir; public int RoomEnd;
+        /// <summary>Squeezing past (GameBodyGive.cs): with whom, until when at most, and the way it was going when the squeeze began.</summary>
+        public string? SqzId; public int SqzEnd; public Pt SqzDir;
+        /// <summary>A change of plans (GameBodyGive.cs): the place it went instead (another chair, another spot, its next stop the other way), the
+        /// chair it took (null: none), and the tick the step of its routine it replaced ends.</summary>
+        public bool AltOn; public Pt Alt; public string? AltStop; public int AltUntil;
+        /// <summary>Its last tick's slide round someone ((0, 0): it did not slide): it never slides straight back next tick (no dancing).</summary>
+        public Pt SlideV;
         /// <summary>A guard's crew spot at a post another holds (0–4 the inner ring, 5–10 the outer; −1: none): his while he stays there, so two never make for one.</summary>
         public int Slot;
         /// <summary>The plan its own rules had when it was laid (a walk, a stand, a state, and the tick and place they started from). Once its rules
@@ -50,21 +63,24 @@ namespace Suborned.Sim
         /// <summary>One body this tick. At: where it stands now (laid this tick, or where it stood last tick while waiting its turn: Prev).</summary>
         struct Bd
         {
-            public string Id; public byte Kind, Cls, Form; public int Ix, Reach; public bool Moving, Fresh, Placed, Armed, Held, Mate; // Mate: a guard at a post point another holds (BodyPosts)
-            public Pt Raw, Lay, At, Prev, Head, Face, LayFace, Aim; public long Key, PathMm; public bool Rejoin; public int StuckN, HeldN, DetEnd, DetTries, Slot, Blk, GiveEnd; public Path? Det; public Pt HeldAt, GiveAt; public string? BlkId; public byte Why, Fix; public object? BRef; public int BN; public Pt BAt; public Path? Path; public bool PathBack; public string? Stop; // Path, PathMm: the walk its own place is on, how far along, and walked end to start (a kite's way back)
+            public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm; // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street
+            public Pt Raw, Own, Lay, At, Prev, Head, Face, LayFace, Aim; public long Key, PathMm; public int StuckN, HeldN, DetEnd, DetTries, Slot, Blk, GiveEnd; public Path? Det; public bool Catch; public Pt HeldAt, GiveAt; public string? BlkId; public byte Why, Fix; public object? BRef; public int BN; public Pt BAt; public Path? Path; public bool PathBack; public string? Stop; // Path, PathMm: the walk its own place is on, how far along, and walked end to start (a kite's way back); Own: where it makes for (its own place, or its change of plans)
+            public string? RoomFor, SqzId, AltStop; public Pt RoomAt, RoomFrom, RoomDir, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil; public bool AltOn; // GameBodyGive.cs; SlideV: last tick's slide (GameBodyForms.cs)
         }
         Bd[] bds = new Bd[128]; int bdN; int[] bdOrder = new int[128]; long[] bdKeys = new long[128];
         readonly Dictionary<long, int> bhHead = new Dictionary<long, int>();
         int[] bhBody = new int[256], bhNext = new int[256]; int bhN;
         int[] bdMark = new int[128]; int bdStamp;
-        readonly HashSet<string> bdIds = new HashSet<string>(StringComparer.Ordinal);
+        /// <summary>This tick's bodies by id (the law's index).</summary>
+        readonly Dictionary<string, int> bdIx = new Dictionary<string, int>(StringComparer.Ordinal);
         readonly BodyLay[] castLay = new BodyLay[4]; BodyLay patrolLay; readonly BodyLay[] crewLay = new BodyLay[5]; BodyLay[] secLay = Array.Empty<BodyLay>();
         WalkGrid bodyWalk;
         /// <summary>Host and test reads (never hashed): ticks where two tenets stood inside two radii (the tenet wins), and bodies the law could not
         /// clear this tick (laid where they overlap; 0 when the law holds).</summary>
         public int BodyTenetTicks, BodyOverlapsNow; public long BodyOverlapTicks;
-        /// <summary>Host and test read (never hashed): bodies the law's last resort put back on their own place (held BodyStuckTicks with no way round that worked).</summary>
-        public int BodyRejoins;
+        /// <summary>Host and test reads (never hashed), the give and take (GameBodyGive.cs): people of the city asked to make room, squeezes begun
+        /// (each a pair), and changes of plans, by what was taken instead (chair, spot, next).</summary>
+        public int BodySidesteps, BodySqueezes, BodyReplans; public readonly SortedDictionary<string, int> BodyReplansBy = new SortedDictionary<string, int>(StringComparer.Ordinal);
 
         /// <summary>Where a pose's own rules put a body, laid by L9 for this tick's reads.</summary>
         Pt Laid(Pt raw, in BodyLay b, int tick, (object? r, int n, Pt at) plan) => R.BodiesOn && tick >= Tick && b.Current(tick, bodyRan) && b.Same(plan) ? raw + b.Lay : raw;
@@ -82,8 +98,9 @@ namespace Suborned.Sim
         /// <summary>An officer of the response unit: his place and facing, laid by L9 (his own rules: SecOfficerPoseRaw in Game.cs; joined to the
         /// final fight, his fight body's).</summary>
         public (Pt pos, Pt facing)? SecOfficerPose(int k) { var p = SecOfficerPoseRaw(k); return p.HasValue && !secJoined[k] && k < secLay.Length ? (Laid(p.Value.pos, secLay[k], Tick, SecPlan(k)), p.Value.facing) : p; }
-        /// <summary>A walker's sector facing at a shared post, while the law holds it there.</summary>
-        Pt? BodyFace(Walker w) => R.BodiesOn && w.St.Length == 0 && w.Body.Current(Tick, bodyRan) && w.Body.Face != default ? w.Body.Face : (Pt?)null;
+        /// <summary>A walker's facing the law gives it, while the law holds it: a sector at a shared post, sideways while it squeezes past someone,
+        /// a chair's own facing in a chair it took instead of its own (GameBodyGive.cs).</summary>
+        Pt? BodyFace(Walker w) => !R.BodiesOn || !w.Body.Current(Tick, bodyRan) ? (Pt?)null : w.Body.SqzId != null ? SqueezeFace(w.P.Id) : w.St.Length == 0 && w.Body.Face != default ? w.Body.Face : w.St.Length == 0 && w.Body.AltOn && w.Body.AltStop != null && G.Within(w.Body.Raw + w.Body.Lay, w.Body.Alt, SitCm) ? StopFace(w.Body.AltStop) : (Pt?)null;
         // each kind's plan (BodyLay.Same): what its own rules re-plan from where it stands
         (object? r, int n, Pt at) WalkerPlan(Walker w) => w.St.Length == 0 ? (null, 0, default) : ((object?)w.Run ?? w.St, w.RunStart, w.At);
         (object? r, int n, Pt at) CrewPlan(CrewMember m) => ((object?)m.Disp ?? m.Walk, m.WalkStart, m.Place);
@@ -114,7 +131,7 @@ namespace Suborned.Sim
 
         void BodyGather()
         {
-            bdN = 0; bdIds.Clear(); seatSeen.Clear();
+            bdN = 0; bdIx.Clear(); seatSeen.Clear();
             // the tenets: the cast where their rules put them, the patrol on its sweep
             for (int i = 0; i < People.Count && i < 4; i++) { var at = CastOnFoot(People[i]); if (at.HasValue) AddBd(People[i].Id, BkCast, BcFixed, i, at.Value, castLay[i], FmNone, default, CastPlan(i), !(People[i] == ValeP && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking))); } // Vale held or being seized goes with whoever holds him
             if (!PatrolDown && PatrolPoseRaw() is var pp && pp.HasValue)
@@ -129,8 +146,8 @@ namespace Suborned.Sim
                 var op = Ops[i]; if (op.Inside || op.InCar || op.CarriedBy.HasValue || op.Down || op.LeftMap) continue;
                 bool walkSame = op.Walk != null && ReferenceEquals(op.BodyWalk, op.Walk), fixedOp = op.Busy != null || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);
                 var raw = fixedOp ? op.Pos : op.Walk != null ? op.Walk.At(op.WalkMm) : op.Body.Live(Tick) && op.Pos == op.Body.Raw + op.Body.Lay ? op.Body.Raw : op.Pos; // at work or leading Vale he stands where he stands
-                var prev = op.Body; if (fixedOp || (op.Walk != null ? !walkSame : raw == op.Pos)) { prev.Lay = default; prev.Det = null; prev.HeldN = 0; } // a new walk or a set place starts where he stands
-                AddBd(Sim.Op.Name(op.Id), BkOp, fixedOp ? BcFixed : BcFirm, i, raw, prev, FmNone, default, (null, 0, default)); // his plan is his walk and his place (above)
+                bool anew = fixedOp || (op.Walk != null ? !walkSame : raw == op.Pos); // a new walk or a set place starts where he stands
+                AddBd(Sim.Op.Name(op.Id), BkOp, fixedOp ? BcFixed : BcFirm, i, raw, op.Body, FmNone, default, (null, 0, default), false, anew); // his plan is his walk and his place (above)
                 if (op.Walk != null && bdN > 0 && bds[bdN - 1].Id == Sim.Op.Name(op.Id)) { bds[bdN - 1].Path = op.Walk; bds[bdN - 1].PathMm = op.WalkMm; }
             }
             // the armed: fight bodies, the rival crew on foot, the response unit's officers, police units and robots
@@ -138,37 +155,44 @@ namespace Suborned.Sim
             for (int i = 0; i < Crew.Count; i++) { var m = Crew[i]; if (m.Fight || !Up(m)) continue; if (MemberPoseRaw(m) is var mp && mp.HasValue) { AddBd(m.Id, BkCrew, BcFirm, i, mp.Value.pos, crewLay[i], FmNone, default, CrewPlan(m)); if (m.Disp != null) OnDisp(m.Id, m.Disp, rivSpeed); else if (m.Mode == CrewMode.Walking && m.Walk != null) OnPath(m.Id, m.Walk, (long)Math.Max(0, Tick - m.WalkStart) * m.Speed); } }
             for (int k = 0; k < SecGuns.Length; k++) { if (secJoined[k]) continue; if (SecOfficerPoseRaw(k) is var sp && sp.HasValue) { AddBd(SecGuns[k].Id, BkOfficer, BcFirm, k, sp.Value.pos, secLay[k], FmNone, default, SecPlan(k)); if (secDisp.TryGetValue(k, out var sd)) OnDisp(SecGuns[k].Id, sd, secSpeed); } }
             for (int i = 0; i < Units.Count; i++) { var u = Units[i]; if (u.Legacy || u.Patrol || !u.OnStreet(Tick)) continue; if (UnitPoseRaw(u) is var up && up.HasValue) { AddBd(u.Id, BkUnit, BcFirm, i, up.Value.pos, u.Body, FmNone, default, UnitPlan(u)); if (unitDisp.TryGetValue(u.Id, out var ud)) OnDisp(u.Id, ud, u.Speed); else if ((u.St == "walk" || u.St == "back") && u.Route != null) OnPath(u.Id, u.Route, (long)Math.Max(0, Tick - u.Launch) * u.Speed); } }
-            // the city's people (the dial's guards armed, at a post a crew spot; a person in a café chair a tenet)
+            // the city's people (the dial's guards armed, at a post a crew spot; a person in a café chair a tenet, in a chair it took instead too)
             if (People2 != null && Start.Crowd)
                 for (int i = 0; i < Walkers.Count; i++)
                 {
                     var w = Walkers[i]; if (w.P.Down) continue;
                     var raw = CrowdRaw(w, out var stop, out var leg, out var legMm); if (!raw.HasValue) continue;
-                    bool seated = stop != null && People2.FaceVec.ContainsKey(stop) && Sits(stop, w.P.Id, w.Body.Live(Tick) ? w.Body.Lay : default), armed = IsStaff(w.P);
+                    var pb = w.Body; bool alt = pb.AltOn && pb.Live(Tick) && w.St.Length == 0 && Tick < pb.AltUntil; // a change of plans holds while its step of the routine lasts
+                    string? seat = alt ? pb.AltStop : stop; var stood = pb.Live(Tick) ? pb.Raw + pb.Lay : raw.Value; Pt seatAt = alt && pb.AltStop != null ? pb.Alt : raw.Value;
+                    bool seated = seat != null && People2.FaceVec.ContainsKey(seat) && (!alt || pb.AltStop != null) && Sits(seat, w.P.Id, pb.Live(Tick) ? stood - seatAt : default), armed = IsStaff(w.P);
                     var face = stop != null ? StopFace(stop) ?? default : w.St == "calling" ? CallFace(w) : default;
-                    byte form = stop == null && w.St != "calling" ? FmNone : armed ? FmCrew : FmQueue;
-                    AddBd(w.P.Id, BkWalker, seated ? BcFixed : BcSoft, i, raw.Value, w.Body, form, face, WalkerPlan(w));
-                    if (bdN > 0 && bds[bdN - 1].Id == w.P.Id) { bds[bdN - 1].Armed = armed; bds[bdN - 1].Path = leg; bds[bdN - 1].PathMm = legMm; bds[bdN - 1].Stop = stop ?? (w.St == "calling" ? w.Refuge : null); }
+                    byte form = alt || (stop == null && w.St != "calling") ? FmNone : armed ? FmCrew : FmQueue;
+                    AddBd(w.P.Id, BkWalker, seated ? BcFixed : BcSoft, i, raw.Value, pb, form, face, WalkerPlan(w));
+                    if (bdN > 0 && bds[bdN - 1].Id == w.P.Id) { ref var nb = ref bds[bdN - 1]; nb.Armed = armed; nb.Path = leg; nb.PathMm = legMm; nb.Stop = stop ?? (w.St == "calling" ? w.Refuge : null); if (seated && alt) nb.Own = seatAt; if (!alt) { nb.AltOn = false; nb.AltStop = null; } }
                 }
         }
 
-        void AddBd(string id, byte kind, byte cls, int ix, Pt raw, in BodyLay prev, byte form, Pt face, (object? r, int n, Pt at) plan, bool walksFirm = false)
+        void AddBd(string id, byte kind, byte cls, int ix, Pt raw, in BodyLay prev, byte form, Pt face, (object? r, int n, Pt at) plan, bool walksFirm = false, bool anew = false)
         {
-            if (!S.Grid.InGrid(raw) || !bdIds.Add(id)) return; // off the window: nobody sees them there; once each
+            if (!(S.Grid.InGrid(raw) || (prev.Live(Tick) && S.Grid.InGrid(prev.Raw + prev.Lay))) || bdIx.ContainsKey(id)) return; // off the window, its own place and where it stands (one whose own place has walked off the sheet walks out after it): nobody sees them there; once each
             if (bdN == bds.Length) { Array.Resize(ref bds, bdN * 2); Array.Resize(ref bdOrder, bdN * 2); Array.Resize(ref bdKeys, bdN * 2); Array.Resize(ref bdMark, bdN * 2); }
-            bool live = prev.Live(Tick); var lay = live && (kind == BkOp || prev.Same(plan)) ? prev.Lay : default; // a new plan starts where it stands: the lay is spent
-            bool fresh = !live || (long)G.D2(raw, prev.Raw) > (long)JumpCm * JumpCm; // new on the street, or its own place jumped (out of a door, a car)
-            if (fresh) lay = default;
-            if (walksFirm && !fresh && (raw != prev.Raw || lay != default)) cls = BcFirm; // a tenet walking, or not yet back on its own place, steps round people; on it, it is never moved
+            bool live = prev.Live(Tick), fresh = !live; // new on the street (out of a door, a car, a refuge): placed; nobody already on it is ever placed
+            bool same = !anew && (kind == BkOp || prev.Same(plan)), jumped = live && (long)G.D2(raw, prev.Raw) > (long)JumpCm * JumpCm; // its own place jumped (a fright's end, a fast leg, a new walk): it walks there from where it stood
+            var lay = live && same && !jumped ? prev.Lay : default; // a new plan starts where it stands: the lay is spent
+            if (walksFirm && !fresh && (raw != prev.Raw || prev.Raw + prev.Lay != raw)) cls = BcFirm; // a tenet walking, or not yet back on its own place (where it stood, whatever its plan), steps round people; on it, it is never moved
             if (cls == BcFixed) lay = default;
             bool moving = !fresh && raw != prev.Raw;
             ref var b = ref bds[bdN];
-            var stood = live && !fresh ? prev.Raw + prev.Lay : raw; // where it stood last tick: it is there until it is laid, so those laid before it leave it room to wait
-            b = new Bd { Id = id, Kind = kind, Cls = cls, Ix = ix, Raw = raw, Lay = lay, At = stood, Prev = stood, Held = live && !fresh && prev.Held, Moving = moving, Fresh = fresh, Head = moving ? raw - prev.Raw : default, Form = moving ? FmNone : form, Face = face, LayFace = live ? prev.Face : default };
+            var stood = live ? prev.Raw + prev.Lay : raw; // where it stood last tick: it is there until it is laid, so those laid before it leave it room to wait
+            b = new Bd { Id = id, Kind = kind, Cls = cls, Ix = ix, Raw = raw, Own = raw, Lay = lay, At = stood, Prev = stood, Held = live && prev.Held, Moving = moving, Fresh = fresh, Jumped = jumped, Head = moving && !jumped ? raw - prev.Raw : default, Form = moving ? FmNone : form, Face = face, LayFace = live ? prev.Face : default };
+            b.Pace = PaceCmT(kind, ix); b.WalksFirm = walksFirm;
             b.Key = ((long)cls << 40) | ((long)(moving ? 1 : 0) << 36) | ((long)kind << 28) | (long)ix; // within a class: those standing, then those walking
             b.BRef = plan.r; b.BN = plan.n; b.BAt = plan.at;
-            bool keep = live && !fresh && (kind == BkOp || prev.Same(plan)); b.HeldN = keep ? prev.HeldN : 0; b.DetTries = keep ? prev.DetTries : 0; b.HeldAt = prev.HeldAt; b.StuckN = keep ? prev.StuckN : 0; b.Rejoin = keep && prev.Rejoin; b.Blk = -1; b.BlkId = keep ? prev.BlkId : null; b.GiveEnd = keep ? prev.GiveEnd : 0; b.GiveAt = prev.GiveAt; b.Det = keep ? prev.Det : null; b.DetEnd = keep ? prev.DetEnd : 0; b.Slot = keep && prev.At1 > 0 ? prev.Slot : -1; // a new plan: no way round, no crew spot
-            bdN++;
+            bool keep = live && same; b.HeldN = keep ? prev.HeldN : 0; b.DetTries = keep ? prev.DetTries : 0; b.HeldAt = prev.HeldAt; b.StuckN = keep ? prev.StuckN : 0; b.Blk = -1; b.BlkId = keep ? prev.BlkId : null; b.GiveEnd = keep ? prev.GiveEnd : 0; b.GiveAt = prev.GiveAt; b.Det = keep ? prev.Det : null; b.Catch = b.Det != null && prev.Catch; b.DetEnd = keep ? prev.DetEnd : 0; b.Slot = keep && prev.At1 > 0 ? prev.Slot : -1; // a new plan: no way round, no crew spot
+            if (keep && prev.RoomFor != null && Tick < prev.RoomEnd) { b.RoomFor = prev.RoomFor; b.RoomAt = prev.RoomAt; b.RoomFrom = prev.RoomFrom; b.RoomDir = prev.RoomDir; b.RoomEnd = prev.RoomEnd; } // making room, while its own plan stands
+            if (live && prev.SqzId != null) { b.SqzId = prev.SqzId; b.SqzEnd = prev.SqzEnd; b.SqzDir = prev.SqzDir; } // squeezing past someone: a body's state, whatever its plan, until the two stand apart
+            if (live) b.SlideV = prev.SlideV;
+            if (keep && prev.AltOn) { b.AltOn = true; b.Alt = prev.Alt; b.AltStop = prev.AltStop; b.AltUntil = prev.AltUntil; if (prev.AltStop == null || cls != BcFixed) b.Own = prev.Alt; } // a change of plans, while its step of the routine lasts (BodyGather)
+            bdIx[id] = bdN; bdN++;
         }
         /// <summary>Guards sent to one post point (the dial's added guards share points once each point has one): the one standing nearest it last
         /// tick holds it (a tie: the first in the law's order); the others are his mates, who take crew spots round it (FormGoal).</summary>
@@ -202,17 +226,19 @@ namespace Suborned.Sim
         void OnDisp(string id, KiteDisp d, int speed) { if (d.Phase == 0) OnPath(id, d.P, (long)Math.Max(0, Tick - d.Start) * speed); else if (d.Phase == 2) OnPath(id, d.P, d.P.Length - (long)Math.Max(0, Tick - d.BackStart) * speed, true); }
         /// <summary>An operative's walk is held back to his body's progress when he is more than this short of where its clock has him (mm).</summary>
         const long WalkSlackMm = 300;
-        /// <summary>A body whose own place moves farther than this in one tick has jumped (out of a door, out of a car, a new walk's start): it is laid
-        /// afresh there, with no lay carried over.</summary>
+        /// <summary>A body whose own place moves farther than this in one tick has jumped (a fright's end, a leg timed faster than a run, a new walk's
+        /// start): it walks there from where it stood, with no lay carried over.</summary>
         const int JumpCm = 100;
 
         /// <summary>L9 (a seat is one person's at a time): the chair's sitter, from when they sat until they leave it. A person due in a chair someone
-        /// else still sits in (two days shifted by the seed onto one seat, or a person early at the end of their walk) waits beside it.</summary>
+        /// else still sits in (two days shifted by the seed onto one seat, or a person early at the end of their walk) waits beside it, or takes
+        /// another (GameBodyGive.cs).</summary>
         readonly SortedDictionary<string, string> seatHeld = new SortedDictionary<string, string>(StringComparer.Ordinal);
         readonly HashSet<string> seatSeen = new HashSet<string>(StringComparer.Ordinal); readonly List<string> seatGone = new List<string>();
-        bool Sits(string chair, string id, Pt lay)
+        /// <summary>Whether `id` sits in `chair` now: it is theirs, or free and they stand within SitCm of it (`off`: where they stand from the chair).</summary>
+        bool Sits(string chair, string id, Pt off)
         {
-            if (seatHeld.TryGetValue(chair, out var who) ? who != id : G.D2(lay, default) > SitCm * SitCm) return false; // taken, or not yet in it: he walks in first
+            if (seatHeld.TryGetValue(chair, out var who) ? who != id : G.D2(off, default) > SitCm * SitCm) return false; // taken, or not yet in it: he walks in first
             seatHeld[chair] = id; seatSeen.Add(chair); return true;
         }
         /// <summary>A person sits once the law has them within this of the chair (they walk in from where they waited).</summary>
@@ -233,10 +259,32 @@ namespace Suborned.Sim
         /// <summary>A caller at a call box faces it.</summary>
         Pt CallFace(Walker w) { foreach (var (id, at) in S.CallBoxes) if (id == w.Refuge) return at - w.At; return default; }
 
+        // ---------------------------------------------------------------- paces
+
+        /// <summary>The fastest a body of this kind goes on its own feet (cm a second), the rulebook's run paces: the cell's run for the cell and the
+        /// cast (the Enforcer leading Vale at a run), the city's run for its people (the dial's guards among them), a rival's following pace for the
+        /// rival crew and fight bodies (officers walk slower), security's for officers and police, a robot's for the patrol and robots. The law never
+        /// moves a body farther in a tick than this (nobody jumps), and `BodyCheck` counts any move over it.</summary>
+        public int BodyPaceCmS(string kind) => kind switch
+        {
+            "crowd" or "dial-person" or "dial-guard" => R.CrowdRunSpeed,
+            "rival" => RivalPaceCmS, "fight" => Math.Max(RivalPaceCmS, R.SecuritySpeed), "officer" or "police" => R.SecuritySpeed,
+            "patrol" or "robot" => Math.Max(Math.Max(R.RobotSpeed, R.PatrolChase), R.RerouteWalkCmS),
+            _ => R.RunSpeed, // the cell and the cast
+        };
+        int RivalPaceCmS => Math.Max(Math.Max(R.RivalsSpeed, Cr.FollowCmS), Math.Max(Cr.BrokenCmS, Cr.LookoutRunCmS));
+        /// <summary>A body's pace in cm a tick (rounded up), by the law's kind.</summary>
+        int PaceCmT(byte kind, int ix)
+        {
+            int s = kind switch { BkWalker => BodyPaceCmS("crowd"), BkCrew => BodyPaceCmS("rival"), BkHostile => BodyPaceCmS("fight"), BkOfficer => BodyPaceCmS("officer"), BkPatrol => BodyPaceCmS("patrol"), BkUnit => BodyPaceCmS(Units[ix].Robot ? "robot" : "police"), _ => R.RunSpeed };
+            return (s + Hz - 1) / Hz;
+        }
+
         void BodyStore(int i)
         {
             ref var b = ref bds[i];
-            var lay = b.At - b.Raw; var bl = new BodyLay { Lay = lay, Raw = b.Raw, Face = b.LayFace, At1 = Tick + 1, Held = b.Moving && b.At == b.Prev, BRef = b.BRef, BN = b.BN, BAt = b.BAt, HeldN = b.HeldN, DetTries = b.DetTries, HeldAt = b.HeldAt, StuckN = b.StuckN, Rejoin = b.Rejoin, Det = b.Det, DetEnd = b.DetEnd, BlkId = b.Blk >= 0 ? bds[b.Blk].Id : null, GiveEnd = b.GiveEnd, GiveAt = b.GiveAt, Slot = b.Mate ? b.Slot : -1 };
+            var lay = b.At - b.Raw; var bl = new BodyLay { Lay = lay, Raw = b.Raw, Face = b.LayFace, At1 = Tick + 1, Held = b.Moving && b.At == b.Prev, BRef = b.BRef, BN = b.BN, BAt = b.BAt, HeldN = b.HeldN, DetTries = b.DetTries, HeldAt = b.HeldAt, StuckN = b.StuckN, Det = b.Det, Catch = b.Det != null && b.Catch, DetEnd = b.DetEnd, BlkId = b.Blk >= 0 ? bds[b.Blk].Id : null, GiveEnd = b.GiveEnd, GiveAt = b.GiveAt, Slot = b.Mate ? b.Slot : -1,
+                RoomFor = b.RoomFor, RoomAt = b.RoomAt, RoomFrom = b.RoomFrom, RoomDir = b.RoomDir, RoomEnd = b.RoomEnd, SqzId = b.SqzId, SqzEnd = b.SqzEnd, SqzDir = b.SqzDir, AltOn = b.AltOn, Alt = b.Alt, AltStop = b.AltStop, AltUntil = b.AltUntil, SlideV = (b.Why >> 4) == 2 ? b.At - b.Prev : default };
             switch (b.Kind)
             {
                 case BkCast: castLay[b.Ix] = bl; break;
@@ -271,8 +319,9 @@ namespace Suborned.Sim
             long c = CellOf(p); bhBody[bhN] = i; bhNext[bhN] = bhHead.TryGetValue(c, out var h) ? h : -1; bhHead[c] = bhN++;
         }
 
-        /// <summary>The nearest body within `reach` of c that body i must respect and that stands inside `need(j)` of c, or -1. A body i respects:
-        /// every body laid this tick and every body still to be laid where it stood, but a walker of the city in the cell's path (Yields).</summary>
+        /// <summary>The nearest body within `reach` of c that body i must respect and that stands inside `need(j)` of c, or -1: every body laid this
+        /// tick and every body still to be laid where it stood (so each can always wait where it stood, and the law is never forced into an overlap;
+        /// only a tenet that walks, the Enforcer leading Vale, or one that appears, can be).</summary>
         int Blocker(int i, Pt c, bool comfort)
         {
             ref var b = ref bds[i]; if (++bdStamp == int.MaxValue) { Array.Clear(bdMark, 0, bdMark.Length); bdStamp = 1; }
@@ -284,23 +333,19 @@ namespace Suborned.Sim
                     for (; e >= 0; e = bhNext[e])
                     {
                         int j = bhBody[e]; if (j == i || bdMark[j] == bdStamp) continue; bdMark[j] = bdStamp;
-                        ref var o = ref bds[j]; if (!o.Placed && Yields(in b, in o)) continue; // where everyone else stood is kept clear, so waiting there is always room; only the cell walks on through the crowd, which makes way // the lower make way only as they walk; a person standing is respected, and a body new to the street respects everyone
+                        ref var o = ref bds[j];
                         int need = Need(in b, in o, comfort); long d2 = G.D2(c, o.At);
                         if (d2 < (long)need * need && d2 < bd2) { bd2 = d2; best = j; }
                     }
                 }
             return best;
         }
-        /// <summary>A body still to be laid that b may walk into because it will make way: none. Every body keeps clear of where every other stood
-        /// last tick, so each can always wait where it stood, and the law is never forced into an overlap (only a tenet that walks, the Enforcer
-        /// leading Vale, or one that appears, can be; tried 2026-11-07: letting the cell walk on through the crowd squeezed people into one another
-        /// in a jam).</summary>
-        static bool Yields(in Bd b, in Bd o) => false; // nobody walks into anyone: so each body can always wait where it stood (the law's guarantee)
-        /// <summary>How far apart b must stand from o: two radii always; by choice (comfort) a person of the city walking gives personal space, and
-        /// standing keeps it from anyone standing (a guard at his post only two radii from the mates who come to it), a queue at a stop its step. The cell, the
-        /// cast and the armed keep two radii (fight.spacing).</summary>
+        /// <summary>How far apart b must stand from o: two radii always, the narrower squeeze between two squeezing past each other; by choice
+        /// (comfort) a person of the city walking gives personal space, and standing keeps it from anyone standing (a guard at his post only two
+        /// radii from the mates who come to it), a queue at a stop its step. The cell, the cast and the armed keep two radii (fight.spacing).</summary>
         int Need(in Bd b, in Bd o, bool comfort)
         {
+            if (b.SqzId != null && o.SqzId != null && b.SqzId == o.Id && o.SqzId == b.Id) return 2 * R.BodySqueezeCm; // shoulder to shoulder, turned sideways (GameBodyGive.cs)
             int hard = R.BodyMinCm; if (!comfort || b.Cls != BcSoft) return hard; // the cell, the cast and the armed are on business: they keep two radii (the fight's spacing)
             if (b.Moving) return R.BodySpaceCm;
             if (o.Moving) return hard;
@@ -309,8 +354,13 @@ namespace Suborned.Sim
             return b.Cls == BcSoft ? R.BodySpaceCm : hard;
         }
         /// <summary>Ground a body may stand on: its own place, where it stands, or a free cell of the site's walk grid (no wall) with no standing car's
-        /// body within a radius of it (a body touches a car's side; the walk mask's wider margin is for routes).</summary>
-        bool BodyGround(in Bd b, Pt c) => c == b.Raw || c == b.At || (S.Grid.Free(c) && OffCars(c));
+        /// body within a radius of it (a body touches a car's side; the walk mask's wider margin is for routes). One standing where no body stands (a
+        /// car came to stand on it; its own place left it on a solid cell) steps off it, a pace at a time (FixOff); its own place off free ground it
+        /// steps into (StepInCm).</summary>
+        bool BodyGround(in Bd b, Pt c) => c == b.Raw || c == b.At || (b.Fix == FixOff ? G.Within(c, b.Prev, b.Pace + 1) : S.Grid.Free(c) && OffCars(c)) || (G.Within(c, b.Own, StepInCm) && !S.Grid.Free(b.Own)) || (!S.Grid.InGrid(c) && !S.Grid.InGrid(b.Raw)); // off the sheet the street goes on: a body whose own place has gone off it walks out over its edge
+        /// <summary>A place off the walk grid's free ground (a post in a facade's recess, a door point) is stepped into across the last of the solid
+        /// ground, as its own walk does: within this of it.</summary>
+        const int StepInCm = 160;
         readonly List<StandingCar> bodyCars = new List<StandingCar>();
         bool OffCars(Pt c) { foreach (var car in bodyCars) if (OnCar(car, c)) return false; return true; }
         /// <summary>A body at c would touch this standing car (its body grown by a radius).</summary>
@@ -321,40 +371,20 @@ namespace Suborned.Sim
             return along * along <= hl * hl * n2 && across * across <= hw * hw * n2;
         }
 
-        // ---------------------------------------------------------------- host and test reads (never hashed)
-
-        /// <summary>Every body the law laid this tick: id, where it stands, its class (0 tenet, 1 armed, 2 the city's) and whether it walks.</summary>
-        /// <summary>For the law's evidence (never hashed): this tick, the bodies held where they stood while their own place moved on, the farthest a
-        /// body stands from its own place (cm, and who), and the cell's held operatives.</summary>
-        public (int held, int farCm, string farId, int cellHeld) BodyStrain()
-        {
-            int held = 0, far = 0, cell = 0; string fid = "";
-            for (int i = 0; i < bdN; i++) { ref var b = ref bds[i]; if (b.Moving && b.At == b.Prev) { held++; if (b.Kind == BkOp) cell++; } int d = G.Dist(b.At, b.Raw); if (d > far) { far = d; fid = b.Id; } }
-            return (held, far, fid, cell);
-        }
-        public List<(string id, Pt at, int cls, bool moving)> BodiesNow()
-        {
-            var l = new List<(string, Pt, int, bool)>(bdN);
-            for (int i = 0; i < bdN; i++) l.Add((bds[i].Id, bds[i].At, bds[i].Cls, bds[i].Moving));
-            return l;
-        }
-        /// <summary>A body as the law saw it this tick, for a probe (never hashed): its own place, lay, where it stands, class, form, moving, new.</summary>
-        public string BodyTrace(string id) { for (int i = 0; i < bdN; i++) if (bds[i].Id == id) { ref var b = ref bds[i]; return $"{id} raw {b.Raw} lay {b.Lay} at {b.At} prev {b.Prev} cls {b.Cls} form {b.Form} face {b.Face} moving {b.Moving} fresh {b.Fresh} ground {bodyWalkFree(b.At)} why {WhyGoal[b.Why & 15]}{WhyMove[b.Why >> 4]}{WhyFix[b.Fix]} aim {b.Aim}{(b.Mate ? " mate slot " + b.Slot : "")}{(b.Det != null ? " detour to " + b.Det.End + " until " + b.DetEnd : "")} held {b.HeldN} path {(b.Path == null ? "-" : b.Path.Points[0] + ".." + b.Path.End + " len " + b.Path.Length + " mm " + b.PathMm)}"; } return id + " (not laid)"; }
-        bool bodyWalkFree(Pt p) => Walk.Free(p);
-        /// <summary>A test read (never hashed): the body as the law laid it this tick: where it stands, its own place, the stop it stands at (a
-        /// person of the city's; a caller's call box), its class (0 tenet, 1 armed, 2 the city's) and its form at a stop (1 queue, 2 crew), the
-        /// sector facing the law gave it, and a guard's crew spot at a post another holds (−1: none); null when the law did not lay it.</summary>
-        public (Pt at, Pt raw, string? stop, int cls, int form, Pt face, int slot)? BodyInfo(string id) { for (int i = 0; i < bdN; i++) if (bds[i].Id == id) { ref var b = ref bds[i]; return (b.At, b.Raw, b.Stop, b.Cls, b.Form, b.LayFace, b.Mate ? b.Slot : -1); } return null; }
-        /// <summary>Whether the law laid this body as a tenet this tick (the cast, the patrol, a person seated, an operative at work or leading Vale).</summary>
-        public bool BodyIsTenet(string id) { for (int i = 0; i < bdN; i++) if (bds[i].Id == id) return bds[i].Cls == BcFixed; return false; }
-        /// <summary>A body's lay now (cm from where its own rules put it), by id; (0, 0) when the law has not moved it.</summary>
-        public Pt BodyLayOf(string id) { for (int i = 0; i < bdN; i++) if (bds[i].Id == id) return bds[i].At - bds[i].Raw; return default; }
-
-        /// <summary>The law's state for the checkpoint hash: every lay and sector facing still live, by kind and id (no bytes while nobody is moved).</summary>
+        /// <summary>The law's state for the checkpoint hash: every lay and sector facing still live, by kind and id (no bytes while nobody is moved),
+        /// and the give and take while it runs (making room, a squeeze, a change of plans).</summary>
         internal void HashBodies(Hash.H h)
         {
             if (!R.BodiesOn || Range) return;
-            void put(string id, in BodyLay b) { if (b.Live(Tick) && (b.Lay != default || b.Face != default)) h.S(id).P(b.Lay).P(b.Face).P(b.Raw).I(b.Det != null ? b.DetEnd : 0).I(b.GiveEnd).P(b.GiveAt); }
+            void put(string id, in BodyLay b)
+            {
+                if (!b.Live(Tick)) return;
+                if (b.Lay != default || b.Face != default) h.S(id).P(b.Lay).P(b.Face).P(b.Raw).I(b.DetEnd).I(b.GiveEnd).P(b.GiveAt);
+                if (b.RoomFor != null) h.S("room").S(id).S(b.RoomFor).P(b.RoomAt).I(b.RoomEnd);
+                if (b.SqzId != null) h.S("squeeze").S(id).S(b.SqzId).I(b.SqzEnd);
+                if (b.AltOn) h.S("alt").S(id).P(b.Alt).S(b.AltStop ?? "").I(b.AltUntil);
+                if (b.SlideV != default) h.S("slid").S(id).P(b.SlideV);
+            }
             for (int i = 0; i < 4; i++) put(Sim.Op.Name(Ops[i].Id), Ops[i].Body);
             for (int i = 0; i < Crew.Count; i++) put(Crew[i].Id, crewLay[i]);
             foreach (var x in Hostiles) put(x.Id, x.Body);

@@ -178,8 +178,13 @@ namespace Suborned.Sim
         {
             if (w.P.Down) return null;
             var p = w.St.Length > 0 && tick == Tick ? ScatterPos(w) : RoutinePos(w, tick);
+            if (!p.HasValue && tick == Tick && Leaving(w).HasValue) return w.Body.Raw + w.Body.Lay; // brief 098 L9 (engine 0.47.0): still walking to where they leave the street
             return p.HasValue ? Laid(p.Value, w.Body, tick, WalkerPlan(w)) : p; // brief 098 L9: where the law laid them (GameBodies.cs)
         }
+        /// <summary>Brief 098 L9 (engine 0.47.0, nobody jumps or vanishes): a person whose rules take them off the street (inside, into a refuge, off
+        /// the sheet) while the law holds their body back from where they leave it walks there first. Their exit is their own place as they were
+        /// last laid, kept until they stand within two radii and a step of it; null when they are not leaving (or the law is off).</summary>
+        Pt? Leaving(Walker w) => R.BodiesOn && !Range && w.Body.Live(Tick) && !G.Within(w.Body.Raw + w.Body.Lay, w.Body.Raw, R.BodyMinCm + R.BodySpaceCm) ? w.Body.Raw : (Pt?)null; // within two radii and a step of it they go (a doorway is wider than a body: past whoever stands in it)
         /// <summary>Brief 098 L9: where a person's own rules put them now, before the law lays their body; `stop` the place of the stop they stand at
         /// (their routine's, or the next one's while early at a leg's end), else null.</summary>
         Pt? CrowdRaw(Walker w, out string? stop, out Path? leg, out long legMm)
@@ -189,9 +194,10 @@ namespace Suborned.Sim
             {
                 int pace = w.St == "fleeing" ? R.CrowdRunSpeed : w.St == "returning" ? peopleWalk : w.Pace;
                 if (w.Run != null && Tick >= w.RunStart && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking" || w.St == "woken")) { leg = w.Run; legMm = Math.Min(w.Run.Length, (long)(Tick - w.RunStart) * pace); }
-                return ScatterPos(w);
+                var sp = ScatterPos(w); if (sp.HasValue) return sp;
+                leg = null; legMm = 0; return Leaving(w); // into a refuge: from its door
             }
-            return RoutineAt(w, Tick, out stop, out leg, out legMm);
+            return RoutineAt(w, Tick, out stop, out leg, out legMm) ?? Leaving(w); // inside, or off the sheet: from where they leave the street
         }
         /// <summary>Where the routine puts a person of the crowd at this tick (no fight).</summary>
         Pt? RoutinePos(Walker w, int tick) => w.P.Down ? null : RoutineAt(w, tick);

@@ -225,7 +225,7 @@ namespace Suborned.Sim
                 r.Line(g.Trail == t0 + g.R.RerouteTrail && g.Alert == 0 && g.Log.Exists(l => l.Code == "stash.door"), $"seed 0, this choreography: stashed {g.Log.Exists(l => l.Code == "stash.door")}, {g.Trail - t0} T (the Reroute's own {g.R.RerouteTrail}), Alert {g.Alert}: the Office's staff on Apron Road and the patrol's sweep decide who sees the carry (Waymark's plan times it)");
             }, Turned(Driver));
 
-            Add("096-RIV-12", "096", "Motive RIV-12: the lookout knocked out and left untied: he wakes after wake-s and walks back to his post.", r =>
+            Add("096-RIV-12", "096", "Motive RIV-12: the lookout knocked out and left untied: he wakes after wake-s, or sooner if someone finds him and the response brings him round (CrewWakes; brief 098 L9, engine 0.47.0: who walks past him is the bodies' law's, so a passer-by may find him), and walks back to his post.", r =>
             {
                 var g = r.G; r.Until(() => LookoutAtPost(g), T(330));
                 var behind = g.S.Grid.NearestFree(g.S.Stand(g.S.RivalLookout) + new Pt(250, 0)) ?? g.S.Stand(g.S.RivalLookout);
@@ -233,7 +233,8 @@ namespace Suborned.Sim
                 if (!KoFromBehind(r, "rival-4")) return; int down = g.Tick;
                 r.SendTo(Enf, g.S.Grid.NearestFree(behind + new Pt(1500, 0)) ?? behind);
                 r.Until(() => !Lk(r).Gun.Down, T(g.R.WakeS + 30));
-                r.Is(!Lk(r).Gun.Down && g.Tick - down >= T(g.R.WakeS) - T(3), Iv($"he wakes at {Report.Clock(g.Tick)}, {(g.Tick - down) / 10} s after"));
+                bool brought = g.Log.Exists(l => l.Code == "rivals.wakes" && l.Tick >= down && l.Text.Contains("brought round", StringComparison.Ordinal));
+                r.Is(!Lk(r).Gun.Down && (g.Tick - down >= T(g.R.WakeS) - T(3) || brought), Iv($"he wakes at {Report.Clock(g.Tick)}, {(g.Tick - down) / 10} s after{(brought ? ", brought round by the response" : "")}"));
                 r.Until(() => LookoutAtPost(g), T(60));
                 r.Is(LookoutAtPost(g), "and walks back to his post");
             }, KeepVale(Turned(Driver)));
