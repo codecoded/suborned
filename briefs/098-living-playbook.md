@@ -110,6 +110,22 @@ Keel's law (engine 0.46.0, branch `t3/simulation-body-spacing`, `briefs/098/keel
   2. Latch's host side: the host's own crowd spreading off.
   3. The cleanup round: Popovic's car stand about 0.6 m out (Vantage), the routes that no longer compose (Waymark), the Q4 Help grid (Motive), Fable's text gaps, and the rest of the failing tests.
 
+## Sky's calls on walking and listening (2026-11-08)
+- **"Sit them down if they're listening, they're just regular people."**
+  - A listening agent sits at a free seat in listening reach, as any café customer would. Engine 0.39.0's discreet Listen (brief 085: "sit down at cafe, or stand by a wall") becomes the strong default, not a chair that happens to come up within a grace period.
+  - With no seat, the agent stands off every walking lane, by a wall, and never across a passage. In quiet-a, the Scout and the Fixer stood across the café's only lane and held people up to 117 s.
+  - **Aster's reading of "regular people", for Sky to confirm:** an idle agent (no order) steps aside for someone stuck behind them and back again, as anyone does. Never while acting, watching or listening.
+- **"Gap between planter and fountain should be walkable, don't be one of those game engines where you can't get past even though visibly it's clear you have a lot of space either side. We can do better."**
+  - **The cause:** the fountain's four planter gaps are 2.05 m in the block, but they're walls in the engine.
+    - Every solid is grown by `BODY` 0.65 m (`tools/plan/walk-solids.ts`). That value was calibrated so two measured walks came out the right length: a sum, not a law.
+    - The result is then cut into 50 cm cells (`sim/data/handover.site.json` grid), and the engine's A* never cuts a corner.
+    - So the 0.75 m left between planter and basin becomes one diagonal line of cells that nobody can cross.
+  - **The law:** what is walkable is what you see.
+    - A walker keeps its body (L9's radius, 30 cm) and a small margin from a solid: one value, read by the engine, the site tools and the plan checker alike.
+    - A gap a body fits through is walkable in any direction.
+    - The solids are the pieces as built; 097's volumes pinned to older pieces go.
+    - A check over the whole zone proves there are no invisible walls.
+
 ## GDD v0.40.0: text to catch up
 These are rules Sky already approved that the GDD text still lags, gathered as they're found. They go in with the laws (the done-check below), then `bun run crew`. The human GDD wins on conflict.
 - **§04 approaches table:** since engine 0.45.0, a Mercenary or Idealist for whom Help is the wrong approach pays $50,000 once; only a Loyal person still takes two Helps. Sky 2026-11-05: "As you recommend", Motive's Q1 (b). The decision log has no entry for it yet.
