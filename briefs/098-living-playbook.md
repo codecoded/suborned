@@ -110,6 +110,17 @@ Keel's law (engine 0.46.0, branch `t3/simulation-body-spacing`, `briefs/098/keel
   2. Latch's host side: the host's own crowd spreading off.
   3. The cleanup round: Popovic's car stand about 0.6 m out (Vantage), the routes that no longer compose (Waymark), the Q4 Help grid (Motive), Fable's text gaps, and the rest of the failing tests.
 
+## GDD v0.40.0: text to catch up
+These are rules Sky already approved that the GDD text still lags, gathered as they're found. They go in with the laws (the done-check below), then `bun run crew`. The human GDD wins on conflict.
+- **§04 approaches table:** since engine 0.45.0, a Mercenary or Idealist for whom Help is the wrong approach pays $50,000 once; only a Loyal person still takes two Helps. Sky 2026-11-05: "As you recommend", Motive's Q1 (b). The decision log has no entry for it yet.
+- **§07 route A:** since 0.44.0, a fearful Inez takes Help once, $40,000, after the Listen. It's no longer two visits at $20,000.
+- **§14 Motive's hold line, and the human GDD's purse sentence:** helping Inez and the Mercenary driver costs $90,000, not $80,000. It still fits the $100,000 purse.
+- **Bubble length:**
+  - agent §10 says 10 words, while §14 and the human GDD say 12;
+  - conversation lines now run to 25 words (Sky: "Full sentences");
+  - the HUD budget's 12-word cap (Splice) predates that.
+- **L9 Bodies and its give and take** (Sky's calls above), as a law with its settings: radius 30 cm, space 80 and 70 cm, crews 2.5 m, a squeeze at 40 cm and 0.5 m/s, 5 s before changing plans.
+
 ## Done-check
 Sky can set the guards, people and cars in the dev panel, press Play and get that world, with no rebuild. The GDD goes to v0.40.0 with laws in place of per-case sums, and the crew is regenerated (`bun run crew`). Traffic runs in play under L8, with the Handover's bands holding across seeds and 60 fps on the Air. The witness rules run on L1–L6.
 
