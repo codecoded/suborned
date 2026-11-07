@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Brief 098 step 1b: jams and the street (Keel)</title>
+<style>body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1080px;margin:2em auto;padding:0 1em;color:#222}table{border-collapse:collapse;margin:.6em 0 1.2em}td,th{border:1px solid #ccc;padding:.25em .6em;text-align:left;font-variant-numeric:tabular-nums}th{background:#f3f1ec}code{background:#f3f1ec;padding:0 .25em}pre{background:#f3f1ec;padding:.8em;overflow:auto}h2{border-bottom:1px solid #ddd;margin-top:1.6em}.sky{background:#fff6dd;border-left:4px solid #e0b000;padding:.4em .8em}</style></head><body>
+<h1>Brief 098 step 1b: Sky's answers built (jams, the street, the lockdown)</h1>
+<p>Keel, suborned.sim/0.45.0 (no recorded run moves, so the version stays), 2026-11-07, branch <code>t3/street-traffic-lockdown</code>. Engine side only. Latch is building the car views and the Cars row now; this keeps the host API's shape (fields added, none changed). What he must change is listed below.</p>
+
+<h2>Sky's answers, and how each works now</h2>
+<table><tr><th>question</th><th>Sky (2026-11-07)</th><th>what the engine does now</th></tr><tr><td>Lockdown: do cars leave or stop?</td><td><span class="sky">"Drive out"</span></td><td>From Alert 3 no car comes in and the zone's cars carry on out (<code>leave</code>). Marked as Sky's decision in <code>contracts/rules/population.json</code> (traffic.lockdown: no longer proposed, Sky's words in its src). <code>stop</code> stays built, unused.</td></tr><tr><td>What a car count means above about 25</td><td><span class="sky">"its fine, even just a few passing helps bring to life"</span></td><td>Nothing changed: no road or junction changes.</td></tr><tr><td>Jams: should a queue box anyone in?</td><td><span class="sky">"should be opposite - shot cars can get past, others block"</span></td><td>Ordinary traffic (moving, waiting, queued, its driver ducked) is solid: standing on a way out it boxes it in, and a mission car waits behind it for as long as it stands there (step 1's 40 s cap is gone). A shot car (disabled, burning, blown, or abandoned) never boxes anyone in: a mission car pushes it aside, visibly. So a jam can box the cell's car in, and shooting the car in your way clears it.</td></tr><tr><td>What the "people" count means</td><td><span class="sky">"people counter is for street"</span></td><td>People on the street (in the zone, out of doors) at a time, on average over the mission's clock, the cast included: <b>16 today</b>, of the zone's 114. More adds passers-by until the street holds that many; fewer takes street presence away and never the indoors or the cast. <code>Population.Today</code> reports 16 as today's; the census reports the street asked for, the street achieved and the total in the zone.</td></tr><tr><td>Who leaves when a count is lowered</td><td><span class="sky">"same for now"</span></td><td>The same fixed order (a hash of the id), now only among people whose routine brings them out.</td></tr></table>
+
+<h2>Jams: the law now</h2>
+<ul>
+<li><b>Boxed in.</b> A passing car that has stood 3 s (traffic.stand.standS) on a way out boxes it in, as any solid car does: Go is refused <code>car-boxed</code> naming it, a Drive <code>drive-boxed</code>, the official car waits at the pickup, and at the close a boxed car is <code>closed-in</code>, cause boxed. A car merely pausing (under 3 s) boxes nothing.</li>
+<li><b>Held behind traffic.</b> A mission car whose next place on its leg meets a passing car that has not been shot holds there, its leg's clock waiting, for as long as that car is in its way. No cap. A car already touching it (a turn's rear swing) may always move apart; only moving into a car is held.</li>
+<li><b>Shot cars are got past, physically.</b> A wreck in a mission car's next place is pushed aside (traffic.shove): away from the mission car's line, toward the side the wreck's centre is on (its right, the kerb, at a tie), at 1.5 m/s, never into a building, street furniture or another car, 6 m at most in all. The mission car holds while it pushes and drives on once the wreck is clear. The wreck stands where it was pushed from then on: its footprint, cover and box move with it. A Go (the getaway car's or the lent car's) whose way out a wreck stands on is taken, and the wreck is pushed off the way as the car leaves. The log says <code>traffic.shoved</code> ("The rival car pushes the wrecked passing sedan aside.").</li>
+<li><b>Nobody waits for each other for good.</b> A passing car that stands in a mission car's way while waiting for that very car makes room: it backs off along its route (into the gap behind it, keeping 0.5 m) by the least that clears the mission car's next second of road, or its next few places; failing that it pulls aside away from it, across the centreline when the other lane is clear, as an overtake goes. Its sideways move tests bodies only.</li>
+<li><b>A held car's road holds nobody.</b> A mission car held 2 s in a row is not coming soon: the road it would drive is no car in anyone's way and crosses no junction (its body still is, and does), so a queue whose head waited for that road can move and the jam clears.</li>
+<li><b>The rival car's turn-in is seen coming.</b> Before its timetabled turn-in, traffic sees it coming along the way it faces for its first 3 s of road, so no passing car is mid-junction, nose to nose with it, when it turns in.</li>
+</ul>
+<p>The last three came out of the sweep, not the brief: with the cap gone, two cars could each wait for the other. The commonest cases were the official car's drive round, which still runs its precomputed route against the flow on Apron Road, and the rival car turning in mid-junction at Orbit Walk's mouth. Holds of a minute or more of that kind went from 7 to 0 in 1,800 runs.</p>
+<p><b>Where my reading might clash, built as read:</b></p>
+<ul>
+<li>"Shot cars can get past" is applied to passing cars. The mission's own cars keep brief 096's rule: the rival car shot to disabled across the cell's way out still boxes it in (blown, it no longer does). Extending Sky's rule to them would change the rival block (Motive's rules page). Sky's call.</li>
+<li>"Abandoned by a driver who fled gunfire": in the engine a driver leaves the car only when the car itself is hit (that car counts as shot). A driver who hears gunfire brakes, then ducks (Fearful, Loyal) or drives off (Idealist, Mercenary). A ducked driver's car is ordinary traffic: it blocks until they sit up, 30 s after the last shot. In loud plays that now holds the rival car for 20–90 s. If Sky meant that some drivers run from gunfire on foot and leave the car (which could then be got past), that is a new reaction for Motive's natures (step 2).</li>
+</ul>
+
+<h2>People on the street</h2>
+<ul>
+<li><b>What counts.</b> A person's street time is the ticks their routine has them out of doors inside the window, from 0:00 to the close: the people file's stops and legs with this game's seeded shift of their day, an added passer-by's own visit, and the cast by the people file's stops for them (Inez on the terrace all mission, the driver at the car to 7:10, Vale out from 5:10 to 7:10: 2.1 people). The count is that, summed over the clock (<code>Street.Ticks</code>, GameDialStreet.cs).</li>
+<li><b>Today 16 (15.9), not 22.</b> The 22 in step 0's report counted the guards on their posts too (6.2 on the street) and missed the cast. The guards have their own row, so the people row counts the rest. Sky's call if the row should hold everyone on foot instead.</li>
+<li><b>More.</b> Passers-by are added in id order, each with their own visit, until the street holds the count (the nearest a whole passer-by allows). One whose visit misses the clock altogether is not added (nobody would ever see them).</li>
+<li><b>Fewer.</b> People leave in the dial's fixed order, skipping tenets (the cast, a lover's tie) and anyone whose routine keeps them indoors all mission (the cooks, most clerks at their desks: they change nothing on the street), until the street holds the count. The fewest is the cast's own street time: 2.</li>
+<li><b>Today's number</b> (16) plays today's world exactly. Both directions take a prefix of a fixed order, so one more never takes anyone away and one fewer never brings anyone back.</li>
+<li><code>kinds.people.max</code> is now 500 on the street (about 2,000 passers-by), so a hopeless setting still starts in time.</li>
+</ul>
+<p>Built and observed (<code>suborned-sim dial street --seeds 20</code>, briefs/098/keel/street.json). "Observed" is what the game shows, every tick: the crowd of the kind inside the window and out of doors (live while the game runs, by routine after it ends), plus the cast's share.</p>
+<table><tr><th>asked</th><th>the census built</th><th>observed, mean of 20 seeds</th><th>per seed</th><th>in the zone</th></tr>
+<tr><td>unset</td><td>15.9</td><td>15.93</td><td>15.84–16.1</td><td>114</td></tr>
+<tr><td>16</td><td>15.95</td><td>15.93</td><td>15.84–16.1</td><td>114</td></tr>
+<tr><td>32</td><td>32.02</td><td>31.99</td><td>31.71–32.18</td><td>180</td></tr>
+<tr><td>8</td><td>7.96</td><td>7.93</td><td>7.67–8.17</td><td>89</td></tr>
+<tr><td>0</td><td>2.1</td><td>2.1</td><td>2.1–2.1</td><td>68</td></tr>
+<tr><td>64</td><td>64.01</td><td>63.98</td><td>63.81–64.09</td><td>349</td></tr>
+</table>
+<p>Asking 0 plays the floor (2.1: the cast). The cast as the role code plays them averages 2.07 over the ticks a quiet game runs, against 2.10 by their routine.</p>
+<h2>Tests</h2>
+<p>Laws, none pinned to a moment. One Release process per test class (<code>dotnet test sim/Suborned.Sim.Tests -c Release --filter FullyQualifiedName~&lt;class&gt;</code>):</p>
+<table><tr><th>class</th><th>result</th><th>what it checks</th></tr>
+<tr><td>TrafficJamTests (new)</td><td>7/7 pass</td><td>A queue boxes the cell's car in: a car of the street stopped across its way out (someone steps out in front of it) boxes it, the Go is refused <code>car-boxed</code> naming it, the host is told (<code>Boxes</code>), and once the road clears it moves on and the box ends (3 seeds). A wreck put on the getaway car's Drive is pushed aside as it goes by, never driven through, and the car gets there (2 seeds). A wreck across the way out boxes nobody in, the Go is taken and the wreck is pushed off the way (2 seeds).</td></tr>
+<tr><td>DialStreetTests (new)</td><td>7/7 pass</td><td>Today is the street's (16 of 114, floor the cast's share). People N gives N on the street: for today, ×2, ×0.5, 0 and ×4 over 6 seeds, each seed within 0.75 of N (or the floor) and the seeds' mean within 0.4, and what the census says it built is what the game shows (within 0.25). Today's number is today's world (3 seeds). Fewer never takes the cast or the lover tie, never anyone who stays indoors, and only people whose routine brings them out. Fewer and more are prefixes (one fewer brings nobody back, one more takes nobody away).</td></tr>
+<tr><td>TrafficTests</td><td>23/23 pass</td><td>Step 1's laws, unchanged and still holding.</td></tr>
+<tr><td>DialTests</td><td>18/18 pass</td><td>Step 0's laws, the people counts read as street counts.</td></tr>
+</table>
+<ul>
+<li><code>suborned-sim check</code>: 473/473, replays included.</li>
+<li><code>suborned-sim hashes</code> (518 runs: every scenario, route script and motive-fights script) is byte-identical to the base build (ea15dc2e): sha256 <code>0be53a7d…f4</code> both, <code>cmp</code> clean. Unset counts stay today's world byte for byte.</li>
+<li>Every other dotnet class, one Release process each, six at a time (21 classes): all pass except <code>RulesTests.Q4GridMatchesTheTypeScriptEvaluator</code> (mercenary, help), which fails identically on the base commit run from its own sources, as step 0 found. ScenarioTests took 177 s, RedlineTests 328 s (all 21 in about 6 minutes).</li>
+<li>bun: <code>contracts/rules/</code> and <code>tools/sim/lanes.test.ts</code> 114/114; <code>tools/sim/</code> 61 pass, 3 fail (the same three site-rebuild tests step 1 reported failing before and after its work: they need the generated <code>out/people</code> this fresh worktree lacks); <code>bun run typecheck</code> clean. The whole <code>bun run test</code> was not run (step 0: generated assets this worktree lacks).</li>
+</ul>
+<h2>The Handover's bands (information, not a gate)</h2>
+<p>15 adaptive plans × 20 seeds × 9 settings, today's guards, every run replayed: 2700 runs in 73 s, 0 errors, 0 replay differences (briefs/098/keel/jams-sweep.json). "Step 1" is the same sweep before this round (traffic-sweep.json), when a queue boxed nobody in.</p>
+<table><tr><th>setting</th><th>wins</th><th>win %</th><th>step 1 win %</th><th>on the street</th><th>cars on the roads</th><th>fails, most first</th></tr>
+<tr><td>unset</td><td>128</td><td>42.7</td><td>42.7</td><td>15.9</td><td>0.0</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12</td></tr>
+<tr><td>cars 0</td><td>128</td><td>42.7</td><td>42.7</td><td>15.9</td><td>0.0</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12</td></tr>
+<tr><td>cars 4</td><td>125</td><td>41.7</td><td>42.0</td><td>15.9</td><td>4.3</td><td>rivals-reach-vale 77, entry-seen-camera 40, closed-in 29, sealed 12</td></tr>
+<tr><td>cars 8</td><td>128</td><td>42.7</td><td>42.7</td><td>15.9</td><td>9.0</td><td>rivals-reach-vale 74, entry-seen-camera 40, closed-in 30, sealed 14</td></tr>
+<tr><td>cars 16</td><td>124</td><td>41.3</td><td>43.3</td><td>15.9</td><td>16.7</td><td>rivals-reach-vale 71, entry-seen-camera 40, closed-in 36, sealed 14</td></tr>
+<tr><td>people ×2, cars 0</td><td>122</td><td>40.7</td><td>–</td><td>32.0</td><td>0.0</td><td>rivals-reach-vale 80, entry-seen-camera 28, enforcer-down 24, sealed 24</td></tr>
+<tr><td>people ×2, cars 4</td><td>122</td><td>40.7</td><td>–</td><td>32.0</td><td>4.2</td><td>rivals-reach-vale 78, entry-seen-camera 28, enforcer-down 25, sealed 24</td></tr>
+<tr><td>people ×2, cars 8</td><td>120</td><td>40.0</td><td>–</td><td>32.0</td><td>8.8</td><td>rivals-reach-vale 77, entry-seen-camera 28, closed-in 25, sealed 25</td></tr>
+<tr><td>people ×2, cars 16</td><td>112</td><td>37.3</td><td>–</td><td>32.0</td><td>16.5</td><td>rivals-reach-vale 77, closed-in 29, entry-seen-camera 28, sealed 28</td></tr>
+</table>
+<table><tr><th>plan (wins of 20)</th><th>unset</th><th>cars 0</th><th>cars 4</th><th>cars 8</th><th>cars 16</th><th>people ×2, cars 0</th><th>people ×2, cars 4</th><th>people ×2, cars 8</th><th>people ×2, cars 16</th></tr>
+<tr><td>careless</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>drive-early</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>drive-round</td><td>4</td><td>4</td><td>2</td><td>4</td><td>3</td><td>4</td><td>3</td><td>3</td><td>1</td></tr>
+<tr><td>prepared-loud</td><td>14</td><td>14</td><td>15</td><td>14</td><td>14</td><td>15</td><td>14</td><td>14</td><td>11</td></tr>
+<tr><td>prepared-loud-lend</td><td>5</td><td>5</td><td>5</td><td>5</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td></tr>
+<tr><td>quiet-a</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr>
+<tr><td>quiet-b</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr>
+<tr><td>quiet-b-lookout-ignored</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>quiet-b-taped</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>quiet-b-thinned</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr>
+<tr><td>quiet-g</td><td>14</td><td>14</td><td>14</td><td>14</td><td>14</td><td>12</td><td>14</td><td>12</td><td>12</td></tr>
+<tr><td>thin-quiet</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td></tr>
+<tr><td>unprepared-loud</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>veteran</td><td>10</td><td>10</td><td>8</td><td>10</td><td>8</td><td>6</td><td>6</td><td>6</td><td>4</td></tr>
+<tr><td>veteran-drive</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+</table>
+<ul>
+<li>The plans that win on every seed (quiet-a, quiet-b, quiet-b-thinned, thin-quiet) still win on every seed at every setting.</li>
+<li>Traffic that can box the cell in costs about 2 points at 16 cars (130 wins in step 1, 124 now): <code>closed-in</code> goes 26 → 36, 13 of them with a passing car in the way.</li>
+<li>Twice the street (32) costs about 2 points on its own (more witnesses), and 5 points with 16 cars. The loss falls on the mixed plans: veteran 10 → 4 wins of 20, drive-round 4 → 1, prepared-loud 14 → 11, quiet-g 14 → 12.</li>
+</ul>
+<h2>Mission cars held by traffic: how often, how long, by what</h2>
+<table><tr><th>setting</th><th>runs with a hold</th><th>spells</th><th>held a run (mean)</th><th>longest</th><th>spells of 10 s or more</th><th>still held at the end</th><th>by what (spells)</th><th>by car (spells)</th></tr>
+<tr><td>cars 4</td><td>54/300</td><td>143</td><td>0.9 s</td><td>29 s</td><td>4</td><td>2</td><td>yields 70, fleeing 38, moving 26, ducked 5, person 4</td><td>getaway 6, official 73, rivals 64</td></tr>
+<tr><td>cars 8</td><td>70/300</td><td>231</td><td>1.7 s</td><td>43 s</td><td>5</td><td>5</td><td>moving 115, yields 84, fleeing 13, ducked 11, person 7, junction 1</td><td>getaway 36, official 73, rivals 122</td></tr>
+<tr><td>cars 16</td><td>74/300</td><td>262</td><td>3.7 s</td><td>105 s</td><td>25</td><td>16</td><td>yields 111, moving 83, fleeing 28, ducked 22, queued 8, junction 5, person 3, stopped 2</td><td>getaway 20, official 52, rivals 190</td></tr>
+<tr><td>people ×2, cars 4</td><td>44/300</td><td>86</td><td>0.9 s</td><td>48 s</td><td>9</td><td>5</td><td>yields 49, moving 22, ducked 6, fleeing 5, queued 2, junction 1, person 1</td><td>getaway 3, official 26, rivals 57</td></tr>
+<tr><td>people ×2, cars 8</td><td>54/300</td><td>138</td><td>2.0 s</td><td>88 s</td><td>12</td><td>8</td><td>yields 68, moving 40, fleeing 14, ducked 6, person 4, queued 4, junction 2</td><td>getaway 9, official 44, rivals 85</td></tr>
+<tr><td>people ×2, cars 16</td><td>74/300</td><td>281</td><td>4.2 s</td><td>328 s</td><td>15</td><td>14</td><td>yields 129, moving 110, ducked 13, fleeing 9, person 7, queued 7, junction 5, stopped 1</td><td>getaway 14, official 52, rivals 215</td></tr>
+</table>
+<table><tr><th>setting</th><th>held seconds by what (all runs)</th></tr>
+<tr><td>cars 4</td><td>yields 141 s, person 67 s, ducked 43 s, moving 18 s, fleeing 10 s</td></tr>
+<tr><td>cars 8</td><td>yields 202 s, ducked 148 s, moving 112 s, person 24 s, fleeing 8 s, junction 3 s</td></tr>
+<tr><td>cars 16</td><td>ducked 441 s, yields 220 s, moving 164 s, queued 128 s, junction 77 s, fleeing 34 s, person 32 s, stopped 21 s</td></tr>
+<tr><td>people ×2, cars 4</td><td>yields 133 s, ducked 50 s, queued 49 s, person 16 s, junction 12 s, moving 11 s, fleeing 1 s</td></tr>
+<tr><td>people ×2, cars 8</td><td>ducked 225 s, yields 215 s, queued 82 s, moving 50 s, person 17 s, junction 4 s, fleeing 2 s</td></tr>
+<tr><td>people ×2, cars 16</td><td>queued 521 s, yields 338 s, ducked 204 s, junction 73 s, moving 58 s, person 43 s, fleeing 9 s, stopped 4 s</td></tr>
+</table>
+<p>What the words mean: <i>moving</i>, a car crossing its way; <i>yields</i>, a car waiting for this very mission car (it makes room); <i>fleeing</i>, a driver driving off from gunfire; <i>ducked</i>, a driver down at the wheel until it has been quiet 30 s; <i>queued</i>, a car waiting behind another; <i>junction</i>, waiting at a stop line; <i>person</i>, stopped for someone in the road. Most spells are a second or two. Step 1's mission cars waited 0.6, 1.3 and 1.9 s a run (cars 4, 8, 16), capped at 40 s; now 0.9, 1.7 and 3.7 s, uncapped.</p>
+<h2>The cell boxed in by traffic</h2>
+<table><tr><th>setting</th><th>runs where traffic boxed a mission car</th><th>boxed a run (mean)</th><th>of it with someone aboard</th><th>Go refused by traffic</th><th>closed-in by traffic</th></tr>
+<tr><td>cars 4</td><td>110/300</td><td>9.1 s</td><td>2.0 s</td><td>62 times in 19 runs</td><td>2</td></tr>
+<tr><td>cars 8</td><td>140/300</td><td>16.1 s</td><td>4.1 s</td><td>164 times in 26 runs</td><td>4</td></tr>
+<tr><td>cars 16</td><td>160/300</td><td>20.3 s</td><td>7.7 s</td><td>248 times in 45 runs</td><td>13</td></tr>
+<tr><td>people ×2, cars 4</td><td>95/300</td><td>7.9 s</td><td>2.3 s</td><td>61 times in 14 runs</td><td>1</td></tr>
+<tr><td>people ×2, cars 8</td><td>120/300</td><td>12.8 s</td><td>3.0 s</td><td>83 times in 17 runs</td><td>3</td></tr>
+<tr><td>people ×2, cars 16</td><td>134/300</td><td>20.2 s</td><td>6.5 s</td><td>273 times in 32 runs</td><td>6</td></tr>
+</table>
+<p>"Boxed" counts any passing car standing on the getaway car's or the official car's way out, aboard or not. A wreck never counts. No adaptive plan ever got a wreck in a mission car's way (wrecks shoved: 0 in the sweep); the law tests cover the shove.</p>
+<h2>The long holds (a minute or more)</h2>
+<p>From the 2,400 traffic runs (briefs/098/keel/jams-long-holds.txt has every hold of 10 s or more):</p>
+<pre>hold  328.2 s car:rivals queued by car:t-015-03 from 2:41.9 (to the end): veteran-drive #4 cars 16
+hold  161.6 s car:rivals queued by car:t-009-03 from 3:00.4 (to the end): veteran-drive #17 cars 16
+hold  105.0 s car:rivals moving by car:t-002-03 from 3:57.6 (to the end): veteran-drive #17 cars 16
+hold   90.0 s car:rivals ducked by car:t-004-06 from 5:57.1: prepared-loud #11 cars 16
+hold   88.5 s car:rivals ducked by car:t-012-05 from 5:15.0: prepared-loud #6 cars 8
+hold   66.2 s car:rivals ducked by car:t-015-01 from 0:39.4 (to the end): unprepared-loud #18 cars 16
+hold   63.7 s car:rivals queued by car:t-003-02 from 0:42.6 (to the end): unprepared-loud #18 cars 8</pre>
+<p>All are the rival car behind drivers ducked at the wheel while a gunfight goes on, or behind the queue they hold up (the 328 s one: a ducked driver on Orbit Walk through veteran-drive's fight, a car behind unable to get round, the rival car behind both, for the rest of the game). Under Sky's rule those are jams. None is two cars waiting for each other.</p>
+<p>One limit inside them is step 1's: a car trying to ease round a ducked car sometimes cannot start its sideways move (its clearance rule keeps it 30 cm from anything near, and a crowded junction leaves no such room), so the queue behind it waits for the quiet too. An exact-footprint test (the one a car making room for a mission car now uses) would let it squeeze by. Not changed here; Pulse's to weigh.</p>
+<h2>The tick's cost</h2>
+<p>One thread, Apple M5 Max (the Studio), warm, 10 plays each; the base is step 1 (ea15dc2e) on its own data, the same machine and hour (briefs/098/keel/jams-perf.json). The engine steps at 10 Hz.</p>
+<table><tr><th>route</th><th>setting</th><th>start ms</th><th>ms a tick</th><th>p99 tick ms</th><th>step 1 ms a tick</th><th>step 1 p99</th></tr>
+<tr><td>route-a</td><td>unset</td><td>2.6</td><td>0.0082</td><td>0.038</td><td>0.0083</td><td>0.038</td></tr>
+<tr><td>route-a</td><td>cars=8</td><td>5.6</td><td>0.021</td><td>0.067</td><td>0.0206</td><td>0.067</td></tr>
+<tr><td>route-a</td><td>cars=16</td><td>9.9</td><td>0.0362</td><td>0.097</td><td>0.0335</td><td>0.091</td></tr>
+<tr><td>route-a</td><td>people=32</td><td>3.4</td><td>0.0104</td><td>0.054</td><td>–</td><td>–</td></tr>
+<tr><td>route-a</td><td>people=32,cars=16</td><td>10.0</td><td>0.0424</td><td>0.109</td><td>–</td><td>–</td></tr>
+<tr><td>route-a</td><td>people=64,cars=16</td><td>11.8</td><td>0.0526</td><td>0.164</td><td>–</td><td>–</td></tr>
+<tr><td>loud-fight</td><td>unset</td><td>3.1</td><td>0.0059</td><td>0.028</td><td>0.0071</td><td>0.024</td></tr>
+<tr><td>loud-fight</td><td>cars=8</td><td>5.8</td><td>0.0174</td><td>0.046</td><td>0.0186</td><td>0.045</td></tr>
+<tr><td>loud-fight</td><td>cars=16</td><td>10.5</td><td>0.0315</td><td>0.071</td><td>0.0294</td><td>0.067</td></tr>
+<tr><td>loud-fight</td><td>people=32</td><td>3.6</td><td>0.0082</td><td>0.037</td><td>–</td><td>–</td></tr>
+<tr><td>loud-fight</td><td>people=32,cars=16</td><td>10.3</td><td>0.0373</td><td>0.084</td><td>–</td><td>–</td></tr>
+<tr><td>loud-fight</td><td>people=64,cars=16</td><td>13.8</td><td>0.0566</td><td>0.206</td><td>–</td><td>–</td></tr>
+</table>
+<p>About 0.003 ms a tick more at 16 cars (route-a 0.0335 → 0.036), mostly the per-tick record of who boxes whom (<code>MissionBoxes</code>: two way-out checks a tick). Unset is unchanged. Twice the street adds 0.6 ms to the start; ×4 with 16 cars starts in 12–14 ms. The Air's row is Redline's.</p>
+<h2>What Latch must change (host)</h2>
+<ul>
+<li><b>The people row.</b> <code>Population.Today</code>'s people Today is now the street number: 16 (floor 2, max 500), not 114. The panel's numbers come from it, so the row works as it is; label it "on the street" (<code>KindCensus.Measure</code> is <code>street</code>; guards <code>zone</code>, cars <code>roads</code>) and show the zone's total beside it if wanted (<code>Total</code>, <code>TotalToday</code>). Steps of 10 are large on a street of 16: ±2 or ±5 may suit.</li>
+<li><b>The shot rig.</b> <code>-counts guards=19,people=150</code> now asks for 150 on the street (about 650 passers-by: each person on the street above today takes about 5). For "a few more" use people=24 or so.</li>
+<li><b>Saved runs with people counts</b> from before this change no longer replay: their start hash moved with the dial's rules text, and the replay says "the start state differs from the record". No recorded run in the repo carries counts.</li>
+<li><b>The census log.</b> New fields: <code>Street10</code> (the street achieved, tenths), <code>CastStreet10</code> (the cast's share), <code>Total</code>, <code>TotalToday</code>, <code>Measure</code>. Asked and Count are street numbers for the people.</li>
+<li><b>The car views</b> (<code>TrafficView</code>, fields added, none changed): <code>Shot</code> (a wreck: it can be got past), <code>ShovedBy</code>, <code>ShovedAt</code>, <code>Shoved</code> (cm in all), <code>Boxes</code> (the mission car it boxes in now: car:getaway or car:official, else ""), <code>MakingRoom</code> (the mission car it is getting out of the way of: it backs off or pulls aside). A wreck being pushed moves a few cm each tick (<code>At</code> is already where it was pushed; <code>ShovedAt</code> is this tick while it slides). At a Go, the wrecks on the way out jump to their pushed place on the Go's tick: draw them sliding there as the car leaves.</li>
+<li><b>The Go card and the ring.</b> <code>car-boxed</code> and <code>GetawayBoxers()</code> can now name a passing car (<code>car:t-005-02</code>). Its words read "boxed in: car:t-005-02 is in the way": the card wants a plain name (a passing sedan) and the hint that shooting it clears the way (Glyph, Fable).</li>
+<li><b>New reads</b>: <code>game.MissionHoldNow(id)</code> ("held 4 s by car:t-003-02 (queued)"), <code>game.MissionHolds</code> and <code>game.MissionBoxes</code> (records, never hashed).</li>
+<li>Nothing new in the bundle: population.json and handover.lanes.json are already in it; <code>Engine.FromTexts</code> is unchanged.</li>
+<li>The Dial098 floor assertion (every kind's floor between 1 and its today) holds for the people: 2 and 16.</li>
+</ul>
+<h2>Open questions</h2>
+<p><b>Sky's calls:</b></p>
+<ul>
+<li>Does the people row count the guards on the street too (then about 22, and adding guards moves it)? Built: the rest of the people, the cast included (16).</li>
+<li>Should "shot cars can get past" hold for the mission's own cars (the rival car shot to disabled across the cell's way out)? Built: passing cars only; brief 096's rule stands for the mission's cars.</li>
+<li>Should some drivers run from gunfire on foot, leaving a car that can be got past? Built: drivers duck or drive off; a ducked driver's car blocks until it is quiet.</li>
+</ul>
+<p><b>For the crew:</b></p>
+<ul>
+<li><b>Glyph, Fable</b>: a jam is now a real lock on the Go. The player needs to read which car boxes them in and that shooting it frees the way.</li>
+<li><b>Motive</b>: the natures' answers to gunfire at the wheel (above), with step 2's witness laws.</li>
+<li><b>Pulse</b>: the shove's numbers (1.5 m/s, 6 m) and the 3 s a car stands before it boxes a way out.</li>
+<li><b>Datum</b>: the official car's drive round runs against the flow on Apron Road (its precomputed kerb-side route). Traffic now makes room for it; a route that keeps right would remove the cause, but it moves the kerbside-stop rules built on that route.</li>
+<li><b>Aster</b>: the rulebook's car.target text still says the street's cars are dressing; and the GDD's L8 text should say jams box and wrecks are pushed aside. Both ride with the next engine version.</li>
+<li><b>Redline</b>: the Air's frame-time row with traffic and the street ×2.</li>
+</ul>
+<h2>Files</h2>
+<ul>
+<li>Engine (sim/Suborned.Sim/): new GameTrafficShove.cs (the shove, the Go's shove, making room), GameTrafficBoxes.cs (the box record), GameDialStreet.cs (street time, fewer and more by the street); touched GameTrafficYield.cs (the hold law, the records), GameTrafficSense.cs, GameTrafficPass.cs, GameTrafficLaw.cs, GameTrafficHost.cs, GameTraffic.cs, Traffic.cs, GameBoxIn.cs, GameGetaway.cs, GameLend.cs, Population.cs, GamePopulation.cs, GameDialPeople.cs, GameSeed.cs. Every file is under 500 lines (the largest touched, GameGetaway.cs, stays at 483).</li>
+<li>CLI (sim/cli/): Street.cs (new: <code>dial street</code>), Dial.cs (the sweep's jams and street column), Traffic.cs, Adaptive.cs.</li>
+<li>Tests: sim/Suborned.Sim.Tests/TrafficJams.cs, DialStreet.cs (new), Dial.cs.</li>
+<li>Rules: contracts/rules/population.json, population.schema.ts, population.test.ts.</li>
+<li>Evidence: briefs/098/keel/jams.html (this), jams-sweep.json, jams-long-holds.txt, jams-perf.json, street.json, census-1b.json.</li>
+</ul>
+</body></html>

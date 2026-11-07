@@ -1,0 +1,1 @@
+{"engine":"suborned.sim/0.45.0","kinds":[{"kind":"guards","measure":"zone","today":16,"floor":1,"max":400,"street10":62,"inZone":16},{"kind":"people","measure":"street","today":16,"floor":2,"max":500,"street10":159,"inZone":114},{"kind":"cars","measure":"roads","today":0,"floor":0,"max":64,"street10":0,"inZone":0}]}
