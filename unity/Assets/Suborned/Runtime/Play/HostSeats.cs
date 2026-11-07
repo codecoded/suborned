@@ -49,7 +49,7 @@ namespace Suborned.Play
             for (int i = 0; i < w.Place.Length; i++)
             {
                 if (g.Tick < w.From[i] || g.Tick >= w.To[i]) continue;
-                if (!w.Out[i] || !host.CafeSeats.Chairs.TryGetValue(w.Place[i], out var ch)) return null;
+                if (!w.Out[i] || !host.CafeSeats.Chairs.TryGetValue(AltChairOf(key) ?? w.Place[i], out var ch)) return null; // brief 098 L9: a chair taken instead of their own (BodyMove.AltChair)
                 var at = frame.World(ch.at); var d = at - drawn; d.y = 0f; if (d.magnitude > 0.35f) return null;
                 var fw = frame.World(new Pt(ch.at.X + ch.face.X, ch.at.Y + ch.face.Y)) - at;
                 return (new Vector3(at.x, drawn.y, at.z), Mathf.Atan2(fw.x, fw.z) * Mathf.Rad2Deg, w.From[i], w.To[i]);

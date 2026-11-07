@@ -14,9 +14,15 @@ namespace Suborned.Play
     ///  · walking together: a loose column along the direction of travel (rows RowCm apart, up to three abreast LaneCm apart, staggered,
     ///    jittered and drifting by tick and hash).
     ///  · startled, or fleeing with nowhere to run: facing away from the last shot.
-    /// Offsets move at most StepCm a tick (a walk), so nobody jumps when a group changes.</summary>
+    /// Offsets move at most StepCm a tick (a walk), so nobody jumps when a group changes.
+    /// Brief 098 L9 (Keel's bodies, engine 0.47.0; Sky 2026-11-07): the engine now lays every body itself, 60 cm apart at the closest, 80 cm of space,
+    /// queues and arcs at a stop, so the host draws CrowdPos as it is. The spread, the relief's step and GiveWay are off (HostSpread); they stay only
+    /// to draw a before-and-after (-hostSpread) and go in the cleanup round.</summary>
     public sealed partial class HostViews
     {
+        /// <summary>Brief 098 L9: the host's own crowd spreading (the knots and columns here, the relief's step, GiveWay round the cast). Off: the
+        /// engine's bodies are drawn where it lays them. On only for a before-and-after shot (-hostSpread).</summary>
+        public static bool HostSpread = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-hostSpread") >= 0;
         const int SpreadCm = 72, KnotGapCm = 150, RowCm = 140, LaneCm = 90, WallReachCm = 400, WallStandCm = 90, StepCm = 14;
         /// <summary>Pulse 067 L: a standing person's one-tick jump eased at a walk: longer than any tick of walking or running (0.5 m), at most 1.5 m.</summary>
         const float StepEaseMinCm = 50f, StepEaseMaxCm = 150f;
@@ -52,6 +58,13 @@ namespace Suborned.Play
         {
             if (spreadGame != g || prevAt.Length != g.Walkers.Count) SpreadInit(g);
             int n = g.Walkers.Count;
+            if (!HostSpread)
+            {   // brief 098 L9: where the engine lays each body, no offset; only the startled turn below (a facing, not a place)
+                for (int i = 0; i < n; i++) { atNow[i] = g.CrowdPos(g.Walkers[i]); offCur[i] = offWant[i] = Vector2.zero; faceWant[i] = null; }
+                StartledFaces(g, n);
+                for (int i = 0; i < n; i++) prevAt[i] = atNow[i];
+                return;
+            }
             foreach (var l in groups.Values) { l.Clear(); listPool.Add(l); }
             groups.Clear();
             for (int i = 0; i < n; i++)
@@ -82,18 +95,23 @@ namespace Suborned.Play
                 foreach (var i in m) if (prevAt[i].HasValue && !prevAt[i].Value.Equals(kv.Key)) { dir = (at - V(prevAt[i].Value)).normalized; break; }
                 if (dir != Vector2.zero) Column(g, m, at, dir, g.Tick); else Stand(g, kv.Key, m, at);
             }
-            // startled (or fleeing with nowhere to run): away from the last shot
-            if (LastShotFrom is { } shot)
-                for (int i = 0; i < n; i++)
-                {
-                    var w = g.Walkers[i]; if (!atNow[i].HasValue) continue;
-                    bool still = !prevAt[i].HasValue || prevAt[i].Value.Equals(atNow[i].Value);
-                    if (w.St == "startled" || (w.St == "fleeing" && still)) { var d = V(atNow[i].Value) - V(shot); if (d.sqrMagnitude > 1f) faceWant[i] = d.normalized; }
-                }
+            StartledFaces(g, n);
             for (int i = 0; i < n; i++)
             {
                 var d = offWant[i] - offCur[i]; offCur[i] = d.magnitude <= StepCm ? offWant[i] : offCur[i] + d.normalized * StepCm;
                 prevAt[i] = atNow[i];
+            }
+        }
+
+        /// <summary>Startled (or fleeing with nowhere to run): facing away from the last shot (before prevAt takes this tick's points).</summary>
+        void StartledFaces(Game g, int n)
+        {
+            if (LastShotFrom is not { } shot) return;
+            for (int i = 0; i < n; i++)
+            {
+                var w = g.Walkers[i]; if (!atNow[i].HasValue) continue;
+                bool still = !prevAt[i].HasValue || prevAt[i].Value.Equals(atNow[i].Value);
+                if (w.St == "startled" || (w.St == "fleeing" && still)) { var d = V(atNow[i].Value) - V(shot); if (d.sqrMagnitude > 1f) faceWant[i] = d.normalized; }
             }
         }
 
@@ -179,6 +197,42 @@ namespace Suborned.Play
             float pull = Mathf.Max(0f, best - WallStandCm);
             return (at + bu * pull, bu, true);
         }
+
+        /// <summary>The crowd gives way to the people the cell knows (Inez, the door guard, the driver, Vale) for the eye only, so the known person
+        /// draws on top of a cluster: a passer-by standing between the camera and one (up to 3 m in front, where a 1.75 m figure overlaps them at
+        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.
+        /// Suture's Q-SOLID give-way (0.2.122, briefs/060 "0.2.122 bot rows" cause B): on the cast's own point the side is the walker's hash (never
+        /// always the camera's right), and a pushed point is kept only on free ground (the engine's walk grid); else the mirror side, else 1 m behind
+        /// the cast person, else the engine's point (the relief guard on the door guard's post was pushed into the Office face).
+        /// Brief 098 L9: off with the spread (HostSpread): the engine keeps every body 60 cm from the cast, and a pushed point could stand in someone.</summary>
+        Pt GiveWay(Game g, Pt p, int walker)
+        {
+            var cam = host.View; Vector2 f = Vector2.up, r = Vector2.right;
+            if (cam)
+            {
+                var o = frame.Engine(Vector3.zero); var ef = frame.Engine(new Vector3(cam.transform.forward.x, 0, cam.transform.forward.z).normalized * 10f); var er = frame.Engine(new Vector3(cam.transform.right.x, 0, cam.transform.right.z).normalized * 10f);
+                f = new Vector2(ef.X - o.X, ef.Y - o.Y).normalized; r = new Vector2(er.X - o.X, er.Y - o.Y).normalized;
+            }
+            foreach (var cp in new[] { g.PersonPos(g.Inez), g.GuardPose()?.pos, g.DriverPos(), g.ValePos() })
+            {
+                if (!cp.HasValue) continue;
+                var d = new Vector2(p.X - cp.Value.X, p.Y - cp.Value.Y);
+                float front = -Vector2.Dot(d, f), side = Vector2.Dot(d, r);
+                var d0 = d;
+                if (front > -40f && front < 300f && Mathf.Abs(side) < 70f) { side = side >= 0 ? 70f : -70f; d = -f * front + r * side; }
+                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * (walker >= 0 && walker < idHash.Length && (idHash[walker] & 1) != 0 ? -70f : 70f) : d.normalized * 70f;
+                if (d == d0) continue; // not in the way: the point stands
+                var c = cp.Value; Pt At(Vector2 v) => new Pt(c.X + Mathf.RoundToInt(v.x), c.Y + Mathf.RoundToInt(v.y));
+                var grid = host.CarWalk; var pushed = At(d); // engine 0.33.1 (Keel's addendum): the free test sees the standing cars
+                if (grid.Free(pushed)) { p = pushed; continue; }
+                var mirror = At(d - 2f * r * Vector2.Dot(d, r)); if (grid.Free(mirror)) { p = mirror; continue; }
+                var behind = At(f * 100f); if (grid.Free(behind)) { p = behind; continue; }
+                GiveWayKept++; // none free: the engine's point
+            }
+            return p;
+        }
+        /// <summary>Crowd points GiveWay left on the engine's point because no pushed side was free ground (Suture's Q-SOLID cause B).</summary>
+        public static int GiveWayKept;
 
         /// <summary>The drawn point of crowd person i this tick (the engine's plus the eased spread offset).</summary>
         Pt SpreadAt(int i) => OldFan ? atNow[i].Value + OldFanAt(i) : atNow[i].Value + P(offCur[i]);

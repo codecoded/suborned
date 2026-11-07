@@ -339,11 +339,12 @@ namespace Suborned.Play
                     for (int i = 0; i < g.Walkers.Count; i++)
                     {
                         string k = "crowd/" + i; var v = ViewAt(h, k); if (!v.HasValue) { last.Remove(k); continue; }
-                        if (h.Views.StepEased.Contains(k) && last.TryGetValue(k, out var lp)) { float d = Flat(lp, v.Value); if (d > worst) { worst = d; worstKey = k; } } // the drawn step a tick of an eased person, from the tick before its jump
+                        if ((!HostViews.HostSpread || h.Views.StepEased.Contains(k)) && last.TryGetValue(k, out var lp)) { float d = Flat(lp, v.Value); if (d > worst) { worst = d; worstKey = k; } } // the drawn step a tick of an eased person, from the tick before its jump; brief 098 L9 (the spread off): of everyone in the crowd
                         last[k] = v.Value;
                     }
                 }
-                int eased = h.Views.StepEases - eased0; bool stepOk = eased == 0 || worst <= 0.25f;
+                float paceM = (g.R.CrowdRunSpeed / (float)hz + Suborned.Sim.BodyCheck.RoundCm) / 100f; // the engine's own jump rule for the city's people: their run a tick and its rounding (BodyCheck.Moves)
+                int eased = h.Views.StepEases - eased0; bool stepOk = HostViews.HostSpread ? eased == 0 || worst <= 0.25f : eased == 0 && worst <= paceM + 0.001f; // brief 098 L9: nobody jumps as drawn
                 // a shift guard on the street now (they leave the official door from 4:30), on screen at play zoom
                 To(h, 4 * 600 + 45 * hz); yield return Settle(h); h.Select(OpId.Scout, false);
                 string gkey = ""; for (int i = 0; i < g.Walkers.Count && gkey.Length == 0; i++) if (!g.Walkers[i].P.Civilian && ViewAt(h, "crowd/" + i).HasValue) gkey = "crowd/" + i;

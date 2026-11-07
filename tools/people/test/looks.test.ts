@@ -110,6 +110,7 @@ describe('the replay is the host\'s choice (each line of it pinned to the source
   test('every place the host dresses a view is one the audit replays: a new `Dress(` or figure pick fails this list', () => {
     expect(calls(allViews, 'Dress')).toEqual([
       'crowdKeys[i], fid',                                                // DressCrowd (HostViews.Figures.cs): the walkers
+      'crowdKeys[i], PersonFigure(w.P)',                                  // GrowCrowd (HostViews.Traffic.cs, brief 098 step 1): a passing car's driver who got out, the plain pick by job
       'hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"', // the fight's hostiles: the range's rivals and the response's officers (two sites: the range, the Handover), each rival in his number's look
       'hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"',
       'k, fid',                                                           // the fixed keys, RoleFigure
@@ -129,6 +130,11 @@ describe('the replay is the host\'s choice (each line of it pinned to the source
     expect(views).toContain('if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, RivalFigure(p.Id)); }'); // a crew member's body is his own look
     expect(views).toContain('else { Person(key, host.securityColour); Dress(key, "security"); }'); // a response unit's officer
     expect(views).toContain('if (host.figures != null) Dress(key, host.figures.Pick("family/passer", b.Id));');
+    // brief 098 step 1: a driver who gets out of a passing car joins the crowd mid-game (the engine's walker, job `visitor` from contracts/rules/population.json
+    // traffic.driver), dressed by the plain pick: no group to re-pick against, as nobody sets out with them. A visitor has no pool of its own: a passer-by's look
+    expect(src('unity/Assets/Suborned/Runtime/Play/HostViews.Traffic.cs')).toContain('if (!things.ContainsKey(crowdKeys[i])) { Person(crowdKeys[i], Family(w.P.Job), false, true, Shape(w.P.Job)); Dress(crowdKeys[i], PersonFigure(w.P)); }');
+    expect(poolOf(m, 'visitor')).toBe('family/passer');
+    for (const id of ['x-driver-01', 'x-driver-02', 'x-driver-03']) expect(m.pools.get('family/passer'), id).toContain(personFigure(m, id, 'visitor')!);
     for (const id of ['b-1', 'b-2', 'b-3', 'b-4', 'b-5', 'b-6']) expect(m.pools.get('family/passer'), id).toContain(rangeBystanderFigure(m, id)!);
   });
   test('BodyFigure: a body wears the figure its walker was drawn in, so nobody changes clothes when knocked out', () => {

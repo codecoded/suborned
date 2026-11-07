@@ -194,12 +194,12 @@ public class Debrief099
         Assert.That(h.DebriefSameStart, Is.False, "the next ending offers a new start again");
     }
 
-    [Test] public void EveryWordThePageReadsIsFablesOrAMarkedStandIn()
+    /// <summary>Brief 098/099 (Latch, 2026-11-07): Fable's words cover every key the page reads, so the stand-ins are gone; the page reads text.json only.</summary>
+    [Test] public void EveryWordThePageReadsIsFables()
     {
         foreach (var path in new[] { QuietWin, Lookout, Loud }) { var h = Ended(path); foreach (var id in new[] { "time", "cash", "trail", "alert", "standing" }) { h.DebriefFold(id); } }
-        var dw = DebriefWords.Get(); Assert.That(dw.FromStandIn.Count + dw.FromFable.Count, Is.GreaterThan(30));
-        Keep("words", $"from Fable's debrief.page: {dw.FromFable.Count}\n  {string.Join("\n  ", dw.FromFable)}\nfrom the stand-ins: {dw.FromStandIn.Count}\n  {string.Join("\n  ", dw.FromStandIn)}");
-        var stand = JNode.Parse(File.ReadAllText(Path.Combine(Root.Path, "unity/Assets/Suborned/Resources/Debrief099/standins.json")));
-        foreach (var k in new[] { "head", "way", "how", "numbers", "reasons", "trail", "city", "beats", "next", "ways" }) Assert.That(stand.Has(k), $"the stand-ins keep Fable's shape: {k}");
+        var dw = DebriefWords.Get(); Assert.That(dw.HasFable, "text.json's debrief.page is read"); Assert.That(dw.FromFable.Count, Is.GreaterThan(30));
+        Keep("words", $"from Fable's debrief.page: {dw.FromFable.Count}\n  {string.Join("\n  ", dw.FromFable)}");
+        Assert.That(File.Exists(Path.Combine(Root.Path, "unity/Assets/Suborned/Resources/Debrief099/standins.json")), Is.False, "no stand-ins: every key is Fable's");
     }
 }

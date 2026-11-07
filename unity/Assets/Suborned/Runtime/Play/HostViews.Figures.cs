@@ -139,7 +139,7 @@ namespace Suborned.Play
                     f.ground = Mathf.Lerp(f.ground, now, 1f - Mathf.Exp(-dt / 0.1f));
                     speed = Mathf.Min(DriveSpeed, f.ground);
                     f.yaw = Mathf.MoveTowardsAngle(f.yaw, DriveYaw, 540f * Time.unscaledDeltaTime); } // brief 025: the controller's speed and heading (Glyph: up to 540°/s)
-                else if (speed > 0.15f) f.yaw = Mathf.SmoothDampAngle(f.yaw, Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg, ref f.yawVel, 0.1f, 720f, Time.unscaledDeltaTime); // Forma: turns eased (they snapped a corner a frame)
+                else if (speed > 0.15f) f.yaw = Mathf.SmoothDampAngle(f.yaw, Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg + SqueezeTurn(key, d), ref f.yawVel, 0.1f, 720f, Time.unscaledDeltaTime); // Forma: turns eased (they snapped a corner a frame); brief 098 L9: turned side-on squeezing past (HostViews.Give)
                 else if (faces.TryGetValue(key, out var fc)) f.yaw = Mathf.MoveTowardsAngle(f.yaw, Mathf.Atan2(fc.x, fc.z) * Mathf.Rad2Deg, 360f * Time.unscaledDeltaTime); // turn to the table, or to him
                 bool aiming = Aim.TryGetValue(key, out var aimAt);
                 if (aiming) { var ad = aimAt - t.position; ad.y = 0f; if (ad.sqrMagnitude > 0.04f) f.yaw = Mathf.SmoothDampAngle(f.yaw, Mathf.Atan2(ad.x, ad.z) * Mathf.Rad2Deg, ref f.yawVel, 0.05f, 1800f, Time.unscaledDeltaTime); else aiming = false; } // Sky 2026-10-20: a shooter faces its target (~0.15 s), walking or not (it strafes)

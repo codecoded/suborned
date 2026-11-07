@@ -93,7 +93,7 @@ namespace Suborned.Play
             var keep = h.controls.conversations; var got = new bool[1];
             // ---- route A: Listen, the Help (engine 0.44.0: one, after the Listen, the full offer), the Call, each whole at its landing; First time counts by scene, not by person
             yield return Fresh(h, ConversationScenes.FirstEachScene); var g = h.Game; var ra = new RouteRun { Orders = Route("route-a") }; int callAt = ra.Orders.Find(o => o.Do == "call")?.Tick ?? 1556, enterAt = ra.Orders.Find(o => o.Do == "enter")?.Tick ?? 1575; /* route A's own Call and Enter (c054: 1556, 1575; the call waits for the rival car) */
-            var cam = h.View; yield return ListenOnStreet(h, ra, dir, log, row); var pos0 = cam.transform.position; var rot0 = cam.transform.rotation; yield return ToScene(h, ra, 900, got); string w = Words(h, "listen-inez"); var c = h.ConvoNow;
+            var cam = h.View; yield return ListenOnStreet(h, ra, dir, log, row); var pos0 = Proof083.ViewGround(cam); var rot0 = cam.transform.rotation; yield return ToScene(h, ra, 900, got); string w = Words(h, "listen-inez"); var c = h.ConvoNow; // the framed ground point (Proof083.ViewGround: brief 096's stand-off slides the camera along its axis)
             row("r085listenWhole", got[0] && w.Length == 0 && c.HasCards, $"{h.ConvoLast}; {w}; said '{HudToolkit.ConvoSaid}'; picks {string.Join(",", h.ConvoPicks)}");
             if (got[0])
             {
@@ -108,7 +108,7 @@ namespace Suborned.Play
                     yield return ListenBeats(h, c, dir, log, row);
                     for (int i = 0; i < 40 && h.ConvoOn; i++) yield return null;
                     h.SetPaused(true); yield return Frames(3);
-                    row("r085viewBack", h.ConvoLast.Contains("bit-identical") && cam.transform.position == pos0 && cam.transform.rotation == rot0, h.ConvoLast);
+                    float back = (Proof083.ViewGround(cam) - pos0).magnitude; row("r085viewBack", h.ConvoLast.Contains("bit-identical") && back < 0.01f && cam.transform.rotation == rot0, $"{h.ConvoLast}; its ground point back within {back:0.0000} m");
                     row("r085clockHeld", g.Tick == tick0 && g.Orders.Count == ord0, $"tick {tick0} to {g.Tick}; orders {ord0} to {g.Orders.Count}");
                     yield return CardOnPerson(h, dir, log, row);
                 }

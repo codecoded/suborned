@@ -161,18 +161,20 @@ namespace Suborned.Play
             if (g.GuardPose() is { } gp && (gp.facing.X != 0 || gp.facing.Y != 0)) faces["guard"] = frame.Dir(gp.facing);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
             RivalViews(g); // brief 059 K8: one view per member and one for the car, from RivalPoses (the three followers at one point are gone)
-            var sp = g.SecurityPose();
-            for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? (i == 0 ? sp.Value.pos : Follower(g, "security", sp.Value.pos, i, new Pt(0, i * 90))) : (Pt?)null);
-            if (!sp.HasValue) trails.Remove("security");
+            for (int i = 0; i < 2; i++) // brief 098 L9: each officer where the engine lays him (SecOfficerPose), facing his own sector at the end of his run (was a follower on the lead's trail);
+            {                           // joined to the final fight, his hostile view draws him (HostFight.ViewKey), never two figures
+                var op = i < g.SecGuns.Length && !InFight(g, g.SecGuns[i].Id) ? g.SecOfficerPose(i) : null; Set("security/" + i, op?.pos);
+                if (op is { } o && (o.facing.X != 0 || o.facing.Y != 0)) faces["security/" + i] = frame.Dir(o.facing);
+            }
             Set("car/official", g.Vale == ValeAt.Car && g.Result != Outcome.Success ? (Pt?)null : g.CarPos());
             Set("car/getaway", g.GetawayCarPos()); // brief 059 K6: its stand, or along its Drive
-            // the crowd: people the engine puts on one point are spread for the eye only (HostCrowdSpread: hash-seeded spots 0.7 m apart, a
-            // loose column when walking, drawn up to a wall when standing; the engine is not told)
+            // the crowd, where the engine lays each body (brief 098 L9: 60 cm apart, queues and arcs at a stop); HostCrowdSpread's eye-only spread
+            // (hash-seeded spots, columns, GiveWay round the cast) runs only for a before-and-after (HostSpread)
             TrafficViews(g); GrowCrowd(g); Spread(g); // brief 098 step 1: the passing cars, and a crowd view for each driver who got out (HostViews.Traffic)
             for (int i = 0; i < g.Walkers.Count; i++)
             {
                 if (ListenOwns(crowdKeys[i])) continue; /* brief 085: a Listen's partner, drawn by the view alone */ if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
-                Set(crowdKeys[i], GiveWay(g, SpreadAt(i), i));
+                Set(crowdKeys[i], HostSpread ? GiveWay(g, SpreadAt(i), i) : atNow[i].Value); // brief 098 L9: where the engine lays the body (HostCrowdSpread: the host's spread is off)
                 if (SpreadFace(i) is { } sf) faces[crowdKeys[i]] = sf;
                 else if (StillFacing(g, i) is { } ef) faces[crowdKeys[i]] = ef; // engine 0.34.0 (Pulse 067 L): one standing alone faces the way the engine reads him (Game.FacingNow: the Office's door guards face out, toward the kerb), so the figure and its cone agree
                 // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
@@ -180,7 +182,7 @@ namespace Suborned.Play
                 var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
                 var want = cower ? new Vector3(1.2f, 0.75f, 1.2f) : Vector3.one; if (ct.localScale != want) ct.localScale = want;
             }
-            Bodies(g);
+            GiveTick(g); Bodies(g); // brief 098 L9: the give and take (HostViews.Give: squeezing past, making room, a chair taken instead)
             Units(g);
             RobotFaces(g); // brief 026: view only
             // the final fight's hostiles (officers in the loud branch, the rival ambush in the safe one)
@@ -212,41 +214,9 @@ namespace Suborned.Play
         /// <summary>The cheap role shape: an apron band for café staff, a cap for guards and drivers.</summary>
         static string Shape(string job) => FamilyOf(job) switch { "cafe" => "apron", "guard" or "driver" => "cap", _ => "" };
 
-        /// <summary>The crowd gives way to the people the cell knows (Inez, the door guard, the driver, Vale) for the eye only, so the known person
-        /// draws on top of a cluster: a passer-by standing between the camera and one (up to 3 m in front, where a 1.75 m figure overlaps them at
-        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.
-        /// Suture's Q-SOLID give-way (0.2.122, briefs/060 "0.2.122 bot rows" cause B): on the cast's own point the side is the walker's hash (never
-        /// always the camera's right), and a pushed point is kept only on free ground (the engine's walk grid); else the mirror side, else 1 m behind
-        /// the cast person, else the engine's point (the relief guard on the door guard's post was pushed into the Office face).</summary>
-        Pt GiveWay(Game g, Pt p, int walker)
-        {
-            var cam = host.View; Vector2 f = Vector2.up, r = Vector2.right;
-            if (cam)
-            {
-                var o = frame.Engine(Vector3.zero); var ef = frame.Engine(new Vector3(cam.transform.forward.x, 0, cam.transform.forward.z).normalized * 10f); var er = frame.Engine(new Vector3(cam.transform.right.x, 0, cam.transform.right.z).normalized * 10f);
-                f = new Vector2(ef.X - o.X, ef.Y - o.Y).normalized; r = new Vector2(er.X - o.X, er.Y - o.Y).normalized;
-            }
-            foreach (var cp in new[] { g.PersonPos(g.Inez), g.GuardPose()?.pos, g.DriverPos(), g.ValePos() })
-            {
-                if (!cp.HasValue) continue;
-                var d = new Vector2(p.X - cp.Value.X, p.Y - cp.Value.Y);
-                float front = -Vector2.Dot(d, f), side = Vector2.Dot(d, r);
-                var d0 = d;
-                if (front > -40f && front < 300f && Mathf.Abs(side) < 70f) { side = side >= 0 ? 70f : -70f; d = -f * front + r * side; }
-                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * (walker >= 0 && walker < idHash.Length && (idHash[walker] & 1) != 0 ? -70f : 70f) : d.normalized * 70f;
-                if (d == d0) continue; // not in the way: the point stands
-                var c = cp.Value; Pt At(Vector2 v) => new Pt(c.X + Mathf.RoundToInt(v.x), c.Y + Mathf.RoundToInt(v.y));
-                var grid = host.CarWalk; var pushed = At(d); // engine 0.33.1 (Keel's addendum): the free test sees the standing cars
-                if (grid.Free(pushed)) { p = pushed; continue; }
-                var mirror = At(d - 2f * r * Vector2.Dot(d, r)); if (grid.Free(mirror)) { p = mirror; continue; }
-                var behind = At(f * 100f); if (grid.Free(behind)) { p = behind; continue; }
-                GiveWayKept++; // none free: the engine's point
-            }
-            return p;
-        }
-
         // ---------------------------------------------------------------- brief 013: bodies and the response's units
 
+        static bool InFight(Game g, string id) { foreach (var h in g.Hostiles) if (h.Id == id) return true; return false; }
         /// <summary>A person's view key in orders and views: the cast by role, the crowd by id.</summary>
         public static string KeyOf(Person p) => p.Role.Length > 0 ? p.Role : p.Id;
         readonly Dictionary<Person, int> walkerIndex = new();
@@ -547,35 +517,6 @@ namespace Suborned.Play
             var t = Part(root, key, cylinder, select, Vector3.zero, new Vector3(1.1f, 0.01f, 1.1f));
             t.gameObject.SetActive(false);
             things[key] = (t, Vector3.zero, Vector3.zero, false);
-        }
-
-        // ---------------------------------------------------------------- group followers (Suture's bot triage, 0.2.115)
-
-        readonly Dictionary<string, List<Pt>> trails = new();
-        /// <summary>For checks: followers drawn this build that had to be moved onto free ground.</summary>
-        public static int FollowerSnaps;
-        /// <summary>Crowd points GiveWay left on the engine's point because no pushed side was free ground (Suture's Q-SOLID cause B).</summary>
-        public static int GiveWayKept;
-
-        /// <summary>Follower `idx` of a group whose leader the engine places at `lead`: on the leader's recent path 0.9 m x idx back while it walks
-        /// (the path is free ground: the engine walked it), else `offset` beside it; then on a free walk cell (the nearest free cell within 2 m),
-        /// else on the leader. View only.</summary>
-        Pt Follower(Game g, string group, Pt lead, int idx, Pt offset)
-        {
-            if (!trails.TryGetValue(group, out var tr)) trails[group] = tr = new List<Pt>();
-            if (tr.Count == 0 || G.Dist(tr[^1], lead) >= 10) { tr.Add(lead); if (tr.Count > 64) tr.RemoveAt(0); }
-            long want = 90L * idx; Pt at = lead + offset; long run = 0; bool onPath = false;
-            for (int k = tr.Count - 1; k > 0; k--)
-            {
-                long seg = G.Dist(tr[k], tr[k - 1]); if (seg <= 0) continue;
-                if (run + seg >= want) { long t = want - run; at = new Pt(tr[k].X + (int)((tr[k - 1].X - tr[k].X) * t / seg), tr[k].Y + (int)((tr[k - 1].Y - tr[k].Y) * t / seg)); onPath = true; break; }
-                run += seg;
-            }
-            if (onPath && G.Dist(lead, tr[^1]) > 300) onPath = false; // the leader jumped (a respawn): the old trail is not its path
-            if (!onPath) at = lead + offset;
-            var grid = g.S.Grid; if (grid.Free(at)) return at;
-            FollowerSnaps++; var nf = grid.NearestFree(at);
-            return nf.HasValue && G.Dist(nf.Value, at) <= 200 ? nf.Value : lead;
         }
 
         static Transform Part(Transform parent, string name, Mesh mesh, Material mat, Vector3 pos, Vector3 scale)

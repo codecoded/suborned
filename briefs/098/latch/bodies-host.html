@@ -1,0 +1,86 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Brief 098 L9: bodies drawn where the engine lays them (Latch)</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1040px;margin:32px auto;padding:0 20px;color:#17302f;background:#f9f7ee}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:19px;margin:28px 0 8px;border-bottom:1px solid #d2e6e2;padding-bottom:4px}
+.sub{color:#4e625f;margin:0 0 18px}table{border-collapse:collapse;margin:8px 0 14px;font-size:14px}th,td{border:1px solid #d2e6e2;padding:4px 8px;text-align:left;vertical-align:top}
+th{background:#e9f2ef}td.n{text-align:right;font-variant-numeric:tabular-nums}code{background:#eef3f1;padding:0 4px;border-radius:3px;font-size:13px}
+.ok{color:#1f6c67;font-weight:600}.bad{color:#b3262c;font-weight:600}.note{color:#4e625f}li{margin:3px 0}
+figure{margin:10px 0}figure img{max-width:100%;border:1px solid #d2e6e2}figcaption{color:#4e625f;font-size:13px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+</style></head><body>
+<h1>Brief 098 L9: bodies drawn where the engine lays them</h1>
+<p class="sub">Latch, 2026-11-07, branch <code>work/098-living-playbook</code> (uncommitted), engine suborned.sim/0.47.0 (Keel's L9 give and take, merged at 2e449f1d, exported at 52de112c).
+Sky's calls on L9: bodies 60 cm apart at the closest, 80 cm of space (70 in a queue), the cell steps round people or waits, and nobody ever jumps: a stuck person steps
+aside, squeezes past or changes plans, never hidden by a fade or a cut. Pictures and clips stay on disk beside this file (<code>pics/l9/</code>, git-ignored).</p>
+
+<h2>What changed in the host</h2>
+<ul>
+<li><b>The crowd is drawn where the engine lays each body.</b> <code>HostCrowdSpread</code>'s eye-only spread (knots and columns of people on one engine point), the relief's step
+(a short jump folded into the drawn spread) and <code>GiveWay</code> (passers-by pushed 0.7 m aside round Inez, the door guard, the driver and Vale) are off: <code>HostViews.HostSpread</code>,
+false unless the player is started with <code>-hostSpread</code>, which exists only for the before-and-after below and goes in the cleanup round.</li>
+<li><b>No rejoin blend.</b> L9's host side (a fade or cut for the one-tick rejoin) was never built, so nothing was removed; with 0.47.0 there is nothing to blend.</li>
+<li><b>The response unit's officers</b> are each drawn from <code>SecOfficerPose(k)</code>, facing their own sector at the end of the run. The second officer was a follower 0.9 m
+behind the first on his trail (a host spread). An officer who joins the final fight is drawn by his fight body only (<code>HostFight.ViewKey</code> already said so); he was drawn twice.</li>
+<li><b>Squeezing past</b> (<code>BodyMove.SqueezeWith/SqueezeFacing</code>): the figure turns up to 50° off its walk toward the engine's side-on facing, on the walk clip's slowest
+stride at the engine's 0.5 m/s.</li>
+<li><b>Making room</b> (<code>RoomFor/RoomAt</code>): the engine's walk to the side and back; standing aside, the figure faces the one passing.</li>
+<li><b>Changed plans</b> (<code>AltChair</code>): seated in the chair taken instead of their own (<code>HostSeats.SeatNow</code>).</li>
+<li><b>Going in</b>: the host draws whatever <code>CrowdPos</code> returns; nothing hides a person by their routine.</li>
+</ul>
+
+<h2>Why the squeeze is a turn, not a side-step</h2>
+<p>Every figure imports with Optimize Game Objects (brief 069 A: Redline, about 15 % of a person's frame), so the skeleton lives inside the Animator and only Head and Hips stay as
+transforms. A pass after the clip can't turn the spine, and Animation Rigging's constraints work on bone transforms the crowd's figures no longer have (and would put a rig
+on every one of about 130 figures for a two-second event). The light route left is the figure's own yaw over the existing walk.
+A true side-step needs a strafe pair in the clip set (the Mixamo library on disk has <code>Left_Strafe_Walk</code> and <code>Right_Strafe_Walking</code>): Forma's.</p>
+
+<h2>Shots</h2>
+<p>Build 0.2.264 (0.2.265 differs only in a proof limit) on <code>OldTown.unity</code>, world only, play zoom unless noted (<code>out/scratch/latch/shots/review.shots.json</code>, <code>dense.shots.json</code>; copies in <code>pics/l9/</code>).</p>
+<div class="pair">
+<figure><img src="pics/l9/l9-cafe-queue-after.jpg"><figcaption>The café door at 1:00, route A, today's crowd, drawn where the engine lays each body.</figcaption></figure>
+<figure><img src="pics/l9/l9-cafe-queue-before.jpg"><figcaption>The same moment with the host's old spread on (<code>-hostSpread</code>): no visible change.</figcaption></figure>
+<figure><img src="pics/l9/l9-dense-cafe-after.jpg"><figcaption>About six times today's street (<code>-counts people=128</code>) at 1:25, spread off.</figcaption></figure>
+<figure><img src="pics/l9/l9-dense-cafe-before.jpg"><figcaption>The same with the spread on: the pixels that differ are the fountain, petals and birds, not people.</figcaption></figure>
+<figure><img src="pics/l9/l9-office-front-after.jpg"><figcaption>The Records Office front at 2:00, yaw 210: the door guard on the steps, the Fixer, the Tech at the cabinet, the driver in the cut.</figcaption></figure>
+<figure><img src="pics/l9/l9-rivals-posted-after.jpg"><figcaption>Route B at 4:05: two of the crew posted at the front, 2.25 m apart, each on his own spot.</figcaption></figure>
+</div>
+<p><b>Why the before and after look the same.</b> The old spread acted on people sharing one engine point and on anyone in front of or within 0.7 m of the cast.
+Counted over route A's first 3:00 on the same engine (<code>out/scratch/latch/probe</code>): at today's settings nobody shared a point and nobody came within 70 cm of the cast,
+so it had nothing to move. At <code>people=128</code> still nobody shares a point, but there are 282 person-ticks within 70 cm of the cast: the people <code>GiveWay</code> would have
+pushed 0.7 m aside, now with a body that could be standing there.</p>
+<p><b>The squeeze and the step aside</b> (<code>pics/l9/l9-squeeze.mp4</code>, <code>l9-step-aside.mp4</code>, <code>l9-squeeze-sheet.jpg</code>; people=128, the café door at 1:25 and 1:40).
+At play zoom the squeeze is small and short: one stands, the other passes at 0.4 m/s turned toward him. What reads more is the second before it, where the engine slides the
+passer at 2.4 m/s (the city's run, so the figure runs) one way and straight back (below, for Keel).</p>
+
+<h2>Checks</h2>
+<table>
+<tr><th>What</th><th>Result</th></tr>
+<tr><td>The build for Sky</td><td class="ok">0.2.265 (c058, 52de112c+), <code>out/build/play/The Suborned.app</code>, <code>OldTown.unity</code> with the Handover zone, 0 errors; draw check ok (8 s)</td></tr>
+<tr><td>Host logic</td><td class="ok">168/168 in 58 s (the debrief test now asserts Fable's words only, no stand-ins file)</td></tr>
+<tr><td><code>bun run batch</code> (full: an engine change, and 353 changed paths the proof map can't place)</td><td>sim ok (headless 472/472, identical replay) · words ok · compile ok · hostlogic 168/168 · kit ok · world ok · unity-world ok (the old town rebuilt, 706 s) · unity-match 569/569 · game-build ok · game-check ok (472/472 in the player, the driven and fire sessions replay, every gated section) · shots 13/13 · <span class="bad">budget 5/11</span> · late-fight ok · <span class="bad">tp-long</span> · perf064 opt-in, not run</td></tr>
+<tr><td>Budget's 6 (none from this round)</td><td>Four speech lines over 12 words: the conversation cutaway's full sentences (brief 096, Sky: "Full sentences", up to 25 words) against the budget's 12. One refusal pop "Too far · 1 m" at the getaway car: route A no longer plays as written on 0.47.0 (Waymark's list). The loud fight's two cards (brief 101).</td></tr>
+<tr><td>tp-long</td><td>Third person's draw distance, open since 0.2.231: tp-street 6.4 M triangles, 1,249 shadow casters, 1,627 renderers beyond 150 m (limits 6 M, 1,200, 1,500). The world's, not the crowd's.</td></tr>
+<tr><td>r083 (first run)</td><td>Three camera checks (<code>clickWalks</code>, <code>bookCameraReturns</code>, <code>r085viewBack</code>) compared the camera's raw position, which brief 096's <code>PlayStandOff</code> slides along the view axis. They now compare the framed ground point (<code>Proof083.ViewGround</code>), rotation and zoom: ok, the ground point moved 0.000 m.</td></tr>
+<tr><td>Nobody jumps as drawn (r067)</td><td class="ok">every crowd view a tick for 6 s round the 5:30 shift: worst 0.27 m, within the engine's own limit (the city's run 26 cm a tick and its 2 cm rounding, read from the engine); the relief's step 0</td></tr>
+<tr><td>Frame time, play zoom, the Studio</td><td>Proof at 2880x1864: 260.6 fps mean, p99 5.4 ms; slowest of 7 spots fire-commander 95 fps, p99 7.5 ms; start-overhead-day 267.9 fps, p99 5.2 ms, GPU 3.2 ms. The café at 1:00, 8 s, 1920x1080: spread off 3.97 ms (252 fps), p99 6.5 ms; on 4.09 ms (244 fps), p99 6.8 ms. Late fight: loud p99 6.9 ms (worst 29.8 ms at the tail); left-downed p99 6.7 ms. No Air run (needs Sky's OK).</td></tr>
+<tr><td>Touched tests</td><td>typecheck clean; looks audit 17/17; leaf shader 3/3 (<code>bun tools/kit/leaf-shader.ts</code>: every file PASS); style agent's short 20/20; comment lint: my files clean, two hits in <code>sim/</code> (Keel's)</td></tr>
+<tr><td><code>tools/game/proofdelta.test.ts</code></td><td>52/57: the five CLI gate tests see a deleted player input (the stand-ins) as changed since their scratch build (<code>cli.ts</code> counts a missing file as newer); they pass once the deletion is committed</td></tr>
+</table>
+
+<h2>For others</h2>
+<ul>
+<li><b>Keel.</b> At people=128 a person of the city about to squeeze is slid at the city's run, so his figure runs: <code>x-person-0050</code>, route A at 1:25 (t848 to t872) slides 24 cm a tick
+and once straight back (t852 to t854: (-1041,-3021), (-1032,-3045), (-1041,-3021)), squeezes at 4 cm a tick, waits 0.7 s, then slides again. Drawn, it reads as a dash back and forth.
+A slide capped at a walk would read as a person stepping aside. The comment lint has two hits in <code>sim/</code>: <code>GameCrew.cs:391</code>, <code>sim/cli/Bodies.cs:176</code>.</li>
+<li><b>Forma.</b> The squeeze would read better turned fully side-on with a side-step: the Mixamo library on disk has <code>Left_Strafe_Walk</code> and <code>Right_Strafe_Walking</code>.
+Separately, every figure imports with Optimize Game Objects, which likely means brief 031's head turns (<code>HostViews.LateHeads</code> writes the exposed Head transform) no longer reach
+the skin; not checked on screen.</li>
+<li><b>Glyph.</b> <code>GiveWay</code> is off, so a passer-by can stand between the camera and Inez, the door guard, the driver or Vale. At today's numbers nobody came within 70 cm of the cast
+in route A's first three minutes; at six times the street, it happens. Whether the cast need the silhouette there is yours.</li>
+<li><b>Splice.</b> The proof map can't place 353 changed paths since the oldest recorded passes (the adaptive plans, the routes, <code>contracts/rules/population.json</code> and more),
+so every batch is a full run; <code>PlayStandOff.cs</code> has no row either. The player build rewrites <code>Kit/Materials/DK_Glass_Sheen.mat</code> after the batch takes its snapshot, so the
+next batch saw a changed kit and ran a full proof again. The budget's speech rule (12 words) predates the conversation cutaway's full sentences (25).</li>
+<li><b>Waymark.</b> On 0.47.0 the shot scripts <code>route-a-board</code>, <code>route-b-board</code>, <code>route-g-board</code> and <code>route-a-pressure-board</code> all end in Failure
+(engine probe; route A meets the rival crew at its car at 3:00 and fails at 8:10), the known "routes that no longer compose"; the batch's later shots on those scripts show it.</li>
+</ul>
+</body></html>

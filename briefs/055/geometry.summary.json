@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "0342bc14bf1cff10d9e978a1e7be9786ca49588a68452110d4683f44a2806f19",
+    "sha256": "6435fd47c875732b1dd003924f8eb3e7e39cec7a32c1cd2a74eff2798dfbe6e9",
     "stale": false
   },
   "window": {
@@ -76,8 +76,8 @@
     "measured": 424,
     "offPivotOrSize": 21,
     "placedHere": [
-      "BikeRack_Play: size 0.32 m off the catalogue",
-      "ShrubMound_TB: size 0.24 m off the catalogue"
+      "ShrubMound_TB: size 0.24 m off the catalogue",
+      "BikeRack_Play: size 0.32 m off the catalogue"
     ]
   },
   "rules": [
@@ -139,7 +139,7 @@
       "id": "K-1",
       "count": 2,
       "unit": "pieces",
-      "example": "BikeRack_Play: size 0.32 m off the catalogue"
+      "example": "ShrubMound_TB: size 0.24 m off the catalogue"
     }
   ],
   "ifHostReadsWalkFile": {

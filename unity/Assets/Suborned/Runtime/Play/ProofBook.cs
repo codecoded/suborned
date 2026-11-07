@@ -56,9 +56,9 @@ namespace Suborned.Play
             h.DriveLetGoToMap(); if (h.Following) h.FollowToggle(); yield return Wait(0.3f);
             UnityEngine.Debug.Log("ProofBook: the map view comes back exactly"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- the map view comes back exactly
-            h.TurnSnap(1); yield return Wait(0.6f); h.View.orthographicSize = 13f; h.LookAt(h.frame.World(g.Ops[3].Pos) + new Vector3(4f, 0f, 2f)); yield return Frames(2); var cp = h.View.transform.position; var cr = h.View.transform.rotation; float cz = h.View.orthographicSize;
-            h.BookOpenNow("job"); yield return Wait(0.7f); bool went = (h.View.transform.position - cp).magnitude > 1f; h.BookClose(); yield return Frames(2);
-            Row("bookCameraReturns", went && (h.View.transform.position - cp).magnitude < 0.001f && Quaternion.Angle(h.View.transform.rotation, cr) < 0.01f && Mathf.Abs(h.View.orthographicSize - cz) < 0.001f, $"moved to the page's subject {went}, back within {(h.View.transform.position - cp).magnitude:0.0000} m"); h.TurnSnap(0);
+            h.TurnSnap(1); yield return Wait(0.6f); h.View.orthographicSize = 13f; h.LookAt(h.frame.World(g.Ops[3].Pos) + new Vector3(4f, 0f, 2f)); yield return Frames(2); var cp = Proof083.ViewGround(h.View); var cr = h.View.transform.rotation; float cz = h.View.orthographicSize; // the framed ground point: brief 096's stand-off slides the camera along its axis (Proof083.ViewGround)
+            h.BookOpenNow("job"); yield return Wait(0.7f); bool went = (Proof083.ViewGround(h.View) - cp).magnitude > 1f; h.BookClose(); yield return Frames(2); float camBack = (Proof083.ViewGround(h.View) - cp).magnitude;
+            Row("bookCameraReturns", went && camBack < 0.01f && Quaternion.Angle(h.View.transform.rotation, cr) < 0.01f && Mathf.Abs(h.View.orthographicSize - cz) < 0.001f, $"moved to the page's subject {went}, its ground point back within {camBack:0.0000} m"); h.TurnSnap(0);
             UnityEngine.Debug.Log("ProofBook: a saved run replays to the same hash with the book"); // where the proof is, if it throws (the coroutine dies silently and the proof waits out its time)
             // ---- a saved run replays to the same hash with the book opened and shut during it
             yield return Fresh(h); g = h.Game; h.controls.planTogether = false; var ra = Route(); int stop = 1400; h.SetPaused(true);

@@ -17,6 +17,10 @@ namespace Suborned.Play
     ///  · wasd: Sky's run of 22:18 to 22:21: a restart in third person, and T under the briefing, each come up with WASD live and a ground click giving no walk.</summary>
     public static class Proof083
     {
+        /// <summary>The ground point the play camera frames (where its axis meets the ground). Brief 096's PlayStandOff slides the orthographic camera along
+        /// its own axis as the tallest roof in view changes, easing over a second or so: the same picture at any stand-off, so a check that the view did
+        /// not move, or came back, compares this point with the rotation and zoom, never the raw position.</summary>
+        public static Vector3 ViewGround(UnityEngine.Camera cam) { var t = cam.transform; var f = t.forward; return f.y < -1e-4f ? t.position + f * (-t.position.y / f.y) : t.position; }
         static string B(bool b) => b ? "true" : "false";
         static string J(string x) => (x ?? "").Replace("\\", "/").Replace("\"", "'").Replace("\n", " ");
         static void Keys(params Key[] down) { if (Keyboard.current is Keyboard kb) InputSystem.QueueStateEvent(kb, new KeyboardState(down)); }
@@ -70,7 +74,7 @@ namespace Suborned.Play
                 Row("panGround", moved > 1f && after.Count == 0 && ring == 0 && h.PanDrags == pd + 1 && h.Selected[0] == sel0 && h.Ring == null, $"camera moved {moved:0.0} m, orders [{string.Join(",", after)}], rings or boxes {ring}");
                 // a click still walks and moves no camera (the clock running: paused, "start together" keeps it as a ghost)
                 h.SetPaused(false); yield return Frames(2);
-                if (Ground(h, OpId.Scout) is Vector2 gc) { var c1 = h.View.transform.position; n0 = g.Orders.Count; yield return Click(gc); var cl = Since(h, n0); Row("clickWalks", cl.Contains("scout:move") && (h.View.transform.position - c1).magnitude < 0.01f, $"[{string.Join(",", cl)}]"); }
+                if (Ground(h, OpId.Scout) is Vector2 gc) { var c1 = ViewGround(h.View); n0 = g.Orders.Count; yield return Click(gc); var cl = Since(h, n0); float cm = (ViewGround(h.View) - c1).magnitude; Row("clickWalks", cl.Contains("scout:move") && cm < 0.01f, $"[{string.Join(",", cl)}], the view's ground point moved {cm:0.000} m"); }
                 else Row("clickWalks", false, "no ground");
                 // a click with a shaky hand (under the threshold) is still a click
                 if (Ground(h, OpId.Scout, 3f) is Vector2 gs) { n0 = g.Orders.Count; Btn(gs); yield return Frames(2); Btn(gs, true); yield return Frames(1); Btn(gs + new Vector2(4f, 3f) * Mathf.Max(1f, Mathf.Round(Screen.height / 1080f)), true); yield return Frames(1); Btn(gs + new Vector2(4f, 3f) * Mathf.Max(1f, Mathf.Round(Screen.height / 1080f))); yield return Frames(3); var sh = Since(h, n0); Row("shakyClick", sh.Contains("scout:move"), $"[{string.Join(",", sh)}]"); }
