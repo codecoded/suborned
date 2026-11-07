@@ -98,9 +98,10 @@ public class RulesTests
         Assert.Equal("refused", g.Preview("ask", "waitress").Outcome);
     }
 
+    // A copy of the Q4 rows in contracts/rules/rulebook.test.ts ("the steps") and rulebook096h.test.ts (H6): a rule change updates both.
     [Theory]
     [InlineData("mercenary", "pay", 70000, 1, "turned")]
-    [InlineData("mercenary", "help", 20000, 2, "not-yet")]
+    [InlineData("mercenary", "help", 50000, 1, "turned")] // engine 0.45.0 (brief 096, Sky 2026-11-05 on Motive's Q1 (b)): a worse Help on a Mercenary is the full offer once, one step dearer (turn.help worse-once)
     [InlineData("fearful", "pay", 90000, 1, "turned")]
     [InlineData("loyal", "help", 40000, 2, "not-yet")]
     [InlineData("loyal", "pay", 90000, 1, "turned")]
