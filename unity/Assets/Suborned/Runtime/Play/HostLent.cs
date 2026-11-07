@@ -132,7 +132,7 @@ namespace Suborned.Play
         void LentGoGive(OpId by, Vector2? screen)
         {
             var o = new Order { Op = Op.Name(LentDriver() >= 0 ? (OpId)LentDriver() : by), Do = "go", Target = "car:official" }; var lk = LentGoLock(); var at = LentWorld;
-            if (!lk.ok) { Pop(ShortOf(o, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(o, lk) ?? lk.why); if (lk.code is "car-held" or "car-boxed") HolderPulseAt = Time.unscaledTime; return; }
+            if (!lk.ok) { Pop(ShortOf(o, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(o, lk) ?? lk.why); if (lk.code is "car-held" or "car-boxed") HolderPulseAt = Time.unscaledTime; PulseBoxers(lk); return; } // brief 098 step 1b: a passing car boxing it in pulses
             Issue(o, screen, at);
         }
 

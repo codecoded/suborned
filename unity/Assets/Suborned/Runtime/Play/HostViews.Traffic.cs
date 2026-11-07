@@ -26,6 +26,8 @@ namespace Suborned.Play
             public string Id = "", Key = "", Kit = ""; public Transform T, Model; public int Paint = -1; public float Lift, Phase; public bool Box;
             public Renderer[] Rs = System.Array.Empty<Renderer>(); public Material[][] Built = System.Array.Empty<Material[]>();
             public Vector3 HeadFrom = Vector3.forward, HeadTo = Vector3.forward;
+            /// <summary>Brief 098 step 1b, a wreck's push drawn as a slide (HostViews.TrafficShove): from, to, how far along (0..1), the pushing car's view and its last drawn place.</summary>
+            public bool Sliding, Touched; public Vector3 SlideFrom, SlideTo, PusherWas; public float SlideP, SlideAt, HalfLen, GapMin; public string SlideBy = ""; public int ShovedSeen;
         }
         readonly Dictionary<string, TrafficCarView> trafficCars = new(System.StringComparer.Ordinal);
         readonly Dictionary<string, Stack<TrafficCarView>> trafficSpare = new(System.StringComparer.Ordinal);
@@ -60,7 +62,7 @@ namespace Suborned.Play
                 bool fresh = !trafficCars.TryGetValue(v.Id, out var cv); if (fresh) cv = TrafficTake(v);
                 var dir = frame.Dir(v.Heading); if (dir.sqrMagnitude < 1e-6f) dir = cv.HeadTo;
                 cv.HeadFrom = fresh ? dir : cv.HeadTo; cv.HeadTo = dir;
-                Set(cv.Key, v.At);
+                if (!SlideTick(cv, v, g, fresh)) Set(cv.Key, v.At); // brief 098 step 1b: a wreck pushed a long way in one tick (a Go's push) slides there instead
             }
             if (trafficCars.Count == trafficSeen.Count) return;
             trafficGone.Clear(); foreach (var id in trafficCars.Keys) if (!trafficSeen.Contains(id)) trafficGone.Add(id);
@@ -71,6 +73,7 @@ namespace Suborned.Play
         void TrafficFrame(float alpha)
         {
             if (trafficCars.Count == 0) return;
+            SlideFrame(); // brief 098 step 1b: the wrecks being pushed aside, drawn sliding (HostViews.TrafficShove)
             float now = Time.time;
             foreach (var cv in trafficCars.Values)
             {
@@ -150,7 +153,7 @@ namespace Suborned.Play
         void TrafficRelease(TrafficCarView cv)
         {
             if (carTint.ContainsKey(cv.Key)) Scorch(cv.Key, 1f); // a char the car effects left (CarTint) goes with the car
-            things.Remove(cv.Key); carTint.Remove(cv.Key); lifted.Remove(cv.Key);
+            things.Remove(cv.Key); carTint.Remove(cv.Key); lifted.Remove(cv.Key); cv.Sliding = cv.Touched = false; cv.SlideBy = ""; cv.ShovedSeen = 0;
             if (cv.T) cv.T.gameObject.SetActive(false);
             if (!trafficSpare.TryGetValue(cv.Kit, out var spare)) trafficSpare[cv.Kit] = spare = new Stack<TrafficCarView>();
             spare.Push(cv);

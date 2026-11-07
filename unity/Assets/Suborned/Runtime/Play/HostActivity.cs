@@ -288,7 +288,7 @@ namespace Suborned.Play
         /// code the text has no line for (and for an older text keyed by patterns, `lockOf` over the words).</summary>
         public string LockLine(Order o, Answer a)
         {
-            if (Text == null) return null;
+            if (Text == null) return null; if (BoxedLine(a) is string bl) return bl; // brief 098 step 1b: boxed in by passing traffic, the car named (HostTrafficBoxed)
             var l = (a.code ?? "").Length > 0 ? Text.LockByCode(a.code) : null;
             l ??= Text.LockOf(a.why ?? "");
             if (l == null || l.Line.Length == 0) return null;

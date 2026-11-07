@@ -1062,8 +1062,8 @@ namespace Suborned.Play
                 var full = Humanise(o, r); // brief 014: the pop is the short form with its family glyph; the long line is Alt
                 bool atStand = o.Do == "drive-car" && StandWorld(o.Target).HasValue; // Glyph 2026-10-26 §5: a refused Drive pops at the stand's footprint, with one pulse there
                 popCode = r.code; // the refusal's cause: one pop per cause and place (Pop), stance-unknown's stance marks (HudToolkit.StanceIcons)
-                Pop(ShortOf(o, r) ?? full, atStand ? null : screen, atStand ? StandWorld(o.Target) : screen.HasValue ? null : target ?? (o.Op == "cell" ? null : SelectedWorld()), Feedback.Refused, 2f, PopIcon(r.code), full);
-                if (r.code is "drive-held" or "car-held") HolderPulseAt = Time.unscaledTime; // the holders pulse as for Go
+                Pop(ShortOf(o, r) ?? full, atStand ? null : screen, atStand ? StandWorld(o.Target) : screen.HasValue ? null : target ?? (o.Op == "cell" ? CellOrderWorld(o) : SelectedWorld()), Feedback.Refused, 2f, PopIcon(r.code), full); // brief 098 step 1b: a cell Go given with no click (a script, a bot) pops over its car, as a click on it does
+                if (r.code is "drive-held" or "car-held") HolderPulseAt = Time.unscaledTime; else PulseBoxers(r); // the holders pulse as for Go; brief 098 step 1b: a passing car boxing us in pulses where it stands
                 if (screen.HasValue && target.HasValue) Pulses.Add((target.Value, Feedback.Refused, Time.unscaledTime));
             }
             if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not

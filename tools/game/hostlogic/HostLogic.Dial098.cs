@@ -31,7 +31,15 @@ public class Dial098
             Assert.That(h.DialShown(c.Kind), Is.EqualTo(c.Today)); Assert.That(c.Max, Is.GreaterThan(c.Today));
             if (c.Kind == Population.Cars) Assert.That((c.Today, c.Floor), Is.EqualTo((0, 0)), "step 1: no passing traffic today, and no car is a tenet: today 0, the fewest 0");
             else Assert.That(c.Floor, Is.InRange(1, c.Today), "the cast never leave: each people kind has a floor of at least 1");
+            Assert.That(h.DialBigStep(c.Kind), Is.InRange(1, Math.Max(4, c.Today / 2)), $"{c.Kind}: a big step that suits the number it changes");
         }
+        // brief 098 step 1b (Sky 2026-11-07: "people counter is for street"): the people row counts people on the street, and the panel says what each number counts
+        var tp = h.DialTodayOf("people"); Assert.That(tp.Measure, Is.EqualTo("street")); Assert.That(tp.Today, Is.LessThan(tp.Total), "most of the zone's people are indoors: the street holds fewer");
+        Assert.That(h.DialToday.Select(c => HandoverHost.DialMeasureWords(c)), Is.EqualTo(new[] { "in the zone", "on the street", "on the roads" }));
+        Assert.That(h.DialBigStep("people"), Is.EqualTo(5)); Assert.That(h.DialBigStep(Population.Cars), Is.EqualTo(4));
+        Assert.That(HandoverHost.DialPrefKey("people", "street"), Is.EqualTo("suborned.dial.street.people"), "a number is kept with what it counts: step 0's people (the zone) are never read as the street's");
+        foreach (var k in Population.Kinds) Assert.That(HandoverHost.DialPrefKey(k, h.DialTodayOf(k).Measure), Does.Match("^[a-z.]+$"), "letters and dots only (the macOS player does not read back a key with '@')");
+        Assert.That(HandoverHost.DialPrefKey("people", "street"), Is.Not.EqualTo(HandoverHost.DialPrefPrefix + "people"));
         Assert.That(h.DialPending, Is.False);
     }
 
@@ -47,22 +55,24 @@ public class Dial098
 
     [Test] public void PlayBuildsTheStreetWithTheNumbersOnTheSameSeed()
     {
-        var h = AtStart(); var g0 = h.Game; var tg = h.DialTodayOf("guards"); var tp = h.DialTodayOf("people");
-        h.DialStep("guards", 3); h.DialStep("people", 10); h.DialStep("people", 10); h.DialStep("people", 10); h.DialStep("people", 6);
-        Assert.That(h.DialShown("guards"), Is.EqualTo(tg.Today + 3)); Assert.That(h.DialShown("people"), Is.EqualTo(tp.Today + 36));
+        var h = AtStart(); var g0 = h.Game; var tg = h.DialTodayOf("guards"); var tp = h.DialTodayOf("people"); int bp = h.DialBigStep("people"), more = 3 * bp + 1;
+        h.DialStep("guards", 3); for (int i = 0; i < 3; i++) h.DialStep("people", bp); h.DialStep("people", 1); // brief 098 step 1b: 16 more on the street (+5 three times, + once)
+        Assert.That(h.DialShown("guards"), Is.EqualTo(tg.Today + 3)); Assert.That(h.DialShown("people"), Is.EqualTo(tp.Today + more));
         h.DialPlay();
         var g = h.Game; Assert.That(h.Fault, Is.Null, h.Status); Assert.That(g, Is.Not.SameAs(g0));
         Assert.That(g.Seed, Is.EqualTo(g0.Seed), "the same street: only the numbers change");
-        Assert.That(g.Start.Counts, Is.EqualTo(Counts(("guards", tg.Today + 3), ("people", tp.Today + 36))));
+        Assert.That(g.Start.Counts, Is.EqualTo(Counts(("guards", tg.Today + 3), ("people", tp.Today + more))));
         Assert.That(h.ShowBriefing, Is.False, "Play begins"); Assert.That(h.DialPending, Is.False);
         var cg = g.Census.Single(c => c.Kind == "guards"); var cp = g.Census.Single(c => c.Kind == "people");
         Assert.That(cg.Count, Is.EqualTo(tg.Today + 3)); Assert.That(cg.Added, Is.EqualTo(new[] { "x-guard-001", "x-guard-002", "x-guard-003" })); Assert.That(cg.Removed, Is.Empty);
-        Assert.That(cp.Added.Count, Is.EqualTo(36)); Assert.That(cp.Added[0], Is.EqualTo("x-person-0001"));
-        var added = g.Walkers.Where(w => w.Added).ToList(); Assert.That(added.Count, Is.EqualTo(39));
+        Assert.That(cp.Count, Is.EqualTo(tp.Today + more)); Assert.That(cp.Added.Count, Is.GreaterThan(more), "on the street at a time: each more there takes several passers-by"); Assert.That(cp.Added[0], Is.EqualTo("x-person-0001"));
+        Assert.That(Math.Abs(cp.Street10 - 10 * cp.Count), Is.LessThanOrEqualTo(7), $"the street holds the count asked (within 0.75): {cp.Street10 / 10.0}");
+        var added = g.Walkers.Where(w => w.Added).ToList(); Assert.That(added.Count, Is.EqualTo(3 + cp.Added.Count));
         Assert.That(added.Where(w => w.P.Job == "guard").Select(w => HostViews.FamilyOf(w.P.Job)).Distinct(), Is.EqualTo(new[] { "guard" }), "an added guard dresses as a guard");
         Assert.That(added.Where(w => w.P.Job != "guard").Select(w => HostViews.FamilyOf(w.P.Job)).Distinct(), Is.EqualTo(new[] { "passer" }), "an added person dresses as a passer-by");
         Assert.That(g.Walkers.Single(w => w.P.Id == "x-guard-001").P.Name, Is.EqualTo("Guard 1"));
         Assert.That(HandoverHost.CensusLine(cg), Does.Contain("x-guard-001..x-guard-003").And.Contain($"plays {tg.Today + 3}"));
+        Assert.That(HandoverHost.CensusLine(cp), Does.Contain("(on the street)").And.Contain("the street holds").And.Contain(" in the zone"));
     }
 
     [Test] public void BeginWithChangedNumbersBuildsThemFirst()
@@ -76,12 +86,13 @@ public class Dial098
     [Test] public void FewerTakesNoTenetAndLeavesNoWalkerBehind()
     {
         var h = AtStart(); var tg = h.DialTodayOf("guards"); var tp = h.DialTodayOf("people");
-        h.DialStep("guards", -(tg.Today - 8)); h.DialStep("people", -(tp.Today - 60)); h.DialPlay();
-        var g = h.Game; var gone = g.Census.SelectMany(c => c.Removed).ToHashSet();
-        Assert.That(gone.Count, Is.EqualTo(tg.Today - 8 + tp.Today - 60));
+        h.DialStep("guards", -(tg.Today - 8)); h.DialStep("people", -(tp.Today - 8)); h.DialPlay(); // brief 098 step 1b: 8 on the street
+        var g = h.Game; var gone = g.Census.SelectMany(c => c.Removed).ToHashSet(); var cg = g.Census.Single(c => c.Kind == "guards"); var cp = g.Census.Single(c => c.Kind == "people");
+        Assert.That(cg.Removed.Count, Is.EqualTo(tg.Today - 8), "the guards count the zone"); Assert.That(cp.Count, Is.EqualTo(8)); Assert.That(cp.Removed, Is.Not.Empty);
+        Assert.That(Math.Abs(cp.Street10 - 80), Is.LessThanOrEqualTo(7), $"the street holds 8 (within 0.75): {cp.Street10 / 10.0}");
         Assert.That(g.Walkers.Any(w => gone.Contains(w.P.Id)), Is.False, "nobody who left has a walker (so no view)");
         foreach (var c in g.S.Cast) Assert.That(gone.Contains(c.Id), Is.False, $"the cast never leave: {c.Role}");
-        Assert.That(g.Walkers.Count, Is.EqualTo(8 + 60 - g.S.Cast.Count), "the walkers are the zone's counts less the cast, who are drawn by role");
+        Assert.That(g.Walkers.Count, Is.EqualTo(cg.Total + cp.Total - g.S.Cast.Count), "the walkers are the zone's people less the cast, who are drawn by role");
     }
 
     [Test] public void ReplayKeepsTheSeedAndTheCounts()
@@ -124,19 +135,20 @@ public class Dial098
     /// ProofDial, counts them in the scene, as the harness stubs the views).</summary>
     [Test] public void FewerAfterMoreKeepsNoWalkerOfAnyoneWhoLeft()
     {
-        var h = AtStart(); h.DialStep("guards", 10); h.DialStep("people", 40); h.DialPlay(); Views(h);
+        var h = AtStart(); h.DialStep("guards", 10); h.DialStep("people", 16); h.DialPlay(); Views(h);
         Host.Set(h, "ShowBriefing", true);
-        h.DialStep("guards", -(h.DialShown("guards") - 8)); h.DialStep("people", -(h.DialShown("people") - 60)); h.DialPlay(); Views(h);
+        h.DialStep("guards", -(h.DialShown("guards") - 8)); h.DialStep("people", -(h.DialShown("people") - 8)); h.DialPlay(); Views(h);
         var g = h.Game; var gone = g.Census.SelectMany(c => c.Removed).ToHashSet();
-        Assert.That(g.Census.Single(c => c.Kind == "guards").Count, Is.EqualTo(8)); Assert.That(g.Census.Single(c => c.Kind == "people").Count, Is.EqualTo(60));
-        Assert.That(g.Walkers.Any(w => w.Added), Is.False, "fewer than today adds nobody: the added of the street before are gone");
+        Assert.That(g.Census.Single(c => c.Kind == "guards").Count, Is.EqualTo(8)); Assert.That(g.Census.Single(c => c.Kind == "people").Count, Is.EqualTo(8));
+        Assert.That(g.Walkers.Where(w => w.Added).Select(w => w.P.Id), Is.EquivalentTo(g.Census.SelectMany(c => c.Added)), "the added are this street's own (brief 098 step 1b: fewer on the street may still add a passer-by to land on the count), none of the street before");
+        Assert.That(g.Census.Single(c => c.Kind == "guards").Added, Is.Empty, "fewer guards than today adds none");
         Assert.That(g.Walkers.Any(w => gone.Contains(w.P.Id)), Is.False);
         Host.Tick(h, 300); Assert.That(h.Fault, Is.Null, h.Status);
     }
 
     [Test] public void TheCountsSwitchPinsEveryNewGameAndRejectsWhatTheDialDoesNotBuild()
     {
-        Assert.That(HandoverHost.ParseCounts("guards=19,people=150"), Is.EqualTo(Counts(("guards", 19), ("people", 150))));
+        Assert.That(HandoverHost.ParseCounts("guards=19,people=24"), Is.EqualTo(Counts(("guards", 19), ("people", 24))), "the shot rig's few more (brief 098 step 1b: people count the street)");
         Assert.That(HandoverHost.ParseCounts(" guards:0 "), Is.EqualTo(Counts(("guards", 0))));
         Assert.That(HandoverHost.ParseCounts("cars=16"), Is.EqualTo(Counts(("cars", 16))), "step 1: cars are a kind of the dial (passing traffic)");
         Assert.Throws<FormatException>(() => HandoverHost.ParseCounts("trucks=3"), "unknown = reject");

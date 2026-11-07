@@ -46,6 +46,18 @@ namespace Suborned.Play
         /// <summary>A person playing: the numbers last played persist (PlayerPrefs). A proof, a batch row or a probe neither reads nor writes them.</summary>
         static bool DialPrefs => !(Application.isBatchMode || GameBoot.Automation && !Application.isEditor);
         public const string DialPrefPrefix = "suborned.dial.";
+        /// <summary>Brief 098 step 1b: a number is kept with what it counts (KindCensus.Measure: "suborned.dial.street.people"), so a number kept under another
+        /// meaning is never read again. Step 0's keys ("suborned.dial.people", when people counted the whole zone) are dropped: a remembered people=150
+        /// would now ask for 150 on the street, about 650 passers-by. Letters and dots only: the macOS player does not read back a key with '@' in it.</summary>
+        public static string DialPrefKey(string kind, string measure) => DialPrefPrefix + (string.IsNullOrEmpty(measure) ? "zone" : measure) + "." + kind;
+        string DialPrefKeyOf(string kind) => DialPrefKey(kind, DialTodayOf(kind)?.Measure);
+
+        /// <summary>The panel's big step for a kind (its −N and +N; the small step is 1), a step that suits the number it changes (Aster, brief 098 step 1b):
+        /// people 5 (16 on the street today), guards 5 (16 in the zone), cars 4 (none today: 4, 8, 12, 16, the settings measured, and about 25 is where the
+        /// roads fill). A kind the panel does not know yet steps by about a third of today's number.</summary>
+        public int DialBigStep(string kind) => kind switch { "people" => 5, "guards" => 5, Population.Cars => 4, _ => Mathf.Max(1, Mathf.RoundToInt((DialTodayOf(kind)?.Today ?? 3) / 3f)) };
+        /// <summary>What a kind's number counts, in the panel's words: "on the street", "in the zone", "on the roads".</summary>
+        public static string DialMeasureWords(KindCensus c) => c?.Measure switch { "street" => "on the street", "roads" => "on the roads", _ => "in the zone" };
 
         /// <summary>The next Begin plays these counts once (Replay, Restart, the panel's Play), over the pin and the numbers last played; empty: none.</summary>
         SortedDictionary<string, int> countsAgain;
@@ -100,7 +112,7 @@ namespace Suborned.Play
             if (!DialPending) { dialEdit = null; if (ShowBriefing) BriefingBegin(); return; }
             var c = new SortedDictionary<string, int>(StringComparer.Ordinal);
             foreach (var kv in dialEdit) if (DialTodayOf(kv.Key) is { } t && kv.Value != t.Today) c[kv.Key] = kv.Value; // a kind at today's number stays unset: today's world byte for byte
-            if (DialPrefs) try { foreach (var k in Population.Kinds) { if (c.TryGetValue(k, out var n)) PlayerPrefs.SetInt(DialPrefPrefix + k, n); else PlayerPrefs.DeleteKey(DialPrefPrefix + k); } PlayerPrefs.Save(); }
+            if (DialPrefs) try { foreach (var k in Population.Kinds) { PlayerPrefs.DeleteKey(DialPrefPrefix + k); if (c.TryGetValue(k, out var n)) PlayerPrefs.SetInt(DialPrefKeyOf(k), n); else PlayerPrefs.DeleteKey(DialPrefKeyOf(k)); } PlayerPrefs.Save(); }
                 catch (Exception e) { Debug.LogWarning($"Dial: the numbers were not kept for the next launch ({e.Message}); this game plays them"); } // a save that fails never stops the game
             countsAgain = c; seedAgain = Game.Seed; dialEdit = null;
             var t0 = System.Diagnostics.Stopwatch.GetTimestamp(); Begin(); DialBuildMs = (System.Diagnostics.Stopwatch.GetTimestamp() - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
@@ -115,6 +127,7 @@ namespace Suborned.Play
         {
             var c = countsAgain; countsAgain = null;
             if (rangeMode) return; // the fight range has no people file: the dial builds none
+            if (c == null && CountsPin == null && !dialPrefsSaid) { dialPrefsSaid = true; if (!DialPrefs) Debug.Log($"Dial: an automated launch (args: {string.Join(" ", Environment.GetCommandLineArgs(), 1, Environment.GetCommandLineArgs().Length - 1)}): the numbers last played are neither read nor written"); }
             c ??= CountsPin ?? (DialPrefs ? DialLast() : null);
             if (c != null) foreach (var kv in c) s.Counts[kv.Key] = kv.Value;
         }
@@ -122,11 +135,24 @@ namespace Suborned.Play
         /// <summary>Replay and Restart (HostSeed.BeginSameSeed): the next Begin keeps the counts of the game just played (none kept as none).</summary>
         void DialKeep() => countsAgain = Game != null ? new SortedDictionary<string, int>(Game.Start.Counts, StringComparer.Ordinal) : null;
 
-        /// <summary>The numbers last played (PlayerPrefs), by kind; null when none differ from today's.</summary>
-        static SortedDictionary<string, int> DialLast()
+        static bool dialPrefsSaid;
+        /// <summary>The numbers last played (PlayerPrefs), by kind, each kept under what it counts now (DialPrefKey); null when none. A number kept under step 0's
+        /// keys, or under another meaning, is not read: the old keys are dropped here.</summary>
+        SortedDictionary<string, int> DialLast()
         {
             SortedDictionary<string, int> c = null;
-            foreach (var k in Population.Kinds) if (PlayerPrefs.HasKey(DialPrefPrefix + k)) (c ??= new SortedDictionary<string, int>(StringComparer.Ordinal))[k] = Mathf.Clamp(PlayerPrefs.GetInt(DialPrefPrefix + k), 0, Population.CountCap);
+            try
+            {
+                var dropped = new List<string>();
+                foreach (var k in Population.Kinds)
+                {
+                    if (PlayerPrefs.HasKey(DialPrefPrefix + k)) { dropped.Add($"{k} {PlayerPrefs.GetInt(DialPrefPrefix + k)}"); PlayerPrefs.DeleteKey(DialPrefPrefix + k); } // step 0's: people counted the zone then
+                    var key = DialPrefKeyOf(k); if (DialTodayOf(k) != null && PlayerPrefs.HasKey(key)) (c ??= new SortedDictionary<string, int>(StringComparer.Ordinal))[k] = Mathf.Clamp(PlayerPrefs.GetInt(key), 0, Population.CountCap);
+                }
+                if (dropped.Count > 0) PlayerPrefs.Save(); // gone on disk too
+                Debug.Log($"Dial: the numbers last played: {(c == null ? "none" : string.Join(", ", System.Linq.Enumerable.Select(c, kv => $"{kv.Key} {kv.Value}")))}{(dropped.Count > 0 ? $"; dropped step 0's, kept when people counted the whole zone ({string.Join(", ", dropped)})" : "")}");
+            }
+            catch (Exception e) { Debug.LogWarning($"Dial: the numbers last played were not read ({e.Message}); today's world"); return null; }
             return c;
         }
 
@@ -142,9 +168,11 @@ namespace Suborned.Play
         /// <summary>One kind's census in words: asked, plays, today's, the floor and the most, the note, who was added and who left.</summary>
         public static string CensusLine(KindCensus c)
         {
-            var sb = new StringBuilder();
-            sb.Append(c.Kind).Append(" asked ").Append(c.Asked.HasValue ? c.Asked.Value.ToString(CultureInfo.InvariantCulture) : "unset").Append(", plays ").Append(c.Count)
+            var sb = new StringBuilder(); bool street = c.Measure == "street";
+            sb.Append(c.Kind).Append(street ? " (on the street)" : "").Append(" asked ").Append(c.Asked.HasValue ? c.Asked.Value.ToString(CultureInfo.InvariantCulture) : "unset").Append(", plays ").Append(c.Count)
               .Append(" (today ").Append(c.Today).Append(", fewest ").Append(c.Floor).Append(", most ").Append(c.Max).Append(')');
+            if (street) sb.Append(", the street holds ").Append((c.Street10 / 10.0).ToString("0.0", CultureInfo.InvariantCulture)).Append(" (the cast ").Append((c.CastStreet10 / 10.0).ToString("0.0", CultureInfo.InvariantCulture))
+              .Append("), ").Append(c.Total).Append(" in the zone (today ").Append(c.TotalToday).Append(')'); // brief 098 step 1b: the street achieved and the zone's people behind it
             if (c.Note.Length > 0) sb.Append(": ").Append(c.Note);
             sb.Append("; added ").Append(c.Added.Count); if (c.Added.Count > 0) sb.Append(" (").Append(c.Added[0]).Append(c.Added.Count > 1 ? ".." + c.Added[c.Added.Count - 1] : "").Append(')');
             sb.Append("; removed ").Append(c.Removed.Count); if (c.Removed.Count > 0) sb.Append(" (").Append(string.Join(", ", c.Removed)).Append(')');

@@ -1,0 +1,114 @@
+{
+ "schema": "suborned.jams-host-frames/1",
+ "by": "Latch, brief 098 step 1b, 2026-11-07",
+ "machine": "this Mac (the Studio, Apple M5 Max), scratch player 0.2.254-scratch (sim 0.45.0, engine 0a4ec8b7), lean OldTown (the zone and a 110 m margin), 1920x1080 window, no vsync",
+ "how": "tools/game ShotRunner perf rows: the clock running 1 s, then 8 s of frame times at play zoom on route-a-board, seed 0, today's guards: the cafe square (focus waitress, yaw 0, 1:00) and the Office front (focus camera/entrance, yaw 2, 2:00). The GPU recorder's figure is noisy (step 0, step 1); the mean is the reading. Not the Air: a run there needs Sky's OK (Redline's row).",
+ "settings": [
+  {
+   "people": 16,
+   "cars": 0,
+   "counts": "today (no counts)",
+   "square": {
+    "meanMs": 3.594,
+    "p99Ms": 5.9,
+    "gpuMs": 3.162,
+    "count": 2227
+   },
+   "office": {
+    "meanMs": 3.47,
+    "p99Ms": 5.993,
+    "gpuMs": 2.05,
+    "count": 2306
+   },
+   "census": [
+    "Dial: unset, today's world (seed 0): guards 16, people 16, cars 0"
+   ]
+  },
+  {
+   "people": 16,
+   "cars": 8,
+   "counts": "cars=8",
+   "square": {
+    "meanMs": 3.67,
+    "p99Ms": 6.29,
+    "gpuMs": 3.166,
+    "count": 2181
+   },
+   "office": {
+    "meanMs": 3.523,
+    "p99Ms": 6.099,
+    "gpuMs": 2.932,
+    "count": 2271
+   },
+   "census": [
+    "Dial: cars asked 8, plays 8 (today 0, fewest 0, most 64); added 0; removed 0 (seed 0)",
+    "Dial: guards asked unset, plays 16 (today 16, fewest 1, most 400); added 0; removed 0 (seed 0)",
+    "Dial: people (on the street) asked unset, plays 16 (today 16, fewest 2, most 500), the street holds 15.9 (the cast 2.1), 114 in the zone (today 114); added 0; removed 0 (seed 0)"
+   ]
+  },
+  {
+   "people": 32,
+   "cars": 0,
+   "counts": "people=32",
+   "square": {
+    "meanMs": 3.888,
+    "p99Ms": 6.599,
+    "gpuMs": 3.264,
+    "count": 2058
+   },
+   "office": {
+    "meanMs": 3.526,
+    "p99Ms": 6.109,
+    "gpuMs": 1.306,
+    "count": 2270
+   },
+   "census": [
+    "Dial: guards asked unset, plays 16 (today 16, fewest 1, most 400); added 0; removed 0 (seed 0)",
+    "Dial: people (on the street) asked 32, plays 32 (today 16, fewest 2, most 500), the street holds 31.9 (the cast 2.1), 178 in the zone (today 114); added 64 (x-person-0001..x-person-0068); removed 0 (seed 0)"
+   ]
+  },
+  {
+   "people": 32,
+   "cars": 8,
+   "counts": "people=32,cars=8",
+   "square": {
+    "meanMs": 3.862,
+    "p99Ms": 6.403,
+    "gpuMs": 3.238,
+    "count": 2072
+   },
+   "office": {
+    "meanMs": 3.705,
+    "p99Ms": 6.495,
+    "gpuMs": 1.45,
+    "count": 2160
+   },
+   "census": [
+    "Dial: cars asked 8, plays 8 (today 0, fewest 0, most 64); added 0; removed 0 (seed 0)",
+    "Dial: guards asked unset, plays 16 (today 16, fewest 1, most 400); added 0; removed 0 (seed 0)",
+    "Dial: people (on the street) asked 32, plays 32 (today 16, fewest 2, most 500), the street holds 31.9 (the cast 2.1), 178 in the zone (today 114); added 64 (x-person-0001..x-person-0068); removed 0 (seed 0)"
+   ]
+  },
+  {
+   "people": 8,
+   "cars": 0,
+   "counts": "people=8",
+   "square": {
+    "meanMs": 3.554,
+    "p99Ms": 5.901,
+    "gpuMs": 3.128,
+    "count": 2252
+   },
+   "office": {
+    "meanMs": 3.396,
+    "p99Ms": 5.892,
+    "gpuMs": 2.831,
+    "count": 2356
+   },
+   "census": [
+    "Dial: guards asked unset, plays 16 (today 16, fewest 1, most 400); added 0; removed 0 (seed 0)",
+    "Dial: people (on the street) asked 8, plays 8 (today 16, fewest 2, most 500), the street holds 8.2 (the cast 2.1), 91 in the zone (today 114); added 2 (x-person-0001..x-person-0002); removed 25 (p-records-office-18, p-records-office-12, p-records-office-27, p-garden-row-east-03, p-records-office-53, p-records-office-55, p-records-office-62, p-records-office-69, p-pylon-row-east-03, p-records-office-11, p-records-office-34, p-records-office-44, p-rocket-west-02, p-records-office-58, p-records-office-28, p-records-office-17, p-records-office-21, p-records-office-13, p-pylon-row-east-01, p-records-office-56, p-records-office-19, p-records-office-26, p-records-office-20, p-records-office-52, p-garden-row-east-02) (seed 0)"
+   ]
+  }
+ ]
+}

@@ -40,10 +40,10 @@ namespace Suborned.Play
             Check("a new game with no counts has no traffic and draws no car", !g0.TrafficOn && h.Views.TrafficViewsOn == 0 && SceneCars() == 0, $"seed {seed}");
             if (h.DialTodayOf(Population.Cars) is not { } tc) { Check("the dial's cars in the bundle", false, "Population.Today has no cars"); Write(); yield break; }
 
-            // 1 · the Cars row: +10, −, − is 8; nothing is built until Play
+            // 1 · the Cars row: +4, +4 is 8 (brief 098 step 1b: the cars' big step is 4); nothing is built until Play
             yield return Page(h);
-            Check("the Cars row is on the panel with its buttons", Has("dial-cars-minus10") && Has("dial-cars-minus") && Has("dial-cars-plus") && Has("dial-cars-plus10"), $"today {tc.Today}, {tc.Floor}–{tc.Max}");
-            Click("dial-cars-plus10"); yield return null; Click("dial-cars-minus"); yield return null; Click("dial-cars-minus"); yield return null; yield return null;
+            Check("the Cars row is on the panel with its buttons", Has("dial-cars-minus-big") && Has("dial-cars-minus") && Has("dial-cars-plus") && Has("dial-cars-plus-big"), $"today {tc.Today}, {tc.Floor}–{tc.Max}, steps 1 and {h.DialBigStep(Population.Cars)}");
+            for (int i = 0; i < 8 / h.DialBigStep(Population.Cars); i++) { Click("dial-cars-plus-big"); yield return null; } for (int i = 0; i < 8 % h.DialBigStep(Population.Cars); i++) { Click("dial-cars-plus"); yield return null; } yield return null;
             Check("the clicks set 8 cars and build nothing", h.DialShown(Population.Cars) == 8 && h.DialPending && ReferenceEquals(h.Game, g0), HudToolkit.DialLineNow);
             yield return Shot(h, "traffic-1-panel");
             Click("dial-play"); yield return null; yield return null; yield return null;

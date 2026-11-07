@@ -1,0 +1,85 @@
+{
+ "schema": "suborned.jam-probe/1",
+ "ok": true,
+ "session": "/Users/sky/Projects/suborned/briefs/098/latch/jam.script.json",
+ "checks": [
+  {
+   "what": "the session plays its start",
+   "ok": true,
+   "detail": "seed 0, counts cars=16"
+  },
+  {
+   "what": "the Go is refused car-boxed by a passing car",
+   "ok": true,
+   "detail": "7:46.2: car-boxed [car:t-016-04] boxed in: car:t-016-04 is in the way"
+  },
+  {
+   "what": "the pop names the car plainly",
+   "ok": true,
+   "detail": "pop 'Boxed in \u00b7 green car' (the car car:t-016-04: the green car, paint seafoam-green)"
+  },
+  {
+   "what": "its long line names it and says shooting it clears the way (HostTrafficBoxed's line)",
+   "ok": true,
+   "detail": "'Boxed in: the green car is in our way out. Shoot it and we can shove it aside.'"
+  },
+  {
+   "what": "the car named pulses where it stands",
+   "ok": true,
+   "detail": "6 pulses"
+  },
+  {
+   "what": "the pop is drawn over our car",
+   "ok": true,
+   "detail": "'Boxed in \u00b7 green car' on screen"
+  },
+  {
+   "what": "its hover says it boxes our car in",
+   "ok": true,
+   "detail": "Fixer selected: pill 'Green car \u00b7 boxing our car in' (info); words 'Green car \u00b7 boxing our car in'"
+  },
+  {
+   "what": "a mission car held behind traffic: the engine's words (MissionHoldNow), the passing car named plainly",
+   "ok": true,
+   "detail": "'held 2 s by the green car (its driver ducked)'; the hover on rivals car:rivals with the Fixer selected shows 'Watch the rival crew \u00b7 Can't act on that' (lock): a way is offered on it, so its pill is that way's"
+  },
+  {
+   "what": "shot, it boxes nobody in",
+   "ok": true,
+   "detail": "7:56.0: stopped abandoned, boxers []"
+  },
+  {
+   "what": "its hover says it is wrecked or abandoned",
+   "ok": true,
+   "detail": "'abandoned, the driver ran'"
+  },
+  {
+   "what": "the Go is taken and the engine pushes the wreck off the way",
+   "ok": true,
+   "detail": "Success at 8:00.8; pushed 230 \u2192 585 cm by car:getaway"
+  },
+  {
+   "what": "on the Go's tick the view has not jumped there",
+   "ok": true,
+   "detail": "the engine moved it 3.55 m; drawn 0.00 m from where it stood; sliding True"
+  },
+  {
+   "what": "drawn sliding, not jumping: it waits for our car, steps a little each frame and ends where the engine has it",
+   "ok": true,
+   "detail": "it began to move 5.50 s after the Go, our car 23.7 m along its way out; 3.55 m in 1039 frames, the most in a frame 0.08 m, 0.000 m from the engine's place at the end (our car 26.8 m along); slides 1"
+  }
+ ],
+ "notes": [
+  "the slide: 0.03s 0.00m car 0.0m, 0.05s 0.00m car 0.0m, 0.07s 0.00m car 0.0m, 1.29s 0.00m car 0.3m, 1.31s 0.00m car 0.3m, 1.33s 0.00m car 0.3m, 1.35s 0.00m car 0.3m, 2.50s 0.00m car 0.8m, 2.52s 0.00m car 0.9m, 2.54s 0.00m car 0.9m, 2.56s 0.00m car 1.0m, 2.58s 0.00m car 1.1m, 2.60s 0.00m car 1.1m, 2.62s 0.00m car 1.2m, 2.64s 0.00m car 1.2m, 2.66s 0.00m car 1.3m, 2.68s 0.00m car 1.3m, 2.70s 0.00m car 1.4m, 2.72s 0.00m car 1.5m, 2.74s 0.00m car 1.5m, 2.76s 0.00m car 1.6m, 2.78s 0.00m car 1.6m, 2.80s 0.00m car 1.7m, 2.82s 0.00m car 1.8m, 2.83s 0.00m car 1.8m, 2.86s 0.00m car 1.9m, 2.87s 0.00m car 2.0m, 2.90s 0.00m car 2.1m, 2.92s 0.00m car 2.2m, 2.94s 0.00m car 2.2m, 2.96s 0.00m car 2.3m, 2.98s 0.00m car 2.4m, 3.00s 0.00m car 2.5m, 3.02s 0.00m car 2.6m, 3.04s 0.00m car 2.6m, 3.06s 0.00m car 2.7m, 3.08s 0.00m car 2.8m, 3.10s 0.00m car 2.9m, 3.12s 0.00m car 3.0m, 3.14s 0.00m car 3.1m, 3.16s 0.00m car 3.2m, 3.18s 0.00m car 3.3m, 3.20s 0.00m car 3.3m, 3.22s 0.00m car 3.4m, 3.24s 0.00m car 3.5m, 3.26s 0.00m car 3.6m, 3.28s 0.00m car 3.7m, 3.30s 0.00m car 3.8m, 3.31s 0.00m car 3.9m, 3.33s 0.00m car 4.0m, 3.35s 0.00m car 4.1m, 3.37s 0.00m car 4.3m, 3.39s 0.00m car 4.4m, 3.41s 0.00m car 4.5m, 3.43s 0.00m car 4.6m, 3.45s 0.00m car 4.7m, 3.47s 0.00m car 4.8m, 3.49s 0.00m car 4.9m, 3.51s 0.00m car 5.0m, 3.53s 0.00m car 5.2m, 3.55s 0.00m car 5.3m, 3.57s 0.00m car 5.4m, 3.59s 0.00m car 5.5m, 3.61s 0.00m car 5.6m, 3.63s 0.00m car 5.8m, 3.65s 0.00m car 5.9m, 3.67s 0.00m car 6.0m, 3.69s 0.00m car 6.1m, 3.71s 0.00m car 6.3m, 3.73s 0.00m car 6.4m, 3.75s 0.00m car 6.5m, 3.77s 0.00m car 6.7m, 3.79s 0.00m car 6.8m, 3.81s 0.00m car 6.9m, 3.83s 0.00m car 7.1m, 3.85s 0.00m car 7.2m, 3.87s 0.00m car 7.3m, 3.89s 0.00m car 7.5m, 3.91s 0.00m car 7.6m, 3.93s 0.00m car 7.8m, 3.95s 0.00m car 7.9m, 3.97s 0.00m car 8.1m, 3.99s 0.00m car 8.2m, 4.01s 0.00m car 8.4m, 4.02s 0.00m car 8.5m, 4.05s 0.00m car 8.7m, 4.06s 0.00m car 8.8m, 4.08s 0.00m car 9.0m, 4.10s 0.00m car 9.1m, 4.12s 0.00m car 9.3m, 4.14s 0.00m car 9.5m, 4.16s 0.00m car 9.6m, 4.18s 0.00m car 9.8m, 4.20s 0.00m car 9.9m, 4.22s 0.00m car 10.1m, 4.24s 0.00m car 10.3m, 4.26s 0.00m car 10.4m, 4.28s 0.00m car 10.6m, 4.30s 0.00m car 10.8m, 4.32s 0.00m car 11.0m, 4.34s 0.00m car 11.1m, 4.36s 0.00m car 11.3m, 4.38s 0.00m car 11.5m, 4.40s 0.00m car 11.7m, 4.42s 0.00m car 11.8m, 4.44s 0.00m car 12.0m, 4.46s 0.00m car 12.2m, 4.48s 0.00m car 12.4m, 4.50s 0.00m car 12.6m, 4.52s 0.00m car 12.8m, 4.54s 0.00m car 12.9m, 4.56s 0.00m car 13.1m, 4.58s 0.00m car 13.3m, 4.60s 0.00m car 13.5m, 4.62s 0.00m car 13.7m, 4.64s 0.00m car 13.9m, 4.66s 0.00m car 14.1m, 4.68s 0.00m car 14.3m, 4.70s 0.00m car 14.5m, 4.72s 0.00m car 14.7m, 4.74s 0.00m car 14.9m, 4.76s 0.00m car 15.1m, 4.78s 0.00m car 15.3m, 4.80s 0.00m car 15.5m, 4.82s 0.00m car 15.8m, 4.84s 0.00m car 16.0m, 4.86s 0.00m car 16.2m, 4.88s 0.00m car 16.4m, 4.90s 0.00m car 16.6m, 4.92s 0.00m car 16.8m, 4.94s 0.00m car 17.0m, 4.96s 0.00m car 17.2m, 4.98s 0.00m car 17.5m, 5.00s 0.00m car 17.7m, 5.02s 0.00m car 17.9m, 5.04s 0.00m car 18.1m, 5.06s 0.00m car 18.3m, 5.08s 0.00m car 18.6m, 5.10s 0.00m car 18.8m, 5.12s 0.00m car 19.0m, 5.14s 0.00m car 19.2m, 5.16s 0.00m car 19.5m, 5.18s 0.00m car 19.7m, 5.20s 0.00m car 19.9m, 5.22s 0.00m car 20.2m, 5.24s 0.00m car 20.4m, 5.25s 0.00m car 20.6m, 5.27s 0.00m car 20.9m, 5.29s 0.00m car 21.1m, 5.31s 0.00m car 21.3m, 5.33s 0.00m car 21.6m, 5.35s 0.00m car 21.8m, 5.37s 0.00m car 22.1m, 5.39s 0.00m car 22.3m, 5.41s 0.00m car 22.5m, 5.43s 0.00m car 22.8m, 5.45s 0.00m car 23.0m, 5.47s 0.00m car 23.3m, 5.49s 0.00m car 23.5m, 5.51s 0.06m car 23.8m, 5.53s 0.24m car 24.1m, 5.55s 0.49m car 24.3m, 5.57s 0.81m car 24.5m, 5.59s 1.15m car 24.8m, 5.61s 1.52m car 25.0m, 5.63s 1.90m car 25.2m, 5.65s 2.27m car 25.5m, 5.67s 2.63m car 25.7m, 5.69s 2.93m car 25.9m, 5.71s 3.19m car 26.1m, 5.73s 3.38m car 26.4m, 5.75s 3.51m car 26.6m, 5.77s 3.55m car 26.8m",
+  "the player's session: /Users/sky/Projects/suborned/out/scratch/latch/098j/jam/jam-player.script.json"
+ ],
+ "shots": [
+  "jam-1-refused.png (queued)",
+  "jam-2-hover.png (queued)",
+  "jam-2b-rival-held.png (queued)",
+  "jam-3-shot.png (queued)",
+  "jam-4-leaving-20.png (queued)",
+  "jam-4-leaving-45.png (queued)",
+  "jam-5-after.png (queued)"
+ ]
+}

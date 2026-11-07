@@ -107,7 +107,7 @@ namespace Suborned.Play
         void LockPop(PanelRow r, Vector2 at, Vector3? world)
         {
             if (r == null) return;
-            if (r.Lock.code is "car-held" or "car-boxed") HolderPulseAt = Time.unscaledTime;
+            if (r.Lock.code is "car-held" or "car-boxed") HolderPulseAt = Time.unscaledTime; PulseBoxers(r.Lock); // brief 098 step 1b: a passing car boxing us in pulses where it stands
             var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}";
             popCode = r.Lock.code ?? ""; Pop(Text?.ShortLock(r.Lock.code) is string ? ShortOf(r.I.Order, r.Lock) ?? full : full, at, world, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full);
         }

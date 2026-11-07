@@ -1,0 +1,73 @@
+{
+ "schema": "suborned.traffic-probe/1",
+ "ok": true,
+ "checks": [
+  {
+   "what": "a new game with no counts has no traffic and draws no car",
+   "ok": true,
+   "detail": "seed 452357275"
+  },
+  {
+   "what": "the Cars row is on the panel with its buttons",
+   "ok": true,
+   "detail": "today 0, 0\u201364, steps 1 and 4"
+  },
+  {
+   "what": "the clicks set 8 cars and build nothing",
+   "ok": true,
+   "detail": "Changed: Play builds this street"
+  },
+  {
+   "what": "Play builds traffic on the same seed",
+   "ok": true,
+   "detail": "built in 66 ms; 14 cars at 0:00"
+  },
+  {
+   "what": "every passing car is drawn by one view, none left over",
+   "ok": true,
+   "detail": "cars 12, drawn 12, views 12, active in the scene 12, built 17"
+  },
+  {
+   "what": "each car in its kit model, a sedan in a paint of the palette, never one kept off its body (it would pass for a mission car)",
+   "ok": true,
+   "detail": "sedan-g 6, sedan-o 5, van 1; paints sedan-g cream-turquoise, sedan-g larkspur-blue, sedan-g onyx, sedan-o cream-turquoise, sedan-o matador-red, sedan-o orchid; look-alikes 0"
+  },
+  {
+   "what": "hover: a passing car is a car target and the pill says what it is doing",
+   "ok": true,
+   "detail": "car:t-009-02 (sedan, 280 cm/s, why ''): pill 'Cream car \u00b7 driving through' (info)"
+  },
+  {
+   "what": "a shot car stands, its driver out and drawn as one of the crowd",
+   "ok": true,
+   "detail": "car:t-004-02: fired at 0:40.2, disabled 0:55.3, driver x-driver-004-02 walker 126, crowd views added 1"
+  },
+  {
+   "what": "its smoke is drawn in the world and its hover says so",
+   "ok": true,
+   "detail": "fx True, words 'wrecked, the driver ran'"
+  },
+  {
+   "what": "passing cars are heard (at most the voice cap)",
+   "ok": true,
+   "detail": "most voices at once 4 (cap 4)"
+  },
+  {
+   "what": "cars back to none: today's world, no car drawn",
+   "ok": true,
+   "detail": "start 7521ff674d21963c"
+  }
+ ],
+ "after the shot": [
+  "car:t-002-02 sedan duck stopped",
+  "car:t-004-02 sedan abandoned disabled",
+  "car:t-005-02 sedan duck stopped",
+  "car:t-008-02 sedan duck stopped",
+  "car:t-010-02 sedan flee stopped"
+ ],
+ "shots": [
+  "traffic-1-panel.png (queued)",
+  "traffic-2-hover.png (queued)",
+  "traffic-3-shot.png (queued)"
+ ]
+}

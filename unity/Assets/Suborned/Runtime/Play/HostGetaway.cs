@@ -65,6 +65,8 @@ namespace Suborned.Play
             return new Answer { ok = true, code = "", why = "" };
         }
 
+        /// <summary>Where a cell order given with no click shows its refusal: over the car a Go is on (ours, or Popovic's when lent), else nowhere (the HUD's own place).</summary>
+        Vector3? CellOrderWorld(Order o) => o.Do != "go" || Game == null ? null : LentOrder(o.Target) ? LentWorld : GetawayWorld;
         /// <summary>The engine's own answer to Go now (car-held names the holders in `ids`; car-empty).</summary>
         public Answer GoLock() { Answer a = new Answer { ok = true, code = "", why = "" }; Guard("go query", () => a = Game.GoQuery()); a.code ??= ""; a.why ??= ""; return a; }
 
@@ -121,7 +123,7 @@ namespace Suborned.Play
             if (LentOrder(car)) { LentGoGive(by, screen); return; } // brief 096: Popovic's car has its own Go
             var lk = GoLock();
             var at = GetawayWorld;
-            if (!lk.ok) { Pop(ShortOf(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why); if (lk.code == "car-held") HolderPulseAt = Time.unscaledTime; return; }
+            if (!lk.ok) { Pop(ShortOf(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why); if (lk.code == "car-held") HolderPulseAt = Time.unscaledTime; else PulseBoxers(lk); return; } // brief 098 step 1b: boxed in by traffic, the car named pulses
             var order = new Order { Op = Op.Name(by), Do = "go" };
             var left = LeftBehindNow();
             if ((Game.Lent ? left.Exists(x => x.fate == "captured") : left.Count > 0) && Loud == null) // brief 096: while lent, only a capture asks for the hold (the rest stay on)

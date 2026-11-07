@@ -23,7 +23,7 @@ namespace Suborned.Play
             if (lentWay.Count < 2) return;
             if (lentS >= lentLen) { if (th.shown) things[LentKey] = (th.t, th.to, th.to, false); return; }
             float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
-            lentV = Mathf.Min(LeaveTop, lentV + LeaveAccel * dt); lentS += lentV * dt;
+            lentV = PushCap(LentKey, Mathf.Min(LeaveTop, lentV + LeaveAccel * dt), dt); lentS += lentV * dt; // brief 098 step 1b: it brakes while it shoves a wreck aside
             var (at, dir) = Along(lentWay, lentS); things[LentKey] = (th.t, at, at, true); lentHeading = dir; // the car model faces it (CarFacing)
         }
 

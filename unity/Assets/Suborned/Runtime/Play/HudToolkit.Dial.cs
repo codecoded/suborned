@@ -8,10 +8,11 @@ using UnityEngine.UIElements;
 namespace Suborned.Play
 {
     /// <summary>Brief 098 step 0, the dial's dev panel on the start page (HostDial; Sky 2026-11-07: "add 3 more guards, take some away, bring in more cars etc - the game
-    /// then just does that"). Bottom left, on the street beside the book's page, only while the start book is up. Per kind (guards, people, and cars since step 1: passing traffic, today 0): −10, −, the number, +, +10
-    /// (clicks; no key does any of it), with today's number, the floor (the cast never leave) and the most beside it. Today puts every kind back; Play builds the
+    /// then just does that"). Bottom left, on the street beside the book's page, only while the start book is up. Per kind (guards, people, and cars since step 1: passing traffic, today 0): −N, −, the number, +, +N
+    /// (clicks; no key does any of it; N the kind's big step, HostDial.DialBigStep: people and guards 5, cars 4), the kind's name over what it counts (since step 1b, Sky 2026-11-07
+    /// "people counter is for street": "People / on the street", "Guards / in the zone", "Cars / on the roads"), with today's number, the floor (the cast never leave) and the most beside it. Today puts every kind back; Play builds the
     /// street with those numbers and begins (the page's Begin does the same once a number changed). The line under them says what the street behind the page plays.
-    /// A dev panel, not final UI: the book's own colours and Jost, for Glyph to style. Named elements ("dial-guards-plus", "dial-play") for a scripted click.</summary>
+    /// A dev panel, not final UI: the book's own colours and Jost, for Glyph to style. Named elements ("dial-guards-plus", "dial-people-plus-big", "dial-play") for a scripted click.</summary>
     public sealed partial class HudToolkit
     {
         const float DlW = 560f, DlX = 24f, DlLineW = 400f, DlRow0 = 74f, DlRowH = 46f;
@@ -62,14 +63,15 @@ namespace Suborned.Play
             float cy = DlRow0;
             foreach (var k in Population.Kinds)
             {
-                var kind = k; var t = host.DialTodayOf(k); if (t == null) continue;
-                BkPut(dl, 18f, cy, char.ToUpperInvariant(k[0]) + k.Substring(1), 19f, "Jost-SemiBold", BkCreamHex);
-                DlButton($"dial-{k}-minus10", 102f, cy, 50f, 34f, "−10", 16f, BkDeep, () => host.DialStep(kind, -10));
-                DlButton($"dial-{k}-minus", 156f, cy, 36f, 34f, "−", 20f, BkDeep, () => host.DialStep(kind, -1));
-                var n = BkPut(dl, 194f, cy, "", 25f, "Jost-Bold", BkCreamHex); n.style.width = 68f; n.style.unityTextAlign = TextAnchor.MiddleCenter; dlNum[k] = n;
-                DlButton($"dial-{k}-plus", 264f, cy, 36f, 34f, "+", 20f, BkDeep, () => host.DialStep(kind, 1));
-                DlButton($"dial-{k}-plus10", 304f, cy, 50f, 34f, "+10", 16f, BkDeep, () => host.DialStep(kind, 10));
-                BkPut(dl, 368f, cy, $"today {t.Today} · {t.Floor}–{t.Max}", 15f, "Jost-Medium", BkDimHex);
+                var kind = k; var t = host.DialTodayOf(k); if (t == null) continue; int big = host.DialBigStep(k);
+                BkPut(dl, 18f, cy - 8f, char.ToUpperInvariant(k[0]) + k.Substring(1), 19f, "Jost-SemiBold", BkCreamHex); // brief 098 step 1b: what the number counts under the kind ("People / on the street")
+                var m = BkPut(dl, 18f, cy + 11f, HandoverHost.DialMeasureWords(t), 13f, "Jost-Medium", BkDimHex); m.name = $"dial-{k}-measure";
+                DlButton($"dial-{k}-minus-big", 112f, cy, 46f, 34f, "−" + big, 16f, BkDeep, () => host.DialStep(kind, -big));
+                DlButton($"dial-{k}-minus", 162f, cy, 36f, 34f, "−", 20f, BkDeep, () => host.DialStep(kind, -1));
+                var n = BkPut(dl, 200f, cy, "", 25f, "Jost-Bold", BkCreamHex); n.style.width = 68f; n.style.unityTextAlign = TextAnchor.MiddleCenter; dlNum[k] = n;
+                DlButton($"dial-{k}-plus", 270f, cy, 36f, 34f, "+", 20f, BkDeep, () => host.DialStep(kind, 1));
+                DlButton($"dial-{k}-plus-big", 310f, cy, 46f, 34f, "+" + big, 16f, BkDeep, () => host.DialStep(kind, big));
+                BkPut(dl, 370f, cy, $"today {t.Today} · {t.Floor}–{t.Max}", 15f, "Jost-Medium", BkDimHex);
                 cy += DlRowH;
             }
             dlLine = BkPut(dl, 18f, DlLineY, "", 15f, "Jost-Medium", BkCreamHex);

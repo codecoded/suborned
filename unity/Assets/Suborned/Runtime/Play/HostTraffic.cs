@@ -26,26 +26,42 @@ namespace Suborned.Play
         Target TrafficTarget(string n)
         {
             var v = views?.TrafficOf("car:" + n.Substring(4)); if (v == null) return null;
-            return new Target { Kind = "car", Key = n.Substring(4), Label = TrafficName(v.Model) };
+            return new Target { Kind = "car", Key = n.Substring(4), Label = TrafficName(v) };
         }
 
-        /// <summary>A passing car's name in the player's words: "the passing car", "the van", "the scooter" (text.json targets, else these).</summary>
-        string TrafficName(string model) => model switch
+        /// <summary>A passing car's name in the player's words, by what it is and (a car) the colour it is painted (brief 098 step 1b, so the player can find the
+        /// one named: "the red car", "the cream car", "the van", "the scooter"). Stand-ins for Fable: text.json targets car-van, car-scooter and car-colour
+        /// ("the {colour} car") are read when present.</summary>
+        string TrafficName(TrafficView v) => v.Model switch
         {
             "van" => Text?.TargetName("car-van", "the van") ?? "the van", "scooter" => Text?.TargetName("car-scooter", "the scooter") ?? "the scooter",
-            _ => Text?.TargetName("car-passing", "the passing car") ?? "the passing car",
+            _ => TrafficColour(views?.TrafficPaintOf(v.Id) ?? "") is { Length: > 0 } c ? (Text?.TargetName("car-colour", "the {colour} car") ?? "the {colour} car").Replace("{colour}", c) : Text?.TargetName("car-passing", "the passing car") ?? "the passing car",
+        };
+        /// <summary>A passing car's name by its engine id (car:t-…): its view's, else the engine's own read of it (TrafficNow); null when the roads have no such car.</summary>
+        public string TrafficNameOf(string id) => (views?.TrafficOf(id) ?? EngineTrafficView(id)) is TrafficView v ? TrafficName(v) : null;
+        /// <summary>A passing car as the engine reads it now (Game.TrafficNow), for a word asked between the views' ticks or with no views; null when none.</summary>
+        TrafficView EngineTrafficView(string id) { var g = Game; TrafficView v = null; if (g != null && g.TrafficOn && IsTrafficId(id)) Guard("traffic now", () => v = g.TrafficNow().Find(x => x.Id == id)); return v; }
+        /// <summary>An engine id that names a passing car: car: and the dial's traffic prefix (population.json kinds.cars.id, "t-").</summary>
+        bool IsTrafficId(string id) => !string.IsNullOrEmpty(id) && id.StartsWith("car:" + (Bundle?.Inputs?.Population?.Traffic?.IdPrefix ?? "t-"), StringComparison.Ordinal);
+        /// <summary>A palette paint (presentation.json paints, the key) as the colour a player would call it; the body's colour, not the roof's.</summary>
+        static string TrafficColour(string paint) => paint switch
+        {
+            "" => "", "canary-yellow" => "yellow", "cream-turquoise" => "cream", "harbor-blue" => "blue", "larkspur-blue" => "pale blue", "matador-red" => "red", "onyx" => "black",
+            "orchid" => "lilac", "seafoam-green" => "green", "tropical-turquoise" => "turquoise", "dusk-pink" => "pink", "tangerine" => "orange",
+            _ => paint.Split('-')[0],
         };
         /// <summary>The fire line's name for a car id when it is a passing car's, else null (FireName keeps its own).</summary>
-        string TrafficFireName(string id) => views?.TrafficOf(id) is TrafficView v ? TrafficName(v.Model) : null;
+        string TrafficFireName(string id) => TrafficNameOf(id);
 
-        /// <summary>The hover pill's line for a passing car with no way offered on it (HudToolkit.HoldPillFrame): "Passing car · waiting for someone to cross"; "" for anything else.</summary>
+        /// <summary>The hover pill's line for a passing car with no way offered on it (HudToolkit.HoldPillFrame): "Red car · waiting for someone to cross"; for a mission
+        /// car held by traffic, why (MissionPill); "" for anything else.</summary>
         public string TrafficPill(Target t)
         {
-            if (!IsTrafficCar(t) || views?.TrafficOf("car:" + t.Key) is not TrafficView v) return "";
-            var name = TrafficName(v.Model); if (name.StartsWith("the ", StringComparison.Ordinal)) name = name.Substring(4);
-            if (name.Length > 0) name = char.ToUpperInvariant(name[0]) + name.Substring(1);
-            var w = TrafficWords(v.Id); return w.Length > 0 ? name + " · " + w : name;
+            if (!IsTrafficCar(t) || views?.TrafficOf("car:" + t.Key) is not TrafficView v) return MissionPill(t);
+            var w = TrafficWords(v.Id); return w.Length > 0 ? Head(TrafficName(v)) + " · " + w : Head(TrafficName(v));
         }
+        /// <summary>A name as a pill's head: "the red car" → "Red car".</summary>
+        static string Head(string name) { if (name.StartsWith("the ", StringComparison.Ordinal)) name = name.Substring(4); return name.Length > 0 ? char.ToUpperInvariant(name[0]) + name.Substring(1) : name; }
 
         /// <summary>What a passing car is doing now, in plain words: its state (wrecked, on fire, burnt out), its driver's mode (ducking, braking hard, pulled
         /// up for the lockdown, fled), else what holds it (Game.TrafficWhy's first thing ahead and the turn it waits for) once it is slow, else "driving through".</summary>
@@ -55,11 +71,16 @@ namespace Suborned.Play
             wordsSaid = TrafficWordsNow(id); wordsGame = g; wordsTick = g?.Tick ?? -1; wordsId = id; return wordsSaid;
         }
         Game wordsGame; int wordsTick = -1; string wordsId = "", wordsSaid = "";
-        string TrafficWordsNow(string id)
+        string TrafficWordsNow(string id) => TrafficWordsOf(views?.TrafficOf(id));
+        /// <summary>TrafficWordsNow for one car's read (the views' copy of TrafficNow's).</summary>
+        string TrafficWordsOf(TrafficView v)
         {
-            var g = Game; var v = views?.TrafficOf(id); if (g == null || v == null) return "";
-            switch (v.State) { case "blown": return "burnt out"; case "burning": return "on fire"; case "disabled": return v.DriverIn ? "wrecked" : "wrecked, the driver ran"; }
-            if (!v.DriverIn || v.Mode == "abandoned") return "abandoned, the driver ran";
+            var g = Game; if (g == null || v == null) return ""; var id = v.Id;
+            string shoved = v.Shot && v.ShovedAt >= 0 && g.Tick - v.ShovedAt <= 2 ? " · being pushed aside" : ""; // brief 098 step 1b: a mission car is shoving the wreck out of its way
+            switch (v.State) { case "blown": return "burnt out" + shoved; case "burning": return "on fire" + shoved; case "disabled": return (v.DriverIn ? "wrecked" : "wrecked, the driver ran") + shoved; }
+            if (!v.DriverIn || v.Mode == "abandoned") return "abandoned, the driver ran" + shoved;
+            if (v.Boxes.Length > 0) return $"boxing {CarWords(v.Boxes)} in"; // brief 098 step 1b: it stands across that car's way out (shoot it and the car can shove it aside)
+            if (v.MakingRoom.Length > 0) return $"making room for {CarWords(v.MakingRoom)}";
             switch (v.Mode) { case "duck": return "the driver is ducking"; case "brake": return "braking hard"; case "held": return "pulled up for the lockdown"; }
             string why = ""; try { why = g.TrafficWhy(id) ?? ""; } catch (Exception) { }
             bool flee = v.Mode == "flee", stopped = v.Speed <= 30, slow = v.Speed < 250; // cm/s: 0.3 m/s and 2.5 m/s (the access roads' lanes run at 5 m/s)
