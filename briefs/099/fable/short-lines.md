@@ -272,3 +272,132 @@ The loop's 10/10 means Motive found nothing to fix. Some accepted families read 
 - **Dropped from the open list:** the VOICE rule's "no exclamation marks" covers only the why block and the debrief page, not barks. The flattened shouts were Motive's reading, not the rule.
 - **Still open for the GDD:** a bubble is at most 10 words in agent GDD §10, but 12 in §14 and the human GDD. To fix at the next GDD version, with Sky.
 - **Checks:** `bun test tools/style-agent contracts/missions/handover tools/names tools/dialogue tools/game/proofdelta.test.ts` 387/387; `bun run typecheck` clean.
+
+## Round 2 (Fable, 2026-11-07; Sky: "Do all")
+
+Uncommitted on `work/098-living-playbook`; Aster commits. No Unity code, no GDD, no engine.
+
+### What the player sees
+
+**The debrief page's last 13 keys** come from `text.json` now, written through the loop. Before, they were Latch's marked stand-ins (`Resources/Debrief099/standins.json`).
+
+| key | before (stand-in) | now |
+|---|---|---|
+| `folds.time` | "the clock" · "When the job was done, against the stops on the mission's clock." | "the clock" · "This is when the run ended, alongside the mission's fixed times." |
+| `folds.cash` | "what it went on" · "The purse pays for people. A refusal gives the money back." | "what it went on" · "This is what you spent helping or paying people, minus any money returned." |
+| `folds.alert` | "what raised it" · "Alert is how hard security is looking: 0 routine, up to 3 lockdown." | "what raised it" · "Alert shows the highest response this run: 0 routine through 3 lockdown." |
+| `folds.standing` | "what moved it" · "Standing is how the district sees you, from Hero to Menace." | kept |
+| `folds.rest` | "Smaller things" (the "+3" row) | kept |
+| `head.withdraw` | "The Handover · ended at {clock}" | kept |
+| `beats.withdrew` | "Pulled out" | kept |
+| `how.killed` | "killed" | kept |
+| `and` | "and" | kept |
+
+The old Time line was false on a fail or a withdrawal ("When the job was done"). The withdrawal's words hold for both ways a run is withdrawn: the Withdraw order, and Go pressed before Popovic was aboard.
+
+**Spent names who again** (`reasons.cash`):
+
+| key | before | now |
+|---|---|---|
+| `help` | "Helping someone" | "Helping {who}": "Helping Inez", "Helping the driver" |
+| `pay` | "Paying someone" | "Paying {who}": "Paying the driver", "Paying a rival" |
+| `both` | "Helping and paying" | "Helping or paying several people" |
+| `none` | "Nothing spent" | "No one helped or paid" |
+
+- `both` was false. The host picks it for any two or more payments, so two Pays read "Helping and paying".
+- `none` was false in one case. A Help or Pay still under way when the run ends keeps its price, so Spent can show money while nothing went through.
+
+### The runs (`runs/style-agent/short/`, guide /9)
+
+| family | scores | calls | tokens |
+|---|---|---|---|
+| `debrief/numbers` (rerun) | 10 | 2 | 28,628 |
+| `debrief/folds` (new) | 9 → 10 | 4 | 57,367 |
+
+- Both ran on `gpt-6.1-sol` through the Codex CLI (Sky's ChatGPT plan), approved by Sky. No paid API.
+- `debrief/folds`: Motive's one finding was the cash line ("Helps and Pays after refunds" read like accounting; the two capitals failed the code check).
+- `debrief/numbers` kept its other ten words as they were: /9 shows the page's words as today, and the rubric keeps them where they hold.
+- `apply` ran once, with Aster's whole restore list. Only the page changed: no bark or why line moved.
+
+### Guide /9 (`short-types.ts`; older runs rebuild with their own version)
+
+**The why families**, made safe before anyone reruns them. `why/gunfire`, `why/police` and `why/on-the-way` were not rerun; their second pass waits on Sky with the ten bark families.
+- A police title names who or what is coming (Police coming, More police, Robots coming, Lockdown); the cause goes in the short. It's in three places:
+  - the rubric's USEFUL rule;
+  - each police title's `where`;
+  - a must-match code check on every police title (police, robots, lockdown or seal).
+- The meter's head keeps its level: `{alert}`, and "Why it…".
+- What brief 100's HUD tests read (`HostLogic.Why100.cs`) is held:
+  - word for word: "Police coming" (the body's card), "the search goes on", "{about} called in an attack", "{who} saw {agent}'s gun", "Radioing it in · {s} s", "Going to {to} · {s} s";
+  - by pattern: the gunfire line starts "{agent} fired at {about}"; the knockout's short starts with `{who}` and holds `{about}`.
+- Today's restored words pass every /9 check.
+
+**The debrief families:**
+- An item's today is what the page shows now (before: Glyph's stand-ins). The rubric keeps today's words where they already hold every rule.
+- `reasons.cash.help` and `pay` have the `{who}` fill again (who was helped or paid), with a must-match check.
+- `both` and `none` are briefed as the host picks them.
+- `debrief/folds` is the new family of the 13 keys.
+
+### The traffic codes (Keel's report)
+
+Keel's four codes are `traffic.brakes`, `traffic.driver-out`, `traffic.shoved` and `traffic.closed` (brief 098, law L8). The test that reads them is `text.test.ts` › "every engine log code is spoken by an event or silent on purpose".
+- Keel's L9 tree branched before brief 100 (ee31d485), which made all four silent here. In his tree the test fails; here it passes.
+- My decision per code: none of them speaks. Each reason in `silentLogs` now says why.
+  - `traffic.brakes`: drivers at the wheel are nobody the player deals with; a sound would be Chime's.
+  - `traffic.driver-out`: the driver becomes a passer-by, who speaks the crowd's own lines and can witness like anyone.
+  - `traffic.shoved`: one of the mission cars pushes a wreck aside; a bark would only say what the player watches.
+  - `traffic.closed`: at Alert 3 the roads close; the Alert 3 row's `why.effect` already says "the roads shut".
+- The text contract has no non-speaking event (an event needs a speaker), so `silentLogs` is where a code that speaks no line belongs.
+
+### The opening barks
+
+Keel's tree is also where the opening barks are still expected. It has Sky's cut of the four rows (433cc692) but still has the `start` event listing four speakers, so `text.test.ts` › "every event has a line for every speaker it lists" asks for them. Brief 100 removed the event here.
+
+So the test follows Sky's call explicitly, `short.test.ts` now pins the quiet opening:
+- no `start` event;
+- no start bark;
+- `silentLogs.start` records Sky's words.
+
+### The dialogue drift ledger (r017–r019)
+
+- **What moved:** one rule, D-2, and only its words. In 3794289d (brief 096, Sky: "Full sentences") its rule changed from "spoken lines 1–12 words" to "bubbles 1–12 words", and its source gained "a cutaway conversation has its own limits". Its value, limit, result and detail rerun identically on every round of r017, r018 and r019. Every other change since 085's declaration is a schema no dialogue rule reads.
+- **Declared** with `--rules D-2` in `tools/levels/dialogue/drift.json`.
+- **Why the declaration alone was not enough.** The dialogue objective's code was not a moving code, so `replay-code.ts` failed any rerun difference whatever the ledger declared. `tools/levels/dialogue/plugin.ts` now sets `moves: true`, as people, skyline and transit do. A rule whose result or words differ still needs a declared cause that names it.
+- The people ledger is Pulse's and is untouched.
+
+### Two text rules the loop doesn't carry
+
+`text.test.ts` caught two of the new words after `apply`. I fixed both in the test, narrowly:
+- Its list of allowed capitals lacked Standing's bands (Hero, Neutral, Menace). They are the game's own names; the loop's list already had them.
+- "A run is noticed, never an Alert" flagged "this run" beside "Alert". On the page "this run" is the game played ("Watch this run"), not running, so that phrase alone is exempt.
+
+### Read before committing
+
+- "Helping or paying several people": "several" is a stretch when it is exactly two people, the usual case.
+- "Alert shows the highest response this run" is more abstract than the stand-in ("how hard security is looking").
+
+### Checks (round 2)
+
+- `bun test tools/style-agent contracts/missions/handover tools/dialogue tools/names tools/drift-auto`: 350/351.
+  - The one failure is drift-auto's "nothing changed: nothing to declare (every objective, every run)", on the people ledger (r012–r016), which is Pulse's.
+  - Every saved short run, /1 to /9, rebuilds from its archive.
+- `bun run typecheck`: clean.
+- `bun tools/drift-auto/cli.ts --check --objective dialogue`: "no CHECKER CODE failure, nothing to declare". `bun tools/levels/replay.ts` r017, r018, r019: REPLAY OK.
+- `bun test tools/levels`: 119/119 (the dialogue plugin changed).
+- `bun run guard bun tools/sim/unity.ts --tree`: headless 473/473 and range 97/97 with identical replay; mission text 76de9dd82870, the same file as the repo's.
+- `bun run guard bun tools/game/hostlogic.ts`: 168/168, as on HEAD before this round.
+  - The page reads 112 keys from text.json and none from the stand-ins: `round2/hostlogic-words.txt`.
+  - "Spent $40,000: Helping Inez" and "Spent $70,000: Paying the driver": `round2/hostlogic-folds-*.txt`.
+  - `how.killed` and `reasons.cash.both` are written, but no script reaches them.
+- The full suite before this round: 2,636 pass, 17 fail. My only one was drift-auto's dialogue part, now passing.
+
+### Open, and for whom
+
+- **Aster:**
+  - `moves: true` on the dialogue objective is a policy change: one line, and it can be reverted. Without it no declaration can cover a rule whose words change.
+  - It changed how drift-auto words a dialogue refusal, so `drift-auto.test.ts`'s D-7 case now expects the rule named the way the people case names P-3. That test is Splice's.
+  - The two `text.test.ts` fixes above, and "several people".
+- **Latch:** every key the page reads now comes from text.json, so `Resources/Debrief099/standins.json` can go whenever you choose.
+- **Keel:** rebasing L9 on this branch clears both reports (the `start` event and the four traffic codes). Nothing to change in the engine.
+- **Pulse:** the people ledger is the one drift-auto failure left.
+- **Sky (through Aster):** the second pass of `why/gunfire`, `why/police`, `why/on-the-way` and the ten bark families. Their briefs are safe at /9.

@@ -17,8 +17,14 @@ const LIMIT: Record<Form, [number, number]> = { label: [3, 20], note: [6, 40], l
 const f = (id: string, form: Form, fills: string[] = [], limit?: [number, number], wide: Record<string, string> = {}): Field => ({ id, form, words: (limit ?? LIMIT[form])[0], chars: (limit ?? LIMIT[form])[1], count: 1,
   fills: fills.map(x => ({ id: x, means: FILLS[x]![0], widest: wide[x] ?? FILLS[x]![1] }) as Fill), keep: [], patterns: [] });
 const PERSON = { who: 'their lookout' }, CAMERA = { who: 'the entrance camera' };
-const item = (key: string, where: string, tells: string, fields: Field[], current: Record<string, string>): ShortItem =>
-  ({ key, where, tells, speaker: null, fields, current: Object.fromEntries(Object.entries(current).filter(([, v]) => v).map(([k, v]) => [k, [v]])), stays: 'The page reads it (brief 099, concept A).' });
+/** Guide /9: text.json's debrief.page, so an item's today is what the page shows now (null before /9: Glyph's stand-ins). Set by debriefBriefs. */
+let PAGE: Record<string, unknown> | null = null;
+/** A field's words on the page now, by apply's own path (short-apply.ts): one field is the key itself, more are keys under it. */
+const onPage = (key: string, fields: Field[], f: Field): unknown => (fields.length === 1 ? key.split('.') : [...key.split('.'), f.id]).reduce<unknown>((o, s) => (o as Record<string, unknown> | undefined)?.[s], PAGE);
+const item = (key: string, where: string, tells: string, fields: Field[], current: Record<string, string>): ShortItem => ({ key, where, tells, speaker: null, fields,
+  current: !PAGE ? Object.fromEntries(Object.entries(current).filter(([, v]) => v).map(([k, v]) => [k, [v]]))
+    : Object.fromEntries(fields.map(f => { const now = onPage(key, fields, f); return [f.id, typeof now === 'string' ? now : current[f.id] ?? '']; }).filter(([, v]) => v).map(([k, v]) => [k, [v]])),
+  stays: 'The page reads it (brief 099, concept A).' });
 
 /** Glyph's stand-ins by key, read from words.md ("- `key`: words"). */
 export function standIns(read: Read): Record<string, string> {
@@ -28,7 +34,37 @@ export function standIns(read: Read): Record<string, string> {
   return out;
 }
 
+/** Guide /9 (Aster's review, 2026-11-07: Spent's reason said "Helping someone"; Latch's stand-in had "Helping {who}", Glyph's concept "Clearing Inez's debt"): what the money went on
+ *  as the host chooses it (HostDebrief.Numbers.cs: one payment that landed names its person, two or more are `both`, none is `none`), told true for every run that shows it. */
+const WHO_PAID = 'it names who the money went to (Aster\'s review, 2026-11-07: "Helping someone" lost its who)';
+const CASH_9: [string, string, string?][] = [
+  ['help', 'one Help went through and took all of it: the Fixer helped {who}', 'who was helped: Inez (her debt), the driver or the guard'],
+  ['pay', 'one Pay went through and took all of it: the Fixer paid {who}', 'who was paid: Inez, the driver, the guard, or one of the rival crew, whom the page calls "a rival"'],
+  ['both', 'two or more Helps and Pays went through and shared it: two Pays, or a Help and a Pay, to any of Inez, the driver, the guard and the rival crew. There is no {who}: more than one person was paid or helped, and the Spent fold lists each'],
+  ['none', 'no Help or Pay went through. The number above is $0, unless a Help or Pay was still under way when the run ended: its price is taken when the order is given'],
+];
+/** Guide /9: the keys Latch's page reads that /4–/8 had no item for (briefs/099/latch/notes.md, round 2), with what the page shows for each today: Latch's marked stand-ins
+ *  (unity/Assets/Suborned/Resources/Debrief099/standins.json, read by HostDebrief.Words.cs until text.json has the key). */
+const LATCH: Record<string, string> = {
+  'head.withdraw': 'The Handover · ended at {clock}', 'beats.withdrew': 'Pulled out', 'how.killed': 'killed', and: 'and', 'folds.rest': 'Smaller things',
+  'folds.time.head': 'the clock', 'folds.time.means': 'When the job was done, against the stops on the mission\'s clock.', 'folds.cash.head': 'what it went on',
+  'folds.cash.means': 'The purse pays for people. A refusal gives the money back.', 'folds.alert.head': 'what raised it',
+  'folds.alert.means': 'Alert is how hard security is looking: 0 routine, up to 3 lockdown.', 'folds.standing.head': 'what moved it', 'folds.standing.means': 'Standing is how the district sees you, from Hero to Menace.',
+};
+/** The four numbers whose fold had no words (Trail's is trail.*): what the number is, the title the fold shows, and what its rows list (HostDebrief.Numbers.cs, DebriefFoldOf). */
+const FOLDS: [string, string, string, string][] = [
+  ['time', 'Time: the mission clock when the run ended: when the car left with Popovic, when the run was lost, or when the cell pulled out', 'Time 5:53',
+    'the mission\'s fixed times, each when it came this run (2:35 the rival car turns in, 5:10 the chime, 5:20 the last chance, 5:30 Popovic walks out, 5:50 his car leaves), and the end'],
+  ['cash', 'Spent: the money the cell paid from its $100,000 purse, all of it on Helps and Pays. A price is taken when the order is given; a refusal, or an order cut short, gives it back', 'Spent $70,000',
+    'each Help and Pay that went through: who gave it, to whom, and when (the amount shows when one payment is the whole sum)'],
+  ['alert', 'Alert: the highest the Alert reached this run, 0 to 3 (GDD: routine, inquiry, search, lockdown): at 1 robots come to look, at 2 police come to search, at 3 the doors lock, police close the exits and the roads shut', 'Alert 2',
+    'each rise: its cause in a few words (the why block\'s short), by how much, and when'],
+  ['standing', 'Standing: the district\'s band and number for the next mission ("Hero +4"): how the district sees the cell, from Hero to Menace, moved by acts seen or found, a public fight once by opponent, and word of mouth between missions; it started leaning Hero (+2)', 'Standing Hero +4',
+    'each move this run: its cause, by how much, and when'],
+];
+
 export function debriefBriefs(read: Read, text: any, rulebook: string, v: ShortGuideVersion): ShortBrief[] {
+  PAGE = v >= 9 ? text.debrief?.page ?? null : null;
   const G = standIns(read), rb = (id: string) => Number(pick(rulebook, new RegExp(`"${id}": \\{ ?"v": (\\d+)`), `rulebook ${id}`)[0]);
   const [fire, hit, down] = [rb('gunfire-trail'), rb('hit-trail'), rb('down-trail')];
   const rows = Object.fromEntries((text.book.job.needs.ways['front-door'] as { id: string; words: string }[]).concat(text.book.job.needs.ways.pickup).map(r => [r.id, r.words]));
@@ -90,8 +126,9 @@ export function debriefBriefs(read: Read, text: any, rulebook: string, v: ShortG
       ...[['time', 'when the run ended (the play clock)'], ['cash', 'the money spent of the $100,000 purse'], ['trail', 'the Trail added (what investigators can trace)'], ['alert', 'the highest Alert reached'], ['standing', 'the district\'s Standing after the run, as its band and number']]
         .map(([k, what]) => item(`numbers.${k}`, 'A number\'s label, beside its icon; a › opens its explainer', `The label of the number that shows ${what}. Trail, Alert and Standing are the game's own names and stay.`, [f('label', 'label', [], [1, 10])], { label: G[`stat.${k}`] ?? '' })),
       item('reasons.time.win', 'Under the Time number on a win', 'How much time was left against Popovic\'s own car leaving the pickup at 5:50 ({clock} is that margin, m:ss).', [f('note', 'note', ['clock'])], { note: G['why.time.win']!.replace('{left}', '{clock}') }),
-      ...[['help', 'all of it went on a Help (Inez\'s debt, or the driver\'s need)'], ['pay', 'all of it went on a Pay'], ['both', 'a Help and a Pay'], ['none', 'nothing was spent']]
-        .map(([k, what]) => item(`reasons.cash.${k}`, 'Under the Spent number', `What the money went on: ${what}.`, [f('note', 'note')], { note: G[`why.cash.${k}`] ?? '' })),
+      ...(v >= 9 ? CASH_9 : [['help', 'all of it went on a Help (Inez\'s debt, or the driver\'s need)'], ['pay', 'all of it went on a Pay'], ['both', 'a Help and a Pay'], ['none', 'nothing was spent']])
+        .map(([k, what, who]) => item(`reasons.cash.${k}`, 'Under the Spent number', `What the money went on: ${what}.`,
+          [who ? { ...f('note', 'note'), fills: [{ id: 'who', means: who, widest: 'the driver' }], patterns: [{ re: '\\{who\\}', flags: '', must: true, why: WHO_PAID }] } : f('note', 'note')], { note: G[`why.cash.${k}`] ?? '' })),
       item('reasons.trail.shooting', 'Under the Trail number when shooting made half of it or more', '{n} of the {trail} Trail came from shooting.', [f('note', 'note', ['n', 'trail'])], { note: G['why.trail.shooting']!.replace('{total}', '{trail}') }),
       item('reasons.trail.none', 'Under the Trail number at 0', 'Nothing the cell did could be traced: Trail 0.', [f('note', 'note')], {}),
       item('reasons.trail.list', 'Under the Trail number otherwise: the biggest shorts joined ("the pay, the loop and her call")', v >= 5
@@ -119,5 +156,26 @@ export function debriefBriefs(read: Read, text: any, rulebook: string, v: ShortG
     brief('debrief/strip', 'The run along the foot: one word or two under each beat', ctx, BEATS.map(([k, what, fills]) =>
       item(`beats.${k}`, 'Under a beat on the strip at the foot of the page, over its time; the strip is narrow, often two lines', `The beat for ${what}.`, [f('label', 'label', fills, [3, 18], { who: 'the driver' })], { label: G[`beat.${k}`] ?? '' }))),
     brief('debrief/next', 'A fail: Next time, and the reason under the Time number', ctx, fails),
+    ...(v >= 9 ? [brief('debrief/folds', 'The other four numbers\' folds, and the words a withdrawal, a killing and a list need', ctx, folds9(text, row))] : []),
+  ];
+}
+
+/** Guide /9: the family of the 13 keys Latch's page reads that had no item (Latch's notes, round 2: head.withdraw, beats.withdrew, folds, folds.rest, and, how.killed). */
+function folds9(text: any, row: (k: string) => string): ShortItem[] {
+  const page = text.debrief?.page ?? {}, by = String(page.trail?.byWhat ?? 'What left it').toLowerCase(), how = page.how ?? {}, head = page.head ?? {}, beats = page.beats ?? {};
+  const WITHDREW = 'the Fixer\'s Withdraw (call off the attempt; the cell gets away to try again), or Go pressed before Popovic was aboard, so the car left without him';
+  return [
+    ...FOLDS.map(([k, number, title, rows]) => item(`folds.${k}`, `The fold its number opens, as the Trail fold: head, a word or two beside the fold's title ("${title}"), lower case like the Trail fold's "${by}"; means, one sentence under the title saying what the number is`,
+      `${number}. The fold lists ${rows}.`, [f('head', 'label', [], [4, 20]), f('means', 'line')], { head: LATCH[`folds.${k}.head`]!, means: LATCH[`folds.${k}.means`]! })),
+    item('folds.rest', 'The words of a fold\'s last row, after the sum of the rows that do not fit ("+3 ___"), in the Trail, Alert and Standing folds once the biggest rows have filled the fold',
+      'What the last row sums: the Trail points, the Alert rises or the Standing moves left over once the biggest are shown, so the smaller ones, whoever or whatever made them.', [f('note', 'note', [], [3, 20])], { note: LATCH['folds.rest']! }),
+    item('head.withdraw', `The small caps over the headline on a withdrawal (the host sets them in capitals); a win's are "${head.win ?? ''}", a fail's "${head.fail ?? ''}"`,
+      `The mission's name and the clock when the cell pulled out ({clock}): ${WITHDREW}. The end card says "${text.debrief?.headline?.withdraw ?? ''}".`, [f('label', 'label', ['clock'], [6, 40])], { label: LATCH['head.withdraw']! }),
+    item('beats.withdrew', `Under the last beat of the run along the foot on a withdrawal, over its time, and the last row of the Time fold; the strip is narrow, often two lines. The other ends: a win's "${beats.away ?? ''}", a fail's "${beats.lost ?? ''}"`,
+      `The cell pulled out: ${WITHDREW}.`, [f('label', 'label', [], [3, 18])], { label: LATCH['beats.withdrew']! }),
+    item('how.killed', `A note right of ${row('guard-away')}, before the time it came true ("· 2:31"); beside it on other runs: "${how.knocked ?? ''}", "${how.shot ?? ''}", "${how.called ?? ''}"`,
+      'How the row came true: the guard was killed (takedown.dead): the Enforcer\'s Kill takedown, or shot dead where he lay.', [f('note', 'note', [], [4, 24])], { note: LATCH['how.killed']! }),
+    item('and', 'The word that joins the last two of a list: the Trail reason\'s {list} ("the pay, the loop and her call") and a fold row\'s shooters ("Hasti and Larthi fired on 3 rivals")',
+      'Joins the last two things or people of a list, as everyday English does.', [f('label', 'label', [], [1, 5])], { label: LATCH.and! }),
   ];
 }

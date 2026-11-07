@@ -924,7 +924,7 @@
    }
   },
   "page": {
-   "head": {"win":"The Handover · away at {clock}","fail":"The Handover · lost at {clock}"},
+   "head": {"win":"The Handover · away at {clock}","fail":"The Handover · lost at {clock}","withdraw":"The Handover · ended at {clock}"},
    "way": {"yours":"your way in"},
    "how": {
     "called": "Inez called him over",
@@ -939,7 +939,8 @@
     "pressed": "leaned on",
     "asked": "asked outright",
     "taped": "payment caught on tape",
-    "never": "never happened"
+    "never": "never happened",
+    "killed": "killed"
    },
    "next": {
     "head": "Next time",
@@ -1037,15 +1038,24 @@
     "report": "Report arrived",
     "car-seen": "Getaway car seen",
     "away": "Away with Popovic",
-    "lost": "Handover failed"
+    "lost": "Handover failed",
+    "withdrew": "Pulled out"
    },
    "numbers": {"time":"Time","cash":"Spent","trail":"Trail","alert":"Alert","standing":"Standing"},
    "reasons": {
     "time": {"win":"{clock} to spare"},
-    "cash": {"help":"Helping someone","pay":"Paying someone","both":"Helping and paying","none":"Nothing spent"},
+    "cash": {"help":"Helping {who}","pay":"Paying {who}","both":"Helping or paying several people","none":"No one helped or paid"},
     "trail": {"shooting":"Shooting: {n} of {trail}","none":"Nothing to trace","list":"From {list}"},
     "alert": {"none":"No alarm raised"}
-   }
+   },
+   "folds": {
+    "time": {"head":"the clock","means":"This is when the run ended, alongside the mission's fixed times."},
+    "cash": {"head":"what it went on","means":"This is what you spent helping or paying people, minus any money returned."},
+    "alert": {"head":"what raised it","means":"Alert shows the highest response this run: 0 routine through 3 lockdown."},
+    "standing": {"head":"what moved it","means":"Standing is how the district sees you, from Hero to Menace."},
+    "rest": "Smaller things"
+   },
+   "and": "and"
   }
  },
  "events": {
@@ -1438,10 +1448,10 @@
   "restrain.freed": "card only: someone untied the body",
   "report.stopped": "card only: the reporter was taken down before the call",
   "victim.statement": "card only: the response brought the victim round",
-  "traffic.shoved": "brief 098 (law L8): a car pushes a wrecked passing car aside: the street shows it",
-  "traffic.closed": "brief 098 (law L8): at Alert 3 the roads into the district close and no car comes in: the street shows it, and why.effect says it",
-  "traffic.brakes": "brief 098 (law L8): passing cars brake hard at gunfire nearby or a gun drawn in a driver's sight: the street shows it",
-  "traffic.driver-out": "brief 098 (law L8): a passing car's driver gets out and runs from the gunfire or the gun, a passer-by from then on: the street shows it"
+  "traffic.shoved": "brief 098 (law L8): a mission car (ours, Popovic's or the rivals') pushes a wrecked passing car aside: the street shows it. No line (Fable, 2026-11-07, Keel's report): a bark would tell the player only what they watch",
+  "traffic.closed": "brief 098 (law L8): at Alert 3 (population.json traffic.lockdown) the roads into the district close: no car comes in, and the cars in it drive out. The street shows it, and the Alert 3 row's why.effect says the roads shut (the Journal, the meter's hover). No line of its own (Fable, 2026-11-07)",
+  "traffic.brakes": "brief 098 (law L8): passing cars brake hard at gunfire nearby or a gun drawn in a driver's sight: the street shows it, and a sound would be Chime's. No line (Fable, 2026-11-07): drivers at the wheel are nobody the player deals with",
+  "traffic.driver-out": "brief 098 (law L8): a passing car's driver gets out and runs from the gunfire or the gun, a passer-by from then on: the street shows it, and as a passer-by they speak the crowd's own lines (crowd-state) and can witness like anyone. No line of its own (Fable, 2026-11-07)"
  },
  "hints": {
   "rules": {

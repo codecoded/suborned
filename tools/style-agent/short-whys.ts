@@ -1,4 +1,4 @@
-import type { Field, Fill, Form, ShortBrief, ShortGuideVersion, ShortItem } from './short-types';
+import type { Field, Fill, Form, Pattern, ShortBrief, ShortGuideVersion, ShortItem } from './short-types';
 
 /** The why block (text.json `why`, brief 100) as families: every Alert cause and police call with its variants, the report on its way,
  *  the meter and the glossary words, each with the engine's facts from briefs/100/fable/words.md (Fable's notes on the ledger and the log). */
@@ -97,19 +97,40 @@ const WAYS: Record<string, [string, string[]]> = {
 const FORM: Record<string, Form> = { title: 'title', short: 'short', line: 'line', plate: 'plate' };
 const LIMIT: Record<Form, [number, number]> = { title: [4, 32], short: [6, 56], line: [16, 80], plate: [6, 36], speech: [12, 80], label: [4, 28], note: [6, 40] };
 const field = (id: string, form: Form, key: string, ids: string[]): Field => ({ id, form, words: LIMIT[form][0], chars: LIMIT[form][1], count: 1, fills: fills(key, ids), keep: [], patterns: [] });
-/** Guide /7: the fills today's text carries for who and what (the cause itself) and when it lands stay; a counting plate keeps its countdown. */
+/** Guide /7: the fills today's text carries for who and what (the cause itself) and when it lands stay; a counting plate keeps its countdown. /9: and the level (the meter's head). */
 const KEEP_FILLS = ['who', 'about', 'agent', 'to', 's'];
-const MEANS: Record<string, string> = { who: 'who saw it or makes the report', about: 'whom or what it is about', agent: 'which agent', to: 'where the report goes', s: 'when it lands' };
+const MEANS: Record<string, string> = { who: 'who saw it or makes the report', about: 'whom or what it is about', agent: 'which agent', to: 'where the report goes', s: 'when it lands', alert: 'the level it names' };
 function kept(f: Field, now: string | undefined): Field {
   if (V < 7 || !now) return f;
-  const need = KEEP_FILLS.filter(id => now.includes(`{${id}}`)).map(id => ({ re: `\\{${id}\\}`, flags: '', must: true, why: `keep {${id}}: it says ${MEANS[id]}` }));
+  const need = (V >= 9 ? [...KEEP_FILLS, 'alert'] : KEEP_FILLS).filter(id => now.includes(`{${id}}`)).map(id => ({ re: `\\{${id}\\}`, flags: '', must: true, why: `keep {${id}}: it says ${MEANS[id]}` }));
   const count = f.form === 'plate' && / · \{s\} s$/.test(now) ? [{ re: ' · \\{s\\} s$', flags: '', must: true, why: 'a plate that counts down ends " · {s} s", the seconds to its landing (brief 100)' }] : [];
   return { ...f, patterns: [...need, ...count] };
+}
+/** Guide /9 (Aster's review, 2026-11-07): the /5–/7 police titles named their cause, so the card read "Shots heard · shots were heard" and never said police were coming,
+ *  and brief 100's HUD tests failed on the player's copy. A police title names who or what is coming; the words those tests read are held (tools/game/hostlogic/HostLogic.Why100.cs). */
+const POLICE_TITLE: Pattern = { re: 'police|robots|lockdown|seal', flags: 'i', must: true, why: 'a police title names who or what is coming (Police coming, More police, Robots coming, Lockdown); the cause is the short, under it on the same card' };
+const HL = (test: string) => `brief 100's HUD test reads it (HostLogic.Why100.cs, ${test})`;
+const HELD_9: Record<string, Record<string, { keep?: string; patterns?: Pattern[] }>> = {
+  'alert.gunfire': { line: { patterns: [{ re: '^\\{agent\\} fired at \\{about\\}', flags: '', must: true, why: HL('the loud pin: "The Enforcer fired at the guard"') }] } },
+  'alert.drawn': { short: { keep: '{who} saw {agent}\'s gun' } }, // the seal's short on fail-enforcer-down
+  'alert.down': { short: { patterns: [{ re: '^\\{who\\} .*\\{about\\}', flags: '', must: true, why: HL('the radio: "another guard … the guard … at the Office door", the fills in that order') }] } },
+  'police.body': { title: { keep: 'Police coming' } }, 'police.more': { short: { keep: 'the search goes on' } }, 'police.attack': { short: { keep: '{about} called in an attack' } },
+  'onWay.ways.radio': { plate: { keep: 'Radioing it in · {s} s' } }, 'onWay.ways.walk': { plate: { keep: 'Going to {to} · {s} s' } },
+  'meter.head': { plate: { patterns: [{ re: '^Why it', flags: '', must: true, why: HL('the loud pin: "Why it\'s Alert 2"') }, { re: '\\{alert\\}', flags: '', must: true, why: 'the meter\'s head names the level its list explains' }] } },
+};
+function held(key: string, f: Field): Field {
+  if (V < 9) return f;
+  const h = HELD_9[key]?.[f.id], title = key.startsWith('police.') && f.id === 'title';
+  if (!h && !title) return f;
+  const more = [...(title ? [POLICE_TITLE] : []), ...(h?.patterns ?? [])].filter(p => !f.patterns.some(q => q.re === p.re)); // a fill /7's kept() already holds is held once
+  return { ...f, keep: h?.keep ? [h.keep] : f.keep, patterns: [...f.patterns, ...more] };
 }
 const SHOWN: Record<string, string> = {
   title: 'title: the card and the Journal row', short: 'short: the crucial card\'s dim line with {where} after it, and the Alert meter\'s row', line: 'line: one sentence on Alt, in the Journal, on the meter\'s hover and in the debrief\'s timeline',
   plate: 'plate: over the reporter while the report is on its way, then " · {s} s"',
 };
+/** Guide /9: a police card's title, said where it shows (Aster's review: "Shots heard · shots were heard"). */
+const TITLE_9 = 'title: the police card\'s head, over its short on the same card, and the Journal row: who or what is coming (Police coming, More police, Robots coming, Lockdown), never the cause, which the short gives';
 const SHOWN_7 = 'plate: over the reporter while the report is on its way; a plate that counts down ends " · {s} s", the seconds to its landing, and its six words are the part before';
 type W = { title?: string; short?: string; line?: string; plate?: string; variants?: Record<string, W> };
 
@@ -122,15 +143,15 @@ function causeItems(group: 'alert' | 'police', block: Record<string, W>, facts: 
     const c = block[k]!, [tells, ids] = (V >= 6 && group === 'alert' ? ALERT_6[k] : undefined) ?? facts[k]!;
     const one = (path: string, w: W, label: string): ShortItem => {
       const parts = (['title', 'short', 'line'] as const).filter(f => w[f] !== undefined);
-      return { key: path, where: parts.map(p => SHOWN[p]).join('; '), tells: `${label}: ${tells}`, speaker: null,
-        fields: parts.map(p => kept(field(p, FORM[p]!, k, ids), w[p])), current: Object.fromEntries(parts.map(p => [p, [w[p]!]])), stays: 'The host reads it for every rise of this cause (why.schema.ts).' };
+      return { key: path, where: parts.map(p => V >= 9 && group === 'police' && p === 'title' ? TITLE_9 : SHOWN[p]).join('; '), tells: `${label}: ${tells}`, speaker: null,
+        fields: parts.map(p => held(path, kept(field(p, FORM[p]!, k, ids), w[p]))), current: Object.fromEntries(parts.map(p => [p, [w[p]!]])), stays: 'The host reads it for every rise of this cause (why.schema.ts).' };
     };
     return [one(`${group}.${k}`, c, `${group === 'alert' ? 'Alert' : 'Police'} cause "${k}"`),
       ...Object.entries(c.variants ?? {}).map(([v, w]) => one(`${group}.${k}.variants.${v}`, w, `"${k}", its ${v} variant`))];
   });
 }
 const plain = (key: string, form: Form, text: string, tells: string, ids: string[] = []): ShortItem => ({ key, where: SHOWN[form] ?? form, tells, speaker: null,
-  fields: [kept(field(form, form, key, ids), text)], current: { [form]: [text] }, stays: 'The host reads it (why.schema.ts).' });
+  fields: [held(key, kept(field(form, form, key, ids), text))], current: { [form]: [text] }, stays: 'The host reads it (why.schema.ts).' });
 
 export function whyBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
   V = v;
@@ -148,12 +169,12 @@ export function whyBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
       ...(['1', '2', '3'] as const).map(n => plain(`effect.${n}`, 'line', w.effect[n], `What Alert ${n} sets off (GDD §05, the Handover's dial): ${['robots come to look', 'police come to search, hiding places too', 'the doors lock, police close the exits and the roads shut'][Number(n) - 1]}.`))]),
     brief('why/on-the-way', 'A report on its way: the reporter\'s plate, and the Alert meter', ctx, [
       ...Object.entries(WAYS).map(([k, [tells, ids]]) => ({ key: `onWay.ways.${k}`, where: `${v >= 7 ? SHOWN_7 : SHOWN.plate}; line: on Alt and in the Journal`, tells: `How it travels, "${k}": ${tells}`, speaker: null,
-        fields: [kept(field('plate', 'plate', k, ids), w.onWay.ways[k].plate), kept(field('line', 'line', k, ids), w.onWay.ways[k].line)], current: { plate: [w.onWay.ways[k].plate], line: [w.onWay.ways[k].line] }, stays: 'The host reads it (why.schema.ts).' }) as ShortItem),
+        fields: [held(`onWay.ways.${k}`, kept(field('plate', 'plate', k, ids), w.onWay.ways[k].plate)), held(`onWay.ways.${k}`, kept(field('line', 'line', k, ids), w.onWay.ways[k].line))], current: { plate: [w.onWay.ways[k].plate], line: [w.onWay.ways[k].line] }, stays: 'The host reads it (why.schema.ts).' }) as ShortItem),
       plain('onWay.fix', 'plate', w.onWay.fix, 'Follows a plate the cell can still stop: downing the reporter first drops the report.'),
       plain('onWay.nofix', 'plate', w.onWay.nofix, 'Follows a plate the cell can\'t stop: a tape, a dead screen, a robot\'s ring, a check-in.'),
       { key: 'onWay.stopped', where: 'plate: the pop when a report never lands; line: the Journal', tells: 'The report never landed: its reporter was downed or stopped first.', speaker: null,
         fields: [kept(field('plate', 'plate', 'stopped', []), w.onWay.stopped.plate), kept(field('line', 'line', 'stopped', ['who']), w.onWay.stopped.line)], current: { plate: [w.onWay.stopped.plate], line: [w.onWay.stopped.line] }, stays: 'The host reads it (why.schema.ts).' },
-      plain('meter.head', 'plate', w.meter.head, 'Heads the Alert meter\'s list of every rise so far, newest first (a click or hover on the Alert lamps).', ['alert']),
+      plain('meter.head', 'plate', w.meter.head, `Heads the Alert meter's list of every rise so far, newest first (a click or hover on the Alert lamps)${v >= 9 ? ': it names the Alert now, {alert}, the level the list explains' : ''}.`, ['alert']),
       plain('meter.empty', 'plate', w.meter.empty, 'The meter\'s list at Alert 0, with nothing raised.'),
       plain('meter.start', 'plate', w.meter.start, 'The meter\'s row for an Alert set at the start of the job.', ['alert'])]),
     brief('why/words', 'The why block\'s glossary: reporters who are no person, report points, places', ctx, [

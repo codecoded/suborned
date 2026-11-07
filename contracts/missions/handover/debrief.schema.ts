@@ -13,16 +13,18 @@ const Short = (max: number) => z.string().min(1).max(max).regex(/^[^\n<>]+$/);
 const Frag = (slot: number) => z.string().min(1).max(80).regex(/^[^\n<>.!]+$/, 'a fragment: no full stop, no exclamation mark').describe(`a fragment for a slot of ${slot} characters at its widest fills`);
 const Sentence = z.string().min(1).max(80).regex(/^[A-Z{][^\n<>!]*\.$/, 'one line, a capital, ending in a full stop');
 const Two = (head: number, line: number) => z.strictObject({ head: Frag(head), line: Frag(line) });
+/** A number's fold (brief 099, round 2: the four Latch's page reads besides Trail's): a word or two beside the fold's title, and what the number is. */
+const Fold = z.strictObject({ head: Frag(20).describe('beside the fold\'s title ("Time 5:53"), lower case, as the Trail fold\'s byWhat'), means: Sentence });
 
 /** brief 099, concept A; its rule is the last part of debrief.rule (the text checks walk every other debrief string as a line). */
 export const DebriefPage = z.strictObject({
-  head: z.strictObject({ win: Frag(40), fail: Frag(40) }).describe('the small caps over the headline ({clock}: when the car left, or when the run was lost); the host sets them in capitals'),
+  head: z.strictObject({ win: Frag(40), fail: Frag(40), withdraw: Frag(40) }).describe('the small caps over the headline ({clock}: when the car left, when the run was lost, or when the cell pulled out: the Withdraw order, or Go before Popovic was aboard); the host sets them in capitals'),
   way: z.strictObject({ yours: Frag(16) }).describe('beside the way\'s name (less.briefing.ways) over the start page\'s rows: the way this run took (the pickup if the driver was turned, else the front door)'),
-  how: z.record(code, Frag(24)).describe('a note after a start-page row (book.job.needs.ways), before the time it came true: how it came true, by the log line that made it so (called call.waitress, knocked a takedown, shot guard.down, looped loop.on, cut camera.cut, shot-out fire.camera-dark, in enter.in, paid/helped/pressed/asked turn.<approach>.turned on the driver); taped: the pickup camera recorded the Pay (the row failed); never: a row that never came true'),
+  how: z.record(code, Frag(24)).describe('a note after a start-page row (book.job.needs.ways), before the time it came true: how it came true, by the log line that made it so (called call.waitress, knocked a takedown, shot guard.down, killed takedown.dead, looped loop.on, cut camera.cut, shot-out fire.camera-dark, in enter.in, paid/helped/pressed/asked turn.<approach>.turned on the driver); taped: the pickup camera recorded the Pay (the row failed); never: a row that never came true'),
   numbers: z.strictObject({ time: Frag(10), cash: Frag(10), trail: Frag(10), alert: Frag(10), standing: Frag(10) }).describe('the five numbers\' labels'),
   reasons: z.strictObject({
     time: z.strictObject({ win: Frag(40) }).describe('{clock}: the time to spare against Popovic\'s car leaving at 5:50; a fail\'s reason is next.by[fail][why].time'),
-    cash: z.record(code, Frag(40)).describe('what the money went on, by the turns that landed: help, pay, both, none'),
+    cash: z.record(code, Frag(40)).describe('what the money went on, by the turns that landed: help and pay (one, {who} the person helped or paid), both (two or more, no {who}), none'),
     trail: z.strictObject({ shooting: Frag(40), none: Frag(40), list: Frag(40) }).describe('shooting when it made half the Trail or more ({n} of {trail}); none at 0; list ({list}) the biggest of trail.rows[].short joined'),
     alert: z.strictObject({ none: Frag(40) }).describe('at Alert 0; a rise shows its cause\'s short from the why block, with {where}'),
   }).describe('the one line under each number; Standing\'s is standing.causes above (the run\'s main cause)'),
@@ -32,10 +34,13 @@ export const DebriefPage = z.strictObject({
   }).describe('the Trail explainer, opened from its number as the book\'s fold'),
   city: z.strictObject({ case: Two(40, 40), watch: Two(40, 40), hunt: Two(40, 40), kept: Frag(16), word: Two(40, 40), face: Frag(40) })
     .describe('what the city does now, from the debrief: nextMission.cases ({who} {missions}), areaWatch ({guards} {cameras} {place} {missions}), investigators.hunted ({by}), assets (kept, over the assets line), the word lines ({n}; face: {n} {op}, the Fixer\'s face described)'),
-  beats: z.record(code, Frag(18)).describe('the run along the foot, one word or two under each beat, by the log line that marks it (watched, listened, turned {who}, loop, reroute, call, in, out, rivals, lookout, alert {alert}, taped, vale-out, fight, shots, report, car-seen, away, lost)'),
+  beats: z.record(code, Frag(18)).describe('the run along the foot, one word or two under each beat, by the log line that marks it (watched, listened, turned {who}, loop, reroute, call, in, out, rivals, lookout, alert {alert}, taped, vale-out, fight, shots, report, car-seen, away, lost, withdrew); the end\'s beat also ends the Time fold'),
   next: z.strictObject({ head: Frag(16), by: z.record(code, z.record(code, z.strictObject({ line: Sentence, time: Frag(40) }))) })
     .describe('a fail\'s Next time box and the reason under its Time number, by the fail camera\'s keys (less.failcam): line says what to deal with and why, never the order to give'),
   ways: z.strictObject({ again: Frag(20), new: Frag(20), same: Frag(20), replay: Frag(20), start: Frag(20) }).describe('the buttons at the foot: Try again (new start or same start, its seed after it), watch this run again, back to the start page'),
+  folds: z.strictObject({ time: Fold, cash: Fold, alert: Fold, standing: Fold, rest: Frag(20) })
+    .describe('round 2 (Latch\'s notes): the folds of Time, Spent, Alert and Standing (Trail\'s is trail above); rest: the words of a Trail, Alert or Standing fold\'s last row when its rows do not all fit, after the sum of the rest ("+3")'),
+  and: Frag(5).describe('the word that joins the last two of a list: the Trail reason\'s {list} ("the pay, the loop and her call") and a fold row\'s shooters'),
 });
 export type DebriefPage = z.infer<typeof DebriefPage>;
 

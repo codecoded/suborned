@@ -52,10 +52,13 @@ export const dialoguePlugin: Plugin<State> = {
   builders: [{ key: 'fable', owner: objectives.fable.owner, objective: objectives.fable, schema: agents.fable }],
   critic: { key: 'keel', owner: 'Keel', objective: objectives.keel, schema: agents.keel },
   header: { proposals: 'voice tables' },
+  // `moves` (Fable, 2026-11-07, brief 098's drift ledgers): the hash takes every Handover text schema, which moves most days, and a rule whose result or words
+  // differ is labelled drift only when a declared cause names it (tools/gen/replay-code.ts), as for people, skyline and transit. Without it no declaration
+  // could cover r017–r019's D-2, whose words changed in brief 096 (3794289d) while its result did not.
   code: {
     label: 'tools/dialogue (expand, check), contracts/dialogue, contracts/people, contracts/rules, tools/levels/dialogue',
     hash: dialogueHash, ledger: dialogueLedger, ledgerFile: dialogueLedgerFile,
-    declare: 'bun tools/levels/dialogue/drift.ts declare', record: recordDialogue,
+    declare: 'bun tools/levels/dialogue/drift.ts declare', moves: true, record: recordDialogue,
   },
   async open(path, scope = SCOPES[0]) {
     if (!SCOPES.includes(scope)) throw new Error(`unknown scope ${scope}`);

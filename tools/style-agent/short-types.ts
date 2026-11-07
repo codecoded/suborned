@@ -19,10 +19,14 @@ export type ShortRuleId = z.infer<typeof ShortRuleId>;
  *  payment on tape", a plate with no countdown), and a plate that counts down ends " · {s} s", as brief 100 made it. */
 /** /8: the guard's call and the plain acknowledgements carry conversations.test.ts's banned words (the spill, an envelope, a bonus, a promise, a time such as
  *  "a minute"), and the guard at the café is no longer briefed as "unguarded for about a minute" (the /4 bark/guard-call run wrote the GDD's 60 s into the lines). */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8' } as const;
+/** /9 (Aster's review, 2026-11-07, after host logic ran brief 100's HUD tests on the /5–/7 why words): a police card shows its title over its short, so a police title names
+ *  who or what is coming (Police coming, More police, Robots coming, Lockdown) and the cause goes in the short; the meter's head keeps its level; the words those tests read
+ *  are held (HostLogic.Why100.cs). The debrief page: the 13 keys Latch's page reads that had no item (the four other folds, the withdrawal's head and beat, a killing's
+ *  note, the list's joiner), Spent's help and pay name who ({who}), its both and none told true, and an item's today is what the page shows now, kept where it holds. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 8;
+export const SHORT_NOW: ShortGuideVersion = 9;
 export const shortGuideVersion = (g: Pick<ShortGuide, 'schema'>): ShortGuideVersion => (Number(Object.entries(SHORT_GUIDES).find(([, v]) => v === g.schema)?.[0] ?? 4)) as ShortGuideVersion;
 export const SHORT_RUN = 'suborned.style-short-run/1';
 
@@ -97,7 +101,7 @@ export const ShortBriefSchema = z.object({
 const RuleSchema = z.object({ id: ShortRuleId, kind: z.string(), instruction: z.string(), sources: z.array(z.string()) }).strict();
 const KindSchema = z.object({ use: z.string(), rules: z.array(RuleSchema).min(5) }).strict();
 export const ShortGuideSchema = z.object({
-  schema: z.enum([SHORT_GUIDES[1], SHORT_GUIDES[2], SHORT_GUIDES[3], SHORT_GUIDES[4], SHORT_GUIDES[5], SHORT_GUIDES[6], SHORT_GUIDES[7], SHORT_GUIDES[8]]), game: z.literal('The Suborned'), gdd: z.string(),
+  schema: z.enum([SHORT_GUIDES[1], SHORT_GUIDES[2], SHORT_GUIDES[3], SHORT_GUIDES[4], SHORT_GUIDES[5], SHORT_GUIDES[6], SHORT_GUIDES[7], SHORT_GUIDES[8], SHORT_GUIDES[9]]), game: z.literal('The Suborned'), gdd: z.string(),
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
   kinds: z.object({ bark: KindSchema, why: KindSchema, debrief: KindSchema }).strict(),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()), named: z.array(z.string()), cell: z.array(z.string()),

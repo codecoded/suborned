@@ -120,7 +120,7 @@ describe('end to end on a scratch copy', () => {
     keep('tools/dialogue/check.ts');
     edit('tools/dialogue/check.ts', s => s.replace("out.push({ id: 'D-7', rule: RULES['D-7']!, bad });", "out.push({ id: 'D-7', rule: RULES['D-7']!, bad: [...bad, 'drift-auto test'] });"));
     const before = ledger(), r = cli();
-    expect(r.out).toContain('CHECKER CODE changed fails dialogue'); expect(r.out).toContain('REFUSED'); expect(r.out).toContain('tools/dialogue/check.ts'); expect(r.out).toContain('checker rerun differs from checks.json');
+    expect(r.out).toContain('CHECKER CODE changed fails dialogue'); expect(r.out).toContain('REFUSED'); expect(r.out).toContain('tools/dialogue/check.ts'); expect(r.out).toMatch(/rules whose result differs and no declared cause names: .*D-7/); // dialogue's code moves since 2026-11-07 (Fable): named as the people refusal below names P-3
     expect(r.code).toBe(1); expect(ledger()).toBe(before);
     restore();
   });

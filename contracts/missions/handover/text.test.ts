@@ -185,7 +185,7 @@ describe('tone and names', () => {
   });
   test('no capitalised word mid-sentence other than the cast, the places, the verbs and the agents', () => {
     const ok = new Set(['Inez', 'Popovic', 'Bureau', 'Scout', 'Fixer', 'Tech', 'Enforcer', 'Councillor', 'Council', 'Office', 'Records', 'Civic', 'Police', 'Handover',
-      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'X', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon', 'Security', 'Disable', 'Drive', 'Orbit', 'Walk', 'Mislead', 'Withdraw', 'End']); // Mislead, Withdraw and End: the ring's and the menu's verbs (brief 096); Disable and Drive: briefs 058, 059; Orbit Walk: the street the rival car turns in from (brief 059); X: the cease-fire key H21 teaches (brief 067)
+      'Return', 'Ctrl', 'I', 'F', 'G', 'N', 'Q', 'E', 'X', 'Trail', 'Alert', 'Ask', 'Pay', 'Help', 'Pressure', 'Call', 'Watch', 'Listen', 'Loop', 'Reroute', 'Enter', 'Take', 'Fire', 'Carry', 'Board', 'Go', 'Kill', 'Halcyon', 'Security', 'Disable', 'Drive', 'Orbit', 'Walk', 'Mislead', 'Withdraw', 'End', 'Hero', 'Neutral', 'Menace']); // Mislead, Withdraw and End: the ring's and the menu's verbs (brief 096); Hero, Neutral, Menace: Standing's bands, the game's own names (GDD §01; debrief.standing.bands, the debrief page's Standing fold, brief 099); Disable and Drive: briefs 058, 059; Orbit Walk: the street the rival car turns in from (brief 059); X: the cease-fire key H21 teaches (brief 067)
     const hits: string[] = [];
     for (const s of strings) {
       const toks = s.text.split(/\s+/);
@@ -1866,7 +1866,7 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     for (const c of ['entry.seen', 'entry.reported', 'entry.stopped']) expect(t.silentLogs[c], c).toMatch(/card only/);
   });
   test('a run is noticed, never an Alert on its own (Motive M067-B2): no line says running raises the Alert; the card, the toast and the hint say who noticed and what to do', () => {
-    const hits = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\b(runs?|running|runner)\b/i.test(s.text) && /\balert\b/i.test(s.text)).map((s) => s.path);
+    const hits = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\b(runs?|running|runner)\b/i.test(s.text.replace(/\bthis run\b/gi, '')) && /\balert\b/i.test(s.text)).map((s) => s.path); // "this run": the game played, the debrief page's word (Watch this run), not running
     expect(hits).toEqual(['actions.run.does', 'hints.H12']); // the Run verb and the hint that teaches it: both say a run raises no Alert
     for (const x of [t.actions.run!.does, t.hints.items.H12!.line]) expect(x).toMatch(/raises no Alert/);
     expect(t.cards.items['run.seen']!.result).toBe('{who} noticed {agent} running.');

@@ -73,6 +73,9 @@ describe('the families: every short line in the game, a family per run', () => {
     expect(new Set(keys).size).toBe(keys.length);
     expect([...keys].sort()).toEqual([...live].sort());
     expect(keys.length).toBe(497);
+    // Sky 2026-11-07 ("what is this stupid words at the start of every game?"): the game opens quiet. No start event (its four speakers would ask text.test.ts for
+    // the cut barks), no start bark, and the start log line silent on purpose.
+    expect(text.events.start).toBeUndefined(); expect(live.some(k => k.startsWith('start/'))).toBe(false); expect(text.silentLogs.start).toContain('stupid words');
   });
   test('a bark says what it must tell the player, from the game\'s own data', () => {
     const at = (id: string, key: string) => family(id).items.find(i => i.key === key)!;
@@ -105,16 +108,57 @@ describe('the families: every short line in the game, a family per run', () => {
     for (const k of [...Object.keys(text.why.by).map(x => `by.${x}`), ...Object.keys(text.why.places).map(x => `places.${x}`), 'again', 'effect.3', 'onWay.stopped', 'meter.empty']) expect(keys.has(k), k).toBe(true);
   });
   test('the debrief page: concept A\'s keys from Glyph\'s stand-ins, a row for every Trail cause the engine records, a Next time for every fail the fail camera knows', () => {
-    const items = briefs.filter(b => b.kind === 'debrief').flatMap(b => b.items);
-    const at = (k: string) => items.find(i => i.key === k)!;
-    expect(at('head.win').current.label).toEqual(['The Handover · done at {clock}']); // Glyph's caps, set in capitals by the host
-    expect(at('reasons.time.win').current.note).toEqual(['{clock} to spare']); // Glyph's {left}, as a fill the host has
-    expect(at('next.by.rivals-reach-vale.lookout').current.line).toEqual(['Send their lookout away before the car goes round.']);
+    const items = briefs.filter(b => b.kind === 'debrief').flatMap(b => b.items), glyph = loadShortBriefs(root, 8).filter(b => b.kind === 'debrief').flatMap(b => b.items);
+    const at = (k: string, from = items) => from.find(i => i.key === k)!;
+    expect(at('head.win', glyph).current.label).toEqual(['The Handover · done at {clock}']); // Glyph's caps, set in capitals by the host (/4–/8)
+    expect(at('reasons.time.win', glyph).current.note).toEqual(['{clock} to spare']); // Glyph's {left}, as a fill the host has
+    expect(at('next.by.rivals-reach-vale.lookout', glyph).current.line).toEqual(['Send their lookout away before the car goes round.']);
+    expect(at('head.win').current.label).toEqual([text.debrief.page.head.win]); // guide /9: today is what the page shows now
+    expect(at('next.by.rivals-reach-vale.lookout').current.line).toEqual([text.debrief.page.next.by['rivals-reach-vale'].lookout.line]);
     expect(at('next.by.rivals-reach-vale.lookout').tells).toContain('Deal with their lookout first.'); // the fail camera's tip
     expect(at('trail.law').tells).toContain('+2 for firing on someone, +2 if they are hit, +2 if they go down'); // the rulebook's values
     const nexts = items.filter(i => i.key.startsWith('next.by.')).length, tips = Object.entries(text.less.failcam.tip as Record<string, object>).filter(([k]) => k !== 'engine-error').reduce((n, [, v]) => n + Object.keys(v).length, 0);
     expect(nexts).toBe(tips);
     expect(items.filter(i => i.key.startsWith('trail.rows.')).map(i => i.key.slice(11))).toContain('take-unturned');
+  });
+  test('guide /9: every key Latch\'s page reads has an item; Spent names who; the other folds, the withdrawal, a killing and the joiner have words', () => {
+    const items = briefs.filter(b => b.kind === 'debrief').flatMap(b => b.items), at = (k: string) => items.find(i => i.key === k)!;
+    // a key's path on the page, as apply writes it: one field is the key itself, more are keys under it
+    const paths = new Set(items.flatMap(i => i.fields.length === 1 ? [i.key] : i.fields.map(f => `${i.key}.${f.id}`)));
+    const stand = join(root, 'unity/Assets/Suborned/Resources/Debrief099/standins.json'); // Latch's marked stand-ins, until the page has every key (then the file can go)
+    if (existsSync(stand)) {
+      const leaves = (o: unknown, p: string[] = []): string[] => typeof o === 'string' ? [p.join('.')] : Object.entries(o as object).flatMap(([k, v]) => leaves(v, [...p, k]));
+      const read = leaves(JSON.parse(readFileSync(stand, 'utf8'))).filter(k => k !== 'note' && !k.startsWith('missions.')); // missions.one/many: no longer read (Latch, round 2)
+      expect(read.filter(k => !paths.has(k))).toEqual([]);
+    }
+    for (const k of ['help', 'pay']) {
+      const f = at(`reasons.cash.${k}`).fields[0]!;
+      expect(f.fills.map(x => x.id), k).toEqual(['who']); expect(f.patterns.some(p => p.must && p.re === '\\{who\\}'), k).toBe(true);
+    }
+    expect(at('reasons.cash.both').fields[0]!.fills).toEqual([]); // two or more: the host gives no {who}
+    expect(at('reasons.cash.both').tells).toContain('two Pays');
+    expect(at('folds.time').fields.map(f => f.id)).toEqual(['head', 'means']);
+    expect(at('head.withdraw').tells).toContain('Go pressed before Popovic was aboard');
+    const old = loadShortBriefs(root, 8).filter(b => b.kind === 'debrief');
+    expect(old.some(b => b.id === 'debrief/folds')).toBe(false); // a /4–/8 run rebuilds with the families it ran with
+    expect(old.flatMap(b => b.items).find(i => i.key === 'reasons.cash.help')!.fields[0]!.fills).toEqual([]);
+  });
+  test('guide /9: a police title names who or what is coming, the meter keeps its level, and the words brief 100\'s HUD tests read are held', () => {
+    const items = briefs.filter(b => b.kind === 'why').flatMap(b => b.items), field = (k: string, id: string) => items.find(i => i.key === k)!.fields.find(f => f.id === id)!;
+    const titles = items.filter(i => /^police\.[a-z-]+$/.test(i.key)).map(i => i.fields.find(f => f.id === 'title')!);
+    expect(titles.length).toBeGreaterThan(10);
+    for (const t of titles) expect(t.patterns.some(p => p.must && new RegExp(p.re, p.flags).test('Police coming') && !new RegExp(p.re, p.flags).test('Shots heard')), t.id).toBe(true);
+    expect(field('police.body', 'title').keep).toEqual(['Police coming']); expect(field('police.more', 'short').keep).toEqual(['the search goes on']);
+    expect(field('onWay.ways.radio', 'plate').keep).toEqual(['Radioing it in · {s} s']);
+    const head = field('meter.head', 'plate').patterns;
+    expect(head.filter(p => p.re === '\\{alert\\}')).toHaveLength(1); expect(head.some(p => p.re === '^Why it')).toBe(true);
+    const p = family('why/police'), set = today(p);
+    expect(issues(p, edit(set, 'police.body', ['Body found'], 'title'))).toContain('a police title names who or what is coming');
+    expect(issues(p, set)).toBe('');
+    const old = loadShortBriefs(root, 8).filter(b => b.kind === 'why').flatMap(b => b.items);
+    expect(old.find(i => i.key === 'police.body')!.fields.find(f => f.id === 'title')!.keep).toEqual([]); // the /5–/7 runs rebuild as they ran
+    expect(loadShortGuide(root, 8).kinds.why.rules[0]!.instruction).not.toContain('who or what is coming');
+    expect(guide.kinds.why.rules[0]!.instruction).toContain('who or what is coming');
   });
   test('the prompt shows each item once with its limits, fills and facts, and the speaker\'s voice once', () => {
     const p = shortPrompt('generate', guide, family('bark/noticed'), null, null);

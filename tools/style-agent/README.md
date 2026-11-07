@@ -33,10 +33,10 @@ Since 2026-11-07 (Sky, asked whether the loop covers more than the Inez conversa
 - **why**: a cause of the `why` block with its fills: title, short, line, plate; held to `why.schema.ts` at the widest fills.
 - **debrief**: the debrief page's words (brief 099, concept A), Glyph's stand-ins by key with the data each one shows; written to `debrief.page`.
 
-Motive's rubric for each kind (`short-guide.ts`): USEFUL (tells the player something they can use; the cut opening barks are the failing example), TRUE (to what the engine did), PLAIN (everyday words, never a report's tone), SHORT (the kind's limit), NAMES (people as the player knows them), VOICE (the speaker's, or the book's). Guide /2: Motive also sees its own last findings, and the reviser changes only the lines they name.
+Motive's rubric for each kind (`short-guide.ts`): USEFUL (tells the player something they can use; the cut opening barks are the failing example), TRUE (to what the engine did), PLAIN (everyday words, never a report's tone), SHORT (the kind's limit), NAMES (people as the player knows them), VOICE (the speaker's, or the book's). Guide /2: Motive also sees its own last findings, and the reviser changes only the lines they name. Guide /9 (`short-types.ts` lists every version): a police title names who or what is coming (Police coming, More police, Robots coming, Lockdown) and the cause goes in its short; the meter's head keeps its level; the why words brief 100's HUD tests read are held word for word or by pattern (`HostLogic.Why100.cs`); a debrief item's today is what the page shows now, kept where it holds; and `debrief/folds` writes the keys Latch's page reads that had no item.
 
 ```sh
-bun tools/style-agent/cli.ts shorts              # the 41 families: items and lines each
+bun tools/style-agent/cli.ts shorts              # the 42 families: items and lines each
 bun run style:run bark/end $LIVE                 # one family
 bun run style:chain --short $LIVE [--kind bark]  # every family not yet accepted
 bun run style:replay runs/style-agent/short/<run>   # the same replay and verify as a conversation
@@ -45,7 +45,7 @@ bun tools/style-agent/cli.ts apply [--dry]       # each family's accepted lines 
 
 Runs are in `runs/style-agent/short/<time>-<family>/`; they share the sources store.
 
-`apply` writes every accepted family each time, so a family put back with `--restore` must be named again on every later `apply`: give the whole list in one call (`--restore a,b,c`). Calling it once per family leaves only the last one restored. The families restored on 2026-11-07 are listed in `briefs/099/fable/short-lines.md`.
+`apply` writes every accepted family each time, so a family put back with `--restore` must be named again on every later `apply`: give the whole list in one call (`--restore a,b,c`). Calling it once per family leaves only the last one restored. The families restored on 2026-11-07 are listed in `briefs/099/fable/short-lines.md`. After `apply`, export the text to the player (`bun tools/sim/unity.ts --tree`) and run `bun run hostlogic`: the HUD's and the debrief page's tests read the words there, and `contracts/missions/handover/text.test.ts` holds rules the loop does not.
 
 ## Files
 
