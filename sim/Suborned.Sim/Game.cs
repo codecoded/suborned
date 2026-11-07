@@ -183,7 +183,7 @@ namespace Suborned.Sim
             else Note("start", $"{Cap(ValeName)} is inside. His official car will collect him later. The city is already moving.");
             CarEpochStep(); // engine 0.33.1 (car.footprint): the cars standing at the start (the crowd's legs built at load go round them)
             if (!Range) SeedStart(); // brief 080 (GameSeed.cs): the crowd's phases, the patrol's, the rivals' posts; nothing at seed 0
-            InitTraffic(); // brief 098 step 1 (GameTraffic.cs): passing cars, when the start sets cars; nothing otherwise
+            InitTraffic(); BodyStep(); // brief 098 step 1 (GameTraffic.cs): passing cars, when the start sets cars; nothing otherwise; L9: the bodies laid at the start (GameBodies.cs)
         }
 
         public Person PersonByRole(string role)
@@ -244,7 +244,7 @@ namespace Suborned.Sim
                 if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
                 if (op.Walk != null)
                 {
-                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm);
+                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm) + OpLay(op); // brief 098 L9: his walk keeps the lay the law gave it
                     if (op.Running) RunAttention(op);
                     if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
                 }
@@ -271,7 +271,7 @@ namespace Suborned.Sim
             // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no
             // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
             if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking && Vale != ValeAt.Lent && Vale != ValeAt.Out) GivesUp(); // brief 096 (car.box): a boxed official car stays: closed-in (GameKerb.cs)
-            FightEnds(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission
+            FightEnds(); BodyStep(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission; brief 098 L9: every body laid (GameBodies.cs)
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
         }
 
@@ -324,7 +324,7 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- where things are
 
-        public (Pt pos, Pt facing, string phase)? GuardPose()
+        (Pt pos, Pt facing, string phase)? GuardPoseRaw() // brief 098 L9: GuardPose (GameBodies.cs) lays it
         {
             if (GuardDown) return null;
             if (GuardHeld) return (heldPos, heldFacing, heldPhase);
@@ -380,14 +380,14 @@ namespace Suborned.Sim
         /// car.serviceFacing parked in the service bay, along the road at the drive's mouth, and the way it was going where it stopped.
         /// Never null now; nullable for the hosts that read it so.</summary>
         public Pt? CarHeading() => OfficialHeading();
-        public Pt? DriverPos()
+        Pt? DriverPosRaw() // brief 098 L9: DriverPos (GameBodies.cs) lays it
         {
             if (Driver.Down) return null; if (Lent) return LentDriverPos(); // engine 0.42.0 (car.lend): out of his car, walking off
             var car = CarPos();
             if (valeDriveStart < 0 && car == blockPath.Points[0]) return S.Stand(S.CarDriver); // brief 059: on duty by his car at the pickup until Vale is in
             return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car (engine 0.33.1: the road side)
         }
-        public Pt? ValePos()
+        Pt? ValePosRaw() // brief 098 L9: ValePos (GameBodies.cs) lays it
         {
             switch (Vale)
             {
@@ -399,18 +399,18 @@ namespace Suborned.Sim
                 default: return null;
             }
         }
-        public Pt? PersonPos(Person p)
+        Pt? PersonPosRaw(Person p) // brief 098 L9: PersonPos (GameBodies.cs) lays the cast
         {
             if (p.Down) return null;
             if (CrewOfPerson(p) is CrewMember cm) return !cm.Fight && cm.OnFoot ? MemberPose(cm)?.pos : null; // engine 0.33.0: a rival on the street (aboard or in the final fight, no takedown target)
             if (ServerOf(p) is RoundsData.Server sv) return RoundPoseAt(sv, EvRead(sv), Tick).Pos; // brief 022: a server's round
             if (p == Inez) return S.Stand(Inez.Place);
-            if (p == Driver) return DriverPos();
-            if (p == GuardP) return GuardPose()?.pos;
-            return ValePos();
+            if (p == Driver) return DriverPosRaw();
+            if (p == GuardP) return GuardPoseRaw()?.pos;
+            return ValePosRaw();
         }
 
-        public (Pt pos, Pt facing)? PatrolPose()
+        (Pt pos, Pt facing)? PatrolPoseRaw() // brief 098 L9: PatrolPose (GameBodies.cs) lays it
         {
             if (PatrolDown) return (patrolDownAt, new Pt(0, 0));
             if (PatrolUnit() is Unit pu && UnitPose(pu) is var up && up.HasValue) return up.Value; // brief 013: answering an alarm
@@ -460,15 +460,15 @@ namespace Suborned.Sim
             for (int k = 0; k < SecGuns.Length; k++) if (!SecGuns[k].Down) return SecOfficerPose(k);
             return null;
         }
-        const long SecFileMm = 1500; // the officers' spacing in file: placement only (no rule reads it), until Pulse's hostile spec places them
-        public (Pt pos, Pt facing)? SecOfficerPose(int k)
+        long SecFileMm => R.BodiesOn ? R.BodyCrewCm * 10L : 1500; // the officers' spacing in file (mm); brief 098 L9 (groups spread): bodies.crew apart, was 1.5 m
+        (Pt pos, Pt facing)? SecOfficerPoseRaw(int k) // brief 098 L9: SecOfficerPose (GameBodies.cs) lays it
         {
             if (Tick < SecurityArrives || SecGuns[k].Down) return null;
             if (!secJoined[k] && secDisp.TryGetValue(k, out var kd)) return DispPose(kd, secSpeed, Tick); // brief 027 F2 (lab kite): closing on a shooter
             if (secJoined[k]) { var h = HostileOf(SecGuns[k].Id)!; var p = h.Pos(Tick); return (p, Car - p == new Pt(0, 0) ? new Pt(100, 0) : Car - p); } // joined the loud fight: faces the car
             long mm = (long)(Tick - SecurityArrives) * secSpeed - k * SecFileMm, end = Math.Max(0, securityPath.Length - k * SecFileMm);
             if (mm < 0) mm = 0;
-            if (mm >= end) return (securityPath.At(end), Back(securityPath));
+            if (mm >= end) return (securityPath.At(end), SectorFace(Back(securityPath), k)); // brief 098 L9: each faces his own sector
             return (securityPath.At(mm), securityPath.Heading(mm));
         }
 

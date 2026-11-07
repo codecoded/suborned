@@ -109,23 +109,33 @@ public class RedlineTests
         Assert.Throws<FormatException>(() => JNode.Parse("{\"a\": -}"));
     }
 
+    /// <summary>E7's cultures, and its scenarios cut into this many parts: each part one test case (one shard of `bun run sim:test` at most; brief
+    /// 098 L9, Keel: the whole set run twice per culture took 10-13 minutes as one shard sharing the cores, over the 10-minute rule).</summary>
+    static readonly string[] E7Cultures = { "sv-SE", "ar-SA", "fa-IR", "tr-TR" };
+    const int E7Parts = 16;
+    public static IEnumerable<object[]> E7PartsData() { for (int k = 0; k < E7Parts; k++) yield return new object[] { k }; }
+
+    /// <summary>Every scenario's report is the same in every culture: each part's scenarios (every E7Parts-th, from `part`) played once in the
+    /// invariant culture and once in each of E7Cultures, compared report by report. Together the parts cover every scenario in every culture.</summary>
     [Theory]
-    [InlineData("sv-SE")] [InlineData("ar-SA")] [InlineData("fa-IR")] [InlineData("tr-TR")]
-    public void E7_every_report_is_the_same_in_every_culture(string culture)
+    [MemberData(nameof(E7PartsData))]
+    public void E7_every_report_is_the_same_in_every_culture(int part)
     {
         string All()
         {
-            var parts = new List<string>();
-            foreach (var s in Scenarios.All) { var r = Scenarios.Run(I, s); parts.Add(Report.Json(s.Id, r.G, r.Checks, true)); }
+            var parts = new List<string>(); int k = 0;
+            foreach (var s in Scenarios.All) { if (k++ % E7Parts != part) continue; var r = Scenarios.Run(I, s); parts.Add(Report.Json(s.Id, r.G, r.Checks, true)); }
             return string.Join("\n", parts);
         }
         var keep = Thread.CurrentThread.CurrentCulture;
         try
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture; var inv = All();
-            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture); var other = All();
-            if (inv != other)
+            Assert.True(inv.Length > 0, $"part {part} has scenarios");
+            foreach (var culture in E7Cultures)
             {
+                Thread.CurrentThread.CurrentCulture = new CultureInfo(culture); var other = All();
+                if (inv == other) continue;
                 var a = inv.Split('\n'); var b = other.Split('\n'); int i = 0; while (i < a.Length && i < b.Length && a[i] == b[i]) i++;
                 int j = 0; while (j < a[i].Length && j < b[i].Length && a[i][j] == b[i][j]) j++;
                 Assert.Fail($"{culture} differs: …{a[i].Substring(Math.Max(0, j - 60), Math.Min(120, a[i].Length - Math.Max(0, j - 60)))}");

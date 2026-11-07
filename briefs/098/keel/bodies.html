@@ -1,0 +1,143 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Brief 098, law L9 Bodies (Keel, engine 0.46.0)</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1080px;margin:2em auto;padding:0 1.2em;color:#1d232b;background:#fbfaf6}
+h1{font-size:1.6em;margin-bottom:.2em}h2{margin-top:1.8em;border-bottom:2px solid #d9d2c3;padding-bottom:.2em}h3{margin-top:1.3em}
+table{border-collapse:collapse;margin:.6em 0 1em;font-size:13.5px}td,th{border:1px solid #d9d2c3;padding:3px 7px;text-align:left;vertical-align:top}th{background:#efe9dc}
+td.s{font-size:12px;color:#444}.ok{color:#1f6b3a;font-weight:600}.no{color:#a33;font-weight:600}.note{background:#f1ede2;border-left:4px solid #b9ab8a;padding:.5em .9em;margin:.8em 0}
+code{background:#efe9dc;padding:0 .25em;border-radius:3px;font-size:12.5px}ul{padding-left:1.3em}li{margin:.2em 0}
+</style></head><body>
+<h1>Brief 098, law L9: Bodies</h1>
+<p>Keel, 2026-11-07, engine <code>suborned.sim/0.46.0</code>, branch <code>t3/simulation-body-spacing</code>. Sky (2026-11-07, three guards inside one another on a call box and the rival crew on one spot): <i>"our people bunch up together too much - we need to think about real tactics from this, and ensuring NPC's don't overlap each, they have real boundaries."</i></p>
+<div class="note"><b>In short.</b> Every person on the street has a body, and in no tick of the law's tests or of 315 probe runs across the dial did two bodies on their feet stand inside two radii. A stop holds one person and the next queues or stands beside it. Guards sharing a post take crew spots 2.5 m out, each facing his own sector. The rival crew at the Office front spreads 2.5 m apart, fanned over the street. The game's balance barely moves: wins by dial setting change by &minus;1.3 to +1.7 points. The tick costs about 0.1 ms at the dial's x4 (it was 0.02&ndash;0.03). Mission record c057 holds. Some calls are Sky's; they are listed at the end.</div>
+
+<h2>How the law works</h2>
+<h3>Bodies</h3>
+<ul>
+<li><b>Who has one:</b> everyone upright on the street: the cast, the patrol, the cell, the rival crew, fight bodies, the response unit's officers, police units and the city's people, the dial's added guards among them. A body on the ground stays where it fell. Anyone carried, inside, or in a car is off the street.</li>
+<li><b>Size</b> (rulebook <code>bodies</code>, marked proposed): radius 30 cm, so no two bodies on their feet stand closer than 60 cm centre to centre. That equals <code>fight.spacing.clear</code> (60 cm) and the crowd occlusion's body width. The rulebook refuses a <code>fight.spacing.clear</code> under two radii, so the fight's spacing and the law cannot disagree.</li>
+<li><b>When:</b> at the end of every tick, after every rule has moved its people, and once at the start. Each body's offset from the place its own rules give it (its lay) is stored and read by its pose through the next tick: CrowdPos, MemberPose, Hostile.Pos, SecOfficerPose, UnitPose, GuardPose, DriverPos, ValePos, PersonPos, PatrolPose and an operative's Pos. Rules and host read the same spaced bodies. A lay belongs to the plan it was laid on: when a rule plans again (a new walk, a stop, a fright) it plans from where the body stands.</li>
+<li><b>Order and the guarantee:</b> tenets are laid first and never moved, then the armed and the cell, then the city's people. Within each, those standing come before those walking. Every body keeps clear of where every other stood last tick, so waiting where it stood always fits and the law is never forced into an overlap. The only exception is two tenets placed together; that is counted and came to 0. Integer cm, fixed candidate lists, a fixed order, a 1 m spatial hash, no floats and no general solver: the same seed and orders lay the same bodies, and lays are in the checkpoint hash.</li>
+</ul>
+<h3>Space</h3>
+<ul>
+<li>The city's people keep <b>personal space</b> by choice where there is room: 80 cm walking, and 80 cm from anyone standing. In a queue at one stop it is the queue's step, 70 cm. When there is no room they fall back to two radii.</li>
+<li>The cell and the armed are on business and keep two radii, as the fight's spacing does.</li>
+<li><b>Moving:</b> each body heads for its own place. If that isn't clear it takes the first clear goal from a fixed list: hold its lay, a stop's formation, a sidestep, rings round its place. It moves at 4 m/s when it must make room now, at a walk to a spot it chose, and eases back to its own place at 0.6 m/s. It slides round whoever is in the way, up to 90° off its course.</li>
+<li>A body behind its own place follows its own walk, not a straight line through walls. The patrol follows its reroute and alarm walks the same way.</li>
+<li><b>Held:</b> a body held for a second (it stood still or slid to and fro) does one of two things. If two bodies hold each other, the one with the lesser right of way gives way: the city's people before the armed, then the law's order. It backs 2 m down the way it came for 2 s. Otherwise it walks round, on the walk grid, with the cells of the bodies near it shut. A way much longer than the straight line is refused at first, as in a queue at a door, and each second held allows 4 m more. <b>The last resort:</b> a body that gets nowhere for 10 s, whatever it tries, rejoins its own place. It is counted (<code>BodyRejoins</code>). On today's settings it happened once in 45 probe runs, and it is listed below.</li>
+</ul>
+<h3>Places</h3>
+<ul>
+<li><b>A stop takes one body.</b> The next queues behind it in 70 cm steps, up to five, then stands in an arc beside and behind it.</li>
+<li>A <b>chair</b> holds one sitter from the moment they sit until they leave. A person due in a chair someone still sits in waits beside it.</li>
+<li>A <b>door</b> lets one person out of a refuge at a time, a queue's step apart: a crowd coming back out of shelter files out instead of appearing on top of itself.</li>
+<li><b>Guards sharing a post point.</b> The dial's added guards still take separate points before any share. When two share, the one standing nearest the point holds it. Each other guard takes the nearest free crew spot in sight of it (no wall between) and keeps it while he stays: 250 cm out at &plusmn;60&deg;, &plusmn;120&deg; and 180&deg;, then an outer ring at 500 cm staggered between those. Each faces his spot's sector: &plusmn;45&deg;, &plusmn;90&deg;, behind. When no spot is free he keeps personal space nearby.</li>
+</ul>
+<h3>Groups spread, with tactics</h3>
+<ul>
+<li><b>The rival crew drawn to the Office front</b> stands 250 cm apart along one line (it was 90 cm). The middle man faces out from the front to the street, the next ones turn 45&deg; out to their side, the flanks 90&deg;.</li>
+<li><b>The response unit</b> at the end of its walk and <b>police units</b> at their destination stand at crew spots round the place, each facing his own sector.</li>
+<li><b>A crowd round a scene</b> (people who come to look at a body or a fight) has no special formation. Each stands where its own rules send it and the law rings them round the scene by personal space, 80 cm apart where there is room and never closer than two radii.</li>
+<li><b>Fights</b> keep brief 081's rules: the kite's step off the line, cover and <code>fight.spacing</code>. A man stepping off the line of fire is the fight's.</li>
+</ul>
+<h3>The tenets, which win where they conflict</h3>
+<ul>
+<li>Inez and the door guard's meeting ring: he stands at it and the law never moves him off it.</li>
+<li>The server at a table, and anyone seated, is a tenet. The driver at his car and the cast standing at their places are never moved.</li>
+<li>Vale's walk: standing at his place he is never moved; walking, he steps round people as the armed do. Vale held is a metre off the Enforcer and never laid apart, the escort grip. The carried go wherever the carrier goes.</li>
+<li>The cell's orders: an operative's walk waits for his body, so it ends where he arrives. If whoever holds its end lets him come no nearer, it ends within two radii and a step (1.4 m), for example when a car has pulled in on it. An operative at work, or leading Vale, is a tenet.</li>
+<li>The takedown's reach is unchanged. The target stands where the law laid them, and a player's takedown out of reach walks in, as before.</li>
+</ul>
+
+<h2>Tests</h2>
+<table><tr><th>What</th><th>Command</th><th>Result</th></tr>
+<tr><td>The law's tests: no overlap at any tick (5 routes &times; 2 seeds &times; today, people 32/64, guards 32/64, cars 8); stops form queues, arcs and crew spots; the dial's guards take separate posts and settle apart (judged at rest, and at least 80 % of looks at rest); the rival crew's spread and sectors; the tenets; walks end where sent; same seed, same bodies; with the law off nothing is laid</td><td><code>dotnet test sim/Suborned.Sim.Tests -c Release --filter FullyQualifiedName~BodiesTests</code></td><td class=ok>14/14</td></tr>
+<tr><td>One hop as a law, across 6 routes &times; 4 seeds (replaces N82)</td><td><code>&hellip; --filter FullyQualifiedName~OneHopTests</code></td><td class=ok>1/1</td></tr>
+<tr><td>Every scenario, its checks and its replay, in one process</td><td><code>suborned-sim check</code></td><td class=ok>472/472 (47 s)</td></tr>
+<tr><td>Every scenario's checkpoints, in one process</td><td><code>suborned-sim hashes</code></td><td class=ok>exit 0</td></tr>
+<tr><td>The C# suite, sharded by class (ScenarioTests by method), 30 shards, 8 at a time</td><td><code>dotnet test &hellip; --filter FullyQualifiedName~&lt;Class&gt;.</code></td><td>29/30 shards pass. The 30th is <b>RulesTests.Q4GridMatchesTheTypeScriptEvaluator(mercenary, help)</b>, which <b>fails at HEAD too</b> (0.45.0's one-visit Help against the TypeScript grid; Motive). Rerun on the final engine (b2ea7c46) with the same result. RedlineTests passed but took 10&ndash;13 minutes sharing the cores with 7 other shards (10 m 19 s on the final run); it should be split by test if it must stay under 10 minutes</td></tr>
+<tr><td>The independent body probe: every adaptive plan &times; 3 seeds &times; 7 settings, every tick</td><td><code>suborned-sim dial bodies</code></td><td class=ok>315 runs, 0 pairs inside two radii</td></tr>
+<tr><td>Overflow checks: every scenario on a Debug build</td><td>Debug probe (<code>CheckForOverflowUnderflow</code>)</td><td class=ok>0 overflows (a cell-key cast fixed)</td></tr>
+<tr><td>Rulebook (the <code>bodies</code> section)</td><td><code>bun test contracts/rules</code></td><td class=ok>116/116</td></tr>
+<tr><td>The mission check's tests, the headless Handover among them</td><td><code>bun test tools/missions/check/check.test.ts</code></td><td class=ok>36/36</td></tr>
+<tr><td>The bun tests that play the engine</td><td><code>bun test tools/sim tools/simview tools/missions contracts/missions tools/route-diff tools/game/closing-hash.test.ts tools/game/proofdelta.test.ts</code></td><td>All pass but 6, every one failing at HEAD too or needing a file this worktree lacks: <b>text.test</b> (four traffic log codes with no line; the opening barks removed in 433cc692); three <b>site</b> tests that need <code>out/people/harbour-district.people.json</code> (not generated here); <b>route-diff</b> (route-a-board loses at HEAD too). simview's dump and <code>Game.ClosingHash</code> agree with c057</td></tr>
+<tr><td>Types</td><td><code>bun run typecheck</code></td><td class=ok>clean</td></tr>
+</table>
+
+<h2>Scenarios and recorded runs</h2>
+<p>Each rewrite states the case's rule as the law now plays it; none is pinned to win one replay.</p>
+<table><tr><th>Case</th><th>Change</th><th>Why</th></tr>
+<tr><td>N12</td><td>rewritten (ScenariosBodies098.cs)</td><td>At a stop a person stands on its place, or beside it where the law lays them when another holds it (a queue, an arc, a crew spot, within that spread), and no two on their feet stand inside two radii.</td></tr>
+<tr><td>N49</td><td>rewritten (ScenariosBodies098.cs)</td><td>The Enforcer waits where the timetable has guard 57 cross and takes him when he is in the camera's view and in reach, as the law lays him (the shift change's press can hold him a moment), not at the timetable's tick.</td></tr>
+<tr><td>N58</td><td>rewritten (ScenariosBodies098.cs)</td><td>The Enforcer's walk to Vale waits for his body: it meets the shift change's file in the passage between the official car and the Office. The case waits for him to arrive, not for a tick.</td></tr>
+<tr><td>N70, N83, N87</td><td>rewritten</td><td>The target stands where the law laid them (round the door in the 6:30 group's press). The Enforcer closes the last metres (<code>CloseOn</code>, <code>Run.Takedown</code>). N87 asks for two or more reports of the one takedown (was three: the clerk came out where the group's bodies stood, now beside it).</td></tr>
+<tr><td>N68</td><td>in part retired</td><td>The clerks stepping out together are laid round the door, and clerk 9 now steps out 1.6 m from the body, beyond the near sense. Nobody walks to look, so the "Collection was modified" check is no longer reached by these orders (the fix, stepping reports by index, stays in the engine). The finding after the chime, the Mercenary's report at Alert 2 and the seal's origin are kept.</td></tr>
+<tr><td>N82</td><td>retired, replaced by a law test</td><td>Under the law the clerks walk past guard 74's knockout and see it, so the pinned chain no longer forms. The rule (one hop: someone told never retells) is held across plans and seeds in OneHopTests.</td></tr>
+<tr><td>N81</td><td>rewritten</td><td>Vale is told face to face at the moment of the knockout, which now lands a moment after 5:55 (the Enforcer stands a step off guard 74 and closes), not at a pinned 5:55.0.</td></tr>
+<tr><td>N99, N101</td><td>rewritten</td><td>The drawn crew spreads to cover its sectors and may hold rather than break, which counts for nothing against them either way. The response unit's officers stand spread, so whichever officer sees the weapon first is the move's (was security-1).</td></tr>
+<tr><td>N176</td><td>rewritten</td><td>A police unit's second officer now stands a crew's spread off the scene and may start a second fight: the holster follows the fight that went quiet last.</td></tr>
+<tr><td>D11b</td><td>rewritten</td><td>No body walks through another: with the playground's gap off, the Scout walks up to the guard and stops two radii off.</td></tr>
+<tr><td>N157, N158, N163</td><td>rewritten</td><td>Each officer faces his own sector, so the spot is chosen inside both officers' watch. The crew member's own place is back at once and his body follows round whoever stands in the way. The Tech fires from beyond every member's ring, since the crew stands spread.</td></tr>
+<tr><td>ND-1</td><td>rewritten</td><td>One the law laid aside noticed the body where she stood when she noticed. Whether a clerk stepping out has her back to it depends on the moment; the near sense behind her back is ND-2's.</td></tr>
+<tr><td>DP1 (drive session)</td><td>re-recorded</td><td>Its pinned session replays on 0.46.0.</td></tr>
+<tr><td>N19, N134, BOARD-REACH and the other 450-odd</td><td>kept</td><td>They still hold.</td></tr>
+<tr><td>Route scripts</td><td>recomposed from their plans</td><td>route-a, route-a-disable, route-a-pressure, route-b, route-g, careless-g-disable and careless-scout-idles-pickup re-time; seven more compose to the same ticks. Fourteen plans do not compose. <b>Thirteen fail at HEAD too</b> (the Mislead on the rival car retired by brief 096; fight endings the plans wait for), which is Waymark's to re-plan. <b>route-g-kill</b> won at HEAD with the Enforcer on 1 health, carrying Vale and not firing; under the law he falls one shot before the crew breaks. Its script is kept and not tuned to win.</td></tr>
+<tr><td>Mission record</td><td>c056, then c057 (HOLDS)</td><td>MC-0 23/23 and MC-1 to MC-15 pass. Every band is as at c055 except B-11 quiet-b, now green and taken off the known-red list. L96 drive-round 11 % (10.5 % at c055). c057 is c056 with the break fix below.</td></tr>
+<tr><td>SeedTests.NoFighterJumps</td><td>engine fixed (it predates the law)</td><td>route-g seed 9 on the recomposed script: rival-4 jumped 2.75 m when the crew broke. The broken man's running pace was set before his place was read, and his place is a function of time and pace along the walk he was on, so it jumped to the walk's end. He now leaves from where he stands and takes the pace after. This moves SQ2-CLOSES and four Handover route replays; check stays 472/472.</td></tr>
+</table>
+
+<h2>Bands before and after</h2>
+<p>The dial sweep: 15 adaptive plans &times; 20 seeds per setting (2,100 runs each side). Before is the base commit 433cc692 (engine 0.45.0), after is this branch, with the same plans and seeds. Evidence: <code>bodies-sweep.json</code>.</p>
+<table><tr><th>Setting</th><th>Wins before</th><th>Win % before</th><th>Wins after</th><th>Win % after</th><th>&Delta; points</th><th>Fails before (most first)</th><th>Fails after</th></tr>
+<tr><td>unset</td><td>128/300</td><td>42.7</td><td>126/300</td><td>42.0</td><td>-0.7</td><td class=s>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12</td><td class=s>rivals-reach-vale 78, entry-seen-camera 40, closed-in 28, enforcer-down 13</td></tr>
+<tr><td>people=32</td><td>122/300</td><td>40.7</td><td>120/300</td><td>40.0</td><td>-0.7</td><td class=s>rivals-reach-vale 80, entry-seen-camera 28, enforcer-down 24, sealed 24</td><td class=s>rivals-reach-vale 78, entry-seen-camera 31, sealed 26, closed-in 22</td></tr>
+<tr><td>people=64</td><td>105/300</td><td>35.0</td><td>101/300</td><td>33.7</td><td>-1.3</td><td class=s>rivals-reach-vale 105, enforcer-down 28, sealed 25, closed-in 19</td><td class=s>rivals-reach-vale 101, enforcer-down 25, sealed 25, closed-in 22</td></tr>
+<tr><td>guards=32</td><td>112/300</td><td>37.3</td><td>117/300</td><td>39.0</td><td>+1.7</td><td class=s>rivals-reach-vale 95, entry-seen-camera 39, closed-in 23, vale-leaves 14</td><td class=s>rivals-reach-vale 96, entry-seen-camera 40, closed-in 23, vale-leaves 11</td></tr>
+<tr><td>guards=64</td><td>102/300</td><td>34.0</td><td>103/300</td><td>34.3</td><td>+0.3</td><td class=s>rivals-reach-vale 116, entry-seen-camera 39, vale-leaves 20, closed-in 18</td><td class=s>rivals-reach-vale 116, entry-seen-camera 40, vale-leaves 20, closed-in 18</td></tr>
+<tr><td>cars=8</td><td>127/300</td><td>42.3</td><td>124/300</td><td>41.3</td><td>-1.0</td><td class=s>rivals-reach-vale 73, entry-seen-camera 40, closed-in 26, sealed 13</td><td class=s>rivals-reach-vale 72, entry-seen-camera 40, closed-in 32, sealed 13</td></tr>
+<tr><td>x4</td><td>98/300</td><td>32.7</td><td>95/300</td><td>31.7</td><td>-1.0</td><td class=s>rivals-reach-vale 120, vale-leaves 20, closed-in 19, sealed 19</td><td class=s>rivals-reach-vale 118, vale-leaves 21, closed-in 19, entry-seen-camera 19</td></tr></table>
+<p>One drop needed a fix on the way. The drive-round fell to 0 % (every seed closed in) because Vale's car pulls in on the Enforcer's walk's end, and his walk waited for him for ever. A walk now ends beside its end when the bodies there let him come no nearer, and the drive-round is back to 4 of 20 seeds with the same causes as 0.45.0.</p>
+
+<h2>Tick cost</h2>
+<p><code>suborned-sim dial perf</code>, 10 runs a setting, with the base commit's route-a and loud-fight scripts on both engines (the same orders). Evidence: <code>bodies-perf.json</code>.</p>
+<table><tr><th colspan=6>route-a</th></tr><tr><th>Setting</th><th>Walkers</th><th>ms a tick before</th><th>after</th><th>p99 before</th><th>p99 after</th></tr><tr><td>unset</td><td>126</td><td>0.009</td><td>0.0148</td><td>0.047</td><td>0.065</td></tr>
+<tr><td>x4</td><td>413</td><td>0.0226</td><td>0.091</td><td>0.145</td><td>0.309</td></tr>
+<tr><td>people=64</td><td>365</td><td>0.0159</td><td>0.0468</td><td>0.093</td><td>0.188</td></tr>
+<tr><td>guards=64</td><td>174</td><td>0.0154</td><td>0.0521</td><td>0.082</td><td>0.204</td></tr></table>
+<table><tr><th colspan=6>loud-fight</th></tr><tr><th>Setting</th><th>Walkers</th><th>ms a tick before</th><th>after</th><th>p99 before</th><th>p99 after</th></tr><tr><td>unset</td><td>126</td><td>0.006</td><td>0.011</td><td>0.023</td><td>0.038</td></tr>
+<tr><td>x4</td><td>413</td><td>0.0286</td><td>0.1004</td><td>0.132</td><td>0.344</td></tr>
+<tr><td>people=64</td><td>365</td><td>0.0162</td><td>0.0547</td><td>0.101</td><td>0.228</td></tr>
+<tr><td>guards=64</td><td>174</td><td>0.0183</td><td>0.0552</td><td>0.05</td><td>0.135</td></tr></table>
+<p>At the dial's x4 the law adds about 0.07 ms a tick (0.09&ndash;0.10 ms a tick, p99 0.31&ndash;0.34 ms), on a 100 ms tick. That is cheap, but it is 4&ndash;5 times the old tick. Most of it is the spatial hash and the candidate checks, and it grows with the people on the street.</p>
+
+<h2>The law's strain (probe)</h2>
+<p><code>suborned-sim dial bodies</code>: every adaptive plan &times; 3 seeds &times; 7 settings, every tick read by an independent check. Evidence: <code>bodies-probe.json</code>. The A/B that chose the way-round rules is in <code>bodies-ways.json</code>.</p>
+<table><tr><th>Setting</th><th>Runs</th><th>Ticks</th><th>Bodies a tick</th><th>Pairs inside two radii</th><th>Tenet pairs</th><th>Last resorts</th><th>Held a tick</th><th>Cell held (ticks, all runs)</th><th>Farthest from own place</th></tr><tr><td>unset</td><td>45</td><td>161062</td><td>24.9</td><td><b>0</b></td><td>0</td><td>1</td><td>0.009</td><td>1</td><td>18.9 m</td></tr>
+<tr><td>people=32</td><td>45</td><td>158912</td><td>40.6</td><td><b>0</b></td><td>0</td><td>67</td><td>0.011</td><td>1</td><td>18.9 m</td></tr>
+<tr><td>people=64</td><td>45</td><td>158752</td><td>70.8</td><td><b>0</b></td><td>0</td><td>315</td><td>0.069</td><td>2</td><td>27.9 m</td></tr>
+<tr><td>guards=32</td><td>45</td><td>160394</td><td>40.4</td><td><b>0</b></td><td>0</td><td>3</td><td>0.014</td><td>1</td><td>18.9 m</td></tr>
+<tr><td>guards=64</td><td>45</td><td>153125</td><td>71.1</td><td><b>0</b></td><td>0</td><td>14</td><td>0.07</td><td>6</td><td>34.4 m</td></tr>
+<tr><td>cars=8</td><td>45</td><td>162905</td><td>25.2</td><td><b>0</b></td><td>0</td><td>1</td><td>0.009</td><td>1</td><td>18.9 m</td></tr>
+<tr><td>guards=64,people=64</td><td>45</td><td>160646</td><td>117.9</td><td><b>0</b></td><td>0</td><td>388</td><td>0.132</td><td>7</td><td>34.4 m</td></tr></table>
+<p>The last resort is rare on today's settings (1 in 45 runs) and common only in dense crowds: about 7 a run at people=64, at the shift change's door jams. The farthest any body stands from its own place is bounded by it: 19&ndash;34 m in the worst tick of 45 runs, a body held about 10 s while its own place walked on. On the guard settings most of the "5 m off" ticks are guards standing on the outer crew ring, 5 m out by design.</p>
+
+<h2>What Latch must change in Unity</h2>
+<ul>
+<li><b>Positions now come spaced</b> through the same reads (the poses listed above). No new call is needed, and figures stop standing in one another. Expect people beside their stop (queue, arc, crew spots) rather than on it, guards sharing a post 2.5 m apart, and the rival crew at the front 2.5 m apart.</li>
+<li><b>Facings:</b> guards at a shared post, the rival crew at the front and spread officers face their sectors through the existing facing reads. <code>HostCrowdSpread</code> (Runtime/Play, the eye-only spread of people the engine put on one point, 0.7 m spots) is no longer needed: the engine now spaces them, so turn it off or it spreads them a second time. The same goes for the relief's step that folds small jumps into the drawn spread.</li>
+<li><b>New host reads</b>, optional and never hashed: <code>BodiesNow()</code>, <code>BodyInfo(id)</code> (where it stands, its own place, its stop, class, form, sector facing, crew spot), <code>BodyLayOf(id)</code>, <code>BodyIsTenet(id)</code>, <code>BodyStrain()</code>, <code>BodyOverlapsNow</code>, <code>BodyRejoins</code>. <code>R.BodyRadiusCm</code> (30) is the figures' footprint for selection and contact.</li>
+<li><b>A last-resort rejoin</b> moves a body to its own place in one tick. Blend it (a short fade or a cut while off camera); don't animate a walk.</li>
+<li>The rulebook changed, so the inputs hash changed: 0.45.0 saves and recordings won't replay on 0.46.0.</li>
+</ul>
+
+<h2>Open questions, and what is Sky's to decide</h2>
+<ul>
+<li><b>Sky:</b> the body's size. The brief said about 35 cm. I set 30 cm, so two radii equal the fight's spacing and the crowd's occlusion body; 35 would also need <code>fight.spacing.clear</code> at 70. Personal space 80 cm and a queue's step 70 are proposed too.</li>
+<li><b>Sky:</b> the cell no longer walks through crowds. Its walks step round or wait; the cell was held under 0.1 s a run in the probe. Dense crowds (people=64) need the last resort about 7 times a run; whether a person rejoining their place now and then is acceptable is a feel call.</li>
+<li><b>Vantage/Datum (the site):</b> the gap between Vale's car stand at the official entrance and the facade is one body wide, and a staff post in the recess there (p-records-office-74, at 76.25, &minus;30.0 m) pinches it further. The city's routines walk it both ways, so people meet in it and one gives way. A one-cell alley near (&minus;5.75, &minus;36.25 m) has a rival crew member posted in it, which seals it. Moving the car's stand out by about 0.6 m, or the post, would end both jams.</li>
+<li><b>Waymark:</b> route-g-kill now loses (above). Thirteen route plans don't compose at HEAD either.</li>
+<li><b>Motive:</b> the Q4 Help grid test fails at HEAD (0.45.0's Help). <b>Fable:</b> text.json has no lines for four traffic log codes, and the opening barks' removal leaves text.test red at HEAD.</li>
+<li>N68 (in part) and N82 are retired; the one-hop rule is now held as a law test.</li>
+<li>File sizes: no code file over 500 lines grew. The rulebook (<code>contracts/rules/rulebook.json</code>, one data file the engine reads) gained its <code>bodies</code> section.</li>
+</ul>
+</body></html>

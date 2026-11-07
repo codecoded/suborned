@@ -1,0 +1,318 @@
+{
+ "schema": "suborned.keel.bodies-ways/1",
+ "brief": "098 L9 Bodies",
+ "note": "the way-round rules chosen by trying each switched off (the full probe minus x4, 3 seeds; base = all on, before they were settled): give way stays, the routes' car margin and a lost body walking round first were dropped (no gain, more left behind), the follower-progress test dropped (more last resorts); a = no lost-detour, no margin; b = a and the plain held test (chosen)",
+ "runs": {
+  "a": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 7,
+    "heldBodyTicks": 1831,
+    "ticks": 161840,
+    "farthestCm": 1893,
+    "ticks5mBehind": 679
+   },
+   {
+    "setting": "people=32",
+    "runs": 45,
+    "wins": 19,
+    "insideTwoRadii": 0,
+    "lastResorts": 79,
+    "heldBodyTicks": 2248,
+    "ticks": 159690,
+    "farthestCm": 1893,
+    "ticks5mBehind": 993
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 446,
+    "heldBodyTicks": 11942,
+    "ticks": 159530,
+    "farthestCm": 2003,
+    "ticks5mBehind": 5565
+   },
+   {
+    "setting": "guards=32",
+    "runs": 45,
+    "wins": 19,
+    "insideTwoRadii": 0,
+    "lastResorts": 7,
+    "heldBodyTicks": 2668,
+    "ticks": 160760,
+    "farthestCm": 1893,
+    "ticks5mBehind": 1024
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 59,
+    "heldBodyTicks": 11252,
+    "ticks": 153979,
+    "farthestCm": 1886,
+    "ticks5mBehind": 50104
+   },
+   {
+    "setting": "cars=8",
+    "runs": 45,
+    "wins": 20,
+    "insideTwoRadii": 0,
+    "lastResorts": 6,
+    "heldBodyTicks": 1972,
+    "ticks": 163414,
+    "farthestCm": 1893,
+    "ticks5mBehind": 623
+   }
+  ],
+  "b": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 3,
+    "heldBodyTicks": 1416,
+    "ticks": 161840,
+    "farthestCm": 1889,
+    "ticks5mBehind": 236
+   },
+   {
+    "setting": "people=32",
+    "runs": 45,
+    "wins": 19,
+    "insideTwoRadii": 0,
+    "lastResorts": 72,
+    "heldBodyTicks": 1828,
+    "ticks": 159690,
+    "farthestCm": 1889,
+    "ticks5mBehind": 595
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 333,
+    "heldBodyTicks": 11187,
+    "ticks": 159530,
+    "farthestCm": 2788,
+    "ticks5mBehind": 5804
+   },
+   {
+    "setting": "guards=32",
+    "runs": 45,
+    "wins": 19,
+    "insideTwoRadii": 0,
+    "lastResorts": 3,
+    "heldBodyTicks": 2385,
+    "ticks": 160684,
+    "farthestCm": 1889,
+    "ticks5mBehind": 1877
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 14,
+    "heldBodyTicks": 10342,
+    "ticks": 153903,
+    "farthestCm": 2503,
+    "ticks5mBehind": 53871
+   },
+   {
+    "setting": "cars=8",
+    "runs": 45,
+    "wins": 20,
+    "insideTwoRadii": 0,
+    "lastResorts": 1,
+    "heldBodyTicks": 1545,
+    "ticks": 163414,
+    "farthestCm": 1889,
+    "ticks5mBehind": 156
+   }
+  ],
+  "base": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 7,
+    "heldBodyTicks": 1836,
+    "ticks": 161840,
+    "farthestCm": 1893,
+    "ticks5mBehind": 877
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 447,
+    "heldBodyTicks": 11904,
+    "ticks": 159530,
+    "farthestCm": 2688,
+    "ticks5mBehind": 12839
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 56,
+    "heldBodyTicks": 11151,
+    "ticks": 153979,
+    "farthestCm": 1886,
+    "ticks5mBehind": 50252
+   }
+  ],
+  "nogive": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 8,
+    "heldBodyTicks": 2029,
+    "ticks": 161840,
+    "farthestCm": 1893,
+    "ticks5mBehind": 856
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 458,
+    "heldBodyTicks": 14638,
+    "ticks": 159530,
+    "farthestCm": 2688,
+    "ticks5mBehind": 14199
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 56,
+    "heldBodyTicks": 9967,
+    "ticks": 153979,
+    "farthestCm": 1816,
+    "ticks5mBehind": 50266
+   }
+  ],
+  "nolostdet": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 7,
+    "heldBodyTicks": 1831,
+    "ticks": 161840,
+    "farthestCm": 1893,
+    "ticks5mBehind": 679
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 446,
+    "heldBodyTicks": 11933,
+    "ticks": 159530,
+    "farthestCm": 2003,
+    "ticks5mBehind": 5560
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 56,
+    "heldBodyTicks": 11147,
+    "ticks": 153979,
+    "farthestCm": 1886,
+    "ticks5mBehind": 50104
+   }
+  ],
+  "nomargin": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 7,
+    "heldBodyTicks": 1836,
+    "ticks": 161840,
+    "farthestCm": 1893,
+    "ticks5mBehind": 790
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 447,
+    "heldBodyTicks": 11906,
+    "ticks": 159530,
+    "farthestCm": 2688,
+    "ticks5mBehind": 12839
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 59,
+    "heldBodyTicks": 11256,
+    "ticks": 153979,
+    "farthestCm": 1886,
+    "ticks5mBehind": 50252
+   }
+  ],
+  "noprog": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 21,
+    "insideTwoRadii": 0,
+    "lastResorts": 3,
+    "heldBodyTicks": 1413,
+    "ticks": 161840,
+    "farthestCm": 1889,
+    "ticks5mBehind": 316
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "insideTwoRadii": 0,
+    "lastResorts": 330,
+    "heldBodyTicks": 11101,
+    "ticks": 159530,
+    "farthestCm": 2716,
+    "ticks5mBehind": 8458
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 16,
+    "insideTwoRadii": 0,
+    "lastResorts": 15,
+    "heldBodyTicks": 10435,
+    "ticks": 153903,
+    "farthestCm": 3047,
+    "ticks5mBehind": 56310
+   }
+  ]
+ }
+}

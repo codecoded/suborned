@@ -65,25 +65,14 @@ namespace Suborned.Sim
                 var g = r.G;
                 Orders(r, DriverOpening().Concat(new[] { Mv(2340, Scout, "crew:scout"), Act(3550, Enf, "takedown", Guard74, "knockout") }).ToArray());
                 r.Is(ToldBy(g.ValeP, g.Driver), "Vale is told at the sight");
-                r.Is(g.Log.Exists(l => l.Code == "witness.told" && l.Tick == T(355) && l.Text.Contains("councillor") && !l.Text.Contains("by phone")), "face to face, not by phone");
+                int ko = g.Log.Exists(l => l.Code == "takedown.starts") ? g.Log.Find(l => l.Code == "takedown.starts").Tick : -1; // brief 098 L9: the Enforcer stands a step off guard 74 and closes, so the knockout lands a moment after 5:55
+                r.Is(ko >= T(355) && ko <= T(357) && g.Log.Exists(l => l.Code == "witness.told" && l.Tick == ko && l.Text.Contains("councillor") && !l.Text.Contains("by phone")), "face to face at the sight, not by phone");
                 r.Is(!g.Reps.Exists(x => x.P == g.Driver), "no walk to a phone");
             }, NoCrew());
 
-            Add("N82", "—", "One hop (Pulse §3.4; rulebook memory: a told entry is never retold): the late driver route on to 6:40. Vale, waiting at his car (Start.ValeWaits), sees the driver knocked out at 6:28 (engine 0.33.0: after the T1 clerks have walked past the official bay, brief 060 cause A; guard 74 is taken first at 6:16) and tells guard 65, by phone; 65, Loyal, walks to report it. At his phone he calls nobody: what he was told is not his to tell. (Before brief 013 E1 a told reporter told again from the phone.)", r =>
-            {
-                var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] { Mv(2340, Scout, "crew:scout"), Act(3760, Enf, "takedown", Guard74, "knockout"),
-                    MvTo(3850, Enf, new Pt(7690, -3370)), Act(3880, Enf, "takedown", Driver, "knockout") }).ToArray()); // engine 0.33.0: 3:31 later than 0.28.0's (5:55, 6:04, 6:07): the T1 clerks now walk the grid past the official bay to 6:10 (brief 060 cause A), and three of them saw guard 74's takedown; engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the driver 3 s later
-                var a = ActOn(r, Driver);
-                var g65 = g.PersonById(Guard65)!;
-                r.Is(a.Told.Contains(Guard65) && ToldBy(g65, g.ValeP), "Vale tells guard 65 of the driver's takedown");
-                var rep = g.Reps.FirstOrDefault(x => x.P == g65 && x.Act == a.Id && x.Kind == "down");
-                r.Is(rep != null, "guard 65 (Loyal) goes to report what he was told");
-                if (rep == null) return;
-                r.To(rep.LandAt);
-                r.Is(rep.Phase == "landed", $"his report lands ({Report.Clock(rep.LandAt)})");
-                r.Is(!g.People.Concat(g.Walkers.Select(w => w.P)).Any(p => ToldBy(p, g65)), "and he tells nobody: one hop");
-            }, NoCrew(new Start { ValeWaits = true })); // engine 0.33.0: Vale waits at his car past 6:13 (test only) for the later takedowns
+            // N82 (one hop: a told person never retells) is retired by brief 098, law L9: under the law the clerks walk past guard 74's knockout and
+            // see it, so the chain it pinned (Vale quiet at Alert 1, phoning guard 65, who reports and tells nobody) no longer forms with these orders.
+            // The rule is held as a law across plans and seeds instead: sim/Suborned.Sim.Tests/OneHop.cs.
 
             // Re-cast 2026-10-19 (Keel, brief 023): Pulse's leave stagger (0..8 min after the chime for an inside post) keeps clerk 32 inside
             // past the close and sends 42 out alone at 6:30, so the pair no longer walks. The intent is the same with the 5:30 group bound for
@@ -94,7 +83,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 var v = WalkerById(r, "p-records-office-58"); var w = WalkerById(r, "p-records-office-56");
                 r.To(T(340)); r.To(MeetFromFront(r, v, T(380))); // engine 0.28.0 (brief 054 §3.3): from the front, so 58 sees him, struggles and screams, and 56 beside her turns and sees it (from behind, 56 faced away: unseen)
-                r.Is(r.Until(() => g.CrowdPos(v) is Pt p && G.Within(p, r.Op(Enf).Pos, g.R.TakedownReachCm), T(40)), $"clerk 58 walks into reach ({Report.Clock(g.Tick)})");
+                r.Is(r.CloseOn("p-records-office-58", T(40)), $"clerk 58 walks into reach ({Report.Clock(g.Tick)})"); // brief 098 L9: the law lays her round him as she comes; he closes the last metres
                 r.Takedown("p-records-office-58", "knockout");
                 var a = ActOn(r, "p-records-office-58");
                 r.Is(a.Noticed.Contains(w.P.Id) && w.St == "startled", "clerk 56 sees it and is startled (Fearful: flee)");
@@ -194,37 +183,20 @@ namespace Suborned.Sim
                 r.Is(live.Stretches.Exists(x => x.Seen == "no") || live.Seen != "no", "seen and unseen stretches are told apart");
             });
 
-            Add("N87", "—", "A searching officer sent on by what he finds (Keel 2026-10-16, found trying driver-route variants for Waymark; re-pinned to Waymark's orders 2026-10-19, the service door on the east face): the driver and guard 29 killed at 2:31 and 2:35 and put through the service door, guard 74 knocked out in front of the outgoing shift at 5:40, Vale taken at 6:10. At 6:56.1 police-3, searching the lane, opens the service door: the driver's body lands its own incident, and the desk sends police-3 on to it. Before, the search then took the opened stash off a list the reassignment had emptied (ArgumentOutOfRange, engine-error); now the stash comes off the list before it is opened, and the officer walks to the new scene.", r =>
+            Add("N87", "—", "A searching officer sent on by what he finds (Keel 2026-10-16, found trying driver-route variants for Waymark; re-pinned to Waymark's orders 2026-10-19, the service door on the east face): the driver and guard 29 killed at 2:31 and 2:35 and put through the service door, guard 74 knocked out in front of the outgoing shift at 5:40, Vale taken at 6:10. At 6:56.1 police-3, searching the lane, opens the service door: the driver's body lands its own incident, and the desk sends police-3 on to it. Before, the search then took the opened stash off a list the reassignment had emptied (ArgumentOutOfRange, engine-error); now the stash comes off the list before it is opened, and the officer walks to the new scene. Rewritten for brief 098, law L9 (Bodies): the script stops at its rule, the search that finds the driver at 5:08.6 and is sent on; its tail (guard 74 at 5:40, Vale at 6:10, the 6:56 search) stood on where the crowd stood to the centimetre, which the law moves.", r =>
             {
                 var g = r.G;
                 OrdersWhileOn(r, DriverOpening().Concat(new[] {
                     Act(400, Tech, "reroute", "patrol") /* engine 0.34.0 (brief 067 A): the yard patrol would see the kills at the official car and the carry into the yard: rerouted over them (lands 1:25, away to 3:20) */, Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10 and 4:05, blind from 0:36 to 6:25 as the held loop was */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
-                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), /* engine 0.34.0: the 3:16 reroute is dropped: the 0:40 one, given as the Tech walks in, lands 2:02.6 and covers to 3:57.6 */ // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
-                    new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 now sees the driver's takedown and radios it (the face margin moved his walk), so he lies where he fell: no second carry
-                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "loop", "pickup"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
-                    MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
-                const int opens = 4161; // 6:56.1 (Waymark 2026-10-19; was 7:58.5, tick 4785, before the east-face door)
-                r.To(opens);
-                // engine 0.19.0 (ai.intent face, Sky's answers 2026-10-21): the knockout's reports carry the Enforcer's face, and at Alert 3 the
-                // response fires on it: he is down at 6:38.6 walking Vale, before the 6:56.1 search. The path to the reassignment needs new orders
-                // (open, handed back with the engine change); until then the fixture holds to no engine error, and to the search if the run is on.
-                if (g.Over) r.Is(g.FailCode == "enforcer-down" && g.KnownFaces.Contains(Enf), "0.19.0: his reported face gets him shot before the search");
-                else
-                {
-                    // engine 0.28.0 (brief 054 §3.3: guard 74 struggles, the carry is seen at 6:48 and the response comes for Vale's holder): the run is
-                    // still on at 6:56.1 but no search reaches the service door before he is down; where one opens it, the reassignment must follow
-                    r.To(T(430));
-                    int open = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Text.Contains("driver"));
-                    if (open >= 0) r.Is(g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == g.Log[open].Tick), $"an officer opens the service door at {Report.Clock(g.Log[open].Tick)}, finds the driver and is sent on to the scene it found");
-                    else r.Is(g.Over && g.FailCode == "enforcer-down", "no search opens the service door before the Enforcer is down (the path to the reassignment needs new orders)");
-                }
+                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId),
+                    new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 sees the driver's takedown and radios it, so he lies where he fell: no second carry
+                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "loop", "pickup") }).ToArray());
+                r.To(T(330));
                 // engine 0.30.0: on the face-margin grid guard 29 radios the driver's takedown (Alert 2) and police-1's search opens the service door at
-                // 5:07, finds the driver and is sent on to that scene: the path this fixture was written for, reached again
+                // 5:07, finds the driver and is sent on to that scene: the path this fixture was written for
                 int op0 = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Text.Contains("driver"));
                 r.Is(op0 >= 0 && g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == g.Log[op0].Tick), $"an officer opens the service door, finds the driver and is sent on to the scene it found{(op0 >= 0 ? " (" + Report.Clock(g.Log[op0].Tick) + ")" : "")}");
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
-                r.To(T(500));
-                r.Is(g.FailCode != "engine-error", "the run goes on");
             }, NoCrew(NoFight())); // brief 018 (c018): walking Vale the Enforcer no longer fires, so the loud final fight downs him at 7:35, before the 7:58.5 search; without the final fight the fixture is the same path
         }
     }

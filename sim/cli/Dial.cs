@@ -64,6 +64,7 @@ static class DialCli
             case "perf": return Perf(inputs, root, args);
             case "traffic": return TrafficCli.Run(inputs, root, args); // brief 098 step 1: a script under the dial's cars, every tick watched (Traffic.cs)
             case "street": return StreetCli.Run(inputs, root, args); // brief 098 step 1b: the people count on the street, built and observed (Street.cs)
+            case "bodies": return BodiesCli.Run(inputs, root, args); // brief 098 L9: every tick watched, every pair inside two radii (Bodies.cs)
             default: Console.Error.WriteLine("usage: dial census | dial sweep [items] [--seeds n] [--settings s;s] | dial perf [script] [--settings s;s] [--runs n] | dial traffic [script] [--counts cars=8] [--seed n]"); return 2;
         }
     }
@@ -76,7 +77,7 @@ static class DialCli
     }
 
     /// <summary>The settings a sweep or a perf plays: (name, counts or null for unset).</summary>
-    static List<(string name, SortedDictionary<string, int>? counts)> Settings(Engine.Inputs inputs, string[] args, string fallback)
+    internal static List<(string name, SortedDictionary<string, int>? counts)> Settings(Engine.Inputs inputs, string[] args, string fallback)
     {
         int k = Array.IndexOf(args, "--settings"); var spec = k > 0 && k + 1 < args.Length ? args[k + 1] : fallback;
         var today = Population.Today(inputs); var l = new List<(string, SortedDictionary<string, int>?)>();

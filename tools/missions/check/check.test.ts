@@ -276,7 +276,7 @@ describe('the §09 conditions, each with a failing example', () => {
 
 const KNOWN_RED = [
   'R-7' /* Waymark and Pulse: quiet-a's call and enter, quiet-g's beside-guard windows under 30 s at a person's pace (briefs/096/motive/misses.json) */,
-  'B-2 thin-quiet', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', 'B-11 quiet-b', 'B-14', 'B-16 drive-early' /* engine 0.43.0 (brief 096): Motive's bands, reports */,
+  'B-2 thin-quiet', 'B-8 quiet-g', 'B-11 drive-early', 'B-11 drive-round', 'B-11 quiet-b-lookout-ignored', 'B-11 quiet-b-taped', /* 'B-11 quiet-b': green on engine 0.46.0 (brief 098 L9 Bodies, c056: the middle half of quiet-b's fights spans 21-31 s) */ 'B-14', 'B-16 drive-early' /* engine 0.43.0 (brief 096): Motive's bands, reports */,
   'L96 A', 'L96 B-all', 'L96 veteran' /* engine 0.45.0 (brief 096): B-8 quiet-a and prepared-loud back in (route A's wait filled); quiet-a 99 % over its 97 % ceiling, quiet-b 0.69 captured per win, the veteran 39.5 %: for Motive, briefs/096/keel/report-lukac-help.md */,
 ]; // engine 0.43.0 (Keel for Waymark): MC-0 and MC-13 green (fight-loud-wait-yard and careless-scout-idles-pickup recomposed on the lend, the lookout misled), MC-11 and MC-14 read car.unboxed under the block (blocker.ts); the lend bands (L96) and B-7 quiet-a in band
 describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {

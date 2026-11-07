@@ -11,18 +11,7 @@ using System.Collections.Generic;
 
 namespace Suborned.Sim
 {
-    /// <summary>One member of the response (a robot or an officer) sent by an alarm: where it starts and goes, what it is doing.</summary>
-    public sealed class Unit
-    {
-        public string Id = ""; public bool Robot, Patrol, Legacy; public Gun Gun = null!; public int Speed;
-        public Pt From, Dest; public int Launch; public Path? Route; public int Act = -1; public bool Scene, Cordon;
-        public string St = "wait";   // wait (not yet on the street), walk, check, search, hold, back, gone
-        public int Until, Arrive; public bool Verified;
-        public readonly List<string> ToOpen = new List<string>(); public int NextOpen = -1;
-        public bool OnStreet(int tick) => St != "wait" && St != "gone" && (Legacy || tick >= Launch);
-    }
-
-    public sealed partial class Game
+    public sealed partial class Game // brief 098 L9: the Unit class is in GameUnits.cs
     {
         public readonly List<Unit> Units = new List<Unit>();
         readonly SortedSet<string> missedMarks = new SortedSet<string>(StringComparer.Ordinal);       // staff whose missed check-in has landed
@@ -251,7 +240,7 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- the units, a tick at a time
 
         /// <summary>Where a unit stands and faces now, or null off the street.</summary>
-        public (Pt pos, Pt facing)? UnitPose(Unit u)
+        (Pt pos, Pt facing)? UnitPoseRaw(Unit u) // brief 098 L9: UnitPose (GameUnits.cs) lays it
         {
             if (u.Legacy) { int k = SecIndex(u.Id); return k >= 0 ? SecOfficerPose(k) : null; }
             if (u.Gun.Down) return null;
@@ -265,7 +254,7 @@ namespace Suborned.Sim
                         long mm = (long)(Tick - u.Launch) * u.Speed; if (mm < 0) mm = 0;
                         return mm >= u.Route.Length ? (u.Route.End, u.Route.Heading(u.Route.Length)) : (u.Route.At(mm), u.Route.Heading(mm));
                     }
-                default: return u.Route == null ? (u.Dest, new Pt(100, 0)) : (u.Route.End, u.Route.Heading(u.Route.Length));
+                default: return u.Route == null ? (u.Dest, new Pt(100, 0)) : (u.Route.End, SectorFace(u.Route.Heading(u.Route.Length), u.Slot)); // brief 098 L9: each faces his own sector
             }
         }
         bool UnitSees(Unit u, Pt p, bool crowd = true)
@@ -314,7 +303,7 @@ namespace Suborned.Sim
                         if (Tick < u.Launch) break;
                         {
                             var from = u.Patrol ? PatrolPose()!.Value.pos : u.From;
-                            var a = Walk.NearestFree(from) ?? from; var b = ClearStop(u.Id, Walk.NearestFree(u.Dest) ?? u.Dest); // brief 081 (engine 0.37.0; fight.spacing): officers sent to one place spread round it, each past the last's claim
+                            var a = Walk.NearestFree(from) ?? from; var b = UnitStop(u, a); // brief 098 L9 (GameUnits.cs): a crew spot round the place; brief 081 (engine 0.37.0; fight.spacing): officers sent to one place spread round it, each past the last's claim
                             var route = Walk.Route(a, b); u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
                             u.Launch = Tick; u.St = "walk";
                             if (u.Patrol) Note("patrol.alarm", "The patrol leaves its sweep for the alarm.");

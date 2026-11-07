@@ -89,8 +89,7 @@ namespace Suborned.Sim
             r.To(r.SendTo(Enf, g.S.Grid.NearestFree(NearFront) ?? NearFront));
             if (waitForPeople) r.Is(r.Until(() => HeardBy(g, Enf, true) > 0, T(120)), $"people back on the street within reach at {Report.Clock(g.Tick)}");
             r.Until(() => g.Crew.Exists(m => m.OnFoot && !m.Gun.Down && G.Within(g.MemberPos(m, g.Tick), r.Op(Enf).Pos, r.Op(Enf).Gun.W!.MaxCm)), T(60)); // brief 059: the crew comes member by member
-            FireUntilBroken(r, 60, Enf);
-            r.Is(g.RivalsDelayMethod == "fire", $"the crew is driven back at {Report.Clock(g.Tick)}");
+            FireUntilBroken(r, 60, Enf); // brief 098 L9: the drawn crew stands bodies.crew apart, each to his own sector (it may not break: the caller's rule says whether that matters)
         }
         /// <summary>Between the shot corner and the Office front, 16 m from where the drawn rivals make for (d:Office approach). Re-sited
         /// 2026-10-19 with the door (brief 023; was (3600, -2000)).</summary>
@@ -225,14 +224,14 @@ namespace Suborned.Sim
                 r.Is(apart ? gap >= g.R.FightQuietTicks : gap < g.R.FightQuietTicks, $"the rivals' fight starts {gap / 10} s after the last shot at the patrol");
                 r.Is(r.Until(() => g.OpenFight == null, T(60)), $"the last fight ends at {Report.Clock(g.Tick)}");
             }
-            Add("N99", "—", "A mixed fight (rulebook fight.public: authority outranks): the Enforcer shoots the patrol down from the walk north of the service yard, then walks on the rival crew its gunfire draws and drives it off, never 30 s without a shot. One fight, on security and on rivals (broken): −1, seen-fight-security, once; the win over the rivals counts for nothing.", r =>
+            Add("N99", "—", "A mixed fight (rulebook fight.public: authority outranks): the Enforcer shoots the patrol down from the walk north of the service yard, then walks on the rival crew its gunfire draws and fires on it, never 30 s without a shot. One fight, on security and on rivals: −1, seen-fight-security, once; whatever it does to the rivals counts for nothing. Brief 098 L9: the drawn crew now stands bodies.crew apart, each to his own sector, and may hold where it used to break (it broke while it stood 90 cm apart facing one way), so whether it breaks is not this case's rule.", r =>
             {
                 var g = r.G;
                 PatrolThenRivals(r, false);
                 r.Eq(g.Fights.Count, 1, "one fight: no 30 s gap");
                 var f = g.Fights[0];
                 r.Eq((f.Public, f.OnSecurity, f.OnRivals, f.Outcome, f.Delta, f.Cause), (true, true, true, "security", -2, "seen-fight-security"), "on security and rivals: authority outranks, −2");
-                r.Is(f.CrewBroken >= 0, "though the rivals broke");
+                r.Is(f.CrewBroken >= 0 || g.RivalsDelayMethod != "fire", "the rivals broke or held: either way the fight counts for nothing against them"); // brief 098 L9: the drawn crew spreads to cover its sectors and may hold
                 r.Eq(Moves(g), "-2 seen-fight-security patrol", "one move, naming the patrol");
             }, new Start { FinalFight = false });
 
@@ -260,7 +259,8 @@ namespace Suborned.Sim
                 // weapon at 5:33.7, so the second fight is on security too (authority outranks): still two fights 30 s apart, two moves, which is this
                 // case's rule; the rivals-won +1 is N95's (feared rivals driven off)
                 r.Eq(string.Join(", ", g.Fights.Select(f => $"{f.Public} {f.Outcome}")), "True security, True security", "two fights: the patrol's, then the rivals' with the response unit in it");
-                r.Eq(Moves(g), "-2 seen-fight-security patrol, -2 seen-fight-security security-1", "two moves, one a fight each");
+                var mv = Moves(g).Split(", "); // brief 098 L9: the unit's officers stand spread, each at his spot, so whichever sees the weapon first is the move's (was security-1)
+                r.Is(mv.Length == 2 && mv[0] == "-2 seen-fight-security patrol" && mv[1].StartsWith("-2 seen-fight-security security-", StringComparison.Ordinal), $"two moves, one a fight each (got {Moves(g)})");
                 r.Eq(g.Standing, g.R.StandingStart - 4, "+2 → 0 → -2");
             }, new Start { FinalFight = false, Security = 0 });
         }

@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route A (fight it out) with Disable in place of the Loop (brief 058 §4, §6): the cut (+2 T, where the loop is +1) is reported by the desk at its next scan, the run's first incident (Alert 1); route A has no later report, so it wins at the same time as route-a and one Trail dearer, with no 2:00 window to keep. No Reroute (brief 067 A): the patrol answers the dead screen and stands down without a report. The Enforcer holds Vale at (20.0, -65.0) as route-a does (Motive's rad-h3).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"scout","do":"move","to":"beside-inez","run":true},
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"fixer","do":"move","to":"d:Courtyard","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":90,"op":"scout","do":"watch","target":"waitress"},
+  {"tick":127,"op":"tech","do":"disable","target":"entrance"},
+  {"tick":227,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":290,"op":"scout","do":"listen","target":"waitress"},
+  {"tick":596,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
+  {"tick":1556,"op":"fixer","do":"call","target":"waitress"},
+  {"tick":1556,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1556,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":1556,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":1575,"op":"enforcer","do":"enter"},
+  {"tick":1575,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1955,"op":"enforcer","do":"move","to":[2000,-6500]},
+  {"tick":2257,"op":"scout","do":"draw"},
+  {"tick":2257,"op":"fixer","do":"draw"},
+  {"tick":2257,"op":"tech","do":"draw"},
+  {"tick":2257,"op":"enforcer","do":"draw"},
+  {"tick":2358,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2462,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2462,"op":"cell","do":"go"}
+ ],
+ "until": 4900
+}

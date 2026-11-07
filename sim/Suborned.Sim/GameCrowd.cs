@@ -19,6 +19,8 @@ namespace Suborned.Sim
         /// <summary>Brief 098 step 0: added by the dial at the start (not in the people file): its routine is the dial's, its draws its own.</summary>
         public bool Added;
         public int PacePct = -1; // brief 023 (engine 0.8.2): the extra per cent this person walks a routine leg at (rulebook crowd.pace), from their id; -1 until first read
+        /// <summary>Brief 098 L9 (GameBodies.cs): where the law laid this person relative to where their routine or their fright puts them.</summary>
+        public BodyLay Body;
         public Walker Fresh()
         {
             var p = new Person { Id = P.Id, Name = P.Name, Job = P.Job, Temperament = P.Temperament, Need = P.Need, Role = "", Record = P.Record, Size = P.Size, Holder = P.Holder };
@@ -175,24 +177,48 @@ namespace Suborned.Sim
         public Pt? CrowdPos(Walker w, int tick)
         {
             if (w.P.Down) return null;
-            if (w.St.Length > 0 && tick == Tick) return ScatterPos(w);
-            return RoutinePos(w, tick);
+            var p = w.St.Length > 0 && tick == Tick ? ScatterPos(w) : RoutinePos(w, tick);
+            if (!p.HasValue && tick == Tick && Leaving(w).HasValue) return w.Body.Raw + w.Body.Lay; // brief 098 L9 (engine 0.47.0): still walking to where they leave the street
+            return p.HasValue ? Laid(p.Value, w.Body, tick, WalkerPlan(w)) : p; // brief 098 L9: where the law laid them (GameBodies.cs)
+        }
+        /// <summary>Brief 098 L9 (engine 0.47.0, nobody jumps or vanishes): a person whose rules take them off the street (inside, into a refuge, off
+        /// the sheet) while the law holds their body back from where they leave it walks there first. Their exit is their own place as they were
+        /// last laid, kept until they stand within two radii and a step of it; null when they are not leaving (or the law is off).</summary>
+        Pt? Leaving(Walker w) => R.BodiesOn && !Range && w.Body.Live(Tick) && !G.Within(w.Body.Raw + w.Body.Lay, w.Body.Raw, R.BodyMinCm + R.BodySpaceCm) ? w.Body.Raw : (Pt?)null; // within two radii and a step of it they go (a doorway is wider than a body: past whoever stands in it)
+        /// <summary>Brief 098 L9: where a person's own rules put them now, before the law lays their body; `stop` the place of the stop they stand at
+        /// (their routine's, or the next one's while early at a leg's end), else null.</summary>
+        Pt? CrowdRaw(Walker w, out string? stop, out Path? leg, out long legMm)
+        {
+            stop = null; leg = null; legMm = 0; if (w.P.Down) return null;
+            if (w.St.Length > 0)
+            {
+                int pace = w.St == "fleeing" ? R.CrowdRunSpeed : w.St == "returning" ? peopleWalk : w.Pace;
+                if (w.Run != null && Tick >= w.RunStart && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking" || w.St == "woken")) { leg = w.Run; legMm = Math.Min(w.Run.Length, (long)(Tick - w.RunStart) * pace); }
+                var sp = ScatterPos(w); if (sp.HasValue) return sp;
+                leg = null; legMm = 0; return Leaving(w); // into a refuge: from its door
+            }
+            return RoutineAt(w, Tick, out stop, out leg, out legMm) ?? Leaving(w); // inside, or off the sheet: from where they leave the street
         }
         /// <summary>Where the routine puts a person of the crowd at this tick (no fight).</summary>
         Pt? RoutinePos(Walker w, int tick) => w.P.Down ? null : RoutineAt(w, tick);
         /// <summary>Where the routine has a person at this tick, down or not (brief 098: where an added guard's beat has him when his mark is missed).</summary>
-        Pt? RoutineAt(Walker w, int tick)
+        Pt? RoutineAt(Walker w, int tick) => RoutineAt(w, tick, out _, out _, out _);
+        Pt? RoutineAt(Walker w, int tick, out string? stop, out Path? leg, out long legMm)
         {
-            var c = People2!;
+            stop = null; leg = null; legMm = 0;
             for (int i = 0; i < w.Place.Length; i++)
             {
-                if (tick >= w.From[i] && tick < w.To[i]) return w.Out[i] ? CrowdPlace(w.Place[i]) : (Pt?)null;
+                if (tick >= w.From[i] && tick < w.To[i]) { if (!w.Out[i]) return null; stop = w.Place[i]; return CrowdPlace(w.Place[i]); }
                 if (i + 1 < w.Place.Length && tick >= w.To[i] && tick < w.From[i + 1])
                 {
                     if (w.Place[i] == "beyond" || w.Place[i + 1] == "beyond") return null;
                     var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]);
                     int span = w.From[i + 1] - w.To[i];
-                    return span <= 0 ? path.End : path.At(LegMm(w, path, tick - w.To[i], span, LeavesPost(w, i)));
+                    if (span <= 0) return path.End;
+                    long mm = LegMm(w, path, tick - w.To[i], span, LeavesPost(w, i));
+                    if (mm >= path.Length && w.Out[i + 1]) stop = w.Place[i + 1]; // early at the leg's end, waiting at the next stop (brief 098 L9: it holds a spot there)
+                    leg = path; legMm = mm;
+                    return path.At(mm);
                 }
             }
             return null;

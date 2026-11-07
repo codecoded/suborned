@@ -234,7 +234,7 @@ namespace Suborned.Sim
             }, DriveStart(onRelease: "resume"));
 
             Add("D11", "—", "The gap (cell.drive.gap 40 cm): the Scout clicked to 3 m in front of the guard at his post, then driven straight at him for 3 s: she never ends a tick nearer than 40 cm to him while closing. With the playground's gap 0, the same samples walk her through him.", r => GapCase(r, 40), DriveStart());
-            Add("D11b", "—", "The gap off (the playground's gap 0): D11's samples walk the Scout to the guard's own spot.", r => GapCase(r, 0), DriveStart(gap: 0));
+            Add("D11b", "—", "The gap off (the playground's gap 0): D11's samples walk the Scout to the guard's own spot. Rewritten for brief 098, law L9 (Bodies): no body walks through another, so with the gap off she walks up to him and stops two radii off (the law's 60 cm is above the drive's 40 cm gap: it holds either way).", r => GapCase(r, 0), DriveStart(gap: 0));
 
             Add("D12", "—", "Unknown = reject: a gait the rulebook doesn't name (crouch), a facing of 400, release or face on a move are format errors; a sample with no position is refused (no-place), and in the car (in-car); a playground pace of 2000 per mille doubles a driven walk.", r =>
             {
@@ -277,6 +277,7 @@ namespace Suborned.Sim
                 if (now < 40 && G.D2(after, gp) < G.D2(before, gp)) closingInside = true;
             }
             if (gap > 0) r.Is(!closingInside && nearest >= 38, $"never closer than the gap while closing (nearest {nearest} cm)");
+            else if (g.R.BodiesOn) r.Is(nearest >= g.R.BodyMinCm - 1 && nearest <= g.R.BodyMinCm + 15, $"gap off: she walks up to him and stops two radii off, as every body does (L9; {nearest} cm)");
             else r.Is(nearest <= 15, $"gap off: she walks to him ({nearest} cm)");
         }
     }

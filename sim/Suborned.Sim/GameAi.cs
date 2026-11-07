@@ -316,8 +316,8 @@ namespace Suborned.Sim
                 if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
                 if (!h.Present) { h.Gun.St = "gone"; if (CrewOf(h.Id) is CrewMember gm && !gm.Fight) { gm.Mode = CrewMode.Gone; gm.ModeTick = Tick; } continue; } // still lying in wait, or still in the car: it never comes
                 ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Why = "break"; any = true;
-                if (Range) { h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); continue; }
-                h.Gun.Drawn = false; h.Speed = Cr.BrokenCmS; h.BreakTo = offAt; MoveTo(h, offAt); // F2: holstered, off the map
+                if (Range) { h.BreakTo = carAt; MoveTo(h, carAt); h.Speed = rivSpeed; continue; } // brief 098: off from where he stands, then at the new pace (set first, his place along his old walk jumped ahead by it)
+                h.Gun.Drawn = false; h.BreakTo = offAt; MoveTo(h, offAt); h.Speed = Cr.BrokenCmS; // F2: holstered, off the map
             }
             if (any) { FightWhy.Add("rivals-break"); Note("ai.break", "More than half the crew is down: the rivals break for their car."); }
         }

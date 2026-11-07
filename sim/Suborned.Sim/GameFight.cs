@@ -24,7 +24,12 @@ namespace Suborned.Sim
         /// Hashed only when set.</summary>
         public bool Closing;
         public bool Down => Gun.Down; public int Health => Gun.Health;
-        public Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
+        /// <summary>Where it stands at `tick`, laid by L9 (brief 098: Body, set by GameBodies.cs; its own place is RawPos).</summary>
+        public Pt Pos(int tick) => Body.Live(tick) && Body.Same(Plan) ? RawPos(tick) + Body.Lay : RawPos(tick);
+        /// <summary>Its plan (BodyLay.Same): the walk it is on and where it stands; a new one is planned from where it stands, so the lay is spent.</summary>
+        public (object? r, int n, Pt at) Plan => (Run, RunStart, At);
+        public Pt RawPos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
+        public BodyLay Body;
         public bool Moving(int tick) => Run != null && (long)Math.Max(0, tick - RunStart) * Speed < Run.Length;
     }
 
