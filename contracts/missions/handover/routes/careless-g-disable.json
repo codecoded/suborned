@@ -25,11 +25,11 @@
   {"tick":2255,"op":"fixer","do":"fire","target":"rival-2"},
   {"tick":2255,"op":"tech","do":"fire","target":"rival-2"},
   {"tick":2255,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":2275,"op":"scout","do":"fire","target":"rival-1"},
-  {"tick":2275,"op":"fixer","do":"fire","target":"rival-1"},
-  {"tick":2275,"op":"tech","do":"fire","target":"rival-1"},
+  {"tick":2277,"op":"scout","do":"fire","target":"rival-1"},
+  {"tick":2277,"op":"fixer","do":"fire","target":"rival-1"},
+  {"tick":2277,"op":"tech","do":"fire","target":"rival-1"},
   {"tick":2358,"op":"enforcer","do":"board","target":"car"},
-  {"tick":2899,"op":"cell","do":"go"}
+  {"tick":2890,"op":"cell","do":"go"}
  ],
  "until": 4900
 }
