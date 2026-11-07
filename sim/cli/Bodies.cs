@@ -116,6 +116,7 @@ static class BodiesCli
         }
         else { sc = Script.Parse(File.ReadAllText(item)); sc.Start.Seed = seed; sc.Start.Counts.Clear(); if (counts != null) DialCli.Apply(sc.Start, counts); }
         var g = Engine.New(inputs, sc.Start); var r = new Res(); var mv = new BodyCheck.Moves();
+        if (Environment.GetEnvironmentVariable("SUBORNED_SCRIPT_OUT") is string sdir) { var w0 = new JWriter().Obj().Prop("schema", "suborned.sim.script/1").Prop("mission", "handover").Key("start").Raw(sc.Start.Canonical()).OpenArr("orders"); foreach (var o in sc.Orders) o.Write(w0); File.WriteAllText(System.IO.Path.Combine(sdir, $"{Name(item)}-{seed}.json"), w0.EndArr().Prop("until", sc.Until).EndObj().ToString()); } // a probe's run as a script, for `play`
         var raw0 = new Dictionary<string, Pt>(StringComparer.Ordinal); var raw1 = new Dictionary<string, Pt>(StringComparer.Ordinal); int seenJ = 0;
         var stuck = new Dictionary<string, int>(StringComparer.Ordinal); var stuckNow = new Dictionary<string, int>(StringComparer.Ordinal);
         var upLast = new Dictionary<string, (Pt at, Pt raw, string kind)>(StringComparer.Ordinal); var upNow = new Dictionary<string, (Pt at, Pt raw, string kind)>(StringComparer.Ordinal);
@@ -168,7 +169,8 @@ static class BodiesCli
                 }
         }
         while (oi < orders.Count && orders[oi].Tick == g.Tick) g.Issue(orders[oi++]);
-        g.Finish(); r.Outcome = g.Result.ToString().ToLowerInvariant(); r.Fail = g.FailCode; r.LawOverlap = (int)g.BodyOverlapTicks; r.LawTenet = g.BodyTenetTicks;
+        g.Finish(); r.Outcome = g.Result.ToString().ToLowerInvariant(); r.Fail = g.FailCode;
+        if (r.Outcome == "none" && Environment.GetEnvironmentVariable("SUBORNED_NONE_LOG") is string nlog) lock (JumpLock) File.AppendAllText(nlog, $"{Name(item)}\t{seed}\t{g.Tick}\tuntil {until}\tover {g.Over}\n"); // a run with no outcome r.LawOverlap = (int)g.BodyOverlapTicks; r.LawTenet = g.BodyTenetTicks;
         foreach (var kv in stuck) { r.Spells.Add(kv.Value); if (kv.Value > r.LongSpell) { r.LongSpell = kv.Value; r.LongWhat = $"{kv.Key} to the end, {g.BodyTrace(kv.Key)}"; } }
         r.Sidesteps = g.BodySidesteps; r.Squeezes = g.BodySqueezes; r.Replans = g.BodyReplans; foreach (var kv in g.BodyReplansBy) r.ReplansBy[kv.Key] = kv.Value;
         return r;

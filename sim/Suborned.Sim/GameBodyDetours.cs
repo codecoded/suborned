@@ -67,9 +67,22 @@ namespace Suborned.Sim
                 ref var o = ref bds[b.Blk];
                 if (o.HeldN > 0 && (o.Placed ? o.Blk == i : o.BlkId == b.Id) && o.Key < b.Key && GivePoint(in b, from, o.At) is Pt back) { b.GiveEnd = Tick + GiveTicks; b.GiveAt = back; return; }
             }
-            if (!PlanDetour(i, from, goal)) b.DetTries = Math.Min(b.DetTries + 1, 20); // none, or far longer than the straight line: it waits a second more (a queue at a door)
+            if (!PlanDetour(i, from, WayOn(in b, from, goal))) b.DetTries = Math.Min(b.DetTries + 1, 20); // none, or far longer than the straight line: it waits a second more (a queue at a door)
         }
 
+        /// <summary>Where an operative's way round makes for: on his walk, WayOnMm past the point of it nearest where he stands (past whoever holds
+        /// him: his own place waits beside his body, so his goal sits by the one in his way, a teammate standing on his walk among them); anyone
+        /// else's, its goal.</summary>
+        Pt WayOn(in Bd b, Pt from, Pt goal)
+        {
+            if (b.Kind != BkOp || b.Path is not Path p) return goal; // only an operative's own place waits beside his body; anyone else's aim already runs ahead on its walk
+            long lag = (long)G.Dist(b.Raw, from) * 10 + 3000, at = p.NearestMm(from, b.PathMm - lag, b.PathMm + WayOnMm);
+            if (at >= p.Length - 100) return goal;
+            for (long mm = Math.Min(p.Length, at + WayOnMm); mm > at; mm -= 500) { var c = p.At(mm); if (BodyGround(in b, c)) return c; }
+            return goal;
+        }
+        /// <summary>A way round makes for this far along its own walk (mm).</summary>
+        const long WayOnMm = 3000;
         /// <summary>The way round, from where it stands to `goal`, round the bodies near it: taken (Det) unless none, or far longer than the straight
         /// line for how long it has been held; with `any`, however long (a change of plans: its next stop by another way), and with `all` round every
         /// body near it, those going its way too (another way, not the jammed one).</summary>
