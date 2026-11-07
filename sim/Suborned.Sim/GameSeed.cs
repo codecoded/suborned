@@ -177,7 +177,7 @@ namespace Suborned.Sim
             }
             foreach (var w in Walkers)
             {
-                if (R.Seeds.StaffFixed && (IsStaff(w.P) || ServerOf(w.P) != null)) continue; // who keeps a post or a round keeps its clock: check-in marks and the round read it
+                if (w.Added || (R.Seeds.StaffFixed && (IsStaff(w.P) || ServerOf(w.P) != null))) continue; // brief 098: an added person's times are their own draws already // who keeps a post or a round keeps its clock: check-in marks and the round read it
                 int k = T(DrawBand(w.P.Id, "phase", R.Seeds.CrowdPhaseS)); if (k == 0) continue;
                 var f = (int[])w.From.Clone(); var to = (int[])w.To.Clone(); // the routine's arrays are shared by every game of these inputs
                 for (int i = 1; i < f.Length; i++) f[i] = Math.Max(0, f[i] + k);

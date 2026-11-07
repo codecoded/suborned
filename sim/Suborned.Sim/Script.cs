@@ -72,6 +72,7 @@ namespace Suborned.Sim
             var w = new JWriter().Obj().Prop("id", id).Prop("outcome", g.Result.ToString().ToLowerInvariant()).Prop("fail", g.FailCode).Prop("tick", g.Tick)
                 .Prop("seed", g.Seed).Prop("cash", g.Cash).Prop("trail", g.Trail).Prop("alert", g.Alert).Prop("gunfire", g.Gunfire).Prop("standing", g.Standing)
                 .Prop("startHash", Hash.Hex(g.StartHash)).Prop("finalHash", Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash)).Prop("replayIdentical", replayIdentical);
+            if (g.DialOn) { w.Open("counts"); foreach (var c in g.Census) w.Prop(c.Kind, c.Count); w.EndObj(); } // brief 098: what the dial built (output only)
             w.Open("stats").Prop("fightS", g.CellFightS).Prop("shots", g.CellShots).Prop("hits", g.CellHits).Prop("hpLost", g.CellHpLost).Prop("down", g.CellDownCount).EndObj(); // brief 080: what a band reads (output only, never hashed)
             if (g.Cause != null) { w.Key("cause"); g.Cause.Write(w); } // the fail camera's culprit (FailCause.cs): written only when the run failed or withdrew
             w.OpenArr("checkpoints"); foreach (var (t, h) in g.Checkpoints) w.Obj().Prop("tick", t).Prop("hash", Hash.Hex(h)).EndObj(); w.EndArr();

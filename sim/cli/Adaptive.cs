@@ -240,9 +240,9 @@ static class Adaptive
     }
 
     /// <summary>Plays a plan on a seed: the whole driver. Mirrors Engine.Play's order of things (run to the tick, give the tick's orders), so Engine.Replay lands on the same checkpoints.</summary>
-    public static Game Play(Engine.Inputs inputs, Plan plan, int seed, out Extra extra)
+    public static Game Play(Engine.Inputs inputs, Plan plan, int seed, out Extra extra, IReadOnlyDictionary<string, int>? counts = null)
     {
-        var start = Start.Parse(plan.StartNode); start.Seed = seed;
+        var start = Start.Parse(plan.StartNode); start.Seed = seed; if (counts != null) DialCli.Apply(start, counts); // brief 098: the dial over the plan's start
         var g = Engine.New(inputs, start); int until = plan.Until > 0 ? plan.Until : Game.T(inputs.SiteData.Over);
         var x = new Extra { Plan = plan.Id, Style = plan.Style }; extra = x;
         var rules = plan.Rules; int n = rules.Count;
@@ -340,6 +340,7 @@ static class Adaptive
         w.Prop("cash", g.Cash).Prop("trail", g.Trail).Prop("alert", g.Alert).Prop("gunfire", g.Gunfire).Prop("standing", g.Standing);
         w.Prop("startHash", Hash.Hex(g.StartHash)).Prop("finalHash", Hash.Hex(g.Checkpoints[g.Checkpoints.Count - 1].hash));
         if (replayed) w.Prop("replayIdentical", same);
+        if (g.DialOn) { w.Open("counts"); foreach (var c in g.Census) w.Prop(c.Kind, c.Count); w.EndObj(); } // brief 098: what the dial built
         w.Open("stats").Prop("fightS", g.CellFightS).Prop("shots", g.CellShots).Prop("hits", g.CellHits).Prop("hpLost", g.CellHpLost).Prop("down", g.CellDownCount).Prop("captured", g.Captured.Count).EndObj(); // engine 0.42.0: captured (all four out = 0 on a win)
         if (g.Result == Outcome.Success)
         {

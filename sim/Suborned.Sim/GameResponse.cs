@@ -144,7 +144,7 @@ namespace Suborned.Sim
         /// then id; `skip` left out.</summary>
         IEnumerable<Pt> TiePlaces(Person p, Person? skip)
         {
-            if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts)) yield break;
+            if (People2 == null || !LiveTies.TryGetValue(p.Id, out var ts)) yield break;
             foreach (var kind in R.CloseTies.Count == 0 ? new List<string>() : new List<string> { "lover", "family", "workmate" })
             {
                 var ids = new List<string>(); foreach (var (k, id) in ts) if (k == kind && R.CloseTies.Contains(k)) ids.Add(id);
@@ -503,7 +503,7 @@ namespace Suborned.Sim
         /// before a stop at that door is a relief's wait (the last minute of her walk), not her shift.</summary>
         (string place, Pt at, int from, int to)? PostOf(Person p, int tick)
         {
-            if (!IsStaff(p)) return null;
+            if (!IsStaff(p)) return null; if (beats.Count > 0 && beats.ContainsKey(p.Id)) return BeatPost(p, tick); // brief 098: an added guard's post is his beat
             var stops = StopsOf(p); if (stops == null) return null;
             string PostAt(int k)
             {
@@ -528,7 +528,7 @@ namespace Suborned.Sim
         }
         List<(string place, int from, int to, bool outside)>? StopsOf(Person p)
         {
-            if (People2 == null || !People2.Stops.TryGetValue(p.Id, out var s)) return null;
+            if (People2 == null || !StopsBase(p.Id, out var s)) return null; // brief 098: as this game holds them (GamePopulation.cs)
             if (!Start.OldClock) return s;
             if (oldStops.TryGetValue(p.Id, out var o)) return o; // test only: OldClockS later, as the walkers are (SeedStart)
             o = new List<(string, int, int, bool)>(s.Count); foreach (var (pl, f, t, ou) in s) o.Add((pl, f + T(OldClockS), t + T(OldClockS), ou)); oldStops[p.Id] = o; return o;
@@ -588,7 +588,7 @@ namespace Suborned.Sim
                 {
                     if (Tick < qFrom || Tick >= qTo || place == "beyond") continue;
                     if (!People2.Places.TryGetValue(place, out var placeAt)) continue;
-                    if (!People2.Ties.TryGetValue(q.Id, out var ts)) continue;
+                    if (!LiveTies.TryGetValue(q.Id, out var ts)) continue;
                     var ids = new List<(string kind, string id)>(); foreach (var (k, id) in ts) if (R.CloseTies.Contains(k)) ids.Add((k, id));
                     ids.Sort((x, y) => string.CompareOrdinal(x.id, y.id));
                     foreach (var (kind, id) in ids)
