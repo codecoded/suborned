@@ -29,6 +29,7 @@ namespace Suborned.Play
         public void BriefingBegin()
         {
             if (!ShowBriefing) return;
+            if (DialPending) { DialPlay(); return; } // brief 098: numbers changed on the dial: the street is built with them first, then this again (HostDial)
             if (!cam || Game == null || Game.Over) { StartClock(); return; }
             ShowBriefing = false; Paused = true; ClearHover(); Status = "";
             StartT = BriefExitS + BriefGlideS; glideFrom = glideTo = focus; glideYawFrom = glideYawTo = yawNow; // no glide: the view behind the page is where play starts

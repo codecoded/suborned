@@ -47,6 +47,7 @@ namespace Suborned.Play
             if (!host.BookOpen) { if (bk != null) BookTake(); return false; }
             if (bk == null) BookBuild();
             if (bkFor != host.BookPageNow && host.BookPageNow != null) BookDraw(host.BookPageNow);
+            DialHud(); // brief 098: the dial's dev panel while the book is the start (HudToolkit.Dial)
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? BookLayout.Grid : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? BookLayout.GridH : size.y, k = Mathf.Min(W / BookLayout.Grid, H / BookLayout.GridH);
             bkPage.style.left = W - BookLayout.Grid * k; bkPage.style.top = (H - BookLayout.GridH * k) / 2f; bkPage.style.scale = new Scale(new Vector3(k, k, 1f));
             float u = Mathf.Clamp01((Time.unscaledTime - bkOpenedAt) / 0.16f), e = 1f - (1f - u) * (1f - u); bkBody.style.opacity = e; bkBody.style.translate = new Translate(90f * (1f - e), 0f);

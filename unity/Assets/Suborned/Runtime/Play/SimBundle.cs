@@ -17,8 +17,9 @@ namespace Suborned.Play
     {
         public static string Dir => Path.Combine(Application.streamingAssetsPath, "sim");
         /// <summary>Brief 013 E: the provisional facts (security level 2) and the world's takedown places (stashes, service doors, call boxes,
-        /// posts, watchers) load too, or the engine runs at level 1 with no stashes and no record matches headless.</summary>
-        public static readonly string[] Files = { "rulebook.json", "people.rules.json", "handover.site.json", "handover.people.json", "handover.provisional.json", "handover.takedown.json", "handover.rounds.json" }; // brief 022: Inez's rounds (without them the host plays none: a split from headless)
+        /// posts, watchers) load too, or the engine runs at level 1 with no stashes and no record matches headless. Brief 098 step 0: the dial's
+        /// rules (population.json) too, read only by a start that sets counts and never in the inputs hash; without them any count is refused.</summary>
+        public static readonly string[] Files = { "rulebook.json", "people.rules.json", "handover.site.json", "handover.people.json", "handover.provisional.json", "handover.takedown.json", "handover.rounds.json", "population.json" }; // brief 022: Inez's rounds (without them the host plays none: a split from headless)
 
         public sealed class Loaded
         {
@@ -27,7 +28,7 @@ namespace Suborned.Play
             public JNode Manifest;
         }
 
-        /// <summary>Reads engine.json and the six inputs, checks every hash, and builds the engine's inputs. Throws on any mismatch.</summary>
+        /// <summary>Reads engine.json and the inputs (Files), checks every hash, and builds the engine's inputs. Throws on any mismatch.</summary>
         public static Loaded Load()
         {
             var manifestPath = Path.Combine(Dir, "engine.json");
@@ -46,7 +47,7 @@ namespace Suborned.Play
             }
             return new Loaded
             {
-                Inputs = Engine.FromTexts(texts[0], texts[1], texts[2], texts[3], texts[4], texts[5], texts[6]),
+                Inputs = Engine.FromTexts(texts[0], texts[1], texts[2], texts[3], texts[4], texts[5], texts[6], texts[7]),
                 Commit = m["commit"].Str(), Source = m["source"].Str(), DllSha = m["dllSha256"].Str(), Manifest = m,
             };
         }

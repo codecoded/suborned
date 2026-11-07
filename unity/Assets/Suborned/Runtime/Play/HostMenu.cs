@@ -55,7 +55,7 @@ namespace Suborned.Play
             if (!g.Over) g.RunTo(sc.Until);
             lastLog = g.Log.Count; Continued = true;
             Debug.Log($"Play: continued {System.IO.Path.GetFileName(path)} at tick {g.Tick} ({sc.Orders.Count} orders)");
-            return g;
+            return DialStarted(g); // brief 098: the saved start's counts built the same world; its census to the log
         }
 
         public void QuitFromMenu()

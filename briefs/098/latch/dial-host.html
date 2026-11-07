@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Brief 098 step 0: the dial in the game (Latch)</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:980px;margin:32px auto;padding:0 20px;color:#17302f;background:#f9f7ee}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:19px;margin:28px 0 8px;border-bottom:1px solid #d2e6e2;padding-bottom:4px}
+.sub{color:#4e625f;margin:0 0 18px}table{border-collapse:collapse;margin:8px 0 14px;font-size:14px}th,td{border:1px solid #d2e6e2;padding:4px 8px;text-align:left;vertical-align:top}
+th{background:#e9f2ef}td.n{text-align:right;font-variant-numeric:tabular-nums}code{background:#eef3f1;padding:0 4px;border-radius:3px;font-size:13px}
+.ok{color:#1f6c67;font-weight:600}.note{color:#4e625f}li{margin:3px 0}
+</style></head><body>
+<h1>Brief 098 step 0: the dial in the game</h1>
+<p class="sub">Latch, 2026-11-07, branch work/098-living-playbook, engine suborned.sim/0.45.0 (Keel's dial). The host side: the bundle, the start page's dev panel, the counts in the run, the views of the added, <code>-counts</code>. Pictures stay on disk beside this file (<code>pics/</code>, git-ignored).</p>
+
+<h2>What Sky gets</h2>
+<ul>
+<li><b>The panel</b>, bottom left on the street beside the start page (the book's Job page at 0:00), only while the start is up: per kind (Guards, People) <b>−10, −, the number, +, +10</b>, today's number with the fewest (the cast never leave) and the most beside it; <b>Today</b> puts both back; <b>Play ›</b> builds the street with those numbers on the same seed and begins. The page's own Begin does the same once a number changed, so no start ever plays numbers the panel no longer shows. Clicks only: no key does any of it. A changed number reads in turquoise; the line under says <i>Changed: Play builds this street</i>, or what plays now (<i>Now: guards 19 (+3) · people 150 (+36)</i>). Pictures: <a href="pics/start-panel-more.png">pics/start-panel-more.png</a>, <a href="pics/probe-dial-2-changed.png">pics/probe-dial-2-changed.png</a>.</li>
+<li><b>Which counts a game plays.</b> Replay and Restart keep the counts of the game just played (as they keep its seed). The panel's Play takes its numbers. Else <code>-counts</code> as given. Else, for a person playing, the numbers last played (PlayerPrefs <code>suborned.dial.guards</code>, <code>suborned.dial.people</code>, so the numbers come back at the next launch). A proof, a batch row or a probe plays today's world unless it passes <code>-counts</code>, and never reads or writes those numbers (HostSeed's rule for the seed; HostNight's for the night look).</li>
+<li><b>Unchanged numbers are no counts.</b> A kind at today's number is left out of the start; a start with none set is today's game byte for byte (the probe: Today then Play gives the first game's start hash exactly).</li>
+<li><b>Saved with the run.</b> The counts are in the start (<code>"start": {"seed": …, "counts": {…}}</code>), written by the engine's Script.Write like the seed, so seed + counts + orders replay; Continue rebuilds them.</li>
+<li><b>The census</b> goes to the player log at every start: per kind asked, plays, today's, the fewest and the most, the note, who was added and who left.</li>
+<li><b><code>-counts guards=19,people=150</code></b> (':' works for '=' too) for the shot rig and perf runs; an unknown kind is refused (unknown = reject).</li>
+<li><b>The added people</b> are walkers like anyone: guard and passer-by figures through the job families (no pool by id), walk, sit at free café seats, run and lie down; the hover reads them through the engine (<i>a guard</i>, <i>a passer-by</i>); the views are built from the game's walkers at every start, so a street rebuilt with fewer keeps no view of anyone who left.</li>
+</ul>
+
+<h2>Evidence</h2>
+<h3>The player probe: 19/19 (<code>-dialProbe</code>, dial-probe.json; a rolled seed each run)</h3>
+<table><tr><th>check</th><th>detail</th></tr>
+<tr><td class="ok">a new game with no counts is today's world</td><td>126 walkers</td></tr>
+<tr><td class="ok">the panel is up with its buttons; the clicks set the numbers; a click builds nothing</td><td>19 / 150, "Changed: Play builds this street" (<a href="pics/probe-dial-2-changed.png">picture</a>)</td></tr>
+<tr><td class="ok">Play builds the street again on the same seed, then begins</td><td>124 to 258 ms over four runs with more people (the engine's start and every figure); 17 to 19 ms back to fewer or today</td></tr>
+<tr><td class="ok">a crowd view a walker, none left over (the host's table and the scene's own objects)</td><td>today 126, more 165 (39 added), Replay 165, fewer 64, today again 126</td></tr>
+<tr><td class="ok">hover on an added guard and an added passer-by reads as anyone</td><td>"a guard", "a passer-by" (<a href="pics/probe-dial-3-hover-guard.png">guard</a>, <a href="pics/probe-dial-3-hover-visitor.png">passer-by</a>)</td></tr>
+<tr><td class="ok">an added guard taken down lies where he fell, his standing view gone</td><td>the Enforcer's knockout on x-guard-001; the city answers as for anyone: seen, reported, "Police coming" (<a href="pics/probe-dial-3-down-guard.png">picture</a>)</td></tr>
+<tr><td class="ok">Replay keeps the seed and the counts; fewer by clicks plays 8 / 60, the cast kept (62 left)</td><td></td></tr>
+<tr><td class="ok">Today then Play is today's world byte for byte</td><td>the first game's start hash</td></tr>
+<tr><td class="ok">a probe neither reads nor writes the numbers last played</td><td></td></tr>
+</table>
+
+<h3>The census per setting (route-a-board, seed 0; census.txt)</h3>
+<table><tr><th>setting</th><th>guards</th><th>people</th></tr>
+<tr><td>today (no counts)</td><td colspan="2">unset, today's world: guards 16, people 114</td></tr>
+<tr><td>fewer 8 / 60</td><td>plays 8; removed 8 (all p-records-office-*)</td><td>plays 60; removed 54 (mostly Office and café staff indoors)</td></tr>
+<tr><td>more 19 / 150</td><td>plays 19; added x-guard-001..003</td><td>plays 150; added x-person-0001..0036</td></tr>
+<tr><td>×2 32 / 228</td><td>plays 32; added 16</td><td>plays 228; added 114</td></tr>
+<tr><td>×4 64 / 456</td><td>plays 64; added 48</td><td>plays 456; added 342</td></tr>
+</table>
+
+<h3>Frame times on the Studio (frames.json)</h3>
+<p class="note">Scratch player 0.2.254-scratch, lean OldTown (the zone and a 110 m margin), 1920 x 1080 window, no vsync, 8 s of frames with the clock running at play zoom. The GPU recorder's figure is noisy (the Office view's swings 1.6 to 2.9 ms with no trend); the mean is the reading. Not the Air (a run there needs Sky's OK).</p>
+<table><tr><th>setting</th><th>walkers</th><th>square mean ms</th><th>square p99</th><th>square GPU</th><th>Office mean ms</th><th>Office p99</th><th>Office GPU</th></tr>
+<tr><td>fewer 8 / 60</td><td class="n">64</td><td class="n">3.52</td><td class="n">5.91</td><td class="n">3.09</td><td class="n">3.34</td><td class="n">5.70</td><td class="n">2.79</td></tr>
+<tr><td>today</td><td class="n">126</td><td class="n">3.63</td><td class="n">6.09</td><td class="n">3.10</td><td class="n">3.46</td><td class="n">5.81</td><td class="n">2.90</td></tr>
+<tr><td>more 19 / 150</td><td class="n">165</td><td class="n">3.70</td><td class="n">6.01</td><td class="n">3.19</td><td class="n">3.50</td><td class="n">5.90</td><td class="n">1.87</td></tr>
+<tr><td>×2 32 / 228</td><td class="n">256</td><td class="n">3.94</td><td class="n">6.40</td><td class="n">3.33</td><td class="n">3.71</td><td class="n">6.30</td><td class="n">1.63</td></tr>
+<tr><td>×4 64 / 456</td><td class="n">516</td><td class="n">4.40</td><td class="n">7.40</td><td class="n">2.80</td><td class="n">4.17</td><td class="n">6.90</td><td class="n">1.78</td></tr>
+</table>
+
+<h3>Shots at play zoom (route-a-board; every shot ok)</h3>
+<p>Per setting (today, fewer, more, x2, x4): <code>pics/&lt;setting&gt;-square.jpg</code> (the café at about 1:09), <code>-office.jpg</code> (2:09), <code>-pickup.jpg</code> (3:00), <code>-wide.jpg</code> (zoom 18 over the Office corner). The clip: <a href="pics/clip-x2-square.mp4">pics/clip-x2-square.mp4</a> (×2, the café square from 1:10, 8 s). At ×4 the café chairs fill and passers-by cross the square and the roads; at 8 / 60 the street looks almost as today's, because the 54 who leave are mostly indoors. The loud moment at ×2 (loud-fight, the Enforcer's shot on the door guard at 2:31): <a href="pics/x2-loud-before.jpg">before</a>, <a href="pics/clip-x2-loud.mp4">the clip</a>, <a href="pics/x2-loud-after.jpg">after</a>: the passers-by and the added guard on the call box leave the street.</p>
+
+<h3>No counts changes nothing</h3>
+<ul>
+<li>Host logic (<code>bun tools/game/hostlogic.ts</code>): 142 pass, 0 fail (the 132 before, unchanged, and 10 new in HostLogic.Dial098.cs).</li>
+<li>Unity's scenarios against headless with the new bundle (SimScenarios.RunBatch): 570/570 match headless at every checkpoint and replay identically; 569/570 pass their checks, the one being DP1, which fails identically headless (Keel: a recorded drive session to re-record).</li>
+<li>The bundle (<code>bun tools/sim/unity.ts --routes</code>): population.json validated with Keel's zod schema and shipped as the eighth input; 472/473 headless (DP1), 97/97 range.</li>
+<li>The player's own saved sessions of the more, ×2, ×4 and fewer runs (17 orders to 1810 each) replay headless to their records: inputs, engine, start, every checkpoint, outcome.</li>
+<li>Delta proof on the scratch player (<code>-gameProof -proofOnly</code> the sections the proof map gives the touched files, and seed): seed, act, hudClick, holdActs, holdRange, r059, r067, r123 (with inputMap and leash) ok. r083 fails three camera parts (clickWalks: the view moved on a click; bookCameraReturns: back within 1.31 m; r085viewBack), and fails them identically on main097's scratch build from before this work (1.3056 m), so they come with the lean scratch scene or the 097 code, not the dial. Seed: a new game rolls, Replay keeps it, a saved run replays the same.</li>
+</ul>
+
+<h2>Open</h2>
+<ul>
+<li><b>Sky's call (open):</b> what "people" counts. Today it is the whole zone (114, about 22 on the street at a time), so fewer mostly takes indoor staff away and the street barely changes, while more adds only passers-by. The panel is built per kind from the census: either answer changes only the engine's meaning and the row's label.</li>
+<li><b>Sky's or Aster's call:</b> the panel shows on the start page in every build, release too, so Sky sees it. Glyph's rule for labs (0.2.104 #6) keeps lab controls to a development player or <code>-debug</code> (FrontEnd.DebugOptions); before any public build it goes behind that.</li>
+<li>Glyph and Pulse: an added guard's door beat point stands 2 m out of the door, inside the door marker's 2.4 m box; with an agent selected whose calm way is on the door, the overlap rule (brief 067 F8) puts the door first and Tab steps to the guard. As designed, but it reads as "the guard won't take my hover" there.</li>
+<li>Pulse (Keel's open question): at ×4, 48 added guards share the 20 beat points, two or three to a call box, and stand in a knot there.</li>
+<li>Motive (Keel's open question): added guards don't engage a drawn gun; no crowd guard does today.</li>
+<li>DP1 makes <code>bun tools/sim/unity.ts</code> exit 1 (as on the base); the batch's sim step stops there until Keel re-records it.</li>
+<li>Remembering the numbers between launches runs only for a person's launch (any command-line switch makes a run automation, which never reads or writes them), so no automated run exercised it: one manual launch by Sky shows it.</li>
+</ul>
+</body></html>
