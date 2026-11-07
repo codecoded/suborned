@@ -53,6 +53,20 @@ The player leaves knowing why they won or lost and what to try next.
 - Clickable, never key-only. The page gives no orders; its ways on are buttons.
 - It reads the run and never changes it: a replay is untouched.
 
+## Sky's pick (2026-11-07)
+"yeah, try A": concept A, the front page (`briefs/099/glyph/A-front-win.png`, board `briefs/099/glyph/board.png`).
+- The start page's rows come back ticked, each with the time it came true; a fail's row is in orange with "Next time" under it.
+- Five numbers with their reasons: time, spent, Trail, Alert, Standing. Each opens as the book's fold.
+- What the city does now, and the run along the foot.
+- Watch the replay · Back to the start · Try again (new or same start).
+
+Glyph's notes: C's cards later become the end page's Cell tab, and B's clock the Journal.
+
+**Build order:**
+1. Latch builds A on the book's slots after the sight cones, from the data the host already has (the game builds the debrief on every ending) and the log.
+2. Fable turns Glyph's 140 stand-ins (`briefs/099/glyph/words.md`) into text.json after brief 100's words.
+3. Keel adds the cash rows and per-agent shot counts after law L9; the stand-ins hold until then.
+
 ## Owners
 - Glyph: layout and concepts.
 - Fable: words.
