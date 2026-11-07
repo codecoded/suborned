@@ -108,7 +108,7 @@ namespace Suborned.Sim
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
                 var (s1, s2) = st!.Value; int eff = g.PistolW.EffCm;
                 var tp = KiteSpot(g, s1, eff + 50, eff + 250, eff + 50, s2);
-                var fp = g.S.Grid.Nearest(s1, q => G.D2(q, s1) >= 1100L * 1100 && G.D2(q, s1) <= 1300L * 1300 && g.SecOfficerWatching(0, q, false), 1800); // inside the ring, in his watch
+                var fp = g.S.Grid.Nearest(s1, q => G.D2(q, s1) >= 1100L * 1100 && G.D2(q, s1) <= 1300L * 1300 && g.SecOfficerWatching(0, q, false) && g.SecOfficerWatching(1, q, false), 1800); // inside the ring, in both officers' watch (brief 098 L9: each faces his own sector now)
                 if (!r.Is(tp.HasValue && fp.HasValue, "a spot for the Tech beyond the ring, one for the Fixer inside it")) return;
                 r.To(Max(r.SendTo(Tech, tp!.Value), r.SendTo(Fixer, fp!.Value)));
                 r.Do(Fixer, "draw"); r.Do(Tech, "draw"); r.Wait(g.DrawT + 1);
@@ -165,7 +165,7 @@ namespace Suborned.Sim
                 if (!r.Is(back.Code == "ai.kite", "the crew comes back")) return;
                 r.Is(back.Tick - answered >= g.Labr.KiteHide, $"not before kite.hide ({g.Labr.KiteHide} ticks) of quiet");
                 // brief 059: he stood posted at the front, on no walk: no arrival clock to shift (a member still walking shifts his walk by the detour)
-                r.Eq(g.MemberPose(g.Crew[0])?.pos, at, "back where it stood");
+                r.Is(r.Until(() => g.MemberPose(g.Crew[0])?.pos == at, T(10)), $"back where it stood ({g.MemberPose(g.Crew[0])?.pos}, {Report.Clock(g.Tick)})"); // brief 098 L9: his own place is back at once; his body follows round whoever stands in its way (the response unit spread along the front)
             }, LabStart(s => s.Security = 1));
         }
     }

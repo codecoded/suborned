@@ -19,8 +19,9 @@ namespace Suborned.Sim
                 r.Is(r.Op(Enf).Gun.Drawn && r.Op(Enf).Gun.DrawnBy == "fire", $"drawn by the fire order ({r.Op(Enf).Gun.DrawnBy})");
                 if (!r.Is(r.Until(() => g.Fights.Count > 0, T(120)), $"the fight goes quiet and ends ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})")) return;
                 int end = g.Fights[0].End;
-                if (!r.Is(r.Until(() => g.Log.Exists(l => l.Code == "holster.auto"), T(30)), $"the engine holsters the fight's weapon ({g.Result} at {Report.Clock(g.Tick)})")) return;
+                if (!r.Is(r.Until(() => g.Log.Exists(l => l.Code == "holster.auto"), T(90)), $"the engine holsters the fight's weapon ({g.Result} at {Report.Clock(g.Tick)})")) return;
                 var line = g.Log.First(l => l.Code == "holster.auto");
+                end = g.Fights.Where(f => f.End <= line.Tick).Max(f => f.End); // brief 098 L9: a police unit's second officer now stands bodies.crew off the scene, in his sight, and may start a second fight before the 4 s are up: the holster follows the fight that went quiet last
                 r.Is(line.Tick >= end + T(g.R.AutoHolsterS) && line.Text.StartsWith("enforcer", StringComparison.Ordinal), $"the Enforcer's, {line.Tick - end} ticks after the fight ended (4 s, or later while a hostile has him in sight)");
                 r.Wait(g.R.HolsterTicks + 1);
                 r.Is(!r.Op(Enf).Gun.Drawn && r.Op(Enf).Gun.DrawnBy == "", "his carbine is holstered");

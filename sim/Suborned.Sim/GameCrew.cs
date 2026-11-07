@@ -151,7 +151,7 @@ namespace Suborned.Sim
                     break;
                 case "misled": Post(m, "misled", end, back); m.Until = Tick + T(Cr.MisledS); break; // GameCrewTurn.cs: he watches where he was sent
                 case "follow": Post(m, "follow", end, FaceFrom(end, CarPos())); break; // he stands at the target's car (LookoutReach)
-                case "front": Post(m, "front", end, back); break;
+                case "front": Post(m, "front", end, FrontFace(m, back)); break; // brief 098 L9: each faces his own sector
                 case "exit": m.Mode = CrewMode.Gone; m.ModeTick = Tick; Note("rivals.gone", $"{m.Id} of the rival crew walks off the map."); break;
                 case "aboard": m.Mode = CrewMode.Aboard; m.ModeTick = Tick; m.Post = ""; break; // engine 0.33.0: a woken member back in his car (M059-3.4)
                 case "leave": m.Mode = CrewMode.Gone; m.ModeTick = Tick; Note("rivals.gone", $"{m.Id} of the rival crew walks off the map."); break; // engine 0.33.0: a woken member with his car gone
@@ -223,7 +223,7 @@ namespace Suborned.Sim
         {
             Pt a = S.Stand(S.RivalsFront), c = S.At(S.RivalCarFront); var f = a - c; long len = Math.Max(1, G.Isqrt((long)f.X * f.X + (long)f.Y * f.Y));
             int[] ks = { 0, 1, -1, 2, -2 }; int k = ks[Math.Min(m.N - 1, ks.Length - 1)];
-            var p = new Pt(a.X + (int)(-f.Y * 90L * k / len), a.Y + (int)(f.X * 90L * k / len));
+            long gap = R.BodiesOn ? R.BodyCrewCm : 90L; var p = new Pt(a.X + (int)(-f.Y * gap * k / len), a.Y + (int)(f.X * gap * k / len)); // brief 098 L9 (groups spread): bodies.crew apart, was 90 cm
             return Walk.NearestFree(p) ?? a;
         }
         /// <summary>F5: the crew on foot makes for the Office front now; the car keeps its block (engine 0.41.0, Motive rivals.json routine.drawn: one
@@ -380,110 +380,6 @@ namespace Suborned.Sim
             return true;
         }
 
-// ---------------------------------------------------------------- poses and reads
-
-        /// <summary>Where a member stands now (his fight body's place once he fights), or the car's while aboard.</summary>
-        public Pt MemberPos(CrewMember m, int tick)
-        {
-            if (m.Fight && m.H != null) return m.H.Pos(tick);
-            if (m.Gun.Down) return BodyOf(m.P) is Body b ? BodyPos(b) : m.DownAt; // engine 0.33.0: a body taken down, carried or stashed
-            switch (m.Mode)
-            {
-                case CrewMode.Walking: return m.Disp != null ? DispPose(m.Disp, rivSpeed, tick).pos : WalkPos(m, tick);
-                case CrewMode.Posted:
-                    if (m.Disp != null) return DispPose(m.Disp, rivSpeed, tick).pos;
-                    if (m.Post == "lookout") { var (b, into) = CrewRules.BeatAt(Cr.LookoutLoop, m.Id, tick - m.PostTick); int pace = Cr.LookoutPaceCm; int off = b.Move > 0 ? pace * into / (b.S * Hz) : b.Move < 0 ? pace - pace * into / (b.S * Hz) : b.AtPace ? pace : 0; return m.Place + new Pt(0, off); }
-                    return m.Place;
-                case CrewMode.Talking: case CrewMode.Boarding: return m.Place;
-                default: return RivalCarPose()?.pos ?? S.Stand(S.RivalsPark);
-            }
-        }
-        /// <summary>A member on the street now (on foot, up, not gone): his place and facing; null while aboard, down or gone (off the street).</summary>
-        public (Pt pos, Pt facing)? MemberPose(CrewMember m)
-        {
-            if (m.Gun.Down || m.Mode == CrewMode.Gone) return null;
-            if (m.Fight && m.H != null)
-            {
-                var h = m.H; if (!h.Present) return null; var p = h.Pos(Tick);
-                var tp = h.Gun.Target.Length > 0 ? PosOf(h.Gun.Target) : null;
-                if (tp.HasValue && tp.Value != p) return (p, tp.Value - p);
-                if (h.Run != null && h.Moving(Tick)) return (p, h.Run.Heading((long)Math.Max(0, Tick - h.RunStart) * h.Speed));
-                return (p, FaceFrom(p, Car));
-            }
-            switch (m.Mode)
-            {
-                case CrewMode.Walking:
-                    if (m.Disp != null) return DispPose(m.Disp, rivSpeed, Tick);
-                    { long mm = (long)Math.Max(0, Tick - m.WalkStart) * m.Speed; return (m.Walk!.At(mm), mm >= m.Walk.Length ? Back(m.Walk) : m.Walk.Heading(mm)); }
-                case CrewMode.Posted:
-                    if (m.Disp != null) return DispPose(m.Disp, rivSpeed, Tick);
-                    return (MemberPos(m, Tick), Yaw(m.Base, BeatOf(m).beat.Yaw));
-                case CrewMode.Talking: case CrewMode.Boarding: return (m.Place, m.Base);
-                default: return null;
-            }
-        }
-        (CrewBeat beat, int into) BeatOf(CrewMember m)
-        {
-            var loop = m.Post == "lookout" ? Cr.LookoutLoop : Cr.PostedLoop;
-            var id = m.Post == "lookout" ? m.Id : m.N <= Cr.Posted ? m.Id : "rival-1"; // the wheelman on foot plays the posted loop on rival-1's phase
-            return CrewRules.BeatAt(loop, loop.PhaseS.ContainsKey(id) ? id : "rival-1", Tick - Math.Max(0, m.PostTick));
-        }
-        /// <summary>The base facing turned by a beat's yaw (rulebook rivals.beats.rule): cos/sin per mille 30 → (866, 500), 60 → (500, 866).</summary>
-        static Pt Yaw(Pt f, int yaw)
-        {
-            if (yaw == 0) return f;
-            int c = Math.Abs(yaw) == 30 ? 866 : 500, s = (Math.Abs(yaw) == 30 ? 500 : 866) * Math.Sign(yaw);
-            var r = new Pt((int)(((long)f.X * c - (long)f.Y * s) / 1000), (int)(((long)f.X * s + (long)f.Y * c) / 1000));
-            return r == new Pt(0, 0) ? f : r;
-        }
-        /// <summary>Host read (never hashed): the beat a member plays now ("" while aboard or in the fight), for his pose.</summary>
-        public string MemberBeat(string id)
-        {
-            var m = CrewOf(id); if (m == null || m.Fight || m.Gun.Down) return "";
-            if (m.Mode == CrewMode.Aboard) return m == Wheelman ? CrewRules.BeatAt(Cr.WheelmanLoop, m.Id, Tick - CarStTick).beat.Pose : "";
-            if (m.Mode == CrewMode.Talking) return "talk";
-            if (m.Mode == CrewMode.Boarding) return "board";
-            if (m.Mode == CrewMode.Walking) return "walk";
-            if (m.Mode != CrewMode.Posted) return "";
-            var b = BeatOf(m).beat.Pose;
-            if (b == "lean") { bool cover = false; foreach (var c in LiveCover) if (G.Within(c.At, m.Place, R.CoverSnapCm)) { cover = true; break; } if (!cover) b = "watch"; }
-            return b;
-        }
-
-        /// <summary>A member's cone sees p (perception.rivals; its own sight ignores people): on foot, on the street, drawn or watching it from
-        /// their arrival (ai.intent.rivals.street).</summary>
-        public bool MemberWatching(CrewMember m, Pt p)
-        {
-            if (!RivalsDrawn && !R.Intent.RivalsStreet) return false;
-            var pose = MemberPose(m); if (!pose.HasValue) return false;
-            return G.InCone(pose.Value.pos, pose.Value.facing, R.RivReachCm, R.RivHalfCm, near, p) && Sees(pose.Value.pos, p);
-        }
-        /// <summary>Any member of the crew on foot sees p (RivalsStreetWatching's crew-wide answer).</summary>
-        bool CrewSees(Pt p) { foreach (var m in Crew) if (!m.Fight && MemberWatching(m, p)) return true; return false; }
-        /// <summary>The crew on the map and watching the street (ai.intent.rivals.street, or drawn), any member on foot and up.</summary>
-        bool CrewStreetOn { get { if (!RivalsDrawn && !R.Intent.RivalsStreet) return false; foreach (var m in Crew) if (!m.Fight && Up(m) && m.OnFoot) return true; return false; } }
-
-        /// <summary>Pulse §8 (host read, never hashed): what a Watch on the rivals shows of a member or the car: the next move's kind, its tick (−1
-        /// for none) and where. The car: stops (its block point's arrival), back (after a break). The posted three: spring (the ring round the
-        /// cell's car). The lookout (engine 0.41.0): follows (the target's car, from when it is due to leave), back (a misled man's return to his post).</summary>
-        public (string kind, int tick, Pt at)? RivalNext(string id)
-        {
-            if (id == "car:rivals" || id == "rivals")
-            {
-                switch (CarSt)
-                {
-                    case CrewCar.Away: return ("back", RivalsDelayedUntil, BlockAt(StandForCrew()).at);
-                    case CrewCar.Entering: case CrewCar.Returning: if (CarMoving) return ("stops", ccStart + ccProf!.Length - 1, ccPath!.End); return null;
-                    default: return null;
-                }
-            }
-            var m = CrewOf(id); if (m == null || !Up(m)) return null;
-            if (m.Mode == CrewMode.Posted && m.Post == "spot") return ("spring", -1, Car);
-            if (m.Mode == CrewMode.Posted && m.Post == "misled") return ("back", MisledBackTick(m), m == Lookout ? S.Stand(S.RivalLookout) : S.Stand(CrewStand.Ambush[Math.Max(0, m.Spot)]));
-            if (m == Lookout && m.Mode == CrewMode.Posted && m.Post == "lookout" && (Vale == ValeAt.Office || Vale == ValeAt.Leaving || Vale == ValeAt.Pickup)) return ("follows", T(valeAtCarS) + T(R.ValeInS), CarPos());
-            return null;
-        }
-
         // ---------------------------------------------------------------- shot on the street (Motive M059-3.1, 3.5)
 
         /// <summary>A member of the crew on the street is hit (Damage, its Trail already charged as any person's). Down, he lies where he fell; if
@@ -492,7 +388,7 @@ namespace Suborned.Sim
         void MemberHit(CrewMember m, bool down, string by)
         {
             if (!down) { Note("rivals.hit", $"{m.Id} of the rival crew is hit."); return; }
-            m.DownAt = RawMemberPos(m, Tick); m.Disp = null; m.Until = INF; ReleaseCover(m.Gun); LoseTarget(m.Gun);
+            m.DownAt = !m.Fight && m.N >= 1 && m.N <= crewLay.Length ? Laid(RawMemberPos(m, Tick), crewLay[m.N - 1], Tick, CrewPlan(m)) : RawMemberPos(m, Tick); // brief 098 L9: he falls where he stood, laid m.Disp = null; m.Until = INF; ReleaseCover(m.Gun); LoseTarget(m.Gun);
             Note("rivals.down", $"{m.Id} of the rival crew is down."); Chain.Add(m.Id + "-down");
             CrewBreakCheck();
         }

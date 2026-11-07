@@ -152,7 +152,7 @@ namespace Suborned.Sim
                 if (stopFace != null && w.St == "startled" && lastShooterFor.TryGetValue(w.P.Id, out var src)) { var d = src - w.At; if (d != new Pt(0, 0)) return d; }
                 return null;
             }
-            return RoutineFacing(w, Tick);
+            return BodyFace(w) ?? RoutineFacing(w, Tick); // brief 098 L9: a guard at a post another holds faces his own sector
         }
         /// <summary>The way the routine has a person of the crowd facing at a tick (their leg, the stop's facing); a read for a card too.</summary>
         Pt? RoutineFacing(Walker w, int tick)

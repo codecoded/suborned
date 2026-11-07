@@ -255,8 +255,32 @@ namespace Suborned.Sim
         public bool Takedown(string target, string how)
         {
             var a = G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "takedown", Target = target, How = how });
+            // brief 098 L9: the target stands where the law laid them (beside its routine's place when others press round it, or held up a
+            // moment), not always where its routine's timetable has them; a scenario that walked the Enforcer to the timetable's place closes
+            // the last few metres on where they stand, then takes them (the law stops him beside them, never in them)
+            for (int k = 0; k < 3 && !a.ok && a.code == "too-far" && G.R.BodiesOn && Where(target) is Pt tp && G.Within(tp, Op("enforcer").Pos, 600); k++)
+            {
+                G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "move", Point = tp });
+                Until(() => Op("enforcer").Walk == null || Where(target) is Pt q && G.Within(q, Op("enforcer").Pos, G.R.TakedownReachCm - 10), Game.T(8));
+                a = G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "takedown", Target = target, How = how });
+            }
             return Is(a.ok, $"enforcer takedown ({how}) {target} taken at {Report.Clock(G.Tick)}{(a.ok ? "" : ": " + a.why)}");
         }
+        /// <summary>Brief 098 L9: wait up to `limit` ticks for the target to come within the Enforcer's reach; once they are on the street within
+        /// 6 m he closes on where they walk (a walk to where they stand, re-aimed each second). True once in reach.</summary>
+        public bool CloseOn(string target, int limit)
+        {
+            int end = G.Tick + limit;
+            while (G.Tick < end && !G.Over)
+            {
+                if (Where(target) is Pt p && G.Within(p, Op("enforcer").Pos, G.R.TakedownReachCm - 10)) return true;
+                if (G.Tick % Game.Hz == 0 && Where(target) is Pt q && G.Within(q, Op("enforcer").Pos, 600)) G.Issue(new Order { Tick = G.Tick, Op = "enforcer", Do = "move", Point = q });
+                G.Step();
+            }
+            return Where(target) is Pt f && G.Within(f, Op("enforcer").Pos, G.R.TakedownReachCm - 10);
+        }
+        /// <summary>Where a person stands now, by role or id: the cast, anyone of the crowd (guards too), a member of the crew.</summary>
+        Pt? Where(string target) => G.PersonById(target) is Person p ? G.PosOfPerson(p) : G.PosOf(target);
         /// <summary>A body order now (carry, drop, stash, restrain) by an operative; checks it was taken.</summary>
         public bool Body(string op, string verb, string target = "")
         {

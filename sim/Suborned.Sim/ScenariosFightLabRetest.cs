@@ -130,7 +130,7 @@ namespace Suborned.Sim
                 if (mate != null) r.Is(mate.Gun.KiteAt >= 0 || mate.Gun.KiteLast >= 0, $"{mate.Id}, of the same dispatch, is alarmed too");
             }, LabStart(s => s.Security = 2));
 
-            Add("N163", "—", "Brief 027 retest R4 (Pulse retest-fixes.md §5.2; at security 0, the patrol downed first, as it turns toward gunfire): N158's crew, shot at once from beyond its ring by the Tech, who then stays drawn where he stood. The crew hides and does not lean back out while he stands within its max ring of the lean-out point; past kite.hideMax of holding it walks on toward him.", r =>
+            Add("N163", "—", "Brief 027 retest R4 (Pulse retest-fixes.md §5.2; at security 0, the patrol downed first, as it turns toward gunfire): N158's crew, shot at once from beyond its ring by the Tech, who then stays drawn where he stood. The crew hides and does not lean back out while he stands within its max ring of the lean-out point; past kite.hideMax of holding it walks on toward him. Rewritten for brief 098, law L9 (Bodies): rival-1 is drawn alone (the rest of the crew gone before the mission, test only), because the law now spreads a drawn crew bodies.crew apart to its sectors, and its flankers in the open answer the shot by walking to their ring and fighting him, which is another rule's; the rule here is rival-1's.", r =>
             {
                 var g = r.G; var st = KiteStage(r);
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
@@ -148,6 +148,7 @@ namespace Suborned.Sim
                     {
                         double ang = k * Math.PI / 36; var q0 = new Pt(rpos.X + (int)Math.Round(rr * Math.Cos(ang)), rpos.Y + (int)Math.Round(rr * Math.Sin(ang)));
                         if (!g.S.Grid.Free(q0) || G.D2(q0, o1) <= (long)(eff + 50) * (eff + 50) || G.D2(q0, o2) <= (long)(eff + 50) * (eff + 50) || !g.S.Sight(q0, rpos, g.R.Eye)) continue;
+                        if (g.Crew.Any(m => m.OnFoot && !m.Gun.Down && G.D2(q0, g.MemberPos(m, g.Tick)) <= (long)(eff + 50) * (eff + 50))) continue; // brief 098 L9: beyond every member's ring (the drawn crew now spreads bodies.crew apart, each to his sector)
                         if (g.PreviewAnswer(OpId.Tech, "rival-1", q0) is KiteAnswer ka && ka.Side == "rivals" && ka.Cover) tp = q0;
                     }
                 if (!r.Is(tp.HasValue, "a spot 15.5–17.5 m from the crew from which it has cover to hide behind")) return;
@@ -157,12 +158,19 @@ namespace Suborned.Sim
                 if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "tech" && s.target == "rival-1"), T(3)), "the Tech's shot goes")) return;
                 g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "stance", Stance = "hold" }); // he stays drawn on the line, and fires no more
                 if (!r.Is(r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 answers", StringComparison.Ordinal)), T(3)), "the crew answers")) return;
+                // brief 098 L9: the lean-out point is where rival-1's step out of the line began, which the law may lay a few tens of cm off where he
+                // stood when the stage was read, and the band between the pistol's ring and its max is 1 m: the Tech steps in to 15.5 m of that point
+                if (g.Crew[0].Disp?.P.At(0) is Pt lp && G.Dist(r.Op(Tech).Pos, lp) > g.Crew[0].Gun.W!.MaxCm - 30)
+                {
+                    var tq = r.Op(Tech).Pos; long dq = Math.Max(1, G.Dist(tq, lp)); var inside = new Pt(lp.X + (int)((tq.X - lp.X) * (eff + 50) / dq), lp.Y + (int)((tq.Y - lp.Y) * (eff + 50) / dq));
+                    r.SendTo(Tech, g.Walk.NearestFree(inside) ?? inside);
+                }
                 int quietFrom = g.Tick;
                 r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && (l.Text.StartsWith("rival-1 walks on", StringComparison.Ordinal) || l.Text.StartsWith("rival-1 leans out", StringComparison.Ordinal))) || g.Over, g.Labr!.KiteHide + g.Labr.KiteHideMax + T(30));
                 r.Is(!g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 leans out", StringComparison.Ordinal)), "it never leans back out into him");
                 var on = g.Log.FirstOrDefault(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 walks on", StringComparison.Ordinal));
                 r.Is(on.Code == "ai.kite" && on.Tick - quietFrom >= g.Labr.KiteHideMax, $"past kite.hideMax ({g.Labr.KiteHideMax} ticks) it walks on toward him");
-            }, LabStart(s => s.Security = 0));
+            }, LabStart(s => { s.Security = 0; s.CrewGone.AddRange(new[] { "rival-2", "rival-3", "rival-4" }); }));
 
             Add("N164", "—", "Brief 027 retest (Motive tuning.md §7.4), brief 059 (Motive M059-3.5): the cell drives the pre-fight crew back. The crew is five people now: each down member stays down (no fresh health at a drive-back: the single crew gun's lab rule is retired); once more than half of the crew on the map is down it breaks and makes for its car (rivals.retreat), and fires no more.", r =>
             {

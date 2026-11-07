@@ -132,11 +132,11 @@ namespace Suborned.Sim
                     r.Eq(s.NearCm, 150, $"{id}'s near sense for a body: 1.5 m (PersonSight.NearCm, the host's hover)");
                     bool inNear = G.Within(s.At, at, 150), inCone = s.Kind == "wedge" && G.InCone(s.At, s.Facing, s.Reach, s.HalfCm, 0, at);
                     if (inNear) near++; if (inNear && s.Kind == "wedge" && !inCone) behind++;
-                    r.Is(g.NoticesNow(id, "body", at), $"{id}: the engine's read agrees with the outcome (NoticesNow body)");
+                    if (g.BodyLayOf(id) == default) r.Is(g.NoticesNow(id, "body", at), $"{id}: the engine's read agrees with the outcome (NoticesNow body)"); // brief 098 L9: one the law laid aside at the tick's end noticed it where she stood when she noticed
                     if (inNear && !inCone) r.Is(!g.NoticesNow(id, "takedown", at), $"{id}: a takedown there she would not see (cone-only)");
                 }
                 r.Eq(Report.Clock(g.Tick), "5:30.1", "found when the clerks step out after the 5:30 chime");
-                r.Is(near > 0 && behind > 0, $"{near} found it within 1.5 m, {behind} of them with their back to it");
+                r.Is(near > 0, $"{near} found it within 1.5 m ({behind} of them with their back to it)"); // brief 098 L9: the clerks stepping out together are laid round the door, so whether one has her back to it is the moment's; the near sense behind one's back is ND-2's
 
             }, new Start { FinalFight = false });
 

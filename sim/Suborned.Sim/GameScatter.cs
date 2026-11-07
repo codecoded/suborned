@@ -66,11 +66,13 @@ namespace Suborned.Sim
                         break;
                     case "sheltered":
                         if (Tick - Math.Max(LastShotTick, w.Until) < T(R.CrowdQuietS)) break;
+                        if (R.BodiesOn && w.Refuge.Length > 0 && refugeOut.TryGetValue(w.Refuge, out var lastOut) && Tick - lastOut < DoorGapTicks) break; // brief 098 L9: a door lets one body out at a time
                         {
                             var home = RoutinePos(w, Tick);
                             if (!home.HasValue) { w.St = ""; break; }
                             var start = w.Run?.End ?? w.At;
                             w.Run = RouteOf(start, home.Value); w.RunStart = Tick; w.At = start; w.St = "returning";
+                            if (R.BodiesOn && w.Refuge.Length > 0) refugeOut[w.Refuge] = Tick;
                         }
                         break;
                 }
@@ -82,6 +84,10 @@ namespace Suborned.Sim
             if (back > 0) Note("crowd.back", $"{back} are back on their way.");
         }
         readonly Dictionary<string, Pt> lastShooterFor = new Dictionary<string, Pt>(StringComparer.Ordinal);
+        /// <summary>Brief 098 L9 (a door holds one body): when someone last came out of each refuge; the next comes out a queue's step later
+        /// (bodies.queue at the city's walk), so a crowd back from shelter leaves a door in file, not as one heap. Hashed (HashBodies).</summary>
+        internal readonly SortedDictionary<string, int> refugeOut = new SortedDictionary<string, int>(StringComparer.Ordinal);
+        int DoorGapTicks => Math.Max(1, (R.BodyQueueCm * Hz + peopleWalk - 1) / Math.Max(1, peopleWalk)); // a queue's step at the city's walk (cm a second)
 
         Path RouteOf(Pt a, Pt b)
         {

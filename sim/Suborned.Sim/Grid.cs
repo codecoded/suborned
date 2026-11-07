@@ -425,6 +425,22 @@ namespace Suborned.Sim
             if (still(j)) { j = i; while (j > 1 && still(j)) j--; }
             return Points[j] - Points[j - 1];
         }
+        /// <summary>Brief 098 L9: the mm along the walk, between fromMm and toMm, of the point nearest p (a body that has fallen behind its own place
+        /// rejoins its walk there). Integer: each segment's nearest point by projection, ties to the earlier.</summary>
+        public long NearestMm(Pt p, long fromMm, long toMm)
+        {
+            if (Points.Length < 2) return 0;
+            fromMm = Math.Max(0, fromMm); toMm = Math.Min(Length, toMm); long best = fromMm, bd = long.MaxValue;
+            for (int i = 1; i < Points.Length; i++)
+            {
+                if (cum[i] < fromMm) continue; if (cum[i - 1] > toMm) break;
+                Pt a = Points[i - 1], b = Points[i]; long dx = b.X - a.X, dy = b.Y - a.Y, l2 = dx * dx + dy * dy, seg = cum[i] - cum[i - 1];
+                long t = l2 == 0 ? 0 : Math.Max(0, Math.Min(l2, (long)(p.X - a.X) * dx + (long)(p.Y - a.Y) * dy)); // along the segment, × l2
+                long mm = cum[i - 1] + (l2 == 0 ? 0 : seg * t / l2); mm = Math.Max(fromMm, Math.Min(toMm, mm));
+                long d = G.D2(At(mm), p); if (d < bd) { bd = d; best = mm; }
+            }
+            return best;
+        }
         /// <summary>The first `mm` of the walk (brief 022: the summoned lover stops short of her post), a path of its own.</summary>
         public Path Cut(long mm)
         {

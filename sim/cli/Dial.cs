@@ -64,6 +64,7 @@ static class DialCli
             case "perf": return Perf(inputs, root, args);
             case "traffic": return TrafficCli.Run(inputs, root, args); // brief 098 step 1: a script under the dial's cars, every tick watched (Traffic.cs)
             case "street": return StreetCli.Run(inputs, root, args); // brief 098 step 1b: the people count on the street, built and observed (Street.cs)
+            case "bodies": return BodiesCli.Run(inputs, root, args); // brief 098 L9: every tick watched, every pair inside two radii (Bodies.cs)
             default: Console.Error.WriteLine("usage: dial census | dial sweep [items] [--seeds n] [--settings s;s] | dial perf [script] [--settings s;s] [--runs n] | dial traffic [script] [--counts cars=8] [--seed n]"); return 2;
         }
     }

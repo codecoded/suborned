@@ -810,40 +810,6 @@ namespace Suborned.Sim
             });
 
 
-            Add("N12", "—", "People step their routines (§04, brief 010): at each tick everyone stands at the stop the people file gives, or walks between two stops, or is off the street.", r =>
-            {
-                var g = r.G;
-                r.Is(g.Walkers.Count > 100, $"the civic block's people are in ({g.Walkers.Count})");
-                bool atStops = true; int walking = 0, onStreet0 = 0;
-                Walker? mover = null; var movers = new List<Walker>();
-                for (int t = 0; t <= T(360); t += T(30)) // brief 059: an unturned driver drives Vale away (5:53 since brief 096), and the run ends there
-                {
-                    r.To(t);
-                    foreach (var w in g.Walkers)
-                    {
-                        var at = g.CrowdPos(w);
-                        int i = Array.FindIndex(w.From, f => f <= t);
-                        bool inStop = false;
-                        for (int k = 0; k < w.Place.Length; k++)
-                            if (t >= w.From[k] && t < w.To[k]) { inStop = true; if (w.Out[k] ? at != g.People2!.Places[w.Place[k]] : at != null) atStops = false; }
-                        if (!inStop && at.HasValue) { walking++; mover ??= w; if (!movers.Contains(w)) movers.Add(w); }
-                        if (t == 0 && at.HasValue) onStreet0++;
-                    }
-                }
-                r.Is(atStops, "everyone at a stop stands at its place, or is off the street (at home, inside, beyond)");
-                // Changed (r016 cast, 2026-10-16): was "more than 10", the fixture cast's count; the people file says who is out at 0:00
-                int outAt0 = 0;
-                foreach (var w in g.Walkers) for (int k = 0; k < w.Place.Length; k++) if (w.From[k] <= 0 && 0 < w.To[k] && w.Out[k]) { outAt0++; break; }
-                r.Is(outAt0 > 0 && onStreet0 >= outAt0, $"people are out on the street at 0:00 ({onStreet0}; the people file puts {outAt0} at a street stop)");
-                r.Is(walking > 0 && mover != null, $"someone walks between stops during the mission ({mover?.P.Id})");
-                if (mover != null)
-                {
-                    var seen = new List<Pt>(); // brief 096: the walker caught on the longest walk, not the first caught (the first may be on a 5 s leg once the shift moves)
-                    foreach (var m in movers) { var s = new List<Pt>(); for (int t = 0; t <= T(480); t += Game.Hz) { var p = g.CrowdPos(m, t); if (p.HasValue && !s.Contains(p.Value)) s.Add(p.Value); } if (s.Count > seen.Count) { seen = s; mover = m; } }
-                    r.Is(seen.Count > 5, $"{mover.P.Name} moves in live time ({seen.Count} positions)");
-                }
-            });
-
             Add("N12b", "—", "A private Help (rulebook privacy, Sky 2026-10-16: a turning conversation is private, unless it's pressure): the Fixer helps Inez with customers at the café terrace in sight. Onlookers learn nothing: no witness Trail, no Standing move, no incident, nobody remembers the Fixer's face; the Help's own price stands (its base Trail).", r =>
             {
                 var g = r.G;
@@ -1101,7 +1067,7 @@ namespace Suborned.Sim
             Always059(); Camera096(); Box096(); Parked096(); Rivals096(); Lend096(); Lend096b(); Misses096(); HelpOffer096(); HelpOnce096(); // engine 0.45.0 (brief 096): a worse Help once, one step dearer (ScenariosHelpOnce096.cs); engine 0.44.0 (brief 096): the small offer, a Fearful person helped once (ScenariosHelpOffer096.cs); engine 0.43.0 (brief 096): Motive's misses (ScenariosMisses096.cs); engine 0.42.0 (brief 096): the lend, the fight fixes, the veteran's placing (ScenariosLend096*.cs); engine 0.41.0 (brief 096): the block on arrival, the lookout, thinning, the gang shooting (ScenariosRivals096*.cs)
             // engine 0.40.0 (brief 096): bribes on camera, box-in and the kerbside stop, the parked car (Scenarios*096.cs); engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
             FightBCases(); // engine 0.35.0 (brief 039 B): Covering fire holding Vale, Talk down on the blocker (ScenariosFightB.cs)
-            Pace067(); // engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
+            Pace067(); Bodies098(); // brief 098 L9 (ScenariosBodies098.cs): the scenarios the law moved, rewritten; engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
         }
     }
 }

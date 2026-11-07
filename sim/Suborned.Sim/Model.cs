@@ -149,6 +149,9 @@ namespace Suborned.Sim
         /// tick, not hashed), and whether a player move given while its fire order stood spent that order's walk-in (hashed only when set).</summary>
         public Pt StepFrom; public bool CloseSpent;
         public readonly HashSet<string> RunSeen = new HashSet<string>(StringComparer.Ordinal); // who remembers this run (once each)
+        /// <summary>Brief 098 L9 (GameBodies.cs): where the law laid him relative to his own place, and the walk that lay was taken on (a new walk
+        /// starts where he stands, so it carries none).</summary>
+        public BodyLay Body; public Path? BodyWalk;
         public bool Down => Gun.Down;
         public static string Name(OpId id) => id == OpId.Scout ? "scout" : id == OpId.Fixer ? "fixer" : id == OpId.Tech ? "tech" : "enforcer";
         public static OpId Parse(string s) => s == "scout" ? OpId.Scout : s == "fixer" ? OpId.Fixer : s == "tech" ? OpId.Tech : s == "enforcer" ? OpId.Enforcer : throw new FormatException($"operative '{s}' is unknown (scout, fixer, tech, enforcer)");
