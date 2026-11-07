@@ -53,7 +53,7 @@ public class DialStreetTests
             {
                 var g = Engine.New(Repo.Inputs, With(seed, n)); double o = Observed(g, out var c);
                 Assert.Equal(want, c.Count); Assert.InRange(o, want - 0.75, want + 0.75); Assert.InRange(c.Street10 / 10.0, want - 0.75, want + 0.75); // the street the census says it built is the street the game shows
-                Assert.InRange(o, c.Street10 / 10.0 - 0.25, c.Street10 / 10.0 + 0.25);
+                Assert.InRange(o, c.Street10 / 10.0 - 0.5, c.Street10 / 10.0 + 0.5); // brief 098 L9 (engine 0.47.0): the census reads the routines; the street the game shows holds a person a little longer (they walk to their door before going in, and out over the sheet's edge): 0.3 over at four times today's (was within 0.25 before the law)
                 seen.Add(o);
             }
             Assert.InRange(seen.Average(), want - 0.4, want + 0.4);
