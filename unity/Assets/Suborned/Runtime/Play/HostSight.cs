@@ -20,6 +20,14 @@ namespace Suborned.Play
         public bool Peeking { get; private set; }
         /// <summary>Alt held by a script (the budget shots' Alt moment): the same as holding the key.</summary>
         public bool PeekLatch { get; set; }
+        /// <summary>The eye button on the scope's rim (Sky 2026-11-07, the cones round; never key-only): latched on, every learned cone shows, as Alt
+        /// shows them (rule 6) and in the same merged look; Alt's other detail (prices' sums, words) stays on Alt. A view setting: the run never reads it.</summary>
+        public bool ConesAll { get; set; }
+        public void ConesAllToggle() => ConesAll = !ConesAll;
+        /// <summary>Per agent (OpId order): the learned watchers that see it now (the engine's Detection, sight known), a combatant not counted while a
+        /// fight is on (rule 3 is off for it then): the HUD marks a selected agent seen by two or more with an eye and the count, so a crew whose cones
+        /// merge into one shape still says how many see (Sky 2026-11-07: a crew counts once). Refreshed after each step.</summary>
+        public readonly int[] SeenBy = new int[4];
         /// <summary>Seconds Alt must be held before the detail layer shows (Glyph, brief 016 review §5).</summary>
         public const float PeekDelay = 0.25f;
         float peekHeldSince = -1f;
@@ -118,7 +126,7 @@ namespace Suborned.Play
                     bool combat = fight && CombatWatcher(w);
                     if (!combat && (SeesSelectedSoon(f) || FanMattersNow(f))) until = Mathf.Max(until, now + 1f); // (3), (5)
                     fanUntil[w] = until;
-                    shownFans.Add(f); fanStrong.Add(Peeking || now < until || fanReveal.TryGetValue(w, out var rv) && g.Tick < rv);
+                    shownFans.Add(f); fanStrong.Add(Peeking || ConesAll || now < until || fanReveal.TryGetValue(w, out var rv) && g.Tick < rv);
                 }
                 fanLearnedInit = true;
             });
@@ -127,7 +135,7 @@ namespace Suborned.Play
             MastHeads.Clear();
             foreach (var f in shownFans)
             {
-                if (f.More.Length == 0 || !(Peeking || f.Watcher == FocusWatcher)) continue;
+                if (f.More.Length == 0 || !(Peeking || ConesAll || f.Watcher == FocusWatcher)) continue;
                 MastHeads.Add(Far(f, f.Points)); foreach (var m in f.More) MastHeads.Add(Far(f, m));
             }
         }
@@ -199,6 +207,7 @@ namespace Suborned.Play
 
         /// <summary>The watcher a cell agent is watching now (the busy Watch), else null: brief 057 §3, no fallback to a finished Watch.</summary>
         static readonly OpId[] CellOrder = { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer };
+        static readonly string[] OpNames = { Op.Name(OpId.Scout), Op.Name(OpId.Fixer), Op.Name(OpId.Tech), Op.Name(OpId.Enforcer) }; // Noticing.Op, by OpId index
         string ScoutWatchingNow()
         {
             foreach (var w in CellOrder)
@@ -255,11 +264,13 @@ namespace Suborned.Play
         /// <summary>After each step: the watchers noticing an agent whose sight the cell doesn't know (the "?").</summary>
         void Notice()
         {
-            Unknowns.Clear();
+            Unknowns.Clear(); System.Array.Clear(SeenBy, 0, SeenBy.Length);
             List<Noticing> n = null; if (!Guard("detection", () => n = Game.Detection())) return;
             noticingNow.Clear(); foreach (var x in n) noticingNow.Add(x.Watcher); // brief 057 §3 (4): a watcher noticing someone draws strong
             bool fightEyes = OneInput && Game.FightOn; // Glyph N4 (0.2.137): a hostile in the fight (an officer, a unit, a rival, the guard and patrol once it is on) wears no "?": he is already hostile; cameras and the rest keep theirs
             foreach (var x in n) { if (x.Known || fightEyes && CombatWatcher(x.Watcher)) continue; var at = frame.World(x.From) + Vector3.up * 3.2f; if (!Unknowns.Contains(at)) Unknowns.Add(at); }
+            bool fight = Game.FightOn || AnyDrawn(); // as ShowSight: in a fight the combatants' cones take no rule 3, so they are not counted
+            foreach (var x in n) { if (!x.Known || fight && CombatWatcher(x.Watcher)) continue; int k = System.Array.IndexOf(OpNames, x.Op); if (k >= 0) SeenBy[k]++; }
         }
 
         /// <summary>"seen by" for a quote, in words (rulebook sight.unknown: never more than the cell knows): "" when no one, "?" when only an

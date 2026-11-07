@@ -28,12 +28,14 @@ namespace Suborned.Play
                 manifest.Add((b, "image", () => "turn button"));
             }
             scope.style.overflow = Overflow.Visible;
+            BuildConesButton(); // the cones round: the eye button between them (HudToolkit.Sight)
         }
 
         /// <summary>Per frame with the pill: the button shows while the run is on; the glyph turquoise while the clock is stopped.</summary>
         void Keys096Frame(bool ended)
         {
             Show(pauseBtn, !ended); Show(pauseIcon, !ended); pauseIcon.style.unityBackgroundImageTintColor = host.Paused || host.Frozen ? TurqLight : Cream;
+            SightFrame(ended); // the cones round: the eye button's state and the seen counts (HudToolkit.Sight)
         }
     }
 }

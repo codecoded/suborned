@@ -18,7 +18,7 @@ namespace Suborned.Play
     {
         public string hover = ""; public bool mark = true;
         public string name = "", scriptPath = "", checkpoint = "", preset = "today", agent = "scout", face = "", focus = "", focus2 = "", state = "rest", select = "", arm = "";
-        public int tick, yaw = -1; public bool night, setNight, briefing, follow, hasAt, hud = true, hasPointer, intel;
+        public int tick, yaw = -1; public bool night, setNight, briefing, follow, hasAt, hud = true, hasPointer, intel, eye;
         /// <summary>Brief 070 (the briefing's stills, tools/game/briefstills.ts): `nocut` turns the play camera's architecture cut off for the capture; `doorN`
         /// (a block-frame unit normal, x south, y east) with yaw -1 picks the quarter step that best faces that outward side.</summary>
         public bool nocut; public float[] doorN = new float[0];
@@ -116,7 +116,7 @@ namespace Suborned.Play
                     res.Tick = h.Game.Tick;
                     if (h.Game.Over && h.Game.Tick < s.tick) res.Error = $"the run ended at tick {h.Game.Tick} ({h.Game.Result}), before tick {s.tick}";
                     if (s.setNight) h.SetNight(s.night);
-                    h.IntelOpen = s.intel;
+                    h.IntelOpen = s.intel; h.ConesAll = s.eye; // the cones round: the eye button latched for the shot
                     HandoverHost.PointerOverride = s.hasPointer ? new Vector2(Screen.width * s.px, Screen.height * s.py) : (Vector2?)null;
                     h.ClearHover();
                     if (s.select.Length > 0) h.Select(Suborned.Sim.Op.Parse(s.select), false);
@@ -182,7 +182,7 @@ namespace Suborned.Play
                 else if (res.Audited && !res.AuditClean) res.Status = "audit";
             }
             if (fadeOff != null) { fadeOff.fade = fadeWas; fadeOff = null; }
-            HudToolkit.WorldMarksOff = false; h.controls.conversations = keep; HandoverHost.PointerOverride = null; HudToolkit.ActMarkOff = false;
+            HudToolkit.WorldMarksOff = false; h.controls.conversations = keep; HandoverHost.PointerOverride = null; HudToolkit.ActMarkOff = false; h.ConesAll = false;
             bool ok = results.All(r => r.Status is "ok" or "note");
             Write(ok ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.1f); GameBoot.Leave(ok ? 0 : 1);
         }

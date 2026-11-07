@@ -3,6 +3,8 @@
 // it replaces took the follow tier's fog). Transparent by default (SrcAlpha OneMinusSrcAlpha, no depth write, both faces, the Transparent queue, as
 // the fan template); a material may set _SrcBlend/_DstBlend/_ZWrite for an opaque mark (the lamp). _ZTest and _OffsetFactor/_OffsetUnits exist for
 // tp-long's control shot only (ZTest Always is never shipped). SRP Batcher (UnityPerMaterial) and GPU Resident Drawer (DOTS instancing) compatible.
+// The merged cones (Latch, Sky 2026-11-07: "every rival having a cone - dominates the game"): an optional stencil state, off by default (Always, Keep), so a
+// colour's cones fill as one shape: the merged fill sets NotEqual/Replace on its colour's bit, and a pixel any of its cones covers fills once.
 Shader "Suborned/SignalUnlit"
 {
     Properties
@@ -16,6 +18,10 @@ Shader "Suborned/SignalUnlit"
         [HideInInspector] _ZTest("__ztest", Float) = 4
         [HideInInspector] _OffsetFactor("__offf", Float) = 0
         [HideInInspector] _OffsetUnits("__offu", Float) = 0
+        [HideInInspector] _StencilRef("__sref", Float) = 0
+        [HideInInspector] _StencilMask("__smask", Float) = 255
+        [HideInInspector] _StencilComp("__scomp", Float) = 8
+        [HideInInspector] _StencilPass("__spass", Float) = 0
     }
     SubShader
     {
@@ -29,6 +35,7 @@ Shader "Suborned/SignalUnlit"
             ZTest [_ZTest]
             Cull [_Cull]
             Offset [_OffsetFactor], [_OffsetUnits]
+            Stencil { Ref [_StencilRef] ReadMask [_StencilMask] WriteMask [_StencilMask] Comp [_StencilComp] Pass [_StencilPass] }
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag

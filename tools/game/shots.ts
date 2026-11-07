@@ -17,7 +17,7 @@ export type Resolved = {
   name: string; scriptPath: string; checkpoint: string; preset: string; tick: number;
   night: boolean; setNight: boolean; briefing: boolean;
   follow: boolean; agent: string; face: string; focus: string; hasAt: boolean; atX: number; atY: number; yaw: number; zoom: number;
-  hud: boolean; state: string; select: string; arm: string; hasPointer: boolean; px: number; py: number; intel: boolean; settle: number; perf: number; hover: string; mark: boolean;
+  hud: boolean; state: string; select: string; arm: string; hasPointer: boolean; px: number; py: number; intel: boolean; eye: boolean; settle: number; perf: number; hover: string; mark: boolean;
   pose: { on: boolean; view: string; pos: number[]; look: number[]; offset: number[]; lookOffset: number[]; fov: number };
   /** the capture size in pixels (1920 x 1080 unless the row says), and whether its files are JPEG */
   w: number; h: number; jpg: boolean;
@@ -102,7 +102,7 @@ export function resolveShots(raw: unknown, outDir: string, r: Resolver = fileRes
         night: s.night ?? false, setNight: s.night !== undefined, briefing: s.briefing ?? false,
         follow: s.view === 'follow', agent: s.agent ?? s.select ?? 'scout', face: s.face ?? '', focus: s.focus ?? '', hasAt: s.at !== undefined, atX: s.at?.[0] ?? 0, atY: s.at?.[1] ?? 0,
         yaw: s.yaw ?? -1, zoom: s.zoom ?? 0,
-        hud: pose ? false : s.hud ?? true, state: s.state ?? 'rest', select: s.select ?? '', arm: s.arm ?? '', hasPointer: s.pointer !== undefined, px: s.pointer?.[0] ?? 0, py: s.pointer?.[1] ?? 0, intel: s.intel ?? false, hover: s.hover ?? '', mark: s.mark ?? true,
+        hud: pose ? false : s.hud ?? true, state: s.state ?? 'rest', select: s.select ?? '', arm: s.arm ?? '', hasPointer: s.pointer !== undefined, px: s.pointer?.[0] ?? 0, py: s.pointer?.[1] ?? 0, intel: s.intel ?? false, eye: s.eye ?? false, hover: s.hover ?? '', mark: s.mark ?? true,
         settle: s.settle ?? 0.35, perf: s.perf ?? 0,
         pose: { on: !!pose, view: pose?.view ?? '', pos: pose?.pos ?? [], look: pose?.look ?? [], offset: pose?.offset ?? [], lookOffset: pose?.lookOffset ?? [], fov: pose?.fov ?? 39.6 },
         w: s.size?.[0] ?? DEFAULT_SIZE[0], h: s.size?.[1] ?? DEFAULT_SIZE[1], jpg: (s.format ?? ((pose ? false : s.hud ?? true) && !s.clip ? 'png' : 'jpg')) === 'jpg',

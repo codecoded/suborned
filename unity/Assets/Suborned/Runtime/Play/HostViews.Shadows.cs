@@ -6,8 +6,9 @@ namespace Suborned.Play
 {
     /// <summary>Engine 0.28 (brief 055 §7, perception.mount; hud29 securityFan.shadows): a fan's Fan.Shadows, the stretches inside its polygon the
     /// watcher does not see into (behind a solid it sees over or under), are cut out of the fill and the rim; each cut gets a rim of its own,
-    /// the fan's colour 0.045 m over ink-deep 0.08 m (alpha 0.45), so a cut reads as a cut. No hatch: the ground shows through. The polygons are
-    /// the engine's (convex, block frame cm); nothing here decides what is seen.</summary>
+    /// the fan's colour 0.045 m over ink-deep 0.08 m (alpha 0.45), so a cut reads as a cut (HostViews.FanUnion draws them, where no other fan of
+    /// the colour sees into the cut). No hatch: the ground shows through. The polygons are the engine's (convex, block frame cm); nothing here
+    /// decides what is seen.</summary>
     public sealed partial class HostViews
     {
         const float ShadowRimW = 0.045f, ShadowInkW = 0.08f, ShadowInkA = 0.45f;
@@ -30,7 +31,6 @@ namespace Suborned.Play
             for (int i = 0; i < n; i++) { float c = Cross(poly[i], poly[(i + 1) % n], p); if (Mathf.Abs(c) < 1e-6f) continue; if (sign == 0f) sign = Mathf.Sign(c); else if (Mathf.Sign(c) != sign) return false; }
             return true;
         }
-        bool InShadow(Vector3 p) { foreach (var s in shadows) if (InConvex(s, p)) return true; return false; }
         static float Winding(Vector3[] poly) { float a = 0f; for (int i = 0; i < poly.Length; i++) { var p = poly[i]; var q = poly[(i + 1) % poly.Length]; a += p.x * q.z - q.x * p.z; } return Mathf.Sign(a); }
 
         /// <summary>Sutherland–Hodgman against one edge's half-plane: keep = the side `side` (+1 left, -1 right of a→b on the ground).</summary>
@@ -76,56 +76,11 @@ namespace Suborned.Play
             foreach (var pc in pieces) { int b0 = verts.Count; verts.AddRange(pc); for (int i = 1; i + 1 < pc.Count; i++) { tris.Add(b0); tris.Add(b0 + i); tris.Add(b0 + i + 1); } }
         }
 
-        /// <summary>A rim quad with the stretches inside a shadow left out.</summary>
-        void QuadCut(Vector3 a, Vector3 b, float w)
-        {
-            if (shadows.Count == 0) { Quad(a, b, w); return; }
-            const int n = 24; int start = -1;
-            for (int i = 0; i <= n; i++)
-            {
-                bool vis = i < n && !InShadow(Vector3.Lerp(a, b, (i + 0.5f) / n));
-                if (vis && start < 0) start = i;
-                if (!vis && start >= 0) { Quad(Vector3.Lerp(a, b, start / (float)n), Vector3.Lerp(a, b, i / (float)n), w); start = -1; }
-            }
-        }
-
         static bool InRing(List<Vector3> ring, Vector3 p)
         {
             bool inside = false; int n = ring.Count;
             for (int i = 0, j = n - 1; i < n; j = i++) { var a = ring[i]; var b = ring[j]; if ((a.z > p.z) != (b.z > p.z) && p.x < (b.x - a.x) * (p.z - a.z) / (b.z - a.z) + a.x) inside = !inside; }
             return inside;
-        }
-
-        /// <summary>Each shadow's edges where they run inside the fan (and outside every other shadow): the fan's colour on the rim mesh, ink-deep
-        /// under it in the fan's own under mesh.</summary>
-        void ShadowRims(List<(List<Vector3> ring, string[] stop)> polys, Color c, FanDraw d)
-        {
-            underV.Clear(); underT.Clear();
-            for (int s = 0; s < shadows.Count; s++)
-            {
-                var sh = shadows[s];
-                for (int i = 0; i < sh.Length; i++)
-                {
-                    var a = sh[i]; var b = sh[(i + 1) % sh.Length]; float len = Vector3.Distance(Flat(a), Flat(b)); int n = Mathf.Max(2, Mathf.CeilToInt(len / 0.1f)); int start = -1;
-                    for (int k = 0; k <= n; k++)
-                    {
-                        bool on = false;
-                        if (k < n)
-                        {
-                            var p = Vector3.Lerp(a, b, (k + 0.5f) / n); foreach (var (ring, _) in polys) if (ring.Count >= 3 && InRing(ring, p)) { on = true; break; }
-                            if (on) for (int o = 0; o < shadows.Count; o++) if (o != s && InConvex(shadows[o], p)) { on = false; break; }
-                        }
-                        if (on && start < 0) start = k;
-                        if (!on && start >= 0)
-                        {
-                            var p0 = Vector3.Lerp(a, b, start / (float)n) + Vector3.up * (RimY + 0.004f); var p1 = Vector3.Lerp(a, b, k / (float)n) + Vector3.up * (RimY + 0.004f);
-                            Quad(p0, p1, ShadowRimW); UnderQuad(p0 - Vector3.up * 0.009f, p1 - Vector3.up * 0.009f, ShadowInkW); start = -1;
-                        }
-                    }
-                }
-            }
-            d.Under.Clear(); d.Under.SetVertices(underV); d.Under.SetTriangles(underT, 0); d.Under.RecalculateBounds();
-            var um = FanMat(InkDeepC, ShadowInkA); if (d.UnderR.sharedMaterial != um) d.UnderR.sharedMaterial = um;
         }
 
         void UnderQuad(Vector3 a, Vector3 b, float w)
