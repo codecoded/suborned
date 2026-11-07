@@ -7,10 +7,13 @@
 // a spoken line from a rule printed on a card. Without a manifest every running line fails, which is the safe answer.
 import type { Image } from './png';
 import { checkPage, type PagePart } from './page';
+import { checkBook, isBook } from './book';
+import { BUBBLE, CARD_MAX as CARDS, conversationLines, speechFault } from './speech';
 
-/** `page`: a full-screen page outside play (the briefing page, GDD v0.27.0 §10), judged by its own checks (page.ts), never by coverage or the reading caps.
+/** `page`: a full-screen page outside play (the briefing page, GDD v0.27.0 §10), judged by its own checks (page.ts), never by coverage or the reading caps. `book`: the book's
+ *  pages (the start page, the debrief), on their own checks (book.ts); a `page` manifest with the book's section signs is read as the book.
  *  `briefing`: RETIRED with the street overlay (brief 062 B, gone in v0.27.0); kept only so the archived street-briefing fixtures still judge as they were shot. */
-export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page';
+export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page' | 'book';
 export interface Rect { x: number; y: number; w: number; h: number }
 export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card'; // pin, paper, band: the page's (page.ts); card: a conversation's cards
 /** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
@@ -38,9 +41,9 @@ export interface Report {
  *  the player opens to read (Glyph; a reading surface, only while open): 18% (the open panel measures 17.0 to 17.5%), and its lines may be sentences.
  *  `briefing` (retired: the street overlay): the briefing card before play (title and copy): the same room and the same freedom. `page` has no limit: a full-screen page
  *  is 100% by design (glyph-page-budget §1). */
-export const LIMIT: Record<Exclude<State, 'page'>, number> = { rest: 15, active: 22, alt: 30, log: 18, briefing: 18 };
+export const LIMIT: Record<Exclude<State, 'page' | 'book'>, number> = { rest: 15, active: 22, alt: 30, log: 18, briefing: 18 };
 /** The states that are reading surfaces the player opens or meets before play (the history log; the briefing card): their lines are sentences by design. */
-export const READING: State[] = ['log', 'briefing', 'page'];
+export const READING: State[] = ['log', 'briefing', 'page', 'book'];
 /** The briefing's reading copy (its hook and objective: manifest `hud` elements of three or more words, on screen) is exempt from the running-text rule, so it gets its own cap: it is the one
  *  place the game may read a sentence, and a modal screen is where "the reading is too much" would creep back. Shipped 0.2.122: 2 lines, 13 words (hook 6, objective 7). [S] starting value. The
  *  objective is NOT a `line` here: a `line` is the in-play goal or hint (at most six words, one at a time); the briefing's objective is the dossier's sentence, and the play goal that follows Begin is the short line. */
@@ -50,7 +53,7 @@ export const WARN_REST = 10;
 export const HUD_ALPHA = 24, WORLD_DIFF = 10;
 /** A line of three or more words is running text; a block is two or more stacked lines of them. Alt allows fragments of up to ALT_WORDS words. */
 export const SENTENCE_WORDS = 3, SENTENCE_COMPS = 14, ALT_WORDS = 5;
-export const SPEECH_MAX = { lines: 2, words: 12 }, BEAT_MAX = { lines: 1, words: 6, onScreen: 2 }, LINE_MAX = { lines: 1, words: 6, onScreen: 1 }; // line = the objective or the Next Step hint: one imperative, at most six words, one at a time
+export const SPEECH_MAX = BUBBLE, BEAT_MAX = { lines: 1, words: 6, onScreen: 2 }, LINE_MAX = { lines: 1, words: 6, onScreen: 1 }; // line = the objective or the Next Step hint: one imperative, at most six words, one at a time
 /** A refusal pop (GDD §10 "Refusals: one pop of an icon and ≤ 4 words"): one line, at most four words, never a sentence of running text. The host keeps a pool of three, so three at once is the most a frame can show. [S] */
 export const POP_MAX = { lines: 1, words: 4, onScreen: 3 };
 /** A window marker (the seal clock, GDD §10: "a lock and m:ss under the clock bar"): a clock reading, not a line. At most MARKER_MAX.words words of text; it never counts as a goal or hint line. */
@@ -70,7 +73,7 @@ export const PILL_SLOT = 1;
 /** The done chip (kind `chip`): the learn chip (face, facts, ›, verb pills). Facts at most 3 rows of at most 2 words; verbs one row of at most 3 one-word pills; at most 9 words a chip; at most 2 chips
  *  on screen; `rest` and `active`, and in `alt` never over a ring (an element whose text names a ring). Its rows are a list, not running text: inside a chip the sentence and block rules give way to these caps. [S] */
 /** A conversation's cards (kind `card`, brief 085, conversations.schema.ts): what the player now knows and can do, as written: at most 4 rows of at most 6 words, one panel on screen. */
-export const CARD_MAX = { rows: 4, rowWords: 6, words: 24, onScreen: 1 };
+export const CARD_MAX = CARDS; // conversations.schema's rows and CARD_WORDS (speech.ts)
 export const CHIP_MAX = { facts: 3, factWords: 2, verbs: 3, verbWords: 1, words: 9, onScreen: 2, states: ['rest', 'active'] as State[] };
 /** A chip the manifest does not spell (`facts`/`verbs`; today's builds name it only in the parts, `gain-chip-N`): the reader counts its rows, at most 4 (3 facts and the verbs). Its words are
  *  not capped by the reader: at 1080 the verb pills' rims and the plate's screws read as letters (a two-pill row of "Help", "Pressure" reads 10 words), so a reader cap would fail every chip.
@@ -309,10 +312,11 @@ export function analyse(shot: Image, o: Options): Report {
   const { w, h } = shot, { mask, how } = maskOf(shot, o); let n = 0; for (const v of mask) n += v;
   const coveragePct = (n / (w * h)) * 100, failures: string[] = [], warnings: string[] = [];
   const all = textRuns(shot, mask);
-  if (o.state === 'page') { // the page's own checks (page.ts): no coverage limit, no running-text, block or reading cap
-    const pg = checkPage(shot, mask, o.manifest?.elements ?? [], () => paperTexture(shot, mask));
+  if (o.state === 'page' || o.state === 'book') { // the page's or the book's own checks (page.ts, book.ts): no coverage limit, no running-text, block or reading cap
+    const book = o.state === 'book' || isBook(o.manifest?.elements ?? [], w, h), pg = book ? checkBook(shot, mask, o.manifest?.elements ?? []) : checkPage(shot, mask, o.manifest?.elements ?? [], () => paperTexture(shot, mask));
+    if (book && o.state === 'page') pg.warnings.unshift('the manifest says `page`; read as the book by its section signs (HudToolkit.BookManifest\'s default; `book` once the host writes it)');
     if (!o.manifest) pg.failures.unshift('a page needs its manifest: every word on it is a manifest element');
-    return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct: null, runs: all, sentences: [], blocks: [], speech: [], beats: [], lines: [], pops: [], markers: [], pills: [], locks: [], chips: [], altlines: [], bars: [], failures: pg.failures, warnings: pg.warnings, pass: pg.failures.length === 0, pageWords: pg.words };
+    return { width: w, height: h, state: book ? 'book' : 'page', mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct: null, runs: all, sentences: [], blocks: [], speech: [], beats: [], lines: [], pops: [], markers: [], pills: [], locks: [], chips: [], altlines: [], bars: [], failures: pg.failures, warnings: pg.warnings, pass: pg.failures.length === 0, pageWords: pg.words };
   }
   const limitPct = LIMIT[o.state], els = (o.manifest?.elements ?? []).map(e => recognise(e, o.state)); // today's pills, Alt line and seal clock arrive as `line`: read by their text shape (recognise)
   const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
@@ -338,7 +342,8 @@ export function analyse(shot: Image, o: Options): Report {
   // the strongest row's strokes, and at least three.
   const lines = (rs: Run[]) => rowsOf(rs).length;
   const named = (b: Run[]) => b.some(r => { const t = owner.get(r)?.text; return !!t && speechWords(t) < wordsOf(t) && !/^\s*[^:]*:\s/.test(t); }) ? 1 : 0; // the conversation bubble sets its speaker's name on a row of its own: a label, not a line of speech
-  if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines + named(b) || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
+  const said = conversationLines(); // a conversation's line has the cutaway's caps, a bubble the bubble's (speech.ts, from the text schema)
+  for (const b of speech.length ? stack(speech) : []) { const f = speechFault(b.map(r => owner.get(r)?.text).find(Boolean) ?? '', b.length - named(b), wordsIn(b), said); if (f) failures.push(f); }
   { const cards = els.filter(e => e.kind === 'card' && e.text && e.w > 0); if (cards.length > CARD_MAX.onScreen) failures.push(`${cards.length} card panels on screen (at most ${CARD_MAX.onScreen})`); if (cards.some(e => wordsOf(e.text!) > CARD_MAX.words)) failures.push(`the cards run over ${CARD_MAX.words} words`); }
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);

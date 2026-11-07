@@ -29,12 +29,19 @@ describe('the table', () => {
   test('the engine, its data, the world export and the kit are full, as the brief names them', () => {
     for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/catalogue.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');
   });
-  test('a path it cannot place has no row: the game\'s other code, assets and settings among them', () => {
-    for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', PLAY + 'SimBundle.cs', 'unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json', 'unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl', 'sim/cli/Program.cs']) expect(classify(m, p)).toBeUndefined();
+  test('a path it cannot place has no row: a new tool or host file (brief 098: every path of today\'s tree has one, proofwhat.test.ts)', () => {
+    for (const p of ['tools/mystery/x.ts', PLAY + 'HostNew.cs', 'unity/Assets/Suborned/Mystery/x.asset']) expect(classify(m, p)).toBeUndefined();
+  });
+  test('the project, the render pipeline, the shaders and the engine\'s loader are full; the settings and packages every step, the rest no engine, kit, world or scene step', () => {
+    for (const p of ['unity/ProjectSettings/QualitySettings.asset', 'unity/Packages/manifest.json']) { expect(classify(m, p)?.run).toBe('full'); expect(classify(m, p)?.steps).toBeUndefined(); }
+    for (const p of ['unity/Assets/Settings/PC_RPAsset.asset', 'unity/Assets/Suborned/Shaders/DecoKit/DK_Leaf.hlsl']) { expect(classify(m, p)?.run).toBe('full'); expect(classify(m, p)?.steps).toEqual(['late-fight', 'tp-long']); }
+    expect(classify(m, PLAY + 'SimBundle.cs')?.steps).toEqual(['unity-match', 'scenarios']);
+    expect(classify(m, 'sim/cli/Program.cs')).toMatchObject({ run: [], steps: ['sim', 'unity-match', 'scenarios', 'late-fight'] }); // the CLI: headless scenarios and the late rows' ends, never the player
   });
   test('tools no batch step imports are none; the late rows\' pins are that step\'s alone', () => {
     for (const p of ['tools/figures/build.py', 'tools/life/cli.ts', 'tools/dialogue/cli.ts', 'tools/missions/check/cli.ts', 'tools/game/hostlogic/HostLogic.cs', 'tools/game/hostlogic.ts']) expect(classify(m, p)?.run).toBe('none');
-    const pin = classify(m, 'tools/game/pins/loud.seed3.json'); expect(pin?.run).toEqual([]); expect(pin?.steps).toEqual(['late-fight']);
+    const pin = classify(m, 'tools/game/pins/loud-fight.seed3.json'); expect(pin?.run).toEqual([]); expect(pin?.steps).toEqual(['late-fight']);
+    expect(classify(m, 'tools/game/pins/loud.seed3.json')).toMatchObject({ run: [], shots: ['fight-loud-body'] }); // a shot's pin, not a late row's (shots.json fight-loud-body)
   });
   test('holds to the sources: every HudToolkit member a proof reads and every helper of another proof it calls has that proof\'s sections on its row', () => {
     const dir = join(ROOT, PLAY), sources = Object.fromEntries(readdirSync(dir).filter(f => f.endsWith('.cs')).map(f => [f, readFileSync(join(dir, f), 'utf8')]));
@@ -91,8 +98,9 @@ describe('the host rows', () => {
     expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => go(SB, s))).toEqual(['unity-world', 'late-fight', 'tp-long']);
     expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => go(T, s))).toEqual(['words']);
     expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => go(H, s))).toEqual([]);
-    expect(stepGate(m, snap({ ...files, 'sim/data/x.json': 'b' }), l, 'sim').run).toBe(true); // the engine still forces every step
-    expect(stepGate(m, snap({ ...files, 'sim/data/x.json': 'b' }), l, 'unity-world').run).toBe(true);
+    // brief 098: the engine runs its own steps and the late rows' fights, never the kit, world, scene, words or draw-distance steps (it ran them all until 2026-11-08)
+    expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => stepGate(m, snap({ ...files, 'sim/data/x.json': 'b' }), l, s).run)).toEqual(['sim', 'unity-match', 'scenarios', 'late-fight']);
+    expect(['sim', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long', 'words'].filter(s => stepGate(m, snap({ ...files, 'tools/mystery/x.ts': 'b' }), l, s).run)).toHaveLength(9); // failing example: a path no row places still runs them all
   });
   test('the stills stand through a host, HUD or words change; a figure, the light or the world takes them again', () => {
     const base = { [HOLD]: 'a', [PLAY + 'HostViews.Figures.cs']: 'a', [PLAY + 'HostHold.cs']: 'a', 'contracts/missions/handover/text.json': 'a', 'out/world/harbour-district.world.json': 'a' }, k = stillsKeyOf(snap(base));
@@ -157,7 +165,7 @@ describe('the plan', () => {
     for (const p of ['unity/Assets/Suborned/Resources/Atmosphere/lens.json', 'unity/Assets/Suborned/Runtime/OldTown/OldTownPlayLook.cs']) {
       const r = classify(m, p)!; expect(r.run).toEqual(['r118']); expect(r.shots).toBe('all'); expect(r.steps).toBeUndefined();
     }
-    expect(classify(m, 'unity/Assets/Suborned/Runtime/OldTown/DKCutaway.cs')).toBeUndefined();
+    expect(classify(m, 'unity/Assets/Suborned/Runtime/OldTown/DKCutaway.cs')).toMatchObject({ run: ['r118', 'levels'], shots: 'all' }); // the old town's pieces in the played scene: the look and the cut-away
     expect(classify(m, 'tools/kit/kit.test.ts')?.run).toEqual([]); expect(classify(m, 'tools/kit/kit.test.ts')?.steps).toEqual([]);
   });
   test('fails safe: a changed path the map cannot place runs the whole proof, and says which', () => {
@@ -297,8 +305,8 @@ describe('the batch\'s steps (delta only)', () => {
     const M = MISSION_FILE, parts = missionParts('{"points":[1]}'); expect(changedPaths({ [M]: 'a' }, { [M]: 'a', ...parts })).toEqual([]);
     expect(changedPaths({ [M]: 'a' }, { [M]: 'b', ...parts }).length).toBe(5);
   });
-  test('the engine\'s copier runs its own step only; what it writes is placed by its own rows', () => {
-    expect(classify(m, 'tools/sim/unity.ts')).toMatchObject({ run: [], steps: ['sim'] });
+  test('the engine\'s copier runs its own step and the steps that check the DLL it builds (gates read the tree at the batch\'s start); what it writes is placed by its own rows', () => {
+    expect(classify(m, 'tools/sim/unity.ts')).toMatchObject({ run: [], steps: ['sim', 'unity-match', 'scenarios', 'late-fight'] });
     expect(classify(m, 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll')?.run).toBe('full');
   });
   test('the rules\' source runs the engine\'s steps and every shot, never the kit, world, scene or tp-long; no section by itself, the copy on the full row does that', () => {
@@ -319,7 +327,8 @@ describe('the batch\'s steps (delta only)', () => {
     const open = recordSteps(seed(BASE, ['tp-long']), snap(BASE), [], BUILD, { step: 'tp-long', problem: 'tp-worst: triangles 6.9 M' });
     const host = stepGate(m, snap({ ...BASE, [HOLD]: 'b' }), open, 'tp-long');
     expect(host.run).toBe(false); expect(host.why).toContain('STILL OPEN'); expect(host.why).toContain('tp-worst');
-    expect(stepGate(m, snap({ ...BASE, 'sim/data/rules.json': 'b' }), open, 'tp-long').run).toBe(true);
+    expect(stepGate(m, snap({ ...BASE, 'sim/data/rules.json': 'b' }), open, 'tp-long').run).toBe(false); // the engine: tp-long's draw counts are the world's (brief 098)
+    expect(stepGate(m, snap({ ...BASE, 'out/world/harbour-district.world.json': 'b' }), open, 'tp-long').run).toBe(true);
     expect(stepGate(m, snap(BASE), open, 'tp-long', '--full').run).toBe(true);
     expect(recordSteps(open, snap(BASE), ['tp-long'], BUILD).stepFails).toEqual({});
   });

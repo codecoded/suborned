@@ -7,18 +7,36 @@
 //   a skip is never a pass: judgeGates says "not run, unchanged since build N (commit)", and the gate takes the skip only from planProof over the ledger, never from the plan file's word.
 // A row's `steps` names the batch's gated steps its path can affect (a scene builder: the scene and the frame-time steps, never the engine's; the words: the copy of the words). Absent: a `full` row forces them all, a list row none.
 // A fix loop runs just the failing section (CLAUDE.md, Delta only). Order can matter to this proof (0.2.145: r29 alone passed where the full run failed), so a pass alone after a failure in company is said, with what ran before it, and marked on the ledger (Pass.alone); it is not re-run in company unless asked. A delta run cannot catch what only the sections it skipped would have disturbed: --full, and any submission build, runs them all.
+// A path the table cannot place still runs the whole proof (the fail-safe), but never silently: the plan, the step and shot gates name it, and proofdelta.test.ts fails on
+// any tracked path with no row (brief 098: on the L9 merge 353 unplaced paths ran everything, named by the first alone).
 // usage: bun tools/game/proofdelta.ts plan                  what the next batch's proof would run
 //        bun tools/game/proofdelta.ts what-if <path>...     what a change to these paths alone would run, as if every section had just passed
+//        bun tools/game/proofwhat.ts diff <from> <to>       the same for a commit range, with the batch's steps and shots (proofwhat.ts: unplaced, what-if)
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, resolve } from 'node:path';
 import { z } from 'zod';
 import { IGNORED_INPUTS, fingerprint, ignoredFiles } from './fingerprint';
+import { unityOwned } from '../kit/copy';
 
 export const ROOT = resolve(import.meta.dir, '../..');
 export const MAP_FILE = join(ROOT, 'tools/game/proofmap.json');
 /** What the app carries or is made from that git does not hold, read by content: the kit and the figures, and the world export. */
 export const SNAPSHOT_IGNORED = [...IGNORED_INPUTS, 'unity/Assets/Suborned/Kit', 'unity/Assets/Suborned/People', 'out/world/harbour-district.world.json', 'out/world/harbour-district.walk.json'];
+/** The batch's gated steps (batch.ts `gated`, and the check's scenarios): what stepGate is asked about. */
+export const GATED_STEPS = ['sim', 'words', 'kit', 'world', 'unity-world', 'unity-match', 'scenarios', 'late-fight', 'tp-long'] as const;
+export const KIT_DIR = 'unity/Assets/Suborned/Kit', KIT_SETTLED = 'out/kit/copied.json';
+/** The kit copy by content, but what Unity owns in it (a .mat or a .meta: tools/kit/copy.ts unityOwned) by what it was made from: the catalogue hash it was copied at
+ *  (out/kit/copied.json), and not at all when Unity made it (a prefab's or a model's meta, a colourway variant) from the copy and the Editor code, both hashed. The game build's
+ *  own material pass (Look097Materials) and Unity's re-serialisation rewrite them after the batch's snapshot: DK_Glass_Sheen.mat between 0.2.263 and 0.2.264, a second full
+ *  proof for no source change (brief 098). Their sources stay hashed: kit.json, look097.json and the pass's code. Without the settled record (a fresh checkout) the bytes stand. */
+export function kitFiles(root: string): Map<string, string> {
+  const all = ignoredFiles(root, [KIT_DIR]), file = join(root, KIT_SETTLED);
+  if (!existsSync(file)) return all;
+  const settled = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>, out = new Map<string, string>();
+  for (const [f, h] of all) { const rel = f.slice(KIT_DIR.length + 1); if (!unityOwned(rel)) out.set(f, h); else if (settled[rel]) out.set(f, `kit:${settled[rel]}`); }
+  return out;
+}
 
 const Row = z.strictObject({ match: z.array(z.string().min(1)).min(1), run: z.union([z.literal('full'), z.literal('none'), z.array(z.string())]), why: z.string().min(8), shots: z.union([z.literal('all'), z.array(z.string().min(1))]).optional(),
   /** the batch's gated steps this path can affect (stepGate). Absent: a `full` row forces them all, a list row none. */
@@ -72,15 +90,19 @@ export function snapshot(root = ROOT, m = loadMap()): Snapshot {
     const p = join(root, item);
     if (!existsSync(p)) continue;
     if (item.endsWith('.json')) files.set(item, 'sha256:' + createHash('sha256').update(readFileSync(p)).digest('hex'));
-    else for (const [f, h] of ignoredFiles(root, [item])) files.set(f, h);
+    else for (const [f, h] of item === KIT_DIR ? kitFiles(root) : ignoredFiles(root, [item])) files.set(f, h);
   }
   if (files.has(MISSION_FILE) && existsSync(join(root, MISSION_FILE))) for (const [f, h] of Object.entries(missionParts(readFileSync(join(root, MISSION_FILE), 'utf8')))) files.set(f, h);
   return snapshotOf(files);
 }
-/** A field path new since `was`, whose whole file has not moved, is the same bytes as before (a ledger written before the file was split): not a change. */
+/** A field path new since `was`, whose whole file has not moved, is the same bytes as before (a ledger written before the file was split): not a change. A Unity-owned kit
+ *  file read two ways, Unity's bytes then (a ledger written before kitFiles) and its catalogue hash or nothing now, or the catalogue's hash then and bytes now (the settled
+ *  record lost), is the same file: not a change, and kit.json says when the catalogue moved. Read the same way on both sides, added, or gone under the catalogue's hash, it
+ *  compares as any file. */
 export function changedPaths(was: Record<string, string>, now: Record<string, string>): string[] {
-  const base = (f: string) => f.split('#')[0]!;
-  return [...new Set([...Object.keys(was), ...Object.keys(now)])].filter(f => was[f] !== now[f] && !(f.includes('#') && !(f in was) && was[base(f)] !== undefined && was[base(f)] === now[base(f)])).sort();
+  const base = (f: string) => f.split('#')[0]!, how = (v: string | undefined) => (v === undefined ? 'none' : v.startsWith('kit:') ? 'kit' : 'bytes');
+  const twoWays = (f: string) => { if (!f.startsWith(KIT_DIR + '/') || !unityOwned(f)) return false; const a = how(was[f]), b = how(now[f]); return (a === 'bytes' && b !== 'bytes') || (a === 'kit' && b === 'bytes'); };
+  return [...new Set([...Object.keys(was), ...Object.keys(now)])].filter(f => was[f] !== now[f] && !twoWays(f) && !(f.includes('#') && !(f in was) && was[base(f)] !== undefined && was[base(f)] === now[base(f)])).sort();
 }
 
 // ---------------------------------------------------------------- the ledger
@@ -125,9 +147,15 @@ export type Plan = {
   /** section → why it runs */
   reasons: Record<string, string>;
   seconds: number; snapshot: string; force?: string;
+  /** changed paths no row places: the reason the proof is full, each named */
+  unplaced?: string[];
 };
 const secondsOf = (m: ProofMap, ids: string[]) => m.baseSeconds + m.sections.filter(s => ids.includes(s.id)).reduce((a, s) => a + s.seconds, 0);
-const fullPlan = (m: ProofMap, why: string, snap: string, force?: string): Plan => ({ schema: 'suborned.proofplan/1', mode: 'full', why, only: [], skips: {}, reasons: {}, seconds: secondsOf(m, sectionIds(m)), snapshot: snap, ...(force ? { force } : {}) });
+const fullPlan = (m: ProofMap, why: string, snap: string, force?: string, unplaced?: string[]): Plan => ({ schema: 'suborned.proofplan/1', mode: 'full', why, only: [], skips: {}, reasons: {}, seconds: secondsOf(m, sectionIds(m)), snapshot: snap, ...(force ? { force } : {}), ...(unplaced?.length ? { unplaced } : {}) });
+/** The changed paths no row places, named: never a silent full run. */
+export const unplacedIn = (m: ProofMap, paths: string[]): string[] => paths.filter(f => !classify(m, f));
+const some = (fs: string[], n = 3) => `${fs.slice(0, n).join(', ')}${fs.length > n ? `, +${fs.length - n} more` : ''}`;
+export const unplacedWhy = (fs: string[]) => `${fs.length} changed path${fs.length === 1 ? '' : 's'} the map cannot place (${some(fs)}): the whole proof runs until each has a row in tools/game/proofmap.json (bun tools/game/proofwhat.ts unplaced)`;
 /** The sections that ran before `s` in the proof's order, of those in `ran`. */
 const before = (m: ProofMap, s: string, ran: string[]) => { const ids = sectionIds(m); return ids.slice(0, ids.indexOf(s)).filter(x => ran.includes(x)); };
 
@@ -145,7 +173,9 @@ export function planProof(m: ProofMap, snap: Snapshot, l: Ledger, o: { force?: s
     const changed = changedPaths(was, snap.files), wide = changed.filter(f => { const r = classify(m, f); return !r || r.run === 'full'; });
     // names the edit, not what the batch's own kit and scene steps rewrote: Kit/** sorts before the file that set them off (brief 078: lens.json read as "DK_SpaceHQ.fbx.meta changed")
     const first = wide.find(f => !f.startsWith('unity/Assets/Suborned/Kit/')) ?? wide[0];
-    if (first) { const row = classify(m, first); return fullPlan(m, row ? `${first} changed: ${row.why}` : `${first} changed and the map cannot place it`, snap.id); }
+    const unplaced = unplacedIn(m, changed);
+    if (unplaced.length) return fullPlan(m, unplacedWhy(unplaced), snap.id, undefined, unplaced);
+    if (first) { const row = classify(m, first)!; return fullPlan(m, `${first} changed: ${row.why}`, snap.id); }
     for (const f of changed) {
       const row = classify(m, f)!;
       if (row.run !== 'none' && row.run !== 'full' && row.run.includes(s)) { hit = f; break; }
@@ -169,7 +199,9 @@ export function stepGate(m: ProofMap, snap: Snapshot, l: Ledger, step: string, f
   const p = l.steps[step], was = p && l.snapshots[p.snapshot];
   if (!p || !was) return { run: true, why: 'no recorded pass' };
   const hit = moved(was);
-  return hit ? { run: true, why: `${hit} changed` } : { run: false, why: `nothing it reads changed since build ${p.build}` };
+  if (!hit) return { run: false, why: `nothing it reads changed since build ${p.build}` };
+  const unplaced = unplacedIn(m, changedPaths(was, snap.files));
+  return { run: true, why: unplaced.length ? unplacedWhy(unplaced) : `${hit} changed` };
 }
 /** The shots a change can show in: what the rows of the paths changed since the last shots pass name. Anything full or unplaced, or no recorded pass: all of them. */
 export function shotsGate(m: ProofMap, snap: Snapshot, l: Ledger, force?: string): { names: 'all' | string[]; why: string } {
@@ -179,7 +211,8 @@ export function shotsGate(m: ProofMap, snap: Snapshot, l: Ledger, force?: string
   const names = new Set<string>(); let by = '';
   for (const f of changedPaths(was, snap.files)) {
     const r = classify(m, f);
-    if (!r || r.run === 'full' || r.shots === 'all') return { names: 'all', why: `${f} changed` };
+    if (!r) return { names: 'all', why: unplacedWhy(unplacedIn(m, changedPaths(was, snap.files))) };
+    if (r.run === 'full' || r.shots === 'all') return { names: 'all', why: `${f} changed` };
     if (r.shots?.length) { for (const n of r.shots) names.add(n); by ||= f; }
   }
   return names.size ? { names: [...names], why: `${by} changed` } : { names: [], why: `no HUD or view path changed since build ${p.build}` };
@@ -249,7 +282,7 @@ export function readPlan(file: string): { plan: Plan; snap: Snapshot } {
 /** One line of a plan, for the batch and the what-if. */
 export function planLines(p: Plan): string[] {
   const m = Math.round(p.seconds / 6) / 10;
-  if (p.mode === 'full') return [`proof: FULL, about ${m} min: ${p.why}`];
+  if (p.mode === 'full') return [`proof: FULL, about ${m} min: ${p.why}`, ...(p.unplaced?.length ? [`  cannot place: ${p.unplaced.slice(0, 12).join(', ')}${p.unplaced.length > 12 ? ` (+${p.unplaced.length - 12} more)` : ''}`] : [])];
   const by = Object.keys(p.skips).length;
   return [`proof: delta, about ${m} min: ${p.why}`, `  runs: the base${p.only.length ? `, ${p.only.join(', ')}` : ' only'}`, ...(by ? [`  not run: ${by} section${by === 1 ? '' : 's'} (${Object.keys(p.skips).join(', ')}); ${Object.values(p.skips)[0]}`] : [])];
 }

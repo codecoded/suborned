@@ -4,6 +4,9 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isPipRow, ALTLINE_MAX, analyse, BAR_MAX, bands, barFromParts, BRIEFING_READING, CHIP_MAX, chipsFromParts, footprint, fromParts, glyphWords, isClock, LIMIT, LOCK_MAX, MARKER_MAX, maskOf, PILL_MAX, POP_MAX, popsFromParts, SPEECH_MAX, speechWords, recognise, rectMask, stack, type Element, type Manifest, type Rect, type Run, type State } from './budget';
+import { CARD_MAX, CUTAWAY, conversationLines, speechFault } from './speech';
+import { MAX_WORDS } from '../../contracts/missions/handover/text.schema';
+import { CARD_WORDS, CUTAWAY_MAX_SENTENCES, CUTAWAY_MAX_WORDS } from '../../contracts/missions/handover/conversations.schema';
 import { decodePng, encodePng, type Image } from './png';
 
 const fx = (f: string) => join(import.meta.dir, 'fixtures', f);
@@ -345,8 +348,23 @@ describe('speech (GDD v0.35.0: bubbles at most 12 words; the name is a label)', 
     expect(speechWords('Hush, and drink it.')).toBe(4);
   });
   test('failing example: a thirteenth word fails with a name or without; twelve and a name pass', () => {
-    expect(judge(`Rival: ${twelve}`)).not.toContain('a speech line');
-    expect(judge(`Rival: ${twelve} thirteen`)).toContain('a speech line is longer than 2 lines or 12 words');
-    expect(judge(`${twelve} thirteen`)).toContain('a speech line is longer');
+    expect(judge(`Rival: ${twelve}`)).not.toContain('speech bubble');
+    expect(judge(`Rival: ${twelve} thirteen`)).toContain('runs 13 words (a bubble at most 12: text.schema MAX_WORDS)');
+    expect(judge(`${twelve} thirteen`)).toContain('the speech bubble');
+  });
+  // brief 098 (Splice): the caps are the text schema's own, and a conversation's line keeps the cutaway's (Sky 2026-11-05, "Full sentences")
+  test('the caps come from the text schema: a bubble text.schema\'s MAX_WORDS, a conversation\'s line the cutaway\'s, the cards their rows', () => {
+    expect(SPEECH_MAX.words).toBe(MAX_WORDS); expect(CUTAWAY.words).toBe(CUTAWAY_MAX_WORDS); expect(CUTAWAY.sentences).toBe(CUTAWAY_MAX_SENTENCES);
+    expect(CARD_MAX).toMatchObject({ rows: 4, rowWords: CARD_WORDS, words: 4 * CARD_WORDS }); // learned and opens, at most two rows each (conversations.schema)
+  });
+  test('a conversation\'s line from text.json holds to 25 words and two sentences; the same words outside a conversation are a bubble\'s, and fail at 13', () => {
+    const said = conversationLines()!, inez = [...said].find(l => l.startsWith('Inez, have you eaten'))!;
+    expect(inez.split(/\s+/).length).toBeGreaterThan(12); // the line the 0.2.265 shots failed on: 15 words
+    expect(judge(inez)).not.toContain('speech');
+    expect(speechFault(inez, 2, 15, null)).toContain('a bubble at most 12'); // with no text.json to say it is a conversation's, it is judged as a bubble: the stricter answer
+    const long = 'one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two twenty-three twenty-four twenty-five twenty-six';
+    expect(speechFault(long, 4, 26, new Set([long]))).toContain('runs 26 words (a conversation\'s line at most 25');
+    expect(speechFault('One. Two. Three.', 1, 3, new Set(['One. Two. Three.']))).toContain('is 3 sentences (at most 2');
+    expect(speechFault('Who? Why?', 1, 2, new Set(['Who? Why?']))).toContain('asks 2 questions (at most 1');
   });
 });

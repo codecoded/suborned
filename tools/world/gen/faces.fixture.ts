@@ -6,8 +6,8 @@ import { resolve } from 'node:path';
 import type { Kit } from '../../../contracts/world/kit.schema';
 
 export const FACE_PIECES = /^(SideBay_[34]|SideBayStack_(Base|Mid|Top)|CornerPier_(Out|In)_(3|4|Base|Mid|Top)|AlleyWall_[34]D?|SidePilaster_(3|4|Base|Mid|Top)|RecordsTower(_TB)?)$/; // brief 077: and its testbed rebuild
-export function faceKitOff(): Kit {
-  const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../../contracts/world/kit.json'), 'utf8'));
+export function faceKitOff(from = resolve(import.meta.dir, '../../../contracts/world/kit.json')): Kit { // from: the catalogue to start from (faces.test.ts: the pre-remap pin)
+  const kit: Kit = JSON.parse(readFileSync(from, 'utf8'));
   kit.assets = kit.assets.map(a => (FACE_PIECES.test(a.id) ? { ...a, status: 'candidate' } : a));
   return kit;
 }

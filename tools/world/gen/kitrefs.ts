@@ -37,6 +37,9 @@ export function withKit<T>(file: string | undefined, fn: () => T): T {
   pinned = file;
   try { return fn(); } finally { pinned = before; }
 }
+/** `file` as the catalogue until the next call (undefined: kit.json again), for a test file that generates one pinned plan throughout (tools/world/test/preremap.ts
+ *  sets it at the file's load and takes it off after its tests). A withKit inside still names its own. */
+export function pinKit(file: string | undefined): void { pinned = file; }
 const everything = new Map<string, KitAsset[]>();
 /** A piece of the catalogue by id whatever its status (candidate, adopted, rejected): the generator measures a candidate it is about to place a stand-in for, and reads its tags (a Dumpster's `stash`), but never draws it. */
 export function catalogued(id: string): KitAsset | undefined {
