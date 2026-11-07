@@ -1,121 +1,121 @@
-THE HANDOVER · DONE AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
+THE HANDOVER · AWAY AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
 way Front door (your way in)
   ✓ The guard is off the door · Inez called him over · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:45
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:45
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 4:12
   ✓ While blocked, someone guards the car outside, gun drawn · 4:12
 next :  []
   Time 4:12: 1:37 to spare
-  Spent $40,000: Helping Inez
-  Trail +3: Inez turned, the loop and her call
-  Alert 0: Nobody raised the alarm
+  Spent $40,000: Helping someone
+  Trail +3: From the help, the loop and the call
+  Alert 0: No alarm raised
   Standing Hero +4: Strangers drove off a feared crew
   city found: An investigation is open / the guard's trip to the café looks staged
-  city turned: Kept / Inez, though investigators may question her
-  city talker: 2 people heard what Hasti looks like / word of mouth, by tonight
-run Listened 0:59 [face] · Inez turned 1:34 [face] · Loop 1:45 [face] · Rivals in 2:35 · In 2:37 [face] · Popovic out 3:15 · Fight 3:47 · Away 4:12
+  city turned: Contact kept / Inez, though investigators may question her
+  city talker: 2 will describe Hasti's face / How you treated them
+run Listened 0:59 [face] · Turned 1:34 [face] · Camera looped 1:45 [face] · Rivals arrived 2:35 · Went in 2:37 [face] · Out with Popovic 3:15 · Final fight 3:47 · Away with Popovic 4:12
 fold Time 4:12 the clock: When the job was done, against the stops on the mission's clock.
   pips 
   2:35 Rivals in  []
-  4:12 Away  []
+  4:12 Away with Popovic  []
   5:10 Chime  []
   5:20 Last chance  []
   5:30 Popovic exits  []
   5:50 His car leaves  []
   law 
-ways Back to the start · Try again* | New start / Same start · 0
+ways Back to start · Try again* | New start / Same start · 0
 
-THE HANDOVER · DONE AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
+THE HANDOVER · AWAY AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
 way Front door (your way in)
   ✓ The guard is off the door · Inez called him over · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:45
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:45
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 4:12
   ✓ While blocked, someone guards the car outside, gun drawn · 4:12
 next :  []
   Time 4:12: 1:37 to spare
-  Spent $40,000: Helping Inez
-  Trail +3: Inez turned, the loop and her call
-  Alert 0: Nobody raised the alarm
+  Spent $40,000: Helping someone
+  Trail +3: From the help, the loop and the call
+  Alert 0: No alarm raised
   Standing Hero +4: Strangers drove off a feared crew
   city found: An investigation is open / the guard's trip to the café looks staged
-  city turned: Kept / Inez, though investigators may question her
-  city talker: 2 people heard what Hasti looks like / word of mouth, by tonight
-run Listened 0:59 [face] · Inez turned 1:34 [face] · Loop 1:45 [face] · Rivals in 2:35 · In 2:37 [face] · Popovic out 3:15 · Fight 3:47 · Away 4:12
+  city turned: Contact kept / Inez, though investigators may question her
+  city talker: 2 will describe Hasti's face / How you treated them
+run Listened 0:59 [face] · Turned 1:34 [face] · Camera looped 1:45 [face] · Rivals arrived 2:35 · Went in 2:37 [face] · Out with Popovic 3:15 · Final fight 3:47 · Away with Popovic 4:12
 fold Spent $40,000 what it went on: The purse pays for people. A refusal gives the money back.
   pips 
   $40,000 Hasti helped Inez 1:34 [portraits/cameo_fixer_normal]
   law 
-ways Back to the start · Try again* | New start / Same start · 0
+ways Back to start · Try again* | New start / Same start · 0
 
-THE HANDOVER · DONE AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
+THE HANDOVER · AWAY AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
 way Front door (your way in)
   ✓ The guard is off the door · Inez called him over · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:45
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:45
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 4:12
   ✓ While blocked, someone guards the car outside, gun drawn · 4:12
 next :  []
   Time 4:12: 1:37 to spare
-  Spent $40,000: Helping Inez
-  Trail +3: Inez turned, the loop and her call
-  Alert 0: Nobody raised the alarm
+  Spent $40,000: Helping someone
+  Trail +3: From the help, the loop and the call
+  Alert 0: No alarm raised
   Standing Hero +4: Strangers drove off a feared crew
   city found: An investigation is open / the guard's trip to the café looks staged
-  city turned: Kept / Inez, though investigators may question her
-  city talker: 2 people heard what Hasti looks like / word of mouth, by tonight
-run Listened 0:59 [face] · Inez turned 1:34 [face] · Loop 1:45 [face] · Rivals in 2:35 · In 2:37 [face] · Popovic out 3:15 · Fight 3:47 · Away 4:12
-fold Trail +3 what left it: Trail is what investigators can trace back to you. It stays with the campaign.
+  city turned: Contact kept / Inez, though investigators may question her
+  city talker: 2 will describe Hasti's face / How you treated them
+run Listened 0:59 [face] · Turned 1:34 [face] · Camera looped 1:45 [face] · Rivals arrived 2:35 · Went in 2:37 [face] · Out with Popovic 3:15 · Final fight 3:47 · Away with Popovic 4:12
+fold Trail +3 what left it: Trail is what investigators can trace to your cell, even after this mission.
   pips 1 1 1
   +1 Hasti helped Inez 1:34 [portraits/cameo_fixer_normal]
   +1 Sethre looped the entrance camera 1:45 [portraits/cameo_tech_normal]
   +1 Inez called the guard over 2:35 []
   law 
-ways Back to the start · Try again* | New start / Same start · 0
+ways Back to start · Try again* | New start / Same start · 0
 
-THE HANDOVER · DONE AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
+THE HANDOVER · AWAY AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
 way Front door (your way in)
   ✓ The guard is off the door · Inez called him over · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:45
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:45
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 4:12
   ✓ While blocked, someone guards the car outside, gun drawn · 4:12
 next :  []
   Time 4:12: 1:37 to spare
-  Spent $40,000: Helping Inez
-  Trail +3: Inez turned, the loop and her call
-  Alert 0: Nobody raised the alarm
+  Spent $40,000: Helping someone
+  Trail +3: From the help, the loop and the call
+  Alert 0: No alarm raised
   Standing Hero +4: Strangers drove off a feared crew
   city found: An investigation is open / the guard's trip to the café looks staged
-  city turned: Kept / Inez, though investigators may question her
-  city talker: 2 people heard what Hasti looks like / word of mouth, by tonight
-run Listened 0:59 [face] · Inez turned 1:34 [face] · Loop 1:45 [face] · Rivals in 2:35 · In 2:37 [face] · Popovic out 3:15 · Fight 3:47 · Away 4:12
+  city turned: Contact kept / Inez, though investigators may question her
+  city talker: 2 will describe Hasti's face / How you treated them
+run Listened 0:59 [face] · Turned 1:34 [face] · Camera looped 1:45 [face] · Rivals arrived 2:35 · Went in 2:37 [face] · Out with Popovic 3:15 · Final fight 3:47 · Away with Popovic 4:12
 fold Alert 0 what raised it: Alert is how hard security is looking: 0 routine, up to 3 lockdown.
   pips 
   law 
-ways Back to the start · Try again* | New start / Same start · 0
+ways Back to start · Try again* | New start / Same start · 0
 
-THE HANDOVER · DONE AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
+THE HANDOVER · AWAY AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
 way Front door (your way in)
   ✓ The guard is off the door · Inez called him over · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:45
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:45
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 4:12
   ✓ While blocked, someone guards the car outside, gun drawn · 4:12
 next :  []
   Time 4:12: 1:37 to spare
-  Spent $40,000: Helping Inez
-  Trail +3: Inez turned, the loop and her call
-  Alert 0: Nobody raised the alarm
+  Spent $40,000: Helping someone
+  Trail +3: From the help, the loop and the call
+  Alert 0: No alarm raised
   Standing Hero +4: Strangers drove off a feared crew
   city found: An investigation is open / the guard's trip to the café looks staged
-  city turned: Kept / Inez, though investigators may question her
-  city talker: 2 people heard what Hasti looks like / word of mouth, by tonight
-run Listened 0:59 [face] · Inez turned 1:34 [face] · Loop 1:45 [face] · Rivals in 2:35 · In 2:37 [face] · Popovic out 3:15 · Fight 3:47 · Away 4:12
+  city turned: Contact kept / Inez, though investigators may question her
+  city talker: 2 will describe Hasti's face / How you treated them
+run Listened 0:59 [face] · Turned 1:34 [face] · Camera looped 1:45 [face] · Rivals arrived 2:35 · Went in 2:37 [face] · Out with Popovic 3:15 · Final fight 3:47 · Away with Popovic 4:12
 fold Standing Hero +4 what moved it: Standing is how the district sees you, from Hero to Menace.
   pips 
   +1 Strangers drove off a feared crew 3:58 []
   +1 Word is a stranger helped Inez  []
   law 
-ways Back to the start · Try again* | New start / Same start · 0
+ways Back to start · Try again* | New start / Same start · 0

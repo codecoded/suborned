@@ -12,7 +12,8 @@ using Path = System.IO.Path;
 namespace Suborned.Play
 {
     /// <summary>Brief 099, `-debriefShots &lt;dir&gt; -capture-size 1920x1080`: the debrief page in the real player beside Glyph's concept (briefs/099/glyph/A-front-*.png): the quiet
-    /// win (route A), the lookout's fail at 5:53 (its Time fold too, which opens over the numbers), the loud win with Trail opened. Each script is played through the host's own
+    /// win (route A), the lookout's fail at 5:53 (its Time fold too, which opens over the numbers), the loud win with Trail opened, the two deepest fail pages (where the run gives
+    /// way), a withdrawal, and the start page after Try again (its kicker beside the debrief's). Each script is played through the host's own
     /// order paths to its end; the fail camera plays as in the game; the page opens as the game opens it. For each picture: the page's manifest (tools/hud-budget, state page),
     /// its layout audit (the HUD's own and the page's), its words (pages.txt); and, once a run's page has been opened and every fold toggled, its saved session replayed to the
     /// same hash. Its own flag; no proof section runs it. Reads only.</summary>
@@ -33,6 +34,11 @@ namespace Suborned.Play
             var bad = HudToolkit.BookAudit(); bad.AddRange(HudToolkit.AuditText());
             audit.AppendLine($"{name}: {(bad.Count == 0 ? "clean" : bad.Count + " finding(s)")}"); foreach (var b in bad) audit.AppendLine("  " + b);
             var p = h.BookPageNow; pages.AppendLine($"== {name} ({Screen.width}x{Screen.height}, build {h.DebriefBuildMs:0.0} ms, rows replayed {h.NeedsReplayed})"); if (p != null) pages.AppendLine(PageText(p));
+            if (p != null && HudToolkit.BookLaidOut is { Debrief: not null } lr) // the run as the page laid it out: the stops it kept, their size, and the city's rows shown
+            {
+                var run = new List<string>(); foreach (var it in lr.Of(BookSlot.Track)) run.Add(string.Join(" / ", lr.Debrief.Run[it.Index])); int city = 0; foreach (var _ in lr.Of(BookSlot.City)) city++;
+                pages.AppendLine($"  laid out: run {run.Count}/{p.Track.Count} at {lr.Debrief.RunSize:0.#} px: {string.Join(" · ", run)}; city {city}/{p.City.Count}; rows {lr.Debrief.TicksShown}/{p.Ticks.Count}\n");
+            }
             Debug.Log($"debrief-shots: {name} {Screen.width}x{Screen.height}, audit {bad.Count}");
         }
 
@@ -58,7 +64,8 @@ namespace Suborned.Play
             HandoverHost h; float t0 = Time.realtimeSinceStartup; while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 90f) { Application.Quit(3); yield break; } yield return null; }
             yield return new WaitForSecondsRealtime(3f);
             h.controls.conversations = ConversationScenes.Never; h.controls.planTogether = false; var verdicts = new List<string>();
-            foreach (var (name, rel, folds) in new[] { ("debrief-quiet-win", "contracts/missions/handover/routes/route-a.json", new string[0]), ("debrief-fail-lookout", "contracts/missions/handover/routes/fail-rivals-reach-vale.json", new[] { "time" }), ("debrief-loud", "tools/game/pins/loud.seed3.json", new[] { "trail" }) })
+            foreach (var (name, rel, folds) in new[] { ("debrief-quiet-win", "contracts/missions/handover/routes/route-a.json", new string[0]), ("debrief-fail-lookout", "contracts/missions/handover/routes/fail-rivals-reach-vale.json", new[] { "time" }), ("debrief-loud", "tools/game/pins/loud.seed3.json", new[] { "trail" }),
+                ("debrief-tall", "contracts/missions/handover/routes/fight-safe-unguarded.json", new string[0]), ("debrief-tallest", "contracts/missions/handover/routes/route-g-fast-board.json", new string[0]) }) // the two deepest fail pages: the run gives way
             {
                 if (!File.Exists(Path.Combine(Root, rel))) { audit.AppendLine($"{name}: no script at {Path.Combine(Root, rel)}"); continue; }
                 yield return Play(h, rel);
@@ -78,7 +85,8 @@ namespace Suborned.Play
                 }
             }
             // Try again on the same start: the book shuts, a new run on the same seed at 0:00, the start's book opens on Job
-            if (h.BookOpen && h.BookEnd) { int seed = h.Game.Seed; h.DebriefSame(true); h.DebriefWay("again"); yield return null; yield return null; yield return null; verdicts.Add($"Try again (same start): seed {h.Game.Seed} (was {seed}), tick {h.Game.Tick}, the start's book {(h.BookOpen && h.BookStart ? "open on " + h.BookSectionNow : "NOT OPEN")}"); }
+            if (h.BookOpen && h.BookEnd) { int seed = h.Game.Seed; h.DebriefSame(true); h.DebriefWay("again"); yield return null; yield return null; yield return null; verdicts.Add($"Try again (same start): seed {h.Game.Seed} (was {seed}), tick {h.Game.Tick}, the start's book {(h.BookOpen && h.BookStart ? "open on " + h.BookSectionNow : "NOT OPEN")}");
+                if (h.BookOpen && h.BookStart) yield return Shot(h, "start-page"); } // the start page's kicker, beside the debrief's
             // a withdrawal's page, then Back to the start: the main menu over the stopped street
             yield return Play(h, "contracts/missions/handover/routes/withdraw.json");
             if (h.BookOpen && h.BookEnd) { yield return Shot(h, "debrief-withdraw"); h.DebriefWay("start"); yield return null; yield return null; verdicts.Add($"Back to the start: the main menu {(FrontEnd.Covers ? "is up" : "IS NOT UP")}, the book {(h.BookOpen ? "STILL OPEN" : "shut")}"); }

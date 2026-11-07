@@ -1,42 +1,42 @@
-careless-body-found.json: Failure enforcer-down 3:37 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
-careless-enforcer-watches-guard.json: Failure enforcer-down 2:59 · The Enforcer went down · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
+careless-body-found.json: Failure enforcer-down 3:37 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next: Only the Enforcer can take Popovic, and enemy fire targets him. · ways replay/start/again
+careless-enforcer-watches-guard.json: Failure enforcer-down 2:59 · The Enforcer went down · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: Only the Enforcer can take Popovic, and enemy fire targets him. · ways replay/start/again
 careless-g-disable.json: Success  4:49 · Popovic is in the car · Front door 5/5 · lost:  · next:  · ways start/again
-careless-guard-left-door-held.json: Failure vale-leaves 5:53 · Popovic got away · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-careless-loop-runs-out.json: Failure entry-seen-camera 2:37 · The camera saw the Enforcer · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-careless-reporter-not-stopped.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Send their lookout away before the car goes round. · ways replay/start/again
+careless-guard-left-door-held.json: Failure vale-leaves 5:53 · Popovic got away · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next: The driver keeps Popovic's departure on time unless someone changes his mind. · ways replay/start/again
+careless-loop-runs-out.json: Failure entry-seen-camera 2:37 · The camera saw the Enforcer · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next: The entrance camera watches the door; being seen brings a lockdown. · ways replay/start/again
+careless-reporter-not-stopped.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Their lookout follows Popovic's car and can reach him first. · ways replay/start/again
 careless-scout-idles-pickup.json: Success  7:47 · Popovic is out · Pickup 3/4 · lost:  · next:  · ways start/again
-careless-takedown-seen-camera.json: Failure entry-seen-camera 2:37 · The camera saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-careless-takedown-seen-crowd.json: Failure vale-leaves 5:53 · Popovic got away · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-careless-thin-all.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Send their lookout away before the car goes round. · ways replay/start/again
+careless-takedown-seen-camera.json: Failure entry-seen-camera 2:37 · The camera saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The entrance camera watches the door; being seen brings a lockdown. · ways replay/start/again
+careless-takedown-seen-crowd.json: Failure vale-leaves 5:53 · Popovic got away · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next: The driver keeps Popovic's departure on time unless someone changes his mind. · ways replay/start/again
+careless-thin-all.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Their lookout follows Popovic's car and can reach him first. · ways replay/start/again
 fail-district-seals.json: Failure sealed 5:15 · Sealed in before the car · Front door 2/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fail-enforcer-down.json: Failure enforcer-down 1:46 · The Enforcer went down · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fail-entry-seen-camera.json: Failure vale-leaves 5:53 · Popovic got away · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fail-entry-seen-guard.json: Failure entry-seen-guard 3:52 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fail-rivals-reach-vale.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Send their lookout away before the car goes round. · ways replay/start/again
-fail-take-seen-camera.json: Failure abduction-seen-camera 5:50 · The camera saw the Take · Front door 0/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fail-vale-dead.json: Failure vale-dead 5:35 · Popovic is dead · Front door 0/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fail-vale-leaves.json: Failure vale-leaves 5:53 · Popovic got away · Front door 0/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-fight-loud-enforcer-down.json: Failure enforcer-down 3:23 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
-fight-loud-wait-square.json: Failure enforcer-down 4:11 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
+fail-enforcer-down.json: Failure enforcer-down 1:46 · The Enforcer went down · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: Only the Enforcer can take Popovic, and enemy fire targets him. · ways replay/start/again
+fail-entry-seen-camera.json: Failure vale-leaves 5:53 · Popovic got away · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The driver keeps Popovic's departure on time unless someone changes his mind. · ways replay/start/again
+fail-entry-seen-guard.json: Failure entry-seen-guard 3:52 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The guard watches the door and warns Popovic if he sees the Enforcer enter. · ways replay/start/again
+fail-rivals-reach-vale.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Their lookout follows Popovic's car and can reach him first. · ways replay/start/again
+fail-take-seen-camera.json: Failure abduction-seen-camera 5:50 · The camera saw the Take · Front door 0/7 · lost: The Enforcer is inside before 5:30 · next: The camera covers Popovic's car; security takes him back if it sees the Take. · ways replay/start/again
+fail-vale-dead.json: Failure vale-dead 5:35 · Popovic is dead · Front door 0/7 · lost: The Enforcer is inside before 5:30 · next: Gunfire near Popovic can kill him; we need him alive. · ways replay/start/again
+fail-vale-leaves.json: Failure vale-leaves 5:53 · Popovic got away · Front door 0/7 · lost: The Enforcer is inside before 5:30 · next: The driver keeps Popovic's departure on time unless someone changes his mind. · ways replay/start/again
+fight-loud-enforcer-down.json: Failure enforcer-down 3:23 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next: Only the Enforcer can take Popovic, and enemy fire targets him. · ways replay/start/again
+fight-loud-wait-square.json: Failure enforcer-down 4:11 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next: Only the Enforcer can take Popovic, and enemy fire targets him. · ways replay/start/again
 fight-loud-wait-yard.json: Withdrawn  6:55 · You withdrew · Pickup 3/6 · lost:  · next:  · ways start/again
-fight-safe-rivals-reach-vale.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Send their lookout away before the car goes round. · ways replay/start/again
-fight-safe-unguarded.json: Failure rivals-reach-vale 3:02 · Rivals took Popovic from the car · Front door 5/7 · lost: Go gets Popovic out, and the job's done · next:  · ways replay/start/again
-loud-fight.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-loud-left-downed.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-loud-left-standing.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-loud.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next:  · ways replay/start/again
-route-a-board.json: Failure closed-in 8:10 · Time ran out on foot · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
+fight-safe-rivals-reach-vale.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Their lookout follows Popovic's car and can reach him first. · ways replay/start/again
+fight-safe-unguarded.json: Failure rivals-reach-vale 3:02 · Rivals took Popovic from the car · Front door 5/7 · lost: Go gets Popovic out, and the job's done · next: Without someone outside with a gun drawn, rivals can take Popovic from the car. · ways replay/start/again
+loud-fight.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The guard watches the door and warns Popovic if he sees the Enforcer enter. · ways replay/start/again
+loud-left-downed.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The guard watches the door and warns Popovic if he sees the Enforcer enter. · ways replay/start/again
+loud-left-standing.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The guard watches the door and warns Popovic if he sees the Enforcer enter. · ways replay/start/again
+loud.json: Failure entry-seen-guard 2:37 · The guard saw the Enforcer · Front door 1/7 · lost: The Enforcer is inside before 5:30 · next: The guard watches the door and warns Popovic if he sees the Enforcer enter. · ways replay/start/again
+route-a-board.json: Failure closed-in 8:10 · Time ran out on foot · Front door 3/7 · lost: Popovic reaches the getaway car · next: Popovic needs to be in the getaway car before the district closes in. · ways replay/start/again
 route-a-disable.json: Success  4:12 · Popovic is in the car · Front door 5/5 · lost:  · next:  · ways start/again
-route-a-pressure-board.json: Failure rivals-reach-vale 4:23 · Rivals took Popovic from the car · Front door 5/7 · lost: Go gets Popovic out, and the job's done · next:  · ways replay/start/again
+route-a-pressure-board.json: Failure rivals-reach-vale 4:23 · Rivals took Popovic from the car · Front door 5/7 · lost: Go gets Popovic out, and the job's done · next: Without someone outside with a gun drawn, rivals can take Popovic from the car. · ways replay/start/again
 route-a-pressure.json: Success  4:35 · Popovic is in the car · Front door 5/5 · lost:  · next:  · ways start/again
 route-a.json: Success  4:12 · Popovic is in the car · Front door 5/5 · lost:  · next:  · ways start/again
-route-b-board.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Send their lookout away before the car goes round. · ways replay/start/again
-route-b-thin.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Send their lookout away before the car goes round. · ways replay/start/again
+route-b-board.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Their lookout follows Popovic's car and can reach him first. · ways replay/start/again
+route-b-thin.json: Failure rivals-reach-vale 5:53 · Their lookout got there first · Pickup 1/6 · lost: The Enforcer has Popovic · next: Their lookout follows Popovic's car and can reach him first. · ways replay/start/again
 route-b.json: Success  7:47 · Popovic is out · Pickup 3/4 · lost:  · next:  · ways start/again
-route-g-board.json: Failure rivals-reach-vale 4:01 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
-route-g-fast-board.json: Failure rivals-reach-vale 3:06 · Rivals took Popovic from the car · Front door 6/7 · lost: Go gets Popovic out, and the job's done · next:  · ways replay/start/again
+route-g-board.json: Failure rivals-reach-vale 4:01 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next: Gunfire can down the Enforcer carrying Popovic, leaving Popovic to the rivals. · ways replay/start/again
+route-g-fast-board.json: Failure rivals-reach-vale 3:06 · Rivals took Popovic from the car · Front door 6/7 · lost: Go gets Popovic out, and the job's done · next: Without someone outside with a gun drawn, rivals can take Popovic from the car. · ways replay/start/again
 route-g-fast.json: Success  3:04 · Popovic is in the car · Front door 5/5 · lost:  · next:  · ways start/again
-route-g-kill-board.json: Failure rivals-reach-vale 5:58 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
+route-g-kill-board.json: Failure rivals-reach-vale 5:58 · The Enforcer went down · Front door 3/7 · lost: Popovic reaches the getaway car · next: Gunfire can down the Enforcer carrying Popovic, leaving Popovic to the rivals. · ways replay/start/again
 route-g-kill.json: Success  5:59 · Popovic is in the car · Front door 5/5 · lost:  · next:  · ways start/again
-route-g.json: Failure closed-in 8:10 · Time ran out on foot · Front door 3/7 · lost: Popovic reaches the getaway car · next:  · ways replay/start/again
+route-g.json: Failure closed-in 8:10 · Time ran out on foot · Front door 3/7 · lost: Popovic reaches the getaway car · next: Popovic needs to be in the getaway car before the district closes in. · ways replay/start/again
 withdraw.json: Withdrawn  0:30 · You withdrew · Front door 0/7 · lost:  · next:  · ways start/again

@@ -93,6 +93,23 @@ The pillars and tiebreakers; Keel's rulebook as the one source (unknown = reject
 7. **How busy the roads get** ("its fine, even just a few passing helps bring to life"): the plan's roads and junctions stay; above about 25 cars the extra ones queue at the edges.
 8. **Jams** ("should be opposite - shot cars can get past, others block"): ordinary traffic blocks a mission car's way, so a jam can box the cell's car in. A car that's been shot can be shoved aside or driven round, so shooting the car in your way clears it.
 
+## Sky's calls on L9 Bodies (2026-11-07)
+Keel's law (engine 0.46.0, branch `t3/simulation-body-spacing`, `briefs/098/keel/bodies.html`). Sky: "Do all but the jumping back to spot should be better to dealt with".
+- **Kept:**
+  - bodies 60 cm apart at the closest (radius 30 cm, the fight spacing);
+  - the city's personal space 80 cm, 70 cm in a queue;
+  - the cell steps round people or waits, never through them.
+- **Not kept: the last resort.** A body stuck 10 s rejoining its place in one tick (about seven a game at 64 people) goes. So does hiding it with a fade or an off-camera cut. A stuck person resolves it as a person would:
+  - the one in the way steps aside;
+  - two in a one-body gap squeeze past, shoulders turned;
+  - a city person who still can't get through changes plans: another free spot that serves, or the next step of their routine.
+
+  Tenets never change plans. Nobody ever jumps.
+- **The rest goes ahead in order:**
+  1. The merge, after Latch's debrief fix.
+  2. Latch's host side: the host's own crowd spreading off.
+  3. The cleanup round: Popovic's car stand about 0.6 m out (Vantage), the routes that no longer compose (Waymark), the Q4 Help grid (Motive), Fable's text gaps, and the rest of the failing tests.
+
 ## Done-check
 Sky can set the guards, people and cars in the dev panel, press Play and get that world, with no rebuild. The GDD goes to v0.40.0 with laws in place of per-case sums, and the crew is regenerated (`bun run crew`). Traffic runs in play under L8, with the Handover's bands holding across seeds and 60 fps on the Air. The witness rules run on L1–L6.
 

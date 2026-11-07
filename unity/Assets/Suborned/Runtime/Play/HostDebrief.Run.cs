@@ -16,11 +16,12 @@ namespace Suborned.Play
             void Add(string icon, string head, string line) { if (head.Length > 0) p.City.Add(new BookCity { Icon = icon, Head = head, Line = line }); }
             foreach (var (op, fate, why) in d.LeftBehind) // a capture is news; one who walked out is the end as planned
                 if (fate == "captured" && IsOpName(op) && t != null) Add(fate == "captured" ? "close_x" : "s_moving", $"{AgentName((int)Op.Parse(op))} · {(t.GetawayFate.TryGetValue(fate, out var fw) ? fw : "")}".TrimEnd(' ', '·'), t.GetawayWhy.TryGetValue(why, out var ww) ? ww : "");
+            // {missions} is the count alone, as Fable's block has it ("Killing found · {missions}-mission case"; debrief.schema.ts, the style agent's fill "a number of missions")
             string cause = d.InvestigationCause, ck = cause.Split(':')[0], who = cause.Contains(':') ? Name(cause[(cause.IndexOf(':') + 1)..]) : null;
             Add("found", dw.Debrief("investigation", d.InvestigationState).TrimEnd('.'), DebriefWords.Fill(dw.Debrief("causes", ck), false, ("who", who)));
-            foreach (var (cw, kind, place, missions) in d.Next.Cases) Add("papers", dw.F(new[] { "city", "case", "head" }, true, ("who", DebriefWho(cw))), dw.F(new[] { "city", "case", "line" }, false, ("missions", Missions(dw, missions))));
+            foreach (var (cw, kind, place, missions) in d.Next.Cases) Add("papers", dw.F(new[] { "city", "case", "head" }, true, ("who", DebriefWho(cw))), dw.F(new[] { "city", "case", "line" }, false, ("missions", missions.ToString())));
             foreach (var (place, guards, cameras, missions) in d.Next.AreaWatch)
-                Add("eye_open", dw.F(new[] { "city", "watch", "head" }, true, ("guards", guards.ToString()), ("cameras", cameras.ToString()), ("place", t != null && t.WhyPlaces.TryGetValue(place, out var pw) ? pw : null)), dw.F(new[] { "city", "watch", "line" }, false, ("missions", Missions(dw, missions))));
+                Add("eye_open", dw.F(new[] { "city", "watch", "head" }, true, ("guards", guards.ToString()), ("cameras", cameras.ToString()), ("place", t != null && t.WhyPlaces.TryGetValue(place, out var pw) ? pw : null)), dw.F(new[] { "city", "watch", "line" }, false, ("missions", missions.ToString())));
             if (d.Inv.Hunted.Contains("cell-car")) Add("car", dw.F(new[] { "city", "hunt", "head" }, true), dw.F(new[] { "city", "hunt", "line" }, false, ("by", t != null && t.GetawayBy.TryGetValue(PlayText.RoleOfId(d.Next.CarSeenBy), out var by) ? by : null)));
             foreach (var a in d.Assets) Add("turned", dw.W("city", "kept"), dw.Debrief("assets", a).TrimEnd('.'));
             var words = d.Next.Lines.FindAll(x => x.Line == "word"); string face = null; int faces = 0;
@@ -30,10 +31,9 @@ namespace Suborned.Play
         }
         /// <summary>The run's last beat: away (a win), withdrew (a withdrawal, where the words have it), lost.</summary>
         string EndBeat(bool win, DebriefWords dw) => win ? "away" : Game.Result == Outcome.Withdrawn && dw.W("beats", "withdrew").Length > 0 ? "withdrew" : "lost";
-        static string Missions(DebriefWords dw, int n) => n == 1 ? dw.W("missions", "one") : DebriefWords.Fill(dw.W("missions", "many"), false, ("n", n.ToString()));
 
         /// <summary>A beat: its tick, the beats key, icon, the agent whose act it was (a face), our lane (the deep disc) and hot (the one that lost it).</summary>
-        sealed class RunBeat { public int Tick; public string Key = "", Icon = "", Op = "", Who = ""; public bool Ours, Hot, City; }
+        sealed class RunBeat { public int Tick, Rank; public string Key = "", Icon = "", Op = "", Who = ""; public bool Ours, Hot, City; }
 
         void DebriefRun(BookPage p, DebriefWords dw, bool win)
         {
@@ -64,14 +64,18 @@ namespace Suborned.Play
             foreach (var f in g.Fights) beats.Add(new RunBeat { Tick = f.Start, Key = f.Final ? "fight" : "shots", Icon = "fire", Ours = true });
             beats.Sort((a, b) => a.Tick.CompareTo(b.Tick));
             bool lost = g.Result == Outcome.Failure; beats.Add(new RunBeat { Tick = g.Tick, Key = EndBeat(win, dw), Icon = win ? "car" : "close_x", Ours = !lost, Hot = lost }); // a withdrawal ends on its own word, not the loss's orange
-            while (beats.Count > p.TrackMax) // the quiet city beats go first, then a watch, then the second beat on (the end always stays)
+            // the order the beats give way in: the quiet city beats first, then a watch, then the second beat on; the end always stays. Past eight they go here; the page shows fewer
+            // when its labels need the room (BookLayout.FitRun reads the rank)
+            for (var left = new List<RunBeat>(beats); left.Count > 0;)
             {
-                int i = beats.FindIndex(b => b.City && !b.Hot); if (i < 0) i = beats.FindIndex(b => b.Key == "watched"); if (i < 0 || i == beats.Count - 1) i = 1; beats.RemoveAt(i);
+                int i = left.FindIndex(b => b.City && !b.Hot); if (i < 0) i = left.FindIndex(b => b.Key == "watched"); if (i < 0 || i == left.Count - 1) i = left.Count > 2 ? 1 : 0;
+                left[i].Rank = left.Count - 1; left.RemoveAt(i);
             }
+            beats.RemoveAll(b => b.Rank >= p.TrackMax);
             foreach (var b in beats)
             {
                 string word = dw.F(new[] { "beats", b.Key }, true, ("who", b.Who), ("alert", b.Who)); if (word.Length == 0) continue;
-                p.Track.Add(new BookStop { Icon = b.Icon, Word = word, Time = MissionClock(b.Tick), Face = b.Op.Length > 0 && IsOpName(b.Op) ? $"portraits/cameo_{b.Op}_normal" : "", Past = b.Ours, Hot = b.Hot });
+                p.Track.Add(new BookStop { Icon = b.Icon, Word = word, Time = MissionClock(b.Tick), Face = b.Op.Length > 0 && IsOpName(b.Op) ? $"portraits/cameo_{b.Op}_normal" : "", Past = b.Ours, Hot = b.Hot, Rank = b.Rank });
             }
         }
     }

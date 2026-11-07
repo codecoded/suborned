@@ -1,7 +1,4 @@
-from Fable's debrief.page: 0
-  
-from the stand-ins: 95
-  and
+from Fable's debrief.page: 100
   beats.alert
   beats.away
   beats.call
@@ -20,7 +17,6 @@ from the stand-ins: 95
   beats.turned
   beats.vale-out
   beats.watched
-  beats.withdrew
   city.case.head
   city.case.line
   city.face
@@ -31,18 +27,8 @@ from the stand-ins: 95
   city.watch.line
   city.word.head
   city.word.line
-  folds.alert.head
-  folds.alert.means
-  folds.cash.head
-  folds.cash.means
-  folds.rest
-  folds.standing.head
-  folds.standing.means
-  folds.time.head
-  folds.time.means
   head.fail
   head.win
-  head.withdraw
   how.called
   how.cut
   how.in
@@ -51,9 +37,26 @@ from the stand-ins: 95
   how.paid
   how.shot
   how.taped
-  missions.many
+  next.by.abduction-seen-camera.seen.line
+  next.by.abduction-seen-camera.seen.time
+  next.by.closed-in.on-foot.line
+  next.by.closed-in.on-foot.time
+  next.by.enforcer-down.shot.line
+  next.by.enforcer-down.shot.time
+  next.by.entry-seen-camera.seen.line
+  next.by.entry-seen-camera.seen.time
+  next.by.entry-seen-guard.seen.line
+  next.by.entry-seen-guard.seen.time
+  next.by.rivals-reach-vale.downed-enforcer.line
+  next.by.rivals-reach-vale.downed-enforcer.time
   next.by.rivals-reach-vale.lookout.line
   next.by.rivals-reach-vale.lookout.time
+  next.by.rivals-reach-vale.reached-car.line
+  next.by.rivals-reach-vale.reached-car.time
+  next.by.vale-dead.shot.line
+  next.by.vale-dead.shot.time
+  next.by.vale-leaves.driven-away.line
+  next.by.vale-leaves.driven-away.time
   next.head
   numbers.alert
   numbers.cash
@@ -96,3 +99,16 @@ from the stand-ins: 95
   ways.replay
   ways.same
   ways.start
+from the stand-ins: 12
+  and
+  beats.withdrew
+  folds.alert.head
+  folds.alert.means
+  folds.cash.head
+  folds.cash.means
+  folds.rest
+  folds.standing.head
+  folds.standing.means
+  folds.time.head
+  folds.time.means
+  head.withdraw

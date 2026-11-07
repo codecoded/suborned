@@ -268,8 +268,8 @@ namespace Suborned.Play
             {
                 var s = list[i]; bool menu = s.Id == "menu", cur = s.Id == pg.Section, dim = !menu && (s.Page == null || !host.BookSectionLive(s.Id)); float d = cur ? 108f : 84f, y = BookLayout.SignY(i, n), x = BookLayout.SignX; // brief 096: Menu opens the pause menu; the Journal is dim until it has a row
                 var e = E(body, null, x - d / 2f, y - d / 2f, d, d, !dim); Round(e, d / 2f); e.style.backgroundColor = cur ? BkOrange : BkBody; e.name = "book-sign-" + s.Id; if (dim) e.style.opacity = .34f;
-                Icon(E(e, null, d * .25f, d * .14f, d * .5f, d * .5f), s.Icon, Cream);
-                var l = BkPut(e, 0f, d * .74f, s.Word, cur ? 22f : 16f, "Jost-Bold", BkCreamHex); l.style.width = d; l.style.unityTextAlign = TextAnchor.MiddleCenter;
+                Icon(E(e, null, d * .25f, d * .12f, d * .5f, d * .5f), s.Icon, Cream); // brief 099 (Glyph): the icon a little up and the word a little down, 4 px or more apart (they sat 1 px)
+                var l = BkPut(e, 0f, d * .765f, s.Word, cur ? 22f : 16f, "Jost-Bold", BkCreamHex); l.style.width = d; l.style.unityTextAlign = TextAnchor.MiddleCenter;
                 if (menu) e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookToMenu(); });
                 else if (!dim) { string id = s.Id; e.RegisterCallback<ClickEvent>(ev => { ev.StopPropagation(); host.BookShow(id); }); }
             }

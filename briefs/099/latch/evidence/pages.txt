@@ -1,127 +1,186 @@
-== debrief-quiet-win (1920x1080, build 24.7 ms, rows replayed False)
-THE HANDOVER · DONE AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive.
+== debrief-quiet-win (1920x1080, build 22.1 ms, rows replayed False)
+THE HANDOVER · AWAY AT 4:12 | Popovic is in the car | The cell gets away with Popovic alive.
 Front door your way in
   ✓ The guard is off the door · Inez called him over · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:45
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:45
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 4:12
   ✓ While blocked, someone guards the car outside, gun drawn · 4:12
   Time 4:12: 1:37 to spare
-  Spent $40,000: Helping Inez
-  Trail +3: Inez turned, the loop and her call
-  Alert 0: Nobody raised the alarm
+  Spent $40,000: Helping someone
+  Trail +3: From the help, the loop and the call
+  Alert 0: No alarm raised
   Standing Hero +4: Strangers drove off a feared crew
   An investigation is open / the guard's trip to the café looks staged
-  Kept / Inez, though investigators may question her
-  2 people heard what Hasti looks like / word of mouth, by tonight
-  run: Listened 0:59 · Inez turned 1:34 · Loop 1:45 · Rivals in 2:35 · In 2:37 · Popovic out 3:15 · Fight 3:47 · Away 4:12
+  Contact kept / Inez, though investigators may question her
+  2 will describe Hasti's face / How you treated them
+  run: Listened 0:59 · Turned 1:34 · Camera looped 1:45 · Rivals arrived 2:35 · Went in 2:37 · Out with Popovic 3:15 · Final fight 3:47 · Away with Popovic 4:12
 
-== debrief-fail-lookout (1920x1080, build 0.9 ms, rows replayed False)
+  laid out: run 8/8 at 19.5 px: Listened · Turned · Camera / looped · Rivals / arrived · Went in · Out with / Popovic · Final fight · Away with / Popovic; city 3/3; rows 5/5
+
+== debrief-fail-lookout (1920x1080, build 0.8 ms, rows replayed False)
 THE HANDOVER · LOST AT 5:53 | Their lookout got there first | Their lookout saw Popovic's car go and ran after it. Nobody had dealt with him.
 Pickup your way in
   ✓ The driver is turned by 5:20 · paid · 2:36
-  ? The pickup camera can't see Popovic's car · it taped the pay · 2:18
+  ? The pickup camera can't see Popovic's car · payment caught on tape · 2:18
   ✕ The Enforcer has Popovic · their lookout got there first · 5:53
-  ○ Popovic is in our car, or in his with the Enforcer driving · never
-  ○ Go gets Popovic out, and the job's done · never
+  ○ Popovic is in our car, or in his with the Enforcer driving · never happened
+  ○ Go gets Popovic out, and the job's done · never happened
   ? Nobody left behind gets caught by the police · 
-Next time: Send their lookout away before the car goes round. [Mislead Larthi, Pay Hasti, Take Arruns]
-  Time 5:53: Their lookout got him
-  Spent $70,000: Paying the driver
-  Trail +3: The pay and the tape
-  Alert 1: The pickup camera saw the Fixer hanging about at the pickup
+Next time: Their lookout follows Popovic's car and can reach him first. [Mislead Larthi, Pay Hasti, Take Arruns]
+  Time 5:53: Their lookout reached Popovic first
+  Spent $70,000: Paying someone
+  Trail +3: From the payment and the recording
+  Alert 1: The pickup camera saw the Fixer stay too long at the pickup
   Standing Neutral +2: Nothing new was seen
   An investigation is open / several acts point back to the cell
-  Kept / The driver, who can change a pickup
-  2 people heard what Hasti looks like / word of mouth, by tonight
-  run: Alert 1 1:38 · Listened 1:51 · Pay taped 2:18 · Rivals in 2:35 · The driver turned 2:36 · Lookout posted 3:58 · Popovic leaves 5:30 · Lost 5:53
+  Contact kept / The driver, who can change a pickup
+  2 will describe Hasti's face / How you treated them
+  run: Alert 1 1:38 · Listened 1:51 · Pay tape arrived 2:18 · Rivals arrived 2:35 · Turned 2:36 · Their lookout set 3:58 · Popovic walked out 5:30 · Handover failed 5:53
+
+  laid out: run 8/8 at 18 px: Alert 1 · Listened · Pay tape / arrived · Rivals / arrived · Turned · Their / lookout set · Popovic / walked out · Handover / failed; city 0/3; rows 3/6
 
 == debrief-fail-lookout-time (1920x1080, build 0.3 ms, rows replayed False)
 THE HANDOVER · LOST AT 5:53 | Their lookout got there first | Their lookout saw Popovic's car go and ran after it. Nobody had dealt with him.
 Pickup your way in
   ✓ The driver is turned by 5:20 · paid · 2:36
-  ? The pickup camera can't see Popovic's car · it taped the pay · 2:18
+  ? The pickup camera can't see Popovic's car · payment caught on tape · 2:18
   ✕ The Enforcer has Popovic · their lookout got there first · 5:53
-  ○ Popovic is in our car, or in his with the Enforcer driving · never
-  ○ Go gets Popovic out, and the job's done · never
+  ○ Popovic is in our car, or in his with the Enforcer driving · never happened
+  ○ Go gets Popovic out, and the job's done · never happened
   ? Nobody left behind gets caught by the police · 
-Next time: Send their lookout away before the car goes round. [Mislead Larthi, Pay Hasti, Take Arruns]
-  Time 5:53: Their lookout got him
-  Spent $70,000: Paying the driver
-  Trail +3: The pay and the tape
-  Alert 1: The pickup camera saw the Fixer hanging about at the pickup
+Next time: Their lookout follows Popovic's car and can reach him first. [Mislead Larthi, Pay Hasti, Take Arruns]
+  Time 5:53: Their lookout reached Popovic first
+  Spent $70,000: Paying someone
+  Trail +3: From the payment and the recording
+  Alert 1: The pickup camera saw the Fixer stay too long at the pickup
   Standing Neutral +2: Nothing new was seen
   An investigation is open / several acts point back to the cell
-  Kept / The driver, who can change a pickup
-  2 people heard what Hasti looks like / word of mouth, by tonight
-  run: Alert 1 1:38 · Listened 1:51 · Pay taped 2:18 · Rivals in 2:35 · The driver turned 2:36 · Lookout posted 3:58 · Popovic leaves 5:30 · Lost 5:53
+  Contact kept / The driver, who can change a pickup
+  2 will describe Hasti's face / How you treated them
+  run: Alert 1 1:38 · Listened 1:51 · Pay tape arrived 2:18 · Rivals arrived 2:35 · Turned 2:36 · Their lookout set 3:58 · Popovic walked out 5:30 · Handover failed 5:53
   fold Time 5:53 the clock
     2:35 Rivals in 
     5:10 Chime 
     5:20 Last chance 
     5:30 Popovic exits 
     5:50 His car leaves 
-    5:53 Lost 
+    5:53 Handover failed 
 
-== debrief-loud (1920x1080, build 0.9 ms, rows replayed False)
-THE HANDOVER · DONE AT 5:01 | Popovic is in the car | The cell gets away with Popovic alive.
+  laid out: run 0/8 at 18 px: ; city 0/3; rows 3/6
+
+== debrief-loud (1920x1080, build 0.7 ms, rows replayed False)
+THE HANDOVER · AWAY AT 5:01 | Popovic is in the car | The cell gets away with Popovic alive.
 Front door your way in
   ✓ The guard is off the door · shot down · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:20
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:20
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 5:00
   ✓ While blocked, someone guards the car outside, gun drawn · 5:00
   Time 5:01: 0:48 to spare
-  Spent $0: Nothing paid
-  Trail +27: Shooting: 24 of the 27
+  Spent $0: Nothing spent
+  Trail +27: Shooting: 24 of 27
   Alert 2: Shots fired at the Office door
   Standing Menace −3: A gunfight with security was heard
   An investigation is open / several acts point back to the cell
-  A case on the guard / open for 3 missions
-  They are hunting our car / A police officer saw it leave
-  11 people are talking about it / word of mouth, by tonight
-  run: Loop 1:20 · Patrol off 1:50 · Shots 2:33 · In 2:37 · Rivals in 2:37 · Popovic out 3:45 · Fight 3:46 · Away 5:01
+  Case opened: the guard / Killing found · 3 missions-mission case
+  Hunting the getaway car / A police officer saw it leave
+  11 will tell others / How you treated them
+  run: Camera looped 1:20 · Patrol sent off 1:50 · Shots exchanged 2:33 · Went in 2:37 · Rivals arrived 2:37 · Out with Popovic 3:45 · Final fight 3:46 · Away with Popovic 5:01
 
-== debrief-loud-trail (1920x1080, build 1.1 ms, rows replayed False)
-THE HANDOVER · DONE AT 5:01 | Popovic is in the car | The cell gets away with Popovic alive.
+  laid out: run 8/8 at 18 px: Camera / looped · Patrol / sent off · Shots / exchanged · Went in · Rivals / arrived · Out with / Popovic · Final fight · Away with / Popovic; city 3/4; rows 5/5
+
+== debrief-loud-trail (1920x1080, build 1.0 ms, rows replayed False)
+THE HANDOVER · AWAY AT 5:01 | Popovic is in the car | The cell gets away with Popovic alive.
 Front door your way in
   ✓ The guard is off the door · shot down · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:20
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:20
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 5:00
   ✓ While blocked, someone guards the car outside, gun drawn · 5:00
   Time 5:01: 0:48 to spare
-  Spent $0: Nothing paid
-  Trail +27: Shooting: 24 of the 27
+  Spent $0: Nothing spent
+  Trail +27: Shooting: 24 of 27
   Alert 2: Shots fired at the Office door
   Standing Menace −3: A gunfight with security was heard
   An investigation is open / several acts point back to the cell
-  A case on the guard / open for 3 missions
-  They are hunting our car / A police officer saw it leave
-  11 people are talking about it / word of mouth, by tonight
-  run: Loop 1:20 · Patrol off 1:50 · Shots 2:33 · In 2:37 · Rivals in 2:37 · Popovic out 3:45 · Fight 3:46 · Away 5:01
+  Case opened: the guard / Killing found · 3 missions-mission case
+  Hunting the getaway car / A police officer saw it leave
+  11 will tell others / How you treated them
+  run: Camera looped 1:20 · Patrol sent off 1:50 · Shots exchanged 2:33 · Went in 2:37 · Rivals arrived 2:37 · Out with Popovic 3:45 · Final fight 3:46 · Away with Popovic 5:01
   fold Trail +27 what left it
-    +18 Hasti and Larthi shot 3 rivals 4:06–4:20
-    +6 Arruns shot the guard 2:33
+    +18 Hasti and Larthi fired on 3 rivals 4:06–4:20
+    +6 Arruns fired on the guard 2:33
     +1 Sethre looped the entrance camera 1:20
-    +1 Sethre sent the patrol off 1:50
-    +1 An officer saw the car leave 5:01
+    +1 Sethre sent the patrol off its sweep 1:50
+    +1 An officer saw the getaway car go 5:01
 
-== debrief-withdraw (1920x1080, build 0.5 ms, rows replayed False)
+  laid out: run 0/8 at 18 px: ; city 0/4; rows 5/5
+
+== debrief-tall (1920x1080, build 0.4 ms, rows replayed False)
+THE HANDOVER · LOST AT 3:02 | Rivals took Popovic from the car | Nobody stood guard outside with a gun drawn, so they walked up and took him.
+Front door your way in
+  ✓ The guard is off the door · 1:26
+  ✓ The entrance camera can't see the door · camera looped · 0:32
+  ✓ The Enforcer is inside before 5:30 · through the door · 1:32
+  ✓ Popovic reaches the getaway car · 2:54
+  ✓ While blocked, someone guards the car outside, gun drawn · 2:54
+  ✕ Go gets Popovic out, and the job's done · rivals took Popovic from the car · 3:02
+  ○ Nobody left behind gets caught by the police · never happened
+Next time: Without someone outside with a gun drawn, rivals can take Popovic from the car. []
+  Time 3:02: Rivals took Popovic from the car
+  Spent $0: Nothing spent
+  Trail +5: From the knockout and the loop
+  Alert 1: The guard missed a check-in at the Office door
+  Standing Neutral +1: Word is a stranger knocked the guard out
+  An investigation is open / several acts point back to the cell
+  run: Camera looped 0:32 · Watched 0:51 · Went in 1:32 · Out with Popovic 2:10 · Report arrived 2:30 · Alert 1 2:30 · Rivals arrived 2:35 · Handover failed 3:02
+
+  laid out: run 5/8 at 19.5 px: Camera looped · Went in · Out with Popovic · Rivals arrived · Handover failed; city 0/1; rows 6/7
+
+== debrief-tallest (1920x1080, build 1.9 ms, rows replayed False)
+THE HANDOVER · LOST AT 3:06 | Rivals took Popovic from the car | Nobody stood guard outside with a gun drawn, so they walked up and took him.
+Front door your way in
+  ✓ The guard is off the door · 1:26
+  ✓ The entrance camera can't see the door · camera looped · 0:32
+  ✓ The Enforcer is inside before 5:30 · through the door · 1:32
+  ✓ Popovic reaches the getaway car · 2:54
+  ✓ While blocked, someone guards the car outside, gun drawn · 2:54
+  ✕ Go gets Popovic out, and the job's done · rivals took Popovic from the car · 3:06
+  ✓ Nobody left behind gets caught by the police · 3:01
+Next time: Without someone outside with a gun drawn, rivals can take Popovic from the car. []
+  Time 3:06: Rivals took Popovic from the car
+  Spent $0: Nothing spent
+  Trail +5: From the knockout and the loop
+  Alert 1: The guard missed a check-in at the Office door
+  Standing Neutral +1: Word is a stranger knocked the guard out
+  An investigation is open / several acts point back to the cell
+  run: Camera looped 0:32 · Watched 0:51 · Went in 1:32 · Out with Popovic 2:10 · Alert 1 2:30 · Rivals arrived 2:35 · Final fight 2:58 · Handover failed 3:06
+
+  laid out: run 0/8 at 21 px: ; city 1/1; rows 7/7
+
+== start-page (1920x1080, build 0.3 ms, rows replayed False)
+THE HANDOVER | Take Popovic alive | to the getaway car
+ 
+  run: Rivals in 2:35 · Chime 5:10 · Last chance 5:20 · Popovic exits 5:30 · His car leaves 5:50
+
+== debrief-withdraw (1920x1080, build 0.4 ms, rows replayed False)
 THE HANDOVER · ENDED AT 0:30 | You withdrew | The cell pulled out. You can try again.
 Front door your way in
-  ○ The guard is off the door · never
-  ○ The entrance camera can't see the door · never
-  ○ The Enforcer is inside before 5:30 · never
-  ○ Popovic reaches the getaway car · never
-  ○ While blocked, someone guards the car outside, gun drawn · never
-  ○ Go gets Popovic out, and the job's done · never
+  ○ The guard is off the door · never happened
+  ○ The entrance camera can't see the door · never happened
+  ○ The Enforcer is inside before 5:30 · never happened
+  ○ Popovic reaches the getaway car · never happened
+  ○ While blocked, someone guards the car outside, gun drawn · never happened
+  ○ Go gets Popovic out, and the job's done · never happened
   ? Nobody left behind gets caught by the police · 
   Time 0:30: You withdrew
-  Spent $0: Nothing paid
-  Trail 0: Nothing traced to you
-  Alert 0: Nobody raised the alarm
+  Spent $0: Nothing spent
+  Trail 0: Nothing to trace
+  Alert 0: No alarm raised
   Standing Neutral +2: Nothing new was seen
   No investigation yet / 
   run: Pulled out 0:30
+
+  laid out: run 1/1 at 21 px: Pulled out; city 1/1; rows 7/7
 

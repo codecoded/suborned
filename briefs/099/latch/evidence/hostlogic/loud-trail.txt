@@ -1,27 +1,27 @@
-THE HANDOVER · DONE AT 5:01 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
+THE HANDOVER · AWAY AT 5:01 | Popovic is in the car | The cell gets away with Popovic alive. | face portraits/hero_councillor
 way Front door (your way in)
   ✓ The guard is off the door · shot down · 2:35
-  ✓ The entrance camera can't see the door · looped · 1:20
-  ✓ The Enforcer is inside before 5:30 · in · 2:37
+  ✓ The entrance camera can't see the door · camera looped · 1:20
+  ✓ The Enforcer is inside before 5:30 · through the door · 2:37
   ✓ Popovic reaches the getaway car · 5:00
   ✓ While blocked, someone guards the car outside, gun drawn · 5:00
 next :  []
   Time 5:01: 0:48 to spare
-  Spent $0: Nothing paid
-  Trail +27: Shooting: 24 of the 27
+  Spent $0: Nothing spent
+  Trail +27: Shooting: 24 of 27
   Alert 2 (hot): Shots fired at the Office door
   Standing Menace −3 (hot): A gunfight with security was heard
   city found: An investigation is open / several acts point back to the cell
-  city papers: A case on the guard / open for 3 missions
-  city car: They are hunting our car / A police officer saw it leave
-  city talker: 11 people are talking about it / word of mouth, by tonight
-run Loop 1:20 [face] · Patrol off 1:50 [face] · Shots 2:33 · In 2:37 [face] · Rivals in 2:37 · Popovic out 3:45 · Fight 3:46 · Away 5:01
-fold Trail +27 what left it: Trail is what investigators can trace back to you. It stays with the campaign.
+  city papers: Case opened: the guard / Killing found · 3-mission case
+  city car: Hunting the getaway car / A police officer saw it leave
+  city talker: 11 will tell others / How you treated them
+run Camera looped 1:20 [face] · Patrol sent off 1:50 [face] · Shots exchanged 2:33 · Went in 2:37 [face] · Rivals arrived 2:37 · Out with Popovic 3:45 · Final fight 3:46 · Away with Popovic 5:01
+fold Trail +27 what left it: Trail is what investigators can trace to your cell, even after this mission.
   pips 18! 6! 1 1 1
-  +18 Hasti and Larthi shot 3 rivals 4:06–4:20 [portraits/cameo_fixer_normal,portraits/cameo_scout_normal]
-  +6 Arruns shot the guard 2:33 [portraits/cameo_enforcer_normal]
+  +18 Hasti and Larthi fired on 3 rivals 4:06–4:20 [portraits/cameo_fixer_normal,portraits/cameo_scout_normal]
+  +6 Arruns fired on the guard 2:33 [portraits/cameo_enforcer_normal]
   +1 Sethre looped the entrance camera 1:20 [portraits/cameo_tech_normal]
-  +1 Sethre sent the patrol off 1:50 [portraits/cameo_tech_normal]
-  +1 An officer saw the car leave 5:01 []
-  law Shooting at someone: +2 when you fire, +2 when they are hit, +2 when they fall.
-ways Back to the start · Try again* | New start / Same start · 3
+  +1 Sethre sent the patrol off its sweep 1:50 [portraits/cameo_tech_normal]
+  +1 An officer saw the getaway car go 5:01 []
+  law Per person: +2 for firing, +2 if hit, +2 if down.
+ways Back to start · Try again* | New start / Same start · 3

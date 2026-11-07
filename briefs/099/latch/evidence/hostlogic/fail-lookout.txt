@@ -1,19 +1,19 @@
 THE HANDOVER · LOST AT 5:53 | Their lookout got there first | Their lookout saw Popovic's car go and ran after it. Nobody had dealt with him. | face portraits/hero_councillor
 way Pickup (your way in)
   ✓ The driver is turned by 5:20 · paid · 2:36
-  ? The pickup camera can't see Popovic's car · it taped the pay · 2:18
+  ? The pickup camera can't see Popovic's car · payment caught on tape · 2:18
   ✕ The Enforcer has Popovic · their lookout got there first · 5:53
-  ○ Popovic is in our car, or in his with the Enforcer driving · never
-  ○ Go gets Popovic out, and the job's done · never
+  ○ Popovic is in our car, or in his with the Enforcer driving · never happened
+  ○ Go gets Popovic out, and the job's done · never happened
   ? Nobody left behind gets caught by the police · 
-next Next time: Send their lookout away before the car goes round. [Mislead Larthi, Pay Hasti, Take Arruns]
-  Time 5:53: Their lookout got him
-  Spent $70,000: Paying the driver
-  Trail +3: The pay and the tape
-  Alert 1 (hot): The pickup camera saw the Fixer hanging about at the pickup
+next Next time: Their lookout follows Popovic's car and can reach him first. [Mislead Larthi, Pay Hasti, Take Arruns]
+  Time 5:53: Their lookout reached Popovic first
+  Spent $70,000: Paying someone
+  Trail +3: From the payment and the recording
+  Alert 1 (hot): The pickup camera saw the Fixer stay too long at the pickup
   Standing Neutral +2: Nothing new was seen
   city found: An investigation is open / several acts point back to the cell
-  city turned: Kept / The driver, who can change a pickup
-  city talker: 2 people heard what Hasti looks like / word of mouth, by tonight
-run Alert 1 1:38 · Listened 1:51 [face] · Pay taped 2:18 · Rivals in 2:35 · The driver turned 2:36 [face] · Lookout posted 3:58 (hot) · Popovic leaves 5:30 · Lost 5:53 (hot)
-ways Watch the replay · Back to the start · Try again* | New start / Same start · 0
+  city turned: Contact kept / The driver, who can change a pickup
+  city talker: 2 will describe Hasti's face / How you treated them
+run Alert 1 1:38 · Listened 1:51 [face] · Pay tape arrived 2:18 · Rivals arrived 2:35 · Turned 2:36 [face] · Their lookout set 3:58 (hot) · Popovic walked out 5:30 · Handover failed 5:53 (hot)
+ways Watch this run · Back to start · Try again* | New start / Same start · 0

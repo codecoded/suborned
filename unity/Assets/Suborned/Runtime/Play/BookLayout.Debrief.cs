@@ -8,30 +8,34 @@ namespace Suborned.Play
     /// does now, the run along the foot and the ways on. Pure, as the rest of BookLayout: an empty slot takes no room, and nothing here knows what a row says.</summary>
     public static partial class BookLayout
     {
-        /// <summary>The debrief's band (the numbers, the fold, the city, the run) and its text column's right edge; the numbers' highest top; the run's highest line; the floor every piece stays above (the ways on).</summary>
-        public const float DX = 880f, DX1 = 1745f, StatTop = 470f, RunTop = 790f, RunD = 44f, AgainFloor = 952f, FoldFloor = 960f, FoldRowH = 36f;
+        /// <summary>The debrief's band (the numbers, the fold, the city, the run) and its text column's right edge; the numbers' highest top; the run's highest line; the floor every piece
+        /// but the run stays above (the ways on); the run's columns keep RunGap from every way on instead, each at its own depth (the new-or-same choice stands higher than the rest).</summary>
+        public const float DX = 880f, DX1 = 1745f, StatTop = 470f, RunTop = 790f, RunD = 44f, AgainFloor = 952f, FoldFloor = 960f, FoldRowH = 36f, RunGap = 4f;
         public static readonly float[] StatSizes = { 48f, 41f, 35.5f };
+        /// <summary>The run's label sizes: on two lines where a label wants it (Glyph's three), then on one line, down to the page's smallest words (the chips' 17); the fewest stops before the run gives way.</summary>
+        static readonly float[] RunTwo = { 21f, 19.5f, 18f }, RunOne = { 21f, 19.5f, 18f, 17f }; const int RunMin = 3;
 
         /// <summary>The page's own extras in the result: a number's value size and its reason's lines, a city row's lines, a run label's lines, the fold's rows shown and its side.</summary>
         public sealed class DebriefLines { public readonly Dictionary<int, string[]> Why = new(), CityHead = new(), CityLine = new(), Run = new(), Next = new(); public readonly Dictionary<int, float> TickWords = new(); public int FoldRows, TicksShown; public readonly List<int> FoldShown = new(); public bool FoldBelow = true, FoldRest; public string FoldRestValue = ""; public float RunSize = 21f, TickSize = 22f, BandH = 162f; }
 
         /// <summary>The way taken and its rows, a fail's next time, the numbers, then the fold (when one is open) or the city and the run. A page that would reach the ways on gives
-        /// way in order: the spare rows (after the one that lost it) from the last, then the rows closer and smaller. Returns the bottom.</summary>
+        /// way in order: the spare rows (after the one that lost it) from the last, then the rows closer and smaller, then the run (its labels on one line, smaller or on fewer
+        /// stops, then no run). It is the words' size that decides, never today's words: any label in its slot fits (debrief.schema.ts). Returns the bottom.</summary>
         static float PlaceDebrief(BookPage p, Result r, float y, Measure tw)
         {
             if (p.WayWord.Length == 0 && p.Ticks.Count == 0 && p.Stats.Count == 0) return y;
             int mark = r.Items.Count, spare = 0; for (int i = p.Ticks.Count - 1; i >= 0 && p.Ticks[i].Spare; i--) spare++;
-            float bottom = y;
-            for (int pass = 0; pass <= spare + 1; pass++)
+            var ways = Ways(p, tw); var runs = RunShapes(p, tw); float bottom = y;
+            for (int pass = 0, last = spare + runs.Count; pass <= last; pass++)
             {
                 r.Items.RemoveRange(mark, r.Items.Count - mark);
-                bottom = PlaceDebriefOnce(p, r, y, tw, p.Ticks.Count - Mathf.Min(pass, spare), pass > spare, out float low);
-                if (low <= AgainFloor) break;
+                bottom = PlaceDebriefOnce(p, r, y, tw, p.Ticks.Count - Mathf.Min(pass, spare), pass > spare, runs[Mathf.Max(0, pass - spare - 1)], ways, out bool fits);
+                if (fits) break;
             }
             return bottom;
         }
 
-        static float PlaceDebriefOnce(BookPage p, Result r, float y, Measure tw, int shown, bool tight, out float low)
+        static float PlaceDebriefOnce(BookPage p, Result r, float y, Measure tw, int shown, bool tight, RunFit run, List<Item> ways, out bool fits)
         {
             var d = r.Debrief = new DebriefLines(); float x0 = X, w = DX1 - X, top = y; d.TicksShown = shown;
             if (p.WayWord.Length > 0) { float cy = y + 32f; r.Items.Add(new Item { Slot = BookSlot.WayIn, Cy = cy, Size = 28f, D = 34f, At = new Rect(x0, cy - 17f, w, 34f) }); y = cy + 44f; }
@@ -55,13 +59,14 @@ namespace Suborned.Play
             }
             else ty = Mathf.Max(y + 26f, StatTop);
             ty = PlaceStats(p, r, ty, tw);
-            float bottom = low = ty + d.BandH;
-            // the city's three columns, then the run; the city gives way when the run would reach the ways on. Measured with a fold open too, so opening one moves nothing above it
+            float bottom = ty + d.BandH;
+            // the city's three columns, then the run, its columns measured as drawn; the city gives way when the run would not clear the ways on under it (and comes back when there is
+            // no run to make room for). Measured with a fold open too, so opening one moves nothing above it
             float runY = Mathf.Max(RunTop, ty + d.BandH + 43f);
             if (p.City.Count > 0)
             {
                 float cy0 = ty + d.BandH + 44f, cityBottom = cy0 + 70f, withCity = Mathf.Max(RunTop, cityBottom + 14f);
-                if (p.Track.Count == 0 || withCity + RunD + 78f <= AgainFloor)
+                if (cityBottom <= AgainFloor && (run == null || Clear(run, withCity, ways)))
                 {
                     float cw = (DX1 - DX) / 3f;
                     for (int i = 0; i < Mathf.Min(p.City.Count, 3); i++)
@@ -71,10 +76,11 @@ namespace Suborned.Play
                         d.CityHead[i] = head; d.CityLine[i] = line;
                         r.Items.Add(new Item { Slot = BookSlot.City, Index = i, Cy = cy0, Size = 21f, At = new Rect(DX + i * cw, cy0 - 14f, cw, 86f) });
                     }
-                    runY = withCity; bottom = low = cityBottom;
+                    runY = withCity; bottom = cityBottom;
                 }
             }
-            if (p.Track.Count > 0) bottom = low = PlaceRun(p, r, runY, tw);
+            fits = bottom <= AgainFloor;
+            if (run != null) { if (Clear(run, runY, ways)) bottom = PlaceRun(r, runY, run); else fits = false; }
             if (p.Fold != null) { r.Items.RemoveAll(i => i.Slot is BookSlot.City or BookSlot.Track); return PlaceFold(p, r, ty, top, tw); } // the fold takes the city's and the run's place
             return bottom;
         }
@@ -129,14 +135,54 @@ namespace Suborned.Play
         /// <summary>A row's signed value ("+18", "\u22123", "2"); 0 for anything else.</summary>
         public static int SignedValue(string v) { v = (v ?? "").Replace("+", "").Replace("\u2212", "-"); return int.TryParse(v, out int n) ? n : 0; }
 
-        /// <summary>The run along the foot: the book's track, evenly spaced, at most TrackMax stops; a label too long for its share breaks in two at its first space.</summary>
-        static float PlaceRun(BookPage p, Result r, float y, Measure tw)
+        /// <summary>The run as it fits its columns: the stops shown (indices into the track, in order), the step, the label size and each label's lines.</summary>
+        sealed class RunFit { public readonly List<int> Shown = new(); public readonly Dictionary<int, string[]> Lines = new(); public float Step, Size; public float H(int i) => RunD + 60f + (Lines[i].Length - 1) * Size * 1.05f; }
+
+        /// <summary>The run's shapes, the best first: the most stops whose labels fit their columns (on two lines where a label wants it, else on one at a smaller size), then, when
+        /// that one is deeper, the most stops that fit on one line; then no run (null). Fewer stops never make a run shallower, so no other shape could clear what these do not.</summary>
+        static List<RunFit> RunShapes(BookPage p, Measure tw)
         {
-            int n = Mathf.Min(p.Track.Count, p.TrackMax), from = p.Track.Count - n; float step = r.TrackStep = (DX1 - DX) / Mathf.Max(1, n), size = 18f; var d = r.Debrief;
-            foreach (var s in new[] { 21f, 19.5f, 18f }) { bool ok = true; for (int i = from; i < p.Track.Count; i++) foreach (var part in RunWords(p.Track[i].Word, s, step, tw)) ok &= tw(part, s, "Jost-SemiBold") <= step - 14f; if (ok) { size = s; break; } }
-            r.TrackSize = d.RunSize = size; float most = 1f;
-            for (int i = 0; i < n; i++) { var ls = RunWords(p.Track[from + i].Word, size, step, tw); d.Run[from + i] = ls; most = Mathf.Max(most, ls.Length); r.Items.Add(new Item { Slot = BookSlot.Track, Index = from + i, Size = size, D = RunD, At = new Rect(DX + i * step, y, step, RunD + 60f + (ls.Length - 1) * size * 1.05f) }); }
-            return y + RunD + 60f + (most - 1f) * size * 1.05f;
+            var l = new List<RunFit>(); int n = Mathf.Min(p.Track.Count, p.TrackMax);
+            for (int k = n; k > 0 && k >= Mathf.Min(n, RunMin) && l.Count == 0; k--) if ((FitRun(p, k, true, tw) ?? FitRun(p, k, false, tw)) is RunFit f) l.Add(f);
+            if (l.Count > 0 && l[0].Shown.Exists(i => l[0].Lines[i].Length > 1))
+                for (int k = n; k >= Mathf.Min(n, RunMin); k--) if (FitRun(p, k, false, tw) is RunFit one) { l.Add(one); break; }
+            l.Add(null); return l;
+        }
+
+        /// <summary>The run on its n stops that give way last (BookStop.Rank; the end always stays), evenly spaced, at the biggest size whose every label fits its column, on one
+        /// line or, with `two`, on two where a label wants it; null when no size fits.</summary>
+        static RunFit FitRun(BookPage p, int n, bool two, Measure tw)
+        {
+            var f = new RunFit(); var order = new List<int>(); for (int i = 0; i < p.Track.Count; i++) order.Add(i);
+            order.Sort((a, b) => p.Track[a].Rank != p.Track[b].Rank ? p.Track[a].Rank.CompareTo(p.Track[b].Rank) : b.CompareTo(a)); // equal ranks keep the latest (the book's clock's rule)
+            f.Shown.AddRange(order.GetRange(0, Mathf.Min(n, order.Count))); f.Shown.Sort(); f.Step = (DX1 - DX) / Mathf.Max(1, f.Shown.Count);
+            foreach (var s in two ? RunTwo : RunOne)
+            {
+                bool ok = true; f.Lines.Clear();
+                foreach (int i in f.Shown) { var ls = two ? RunWords(p.Track[i].Word, s, f.Step, tw) : new[] { p.Track[i].Word }; foreach (var part in ls) ok &= tw(part, s, "Jost-SemiBold") <= f.Step - 14f; f.Lines[i] = ls; }
+                if (ok) { f.Size = s; return f; }
+            }
+            return null;
+        }
+
+        /// <summary>Every column of the run at y, as deep as its own label, RunGap clear of every way on (the new-or-same choice stands over the last columns) and on the grid.</summary>
+        static bool Clear(RunFit f, float y, List<Item> ways)
+        {
+            for (int k = 0; k < f.Shown.Count; k++)
+            {
+                float h = f.H(f.Shown[k]); if (y + h > (ways.Count == 0 ? AgainFloor : GridH - 20f)) return false;
+                var c = new Rect(DX + k * f.Step, y, f.Step, h + RunGap);
+                foreach (var w in ways) if (c.Overlaps(w.At)) return false;
+            }
+            return true;
+        }
+
+        /// <summary>The run along the foot as fitted: the book's track, its stops evenly spaced, each label on its lines.</summary>
+        static float PlaceRun(Result r, float y, RunFit f)
+        {
+            var d = r.Debrief; r.TrackStep = f.Step; r.TrackSize = d.RunSize = f.Size; float low = y;
+            for (int k = 0; k < f.Shown.Count; k++) { int i = f.Shown[k]; d.Run[i] = f.Lines[i]; low = Mathf.Max(low, y + f.H(i)); r.Items.Add(new Item { Slot = BookSlot.Track, Index = i, Size = f.Size, D = RunD, At = new Rect(DX + k * f.Step, y, f.Step, f.H(i)) }); }
+            return low;
         }
         /// <summary>A run label on one line when it fits its share, else on two, broken at the space that leaves the longer line shortest.</summary>
         static string[] RunWords(string word, float size, float step, Measure tw)
@@ -147,21 +193,24 @@ namespace Suborned.Play
         }
 
         /// <summary>The ways on, bottom right: Try again (the book's orange pill), its new-or-same choice over it, then the outlined ways to its left. Index -1 is the choice.</summary>
-        static void PlaceAgain(BookPage p, Result r, Measure tw)
+        static void PlaceAgain(BookPage p, Result r, Measure tw) => r.Items.AddRange(Ways(p, tw));
+        /// <summary>Where the ways on stand (PlaceAgain), for the page above them to keep clear of.</summary>
+        static List<Item> Ways(BookPage p, Measure tw)
         {
-            if (p.Again.Count == 0) return; const float x1 = 1875f, y = 1000f; float gx = x1;
+            var l = new List<Item>(); if (p.Again.Count == 0) return l; const float x1 = 1875f, y = 1000f; float gx = x1;
             for (int i = 0; i < p.Again.Count; i++)
             {
                 var a = p.Again[i]; if (!a.Main) continue; float w = tw(a.Word, 34f, "Jost-Bold") + 78f; gx = x1 - w;
-                r.Items.Add(new Item { Slot = BookSlot.Again, Index = i, Size = 34f, At = new Rect(gx, y, w, 62f) });
+                l.Add(new Item { Slot = BookSlot.Again, Index = i, Size = 34f, At = new Rect(gx, y, w, 62f) });
             }
-            if (p.NewWord.Length > 0 && p.SameWord.Length > 0) { float sw = tw(p.NewWord, 17f, "Jost-SemiBold") + tw(p.SameWord, 17f, "Jost-SemiBold") + 64f; r.Items.Add(new Item { Slot = BookSlot.Again, Index = -1, Size = 17f, At = new Rect(x1 - sw, y - 40f, sw, 30f) }); }
+            if (p.NewWord.Length > 0 && p.SameWord.Length > 0) { float sw = tw(p.NewWord, 17f, "Jost-SemiBold") + tw(p.SameWord, 17f, "Jost-SemiBold") + 64f; l.Add(new Item { Slot = BookSlot.Again, Index = -1, Size = 17f, At = new Rect(x1 - sw, y - 40f, sw, 30f) }); }
             gx -= 18f;
             for (int i = p.Again.Count - 1; i >= 0; i--)
             {
                 var a = p.Again[i]; if (a.Main) continue; float w = tw(a.Word, 24f, "Jost-SemiBold") + 80f; gx -= w;
-                r.Items.Add(new Item { Slot = BookSlot.Again, Index = i, Size = 24f, At = new Rect(gx, y + 5f, w, 52f) }); gx -= 12f;
+                l.Add(new Item { Slot = BookSlot.Again, Index = i, Size = 24f, At = new Rect(gx, y + 5f, w, 52f) }); gx -= 12f;
             }
+            return l;
         }
     }
 }

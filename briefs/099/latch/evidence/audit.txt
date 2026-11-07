@@ -3,4 +3,7 @@ debrief-fail-lookout: clean
 debrief-fail-lookout-time: clean
 debrief-loud: clean
 debrief-loud-trail: clean
+debrief-tall: clean
+debrief-tallest: clean
+start-page: clean
 debrief-withdraw: clean

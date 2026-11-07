@@ -1,269 +1,8 @@
-== debrief-quiet-win
-FAIL  debrief-quiet-win.png              page   180 words (at most 220), 44 faults; coverage not judged  [rects mask]
-      - the page shows the street (its paper leaves 39.6% of the frame open)
-      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
-      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "D" at 1257,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "O" at 1276,38 16x28 is outside the safe frame (48 px in from each edge)
-      - the text "N" at 1297,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1317,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "A" at 1344,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "T" at 1363,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "4" at 1390,38 13x28 is outside the safe frame (48 px in from each edge)
-      - the text ":" at 1408,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "1" at 1419,38 10x28 is outside the safe frame (48 px in from each edge)
-      - the text "2" at 1434,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1401,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Back to the start" at 1441,1014 175x36 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
-      - the clock-time "4:12" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
-      - the text "Popovic" and the text "out" overlap
-      - the image "picture" and the text "Cell" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Job" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Journal" overlap
-      - the image "picture" and the text "Menu" overlap
-      - the page has no mission name
-      - the page has no hook
-      - the page has no objective
-      - 0 ways on the page (1 to 3)
-      - the clock has 12 stations (3 to 7)
-      - the clock's times do not ascend left to right (4:12, 0:59, 1:34, 1:45, 2:35, 2:37, 3:15, 3:47, 4:12, 4:12, 4:12, 4:12)
-      - 0 cell lines (one for each of the 4 faces)
-      - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
-      - the Heat head word is missing ("Heat" beside "?")
-      - 0 Begin buttons (one)
-      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
-      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "D" at 1257,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "O" at 1276,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "N" at 1297,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1317,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A" at 1344,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1363,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "4" at 1390,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text ":" at 1408,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "1" at 1419,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "2" at 1434,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic is in the car" at 1010,48 674x108 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The cell gets away with Popovic " at 1010,150 445x40 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Front door" at 1056,217 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "your way in" at 1199,225 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The guard is off the door" at 1052,265 249x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Inez called him over · 2:35" at 1505,267 238x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The entrance camera can't see th" at 1052,305 394x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "looped · 1:45" at 1625,307 121x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The Enforcer is inside before 5:" at 1052,345 343x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "in · 2:37" at 1670,347 76x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic reaches the getaway car" at 1052,385 325x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "While blocked, someone guards th" at 1052,425 596x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Time" at 914,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Spent" at 1065,484 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Helping Inez" at 1031,587 99x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Trail" at 1266,484 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "+3" at 1232,516 63x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Inez turned, the" at 1232,587 122x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "loop and her call" at 1232,609 131x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Alert" at 1437,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "0" at 1403,516 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nobody raised" at 1403,587 115x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the alarm" at 1403,609 72x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Standing" at 1588,484 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Hero +4" at 1554,525 143x53 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Strangers drove" at 1554,587 123x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "off a feared crew" at 1554,609 132x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "An investigation is open" at 916,678 229x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the guard's trip to" at 916,707 137x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the café looks staged" at 916,728 163x27 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Kept" at 1204,678 44x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Inez, though investigators" at 1204,707 198x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "may question her" at 1204,728 133x27 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "2 people heard" at 1493,678 147x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "what Hasti looks like" at 1493,702 195x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "word of mouth, by tonight" at 1493,731 200x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Listened" at 880,840 80x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Inez" at 988,840 40x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "turned" at 988,862 63x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Loop" at 1096,840 48x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Rivals in" at 1204,840 79x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "In" at 1313,840 18x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic" at 1421,840 75x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "out" at 1421,862 30x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Fight" at 1529,840 48x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Away" at 1637,840 51x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Back to the start" at 1441,1014 175x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Cell" at 1815,206 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "People" at 1804,382 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Job" at 1813,559 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Journal" at 1804,734 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menu" at 1809,910 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-
-== debrief-fail-lookout
-FAIL  debrief-fail-lookout.png           page   176 words (at most 220), 49 faults; coverage not judged  [rects mask]
-      - the page shows the street (its paper leaves 39.6% of the frame open)
-      - unlisted words at 760,0 (33x18, about 2 words): every word on the page is a manifest element with its text
-      - unlisted words at 1012,424 (57x11, about 4 words): every word on the page is a manifest element with its text
-      - unlisted words at 787,1033 (17x10, about 1 word): every word on the page is a manifest element with its text
-      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
-      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "L" at 1257,38 10x28 is outside the safe frame (48 px in from each edge)
-      - the text "O" at 1272,38 16x28 is outside the safe frame (48 px in from each edge)
-      - the text "S" at 1293,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "T" at 1310,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "A" at 1336,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "T" at 1355,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "5" at 1382,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text ":" at 1399,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "5" at 1410,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "3" at 1427,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1401,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Back to the start" at 1441,1014 175x36 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1125,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Watch the replay" at 1165,1014 183x36 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
-      - the clock-time "5:53" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
-      - the text "Popovic" and the text "leaves" touch (0 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Cell" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Job" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Journal" overlap
-      - the image "picture" and the text "Menu" overlap
-      - the page has no mission name
-      - the page has no hook
-      - the page has no objective
-      - 0 ways on the page (1 to 3)
-      - the clock has 10 stations (3 to 7)
-      - the clock's times do not ascend left to right (5:53, 1:38, 1:51, 2:18, 2:35, 2:36, 3:58, 5:30, 5:53, 5:53)
-      - 0 cell lines (one for each of the 4 faces)
-      - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
-      - the Heat head word is missing ("Heat" beside "?")
-      - 0 Begin buttons (one)
-      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
-      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "L" at 1257,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "O" at 1272,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "S" at 1293,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1310,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A" at 1336,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1355,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "5" at 1382,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text ":" at 1399,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "5" at 1410,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "3" at 1427,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Their lookout got there first" at 1010,50 719x84 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Their lookout saw Popovic's car " at 1010,140 462x41 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "ran after it. Nobody had dealt w" at 1010,175 471x41 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Pickup" at 1056,243 89x42 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "your way in" at 1150,251 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The driver is turned by 5:20" at 1052,291 282x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "paid · 2:36" at 1646,293 100x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "?" at 1022,335 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The pickup camera can't see Popo" at 1052,331 419x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "it taped the pay · 2:18" at 1552,333 195x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The Enforcer has Popovic" at 1052,371 253x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "their lookout got there first · " at 1439,373 305x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "N" at 1010,417 14x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1029,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "X" at 1044,417 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1060,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1085,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "I" at 1100,417 6x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "M" at 1111,417 15x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1131,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Send their lookout away before t" at 1010,445 584x37 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Mislead" at 1084,509 74x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Larthi" at 1166,513 42x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Pay" at 1308,509 34x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Hasti" at 1350,513 38x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Take" at 1489,509 43x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Arruns" at 1542,513 51x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Time" at 914,577 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "got him" at 880,702 59x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Spent" at 1049,577 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Paying the driver" at 1015,680 131x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Trail" at 1225,577 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "+3" at 1191,609 63x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The pay and" at 1191,680 95x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the tape" at 1191,702 63x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Alert" at 1360,577 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "1" at 1326,609 25x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The pickup camera saw" at 1326,680 180x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the Fixer hanging about" at 1326,702 183x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "at the pickup" at 1326,723 100x27 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Standing" at 1567,577 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Neutral +2" at 1533,618 182x53 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nothing new was seen" at 1533,680 174x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Alert 1" at 880,859 59x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Listened" at 988,859 74x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Pay taped" at 1096,859 87x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Rivals in" at 1204,859 73x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The driver" at 1313,859 91x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "turned" at 1313,879 58x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Lookout" at 1421,859 71x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "posted" at 1421,879 60x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic" at 1529,859 70x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "leaves" at 1529,879 55x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Lost" at 1637,859 36x29 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Back to the start" at 1441,1014 175x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Watch the replay" at 1165,1014 183x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Cell" at 1815,206 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "People" at 1804,382 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Job" at 1813,559 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Journal" at 1804,734 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menu" at 1809,910 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-
 == debrief-fail-lookout-time
-FAIL  debrief-fail-lookout-time.png      page   182 words (at most 220), 62 faults; coverage not judged  [rects mask]
+FAIL  debrief-fail-lookout-time.png      page   185 words (at most 220), 65 faults; coverage not judged  [rects mask]
       - the page shows the street (its paper leaves 39.6% of the frame open)
       - the image "book-hero" at 640,70 330x330 holds other pieces of the page (1 of them): an image covers one picture, and this one hides the page from the reader
+      - unlisted words at 760,0 (31x18, about 2 words): every word on the page is a manifest element with its text
       - unlisted words at 723,62 (91x25, about 2 words): every word on the page is a manifest element with its text
       - unlisted words at 995,365 (94x23, about 2 words): every word on the page is a manifest element with its text
       - unlisted words at 787,1033 (17x10, about 1 word): every word on the page is a manifest element with its text
@@ -293,10 +32,10 @@ FAIL  debrief-fail-lookout-time.png      page   182 words (at most 220), 62 faul
       - the clock-time "5:53" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
       - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1401,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Back to the start" at 1441,1014 175x36 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1125,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Watch the replay" at 1165,1014 183x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1192,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Watch this run" at 1232,1014 156x36 is outside the safe frame (48 px in from each edge)
       - the image "debrief-tick" and the text "Time 5:53" overlap
       - the text "The driver is turned by 5:20" and the text "Time 5:53" overlap
       - the text "The driver is turned by 5:20" and the text "the clock" overlap
@@ -307,10 +46,12 @@ FAIL  debrief-fail-lookout-time.png      page   182 words (at most 220), 62 faul
       - the text "N" and the clock-time "5:10" overlap
       - the text "N" and the clock-time "5:20" overlap
       - the text "I" and the text "Last chance" overlap
-      - the text "Send their lookout away before t" and the clock-time "5:20" overlap
+      - the text "Their lookout follows Popovic's " and the clock-time "5:20" overlap
       - the image "picture" and the clock-time "5:53" overlap
-      - the image "picture" and the text "Lost" overlap
-      - the image "picture" and the text "Lost" overlap
+      - the image "picture" and the text "Handover failed" overlap
+      - the image "picture" and the text "Handover failed" overlap
+      - the text "Mislead" and the text "Handover failed" overlap
+      - the text "Larthi" and the text "Handover failed" overlap
       - the image "picture" and the image "picture" touch (0 px apart; at least 4 at 1080)
       - the image "picture" and the image "picture" touch (0 px apart; at least 4 at 1080)
       - the image "picture" and the image "picture" touch (0 px apart; at least 4 at 1080)
@@ -354,8 +95,8 @@ FAIL  debrief-fail-lookout-time.png      page   182 words (at most 220), 62 faul
       ~ the text "The driver is turned by 5:20" at 1052,291 282x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "paid · 2:36" at 1646,293 100x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "?" at 1022,335 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The pickup camera can't see Popo" at 1052,331 419x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "it taped the pay · 2:18" at 1552,333 195x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The pickup camera can't see Popo" at 1052,333 381x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "payment caught on tape · 2:18" at 1477,333 269x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The Enforcer has Popovic" at 1052,371 253x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "their lookout got there first · " at 1439,373 305x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "N" at 1010,417 14x25 is not a part the page knows: its words count, its caps wait for the host's `part`
@@ -366,34 +107,36 @@ FAIL  debrief-fail-lookout-time.png      page   182 words (at most 220), 62 faul
       ~ the text "I" at 1100,417 6x25 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "M" at 1111,417 15x25 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "E" at 1131,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Send their lookout away before t" at 1010,445 584x37 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Their lookout follows Popovic's " at 1010,445 663x37 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Mislead" at 1084,509 74x32 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Larthi" at 1166,513 42x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Pay" at 1308,509 34x32 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Hasti" at 1350,513 38x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Take" at 1489,509 43x32 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Arruns" at 1542,513 51x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Spent" at 1049,577 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Paying the driver" at 1015,680 131x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Trail" at 1225,577 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "+3" at 1191,609 63x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The pay and" at 1191,680 95x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the tape" at 1191,702 63x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Alert" at 1360,577 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "1" at 1326,609 25x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The pickup camera saw" at 1326,680 180x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the Fixer hanging about" at 1326,702 183x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "at the pickup" at 1326,723 100x27 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Standing" at 1567,577 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Neutral +2" at 1533,618 182x53 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nothing new was seen" at 1533,680 174x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Cell" at 1815,206 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "People" at 1804,382 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Job" at 1813,559 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Journal" at 1804,734 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menu" at 1809,910 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Spent" at 1063,577 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Paying someone" at 1029,680 126x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail" at 1230,577 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+3" at 1196,609 63x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "From the" at 1196,680 68x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "payment and the" at 1196,702 128x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "recording" at 1196,723 76x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert" at 1384,577 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1350,609 25x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The pickup camera" at 1350,680 146x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "saw the Fixer stay too" at 1350,702 165x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "long at the pickup" at 1350,723 139x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Standing" at 1580,577 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Neutral +2" at 1546,618 182x53 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing new was seen" at 1546,680 174x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Time" at 917,580 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "got him" at 883,705 59x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "reached" at 883,705 63x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic first" at 883,726 95x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Time 5:53" at 910,277 162x51 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "the clock" at 1083,289 83x32 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "When the job was done, against t" at 910,321 543x28 is not a part the page knows: its words count, its caps wait for the host's `part`
@@ -401,16 +144,18 @@ FAIL  debrief-fail-lookout-time.png      page   182 words (at most 220), 62 faul
       ~ the text "Chime" at 1046,396 64x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Last chance" at 1046,432 115x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Popovic exits" at 1046,468 131x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Lost" at 1046,504 40x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Handover failed" at 1046,504 160x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Back to the start" at 1441,1014 175x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Watch the replay" at 1165,1014 183x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-
-== debrief-loud
-FAIL  debrief-loud.png                   page   178 words (at most 220), 44 faults; coverage not judged  [rects mask]
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Watch this run" at 1232,1014 156x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+== debrief-fail-lookout
+FAIL  debrief-fail-lookout.png           page   180 words (at most 220), 46 faults; coverage not judged  [rects mask]
       - the page shows the street (its paper leaves 39.6% of the frame open)
+      - unlisted words at 760,0 (31x18, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1012,424 (57x11, about 4 words): every word on the page is a manifest element with its text
+      - unlisted words at 786,1033 (18x10, about 1 word): every word on the page is a manifest element with its text
       - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
       - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
       - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
@@ -423,33 +168,32 @@ FAIL  debrief-loud.png                   page   178 words (at most 220), 44 faul
       - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
       - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
       - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "D" at 1257,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "O" at 1276,38 16x28 is outside the safe frame (48 px in from each edge)
-      - the text "N" at 1297,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1317,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "A" at 1344,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "T" at 1363,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "5" at 1390,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text ":" at 1407,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "0" at 1418,38 13x28 is outside the safe frame (48 px in from each edge)
-      - the text "1" at 1436,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "L" at 1257,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1272,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "S" at 1293,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1310,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1336,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1355,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "5" at 1382,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text ":" at 1399,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "5" at 1410,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "3" at 1427,38 12x28 is outside the safe frame (48 px in from each edge)
       - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1401,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Back to the start" at 1441,1014 175x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1192,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Watch this run" at 1232,1014 156x36 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
-      - the clock-time "5:01" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
-      - the text "Popovic" and the text "out" overlap
-      - the image "picture" and the text "Cell" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Job" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Journal" overlap
-      - the image "picture" and the text "Menu" overlap
+      - the clock-time "5:53" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
+      - the text "Pay tape" and the text "arrived" overlap
+      - the text "Popovic" and the text "walked out" overlap
       - the page has no mission name
       - the page has no hook
       - the page has no objective
       - 0 ways on the page (1 to 3)
-      - the clock has 12 stations (3 to 7)
-      - the clock's times do not ascend left to right (5:01, 1:20, 1:50, 2:33, 2:37, 2:37, 3:45, 3:46, 5:01, 5:00, 5:00, 5:01)
+      - the clock has 10 stations (3 to 7)
+      - the clock's times do not ascend left to right (5:53, 1:38, 1:51, 2:18, 2:35, 2:36, 3:58, 5:30, 5:53, 5:53)
       - 0 cell lines (one for each of the 4 faces)
       - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
       - the Heat head word is missing ("Heat" beside "?")
@@ -466,73 +210,88 @@ FAIL  debrief-loud.png                   page   178 words (at most 220), 44 faul
       ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "D" at 1257,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "O" at 1276,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "N" at 1297,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1317,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A" at 1344,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1363,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "5" at 1390,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text ":" at 1407,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "0" at 1418,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "1" at 1436,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic is in the car" at 1010,48 674x108 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The cell gets away with Popovic " at 1010,150 445x40 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Front door" at 1056,217 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "your way in" at 1199,225 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The guard is off the door" at 1052,265 249x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "shot down · 2:35" at 1596,267 150x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The entrance camera can't see th" at 1052,305 394x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "looped · 1:20" at 1625,307 121x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "The Enforcer is inside before 5:" at 1052,345 343x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "in · 2:37" at 1670,347 76x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic reaches the getaway car" at 1052,385 325x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "While blocked, someone guards th" at 1052,425 596x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Time" at 914,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Spent" at 1069,484 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nothing paid" at 1035,587 102x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Trail" at 1224,484 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "+27" at 1190,516 93x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Shooting:" at 1190,587 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "24 of the 27" at 1190,609 97x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Alert" at 1379,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "2" at 1345,516 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Shots fired at" at 1345,587 102x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the Office door" at 1345,609 119x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Standing" at 1538,484 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menace −3" at 1504,525 184x53 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A gunfight with" at 1504,587 118x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "security was heard" at 1504,609 143x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "An investigation is open" at 916,678 229x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "several acts point" at 916,707 133x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "back to the cell" at 916,728 117x27 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A case on the guard" at 1204,678 192x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "open for 3 missions" at 1204,707 152x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "They are hunting our car" at 1493,678 233x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A police officer saw it leave" at 1493,707 214x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Loop" at 880,840 48x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Patrol off" at 988,840 87x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Shots" at 1096,840 52x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "In" at 1204,840 18x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Rivals in" at 1313,840 79x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Popovic" at 1421,840 75x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "out" at 1421,862 30x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Fight" at 1529,840 48x32 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Away" at 1637,840 51x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "L" at 1257,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1272,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "S" at 1293,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1310,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1336,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1355,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "5" at 1382,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text ":" at 1399,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "5" at 1410,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "3" at 1427,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Their lookout got there first" at 1010,50 719x84 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Their lookout saw Popovic's car " at 1010,140 462x41 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "ran after it. Nobody had dealt w" at 1010,175 471x41 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Pickup" at 1056,243 89x42 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "your way in" at 1150,251 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The driver is turned by 5:20" at 1052,291 282x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "paid · 2:36" at 1646,293 100x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "?" at 1022,335 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The pickup camera can't see Popo" at 1052,333 381x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "payment caught on tape · 2:18" at 1477,333 269x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer has Popovic" at 1052,371 253x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "their lookout got there first · " at 1439,373 305x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1010,417 14x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1029,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "X" at 1044,417 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1060,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1085,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "I" at 1100,417 6x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "M" at 1111,417 15x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1131,417 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Their lookout follows Popovic's " at 1010,445 663x37 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Mislead" at 1084,509 74x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Larthi" at 1166,513 42x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Pay" at 1308,509 34x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Hasti" at 1350,513 38x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Take" at 1489,509 43x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Arruns" at 1542,513 51x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Time" at 914,577 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "reached" at 880,702 63x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic first" at 880,723 95x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Spent" at 1063,577 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Paying someone" at 1029,680 126x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail" at 1230,577 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+3" at 1196,609 63x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "From the" at 1196,680 68x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "payment and the" at 1196,702 128x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "recording" at 1196,723 76x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert" at 1384,577 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1350,609 25x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The pickup camera" at 1350,680 146x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "saw the Fixer stay too" at 1350,702 165x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "long at the pickup" at 1350,723 139x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Standing" at 1580,577 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Neutral +2" at 1546,618 182x53 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing new was seen" at 1546,680 174x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert 1" at 880,860 54x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Listened" at 988,860 69x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Pay tape" at 1096,860 70x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "arrived" at 1096,879 58x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals" at 1204,860 47x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "arrived" at 1204,879 58x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Turned" at 1313,860 57x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Their" at 1421,860 42x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "lookout set" at 1421,879 90x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic" at 1529,860 65x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "walked out" at 1529,879 89x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Handover" at 1637,860 80x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "failed" at 1637,879 46x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "New start" at 1651,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Same start · 3" at 1754,963 106x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Back to the start" at 1441,1014 175x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Cell" at 1815,206 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "People" at 1804,382 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Job" at 1813,559 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Journal" at 1804,734 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menu" at 1809,910 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-
+      ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Watch this run" at 1232,1014 156x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
 == debrief-loud-trail
-FAIL  debrief-loud-trail.png             page   179 words (at most 220), 43 faults; coverage not judged  [rects mask]
+FAIL  debrief-loud-trail.png             page   176 words (at most 220), 43 faults; coverage not judged  [rects mask]
       - the page shows the street (its paper leaves 39.6% of the frame open)
-      - unlisted words at 760,55 (41x7, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 760,63 (47x7, about 2 words): every word on the page is a manifest element with its text
       - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
       - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
       - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
@@ -545,22 +304,22 @@ FAIL  debrief-loud-trail.png             page   179 words (at most 220), 43 faul
       - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
       - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
       - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "D" at 1257,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "O" at 1276,38 16x28 is outside the safe frame (48 px in from each edge)
-      - the text "N" at 1297,38 15x28 is outside the safe frame (48 px in from each edge)
-      - the text "E" at 1317,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text "A" at 1344,38 14x28 is outside the safe frame (48 px in from each edge)
-      - the text "T" at 1363,38 11x28 is outside the safe frame (48 px in from each edge)
-      - the text "5" at 1390,38 12x28 is outside the safe frame (48 px in from each edge)
-      - the text ":" at 1407,38 6x28 is outside the safe frame (48 px in from each edge)
-      - the text "0" at 1418,38 13x28 is outside the safe frame (48 px in from each edge)
-      - the text "1" at 1436,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1257,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "W" at 1276,38 20x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1301,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "Y" at 1320,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1347,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1366,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "5" at 1393,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text ":" at 1410,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "0" at 1421,38 13x28 is outside the safe frame (48 px in from each edge)
+      - the text "1" at 1439,38 10x28 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
       - the clock-time "5:01" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
       - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1401,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Back to the start" at 1441,1014 175x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
       - the image "picture" and the image "picture" overlap
       - the image "picture" and the image "picture" touch (0 px apart; at least 4 at 1080)
       - the image "picture" and the image "picture" touch (0 px apart; at least 4 at 1080)
@@ -586,16 +345,16 @@ FAIL  debrief-loud-trail.png             page   179 words (at most 220), 43 faul
       ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "D" at 1257,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "O" at 1276,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "N" at 1297,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "E" at 1317,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "A" at 1344,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "T" at 1363,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "5" at 1390,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text ":" at 1407,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "0" at 1418,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "1" at 1436,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1257,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "W" at 1276,38 20x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1301,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Y" at 1320,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1347,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1366,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "5" at 1393,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text ":" at 1410,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "0" at 1421,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1439,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Popovic is in the car" at 1010,48 674x108 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The cell gets away with Popovic " at 1010,150 445x40 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Front door" at 1056,217 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
@@ -603,14 +362,14 @@ FAIL  debrief-loud-trail.png             page   179 words (at most 220), 43 faul
       ~ the text "The guard is off the door" at 1052,265 249x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "shot down · 2:35" at 1596,267 150x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The entrance camera can't see th" at 1052,305 394x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "looped · 1:20" at 1625,307 121x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "camera looped · 1:20" at 1555,307 191x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The Enforcer is inside before 5:" at 1052,345 343x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "in · 2:37" at 1670,347 76x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "through the door · 2:37" at 1538,347 208x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Popovic reaches the getaway car" at 1052,385 325x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "While blocked, someone guards th" at 1052,425 596x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Time" at 914,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Spent" at 1069,484 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nothing paid" at 1035,587 102x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing spent" at 1035,587 109x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Alert" at 1379,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "2" at 1345,516 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Shots fired at" at 1345,587 102x26 is not a part the page knows: its words count, its caps wait for the host's `part`
@@ -619,35 +378,533 @@ FAIL  debrief-loud-trail.png             page   179 words (at most 220), 43 faul
       ~ the text "Menace −3" at 1504,525 184x53 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "A gunfight with" at 1504,587 118x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "security was heard" at 1504,609 143x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Cell" at 1815,206 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "People" at 1804,382 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Job" at 1813,559 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Journal" at 1804,734 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menu" at 1809,910 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Trail" at 1227,487 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "+27" at 1193,519 93x72 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Shooting:" at 1193,590 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "24 of the 27" at 1193,612 97x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "24 of 27" at 1193,612 68x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Trail +27" at 910,676 144x51 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "what left it" at 1067,688 96x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Trail is what investigators can " at 910,719 623x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail is what investigators can " at 910,719 591x29 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "+18" at 983,786 48x39 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Hasti and Larthi shot 3 rivals" at 1046,789 283x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "4:06–4:20" at 1341,792 97x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Hasti and Larthi fired on 3 riva" at 1046,789 321x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "4:06–4:20" at 1379,792 97x29 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "+6" at 995,822 35x39 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Arruns shot the guard" at 1046,825 218x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Arruns fired on the guard" at 1046,825 255x33 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "+3" at 996,858 34x39 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Smaller things" at 1046,861 141x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Shooting at someone: +2 when you" at 910,903 658x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Per person: +2 for firing, +2 if" at 910,903 383x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "New start" at 1651,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Same start · 3" at 1754,963 106x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Back to the start" at 1441,1014 175x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-
-== debrief-withdraw
-FAIL  debrief-withdraw.png               page   140 words (at most 220), 43 faults; coverage not judged  [rects mask]
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+== debrief-loud
+FAIL  debrief-loud.png                   page   186 words (at most 220), 41 faults; coverage not judged  [rects mask]
       - the page shows the street (its paper leaves 39.6% of the frame open)
-      - unlisted words at 787,1034 (17x9, about 1 word): every word on the page is a manifest element with its text
+      - unlisted words at 787,1036 (16x7, about 1 word): every word on the page is a manifest element with its text
+      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1257,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "W" at 1276,38 20x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1301,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "Y" at 1320,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1347,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1366,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "5" at 1393,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text ":" at 1410,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "0" at 1421,38 13x28 is outside the safe frame (48 px in from each edge)
+      - the text "1" at 1439,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
+      - the clock-time "5:01" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
+      - the text "Away with" and the text "Popovic" touch (0 px apart; at least 4 at 1080)
+      - the page has no mission name
+      - the page has no hook
+      - the page has no objective
+      - 0 ways on the page (1 to 3)
+      - the clock has 12 stations (3 to 7)
+      - the clock's times do not ascend left to right (5:01, 1:20, 1:50, 2:33, 2:37, 2:37, 3:45, 3:46, 5:01, 5:00, 5:00, 5:01)
+      - 0 cell lines (one for each of the 4 faces)
+      - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
+      - the Heat head word is missing ("Heat" beside "?")
+      - 0 Begin buttons (one)
+      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
+      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1257,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "W" at 1276,38 20x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1301,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Y" at 1320,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1347,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1366,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "5" at 1393,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text ":" at 1410,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "0" at 1421,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1439,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic is in the car" at 1010,48 674x108 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The cell gets away with Popovic " at 1010,150 445x40 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Front door" at 1056,217 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "your way in" at 1199,225 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard is off the door" at 1052,265 249x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "shot down · 2:35" at 1596,267 150x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The entrance camera can't see th" at 1052,305 394x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "camera looped · 1:20" at 1555,307 191x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer is inside before 5:" at 1052,345 343x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "through the door · 2:37" at 1538,347 208x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic reaches the getaway car" at 1052,385 325x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "While blocked, someone guards th" at 1052,425 596x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Time" at 914,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Spent" at 1069,484 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing spent" at 1035,587 109x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail" at 1224,484 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+27" at 1190,516 93x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Shooting:" at 1190,587 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "24 of 27" at 1190,609 68x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert" at 1379,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "2" at 1345,516 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Shots fired at" at 1345,587 102x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the Office door" at 1345,609 119x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Standing" at 1538,484 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menace −3" at 1504,525 184x53 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A gunfight with" at 1504,587 118x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "security was heard" at 1504,609 143x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "An investigation is open" at 916,678 229x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "several acts point" at 916,707 133x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "back to the cell" at 916,728 117x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Case opened: the guard" at 1204,678 230x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Killing found · 3" at 1204,707 125x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "missions-mission case" at 1204,728 166x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Hunting the getaway car" at 1493,678 232x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A police officer saw it leave" at 1493,707 214x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Camera" at 880,843 63x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "looped" at 880,861 58x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Patrol" at 988,843 47x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "sent off" at 988,861 61x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Shots" at 1096,843 45x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "exchanged" at 1096,861 89x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Went in" at 1204,843 63x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals" at 1313,843 47x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "arrived" at 1313,861 58x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Out with" at 1421,843 69x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic" at 1421,861 65x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Final fight" at 1529,843 81x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Away with" at 1637,843 83x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic" at 1637,861 65x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "New start" at 1651,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Same start · 3" at 1754,963 106x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+== debrief-quiet-win
+FAIL  debrief-quiet-win.png              page   185 words (at most 220), 41 faults; coverage not judged  [rects mask]
+      - the page shows the street (its paper leaves 39.6% of the frame open)
+      - unlisted words at 787,1035 (21x11, about 1 word): every word on the page is a manifest element with its text
+      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1257,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "W" at 1276,38 20x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1301,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "Y" at 1320,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1347,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1366,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "4" at 1393,38 13x28 is outside the safe frame (48 px in from each edge)
+      - the text ":" at 1411,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "1" at 1422,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "2" at 1437,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
+      - the clock-time "4:12" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
+      - the text "Away with" and the text "Popovic" touch (2 px apart; at least 4 at 1080)
+      - the page has no mission name
+      - the page has no hook
+      - the page has no objective
+      - 0 ways on the page (1 to 3)
+      - the clock has 12 stations (3 to 7)
+      - the clock's times do not ascend left to right (4:12, 0:59, 1:34, 1:45, 2:35, 2:37, 3:15, 3:47, 4:12, 4:12, 4:12, 4:12)
+      - 0 cell lines (one for each of the 4 faces)
+      - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
+      - the Heat head word is missing ("Heat" beside "?")
+      - 0 Begin buttons (one)
+      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
+      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1257,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "W" at 1276,38 20x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1301,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Y" at 1320,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1347,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1366,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "4" at 1393,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text ":" at 1411,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1422,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "2" at 1437,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic is in the car" at 1010,48 674x108 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The cell gets away with Popovic " at 1010,150 445x40 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Front door" at 1056,217 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "your way in" at 1199,225 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard is off the door" at 1052,265 249x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Inez called him over · 2:35" at 1505,267 238x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The entrance camera can't see th" at 1052,305 394x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "camera looped · 1:45" at 1555,307 191x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer is inside before 5:" at 1052,345 343x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "through the door · 2:37" at 1538,347 208x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic reaches the getaway car" at 1052,385 325x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "While blocked, someone guards th" at 1052,425 596x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Time" at 914,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Spent" at 1064,484 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Helping someone" at 1030,587 137x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail" at 1263,484 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+3" at 1229,516 63x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "From the help, the" at 1229,587 141x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "loop and the call" at 1229,609 129x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert" at 1440,484 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "0" at 1406,516 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "No alarm raised" at 1406,587 124x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Standing" at 1589,484 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Hero +4" at 1555,525 143x53 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Strangers drove" at 1555,587 123x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "off a feared crew" at 1555,609 132x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "An investigation is open" at 916,678 229x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the guard's trip to" at 916,707 137x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the café looks staged" at 916,728 163x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Contact kept" at 1204,678 120x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Inez, though investigators" at 1204,707 198x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "may question her" at 1204,728 133x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "2 will describe" at 1493,678 140x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Hasti's face" at 1493,702 108x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "How you treated them" at 1493,731 170x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Listened" at 880,841 74x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Turned" at 988,841 61x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Camera" at 1096,841 69x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "looped" at 1096,862 62x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals" at 1204,841 51x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "arrived" at 1204,862 63x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Went in" at 1313,841 69x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Out with" at 1421,841 75x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic" at 1421,862 70x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Final fight" at 1529,841 88x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Away with" at 1637,841 90x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic" at 1637,862 70x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+== debrief-tall
+FAIL  debrief-tall.png                   page   202 words (at most 220), 46 faults; coverage not judged  [rects mask]
+      - the page shows the street (its paper leaves 39.6% of the frame open)
+      - unlisted words at 1036,295 (27x16, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1036,323 (27x16, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1036,351 (27x16, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1012,481 (57x11, about 4 words): every word on the page is a manifest element with its text
+      - unlisted words at 782,1030 (22x13, about 1 word): every word on the page is a manifest element with its text
+      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "L" at 1257,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1272,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "S" at 1293,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1310,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1336,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1355,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "3" at 1382,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text ":" at 1399,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "0" at 1410,38 13x28 is outside the safe frame (48 px in from each edge)
+      - the text "2" at 1428,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1192,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Watch this run" at 1232,1014 156x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
+      - the clock-time "3:02" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
+      - the page has no mission name
+      - the page has no hook
+      - the page has no objective
+      - 0 ways on the page (1 to 3)
+      - the clock has 10 stations (3 to 7)
+      - the clock's times do not ascend left to right (3:02, 0:32, 1:32, 2:10, 2:35, 3:02, 2:54, 2:54, 1:26, 3:02)
+      - 0 cell lines (one for each of the 4 faces)
+      - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
+      - the Heat head word is missing ("Heat" beside "?")
+      - 0 Begin buttons (one)
+      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
+      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "L" at 1257,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1272,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "S" at 1293,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1310,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1336,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1355,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "3" at 1382,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text ":" at 1399,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "0" at 1410,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "2" at 1428,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals took Popovic from the car" at 1010,52 751x75 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nobody stood guard outside with " at 1010,137 474x40 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "drawn, so they walked up and too" at 1010,172 475x40 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Front door" at 1056,239 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "your way in" at 1199,247 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard is off the door" at 1052,290 215x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The entrance camera can't see th" at 1052,318 340x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "camera looped · 0:32" at 1581,319 164x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer is inside before 5:" at 1052,346 296x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "through the door · 1:32" at 1570,347 176x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic reaches the getaway car" at 1052,374 281x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "While blocked, someone guards th" at 1052,402 515x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Go gets Popovic out, and the job" at 1052,430 345x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "rivals took Popovic from the car" at 1447,431 297x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1010,474 14x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1029,474 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "X" at 1044,474 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1060,474 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1085,474 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "I" at 1100,474 6x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "M" at 1111,474 15x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1131,474 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Without someone outside with a g" at 1010,501 500x38 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "rivals can take Popovic from the" at 1010,533 409x37 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Time" at 914,620 42x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic from" at 880,745 102x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the car" at 880,767 53x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Spent" at 1067,620 50x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing spent" at 1033,723 109x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail" at 1207,620 36x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+5" at 1173,653 64x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "From the" at 1173,723 68x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "knockout and" at 1173,745 103x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the loop" at 1173,767 64x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert" at 1358,620 42x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1324,653 25x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard missed a" at 1324,723 151x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "check-in at the Office" at 1324,745 163x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "door" at 1324,767 37x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Standing" at 1566,620 77x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Neutral +1" at 1532,662 177x53 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Word is a stranger" at 1532,723 143x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "knocked the guard out" at 1532,745 174x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Camera looped" at 880,903 136x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Went in" at 1053,903 69x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Out with Popovic" at 1226,903 150x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals arrived" at 1399,903 120x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Handover failed" at 1572,903 142x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Watch this run" at 1232,1014 156x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+== debrief-tallest
+FAIL  debrief-tallest.png                page   206 words (at most 220), 46 faults; coverage not judged  [rects mask]
+      - the page shows the street (its paper leaves 39.6% of the frame open)
+      - unlisted words at 760,0 (31x18, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1036,295 (27x16, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1036,323 (27x16, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1036,351 (27x16, about 2 words): every word on the page is a manifest element with its text
+      - unlisted words at 1012,509 (57x11, about 4 words): every word on the page is a manifest element with its text
+      - unlisted words at 782,1030 (22x13, about 1 word): every word on the page is a manifest element with its text
+      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the place "·" at 1236,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "L" at 1257,38 10x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1272,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "S" at 1293,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1310,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1336,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 1355,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "3" at 1382,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text ":" at 1399,38 6x28 is outside the safe frame (48 px in from each edge)
+      - the text "0" at 1410,38 13x28 is outside the safe frame (48 px in from each edge)
+      - the text "6" at 1428,38 13x28 is outside the safe frame (48 px in from each edge)
+      - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1192,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Watch this run" at 1232,1014 156x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
+      - the clock-time "3:06" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
+      - the page has no mission name
+      - the page has no hook
+      - the page has no objective
+      - 0 ways on the page (1 to 3)
+      - the clock's times do not ascend left to right (3:06, 2:54, 2:54, 3:01, 1:26, 3:06)
+      - 0 cell lines (one for each of the 4 faces)
+      - 0 Heat words (one of Unknown, Noticed, Wanted, Infamous)
+      - the Heat head word is missing ("Heat" beside "?")
+      - 0 Begin buttons (one)
+      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
+      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "L" at 1257,38 10x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1272,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "S" at 1293,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1310,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1336,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1355,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "3" at 1382,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text ":" at 1399,38 6x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "0" at 1410,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "6" at 1428,38 13x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals took Popovic from the car" at 1010,52 751x75 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nobody stood guard outside with " at 1010,137 474x40 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "drawn, so they walked up and too" at 1010,172 475x40 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Front door" at 1056,239 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "your way in" at 1199,247 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard is off the door" at 1052,290 215x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The entrance camera can't see th" at 1052,318 340x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "camera looped · 0:32" at 1581,319 164x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer is inside before 5:" at 1052,346 296x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "through the door · 1:32" at 1570,347 176x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic reaches the getaway car" at 1052,374 281x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "While blocked, someone guards th" at 1052,402 515x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Go gets Popovic out, and the job" at 1052,430 345x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "rivals took Popovic from the car" at 1447,431 297x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nobody left behind gets caught b" at 1052,458 389x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1010,502 14x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1029,502 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "X" at 1044,502 11x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1060,502 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 1085,502 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "I" at 1100,502 6x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "M" at 1111,502 15x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1131,502 10x25 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Without someone outside with a g" at 1010,529 500x38 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "rivals can take Popovic from the" at 1010,561 409x37 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Time" at 914,648 42x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic from" at 880,773 102x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the car" at 880,795 53x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Spent" at 1067,648 50x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing spent" at 1033,751 109x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Trail" at 1207,648 36x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+5" at 1173,681 64x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "From the" at 1173,751 68x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "knockout and" at 1173,773 103x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the loop" at 1173,795 64x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Alert" at 1358,648 42x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "1" at 1324,681 25x72 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard missed a" at 1324,751 151x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "check-in at the Office" at 1324,773 163x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "door" at 1324,795 37x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Standing" at 1566,648 77x29 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Neutral +1" at 1532,690 177x53 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Word is a stranger" at 1532,751 143x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "knocked the guard out" at 1532,773 174x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "An investigation is open" at 916,864 229x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "several acts point" at 916,893 133x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "back to the cell" at 916,915 117x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Watch this run" at 1232,1014 156x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+== debrief-withdraw
+FAIL  debrief-withdraw.png               page   143 words (at most 220), 40 faults; coverage not judged  [rects mask]
+      - the page shows the street (its paper leaves 39.6% of the frame open)
+      - unlisted words at 786,1033 (19x11, about 1 word): every word on the page is a manifest element with its text
       - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
       - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
       - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
@@ -673,13 +930,10 @@ FAIL  debrief-withdraw.png               page   140 words (at most 220), 43 faul
       - the text "0" at 1451,38 13x28 is outside the safe frame (48 px in from each edge)
       - the text "Try again" at 1680,1005 146x51 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1831,1021 20x20 is outside the safe frame (48 px in from each edge)
-      - the image "picture" at 1401,1018 30x30 is outside the safe frame (48 px in from each edge)
-      - the text "Back to the start" at 1441,1014 175x36 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1441,1018 30x30 is outside the safe frame (48 px in from each edge)
+      - the text "Back to start" at 1481,1014 134x36 is outside the safe frame (48 px in from each edge)
       - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
       - the clock-time "0:30" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
-      - the image "picture" and the text "Cell" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Job" touch (1 px apart; at least 4 at 1080)
-      - the image "picture" and the text "Menu" overlap
       - the page has no mission name
       - the page has no hook
       - the page has no objective
@@ -717,42 +971,177 @@ FAIL  debrief-withdraw.png               page   140 words (at most 220), 43 faul
       ~ the text "Front door" at 1056,217 138x42 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "your way in" at 1199,225 101x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The guard is off the door" at 1052,267 226x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "never" at 1699,268 44x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "never happened" at 1612,268 130x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The entrance camera can't see th" at 1052,300 358x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "never" at 1699,301 44x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "never happened" at 1612,301 130x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "The Enforcer is inside before 5:" at 1052,333 312x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "never" at 1699,334 44x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "never happened" at 1612,334 130x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Popovic reaches the getaway car" at 1052,366 296x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "never" at 1699,367 44x27 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "While blocked, someone guards th" at 1052,399 542x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "never" at 1699,400 44x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "never happened" at 1612,367 130x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "While blocked, someone guards th" at 1052,400 488x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "never happened" at 1612,400 130x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Go gets Popovic out, and the job" at 1052,432 363x30 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "never" at 1699,433 44x27 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "never happened" at 1612,433 130x27 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "?" at 1022,468 10x23 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Nobody left behind gets caught b" at 1052,465 410x30 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Time" at 914,522 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Spent" at 1070,522 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nothing paid" at 1036,625 102x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing spent" at 1036,625 109x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Trail" at 1226,522 36x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "0" at 1192,554 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nothing" at 1192,625 63x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "traced to you" at 1192,647 101x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nothing to trace" at 1192,625 126x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Alert" at 1382,522 42x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "0" at 1348,554 32x72 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Nobody raised" at 1348,625 115x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "the alarm" at 1348,647 72x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "No alarm raised" at 1348,625 124x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Standing" at 1538,522 77x28 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Neutral +2" at 1504,563 182x53 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Nothing new was seen" at 1504,625 174x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "No investigation yet" at 916,716 189x31 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Pulled out" at 880,866 96x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "No investigation yet" at 916,694 189x31 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Pulled out" at 880,844 96x31 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Try again" at 1680,1005 146x51 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "New start" at 1650,963 74x26 is not a part the page knows: its words count, its caps wait for the host's `part`
       ~ the text "Same start · 0" at 1753,963 107x26 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Back to the start" at 1441,1014 175x36 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Cell" at 1815,206 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "People" at 1804,382 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Job" at 1813,559 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Journal" at 1804,734 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-      ~ the text "Menu" at 1809,910 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
-
+      ~ the text "Back to start" at 1481,1014 134x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+== start-page
+FAIL  start-page.png                     page   229 words (at most 220), 36 faults; coverage not judged  [rects mask]
+      - the page shows the street (its paper leaves 39.6% of the frame open)
+      - unlisted words at 89,832 (41x10, about 4 words): every word on the page is a manifest element with its text
+      - the text "T" at 1010,38 11x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1026,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1046,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" at 1073,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "A" at 1093,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "N" at 1112,38 15x28 is outside the safe frame (48 px in from each edge)
+      - the text "D" at 1132,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "O" at 1151,38 16x28 is outside the safe frame (48 px in from each edge)
+      - the text "V" at 1172,38 14x28 is outside the safe frame (48 px in from each edge)
+      - the text "E" at 1191,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "R" at 1208,38 12x28 is outside the safe frame (48 px in from each edge)
+      - the text "Take Popovic alive" at 1010,45 500x88 is outside the safe frame (48 px in from each edge)
+      - the image "picture" at 1771,25 18x18 is outside the safe frame (48 px in from each edge)
+      - the clock-time "0:00" at 1795,18 47x32 is outside the safe frame (48 px in from each edge)
+      - the text "T" at 44,826 8x21 is outside the safe frame (48 px in from each edge)
+      - the text "Guards" at 44,866 63x28 is outside the safe frame (48 px in from each edge)
+      - the text "in the zone" at 44,889 64x20 is outside the safe frame (48 px in from each edge)
+      - the text "People" at 44,912 60x28 is outside the safe frame (48 px in from each edge)
+      - the text "on the street" at 44,935 71x20 is outside the safe frame (48 px in from each edge)
+      - the text "Cars" at 44,958 39x28 is outside the safe frame (48 px in from each edge)
+      - the text "on the roads" at 44,981 72x20 is outside the safe frame (48 px in from each edge)
+      - the text "Now: today's world" at 44,1015 127x22 is outside the safe frame (48 px in from each edge)
+      - the text "Play ›" at 491,1012 50x28 is outside the safe frame (48 px in from each edge)
+      - the text "H" and the text "Take Popovic alive" overlap
+      - the text "Take Popovic alive" and the text "to the getaway car" touch (0 px apart; at least 4 at 1080)
+      - the way-name "Pickup" and the way-when "From 5:50" touch (0 px apart; at least 4 at 1080)
+      - the text "People" and the text "on the street" touch (0 px apart; at least 4 at 1080)
+      - the page has no mission name
+      - the page has no hook
+      - the page has no objective
+      - the way "Front door" has 0 when tags (one plate)
+      - the way "Pickup" has 2 when tags (one plate)
+      - the clock's times do not ascend left to right (2:35, 5:10, 5:20, 5:30, 5:50, 0:00)
+      - the page reads 229 words (at most 220, about a minute's reading)
+      ~ no `pin` elements in the manifest: the pins agree check (2.6) waits for the host to emit them
+      ~ the text "T" at 1010,38 11x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1026,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1046,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 1073,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 1093,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "N" at 1112,38 15x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 1132,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "O" at 1151,38 16x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "V" at 1172,38 14x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 1191,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "R" at 1208,38 12x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Take Popovic alive" at 1010,45 500x88 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "to the getaway car" at 1010,112 241x45 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Ways to fail  9" at 1010,164 144x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Inez" at 1066,321 40x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard" at 1179,321 97x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The driver" at 1413,321 98x32 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The guard is off the door" at 1044,362 220x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The entrance camera" at 1044,396 184x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "can't see the door" at 1044,422 159x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer is inside before 5:" at 1044,456 304x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic reaches the getaway car" at 1044,490 288x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "While blocked, someone guards" at 1044,524 287x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the car outside, gun drawn" at 1044,550 236x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The driver is turned by 5:20" at 1391,362 249x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "?" at 1366,403 9x20 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The pickup camera" at 1391,396 167x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "can't see Popovic's car" at 1391,422 198x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "The Enforcer has Popovic" at 1391,456 224x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic is in our car," at 1391,490 186x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "or in his with the Enforcer driv" at 1391,516 296x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Go gets Popovic out. If he leave" at 1052,605 690x34 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Go gets Popovic out," at 1034,652 185x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "and the job's done" at 1034,678 163x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "?" at 1384,659 9x20 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Nobody left behind gets" at 1409,652 215x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "caught by the police" at 1409,678 179x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Rivals in" at 880,784 90x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Chime" at 1048,784 70x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Last chance" at 1216,784 126x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Popovic exits" at 1384,784 142x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "His car leaves" at 1552,784 151x36 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Larthi" at 956,873 59x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Scout" at 956,900 42x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Watches and listens;" at 880,939 153x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "misleads the rival" at 880,960 130x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Hasti" at 1156,873 53x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Fixer" at 1156,900 37x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Turns Inez or the" at 1080,939 125x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Sethre" at 1356,873 68x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Tech" at 1356,900 34x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Loops cameras, moves" at 1280,939 169x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "the patrol, drives our" at 1280,960 157x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Arruns" at 1556,873 70x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Enforcer" at 1556,900 64x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Takes Popovic." at 1480,939 110x26 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cell" at 1815,208 30x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 1804,384 52x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Job" at 1813,562 34x33 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Journal" at 1804,736 53x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Menu" at 1809,912 42x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "T" at 44,826 8x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "H" at 55,826 11x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 69,826 9x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 88,826 11x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "I" at 102,826 5x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "A" at 110,826 10x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "L" at 123,826 8x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "·" at 141,826 5x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "D" at 156,826 11x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "E" at 170,826 9x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "V" at 182,826 10x21 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Today" at 508,830 41x22 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Guards" at 44,866 63x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "in the zone" at 44,889 64x20 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "−5" at 154,878 20x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "−" at 202,875 12x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "16" at 245,869 30x38 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+" at 310,875 14x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+5" at 351,878 22x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "today 16 · 1–400" at 396,877 118x22 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "People" at 44,912 60x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "on the street" at 44,935 71x20 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "−5" at 154,924 20x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "−" at 202,921 12x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "16" at 245,915 30x38 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+" at 310,921 14x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+5" at 351,924 22x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "today 16 · 2–500" at 396,923 119x22 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Cars" at 44,958 39x28 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "on the roads" at 44,981 72x20 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "−4" at 153,970 21x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "−" at 202,967 12x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "0" at 252,961 17x38 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+" at 310,967 14x30 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "+4" at 350,970 22x24 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "today 0 · 0–64" at 396,969 103x22 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Now: today's world" at 44,1015 127x22 is not a part the page knows: its words count, its caps wait for the host's `part`
+      ~ the text "Play ›" at 491,1012 50x28 is not a part the page knows: its words count, its caps wait for the host's `part`

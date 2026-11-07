@@ -39,7 +39,7 @@ Sky picked concept A, the front page ("yeah, try A"). It now shows at every endi
 - Trail: what it means, a bar of every point (the shooting in orange), and the rows biggest first. A shooting is one row per target group, its shooters' faces and its span ("Hasti and Larthi shot 3 rivals 4:06–4:20"); each act is one row. The law comes last, with the rulebook's own numbers.
 - Time: the mission's stops and the end. Spent: each payment. Alert: each rise with its why. Standing: each move.
 
-**Fitting the page.** If the closed page would reach the ways on, it gives way in order: first the spare rows from the last, then the rows closer together and smaller. The city drops before the run does. Any line too long for its slot ends with an ellipsis rather than run into its neighbour.
+**Fitting the page.** If the closed page would reach the ways on, it gives way in order: first the spare rows from the last, then the rows closer together and smaller, then the run (round 2, below: its labels on one line, smaller or on fewer stops, then no run). The city drops before the run does. Any line too long for its slot ends with an ellipsis rather than run into its neighbour.
 
 **The ways on, all clicks:**
 - **Watch the replay** shows only where there is a replay to watch: a fail whose culprit is placed, through the fail camera. When it has played, the page comes back.
@@ -49,19 +49,20 @@ Sky picked concept A, the front page ("yeah, try A"). It now shows at every endi
 ## The words
 
 There are no words in code. Each is read by key (`HostDebrief.Words.cs`):
-- first from text.json's `debrief.page`, in Fable's schema (`contracts/missions/handover/debrief.schema.ts`, still uncommitted);
+- first from text.json's `debrief.page`, in Fable's schema (`contracts/missions/handover/debrief.schema.ts`);
 - for a key that block doesn't have yet, from `unity/Assets/Suborned/Resources/Debrief099/standins.json`. This file is clearly marked as stand-ins: Glyph's words in Fable's shape, plus a few fill-ins listed in its note.
 
 Each key switches to Fable's the moment it exists. A key in neither, or a fill left unfilled, shows nothing rather than half a line. The proof prints which keys still come from the stand-ins.
 
-Keys the page reads that Fable's schema doesn't have yet:
+Keys the page reads that Fable's schema doesn't have yet (13, round 2):
 - `head.withdraw` (a withdrawal's kicker);
 - `beats.withdrew`;
 - `folds.{time,cash,alert,standing}.{head,means}` (the four other folds' head words);
 - `folds.rest`;
 - `and` (the list joiner);
-- `missions.one/many`;
-- `how.killed`.
+- `how.killed` (no script reaches it yet).
+
+`missions.one/many` are no longer read: Fable's city lines take `{missions}` as the count alone ("Killing found · {missions}-mission case"), so the host now fills the number (round 2).
 
 ## Captures (beside Glyph's concept)
 
@@ -158,3 +159,43 @@ These are 1920 x 1080, from the real player: scratch build 0.2.263-scratch, `out
 - `tools/game/proofmap.json`: one row for the debrief's files, one for its capture runner.
 
 Every new file is under 170 lines; `HudToolkit.cs` stays at 1300 lines (an in-place edit).
+
+## Round 2 (Aster's review of 0e7281fc): any words in their slots
+
+Latch, 2026-11-07, same branch, uncommitted.
+
+**What failed.** Host logic was 166/167: on `fight-safe-unguarded` the run ended at y 977, under the new-or-same choice (960). Fable's run labels run two or three words ("Away with Popovic"), so they break onto two lines, 22 px deeper. On the deepest fail pages the run starts at 851, after the numbers. The page's passes never made the run shallower, and the city's check assumed one-line labels. Two more endings had the same fault: `route-a-pressure-board` (977) and `route-g-fast-board` (1005). One more fault was hidden: when a label fitted its column at no size, the old run fell back to 18 px and let it run into the next column. No test looked at that.
+
+**What changed** (`BookLayout.Debrief.cs`):
+- **The run is fitted from its labels' size, never today's words.** Its shape is the most stops whose every label fits its column: on two lines where a label wants it (21, 19.5, 18 px), else on one line, smaller. If that shape has a two-line label, the next shape is the most stops that fit on one line (down to 17 px, the chips' size).
+- **Each column is measured as drawn, at its own depth.** It must stay 4 px clear of every way on (`RunGap`); the new-or-same choice stands over the last columns. Everything else keeps the 952 floor. Where the ways on stand is now one list, `Ways`, which both PlaceAgain and the fit read.
+- **The order the page gives way:** the spare rows from the last, then the rows closer and smaller, then the run's one-line shape, then no run. The city shows only when the run in that pass's shape clears the ways under it. With no run, the city comes back alone if it fits above 952.
+- **Which stops go:** the host's own order, carried on each stop as `BookStop.Rank`. The quiet city beats go first, then a watch, then the second beat on; the end always stays. One loop in `HostDebrief.Run.cs` now does today's cull to eight and ranks the rest. So a five-stop run keeps the cell's acts and the end.
+- **A host fix found in the captures:** `{missions}` in Fable's city lines is the count alone. The host had filled it with the stand-ins' "3 missions", so a case read "Killing found · 3 missions-mission case". It now reads "3-mission case". **The loud captures predate this fix and still show the old words:** the fix came after the one build.
+- **Glyph's polish:** each section sign's icon sits a little higher and its word a little lower, at least 4 px apart; they were 1 px.
+
+**What the endings do now** (host logic's measure, Fable's words; `evidence/hostlogic/widest.txt` has every ending at the widest labels):
+- **30 of 42 as before.**
+- **9 pages had a label wider than its column at eight stops.** It is the same label on all nine, "Their lookout set", under the host's measure of 0.52 em a letter. The old run let it spill into the next column; they now show **7 stops, two lines**. In the player it fits at 8 stops (the lookout capture: 8 stops at 18 px).
+- **`fight-safe-unguarded`, `route-a-pressure-board`:** 5 stops on one line, ending at 955, clear of the choice.
+- **`route-g-fast-board`:** 7 rows, a two-line Next time and three-line reasons leave no room for any run. The run gives way, and the city's row takes the foot.
+
+**Checks:**
+- **Host logic 168/168** (`bun tools/game/hostlogic.ts`; was 166/167). There is one new case, `EveryEndingFitsTheWidestRunLabels`: every ending with its run labels at the schema's widest, 18 characters, as one word that cannot break ("Counterinfiltrated") and as three that break in two ("Popovic walked out"), with the widest seed after Same start (int.MaxValue).
+  - Every page fits. Each label is inside its column, every column is clear of the ways on, and the end is kept.
+  - Every page with no Next time keeps its run.
+  - `Fits`, which every ending and every fold goes through, now also checks each run label's width and that a shown run keeps its end.
+  - The loud case checks the `{missions}` fill.
+- **Scratch build 0.2.263-scratch** (`out/scratch/latch/099b/player`): 0 errors, built once.
+- **Captures with Fable's words**, 1920 x 1080, `-debriefShots -novsync`. The Studio's display was asleep, and a vsync launch parks in `WaitForLastPresentation`, as in brief 096. There are nine: the six of round 1, `debrief-tall` (`fight-safe-unguarded`: 5 stops, one line), `debrief-tallest` (`route-g-fast-board`: no run, the city's row) and `start-page` (after Try again, for the kicker).
+  - **Layout audit clean on all nine** (the HUD's own and the page's).
+  - Every run replays to the same hash after the page and every fold. Watch the replay plays and comes back. Try again on the same start keeps seed 0. Back to the start shows the menu.
+  - `pages.txt` now says how each page laid its run out ("laid out: run 5/8 at 19.5 px …").
+- **HUD budget:** it still fails every shot on the 070 briefing page's own parts, as in round 1. The sign icon/word touches are gone (2 a shot before, 0 now). The two-line run labels' line overlaps (3, 3 and 2 a shot in round 1) are now one touch on each win ("Away with / Popovic", 0–2 px apart) and 2 overlaps on the lookout page, where a descender meets the next line at 1.05 leading ("Pay tape / arrived", "Popovic / walked out").
+- **The kicker:** the same ink on the start page and the debrief, rows 46–58, as in round 1. Jost's own line at 19 px is about the 1.5× box, so the swallowed lines had changed nothing visible. The "3 px inside the 48 px frame" finding is the kicker's place on the book's grid (Cy 52, its box from 38), not that bug. It matches Glyph's start mock (46–57). Concept A has it 5 px higher (41–54).
+
+**Open, round 2:**
+- **Glyph:** the two-line run labels' leading (1.05, your d_parts number); 1.15 would clear the descenders for 2 px of depth. On the start page, the headline at its smaller size (more than 8 facts) keeps its box top at 60, so its caps ride 6 px under the kicker (your mock has 19 px, at full size). With no room for a run, should the city's row take the foot, as now, or should the foot stay empty?
+- **Fable:** the 13 keys above. `missions.one/many` are no longer needed.
+- **Aster:** the loud captures show "3 missions-mission case" (fixed after the build); the next build will show "3-mission case".
+

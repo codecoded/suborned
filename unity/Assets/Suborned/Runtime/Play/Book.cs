@@ -34,8 +34,9 @@ namespace Suborned.Play
     public sealed class BookNeed { public string Id = "", Group = "", Words = ""; public bool Met, Unknown; }
     public sealed class BookScale { public string Word = ""; public int Value, Max; }
     public sealed class BookKnow { public string Icon = "", Face = "", Word = ""; }
-    /// <summary>A stop on the track. Brief 099: the debrief's run strip gives a cell act its agent's face, and Hot marks the end that lost it (the book's orange).</summary>
-    public sealed class BookStop { public string Icon = "", Word = "", Time = "", Face = ""; public bool Past, Hot; }
+    /// <summary>A stop on the track. Brief 099: the debrief's run strip gives a cell act its agent's face, and Hot marks the end that lost it (the book's orange); Rank is the order
+    /// the run gives its stops up in when the page shows fewer (0 stays longest: the end; equal ranks keep the latest).</summary>
+    public sealed class BookStop { public string Icon = "", Word = "", Time = "", Face = ""; public bool Past, Hot; public int Rank; }
     public sealed class BookOther { public string Face = "", Word = ""; public int Agent = -1; }
     /// <summary>Brief 096: a face under a way (Glyph's 1-start-job): its picture (a cameo, or a badge for one with none), its name, and the view a hover turns the street to.</summary>
     public sealed class BookFace { public string Face = "", Word = "", View = ""; public bool Badge; }

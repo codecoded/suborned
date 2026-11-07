@@ -1,0 +1,84 @@
+careless-body-found.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/2, rows 4/7
+careless-body-found.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/2, rows 4/7
+careless-enforcer-watches-guard.json 'Counterinfiltrated': run 4/6 at 21 px on 1 line(s), city 0/1, rows 4/7
+careless-enforcer-watches-guard.json 'Popovic walked out': run 6/6 at 21 px on 2 line(s), city 0/1, rows 3/7
+careless-g-disable.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/5, rows 5/5
+careless-g-disable.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/5, rows 5/5
+careless-guard-left-door-held.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/1, rows 4/7
+careless-guard-left-door-held.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/1, rows 3/7
+careless-loop-runs-out.json 'Counterinfiltrated': run 4/7 at 21 px on 1 line(s), city 0/3, rows 4/7
+careless-loop-runs-out.json 'Popovic walked out': run 7/7 at 21 px on 2 line(s), city 0/3, rows 3/7
+careless-reporter-not-stopped.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 3/6
+careless-reporter-not-stopped.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 3/6
+careless-scout-idles-pickup.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 4/4
+careless-scout-idles-pickup.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/3, rows 4/4
+careless-takedown-seen-camera.json 'Counterinfiltrated': run 4/5 at 21 px on 1 line(s), city 0/1, rows 4/7
+careless-takedown-seen-camera.json 'Popovic walked out': run 5/5 at 21 px on 2 line(s), city 0/1, rows 3/7
+careless-takedown-seen-crowd.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/2, rows 4/7
+careless-takedown-seen-crowd.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/2, rows 3/7
+careless-thin-all.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 3/6
+careless-thin-all.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 3/6
+fail-district-seals.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 7/7
+fail-district-seals.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 7/7
+fail-enforcer-down.json 'Counterinfiltrated': run 4/5 at 21 px on 1 line(s), city 0/3, rows 4/7
+fail-enforcer-down.json 'Popovic walked out': run 5/5 at 21 px on 2 line(s), city 0/3, rows 3/7
+fail-entry-seen-camera.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/2, rows 4/7
+fail-entry-seen-camera.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/2, rows 3/7
+fail-entry-seen-guard.json 'Counterinfiltrated': run 4/7 at 21 px on 1 line(s), city 0/2, rows 4/7
+fail-entry-seen-guard.json 'Popovic walked out': run 7/7 at 21 px on 2 line(s), city 0/2, rows 3/7
+fail-rivals-reach-vale.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 3/6
+fail-rivals-reach-vale.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 3/6
+fail-take-seen-camera.json 'Counterinfiltrated': run 4/5 at 21 px on 1 line(s), city 0/1, rows 4/7
+fail-take-seen-camera.json 'Popovic walked out': run 5/5 at 21 px on 2 line(s), city 0/1, rows 3/7
+fail-vale-dead.json 'Counterinfiltrated': run 4/6 at 21 px on 1 line(s), city 0/2, rows 6/7
+fail-vale-dead.json 'Popovic walked out': run 6/6 at 21 px on 2 line(s), city 0/2, rows 6/7
+fail-vale-leaves.json 'Counterinfiltrated': run 4/4 at 21 px on 1 line(s), city 0/1, rows 4/7
+fail-vale-leaves.json 'Popovic walked out': run 4/4 at 21 px on 1 line(s), city 0/1, rows 4/7
+fight-loud-enforcer-down.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 4/7
+fight-loud-enforcer-down.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 4/7
+fight-loud-wait-square.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 4/7
+fight-loud-wait-square.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 4/7
+fight-loud-wait-yard.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 6/6
+fight-loud-wait-yard.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/3, rows 6/6
+fight-safe-rivals-reach-vale.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 3/6
+fight-safe-rivals-reach-vale.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 3/6
+fight-safe-unguarded.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/1, rows 6/7
+fight-safe-unguarded.json 'Popovic walked out': run 4/8 at 21 px on 1 line(s), city 0/1, rows 6/7
+loud-fight.json 'Counterinfiltrated': run 4/6 at 21 px on 1 line(s), city 0/2, rows 5/7
+loud-fight.json 'Popovic walked out': run 6/6 at 21 px on 2 line(s), city 0/2, rows 4/7
+loud-left-downed.json 'Counterinfiltrated': run 4/6 at 21 px on 1 line(s), city 0/2, rows 5/7
+loud-left-downed.json 'Popovic walked out': run 6/6 at 21 px on 2 line(s), city 0/2, rows 4/7
+loud-left-standing.json 'Counterinfiltrated': run 4/6 at 21 px on 1 line(s), city 0/2, rows 5/7
+loud-left-standing.json 'Popovic walked out': run 6/6 at 21 px on 2 line(s), city 0/2, rows 4/7
+loud.json 'Counterinfiltrated': run 4/6 at 21 px on 1 line(s), city 0/2, rows 5/7
+loud.json 'Popovic walked out': run 6/6 at 21 px on 2 line(s), city 0/2, rows 4/7
+route-a-board.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 4/7
+route-a-board.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 4/7
+route-a-disable.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 5/5
+route-a-disable.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/3, rows 5/5
+route-a-pressure-board.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 6/7
+route-a-pressure-board.json 'Popovic walked out': run 4/8 at 21 px on 1 line(s), city 0/3, rows 6/7
+route-a-pressure.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 5/5
+route-a-pressure.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/3, rows 5/5
+route-a.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 5/5
+route-a.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/3, rows 5/5
+route-b-board.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 3/6
+route-b-board.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 3/6
+route-b-thin.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/3, rows 3/6
+route-b-thin.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/3, rows 3/6
+route-b.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 3/3, rows 4/4
+route-b.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 3/3, rows 4/4
+route-g-board.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/1, rows 4/7
+route-g-board.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/1, rows 4/7
+route-g-fast-board.json 'Counterinfiltrated': run 0/8, city 1/1, rows 7/7
+route-g-fast-board.json 'Popovic walked out': run 0/8, city 1/1, rows 7/7
+route-g-fast.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 1/1, rows 5/5
+route-g-fast.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 1/1, rows 5/5
+route-g-kill-board.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/2, rows 4/7
+route-g-kill-board.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/2, rows 4/7
+route-g-kill.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 2/2, rows 5/5
+route-g-kill.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 2/2, rows 5/5
+route-g.json 'Counterinfiltrated': run 4/8 at 21 px on 1 line(s), city 0/1, rows 4/7
+route-g.json 'Popovic walked out': run 8/8 at 18 px on 2 line(s), city 0/1, rows 4/7
+withdraw.json 'Counterinfiltrated': run 1/1 at 21 px on 1 line(s), city 1/1, rows 7/7
+withdraw.json 'Popovic walked out': run 1/1 at 21 px on 1 line(s), city 1/1, rows 7/7

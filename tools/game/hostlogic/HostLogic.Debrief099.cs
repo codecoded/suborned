@@ -44,6 +44,8 @@ public class Debrief099
                 if (col[a].Slot != col[b].Slot && !Under(col[a].Slot, col[b].Slot) && !Under(col[b].Slot, col[a].Slot)) Assert.That(col[a].At.Overlaps(col[b].At), Is.False, $"{what}: {col[a].Slot} {col[a].At} over {col[b].Slot} {col[b].At}");
         var ways = r.Items.Where(i => i.Slot == BookSlot.Again).ToList(); Assert.That(ways, Is.Not.Empty, $"{what}: no ways on");
         foreach (var it in col) foreach (var w in ways) Assert.That(it.At.Overlaps(w.At), Is.False, $"{what}: {it.Slot} {it.At} under the way on {w.At}");
+        var run = r.Items.Where(i => i.Slot == BookSlot.Track).ToList(); if (run.Count > 0) Assert.That(run[^1].Index, Is.EqualTo(p.Track.Count - 1), $"{what}: the run keeps its end");
+        foreach (var it in run) foreach (var l in r.Debrief.Run[it.Index]) Assert.That(Tw(l, r.Debrief.RunSize, "Jost-SemiBold"), Is.LessThanOrEqualTo(r.TrackStep - 14f + .01f), $"{what}: the run's '{l}' runs past its column ({r.TrackStep:0} px)");
         Host.NoTokens(what, new[] { p.Kicker, p.Name, p.Sub, p.WayWord, p.WayNote, p.NextHead, p.NextLine }.Concat(p.Ticks.SelectMany(t => new[] { t.Words, t.Note })).Concat(p.Stats.SelectMany(s => new[] { s.Label, s.Value, s.Why }))
             .Concat(p.City.SelectMany(c => new[] { c.Head, c.Line })).Concat(p.Track.Select(s => s.Word)).Concat(p.Again.Select(a => a.Word)).Concat(p.Fold == null ? new string[0] : p.Fold.Rows.Select(x => x.Words).Append(p.Fold.Law).Append(p.Fold.Means)).ToArray());
     }
@@ -93,6 +95,9 @@ public class Debrief099
         var rivals = p.Fold.Rows.First(); Assert.That(rivals.Hot && rivals.Faces.Count >= 2, $"the biggest row is the rivals' shooting, by more than one of us: {rivals.Words}");
         Assert.That(p.Fold.Rows.Select(r => BookLayout.SignedValue(r.Value)), Is.Ordered.Descending);
         Assert.That(p.Fold.Law, Does.Contain("+" + g.R.GunfireTrail)); Fits(p, "loud trail fold");
+        var cases = h.EndDebrief.Next.Cases; Assert.That(cases, Is.Not.Empty, "the loud run's killing opens a case");
+        Assert.That(p.City.Select(c => c.Line), Does.Contain(DebriefWords.Fill(DebriefWords.Get().W("city", "case", "line"), false, ("missions", cases[0].missions.ToString()))), "{missions} is the count alone, as Fable's line has it (\"{missions}-mission case\")");
+        Assert.That(p.City.Select(c => c.Line), Has.None.Contains("missions-mission"));
         h.DebriefFold("trail"); Assert.That(h.BookPageNow.Fold, Is.Null, "a second click shuts it");
     }
 
@@ -127,6 +132,29 @@ public class Debrief099
             said.Add($"{Path.GetFileName(f)}: {g.Result} {g.FailCode} {HandoverHost.MissionClock(g.Tick)} · {p.Name} · {p.WayWord} {p.Ticks.Count(t => t.Met)}/{p.Ticks.Count} · lost: {p.Ticks.FirstOrDefault(t => t.Lost)?.Words} · next: {p.NextLine} · ways {string.Join("/", p.Again.Select(x => x.Id))}");
         }
         Keep("endings", string.Join("\n", said)); Assert.That(codes.Count, Is.GreaterThanOrEqualTo(6), "the scripts cover a win and several fail causes: " + string.Join(", ", codes)); Assert.That(fails, Is.GreaterThan(5));
+    }
+
+    /// <summary>The run's labels at the schema's widest (debrief.schema.ts, beats: 18 characters at the widest fills), as one word that cannot break and as three words that break
+    /// in two, on every ending, with the widest seed after Same start (HostSeed.RollSeed: up to int.MaxValue): every page fits (Fits: each label inside its column, every column clear
+    /// of the ways on, the run's end kept); a page with no Next time has the room for its run. Which pages give their run way, and how, is kept in widest.txt.</summary>
+    [Test] public void EveryEndingFitsTheWidestRunLabels()
+    {
+        var dir = Path.Combine(Root.Path, "contracts/missions/handover/routes"); var files = Directory.GetFiles(dir, "*.json").Where(f => !f.EndsWith("routes.json")).OrderBy(f => f).ToList();
+        var said = new List<string>(); var dw = DebriefWords.Get(); int pages = 0;
+        foreach (var f in files)
+        {
+            var rel = Path.GetRelativePath(Root.Path, f); var h = Why100.Play(rel); if (!h.Game.Over) continue;
+            Assert.That((bool)Host.Call(h, "BookOpenEnd"), rel); var p = h.BookPageNow; p.SameWord = $"{dw.W("ways", "same")} · {int.MaxValue}";
+            foreach (var widest in new[] { "Counterinfiltrated", "Popovic walked out" })
+            {
+                Assert.That(widest.Length, Is.EqualTo(18), "the beats' slot at its widest (debrief.schema.ts)"); foreach (var s in p.Track) s.Word = widest;
+                string what = $"{Path.GetFileName(f)} '{widest}'"; Fits(p, what); pages++;
+                var r = BookLayout.Place(p, Tw); var run = r.Items.Where(i => i.Slot == BookSlot.Track).ToList();
+                if (p.NextLine.Length == 0) Assert.That(run, Is.Not.Empty, $"{what}: a page with no Next time has the room for its run");
+                said.Add($"{what}: run {run.Count}/{p.Track.Count}{(run.Count > 0 ? $" at {r.Debrief.RunSize} px on {run.Max(i => r.Debrief.Run[i.Index].Length)} line(s)" : "")}, city {r.Items.Count(i => i.Slot == BookSlot.City)}/{p.City.Count}, rows {r.Debrief.TicksShown}/{p.Ticks.Count}");
+            }
+        }
+        Keep("widest", string.Join("\n", said)); Assert.That(pages, Is.GreaterThan(60), "every ending, twice");
     }
 
     [Test] public void OpeningAFoldMovesNothingAboveIt()
