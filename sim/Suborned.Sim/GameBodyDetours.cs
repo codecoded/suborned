@@ -42,6 +42,7 @@ namespace Suborned.Sim
         {
             var p = b.Det; if (p == null) return null;
             if (Tick >= b.DetEnd || G.Within(from, p.End, DetourDoneCm)) { b.Det = null; b.Catch = false; return null; }
+            if (b.Catch && b.Form != FmNone && G.Within(from, b.Aim, 2 * CatchCm) && S.Grid.LineFree(from, b.Aim)) { b.Det = null; b.Catch = false; b.DetEnd = Tick; return null; } // a way back to a stop is done once it is back in sight of it (the stop's form takes over: a queue's spot, a crew spot); the next way back may come at once
             return p.At(Math.Min(p.Length, p.NearestMm(from, 0, p.Length) + DetourAheadMm));
         }
 

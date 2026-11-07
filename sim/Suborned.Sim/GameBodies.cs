@@ -36,6 +36,8 @@ namespace Suborned.Sim
         public int StuckN;
         /// <summary>Making room (GameBodyGive.cs): for whom, the spot it stepped to, where it stood when asked, the asker's way then, until when.</summary>
         public string? RoomFor; public Pt RoomAt, RoomFrom, RoomDir; public int RoomEnd;
+        /// <summary>The last it made room for and until when it is not asked again by them (it stood aside once; they did not get past).</summary>
+        public string? RoomDone; public int RoomDoneUntil;
         /// <summary>Squeezing past (GameBodyGive.cs): with whom, until when at most, and the way it was going when the squeeze began.</summary>
         public string? SqzId; public int SqzEnd; public Pt SqzDir;
         /// <summary>A change of plans (GameBodyGive.cs): the place it went instead (another chair, another spot, its next stop the other way), the
@@ -65,7 +67,7 @@ namespace Suborned.Sim
         {
             public string Id; public byte Kind, Cls, Form; public int Ix, Reach, Pace; public bool Moving, Fresh, Jumped, Placed, Armed, Held, Mate, WalksFirm; // Mate: a guard at a post point another holds (BodyPosts); Pace: its own top pace (cm a tick); Jumped: its own place jumped while it stood on the street
             public Pt Raw, Own, Lay, At, Prev, Head, Face, LayFace, Aim; public long Key, PathMm; public int StuckN, HeldN, DetEnd, DetTries, Slot, Blk, GiveEnd; public Path? Det; public bool Catch; public Pt HeldAt, GiveAt; public string? BlkId; public byte Why, Fix; public object? BRef; public int BN; public Pt BAt; public Path? Path; public bool PathBack; public string? Stop; // Path, PathMm: the walk its own place is on, how far along, and walked end to start (a kite's way back); Own: where it makes for (its own place, or its change of plans)
-            public string? RoomFor, SqzId, AltStop; public Pt RoomAt, RoomFrom, RoomDir, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil; public bool AltOn; // GameBodyGive.cs; SlideV: last tick's slide (GameBodyForms.cs)
+            public string? RoomFor, SqzId, AltStop, RoomDone; public Pt RoomAt, RoomFrom, RoomDir, SqzDir, Alt, SlideV; public int RoomEnd, SqzEnd, AltUntil, RoomDoneUntil; public bool AltOn; // GameBodyGive.cs; SlideV: last tick's slide (GameBodyForms.cs)
         }
         Bd[] bds = new Bd[128]; int bdN; int[] bdOrder = new int[128]; long[] bdKeys = new long[128];
         readonly Dictionary<long, int> bhHead = new Dictionary<long, int>();
@@ -188,7 +190,9 @@ namespace Suborned.Sim
             b.Key = ((long)cls << 40) | ((long)(moving ? 1 : 0) << 36) | ((long)kind << 28) | (long)ix; // within a class: those standing, then those walking
             b.BRef = plan.r; b.BN = plan.n; b.BAt = plan.at;
             bool keep = live && same; b.HeldN = keep ? prev.HeldN : 0; b.DetTries = keep ? prev.DetTries : 0; b.HeldAt = prev.HeldAt; b.StuckN = keep ? prev.StuckN : 0; b.Blk = -1; b.BlkId = keep ? prev.BlkId : null; b.GiveEnd = keep ? prev.GiveEnd : 0; b.GiveAt = prev.GiveAt; b.Det = keep ? prev.Det : null; b.Catch = b.Det != null && prev.Catch; b.DetEnd = keep ? prev.DetEnd : 0; b.Slot = keep && prev.At1 > 0 ? prev.Slot : -1; // a new plan: no way round, no crew spot
+            if (live && prev.RoomDone != null && Tick < prev.RoomDoneUntil) { b.RoomDone = prev.RoomDone; b.RoomDoneUntil = prev.RoomDoneUntil; }
             if (keep && prev.RoomFor != null && Tick < prev.RoomEnd) { b.RoomFor = prev.RoomFor; b.RoomAt = prev.RoomAt; b.RoomFrom = prev.RoomFrom; b.RoomDir = prev.RoomDir; b.RoomEnd = prev.RoomEnd; } // making room, while its own plan stands
+            else if (live && prev.RoomFor != null) { b.RoomDone = prev.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; } // its time up, or its own plan changed: it stood aside once (not asked again by them a while)
             if (live && prev.SqzId != null) { b.SqzId = prev.SqzId; b.SqzEnd = prev.SqzEnd; b.SqzDir = prev.SqzDir; } // squeezing past someone: a body's state, whatever its plan, until the two stand apart
             if (live) b.SlideV = prev.SlideV;
             if (keep && prev.AltOn) { b.AltOn = true; b.Alt = prev.Alt; b.AltStop = prev.AltStop; b.AltUntil = prev.AltUntil; if (prev.AltStop == null || cls != BcFixed) b.Own = prev.Alt; } // a change of plans, while its step of the routine lasts (BodyGather)
@@ -284,7 +288,7 @@ namespace Suborned.Sim
         {
             ref var b = ref bds[i];
             var lay = b.At - b.Raw; var bl = new BodyLay { Lay = lay, Raw = b.Raw, Face = b.LayFace, At1 = Tick + 1, Held = b.Moving && b.At == b.Prev, BRef = b.BRef, BN = b.BN, BAt = b.BAt, HeldN = b.HeldN, DetTries = b.DetTries, HeldAt = b.HeldAt, StuckN = b.StuckN, Det = b.Det, Catch = b.Det != null && b.Catch, DetEnd = b.DetEnd, BlkId = b.Blk >= 0 ? bds[b.Blk].Id : null, GiveEnd = b.GiveEnd, GiveAt = b.GiveAt, Slot = b.Mate ? b.Slot : -1,
-                RoomFor = b.RoomFor, RoomAt = b.RoomAt, RoomFrom = b.RoomFrom, RoomDir = b.RoomDir, RoomEnd = b.RoomEnd, SqzId = b.SqzId, SqzEnd = b.SqzEnd, SqzDir = b.SqzDir, AltOn = b.AltOn, Alt = b.Alt, AltStop = b.AltStop, AltUntil = b.AltUntil, SlideV = (b.Why >> 4) == 2 ? b.At - b.Prev : default };
+                RoomFor = b.RoomFor, RoomAt = b.RoomAt, RoomFrom = b.RoomFrom, RoomDir = b.RoomDir, RoomEnd = b.RoomEnd, SqzId = b.SqzId, SqzEnd = b.SqzEnd, SqzDir = b.SqzDir, AltOn = b.AltOn, Alt = b.Alt, AltStop = b.AltStop, AltUntil = b.AltUntil, SlideV = (b.Why >> 4) == 2 ? b.At - b.Prev : default, RoomDone = b.RoomDone, RoomDoneUntil = b.RoomDoneUntil };
             switch (b.Kind)
             {
                 case BkCast: castLay[b.Ix] = bl; break;
@@ -381,6 +385,7 @@ namespace Suborned.Sim
                 if (!b.Live(Tick)) return;
                 if (b.Lay != default || b.Face != default) h.S(id).P(b.Lay).P(b.Face).P(b.Raw).I(b.DetEnd).I(b.GiveEnd).P(b.GiveAt);
                 if (b.RoomFor != null) h.S("room").S(id).S(b.RoomFor).P(b.RoomAt).I(b.RoomEnd);
+                if (b.RoomDone != null) h.S("roomed").S(id).S(b.RoomDone).I(b.RoomDoneUntil);
                 if (b.SqzId != null) h.S("squeeze").S(id).S(b.SqzId).I(b.SqzEnd);
                 if (b.AltOn) h.S("alt").S(id).P(b.Alt).S(b.AltStop ?? "").I(b.AltUntil);
                 if (b.SlideV != default) h.S("slid").S(id).P(b.SlideV);

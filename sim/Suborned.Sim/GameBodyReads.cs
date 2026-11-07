@@ -43,6 +43,13 @@ namespace Suborned.Sim
             ref var b = ref bds[i];
             return $"{id} raw {b.Raw} lay {b.Lay} at {b.At} prev {b.Prev} cls {b.Cls} form {b.Form} face {b.Face} moving {b.Moving} fresh {b.Fresh}{(b.Jumped ? " jumped" : "")} pace {b.Pace} ground {Walk.Free(b.At)} why {WhyGoal[b.Why & 15]}{WhyMove[b.Why >> 4]}{WhyFix[b.Fix]} aim {b.Aim}{(b.Mate ? " mate slot " + b.Slot : "")}{(b.Det != null ? (b.Catch ? " back to " : " detour to ") + b.Det.End + " until " + b.DetEnd : "")}{(b.RoomFor != null ? " room for " + b.RoomFor + " at " + b.RoomAt : "")}{(b.SqzId != null ? " squeezing with " + b.SqzId : "")}{(b.AltOn ? " plans changed to " + b.Alt + (b.AltStop != null ? " (" + b.AltStop + ")" : "") + " until " + b.AltUntil : "")} held {b.HeldN} stuck {b.StuckN}{(b.Kind == BkWalker ? " st '" + Walkers[b.Ix].St + "' stop " + (b.Stop ?? "-") : "")} path {(b.Path == null ? "-" : b.Path.Points[0] + ".." + b.Path.End + " len " + b.Path.Length + " mm " + b.PathMm)}";
         }
+        /// <summary>A walker squeezing past someone: the way it faces (across its way, toward the other), for its facing read (FacingNow); else null.</summary>
+        Pt? SqueezeFacing(Walker w) => R.BodiesOn && w.Body.Current(Tick, bodyRan) && w.Body.SqzId != null ? SqueezeFace(w.P.Id) : null;
+        /// <summary>A test read (never hashed): whether the law laid this body as one the give and take never moves: a tenet, the cell or the armed (the rival crew, guards, officers, police, robots, a
+        /// staff guard of the city).</summary>
+        public bool BodyKeepsPlace(string id) => bdIx.TryGetValue(id, out var i) && (bds[i].Cls != BcSoft || bds[i].Armed);
+        /// <summary>A test read (never hashed): whether the law holds this body now (short of its goal, getting nowhere: on its way, not settled).</summary>
+        public bool BodyHeld(string id) => bdIx.TryGetValue(id, out var i) && bds[i].StuckN > 0;
         /// <summary>A test read (never hashed): the body as the law laid it this tick: where it stands, its own place, the stop it stands at (a
         /// person of the city's; a caller's call box), its class (0 tenet, 1 armed, 2 the city's) and its form at a stop (1 queue, 2 crew), the
         /// sector facing the law gave it, and a guard's crew spot at a post another holds (−1: none); null when the law did not lay it.</summary>

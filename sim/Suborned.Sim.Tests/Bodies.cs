@@ -1,4 +1,4 @@
-// Brief 098, law L9 (Bodies; engine 0.46.0): the law's tests. Laws, none pinned to a moment: route scripts played on several seeds under the dial's
+// Brief 098, law L9 (Bodies; engine 0.46.0; give and take, engine 0.47.0, in BodiesGiveTests): the law's tests. Laws, none pinned to a moment: route scripts played on several seeds under the dial's
 // settings, every tick read by the law's independent check (BodyCheck: every upright body as the host reads it), and the law's promises held at
 // whatever moment they come up. dotnet test sim/Suborned.Sim.Tests -c Release --filter FullyQualifiedName~BodiesTests
 using System;
@@ -39,6 +39,7 @@ public class BodiesTests
                 foreach (var (a, b, cm) in BodyCheck.Closer(up, g.R.BodyMinCm))
                 {
                     if (a.Tenet && b.Tenet) { tenets++; continue; } // two tenets placed within two radii: the tenet wins (counted below, none today)
+                    if (BodyCheck.Squeezing(g, a, b, cm)) continue; // engine 0.47.0: two squeezing past each other, two squeeze widths apart (BodiesGiveTests holds the squeeze)
                     if (bad.Count < 5) bad.Add($"{route} #{seed} {Report.Clock(g.Tick)}: {a.Id} and {b.Id} {cm} cm");
                     else bad.Add("");
                 }
@@ -74,10 +75,10 @@ public class BodiesTests
                     var spots = l.Select(x => x.at).Distinct().Count();
                     if (spots != l.Count) bad.Add($"{kv.Key} at {Report.Clock(g.Tick)}: {l.Count} on {spots} spots");
                     int reach = crew ? 2 * g.R.BodyCrewCm + g.R.BodyMinCm : 5 * g.R.BodyQueueCm + g.R.BodySearchCm;
-                    foreach (var x in l) if (was.TryGetValue(x.id, out var xw) && xw == x.at && !G.Within(x.at, x.raw, reach)) bad.Add($"{x.id} at {kv.Key} stands {G.Dist(x.at, x.raw)} cm from it ({Report.Clock(g.Tick)})"); // at rest (one still on his way is behind)
+                    foreach (var x in l) if (was.TryGetValue(x.id, out var xw) && xw == x.at && !g.BodyHeld(x.id) && !G.Within(x.at, x.raw, reach)) bad.Add($"{x.id} at {kv.Key} stands {G.Dist(x.at, x.raw)} cm from it ({Report.Clock(g.Tick)})"); // at rest, settled (one still on his way is behind; one held on it, engine 0.47.0, is not yet there)
                     if (crew) // armed at one post, at rest: the holder and those at crew spots bodies.crew apart, each to his sector; one with no spot free, personal space (one just come, stepping to his spot, is on his way)
                     {
-                        bool still(int k) => was.TryGetValue(l[k].id, out var p) && p == l[k].at;
+                        bool still(int k) => was.TryGetValue(l[k].id, out var p) && p == l[k].at && !g.BodyHeld(l[k].id); // settled, not held on its way
                         for (int i = 0; i < l.Count; i++) for (int j = i + 1; j < l.Count; j++)
                         {
                             if (!still(i) || !still(j)) continue; bool both = l[i].slot >= 0 && l[j].slot >= 0; int d = G.Dist(l[i].at, l[j].at);
@@ -107,7 +108,7 @@ public class BodiesTests
                     for (int i = 0; i < l.Count; i++) for (int j = i + 1; j < l.Count; j++)
                     {
                         pairs++; // at rest: neither moved since the tick before (one just come, stepping to his crew spot, is on his way)
-                        if (!(was.TryGetValue(l[i].Id, out var pi) && pi == l[i].info.at && was.TryGetValue(l[j].Id, out var pj) && pj == l[j].info.at)) continue;
+                        if (!(was.TryGetValue(l[i].Id, out var pi) && pi == l[i].info.at && was.TryGetValue(l[j].Id, out var pj) && pj == l[j].info.at) || h.BodyHeld(l[i].Id) || h.BodyHeld(l[j].Id)) continue; // settled: neither moved, neither held on his way
                         still++; int d = G.Dist(l[i].info.at, l[j].info.at);
                         if (d < h.R.BodySpaceCm) bad.Add($"{l[i].Id} and {l[j].Id} share {grp.Key}: {d} cm ({Report.Clock(h.Tick)})");
                     }

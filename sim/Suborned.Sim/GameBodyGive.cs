@@ -39,7 +39,7 @@ namespace Suborned.Sim
         void GiveStart(int i)
         {
             ref var b = ref bds[i];
-            if (b.RoomFor != null && (Tick >= b.RoomEnd || !bdIx.TryGetValue(b.RoomFor, out var a) || Past(bds[a].At, b.RoomFrom, b.RoomDir, R.BodyMinCm))) b.RoomFor = null;
+            if (b.RoomFor != null && (Tick >= b.RoomEnd || !bdIx.TryGetValue(b.RoomFor, out var a) || Past(bds[a].At, b.RoomFrom, b.RoomDir, R.BodyMinCm))) { b.RoomDone = b.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; b.RoomFor = null; } // it stood aside once: not asked again by them for a while
             if (b.SqzId == null) return;
             if (!bdIx.TryGetValue(b.SqzId, out var p) || bds[p].SqzId != b.Id) { b.SqzId = null; return; } // the other has left the street, or squeezes no more
             ref var o = ref bds[p];
@@ -55,7 +55,7 @@ namespace Suborned.Sim
         bool AskRoom(int i, int j, Pt from, Pt goal)
         {
             ref var b = ref bds[i]; ref var o = ref bds[j];
-            if (b.RoomFor != null || Squeezing(in b) || o.Cls != BcSoft || o.Armed || o.Fresh || o.RoomFor != null || o.SqzId != null || o.GiveEnd > Tick) return false; // the armed and the tenets keep their places; one already giving way is busy
+            if (b.RoomFor != null || Squeezing(in b) || o.Cls != BcSoft || o.Armed || o.Fresh || o.RoomFor != null || o.SqzId != null || o.GiveEnd > Tick || (o.RoomDone == b.Id && Tick < o.RoomDoneUntil)) return false; // the armed and the tenets keep their places; one already giving way is busy; one it already stood aside for asks no more a while
             if (o.Stop != null && o.Stop == b.Stop) return false; // a queue at one stop: it waits its turn
             var dir = goal - from; if (dir == default) return false;
             var way = b.Head != default ? b.Head : dir; // the way it is going (its own place's step), else the way to its goal
@@ -77,14 +77,14 @@ namespace Suborned.Sim
                     for (; e >= 0; e = bhNext[e])
                     {
                         int j = bhBody[e]; if (j == i) continue; ref var o = ref bds[j];
-                        if (o.Placed || o.Cls != BcSoft || o.Armed || o.Fresh || o.RoomFor != null || o.SqzId != null) continue; // laid already, or one who keeps its place, or busy
+                        if (o.Placed || o.Cls != BcSoft || o.Armed || o.Fresh || o.RoomFor == b.Id || o.SqzId != null) continue; // laid already, or one who keeps its place, or already making room for it (a walking tenet comes first: it replaces making room for another, as Vale a metre beside the Enforcer)
                         var v = o.At - b.At; long along = ((long)v.X * dir.X + (long)v.Y * dir.Y) / len, across = Math.Abs((long)v.X * dir.Y - (long)v.Y * dir.X) / len;
                         if (along <= 0 || along > AheadCm || across >= R.BodyMinCm + RoomClearCm) continue;
                         if (RoomSpot(j, b.At, dir) is Pt spot) { o.RoomFor = b.Id; o.RoomAt = spot; o.RoomFrom = o.At; o.RoomDir = dir; o.RoomEnd = Tick + RoomTicks; BodySidesteps++; }
                     }
         }
         /// <summary>How far ahead of a tenet walking the city makes room (cm).</summary>
-        const int AheadCm = 200;
+        const int AheadCm = 300;
         /// <summary>Where j steps to make room for one going `dir` from `from`: the nearest free spot off that way on the side j stands, then the other.</summary>
         Pt? RoomSpot(int j, Pt from, Pt dir)
         {

@@ -144,6 +144,7 @@ namespace Suborned.Sim
         Pt? FacingOf(Person p)
         {
             var w = WalkerOf(p); if (w == null || !Start.Crowd || w.P.Down) return null;
+            if (SqueezeFacing(w) is Pt sq) return sq; // brief 098 L9 (engine 0.47.0): squeezing past someone, turned sideways
             if (w.St.Length > 0)
             {
                 if (w.Run != null && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking") && Tick >= w.RunStart)

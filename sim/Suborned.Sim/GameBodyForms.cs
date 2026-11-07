@@ -70,11 +70,12 @@ namespace Suborned.Sim
             else if (RingGoal(i, false, out goal)) why = WhyRing2;
             else if ((b.Fresh || onCar) && bodyWalk.Nearest(onCar ? from : b.Raw, c => Fits(i, c, false), 2 * R.BodySearchCm) is Pt wide) { goal = wide; why = WhyWide; } // new on the street in a press (a crowd back out of one door), or standing where no body stands (a car came to stand on it): the nearest room by walk
             else { goal = cur; why = WhyNone; }
+            if (form && b.Det != null && !b.Catch && G.Within(b.Det.End, b.Own, R.BodyMinCm) && !G.Within(goal, b.Own, R.BodyMinCm)) { b.Det = null; } // a spot of its stop's form to stand at (a queue's, a crew spot): a way round onto the stop itself, which another holds, is spent
             if (b.RoomFor != null) { goal = b.RoomAt; why = WhyRoom; form = false; } // making room for one it held (GameBodyGive.cs)
             else if (b.GiveEnd > Tick) { goal = b.GiveAt; why = WhyGive; form = false; } // giving way to one it held (GameBodyDetours.cs)
             else if (DetourAim(ref b, from) is Pt way) { goal = way; why = b.Catch ? WhyCatch : WhyDetour; form = false; } // on its way round what held it, or back to where it makes for
             bool urgent = !Fits(i, from, false); // someone stands inside two radii of where it stood (a tenet walked on it), or a car stood on it: it steps clear now
-            int rate = b.Fresh ? int.MaxValue : urgent || onCar ? R.BodyShoveCmT : why == WhyDetour || why == WhyGive || why == WhyRoom ? WalkCmT : why == WhyCatch ? Math.Max(R.BodyBackCmT, WalkCmT) : b.Moving && goal != b.Aim ? R.BodyShoveCmT : behind && goal == b.Aim ? Math.Max(R.BodyBackCmT, WalkCmT) : goal == b.Raw ? R.BodyBackCmT : Math.Max(R.BodyBackCmT, WalkCmT); // behind, it hurries
+            int rate = b.Fresh ? int.MaxValue : urgent || onCar || (why == WhyRoom && RoomForTenet(in b)) ? R.BodyShoveCmT : why == WhyDetour || why == WhyGive || why == WhyRoom ? WalkCmT : why == WhyCatch ? Math.Max(R.BodyBackCmT, WalkCmT) : b.Moving && goal != b.Aim ? R.BodyShoveCmT : behind && goal == b.Aim ? Math.Max(R.BodyBackCmT, WalkCmT) : goal == b.Raw ? R.BodyBackCmT : Math.Max(R.BodyBackCmT, WalkCmT); // behind, it hurries
             int reach = b.Fresh ? int.MaxValue : b.SqzId != null ? Math.Min(b.Pace, R.BodySqueezeCmT) : Math.Min(b.Pace, rate + (int)G.Isqrt(G.D2(b.Head, default))); // its own step this tick and the law's pace on top, never over its own pace (nobody jumps); squeezing past, slower
             int most = b.Fresh ? R.BodySearchCm : Math.Min(b.Pace, R.BodyShoveCmT); // the farthest it may step aside this tick when it must
             var next = Toward(from, goal, reach); Pt at; bool clear = Fits(i, next, false); if (!clear) b.Blk = Blocker(i, next, false); // who holds its step (GameBodyDetours.cs)
@@ -88,6 +89,8 @@ namespace Suborned.Sim
             b.At = at; b.Placed = true; b.Reach = b.Fresh ? R.BodySearchCm : most; b.LayFace = form ? gface : at == b.Raw ? default : b.LayFace;
             HashAdd(i, at); DetourAfter(i, from, goal, reach);
         }
+        /// <summary>Making room for a tenet walking (the Enforcer leading Vale): it would walk on whoever stays, so they step aside quickly.</summary>
+        bool RoomForTenet(in Bd b) => b.RoomFor != null && bdIx.TryGetValue(b.RoomFor, out var a) && bds[a].Cls == BcFixed;
         bool Fits(int i, Pt c, bool comfort) => BodyGround(in bds[i], c) && Blocker(i, c, comfort) < 0;
         /// <summary>Where a body behind its own place aims: FollowAheadMm along its walk past the point nearest it, then on to the first point of the
         /// walk on free ground (a walk out of a door starts over the door's own ground), no farther than its own place.</summary>
