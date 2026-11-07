@@ -31,7 +31,7 @@ namespace Suborned.World
                     {
                         int k = parts.IndexOf(KitLods.Part(t.name)); if (k < 0 || !KitLods.Part(t.name).Contains("_Orbit") || t.GetComponent<Spin>()) continue; // `parts` are any separately drawn parts (robot heads, signal eyes); only orbits turn (kit.json has no spin key yet)
                         GameObjectUtility.SetStaticEditorFlags(t.gameObject, 0);
-                        var s = t.gameObject.AddComponent<Spin>(); s.axisPoint = inst.position; s.degreesPerSecond = Rates[k % Rates.Length]; n++;
+                        var s = t.gameObject.AddComponent<Spin>(); s.degreesPerSecond = Rates[k % Rates.Length]; n++;
                     }
             }
             return n + baked;

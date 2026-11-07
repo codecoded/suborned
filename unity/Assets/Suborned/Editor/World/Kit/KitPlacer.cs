@@ -224,7 +224,7 @@ namespace Suborned.World
                     go.transform.SetPositionAndRotation(m.GetColumn(3), m.rotation); go.transform.localScale = m.lossyScale;
                     go.AddComponent<MeshFilter>().sharedMesh = mesh; var rr = go.AddComponent<MeshRenderer>();
                     rr.sharedMaterials = mats.Select(x => KitSlots.For(x, slots, used)).ToArray(); rr.shadowCastingMode = mr.shadowCastingMode;
-                    var sp = go.AddComponent<Suborned.Play.Spin>(); sp.axisPoint = new Vector3(at.x, z, at.y); sp.degreesPerSecond = KitParts.Rate(orbit++);
+                    var sp = go.AddComponent<Suborned.Play.Spin>(); sp.degreesPerSecond = KitParts.Rate(orbit++);
                     for (int s2 = 0; s2 < mesh.subMeshCount; s2++) n += (int)mesh.GetIndexCount(s2) / 3;
                     KitParts.Baked++; continue;
                 }
