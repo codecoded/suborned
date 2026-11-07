@@ -86,6 +86,11 @@ The pillars and tiebreakers; Keel's rulebook as the one source (unknown = reject
 1. **The direction:** laws plus fairness bands, instead of pinned sums. **Sky: yes** ("work on the rules direction").
 2. **Traffic:** real sim cars under L8, read from Sky's "bring in more cars etc - the game then just does that". Scenery-only cars are dropped.
 3. **The first laws:** L1–L8 as the starting list. Sky can add or cut any as they meet play.
+4. **The dial's people count** (Sky 2026-11-07: "people counter is for street"): it counts people on the street at a time, on average (today about 22, not the 114 who mostly work indoors).
+5. **Who leaves when a count is lowered** ("same for now"): the same people every game, in a fixed order; the cast never leaves.
+6. **Lockdown** ("Drive out"): the cars in the zone drive out, and no new ones come in.
+7. **How busy the roads get** ("its fine, even just a few passing helps bring to life"): the plan's roads and junctions stay; above about 25 cars the extra ones queue at the edges.
+8. **Jams** ("should be opposite - shot cars can get past, others block"): ordinary traffic blocks a mission car's way, so a jam can box the cell's car in. A car that's been shot can be shoved aside or driven round, so shooting the car in your way clears it.
 
 ## Done-check
 Sky can set the guards, people and cars in the dev panel, press Play and get that world, with no rebuild. The GDD goes to v0.40.0 with laws in place of per-case sums, and the crew is regenerated (`bun run crew`). Traffic runs in play under L8, with the Handover's bands holding across seeds and 60 fps on the Air. The witness rules run on L1–L6.
