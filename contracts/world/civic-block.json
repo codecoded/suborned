@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "dfea4c373e368fac9ac1f9de1b97ba84d0321fc0d4d1a74892478d273bd558ba",
+  "sha256": "531823938bb2306fd1c56785d4ea6939c45546032d8c36f9e4b35f326e8247c4",
   "owner": "Vantage",
   "applied": [
    {
@@ -365,6 +365,18 @@
     "building": "cafe",
     "height": 16.8,
     "reason": "brief 066 (Sky 2026-10-26: \"buildings too high for a 2.5D game\"; yes to the play-street cap), then Sky 2026-10-27: the café stands 3 storeys, H(3) 16.8 m, so the getaway bay (squareBay) shows at yaw 210; Vantage found the 4th storey hid it. Was H(4) 20.4 (the 4-storey corner, 2026-10-26) and before that 34.8 (HandoverCafe.cs Height). Read on the plain mass at yaw 210 (zoom 14, 38 deg): the bay's ground 8 % seen past architecture at 20.4, 60 % at 16.8; a 1.5 m car standing in it 21 % and 76 %; the rest is the square-bay canopy and the café's lower storeys. Still under the Records Office crown 38 and inside standards.buildings.playStreets (3 to 4 storeys). Footprint 22 x 11.3, entrance, interior (floor 0.45, ceiling 4.6) and terrace unchanged; Vela's CafeUpper_3 (adopted, 12.1 m over the 4.7 m ground storey) draws the body; plan.civic.scale.cafe.height says 16.8 so C-0 holds it there"
+   },
+   {
+    "op": "edit",
+    "id": "cafe-palm-0",
+    "move": [0, 0.45],
+    "reason": "Vantage, brief 098 L9 Bodies (Keel's give-and-take report, the café passage; Sky: \"Do all\"): the west door palm 0.45 m east along the café front, toward the door, (-10, -31.1) to (-10, -30.65), 1.65 m from the door axis (y -29; was 2.1). With bodies 60 cm apart, the way between this palm and cafe-table-1's chairs was one walk cell: every route of the engine's walk grid (0.5 m cells, no corner cutting) went single file through it, where people sheltering at the café door meet people fleeing west along the front after a gunfight (people=64: 195 held body-seconds a run in front of the café, 254 holds of 5 s or more in 150 runs). Now two lanes. 0.42 m is the least that opens the second (0.4 m does not); 0.45 m keeps the back row of the door's alcove 4 cells wide (0.5 m closes one), and the café door's stand (-9.75, -29.25), Inez's post, and beside-inez (-8.2, -29) stay free. Moving both door palms 0.5 m cut the café entrance off the plan checker's 2 m walk grid (W-1)."
+   },
+   {
+    "op": "edit",
+    "id": "cafe-palm-1",
+    "move": [0, -0.25],
+    "reason": "As cafe-palm-0, the east door palm 0.25 m west toward the door, (-10, -26.9) to (-10, -27.15), 1.85 m from the door axis, so the pair still frames the door: it widens the same pinch between this palm and cafe-table-2's chairs from one lane to two, where Inez was held up to 43 s on her rounds at today's settings. 0.25 m exactly: 0.2 m leaves one lane, and 0.3 m puts the first two stops of the guard's ring beside Inez (sim/data/handover.rounds.json guard.stops, 1.2 m round her post) on its ground."
    },
    {
     "op": "dressing",
@@ -1387,22 +1399,22 @@
    "id": "cafe-palm-0",
    "kind": "planter",
    "polygon": [
-    [-9.55, -31.1],
-    [-9.584, -30.928],
-    [-9.682, -30.782],
-    [-9.828, -30.684],
-    [-10, -30.65],
-    [-10.172, -30.684],
-    [-10.318, -30.782],
-    [-10.416, -30.928],
-    [-10.45, -31.1],
-    [-10.416, -31.272],
-    [-10.318, -31.418],
-    [-10.172, -31.516],
-    [-10, -31.55],
-    [-9.828, -31.516],
-    [-9.682, -31.418],
-    [-9.584, -31.272]
+    [-9.55, -30.65],
+    [-9.584, -30.478],
+    [-9.682, -30.332],
+    [-9.828, -30.234],
+    [-10, -30.2],
+    [-10.172, -30.234],
+    [-10.318, -30.332],
+    [-10.416, -30.478],
+    [-10.45, -30.65],
+    [-10.416, -30.822],
+    [-10.318, -30.968],
+    [-10.172, -31.066],
+    [-10, -31.1],
+    [-9.828, -31.066],
+    [-9.682, -30.968],
+    [-9.584, -30.822]
    ],
    "z": 0,
    "height": 1.6
@@ -1411,22 +1423,22 @@
    "id": "cafe-palm-1",
    "kind": "planter",
    "polygon": [
-    [-9.55, -26.9],
-    [-9.584, -26.728],
-    [-9.682, -26.582],
-    [-9.828, -26.484],
-    [-10, -26.45],
-    [-10.172, -26.484],
-    [-10.318, -26.582],
-    [-10.416, -26.728],
-    [-10.45, -26.9],
-    [-10.416, -27.072],
-    [-10.318, -27.218],
-    [-10.172, -27.316],
-    [-10, -27.35],
-    [-9.828, -27.316],
-    [-9.682, -27.218],
-    [-9.584, -27.072]
+    [-9.55, -27.15],
+    [-9.584, -26.978],
+    [-9.682, -26.832],
+    [-9.828, -26.734],
+    [-10, -26.7],
+    [-10.172, -26.734],
+    [-10.318, -26.832],
+    [-10.416, -26.978],
+    [-10.45, -27.15],
+    [-10.416, -27.322],
+    [-10.318, -27.468],
+    [-10.172, -27.566],
+    [-10, -27.6],
+    [-9.828, -27.566],
+    [-9.682, -27.468],
+    [-9.584, -27.322]
    ],
    "z": 0,
    "height": 1.6

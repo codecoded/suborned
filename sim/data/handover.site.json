@@ -103,9 +103,9 @@
    "....####.......................####....#####...........######################################...........#####....####...................................############",
    ".....#.........................####.....####............###################################.............#####....####.......................####........############",
    "...............................####.....#####..............##############################..............#####.....####.......................####......##############",
-   ".....###.......................####.....######..###.................####....####.................###...#####.....####.......................####......##############",
-   ".....###.......................####......#####.####.................####.....###.................####.#####......####.......................####......##############",
-   ".....###.......................####.......#########.....##.......##..#........#...##.......#.....#########.......####.......................####.....###############",
+   ".....###.......................####.....######..###..................####...####.................###...#####.....####.......................####......##############",
+   ".....###.......................####......#####.####..................###....###..................####.#####......####.......................####......##############",
+   ".....###.......................####.......#########.....##.......##...#......#....##.......#.....#########.......####.......................####.....###############",
    "......#........................####........########....####.....###..............###.....####....########........####.......................####.....###############",
    "...............................####........######......####....#####............#####....####......######........####.......................####.....###############",
    "...............................####.........######....######..######...........######...######....######.........####.......................####.....###############",
@@ -353,7 +353,7 @@
   "drawn": {
    "walk": true,
    "sight": true,
-   "walkCells": 2435,
+   "walkCells": 2434,
    "sightOccluders": 301,
    "digest": "solid"
   },
@@ -2498,7 +2498,7 @@
    "src": "mission.json destinations \"Getaway bay\""
   },
   "d:Official drop-off": {
-   "at": [7820,-3100],
+   "at": [7870,-3100],
    "src": "mission.json destinations \"Official drop-off\""
   },
   "d:Service lane": {
@@ -2562,7 +2562,7 @@
   "rival-park": {
    "at": [9050,-3100],
    "src": "GDD §07: 3:10 rival car parks near pickup; re-sited 2026-10-25 from (84.0, -31.0) (brief 059 §5, Vantage; Sky's answer 2a: the rival crew drives in, drops a team and parks)",
-   "reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 12.3 m south of Vale's car in the official bay (78.2, -31.0), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round)."
+   "reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 11.8 m south of Vale's car in the official bay (78.7, -31.0; 78.2 until brief 098), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round)."
   },
   "rival-entry": {
    "at": [3600,1000],
@@ -2597,7 +2597,7 @@
   "block-spot": {
    "at": [7725,-3375],
    "src": "GDD §07 route B: driver blocks pickup camera 2:30",
-   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, 78.2, -31) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed. Retired in play since brief 059 (the driver's camera block is gone: Game BlockedFrom stays INF, no car drives here). It lies 0.4 m behind the tail corner of Vale's car parked at the pickup, on the car's ground (car-clear-cm 50; Keel's car.footprint probe, engine 0.33.1). Not moved (Vantage, brief 067 L, 2026-10-26): tools/sim/site.ts (car.block, and blockFacing, the heading Vale's car keeps in the bay) and Site.cs (CarBlock) still read it, and the scenarios N57 and N57b send the Enforcer 3 m off it, so moving it would move them; Keel and Splice retire it (the heading from the bay itself, the scenarios' wait as its own point), then this entry goes."
+   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, then 78.2, -31; 78.7, -31 since brief 098) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed. Retired in play since brief 059 (the driver's camera block is gone: Game BlockedFrom stays INF, no car drives here). It lay 0.4 m behind the tail corner of Vale's car parked at the pickup, on the car's ground (car-clear-cm 50; Keel's car.footprint probe, engine 0.33.1); with the pickup 0.5 m out (brief 098) it lies 0.66 m off that corner, still in the bay. Not moved (Vantage, brief 067 L, 2026-10-26): tools/sim/site.ts (car.block, and blockFacing, the heading Vale's car keeps in the bay) and Site.cs (CarBlock) still read it, and the scenarios N57 and N57b send the Enforcer 3 m off it, so moving it would move them; Keel and Splice retire it (the heading from the bay itself, the scenarios' wait as its own point), then this entry goes."
   },
   "ambush-1": {
    "at": [2175,-4425],
@@ -2752,7 +2752,7 @@
    "id": "pickup",
    "kind": "pole-camera",
    "at": [7400,-4000],
-   "facing": [420,900],
+   "facing": [470,900],
    "reach": 1800,
    "half": 900,
    "src": "GDD §07 route B: the pickup camera",
@@ -3347,13 +3347,13 @@
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "a624854d2fc12fa8ce7f17ead06b8fa5e4e81f106bcbc2b840161a9b7fca95b7",
+  "sha256": "c074355d234c5478e9d25042a651bcec44d96fc678b06a9ee699c6052f620d8d",
   "startsAt": "17:24:50",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "d1efd1205b4f5ce00846bb24c87b35f5d8afb5363bde5c26fb8c94b0263cb643",
+  "sha256": "88bf8a6978e46baff31a8c7a2c6afad1956732a1609456d6fa8d5a0a9fdf177d",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight; sha256 of the points, blockers and refuge as copied here",
   "points": [
    {
@@ -3436,7 +3436,7 @@
    },
    {
     "id": "cv-007",
-    "at": [7625,-3125],
+    "at": [7675,-3125],
     "faces": [1000,0],
     "arc": 54,
     "cos": 587,
@@ -3449,7 +3449,7 @@
    },
    {
     "id": "cv-008",
-    "at": [7825,-3425],
+    "at": [7875,-3425],
     "faces": [0,1000],
     "arc": 36,
     "cos": 809,
@@ -3462,7 +3462,7 @@
    },
    {
     "id": "cv-009",
-    "at": [7825,-2775],
+    "at": [7875,-2775],
     "faces": [0,-1000],
     "arc": 36,
     "cos": 809,
@@ -3475,7 +3475,7 @@
    },
    {
     "id": "cv-010",
-    "at": [8025,-3125],
+    "at": [8075,-3125],
     "faces": [-1000,0],
     "arc": 52,
     "cos": 615,
