@@ -67,7 +67,7 @@ namespace Suborned.Play
         public void BookToMenu()
         {
             if (!BookOpen) return;
-            if (BookStart) ShowBriefing = false; else BookClose();
+            if (BookStart) ShowBriefing = false; else BookShut(false); // brief 099: the debrief shuts too (its page comes back when the menu does)
             OpenMenu();
         }
 

@@ -1,0 +1,6 @@
+debrief-quiet-win: Success at 4:12.7 · final 32c6a8662129 · replay identical · after the page and every fold: the saved run replays to the same hash
+debrief-fail-lookout: Failure (rivals-reach-vale) at 5:53.1 · final 0e783f4c0f0a · replay identical · after the page and every fold: the saved run replays to the same hash
+debrief-fail-lookout: Watch the replay: the fail camera played, the page came back
+debrief-loud: Success at 5:01.8 · final e3cb25dc8cfa · replay identical · after the page and every fold: the saved run replays to the same hash
+Try again (same start): seed 3 (was 3), tick 0, the start's book open on job
+Back to the start: the main menu is up, the book shut

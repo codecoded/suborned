@@ -825,7 +825,7 @@ namespace Suborned.Play
                 for (int i = 0; i < 2; i++) if (briefPhaseW[i] is { } pw) { bool on = (i == 1) == host.NightLook; if (pw.Focused != on) { pw.Focused = on; FrontEnd.PaintWord(pw); } } // the chosen one: full cream and the line (the tab grammar)
             }
             // the end card
-            Show(end, m.Ended);
+            Show(end, m.Ended && !host.DebriefOwnsEnd); // brief 099: the debrief page is the end (HostDebrief); the card stays for a host without it
             if (m.Ended)
             {
                 end.style.left = (W - 560) / 2 + 40;

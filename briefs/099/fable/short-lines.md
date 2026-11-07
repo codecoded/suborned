@@ -258,11 +258,16 @@ The loop's 10/10 means Motive found nothing to fix. Some accepted families read 
 
 ## Review (Aster, 2026-11-07)
 
-- **Put back to today's lines** (`apply --restore`, one call, the seven together), so every later `apply` must name them all:
-  `bark/reply-inez-help-pressure,bark/reply-driver-help-pressure,bark/final-fight,bark/ack-bodies,bark/arrive,bark/guard-call,bark/read-people`.
+- **Put back to today's lines** (`apply --restore`, one call, all of them together), so every later `apply` must name them all:
+  `bark/reply-inez-help-pressure,bark/reply-driver-help-pressure,bark/final-fight,bark/ack-bodies,bark/arrive,bark/guard-call,bark/read-people,why/gunfire,why/police,why/on-the-way`.
   - The first five are the families listed under "Read before committing": truer but flatter, and a bark's voice is the point.
   - The last two are Fable's own restores. A loop of one-family `--restore` calls had undone them, and `conversations.test.ts` caught the "about a minute" lines again.
   - All 123 rows of the seven match the last commit.
+- **Three why families put back too**, after Latch's debrief round ran the host logic against the new words (6 failures; Fable's checks never ran host logic, which reads the player's copy of text.json):
+  - `why/gunfire` and `why/police`: every police title became its cause ("Shots heard", "Body found", "Gun called in"). The card shows title over short, so it read "Shots heard · shots were heard" and no longer said police are coming: the point of Sky's "why police came". The brief never said a police title's job is what is coming; fix that brief before rerunning them (a title names who is coming: Police coming, More police, Robots coming, Lockdown; the cause goes in the short).
+  - `why/on-the-way`: the meter's head lost its level ("Why it's Alert {alert}" became "Why Alert rose"), and the plates' words changed under brief 100's tests.
+  - Kept from the loop: `why/reported` and `why/witnessed` (a knockout is "Found knocked out", not "Body found"), and the debrief page.
+  - For the next pass: after `apply`, export the text to the player (`bun tools/sim/unity.ts --tree`) and run `bun run hostlogic`; the HUD's tests read the words there.
 - **Guide /8** (`short-types.ts`, `short-barks.ts`): the guard at the café is no longer briefed as "unguarded for about a minute". `conversations.test.ts`'s banned words (the spill, an envelope, a bonus, a promise, a time) now reach the 132 rows it reads, as a must-not pattern, so a rerun of `bark/guard-call` can't accept them. Runs on /1 to /7 rebuild as they ran (`short.test.ts`).
 - **Dropped from the open list:** the VOICE rule's "no exclamation marks" covers only the why block and the debrief page, not barks. The flattened shouts were Motive's reading, not the rule.
 - **Still open for the GDD:** a bubble is at most 10 words in agent GDD §10, but 12 in §14 and the human GDD. To fix at the next GDD version, with Sky.

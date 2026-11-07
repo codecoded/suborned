@@ -1,0 +1,6 @@
+debrief-quiet-win: clean
+debrief-fail-lookout: clean
+debrief-fail-lookout-time: clean
+debrief-loud: clean
+debrief-loud-trail: clean
+debrief-withdraw: clean

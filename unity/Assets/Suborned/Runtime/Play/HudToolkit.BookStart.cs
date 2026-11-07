@@ -10,7 +10,7 @@ namespace Suborned.Play
     {
         void BkKicker(VisualElement body, BookPage pg, BookLayout.Item it)
         {
-            var l = PgText(body, it.At.x, it.Cy - it.Size * .75f, "Jost-SemiBold", it.Size, "#1f6c67", pg.Kicker, 0.26f, true); l.style.height = it.Size * 1.5f; l.style.unityTextAlign = TextAnchor.MiddleLeft;
+            var l = PgText(body, it.At.x, it.Cy - it.Size * .75f, "Jost-SemiBold", it.Size, pg.KickerHot ? "#e8622c" : "#1f6c67", pg.Kicker, 0.26f, true); l.style.height = it.Size * 1.5f; l.style.unityTextAlign = TextAnchor.MiddleLeft; // brief 099: a lost run's kicker in the orange
         }
 
         void BkPurse(VisualElement body, BookPage pg, BookLayout.Item it)

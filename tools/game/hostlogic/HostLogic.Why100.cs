@@ -152,7 +152,7 @@ public class Why100OnWay
         Why100.Keep("route-g-radio", $"radio marked from tick {from} ({HandoverHost.MissionClock(from)}), seconds {string.Join(",", secs.Distinct())}; rise at {h.WhyRows.FirstOrDefault(r => r.What == "alert")?.Tick}");
         Assert.That(secs, Is.Not.Empty, "the shift guard's radio is marked"); Assert.That(secs, Is.Ordered.Descending); Assert.That(secs[0], Is.InRange(4, 6)); Assert.That(secs[^1], Is.InRange(0, 1));
         Assert.That(plate, Does.StartWith("Radioing it in · "));
-        var rise = h.WhyRows.First(r => r.What == "alert"); Assert.That(rise.Key, Is.EqualTo("down")); Assert.That(rise.ShortWhere, Is.EqualTo("another guard spotted the guard lying at the Office door"), "by.another: a guard reporting the guard");
+        var rise = h.WhyRows.First(r => r.What == "alert"); Assert.That(rise.Key, Is.EqualTo("down")); Assert.That(rise.ShortWhere, Does.StartWith("another guard ").And.EndsWith(" at the Office door"), "by.another: a guard reporting the guard"); Assert.That(rise.ShortWhere, Does.Contain(" the guard ")); // the fills, not Fable's verb (the style loop may reword it)
         Assert.That(h.StoppedReports, Is.Zero);
     }
 

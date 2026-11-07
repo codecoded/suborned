@@ -29,7 +29,7 @@ namespace Suborned.Play
         bool bookCamSaved; Vector3 bookFocus; float bookYaw, bookZoom; Vector3 bookFrom, bookTo; float bookYawFrom, bookYawTo, bookGlideAt = -1f; const float BookGlideS = 0.45f;
 
         /// <summary>Whether the book may open now: only with no modal up, no scene or fail camera playing, no start sequence.</summary>
-        bool BookMayOpen => Game != null && Fault == null && !rangeMode && !Game.Over && Ending.Length == 0 && (Modal == ModalGate.Modal.None || startWanted && Modal == ModalGate.Modal.Briefing) && !Starting && !ConvoOn && convoWant == null && !FailCamOn && Loud == null && !Frozen && !CameraLab.Typing;
+        bool BookMayOpen => Game != null && Fault == null && !rangeMode && (BookEnd ? BookEndMay : !Game.Over && Ending.Length == 0 && (Modal == ModalGate.Modal.None || startWanted && Modal == ModalGate.Modal.Briefing) && !Starting && !ConvoOn && convoWant == null && !FailCamOn && Loud == null && !Frozen) && !CameraLab.Typing; // brief 099: the ended run's debrief (HostDebrief)
 
         public bool BookOpenNow(string section = null, int agent = -1)
         {
@@ -44,13 +44,13 @@ namespace Suborned.Play
             return true;
         }
 
-        public void BookClose() { if (BookStart) ShowBriefing = false; else BookShut(false); }
+        public void BookClose() { if (BookStart) ShowBriefing = false; else if (BookEnd) BookShow("job"); else BookShut(false); } // brief 099: at the end, Back on another page returns to the debrief
 
         /// <summary>The book shuts: the camera back exactly; the clock as it was before it opened, or (the start, `keepClock`) left as it is now.</summary>
         void BookShut(bool keepClock)
         {
             if (!BookOpen) return;
-            JournalSeenNow(); BookStart = false; BookLookView = ""; bookLookPinned = false;
+            JournalSeenNow(); BookStart = false; BookEnd = false; BookLookView = ""; bookLookPinned = false;
             BookOpen = false; BookPageNow = null; bookClosedFrame = Time.frameCount; bookGlideAt = -1f; if (!keepClock) Paused = pausedBeforeBook; lp = default; rp = default;
             if (bookCamSaved && cam) { yawNow = yawFrom = yawTo = bookYaw; turnStart = -1f; cam.transform.rotation = Quaternion.Euler(pitch, yawNow, 0f); cam.orthographicSize = bookZoom; CamProjection(); focus = bookFocus; PlaceCamera(); } bookCamSaved = false;
             Status = Paused ? "Paused." : "Running."; intentKey = "";
@@ -105,12 +105,12 @@ namespace Suborned.Play
             if (!BookOpen)
             {
                 if (Time.frameCount == bookClosedFrame) return true; // the frame a page's click closed it: that click reaches nothing under it
-                if (BookOpenStart()) return true; // brief 096: a new run's start opens the book on Job
+                if (BookOpenStart() || BookOpenEnd()) return true; // brief 096: a new run's start opens the book on Job; brief 099: an ended run, on its debrief
                 if (controls.Down(kb, PlayAction.Book) && BookOpenNow(JournalUnread > 0 ? "journal" : null)) return true;
                 return false;
             }
             ClearHover();
-            if (BookStartKeys(kb)) return true;
+            if (BookStartKeys(kb) || BookEndKeys(kb)) return true;
             if (controls.Down(kb, PlayAction.Book) || kb != null && kb.escapeKey.wasPressedThisFrame) { BookClose(); return true; }
             if (BookSectionNow == "journal" && UnityEngine.InputSystem.Mouse.current is { } wm && wm.scroll.ReadValue().y is float wy && wy != 0f) JournalScroll(wy > 0f ? -1 : 1);
             if (controls.Down(kb, PlayAction.CycleAgent)) BookNext();

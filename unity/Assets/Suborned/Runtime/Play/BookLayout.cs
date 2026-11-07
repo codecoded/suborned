@@ -11,7 +11,7 @@ namespace Suborned.Play
         /// <summary>A text width in grid px: (text, size, font).</summary>
         public delegate float Measure(string text, float size, string font);
         public struct Item { public BookSlot Slot; public int Index; public Rect At; public float Size, Cy, D; }
-        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(), CrewLines = new(); public int RowsShown; public float SubSize = 30f; public int Rows; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
+        public sealed class Result { public readonly List<Item> Items = new(); public float Bottom, NameSize, TrackStep, TrackSize; public string[] SubLines = Array.Empty<string>(); public readonly Dictionary<int, string[]> CanLines = new(), NeedLines = new(), CrewLines = new(); public int RowsShown; public float SubSize = 30f; public int Rows; public DebriefLines Debrief; public bool Has(BookSlot s) { foreach (var i in Items) if (i.Slot == s) return true; return false; } public IEnumerable<Item> Of(BookSlot s) { foreach (var i in Items) if (i.Slot == s) yield return i; } }
 
         static readonly (float size, float step, float d)[] One = { (36, 60, 46), (31, 54, 42) }, Two = { (30, 52, 40), (27, 46, 36), (24, 40, 32), (22, 37, 30) };
 
@@ -40,7 +40,12 @@ namespace Suborned.Play
             var r = new Result(); float y = Top;
             PlaceKicker(p, r, tw);
             if (p.HeroFace.Length > 0 || p.HeroIcon.Length > 0) r.Items.Add(new Item { Slot = BookSlot.Hero, At = new Rect(HeroX, HeroY, HeroD, HeroD) });
-            if (p.Name.Length > 0)
+            if (p.Name.Length > 0 && p.NameFit != null) // brief 099: the debrief's headline takes the biggest of its own sizes that fits its width (Glyph's d_parts.head)
+            {
+                float s = p.NameFit[^1]; foreach (var z in p.NameFit) if (tw(p.Name, z, "Jost-Bold") <= p.NameW) { s = z; break; }
+                r.NameSize = s; float cy = y + s * .58f; r.Items.Add(new Item { Slot = BookSlot.Name, Cy = cy, Size = s, At = new Rect(X, cy - s * .5f, p.NameW, s) }); y = cy + 68f;
+            }
+            else if (p.Name.Length > 0)
             {
                 float s = r.NameSize = NameSize(p.Name, p.Facts.Count, tw);
                 // the name's tag (the job word beside an agent's name, "Larthi · Scout"): at about two-fifths of the name's size; the name steps down until both fit
@@ -51,7 +56,7 @@ namespace Suborned.Play
             if (p.Sub.Length > 0 || p.State.Length > 0)
             {
                 // the sub: one line at 30, else 26, else two lines at 26 split at the word nearest the middle
-                float sz = 30f; if (tw(p.Sub, 30f, "Jost-Medium") > CanW) sz = 26f; r.SubSize = sz; r.SubLines = new[] { p.Sub };
+                float big = p.NameFit != null ? 27f : 30f, sz = big; if (tw(p.Sub, big, "Jost-Medium") > CanW) sz = p.NameFit != null ? 27f : 26f; r.SubSize = sz; r.SubLines = new[] { p.Sub }; // brief 099: the debrief's line is 27 on one or two lines
                 if (tw(p.Sub, sz, "Jost-Medium") > CanW)
                 {
                     int mid = p.Sub.Length / 2, best = -1; for (int i = 0; i < p.Sub.Length; i++) if (p.Sub[i] == ' ' && (best < 0 || Mathf.Abs(i - mid) < Mathf.Abs(best - mid))) best = i;
@@ -124,7 +129,8 @@ namespace Suborned.Play
                 }
                 y += 10f;
             }
-            if (p.Track.Count > 0)
+            y = PlaceDebrief(p, r, y, tw); // brief 099: the debrief's rows, numbers, fold or city, and its run (BookLayout.Debrief)
+            if (p.Track.Count > 0 && r.Debrief == null) // brief 099: the debrief places its own run (or its fold, in the run's place)
             {
                 // one evenly spaced line, the latest six; the label size steps down until the longest fits its share
                 int n = Mathf.Min(p.Track.Count, 6), from = p.Track.Count - n; float step = r.TrackStep = TrackW / n, ty = p.Crew.Count > 0 ? y + 8f : Mathf.Max(y + 2f, TrackFloor); // brief 096: with the cell strip under it, the clock follows the page
@@ -133,7 +139,7 @@ namespace Suborned.Play
                 for (int i = 0; i < n; i++) r.Items.Add(new Item { Slot = BookSlot.Track, Index = from + i, Size = size, D = TrackD, At = new Rect(TrackX + i * step, ty, step, TrackD + 70f) });
                 y = ty + TrackD + 70f;
             }
-            y = PlaceCrew(p, r, y, tw); PlaceBegin(p, r);
+            y = PlaceCrew(p, r, y, tw); PlaceBegin(p, r); PlaceAgain(p, r, tw);
             for (int i = 0; i < Mathf.Min(p.Others.Count, 3); i++) r.Items.Add(new Item { Slot = BookSlot.Others, Index = i, D = 80f, At = new Rect(22f + i * 92f, 26f, 80f, 104f) });
             r.Bottom = y; return r;
         }

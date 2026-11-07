@@ -55,7 +55,7 @@ namespace Suborned.Play
         /// <summary>The list: one entry a section. Which have pages is this table; a sign with none is dim and has no page.</summary>
         public List<BookSection> Sections()
         {
-            var pages = new Dictionary<string, Func<HandoverHost, BookPage>> { ["cell"] = h => h.BookCellPage(h.BookAgent), ["job"] = h => h.BookJobPage(), ["journal"] = h => h.BookJournalPage() };
+            var pages = new Dictionary<string, Func<HandoverHost, BookPage>> { ["cell"] = h => h.BookCellPage(h.BookAgent), ["job"] = h => h.BookEnd ? h.BookDebriefPage() : h.BookJobPage(), ["journal"] = h => h.BookJournalPage() };
             var l = new List<BookSection>(); foreach (var (id, icon, word) in SectionRows) l.Add(new BookSection(id, icon, word, pages.TryGetValue(id, out var p) ? p : null)); return l;
         }
     }

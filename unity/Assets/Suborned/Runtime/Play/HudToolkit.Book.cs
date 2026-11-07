@@ -108,7 +108,7 @@ namespace Suborned.Play
         void BookDraw(BookPage pg)
         {
             bkFor = pg; var body = bkBody; for (int i = body.childCount - 1; i >= 0; i--) if (body[i] != bkCurve) body[i].RemoveFromHierarchy();
-            var r = BookLaidOut = BookLayout.Place(pg, BkTw);
+            var r = BookLaidOut = BookLayout.Place(pg, BkTw); var keep = new List<VisualElement>(); var dl = r.Debrief; // brief 099: what stays in front of the fold's veil
             foreach (var it in r.Items)
                 switch (it.Slot)
                 {
@@ -125,7 +125,7 @@ namespace Suborned.Play
                     case BookSlot.Can: BkCan(body, pg.Can[it.Index], it, r.CanLines[it.Index], r); break;
                     case BookSlot.Scales: BkScales(body, pg, it); break;
                     case BookSlot.Knows: BkKnows(body, pg, it); break;
-                    case BookSlot.Track: BkStop(body, pg, it, r); break;
+                    case BookSlot.Track: if (dl != null) BkRunStop(body, pg, it, r); else BkStop(body, pg, it, r); break;
                     case BookSlot.Others: BkOther(body, pg.Others[it.Index], it.At); break;
                     case BookSlot.Kicker: BkKicker(body, pg, it); break;
                     case BookSlot.Purse: BkPurse(body, pg, it); break;
@@ -135,8 +135,15 @@ namespace Suborned.Play
                     case BookSlot.Begin: BkBegin(body, it); break;
                     case BookSlot.Filters: BkFilter(body, pg.Filters[it.Index], it); break;
                     case BookSlot.Rows: BkRow(body, pg.Rows[it.Index], it); break;
+                    case BookSlot.WayIn: BkWayIn(body, pg, it); break; // brief 099, the debrief (HudToolkit.BookDebrief, BookFold)
+                    case BookSlot.Ticks: BkTick(body, pg.Ticks[it.Index], it, dl.TickWords[it.Index]); break;
+                    case BookSlot.Next: BkNext(body, pg, it, dl.Next[0]); break;
+                    case BookSlot.Stats: { var b = BkStat(body, pg, pg.Stats[it.Index], it, dl.Why[it.Index]); if (pg.Fold?.Id == pg.Stats[it.Index].Id) keep.Add(b); break; }
+                    case BookSlot.Fold: keep.Add(BkFoldDraw(body, pg.Fold, it, dl)); break;
+                    case BookSlot.City: BkCity(body, pg.City[it.Index], it, dl.CityHead[it.Index], dl.CityLine[it.Index]); break;
+                    case BookSlot.Again: keep.Add(BkAgain(body, pg, it)); break;
                 }
-            BkSigns(body, pg); BkChrome(body, pg);
+            BkSigns(body, pg); BkChrome(body, pg); if (pg.Fold != null) BkFoldVeil(body, keep);
         }
 
         void BkHero(VisualElement body, BookPage pg, Rect at)
@@ -273,7 +280,7 @@ namespace Suborned.Play
         {
             var chip = PlateDark(body, 40f, 0.43f); chip.style.position = Position.Absolute; chip.style.right = 64f; chip.style.top = 14f; chip.style.paddingLeft = 12f; chip.style.paddingRight = 14f;
             Icon(E(chip, null, w: 18f, h: 18f), "pause", Cream); bkClock = Words(chip, 22f); bkClock.style.marginLeft = 6f; bkClock.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Kit/fonts/Jost-Medium-Tab"));
-            if (pg.Begin) return; // brief 096: the start has Begin (bottom right) where Back would be
+            if (pg.Begin || pg.Again.Count > 0) return; // brief 096: the start has Begin (bottom right) where Back would be; brief 099: the debrief has its ways on
             string word = BookWordsFile.Get().Back; float bw = 30f + BkTw(word, 24f, "Jost-SemiBold");
             var back = E(body, null, 1920f - 64f - 120f - 24f - bw, 14f, bw, 40f, true); back.name = "book-back";
             var ch = E(back, null, 0f, 11f, 18f, 18f); Icon(ch, "chev_up", BkInk); ch.style.rotate = new Rotate(-90f);

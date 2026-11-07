@@ -39,7 +39,7 @@ namespace Suborned.Play
             crucialLogAt = Game?.Log.Count ?? 0; crucialLedgerAt = Game?.Ledger.Count ?? 0; crucialAlert = Game?.Alert ?? 0;
             if (Game != null) for (int k = 0; k < 4; k++) crucialDown[k] = Game.Ops[k].Down;
             journalSeen = 0; JournalOpenId = -1; JournalFrom = 0; JournalFilter = "all";
-            WhyReset(); // brief 100: the why of every rise and call (HostWhy)
+            WhyReset(); DebriefReset(); // brief 100: the why of every rise and call (HostWhy); brief 099: the debrief's fold, choice and rows (HostDebrief)
         }
 
         static int CrucialRank(string kind) { int i = Array.IndexOf(CrucialOrder, RankAs(kind)); return i < 0 ? CrucialOrder.Length : i; }
@@ -60,7 +60,7 @@ namespace Suborned.Play
         void CrucialTrack()
         {
             var g = Game; if (g == null) return;
-            WhyTrack(); // brief 100: this tick's rises and calls first, so their cards take their cause
+            WhyTrack(); NeedsTrack(); // brief 100: this tick's rises and calls first, so their cards take their cause; brief 099: when each start-page row first held
             for (; crucialLogAt < g.Log.Count; crucialLogAt++) CrucialFromLog(g.Log[crucialLogAt]);
             for (; crucialLedgerAt < g.Ledger.Count; crucialLedgerAt++)
             {
