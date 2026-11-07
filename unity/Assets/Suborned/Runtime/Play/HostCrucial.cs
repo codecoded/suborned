@@ -16,6 +16,8 @@ namespace Suborned.Play
         {
             public int Id, Tick, Rank, Value, Agent = -1; public string Kind = "", Code = "", Role = "", Title = "", Line = "", Face = "", Icon = "", View = ""; public Vector3? Place; public bool Read, Gone;
             public readonly List<(string icon, string word)> Fixes = new(); public readonly List<string> FixBy = new(); // FixBy: a chip's agent, "" a label (CrucialFix)
+            /// <summary>Brief 100: the Alert or Police card's cause (HostWhy), null for the other kinds or a text with no why.</summary>
+            public WhyRow Why;
         }
         /// <summary>Sky 2026-11-05 ("yes, crucial card", after his Air run lost to the Enforcer shot down carrying Popovic, the warning only an icon): the Enforcer
         /// badly hurt (engine enforcer.warning) while he carries Popovic tops the queue (hurt-carry) until he is down or Popovic is in a car; hurt otherwise ranks with down.</summary>
@@ -37,6 +39,7 @@ namespace Suborned.Play
             crucialLogAt = Game?.Log.Count ?? 0; crucialLedgerAt = Game?.Ledger.Count ?? 0; crucialAlert = Game?.Alert ?? 0;
             if (Game != null) for (int k = 0; k < 4; k++) crucialDown[k] = Game.Ops[k].Down;
             journalSeen = 0; JournalOpenId = -1; JournalFrom = 0; JournalFilter = "all";
+            WhyReset(); // brief 100: the why of every rise and call (HostWhy)
         }
 
         static int CrucialRank(string kind) { int i = Array.IndexOf(CrucialOrder, RankAs(kind)); return i < 0 ? CrucialOrder.Length : i; }
@@ -57,6 +60,7 @@ namespace Suborned.Play
         void CrucialTrack()
         {
             var g = Game; if (g == null) return;
+            WhyTrack(); // brief 100: this tick's rises and calls first, so their cards take their cause
             for (; crucialLogAt < g.Log.Count; crucialLogAt++) CrucialFromLog(g.Log[crucialLogAt]);
             for (; crucialLedgerAt < g.Ledger.Count; crucialLedgerAt++)
             {
@@ -65,7 +69,7 @@ namespace Suborned.Play
                 if (tick - crucialSeenAt < 5 * Game.Hz) continue; crucialSeenAt = tick; // one card for a burst of witnesses
                 var c = Crucial("seen", "trail:" + cause); c.Icon = "sawyou"; c.Line = ""; c.Place = SelectedWorld();
             }
-            if (g.Alert > crucialAlert) { var c = Crucial("alert", "alert"); c.Value = g.Alert; c.Icon = "p_alert"; c.View = "marker/door"; } crucialAlert = Math.Max(crucialAlert, g.Alert);
+            if (g.Alert > crucialAlert) { var c = Crucial("alert", "alert"); c.Value = g.Alert; c.Icon = "p_alert"; c.View = "marker/door"; TakeWhy(c, WhyNow("alert")); } crucialAlert = Math.Max(crucialAlert, g.Alert);
             for (int k = 0; k < 4; k++)
             {
                 bool down = g.Ops[k].Down; if (down && !crucialDown[k]) { string r = Op.Name((OpId)k); var c = Crucial("down", r + ".down", agent: k); c.Face = $"portraits/cameo_{r}_hurt"; c.View = "op/" + r; c.Place = frame.World(g.Ops[k].Pos); }
@@ -96,7 +100,7 @@ namespace Suborned.Play
             string code = l.Code ?? "";
             // Sky 2026-11-05 ("sure"): the seal is never a feed card; its plate under the clock (brief 093) carries the countdown, in the Journal like every event
             if (code is "security.called" or "fight.loud" || code.StartsWith("alarm.dispatches", StringComparison.Ordinal))
-            { Suborned.Fx097.PoliceCalled(); if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; } } // brief 097: the police posts' domes pulse
+            { Suborned.Fx097.PoliceCalled(); if (!CrucialQueue.Exists(x => x.Kind == "police")) { var c = Crucial("police", code); c.Face = "badges/signal_police"; c.View = "security/0"; TakeWhy(c, WhyNow("police")); } } // brief 097: the police posts' domes pulse; brief 100: its cause
             else if (code == "vale.out") { var c = Crucial("vale-out", code); c.Icon = "car"; c.View = "car/getaway"; } // brief 096 (car.lend L5): Popovic is out; the rest to our car before the police
             else if (code == "lend.lent") { var c = Crucial("lent", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "car/official"; } // L1: Popovic's car is ours, the Enforcer at its wheel
             else if (code == "rivals.lookout-posted") LookoutCard(code); // engine 0.41.0: deal with him, or he reaches Popovic's car
@@ -112,6 +116,16 @@ namespace Suborned.Play
                 if (role.Length == 0) return;
                 var c = Crucial(outcome, code, role); c.Face = role is "waitress" or "driver" ? $"portraits/cameo_{role}_normal" : HudModel.PersonBadge(role); c.View = role;
             }
+        }
+
+        /// <summary>Brief 100: a card takes its cause: its short and place lead the dim line (before the card's own line: "here in {s}"), a police call's own title
+        /// ("Robots coming", "More police") over "Police coming", and a click on the line pans to where it happened. No why: the card is as it was.</summary>
+        void TakeWhy(CrucialCard c, WhyRow w)
+        {
+            if (w == null || w.ShortWhere.Length == 0) return;
+            c.Why = w; c.Line = c.Line.Length > 0 ? $"{w.ShortWhere} · {c.Line}" : w.ShortWhere;
+            if (c.Kind == "police" && w.Title.Length > 0) c.Title = w.Title;
+            if (w.Place.HasValue) { c.Place = w.Place; c.View = ""; }
         }
 
         /// <summary>The card's dim line now: its place or what (live for a count or a countdown), then the clock it came at.</summary>

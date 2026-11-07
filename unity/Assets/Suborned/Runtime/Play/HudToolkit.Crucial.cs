@@ -34,10 +34,13 @@ namespace Suborned.Play
             crCard.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.CrucialDismiss(); e.StopPropagation(); } });
             manifest.Add((crCard, "card", () => crTitle.text + " · " + crLine.text));
             Show(crCard, false);
+            crLine.style.whiteSpace = WhiteSpace.Normal; crLine.style.flexShrink = 1; sub.style.flexShrink = 1; // brief 100: the cause can run to a second line
+            BuildWhy(); BuildOnWay(); // brief 100: the meter's list (HudToolkit.Why), the report on its way (HudToolkit.OnWay)
         }
 
         void CrucialFrame(bool on)
         {
+            WhyFrame(on); OnWayFrame(on); // brief 100
             var c = on ? host.CrucialNow : null; Show(crCard, c != null);
             if (c == null) { CrucialShown = ""; crShownId = -1; return; }
             int n = host.CrucialQueue.Count; var words = BookWordsFile.Get();

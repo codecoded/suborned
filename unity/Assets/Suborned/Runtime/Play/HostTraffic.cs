@@ -16,7 +16,7 @@ namespace Suborned.Play
         public GameObject trafficVan, trafficScooter;
         [Tooltip("Brief 098 step 1: Pulse's palette (presentation.json paints) as body and roof material pairs, with their keys; and the slots they replace (kit.json carPaints.slots: official body, official roof, getaway body, getaway roof).")]
         public Material[] trafficPaints; public string[] trafficPaintKeys, trafficSlots;
-        [Tooltip("Brief 098 step 1: per paint, the bodies it is kept off (1 Sedan_Official, 2 Sedan_Getaway; today both or neither): its body colour would pass for Vale's car or ours (TrafficKit.NearDE, CIEDE2000).")]
+        [Tooltip("Brief 098 step 1: per paint, the bodies it is kept off (1 Sedan_Official, 2 Sedan_Getaway; today both or neither): its body colour would pass for the official car or ours (TrafficKit.NearDE, CIEDE2000).")]
         public int[] trafficPaintAvoid;
 
         /// <summary>A car target that is a passing car: neither the Handover's own two (the rival car is a target of its own kind) nor the fight range's.</summary>

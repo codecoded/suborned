@@ -16,6 +16,7 @@
 //   state     the budget state of a HUD shot: rest, active or alt (page, the briefing page, and log are chosen by the game itself).
 //   select / arm / pointer / intel   what the player has done before the shot: the selected agent, the verb armed (plate id), the cursor ([0..1, 0..1] of the screen), the Intel sheet open.
 //   eye       true: the eye button on the scope's rim is latched on (every learned cone shows, as Alt shows them; the cones round, Sky 2026-11-07).
+//   why       true: the Alert meter's list is pinned open under the pill (brief 100: what raised the Alert, newest first), as a click on the lamps pins it.
 //   hover     a view key the pointer rests on (its head, the camera's lens, a car's door height), placed after the camera: what a hover shows (the chip, the marker)
 //   mark      false: the hover marker's action disc is not drawn (a before shot for brief 038's marker); default true
 //   size      [w, h] of the capture (default 1920 x 1080, the size the HUD budget and the layout audit are defined at; the player is set to it for the run). Give another only for a detail shot.
@@ -47,7 +48,7 @@ export const Shot = z.object({
   }).strict().optional(),
   night: z.boolean().optional(), briefing: z.boolean().optional(),
   hud: z.boolean().optional(), state: z.enum(['rest', 'active', 'alt']).optional(),
-  select: z.enum(OPS).optional(), arm: z.string().optional(), pointer: z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]).optional(), intel: z.boolean().optional(), eye: z.boolean().optional(),
+  select: z.enum(OPS).optional(), arm: z.string().optional(), pointer: z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]).optional(), intel: z.boolean().optional(), eye: z.boolean().optional(), why: z.boolean().optional(),
   hover: z.string().optional(), mark: z.boolean().optional(),
   size: z.tuple([z.number().int().min(320).max(7680), z.number().int().min(180).max(4320)]).optional(), format: z.enum(['png', 'jpg']).optional(),
   settle: z.number().min(0).max(10).optional(), perf: z.number().min(0).max(60).optional(),

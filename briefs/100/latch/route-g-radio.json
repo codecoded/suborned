@@ -1,0 +1,231 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "start": {
+  "seed": 220763000
+ },
+ "orders": [
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    3800,
+    -5000
+   ]
+  },
+  {
+   "tick": 0,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    725,
+    -5025
+   ]
+  },
+  {
+   "tick": 310,
+   "op": "scout",
+   "do": "watch",
+   "target": "guard"
+  },
+  {
+   "tick": 510,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "tick": 600,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 1400,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6520,
+    -4110
+   ]
+  },
+  {
+   "tick": 1510,
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "guard",
+   "how": "knockout"
+  }
+ ],
+ "until": 3500,
+ "expect": {
+  "inputs": "9008f4cabd3f0867",
+  "engine": "suborned.sim/0.45.0",
+  "mvid": "02538ea7-f2da-4d9e-80fa-f048c46a87f1",
+  "start": "1e0f7dd719e9346c",
+  "outcome": "none",
+  "checkpoints": [
+   [
+    100,
+    "7fe60b558e778125"
+   ],
+   [
+    200,
+    "bc157500717dff16"
+   ],
+   [
+    300,
+    "749c5f0bddb01af7"
+   ],
+   [
+    400,
+    "40668c3c105a8e34"
+   ],
+   [
+    500,
+    "319efb605a7f4259"
+   ],
+   [
+    600,
+    "203620a941e16308"
+   ],
+   [
+    700,
+    "ab28bfd39d9ff0c7"
+   ],
+   [
+    800,
+    "692d9e72de9c647f"
+   ],
+   [
+    900,
+    "53afc39d4cec7833"
+   ],
+   [
+    1000,
+    "3fca8bc665520fdc"
+   ],
+   [
+    1100,
+    "0961383345281620"
+   ],
+   [
+    1200,
+    "73a730b21dcd114c"
+   ],
+   [
+    1300,
+    "d92ca58fb9e1bc79"
+   ],
+   [
+    1400,
+    "a4cc23afee54a67f"
+   ],
+   [
+    1500,
+    "2d868b009e73544c"
+   ],
+   [
+    1600,
+    "5fd8573ab1e71963"
+   ],
+   [
+    1700,
+    "def5fc3fa237508d"
+   ],
+   [
+    1800,
+    "d17d03bb1cdda1c9"
+   ],
+   [
+    1900,
+    "580663ef3fffb5ea"
+   ],
+   [
+    2000,
+    "0d1cdafb11fbcb97"
+   ],
+   [
+    2100,
+    "4b0f7b447eb79ff5"
+   ],
+   [
+    2200,
+    "c4eff93992dd2c00"
+   ],
+   [
+    2300,
+    "f1c2b7f311b324fa"
+   ],
+   [
+    2400,
+    "6001d32dca136fb7"
+   ],
+   [
+    2500,
+    "eda7df1aa529c6c0"
+   ],
+   [
+    2600,
+    "b5da04ef3ffffa1b"
+   ],
+   [
+    2700,
+    "3fb7a208b394f8af"
+   ],
+   [
+    2800,
+    "6c1ceae0e2a2ae8f"
+   ],
+   [
+    2900,
+    "45a0dce9b258ce05"
+   ],
+   [
+    3000,
+    "0f550c9f71e7e552"
+   ],
+   [
+    3100,
+    "cd6c5513b5933eb1"
+   ],
+   [
+    3200,
+    "1bb1789b97c4b96c"
+   ],
+   [
+    3300,
+    "f69d5f2bf4ee87ee"
+   ],
+   [
+    3400,
+    "35c1323ccaf91114"
+   ],
+   [
+    3500,
+    "3ada04133fb4a194"
+   ]
+  ]
+ },
+ "note": "Brief 100 (Latch): route G's quiet knockout of the guard at 2:31 with the Enforcer kept by the Office door (route-g.json's orders to 2:31, no entry). At 3:27 a shift guard finds the body and radios it in (5 s): the marked reporter's radio plate; it lands at 3:32 (Alert 1, 'another guard spotted the guard lying at the Office door'). Seed 0."
+}

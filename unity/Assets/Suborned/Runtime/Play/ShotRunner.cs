@@ -18,7 +18,7 @@ namespace Suborned.Play
     {
         public string hover = ""; public bool mark = true;
         public string name = "", scriptPath = "", checkpoint = "", preset = "today", agent = "scout", face = "", focus = "", focus2 = "", state = "rest", select = "", arm = "";
-        public int tick, yaw = -1; public bool night, setNight, briefing, follow, hasAt, hud = true, hasPointer, intel, eye;
+        public int tick, yaw = -1; public bool night, setNight, briefing, follow, hasAt, hud = true, hasPointer, intel, eye, why;
         /// <summary>Brief 070 (the briefing's stills, tools/game/briefstills.ts): `nocut` turns the play camera's architecture cut off for the capture; `doorN`
         /// (a block-frame unit normal, x south, y east) with yaw -1 picks the quarter step that best faces that outward side.</summary>
         public bool nocut; public float[] doorN = new float[0];
@@ -116,7 +116,7 @@ namespace Suborned.Play
                     res.Tick = h.Game.Tick;
                     if (h.Game.Over && h.Game.Tick < s.tick) res.Error = $"the run ended at tick {h.Game.Tick} ({h.Game.Result}), before tick {s.tick}";
                     if (s.setNight) h.SetNight(s.night);
-                    h.IntelOpen = s.intel; h.ConesAll = s.eye; // the cones round: the eye button latched for the shot
+                    h.IntelOpen = s.intel; h.ConesAll = s.eye; HudToolkit.WhyMeterPin(s.why); // the cones round: the eye button latched for the shot; brief 100: the meter's list pinned
                     HandoverHost.PointerOverride = s.hasPointer ? new Vector2(Screen.width * s.px, Screen.height * s.py) : (Vector2?)null;
                     h.ClearHover();
                     if (s.select.Length > 0) h.Select(Suborned.Sim.Op.Parse(s.select), false);
@@ -149,7 +149,7 @@ namespace Suborned.Play
                 yield return new WaitForEndOfFrame(); LogBloom(h, s); // brief 085 (Glint, note 1): what bloom the frame just drawn resolved to
                 // 3 · the capture
                 var path = System.IO.Path.Combine(Dir, s.name);
-                if (s.clipSeconds > 0) { yield return Clip(h, s, res, path); }
+                if (s.clipSeconds > 0) { yield return Clip(h, s, res, path, hh => { while (orders != null && oi < orders.Count && orders[oi].Tick <= hh.Game.Tick && !hh.Game.Over) { var c = Copy(orders[oi++]); if (c.Tick < hh.Game.Tick) continue; if (c.Do is "watch" or "listen" or "turn" or "call") hh.GiveScripted(c); else hh.Issue(c); } }); }
                 else if (s.pose.on || s.bare)
                 {
                     if (s.bare) { HudToolkit.WorldMarksOff = true; yield return null; yield return null; } // a frame with no ground marks queued
@@ -159,7 +159,7 @@ namespace Suborned.Play
                 else if (s.hud)
                 {
                     while (HudToolkit.ShotBusy) yield return null;
-                    var q = HudToolkit.Shoot(path, s.state);
+                    var q = HudToolkit.Shoot(path, s.why && s.state == "rest" ? "log" : s.state); // brief 100: the meter's list pinned open is a reading surface the player opens, judged as the history was (log)
                     if (q != "queued") error = "the HUD capture said: " + q;
                     else
                     {
@@ -294,13 +294,15 @@ namespace Suborned.Play
             return new Vector3(b.x - a.x, 0f, b.z - a.z).normalized;
         }
 
-        /// <summary>Frames at real time: the clock runs and each frame advances the game 1/fps (Time.captureFramerate), n seconds of it, into the folder `path`.</summary>
-        IEnumerator Clip(HandoverHost h, ShotSpec s, Result res, string path)
+        /// <summary>Frames at real time: the clock runs (the host steps by real frame time, about 26 ms a frame while frames are written: Time.captureFramerate fixes Unity's
+        /// clock, not the host's unscaled one), n seconds of frames, into the folder `path`; the script's later orders are given at their ticks (brief 100).</summary>
+        IEnumerator Clip(HandoverHost h, ShotSpec s, Result res, string path, Action<HandoverHost> feed)
         {
             Directory.CreateDirectory(path);
             int fps = Mathf.Clamp(s.clipFps, 5, 60), n = Mathf.CeilToInt(s.clipSeconds * fps);
             var docs = s.hud ? new UIDocument[0] : FindObjectsByType<UIDocument>(FindObjectsSortMode.None); var shown = docs.Select(d => d.rootVisualElement.style.display).ToArray();
             foreach (var d in docs) d.rootVisualElement.style.display = DisplayStyle.None;
+            HandoverHost.BeforeStep = feed; // brief 100: a clip plays its script on: the orders still to come are given at their own tick as the clock passes them (the stop of a report, a chase)
             Time.captureFramerate = fps; h.SetPaused(false); yield return null;
             var ds = new List<float>(); string error = null;
             for (int f = 0; f < n && error == null; f++)
@@ -314,7 +316,7 @@ namespace Suborned.Play
                 });
                 if (error == null) res.Frames++;
             }
-            Time.captureFramerate = 0; h.SetPaused(true);
+            Time.captureFramerate = 0; h.SetPaused(true); HandoverHost.BeforeStep = null;
             for (int k = 0; k < docs.Length; k++) if (docs[k] != null) docs[k].rootVisualElement.style.display = shown[k];
             res.Tick = h.Game.Tick; res.Files.Add(s.name + "/f0000" + Ext(s)); res.Files.Add($"{s.name}/ ({res.Frames} frames at {fps} fps)");
             if (error != null) Fail(res, error);

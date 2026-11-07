@@ -15,6 +15,28 @@ namespace Suborned.Play
         /// <summary>debrief.story: the lines after the car (blocked, unguarded, no-go, no-driver).</summary>
         public readonly Dictionary<string, string> DebriefStory = new();
 
+        /// <summary>The debrief's words (moved here from Read in brief 100, so PlayText.cs stays the size it was): Standing, between missions,
+        /// the getaway, the route, the final fight and its why, then the end card by cause.</summary>
+        void ReadDebrief(JNode n)
+        {
+            if (n.Opt("debrief")?.Opt("standing") is JNode ds)
+            {
+                StandingLine = S(ds, "line") ?? StandingLine;
+                if (ds.Opt("bands") is JNode sb) foreach (var kv in sb.Entries) StandingBands[kv.Key] = kv.Value.Str();
+                if (ds.Opt("causes") is JNode sc2) foreach (var kv in sc2.Entries) StandingCauses[kv.Key] = kv.Value.Str();
+            }
+            if (n.Opt("debrief")?.Opt("between") is JNode dbw) foreach (var kv in dbw.Entries) if (kv.Value.Kind == JKind.Str) DebriefBetween[kv.Key] = kv.Value.Str();
+            if (n.Opt("debrief")?.Opt("getaway") is JNode dga) // brief 018 §3: the getaway's debrief words
+            {
+                GetawayHoldsOut = S(dga, "holdsOut") ?? GetawayHoldsOut; GetawayPost = S(dga, "post") ?? GetawayPost;
+                foreach (var (k, into) in new[] { ("fate", GetawayFate), ("why", GetawayWhy), ("by", GetawayBy) }) if (dga.Opt(k) is JNode m) foreach (var kv in m.Entries) into[kv.Key] = kv.Value.Str();
+            }
+            if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
+            if (n.Opt("debrief")?.Opt("fight") is JNode dfi && dfi.Kind == JKind.Obj) foreach (var kv in dfi.Entries) if (kv.Value.Kind == JKind.Str) DebriefFight[kv.Key] = kv.Value.Str(); // the Final fight line by branch (loud, safe)
+            if (n.Opt("debrief")?.Opt("fightWhy") is JNode dfw && dfw.Kind == JKind.Obj) foreach (var kv in dfw.Entries) if (kv.Value.Kind == JKind.Str) FightWhy[kv.Key] = kv.Value.Str(); // engine 0.33.0: a clause per id of finalFight.why
+            ReadCause(n.Opt("debrief")); // brief 096 (Fable): the end card by cause (debrief.cause) and the story after the car (debrief.story)
+        }
+
         void ReadCause(JNode d)
         {
             if (d?.Opt("story") is JNode st && st.Kind == JKind.Obj) foreach (var kv in st.Entries) if (kv.Value.Kind == JKind.Str) DebriefStory[kv.Key] = kv.Value.Str();

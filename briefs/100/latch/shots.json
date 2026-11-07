@@ -1,0 +1,94 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 100, the why (Latch): the loud win (tools/game/pins/loud.seed3.json) and route G's quiet knockout with the Enforcer kept by the door (briefs/100/latch/route-g-radio.json, and -stopped where he takes the shift guard down as he radios). Each rise's and call's cause on the card that shows, the meter's list pinned open (why), the reporters on their way marked in the street, and two short clips. The Office front is played at yaw 210 (step 2).",
+  "defaults": {
+    "hud": true
+  },
+  "shots": [
+    {
+      "name": "why-loud-police",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 1545,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "2:34: the shot raised Alert 2 and called the police: the Police card (1 of 2) says why, 'shots heard at the Office door'"
+    },
+    {
+      "name": "why-loud-meter",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2790,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "why": true,
+      "note": "4:39: the meter's list pinned open: the rise and the calls so far, newest first"
+    },
+    {
+      "name": "why-loud-walkers",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2952,
+      "yaw": 2,
+      "note": "4:55: the clerks who found the guard walk to the Office door to report it: each marked over their head, its seconds and the ring that says it can still be stopped (framed on the door)",
+      "at": [
+        6400,
+        -4250
+      ]
+    },
+    {
+      "name": "why-quiet-radio",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 2086,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "3:28.6: a shift guard found the knocked-out guard and radios it in: marked, 4 s, stoppable"
+    },
+    {
+      "name": "why-quiet-radio-lands",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 2134,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "3:33: it landed: Alert 1, 'another guard spotted the guard lying at the Office door'"
+    },
+    {
+      "name": "why-quiet-stopped",
+      "script": "briefs/100/latch/route-g-radio-stopped.json",
+      "tick": 2112,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "3:31: the Enforcer took the shift guard down mid-radio: 'Report stopped', no rise from it"
+    },
+    {
+      "name": "why-quiet-stopped-meter",
+      "script": "briefs/100/latch/route-g-radio-stopped.json",
+      "tick": 2160,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "why": true,
+      "note": "3:36: the takedown was on the entrance camera's tape, so the Alert rose anyway: the list says so"
+    },
+    {
+      "name": "why-loud-clip",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 1522,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "clip": {
+        "seconds": 16,
+        "fps": 10
+      },
+      "note": "2:32.2 on: the shot raises Alert 2 and calls the police; their cards come up with the cause (the clip's frames advance the game by real frame time, about 4 s of it)"
+    },
+    {
+      "name": "why-quiet-clip",
+      "script": "briefs/100/latch/route-g-radio-stopped.json",
+      "tick": 2068,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "clip": {
+        "seconds": 20,
+        "fps": 10
+      },
+      "note": "3:26.8 on: the shift guard radios it in, marked and counting; the Enforcer runs in and takes him down: Report stopped (about 4 to 5 s of game time)"
+    }
+  ]
+}

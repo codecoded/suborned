@@ -1,0 +1,278 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "start": {
+  "seed": 1254668356
+ },
+ "orders": [
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "tick": 0,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    3800,
+    -5000
+   ]
+  },
+  {
+   "tick": 0,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    725,
+    -5025
+   ]
+  },
+  {
+   "tick": 310,
+   "op": "scout",
+   "do": "watch",
+   "target": "guard"
+  },
+  {
+   "tick": 510,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "tick": 600,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 1400,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6520,
+    -4110
+   ]
+  },
+  {
+   "tick": 1510,
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "guard",
+   "how": "knockout"
+  },
+  {
+   "tick": 2076,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5318,
+    -4305
+   ],
+   "run": true
+  },
+  {
+   "tick": 2080,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5353,
+    -4309
+   ],
+   "run": true
+  },
+  {
+   "tick": 2090,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5441,
+    -4318
+   ],
+   "run": true
+  },
+  {
+   "tick": 2100,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5530,
+    -4327
+   ],
+   "run": true
+  },
+  {
+   "tick": 2105,
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "p-records-office-74",
+   "how": "knockout"
+  }
+ ],
+ "until": 3500,
+ "expect": {
+  "inputs": "9008f4cabd3f0867",
+  "engine": "suborned.sim/0.45.0",
+  "mvid": "02538ea7-f2da-4d9e-80fa-f048c46a87f1",
+  "start": "d6b1aafc6d5fe16d",
+  "outcome": "none",
+  "checkpoints": [
+   [
+    100,
+    "bc917c8475e63bc2"
+   ],
+   [
+    200,
+    "f4c12c06ed9623db"
+   ],
+   [
+    300,
+    "66f5bcacff0b6535"
+   ],
+   [
+    400,
+    "bb46e409a94b9ab2"
+   ],
+   [
+    500,
+    "97132d0d5ebb872a"
+   ],
+   [
+    600,
+    "b48fc19626a83932"
+   ],
+   [
+    700,
+    "3b02bd3bf1e59f61"
+   ],
+   [
+    800,
+    "6c7fc5343d4c9df4"
+   ],
+   [
+    900,
+    "24c6bc99636dffca"
+   ],
+   [
+    1000,
+    "19fcc449b8570dfb"
+   ],
+   [
+    1100,
+    "eb1c3a882d6af45a"
+   ],
+   [
+    1200,
+    "fde7857dd795e9af"
+   ],
+   [
+    1300,
+    "1b475d791e8f5630"
+   ],
+   [
+    1400,
+    "1f9d36d15969ad9f"
+   ],
+   [
+    1500,
+    "0b5fc2fae50166eb"
+   ],
+   [
+    1600,
+    "1bb39b0b2b9db60b"
+   ],
+   [
+    1700,
+    "3e7a505a055725a7"
+   ],
+   [
+    1800,
+    "f9e17b7b9c9d576e"
+   ],
+   [
+    1900,
+    "c10d912a3f372feb"
+   ],
+   [
+    2000,
+    "57c970f7a47afbed"
+   ],
+   [
+    2100,
+    "8f86b55cb4964779"
+   ],
+   [
+    2200,
+    "f2da5c980e76f79f"
+   ],
+   [
+    2300,
+    "6faf5a97d85dd4ec"
+   ],
+   [
+    2400,
+    "40bb53f94638bcc3"
+   ],
+   [
+    2500,
+    "77a72bb7e4088315"
+   ],
+   [
+    2600,
+    "ac8ce911294bb337"
+   ],
+   [
+    2700,
+    "2ed8c20458b16726"
+   ],
+   [
+    2800,
+    "b2a37c290df7e8bd"
+   ],
+   [
+    2900,
+    "ba449fb795f1e657"
+   ],
+   [
+    3000,
+    "100688c7d45ece60"
+   ],
+   [
+    3100,
+    "37af76336ed3d136"
+   ],
+   [
+    3200,
+    "c53f9bd295032ccd"
+   ],
+   [
+    3300,
+    "031b584e7b1c7aec"
+   ],
+   [
+    3400,
+    "9b1a24ff1c29cf4e"
+   ],
+   [
+    3500,
+    "034b882aa924f420"
+   ]
+  ]
+ },
+ "note": "Brief 100 (Latch): as route-g-radio.json, and the Enforcer runs to the shift guard as he radios (3:27) and takes him down at 3:30: his report never lands ('Report stopped'). The takedown itself is on the entrance camera's tape, so the Alert still rises at 3:34, with its own why. Seed 0."
+}

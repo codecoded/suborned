@@ -246,22 +246,8 @@ namespace Suborned.Play
                     if (v.Opt("result") is JNode r) { if (r.Kind == JKind.Str) c.Result = r.Str(); else foreach (var e in r.Entries) c.Results[e.Key] = e.Value.Str(); }
                     Cards[kv.Key] = c;
                 }
-            if (n.Opt("debrief")?.Opt("standing") is JNode ds)
-            {
-                StandingLine = S(ds, "line") ?? StandingLine;
-                if (ds.Opt("bands") is JNode sb) foreach (var kv in sb.Entries) StandingBands[kv.Key] = kv.Value.Str();
-                if (ds.Opt("causes") is JNode sc2) foreach (var kv in sc2.Entries) StandingCauses[kv.Key] = kv.Value.Str();
-            }
-            if (n.Opt("debrief")?.Opt("between") is JNode dbw) foreach (var kv in dbw.Entries) if (kv.Value.Kind == JKind.Str) DebriefBetween[kv.Key] = kv.Value.Str();
-            if (n.Opt("debrief")?.Opt("getaway") is JNode dga) // brief 018 §3: the getaway's debrief words
-            {
-                GetawayHoldsOut = S(dga, "holdsOut") ?? GetawayHoldsOut; GetawayPost = S(dga, "post") ?? GetawayPost;
-                foreach (var (k, into) in new[] { ("fate", GetawayFate), ("why", GetawayWhy), ("by", GetawayBy) }) if (dga.Opt(k) is JNode m) foreach (var kv in m.Entries) into[kv.Key] = kv.Value.Str();
-            }
-            if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
-            if (n.Opt("debrief")?.Opt("fight") is JNode dfi && dfi.Kind == JKind.Obj) foreach (var kv in dfi.Entries) if (kv.Value.Kind == JKind.Str) DebriefFight[kv.Key] = kv.Value.Str(); // the Final fight line by branch (loud, safe)
-            if (n.Opt("debrief")?.Opt("fightWhy") is JNode dfw && dfw.Kind == JKind.Obj) foreach (var kv in dfw.Entries) if (kv.Value.Kind == JKind.Str) FightWhy[kv.Key] = kv.Value.Str(); // engine 0.33.0: a clause per id of finalFight.why
-            ReadCause(n.Opt("debrief")); // brief 096 (Fable): the end card by cause (debrief.cause) and the story after the car (debrief.story)
+            ReadDebrief(n); // brief 018 §3, brief 096: the debrief's words (PlayText.Cause)
+            ReadWhy(n.Opt("why")); // brief 100 (Fable): the cause of every Alert rise and police call (PlayText.Why)
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) { LoudCaptured = S(gl, "captured") ?? ""; if (gl.Opt("fails") is JNode glf) foreach (var kv in glf.Entries) LoudFails[kv.Key] = kv.Value.Str(); }
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();

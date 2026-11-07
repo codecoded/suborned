@@ -76,6 +76,7 @@ namespace Suborned.Play
                 var row = new BookRow { Id = c.Id, Time = MissionClock(c.Started), Title = c.Title, Where = c.Where, Result = c.Footer, Crucial = crucial, Unread = c.Id > journalSeen, Icon = crucial ? (k.Icon.Length > 0 ? k.Icon : KindIcon(c)) : KindIcon(c), Face = FaceOf(c.Target), View = c.PlaceKey };
                 row.Place = PlaceNow(c); row.Open = c.Id == JournalOpenId;
                 if (row.Open) foreach (var ln in c.Lines) row.Lines.Add((FaceOf(ln.Speaker), ln.Name.Length > 0 && FaceOf(ln.Speaker).Length == 0 ? $"{ln.Name}: {ln.Text}" : ln.Text));
+                if (k?.Why is WhyRow kw && kw.ShortWhere.Length > 0) { row.Where = kw.ShortWhere; row.Result = WhyJoin(WhyFull(kw), row.Result); } // brief 100: the cause beside the card's own result
                 rows.Add((c.Started, row));
             }
             foreach (var c in Feed) Card(c); foreach (var c in FeedHistory) Card(c);
@@ -84,6 +85,7 @@ namespace Suborned.Play
                 if (merged.Contains(k) || !(JournalFilter is "all" or "crucial")) continue;
                 var row = new BookRow { Id = k.Id, Time = MissionClock(k.Tick), Title = k.Title, Where = CrucialLine(k), Crucial = true, Unread = k.Id > journalSeen, Icon = k.Icon.Length > 0 ? k.Icon : "p_alert", Face = k.Face.StartsWith("portraits/") ? k.Face : k.Role.Length > 0 ? FaceOf(k.Role) : "", View = k.View, Place = k.Place, Open = k.Id == JournalOpenId };
                 if (row.Where.EndsWith(row.Time)) row.Where = row.Where[..^row.Time.Length].TrimEnd(' ', '·');
+                if (k.Why != null) row.Result = WhyFull(k.Why); // brief 100: the cause in a sentence, and what it set off
                 rows.Add((k.Tick, row));
             }
             rows.Sort((a, b) => a.tick != b.tick ? b.tick.CompareTo(a.tick) : b.row.Id.CompareTo(a.row.Id));

@@ -17,7 +17,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- names
 
-        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : p.Job == Person.RivalJob ? Text?.HoldersPhrase(p.Id) ?? "a rival" : !p.Civilian ? CrowdSecurityName(p) : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by"; // engine 0.33.0: a member of the crew is "a rival"; Pulse 067 W2: a shift guard is "a guard" (his body too)
+        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : p.Job == Person.RivalJob ? Text?.HoldersPhrase(p.Id) ?? "a rival" : !p.Civilian ? CrowdSecurityName(p) : Text?.TargetName("crowd-" + p.Job, null) ?? Text?.TargetName("crowd", "a passer-by") ?? "a passer-by"; // engine 0.33.0: a member of the crew is "a rival"; Pulse 067 W2: a shift guard is "a guard" (his body too); brief 100 (Fable): a civilian by job (names.targets crowd-<job>: "a clerk")
         public string StashName(StashPlace st) => Text?.TargetName(st.Kind == "door" ? "stash-door" : "stash-bin", st.Kind == "door" ? "the service door" : "the bin") ?? st.Id;
         public string CameraName(string id) => id == "entrance" || id == "pickup" ? Text?.TargetName("camera-" + id, $"the {id} camera") ?? $"the {id} camera"
             : Text != null && Text.TargetNames.TryGetValue("camera-" + id, out var n) ? n : "the square's mast camera";
