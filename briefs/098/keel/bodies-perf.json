@@ -1,0 +1,149 @@
+{
+ "schema": "suborned.keel.bodies-perf/1",
+ "brief": "098 L9 Bodies",
+ "note": "dial perf, 10 runs a setting, the base commit's route-a and loud-fight scripts on both engines (the same orders)",
+ "routeA": {
+  "before": {
+   "engine": "suborned.sim/0.45.0",
+   "script": "route-a.json",
+   "runs": 10,
+   "settings": [
+    {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 4.1,
+     "msPerTick": 0.009,
+     "p99TickMs": 0.047
+    },
+    {
+     "setting": "x4",
+     "walkers": 413,
+     "startMs": 6.9,
+     "msPerTick": 0.0226,
+     "p99TickMs": 0.145
+    },
+    {
+     "setting": "people=64",
+     "walkers": 365,
+     "startMs": 6.1,
+     "msPerTick": 0.0159,
+     "p99TickMs": 0.093
+    },
+    {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 4.2,
+     "msPerTick": 0.0154,
+     "p99TickMs": 0.082
+    }
+   ]
+  },
+  "after": {
+   "engine": "suborned.sim/0.46.0",
+   "script": "route-a.json",
+   "runs": 10,
+   "settings": [
+    {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 4.4,
+     "msPerTick": 0.0187,
+     "p99TickMs": 0.083
+    },
+    {
+     "setting": "x4",
+     "walkers": 413,
+     "startMs": 9.6,
+     "msPerTick": 0.1106,
+     "p99TickMs": 0.376
+    },
+    {
+     "setting": "people=64",
+     "walkers": 365,
+     "startMs": 8.3,
+     "msPerTick": 0.0564,
+     "p99TickMs": 0.221
+    },
+    {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 5.5,
+     "msPerTick": 0.0636,
+     "p99TickMs": 0.23
+    }
+   ]
+  }
+ },
+ "loudFight": {
+  "before": {
+   "engine": "suborned.sim/0.45.0",
+   "script": "loud-fight.json",
+   "runs": 10,
+   "settings": [
+    {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 3.7,
+     "msPerTick": 0.006,
+     "p99TickMs": 0.023
+    },
+    {
+     "setting": "x4",
+     "walkers": 413,
+     "startMs": 7.3,
+     "msPerTick": 0.0286,
+     "p99TickMs": 0.132
+    },
+    {
+     "setting": "people=64",
+     "walkers": 365,
+     "startMs": 5.9,
+     "msPerTick": 0.0162,
+     "p99TickMs": 0.101
+    },
+    {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 4.1,
+     "msPerTick": 0.0183,
+     "p99TickMs": 0.05
+    }
+   ]
+  },
+  "after": {
+   "engine": "suborned.sim/0.46.0",
+   "script": "loud-fight.json",
+   "runs": 10,
+   "settings": [
+    {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 4.4,
+     "msPerTick": 0.0149,
+     "p99TickMs": 0.053
+    },
+    {
+     "setting": "x4",
+     "walkers": 413,
+     "startMs": 9.1,
+     "msPerTick": 0.124,
+     "p99TickMs": 0.37
+    },
+    {
+     "setting": "people=64",
+     "walkers": 365,
+     "startMs": 8.1,
+     "msPerTick": 0.0661,
+     "p99TickMs": 0.267
+    },
+    {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 7.1,
+     "msPerTick": 0.0879,
+     "p99TickMs": 0.311
+    }
+   ]
+  }
+ }
+}
