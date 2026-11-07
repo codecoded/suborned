@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Brief 098, law L9: give and take (Keel, engine 0.47.0)</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:980px;margin:2em auto;padding:0 1em;color:#1d2a33;background:#fbf8f1}
+h1{font-size:1.5em;margin-bottom:.2em}h2{font-size:1.15em;margin-top:1.8em;border-bottom:1px solid #d9d2c3;padding-bottom:.2em}
+table{border-collapse:collapse;margin:.6em 0;font-size:13px}td,th{border:1px solid #d9d2c3;padding:3px 7px;text-align:left;vertical-align:top}th{background:#efe8da}
+td.n{text-align:right}code{background:#efe8da;padding:0 3px;border-radius:3px}.lead{background:#fff;border:1px solid #d9d2c3;padding:.6em 1em}
+.small{color:#5a6a73;font-size:13px}
+</style></head><body>
+<h1>Brief 098, law L9: give and take</h1>
+<p class="small">Keel, 2026-11-07, engine <code>suborned.sim/0.47.0</code>, branch <code>t3/simulation-body-spacing</code> (on L9's d8354c1a). Sky, on L9's report: "Do all but the jumping back to spot should be better to dealt with". Kept: bodies 60 cm apart at the closest, personal space 80 cm (70 in a queue), the cell steps round people or waits. Gone: the last resort (a body held 10 s put back on its own place in one tick), and no fade or off-camera cut in its place.</p>
+
+<div class="lead"><b>In short.</b> Nobody jumps. In 315 probe runs across the dial (63 million tick-to-tick moves watched) no body moved farther in a tick than its own pace, and no two bodies on their feet stood inside two radii except two counted squeezing past each other, never closer than 40 cm. On the same probe, engine 0.46.0 made 13,000 to 94,000 such jumps per setting, and its last resort fired 315 times at people=64.
+<br><br>What a player sees in their place:
+<ul style="margin:.3em 0">
+<li>people step aside to let someone by, then step back;</li>
+<li>in a gap one person wide, two people turn side-on and pass slowly;</li>
+<li>someone who can't get to their table takes another, or waits nearby;</li>
+<li>someone whose way is jammed goes round the block, or picks another door when the one they ran for is packed;</li>
+<li>a person held back walks to their door before they go in, so nobody vanishes in the street.</li>
+</ul>
+The game's balance barely moves: wins against 0.46.0 change by −2.3 to +0.3 points across the seven settings. The tick costs the same as L9 (0.09–0.10 ms at x4) and its worst ticks are lighter. Mission record c058 holds.</div>
+
+<h2>How the law works now</h2>
+<p><b>Nobody jumps (BodyPaceCmS).</b> Every body the law lays moves at most its own pace on foot a tick, and the law's own pushes are capped there too:</p>
+<ul>
+<li>the cell and the cast at the cell's run (3.6 m/s);</li>
+<li>the city's people at the city's run (2.6 m/s);</li>
+<li>the rival crew and fight bodies at a rival's following pace (2.8 m/s);</li>
+<li>officers and police at security's pace (2.2 m/s);</li>
+<li>the patrol and robots at a robot's (0.85 m/s).</li>
+</ul>
+<p>In 0.46.0 a push could reach 4 m/s plus the body's own step.</p>
+<ul>
+<li>Someone <b>new to the street</b> (out of a door, a car or a refuge) is placed, as before.</li>
+<li>Someone already on the street whose <b>own place jumps</b> walks there from where they stood. Causes: a fright's end, a leg timed faster than a run, a new walk, a patrol switching jobs. When a wall is between, they take the walk grid's way back (a <i>Catch</i>). Before, the law laid them at the new place at once, which is about 80 rule-made jumps a run on today's settings.</li>
+<li>A person of the city <b>leaves the street only from the place they leave it</b>: a door, a refuge, the sheet's edge. Held back when their routine takes them in, they walk to the door first (within two radii and a step of it they go). Before, they vanished wherever they were held.</li>
+<li>A body walks <b>off ground no body stands on</b>: a car pulled in on it, or a door point in a facade its own place left it on. It also steps into its own place when that is off the free ground, for example a post in a recess.</li>
+</ul>
+<p><b>Held: what a person does</b> (GameBodyDetours.cs, GameBodyGive.cs), in this order:</p>
+<table>
+<tr><th>When</th><th>What</th><th>Who</th></tr>
+<tr><td>held 0.3 s, and every 0.3 s while held</td><td><b>The one in the way makes room.</b> The person in its way steps off its line to the nearest free spot, at least two radii and 10 cm off it, on the side they stand. They step back once it is two radii past the spot they stood on (or after 6 s). They stand aside once per asker and aren't asked again by the same one for 6 s. A tenet walking (the Enforcer leading Vale) has the city clear his way 3 m ahead, at their own pace, and this replaces any other room they were making.</td><td>Asked: a person of the city standing, waiting or coming the other way. Never one going their own way ahead (followed), or one queueing for the same stop (a queue waits its turn).</td></tr>
+<tr><td>no room to make</td><td><b>Squeezing past.</b> Two people face to face in a gap pass shoulder to shoulder: between those two only, <code>bodies.squeeze</code> 20 cm each (40 cm apart, not 60), at <code>bodies.squeezePace</code> 0.5 m/s, turned sideways. It ends once they have passed and stand two radii apart. It is never between two making for one spot (that is a queue).</td><td>Two people of the city.</td></tr>
+<tr><td>held 1 s</td><td>The lesser right of way gives way (backs 2 m), or it walks round. The way round follows people going its way (a queue through a gap) and goes round those standing or coming. An operative's way round makes for 3 m on along his walk, past whoever holds him.</td><td>Everyone (as in 0.46.0)</td></tr>
+<tr><td>got nowhere <code>bodies.replan</code> 5 s</td><td><b>Changes plans.</b>
+<ul style="margin:.2em 0">
+<li>At a stop it can't reach: another free chair (within 15 m), or the nearest free spot it can walk to within 5 m of the stop (maybe where it stands), kept until the stop ends.</li>
+<li>On its way: its next stop by another way round everyone near, or the stop after.</li>
+<li>Running for shelter or at a packed refuge door: another refuge no nearer the shot, or its own by another way.</li>
+<li>Back from shelter: another way.</li>
+</ul>
+A report or a check goes on as it can (L4: block a reporter's way and the news never lands).</td><td>People of the city only. Tenets never change plans; the armed (a guard at his post among them) keep theirs.</td></tr>
+</table>
+<p>The cell and the armed are never asked to make room, never squeeze and never change plans: they step round people or wait. Tenets are never moved; one of the cast stepping out of a doorway where someone stands steps out beside them and walks to its place as a tenet walking does. No body slides straight back the way it slid the tick before (no dancing). Integer cm, fixed orders and candidate lists: the same seed and orders lay the same bodies; the law's new state is in the checkpoint hash.</p>
+
+<h2>The probe</h2>
+<p><code>suborned-sim dial bodies</code>: every adaptive plan × 3 seeds × 7 settings (315 runs), every tick read by the independent check, which reads each body as the host draws it, never the law's own list.</p>
+<p>Evidence: <code>give-probe.json</code>, which carries before, L9's own probe and after. The before column's jumps are 0.46.0 with this round's counter and its first caps (the cell, the cast and the armed 36 cm a tick, the city 26), so they are a floor.</p>
+<table>
+<tr><th>Setting</th><th>Jumps 0.46.0</th><th>Jumps 0.47.0</th><th>Last resorts 0.46.0</th><th>Pairs inside two radii</th><th>Squeezes (tick-pairs, closest)</th><th>Made room a run</th><th>Squeezes a run</th><th>Changed plans a run</th></tr>
+<tr><td>unset</td><td class="n">13,242</td><td class="n">0</td><td class="n">1</td><td class="n">0</td><td>0</td><td class="n">1.3</td><td class="n">0</td><td class="n">0.02</td></tr>
+<tr><td>people=32</td><td class="n">18,441</td><td class="n">0</td><td class="n">67</td><td class="n">0</td><td>256, 40 cm</td><td class="n">3.6</td><td class="n">0.3</td><td class="n">0.1</td></tr>
+<tr><td>people=64</td><td class="n">39,667</td><td class="n">0</td><td class="n">315</td><td class="n">0</td><td>3,613, 40 cm</td><td class="n">16.0</td><td class="n">2.8</td><td class="n">0.5</td></tr>
+<tr><td>guards=32</td><td class="n">21,618</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td>0</td><td class="n">2.0</td><td class="n">0</td><td class="n">0.02</td></tr>
+<tr><td>guards=64</td><td class="n">54,677</td><td class="n">0</td><td class="n">14</td><td class="n">0</td><td>40, 40 cm</td><td class="n">2.4</td><td class="n">0.02</td><td class="n">0.04</td></tr>
+<tr><td>cars=8</td><td class="n">13,302</td><td class="n">0</td><td class="n">1</td><td class="n">0</td><td>0</td><td class="n">0.8</td><td class="n">0</td><td class="n">0.07</td></tr>
+<tr><td>x4</td><td class="n">93,890</td><td class="n">0</td><td class="n">388*</td><td class="n">0</td><td>4,692, 40 cm</td><td class="n">19.2</td><td class="n">2.5</td><td class="n">1.1</td></tr>
+</table>
+<p class="small">* L9's probe ran guards=64,people=64, the same counts as x4 but with the cars unset. Changes of plans at x4: 29 another refuge, 18 the next stop another way, 3 a spot near the stop.</p>
+<p><b>How long bodies are held</b>: spells of ticks a body gets nowhere (short of its goal, not getting on). A spell ends when it gets on, changes plans or leaves the street.</p>
+<table>
+<tr><th>Setting</th><th>The city's people p50 / p95 / max (≥ 5 s)</th><th>The cell max</th><th>The armed and the cast max (≥ 5 s)</th></tr>
+<tr><td>unset</td><td>0.2 / 0.3 / 4.9 s (0)</td><td>1.1 s</td><td>27.1 s (4)</td></tr>
+<tr><td>people=32</td><td>0.2 / 0.3 / 44.3 s (9)</td><td>1.1 s</td><td>27.1 s (5)</td></tr>
+<tr><td>people=64</td><td>0.2 / 0.3 / 44.3 s (69 of 90,461)</td><td>0.4 s</td><td>15.0 s (6)</td></tr>
+<tr><td>guards=32</td><td>0.2 / 0.3 / 10.8 s (4)</td><td>1.1 s</td><td>83.7 s (9)</td></tr>
+<tr><td>guards=64</td><td>0.2 / 0.3 / 24.2 s (4)</td><td>0.5 s</td><td>83.1 s (101)</td></tr>
+<tr><td>cars=8</td><td>0.2 / 0.3 / 4.9 s (0)</td><td>0.9 s</td><td>27.1 s (3)</td></tr>
+<tr><td>x4</td><td>0.2 / 0.3 / 54.4 s (139 of 107,018)</td><td>1.0 s</td><td>52.1 s (113)</td></tr>
+</table>
+<p>The long holds left, each a person (or a guard) waiting where a person would:</p>
+<ul>
+<li><b>Wedged by the cell or the armed, who never move for them.</b> A clerk between the Scout and the Fixer standing still (44 s). A dial guard boxed into the Office entrance recess by the door guard, a posted guard and the Enforcer (84 s). A staff guard by a café chair behind others.</li>
+<li><b>The café passage after a gunfight at four times today's crowd.</b> A strip one walk cell (50 cm) wide between the building and the café's tables. The sheltering crowd heads north for the café's refuge door, where Inez stands, while the fleeing crowd heads south. People make room, squeeze, give way and change refuges, and it clears, but slowly (x4: 54 s at worst).</li>
+</ul>
+<p>Nobody left the street more than two radii, a step and their pace from where they leave it, except one fight body at 2.5 m (a rival boarding his car, the rules', on guards=64).</p>
+
+<h2>Bands before and after</h2>
+<p>The dial sweep: 15 adaptive plans × 20 seeds per setting, 2,100 runs a side, the same plans and seeds, 0 errors or replay differences. Before is L9's engine 0.46.0 (its own after). Evidence: <code>give-sweep.json</code>.</p>
+<table>
+<tr><th>Setting</th><th>Wins 0.46.0</th><th>Wins 0.47.0</th><th>Δ points</th><th>What moved (plans; fails)</th></tr>
+<tr><td>unset</td><td class="n">126 (42.0 %)</td><td class="n">125 (41.7 %)</td><td class="n">−0.3</td><td>prepared-loud −2, veteran +1; closed-in +1, sealed +1</td></tr>
+<tr><td>people=32</td><td class="n">120 (40.0 %)</td><td class="n">117 (39.0 %)</td><td class="n">−1.0</td><td>prepared-loud −3; sealed +3</td></tr>
+<tr><td>people=64</td><td class="n">101 (33.7 %)</td><td class="n">101 (33.7 %)</td><td class="n">0.0</td><td>prepared-loud −1, quiet-g +1</td></tr>
+<tr><td>guards=32</td><td class="n">117 (39.0 %)</td><td class="n">110 (36.7 %)</td><td class="n">−2.3</td><td>quiet-g −6 (8 → 2 of 20); vale-leaves +5</td></tr>
+<tr><td>guards=64</td><td class="n">103 (34.3 %)</td><td class="n">100 (33.3 %)</td><td class="n">−1.0</td><td>prepared-loud −2, quiet-a −1; closed-in +2, sealed +2</td></tr>
+<tr><td>cars=8</td><td class="n">124 (41.3 %)</td><td class="n">119 (39.7 %)</td><td class="n">−1.7</td><td>one each of drive-round, prepared-loud (2), prepared-loud-lend, veteran</td></tr>
+<tr><td>x4</td><td class="n">95 (31.7 %)</td><td class="n">96 (32.0 %)</td><td class="n">+0.3</td><td>prepared-loud +1</td></tr>
+</table>
+<p>Six settings are inside L9's own spread (−1.3 to +1.7 points against 0.45.0); guards=32 is 0.6 points outside it. The move is one plan:</p>
+<ul>
+<li>On route G at guards=32 the Enforcer stops in the mouth of the Office entrance recess, beside the door guard.</li>
+<li>A second dial guard, a mate making for his crew spot, is wedged behind him against the wall.</li>
+<li>Neither moves for the other, so he stays 69 cm from the Enforcer, and the plan's "nobody who'd radio is near" never comes true. The knockout doesn't happen and Vale leaves.</li>
+<li>On 0.46.0 the 10 s rejoin pulled the mate out.</li>
+</ul>
+<p>I left it: doubling the guards made the door harder, and the plan can approach another way (Waymark's).</p>
+<p>On the way, drive-round seed 12 had run with no outcome: the Enforcer was held 45 s behind his own Scout, who stood on his walk. An operative's way round now makes for a point on along his walk past whoever holds him, and the run ends closed in at 8:10 as others do.</p>
+
+<h2>Tick cost</h2>
+<p><code>suborned-sim dial perf</code>, 10 runs a setting, the base commit's route-a and loud-fight scripts (the same orders as L9's measure), the Studio. Evidence: <code>give-perf.json</code>.</p>
+<table>
+<tr><th>Script</th><th>Setting</th><th>ms a tick 0.46.0</th><th>0.47.0</th><th>p99 0.46.0</th><th>p99 0.47.0</th></tr>
+<tr><td>route-a</td><td>unset</td><td class="n">0.0148</td><td class="n">0.0147</td><td class="n">0.065</td><td class="n">0.057</td></tr>
+<tr><td>route-a</td><td>x4</td><td class="n">0.0910</td><td class="n">0.0906</td><td class="n">0.309</td><td class="n">0.273</td></tr>
+<tr><td>route-a</td><td>people=64</td><td class="n">0.0468</td><td class="n">0.0475</td><td class="n">0.188</td><td class="n">0.154</td></tr>
+<tr><td>route-a</td><td>guards=64</td><td class="n">0.0521</td><td class="n">0.0506</td><td class="n">0.204</td><td class="n">0.144</td></tr>
+<tr><td>loud-fight</td><td>unset</td><td class="n">0.0110</td><td class="n">0.0108</td><td class="n">0.038</td><td class="n">0.034</td></tr>
+<tr><td>loud-fight</td><td>x4</td><td class="n">0.1004</td><td class="n">0.0975</td><td class="n">0.344</td><td class="n">0.278</td></tr>
+<tr><td>loud-fight</td><td>people=64</td><td class="n">0.0547</td><td class="n">0.0507</td><td class="n">0.228</td><td class="n">0.179</td></tr>
+<tr><td>loud-fight</td><td>guards=64</td><td class="n">0.0552</td><td class="n">0.0516</td><td class="n">0.135</td><td class="n">0.090</td></tr>
+</table>
+<p>The give and take costs nothing measurable: a mean of 0.09–0.10 ms a tick at x4 as in L9, and its worst ticks are lighter (fewer bodies sliding to and fro). A second run gave 0.086 and 0.095 ms at x4; the difference is noise.</p>
+
+<h2>Tests and scenarios</h2>
+<table>
+<tr><th>What</th><th>Result</th></tr>
+<tr><td>Law tests, BodiesGiveTests (new): nobody jumps (5 dial settings × 5 routes × 2 seeds, over 100,000 moves each); the person in the way makes room and steps back (a city person, within 6 s, never inside two radii of the asker); two face to face squeeze past (mutual, both people of the city, at least two squeeze widths apart, facing read sideways); one still stuck changes plans (only the city's people, the cast never); the tenets, the cell and the armed are never moved by any of these</td><td>10/10</td></tr>
+<tr><td>BodiesTests (counted squeezes allowed; "at rest" means settled, not held on its way), OneHopTests, BodySpacingTests</td><td>28/28</td></tr>
+<tr><td><code>suborned-sim check</code>: every scenario, its checks and its replay</td><td>472/472</td></tr>
+<tr><td><code>suborned-sim hashes</code></td><td>exit 0</td></tr>
+<tr><td><code>bun run sim:test</code>: the C# suite in shards (Release, 16 at a time)</td><td>3,291/3,292 in 125 s wall; the one failure is RulesTests' Q4 Help grid (mercenary/help), failing at HEAD too (Motive)</td></tr>
+<tr><td>RedlineTests split: E7 (every report the same in every culture) ran all 472 scenarios twice per culture and took 10–13 min as one shard. Now 16 parts, each played in the invariant culture and once in each of the four.</td><td>slowest part 81 s; slowest test in the suite 104 s</td></tr>
+<tr><td>The bun tests that play the engine (tools/sim, simview, missions, contracts/missions, route-diff, closing hash, proof delta) and contracts/rules</td><td>548/554. The 6 are L9's 6: four traffic log codes with no line and the opening barks' removal (text.test, Fable); three site tests that need out/people/harbour-district.people.json; route-diff's route-a-board, which loses at HEAD too</td></tr>
+<tr><td>Mission record c058 (<code>missions:check handover --engine tree --inputs tree --record</code> after compose)</td><td>HOLDS, the same lines red as c057, every band within a point or two; replays OK</td></tr>
+<tr><td><code>bun run typecheck</code></td><td>clean</td></tr>
+</table>
+<p><b>Scenarios rewritten to their rules</b> (none tuned to win):</p>
+<ul>
+<li><b>096-RIV-12</b>: a passer-by may now find the knocked-out lookout, and the response bring him round (CrewWakes). The case reads "he wakes after wake-s, or sooner when brought round".</li>
+<li><b>KiteStage</b>, the stage of the kite cases (N155 to N159 and N162 to N164): the response unit "stands" once both officers have been at rest a second. Each officer settles on his crew spot at his own pace now; 0.46.0 shoved him there.</li>
+<li><b>DialStreetTests</b>: the census's street against the street the game shows, within 0.5 (was 0.25). A person now walks to their door before going in, 0.3 over at four times today's crowd. The dial's promise, N on the street, is unchanged.</li>
+<li><b>DP1</b>: the drive session re-recorded.</li>
+<li><b>Route scripts</b>: route-g and careless-g-disable re-time on composing. The same fourteen plans do not compose as at c057 (Waymark's).</li>
+</ul>
+
+<h2>What Latch must draw</h2>
+<ul>
+<li><b>No more blends.</b> Nothing ever moves faster than its own run now, so remove the blend L9 asked for at a rejoin. <code>BodyRejoins</code> is gone from the engine.</li>
+<li><b>Same pose reads.</b> Positions keep coming through them (CrowdPos, MemberPose, Hostile.Pos, SecOfficerPose, UnitPose, an operative's Pos). The give and take needs no new call to place people.</li>
+<li><b>Squeeze.</b> <code>BodySqueeze(id)</code> gives (with whom, facing). The facing is across the way the person was going, toward the other, and <code>FacingNow(id)</code> already returns it for walkers. Draw a shoulder turn (the figure yawed side-on, shoulders along the gap) and a slow side-step: the engine moves them at 0.5 m/s, and the two pass 40 cm apart centre to centre.</li>
+<li><b>Making room.</b> <code>BodyMove(id).RoomFor</code> is who they stand aside for, and <code>RoomAt</code> the spot. It's an ordinary walk to the side and back; a glance at the one passing would sell it.</li>
+<li><b>Changes of plans.</b> <code>BodyMove(id).Replanned</code>, <code>Alt</code> (where they went instead) and <code>AltChair</code> (a chair they took instead of their own). Where the host seats people by their routine's chair, it must seat them in AltChair when set; FacingNow gives that chair's facing.</li>
+<li><b>Going in.</b> A person whose routine has gone inside can still be on the street, walking to the door. CrowdPos keeps returning them until they are within two radii and a step of it, so draw whatever it returns; don't hide people by the routine.</li>
+<li><b>Other reads</b> (never hashed): <code>BodySidesteps</code>, <code>BodySqueezes</code>, <code>BodyReplans</code> / <code>BodyReplansBy</code> (counts), <code>BodyHeld(id)</code>, <code>BodyKeepsPlace(id)</code>.</li>
+<li><b>Inputs hash.</b> The rulebook changed, so 0.46.0 saves and recordings won't replay on 0.47.0.</li>
+</ul>
+
+<h2>Open, and whose</h2>
+<ul>
+<li><b>Pulse / Keel (the dial, step 0).</b> The dial gives added people stop points on the cast's own stands: seven on Inez's spot by the café door, others on the door guard's at the Office front. Nobody can reach them, so they wait nearby, and it feeds the café passage jam. Placing added stops off any cast stand would end it.</li>
+<li><b>Vantage / Datum (the site).</b> The café passage is one walk cell wide between the building and the café's tables; widening it by a cell, or moving a table, would let two pass without squeezing. The café's refuge door point is where Inez stands. L9's two remain: the gap between Vale's car stand and the official entrance, and the one-cell alley with a rival posted in it.</li>
+<li><b>Waymark.</b> quiet-g at guards=32 (above). The fourteen plans that don't compose (thirteen fail at HEAD too). <code>missions:rerecord</code> stops at the compose step while any plan fails to compose, so c056 to c058 were recorded with the check's own <code>--record</code>.</li>
+<li><b>Motive.</b> The Q4 Help grid test (0.45.0's Help).</li>
+<li><b>Fable.</b> text.json's four traffic log codes and the opening barks' test.</li>
+<li><b>Sky (feel calls).</b> The squeeze's 20 cm and 0.5 m/s, and the 5 s before a change of plans, are proposed values in the rulebook (<code>bodies.squeeze</code>, <code>squeezePace</code>, <code>replan</code>). Armed bodies boxed in by the cell wait as long as the cell stands there (up to 84 s on guards=32); that's the approved rule ("the armed keep their places") playing out.</li>
+<li><b>Files.</b> No file over 500 lines grew. GameTakedown.cs (964 lines) shrank to 932: the walker facing reads moved to GameFacing.cs.</li>
+</ul>
+</body></html>

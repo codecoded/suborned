@@ -21,7 +21,7 @@ namespace Suborned.Sim
         public int BodyCrewCm { get; private set; }
         /// <summary>bodies.back: how fast a displaced body comes back to its own place (cm a tick).</summary>
         public int BodyBackCmT { get; private set; }
-        /// <summary>bodies.shove: the most a body's displacement changes in a tick (cm).</summary>
+        /// <summary>bodies.shove: the most a body's displacement changes in a tick when it must make room now (cm), never over its own pace (engine 0.47.0).</summary>
         public int BodyShoveCmT { get; private set; }
         /// <summary>bodies.search: how far round its own place a body looks for room (cm).</summary>
         public int BodySearchCm { get; private set; }
