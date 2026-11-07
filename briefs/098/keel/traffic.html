@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Brief 098 step 1: traffic (Keel)</title>
+<style>body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1080px;margin:2em auto;padding:0 1em;color:#222}table{border-collapse:collapse;margin:.6em 0 1.2em}td,th{border:1px solid #ccc;padding:.25em .6em;text-align:left;font-variant-numeric:tabular-nums}th{background:#f3f1ec}code{background:#f3f1ec;padding:0 .25em}pre{background:#f3f1ec;padding:.8em;overflow:auto}h2{border-bottom:1px solid #ddd;margin-top:1.6em}.sky{background:#fff6dd;border-left:4px solid #e0b000;padding:.4em .8em}</style></head><body>
+<h1>Brief 098 step 1: traffic as real cars, law L8</h1>
+<p>Keel, suborned.sim/0.45.0 (no recorded run moves, so the version stays), 2026-11-07. Engine side only: Latch adds the car views and the start page's Cars row, Pulse and Motive tune the numbers, Aster edits the GDD once the laws settle.</p>
+
+<h2>What it is</h2>
+<p>A third dial kind, <code>cars</code>, beside guards and people:</p>
+<pre>"start": { "seed": 1234, "counts": { "cars": 16 } }        (with guards and people too, or alone)</pre>
+<ul>
+<li><b>Unset</b> (no <code>cars</code>): no traffic at all. Nothing is read, drawn or hashed. <code>suborned-sim hashes</code> (every scenario, route and fight script) is byte-identical to the base commit.</li>
+<li><b>cars 0</b>: today's world, with its own start hash (the counts are hashed).</li>
+<li><b>cars n</b>: about n cars on the zone's roads at a time. Measured means: 4.3, 9.0, 16.9 and 23.4 for 4, 8, 16 and 32. The zone's junctions carry about 25 at most while still moving, so 32 and above saturate. The roads are already full at 0:00: the game starts after 60 s of traffic has run.</li>
+<li><code>Population.Today</code> lists cars as today 0, floor 0, max 64, so the panel's rows need no new code. <code>Game.Census</code> gets a cars row only when the start sets cars.</li>
+</ul>
+
+<h2>The lanes</h2>
+<p><code>tools/sim/lanes.ts</code> (bun, with <code>lanes.test.ts</code>) derives <code>sim/data/handover.lanes.json</code> (suborned.sim.lanes/1) from the plan. It is generated once, like the site; changing a count needs no generator run.</p>
+<ul>
+<li>Every road through the window gets right-hand lanes. Per direction it gets life.json's lane count: floor((w − median)/2/3.3), at least 1. Each lane sits in the middle of its share of the half carriageway: 3 m from the centreline on these 12 m access roads.</li>
+<li>Junction boxes sit at the plan nodes that two roads share. Each box is cut back by the widest other road's half width plus 0.5 m. Boxes closer than 10 m along a road merge: Orbit Walk's two T junctions with Garden Row and Pylon Row are one junction.</li>
+<li>Turns run from every lane in to every lane out, except U-turns. Corners have a radius of up to 6 m.</li>
+<li>Mouths are where a road leaves the window. Its lanes run on 30 m past the edge, so cars drive in and out rather than appearing on the street.</li>
+<li>The Handover zone has 22 lanes, 6 junctions, 38 turns and 4 mouths: Rocket Lane south, and the east ends of Starline Street, Orbit Walk and Apron Road.</li>
+<li>The tool and the engine (<code>Lanes.cs</code>) both check every lane and turn on the drive grid. The tool also checks a sedan's corners there.</li>
+</ul>
+
+<h2>The rules (contracts/rules/population.json, all marked proposed)</h2>
+<table><tr><th>section</th><th>values</th></tr>
+<tr><td>kinds.cars</td><td>id prefix <code>t-</code> (a car is <code>car:t-&lt;slot&gt;-&lt;trip&gt;</code>), max 64</td></tr>
+<tr><td>mix, size, cover</td><td>sedan 88, van 8, scooter 4 (the presentation file's notes); footprints 473×182, 656×263, 165×71 cm (the kit models); sedans and vans are cover, scooters are not</td></tr>
+<tr><td>drive</td><td>accel 2 m/s², brake 4.5, hard brake 8; gap 2 m plus 1.2 s headway; look 25 m ahead; 30 cm clearance each side; stop 1.5 m short of a person</td></tr>
+<tr><td>trips</td><td>a 6–30 s pause between a slot's trips; 60 s warm-up</td></tr>
+<tr><td>stand</td><td>stopped 3 s = standing (blocks the walk, gives cover); 20 s = settled (the crowd's routine legs go round it)</td></tr>
+<tr><td>pass</td><td>held up 2 s: ease round; 1.5 m/s across at 2 m/s along; back off up to 5 m</td></tr>
+<tr><td>yield</td><td>a mission car's next 3 s are a car in the way; a mission car holds at most 40 s; the rival car's turn-in point is kept clear 15 s before it comes</td></tr>
+<tr><td>react</td><td>duck: fearful, loyal; flee: idealist, mercenary, at 1.6× the lane's speed</td></tr>
+<tr><td>lockdown</td><td>Alert 3, then <code>leave</code> (the other reading, <code>stop</code>, is supported)</td></tr>
+<tr><td>driver</td><td>role visitor, job visitor, ids <code>x-driver-…</code>, stand-in names "Driver 3.2"</td></tr>
+</table>
+<p>The zod schema <code>population.schema.ts</code> checks all of it, and the engine rejects anything unknown.</p>
+
+<h2>How each part of L8 works</h2>
+<ul>
+<li><b>Lanes.</b> Each trip draws a mouth in and another out, takes the shortest way through the lanes, and drives its lane's line at the lane's speed (5 m/s on access roads).</li>
+<li><b>Following.</b> Each tick a car samples a corridor ahead of its front every 50 cm, up to 25 m: its own width plus 30 cm each side. The first thing in the corridor sets its speed: as fast as still lets it stop before that thing, keeping the gap.
+  <ul>
+  <li>That thing can be someone on foot (the cell, the cast, the crowd, security, the crew, hostiles), a body, a passing car, a mission car, or a mission car's next 3 s.</li>
+  <li>A car never passes a moving car in its own lane, whatever its sideways offset.</li>
+  </ul></li>
+<li><b>Stopping.</b> A car stops for anyone in the corridor and never moves while someone stands inside its footprint.
+  <ul>
+  <li>It goes round things that will not move on: a standing mission car, a wreck, an abandoned car, a ducked driver's car or a body. A person counts too, once they have stayed in the road 10 s.</li>
+  <li>It first tries within its own half of the road, by the smallest shift that clears.</li>
+  <li>Failing that, it overtakes across the centreline, but only when no oncoming car could meet it before it is past. While it does, no junction lets a car into that lane.</li>
+  <li>Seen from afar, it eases out while still rolling. Stopped too close to swing out, it backs off where the road behind is clear, or creeps sideways where its body ends clearer.</li>
+  <li>It is back on its lane's line before any junction.</li>
+  </ul></li>
+<li><b>Junctions.</b> A car asks for its turn before it must brake for the stop line. Asks are granted oldest first. A turn is refused while:
+  <ul>
+  <li>a car is on a crossing turn and has not yet cleared this one's way (a crossing turn is held only until the crossing is clear);</li>
+  <li>there is no room past the box for this car and every car already granted into the same lane;</li>
+  <li>something that will not move on stands in it;</li>
+  <li>a mission car will cross it soon. A mission car coming up from behind does not count, and a car standing in a mission car's way is let through to clear it.</li>
+  </ul>
+  A driver who has waited 2 s for a crossing turn is let in first. A turn closed for good sends the driver another way: another turn out of the junction, to their own mouth or the nearest other.</li>
+<li><b>Never parks.</b> Traffic never stops on purpose: no bay, stand or drive is a destination. It stops only for what the law says.</li>
+<li><b>Gunfire.</b> A shot whose shooter is within crowd.scatter (30 m) of the car, or a drawn weapon in the driver's cone (the engine's own notice test, with the car's heading as the driver's facing), and the driver:
+  <ol>
+  <li>brakes hard to a stop;</li>
+  <li>after the crowd's startle (the Fearful startle shorter), ducks or drives off fast, by nature;</li>
+  <li>if ducked, sees nothing, stays down while shots go on, and sits up 30 s (crowd.quiet) after the last one;</li>
+  <li>if fleeing, still stops for anyone in the road.</li>
+  </ol></li>
+<li><b>Lockdown.</b> From Alert 3 no car comes in. Inbound cars stop short of the window's edge. With <code>leave</code>, the zone's cars carry on out; with <code>stop</code>, they pull up where they are, for good.</li>
+<li><b>A car is a car.</b>
+  <ul>
+  <li>It is a target by its id (car.target): fire orders, previews, the moving-target modifier and the blast all treat it as a car.</li>
+  <li>Hit, its driver gets out on the kerb side and runs (the crowd's flight). Disabled, it stands for good. Burning, it blows as any car does, and its cover goes.</li>
+  <li>Standing, it is ground nobody walks through (car.footprint, the live walk mask) and is cover on its four sides, placed as the site's car points are.</li>
+  <li>On a way out it boxes a car in (car.box) only once it stands for good: a wreck, abandoned, or pulled up at a lockdown. A driver merely waiting in traffic boxes nobody in.</li>
+  <li>The crowd's routine legs go round settled cars.</li>
+  </ul></li>
+<li><b>Drivers are people.</b> Each driver is a Person with a temperament drawn from the visitor role, weighted by the zone's people (the dial's rule). Out of the car they are a walker of the crowd: they witness, scatter, block sight and report by their nature.</li>
+</ul>
+
+<h2>The mission's cars</h2>
+<p>The getaway car, the official car and the rival car keep their timetables. Traffic yields to them, and they yield back a little, so none is held for good.</p>
+<ul>
+<li>Traffic sees their next 3 s, and the leg their timetable is about to start, as a car in the way.</li>
+<li>A driver pulls aside within their half for a mission car coming at them.</li>
+<li>A mission car whose next place would meet a passing car holds that tick, and its leg's clock waits a tick:
+  <ul>
+  <li>up to 40 s for a car that is moving or whose driver has ducked;</li>
+  <li>10 s for a car stopped for something else;</li>
+  <li>2 s for a driver who is waiting for this very car;</li>
+  <li>never for a car that stands for good.</li>
+  </ul></li>
+<li>With traffic on, a mission car's new leg (the rival car's, the cell's Drive) keeps right: the lanes give each road cell its way of travel, and the drive grid's route charges for driving against it. The leg also routes round passing cars standing when it starts.</li>
+<li>Across the 1,800-run sweep, mission cars waited 0.6, 1.3, 1.9 and 1.9 s per run on average (4, 8, 16, 32 cars).</li>
+<li>No fail anywhere is traffic boxing a car in.</li>
+</ul>
+
+<h2>Host API (for Latch)</h2>
+<ul>
+<li><code>game.TrafficNow()</code> returns a <code>TrafficView</code> per car, in id order, every tick:
+  <ul>
+  <li><code>Id</code>, <code>Model</code> (sedan, van, scooter);</li>
+  <li><code>At</code> and <code>Heading</code> (block frame, cm; the heading is never (0, 0));</li>
+  <li><code>Length</code>, <code>Width</code>, <code>Speed</code> (cm/s);</li>
+  <li><code>State</code> (moving, stopped, disabled, burning, blown) and <code>Mode</code> (drive, brake, duck, flee, held, abandoned);</li>
+  <li><code>Driver</code> (the driver's id) and <code>DriverIn</code>;</li>
+  <li><code>InZone</code> (inside the window, versus on a runway) and <code>Standing</code>.</li>
+  </ul>
+  A car on a runway is 30 m outside the zone: draw or fade it as the old town needs.</li>
+<li>Further reads:
+  <ul>
+  <li><code>game.TrafficWhy(id)</code>: what holds a car, in plain words;</li>
+  <li><code>game.TrafficCarById(id)</code>, <code>game.TrafficInZone()</code>, <code>game.TrafficDriver(id)</code>;</li>
+  <li><code>game.MissionWaits</code>: how long each mission car waited;</li>
+  <li><code>game.TrafficTripOf(slot, trip)</code>.</li>
+  </ul></li>
+<li>A driver who gets out joins <code>game.Walkers</code> with job visitor, so <code>HostViews.FamilyOf</code> already gives them the passer-by figure.</li>
+<li><b>To load traffic in Unity</b>, the bundle needs the lanes file:
+  <ul>
+  <li>add <code>handover.lanes.json</code> (from <code>sim/data/</code>) to <code>tools/sim/unity.ts</code>'s exported inputs and to <code>SimBundle.Files</code>;</li>
+  <li>pass it as <code>Engine.FromTexts(…, population, lanes)</code>, the new 9th argument.</li>
+  </ul>
+  Without it, a start that sets cars is rejected with a clear message. <code>Engine.Load</code> reads it from <code>sim/data/</code>.</li>
+<li><b>The panel's test.</b> <code>tools/game/hostlogic/HostLogic.Dial098.cs</code> asserts every kind's floor is between 1 and its today. Cars are 0 and 0, so that line needs Latch's change with the Cars row.</li>
+<li>CLI:
+  <ul>
+  <li><code>play &lt;script&gt; --counts cars=8</code> and <code>batch … --counts cars=8</code>;</li>
+  <li><code>dial census</code>;</li>
+  <li><code>dial sweep --settings "cars=16;…"</code> (it reports the mean cars on the zone's roads and the mission cars' waits);</li>
+  <li><code>dial perf</code>;</li>
+  <li><code>dial traffic [script|plan] --counts cars=16 --seed n [--why] [--holds]</code>: every tick watched.</li>
+  </ul></li>
+</ul>
+
+<h2>Determinism</h2>
+<ul>
+<li>The counts, the dial's rules and the lanes are hashed into the start. Seed + counts + orders replay exactly: the sweep's 1,800 runs replayed with 0 differences.</li>
+<li>Every draw is the slot's own (seed, slot, stage, trip), and each driver's temperament is drawn on their own id. A higher count adds slots and moves no car already there (a test checks it).</li>
+<li>A counted start saved under step 0 (guards and people only) gets a new start hash, because the dial's rules text grew. It plays the same world.</li>
+</ul>
+
+<h2>Tests</h2>
+<ul>
+<li><code>dotnet test</code> class <b>TrafficTests: 23/23</b> pass in 7 s. Laws, none pinned to a moment:
+  <ul>
+  <li>unset is no traffic;</li>
+  <li>cars 0 is today's world;</li>
+  <li>unset routes give the same checkpoints with or without the dial and the lanes loaded;</li>
+  <li>a car stops short of a person in its lane and never touches them, then goes on once they cross (3 seeds);</li>
+  <li>the car behind queues a gap behind a standing car and never meets it (3 seeds);</li>
+  <li>gunfire within 30 m: every driver at the wheel stops, then ducks or flees by nature (3 seeds);</li>
+  <li>a lockdown lets no car in and the zone empties;</li>
+  <li>a car shot to disabled stands for good where it stopped: its driver is out, it is a standing car and cover, and no car drives through it (2 seeds);</li>
+  <li>a driver who sees a drawn gun, with no shot fired, brakes, then ducks or flees by nature (3 seeds);</li>
+  <li>adding cars moves no slot's trips;</li>
+  <li>routes × seeds × cars 0, 8 and 32 replay exactly, through a saved script too.</li>
+  </ul></li>
+<li><b>DialTests</b>: 18/18.</li>
+<li><code>suborned-sim check</code>: <b>473/473</b>, replays included (33 s).</li>
+<li><code>suborned-sim hashes</code>: byte-identical to the base build.</li>
+<li>bun: <code>contracts/rules/population.test.ts</code> and <code>tools/sim/lanes.test.ts</code> pass 8/8; <code>bun run typecheck</code> is clean.</li>
+<li>In <code>tools/sim/</code>, 3 site-rebuild tests fail before and after this work: this worktree lacks the generated <code>out/people</code>.</li>
+</ul>
+
+<h2>The law's evidence (dial traffic, every tick watched)</h2>
+<p>The probe covered the 15 adaptive plans × 6 seeds at each of cars 4, 8, 16 and 32, plus every route script × 2 seeds at 16: 444 runs.</p>
+<table><tr><th>cars</th><th>runs</th><th>mean on the zone's roads</th><th>moving passing cars meeting each other (car-ticks)</th><th>a moving car over a person (car-ticks)</th><th>runs where a mission car meets a passing car</th><th>longest a mission car waited in a run</th></tr>
+<tr><td>4</td><td>90</td><td>4.2</td><td>0</td><td>1</td><td>4</td><td>10 s</td></tr>
+<tr><td>8</td><td>90</td><td>8.9</td><td>0</td><td>1</td><td>21</td><td>20 s</td></tr>
+<tr><td>16</td><td>174</td><td>17.0</td><td>6</td><td>2</td><td>18</td><td>30 s</td></tr>
+<tr><td>32</td><td>90</td><td>23.4</td><td>10</td><td>5</td><td>23</td><td>49 s</td></tr>
+</table>
+<p>What the residuals are:</p>
+<ul>
+<li><b>A moving car over a person.</b> Each case is a pedestrian walking into the car's side: the crowd's walks do not watch cars. The car stops the next tick.</li>
+<li><b>Mission cars meeting passing cars.</b> These come from the mission cars' own scripted legs, chiefly the rival car driving off after the final fight through cars whose drivers fled or ducked at the shooting. Next most common is its timetabled turn-in at Orbit Walk's mouth catching the corner of a queued car.</li>
+<li><b>Passing cars meeting each other</b> (16 and 32 cars only). These are junction corner cases where a car eases sideways in dense traffic.</li>
+</ul>
+
+<h2>The tick's cost</h2>
+<p>One thread, Apple M5 Max (the Studio), warm, 10 plays each. The engine steps at 10 Hz.</p>
+<table><tr><th>route</th><th>setting</th><th>start ms</th><th>ms a tick</th><th>p99 tick ms</th></tr>
+<tr><td>route-a</td><td>unset</td><td>2.7</td><td>0.008</td><td>0.036</td></tr>
+<tr><td>route-a</td><td>cars 8</td><td>5.1</td><td>0.020</td><td>0.064</td></tr>
+<tr><td>route-a</td><td>cars 16</td><td>9.3</td><td>0.033</td><td>0.087</td></tr>
+<tr><td>route-a</td><td>cars 32</td><td>12.5</td><td>0.037</td><td>0.097</td></tr>
+<tr><td>loud-fight</td><td>unset</td><td>3.2</td><td>0.006</td><td>0.022</td></tr>
+<tr><td>loud-fight</td><td>cars 8</td><td>5.6</td><td>0.017</td><td>0.040</td></tr>
+<tr><td>loud-fight</td><td>cars 16</td><td>9.5</td><td>0.029</td><td>0.066</td></tr>
+<tr><td>loud-fight</td><td>cars 32</td><td>12.6</td><td>0.034</td><td>0.078</td></tr>
+</table>
+<p>The Air's row is Redline's.</p>
+
+<h2>The Handover's bands with traffic (information, not a gate)</h2>
+<p>15 adaptive plans × 20 seeds × 6 settings, today's guards and people, every run replayed: 1,800 runs in 48 s, 0 errors, 0 replay differences. The full output is in <code>briefs/098/keel/traffic-sweep.json</code>.</p>
+<table><tr><th>setting</th><th>wins</th><th>win %</th><th>cars on the roads (mean)</th><th>fails, most first</th></tr>
+<tr><td>unset</td><td>128</td><td>42.7</td><td>0</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 26, enforcer-down 12, sealed 12, vale-leaves 4</td></tr>
+<tr><td>cars 0</td><td>128</td><td>42.7</td><td>0</td><td>(the same)</td></tr>
+<tr><td>cars 4</td><td>126</td><td>42.0</td><td>4.3</td><td>rivals-reach-vale 78, entry-seen-camera 40, closed-in 27, sealed 12, enforcer-down 11, vale-leaves 4, cell-down 2</td></tr>
+<tr><td>cars 8</td><td>128</td><td>42.7</td><td>9.0</td><td>rivals-reach-vale 74, entry-seen-camera 40, closed-in 29, sealed 13, enforcer-down 12, vale-leaves 4</td></tr>
+<tr><td>cars 16</td><td>130</td><td>43.3</td><td>16.9</td><td>rivals-reach-vale 74, entry-seen-camera 40, closed-in 26, sealed 13, enforcer-down 11, vale-leaves 5, cell-down 1</td></tr>
+<tr><td>cars 32</td><td>131</td><td>43.7</td><td>23.4</td><td>rivals-reach-vale 72, entry-seen-camera 40, closed-in 30, enforcer-down 11, sealed 11, vale-leaves 4, cell-down 1</td></tr>
+</table>
+<table><tr><th>plan (wins of 20)</th><th>unset</th><th>cars 4</th><th>cars 8</th><th>cars 16</th><th>cars 32</th></tr>
+<tr><td>quiet-a, quiet-b, quiet-b-thinned, thin-quiet</td><td>20 each</td><td>20</td><td>20</td><td>20</td><td>20</td></tr>
+<tr><td>quiet-g</td><td>14</td><td>14</td><td>14</td><td>15</td><td>14</td></tr>
+<tr><td>prepared-loud</td><td>14</td><td>15</td><td>15</td><td>15</td><td>16</td></tr>
+<tr><td>veteran</td><td>10</td><td>9</td><td>9</td><td>8</td><td>10</td></tr>
+<tr><td>prepared-loud-lend</td><td>5</td><td>5</td><td>4</td><td>5</td><td>5</td></tr>
+<tr><td>drive-round</td><td>4</td><td>2</td><td>5</td><td>6</td><td>5</td></tr>
+<tr><td>veteran-drive</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>careless, drive-early, quiet-b-lookout-ignored, quiet-b-taped, unprepared-loud</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</table>
+<p>The plans that win on every seed without traffic (quiet-a, quiet-b, quiet-b-thinned, thin-quiet) still win on every seed with it. Plans with mixed results move by a seed or two either way: chaos, for example a rival taking cover behind a passing car in the final fight, or a take a few seconds later. No fail in these 1,200 traffic runs names a passing car (none is a traffic box).</p>
+
+<h2>Open questions</h2>
+<p class="sky"><b>Sky's calls (the defaults below are engineering defaults, all marked proposed):</b></p>
+<ol>
+<li><b>"Roads close" at a lockdown.</b> Today the cars already in the zone drive out (<code>leave</code>), so a sealed street empties and traffic never boxes the cell's car in. The other reading is that they pull up where they are (<code>stop</code>), standing for good, and so can box the cell in. Both are built; it is one word in the rules.</li>
+<li><b>What a cars count means.</b> It counts cars on the zone's roads on average. The junctions carry about 25 moving cars at most, so asking for more makes queues at the edges rather than more cars in the zone. If "more cars" should mean busier still, the plan's roads or junctions would have to change (Datum).</li>
+<li><b>A queue boxes nobody in.</b> A driver waiting in traffic moves up or lets you out; only a car standing for good boxes a way out. This is what guarantees no seed leaves a mission car stuck. If Sky wants jams to trap the cell, it is a one-line change, and the guarantee goes with it.</li>
+</ol>
+<p><b>For the crew:</b></p>
+<ul>
+<li><b>Motive.</b>
+  <ul>
+  <li>The drivers' natures (duck: fearful, loyal; flee: idealist, mercenary).</li>
+  <li>A driver at the wheel reports nothing. News travels on foot, so what a driver who saw something does is step 2's witness laws. Out of the car they are a crowd witness like anyone.</li>
+  </ul></li>
+<li><b>Pulse.</b> Every number in <code>traffic</code>: headway, gaps, speeds, the pause between trips, the waits.</li>
+<li><b>Aster.</b>
+  <ul>
+  <li>The rulebook's car.target text still says "the street's parked and passing cars are the host's dressing, not simulated".</li>
+  <li>Changing rulebook.json moves every inputs hash and every record, so the wording should ride with the next engine version, with the GDD's L8 text.</li>
+  </ul></li>
+<li><b>Known limits.</b>
+  <ul>
+  <li>Cars don't block sight. No car does in the engine yet, though L1 lists cars.</li>
+  <li>The mission cars' scripted legs can still meet a passing car (the residuals above). The official car's drive round keeps its precomputed kerb-side route even with traffic on: re-routing it would move the kerbside-stop rules built on that route.</li>
+  <li>The crowd's walks do not avoid cars, so a pedestrian can step into a moving car's side. The car stops the next tick.</li>
+  </ul></li>
+<li><b>Latch.</b> The car views; the bundle's lanes file; the Cars row; the Dial098 floor assertion.</li>
+<li><b>Redline.</b> The Air's frame-time row with traffic.</li>
+</ul>
+
+<h2>Files</h2>
+<ul>
+<li><b>Engine:</b> <code>sim/Suborned.Sim/</code>
+  <ul>
+  <li>new: Lanes.cs, Traffic.cs, GameTraffic.cs, GameTrafficSense.cs, GameTrafficPass.cs, GameTrafficLaw.cs, GameTrafficYield.cs, GameTrafficHost.cs; GameTimelines.cs (two timelines moved out of Game.cs so it shrinks);</li>
+  <li>touched: Population.cs, GamePopulation.cs, GameCars.cs, GameCarFootprint.cs, GameBoxIn.cs, GameKerb.cs, GameCrew.cs, GameDriveCar.cs, GameFightLab.cs, Grid.cs, Hash.cs, Debrief.cs, Game.cs.</li>
+  </ul>
+  Every file is under 500 lines except those already over, and none of those grew.</li>
+<li><b>CLI:</b> <code>sim/cli/Traffic.cs</code> (new, dial traffic) and <code>sim/cli/Dial.cs</code>.</li>
+<li><b>Tests:</b> <code>sim/Suborned.Sim.Tests/Traffic.cs</code>.</li>
+<li><b>Data and tools:</b> <code>tools/sim/lanes.ts</code>, <code>tools/sim/lanes.test.ts</code>, <code>sim/data/handover.lanes.json</code>.</li>
+<li><b>Rules:</b> <code>contracts/rules/population.json</code>, <code>population.schema.ts</code>, <code>population.test.ts</code>.</li>
+</ul>
+</body></html>

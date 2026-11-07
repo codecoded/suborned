@@ -6,6 +6,8 @@
 //       A setting is "unset" (the start sets no counts), "today" (counts at today's numbers), or kind=n pairs ("guards=32,people=228"); x0.5, x2, x4
 //       scale today's. Default: unset;today;x0.5;x2;x4. Exit 1 if any run errs or fails its replay; the outcomes never fail it.
 //   dial perf [script] [--settings ...] [--runs n]      the tick's cost per setting on one thread: ms a tick, sim-seconds a wall-second, the start's cost
+//   dial traffic [script] [--counts cars=8] [--seed n]  brief 098 step 1: one script under the dial's cars, every tick watched (Traffic.cs)
+//   (a setting may name cars too: "cars=16" is today's guards and people with 16 cars; the sweep reports the mean cars on the zone's roads)
 //   play <script> --counts guards=20,people=200         one script under those counts (its record is dropped); batch items take `#counts=guards:20,people:200`
 //       and `batch ... --counts guards=20` gives every item those counts.
 using System;
@@ -58,7 +60,8 @@ static class DialCli
             case "census": Console.WriteLine(CensusJson(Population.Today(inputs))); return 0;
             case "sweep": return Sweep(inputs, root, args);
             case "perf": return Perf(inputs, root, args);
-            default: Console.Error.WriteLine("usage: dial census | dial sweep [items] [--seeds n] [--settings s;s] | dial perf [script] [--settings s;s] [--runs n]"); return 2;
+            case "traffic": return TrafficCli.Run(inputs, root, args); // brief 098 step 1: a script under the dial's cars, every tick watched (Traffic.cs)
+            default: Console.Error.WriteLine("usage: dial census | dial sweep [items] [--seeds n] [--settings s;s] | dial perf [script] [--settings s;s] [--runs n] | dial traffic [script] [--counts cars=8] [--seed n]"); return 2;
         }
     }
 
@@ -90,7 +93,7 @@ static class DialCli
 
     static int Arg(string[] args, string name, int dflt) { int k = Array.IndexOf(args, name); return k > 0 && k + 1 < args.Length ? int.Parse(args[k + 1], CultureInfo.InvariantCulture) : dflt; }
 
-    sealed class Row { public int Runs, Wins, Errors, ReplayBad, EndSum, AlertSum, TrailSum, Street, StreetN; public readonly SortedDictionary<string, int> Fails = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanWins = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanRuns = new SortedDictionary<string, int>(StringComparer.Ordinal); public string Counts = ""; }
+    sealed class Row { public int Runs, Wins, Errors, ReplayBad, EndSum, AlertSum, TrailSum, Street, StreetN; public long CarSum, CarN, MissionWait; public readonly SortedDictionary<string, int> Fails = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanWins = new SortedDictionary<string, int>(StringComparer.Ordinal), PlanRuns = new SortedDictionary<string, int>(StringComparer.Ordinal); public string Counts = ""; }
 
     static int Sweep(Engine.Inputs inputs, string root, string[] args)
     {
@@ -115,7 +118,8 @@ static class DialCli
             var p = BatchCli.PlayOne(inputs, root, it + "#seed=" + sd.ToString(CultureInfo.InvariantCulture) + (c != null ? "#counts=" + Tag(c) : ""), replay);
             var g = p.G; int street = 0, n = 0;
             for (int t = 0; t <= Game.T(inputs.SiteData.Over); t += Game.T(30)) { foreach (var w in g.Walkers) if (g.CrowdPos(w, t).HasValue) street++; n++; } // on the street by routine, every 30 s
-            return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "");
+            return (ok: p.Same, res: g.Result, fail: g.FailCode, tick: g.Tick, alert: g.Alert, trail: g.Trail, street, n, census: g.DialOn ? string.Join(",", g.Census.Select(x => x.Kind + ":" + x.Count.ToString(CultureInfo.InvariantCulture))) : "",
+                cars: g.TrafficZoneSum, carN: g.TrafficZoneTicks, wait: g.MissionWaits.Values.Sum()); // brief 098 step 1: the cars on the zone's roads (summed per tick) and the ticks the mission's cars waited for them
         });
         var rows = new Row[settings.Count]; for (int s = 0; s < rows.Length; s++) rows[s] = new Row();
         int bad = 0;
@@ -127,20 +131,20 @@ static class DialCli
             var x = res[j].value;
             if (!x.ok) { r.ReplayBad++; bad++; }
             if (x.res == Outcome.Success) { r.Wins++; r.PlanWins[plan] = r.PlanWins.GetValueOrDefault(plan) + 1; } else { var key = x.fail.Length > 0 ? x.fail : x.res.ToString().ToLowerInvariant(); r.Fails[key] = r.Fails.GetValueOrDefault(key) + 1; }
-            r.EndSum += x.tick; r.AlertSum += x.alert; r.TrailSum += x.trail; r.Street += x.street; r.StreetN += x.n; if (x.census.Length > 0) r.Counts = x.census;
+            r.EndSum += x.tick; r.AlertSum += x.alert; r.TrailSum += x.trail; r.Street += x.street; r.StreetN += x.n; if (x.census.Length > 0) r.Counts = x.census; r.CarSum += x.cars; r.CarN += x.carN; r.MissionWait += x.wait;
         }
         var w = new JWriter().Obj().Prop("engine", Engine.Version).Prop("seeds", seeds).Prop("seedFrom", from).Prop("replay", replay).Prop("items", items.Count).Prop("wallS", (long)sw.Elapsed.TotalSeconds).OpenArr("settings");
         Console.Error.WriteLine($"dial sweep: {jobs.Count} runs ({settings.Count} settings x {items.Count} items x {seeds} seeds) in {sw.Elapsed.TotalSeconds:0.0} s; {bad} errors or replay differences");
-        Console.Error.WriteLine("setting      counts                         runs  wins   win%  street  end   alert trail  fails (most first)");
+        Console.Error.WriteLine("setting      counts                         runs  wins   win%  street  cars  end   alert trail  fails (most first)");
         for (int s = 0; s < settings.Count; s++)
         {
             var r = rows[s]; int ok = Math.Max(1, r.Runs - r.Errors);
             w.Obj().Prop("setting", settings[s].name).Prop("counts", r.Counts).Prop("runs", r.Runs).Prop("wins", r.Wins).Prop("errors", r.Errors).Prop("replayDiffers", r.ReplayBad)
-                .Prop("streetMean10", r.StreetN > 0 ? r.Street * 10L / r.StreetN : 0).Prop("endMeanS", r.EndSum / ok / Game.Hz).Prop("alertMean10", r.AlertSum * 10L / ok).Prop("trailMean10", r.TrailSum * 10L / ok);
+                .Prop("streetMean10", r.StreetN > 0 ? r.Street * 10L / r.StreetN : 0).Prop("carsMean10", r.CarN > 0 ? r.CarSum * 10L / r.CarN : 0).Prop("missionWaitMeanS10", r.MissionWait * 10L / ok / Game.Hz).Prop("endMeanS", r.EndSum / ok / Game.Hz).Prop("alertMean10", r.AlertSum * 10L / ok).Prop("trailMean10", r.TrailSum * 10L / ok);
             w.Open("fails"); foreach (var kv in r.Fails.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal)) w.Prop(kv.Key, kv.Value); w.EndObj();
             w.Open("planWins"); foreach (var kv in r.PlanRuns) w.Prop(kv.Key, r.PlanWins.GetValueOrDefault(kv.Key)); w.EndObj(); w.EndObj();
             var fails = string.Join(", ", r.Fails.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key, StringComparer.Ordinal).Take(4).Select(kv => kv.Key + " " + kv.Value));
-            Console.Error.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{settings[s].name,-12} {(r.Counts.Length > 0 ? r.Counts : "(the people file)"),-30} {r.Runs,4} {r.Wins,5} {100.0 * r.Wins / Math.Max(1, r.Runs),6:0.0} {(r.StreetN > 0 ? (double)r.Street / r.StreetN : 0),6:0.0} {r.EndSum / ok / Game.Hz,5} {(double)r.AlertSum / ok,5:0.0} {(double)r.TrailSum / ok,5:0.0}  {fails}"));
+            Console.Error.WriteLine(string.Create(CultureInfo.InvariantCulture, $"{settings[s].name,-12} {(r.Counts.Length > 0 ? r.Counts : "(the people file)"),-30} {r.Runs,4} {r.Wins,5} {100.0 * r.Wins / Math.Max(1, r.Runs),6:0.0} {(r.StreetN > 0 ? (double)r.Street / r.StreetN : 0),6:0.0} {(r.CarN > 0 ? (double)r.CarSum / r.CarN : 0),5:0.0} {r.EndSum / ok / Game.Hz,5} {(double)r.AlertSum / ok,5:0.0} {(double)r.TrailSum / ok,5:0.0}  {fails}"));
         }
         var json = w.EndArr().EndObj().ToString();
         int oi = Array.IndexOf(args, "--out"); if (oi > 0) File.WriteAllText(args[oi + 1], json + "\n"); else Console.WriteLine(json);

@@ -51,8 +51,15 @@ namespace Suborned.Sim
 
     public sealed partial class Game
     {
-        /// <summary>A car standing on the street now (it blocks the walk): its id, its point and its heading (never (0, 0)).</summary>
-        public readonly struct StandingCar { public readonly string Id; public readonly Pt At, Heading; public StandingCar(string id, Pt at, Pt h) { Id = id; At = at; Heading = h.X == 0 && h.Y == 0 ? new Pt(0, 100) : h; } }
+        /// <summary>A car standing on the street now (it blocks the walk): its id, its point and its heading (never (0, 0)); brief 098 step 1: its
+        /// half length and width when it is no sedan (a passing van or scooter; 0: the rulebook's car.footprint, every mission car's).</summary>
+        public readonly struct StandingCar
+        {
+            public readonly string Id; public readonly Pt At, Heading; public readonly int HalfLen, HalfW;
+            public StandingCar(string id, Pt at, Pt h, int halfLen = 0, int halfW = 0) { Id = id; At = at; Heading = h.X == 0 && h.Y == 0 ? new Pt(0, 100) : h; HalfLen = halfLen; HalfW = halfW; }
+            public int Hl(Rules r) => HalfLen > 0 ? HalfLen : r.CarLenCm / 2;
+            public int Hw(Rules r) => HalfW > 0 ? HalfW : r.CarWCm / 2;
+        }
 
         /// <summary>The cars standing now, in a fixed order (car:getaway, car:official, car:rivals, then the range's by id). A host read too.</summary>
         public List<StandingCar> StandingCars()
@@ -62,7 +69,15 @@ namespace Suborned.Sim
             if (getawayPath == null && CurStand != null) l.Add(new StandingCar("car:getaway", CurStand.CarAt, CurStand.Facing));
             if (OfficialStanding()) l.Add(new StandingCar("car:official", CarPos(), OfficialHeading()));
             if (!CarMoving && RivalCarPose() is var rp && rp.HasValue) l.Add(new StandingCar("car:rivals", rp.Value.pos, rp.Value.heading)); // brief 096: a driving car blocks nothing
+            TrafficStanding(l, false); // brief 098 step 1: and the passing cars standing (GameTrafficLaw.cs; none without traffic)
             return l;
+        }
+        /// <summary>Brief 098 step 1: the cars the crowd's legs go round (the car epochs): those standing, but of the passing cars only the settled.</summary>
+        List<StandingCar> EpochCars()
+        {
+            if (tr == null) return StandingCars();
+            var l = new List<StandingCar>(); foreach (var c in StandingCars()) if (!IsTrafficId(c.Id)) l.Add(c);
+            TrafficStanding(l, true); return l;
         }
         /// <summary>The official car stands: at the pickup until it drives (the block move is retired, brief 059), parked round the back, or stopped.</summary>
         bool OfficialStanding()
@@ -93,8 +108,8 @@ namespace Suborned.Sim
         bool[]? CarCells()
         {
             var cars = StandingCars();
-            var key = new long[cars.Count * 4];
-            for (int k = 0; k < cars.Count; k++) { var c = cars[k]; key[4 * k] = Array.IndexOf(CarIds, c.Id) + 1 + (c.Id.Length << 8); key[4 * k + 1] = c.At.X; key[4 * k + 2] = c.At.Y; key[4 * k + 3] = (long)c.Heading.X * 4_000_037L + c.Heading.Y; }
+            var key = new long[cars.Count * 5];
+            for (int k = 0; k < cars.Count; k++) { var c = cars[k]; key[5 * k] = Array.IndexOf(CarIds, c.Id) + 1 + (c.Id.Length << 8); key[5 * k + 1] = c.At.X; key[5 * k + 2] = c.At.Y; key[5 * k + 3] = (long)c.Heading.X * 4_000_037L + c.Heading.Y; key[5 * k + 4] = c.HalfLen * 100_000L + c.HalfW; }
             if (carMask != null && SameKey(key, carMaskKey)) return carMaskCells.Count == 0 ? null : carMask;
             var g = S.Grid; carMask ??= new bool[g.Nx * g.Ny];
             foreach (var k in carMaskCells) carMask[k] = false;
@@ -104,12 +119,14 @@ namespace Suborned.Sim
         }
         static bool SameKey(long[] a, long[] b) { if (a.Length != b.Length) return false; for (int k = 0; k < a.Length; k++) if (a[k] != b[k]) return false; return true; }
 
-        void Cover(StandingCar c, int grow, Action<int, int> cell) => CoverCells(S.Grid, R, c.At, c.Heading, grow, cell);
+        void Cover(StandingCar c, int grow, Action<int, int> cell) => CoverCells(S.Grid, R, c.At, c.Heading, grow, cell, c.Hl(R), c.Hw(R));
         /// <summary>Each grid cell whose centre lies within a car's footprint at `at`, heading `h`, grown by `grow` cm (exact integer test on the centre).</summary>
-        public static void CoverCells(Grid g, Rules r, Pt at, Pt h, int grow, Action<int, int> cell)
+        public static void CoverCells(Grid g, Rules r, Pt at, Pt h, int grow, Action<int, int> cell) => CoverCells(g, r, at, h, grow, cell, r.CarLenCm / 2, r.CarWCm / 2);
+        /// <summary>The same for a footprint of half length `halfLen` and half width `halfW` (brief 098 step 1: a passing van or scooter).</summary>
+        public static void CoverCells(Grid g, Rules r, Pt at, Pt h, int grow, Action<int, int> cell, int halfLen, int halfW)
         {
             if (h.X == 0 && h.Y == 0) h = new Pt(0, 100);
-            long hl = r.CarLenCm / 2 + grow, hw = r.CarWCm / 2 + grow;
+            long hl = halfLen + grow, hw = halfW + grow;
             long hx = h.X, hy = h.Y, n2 = hx * hx + hy * hy; // |h|²; the tests compare squares, so no root
             int reach = (int)Math.Min(int.MaxValue, hl + hw);
             int i0 = g.CI(at.X - reach), i1 = g.CI(at.X + reach), j0 = g.CJ(at.Y - reach), j1 = g.CJ(at.Y + reach);
@@ -126,6 +143,13 @@ namespace Suborned.Sim
         {
             bool[]? m = null;
             foreach (var (at, h) in cars) CoverCells(g, r, at, h, r.CarClearCm, (i, j) => { if (g.FreeCell(i, j)) (m ??= new bool[g.Nx * g.Ny])[i * g.Ny + j] = true; });
+            return m;
+        }
+        /// <summary>The same for standing cars with their own footprints (brief 098 step 1).</summary>
+        static bool[]? MaskOf(Grid g, Rules r, List<StandingCar> cars)
+        {
+            bool[]? m = null;
+            foreach (var c in cars) CoverCells(g, r, c.At, c.Heading, r.CarClearCm, (i, j) => { if (g.FreeCell(i, j)) (m ??= new bool[g.Nx * g.Ny])[i * g.Ny + j] = true; }, c.Hl(r), c.Hw(r));
             return m;
         }
         /// <summary>The cars standing when the Handover starts (the getaway car at its first stand, the official car at the pickup, along its bay),
@@ -148,8 +172,8 @@ namespace Suborned.Sim
         readonly List<(int tick, int id, bool home, long[] key, bool[]? mask)> carEpochs = new List<(int, int, bool, long[], bool[]?)>();
         long[] KeyOf(List<StandingCar> cars)
         {
-            var key = new long[cars.Count * 3];
-            for (int k = 0; k < cars.Count; k++) { var c = cars[k]; key[3 * k] = c.At.X; key[3 * k + 1] = c.At.Y; key[3 * k + 2] = (long)c.Heading.X * 4_000_037L + c.Heading.Y; }
+            var key = new long[cars.Count * 4];
+            for (int k = 0; k < cars.Count; k++) { var c = cars[k]; key[4 * k] = c.At.X; key[4 * k + 1] = c.At.Y; key[4 * k + 2] = (long)c.Heading.X * 4_000_037L + c.Heading.Y; key[4 * k + 3] = c.HalfLen * 100_000L + c.HalfW; }
             return key;
         }
         long[] HomeKey() => S.IsRange || S.Stands.Count == 0 ? Array.Empty<long>() : KeyOf(new List<StandingCar> { new StandingCar("car:getaway", S.Stands[0].CarAt, S.Stands[0].Facing), new StandingCar("car:official", S.CarBlockPath[0], S.CarBlockFacing) });
@@ -157,10 +181,9 @@ namespace Suborned.Sim
         void CarEpochStep()
         {
             if (Range || People2 == null) return;
-            var cars = StandingCars(); var key = KeyOf(cars);
+            var cars = EpochCars(); var key = KeyOf(cars); // brief 098 step 1: a passing car once settled, never one pausing in a queue
             if (carEpochs.Count > 0 && SameKey(key, carEpochs[carEpochs.Count - 1].key)) return;
-            var list = new List<(Pt, Pt)>(cars.Count); foreach (var c in cars) list.Add((c.At, c.Heading));
-            carEpochs.Add((Tick, carEpochs.Count, SameKey(key, HomeKey()), key, MaskOf(S.Grid, R, list)));
+            carEpochs.Add((Tick, carEpochs.Count, SameKey(key, HomeKey()), key, MaskOf(S.Grid, R, cars)));
         }
         // ---------------------------------------------------------------- a car comes to stand (engine 0.36.0; brief 079)
 
@@ -232,16 +255,16 @@ namespace Suborned.Sim
         internal Pt[]? BesideRoute(Pt a, Pt b, WalkGrid w)
         {
             StandingCar? on = null;
-            foreach (var c in StandingCars()) { bool hit = false; CoverCells(S.Grid, R, c.At, c.Heading, R.CarClearCm, (i, j) => { if (!hit && S.Grid.CI(b.X) == i && S.Grid.CJ(b.Y) == j) hit = true; }); if (hit) { on = c; break; } }
+            foreach (var c in StandingCars()) { bool hit = false; CoverCells(S.Grid, R, c.At, c.Heading, R.CarClearCm, (i, j) => { if (!hit && S.Grid.CI(b.X) == i && S.Grid.CJ(b.Y) == j) hit = true; }, c.Hl(R), c.Hw(R)); if (hit) { on = c; break; } }
             var near = w.Grid.NearestFree(b, w.Mask); if (!near.HasValue) return null;
             var cands = new List<Pt> { near.Value };
             if (on.HasValue)
             {
                 var c = on.Value; long hx = c.Heading.X, hy = c.Heading.Y, n = G.Isqrt(hx * hx + hy * hy); if (n == 0) { hx = 0; hy = 100; n = 100; }
                 long dx = b.X - c.At.X, dy = b.Y - c.At.Y, along = (dx * hx + dy * hy) / n, across = (dx * hy - dy * hx) / n;
-                long outL = R.CarLenCm / 2 + R.CarClearCm + S.Grid.Cell / 4, outW = R.CarWCm / 2 + R.CarClearCm + S.Grid.Cell / 4;
+                long outL = c.Hl(R) + R.CarClearCm + S.Grid.Cell / 4, outW = c.Hw(R) + R.CarClearCm + S.Grid.Cell / 4;
                 Pt Local(long u, long v) => new Pt(c.At.X + (int)((u * hx + v * hy) / n), c.At.Y + (int)((u * hy - v * hx) / n)); // along u, across v (the heading turned clockwise: +v is its right)
-                var faces = Math.Abs(along) > R.CarLenCm / 2 - R.CarClearCm ? new[] { Local(along, outW), Local(along, -outW), Local(outL, across), Local(-outL, across) } : new[] { Local(along, outW), Local(along, -outW) }; // its doors are on its sides: an end only for a point by that end
+                var faces = Math.Abs(along) > c.Hl(R) - R.CarClearCm ? new[] { Local(along, outW), Local(along, -outW), Local(outL, across), Local(-outL, across) } : new[] { Local(along, outW), Local(along, -outW) }; // its doors are on its sides: an end only for a point by that end
                 foreach (var q in faces)
                     if (w.Grid.NearestFree(w.Grid.Centre(w.Grid.CI(q.X), w.Grid.CJ(q.Y)), w.Mask) is Pt f && !cands.Contains(f)) cands.Add(f); // a cell centre, as every walk's end
             }
@@ -269,7 +292,7 @@ namespace Suborned.Sim
             long hx = c.Heading.X, hy = c.Heading.Y, n = G.Isqrt(hx * hx + hy * hy); if (n == 0) n = 1;
             long dx = p.X - c.At.X, dy = p.Y - c.At.Y;
             long along = Math.Abs(dx * hx + dy * hy) / n, across = Math.Abs(dx * hy - dy * hx) / n; // cm
-            long ox = Math.Max(0, along - R.CarLenCm / 2), oy = Math.Max(0, across - R.CarWCm / 2);
+            long ox = Math.Max(0, along - c.Hl(R)), oy = Math.Max(0, across - c.Hw(R));
             return (int)G.Isqrt(ox * ox + oy * oy);
         }
         /// <summary>At the getaway car (rulebook car.footprint.reach): within reach of its body where it stands; while it drives, never. Board's

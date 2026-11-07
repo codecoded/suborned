@@ -2,7 +2,7 @@
   "schema": "suborned.rules.population/1",
   "author": "Keel (brief 098 step 0, 2026-11-07)",
   "gdd": "the-suborned-agent-gdd-v0.39.0-2026-11-05.md",
-  "rule": "The dial (brief 098 step 0; Sky 2026-11-07: \"I should say, add 3 more guards, take some away, bring in more cars etc - the game then just does that, no long processing, and I play and get a feel\"). A start sets how many of each kind the zone has (start.counts, the whole zone's count of that kind, the cast included); the engine builds that world when the game starts, from the seed and these rules, with no generator run. A kind the start does not set plays the people file exactly, and a start that sets none hashes and plays as before: this file is read only when a start sets counts, and then its text is hashed into that start, so seed + counts + orders replay exactly against it. Part of Keel's rulebook (contracts/rules/rulebook.json keeps its own bytes, so no recorded run moves). Unknown = reject.",
+  "rule": "The dial (brief 098 step 0; Sky 2026-11-07: \"I should say, add 3 more guards, take some away, bring in more cars etc - the game then just does that, no long processing, and I play and get a feel\"). A start sets how many of each kind the zone has (start.counts: guards and people, the whole zone's count of that kind, the cast included; cars, how many are on the zone's roads at a time on average); the engine builds that world when the game starts, from the seed and these rules, with no generator run. A kind the start does not set plays the people file exactly, and a start that sets none hashes and plays as before: this file is read only when a start sets counts, and then its text is hashed into that start, so seed + counts + orders replay exactly against it. Part of Keel's rulebook (contracts/rules/rulebook.json keeps its own bytes, so no recorded run moves). Unknown = reject.",
   "kinds": {
     "guards": {
       "of": ["guard"],
@@ -25,6 +25,13 @@
       "src": "brief 098 step 0: everyone else in the people file (114 in the Handover, Inez, the driver and Popovic among them) plus any the dial adds; people.rules temperamentsBy.roles.visitor (a simulated person who neither lives nor works in the district)",
       "proposed": true,
       "reason": "an added person is a passer-by named by a stand-in (Passer-by 1, ...), for the reason above. They carry no need record (the cell turns only the cast: Ask, Help and Pressure are never offered to the crowd) and no ties."
+    },
+    "cars": {
+      "id": "t-",
+      "max": 64,
+      "src": "brief 098 step 1 (law L8; Sky 2026-11-07: \"our roads are empty, no reason can't have passing traffic\"; \"bring in more cars etc - the game then just does that\"): passing cars on the zone's lanes (sim/data/handover.lanes.json), each a real car of the engine (GameCars.cs, Sky 2026-10-21: \"shootable, as in Syndicate\"): a target, solid, and cover where it stands",
+      "proposed": true,
+      "reason": "a count is how many cars are on the zone's roads (inside the walk window) at a time on average: the engine runs enough of them through the mouths, each trip a new car (car:t-<slot>-<trip>) with a stand-in driver at the wheel. 0 today (the roads are empty); unset is no traffic at all. 64 is about every lane full at its gap: a hopeless setting still plays in time."
     }
   },
   "fewer": {
@@ -53,5 +60,82 @@
     "src": "brief 098 step 0: an added city person is a passer-by who enters at the site's edges at a seeded time, walks to a seeded destination, lingers and leaves",
     "proposed": true,
     "reason": "the edges are the runs of free cells on the walk grid's border (a street or a path leaving the window), at least edgeMinCells wide, entered at the middle of each; a run longer than edgeSpanCells (a street along the border) is split evenly, so people come in along it, not at one point. A passer-by enters at a seeded second in enterS (mission seconds; before 0:00 they are already walking when the mission starts) and goes to a destination by these weights: a café seat (the people file's chairs) free for the whole linger, sitting there lingerS.seat; a public door of the site's buildings (the café, the Office), inside for lingerS.door; or another edge, walking straight through. Then out by a seeded edge. The site has no benches or transit stops yet, so neither is a destination. Temperament: the role's allow list (people.rules temperamentsBy.roles), weighted by the zone's own mix of that kind, no temperament above temperamentsBy.mix.rowMaxShare. Pulse to tune."
+  },
+  "traffic": {
+    "lanes": "sim/data/handover.lanes.json",
+    "mix": { "sedan": 88, "van": 8, "scooter": 4 },
+    "size": { "sedan": [473, 182], "van": [656, 263], "scooter": [165, 71] },
+    "cover": ["sedan", "van"],
+    "src": "brief 098 step 1, law L8 (Sky 2026-11-07: \"Drivers keep to their lanes, stop for people in the road and for cars ahead ... brake or flee at gunfire. Roads close in a lockdown. A car is a car: it can be shot, hidden behind or blown up\"): the kit's vehicles at budget (out/world/harbour-district.presentation.json models: car/* the sedans, van/box BoxTruck_Play, scooter/hover HoverScooter; its notes: vans 8 %, scooters 4 % of traffic); size [length, width] cm, the models' footprints (the sedan's is the rulebook's car.footprint); cover, the kinds a body can hide behind",
+    "proposed": true,
+    "reason": "each trip draws its kind by the mix; its footprint is what it blocks on the walk grid, its gap and its cover. Every kind is a car under the rulebook's car.target (health, disabled, burning, the blast); a standing sedan or van is cover on its four sides as the mission's cars are (their sides' and ends' cover, the site's car points), a scooter none. Forma's civilian set at budget replaces the sedans' repaints later.",
+    "drive": {
+      "accelCmS2": 200,
+      "brakeCmS2": 450,
+      "hardBrakeCmS2": 800,
+      "gapCm": 200,
+      "headwayDs": 12,
+      "lookCm": 2500,
+      "clearCm": 30,
+      "peopleGapCm": 150,
+      "src": "brief 098 step 1, L8 lanes and stopping: a driver keeps to the lane's line at its speed (the lanes file: life.json traffic.byClass speed), keeps gapCm plus headwayDs tenths of a second of its speed behind whatever is ahead in its lane within lookCm (a car, the cell, the city's people, the cast, a body), and stops peopleGapCm short of a person; the corridor it keeps clear is its width plus clearCm each side",
+      "proposed": true,
+      "reason": "a city driver's 1.2 s headway and 2 m standstill gap; 2 m/s2 to pull away, 4.5 m/s2 to brake, 8 m/s2 at a sudden alarm (a hard stop); 25 m ahead is what a driver at 5 m/s watches; 30 cm each side keeps two cars in neighbouring lanes apart. Pulse to tune."
+    },
+    "trips": {
+      "offS": [6, 30],
+      "warmS": 60,
+      "src": "brief 098 step 1: each slot of the count runs one car at a time through the zone: in at a seeded mouth, out at another, then a seeded offS before its next trip (a new car); the game starts with warmS of traffic already run, so the roads are full at 0:00",
+      "proposed": true,
+      "reason": "enough slots that the mean on the zone's roads is the count (the slots' share of time inside the window, from the routes' lengths at their speeds); every draw is the slot's own (seed, slot, trip), so a higher count adds slots and moves no car already there"
+    },
+    "stand": {
+      "standS": 3,
+      "settleS": 20,
+      "src": "brief 098 step 1, L8 a car is a car: a car stopped standS is standing (rulebook car.footprint: ground nobody walks through; cover where it stands; car.box: on a way out it boxes it in only once it stands for good, a wreck, abandoned or pulled up at a lockdown: a driver waiting in traffic moves up or lets you out); one stopped settleS (or disabled, burning, abandoned, its driver ducked) is settled: the crowd's routine legs set out round it, as round the mission's standing cars",
+      "proposed": true,
+      "reason": "a car pausing for someone crossing is not yet a wall; a queue that waits is. The crowd's legs are walked again only for settled cars, so a queue's stop and go does not re-walk the city each second."
+    },
+    "pass": {
+      "waitS": 2,
+      "latCmS": 150,
+      "passCmS": 200,
+      "backCm": 500,
+      "src": "brief 098 step 1, L8 stopping: a driver held up waitS behind something that will not move on (a standing mission car, a wreck or an abandoned car, a body) eases round it within its own half of the road when there is room, at latCmS across and passCmS along; with no room there, out across the centreline as far as the oncoming lane's line when that lane holds no car that could meet it before it is past (an overtake: meanwhile no junction lets a car into that lane); round a person on their feet only once they have stayed in the road 5 waitS, a body's width wider. Seen from afar the driver eases out early, still rolling; stopped too close to swing out, they back off up to backCm where the road behind is clear, and try again",
+      "proposed": true,
+      "reason": "the official car at its kerbside stop and the rival car's block reach into a lane by less than its spare width: drivers squeeze by. A car or a person that fills the lane (the rival wheelman standing in Apron Road by his parked car) is overtaken when the other way is clear; while it is not, the cars behind it wait and the rest find another way at the junction before."
+    },
+    "yield": {
+      "aheadS": 3,
+      "holdS": 40,
+      "entryS": 15,
+      "src": "brief 098 step 1: the mission's cars (the getaway car, the official car, the rival car) drive their own timetables (tenets); traffic yields to them by the same law: a moving mission car's next aheadS of road is a car in the way (unless it comes up from behind: the driver ahead drives on), a driver it comes at pulls aside within their half where there is room, and no junction is entered that it will cross within aheadS; the rival car's turn-in point (on the street from its timetable, mid-junction at Orbit Walk's mouth) is kept clear from entryS before it comes; and a mission car is a car: one whose next place would meet a passing car on its way holds that tick (its leg's clock waits), at most holdS in a row, then drives on",
+      "proposed": true,
+      "reason": "3 s at 5 m/s is 15 m: a driver sees a car coming and lets it by. A mission car waits for a passing car at most holdS at a time: a car on its way clears in seconds, a ducked driver sits up crowd.quiet (30 s) after the last shot, so 40 s outlasts both and no seed or jam holds it for good; for a car stopped for something else (a person in front of it, a queue) it waits five pass.waitS (10 s), for a driver waiting for it one, then goes first. It never waits for a car that stands for good (a wreck, an abandoned car): a leg it starts goes round those (the drive grid's route round their ground), and one shot to a wreck across a leg already under way it passes, as the mission's cars pass one another's wrecks today."
+    },
+    "react": {
+      "duck": ["fearful", "loyal"],
+      "flee": ["idealist", "mercenary"],
+      "fleePm": 1600,
+      "src": "brief 098 step 1, L8 gunfire (Sky 2026-11-07: \"Pull a gun out in front of someone they run away ... based on their nature\"): a driver who hears a shot within crowd.scatter of the car, or sees a drawn weapon in their cone (perception.people, the car's heading their facing), brakes hard and stops; then by nature they duck at the wheel until it has been quiet crowd.quiet, or drive off fast (fleePm per mille of the lane's speed) the way they were going, still stopping for anyone in the road; a driver whose car is shot gets out and runs (the crowd's flight)",
+      "proposed": true,
+      "reason": "the Fearful freeze and the Loyal wait for the police; the Mercenary and the Idealist want out. The startle before acting is the crowd's (crowd.startle, the Fearful's shorter). A ducked driver sees nothing. Motive to set the natures' answers with step 2's witness laws."
+    },
+    "lockdown": {
+      "alert": 3,
+      "then": "leave",
+      "src": "brief 098 step 1, L8 roads close: from this Alert (3, lockdown) no car comes in: an inbound car stops short of the window's edge; the cars already in the zone carry on out (leave) or pull up where they are (stop)",
+      "proposed": true,
+      "reason": "leave: a sealed street empties of cars, so traffic never boxes the cell's car in for the rest of the mission; stop is the other reading of Sky's \"roads close\"."
+    },
+    "driver": {
+      "role": "visitor",
+      "job": "visitor",
+      "id": "x-driver-",
+      "name": "Driver",
+      "src": "brief 098 step 1, L8 drivers are people: each car's driver is a person with a temperament from people.rules temperamentsBy.roles.visitor (weighted by the zone's own mix of people, the dial's rule), who sees by their cone and reacts by their nature; out of their car they are a passer-by of the crowd (they witness, scatter, block sight)",
+      "proposed": true,
+      "reason": "a driver passing through neither lives nor works in the district: a visitor. Stand-in names (Driver 1, ...) as the dial's added people; no need record, no ties. At the wheel a driver reports nothing (news travels on foot: step 2's witness laws decide what a driver who saw something does)."
+    }
   }
 }

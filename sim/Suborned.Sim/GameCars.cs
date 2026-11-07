@@ -46,9 +46,9 @@ namespace Suborned.Sim
                 if (Range) return basis;
                 bool gHome = getawayPath == null && CurStand == S.Stands[0], rHome = rivalCarParked;
                 int key = (gHome ? 1 : 0) | (rHome ? 2 : 0) | ((liveCover?.Count ?? -1) + 1) << 2;
-                if (gHome && rHome) return basis;
+                if (gHome && rHome) return WithTrafficCover(basis);
                 if (key != liveCoverKey || liveCoverAt == null) { liveCoverAt = basis.FindAll(p => (gHome || p.Of != "car/getaway") && (rHome || p.Of != "car/rivals")); liveCoverKey = key; }
-                return liveCoverAt;
+                return WithTrafficCover(liveCoverAt); // brief 098 step 1: and the standing passing cars' (none without traffic: the same list)
             }
         }
         /// <summary>Whether any cover point of `of` (a cover point's `of`, e.g. car/official) still stands (host read; never hashed).</summary>
@@ -69,7 +69,7 @@ namespace Suborned.Sim
                 case "car:getaway": return Car;
                 case "car:official": return lentLeft ? (Pt?)null : CarPos(); // engine 0.42.0: gone once the lent car leaves
                 case "car:rivals": return RivalCarPose()?.pos; // brief 059 K7: a target from its entry, wherever it drives
-                default: return null;
+                default: return TrafficCarById(id) is TrafficCar tc ? TrafficPose(tc).at : (Pt?)null; // brief 098 step 1: a passing car, wherever it drives
             }
         }
         public CarTarget? CarOf(string id) => cars.TryGetValue(id, out var c) ? c : null;
@@ -82,13 +82,14 @@ namespace Suborned.Sim
 
         void EnsureCar(string id) { if (CarAt(id).HasValue && !cars.ContainsKey(id)) cars[id] = new CarTarget { Id = id, Gun = NewGun(id, null, false, R.HealthCar) }; }
         /// <summary>A car's gun: the one a fire order made, else a fresh one for a preview (never stored, so a preview changes nothing).</summary>
-        Gun? CarGun(string id) => cars.TryGetValue(id, out var c) ? c.Gun : Array.IndexOf(CarIds, id) >= 0 && !Range ? NewGun(id, null, false, R.HealthCar) : null; // a known car not on the street: a target with no place (no-target)
+        Gun? CarGun(string id) => cars.TryGetValue(id, out var c) ? c.Gun : (Array.IndexOf(CarIds, id) >= 0 || TrafficCarById(id) != null) && !Range ? NewGun(id, null, false, R.HealthCar) : null; // a known car not on the street: a target with no place (no-target); brief 098 step 1: a passing car on the roads
 
         /// <summary>A shot lands on a car (Damage, after its health moved): disabled at disabledAt, burning at 0.</summary>
         void CarHit(string t, Gun tg, string by)
         {
             var c = cars[t];
             if (IsOpId(by)) c.By = by;
+            if (IsTrafficId(t)) TrafficHit(t, by); // brief 098 step 1: a driver whose car is shot gets out and runs (GameTrafficLaw.cs)
             if (c.DisabledAt < 0 && tg.Health <= R.CarDisabledAt * HealthScale) CarDisable(c);
             if (Over) return;
             if (tg.Health == 0 && c.BurningAt < 0)
@@ -101,7 +102,7 @@ namespace Suborned.Sim
             }
             if (c.DisabledAt != Tick) Note("car.hit", $"The {CarName(t)} is hit.");
         }
-        static string CarName(string id) => id == "car:getaway" ? "getaway car" : id == "car:official" ? "official car" : id == "car:rivals" ? "rival car" : "car " + id.Substring(4); // the range's: car range-1, …
+        string CarName(string id) => id == "car:getaway" ? "getaway car" : id == "car:official" ? "official car" : id == "car:rivals" ? "rival car" : IsTrafficId(id) ? "passing " + (TrafficCarById(id)?.Model ?? "car") : "car " + id.Substring(4); // the range's: car range-1, …; brief 098 step 1: a passing sedan, van, scooter
 
         void CarDisable(CarTarget c)
         {
@@ -118,6 +119,7 @@ namespace Suborned.Sim
                       int k = 0; foreach (var m in Crew) if (m.Mode == CrewMode.Aboard && Up(m)) m.OutAt = Math.Min(m.OutAt, Tick + T(R.BoardS) + T(R.Crew.StepS) * k++); }
                     return;
                 default:
+                    if (IsTrafficId(c.Id)) { TrafficDisabled(c); return; } // brief 098 step 1: a passing car stops for good, its driver out (GameTrafficLaw.cs)
                     if (Range) RangeCarOut(c); // the range's car: its occupant gets out (GameRange.cs)
                     return;
                 case "car:official":
@@ -158,6 +160,7 @@ namespace Suborned.Sim
             Chain.Add(c.Id.Substring(4) + "-car-exploded");
             Note("car.exploded", $"The {CarName(c.Id)} explodes.");
             var of = Range ? RangeCarCover(c.Id) : CarCover(c.Id); liveCover = new List<CoverPoint>((liveCover ?? S.Cover).FindAll(p => p.Of != of)); liveCoverKey = -1; // its cover points are gone (brief 059: from the site's, not the cars-where-they-stand filter)
+            if (IsTrafficId(c.Id) && trafficCover.RemoveAll(p => p.Of == of) > 0) trafficCoverVer++; // brief 098 step 1: a passing car's too
             // violence seen by a civilian (§05; rulebook car.target): Alert to alert.violenceSeen and a Menace step, once a car
             bool civSees = false; foreach (var p in WitnessesOf(at, null, "gunfire")) if (p.Civilian) { civSees = true; break; }
             if (civSees)

@@ -30,7 +30,7 @@ namespace Suborned.Sim
         /// <summary>Everyone's ties as this game holds them: the people file's, less the ties to anyone the dial took away.</summary>
         Dictionary<string, List<(string kind, string with)>> LiveTies => liveTies ?? People2!.Ties;
         /// <summary>The start hash's share of the dial: its rules' text when the start sets counts, else nothing (every other start hashes as before).</summary>
-        ulong DialHash() => dial == null ? 0UL : unchecked(dial.TextHash * 23UL);
+        ulong DialHash() => dial == null ? 0UL : unchecked(dial.TextHash * 23UL ^ (TrafficAsked > 0 ? dial.Lanes!.TextHash * 29UL : 0UL)); // brief 098 step 1: and the lanes the cars drive, when the start sets any
         /// <summary>Where a crowd place is: the people file's, else one the dial found in the site (a post point, an edge).</summary>
         internal Pt CrowdPlace(string id) => People2!.Places.TryGetValue(id, out var p) ? p : xPlaces[id];
         internal bool TryCrowdPlace(string id, out Pt p) => People2!.Places.TryGetValue(id, out p) || xPlaces.TryGetValue(id, out p);
@@ -66,7 +66,7 @@ namespace Suborned.Sim
             foreach (var c in S.Cast) if (c.Lover.Length > 0) foreach (var o in S.Cast) if (o.Role == c.Lover) tenets.Add(o.Id);
             var fresh = new List<Walker>(); foreach (var w in crowd.Walkers) fresh.Add(w.Fresh());
             var gone = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var kind in Population.Kinds)
+            foreach (var kind in Population.PeopleKinds)
             {
                 var d = dial.Kinds[kind]; var c = new KindCensus { Kind = kind, Max = d.Max };
                 var mine = fresh.FindAll(w => Population.KindOf(dial, w.P.Job) == kind);
@@ -90,6 +90,7 @@ namespace Suborned.Sim
                 foreach (var kv in crowd.Ties) if (!gone.Contains(kv.Key)) liveTies[kv.Key] = kv.Value.FindAll(t => !gone.Contains(t.with));
             }
             foreach (var c in Census) { var d = dial.Kinds[c.Kind]; int add = c.Count - c.Today; for (int k = 1; k <= add; k++) c.Added.Add(AddPerson(d, k, crowd)); }
+            CensusCars(); // brief 098 step 1: the traffic's count (GameTraffic.cs); the cars themselves start at the end of the constructor
         }
 
         /// <summary>Who of one kind leaves, `n` of them, in the dial's order: never a tenet; off-post first, then reliefs (the latest shift first), then

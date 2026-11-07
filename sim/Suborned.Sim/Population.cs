@@ -23,16 +23,21 @@ namespace Suborned.Sim
         public readonly int DestSeat, DestDoor, DestEdge;
         /// <summary>people.rules temperamentsBy.mix.rowMaxShare, per mille: no temperament holds more of an added kind's draw.</summary>
         public readonly int RowMaxPm;
+        /// <summary>Brief 098 step 1 (law L8): the cars kind and the traffic's rules (kinds.cars, traffic), and the lanes the host loaded with them
+        /// (sim/data/handover.lanes.json, Engine.Load), or null when it loaded none: a start that sets cars is then rejected.</summary>
+        public readonly TrafficRules Traffic = null!;
+        public LaneNet? Lanes;
         public PopulationRules(string json, string peopleRules)
         {
             Text = JNode.Canon(json); TextHash = Hash.Of(Text);
             var n = JNode.Parse(Text, "population");
-            n.Only("schema", "author", "gdd", "rule", "kinds", "fewer", "beat", "passers");
+            n.Only("schema", "author", "gdd", "rule", "kinds", "fewer", "beat", "passers", "traffic");
             if (n["schema"].Str() != "suborned.rules.population/1") throw new FormatException("population schema is not suborned.rules.population/1");
             var pr = JNode.Parse(peopleRules, "people.rules")["temperamentsBy"];
             foreach (var kv in n["kinds"].Entries)
             {
                 if (Array.IndexOf(Population.Kinds, kv.Key) < 0) throw new FormatException($"{kv.Value.Path}: '{kv.Key}' is not a kind the engine builds ({string.Join(", ", Population.Kinds)})");
+                if (kv.Key == Population.Cars) { Traffic = new TrafficRules(kv.Value, n["traffic"], pr); continue; } // brief 098 step 1: cars are no people kind (Traffic.cs)
                 var k = kv.Value; k.Only("of", "role", "job", "id", "name", "max", "src", "proposed", "reason");
                 var d = new DialKind { Kind = kv.Key, Role = k["role"].Str(), Job = k["job"].Str(), IdPrefix = k["id"].Str(), Name = k["name"].Str(), Max = k["max"].Int() };
                 if (k["of"].Kind == JKind.Str) { if (k["of"].Str() != "rest") throw new FormatException($"{k["of"].Path}: a list of jobs, or \"rest\""); d.Rest = true; }
@@ -43,7 +48,8 @@ namespace Suborned.Sim
                 d.Allow = role["allow"].Strs().ToArray(); if (d.Allow.Length == 0) throw new FormatException($"{k["role"].Path}: the role allows no temperament");
                 Kinds[kv.Key] = d;
             }
-            foreach (var kind in Population.Kinds) if (!Kinds.ContainsKey(kind)) throw new FormatException($"population.kinds.{kind} is missing");
+            foreach (var kind in Population.PeopleKinds) if (!Kinds.ContainsKey(kind)) throw new FormatException($"population.kinds.{kind} is missing");
+            if (Traffic == null) throw new FormatException("population.kinds.cars is missing (brief 098 step 1: the traffic's kind)");
             int rests = 0; var named = new HashSet<string>(StringComparer.Ordinal); foreach (var d in Kinds.Values) { if (d.Rest) rests++; foreach (var j in d.Of) if (!named.Add(j)) throw new FormatException($"population.kinds: job '{j}' is named by two kinds"); }
             if (rests != 1) throw new FormatException("population.kinds: exactly one kind is \"rest\"");
             var f = n["fewer"]; f.Only("salt", "src", "proposed", "reason"); LeaveSalt = f["salt"].Str();
@@ -77,8 +83,12 @@ namespace Suborned.Sim
 
     public static class Population
     {
-        /// <summary>The kinds the dial builds today. Patrol robots, cameras and cars join here when their rules exist (brief 098: step 1 is traffic).</summary>
-        public static readonly string[] Kinds = { "guards", "people" };
+        /// <summary>The kinds the dial builds today: guards and people (the people file's, more or fewer), and cars (brief 098 step 1: passing traffic,
+        /// none today). Patrol robots and cameras join here when their rules exist.</summary>
+        public static readonly string[] Kinds = { "guards", "people", "cars" };
+        /// <summary>The kinds that count people (the people file's walkers and the dial's added ones).</summary>
+        public static readonly string[] PeopleKinds = { "guards", "people" };
+        public const string Cars = "cars";
         /// <summary>The most any count may be in a start (each kind's own `max` is lower).</summary>
         public const int CountCap = 100000;
         public const string RulesFile = "contracts/rules/population.json";
@@ -90,6 +100,7 @@ namespace Suborned.Sim
             var pop = i.Population ?? throw new FormatException($"the dial needs its rules ({RulesFile})");
             foreach (var kind in Kinds)
             {
+                if (kind == Cars) { l.Add(new KindCensus { Kind = kind, Max = pop.Traffic.Max }); continue; } // brief 098 step 1: no traffic today (0, floor 0)
                 var d = pop.Kinds[kind]; var c = new KindCensus { Kind = kind, Max = d.Max };
                 if (i.Crowd != null) foreach (var w in i.Crowd.Walkers) if (KindOf(pop, w.P.Job) == kind) c.Today++;
                 foreach (var cr in i.SiteData.Cast) if (KindOf(pop, CastJob(cr.Role)) == kind) { c.Today++; c.Floor++; }
