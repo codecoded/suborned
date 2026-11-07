@@ -140,7 +140,7 @@ public class TrafficTests
             for (int k = 0; k < Game.T(10) && near.Count == 0; k++)
             {
                 g.Step(); Stand(g, OpId.Enforcer, spot.Value);
-                if (g.LastShotTick > shot0) foreach (var c in g.Traffic) if (c != target && c.Out == null && G.Within(View(g, c.Id).At, spot.Value, g.R.CrowdScatterCm - 200) && c.Mode != TrafficMode.Abandoned) near.Add(c);
+                if (g.LastShotTick > shot0 && g.LastShotTick == g.Tick) foreach (var c in g.Traffic) if (c != target && c.Out == null && G.Within(View(g, c.Id).At, spot.Value, g.R.CrowdScatterCm - 200) && c.Mode != TrafficMode.Abandoned) near.Add(c); // engine 0.48.0: near on a shot's own tick (a car that drives up after the shot never heard it; 0.47 took it on any tick after)
             }
             if (near.Count == 0) continue;
             tried++;
@@ -148,7 +148,7 @@ public class TrafficTests
             for (int k = 0; k < Game.T(6); k++) { g.Step(); foreach (var c in near) if (c.V == 0 && !stoppedAt.ContainsKey(c.Id)) stoppedAt[c.Id] = g.Tick; }
             foreach (var c in near)
             {
-                Assert.True(stoppedAt.ContainsKey(c.Id) || c.Mode == TrafficMode.Flee, $"{c.Id} brakes and stops at the gunfire");
+                Assert.True(stoppedAt.ContainsKey(c.Id) || c.Mode == TrafficMode.Flee, $"{c.Id} brakes and stops at the gunfire (now {c.Mode}, {c.V} cm/s, {G.Dist(View(g, c.Id).At, spot.Value)} cm from the shot)");
                 if (c.Out != null) continue; // a stray round on it: its driver got out
                 var nature = Tr.Ducks(c.Driver.Temperament) ? TrafficMode.Duck : TrafficMode.Flee;
                 Assert.True(c.Mode == nature || (nature == TrafficMode.Duck && c.Mode == TrafficMode.Drive), $"{c.Id}'s {c.Driver.Temperament} driver: {nature}, not {c.Mode}");

@@ -3,7 +3,8 @@
 // engine 0.47.0). What a held body does in place of jumping (GameBodyDetours.cs says when):
 //  · the one in the way makes room: a person of the city in a held body's way (standing, waiting, or coming the other way; not going its own way
 //    ahead of it, not queueing at the stop it waits for) steps off its line to the nearest free spot, at the city's walk, and steps back once it
-//    has passed (two radii beyond the spot it stood on, along its way), has left the street, or RoomTicks are up. Counted: BodySidesteps.
+//    has passed (two radii beyond the spot it stood on, along its way), has left the street, stands at its own place held by nothing, its own
+//    way has moved on, or RoomTicks are up. One armed does the same for one of its own side (engine 0.48.0). Counted: BodySidesteps.
 //  · squeezing past: with no room to make, two people of the city in one another's way pass shoulder to shoulder, turned sideways: between the
 //    two only bodies.squeeze each (not a radius), everyone else still two radii off; at bodies.squeezePace; until they have passed and stand two
 //    radii apart. Counted: BodySqueezes; the host reads who squeezes with whom and the way each faces (BodySqueeze, GameBodyReads.cs).
@@ -39,12 +40,15 @@ namespace Suborned.Sim
         void GiveStart(int i)
         {
             ref var b = ref bds[i];
-            if (b.RoomFor != null && (Tick >= b.RoomEnd || !bdIx.TryGetValue(b.RoomFor, out var a) || Past(bds[a].At, b.RoomFrom, b.RoomDir, R.BodyMinCm))) { b.RoomDone = b.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; b.RoomFor = null; } // it stood aside once: not asked again by them for a while
+            if (b.RoomFor != null && (Tick >= b.RoomEnd || !bdIx.TryGetValue(b.RoomFor, out var a) || Past(bds[a].At, b.RoomFrom, b.RoomDir, R.BodyMinCm) || Settled(in bds[a]) || !G.Within(b.Raw, b.RoomRaw, R.BodyMinCm + R.BodySpaceCm))) { b.RoomDone = b.RoomFor; b.RoomDoneUntil = Tick + RoomTicks; b.RoomFor = null; } // it stood aside once: not asked again by them for a while (engine 0.48.0: also once they stand at their own place, held by nobody, or its own way has moved on)
             if (b.SqzId == null) return;
             if (!bdIx.TryGetValue(b.SqzId, out var p) || bds[p].SqzId != b.Id) { b.SqzId = null; return; } // the other has left the street, or squeezes no more
             ref var o = ref bds[p];
             if (!G.Within(b.Prev, o.At, R.BodyMinCm) && (Past(b.Prev, o.At, b.SqzDir, 0) || Tick >= b.SqzEnd)) { b.SqzId = null; o.SqzId = null; } // passed, two radii apart
         }
+        /// <summary>Engine 0.48.0: one it made room for stands at its own place, held by nothing: the room is no longer needed (a guard who took over
+        /// the post the other was leaving never passes it; 0.47 kept the other aside the full RoomTicks while his beat walked on).</summary>
+        bool Settled(in Bd a) => !a.Moving && a.HeldN == 0 && G.Within(a.Prev, a.Own, R.BodyMinCm) && (a.Kind != BkOp || a.Path == null); // an operative's own place follows his body: he is settled only when his walk is done
         /// <summary>Squeezing past someone and still trying (a squeeze past its time keeps only the narrower width until the two stand apart).</summary>
         bool Squeezing(in Bd b) => b.SqzId != null && Tick < b.SqzEnd;
         /// <summary>Whether `at` stands more than `by` beyond `spot` along `dir`.</summary>
@@ -55,12 +59,12 @@ namespace Suborned.Sim
         bool AskRoom(int i, int j, Pt from, Pt goal)
         {
             ref var b = ref bds[i]; ref var o = ref bds[j];
-            if (b.RoomFor != null || Squeezing(in b) || o.Cls != BcSoft || o.Armed || o.Fresh || o.RoomFor != null || o.SqzId != null || o.GiveEnd > Tick || (o.RoomDone == b.Id && Tick < o.RoomDoneUntil)) return false; // the armed and the tenets keep their places; one already giving way is busy; one it already stood aside for asks no more a while
+            if (b.RoomFor != null || Squeezing(in b) || !MakesRoomFor(in o, in b) || o.Fresh || o.RoomFor != null || o.SqzId != null || o.GiveEnd > Tick || (o.RoomDone == b.Id && Tick < o.RoomDoneUntil)) return false; // the tenets keep their places, the armed keep theirs but for their own side; one already giving way is busy; one it already stood aside for asks no more a while
             if (o.Stop != null && o.Stop == b.Stop) return false; // a queue at one stop: it waits its turn
             var dir = goal - from; if (dir == default) return false;
             var way = b.Head != default ? b.Head : dir; // the way it is going (its own place's step), else the way to its goal
             if (o.Head != default && (long)o.Head.X * way.X + (long)o.Head.Y * way.Y > 0) return false; // going its own way ahead of it: it follows
-            if (RoomSpot(j, from, dir) is Pt spot) { o.RoomFor = b.Id; o.RoomAt = spot; o.RoomFrom = o.At; o.RoomDir = dir; o.RoomEnd = Tick + RoomTicks; BodySidesteps++; return true; }
+            if (RoomSpot(j, from, dir) is Pt spot) { o.RoomFor = b.Id; o.RoomAt = spot; o.RoomFrom = o.At; o.RoomDir = dir; o.RoomRaw = o.Raw; o.RoomEnd = Tick + RoomTicks; o.SlideUntil = 0; o.PickWhy = 0; BodySidesteps++; return true; }
             if (b.Cls != BcSoft || b.Armed || b.SqzId != null || G.Within(o.Own, b.Own, R.BodySpaceCm)) return false; // the cell and the armed never squeeze (they wait or walk round); two making for one spot are a queue, not a pass
             if ((long)(o.At.X - from.X) * way.X + (long)(o.At.Y - from.Y) * way.Y <= 0) return false; // only one in its way ahead, coming toward it or standing: a squeeze is a pass
             b.SqzId = o.Id; o.SqzId = b.Id; b.SqzEnd = o.SqzEnd = Tick + SqueezeTicks; b.SqzDir = dir; o.SqzDir = o.Head != default ? o.Head : new Pt(-dir.X, -dir.Y); BodySqueezes++;
@@ -77,14 +81,21 @@ namespace Suborned.Sim
                     for (; e >= 0; e = bhNext[e])
                     {
                         int j = bhBody[e]; if (j == i) continue; ref var o = ref bds[j];
-                        if (o.Placed || o.Cls != BcSoft || o.Armed || o.Fresh || o.RoomFor == b.Id || o.SqzId != null) continue; // laid already, or one who keeps its place, or already making room for it (a walking tenet comes first: it replaces making room for another, as Vale a metre beside the Enforcer)
+                        if (o.Placed || !MakesRoomFor(in o, in b) || o.Fresh || o.RoomFor == b.Id || o.SqzId != null) continue; // laid already, or one who keeps its place (the Enforcer's own cell make room for him), or already making room for it (a walking tenet comes first: it replaces making room for another, as Vale a metre beside the Enforcer)
                         var v = o.At - b.At; long along = ((long)v.X * dir.X + (long)v.Y * dir.Y) / len, across = Math.Abs((long)v.X * dir.Y - (long)v.Y * dir.X) / len;
                         if (along <= 0 || along > AheadCm || across >= R.BodyMinCm + RoomClearCm) continue;
-                        if (RoomSpot(j, b.At, dir) is Pt spot) { o.RoomFor = b.Id; o.RoomAt = spot; o.RoomFrom = o.At; o.RoomDir = dir; o.RoomEnd = Tick + RoomTicks; BodySidesteps++; }
+                        if (RoomSpot(j, b.At, dir) is Pt spot) { o.RoomFor = b.Id; o.RoomAt = spot; o.RoomFrom = o.At; o.RoomDir = dir; o.RoomRaw = o.Raw; o.RoomEnd = Tick + RoomTicks; BodySidesteps++; }
                     }
         }
         /// <summary>How far ahead of a tenet walking the city makes room (cm).</summary>
         const int AheadCm = 300;
+        /// <summary>Who makes room for whom (engine 0.48.0; Aster, brief 098 after Vantage's probe: a police officer stood 81.6 s behind a response
+        /// robot in the east gap, both armed): a person of the city for anyone; one armed for one armed of its own side (SideOf), as the city does,
+        /// never for an enemy; a tenet (fixed, one of the cast walking, the patrol on its sweep) or one carrying someone never.</summary>
+        bool MakesRoomFor(in Bd o, in Bd b) => o.Cls != BcFixed && !o.WalksFirm && !o.Laden && o.Kind != BkPatrol && (o.Cls == BcSoft && !o.Armed || SideOf(in o) != 0 && SideOf(in o) == SideOf(in b)); // the patrol on its sweep is one of the rulebook's tenets
+        /// <summary>The side an armed body is on: 1 the cell; 2 security (the patrol, the city's and the dial's guards, the response's officers,
+        /// police units and robots, the fight's police); 3 the rival crew (on foot or in the fight); 0 none (the city's people unarmed, the cast).</summary>
+        static int SideOf(in Bd b) => b.Kind switch { BkOp => 1, BkPatrol or BkOfficer or BkUnit => 2, BkCrew => 3, BkHostile => IsRivalId(b.Id) ? 3 : 2, BkWalker => b.Armed ? 2 : 0, _ => 0 };
         /// <summary>Where j steps to make room for one going `dir` from `from`: the nearest free spot off that way on the side j stands, then the other.</summary>
         Pt? RoomSpot(int j, Pt from, Pt dir)
         {
@@ -150,7 +161,7 @@ namespace Suborned.Sim
         bool ReplanRefuge(int i, Pt from, Walker w)
         {
             var shot = lastShooterFor.TryGetValue(w.P.Id, out var sh) ? sh : lastShooter; long mine = G.D2(from, shot), max2 = (long)R.CrowdFleeMaxCm * R.CrowdFleeMaxCm;
-            refugeTry.Clear(); foreach (var (id, at, _) in S.Refuges) { long d = G.D2(from, at); if (d <= max2 && G.D2(at, shot) > mine) refugeTry.Add((d, id, at)); }
+            refugeTry.Clear(); foreach (var (id, door, _) in S.Refuges) { var at = ShelterAt(id, door); long d = G.D2(from, at); if (d <= max2 && G.D2(at, shot) > mine) refugeTry.Add((d, id, at)); } // a door the cast hold: in from beside the holder
             refugeTry.Sort((x, y) => x.d != y.d ? x.d.CompareTo(y.d) : string.CompareOrdinal(x.id, y.id));
             for (int k = 0; k < refugeTry.Count && k < ReplanRefuges; k++)
             {
@@ -168,7 +179,7 @@ namespace Suborned.Sim
         bool ChairTaken(string chair) { for (int j = 0; j < bdN; j++) if (bds[j].AltOn && bds[j].AltStop == chair) return true; return false; }
         bool TakeAlt(int i, Pt at, string? chair, int until, string how)
         {
-            ref var b = ref bds[i]; b.AltOn = true; b.Alt = at; b.AltStop = chair; b.AltUntil = until; b.Own = at;
+            ref var b = ref bds[i]; b.AltOn = true; b.Alt = at; b.AltStop = chair; b.AltUntil = until; b.Own = at; b.SlideUntil = 0; b.PickWhy = 0;
             BodyReplans++; BodyReplansBy[how] = BodyReplansBy.GetValueOrDefault(how) + 1; return true;
         }
 

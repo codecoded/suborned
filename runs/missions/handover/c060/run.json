@@ -1,0 +1,729 @@
+{
+ "schema": "suborned.mission.check/1",
+ "id": "c060",
+ "mission": "handover",
+ "note": "098 engine 0.48.0 (Keel): nobody stops on a cast member's place (doors gone into from beside the holder), a body keeps to one side for a moment, the armed make room for their own side; on the integration branch's data (Pulse's people and rounds, Vantage's car stand and palms); five route scripts recomposed (0.1-0.4 s)",
+ "verdict": "HOLDS",
+ "engine": {
+  "commit": "tree",
+  "sourceSha256": "a7c1129f003f730ba6d2f1fd5a7e45803f16a329dcd69f3dc3ad7542f62d5047",
+  "inputs": "tree"
+ },
+ "tool": "e27e290ba3e014f82abfdcb9f21e1b411945904fd5d36eb7df882ebadef10d12",
+ "inputs": {
+  "contracts/rules/rulebook.json": "33792d83a6322ae0b8310ca3b642320f16d79f83d6e0d9031b5fc076fe7f8b24",
+  "contracts/people/people.rules.json": "5f87ab1276115474504bf185376702b0c8db99623a5f1840c50f5dc4b9befa2f",
+  "sim/data/handover.lanes.json": "b0f5d309785da1fa1b5540afebdf4438ea483b3f6c836ab7f8268c7b15ed9903",
+  "sim/data/handover.people.json": "b8724f92a1dad4307d71be1d8a1f34489cb12b71fa6ab5080d4608ab48ccff38",
+  "sim/data/handover.provisional.json": "1f01ce6907c9644d627932f6dd1b6ba16d14fd7926a60145db20ab28ca4635e2",
+  "sim/data/handover.rounds.json": "92bc9a3c3cb1705418eab09a9b718993e10eb67616d9c2f60297c7a877e0c0fc",
+  "sim/data/handover.site.json": "4efb8b421c5c3e42442b165c4bf9765a19dd3d435d9716531e393c4c2e31f872",
+  "sim/data/handover.takedown.json": "feebab2c9a42084a56604258da206131e7ab6c94ea6d535ef42fe07e9970830f",
+  "sim/data/range-dense.site.json": "8f806f32efbfdb197b81be567384b4c053734cf69b4247171be09fc1506b7a7f",
+  "sim/data/range-lane.site.json": "9673082e78ee3697cbc92306edb612835f80160f49e88e42534db1dc77b987cc",
+  "sim/data/range.site.json": "b5332531e7ad8c4f8f45a11ed1dc7ec752c97c705bd3afced995a64f3efa2698",
+  "tree:contracts/missions/handover/mission.json": "3158dc9c78621e92a48738ecfaecfd8de0bcccd7ec9d73199489b1ce8bde92bd"
+ },
+ "facts": {
+  "patrolWatchesEntry": false,
+  "sweepSecondsOnEntry": 0,
+  "sweepPeriodS": 100
+ },
+ "scenarios": {
+  "K3-CELL-DOWN": "K3-CELL-DOWN: ok"
+ },
+ "routes": {
+  "routes.json": "b2fd916d0b4fc960f75ddcb38caddf13f11bb447afc0e95496af73c8a41a2e2a",
+  "route-a.json": "08395720e0a465bbaa575b48623c04635ab06f446f64ed54fef16fc35f15feca",
+  "route-a-board.json": "a96bdde76c238512482875154840fad3836bc58ee9d8f509f4b9c4c01d13a3d7",
+  "route-a-pressure.json": "0f21077b0a282851f196e5a7cd8193b6150ff971b33f7b2514ad101d73c756f2",
+  "route-a-pressure-board.json": "e52d0c4a2a8e21c8d9c57857d5e70bcda576c96955d47cead7a603ae2091d283",
+  "route-a-disable.json": "64abcd264e535380b68dab92f432c9cb6d3e998acbcbfadc20b6b4a1494365a7",
+  "route-b.json": "0f8bf02a6a3ea935751ce1801b8e8119e1ea69b258fbb7f18a2b73b9db302edf",
+  "route-b-board.json": "64d4e6f27521db2b9a05c356dfdb0a84a7d096f89bd37a64a8add115eed0fca5",
+  "route-b-thin.json": "af8da3ca47ef383758fe246e08349193367f1f6c1d75082fffe0baf2f10fe003",
+  "route-g.json": "e709b7ac6035037b39619046078bbce483f6dad1249899075c354735cc66afa8",
+  "route-g-board.json": "7442d1d02d843f8c5daf8fde30a5ae9a481b5ed9c81bb3301e894788d889e321",
+  "route-g-fast.json": "fe4566afe3cb6675da6dcef64f82826669a8f0d3ed4bc948067d347ba48df6ce",
+  "route-g-fast-board.json": "0af2114a8f7fc7069ce6933ee7e5503930b58a9571c3c95b1bb67f07b71ecc74",
+  "route-g-kill.json": "438f33eb4c62ab2582509b287aa58b5c12830f97f38d0396ca6f8eb3c28440b0",
+  "route-g-kill-board.json": "a8fda090e8e573bb45686f34c0026cfdddb311435feb729cea78fe6a7ea55539",
+  "loud.json": "b4bf7c7f706a3e1b06aef0fba4d9607e11bf726708298be2e18b1ce536e3ab51",
+  "loud-fight.json": "71535fe8f703a1784f30f48819f99cf1b11025b92b2362736b9e4df094d4c8d1",
+  "fail-vale-dead.json": "bdf141be8abf59df8466328f2e26192377ced4a03994f7f3c427ea600edcbacd",
+  "fail-vale-leaves.json": "a0163ac657ea6340eee29f825ba402e1038fdcbc770f23e85470938f20bf32d4",
+  "fail-rivals-reach-vale.json": "70627b45f3f188352922cde821baf9e208bfe4fd7a0803966bcba746617fee57",
+  "fail-district-seals.json": "80d097418e54657a640a2c7097dc0428f0c5bf787adaf53c7c6e418be13b7d69",
+  "fail-enforcer-down.json": "97cae05770800f01a2158eafe224f75e7cf50142ab1cdb3a9addd231ed046124",
+  "fail-entry-seen-guard.json": "8a40b0be9dd74a88549ffda1179948584158ee90c10e649b87d2485e17145a8b",
+  "fail-entry-seen-camera.json": "5b63b746ad134d59da21e9b1f3de9b3e2906d2201ad9060e94e19a7ea12e6179",
+  "fail-take-seen-camera.json": "5141620f8cc144dac6eed428b8ed53a82af512c1b0ffd6d8346f525ad3f17d1e",
+  "fight-loud-enforcer-down.json": "a1299ccfb3993091a5e82b6de7be51c1f8b03e0fd9601739ae36d85fb2f09b82",
+  "fight-safe-rivals-reach-vale.json": "50086ca4daec533117df04cbdb06c173a8be34700e94e318f61b4fd730f9873d",
+  "fight-safe-unguarded.json": "15def4093c74a22a7a521240434ae48a0460fc74314dc2817b8b07bde9fdb73c",
+  "fight-loud-wait-square.json": "6f4a7c62d7193a6354b240aba4fe5b047cb9f4b7e30edb489f54960bfa830ead",
+  "fight-loud-wait-yard.json": "faef60ac93402fed2b147c6452395039b0da2c9ede382d5e6baeb69b6ca25eaf",
+  "withdraw.json": "b7c425d684460a0ba0950972af7858d81706934d60a787648521b2eb7a4970aa",
+  "loud-left-downed.json": "ddc12048e47f79e2e8ac332f7efc886354b97dda5663bed85dfc641cf856bf39",
+  "loud-left-standing.json": "4a50a376e3f4f347aa3f638f95c927655de2939afa246f5e0f5d33846277e8e0",
+  "careless-takedown-seen-camera.json": "32f6a30610262319f1ad38db9557c29067e9fe12eda650bfdc9fdfd54ace8f08",
+  "careless-takedown-seen-crowd.json": "308148f3b266acae51218f2296db958d6885a05efc863d99b699304ade0fe315",
+  "careless-body-found.json": "5ab4e6abfd4965030dbb88e16e60a2db0599d9154419202b509335a49834db2a",
+  "careless-reporter-not-stopped.json": "05fa5355f5061dac2ede4ae43d07720948e46f285b9cb6af1dc543eb063d2654",
+  "careless-guard-left-door-held.json": "a0551987615a8f264f8178ebf3ce034f6d255e5f9730b74a341a1a905e08453c",
+  "careless-enforcer-watches-guard.json": "1c2f56fba02fd31c1a1e1098ed084719405c681b0d47b8256992f507e7973b5c",
+  "careless-scout-idles-pickup.json": "9d1862f4d5ea45e8ab8abd0d82921ab5ae498f819be1109db2b77f31a72e9a36",
+  "careless-g-disable.json": "22d8ab64ee5735c13d576da671afc09fd89314caf47530d1c38d1d5947fcd725",
+  "careless-loop-runs-out.json": "2287e825b68c8bd09bd81ca0039b76b5a574bccd6d7be02742c3377546207cfe",
+  "careless-thin-all.json": "9424230b31a101f6a942541c7483ee254fc6c39d4da167a6e98abcc3dcae0b21"
+ },
+ "conditions": [
+  {
+   "id": "MC-0",
+   "rule": "Every script plays as the manifest expects and replays to identical checkpoints",
+   "ok": true,
+   "value": "23/23",
+   "detail": "19 pending: route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable, route-b-board, route-b-thin, route-g-board, route-g-fast, route-g-fast-board, route-g-kill, route-g-kill-board, loud-fight, fail-district-seals, fail-entry-seen-camera, loud-left-downed, loud-left-standing, careless-reporter-not-stopped, careless-g-disable, careless-thin-all"
+  },
+  {
+   "id": "MC-1",
+   "rule": "≥ 2 quiet routes win (no shot before the final fight), counted by route",
+   "ok": true,
+   "value": "3 (A, B, G)",
+   "detail": "route-a (route A) wins at 4:48.6, 3 T; route-b (route B) wins at 7:40.6, 3 T; route-g (route G) wins at 6:12.3, 5 T"
+  },
+  {
+   "id": "MC-2",
+   "rule": "The loud route exists, wins, and costs more T than every quiet win (variants too)",
+   "ok": true,
+   "value": "loud 28+8 T vs quiet route-a 3, route-b 3, route-g 5 (mission+campaign+cases at 3 T)",
+   "detail": "loud: success, 28 T, 1 shots before the fight, A 2"
+  },
+  {
+   "id": "MC-3",
+   "rule": "Every §07 fail is reached by a played script",
+   "ok": true,
+   "value": "8/8",
+   "detail": "Vale killed: fail-vale-dead; Vale leaves in his car: fail-vale-leaves, an adaptive plan across seeds; rivals reach Vale: fail-rivals-reach-vale, fight-safe-rivals-reach-vale, fight-safe-unguarded, an adaptive plan across seeds; district seals: an adaptive plan across seeds; Enforcer down before Vale is in the car: fail-enforcer-down, fight-loud-enforcer-down, fight-loud-wait-square, an adaptive plan across seeds; the cell down (every op down): scenario K3-CELL-DOWN, an adaptive plan across seeds; entry seen by guard: fail-entry-seen-guard; entry seen by live camera: fail-take-seen-camera, an adaptive plan across seeds; pending (not played): route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable, route-b-board, route-b-thin, route-g-board, route-g-fast, route-g-fast-board, route-g-kill, route-g-kill-board, loud-fight, fail-district-seals, fail-entry-seen-camera, loud-left-downed, loud-left-standing, careless-reporter-not-stopped, careless-g-disable, careless-thin-all"
+  },
+  {
+   "id": "MC-4",
+   "rule": "No single contact is essential: without each, a quiet route still wins (a contact that leaves < 2 quiet routes is named)",
+   "ok": true,
+   "value": "without waitress: B, G; without driver: A, G",
+   "detail": "waitress (Inez (route A: she calls the guard away)): route A depends on it; driver (the official driver (route B: he moves the pickup to the service lane)): route B depends on it"
+  },
+  {
+   "id": "MC-5",
+   "rule": "The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event",
+   "ok": true,
+   "value": "route A 2:34 early, route B 1:24 early, route G 1:14 early",
+   "detail": "route A (route-a): Vale secured at 2:55.4, 2:34 before 5:30 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside; at the getaway car 4:48.6, 3:21 before the mission's 8:10 close; every planned step can slip 0 s and still win; route B (route-b): Vale secured at 6:45.2, 1:24 before 8:10 rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling); at the getaway car 7:40.6, 0:29 before the mission's 8:10 close; every planned step can slip 30 s and still win; route G (route-g): Vale secured at 4:15.9, 1:14 before 5:30 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside; at the getaway car 6:12.3, 1:57 before the mission's 8:10 close; every planned step can slip 0 s and still win"
+  },
+  {
+   "id": "MC-6",
+   "rule": "The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2)",
+   "ok": true,
+   "value": "route-a 4:48.6 vs loud 5:54.7: 66.1 s faster",
+   "detail": "route-a (quiet) 4:48.6; route-g (quiet) 6:12.3; route-b (quiet) 7:40.6; loud (loud) 5:54.7"
+  },
+  {
+   "id": "MC-7",
+   "rule": "Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 (or above its careful twin's) and dearer in total Trail than its careful twin",
+   "ok": true,
+   "value": "5/5",
+   "detail": "careless-takedown-seen-camera: fails: entry-seen-camera; careless-takedown-seen-crowd: fails: vale-leaves; careless-body-found: fails: enforcer-down; careless-guard-left-door-held: fails: vale-leaves; careless-enforcer-watches-guard: fails: enforcer-down"
+  },
+  {
+   "id": "MC-8",
+   "rule": "Takedown routes are viable with a real time cost: ≥ 1 quiet route that takes someone down wins at Alert ≤ 1, each spending Enforcer time on it",
+   "ok": true,
+   "value": "route-g 6:12.3, 6 s of takedown",
+   "detail": "route-g (route G): success at 6:12.3, 5 T, A 1, $100,000 left, takedown work 6 s"
+  },
+  {
+   "id": "MC-9",
+   "rule": "Turning people stays competitive: no takedown win is at once as fast and as cheap in total Trail as every turning win",
+   "ok": true,
+   "value": "1 takedown win, none dominant over 2 turning wins",
+   "detail": "route-g (6:12.3, 5 T): faster route-a; cheaper route-a, route-b"
+  },
+  {
+   "id": "MC-10",
+   "rule": "Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no seal clock",
+   "ok": true,
+   "value": "quiet 3-5 T, A ≤ 1, Standing ≥ 3; loud 36-36 T, A ≥ 2, Standing ≤ 0",
+   "detail": "loud 28+8 T, A 2, Standing 0, seal clock"
+  },
+  {
+   "id": "MC-11",
+   "rule": "No stop holds the car: every ambush spot and police stand of each of the 2 stands lies beyond fight-hold 8 m of its car and outside its exit lane, every reference win's car was free when it left, and no played script logs a hold that did not come for the car (car.held.answer, or car.held.post at a post the mission places)",
+   "ok": true,
+   "value": "18/18 posts clear (nearest 10.6 m); 4/4 reference wins free at Go; 8/8 holds by bodies that came for the car (2 more at posts the mission does not place, not counted)",
+   "detail": "route-a: the way free (blocker out, or car.unboxed under the block) 0.6 s before the end; route-b: the way free (blocker out, or car.unboxed under the block) 6.9 s before the end; route-g: the way free (blocker out, or car.unboxed under the block) 0.1 s before the end; loud: the way free (blocker out, or car.unboxed under the block) 0.9 s before the end; fight-loud-wait-yard: patrol holds the car at 6:55 at a post the mission does not place (not counted); fight-loud-wait-yard: security-2 holds the car at 6:55 on its way to the response unit's join point a slot beside svc-police-2 (not counted)"
+  },
+  {
+   "id": "MC-12",
+   "rule": "Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin",
+   "ok": true,
+   "value": "3/3 quiet scripts unreported; 1/1 loiter twins dearer",
+   "detail": "careless-scout-idles-pickup: reported at 1:49.9, success at A 1 against route-b's success at A 0"
+  },
+  {
+   "id": "MC-13",
+   "rule": "Every stand's loud-wait twin is held: a loud run whose cell waits in the car while the Enforcer brings Vale out never wins; with Vale aboard its Go is refused car-held",
+   "ok": true,
+   "value": "2/2 stands held",
+   "detail": "square: fight-loud-wait-square held (lost before Vale is aboard: failure enforcer-down at 4:10.3, loud fight); service-drive: fight-loud-wait-yard held (Go refused car-boxed at 6:55 with Vale aboard: withdrawn at 6:55.1, loud fight)"
+  },
+  {
+   "id": "MC-14",
+   "rule": "The fight always comes: every win Goes at or after blocker.out, or car.unboxed under the block (variations too)",
+   "ok": true,
+   "value": "5/5 wins Go after blocker.out",
+   "detail": "the closest Go to blocker.out: 0.1 s after it"
+  },
+  {
+   "id": "MC-15",
+   "rule": "No reference route reaches crew-wiped (the rival crew destroyed, the fight over unfought)",
+   "ok": true,
+   "value": "4/4 reference scripts",
+   "detail": "none"
+  },
+  {
+   "id": "R-1",
+   "rule": "no crash: every play gave its line",
+   "ok": true,
+   "value": "3000 plays, 0 errors",
+   "detail": ""
+  },
+  {
+   "id": "R-2",
+   "rule": "no stall: every play reaches a verdict by the close",
+   "ok": true,
+   "value": "0 plays reach the close with no verdict",
+   "detail": ""
+  },
+  {
+   "id": "R-3",
+   "rule": "every fail names its cause (fail code and culprit)",
+   "ok": true,
+   "value": "1747/1747",
+   "detail": ""
+  },
+  {
+   "id": "R-4",
+   "rule": "every order shows its price: each verb given has its line on the card (text.json less.price), each Listen and Turn had its quote when given",
+   "ok": true,
+   "value": "20/20 verbs, 0 unquoted acts",
+   "detail": ""
+  },
+  {
+   "id": "R-5",
+   "rule": "a saved run replays exactly from seed + orders (a win and a fail of each plan; the bands' own run gives the same hash)",
+   "ok": true,
+   "value": "23/23",
+   "detail": ""
+  },
+  {
+   "id": "R-6",
+   "rule": "unknown = reject: an unknown condition, a log line a player does not see, a missing rule, an unknown key, an unknown pace",
+   "ok": true,
+   "value": "5/5",
+   "detail": ""
+  },
+  {
+   "id": "R-7",
+   "rule": "no reference window under 30 s at a person's pace: each step 30 s late loses at most 10 points of wins",
+   "ok": false,
+   "value": "9/12",
+   "detail": "quiet-a call: 99 % → 64 %; quiet-a enter: 99 % → 70 %; quiet-g beside-guard: 79 % → 43 %"
+  },
+  {
+   "id": "B-1 quiet-a",
+   "rule": "prepared quiet wins ≥ 90 %",
+   "ok": true,
+   "value": "99%",
+   "detail": ""
+  },
+  {
+   "id": "B-1 quiet-b",
+   "rule": "prepared quiet wins ≥ 80 %",
+   "ok": true,
+   "value": "100%",
+   "detail": ""
+  },
+  {
+   "id": "B-1 quiet-g",
+   "rule": "prepared quiet wins ≥ 75 %",
+   "ok": true,
+   "value": "78.5%",
+   "detail": ""
+  },
+  {
+   "id": "B-2 thin-quiet",
+   "rule": "thin quiet wins 60-90 %",
+   "ok": false,
+   "value": "92%",
+   "detail": ""
+  },
+  {
+   "id": "B-3 careless",
+   "rule": "careless wins ≤ 30 %",
+   "ok": true,
+   "value": "0%",
+   "detail": ""
+  },
+  {
+   "id": "B-4 prepared-loud",
+   "rule": "prepared loud wins 50-75 %: only wins whose final fight was loud",
+   "ok": true,
+   "value": "60.5%",
+   "detail": ""
+  },
+  {
+   "id": "B-5 unprepared-loud",
+   "rule": "unprepared loud wins ≤ 20 %",
+   "ok": true,
+   "value": "0%",
+   "detail": ""
+  },
+  {
+   "id": "B-6",
+   "rule": "prepared loud clearly above unprepared (≥ 40 points)",
+   "ok": true,
+   "value": "60.5 % against 0 %",
+   "detail": ""
+  },
+  {
+   "id": "B-7 quiet-a",
+   "rule": "quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s",
+   "ok": true,
+   "value": "median 17 s, p95 45 s",
+   "detail": ""
+  },
+  {
+   "id": "B-7 quiet-b",
+   "rule": "quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s",
+   "ok": true,
+   "value": "median 25 s, p95 50 s",
+   "detail": ""
+  },
+  {
+   "id": "B-7 quiet-g",
+   "rule": "quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s",
+   "ok": true,
+   "value": "median 26 s, p95 80 s",
+   "detail": ""
+  },
+  {
+   "id": "B-7 thin-quiet",
+   "rule": "quiet final fight: median 10-40 s (Sky 2026-11-05 Q1: preparation earns a short fight; was 15), 95 % under 90 s",
+   "ok": true,
+   "value": "median 23 s, p95 56 s",
+   "detail": ""
+  },
+  {
+   "id": "B-8 prepared-loud",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": true,
+   "value": "median 10 s, p95 29 s, worst 194 s",
+   "detail": ""
+  },
+  {
+   "id": "B-8 quiet-a",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": true,
+   "value": "median 21 s, p95 45 s, worst 68 s",
+   "detail": ""
+  },
+  {
+   "id": "B-8 quiet-b",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": true,
+   "value": "median 23 s, p95 38 s, worst 48 s",
+   "detail": ""
+  },
+  {
+   "id": "B-8 quiet-g",
+   "rule": "no reference plan waits over 45 s with the whole cell idle (p95 of seeds)",
+   "ok": false,
+   "value": "median 61 s, p95 105 s, worst 129 s",
+   "detail": ""
+  },
+  {
+   "id": "B-9 quiet-a",
+   "rule": "agents down per win ≤ 0.5, prepared",
+   "ok": true,
+   "value": "0.11",
+   "detail": ""
+  },
+  {
+   "id": "B-9 quiet-b",
+   "rule": "agents down per win ≤ 0.5, prepared",
+   "ok": true,
+   "value": "0.46",
+   "detail": ""
+  },
+  {
+   "id": "B-9 quiet-g",
+   "rule": "agents down per win ≤ 0.5, prepared",
+   "ok": true,
+   "value": "0.27",
+   "detail": ""
+  },
+  {
+   "id": "B-10 prepared-loud",
+   "rule": "agents down per win ≤ 1.5, loud",
+   "ok": true,
+   "value": "1.22",
+   "detail": ""
+  },
+  {
+   "id": "B-10 unprepared-loud",
+   "rule": "agents down per win ≤ 1.5, loud",
+   "ok": true,
+   "value": "no win",
+   "detail": ""
+  },
+  {
+   "id": "B-11 drive-early",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": false,
+   "value": "0-0 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 drive-round",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": false,
+   "value": "9-17 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 prepared-loud-lend",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "55-85 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 prepared-loud",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "19-108 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 quiet-a",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "12-31 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 quiet-b-lookout-ignored",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": false,
+   "value": "0-0 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 quiet-b-taped",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": false,
+   "value": "0-0 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 quiet-b-thinned",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "12-23 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 quiet-b",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "21-31 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 quiet-g",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "25-39 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 thin-quiet",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "13-38 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 veteran-drive",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "83-240 s",
+   "detail": ""
+  },
+  {
+   "id": "B-11 veteran",
+   "rule": "variety: middle half of fight lengths spans ≥ 10 s",
+   "ok": true,
+   "value": "89-294 s",
+   "detail": ""
+  },
+  {
+   "id": "B-12",
+   "rule": "at least one prepared quiet route wins on every seed",
+   "ok": true,
+   "value": "200/200",
+   "detail": ""
+  },
+  {
+   "id": "B-13",
+   "rule": "loud's Trail at least 3× quiet's in 95 % of the loud wins",
+   "ok": true,
+   "value": "121/121 loud wins ≥ 15 T (3 × quiet's dearest median 5 T); loud median 35 T",
+   "detail": ""
+  },
+  {
+   "id": "B-14",
+   "rule": "nobody goes full to down under 5 s, the Enforcer under 7 s (first hit to falling)",
+   "ok": false,
+   "value": "Enforcer: 1 of 201 falls under 7 s, fastest 6.8 s; others: 16 of 1593 under 5 s, fastest 1.7 s",
+   "detail": ""
+  },
+  {
+   "id": "B-15 drive-early",
+   "rule": "one mistake costs: wins at least 10 points under quiet-b",
+   "ok": true,
+   "value": "0 % against 100 %",
+   "detail": ""
+  },
+  {
+   "id": "B-15 quiet-b-taped",
+   "rule": "one mistake costs: wins at least 10 points under quiet-b",
+   "ok": true,
+   "value": "0 % against 100 %",
+   "detail": ""
+  },
+  {
+   "id": "B-16 drive-early",
+   "rule": "the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds",
+   "ok": false,
+   "value": "0/200",
+   "detail": ""
+  },
+  {
+   "id": "B-16 quiet-b-taped",
+   "rule": "the mistake is seen: Alert ≥ 1 on ≥ 95 % of seeds",
+   "ok": true,
+   "value": "200/200",
+   "detail": ""
+  },
+  {
+   "id": "L96 A",
+   "rule": "quiet-a wins 90-97 %",
+   "ok": false,
+   "value": "99%",
+   "detail": ""
+  },
+  {
+   "id": "L96 B",
+   "rule": "quiet-b on the lend: Popovic out >= 85 % (no ceiling: misses.json; the risk is the three, read on B-all)",
+   "ok": true,
+   "value": "100%",
+   "detail": ""
+  },
+  {
+   "id": "L96 B-all",
+   "rule": "quiet-b: all four out on 60-80 % of wins, captured per win <= 0.6",
+   "ok": false,
+   "value": "62 % of wins, 0.73 captured per win",
+   "detail": ""
+  },
+  {
+   "id": "L96 B-thinned",
+   "rule": "quiet-b thinned: out within 3 points of quiet-b, all out >= quiet-b + 10 points",
+   "ok": true,
+   "value": "out 100 % against 100 %; all out 78.5 % against 62 %",
+   "detail": ""
+  },
+  {
+   "id": "L96 G",
+   "rule": "quiet-g wins >= 75 % (GDD §09; misses.json: never lower a route to meet a guess)",
+   "ok": true,
+   "value": "78.5%",
+   "detail": ""
+  },
+  {
+   "id": "L96 loud",
+   "rule": "prepared-loud out 50-70 % (the reference, today's front-door plan: it never uses the lend)",
+   "ok": true,
+   "value": "66.5%",
+   "detail": ""
+  },
+  {
+   "id": "L96 loud-lend",
+   "rule": "prepared-loud on the lend: report only, expect 30-40 % out (Sky Q3: loud on route B stays the hard way; L6)",
+   "ok": true,
+   "value": "34% out; all out 54.4 % of wins",
+   "detail": ""
+  },
+  {
+   "id": "L96 drive-round",
+   "rule": "the drive-round wins 5-20 % (both cars boxed at the mouth, L10)",
+   "ok": true,
+   "value": "10.5%",
+   "detail": ""
+  },
+  {
+   "id": "L96 veteran",
+   "rule": "the veteran's shot: Popovic out 40-70 %, the other three caught the accepted price (Sky Q2 a); captured per win reported",
+   "ok": false,
+   "value": "37.5% out; all out 4 % of wins, 2.76 captured per win",
+   "detail": ""
+  },
+  {
+   "id": "L96 veteran-drive",
+   "rule": "the veteran, our car driven round once the rival car burns: report only (Motive's try, misses.json)",
+   "ok": true,
+   "value": "8.5% out; all out 0 % of wins, 3 captured per win",
+   "detail": ""
+  },
+  {
+   "id": "L96 B-ignored",
+   "rule": "quiet-b with the lookout ignored wins <= 5 %",
+   "ok": true,
+   "value": "0%",
+   "detail": ""
+  },
+  {
+   "id": "L96 B-idle",
+   "rule": "quiet-b: the whole cell idle, median <= 30 s",
+   "ok": true,
+   "value": "median 23 s, p95 38 s",
+   "detail": ""
+  },
+  {
+   "id": "L96 A-fight",
+   "rule": "quiet-a's final fight median 10-40 s (Sky Q1; Motive expects 11-16)",
+   "ok": true,
+   "value": "median 17 s",
+   "detail": ""
+  }
+ ],
+ "slack": [
+  {
+   "script": "route-a",
+   "maxS": 0,
+   "steps": [
+    {
+     "tick": 0,
+     "orders": "call",
+     "slackS": 0
+    },
+    {
+     "tick": 0,
+     "orders": "enter",
+     "slackS": 0
+    },
+    {
+     "tick": 0,
+     "orders": "go",
+     "slackS": 30
+    }
+   ]
+  },
+  {
+   "script": "route-b",
+   "maxS": 30,
+   "steps": [
+    {
+     "tick": 0,
+     "orders": "help-1",
+     "slackS": 30
+    },
+    {
+     "tick": 0,
+     "orders": "mislead-lookout",
+     "slackS": 30
+    },
+    {
+     "tick": 0,
+     "orders": "reroute",
+     "slackS": 30
+    },
+    {
+     "tick": 0,
+     "orders": "take",
+     "slackS": 30
+    },
+    {
+     "tick": 0,
+     "orders": "go-lent",
+     "slackS": 30
+    },
+    {
+     "tick": 0,
+     "orders": "go3",
+     "slackS": 30
+    }
+   ]
+  },
+  {
+   "script": "route-g",
+   "maxS": 0,
+   "steps": [
+    {
+     "tick": 0,
+     "orders": "beside-guard",
+     "slackS": 0
+    },
+    {
+     "tick": 0,
+     "orders": "enter",
+     "slackS": 30
+    },
+    {
+     "tick": 0,
+     "orders": "go",
+     "slackS": 30
+    }
+   ]
+  }
+ ],
+ "plays": {
+  "fail-vale-dead": {"outcome":"failure","fail":"vale-dead","tick":3350,"cash":100000,"trail":8,"alert":3,"gunfire":2,"startHash":"18331703d0ebec85","finalHash":"d7af657a35a69a3b","replayIdentical":true,"rejected":0,"scriptSha":"86491d3c1ea4a35ed566b9245c12142c1e9d7628b642387a4d8e20cfb46e2271","marks":{"start":0,"attention.noticed":538,"attention.wary":658,"attention.reporting":908,"attention.landed":982,"alarm.dispatches":982,"patrol.alarm":1022,"rivals.coming":1556,"patrol.stands-down":1582,"rivals.block":1728,"rivals.post":1952,"patrol.sweep":2010,"rivals.lookout-posted":2386,"vale.exits":3300,"fire.councillor":3310,"round.ends":3311,"drawn.seen":3311,"security.called":3311,"seal.starts":3311,"witness.weapon-drawn":3311,"crowd.startled":3311,"shot.hit":3330,"witness.crowd":3330,"rivals.drawn":3330,"patrol.breaks":3330,"civilian.hit":3330,"fire.free-on":3330,"doors.lock":3330,"crowd.sheltered":3343,"fail.vale-dead":3350,"fight.judged":3350},"shots":2},
+  "fail-vale-leaves": {"outcome":"failure","fail":"vale-leaves","tick":3530,"cash":100000,"trail":0,"alert":0,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"b5a4a4fb5dde789f","replayIdentical":true,"rejected":1,"scriptSha":"af13fbd325c2f5e3533d302549cd9402c863deda17acdc522152b2bbdbfc7114","marks":{"start":0,"attention.noticed":1473,"rivals.coming":1556,"attention.wary":1593,"rivals.block":1728,"rivals.post":1952,"rivals.lookout-posted":2386,"vale.exits":3300,"vale.at-car":3500,"car.leaves":3530,"fail.vale-leaves":3530},"shots":0,"standing":2},
+  "fail-rivals-reach-vale": {"outcome":"failure","fail":"rivals-reach-vale","tick":3531,"cash":30000,"trail":3,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"0016d698c02d052c","replayIdentical":true,"rejected":1,"scriptSha":"ecd15bd8df7b851fee884b200e315640e6ec811bd8682c0fba916ef7651a4bf4","marks":{"start":0,"attention.noticed":549,"attention.wary":669,"attention.reporting":919,"attention.landed":982,"alarm.dispatches":982,"patrol.alarm":1022,"scout.listen.heard":1113,"camera.recorded":1218,"camera.record-lands":1382,"rivals.coming":1556,"turn.pay.turned":1567,"rivals.block":1728,"rivals.post":1952,"patrol.stands-down":1982,"patrol.sweep":2320,"rivals.lookout-posted":2386,"vale.exits":3300,"vale.at-car":3500,"car.leaves":3530,"rivals.lookout-follows":3531,"fail.rivals-reach-vale":3531},"shots":0,"standing":2},
+  "fail-enforcer-down": {"outcome":"failure","fail":"enforcer-down","tick":1071,"cash":100000,"trail":30,"alert":2,"gunfire":11,"startHash":"18331703d0ebec85","finalHash":"59d41220a8eff197","replayIdentical":true,"rejected":0,"scriptSha":"7b9ffeb18af91b62e4951158f317236d3d2f1811734e0289d1a4944ba7d3a130","marks":{"start":0,"fire.guard":354,"round.ends":355,"drawn.seen":355,"security.called":355,"seal.starts":355,"ai.why":355,"shot.hit":374,"rivals.drawn":374,"guard.hit":374,"fire.free-on":374,"crowd.startled":374,"enforcer.hit.guard":375,"shot.miss":390,"guard.down":394,"fire.done":395,"witness.camera":396,"fire.free-off":424,"attention.noticed":434,"witness.react":446,"report.started":446,"patrol.alarm":455,"report.landed":496,"alarm.reassigns":496,"rivals.coming":534,"attention.wary":554,"report.confirmed":596,"guard.check-in":600,"enforcer.hit.police-2":633,"fire.free":634,"patrol.breaks":644,"response.hit":644,"response.down":664,"rivals.block":706,"patrol.resumes":795,"stash.opened":801,"attention.reporting":804,"crowd.sheltered":913,"response.reinforces":915,"patrol.hit":936,"patrol.down":956,"attention.landed":976,"alarm.dispatches":976,"security.hit":976,"enforcer.hit.security-1":985,"enforcer.hit.security-2":1011,"enforcer.warning":1011,"security.officer-down":1016,"enforcer.hit.rival-2":1031,"ai.cover":1041,"ai.kite":1041,"enforcer.hit.rival-1":1050,"rivals.hit":1056,"fail.enforcer-down":1071,"fight.judged":1071},"shots":12,"standing":-1},
+  "fail-entry-seen-guard": {"outcome":"failure","fail":"entry-seen-guard","tick":2329,"cash":60000,"trail":2,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"40de74b38f336279","replayIdentical":true,"rejected":0,"scriptSha":"ab3446ef4520c37da2f371f6e0d062cefe7e8d7cf999a8c6b7b35ef660d9ed52","marks":{"start":0,"scout.watch.watched":483,"loop.on":545,"scout.listen.heard":1118,"rivals.coming":1556,"turn.help.turned":1583,"rivals.block":1728,"loop.ends":1745,"attention.noticed":1857,"rivals.post":1952,"attention.wary":1977,"attention.reporting":2227,"attention.landed":2257,"alarm.dispatches":2257,"patrol.alarm":2297,"fail.entry-seen-guard":2329},"shots":0,"standing":2},
+  "fail-take-seen-camera": {"outcome":"failure","fail":"abduction-seen-camera","tick":3500,"cash":100000,"trail":0,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"cd5bc9b2ad8c6a84","replayIdentical":true,"rejected":1,"scriptSha":"a6d519d81fe32b421cb986656073a26697875c7841d530df871f819359efc95e","marks":{"start":0,"attention.noticed":538,"attention.wary":658,"attention.reporting":908,"attention.landed":982,"alarm.dispatches":982,"patrol.alarm":1022,"rivals.coming":1556,"patrol.stands-down":1582,"rivals.block":1728,"rivals.post":1952,"patrol.sweep":2010,"rivals.lookout-posted":2386,"vale.exits":3300,"vale.at-car":3500,"fail.abduction-seen-camera":3500},"shots":0,"standing":2},
+  "fight-loud-enforcer-down": {"outcome":"failure","fail":"enforcer-down","tick":1989,"cash":100000,"trail":9,"alert":2,"gunfire":5,"startHash":"18331703d0ebec85","finalHash":"7cf9677f5c897e79","replayIdentical":true,"rejected":0,"scriptSha":"01b29e8cd194ad341dab99b94fae0bfca30d10ce6506bc73308810b1d8026f61","marks":{"start":0,"loop.on":327,"patrol.rerouted":627,"fire.guard":777,"round.ends":797,"shot.miss":797,"rivals.drawn":797,"security.called":797,"seal.starts":797,"fire.free-on":797,"crowd.startled":797,"drawn.seen":825,"ai.why":825,"shot.hit":845,"enforcer.hit.guard":845,"guard.hit":860,"guard.down":880,"enter.in":880,"witness.react":881,"report.started":881,"fire.free-off":910,"report.landed":931,"rivals.coming":957,"report.confirmed":1031,"rivals.block":1129,"fight.judged":1180,"attention.noticed":1200,"holster.auto":1220,"stash.opened":1234,"crowd.sheltered":1336,"guard.check-in":1500,"loop.ends":1527,"witness.camera":1531,"enter.out":1560,"fight.loud":1560,"ai.join":1560,"ai.cover":1560,"ai.kite":1560,"fight.blocker":1560,"response.reinforces":1627,"car.held.blocker":1649,"enforcer.hit.rival-4":1696,"enforcer.hit.rival-2":1719,"patrol.returns":1777,"patrol.alarm":1817,"enforcer.hit.fight":1944,"enforcer.warning":1944,"witness.scream":1977,"fail.enforcer-down":1989},"shots":3,"fight":"loud","standing":-2,"held":[{"tick":1649,"how":"blocker","who":"security-2","join":"cv-033"}]},
+  "fight-safe-rivals-reach-vale": {"outcome":"failure","fail":"rivals-reach-vale","tick":3531,"cash":30000,"trail":3,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"7c8311aad9fa6961","replayIdentical":true,"rejected":2,"scriptSha":"d35ebcdd3f0a1f4ecd3914eaef9fddaebbd3bee76713ccb18bd6d1412090430b","marks":{"start":0,"attention.noticed":549,"attention.wary":669,"attention.reporting":919,"attention.landed":982,"alarm.dispatches":982,"patrol.alarm":1022,"scout.listen.heard":1113,"camera.recorded":1218,"camera.record-lands":1382,"rivals.coming":1556,"turn.pay.turned":1567,"rivals.block":1728,"rivals.post":1952,"patrol.stands-down":1982,"patrol.sweep":2320,"rivals.lookout-posted":2386,"vale.exits":3300,"vale.at-car":3500,"car.leaves":3530,"rivals.lookout-follows":3531,"fail.rivals-reach-vale":3531},"shots":0,"standing":2},
+  "fight-safe-unguarded": {"outcome":"failure","fail":"rivals-reach-vale","tick":1822,"cash":100000,"trail":5,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"65f85d6570f2d84e","replayIdentical":true,"rejected":0,"scriptSha":"ac486a8ff6c2f5853efb1495f89136ef9654afae7cfc47b2ba77c824ae8220bc","marks":{"start":0,"loop.on":327,"scout.watch.watched":510,"takedown.starts":860,"takedown.out":920,"enter.in":920,"enter.out":1300,"round.ends":1300,"fight.safe":1300,"post.missed":1500,"report.landed":1500,"alarm.dispatches":1500,"loop.ends":1527,"witness.camera":1531,"patrol.alarm":1540,"rivals.coming":1556,"security.called":1576,"fight.ambush":1605,"report.confirmed":1676,"victim.statement":1676,"guard.back-to-post":1716,"rivals.block":1728,"board.in":1746,"board.out":1757,"rivals.for-car":1778,"car.held.press":1778,"fail.rivals-reach-vale":1822},"shots":0,"fight":"safe","standing":2,"takedownS":6,"held":[{"tick":1778,"how":"press","who":"rival-1"},{"tick":1798,"how":"press","who":"rival-2"},{"tick":1818,"how":"press","who":"rival-3"}],"valeIn":1746},
+  "fight-loud-wait-square": {"outcome":"failure","fail":"enforcer-down","tick":2503,"cash":100000,"trail":8,"alert":2,"gunfire":5,"startHash":"18331703d0ebec85","finalHash":"7c73d4e12ea22547","replayIdentical":true,"rejected":0,"scriptSha":"8963cbb13b743b3ebf02cd6c279581be1f820310bfd77c63c7623e6a01d2936e","marks":{"start":0,"loop.on":800,"patrol.rerouted":1100,"fire.guard":1510,"round.ends":1530,"shot.miss":1530,"rivals.drawn":1530,"security.called":1530,"seal.starts":1530,"fire.free-on":1530,"crowd.startled":1530,"fire.focus-waits":1551,"rivals.coming":1556,"drawn.seen":1562,"ai.why":1562,"shot.hit":1590,"guard.hit":1590,"guard.down":1610,"enter.in":1610,"witness.react":1611,"report.started":1611,"board.in":1620,"fire.free-off":1640,"report.landed":1661,"rivals.block":1728,"report.confirmed":1761,"fight.judged":1910,"holster.auto":1950,"stash.opened":1964,"loop.ends":2000,"witness.camera":2001,"crowd.sheltered":2069,"patrol.returns":2250,"enter.out":2290,"fight.loud":2290,"ai.join":2290,"ai.cover":2290,"patrol.breaks":2290,"ai.kite":2290,"fight.blocker":2290,"patrol.alarm":2290,"response.reinforces":2360,"car.held.blocker":2382,"enforcer.hit.rival-2":2386,"guard.check-in":2400,"enforcer.hit.rival-3":2423,"patrol.resumes":2441,"enforcer.warning":2453,"enforcer.hit.rival-1":2473,"fail.enforcer-down":2503},"shots":4,"fight":"loud","standing":-1,"held":[{"tick":2382,"how":"blocker","who":"security-2","join":"cv-033"}]},
+  "fight-loud-wait-yard": {"outcome":"withdrawn","fail":"","tick":4151,"cash":30000,"trail":6,"alert":2,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"c29e736ad3d4978e","replayIdentical":true,"rejected":2,"scriptSha":"d6a0b947b8f75e3a2b5b4287f7db8ce9af7a545f5a1c4f2d9cc9fe6c4f272263","marks":{"start":0,"camera.recorded":534,"camera.record-lands":582,"alarm.dispatches":582,"patrol.alarm":622,"turn.pay.turned":884,"board.in":933,"patrol.stands-down":1182,"scout.listen.heard":1241,"patrol.sweep":1520,"rivals.coming":1556,"car.parked":1634,"board.out":1644,"run.seen":1644,"attention.noticed":1644,"rivals.block":1684,"car.noticed":1713,"rivals.post":1803,"car.wary":1833,"rivals.lookout-posted":1896,"patrol.rerouted":2061,"rivals.misled":3000,"patrol.returns":3211,"vale.exits":3300,"car.reported":3460,"round.ends":3490,"car.report-lands":3490,"security.called":3490,"vale.at-car":3500,"car.leaves":3530,"car.kerbside":3562,"fire.camera:pickup":3562,"car.parks":3563,"ai.why":3563,"fire.focus-waits":3572,"shot.miss":3583,"fire.free-on":3583,"crowd.startled":3583,"shot.hit":3587,"fixer.hit.patrol":3587,"crowd.sheltered":3615,"fixer.hit.rival-3":3628,"fixer.hit.rival-1":3683,"fixer.down":3683,"fire.free-off":3713,"rivals.misled-back":3837,"fight.judged":3983,"response.reinforces":3990,"crowd.back":3997,"take.done":4150,"lend.lent":4150,"fight.loud":4150,"ai.join":4150,"fight.blocker":4150,"car.held.post":4150,"car.held.blocker":4150,"withdraw":4151},"shots":4,"fight":"loud","standing":2,"held":[{"tick":4150,"how":"post","who":"patrol"},{"tick":4150,"how":"blocker","who":"security-1","join":"a slot beside svc-police-2"},{"tick":4150,"how":"post","who":"security-2","join":"a slot beside svc-police-2"}],"goRefused":[{"tick":4150,"code":"car-boxed"}],"valeIn":4150},
+  "withdraw": {"outcome":"withdrawn","fail":"","tick":300,"cash":100000,"trail":0,"alert":0,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"791154ec4ce77f47","replayIdentical":true,"rejected":0,"scriptSha":"4ab2f24663d5af36e55e0a720f103ad1e9298d60c0f092ae7ada821ac33f3cc2","marks":{"start":0,"withdraw":300},"shots":0,"standing":2},
+  "careless-takedown-seen-camera": {"outcome":"failure","fail":"entry-seen-camera","tick":1570,"cash":100000,"trail":1,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"cc8800de90ac5ec8","replayIdentical":true,"rejected":1,"scriptSha":"61f63b3cc5f7fc9543d212597007a95e6d9eaa048d7e436d0d8ec482cabcb9cc","marks":{"start":0,"attention.noticed":445,"attention.wary":565,"scout.watch.watched":662,"attention.reporting":836,"attention.landed":976,"alarm.dispatches":976,"patrol.alarm":1016,"patrol.rerouted":1360,"takedown.starts":1510,"witness.camera":1510,"rivals.coming":1556,"takedown.out":1570,"fail.entry-seen-camera":1570},"shots":0,"standing":2,"takedownS":6},
+  "careless-takedown-seen-crowd": {"outcome":"failure","fail":"vale-leaves","tick":3530,"cash":100000,"trail":6,"alert":3,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"5835ea7f48f506eb","replayIdentical":true,"rejected":2,"scriptSha":"dfb3c973f7388682c0a3d8345fd22869c63cca51aeb196e264ef75cf0504930d","marks":{"start":0,"attention.noticed":445,"attention.wary":565,"scout.watch.watched":662,"rivals.coming":1556,"rivals.block":1728,"rivals.post":1952,"rivals.lookout-posted":2386,"patrol.rerouted":2550,"takedown.starts":2700,"witness.camera":2700,"takedown.out":2760,"round.ends":2776,"report.landed":2776,"security.called":2776,"doors.lock":2776,"alarm.dispatches":2776,"witness.react":2786,"report.started":2786,"loop.on":2800,"witness.told":3101,"crowd.back":3207,"response.reinforces":3276,"vale.exits":3300,"post.missed":3300,"report.confirmed":3342,"seal.starts":3342,"victim.statement":3342,"guard.back-to-post":3382,"vale.at-car":3500,"car.leaves":3530,"fail.vale-leaves":3530},"shots":0,"standing":2,"takedownS":6},
+  "careless-body-found": {"outcome":"failure","fail":"enforcer-down","tick":2177,"cash":100000,"trail":12,"alert":2,"gunfire":4,"startHash":"18331703d0ebec85","finalHash":"95832f8ee4d7e2d9","replayIdentical":true,"rejected":0,"scriptSha":"138bfb53b787bd22ad213a93e7eb0528d6cd620664edde56b073e53b9a51bb58","marks":{"start":0,"loop.on":366,"attention.noticed":445,"attention.wary":565,"scout.watch.watched":662,"patrol.rerouted":1360,"takedown.starts":1510,"takedown.dead":1540,"enter.in":1540,"rivals.coming":1556,"loop.ends":1566,"round.ends":1566,"witness.camera":1566,"rivals.block":1728,"report.landed":1776,"security.called":1776,"alarm.dispatches":1776,"enter.out":1920,"fight.loud":1920,"ai.cover":1920,"ai.join":1920,"fight.blocker":1920,"rivals.post":1952,"ai.why":1952,"fire.free":1953,"shot.hit":1963,"rivals.drawn":1963,"security.gang":1963,"rivals.hit":1963,"fire.free-on":1963,"crowd.startled":1963,"ai.kite":1964,"car.held.press":1966,"rivals.down":1978,"car.free":1978,"crowd.sheltered":1995,"witness.react":2021,"report.started":2021,"enforcer.hit.rival-2":2057,"shot.miss":2059,"security.gang-claimed":2071,"security.hit":2095,"car.held.blocker":2106,"enforcer.hit.rival-1":2108,"enforcer.warning":2123,"security.officer-down":2131,"blocker.out":2131,"fail.enforcer-down":2177,"fight.judged":2177},"shots":0,"fight":"loud","takedownS":3,"held":[{"tick":1966,"how":"press","who":"rival-3"},{"tick":2106,"how":"blocker","who":"security-1","join":"cv-027"}]},
+  "careless-guard-left-door-held": {"outcome":"failure","fail":"vale-leaves","tick":3530,"cash":100000,"trail":6,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"02d26225e8a07add","replayIdentical":true,"rejected":1,"scriptSha":"b45122b7faa7e3a0769e4b1a1fde28b6a7369bb1e80efe33c49718fc0afbd1eb","marks":{"start":0,"loop.on":366,"scout.watch.watched":510,"patrol.rerouted":1086,"takedown.starts":1326,"takedown.out":1386,"post.missed":1500,"report.landed":1500,"alarm.dispatches":1500,"rivals.coming":1556,"loop.ends":1566,"round.ends":1566,"witness.camera":1566,"attention.noticed":1645,"rivals.block":1728,"attention.wary":1765,"security.called":1776,"report.confirmed":1876,"victim.statement":1876,"guard.back-to-post":1916,"rivals.post":1952,"attention.reporting":2015,"attention.landed":2176,"patrol.returns":2236,"rivals.lookout-posted":2386,"vale.exits":3300,"vale.at-car":3500,"car.leaves":3530,"fail.vale-leaves":3530},"shots":0,"standing":2,"takedownS":6},
+  "careless-enforcer-watches-guard": {"outcome":"failure","fail":"enforcer-down","tick":1796,"cash":100000,"trail":1,"alert":2,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"741be694a57fd1b8","replayIdentical":true,"rejected":0,"scriptSha":"74e7a5f67ed340d849d79b88e441d4cbdd79324d072a23fbca35e711b8473229","marks":{"start":0,"loop.on":327,"scout.watch.watched":510,"attention.noticed":917,"attention.wary":1037,"takedown.fails":1110,"round.ends":1110,"security.called":1110,"seal.starts":1110,"patrol.alarm":1210,"guard.stands-down":1211,"attention.reporting":1287,"attention.landed":1317,"alarm.dispatches":1317,"loop.ends":1527,"rivals.coming":1556,"response.reinforces":1670,"ai.why":1671,"shot.hit":1691,"enforcer.hit.police-1":1691,"fire.free-on":1691,"crowd.startled":1691,"shot.miss":1706,"enforcer.hit.police-2":1706,"rivals.block":1728,"enforcer.warning":1751,"fail.enforcer-down":1796,"fight.judged":1796},"shots":1,"standing":2},
+  "careless-scout-idles-pickup": {"outcome":"success","fail":"","tick":4753,"cash":30000,"trail":5,"alert":1,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"763f0d6e2e49c46a","replayIdentical":true,"rejected":0,"scriptSha":"e97e9bc8204b192587ac5f2d695daf9f9cbc5211909765ca162998675422e6e1","marks":{"start":0,"attention.noticed":729,"attention.wary":849,"scout.listen.heard":986,"attention.reporting":1099,"attention.landed":1182,"alarm.dispatches":1182,"patrol.alarm":1222,"rivals.coming":1556,"rivals.block":1728,"loop.on":1786,"rivals.post":1952,"turn.pay.turned":2136,"patrol.stands-down":2182,"rivals.lookout-posted":2386,"patrol.sweep":2510,"loop.ends":2986,"rivals.misled":3000,"patrol.rerouted":3100,"vale.exits":3300,"vale.at-car":3500,"car.leaves":3530,"car.parks":3654,"rivals.misled-back":3837,"take.done":4230,"lend.lent":4230,"round.ends":4230,"fight.safe":4230,"fight.ambush":4230,"ai.cover":4230,"fight.guard":4230,"vale.out":4230,"split.police":4230,"fire.rival-1":4230,"fire.rival-2":4230,"crowd.startled":4231,"ai.why":4240,"shot.hit":4240,"fixer.hit.fight":4240,"scout.hit.fight":4240,"fire.free-on":4240,"patrol.returns":4250,"fight.hit":4250,"ai.kite":4255,"ai.advance":4255,"shot.miss":4261,"fight.down":4265,"fire.done":4266,"fire.free":4266,"crowd.sheltered":4268,"guard.hit":4698,"ai.break":4737,"rivals.drives-off":4738,"car.unboxed":4738,"fight.over":4738,"fight.judged":4738,"go.waits":4743,"board.in":4748,"car.leaves-split":4753,"success":4753},"shots":0,"fight":"safe","standing":3,"carFreeS":1.5,"valeIn":4230},
+  "careless-loop-runs-out": {"outcome":"failure","fail":"entry-seen-camera","tick":1579,"cash":60000,"trail":3,"alert":0,"gunfire":0,"startHash":"18331703d0ebec85","finalHash":"efd81f1b1bbf34ea","replayIdentical":true,"rejected":0,"scriptSha":"8ff49f0c7d5572dbb359057290ad70f572725d946c060452f71b0f62d913639d","marks":{"start":0,"run.seen":22,"scout.watch.watched":290,"loop.on":327,"scout.listen.heard":595,"turn.help.turned":945,"loop.ends":1527,"rivals.coming":1556,"call.waitress":1560,"attention.noticed":1561,"fail.entry-seen-camera":1579},"shots":0,"standing":2},
+  "route-a": {"outcome":"success","fail":"","tick":2886,"cash":60000,"trail":3,"alert":0,"gunfire":0,"startHash":"30da512751466a79","finalHash":"30f4d2edb441bc0b","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:quiet-a","marks":{"ai.break":2671,"board.in":2874,"call.waitress":1607,"car.unboxed":2672,"enter.in":1754,"enter.out":2134,"fight.ambush":2466,"fight.over":2672,"fight.safe":2134,"guard.at-cafe":2179,"loop.ends":2660,"loop.on":1460,"rivals.block":1738,"rivals.coming":1566,"rivals.drives-off":2672},"shots":0,"fight":"safe","standing":3,"carFreeS":0.6},
+  "route-a~no-waitress": {"outcome":"failure","fail":"needs-waitress","tick":2886,"cash":60000,"trail":3,"alert":0,"gunfire":0,"startHash":"30da512751466a79","finalHash":"30f4d2edb441bc0b","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:quiet-a","marks":{"ai.break":2671,"board.in":2874,"call.waitress":1607,"car.unboxed":2672,"enter.in":1754,"enter.out":2134,"fight.ambush":2466,"fight.over":2672,"fight.safe":2134,"guard.at-cafe":2179,"loop.ends":2660,"loop.on":1460,"rivals.block":1738,"rivals.coming":1566,"rivals.drives-off":2672},"shots":0,"fight":"safe","standing":3},
+  "route-b": {"outcome":"success","fail":"","tick":4606,"cash":50000,"trail":3,"alert":0,"gunfire":0,"startHash":"30da512751466a79","finalHash":"db86eb9ad59024d6","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:quiet-b","marks":{"ai.break":4362,"board.in":4477,"car.unboxed":4363,"fight.ambush":4052,"fight.over":4363,"fight.safe":4052,"lend.lent":4052,"rivals.block":1738,"rivals.coming":1566,"rivals.drives-off":4363,"split.police":4089,"take.done":4052,"vale.out":4089},"shots":0,"fight":"safe","standing":3,"carFreeS":6.9},
+  "route-b~no-driver": {"outcome":"failure","fail":"needs-driver","tick":4606,"cash":50000,"trail":3,"alert":0,"gunfire":0,"startHash":"30da512751466a79","finalHash":"db86eb9ad59024d6","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:quiet-b","marks":{"ai.break":4362,"board.in":4477,"car.unboxed":4363,"fight.ambush":4052,"fight.over":4363,"fight.safe":4052,"lend.lent":4052,"rivals.block":1738,"rivals.coming":1566,"rivals.drives-off":4363,"split.police":4089,"take.done":4052,"vale.out":4089},"shots":0,"fight":"safe","standing":3},
+  "route-g": {"outcome":"success","fail":"","tick":3723,"cash":100000,"trail":5,"alert":1,"gunfire":0,"startHash":"30da512751466a79","finalHash":"81b1c803413e720b","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:quiet-g","marks":{"ai.break":3574,"board.in":3687,"car.free":3467,"car.unboxed":3575,"enter.in":2559,"enter.out":2939,"fight.ambush":3270,"fight.over":3575,"fight.safe":2939,"loop.ends":3310,"loop.on":2110,"rivals.block":1748,"rivals.coming":1576,"rivals.drives-off":3575,"takedown.out":2508},"shots":0,"fight":"safe","standing":3,"takedownS":6,"carFreeS":0.1},
+  "loud": {"outcome":"success","fail":"","tick":3547,"cash":30000,"trail":28,"alert":2,"gunfire":20,"startHash":"30da512751466a79","finalHash":"fd3ee28cd25b50e5","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:prepared-loud","marks":{"blocker.out":3140,"board.in":123,"call.waitress":2566,"car.free":3144,"car.unboxed":3202,"enter.in":2698,"enter.out":3078,"fight.loud":3078,"fight.over":3210,"guard.at-cafe":3581,"guard.back":3474,"loop.ends":3507,"loop.on":2296,"rivals.block":1684,"rivals.coming":1556},"shots":1,"fight":"loud","campaignTrail":8,"standing":0,"carFreeS":0.9},
+  "loud~no-waitress": {"outcome":"failure","fail":"needs-waitress","tick":3547,"cash":30000,"trail":28,"alert":2,"gunfire":20,"startHash":"30da512751466a79","finalHash":"fd3ee28cd25b50e5","replayIdentical":true,"rejected":0,"scriptSha":"adaptive:prepared-loud","marks":{"blocker.out":3140,"board.in":123,"call.waitress":2566,"car.free":3144,"car.unboxed":3202,"enter.in":2698,"enter.out":3078,"fight.loud":3078,"fight.over":3210,"guard.at-cafe":3581,"guard.back":3474,"loop.ends":3507,"loop.on":2296,"rivals.block":1684,"rivals.coming":1556},"shots":1,"fight":"loud","campaignTrail":8,"standing":0}
+ }
+}

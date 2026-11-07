@@ -32,8 +32,11 @@ namespace Suborned.Sim
         /// <summary>The start hash's share of the dial: its rules' text when the start sets counts, else nothing (every other start hashes as before).</summary>
         ulong DialHash() => dial == null ? 0UL : unchecked(dial.TextHash * 23UL ^ (TrafficAsked > 0 ? dial.Lanes!.TextHash * 29UL : 0UL)); // brief 098 step 1: and the lanes the cars drive, when the start sets any
         /// <summary>Where a crowd place is: the people file's, else one the dial found in the site (a post point, an edge).</summary>
-        internal Pt CrowdPlace(string id) => People2!.Places.TryGetValue(id, out var p) ? p : xPlaces[id];
-        internal bool TryCrowdPlace(string id, out Pt p) => People2!.Places.TryGetValue(id, out p) || xPlaces.TryGetValue(id, out p);
+        internal Pt CrowdPlace(string id) => People2!.Places.ContainsKey(id) ? People2.PlaceOf(id) : xPlaces[id]; // brief 098 L9: a held door's going-in point (CastStands.cs)
+        /// <summary>Brief 098 L9: where someone sheltering at a refuge goes in: at a door the cast hold, beside the holder (CastStands.cs); else the
+        /// refuge's own point.</summary>
+        internal Pt ShelterAt(string id, Pt at) => People2 != null && People2.DoorIn.Count > 0 && id.StartsWith("door:", StringComparison.Ordinal) && People2.DoorIn.TryGetValue(id.Substring(5), out var p) ? p : at;
+        internal bool TryCrowdPlace(string id, out Pt p) { if (People2!.Places.ContainsKey(id)) { p = People2.PlaceOf(id); return true; } return xPlaces.TryGetValue(id, out p); }
         /// <summary>A person's stops as this game holds them: a post the dial stood on (a survivor's) or an added person's, else the people file's.</summary>
         bool StopsBase(string id, out List<(string place, int from, int to, bool outside)> s) => xStops.TryGetValue(id, out s!) || People2!.Stops.TryGetValue(id, out s!);
         /// <summary>An added guard's post is his beat: where his beat has him at `tick` (else his first point), from his shift's start to its end.</summary>

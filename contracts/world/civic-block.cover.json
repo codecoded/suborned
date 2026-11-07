@@ -3,8 +3,8 @@
  "mission": "handover",
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
-  "block": "0c1022b7506e9975f8106024ac3ded511ed992aafcf12bb625c57958f14cde3e",
-  "site": "327dc7658c9f81b876f10c293c0ccc0511b2fb7eb0d2bdccb90b9f0018b26dcd",
+  "block": "4f001c8e4d9a2be5dd0b04e053b46b8f54c9f30a23dc3fc409f254fa2fe4b3ce",
+  "site": "efa534c729be9bf42b0cc79b2666255fa8b8834a66ca3e87b81d16081338b56a",
   "kit": "1cbf8bd31ffbe8a1eba6fdd7b25f13aab06e42df8210c78d388fc8dbff01d49e",
   "plan": "fb8709bf587c71b015532b87e452af78ca7b89217bdcceb397b1dcc8489514d2"
  },
@@ -156,7 +156,7 @@
   {
    "id": "cv-007",
    "at": [
-    7625,
+    7675,
     -3125
    ],
    "faces": [
@@ -178,7 +178,7 @@
   {
    "id": "cv-008",
    "at": [
-    7825,
+    7875,
     -3425
    ],
    "faces": [
@@ -200,7 +200,7 @@
   {
    "id": "cv-009",
    "at": [
-    7825,
+    7875,
     -2775
    ],
    "faces": [
@@ -222,7 +222,7 @@
   {
    "id": "cv-010",
    "at": [
-    8025,
+    8075,
     -3125
    ],
    "faces": [

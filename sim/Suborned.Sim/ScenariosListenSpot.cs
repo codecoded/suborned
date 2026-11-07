@@ -52,7 +52,7 @@ namespace Suborned.Sim
                 r.Is(!g.ListenSpotNow(Scout).HasValue, "and clears when the Listen lands");
             }, ListenStart(Inez));
 
-            Add("LS-CHAIR", "085", "A free chair near her walk: placed by a table of a chair that stays free, the Scout takes the chair: the reads name it and give its walkable point.", r =>
+            Add("LS-CHAIR", "085", "A free chair near her walk: placed by a table of a chair that stays free, the Scout takes the chair: the reads name it and give its walkable point. Engine 0.48.0: the order is given on the tick of the card's read (the helper that waits for her round first read one tick and chose another), and a tour that finds no chair spot fails as a check, never a throw.", r =>
             {
                 var g = r.G;
                 r.To(T(5));
@@ -62,9 +62,10 @@ namespace Suborned.Sim
                     r.To(r.SendTo(Scout, st.Value));
                     if (g.ListenSpotAhead(Scout, Inez) is var a && a.HasValue && a.Value.chair.Length > 0)
                     {
-                        r.Do(Scout, "listen", Inez);
+                        var o = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez });
+                        if (!r.Is(o.ok, $"the Listen is taken at {Report.Clock(g.Tick)} ({o.why})")) return;
                         var n = g.ListenSpotNow(Scout);
-                        r.Is(n.HasValue && n.Value.chair == a.Value.chair && g.People2.Places.ContainsKey(n.Value.chair), $"the chair is named: {a.Value.chair}");
+                        if (!r.Is(n.HasValue && n.Value.chair == a.Value.chair && g.People2.Places.ContainsKey(n.Value.chair), $"the chair is named: {a.Value.chair} (the engine took {(n.HasValue ? (n.Value.chair.Length > 0 ? n.Value.chair : "ground at " + n.Value.at) : "no spot")})")) return;
                         r.Is(G.Dist(n!.Value.at, g.People2.Places[n.Value.chair]) <= g.R.ListenChairGroundCm, "and its walkable point is by it");
                         r.Is(r.Until(() => r.Op(Scout).Busy != null, T(120)), "the Listen starts from the chair");
                         return;

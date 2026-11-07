@@ -10,6 +10,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { streetDensity } from './model';
 import { CAT, CATEGORY, DRAW, PROM, bandOf } from './rules';
+import { sectionOf } from '../plan/sections';
 import type { Presentation, Model, Loop, Route, Timed, Looping, Still, Paint, PresentationLod } from '../../contracts/world/presentation.schema';
 
 const ROOT = join(import.meta.dir, '..', '..');
@@ -486,8 +487,7 @@ export function build(I: Inputs, opt: Options = DEFAULTS): Presentation {
   const count = (x: number, id: string) => Math.floor(x) + (rng(id + '/n')() < x - Math.floor(x) ? 1 : 0);
   const pushLoop = (id: string, xyz: number[], where: string, kind: Loop['kind'] = 'walk') => { const pts: P[] = []; for (let i = 0; i < xyz.length; i += 3) pts.push([xyz[i], xyz[i + 1]]); const L = cumul([...pts, pts[0]]).at(-1)!; loops.push({ id, kind, len: r2(L), xyz: xyz.map(r2), where }); return { index: loops.length - 1, L }; };
   const zPave = 0.18;
-  // pavement line offsets and trims (sections.<class>: kerb + walk/2 from the kerb face)
-  const walkOff = (e: Edge) => { const s = e.cls === 'primary' ? sec.primary : e.cls === 'district' ? sec.district : sec.access; return { o: e.w / 2 + s.kerb + s.walk / 2, half: s.walk / 2 }; };
+  const walkOff = (e: Edge) => { const s = sectionOf(sec, PL, e.cls === 'primary' || e.cls === 'district' ? e.cls : 'access', e.road); return { o: e.w / 2 + s.kerb + s.walk / 2, half: s.walk / 2 }; }; // pavement line offsets (and trims): kerb + walk/2 from the kerb face of the road's section as the world generator and the checker read it (sectionOf: its class's, or its own pavement, brief 075; the class's put Sunset Way east's walkers in its buildings)
   const circus = PL.circus.c as P;
   const walkTrim = (n: string, e: Edge, pts: P[], atEnd: boolean) => {
     if (n.startsWith('off_')) return 0;

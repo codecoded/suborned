@@ -2,7 +2,8 @@
 // to dealt with"): the law's tests. Laws, none pinned to a moment: route scripts played on seeds under the dial's settings, every tick read by the
 // law's independent check (BodyCheck), and each promise held whenever it comes up: nobody jumps; a person of the city in the way makes room and
 // steps back; two people of the city face to face squeeze past, turned sideways, two squeeze widths apart; one still stuck changes plans; the
-// tenets, the cell and the armed are never moved by any of these.
+// tenets are never moved by any of these, and the cell and the armed only make room, for their own side (engine 0.48.0: Aster, brief 098, after
+// a police officer stood 81.6 s behind a response robot).
 //   dotnet test sim/Suborned.Sim.Tests -c Release --filter FullyQualifiedName~BodiesGiveTests
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,17 @@ public class BodiesGiveTests
     }
     /// <summary>A person of the city the give and take may move: upright, laid soft and unarmed (not a tenet, not the cell, not the armed).</summary>
     static bool City(Game g, in BodyCheck.Upright u) => !u.Tenet && (u.Kind == "crowd" || u.Kind == "dial-person") && !g.BodyKeepsPlace(u.Id);
+    /// <summary>The side an upright body is on, as the law tells them apart (engine 0.48.0, GameBodyGive.SideOf): 1 the cell; 2 security (the
+    /// patrol, the city's and the dial's guards, officers, police and robots, the fight's police); 3 the rival crew; 0 none (the city unarmed, the cast).</summary>
+    static int Side(Game g, in BodyCheck.Upright u) => u.Kind == "patrol" ? 2 : u.Tenet ? 0 : u.Kind switch // the patrol is security when it asks; a tenet, it never makes room itself
+    {
+        "cell" => 1, "officer" or "police" or "robot" or "dial-guard" => 2, "rival" => 3,
+        "fight" => u.Id.StartsWith("rival-", StringComparison.Ordinal) ? 3 : 2,
+        "crowd" => g.BodyKeepsPlace(u.Id) ? 2 : 0, // a staff guard of the city
+        _ => 0,
+    };
+    /// <summary>Making room for `forId` is the law's: a person of the city for anyone, one armed for one of its own side (never an enemy).</summary>
+    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (Side(g, u) != 0 && up.Find(x => x.Id == forId) is var a && (a.Id == null || Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
 
     [Theory]
     [InlineData("unset")] [InlineData("people=64")] [InlineData("guards=64")] [InlineData("guards=64,people=64")] [InlineData("cars=8")]
@@ -59,7 +71,7 @@ public class BodiesGiveTests
                 {
                     if (g.BodyMove(u.Id) is not BodyMoveRead m || m.RoomFor == null) continue;
                     now.Add(u.Id); if (!since.ContainsKey(u.Id)) { since[u.Id] = g.Tick; orders++; }
-                    if (!City(g, u)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) made room, but it keeps its place");
+                    if (!RoomByLaw(g, up, u, m.RoomFor)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) made room for {m.RoomFor}, but it keeps its place for them");
                     if (g.Tick - since[u.Id] > Game.T(6) + 1) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} has stood aside for {m.RoomFor} over 6 s");
                     if (up.Exists(x => x.Id == m.RoomFor) && up.First(x => x.Id == m.RoomFor) is var a && G.D2(a.At, u.At) < (long)g.R.BodyMinCm * g.R.BodyMinCm && !BodyCheck.Squeezing(g, a, u, G.Dist(a.At, u.At))) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} made room for {m.RoomFor} inside two radii of it"); // closer than two radii (BodyCheck.Closer's measure; two radii apart is allowed: engine 0.47.1 met it exactly, route-a at 6:34.3)
                 }
@@ -120,19 +132,23 @@ public class BodiesGiveTests
 
     [Theory]
     [InlineData("people=64")] [InlineData("guards=64,people=64")]
-    public void TheTenetsTheCellAndTheArmedAreNeverMovedByTheGiveAndTake(string counts)
+    public void TheTenetsAreNeverMovedAndTheArmedMakeRoomOnlyForTheirOwnSide(string counts)
     {
-        var bad = new List<string>(); int looked = 0;
+        var bad = new List<string>(); int looked = 0, own = 0;
         foreach (var route in Routes)
             Play(route, 1, counts, g =>
             {
-                foreach (var u in BodyCheck.Of(g))
+                var up = BodyCheck.Of(g);
+                foreach (var u in up)
                 {
                     if (City(g, u)) continue; looked++;
-                    if (g.BodyMove(u.Id) is BodyMoveRead m) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) {(m.SqueezeWith != null ? "squeezes past " + m.SqueezeWith : m.RoomFor != null ? "made room for " + m.RoomFor : "changed plans")}");
+                    if (g.BodyMove(u.Id) is not BodyMoveRead m) continue;
+                    if (u.Tenet || m.SqueezeWith != null || m.Replanned) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) {(m.SqueezeWith != null ? "squeezes past " + m.SqueezeWith : m.RoomFor != null ? "made room for " + m.RoomFor : "changed plans")}");
+                    else if (m.RoomFor != null) { if (RoomByLaw(g, up, u, m.RoomFor)) own++; else bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) made room for {m.RoomFor}, not one of its own side"); }
                 }
             });
         Assert.True(looked > 10_000, $"{looked} looks at tenets, the cell and the armed");
+        Assert.True(!counts.Contains("guards") || own > 0, $"the armed made room for their own side {own} body-ticks (the dial's guards share posts)");
         Assert.True(bad.Count == 0, string.Join("; ", bad.Distinct().Take(5)));
     }
 }

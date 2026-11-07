@@ -1,0 +1,888 @@
+{
+ "schema": "suborned.evidence/1",
+ "brief": "098 L9 Bodies, the site (Vantage, 2026-11-08)",
+ "engine": "suborned.sim/0.47.1 (b6d72a8e..0f75f128, unchanged)",
+ "before": "HEAD 0f75f128: sim/data/handover.site.json as committed",
+ "after": "this round: Official drop-off (78.2,-31)->(78.7,-31); cafe-palm-0 +0.45 m, cafe-palm-1 -0.25 m along y (block frame)",
+ "how": {
+  "sweep": "suborned-sim dial sweep --seeds 20 --settings \"unset;people=64;guards=64;x4\" (15 adaptive plans x 20 seeds, 300 runs a setting), both sites on the same engine build",
+  "quiet100": "suborned-sim dial sweep quiet-a quiet-b quiet-g --seeds 100 --settings unset",
+  "regions": "a scratch copy of sim/cli with one more command, dial regions (regions-probe.cs here): the dial bodies probe binned by place; 15 adaptive plans x 10 seeds (150 runs a setting); a held spell is binned where the body stood when it ended; boxes in block cm x0,x1,y0,y1",
+  "boxes": {
+   "office-door": "7550,8050,-3820,-2380: the pavement and lay-by along tower-official's south face, the official door and Vale's car",
+   "cafe-alley": "-650,-500,-3700,-3250: the one-cell strip between the terrace wall and cafe-table-0/1 (ambush-2's stand)",
+   "cafe-front": "-1070,-500,-4100,-1700: the cafe front from the facade to the terrace wall"
+  }
+ },
+ "sweep": {
+  "before": {
+   "unset": {
+    "runs": 300,
+    "wins": 129,
+    "fails": {
+     "rivals-reach-vale": 79,
+     "entry-seen-camera": 40,
+     "closed-in": 24,
+     "enforcer-down": 11,
+     "sealed": 11,
+     "vale-leaves": 4,
+     "cell-down": 2
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 14,
+     "prepared-loud-lend": 4,
+     "quiet-a": 20,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 15,
+     "thin-quiet": 20,
+     "unprepared-loud": 0,
+     "veteran": 11,
+     "veteran-drive": 1
+    },
+    "endMeanS": 348,
+    "alertMean10": 10,
+    "trailMean10": 104
+   },
+   "people=64": {
+    "runs": 300,
+    "wins": 101,
+    "fails": {
+     "rivals-reach-vale": 104,
+     "enforcer-down": 26,
+     "sealed": 26,
+     "closed-in": 21,
+     "entry-seen-camera": 21,
+     "vale-leaves": 1
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 9,
+     "prepared-loud-lend": 4,
+     "quiet-a": 20,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 3,
+     "thin-quiet": 19,
+     "unprepared-loud": 0,
+     "veteran": 2,
+     "veteran-drive": 0
+    },
+    "endMeanS": 348,
+    "alertMean10": 13,
+    "trailMean10": 125
+   },
+   "guards=64": {
+    "runs": 300,
+    "wins": 100,
+    "fails": {
+     "rivals-reach-vale": 117,
+     "entry-seen-camera": 39,
+     "vale-leaves": 20,
+     "closed-in": 19,
+     "sealed": 5
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 13,
+     "prepared-loud-lend": 4,
+     "quiet-a": 19,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 0,
+     "thin-quiet": 20,
+     "unprepared-loud": 0,
+     "veteran": 0,
+     "veteran-drive": 0
+    },
+    "endMeanS": 340,
+    "alertMean10": 11,
+    "trailMean10": 83
+   },
+   "x4": {
+    "runs": 300,
+    "wins": 94,
+    "fails": {
+     "rivals-reach-vale": 117,
+     "entry-seen-camera": 21,
+     "sealed": 21,
+     "vale-leaves": 20,
+     "closed-in": 19,
+     "enforcer-down": 8
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 7,
+     "prepared-loud-lend": 4,
+     "quiet-a": 20,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 0,
+     "thin-quiet": 19,
+     "unprepared-loud": 0,
+     "veteran": 0,
+     "veteran-drive": 0
+    },
+    "endMeanS": 348,
+    "alertMean10": 12,
+    "trailMean10": 113
+   }
+  },
+  "after": {
+   "unset": {
+    "runs": 300,
+    "wins": 127,
+    "fails": {
+     "rivals-reach-vale": 80,
+     "entry-seen-camera": 40,
+     "closed-in": 25,
+     "enforcer-down": 11,
+     "sealed": 11,
+     "vale-leaves": 4,
+     "cell-down": 2
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 14,
+     "prepared-loud-lend": 4,
+     "quiet-a": 20,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 13,
+     "thin-quiet": 20,
+     "unprepared-loud": 0,
+     "veteran": 11,
+     "veteran-drive": 1
+    },
+    "endMeanS": 348,
+    "alertMean10": 10,
+    "trailMean10": 106
+   },
+   "people=64": {
+    "runs": 300,
+    "wins": 102,
+    "fails": {
+     "rivals-reach-vale": 104,
+     "enforcer-down": 26,
+     "sealed": 26,
+     "entry-seen-camera": 21,
+     "closed-in": 20,
+     "vale-leaves": 1
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 10,
+     "prepared-loud-lend": 4,
+     "quiet-a": 20,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 3,
+     "thin-quiet": 19,
+     "unprepared-loud": 0,
+     "veteran": 2,
+     "veteran-drive": 0
+    },
+    "endMeanS": 348,
+    "alertMean10": 13,
+    "trailMean10": 124
+   },
+   "guards=64": {
+    "runs": 300,
+    "wins": 100,
+    "fails": {
+     "rivals-reach-vale": 116,
+     "entry-seen-camera": 39,
+     "vale-leaves": 20,
+     "closed-in": 19,
+     "sealed": 6
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 13,
+     "prepared-loud-lend": 4,
+     "quiet-a": 19,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 0,
+     "thin-quiet": 20,
+     "unprepared-loud": 0,
+     "veteran": 0,
+     "veteran-drive": 0
+    },
+    "endMeanS": 340,
+    "alertMean10": 11,
+    "trailMean10": 84
+   },
+   "x4": {
+    "runs": 300,
+    "wins": 97,
+    "fails": {
+     "rivals-reach-vale": 117,
+     "closed-in": 20,
+     "entry-seen-camera": 20,
+     "vale-leaves": 20,
+     "sealed": 19,
+     "enforcer-down": 7
+    },
+    "planWins": {
+     "careless": 0,
+     "drive-early": 0,
+     "drive-round": 4,
+     "prepared-loud": 11,
+     "prepared-loud-lend": 3,
+     "quiet-a": 20,
+     "quiet-b": 20,
+     "quiet-b-lookout-ignored": 0,
+     "quiet-b-taped": 0,
+     "quiet-b-thinned": 20,
+     "quiet-g": 0,
+     "thin-quiet": 19,
+     "unprepared-loud": 0,
+     "veteran": 0,
+     "veteran-drive": 0
+    },
+    "endMeanS": 347,
+    "alertMean10": 12,
+    "trailMean10": 113
+   }
+  }
+ },
+ "quiet100": {
+  "before": {
+   "unset": {
+    "runs": 300,
+    "wins": 271,
+    "fails": {
+     "rivals-reach-vale": 15,
+     "closed-in": 13,
+     "sealed": 1
+    },
+    "planWins": {
+     "quiet-a": 98,
+     "quiet-b": 100,
+     "quiet-g": 73
+    },
+    "endMeanS": 381,
+    "alertMean10": 5,
+    "trailMean10": 58
+   }
+  },
+  "after": {
+   "unset": {
+    "runs": 300,
+    "wins": 270,
+    "fails": {
+     "rivals-reach-vale": 16,
+     "closed-in": 12,
+     "sealed": 2
+    },
+    "planWins": {
+     "quiet-a": 98,
+     "quiet-b": 100,
+     "quiet-g": 72
+    },
+    "endMeanS": 381,
+    "alertMean10": 5,
+    "trailMean10": 57
+   }
+  }
+ },
+ "regions": {
+  "before": {
+   "unset": {
+    "runs": 150,
+    "wins": 68,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 163,
+      "heldBodyTicks": 37081,
+      "bodyTicks": 1350368,
+      "spells": 11501,
+      "p95S10": 6,
+      "maxS10": 136,
+      "held5sOrMore": 43,
+      "held10sOrMore": 5,
+      "squeezePairTicks": 0,
+      "madeRoom": 14,
+      "changedPlans": 0,
+      "longest": [
+       "13.6 s p-records-office-13 at (7614,-2842) to 6:36.6 (prepared-loud #7)",
+       "11.6 s p-records-office-39 at (7632,-2913) to 6:36.6 (prepared-loud #7)",
+       "10.5 s p-records-office-44 at (7702,-2920) to 6:36.6 (prepared-loud #7)",
+       "10.1 s p-records-office-09 at (7696,-3167) to 5:35.8 (quiet-g #4)",
+       "10.1 s patrol at (7638,-3148) to 5:35.8 (quiet-g #4)",
+       "9.7 s p-records-office-61 at (7657,-2856) to 6:36.3 (prepared-loud #1)",
+       "9.5 s p-records-office-61 at (7694,-3001) to 6:36.6 (prepared-loud #7)",
+       "9.4 s patrol at (7672,-3183) to 5:34.7 (quiet-g #6)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 23,
+      "heldBodyTicks": 16,
+      "bodyTicks": 111450,
+      "spells": 8,
+      "p95S10": 5,
+      "maxS10": 5,
+      "held5sOrMore": 0,
+      "held10sOrMore": 0,
+      "squeezePairTicks": 0,
+      "madeRoom": 0,
+      "changedPlans": 0,
+      "longest": []
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 153,
+      "heldBodyTicks": 26592,
+      "bodyTicks": 3969389,
+      "spells": 11335,
+      "p95S10": 5,
+      "maxS10": 430,
+      "held5sOrMore": 9,
+      "held10sOrMore": 4,
+      "squeezePairTicks": 30,
+      "madeRoom": 36,
+      "changedPlans": 7,
+      "longest": [
+       "43.0 s p-cafe-14 at (-851,-2400) to 2:59.7 (quiet-a #7)",
+       "26.3 s p-cafe-14 at (-846,-2651) to 2:32.3 (thin-quiet #10)",
+       "25.9 s p-cafe-14 at (-806,-2596) to 2:41.5 (quiet-a #9)",
+       "10.3 s p-garden-row-east-03 at (-719,-2670) to 0:52.2 (quiet-a #9)",
+       "8.9 s p-garden-row-east-03 at (-921,-2527) to 5:39.8 (quiet-g #9)",
+       "7.4 s p-garden-row-east-03 at (-1000,-2600) to the end (quiet-g #9)",
+       "6.7 s p-cafe-14 at (-831,-2628) to 3:09.3 (quiet-a #9)",
+       "5.6 s p-pylon-row-east-05 at (-860,-3167) to 4:22.7 (quiet-a #8)"
+      ]
+     }
+    }
+   },
+   "people=64": {
+    "runs": 150,
+    "wins": 53,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 291,
+      "heldBodyTicks": 74622,
+      "bodyTicks": 1515729,
+      "spells": 25404,
+      "p95S10": 6,
+      "maxS10": 193,
+      "held5sOrMore": 68,
+      "held10sOrMore": 8,
+      "squeezePairTicks": 2977,
+      "madeRoom": 180,
+      "changedPlans": 3,
+      "longest": [
+       "19.3 s x-person-0136 at (7629,-3094) to 5:12.4 (thin-quiet #9)",
+       "15.9 s x-person-0038 at (7651,-3251) to 4:50.3 (quiet-g #3)",
+       "12.7 s x-person-0052 at (7769,-2833) to the end (quiet-a #3)",
+       "12.4 s x-person-0011 at (7651,-2814) to the end (quiet-a #3)",
+       "11.7 s p-records-office-46 at (7598,-2845) to 6:27.7 (prepared-loud #2)",
+       "10.8 s p-records-office-68 at (7698,-2894) to 6:27.7 (prepared-loud #2)",
+       "10.8 s x-person-0108 at (7703,-3394) to 4:44.1 (quiet-g #3)",
+       "10.5 s x-person-0168 at (7716,-2824) to 5:13.0 (quiet-a #3)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 65,
+      "heldBodyTicks": 4340,
+      "bodyTicks": 167046,
+      "spells": 1058,
+      "p95S10": 8,
+      "maxS10": 432,
+      "held5sOrMore": 4,
+      "held10sOrMore": 3,
+      "squeezePairTicks": 248,
+      "madeRoom": 0,
+      "changedPlans": 0,
+      "longest": [
+       "43.2 s p-records-office-68 at (-609,-3493) to the end (drive-round #2)",
+       "19.0 s p-records-office-68 at (-615,-3507) to the end (drive-round #3)",
+       "18.8 s p-records-office-68 at (-609,-3493) to 7:50.5 (drive-round #8)",
+       "5.5 s p-records-office-68 at (-614,-3505) to the end (drive-round #8)"
+      ]
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 703,
+      "heldBodyTicks": 292833,
+      "bodyTicks": 7071658,
+      "spells": 85828,
+      "p95S10": 5,
+      "maxS10": 738,
+      "held5sOrMore": 254,
+      "held10sOrMore": 88,
+      "squeezePairTicks": 9483,
+      "madeRoom": 1479,
+      "changedPlans": 23,
+      "longest": [
+       "73.8 s x-person-0027 at (-1000,-2993) to the end (quiet-g #9)",
+       "62.9 s x-person-0116 at (-706,-2667) to 2:52.3 (quiet-a #9)",
+       "57.1 s x-person-0113 at (-986,-2987) to the end (quiet-g #8)",
+       "48.3 s x-person-0268 at (-978,-2420) to 3:16.3 (thin-quiet #3)",
+       "44.6 s x-person-0014 at (-876,-2323) to 2:41.6 (thin-quiet #2)",
+       "37.7 s x-person-0122 at (-995,-3211) to 7:32.5 (quiet-b-thinned #3)",
+       "36.9 s x-person-0031 at (-950,-3261) to 7:34.3 (quiet-b-thinned #3)",
+       "34.4 s x-person-0158 at (-769,-3175) to 7:28.2 (prepared-loud-lend #3)"
+      ]
+     }
+    }
+   },
+   "guards=64": {
+    "runs": 150,
+    "wins": 51,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 263,
+      "heldBodyTicks": 287997,
+      "bodyTicks": 2526982,
+      "spells": 87239,
+      "p95S10": 6,
+      "maxS10": 315,
+      "held5sOrMore": 353,
+      "held10sOrMore": 159,
+      "squeezePairTicks": 34,
+      "madeRoom": 129,
+      "changedPlans": 0,
+      "longest": [
+       "31.5 s p-records-office-64 at (7689,-2909) to the end (prepared-loud #5)",
+       "30.6 s p-records-office-68 at (7656,-2804) to the end (prepared-loud #5)",
+       "29.2 s p-records-office-65 at (7617,-2851) to the end (prepared-loud #5)",
+       "29.1 s x-guard-019 at (7653,-2957) to the end (prepared-loud #5)",
+       "28.7 s x-guard-029 at (7609,-2911) to the end (prepared-loud #5)",
+       "26.5 s p-records-office-27 at (7695,-3000) to 8:06.5 (prepared-loud #5)",
+       "26.4 s p-records-office-29 at (7672,-2738) to 5:48.2 (quiet-g #1)",
+       "26.3 s p-records-office-68 at (7652,-2792) to 6:43.2 (prepared-loud #4)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 25,
+      "heldBodyTicks": 30,
+      "bodyTicks": 144578,
+      "spells": 17,
+      "p95S10": 9,
+      "maxS10": 9,
+      "held5sOrMore": 0,
+      "held10sOrMore": 0,
+      "squeezePairTicks": 0,
+      "madeRoom": 0,
+      "changedPlans": 0,
+      "longest": []
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 206,
+      "heldBodyTicks": 88386,
+      "bodyTicks": 4544865,
+      "spells": 38750,
+      "p95S10": 5,
+      "maxS10": 267,
+      "held5sOrMore": 4,
+      "held10sOrMore": 3,
+      "squeezePairTicks": 62,
+      "madeRoom": 152,
+      "changedPlans": 2,
+      "longest": [
+       "26.7 s scout at (-805,-2695) to 2:07.9 (prepared-loud #6)",
+       "26.4 s p-cafe-14 at (-916,-2588) to 2:41.7 (quiet-a #9)",
+       "26.3 s p-cafe-14 at (-846,-2651) to 2:32.3 (thin-quiet #10)",
+       "7.0 s p-cafe-14 at (-880,-2612) to 3:09.2 (quiet-a #9)"
+      ]
+     }
+    }
+   },
+   "x4": {
+    "runs": 150,
+    "wins": 49,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 400,
+      "heldBodyTicks": 370180,
+      "bodyTicks": 2733394,
+      "spells": 113732,
+      "p95S10": 6,
+      "maxS10": 279,
+      "held5sOrMore": 392,
+      "held10sOrMore": 141,
+      "squeezePairTicks": 2844,
+      "madeRoom": 552,
+      "changedPlans": 55,
+      "longest": [
+       "27.9 s p-records-office-68 at (7632,-2855) to the end (prepared-loud #5)",
+       "23.2 s x-guard-015 at (7659,-3276) to 5:53.5 (drive-round #5)",
+       "21.6 s x-guard-008 at (7683,-2813) to 5:10.0 (thin-quiet #9)",
+       "21.1 s p-records-office-05 at (7712,-3283) to 5:53.2 (drive-round #5)",
+       "20.7 s x-person-0006 at (7663,-2929) to the end (prepared-loud #5)",
+       "20.2 s p-records-office-12 at (7667,-3354) to 5:53.5 (drive-round #5)",
+       "20.0 s p-records-office-65 at (7671,-2897) to 7:22.9 (prepared-loud #3)",
+       "18.7 s x-guard-039 at (7698,-2914) to 8:03.4 (prepared-loud #5)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 66,
+      "heldBodyTicks": 4387,
+      "bodyTicks": 175624,
+      "spells": 1065,
+      "p95S10": 8,
+      "maxS10": 432,
+      "held5sOrMore": 4,
+      "held10sOrMore": 3,
+      "squeezePairTicks": 212,
+      "madeRoom": 2,
+      "changedPlans": 0,
+      "longest": [
+       "43.2 s p-records-office-68 at (-609,-3493) to the end (drive-round #2)",
+       "21.5 s p-records-office-68 at (-610,-3492) to the end (drive-round #3)",
+       "21.5 s p-records-office-68 at (-609,-3493) to 7:50.5 (drive-round #8)",
+       "5.5 s p-records-office-68 at (-614,-3505) to the end (drive-round #8)"
+      ]
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 758,
+      "heldBodyTicks": 394010,
+      "bodyTicks": 7817896,
+      "spells": 125290,
+      "p95S10": 5,
+      "maxS10": 649,
+      "held5sOrMore": 265,
+      "held10sOrMore": 114,
+      "squeezePairTicks": 8951,
+      "madeRoom": 1821,
+      "changedPlans": 11,
+      "longest": [
+       "64.9 s x-person-0116 at (-834,-2675) to 2:52.9 (quiet-a #9)",
+       "50.6 s x-person-0037 at (-879,-2389) to 2:45.2 (quiet-a #6)",
+       "48.3 s x-person-0268 at (-978,-2420) to 3:16.3 (thin-quiet #3)",
+       "34.3 s x-guard-023 at (-894,-3217) to 7:36.9 (prepared-loud-lend #1)",
+       "31.6 s x-guard-031 at (-853,-3211) to 5:02.0 (thin-quiet #1)",
+       "28.7 s x-person-0014 at (-850,-3190) to 7:28.0 (quiet-b-thinned #3)",
+       "28.2 s p-rocket-west-02 at (-913,-3285) to 7:34.0 (prepared-loud-lend #5)",
+       "27.8 s x-person-0014 at (-900,-3188) to 7:20.1 (prepared-loud-lend #3)"
+      ]
+     }
+    }
+   }
+  },
+  "after": {
+   "unset": {
+    "runs": 150,
+    "wins": 66,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 165,
+      "heldBodyTicks": 19816,
+      "bodyTicks": 1348133,
+      "spells": 7622,
+      "p95S10": 5,
+      "maxS10": 38,
+      "held5sOrMore": 0,
+      "held10sOrMore": 0,
+      "squeezePairTicks": 0,
+      "madeRoom": 6,
+      "changedPlans": 0,
+      "longest": []
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 24,
+      "heldBodyTicks": 16,
+      "bodyTicks": 111106,
+      "spells": 8,
+      "p95S10": 4,
+      "maxS10": 4,
+      "held5sOrMore": 0,
+      "held10sOrMore": 0,
+      "squeezePairTicks": 0,
+      "madeRoom": 0,
+      "changedPlans": 0,
+      "longest": []
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 153,
+      "heldBodyTicks": 24767,
+      "bodyTicks": 3976468,
+      "spells": 10975,
+      "p95S10": 5,
+      "maxS10": 816,
+      "held5sOrMore": 4,
+      "held10sOrMore": 3,
+      "squeezePairTicks": 9,
+      "madeRoom": 30,
+      "changedPlans": 7,
+      "longest": [
+       "81.6 s police-3 at (-818,-2551) to the end (quiet-g #9)",
+       "25.2 s p-cafe-14 at (-792,-2587) to 2:40.8 (quiet-a #9)",
+       "10.3 s p-garden-row-east-03 at (-719,-2670) to 0:52.2 (quiet-a #9)",
+       "6.8 s p-cafe-14 at (-833,-2631) to 3:09.5 (quiet-a #9)"
+      ]
+     }
+    }
+   },
+   "people=64": {
+    "runs": 150,
+    "wins": 54,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 290,
+      "heldBodyTicks": 36391,
+      "bodyTicks": 1490547,
+      "spells": 15383,
+      "p95S10": 5,
+      "maxS10": 89,
+      "held5sOrMore": 5,
+      "held10sOrMore": 0,
+      "squeezePairTicks": 295,
+      "madeRoom": 115,
+      "changedPlans": 1,
+      "longest": [
+       "8.9 s x-person-0005 at (7684,-3130) to 5:10.6 (quiet-a #5)",
+       "7.0 s p-records-office-12 at (7682,-3019) to 5:53.3 (prepared-loud-lend #1)",
+       "6.2 s officer-1 at (7628,-3028) to 5:10.9 (prepared-loud #6)",
+       "6.0 s p-records-office-13 at (7670,-2894) to 6:30.0 (prepared-loud #7)",
+       "5.5 s p-records-office-17 at (7744,-3035) to 5:53.1 (prepared-loud-lend #1)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 65,
+      "heldBodyTicks": 4111,
+      "bodyTicks": 166801,
+      "spells": 1007,
+      "p95S10": 8,
+      "maxS10": 432,
+      "held5sOrMore": 3,
+      "held10sOrMore": 3,
+      "squeezePairTicks": 221,
+      "madeRoom": 1,
+      "changedPlans": 1,
+      "longest": [
+       "43.2 s p-records-office-68 at (-609,-3493) to the end (drive-round #2)",
+       "17.5 s p-records-office-68 at (-610,-3495) to 7:50.6 (drive-round #8)",
+       "11.1 s p-records-office-68 at (-614,-3505) to the end (drive-round #3)"
+      ]
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 702,
+      "heldBodyTicks": 265012,
+      "bodyTicks": 7051544,
+      "spells": 85955,
+      "p95S10": 4,
+      "maxS10": 629,
+      "held5sOrMore": 125,
+      "held10sOrMore": 33,
+      "squeezePairTicks": 5364,
+      "madeRoom": 1527,
+      "changedPlans": 22,
+      "longest": [
+       "62.9 s x-person-0116 at (-706,-2667) to 2:52.3 (quiet-a #9)",
+       "48.3 s x-person-0268 at (-978,-2420) to 3:16.3 (thin-quiet #3)",
+       "44.6 s x-person-0014 at (-876,-2323) to 2:41.6 (thin-quiet #2)",
+       "35.4 s x-person-0013 at (-920,-2949) to the end (careless #8)",
+       "32.9 s x-person-0007 at (-948,-2409) to 1:58.4 (careless #4)",
+       "27.6 s x-person-0045 at (-1000,-2870) to the end (quiet-g #9)",
+       "25.3 s p-cafe-14 at (-782,-2588) to 2:40.8 (quiet-a #9)",
+       "23.8 s x-person-0045 at (-999,-2837) to 7:35.9 (quiet-g #9)"
+      ]
+     }
+    }
+   },
+   "guards=64": {
+    "runs": 150,
+    "wins": 51,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 262,
+      "heldBodyTicks": 180021,
+      "bodyTicks": 2450228,
+      "spells": 70551,
+      "p95S10": 5,
+      "maxS10": 194,
+      "held5sOrMore": 42,
+      "held10sOrMore": 11,
+      "squeezePairTicks": 0,
+      "madeRoom": 48,
+      "changedPlans": 0,
+      "longest": [
+       "19.4 s p-records-office-39 at (7630,-2877) to 6:07.5 (prepared-loud #7)",
+       "18.2 s x-guard-027 at (7700,-2740) to 6:05.3 (prepared-loud #7)",
+       "16.4 s p-records-office-46 at (7590,-2849) to 6:36.6 (prepared-loud #7)",
+       "16.0 s p-records-office-68 at (7697,-2880) to 6:36.6 (prepared-loud #7)",
+       "15.8 s p-records-office-61 at (7631,-2987) to 6:06.3 (prepared-loud #7)",
+       "14.6 s p-records-office-05 at (7742,-3043) to 6:03.1 (prepared-loud #7)",
+       "14.5 s x-guard-047 at (7727,-2929) to 6:01.5 (prepared-loud #7)",
+       "12.5 s x-guard-019 at (7627,-2851) to 5:58.2 (prepared-loud #7)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 25,
+      "heldBodyTicks": 33,
+      "bodyTicks": 144368,
+      "spells": 17,
+      "p95S10": 9,
+      "maxS10": 9,
+      "held5sOrMore": 0,
+      "held10sOrMore": 0,
+      "squeezePairTicks": 0,
+      "madeRoom": 0,
+      "changedPlans": 0,
+      "longest": []
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 206,
+      "heldBodyTicks": 95391,
+      "bodyTicks": 4550605,
+      "spells": 40520,
+      "p95S10": 5,
+      "maxS10": 146,
+      "held5sOrMore": 12,
+      "held10sOrMore": 1,
+      "squeezePairTicks": 13,
+      "madeRoom": 99,
+      "changedPlans": 1,
+      "longest": [
+       "14.6 s x-guard-021 at (-738,-2952) to 0:34.7 (quiet-a #3)",
+       "9.2 s x-guard-006 at (-886,-2808) to 0:34.3 (careless #3)",
+       "8.0 s p-cafe-14 at (-848,-3055) to 3:12.7 (drive-early #3)",
+       "8.0 s p-cafe-14 at (-848,-3055) to 3:12.7 (drive-round #3)",
+       "8.0 s p-cafe-14 at (-848,-3055) to 3:12.7 (prepared-loud-lend #3)",
+       "8.0 s p-cafe-14 at (-848,-3055) to 3:12.7 (quiet-b-lookout-ignored #3)",
+       "8.0 s p-cafe-14 at (-848,-3055) to 3:12.7 (quiet-b-taped #3)",
+       "8.0 s p-cafe-14 at (-848,-3055) to 3:12.7 (quiet-b-thinned #3)"
+      ]
+     }
+    }
+   },
+   "x4": {
+    "runs": 150,
+    "wins": 52,
+    "regions": {
+     "office-door": {
+      "box": "7550,8050,-3820,-2380",
+      "bodiesARunX10": 398,
+      "heldBodyTicks": 228881,
+      "bodyTicks": 2614151,
+      "spells": 91140,
+      "p95S10": 5,
+      "maxS10": 155,
+      "held5sOrMore": 67,
+      "held10sOrMore": 22,
+      "squeezePairTicks": 119,
+      "madeRoom": 373,
+      "changedPlans": 13,
+      "longest": [
+       "15.5 s p-records-office-12 at (7720,-2880) to 5:53.7 (quiet-b-thinned #5)",
+       "15.1 s p-records-office-12 at (7689,-2835) to the end (veteran-drive #5)",
+       "15.1 s p-records-office-12 at (7689,-2835) to the end (drive-early #5)",
+       "15.1 s p-records-office-12 at (7689,-2835) to the end (veteran #5)",
+       "15.1 s p-records-office-12 at (7689,-2835) to the end (quiet-b-lookout-ignored #5)",
+       "14.8 s x-guard-035 at (7779,-2832) to 5:53.3 (quiet-b-thinned #5)",
+       "14.7 s x-guard-035 at (7753,-2834) to the end (quiet-b-lookout-ignored #5)",
+       "14.7 s x-guard-035 at (7753,-2834) to the end (drive-early #5)"
+      ]
+     },
+     "cafe-alley": {
+      "box": "-650,-500,-3700,-3250",
+      "bodiesARunX10": 67,
+      "heldBodyTicks": 4452,
+      "bodyTicks": 175165,
+      "spells": 1060,
+      "p95S10": 8,
+      "maxS10": 432,
+      "held5sOrMore": 5,
+      "held10sOrMore": 3,
+      "squeezePairTicks": 212,
+      "madeRoom": 0,
+      "changedPlans": 0,
+      "longest": [
+       "43.2 s p-records-office-68 at (-609,-3493) to the end (drive-round #2)",
+       "22.8 s p-records-office-68 at (-615,-3504) to the end (drive-round #3)",
+       "21.5 s p-records-office-68 at (-609,-3493) to 7:50.5 (drive-round #8)",
+       "7.2 s p-records-office-68 at (-615,-3506) to the end (drive-round #5)",
+       "5.8 s p-records-office-68 at (-609,-3493) to the end (drive-round #8)"
+      ]
+     },
+     "cafe-front": {
+      "box": "-1070,-500,-4100,-1700",
+      "bodiesARunX10": 758,
+      "heldBodyTicks": 383806,
+      "bodyTicks": 7826789,
+      "spells": 129232,
+      "p95S10": 5,
+      "maxS10": 391,
+      "held5sOrMore": 218,
+      "held10sOrMore": 46,
+      "squeezePairTicks": 6397,
+      "madeRoom": 1926,
+      "changedPlans": 8,
+      "longest": [
+       "39.1 s p-records-office-46 at (-903,-3759) to the end (drive-round #2)",
+       "32.9 s x-person-0007 at (-948,-2409) to 1:58.4 (careless #4)",
+       "23.4 s x-person-0013 at (-819,-2991) to 2:20.0 (careless #8)",
+       "23.3 s x-guard-022 at (-928,-3157) to 4:23.8 (thin-quiet #9)",
+       "23.0 s x-person-0131 at (-907,-3151) to 7:13.6 (prepared-loud-lend #4)",
+       "21.8 s x-person-0159 at (-837,-3015) to 1:32.8 (careless #6)",
+       "20.9 s x-person-0042 at (-810,-2341) to 2:52.2 (quiet-a #7)",
+       "20.0 s x-person-0017 at (-825,-3020) to 2:34.6 (quiet-a #2)"
+      ]
+     }
+    }
+   }
+  }
+ },
+ "lanes": {
+  "what": "cell-disjoint routes through each cafe pinch on the engine walk grid (0.5 m cells, 8 neighbours, no corner cutting)",
+  "before": {
+   "west palm": 1,
+   "east palm": 1
+  },
+  "after": {
+   "west palm": 2,
+   "east palm": 2
+  }
+ }
+}

@@ -33,6 +33,11 @@ namespace Suborned.Sim
     {
         public readonly List<Walker> Walkers = new List<Walker>();
         public readonly Dictionary<string, Pt> Places = new Dictionary<string, Pt>(StringComparer.Ordinal);
+        /// <summary>Brief 098 L9 (engine 0.48.0, CastStands.cs): a door a cast member holds → where people go in and come out there, beside the
+        /// holder; DoorShut: a held door with no such point (shut to the dial while held). Worked out at load (Warm); empty with L9 off.</summary>
+        public readonly SortedDictionary<string, Pt> DoorIn = new SortedDictionary<string, Pt>(StringComparer.Ordinal); public readonly SortedSet<string> DoorShut = new SortedSet<string>(StringComparer.Ordinal);
+        /// <summary>Where a routine's stop at this place of the file is: a held door's going-in point, else the place's own point.</summary>
+        public Pt PlaceOf(string id) => DoorIn.TryGetValue(id, out var d) ? d : Places[id];
         public readonly int StartsAt;
         /// <summary>The need records (brief 017; sim people `needs.records`, from contracts/people/&lt;plan&gt;.needs.json): id → kind, label, size.</summary>
         public readonly SortedDictionary<string, (string kind, string label, string size)> Records = new SortedDictionary<string, (string, string, string)>(StringComparer.Ordinal);
@@ -50,13 +55,15 @@ namespace Suborned.Sim
         public readonly Dictionary<string, Path> Legs = new Dictionary<string, Path>(StringComparer.Ordinal);
         public void Warm(Site site, Rules rules)
         {
+            DoorIn.Clear(); DoorShut.Clear();
+            if (rules.BodiesOn) foreach (var kv in CastStands.Doors(site, this, rules.BodySpaceCm, rules.BodyMinCm + rules.BodySpaceCm, DoorShut)) DoorIn[kv.Key] = kv.Value; // brief 098 L9: nobody stops on a cast member's place
             var home = Home(site, rules);
             foreach (var w in Walkers)
                 for (int i = 0; i + 1 < w.Place.Length; i++)
                 {
                     var a = w.Place[i]; var b = w.Place[i + 1]; if (a == "beyond" || b == "beyond") continue;
                     var key = a + "→" + b; if (Legs.ContainsKey(key)) continue;
-                    Legs[key] = Leg(site, Places[a], Places[b], home);
+                    Legs[key] = Leg(site, PlaceOf(a), PlaceOf(b), home);
                 }
         }
         /// <summary>Engine 0.33.1 (rulebook car.footprint): the cells of the cars standing when the mission starts (Game.HomeCars), which every

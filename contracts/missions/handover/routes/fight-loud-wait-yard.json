@@ -21,9 +21,9 @@
   {"tick":3211,"op":"tech","do":"reroute","target":"patrol"},
   {"tick":3300,"op":"enforcer","do":"move","to":[7900,-1990]},
   {"tick":3332,"op":"scout","do":"board","target":"car"},
-  {"tick":3566,"op":"fixer","do":"fire","target":"camera:pickup"},
-  {"tick":3566,"op":"fixer","do":"move","to":"service-drive"},
-  {"tick":3591,"op":"fixer","do":"board","target":"car"},
+  {"tick":3562,"op":"fixer","do":"fire","target":"camera:pickup"},
+  {"tick":3562,"op":"fixer","do":"move","to":"service-drive"},
+  {"tick":3587,"op":"fixer","do":"board","target":"car"},
   {"tick":3770,"op":"enforcer","do":"take"},
   {"tick":4150,"op":"cell","do":"go","target":"car:official"},
   {"tick":4151,"do":"withdraw"}

@@ -52,9 +52,9 @@ namespace Suborned.Sim
         {
             ref var b = ref bds[i]; int held = step == int.MaxValue ? DetourHeldCm : Math.Max(DetourHeldCm, 2 * step); // a fast walker sliding to and fro moves farther
             if (b.GiveEnd > Tick || b.RoomFor != null) { b.HeldN = 0; b.HeldAt = b.At; return; } // giving way, or making room
-            if (b.At == goal && b.Det == null) { b.HeldN = 0; b.StuckN = 0; b.DetTries = 0; b.HeldAt = b.At; return; } // there
+            if (b.At == goal && b.Det == null) { b.HeldN = 0; b.StuckN = 0; b.DetTries = 0; b.HeldAt = b.At; b.SlideUntil = 0; return; } // there
             bool got = !G.Within(b.At, b.HeldAt, held);
-            if (b.HeldN == 0 || got) { if (b.HeldN > 0 && got) { b.DetTries = 0; b.StuckN = 0; } b.HeldN = 1; b.HeldAt = b.At; return; } // held now; or it got on (the tries start again)
+            if (b.HeldN == 0 || got) { if (b.HeldN > 0 && got) { b.DetTries = 0; b.StuckN = 0; b.SlideUntil = 0; } b.HeldN = 1; b.HeldAt = b.At; return; } // held now; or it got on (the tries start again, and it may slide either side)
             ++b.StuckN; ++b.HeldN;
             if (b.HeldN >= AskTicks && b.HeldN % AskTicks == 0 && b.Blk >= 0 && AskRoom(i, b.Blk, from, goal)) return; // whoever is in its way now makes room, or the two squeeze past (GameBodyGive.cs): a little crowd parts one by one
             if (b.Blk >= 0 && bds[b.Blk].RoomFor == b.Id) return; // the one in its way is making room for it: it waits
@@ -65,7 +65,7 @@ namespace Suborned.Sim
             if (b.Blk >= 0) // held by one it holds: the lesser right of way gives way
             {
                 ref var o = ref bds[b.Blk];
-                if (o.HeldN > 0 && (o.Placed ? o.Blk == i : o.BlkId == b.Id) && o.Key < b.Key && GivePoint(in b, from, o.At) is Pt back) { b.GiveEnd = Tick + GiveTicks; b.GiveAt = back; return; }
+                if (o.HeldN > 0 && (o.Placed ? o.Blk == i : o.BlkId == b.Id) && o.Key < b.Key && GivePoint(in b, from, o.At) is Pt back) { b.GiveEnd = Tick + GiveTicks; b.GiveAt = back; b.SlideUntil = 0; b.PickWhy = 0; return; }
             }
             if (!PlanDetour(i, from, WayOn(in b, from, goal))) b.DetTries = Math.Min(b.DetTries + 1, 20); // none, or far longer than the straight line: it waits a second more (a queue at a door)
         }
@@ -91,7 +91,7 @@ namespace Suborned.Sim
             ref var b = ref bds[i]; detourPlans++;
             var way = WayRound(i, from, goal, all);
             if (way == null || (!any && way.Length > (2L * G.Dist(from, goal) + DetourLongerCm * (1L + b.DetTries)) * 10)) return false;
-            b.Det = way; b.Catch = false; b.DetEnd = Tick + (int)(way.Length / Math.Max(1, peopleWalk)) + 2 * Hz; b.DetTries = 0; return true;
+            b.Det = way; b.Catch = false; b.DetEnd = Tick + (int)(way.Length / Math.Max(1, peopleWalk)) + 2 * Hz; b.DetTries = 0; b.SlideUntil = 0; b.PickWhy = 0; return true; // another way: either side again
         }
         /// <summary>The walk grid's way from `from` to `goal` with the cells of the bodies within DetourNearCm of it shut that stand or come the other
         /// way (and the cars' ground, grown by a radius); those going its way it follows, so a queue still finds the gap it files through; null when
@@ -120,7 +120,7 @@ namespace Suborned.Sim
             var to = bodyWalk.Free(aim) ? aim : bodyWalk.NearestFree(aim) ?? aim;
             var r = bodyWalk.Route(from, to);
             if (r == null || r.Length < 2) { b.DetEnd = Tick + CatchRetryTicks; return; }
-            b.Det = new Path(r); b.Catch = true; b.DetEnd = Tick + (int)(b.Det.Length / Math.Max(1, WalkCmT * 10)) + 3 * Hz; b.DetTries = 0;
+            b.Det = new Path(r); b.Catch = true; b.DetEnd = Tick + (int)(b.Det.Length / Math.Max(1, WalkCmT * 10)) + 3 * Hz; b.DetTries = 0; b.SlideUntil = 0; b.PickWhy = 0;
         }
 
         /// <summary>Where a body giving way backs to: GiveBackMm back along its own walk past the point nearest it, else GiveBackCm straight away

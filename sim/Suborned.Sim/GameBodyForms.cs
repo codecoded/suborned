@@ -44,6 +44,9 @@ namespace Suborned.Sim
         const int FollowCm = 120; const long FollowAheadMm = 1500;
         /// <summary>A body this far from where it makes for with a wall between walks back to it by the walk grid, at once (GameBodyDetours.cs).</summary>
         const int CatchCm = 150;
+        /// <summary>Engine 0.48.0 (Latch at people=128: x-person-0050 "shuffles 14 cm back and forth four times in 0.8 s"): a body the law steps
+        /// aside keeps to that side for a moment, as long as a held body waits before it looks for a way round (GameBodySides.cs).</summary>
+        const int SlideKeepTicks = DetourTicks;
 
         void LayOne(int i)
         {
@@ -51,7 +54,7 @@ namespace Suborned.Sim
             if (b.Cls == BcFixed && b.Fresh && b.WalksFirm && Blocker(i, b.Own, false) is int on && on >= 0 && bds[on].Cls != BcFixed) b.Cls = BcFirm; // one of the cast coming out where someone stands (Vale out of the Office door onto a guard at its post) steps out beside them, then walks to its place as a tenet walking does
             if (b.Cls == BcFixed)
             {
-                b.At = b.Own; b.LayFace = default; b.Placed = true;
+                b.At = b.Own; b.LayFace = default; b.Placed = true; b.HeldN = 0; b.StuckN = 0; // engine 0.48.0: a tenet at its place (a person seated) is never held (0.47 kept the count it sat down with)
                 if (tenetTick != Tick && Blocker(i, b.At, false) is int t && t >= 0 && bds[t].Cls == BcFixed) { tenetTick = Tick; BodyTenetTicks++; } // two tenets inside two radii: the tenet wins
                 HashAdd(i, b.At); if (b.Head != default) ClearAhead(i); return; // a tenet walking (the Enforcer leading Vale): the city ahead of it makes room before it comes (GameBodyGive.cs)
             }
@@ -62,7 +65,9 @@ namespace Suborned.Sim
             bool onCar = b.Fix == FixOff;
             b.Aim = behind ? FollowAim(in b, from) : b.Own;
             if (!b.Fresh && b.Det == null && Tick >= b.DetEnd && !G.Within(from, b.Aim, CatchCm) && !S.Grid.LineFree(from, b.Aim)) PlanCatch(i, from, b.Aim); // walled off from where it makes for (a routine leg through a building, its own place jumped behind a wall): it walks back by the walk grid (GameBodyDetours.cs)
+            bool kept = false;
             if (!onCar && BodyGround(in b, b.Aim) && Blocker(i, b.Aim, true) < 0) { goal = b.Aim; gface = default; why = b.AltOn ? WhyAlt : behind ? WhyFollow : WhyOwn; }
+            else if (KeptPick(i, out goal)) { kept = true; why = b.PickWhy; form = why == WhyForm; gface = default; } // engine 0.48.0: the spot the law picked last tick, while it stays clear (GameBodySides.cs)
             else if (!b.AltOn && FormGoal(i, out goal, out var ff)) { gface = ff; form = true; why = WhyForm; }
             else if (b.Lay != default && !b.AltOn && Fits(i, cur, true)) { goal = cur; why = WhyHold; }
             else if (b.Moving && SideGoal(i, cur, out goal)) why = WhySide;
@@ -74,6 +79,7 @@ namespace Suborned.Sim
             if (b.RoomFor != null) { goal = b.RoomAt; why = WhyRoom; form = false; } // making room for one it held (GameBodyGive.cs)
             else if (b.GiveEnd > Tick) { goal = b.GiveAt; why = WhyGive; form = false; } // giving way to one it held (GameBodyDetours.cs)
             else if (DetourAim(ref b, from) is Pt way) { goal = way; why = b.Catch ? WhyCatch : WhyDetour; form = false; } // on its way round what held it, or back to where it makes for
+            PickAfter(i, why, goal, kept);
             bool urgent = !Fits(i, from, false); b.Urgent = urgent; // someone stands inside two radii of where it stood (a tenet walked on it), or a car stood on it: it steps clear now
             int rate = b.Fresh ? int.MaxValue : urgent || onCar || (why == WhyRoom && RoomForTenet(in b)) ? R.BodyShoveCmT : why == WhyDetour || why == WhyGive || why == WhyRoom ? WalkCmT : why == WhyCatch ? Math.Max(R.BodyBackCmT, WalkCmT) : b.Moving && goal != b.Aim ? R.BodyShoveCmT : behind && goal == b.Aim ? Math.Max(R.BodyBackCmT, WalkCmT) : goal == b.Raw ? R.BodyBackCmT : Math.Max(R.BodyBackCmT, WalkCmT); // behind, it hurries
             // engine 0.47.1 (Latch at people=128: one about to squeeze was slid at the city's run, once straight back; drawn, a dash): the law's own moves go no
@@ -87,7 +93,7 @@ namespace Suborned.Sim
             int most = b.Fresh ? R.BodySearchCm : Math.Min(b.Pace, R.BodyShoveCmT); // the farthest it may step aside this tick when it must (where it stood is not clear: urgent)
             var next = Toward(from, goal, reach); Pt at; bool clear = Fits(i, next, false); if (!clear) b.Blk = Blocker(i, next, false); // who holds its step (GameBodyDetours.cs)
             if (clear) { at = next; why |= 1 << 4; }
-            else if (Slide(i, from, goal, slide, out var sl) && (long)(sl.X - from.X) * b.SlideV.X + (long)(sl.Y - from.Y) * b.SlideV.Y >= 0) { at = sl; why |= 2 << 4; } // round whoever is in the way, toward where it is going; never straight back the way it slid last tick (no dancing: it waits, then asks, gives way or walks round)
+            else if (Slide(i, from, goal, slide, out var sl) && (long)(sl.X - from.X) * b.SlideV.X + (long)(sl.Y - from.Y) * b.SlideV.Y >= 0) { at = sl; why |= 2 << 4; } // round whoever is in the way, toward where it is going; never back the other way while it keeps to the side it stepped to (no dancing, engine 0.48.0: a slide, a wait and a slide straight back was a shuffle; it waits, then asks, gives way or walks round)
             else if (cur != next && G.Within(cur, from, reach) && Fits(i, cur, false)) { at = cur; why |= 3 << 4; }
             else if (!b.Fresh && Fits(i, from, false)) { at = from; why |= 4 << 4; } // a walker waits a moment where it stood
             else if (NearClear(i, from, most, out var nc)) { at = nc; why |= 5 << 4; } // or steps aside from there
