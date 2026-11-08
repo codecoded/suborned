@@ -193,7 +193,7 @@ namespace Suborned.Play
                     {
                         var k = g.Known(c.Target); if (k == null || !k.Sight) return "Nothing new.";
                         c.Tone = Feedback.Ok;
-                        return $"Learned: what {who} sees{(k.Routine && k.RoutineNeedsS > 0 ? ", and its rounds" : k.RoutineNeedsS > 0 ? $" ({k.WatchedS} of {k.RoutineNeedsS} s toward its rounds)" : "")}.";
+                        return $"Learned: what {who} sees{(k.Routine && k.RoutineNeedsS > 0 ? ", and its rounds" : "")}."; // brief 101: no "(12 of 30 s toward its rounds)": a Watch's length
                     }
                 case "watch": { var p = CastOf(c.Target); return p == null ? "Nothing learned." : p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
                 case "listen" or "pay" when IsCrew(c.Target ?? ""): return CrewFooter(c); // brief 096: a member of the rival crew (HostCrewTurn)

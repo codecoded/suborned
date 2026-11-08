@@ -26,7 +26,7 @@ namespace Suborned.Play
         public sealed class HoldCharge
         {
             public Target T; public int Button; public float Start; public float NeedS = ChargeS; public float Need => NeedS * ChargeScale; public bool Done, Fire, Force, Run, Bystander;
-            public string FireId = "", Verb = "", Extra = ""; public ContextPlan Plan; public int Way = -1;
+            public string FireId = "", Verb = ""; public ContextPlan Plan; public int Way = -1;
             /// <summary>Brief 067 C2: the pill's own intent for this hold when it differs from the row (a group Board's slowest time), else null.</summary>
             public Intent PillI;
             /// <summary>Who does it, chosen at the press and kept (the best placed then: the playground's charge.only).</summary>
@@ -230,7 +230,7 @@ namespace Suborned.Play
                 if (!to.HasValue || G.Dist(to.Value, want) > 300) { if (!said) PopKey("no-way", screen, null, Feedback.Refused, "Can't walk there."); said = true; continue; }
                 lastGroupWalk.Add((k, to.Value));
                 var dest = to.Value; int kk = k;
-                if (Queueing) { QueuePlan(k, $"{(run ? "Run" : "Walk")} · {WalkSeconds(k, dest, run)} s", run ? "run" : "s_moving", RouteWorld(k, dest), () => WalkNow(kk, dest, run, null)); continue; }
+                if (Queueing) { QueuePlan(k, run ? "Run" : "Walk", run ? "run" : "s_moving", RouteWorld(k, dest), () => WalkNow(kk, dest, run, null)); continue; } // brief 101: the ghost says the gait, never the walk's seconds
                 WalkNow(k, dest, run, screen);
             }
         }
@@ -253,7 +253,6 @@ namespace Suborned.Play
         }
 
         List<int> SelectedList() { var l = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k]) l.Add(k); return l; }
-        int WalkSeconds(int k, Pt to, bool run) { var r = MoveRoute(Game.Ops[k].Pos, to); if (r == null) return 0; int sp = Math.Max(1, run ? Game.R.RunSpeed : Game.R.CellSpeed); return (int)((new Sim.Path(r).Length + sp * Game.Hz - 1) / (sp * Game.Hz)); }
         List<Vector3> RouteWorld(int k, Pt to) { var pts = new List<Vector3>(); var r = MoveRoute(Game.Ops[k].Pos, to); if (r != null) foreach (var p in r) pts.Add(frame.World(p) + Vector3.up * 0.1f); return pts; }
         List<Vector3> PlanRoute(int k, Order o, Target t) { ActWalk aw = null; Guard("walk", () => aw = ActPlace((OpId)k, o, t)); return aw == null ? new List<Vector3> { frame.World(Game.Ops[k].Pos) + Vector3.up * 0.1f } : RouteWorld(k, aw.To); }
 
@@ -329,7 +328,7 @@ namespace Suborned.Play
                 return true; // under 0.2 s it is a tap: no charge, no pill, no draw (the charge begins below at 0.2 s)
             }
             if (rp.On && mouse.rightButton.isPressed && Charge?.Button != 1 && !rp.Used && !rp.Cancelled && now - rp.T0 >= RightTapS && rp.T?.Kind != "op")
-            { var (id, force) = HoldFireId(rp.T); if (id.Length > 0) Charge = new HoldCharge { T = rp.T, Button = 1, Start = rp.T0, Fire = true, FireId = id, Force = force, Bystander = force, Verb = "Fire", Extra = FireExtra(id, force) }; }
+            { var (id, force) = HoldFireId(rp.T); if (id.Length > 0) Charge = new HoldCharge { T = rp.T, Button = 1, Start = rp.T0, Fire = true, FireId = id, Force = force, Bystander = force, Verb = "Fire" }; }
             if (rp.On)
             {
                 if (!mouse.rightButton.isPressed)
@@ -453,16 +452,6 @@ namespace Suborned.Play
             if (t.Kind is "op" or "door" or "cabinet" or "stash" or "body") return ("", false); // a camera is security: Aster 2026-10-22, the right hold fires on it (engine 0.15: camera:<id>)
             var id = FireIdOf(t, out var force); bool any = false; for (int k = 0; k < 4; k++) any |= Selected[k] && Armed(k) || Driving && k == dAgent && Armed(k);
             return any ? (id, force) : ("", false);
-        }
-
-        /// <summary>Brief 080: the preview FireExtra read last: the offer's odds, and the sum under Alt (HostOdds).</summary>
-        public FirePreview OfferPreview { get; private set; }
-        string FireExtra(string id, bool force)
-        {
-            int k = -1; for (int i = 0; i < 4; i++) if (Selected[i] && Armed(i)) { k = i; break; }
-            if (Driving) k = dAgent; if (k < 0) return "";
-            FirePreview fp = null; Guard("aim", () => fp = Game.PreviewFire((OpId)k, id, force)); int s = PreviewDownS(fp, k, id); OfferPreview = fp;
-            return s >= 0 ? $"{(fp?.DownIs == "disabled" ? "disabled" : "down")} in {s} s" : "";
         }
 
         /// <summary>A lasting fire order the host gave (a right hold let go, a focus click, a portrait lock): who, on what, since when. Pin: a

@@ -207,7 +207,7 @@ namespace Suborned.Play
                 FirePreview fp = null; try { fp = g.PreviewFire(OpId.Enforcer, car.Id, false); } catch { }
                 downIs = fp?.DownIs ?? "";
                 h.LookAt(h.frame.World(car.At)); yield return Until(h, () => false, 0.4f); yield return null; yield return null;
-                var fl = h.FireLine((int)OpId.Enforcer); words = fl.head + " · " + fl.down;
+                var fl = h.FireLine((int)OpId.Enforcer); words = fl.head;
                 yield return Shot("range-fixes-car-time");
             }
             Check("carTime", car != null && downIs == "disabled" && words.Contains("disabled in"), $"{car?.Id} {car?.State}: preview down is {downIs}; the fire line \"{words}\"");

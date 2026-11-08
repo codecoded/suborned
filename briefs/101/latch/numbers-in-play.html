@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>101 · Sky's rule on numbers in play: today's HUD (Latch, 0.2.273)</title>
+<style>
+body{font:15px/1.45 -apple-system,system-ui,sans-serif;margin:0;padding:24px;max-width:1100px;color:#17302f;background:#f7f4ec}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px;border-bottom:1px solid #d2e6e2;padding-bottom:4px}
+p.sub{color:#4a6461;margin:0 0 16px}table{border-collapse:collapse;width:100%;font-size:13.5px}
+td,th{border-bottom:1px solid #d2e6e2;padding:5px 6px;text-align:left;vertical-align:top}th{background:#e8f1ee}
+.gone{color:#8a2b20}.kept{color:#1d6b5a}.flag{color:#8a6a1d}code{font-size:12.5px;background:#e8f1ee;padding:0 3px;border-radius:3px}
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}.pics figure{margin:0}.pics img{width:100%;border:1px solid #d2e6e2}
+figcaption{font-size:12.5px;color:#4a6461}
+</style></head><body>
+<h1>Brief 101 · Sky's rule on numbers in play, in today's HUD</h1>
+<p class="sub">Latch, 2026-11-08 · build 0.2.273 (<code>out/build/play/The Suborned.app</code>, draw check ok; the r101 pictures are from 0.2.272, whose code differs only by a comment) · Sky: "I agree" (no hit chance); "Don't look at how long something takes … Only thing that feels time is important are the key events that happen".</p>
+
+<h2>What Sky will see</h2>
+<ul>
+<li>A shot's pill says what the street will do and nothing else: <b>"Right hold · Fire · Alert ≥2"</b> (was "… · 75 % · Alert ≥2"); on a rival "Fire · +2/hit Trail · Alert ≥2". No odds plate on Alt, none on a rested price, none on the third-person reticle.</li>
+<li>Every order's price has no time: the pill <b>"Hold · Loop the entrance camera · +1 Trail"</b> (was "… · 46 s · …"); the ring's plates <b>"Loop · +1", "Watch", "Disable · +2 · 1", "Fire · +2 · ≥2"</b> (were "Loop · 21 s · +1", "Watch · 20 s", "Disable · 11 s …", "Fire · draws 1.0 s …").</li>
+<li>Agents at work show the act, not a stopwatch: the portrait chip is the icon and the filling bar (no "12 s", no "45 s" to down); the disc over a head keeps its filling ring and loses its seconds plate; the pill says "Watching", "Walking", "Aiming", "Firing".</li>
+<li>A queued walk's ghost says <b>"Walk"</b> or "Run" (was "Walk · 12 s"). A cancel says "Cancels Watch" (was "… · 12 s lost").</li>
+<li>Key events keep their time: the clock, "District seals in 1:53", the police card's "here in …", the rivals coming, a report on its way, a loop's end.</li>
+</ul>
+<div class="pics">
+<figure><img src="shots/pair-aim-pill.png"><figcaption>Aiming (fight range, the hold proof): before 0.2.268 · after</figcaption></figure>
+<figure><img src="shots/pair-ring-plates.png"><figcaption>The ring's price plates (the Tech on the entrance camera): before · after</figcaption></figure>
+<figure><img src="shots/r101-aim-rival.png"><figcaption>Aiming at a rival, the loud fight (seed 3, 3:48)</figcaption></figure>
+<figure><img src="shots/r101-two-firing.png"><figcaption>Two agents firing (Scout and Tech firing, Fixer aiming), 3:46</figcaption></figure>
+<figure><img src="shots/r101-queued-walk.png"><figcaption>Paused, start together: two queued walks</figcaption></figure>
+<figure><img src="shots/r101-ring-plates.png"><figcaption>The Fixer's ring on Inez at the start</figcaption></figure>
+<figure><img src="shots/r101-seal-police.png"><figcaption>The seal and a police card: their times stay</figcaption></figure>
+<figure><img src="shots/before-hold-plan-paused.png"><figcaption>Before: the queued plan's pill "… · 46 s · +1 Trail" (after: shots/after-hold-plan-paused.png)</figcaption></figure>
+</div>
+
+<h2>Inventory: every place in play that showed a hit chance or an action's seconds</h2>
+<table>
+<tr><th>Place</th><th>Showed</th><th>Now</th><th>Code</th></tr>
+<tr><td>Pill: fire offer, charge, "Let go"</td><td class="gone">"75 %", "75 % · down in about 4 s", "Fire at X · down in 4 s"</td><td>Trail and Alert only</td><td>HudToolkit.ActMark PillLine; HostOdds; HostHoldStatus FireOfferFor; HostHold FireExtra (gone)</td></tr>
+<tr><td>Alt plate beside the pill; a price rested on</td><td class="gone">the odds sum, limits, streak note; the one-line sum</td><td>gone (Alt keeps the lock's long line)</td><td>HudToolkit.Hold LockAltFrame; HostOdds OddsAltLine, OddsSumLine (gone)</td></tr>
+<tr><td>Third-person reticle chip</td><td class="gone">"75 % · 4 s", the downed mark</td><td>gun disc, its Stop cap, "no line", "Stopped"</td><td>HudToolkit.Fire FireLineFrame; HostAim FireLine</td></tr>
+<tr><td>Every order's price (pill, ring plates, chip, order sheet)</td><td class="gone">the walk plus the act ("26 s"); Go's seconds until the car goes</td><td>$, Trail, door window, Alert, eye, what it learns, the answer</td><td>HudModel.Less PriceLine</td></tr>
+<tr><td>Order sheet, Alt fragments</td><td class="gone">the walk split from the act</td><td>zeros and the takedown's world numbers only</td><td>HudModel.Less AltLine</td></tr>
+<tr><td>Ring plates</td><td class="gone">"draws 0.6 s"</td><td>the draw mark alone</td><td>HudToolkit.Ring</td></tr>
+<tr><td>Pill live words</td><td class="gone">"Walking · 9 s", "to Inez · Listen · 9 s", "Watching · 12 s left", "↓3 s", "Aiming · 1 s"</td><td>"Walking", "to Inez · Listen", "Watching", "Firing", "Aiming"</td><td>HostHoldStatus OrderStatus, FireStatus (DownMark gone)</td></tr>
+<tr><td>Portrait chips (roster)</td><td class="gone">act and walk seconds left, "45 s" to down</td><td>icon and filling bar; firing: the fire icon</td><td>HostHoldStatus PlateWords; HudModel slot (Left gone); HudToolkit.Less</td></tr>
+<tr><td>Act disc over a head</td><td class="gone">"13 s" plate</td><td>the filling ring</td><td>HudToolkit.Less</td></tr>
+<tr><td>Queued ghosts (paused, start together)</td><td class="gone">"Walk · 12 s", "Run · 7 s"; an act's ghost its seconds</td><td>"Walk", "Run"; an act's name and price</td><td>HostHold GroupWalk</td></tr>
+<tr><td>Cancel tag and pop</td><td class="gone">"· 12 s lost"</td><td>"Cancels Watch"; other costs stay ("They remember")</td><td>HostDone CancelCostWord</td></tr>
+<tr><td>Feed footer of a Watch on a watcher</td><td class="gone">"(12 of 30 s toward its rounds)"</td><td>"Learned: what the camera sees."</td><td>HostFeed</td></tr>
+<tr><td>Range readout (fight range) fire words</td><td class="gone">"Firing at X · down in 3 s"</td><td>"Firing at X"</td><td>HostHoldStatus FireWords</td></tr>
+<tr><td>Ground move chip (Alt; old click presets only, the hold preset draws none); crosshair chip (old presets)</td><td class="gone">walk, run, carry seconds; "75 %", Alt "hits 3/10", "→ 4 s"</td><td>the eye and Alert; Trail; nothing to say: no chip</td><td>HudToolkit.Less Chip; HostFight</td></tr>
+<tr><td>Old strip and IMGUI HUD (not drawn in play)</td><td class="gone">slot seconds</td><td>gone</td><td>HudToolkit.cs, PlayHud.cs</td></tr>
+<tr><td>Mission clock, the next event</td><td class="kept">kept</td><td>key event</td><td></td></tr>
+<tr><td>The seal: plate and card</td><td class="kept">"District seals in 1:53"</td><td>key event</td><td>HostSeal, HudToolkit.Seal</td></tr>
+<tr><td>Police arriving</td><td class="kept">police card "here in …", response pill's soonest, going-loud card, feed footers, takedown "police in ~40 s"</td><td>key event</td><td>HostCrucial, HudToolkit.Less, HostFeed, HostTakedown</td></tr>
+<tr><td>Rivals arriving</td><td class="kept">"Rivals coming · 18 s" on a held Go; going-loud card</td><td>key event</td><td>HostLess, HudToolkit.Ring</td></tr>
+<tr><td>A report on its way</td><td class="kept">reporter's plate ("Radioing it in · 12 s"), "it lands in N s", tape and parked lines, Disable's "▲1 in 14 s"</td><td>key event the player can stop</td><td>HudToolkit.OnWay, HostTakedown</td></tr>
+<tr><td>A loop running out, a watcher back</td><td class="kept">window markers, "Can't see you, back in 18 s", a shut Loop's "ends 1:23"</td><td>key event</td><td>HostDone, HudToolkit.CuesBlind</td></tr>
+<tr><td>Progress shapes</td><td class="kept">filling act ring, roster bar, attention clock's words and underline, a body's wake ring</td><td>no numbers</td><td></td></tr>
+<tr><td>"Door 1:40" on Pressure and Call on Inez</td><td class="flag">kept, for Aster</td><td>the window a pressed call opens at the door, not the act's length</td><td>HudModel.Less door field</td></tr>
+<tr><td>Knockout's gain chip "Wakes 45 s"; takedown Alt "door held m:ss"</td><td class="flag">kept, for Aster</td><td>world events after the act</td><td>HostDone, HudModel.Less</td></tr>
+<tr><td>Fight lab chips and range panel [lab]</td><td class="flag">untouched</td><td>not the game</td><td>HudToolkit.FightLab, HostFightLab</td></tr>
+</table>
+
+<h2>Keys for Fable (text.json not edited)</h2>
+<ul>
+<li>Unused now: <code>less.odds</code> (chip, chipBare, sum, limits, streak.head, streak.hits, streak.misses); <code>less.done.cancel.cost.lost</code>; <code>less.price.fields.time</code>, "time" in <code>less.price.order</code> and in every verb of <code>less.price.verbs</code>.</li>
+<li>To reword: <code>less.price.rule</code> (says Alt splits the walk from the act); <code>less.price.examples.*</code> (all carry seconds); the <code>less.odds</code> cases in contracts/missions/handover/text.test.ts go with the keys.</li>
+<li>To judge: <code>actions.mark.does</code> "For 10 s …" and <code>actions.steam.does</code> "For 8 s …" (an effect's window, fight-lab verbs); <code>less.done.gain.wakes</code> (kept as a world event).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li>Host logic 173 pass, 0 fail (168 + 5 new in tools/game/hostlogic/HostLogic.Numbers101.cs: no time or chance on any ring row for three agents on nine things; the fire offer on two seeds; live words, plates and the cancel tag; firing and aiming; the queued walk). GoWaits096 now asserts no seconds.</li>
+<li>Player: r101 (new, not gated: the five pictures and their words, all ok on 0.2.272); seed ok; holdActs, holdRange, fire, r118 ok on 0.2.269. Evidence: <code>briefs/101/latch/r101-proof.json</code>.</li>
+<li>Proof map: r101 added (6 s) to its own row and the nine rows it reads; proofdelta, proofgates, proofwhat, proofset, batch and hostlogic tests 183 pass; no unplaced path, no coverage gap.</li>
+<li>Typecheck clean; compile 1 warning (HostNotice, existing); build 0 errors, 86 warnings (as 0.2.268). HUD coverage down 0.1 to 0.4 points where a number was on screen (the Tech's ring 6.7 → 6.4 %, commander firing 8.9 → 8.5 %), unchanged in the other pairs; the budget's only reds are the known two card panels (seal and police) and an old lock-pill wording in the third-person pictures.</li>
+<li>Not run: the full batch and full proof (delta rule). The batch would now run FULL because of 6ce74dfa's tools/geometry change (a world change, not this round's).</li>
+</ul>
+</body></html>

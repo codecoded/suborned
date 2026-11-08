@@ -90,9 +90,9 @@ namespace Suborned.Play
         float aimHoldStart = -1f; string aimHoldId = ""; bool aimHoldForce; LoudCard aimHoldCard;
         public float AimHoldProgress => aimHoldStart < 0f || Game == null ? 0f : Mathf.Clamp01((Time.unscaledTime - aimHoldStart) / HoldSeconds);
         public bool AimHolding => aimHoldStart >= 0f;
-        /// <summary>The reticle's chip (PreviewFire for the driven agent on the reticle's target): its hit chance and seconds to down, the gait it reads.</summary>
+        /// <summary>The reticle's preview (PreviewFire for the driven agent on the reticle's target): whether it has a clear line (brief 101: its hit chance
+        /// and seconds to down are never shown in play).</summary>
         public FirePreview AimPreview { get; private set; }
-        public int AimDownS { get; private set; } = -1;
 
         /// <summary>The fire log (brief 024 host wiring, Keel 0.18): every trigger input (on or off, target, tick, taken), each change of an
         /// agent's fire state (mode, target, firing, hollow, shot, next shot, cadence, lead), followers and locks, the follow setting. The proof
@@ -183,19 +183,19 @@ namespace Suborned.Play
         {
             if (TriggerDown) TriggerRelease();
             if (Aiming && dAgent >= 0) FireLogAdd($"aim\t{Op.Name((OpId)dAgent)}\toff");
-            Aiming = false; aimHoldStart = -1f; AimAt = null; AimId = ""; AimPreview = null; AimDownS = -1; aimByScript = trigByScript = false;
+            Aiming = false; aimHoldStart = -1f; AimAt = null; AimId = ""; AimPreview = null; aimByScript = trigByScript = false;
         }
 
         /// <summary>While aiming: the reticle's target, the agent facing it, and the left button as the trigger.</summary>
         void AimFrame(UnityEngine.InputSystem.Mouse mouse, Vector2 p, bool onHud)
         {
             AimScreen = p; AimAt = AimTargetAt(p, out var id, out aimForce); AimId = id;
-            AimPreview = null; AimDownS = -1;
+            AimPreview = null;
             if (id.Length > 0 && (Game.Vale != ValeAt.WithEnforcer || dAgent != (int)OpId.Enforcer))
             {   // priced once a tick (PreviewFire searches a walk-in when out of reach)
                 var pk = $"{id}|{Game.Tick}|{aimForce}|{dAgent}";
                 if (pk != aimPreviewKey) { aimPreviewKey = pk; FirePreview fp = null; aimPreviewKeep = Guard("aim", () => fp = Game.PreviewFire((OpId)dAgent, id, aimForce)) ? fp : null; }
-                AimPreview = aimPreviewKeep; AimDownS = PreviewDownS(aimPreviewKeep, dAgent, id);
+                AimPreview = aimPreviewKeep;
             }
             // the agent faces the reticle (view and drive facing; the chase camera follows the travel heading, never the aim)
             Vector3? at = AimAt != null ? (id.Length > 0 ? DrawnAt(id) : null) ?? TargetWorld(AimAt) : null;
@@ -540,23 +540,16 @@ namespace Suborned.Play
             if (fk != followersKey) { followersKey = fk; FireLogAdd($"followers\t{(dAgent >= 0 ? Op.Name((OpId)dAgent) : "-")}\t{fk}"); }
         }
 
-        /// <summary>The fire line's words for agent k ("Firing at the guard", "down in 3 s"), or "Stopped" for 1 s after its fire ends; "" none.</summary>
-        public (string head, string down, bool stopped, bool drawn) FireLine(int k)
+        /// <summary>The fire line's words for agent k ("Firing at the guard"), or "Stopped" for 1 s after its fire ends; "" none. Brief 101: never the
+        /// seconds to down.</summary>
+        public (string head, bool stopped, bool drawn) FireLine(int k)
         {
-            if (Game == null || k < 0 || k > 3) return ("", "", false, false);
+            if (Game == null || k < 0 || k > 3) return ("", false, false);
             var fs = FireNow[k];
-            if (fs.Firing && fs.Target.Length > 0)
-            {
-                var lk = $"{fs.Target}|{Game.Tick}";
-                if (lineKey[k] != lk) { lineKey[k] = lk; int s = -1; FirePreview fp = null; if (Guard("fire line", () => fp = Game.PreviewFire((OpId)k, fs.Target, Game.Ops[k].Gun.TrigForce))) s = PreviewDownS(fp, k, fs.Target); lineDown[k] = s; lineDownIs[k] = fp?.DownIs ?? "down"; } // priced once a tick
-                return ($"Firing at {FireName(fs.Target)}", lineDown[k] >= 0 ? $"{(lineDownIs[k] == "disabled" ? "disabled" : "down")} in {lineDown[k]} s" : "", false, true); // engine 0.18 (Keel): an undisabled car counts to disabled
-            }
-            if (Time.unscaledTime - FireStoppedAt[k] < StoppedS) return ("Stopped", "", true, Drawn(k));
-            return ("", "", false, false);
+            if (fs.Firing && fs.Target.Length > 0) return ($"Firing at {FireName(fs.Target)}", false, true);
+            if (Time.unscaledTime - FireStoppedAt[k] < StoppedS) return ("Stopped", true, Drawn(k));
+            return ("", false, false);
         }
-
-        /// <summary>The seconds to down (or disabled) on agent k's fire line, as FireLine priced it this tick; -1 none.</summary>
-        public int FireLineDownS(int k) => k is >= 0 and < 4 && FireNow[k].Firing ? lineDown[k] : -1;
 
         /// <summary>A fire target's name in the line: a car by the text's car names ("Vale's car"), else the usual name.</summary>
         string FireName(string id) => id.StartsWith("car:") ? TrafficFireName(id) ?? Text?.TargetName("car-" + id[4..], "the car") ?? "the car" /* brief 098 step 1: a passing car by its kind */
@@ -564,7 +557,6 @@ namespace Suborned.Play
 
         /// <summary>The agent whose line shows: the driven one, else the selected agent (the commander's), else none.</summary>
         public int FireLineAgent => Driving ? dAgent : (int)Agent;
-        readonly string[] lineKey = { "", "", "", "" }; readonly int[] lineDown = { -1, -1, -1, -1 }; readonly string[] lineDownIs = { "down", "down", "down", "down" };
 
         /// <summary>For the HUD: whether agent k's fire mark is the return mark (returning fire on its shooter).</summary>
         public bool Returning(int k) => FireNow[k].Firing && FireNow[k].Mode == "return";

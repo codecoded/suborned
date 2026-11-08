@@ -21,7 +21,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- brief 041: the verb pill (Sky's pick, testbed/controls/markers.js 'pill')
 
-        VisualElement vpill, vpillDisc, vpillDown, vpillClip, vpillFill, vpillFaces, vpillSeen, vpillAfter, vpillStripeL, vpillStripeR; bool pillAfterNow; Label vpillHead, vpillDot, vpillText; Paint vpillTail, vpillGlow, vpillPip;
+        VisualElement vpill, vpillDisc, vpillClip, vpillFill, vpillFaces, vpillSeen, vpillAfter, vpillStripeL, vpillStripeR; bool pillAfterNow; Label vpillHead, vpillDot, vpillText; Paint vpillTail, vpillGlow, vpillPip;
         string vpillKey = "", vpillLine = ""; bool vpillHarm, vpillReady;
         readonly List<VisualElement> faceEls = new();
         /// <summary>The pill's height and its tail (brief 044 A: `pill_status` 38 px at slice 0.43; harm `panel_strip` at 0.3).</summary>
@@ -44,24 +44,18 @@ namespace Suborned.Play
         /// light disc.</summary>
         public static bool Harmful(Suborned.Sim.Order o) => o?.Do is "takedown" or "fire";
 
-        /// <summary>The words on the pill (data.js priceLine, time Total): the act and its target, the whole time (walk and act), the cash, the Trail, the Alert.</summary>
+        /// <summary>The words on the pill (data.js priceLine): the act and its target, the cash, the Trail, the Alert. Brief 101 (Sky 2026-11-08): no
+        /// hit chance and no time; a shot says what the street will do (its Trail, and Alert ≥2: it goes loud).</summary>
         public static string PillLine(HandoverHost h, HandoverHost.Intent i)
         {
             var parts = new List<string> { i.Label.Length > 0 ? i.Label : i.Order?.Do ?? "" };
-            bool odds = i.Order?.Do == "fire" && i.OddsPct >= 0, oddsSaid = false; // brief 080: the fire chip reads the odds first (Fable's less.odds)
             foreach (var f in HudModel.PriceLine(h, i))
                 switch (f.Kind)
                 {
-                    case "time": case "walk":
-                        if (f.Text.Length == 0) break;
-                        if (odds && !oddsSaid && i.OddsDown) { parts.Add(h.OddsChipLine(i.OddsPct, f.Text.Replace(" s", ""))); oddsSaid = true; }
-                        else parts.Add(i.Order?.Do == "fire" ? "down in " + f.Text : f.Text);
-                        break;
                     case "usd": if (f.Text.Length > 0) parts.Add("$" + f.Text); break;
                     case "trail": if (f.Text.Length > 0) parts.Add(f.Text + " Trail" + (f.Found ? " if found" : "")); break;
                     case "alert": if (f.Text.Length > 0) parts.Add("Alert " + f.Text); break;
                 }
-            if (odds && !oddsSaid) parts.Insert(1, h.OddsBareLine(i.OddsPct));
             return string.Join(" · ", parts);
         }
 
@@ -74,7 +68,7 @@ namespace Suborned.Play
             if (host.SelTarget != null && host.SelIntent is { Actionable: true } si) return (host.SelTarget, si);
             return null;
         }
-        /// <summary>The proof reads it: the pill's words now ("" hidden), the head word included ("Hold · Watch the guard · 26 s").</summary>
+        /// <summary>The proof reads it: the pill's words now ("" hidden), the head word included ("Hold · Watch the guard").</summary>
         public static string PillWords => live != null && live.vpill != null && live.vpill.resolvedStyle.display != DisplayStyle.None ? live.vpillLine : "";
 
         void BuildPill()
@@ -98,7 +92,6 @@ namespace Suborned.Play
             vpillDisc = ActDiscEl(vpill);
             vpillHead = Words(vpill, 15.5f, LookHead); vpillHead.style.marginLeft = DiscGap;
             vpillDot = Words(vpill, 15.5f, new Color(LookHead.r, LookHead.g, LookHead.b, HeadDotAlpha)); vpillDot.text = "·"; vpillDot.style.marginLeft = 5; vpillDot.style.marginRight = 5;
-            vpillDown = E(vpill, null, w: 16, h: 16); vpillDown.style.flexShrink = 0; Icon(vpillDown, "s_downed", Cream); Show(vpillDown, false); // brief 049 row 4: "down in" is this icon
             vpillText = Words(vpill, 15.5f); vpillText.style.marginLeft = 9;
             // brief 067 E3 (Glyph): the locked pill's tail: a dim dot, then the short lock in --text-dim
             vpillLockDot = Words(vpill, 15.5f, new Color(LookHead.r, LookHead.g, LookHead.b, HeadDotAlpha)); vpillLockDot.text = "·"; vpillLockDot.style.marginLeft = 5; vpillLockDot.style.marginRight = 5; Show(vpillLockDot, false);
@@ -148,10 +141,8 @@ namespace Suborned.Play
                 vpillKey = key; vpillLine = text; string head = "", rest = text;
                 foreach (var hw in PillHeads) if (text.StartsWith(hw + " · ")) { head = hw; rest = text[(hw.Length + 3)..]; break; }
                 if (head.Length == 0 && text.StartsWith("to ") && text.IndexOf(" · ", System.StringComparison.Ordinal) is int wi and > 3) { head = text[..wi]; rest = text[(wi + 3)..]; } // review 4: the walk-in's "to Inez" is a head word, dim like "Hold"
-                bool downed = rest.StartsWith(HandoverHost.DownMark); if (downed) { rest = rest[HandoverHost.DownMark.Length..]; vpillLine = (head.Length > 0 ? head + " · " : "") + rest; } // brief 049 row 4: the downed icon, then the seconds
-                Text(vpillHead, head); Show(vpillHead, head.Length > 0); Show(vpillDot, head.Length > 0); Text(vpillText, rest); vpillText.style.marginLeft = head.Length > 0 || downed ? 0 : DiscGap;
+                Text(vpillHead, head); Show(vpillHead, head.Length > 0); Show(vpillDot, head.Length > 0); Text(vpillText, rest); vpillText.style.marginLeft = head.Length > 0 ? 0 : DiscGap;
                 Show(vpillLockDot, lockShort.Length > 0); Show(vpillLock, lockShort.Length > 0); Text(vpillLock, lockShort); if (lockShort.Length > 0) vpillLine = text + " · " + lockShort;
-                Show(vpillDown, downed); vpillDown.style.marginLeft = head.Length > 0 ? 0 : DiscGap; vpillDown.style.marginRight = 5;
                 vpillHead.style.color = ready ? LookLive : LookHead;
                 Show(vpillDisc, icon.Length > 0); if (icon.Length > 0) ActDiscOf(vpillDisc, icon, harm);
                 int n = faces?.Count ?? 0; Show(vpillFaces, n > 0);

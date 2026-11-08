@@ -75,17 +75,11 @@ namespace Suborned.Play
         /// <summary>The pill's live words: what it is on (a target the HUD anchors to), the line, and the faces of those it is about.</summary>
         public sealed class LiveWords { public Target T; public string Id = "", Text = ""; public readonly List<int> Agents = new(); public readonly List<(int k, string words)> Items = new(); public bool Fire; public Order O; }
 
-        /// <summary>Leads a pill's words that are seconds to down: the pill draws the kit's `s_downed` icon in its place (HudToolkit.PillLook).</summary>
-        public const string DownMark = "\u2193";
-
         static string Cap1(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s[1..];
         static string Bare(string name) { foreach (var a in new[] { "the ", "an ", "a " }) if (name.StartsWith(a)) return name[a.Length..]; return name; }
 
-        int WalkLeftS(int k) { var op = Game.Ops[k]; if (op.Walk == null) return 0; int sp = op.WalkSpeed > 0 ? op.WalkSpeed : Game.R.CellSpeed; return (int)Math.Max(0, (op.Walk.Length - op.WalkMm + sp * Game.Hz - 1) / Math.Max(1, sp * Game.Hz)); }
-        int ActLeftS(int k) { var op = Game.Ops[k]; return op.Busy == null ? 0 : Math.Max(0, (op.BusyEnd - Game.Tick + Game.Hz - 1) / Game.Hz); }
-
-        /// <summary>Status.js orderStatus: the orders on a thing now ("… · ordered", "Walking there · 9 s", "Watching · 12 s left", one face each
-        /// for several), else "Done · …" for 2.5 s, "Stopped" for 1 s. Null: nothing to say.</summary>
+        /// <summary>Status.js orderStatus: the orders on a thing now ("… · ordered", "to Inez · Listen", "Walking", "Watching", one face each for
+        /// several); brief 101 (Sky 2026-11-08): never the seconds an act or a walk has left. Null: nothing to say.</summary>
         public LiveWords OrderStatus(Target t)
         {
             if (t == null || Game == null) return null; float now = Time.unscaledTime; var w = new LiveWords { T = t };
@@ -94,7 +88,7 @@ namespace Suborned.Play
             {
                 var a = acts[w.Agents[0]]; w.O = a.O;
                 if (now - a.At < 0.8f) { w.Text = $"{a.Head} · ordered"; return w; }
-                if (w.Agents.Count == 1) { int k = w.Agents[0]; w.Text = Game.Ops[k].Busy == null ? (Game.Ops[k].Act != null ? WalkLine(Game.Ops[k].Act) + $" · {WalkLeftS(k)} s" : $"{(Game.Ops[k].Running ? "Running" : "Walking")} · {WalkLeftS(k)} s") : $"{a.Ing} · {ActLeftS(k)} s left"; return w; }
+                if (w.Agents.Count == 1) { int k = w.Agents[0]; w.Text = Game.Ops[k].Busy == null ? (Game.Ops[k].Act != null ? WalkLine(Game.Ops[k].Act) : Game.Ops[k].Running ? "Running" : "Walking") : a.Ing; return w; }
                 foreach (var k in w.Agents) w.Items.Add((k, PlateWords(k))); return w;
             }
             return null; // brief 043: the old "Done · …" and "Stopped" lines are the gain chip and the cancel pop now (shown without hover)
@@ -115,7 +109,7 @@ namespace Suborned.Play
         }
 
         /// <summary>Fire.js fireStatus, one quiet line (Sky: "I worry we've lost the Syndicate simplicity"; Fable's wording row 17): "Drawing",
-        /// "Aiming · 1 s", "↓3 s" (the pill draws the downed icon for DownMark), "Officer down", "Too far", "No clear line", "Stopped". The newest lasting fire
+        /// "Aiming", "Firing", "Officer down", "Too far", "No clear line", "Stopped" (brief 101: no seconds to down or to the next shot). The newest lasting fire
         /// order the host gave first; else, in a fight, the weapons-free picks (the engine's, FireStateOf mode weapons-free), the biggest group.
         /// Null when nothing fires. Hits and misses show on the tracer and the bar, not in words.</summary>
         public LiveWords FireStatus(Target autoOn = null, bool anyAuto = false)
@@ -142,12 +136,8 @@ namespace Suborned.Play
             if (on.Count == 0) { w.Text = "Stopped"; return w; }
             var ph = on.ConvertAll(k => (k, FireOne(k, s.Id)));
             var firing = ph.FindAll(x => x.Item2.phase == "fire"); var aiming = ph.FindAll(x => x.Item2.phase == "aim"); var blocked = ph.FindAll(x => x.Item2.phase == "blocked");
-            if (firing.Count > 0)
-            {
-                int down = -1; foreach (var (k, _) in firing) { int d = FireDownS(k); if (d >= 0 && (down < 0 || d < down)) down = d; }
-                w.Text = down >= 0 ? $"{DownMark}{down} s" : "Firing"; foreach (var (k, _) in firing) w.Agents.Add(k); return w; // brief 049 row 4 (Glyph's 0.2.94 review #3): the gun disc, the downed mark and the number, never "Firing at … · down in …"
-            }
-            if (aiming.Count > 0) { int left = int.MaxValue; foreach (var (k, _) in aiming) left = Math.Min(left, Math.Max(0, Game.Ops[k].Gun.NextShot - Game.Tick)); w.Text = $"Aiming · {Math.Max(1, (left + Game.Hz - 1) / Game.Hz)} s"; foreach (var (k, _) in aiming) w.Agents.Add(k); return w; }
+            if (firing.Count > 0) { w.Text = "Firing"; foreach (var (k, _) in firing) w.Agents.Add(k); return w; } // brief 049 row 4: the gun disc and the faces, never "Firing at …"; brief 101: no seconds to down
+            if (aiming.Count > 0) { w.Text = "Aiming"; foreach (var (k, _) in aiming) w.Agents.Add(k); return w; }
             var walking = ph.FindAll(x => x.Item2.phase == "walk");
             if (walking.Count > 0 && walking.Count + blocked.Count == ph.Count) { w.Text = walking[0].Item2.words; foreach (var (k, _) in walking) w.Agents.Add(k); return w; } // item 13: "→ officer" while they walk in
             if (blocked.Count == ph.Count) { w.Text = blocked[0].Item2.words; foreach (var (k, _) in blocked) w.Agents.Add(k); return w; }
@@ -188,14 +178,10 @@ namespace Suborned.Play
             return Text?.DoneWord("focus." + state, fb) ?? fb;
         }
 
-        /// <summary>Whether agent k's plate shows its fire's time to down ("45 s" under one input, PlateWords): the plate's icon is the downed mark.</summary>
-        public bool PlateFireDown(int k) => k >= 0 && k < 4 && plateFireDown[k];
-        readonly bool[] plateFireDown = new bool[4];
-
-        /// <summary>The words on agent k's plate (ui.js orderWords): "queued", "drawing", "aiming", "firing", "walking 9 s", "watching 12 s"; "" idle.</summary>
+        /// <summary>The words on agent k's plate (ui.js orderWords): "queued", "drawing", "aiming", "firing", "→ Inez", a done word; "" idle or at an
+        /// act or a walk, whose plate is its icon and the bar that fills (brief 101, Sky 2026-11-08: no act's or walk's seconds in play).</summary>
         public string PlateWords(int k)
         {
-            if (k >= 0 && k < 4) plateFireDown[k] = false;
             if (Game == null || k < 0 || k > 3) return "";
             if (Plan.Exists(x => x.K == k)) return "queued";
             if (DoneTone(k) == "cancel" && DonePlate(k) is { Length: > 0 } cw) return cw; // brief 043: a dropped act says "cancelled" on the plate first, even as the new order starts
@@ -203,12 +189,11 @@ namespace Suborned.Play
             if (op.Down) return Text?.DoneWord("plate.down", null) ?? Text?.DoneWord("fire.agent-down", "down") ?? "down"; // item 13 (d): down is said, not only drawn grey
             if (FireRefusalWord(k) is { Length: > 0 } fr) return fr; // item 13: why this agent took no part in the squad's fire order (two words)
             string fid = op.Gun.Order.Length > 0 ? op.Gun.Order : Driving && k == dAgent && TriggerDown ? TriggerTarget : FireNow[k].Firing ? FireNow[k].Target : "";
-            // at most two words (the HUD budget: three are running text): the plate's icon says walk, run or the act, the words its time
-            if (fid.Length > 0 && op.Busy == null && OneInput && FireOne(k, fid).phase == "fire" && FireDownS(k) is int dn && dn >= 0) { plateFireDown[k] = true; return $"{dn} s"; } // Glyph G1 (0.2.135): the fire line's time to down, on the shooter's portrait chip (the plate's icon: the downed mark)
+            // at most two words (the HUD budget: three are running text): the plate's icon says walk, run or the act
             if (fid.Length > 0 && op.Busy == null) { var (ph, wd) = FireOne(k, fid); return ph == "blocked" ? (wd == "Too far" ? Text?.DoneWord("fire.out-of-range", "too far") ?? "too far" : Text?.DoneWord("fire.no-clear-line", "no line") ?? "no line") : wd; }
-            if (op.Busy != null) return $"{ActLeftS(k)} s";
-            if (op.Act != null && Game.ListenSpotNow(Op.Name((OpId)k)) is { waiting: true }) return Text?.DoneWord("plate.waiting", "waiting") ?? "waiting"; /* brief 085: at the spot, the person not yet in reach */ if (op.Act != null) return WalkPlate(op.Act); // engine 0.23 walk-in (Fable less.done.walk.plate): "→ Inez"; the seconds stay on the pill
-            if (op.Walk != null) return $"{WalkLeftS(k)} s";
+            if (op.Busy != null) return "";
+            if (op.Act != null && Game.ListenSpotNow(Op.Name((OpId)k)) is { waiting: true }) return Text?.DoneWord("plate.waiting", "waiting") ?? "waiting"; /* brief 085: at the spot, the person not yet in reach */ if (op.Act != null) return WalkPlate(op.Act); // engine 0.23 walk-in (Fable less.done.walk.plate): "→ Inez"
+            if (op.Walk != null) return "";
             if (DonePlate(k) is { Length: > 0 } dw) return dw; // brief 043: done, turned, not yet, refused, reported, cancelled (2.2 s)
             // brief 049 row 10: no "under fire" plate: the portrait's pulse ring, the status slot's cause and the ground arc say it
             if (op.Gun.StandDown >= 0 && FightOnNow && Drawn(k)) return "holding"; // X under weapons free: stood down until shot at
@@ -224,9 +209,9 @@ namespace Suborned.Play
         /// <summary>For the range panel's readout: the fire words now (the hold's, else agent k's own fire), "" none.</summary>
         public string FireWords(int k)
         {
-            var s = FireStatus(null, true); if (s != null && s.Text.Length > 0) return s.Text.Replace(DownMark, "down in ");
+            var s = FireStatus(null, true); if (s != null && s.Text.Length > 0) return s.Text;
             if (Game == null || k < 0) return ""; var fs = FireNow[k]; if (!fs.Firing || fs.Target.Length == 0) return "";
-            var (ph, wd) = FireOne(k, fs.Target); return ph == "fire" ? $"Firing at {FireName(fs.Target)}{(FireDownS(k) is int d && d >= 0 ? $" · down in {d} s" : "")}" : ph == "aim" ? "Aiming" : ph == "draw" ? "Drawing" : wd;
+            var (ph, wd) = FireOne(k, fs.Target); return ph == "fire" ? $"Firing at {FireName(fs.Target)}" : ph == "aim" ? "Aiming" : ph == "draw" ? "Drawing" : wd;
         }
 
         // ---------------------------------------------------------------- pause and plan
@@ -490,13 +475,13 @@ namespace Suborned.Play
         public (Target t, int k)? WatchReach { get; private set; }
         float hoverPlanAt = -9f;
 
-        /// <summary>The right hold's offer on t: "Fire at …" with its price (down in n s, Trail a hit, Alert); null when nobody selected can fire on it.</summary>
+        /// <summary>The right hold's offer on t: "Fire at …" with what the street will do (Trail a hit, Alert ≥2: it goes loud); brief 101: no hit chance and
+        /// no seconds to down. Null when nobody selected can fire on it.</summary>
         public Intent FireOfferFor(Target t)
         {
             var (id, force) = HoldFireId(t); if (id.Length == 0) return null;
             int fk = Driving ? dAgent : Array.FindIndex(Selected, s => s); var R = Game.R;
-            var ex = FireExtra(id, force); var m = System.Text.RegularExpressions.Regex.Match(ex, @"(\d+) s");
-            return new Intent { Label = force ? $"Fire at {t.Label}" : "Fire", Order = new Order { Op = Op.Name((OpId)Math.Max(0, fk)), Do = "fire", Target = id, Force = force }, Time = m.Success ? m.Groups[1].Value + " s" : "", Trail = $"T +{R.HitTrail}", Alert = $"A ≥{R.GunfireAlert}", OddsPct = OddsOf(OfferPreview), OddsDown = OfferPreview?.DownIs is null or "down" }; // brief 080: the sheet's chance; brief 049 row 3: a combatant wears its ring and the tail points at it: no noun; a civilian keeps it (the warning)
+            return new Intent { Label = force ? $"Fire at {t.Label}" : "Fire", Order = new Order { Op = Op.Name((OpId)Math.Max(0, fk)), Do = "fire", Target = id, Force = force }, Trail = $"T +{R.HitTrail}", Alert = $"A ≥{R.GunfireAlert}" }; // brief 049 row 3: a combatant wears its ring and the tail points at it: no noun; a civilian keeps it (the warning)
         }
 
         Intent HoldIntent(Target t)

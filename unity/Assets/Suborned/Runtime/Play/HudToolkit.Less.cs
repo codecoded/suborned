@@ -242,7 +242,7 @@ namespace Suborned.Play
                 for (int i = 0; i < 4; i++)
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
-                    string hw = host.controls.HoldActs ? host.PlateWords(i) : ""; // item 13 (d): a down agent's plate says "down" (it was the grey glyph alone) // brief 041: the plate says the pill's words (walking 9 s, watching 12 s, aiming, queued)
+                    string hw = host.controls.HoldActs ? host.PlateWords(i) : ""; // item 13 (d): a down agent's plate says "down" (it was the grey glyph alone) // brief 041: the plate says the pill's words (aiming, queued, → Inez; brief 101: never an act's seconds)
                     var (whyIcon, whyWords, whyAlpha) = host.controls.HoldActs && !ended ? host.WhyChipOf(i) : ("", "", 0f); bool why = whyWords.Length > 0; // brief 067 C4 (Glyph): a refused squad order says why on the portrait's chip
                     if (!why && !ended && !s.Down && !s.InCar && hw.Length == 0 && !s.Busy && host.UnderFireNow[i].Count > 0) { var (uc, uw) = host.UnderFireWords(i, alt); if (uw.Length > 0) { whyIcon = WhyIcon(uc) is { Length: > 0 } wi0 ? wi0 : "bang"; whyWords = uw; whyAlpha = 1f; why = true; } } // engine 0.33.0 (Fable's less.why): beside the under-fire cue, its main cause in words (Alt: every cause), in the chip slot when the agent has no other chip
                     bool on = (s.Busy || s.Pace.Length > 0 || hw.Length > 0) && !s.Down && !ended && !s.InCar || why; Show(r, on); if (!on) continue; /* Glyph's 0.2.104 review #7: a downed agent's portrait carries the downed mark; no second disc beside it */ // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
@@ -257,24 +257,24 @@ namespace Suborned.Play
                         continue;
                     }
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
-                    Icon(ic, s.Down ? "s_downed" : host.FireRefusalWord(i).Length > 0 ? "refused" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" or "holding" ? "fire" : host.PlateFireDown(i) ? "s_downed" : hw == "under fire" ? "bang" : host.controls.HoldActs && host.PlateDoneTone(i) is { Length: > 0 } dtn ? (dtn == "ok" ? "check" : dtn == "soft" ? "asked" : dtn == "cancel" ? "close_x" : "refused") : s.Icon, running ? TurqLight : Cream); // brief 043: the plate's word after a landing or a cancel
+                    Icon(ic, s.Down ? "s_downed" : host.FireRefusalWord(i).Length > 0 ? "refused" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" or "holding" ? "fire" : hw == "under fire" ? "bang" : host.controls.HoldActs && host.PlateDoneTone(i) is { Length: > 0 } dtn ? (dtn == "ok" ? "check" : dtn == "soft" ? "asked" : dtn == "cancel" ? "close_x" : "refused") : s.Icon, running ? TurqLight : Cream); // brief 043: the plate's word after a landing or a cancel
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
                     string eye = running ? host.RunEye(i) : ""; var eb = busyEyes[i]; Show(eb, eye.Length > 0); // a run is noticed: who could see it, as on the price line
                     if (eye.Length > 0) Icon(eb[0], "eye_" + eye, eye == "open" ? new Color(0.878f, 0.227f, 0.184f) : Cream);
                     bool carry = s.Pace.Length > 0 && s.Progress < 0;
                     bar.style.visibility = s.Progress >= 0 && !s.Down ? StyleKeyword.Null : Visibility.Hidden; fill.style.width = Length.Percent(100f * Mathf.Clamp01(s.Progress / 1000f)); // the slot keeps its place
-                    // brief 049 row 9 (Glyph's 0.2.94 review #5c): the plate keeps a number ("9 s"); a word alone ("aiming", "refused", "not yet")
-                    // is the icon alone, on the small plate, never a bar-wide plate with a word at its far end
+                    // brief 049 row 9 (Glyph's 0.2.94 review #5c): a word alone ("aiming", "refused", "not yet") is the icon alone, on the small plate, never a
+                    // bar-wide plate with a word at its far end; brief 101 (Sky 2026-11-08): an act or a walk is its icon and the bar, no seconds, no number slot
                     bool hwDigit = false; for (int ci = 0; ci < hw.Length && !hwDigit; ci++) hwDigit = char.IsDigit(hw[ci]); bool hwWord = hw.Length > 0 && !hwDigit; /* Redline 064 #6: no LINQ a row a frame */ string hwShown = hwWord ? "" : hw;
-                    Text(tx, s.Down && hw.Length == 0 || hwWord ? "" : hw.Length > 0 ? hw : carry ? PaceWords(s.Pace) : s.Left);
+                    Text(tx, s.Down && hw.Length == 0 || hwWord ? "" : hw.Length > 0 ? hw : carry ? PaceWords(s.Pace) : "");
                     tx.style.width = hwShown.Length > 0 ? StyleKeyword.Auto : ValueW;
                     // Glyph's N12 (0.2.122): a snug number ("1 s") sat 2 px from the bar's end cap: left-set 6 px after the bar, a little room on its right
                     tx.style.unityTextAlign = hwShown.Length > 0 ? TextAnchor.MiddleLeft : TextAnchor.MiddleRight; tx.style.marginLeft = hwShown.Length > 0 ? 6 : 8; tx.style.paddingRight = hwShown.Length > 0 ? 4 : 0;
                     if (Stress && tx.text.Length > 0) Text(tx, carry ? "1.4 m/s" : "88 s");
                     bool iconOnly = (s.Progress < 0 || s.Down || hwWord) && tx.text.Length == 0 && hwShown.Length == 0; // no end ("holding the loop"), down, or a word: the icon alone (Glyph §1)
-                    float cw = iconOnly ? IconOnlyW : ChipW; if (hwShown.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
+                    bool noValue = !iconOnly && tx.text.Length == 0 && hwShown.Length == 0; // brief 101: the bar alone, as wide as it was, the value's slot gone
+                    float cw = iconOnly ? IconOnlyW : noValue ? ChipW - ValueW - 8 : ChipW; if (hwShown.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly && !noValue); // one width: the bar takes what the eye does not
                     if (carry && hw.Length == 0 && !s.Down) { Show(bar, false); r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 8; } // Glyph's 0.2.104 review #7: carrying, the plate is its icon and pace (no empty bar slot between them)
-                    else if (host.PlateFireDown(i) && !s.Down) { Show(bar, false); r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 8; tx.style.unityTextAlign = TextAnchor.MiddleLeft; } // Glyph G1 follow-up (0.2.137): the time to down is the downed mark and its seconds, snug (the empty bar slot left "6 s" at the plate's far end)
                     else tx.style.marginLeft = StyleKeyword.Null;
                     { // Aster's call (brief 062 "Portraits and ids"): the Enforcer's plate names who he carries: Vale's model cameo, 14 px (18 and 15 failed the rim audit), before the pace
                         var g0 = host.Game; bool vale = i == (int)OpId.Enforcer && g0 != null && !s.Down && (g0.Vale == ValeAt.WithEnforcer || g0.Ops[i].CarryBody.Length > 0 && host.CastOf("councillor") is Person vp && g0.Ops[i].CarryBody == vp.Id);
@@ -835,27 +835,24 @@ namespace Suborned.Play
                     if (a.Refused.Length > 0) refused = a.Refused;
                     else
                     {
-                        if (a.Pct >= 0) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = host.OddsBareLine(a.Pct) }); // brief 080: the odds first (Fable's less.odds.chipBare)
                         if (a.Lab && a.WalkS >= 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = "s_moving", Text = $"{a.WalkS} s" }); // Keel's walk-in: the walk first, the pips from the stop point
-                        if (a.Gait.Length > 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = a.Gait == "walk" ? "s_moving" : "run", Text = "" }); // Keel 0.15 §8.8: the gait the odds are read at
-                        fs.Add(new HudModel.PField { Kind = "time", Icon = a.Lab ? "" : "p_time", Text = a.Down }); // brief 027: the lab chip has no seconds
-                        if (a.ArriveS >= 0) fs.Add(new HudModel.PField { Kind = "time", Icon = "", Text = $"→ {a.ArriveS} s" }); // on arrival (the move's end, standing)
+                        if (a.Lab) fs.Add(new HudModel.PField { Kind = "time", Icon = "", Text = a.Down }); // brief 027: the lab chip's pips (no seconds); brief 101: the crosshair shows no seconds to down and no chance
                         if (a.Lab && a.Charge > 0) fs.Add(new HudModel.PField { Kind = "charge", Icon = "", Text = $"▮{a.Charge}" });
-                        if (alt && a.Pct < 0) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = "hits " + a.Ratio }); // Glyph fight r1 #2: "3/10" read as shots, odds or a magazine; the odds in words, with Alt
                         if (a.Trail.Length > 0 && (!a.Lab || alt || !host.Fights.Hud.trailAltOnly)) fs.Add(new HudModel.PField { Kind = "trail", Icon = "p_trail", Text = a.Trail });
                         if (a.Civilian) fs.Add(new HudModel.PField { Kind = "mark", Mark = "no" });
                     }
                 }
-                else if (hov == null && alt && host.MoveNow is HandoverHost.MoveParts mv) // the ring answers at rest; Alt adds the numbers beside it
-                {
+                else if (hov == null && alt && host.MoveNow is HandoverHost.MoveParts mv) // the ring answers at rest; Alt adds who would see it beside it
+                {   // brief 101 (Sky 2026-11-08): no walk, run or carry seconds; a walk with nothing else to say draws no chip (its ring says where)
                     fs = new List<HudModel.PField>();
                     if (mv.Refused.Length > 0) { lead = "icons/singles/s_moving"; refused = mv.Refused; }
-                    else if (mv.CarryS >= 0) { lead = "icons/singles/s_carrying"; fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = $"{mv.CarryS} s" }); if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye }); }
+                    else if (mv.CarryS >= 0) { lead = "icons/singles/s_carrying"; if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye }); }
                     else
                     {
-                        lead = "icons/singles/s_moving"; fs.Add(new HudModel.PField { Kind = "walk", Icon = "", Text = $"{mv.WalkS} s" });
-                        if (mv.RunS >= 0) { fs.Add(new HudModel.PField { Kind = "run", Icon = "run", Text = $"{mv.RunS} s" }); if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye, Text = mv.Remembers > 0 ? mv.Remembers.ToString() : "", Tip = mv.Remembers > 0 ? HudModel.RememberTip(mv.Remembers) : "" }); /* engine 0.31.0: the passers-by who keep the face, their number after the eye */ if (mv.Alert.Length > 0) fs.Add(new HudModel.PField { Kind = "alert", Icon = "p_alert", Text = mv.Alert }); }
+                        lead = "icons/singles/s_moving";
+                        if (mv.RunS >= 0) { fs.Add(new HudModel.PField { Kind = "run", Icon = "run", Text = "" }); if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye, Text = mv.Remembers > 0 ? mv.Remembers.ToString() : "", Tip = mv.Remembers > 0 ? HudModel.RememberTip(mv.Remembers) : "" }); /* engine 0.31.0: the passers-by who keep the face, their number after the eye */ if (mv.Alert.Length > 0) fs.Add(new HudModel.PField { Kind = "alert", Icon = "p_alert", Text = mv.Alert }); }
                     }
+                    if (fs.Count == 0 && refused.Length == 0) fs = null;
                 }
                 else if (it != null && hov != null && it.Actionable && host.Driving && it.Opens && host.HoverAct.glyph.Length == 0)
                 {   // brief 024 rule 2: third person, the likely way is harmful (never lit): the prompt shows only that E opens the options
@@ -887,8 +884,8 @@ namespace Suborned.Play
         // brief 083: the act mark over a head and the selected chevron
         const float ActMarkBox = 36f; // the sprite's 12.5 % margin leaves a 27 px disc; the ring just outside it
         readonly List<Action<Painter2D>> actPaints = new(); void ActPaint(Action<Painter2D> f) => actPaints.Add(f);
-        readonly Rect[] actPlaced = new Rect[4]; readonly List<(VisualElement root, Label text)> actLefts = new();
-        /// <summary>The proof reads them: the act marks drawn this frame ("scout:watch:13 "), and the selected chevrons.</summary>
+        readonly Rect[] actPlaced = new Rect[4];
+        /// <summary>The proof reads them: the act marks drawn this frame ("scout:watch: "), and the selected chevrons.</summary>
         public static string ActMarksShown { get; private set; } = ""; public static int SelectedCarets { get; private set; }
         /// <summary>The act marks' own layer: the follow view hides every other mark over the street (FollowMarks) and keeps this one. The proof reads how many discs a frame draws, in that layer's visibility.</summary>
         VisualElement actMarkRoot; readonly List<VisualElement> actDiscs = new(); public static int ActMarkDiscsSeen { get; private set; }
@@ -898,15 +895,6 @@ namespace Suborned.Play
             ActMarkRootEnsure();
             while (actDiscs.Count <= n) { var d = E(actMarkRoot, "s-disc_dark_24", 0, 0, ActMarkBox, ActMarkBox); d.pickingMode = PickingMode.Ignore; var g = E(d, null, ActMarkBox * 0.2f, ActMarkBox * 0.2f, ActMarkBox * 0.6f, ActMarkBox * 0.6f); g.name = "g"; g.pickingMode = PickingMode.Ignore; actDiscs.Add(d); manifest.Add((d, "image", () => "act mark")); }
             Show(actDiscs[n], true); return actDiscs[n];
-        }
-        (VisualElement root, Label text) ActLeft(int n)
-        {
-            while (actLefts.Count <= n)
-            {
-                ActMarkRootEnsure(); var r = PlateDark(actMarkRoot, 22f, 0.3f); r.style.position = Position.Absolute; r.style.paddingLeft = 8; r.style.paddingRight = 8; r.style.alignItems = Align.Center; r.style.justifyContent = Justify.Center; r.pickingMode = PickingMode.Ignore;
-                var t = Words(r, 13.5f); int li = actLefts.Count; actLefts.Add((r, t)); manifest.Add((r, "image", () => "act seconds"));
-            }
-            Show(actLefts[n].root, true); return actLefts[n];
         }
 
         VisualElement WorldEl(string cls, float w, float h)
@@ -985,9 +973,9 @@ namespace Suborned.Play
             foreach (var (w, kind, born) in m.Pulses) { float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue; { bool refused = kind == HandoverHost.Feedback.Refused; var pc = refused ? Cream : TurqLight; pc.a = 1 - a; Ground(w, 50 + 90 * a, pc, 2f, refused); } } // sourced colours (the old coral and mint were the lab colours): refused = a dashed cream pulse, taken = turquoise-light (Glyph 0.2.79: the faint pink circle)
             if (m.Box is Rect box) { var bp = RuntimePanelUtils.ScreenToPanel(root.panel, box.min); var bq = RuntimePanelUtils.ScreenToPanel(root.panel, box.max); paints.Add(pp => { pp.strokeColor = Cream; pp.lineWidth = 1.5f; pp.BeginPath(); pp.MoveTo(bp); pp.LineTo(new Vector2(bq.x, bp.y)); pp.LineTo(bq); pp.LineTo(new Vector2(bp.x, bq.y)); pp.ClosePath(); pp.Stroke(); }); }
             // brief 083 (Sky on 0.2.159: "very unclear when a player is performing an action - need an icon above their head"; Glyph owns the look): over an agent at an act, in both views, the act's
-            // icon on a kit disc the cameo's size (art bible: kind reads by its icon, as large as the face), a ring that fills, and the seconds left on a small plate. Walking to an act: that act's icon, the ring dashed.
+            // icon on a kit disc the cameo's size (art bible: kind reads by its icon, as large as the face) and a ring that fills (brief 101: no seconds plate). Walking to an act: that act's icon, the ring dashed.
             // A plain walk has no mark: its destination ring and the portrait say it (four walking agents read as furniture otherwise).
-            ActMarksShown = ""; Rect[] placed = actPlaced; int nPlaced = 0; int leftUsed = 0, nDisc = 0; bool tpv = host.Following;
+            ActMarksShown = ""; Rect[] placed = actPlaced; int nPlaced = 0, nDisc = 0; bool tpv = host.Following;
             for (int i = 0; i < 4; i++)
             {
                 var rg = m.Rings[i]; if (!rg.Show) continue;
@@ -996,7 +984,7 @@ namespace Suborned.Play
                 { var pr = PillRect(); if (pr.width > 0 && q.x + 21 > pr.xMin && q.x - 21 < pr.xMax && q.y + 21 > pr.yMin && q.y - 21 < pr.yMax + 10) q = new Vector2(q.x, pr.yMin - 25f); }
                 foreach (var role in Cast) // Glyph's 0.2.104 review #7: over a cast person's head the stack is theirs (pip, mood): an agent's act disc beside one goes to the agent's feet
                     if (!tpv && KnownOf(role) && host.Views?.Find(role) is Transform ct && ct.gameObject.activeSelf && Proj(ct.position + Vector3.up * 2.3f, out var ch) && (ch - q).sqrMagnitude < 44f * 44f && Proj(rg.World + Vector3.up * 0.2f, out var feet)) { q = feet + new Vector2(0f, 20f); break; } // review 12: above the pill (beside it, it sat on the figure's body line over an elbow) // brief 043: the agent's ring never sits over the pill's words (the playground shot: the tick over "Hold")
-                for (int pi = 0; pi < nPlaced; pi++) { var o = placed[pi]; if (Mathf.Abs(q.y - o.center.y) < 40f && q.x + 21f > o.xMin && q.x - 21f < o.xMax) q.x = o.xMax + 24f; } // two agents side by side: the later steps right, never over the first's disc or seconds
+                for (int pi = 0; pi < nPlaced; pi++) { var o = placed[pi]; if (Mathf.Abs(q.y - o.center.y) < 40f && q.x + 21f > o.xMin && q.x - 21f < o.xMax) q.x = o.xMax + 24f; } // two agents side by side: the later steps right, never over the first's disc
                 var e = ActDiscEl083(nDisc++); e.style.left = q.x - ActMarkBox / 2f; e.style.top = q.y - ActMarkBox / 2f;
                 string tone = host.DoneTickAge(i) < HandoverHost.DoneTickS + 0.3f ? host.DoneTone(i) : "";
                 float rgR = ActMarkBox / 2f - 1f;
@@ -1005,13 +993,10 @@ namespace Suborned.Play
                 Icon(e.Q("g"), HudModel.AtlasIcon(iconDo, iconAp, walkingTo ? "" : dg.Phase), Cream);
                 float frac = rg.Progress < 0 ? 1f : rg.Progress / 1000f; bool open = rg.Progress < 0 || walkingTo; var aq = q;
                 ActPaint(pp => { if (open) Dashed(pp, aq, rgR, new Color(1, 1, 1, 0.6f), 3f, 10); else { RingArc(pp, aq, rgR, 1f, new Color(1, 1, 1, 0.22f), 3f); RingArc(pp, aq, rgR, frac, TurqLight, 3f); } });
-                float rectR = q.x + 21f; int leftS = walkingTo || dg.TicksLeft < 0 ? -1 : (dg.TicksLeft + Game.Hz - 1) / Game.Hz;
-                if (leftS >= 0) { var lp = ActLeft(leftUsed++); Text(lp.text, leftS + " s"); lp.root.style.left = q.x + 19f; lp.root.style.top = q.y - 11f; rectR += 44f; lp.root.BringToFront(); }
-                placed[nPlaced++] = Rect.MinMaxRect(q.x - 21f, q.y - 21f, rectR, q.y + 21f);
-                ActMarksShown += $"{Op.Name((OpId)i)}:{iconDo}:{leftS} ";
+                placed[nPlaced++] = Rect.MinMaxRect(q.x - 21f, q.y - 21f, q.x + 21f, q.y + 21f);
+                ActMarksShown += $"{Op.Name((OpId)i)}:{iconDo}: ";
                 if (rg.ActAt.HasValue && !tpv && Proj(rg.ActAt.Value + Vector3.up * 0.3f, out var atq)) { var ae = WorldEl("s-disc_light_24", 20, 20); ae.style.left = atq.x - 10; ae.style.top = atq.y - 10; var (qd, qa) = host.PendingOf(i); Icon(ae.Q("g"), HudModel.AtlasIcon(qd, qa, ""), Ink); }
             }
-            for (int i = leftUsed; i < actLefts.Count; i++) Show(actLefts[i].root, false);
             for (int i = nDisc; i < actDiscs.Count; i++) Show(actDiscs[i], false);
             ActMarkDiscsSeen = 0; if (actMarkRoot != null && actMarkRoot.resolvedStyle.visibility == Visibility.Visible) for (int i = 0; i < nDisc; i++) if (actDiscs[i].resolvedStyle.display != DisplayStyle.None) ActMarkDiscsSeen++;
             // brief 083 note 5 ("Needs to be more clear which character you're controlling"): a turquoise-light chevron (the HUD's live accent, not a fire, cone or guard signal; an ink-deep edge carries it over pale paving and in shade)

@@ -309,19 +309,6 @@ namespace Suborned.Play
             return first + (shots - 1) * w.Every;
         }
 
-        /// <summary>An agent firing: whole seconds until its target is down at the present odds (the timer chip's number), or -1 (no line,
-        /// out of range, nothing there). Glyph fight r1 #6: the chip had a bar and no number.</summary>
-        public int FireDownS(int k)
-        {
-            var g = Game; if (g == null) return -1; var R = g.R; var op = g.Ops[k]; var gun = op.Gun; var w = gun.W;
-            string id = gun.Order.Length > 0 ? gun.Order : gun.Target; if (w == null || id.Length == 0) return -1; /* the standing fire order's target (Target is the aim, empty between shots) */ var tg = g.GunOf(id); var at = g.PosOf(id); if (tg == null || !at.HasValue || tg.Down) return -1;
-            long d = G.Isqrt(G.D2(op.Pos, at.Value)); if (d > w.MaxCm || !g.S.Sight(op.Pos, at.Value, R.Eye)) return -1;
-            bool targetMoving = false; foreach (var h in g.Hostiles) if (h.Id == id) targetMoving = h.Moving(g.Tick);
-            int cover = targetMoving ? 1000 : CoverRules.Modifier(g.Range || g.TrafficOn ? g.CoverNow() : g.S.Cover, at.Value, op.Pos, g.Tick / Game.Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial);
-            int acc = R.Accuracy(w, d, op.Walk != null, cover, op.Id == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer, !gun.Trained); if (acc <= 0) return -1;
-            int ticks = DownTicks(k, id, tg, acc); return (ticks + Game.Hz - 1) / Game.Hz;
-        }
-
         /// <summary>Brief 058 (Motive): a fire target that is property (a camera, a car): the engine charges the shooting's Trail once and no hit Trail.</summary>
         /// <summary>Brief 058 §3 (Glyph §1): the one place a fire order's Trail is priced, from the engine's own PreviewFire parts, for the ring
         /// pill, the panel row, the aim chip and the cost line alike. A camera or a car: the shooting once ("+2"), "+0" once the cell has fired
@@ -376,8 +363,6 @@ namespace Suborned.Play
             // Keel 0.15.0 (tuning.md §8.8) host notes: the chip at the shooter's gait and heading, now → on arrival (PreviewFire, both presets)
             FirePreview fp = null; Guard("aim preview", () => fp = g.PreviewFire((OpId)k, id, force));
             if (fp != null && fp.Line && fp.ShotsToDown > 0) { int ps = PreviewDownS(fp, k); if (ps >= 0) secs = ps; acc = fp.Acc; }
-            parts.Pct = OddsOf(fp); OfferPreview = fp; // brief 080: the sheet's chance on the chip, the sum under Alt
-            if (fp != null) { parts.Gait = fp.Gait is "walk" or "run" or "run-away" ? fp.Gait : ""; if (fp.HasEnd && fp.ShotsToDownEnd > 0 && w != null) parts.ArriveS = (R.AimNewTicks + (fp.ShotsToDownEnd - 1) * w.Every + Game.Hz - 1) / Game.Hz; }
             parts.Down = $"{secs} s"; parts.Ratio = Ratio(acc); /* Glyph fight r1 #2: whole seconds, as the rest of the HUD */ parts.Cover = cover < 1000;
             parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : FireTrail((OpId)k, id, force); // brief 058 §3: one price, from PreviewFire
             return $"{who} · hits {Ratio(acc)} · down in {secs} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";

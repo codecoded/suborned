@@ -9,7 +9,8 @@ using Path = System.IO.Path;
 namespace Suborned.Play
 {
     /// <summary>Brief 080's host proof (`-proofOnly seed`; section `seed`, written to proof.json, not gated until Splice adds it): New game rolls a seed that is never 0, Replay keeps it, a new
-    /// game rolls another; a played run's saved session replays exactly on its seed; the fire offer reads the sheet's odds in Fable's words; closed-in's words for every why. The other proof
+    /// game rolls another; a played run's saved session replays exactly on its seed; the fire offer over the guard and its Alt show no hit chance and no seconds (brief 101, Sky's rule on
+    /// numbers in play); closed-in's words for every why. The other proof
     /// sections run on seed 0, the neutral start (HandoverHost.SeedPin), which is what their fixed ticks read.</summary>
     public static class ProofSeed
     {
@@ -22,16 +23,15 @@ namespace Suborned.Play
             bool rolled = a > 0 && b > 0 && a != b, kept = again == a;
             h.StartClock(); h.SetPaused(true); yield return null; var g = h.Game;
             // a played fight: every agent draws and the Enforcer fires on the guard, on the run's own rolled shots
-            var fp = g.PreviewFire(OpId.Enforcer, "guard", false); int pct = h.OddsOf(fp);
-            string chip = pct >= 0 ? h.OddsChipLine(pct, "8") : "";
-            // the chip as a player sees it: the Enforcer drawn, over the guard, then Alt (pictures for Glyph's 2x crop)
+            // the pill as a player sees it: the Enforcer drawn, over the guard, then Alt (pictures for Glyph's 2x crop); brief 101: no "%" and no "n s" in either
+            string chip = "";
             g.Issue(new Order { Tick = g.Tick, Op = "enforcer", Do = "draw" }); h.RunTo(g.Tick + 15); h.Select(OpId.Enforcer, false);
             string pillState = "", altLine = "";
             if (h.Views.Find("guard") is Transform gv && gv)
             {
                 h.LookAt(gv.position); yield return null; HandoverHost.PointerWorld = gv.position + Vector3.up; for (int i = 0; i < 8; i++) yield return null; yield return new WaitForSecondsRealtime(0.3f);
-                pillState = HudToolkit.PillState; while (HudToolkit.ShotBusy) yield return null; log.Add("seed-fire-chip: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-chip"), "active")); yield return null; while (HudToolkit.ShotBusy) yield return null;
-                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.3f); altLine = h.OddsAltLine(); log.Add("seed-fire-alt: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-alt"), "alt")); yield return null; while (HudToolkit.ShotBusy) yield return null;
+                pillState = HudToolkit.PillState; chip = HudToolkit.PillWords; while (HudToolkit.ShotBusy) yield return null; log.Add("seed-fire-chip: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-chip"), "active")); yield return null; while (HudToolkit.ShotBusy) yield return null;
+                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.3f); altLine = HudToolkit.LockAltShown + " | " + HudToolkit.PillWords; log.Add("seed-fire-alt: " + HudToolkit.Shoot(Path.Combine(dir, "seed-fire-alt"), "alt")); yield return null; while (HudToolkit.ShotBusy) yield return null;
                 h.PeekLatch = false; HandoverHost.PointerWorld = null; yield return null;
             }
             log.Add($"seed chip: pill state [{pillState}] alt [{altLine.Replace("\n", " / ")}]");
@@ -46,7 +46,8 @@ namespace Suborned.Play
             var og = Engine.Play(h.PlayInputs, other.Start, other.Orders, other.Until); bool differs = og.Checkpoints[og.Checkpoints.Count - 1].hash != final;
             var whys = new[] { "no-driver", "car-held", "on-foot", "no-go" }; var missing = new List<string>();
             foreach (var w in whys) if (h.Text?.CauseFor("closed-in", w) == null) missing.Add(w); // brief 096: debrief.cause's closed-in words
-            bool ok = rolled && kept && saved && same && differs && missing.Count == 0 && chip.Contains("%") && h.Text.OddsSum.Length > 0 && h.Text.TdComing.Length > 0;
+            static bool Numbers(string w) => w.Contains("%") || System.Text.RegularExpressions.Regex.IsMatch(w, @"\d+(\.\d+)? s\b");
+            bool ok = rolled && kept && saved && same && differs && missing.Count == 0 && !Numbers(chip) && !Numbers(altLine) && h.Text.TdComing.Length > 0;
             log.Add($"seed: rolled {a} {b}, replay {again}; saved {sc.Start.Seed}, replay same {same} ({verdict}), another seed differs {differs}; shots {g.CellShots} hits {g.CellHits}; chip \"{chip}\"; closedIn missing [{string.Join(",", missing)}]");
             json[0] = $"{{\"ok\": {(ok ? "true" : "false")}, \"rolled\": [{a}, {b}], \"replayKept\": {again}, \"savedSeed\": {sc.Start.Seed}, \"savedReplaysSame\": {(same ? "true" : "false")}, \"otherSeedDiffers\": {(differs ? "true" : "false")}, \"shots\": {g.CellShots}, \"hits\": {g.CellHits}, \"chip\": \"{chip}\", \"closedInMissing\": {missing.Count}}}";
             HandoverHost.SeedPin = keep; h.Begin(); h.IntelOpen = false; yield return null;

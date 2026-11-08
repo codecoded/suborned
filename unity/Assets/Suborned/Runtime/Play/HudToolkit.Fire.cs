@@ -13,7 +13,7 @@ namespace Suborned.Play
     ///    shooter to its target, lasting or per shot (Sky 2026-10-26: "Simplify the visuals, it's way too crowded. Just having the agent facing who
     ///    they're shooting should be enough to not need those lines everywhere"): the shooter faces its target (HandoverHost.AimTargets);
     ///  · the firing mark over the agent (the gun with rays), the return mark (the gun with a back arrow), the hollow follow mark;
-    ///  · one line: the gun disc, the downed mark and the seconds ("45 s"; brief 049 row 4), then "Stopped" for 1 s;
+    ///  · one line: the gun disc and its stop cap (brief 049 row 4; brief 101: no seconds to down, no hit chance), "no line", then "Stopped" for 1 s;
     ///  · while aiming: the reticle with its band ticks (wider when the odds drop), the 0.5 s hold's ring, the 8 m follow ring on the ground;
     ///  · the third person key strip and the prompt's key caps (E, and the mouse when a left click acts);
     ///  · cars: smoke when disabled, flame while burning, the blast ring when one explodes (shapes only, no text).</summary>
@@ -36,7 +36,7 @@ namespace Suborned.Play
         }
 
         Paint fireLayer; readonly List<Action<Painter2D>> firePaints = new(); readonly List<Rect> fireDiscs = new();
-        VisualElement fireLine, fireIcon, fireDownIcon, fireHeldIcon, fireCapX, fireCapLmb; const float FireDisc = 32f; Label fireHead, fireDown, fireHeld, fireStop;
+        VisualElement fireLine, fireIcon, fireHeldIcon, fireCapX, fireCapLmb; const float FireDisc = 32f; Label fireHead, fireDown, fireHeld, fireStop;
         bool fireBuilt;
         static readonly Color FlameA = new(1f, 0.62f, 0.18f), FlameB = new(1f, 0.86f, 0.42f), Smoke = new(0.42f, 0.45f, 0.45f);
 
@@ -45,14 +45,13 @@ namespace Suborned.Play
             fireBuilt = true;
             fireLayer = P(marks, 0, 0, 0, 0, (p, r) => { foreach (var f in firePaints) f(p); });
             fireLayer.style.left = 0; fireLayer.style.top = 0; fireLayer.style.right = 0; fireLayer.style.bottom = 0; fireLayer.style.width = StyleKeyword.Auto; fireLayer.style.height = StyleKeyword.Auto;
-            // the line (brief 049 row 4; Glyph's 0.2.94 review #3: no sentence): [gun disc] [downed] 45 s; "Stopped" for 1 s after
+            // the line (brief 049 row 4; Glyph's 0.2.94 review #3: no sentence): [gun disc] [Stop]; "Stopped" for 1 s after (brief 101: no seconds)
             fireLine = E(root, "s-plate_dark", 0, 0, float.NaN, 38); fireLine.style.flexDirection = FlexDirection.Row; fireLine.style.alignItems = Align.Center; fireLine.style.paddingLeft = 6; fireLine.style.paddingRight = 16; // the disc sits in the plate's rounded cap; the words clear of the other cap (the layout audit's 4 px)
             fireLine.pickingMode = PickingMode.Ignore;
             fireCapLmb = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireCapLmb.style.position = Position.Relative; fireCapLmb.style.left = StyleKeyword.Auto; fireCapLmb.style.top = StyleKeyword.Auto; fireCapLmb.style.marginRight = 6; Show(fireCapLmb, false);
             // the kit's light disc (harm and fire: disc_light_24, ink icon), 32 px box = 24 px drawn, inside the 38 px plate
             fireIcon = E(fireLine, null, w: FireDisc, h: FireDisc); fireIcon.style.flexShrink = 0; Bg(fireIcon, "markers/disc_light_24", Color.white);
             Icon(E(fireIcon, null, (FireDisc - 14f) / 2f, (FireDisc - 14f) / 2f, 14f, 14f), "fire", Col(Tok.type.card, Ink));
-            fireDownIcon = E(fireLine, null, w: 14, h: 14); fireDownIcon.style.flexShrink = 0; fireDownIcon.style.marginLeft = 8; Icon(fireDownIcon, "s_downed", Cream);
             fireHead = L(fireLine, "verb-name"); fireHead.style.fontSize = 14f; fireHead.style.marginLeft = 5;
             fireDown = L(fireLine, "verb-name"); fireDown.style.fontSize = 13f; fireDown.style.marginLeft = 10; Show(fireDown, false);
             fireHeldIcon = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireHeldIcon.style.position = Position.Relative; fireHeldIcon.style.left = StyleKeyword.Auto; fireHeldIcon.style.top = StyleKeyword.Auto; fireHeldIcon.style.marginLeft = 14; Show(fireHeldIcon, false);
@@ -344,26 +343,24 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The one fire line, at the target (the reticle while aiming): the gun disc, the downed mark and the seconds to down ("45 s");
-        /// "Stopped" for 1 s after the fire ends. While aiming and not firing: the reticle's chip (the same disc and seconds).</summary>
+        /// <summary>The one fire line, at the target (the reticle while aiming): the gun disc and its stop cap; "Stopped" for 1 s after the fire ends.
+        /// While aiming and not firing: the reticle's chip (the same disc, "no line" when the line is broken). Brief 101: no seconds, no hit chance.</summary>
         void FireLineFrame(float W, float H, bool live)
         {
             int k = host.FireLineAgent; bool show = false;
             if (live && k >= 0)
             {
-                var (head, down, stopped, drawn) = host.FireLine(k);
+                var (head, stopped, _) = host.FireLine(k);
                 if (host.controls.HoldActs && host.FireStatus() != null) head = ""; // brief 041: the pill says it when a hold or a lock is on
                 bool aimChip = head.Length == 0 && host.Aiming && host.AimId.Length > 0 && !(host.controls.HoldActs && host.FireHold != null);
-                if (host.OneInput && !host.Aiming) head = ""; // Glyph G1 (0.2.135): under one input the fire line is off the street (it sat on the focus's lock disc and pips); the time to down rides on the shooter's portrait chip (HostHoldStatus.PlateWords); the cursor's own chip while aiming stays
+                if (host.OneInput && !host.Aiming) head = ""; // Glyph G1 (0.2.135): under one input the fire line is off the street (it sat on the focus's lock disc and pips); the shooter's portrait chip says firing (HostHoldStatus.PlateWords); the cursor's own chip while aiming stays
                 if (head.Length > 0 || aimChip)
                 {
                     show = true;
-                    // brief 049 row 4 (Glyph's 0.2.94 review #3): the gun disc and the number, never a sentence: [gun] [downed] 45 s; "Stopped"
-                    int secs = aimChip ? host.AimDownS : stopped ? -1 : host.FireLineDownS(k);
-                    string word = stopped ? "Stopped" : secs >= 0 ? $"{secs} s" : aimChip && host.AimPreview?.Line == false ? "no line" : "";
-                    if (aimChip && secs >= 0 && HandoverHost.OddsOf(host.AimPreview, host.Game) is int aimPct && aimPct >= 0) word = $"{host.OddsBareLine(aimPct)} · {word}"; // brief 080: the odds on the reticle's chip
+                    // brief 049 row 4 (Glyph's 0.2.94 review #3): the gun disc, never a sentence: [gun] [Stop]; "Stopped"; brief 101 (Sky 2026-11-08): no seconds to down, no hit chance
+                    string word = stopped ? "Stopped" : aimChip && host.AimPreview?.Line == false ? "no line" : "";
                     Text(fireHead, word); Show(fireHead, word.Length > 0);
-                    Show(fireIcon, !stopped); Show(fireDownIcon, secs >= 0);
+                    Show(fireIcon, !stopped);
                     // where: above the target (the reticle while aiming), else above the agent
                     Vector2 at;
                     var fs = host.FireNow[k]; string tgt = fs.Firing ? fs.Target : host.FireStoppedOn[k];

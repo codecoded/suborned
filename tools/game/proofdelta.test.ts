@@ -24,7 +24,7 @@ const HOLD = PLAY + 'HudToolkit.Hold.cs', BASE = { [HOLD]: 'a', 'sim/data/rules.
 describe('the table', () => {
   test('every gated section is one the map can run, but the input map, which the player always runs', () => {
     expect(GATED.filter(g => !ids.includes(g))).toEqual(['inputMap']);
-    expect(ids.filter(i => !(GATED as readonly string[]).includes(i))).toEqual(['drive', 'r123']);
+    expect(ids.filter(i => !(GATED as readonly string[]).includes(i))).toEqual(['drive', 'r123', 'r101']); // r101: brief 101's pictures for Sky, not gated
   });
   test('the engine, its data, the world export and the kit are full, as the brief names them', () => {
     for (const p of ['sim/data/rulebook.json', 'sim/Suborned.Sim/Game.cs', 'out/world/harbour-district.world.json', 'contracts/world/kit.json', 'tools/kit/catalogue.ts', 'unity/Assets/Suborned/Kit/a/b.fbx', 'unity/Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', 'unity/Assets/StreamingAssets/sim/x.json', PLAY + 'GameBoot.cs']) expect(classify(m, p)?.run).toBe('full');

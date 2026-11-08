@@ -134,7 +134,7 @@ namespace Suborned.Play
                 var fs = s.Shut ? new List<HudModel.PField>() : HudModel.PriceLine(host, s.Row.I);
                 if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = s.ShutIcon, Text = s.ShutText }); // brief 067 E: a shut way's short lock (no icon: the lock leads the pill)
                 else if (s.Shut && host.RivalsComingS() is int rcs && rcs >= 0 && s.Holders.Contains("car:rivals")) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = $"{rcs} s" }); // engine 0.33.0 (Motive M059-S1.7): the countdown to the first rider's step-out
-                if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
+                // brief 101: no "draws 0.6 s" (an act's length); the plate's draw mark (w.Draw) says it draws first
                 Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false); // Glyph N3 (0.2.125): the reason in cream (the struck way word is the dim one)
                 Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);
                 Show(w.Key, false); // Sky: no key legends (Aster 2026-10-22: the ⇧1 / ⇧2 caps on the plates); the wedge is the click

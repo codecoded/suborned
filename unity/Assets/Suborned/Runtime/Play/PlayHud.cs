@@ -202,7 +202,6 @@ namespace Suborned.Play
                 {
                     var bar = new Rect(r.x + 6 * s, r.y + 56 * s, r.width - 58 * s, 6 * s);
                     GUI.DrawTexture(bar, barOff); GUI.DrawTexture(new Rect(bar.x, bar.y, bar.width * sl.Progress / 1000f, bar.height), barOn);
-                    GUI.Label(new Rect(bar.xMax + 4 * s, r.y + 49 * s, 46 * s, 18 * s), sl.Left, small);
                 }
                 if (sl.Down) { var cc = GUI.color; GUI.color = new Color(0, 0, 0, 0.45f); GUI.DrawTexture(r, white); GUI.color = cc; }
                 if (sl.Under.Length > 0) GUI.Label(new Rect(r.x + 6 * s, r.y + 66 * s, r.width - 10 * s, 18 * s), sl.Under, small);

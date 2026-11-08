@@ -54,7 +54,7 @@ namespace Suborned.Play
                     var (id, force) = HoldFireId(rp.T);
                     if (id.Length == 0 && (rp.T == null || rp.T.Kind == "op") && TpFireFocus() is Target df) { rp.T = df; (id, force) = HoldFireId(df); } // item 7 (Keel 2026-10-22): the focus the pill offers fire on, as the left hold falls back to it
                     if (id.Length == 0 && TpHostileAhead() is Target ha) { rp.T = ha; (id, force) = HoldFireId(ha); }
-                    if (id.Length > 0) Charge = new HoldCharge { T = rp.T, Button = 1, Start = rp.T0, Fire = true, FireId = id, Force = force, Bystander = force, Verb = "Fire", Extra = FireExtra(id, force) };
+                    if (id.Length > 0) Charge = new HoldCharge { T = rp.T, Button = 1, Start = rp.T0, Fire = true, FireId = id, Force = force, Bystander = force, Verb = "Fire" };
                     else rp.Used = true;
                 }
                 if (rp.On)

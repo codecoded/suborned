@@ -1,0 +1,98 @@
+{
+ "schema": "suborned.latch101/1",
+ "note": "Brief 101, Sky's rule on numbers in play (2026-11-08): the proof answers on the built player. r101 and seed on 0.2.272 (0.2.273, the build handed over, differs by a comment in Proof101.cs); holdActs, holdRange, fire and r118 on 0.2.269 (the same HUD and host code; only Proof101.cs changed after), each ok as printed by that run (its proof.json was removed by mistake; its pictures are kept). Pictures: briefs/101/latch/shots (git-ignored).",
+ "r101": {
+  "ok": true,
+  "ringPlates": {
+   "ok": true,
+   "words": "Watch:  | Ask: +1 1 | Help: 0 +1"
+  },
+  "queuedWalk": {
+   "ok": true,
+   "words": "Scout: Walk | Tech: Walk (2 given)"
+  },
+  "twoFiring": {
+   "ok": true,
+   "words": "3 with fire orders on security-2; pill 'Fire · Alert ≥2'; plates 'firing | aiming | firing | done'"
+  },
+  "aimRival": {
+   "ok": true,
+   "words": "Scout on rival-1 at tick 2280: 'Fire · +2/hit Trail · Alert ≥2' (after the picture 'Fire · +2/hit Trail · Alert ≥2')"
+  },
+  "sealPolice": {
+   "ok": true,
+   "words": "seal 'District seals in 1:53'; card 'police|Police coming|→ shots heard at the Office door · here in ? · 2:33|1 of 5'; plates ' | aiming | aiming | ' at tick 2280"
+  }
+ },
+ "seed": {
+  "ok": true,
+  "rolled": [
+   847653058,
+   75645287
+  ],
+  "replayKept": 847653058,
+  "savedSeed": 75645287,
+  "savedReplaysSame": true,
+  "otherSeedDiffers": true,
+  "shots": 32,
+  "hits": 12,
+  "chip": "Hold · Watch the guard",
+  "closedInMissing": 0
+ },
+ "paired": {
+  "holdActs": true,
+  "holdRange": true,
+  "fire": true,
+  "r118": true
+ },
+ "pillWords": {
+  "hold-fire-charge": [
+   "Right hold · Fire · 75 % · Alert ≥2",
+   "Right hold · Fire · Alert ≥2"
+  ],
+  "hold-fire-ready": [
+   "Let go · Fire · 75 % · Alert ≥2",
+   "Let go · Fire · Alert ≥2"
+  ],
+  "hold-plan-paused": [
+   "Hold · Loop the entrance camera · 46 s · +1 Trail",
+   "Hold · Loop the entrance camera · +1 Trail"
+  ],
+  "seed-fire-chip": [
+   "Hold · Watch the guard · 55 s",
+   "Hold · Watch the guard"
+  ]
+ },
+ "ringPlates": {
+  "r118-ring-camera-tech": [
+   "Loop · 21 s · +1 | Fire · draws 1.0 s · +2 · ≥2 | Watch · 20 s | Disable · 11 s · +2 · 1",
+   "Loop · +1 | Fire · +2 · ≥2 | Watch | Disable · +2 · 1"
+  ]
+ },
+ "hudCoverage": {
+  "commander-firing": [
+   8.9,
+   8.5
+  ],
+  "hold-fire-charge": [
+   5.3,
+   5.2
+  ],
+  "hold-fire-ready": [
+   5.7,
+   5.6
+  ],
+  "hold-plan-paused": [
+   4.8,
+   4.7
+  ],
+  "r118-ring-camera-tech": [
+   6.7,
+   6.4
+  ],
+  "r118-ring-camera-scout": [
+   6.4,
+   6.2
+  ]
+ }
+}

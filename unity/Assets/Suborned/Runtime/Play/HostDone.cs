@@ -414,8 +414,8 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- cancelling
 
-        /// <summary>What a new order to agent k would drop: the act's ring word and its cost ("12 s lost", "They remember"; "" free or not
-        /// started), or null when it is on no act (a walk is not an act).</summary>
+        /// <summary>What a new order to agent k would drop: the act's ring word and its cost ("They remember", "Loop ends"; "" free, not started, or
+        /// only the time spent: brief 101, no act's seconds in play), or null when it is on no act (a walk is not an act).</summary>
         public (string verb, string cost)? WouldCancel(int k)
         {
             if (Game == null || k < 0 || k > 3) return null; var op = Game.Ops[k];
@@ -426,12 +426,11 @@ namespace Suborned.Play
         string CancelCostWord(int k)
         {
             Activity a = null; Guard("activity", () => a = Game.ActivityOf((OpId)k)); if (a == null || !a.CanCancel) return "";
-            var code = a.CancelCost ?? ""; if (CancelFree.Contains(code) || code is "quiet" or "put-down" or "keeps-vale") return "";
-            if (code == "lost") { int s = Math.Max(0, (Game.Tick - Game.Ops[k].BusyStart) / Game.Hz); return s >= 1 ? DW("cancel.cost.lost", "{s} s lost").Replace("{s}", s.ToString()) : ""; }
+            var code = a.CancelCost ?? ""; if (CancelFree.Contains(code) || code is "quiet" or "put-down" or "keeps-vale" or "lost") return ""; // brief 101: "12 s lost" was the act's own time
             return DW("cancel.cost." + code, code switch { "aborted" => "They remember", "released" => "They report", "staff-report" => "Staff report", "vale-reports" => $"{ValeWord} reports", "ends" => "Loop ends", _ => "" });
         }
 
-        /// <summary>The tag over the pill before you let go (Sky 2026-10-22: never cancel unseen): "Cancels Listen · 12 s lost"; null when the
+        /// <summary>The tag over the pill before you let go (Sky 2026-10-22: never cancel unseen): "Cancels Listen", "Cancels Pressure · They remember"; null when the
         /// order drops nothing. doers: who the order goes to.</summary>
         public string CancelTag(IEnumerable<int> doers)
         {

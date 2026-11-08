@@ -7,7 +7,7 @@ using Target = Suborned.Play.HandoverHost.Target;
 namespace Suborned.Play
 {
     /// <summary>Brief 041, the hold preset in the kit HUD (testbed/controls markers.js 'pill', status.js, ui.js, app.js drawGhosts, attention):
-    ///  · the verb pill, the only hover marker: the act's icon and colour, "Hold · Watch the guard · 26 s · …", the doer's face wherever an agent
+    ///  · the verb pill, the only hover marker: the act's icon and colour, "Hold · Watch the guard · …" (brief 101: no seconds, no hit chance), the doer's face wherever an agent
     ///    would be named, a coral "Watched spot" when the stand spot is in a known cone; a hold fills it, its first word swapping "Hold ·" (or
     ///    "Right hold ·") for "Let go ·" when full, the price kept (Fable's wording.md decision 1); live words replace the offer (FireStatus, OrderStatus);
     ///  · the Watch's reach ring round the target; each agent's destination ring in its colour (a run: dashed and doubled); the paused plan's
@@ -43,11 +43,14 @@ namespace Suborned.Play
         /// <summary>Glyph 067 E3 / F9: the pill's last state and target (a lock lapsing into the offer), the stack steps seen, the step glide.</summary>
         (string state, HandoverHost.Target t) pillWas = ("", null); int stepsWas; Vector2? pillQWas; Vector2 glideFrom; float glideAt = -9f, lockLapseAt = -9f;
         VisualElement lockAlt; Label lockAltText;
+        /// <summary>The proof reads it: the Alt plate beside the pill now ("" hidden).</summary>
+        public static string LockAltShown => live?.lockAlt != null && live.lockAlt.resolvedStyle.display != DisplayStyle.None ? live.lockAltText.text : "";
         /// <summary>Brief 067 E3: with Alt, the locked pill's long line (Fable's lock `line`) on a plate_dark under the pill; "" hides it.</summary>
         void LockAltFrame(string line)
         {
             // Sky 2026-11-07 ("but even then it's ugly"): the plate was a fixed one-line height, so a breakdown of several lines spilled over its edges onto
             // the street, and it sat under the pill, on the shooter's bark and the target's marks. Now it grows with its lines and sits beside the pill.
+            // The proof reads LockAltShown (brief 101: never a hit chance)
             if (lockAlt == null)
             {
                 if (line.Length == 0) return;
@@ -90,7 +93,7 @@ namespace Suborned.Play
                 {
                     // Fable's wording row 3-6 (decision 1: the price stays while you hold): one line, its first word swaps: "Hold · …" filling, "Let go · …" full
                     t = ch.T; fill = ch.Progress; state = ch.Ready ? "ready" : "charge"; string head = ch.Ready ? "Let go · " : ch.Fire ? "Right hold · " : "Hold · ";
-                    if (ch.Fire) { var fo = t != null ? h.FireOfferFor(t) : null; text = head + (fo != null ? PillLine(h, fo) : $"Fire at {(t?.Label ?? "")}" + (ch.Extra.Length > 0 ? " · " + ch.Extra : "")); harm = true; icon = "fire"; faces.AddRange(h.FireShooters(t)); } // item 8: the price on the charge too (Trail a hit, Alert)
+                    if (ch.Fire) { var fo = t != null ? h.FireOfferFor(t) : null; text = head + (fo != null ? PillLine(h, fo) : $"Fire at {(t?.Label ?? "")}"); harm = true; icon = "fire"; faces.AddRange(h.FireShooters(t)); } // item 8: the price on the charge too (Trail a hit, Alert)
                     else { var r = ch.Plan.Row(ch.Way); var pi = ch.PillI ?? r.I; var o = pi.Order; text = head + PillLine(h, pi); pillPredNow = pi.PredMark; harm = Harmful(o); icon = pi.Lead.Length > 0 ? pi.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""); faces.AddRange(ch.Doers ?? h.DoersOf(ch.Plan, ch.Way)); } // brief 067 C2: a group Board's own pill (the slowest time)
                 }
                 else
@@ -139,10 +142,8 @@ namespace Suborned.Play
             stepsWas = h.StackSteps; pillWas = (state, t);
             float lapse = Mathf.Clamp01((nowP - lockLapseAt) / 0.15f), lapseA = state == "offer" && lapse < 1f ? Mathf.Lerp(LockPillAlpha * 0.45f, 1f, 1f - (1f - lapse) * (1f - lapse)) : 1f;
             vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : state == "lock" ? LockPillAlpha : lapseA; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px); brief 067 E3: the locked pill at 80 % (nothing to hold)
-            // brief 080: Alt on the fire chip: the sum, its limits and the streak note. Sky 2026-11-07 ("what's with all this text?"): a rested price shows the one-line sum only, and only before
-            // the order is given; while the shot is aimed or fired nothing comes up unless Alt is held
-            bool fireish0 = state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire;
-            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : !fireish0 ? "" : h.Peeking ? h.OddsAltLine() : h.PricePeek && state == "offer" ? h.OddsSumLine() : "");
+            // brief 101 (Sky 2026-11-08, "I agree": no hit chance in play): the fire chip's Alt breakdown and the rested price's sum are gone; Alt keeps the lock's long line
+            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : "");
             vpill.style.scale = state == "ready" ? new Scale(new Vector3(ReadyScale, ReadyScale, 1f)) : new Scale(Vector3.one); // full: the pill pops while it says "Let go"
             float glide = Mathf.Clamp01((nowP - glideAt) / 0.12f); if (glide < 1f) q = Vector2.Lerp(glideFrom, q, 1f - (1f - glide) * (1f - glide));
             pillQWas = q;

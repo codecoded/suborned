@@ -5,10 +5,11 @@ using Suborned.Sim;
 namespace Suborned.Play
 {
     /// <summary>Brief 014 (Fable's price grammar, briefs/014/fable-less.md §2; Glyph's icons, glyph-less.md §2): one line per way. The verb's
-    /// name, then only the fields that are not zero, in the fixed order name · $ · time · Trail · Alert · eye · learns · pace · mark, each an
-    /// icon and a number; an unknown is "?"; the time is the walk plus the act. Which fields an order shows is the text's `less.price.verbs`.
+    /// name, then only the fields that are not zero, in the fixed order name · $ · Trail · door · Alert · eye · learns · pace · mark, each an
+    /// icon and a number; an unknown is "?". Which fields an order shows is the text's `less.price.verbs`. No time (brief 101, Sky 2026-11-08:
+    /// "Don't look at how long something takes because I don't have a choice with the action"): the text's `time` field is never drawn.
     /// Every number is the engine's quote (Preview, QuoteTakedown, SeenAt, the rulebook), read through the host's Intent: nothing is priced
-    /// here. Alt adds the zeros, the walk split from the act, and the takedown's found, wake, door and report numbers as fragments.</summary>
+    /// here. Alt adds the zeros and the takedown's found, wake, door and report numbers as fragments.</summary>
     public sealed partial class HudModel
     {
         public sealed class PField { public string Kind = "", Icon = "", Text = "", Eye = "", Mark = "", Tip = ""; public bool Found; public readonly List<string> Icons = new(); }
@@ -65,8 +66,7 @@ namespace Suborned.Play
             if (o.Do == "go") // brief 018 §6.5 (Glyph r1): up to three cameos, each with its fate glyph (lock: captured; footprints: walks out); +1 T if police see it leave
             {
                 var lf = new PField { Kind = "left" }; foreach (var (who, fate, _) in h.LeftBehindNow()) if (lf.Icons.Count < 3) lf.Icons.Add(who + ":" + fate);
-                if (lf.Icons.Count > 0) l.Add(lf);
-                if (h.GoWaitS(o.Target) is int ws && ws >= 0) l.Add(new PField { Kind = "time", Icon = "p_time", Text = $"{ws} s" }); // engine 0.43.0 (G1): the car goes once the one climbing in is in
+                if (lf.Icons.Count > 0) l.Add(lf); // brief 101: no seconds until the car goes (the wait for the one climbing in is the act's own length)
                 if (Plus.Match(i.Trail ?? "") is var gp && gp.Success && gp.Groups[1].Value != "0") l.Add(new PField { Kind = "trail", Icon = "p_trail", Text = "+" + gp.Groups[1].Value });
                 return l;
             }
@@ -80,15 +80,7 @@ namespace Suborned.Play
                     case "usd":
                         if (i.Usd.Length > 0 && (i.Usd != "$0" || o.Do == "turn" && i.Outcome == "small-offer")) /* engine 0.44.0: the small offer shows its $0 */ F("usd", "p_cash", CompactUsd(i.Usd.TrimStart('$').Replace("–$", "–")));
                         break;
-                    case "time":
-                        {
-                            var m = Num.Match(i.Time ?? ""); if (!m.Success) break;
-                            // Glyph N1 (0.2.125, GDD §14 hold: walk + act as one time): one figure, the sum, with the clock, for every way with a walk (Board too);
-                            // the walk and the act apart only under Alt (AltLine). It was "Board · walk 7 s · 1 s" on the ring and "Hold · Board · 1 s · 1 s" on the pill
-                            int s = int.Parse(m.Groups[1].Value) + System.Math.Max(0, i.WalkS);
-                            F("time", "p_time", $"{s} s");
-                            break;
-                        }
+                    case "time": break; // brief 101 (Sky's rule on numbers in play): an order's price has no time, neither the walk nor the act
                     case "trail":
                         {
                             if (o.Do == "fire") { var ft = HandoverHost.IsOpName(o.Op) ? h.FireTrail(Op.Parse(o.Op), o.Target, o.Force) : HandoverHost.PropertyId(o.Target) ? $"+{h.Game.R.GunfireTrail}" : $"+{h.Game.R.HitTrail}/hit"; if (ft.Length > 0) F("trail", "p_trail", ft); break; } // brief 058 §3: one price from PreviewFire (HandoverHost.FireTrail): a camera or a car the shooting once (+0 once paid), never /hit
@@ -155,13 +147,12 @@ namespace Suborned.Play
             return l;
         }
 
-        /// <summary>Alt's fragments under a way: the walk split from the act, the zero fields, and the takedown's numbers (units on the scene, the
-        /// door held, the wake, a report stopped, the ties of a kill). Icons and numbers only.</summary>
+        /// <summary>Alt's fragments under a way: the zero fields, and the takedown's numbers (units on the scene, the door held, the wake, a report
+        /// stopped, the ties of a kill). Icons and numbers only; never the walk or the act's seconds (brief 101).</summary>
         public static List<PField> AltLine(HandoverHost h, HandoverHost.Intent i)
         {
             var l = new List<PField>(); var o = i.Order; if (o == null) return l;
             PField F(string icon, string text) { var f = new PField { Icon = icon, Text = text }; l.Add(f); return f; }
-            var act = Num.Match(i.Time ?? "");
             if (o.Do == "takedown" && i.Td is TakedownQuote q) // Glyph §4: units, the door held, the wake, a report stopped (the walk split would be a fifth word)
             {
                 if (q.PoliceInS >= 0) F("units", $"{q.PoliceInS} s");
@@ -172,7 +163,6 @@ namespace Suborned.Play
                 foreach (var (icon, text) in i.Rows) if (icon == "call" && Num.Match(text) is var rm && rm.Success) F("call", rm.Groups[1].Value + " s");
                 return l;
             }
-            if (i.WalkS > 0 && act.Success) { F("s_moving", $"{i.WalkS} s"); F("p_time", $"{act.Groups[1].Value} s"); }
             if (i.TapeLoopEnds >= 0) F("loop", HandoverHost.MissionClock(i.TapeLoopEnds)); // brief 096: the loop ends inside the act, so the camera records it
             if ((i.Usd ?? "") is "$0" or "") F("p_cash", "0");
             if (!Plus.IsMatch(i.Trail ?? "") || (i.Trail ?? "").Contains("+0")) F("p_trail", "+0");

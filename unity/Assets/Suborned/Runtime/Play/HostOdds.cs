@@ -1,31 +1,13 @@
-using System;
 using Suborned.Sim;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 080: the fire chip's words from the engine's preview (FirePreview.Acc, .Sum) and Fable's less.odds; the Enforcer's warning flash. Reads only.</summary>
+    /// <summary>Brief 101 (Sky 2026-11-08, "I agree": no hit chance in play): brief 080's fire chip odds, its Alt breakdown (the sum, its limits,
+    /// the streak note) and a rested price's one-line sum are gone; the hit rate stays in the debrief's numbers. Left here: the signed number
+    /// the debrief writes, and the Enforcer's warning flash. Reads only.</summary>
     public sealed partial class HandoverHost
     {
-        /// <summary>The per-cent chance a preview gives, on a rolled game with no refusal; -1 otherwise. Acc is read from the stop point on a walk-in.</summary>
-        public int OddsOf(FirePreview fp) => OddsOf(fp, Game);
-        public static int OddsOf(FirePreview fp, Game g) => g != null && g.Rolled && fp != null && fp.Refused.Length == 0 && fp.Acc > 0 ? fp.Acc / 10 : -1;
-
-        public string OddsChipLine(int pct, string seconds) => (Text?.OddsChip ?? "{pct} % · down in about {s} s").Replace("{pct}", pct.ToString()).Replace("{s}", seconds);
-        public string OddsBareLine(int pct) => (Text?.OddsChipBare ?? "{pct} %").Replace("{pct}", pct.ToString());
-
         static string Signed(int n) => n > 0 ? "+" + n : n < 0 ? "−" + (-n) : "0";
-
-        /// <summary>A price rested on before the order (Sky 2026-11-07: "what's with all this text?"): the sum alone, one line. "" with no rolled chance.</summary>
-        public string OddsSumLine() { var l = OddsAltLine(); int n = l.IndexOf('\n'); return n < 0 ? l : l.Substring(0, n); }
-
-        /// <summary>Alt on the fire chip (Fable's less.odds): the sum, its limits, the streak note. "" with no rolled chance to explain.</summary>
-        public string OddsAltLine()
-        {
-            var fp = OfferPreview; if (Text == null || OddsOf(fp) < 0 || Text.OddsSum.Length == 0) return "";
-            var s = fp.Sum;
-            string sum = Text.OddsSum.Replace("{pct}", s.Pct.ToString()).Replace("{aim}", s.Aim.ToString()).Replace("{range}", Signed(s.Range)).Replace("{cover}", Signed(s.Cover)).Replace("{move}", Signed(s.Move));
-            return string.Join("\n", sum, Text.OddsLimits, Text.OddsStreakHead + ": " + Text.OddsStreakHits, Text.OddsStreakMisses);
-        }
 
         const float EnforcerWarnFlashS = 4f;
         /// <summary>The Enforcer's warning went out within the last few seconds of mission time (the roster's flash; the card and the beat come off the log line).</summary>

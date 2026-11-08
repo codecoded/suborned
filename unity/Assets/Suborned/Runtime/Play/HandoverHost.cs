@@ -149,7 +149,7 @@ namespace Suborned.Play
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed partial class Intent
         {
-            /** brief 080: a fire offer's chance, -1 none */ public int OddsPct = -1; public bool OddsDown = true; public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
+            public Order Order; public int Slot = -1; public string Label = "", Usd = "$0", Time = "", Trail = "T 0", Alert = "A 0", Outcome = "", Hint = "", Walk = "", Name = "", Does = ""; public bool Move;
             /// <summary>For the kit's card: orders a turn takes (more than one = "one step worse"), a Pressure on a known secret, the walk first (s).</summary>
             public long Orders = 1; public bool Leverage; public int WalkS;
             /// <summary>"seen by" where the act is done (the engine's SeenQuote in words): "" no one, "?" an unknown watcher could, else who.</summary>

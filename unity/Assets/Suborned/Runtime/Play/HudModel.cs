@@ -13,7 +13,7 @@ namespace Suborned.Play
     {
         public sealed class Slot
         {
-            public string Key = "", Name = "", Stance = "", Glyph = "", Label = "", Left = "", Under = "", CancelTip = "", Phase = "";
+            public string Key = "", Name = "", Stance = "", Glyph = "", Label = "", Under = "", CancelTip = "", Phase = "";
             public bool Selected, HintRing, Armed, Drawn, Down, Busy, CanCancel; public int Hp, HpMax, Progress = -1;
             // for the kit view (Glyph's slot strip): role, the atlas icon, the state tag, the ready/hurt/down line, the queued act, the cancel tooltip
             public string Role = "", Icon = "", StateTag = "", HintLine = "", Queued = "", CancelTitle = "", CancelBody = "", Pace = ""; public bool Hurt, Show, Compact;
@@ -137,7 +137,7 @@ namespace Suborned.Play
                 s.Hp = h.Seg(op.Gun.Health); s.HpMax = h.Seg(Mathf.Max(op.Gun.Max, op.Gun.Health)); s.Armed = op.Gun.W != null; s.Drawn = op.Gun.Drawn && op.Gun.HolsterAt < 0; // brief 027: one segment per 10 with the lab (Latch 2026-10-21: Armed and Drawn had slipped into this comment, so the sidearm mark never showed)
                 s.Stance = h.OneInput ? "" : op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down; // engine 0.35: one input has no stance
                 s.Busy = d.Busy; s.Phase = d.Phase; s.Glyph = d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph; s.Label = d.Label; s.Progress = d.Progress;
-                s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : d.Phase == "firing" ? (h.FireDownS(i) is int fs && fs >= 0 ? $"{fs} s" : "?") : ""; // firing: until the target is down at the present odds, "?" while the line is broken (Glyph fight r1 #6)
+                // brief 101 (Sky 2026-11-08): no act's seconds left and no seconds to down on the roster: the bar that fills says how far it is
                 s.Under = op.Down ? "" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
                     : s.Armed && op.Gun.Drawn ? (h.OneInput ? "drawn" : $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}") : "";
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";

@@ -1124,7 +1124,7 @@ namespace Suborned.Play
                 Show(st.Icon, busy); if (busy) Icon(st.Icon, s.Icon, Cream);
                 Show(st.Action, busy); Text(st.Action, s.Label);
                 Show(st.Bar, busy && s.Progress >= 0); st.Fill.style.width = 104 * Mathf.Clamp01(s.Progress / 1000f);
-                Show(st.Time, busy && s.Left.Length > 0); Text(st.Time, s.Left);
+                Show(st.Time, false); // brief 101: no act's seconds (the bar says how far it is)
                 Show(st.Cancel, s.CanCancel && !s.Compact);
                 Show(st.Queued, s.Queued.Length > 0 && !s.Compact); Show(st.QueuedIcon, s.Queued.Length > 0 && !s.Compact); Text(st.Queued, s.Queued);
                 Show(st.Ready, !busy && !s.Compact); Text(st.Ready, s.Down ? "Down" : s.Hurt ? "Hurt, still fighting" : "Ready");

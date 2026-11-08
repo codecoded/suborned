@@ -294,7 +294,7 @@ namespace Suborned.Play
             }
             // release: the tracer cuts and the line reads Stopped in that frame
             h.TriggerScripted(T, false); yield return null;
-            var (head, _, stopped, _) = h.FireLine(E); bool cut = !h.FireNow[E].Firing;
+            var (head, stopped, _) = h.FireLine(E); bool cut = !h.FireNow[E].Firing;
             parts.Add($"\"releaseCut\": {B(cut)}, \"releaseLine\": \"{head}\""); ok &= cut && stopped;
             yield return new WaitForSecondsRealtime(0.15f); yield return Shoot(dir, "tp-stopped", "rest", log);
             // a lock on a second agent (the commander's lasting order on the Fixer) while the driven agent fires

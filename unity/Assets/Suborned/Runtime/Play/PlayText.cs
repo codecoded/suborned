@@ -110,8 +110,8 @@ namespace Suborned.Play
         public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
         /// <summary>The fail camera's words (Fable, less.failcam): caption and tip by "fail|why"; {by} by the culprit's kind.</summary>
         public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
-        /// <summary>Brief 080 (Fable, less.odds, less.takedown): the fire chip and its Alt; the takedown card's Coming row. (less.closedIn's line is debrief.cause's now: PlayText.Cause.)</summary>
-        public string OddsChip = "{pct} % · down in about {s} s", OddsChipBare = "{pct} %", OddsSum = "", OddsLimits = "", OddsStreakHead = "", OddsStreakHits = "", OddsStreakMisses = "", TdComing = "Coming: {list}.", TdComingItem = "{who} in {s} s: {verb}", TdComingShort = "{who} · {s} s";
+        /// <summary>Brief 080 (Fable, less.takedown): the takedown card's Coming row (less.odds is gone: brief 101). (less.closedIn's line is debrief.cause's now: PlayText.Cause.)</summary>
+        public string TdComing = "Coming: {list}.", TdComingItem = "{who} in {s} s: {verb}", TdComingShort = "{who} · {s} s";
         public string ObjGo = "Leave in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind"; // Fable 067: "Drive" is the Drive order's word now; Go leaves
         /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): the Alt line of the Go wedge while Vale is not aboard (Go then withdraws the cell).</summary>
         public string GoNoVale = "Calls off the attempt; try again"; // Fable (Glyph N5): text.json less.go.noVale, one fragment of at most 6 words
@@ -311,11 +311,7 @@ namespace Suborned.Play
             }
             if (l.Opt("alt")?.Opt("mood") is JNode am) foreach (var kv in am.Entries) if (kv.Value.Kind == JKind.Str) AltMood[kv.Key] = kv.Value.Str();
             ReadSeal(l.Opt("sealed"));
-            if (l.Opt("odds") is JNode od)
-            {
-                OddsChip = S(od, "chip") ?? OddsChip; OddsChipBare = S(od, "chipBare") ?? OddsChipBare; OddsSum = S(od, "sum") ?? OddsSum; OddsLimits = S(od, "limits") ?? OddsLimits;
-                if (od.Opt("streak") is JNode ost) { OddsStreakHead = S(ost, "head") ?? OddsStreakHead; OddsStreakHits = S(ost, "hits") ?? OddsStreakHits; OddsStreakMisses = S(ost, "misses") ?? OddsStreakMisses; }
-            }
+            // brief 101 (Sky 2026-11-08): less.odds is no longer read (no hit chance in play; the hit rate stays in the debrief's numbers)
             if (l.Opt("takedown") is JNode ltd) { TdComing = S(ltd, "coming") ?? TdComing; TdComingItem = S(ltd, "item") ?? TdComingItem; TdComingShort = S(ltd, "short") ?? TdComingShort; }
             if (l.Opt("price") is JNode pr)
             {

@@ -6,7 +6,7 @@ namespace Suborned.Play
 {
     /// <summary>Brief 096, G1 (engine 0.43.0, rulebook car.go.waits "board"; Motive's misses page; Sky 2026-11-05 "all recommended"): a Go given on either cell car
     /// while an agent is climbing in waits for his Board and lands the tick it lands. The engine answers (Game.GoWouldWait, Game.GoWaiting; LeftBehind already
-    /// counts the climber aboard); this reads it for the car's Go row (its line, its Alt does-line, its seconds) and the roster (the climber's "then" line).
+    /// counts the climber aboard); this reads it for the car's Go row (its line and its Alt does-line; brief 101: no seconds) and the roster (the climber's "then" line).
     /// The words are Fable's (text.json book.cars goOnce, goWaiting, goWaitsRoster; placeholders in HostBook.WordsLend.cs). Nothing here is a rule.</summary>
     public sealed partial class HandoverHost
     {
@@ -25,14 +25,6 @@ namespace Suborned.Play
 
         /// <summary>A Go on this car waits for a Board under way (given, not landed).</summary>
         public bool GoWaitingOn(string car) { bool w = false; var g = Game; if (g != null && !g.Range) Guard("go waiting", () => w = g.GoWaiting(GoCarOf(car))); return w; }
-
-        /// <summary>Whole seconds until the last one climbing into this car is in (the Go lands then), -1 nobody climbing in.</summary>
-        public int GoWaitS(string car)
-        {
-            var ks = Climbers(car); if (ks.Count == 0) return -1; int end = 0;
-            foreach (var k in ks) end = Math.Max(end, Game.Ops[k].BusyEnd);
-            return Math.Max(0, (end - Game.Tick + Game.Hz - 1) / Game.Hz);
-        }
 
         /// <summary>Popovic climbing into our car with the Enforcer: the Go lands once they are in, so it wins (the card says win, not withdraw).</summary>
         bool ValeClimbingIn => Game != null && Game.Vale == ValeAt.WithEnforcer && Climbers("car").Contains((int)OpId.Enforcer);
