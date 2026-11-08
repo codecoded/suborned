@@ -134,7 +134,8 @@ describe('guides /17 and /18: lines written by hand (brief 102)', () => {
     const apply = async (t: string) => { const file = join(dir, 'text.json'); writeFileSync(file, t); await applyShort(false, { runs: new Map([[run.brief.id, { run, path: root }]]), file }); return JSON.parse(readFileSync(file, 'utf8')); };
     const held = await apply(raw);
     rounds.forEach((es, n) => { for (const e of es) expect(held.dialogue.find((x: never) => barkKey(x) === e.key).lines, e.key).toContain(final(n, e.key, e.after)); });
-    const one = keys[0]!, unmarked = raw.split('\n').map(l => l.includes(`"hand":`) && barkKey(JSON.parse(l.trim().replace(/,$/, ''))) === one ? l.replace(/,"hand":"[^"]*"/, '') : l).join('\n');
+    // a dialogue row is one line of the file, `{"event":…}` (from guide /22 a why cause carries `hand` too: hand-whys.test.ts)
+    const one = keys[0]!, unmarked = raw.split('\n').map(l => l.includes(`"hand":`) && l.trimStart().startsWith('{"event":') && barkKey(JSON.parse(l.trim().replace(/,$/, ''))) === one ? l.replace(/,"hand":"[^"]*"/, '') : l).join('\n');
     expect((await apply(unmarked)).dialogue.find((x: never) => barkKey(x) === one).lines[0]).toBe(`${one} line 1.`);
   });
 });

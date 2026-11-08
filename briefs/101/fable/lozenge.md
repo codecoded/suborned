@@ -8,10 +8,11 @@ Latch's r4: the lozenge, bottom right, draws a card's title over one line, `{sho
 - **The measure** (`tools/style-agent/short-lozenge.ts`): the font's own advance for every character (checked against `Jost-Medium.ttf` in a test), no kerning, so it errs 0.4 % wide (Latch's line: 431.7 px here, 430.0 in Unity). Every fill is taken at the widest the glossary gives it: a camera "the square's mast camera", a person "another shopkeeper" or "a kiosk attendant", an agent "the Enforcer". The place is taken at its room, and the clock at the widest, " · 4:44".
 - **What the lozenge can show:** 48 why shorts (every Alert cause but the start, every police call but the seal; the report and the robots show their cause's short) and 11 card lines.
 - **Before:** 34 of the 48 whys ran over the box at their widest. The worst was 524 px ("{who} found {about} knocked out"). The widest place was "by the control cabinet", 124 px. All 11 card lines already fit (widest 226 px: "8 health; cover him and Popovic · 4:44").
-- **Now:** none over. The widest is 293.9 px ("an agent stayed too long at the service drive · 4:44"). Latch's line now reads "an agent stayed too long beside the café · 2:46", 272.2 px. In every saved route and pin the host plays, the 40 lines it draws all fit; the widest is 291.9 px ("getaway car out of place at the service drive · 5:48").
+- **Now:** none over. The widest is 293.9 px ("an agent stayed too long at the service drive · 4:44"). After the hand round (below) it is 295.3 px ("Popovic told when let go at the service drive · 4:44"), and still none over. Latch's line now reads "an agent stayed too long beside the café · 2:46", 272.2 px. In every saved route and pin the host plays, the 40 lines it draws all fit; the widest is 291.9 px ("getaway car out of place at the service drive · 5:48").
 - **Through the loop:** 38 shorts and 2 places rewritten, gpt-6.1-sol writing on Codex (Sky's ChatGPT plan), Claude Opus 5.5 judging on the subscription, approved as Sky, as in brief 102's sweep. Every family was accepted 10/10 with no findings and clean code checks. 1.55M tokens (gpt-6.1-sol 0.76M, Opus 0.78M). No paid API.
 - **Titles and lines unchanged.** The line already says who saw what, whom and where, in full. It shows on hover in the Alert meter's list and in the Journal, and it is the debrief's timeline. So a short now says what happened at a glance, and names a person or a camera only where the box holds them at their widest.
 - **Kept:** brief 102's bar (the rubric's PLAIN now fails AI-sounding words in a why too, with a code check: "confirmed" went), Sky's rows and the `hand` rows (no bark was touched; `apply` changed only these 40 strings), "the search goes on" and "at the Office door" (host tests read them word for word).
+- **Then by hand (guide /22):** the five weakest shorts, rewritten to brief 102's bar and scored once by the Opus judge (5 and 7; every finding on one of the five, each line rewritten from it): "{who} said to drop it", "police call it a killing", "someone woke and told", "Popovic told when let go", "knocked-out body found". Their causes carry `hand` in `text.json`, so no run replaces them. See "The five by hand" below.
 
 ## The why shorts, at their widest
 
@@ -108,13 +109,33 @@ The bold runs are the ones in `text.json`. `why/gunfire`'s /19 lines all fit /20
 
 `apply` ran with Aster's restore list less the two families now accepted at /19 and later: `bark/ack-bodies,bark/arrive,bark/guard-call,bark/read-people,why/on-the-way`. Before it, `apply` failed on a cut it had already made (`bark/rivals`' `ai-gone/rivals`, gone since the sweep). A cut whose row is already gone is now skipped (`short-apply.ts`); the dry run then changed nothing.
 
-## Read before committing
+## The five by hand (guide /22)
 
-These lines passed the judge, but they're the ones I'd read first:
-- **"told to drop the gun"** (`alert.warned`) has no subject, so at a glance it could read as an order to the player. The agent's name doesn't fit with a place.
-- **"police say a killing"** (`alert.confirmed`): "confirmed" is on Sky's AI-sounding list.
-- **"a victim woke, spoke up"** and **"Popovic spoke up"** (`alert.woken` and its Popovic variant): "Popovic spoke up" leans on the line's "reported being taken after he was let go".
-- **"found knocked out"** (`alert.down`) has no subject either. It stays apart from "dead body found".
+These five passed the loop's judge, but they were the weakest. After the round, Aster asked for them by hand, to brief 102's bar:
+- **"told to drop the gun"** (`alert.warned`) had no subject, so at a glance it could read as an order to the player.
+- **"police say a killing"** (`alert.confirmed`) was awkward.
+- **"a victim woke, spoke up"** and **"Popovic spoke up"** (`alert.woken` and its Popovic variant): two clipped verbs, and "Popovic spoke up" leaned on the line's "reported being taken after he was let go".
+- **"found knocked out"** (`alert.down`) had no subject either.
+
+Each was briefed from the engine first. Only the guard or an officer gives the gun warning (`GameIntent.TodayWarns`; the host names them "the guard" and "an officer"). A confirmed killing raises the Alert only when the police check a body that a passer-by reported as knocked out (passers-by report every body as down: `GameTakedown.KindOf`), or a post they come to (`GameResponse.Confirm`). A woken report is the victim's own once they come round. The Popovic variant is his own report once a seen Take is let go (`GameCancel`).
+
+Scored once by Motive on Claude Opus 5.5, approved as Sky, as brief 102's hand rounds were: the family as it plays, the hand shorts in place of the round's. `why/witnessed` scored **5** with 4 findings (`runs/style-agent/short/2026-11-08T19-24-15.250Z-why-witnessed`), `why/gunfire` **7** with 2 (`2026-11-08T19-24-19.150Z-why-gunfire`). Every finding was on one of the five, none on a line the round had left alone, and the code checks were clean. The judge would have put the round's five back (its VOICE rule keeps today's words where they fit), but the brief is that those five are weak. So each was rewritten from what its finding found wrong, and not scored again. Widths are at the widest fills, with " at the service drive · 4:44" after them, in the 296 px box.
+
+| cause | the round's | px | Opus read | its finding | **now, by hand** | px |
+|---|---|---:|---|---|---|---:|
+| `alert.warned` | told to drop the gun | 268.1 | an agent told to holster | "an agent" names nobody by role, and "holster" breaks the match with the line's "drop it" | **{who} said to drop it** | 292.4 |
+| `alert.confirmed` | police say a killing | 258.9 | police call it murder | the glossary and this cause's line say "killing"; "murder" is a new word with a crime-drama tone | **police call it a killing** | 270.9 |
+| `alert.woken` | a victim woke, spoke up | 291.3 | a victim woke and talked | "talked" points to the Talker rule; "victim" is a police-log word | **someone woke and told** | 289.5 |
+| `alert.woken` (vale) | Popovic spoke up | 255.3 | Popovic, let go, talked | the doubled commas are slow at a glance; "talked" again | **Popovic told when let go** | 295.3 |
+| `alert.down` | found knocked out | 260.2 | a knockout victim found | "knockout" for the glossary's "knocked out"; "victim" again | **knocked-out body found** | 291.8 |
+
+- **"{who} said to drop it":** the subject is whoever gave the warning, by the name the player knows them by: "the guard said to drop it", "an officer said to drop it". The words are the cause's own title and line ("Told to drop it", "{who} told {agent} to drop it."). The agent's role doesn't fit with a place ("the Enforcer told to holster" is 153 px of 142.9).
+- **"police call it a killing":** Sky's shape ("Police call it murder"), with the word the glossary and the line use.
+- **"someone woke and told":** "woke" is the cause's own title's word ("Woke and reported it"). The line's "came round" doesn't fit with "and told" ("someone came round, told" is 153.3 px of 142.9). "Told" covers the guard's radio and anyone else's walk to a report point.
+- **"Popovic told when let go":** both facts, in one clause with no commas, as the base reads. It is the tightest at 295.3 px of 296 (Unity draws it about 0.4 % narrower).
+- **"knocked-out body found":** "knocked out" and "a body" are the game's words ("Carry: Lift a downed agent or a body", "a body seen carried"). It reads as "dead body found" does, apart by the one word that matters. "Someone found knocked out" is 162.7 px of 142.9.
+
+In `text.json` each of the four causes carries `hand` (`why.schema.ts` `WHY_HAND`; the host reads only title, short, line and variants). From guide /22, a writer run leaves a marked cause out of its items and gives its shorts in the family's context. `apply` holds it, as it holds a hand row of the dialogue (`short-apply.ts`). The hand edits, with what Opus read and said, are in `briefs/101/fable/hand-whys.json`. The sheet is `briefs/101/fable/lozenge.html` ("The five by hand").
 
 ## Host tests (Latch's file, three pins)
 
@@ -126,15 +147,26 @@ These lines passed the judge, but they're the ones I'd read first:
 ## Open, and next owners
 
 - **Glyph:** confirm the box. 296 px is Latch's audit. A guide's families are built from the box and the place room (`LOZENGE`, `placeRoom` in `short-lozenge.ts`), so a different number is a new guide version and a rerun of the families it moves.
-- **Latch / Glyph:** the lozenge itself has no hover with the line today (`HudToolkit.Crucial.cs`: a hover only lights the inline). The line is on hover in the Alert meter's list and in the Journal. If "on hover" should also mean the lozenge, that's a host change.
+- **Latch (next round): a hover on the lozenge that shows the card's full line.** Today hovering the lozenge only tints its ring (`HudToolkit.Crucial.cs:29`, `RingColour(crLozInline, TurqLight)`). The line shows only in the Alert meter's list and in the Journal. The shorts no longer say who saw it, whom it was about or which agent: "knocked-out body found" names neither the finder nor the one found, and "{who} said to drop it" names the watcher, not the agent. With the hover, the reason is always one hover away. Inputs: each card's `Why` row already has its `Line` (`HostWhy.cs`). Done-check: hovering any Alert or Police card on the lozenge shows the cause's line, filled, and the line is gone on leave. Next owner: Glyph checks it against the corner's look.
+- **Aster / Sky (not in this round's five):** `alert.confirmed`'s title and line still say "confirmed" ("Killing confirmed", "The police checked {about} and confirmed a killing."), a word on Sky's AI-sounding list. The /19 families leave titles and lines as facts, so no run touches them. If Sky wants them gone, by hand: "Police find a killing" and "The police checked {about} and found it was a killing." `alert.warned`'s line also ends on a rule of the game ("Holster, or it's called in.").
 - **Latch:** the three pins above are in your file. Host logic is 186/186 with them.
 - **Aster:** the restore list for the next `apply` is `bark/ack-bodies,bark/arrive,bark/guard-call,bark/read-people,why/on-the-way`.
 
 ## Checks
 
+The loop round:
 - **Export** (`bun run guard bun tools/sim/unity.ts --tree`): headless 472/472 and range 99/99 replay identically. `text.json` parses, and the player's copy matches the working tree's.
 - **`bun run hostlogic`:** 186 pass, 0 fail, on the exported words.
 - **`bun test tools/style-agent contracts/missions/handover tools/dialogue`:** 364/364.
 - **`bun run typecheck`:** clean.
 - **Every saved style-agent run rebuilds exactly:** 179 (24 conversations; short lines /1–/18 141, /19 7, /20 6, /21 1).
 - **Scratch:** `out/scratch/fable/lozenge/` (the measure, the sheet, the run tables, the logs).
+
+The five by hand (guide /22):
+- **Export** (`bun run guard bun tools/sim/unity.ts --tree`): headless 472/472 and range 99/99 replay identically. `text.json` 79cee672de76 parses, and the player's copy (`unity/Assets/StreamingAssets/sim/text.json`) is the same file.
+- **`bun run hostlogic`:** 186 pass, 0 fail, on the exported words. No host test reads the five.
+- **`bun run test tools/style-agent contracts/missions/handover tools/dialogue`** (the same files, the parallel runner): 368/368, the four new ones in `hand-whys.test.ts` among them.
+- **`bun run typecheck`:** clean.
+- **Every saved style-agent run rebuilds exactly:** 181 (24 conversations; short lines /1–/18 141, /19 7, /20 6, /21 1, /22 2).
+- **`apply --dry`** with the restore list above: nothing changes; the four hand causes are held ("why down, why woken, why confirmed, why warned").
+- **Scratch:** `out/scratch/fable/lozenge-hand/` (the measure, the edits, the logs).

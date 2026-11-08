@@ -154,8 +154,9 @@ function causeItems(group: 'alert' | 'police', block: Record<string, W>, facts: 
 const plain = (key: string, form: Form, text: string, tells: string, ids: string[] = []): ShortItem => ({ key, where: SHOWN[form] ?? form, tells, speaker: null,
   fields: [held(key, kept(field(form, form, key, ids), text))], current: { [form]: [text] }, stays: 'The host reads it (why.schema.ts).' });
 
-export function whyBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
-  if (v >= 19) return whyBriefs19(text, whyBriefs(text, 18), { FILL, FILL_BY, ALERT: { ...ALERT, ...ALERT_6 }, POLICE }, v); // guide /19 (brief 101): the lozenge's shorts and the places
+/** `hand`: a hand run's families (from guide /22 its hand causes are items; a writer run's are not). */
+export function whyBriefs(text: any, v: ShortGuideVersion, hand = false): ShortBrief[] {
+  if (v >= 19) return whyBriefs19(text, whyBriefs(text, 18), { FILL, FILL_BY, ALERT: { ...ALERT, ...ALERT_6 }, POLICE }, v, hand); // guide /19 (brief 101): the lozenge's shorts and the places
   V = v;
   const w = text.why, A = w.alert as Record<string, W>, P = w.police as Record<string, W>;
   const brief = (id: string, title: string, context: string, items: ShortItem[]): ShortBrief => ({ id, kind: 'why', title, context, items });

@@ -69,6 +69,7 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
   for (const k of ['to', 'fix', 'nofix', 'stopped'] as const) units.push([k, text.why.onWay[k], why.onWay[k]]);
   for (const k of ['head', 'empty', 'start'] as const) units.push([k, text.why.meter[k], why.meter[k]]);
   for (const [k, before, after] of units) if (JSON.stringify(before) !== JSON.stringify(after)) {
+    if ((before as { hand?: string } | undefined)?.hand) { held.push(`why ${k}`); continue; } // brief 101 (guide /22): a cause Fable wrote by hand stays, as a hand row does
     raw = once(raw, `"${k}": ${JSON.stringify(before)}`, `"${k}": ${JSON.stringify(after)}`, `why ${k}`); log.push(`why ${k}`);
   }
   // the debrief page: one item a key (a single field is the string itself; more fields are an object of them)

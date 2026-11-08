@@ -31,10 +31,15 @@ const PLACE_FACTS: Record<string, string> = {
  *  short one is the act's (HostActivity.cs ActPlaceName: a loop, a disable or a reroute is "at the cabinet"), so its facts say both. */
 const facts21 = (text: any): Record<string, string> => ({ ...PLACE_FACTS, cabinet: `the street's control cabinet, where the Tech loops the cameras and reroutes the patrol. The HUD gives it two names: "${text.names.targets.cabinet}" on hover and in the Intel, and "the cabinet" on the label of an act there (a loop, a disable or a reroute is "at the cabinet"); the short one is the HUD's own` });
 const SHOWN = 'short: the news lozenge\'s line under the card\'s title, the place and the clock after it (the family\'s context); the Alert meter\'s row; the debrief\'s reason under its Alert number';
+type Group = 'alert' | 'police';
 
-export function whyBriefs19(text: any, b18: ShortBrief[], f: Facts, v: ShortGuideVersion): ShortBrief[] {
+/** `hand`: the families of a hand run. Guide /22 (brief 101, Fable 2026-11-09): a cause marked `hand` in text.json (Fable's hand edits, briefs/101/fable/hand-whys.json)
+ *  is not an item of a writer run, as a hand row of the dialogue isn't (guide /17), and its family's context gives its shorts; a hand run scores the family as it plays,
+ *  those causes and all (guide /18). /19 to /21 read as they ran. */
+export function whyBriefs19(text: any, b18: ShortBrief[], f: Facts, v: ShortGuideVersion, hand = false): ShortBrief[] {
   const w = text.why, words = fillWords(text), alertTitle = text.book.feed.cards.alert.title as string, place = placeRoom(v);
-  const item = (group: 'alert' | 'police', k: string, path: string, x: W, base: W, label: string): ShortItem => {
+  const byHand = (g: Group, k: string) => v >= 22 && !hand && !!(w[g][k] as { hand?: string }).hand;
+  const item = (group: Group, k: string, path: string, x: W, base: W, label: string): ShortItem => {
     const [tells, ids] = (group === 'alert' ? f.ALERT : f.POLICE)[k]!, short = x.short ?? base.short!, title = x.title ?? base.title!, line = x.line ?? base.line!;
     const { filled, px } = lozengeWidth(words, group, k, short, place), where = NO_PLACE.has(k) ? '' : v >= 20 ? ' at the service drive' : ' at the official door';
     const field: Field = { id: 'short', form: 'short', words: 6, chars: 56, count: 1, keep: KEEP[`${group}.${k}`] ? [KEEP[`${group}.${k}`]!] : [], patterns: [], lozenge: room(k, v),
@@ -43,28 +48,35 @@ export function whyBriefs19(text: any, b18: ShortBrief[], f: Facts, v: ShortGuid
       tells: `${label}: ${tells} On the lozenge the card's title over it reads "${group === 'alert' ? alertTitle : title}". ${NO_PLACE.has(k)
         ? 'The host adds no place after this short: the line is the short and the clock.' : `The host adds the place after it ("…${where}", any place up to ${place} px), then the clock.`} Its line stays as it is and says it in full, on hover and in the Journal: "${line}" Today at its widest the lozenge reads "${filled}${NO_PLACE.has(k) ? '' : ' [place]'}${CLOCK}", ${px} px of ${LOZENGE.box}${px > LOZENGE.box ? ', cut off' : ''}.` };
   };
-  const causes = (group: 'alert' | 'police', keys: string[]) => keys.filter(k => onLozenge(group, k)).flatMap(k => {
+  const causes = (group: Group, keys: string[]) => keys.filter(k => onLozenge(group, k) && !byHand(group, k)).flatMap(k => {
     const c = w[group][k] as W, label = `${group === 'alert' ? 'Alert' : 'Police'} cause "${k}"`;
     return [item(group, k, `${group}.${k}`, c, c, label), ...Object.entries(c.variants ?? {}).filter(([, v]) => v.short).map(([v, x]) => item(group, k, `${group}.${k}.variants.${v}`, x, c, `"${k}", its ${v} variant`))];
   });
   const ctx = `The why block's words, keyed by the engine's cause; a fill is filled by the host from the engine. A \`variants\` entry words the same cause in a case the engine names. Guide /19 (brief 101): the news lozenge, bottom right by the Book, shows one card at a time, its title in bold over one small line, "{short} {where} · m:ss": the cause's short, the place the host adds after it (none for a cause with no place), " · " and the clock it came at. The line is one line of Jost Medium at 13 px in a box ${LOZENGE.box} px wide, about 40 characters for the short and its place together; a longer line is cut off with an ellipsis (Latch's layout audit, 2026-11-09: "the square's mast camera saw the Fixer stay too long beside the café · 2:46" took 430 px). A click on the line pans to the place. The same short is the Alert meter's row and the debrief's reason under its Alert number. This family writes only the shorts: each cause's title and line stay as they are, and the line already says who saw what, whom and where in full, one hover away and in the Journal.`;
-  const brief = (id: string, title: string, items: ShortItem[]): ShortBrief => ({ id, kind: 'why', title, context: ctx, items });
+  /** /22: the shorts of a family's hand causes, given in its context (none before /22, so /19 to /21 read as they ran). */
+  const given = (parts: [Group, string[]][]) => {
+    const said = parts.flatMap(([g, keys]) => keys.filter(k => onLozenge(g, k) && byHand(g, k)).flatMap(k => { const c = w[g][k] as W;
+      return [`${g}.${k}: ${JSON.stringify(c.short)}`, ...Object.entries(c.variants ?? {}).filter(([, x]) => x.short).map(([n, x]) => `${g}.${k}.variants.${n}: ${JSON.stringify(x.short)}`)]; }));
+    return said.length ? ` Shorts Fable wrote by hand to the same bar (brief 101), already in the game and not items here: never rewrite them, and keep every short here apart from them: ${said.join('; ')}.` : '';
+  };
+  const brief = (id: string, title: string, parts: [Group, string[]][]): ShortBrief => ({ id, kind: 'why', title, context: ctx + given(parts), items: parts.flatMap(([g, keys]) => causes(g, keys)) });
   const old = (id: string) => b18.find(b => b.id === id)!, words18 = old('why/words');
   const facts = v >= 21 ? facts21(text) : PLACE_FACTS;
   const places = Object.entries(w.places as Record<string, string>).map(([k, word]): ShortItem => ({ key: `places.${k}`, where: 'a phrase filled into {where}', speaker: null, current: { label: [word] },
     stays: 'The host reads it (why.schema.ts).', fields: [{ id: 'label', form: 'label', words: 4, chars: 28, count: 1, fills: [], keep: KEEP_PLACE[k] ? [KEEP_PLACE[k]!] : [], patterns: [], lozenge: place }],
     tells: `{where}: the site's place "${k.replace(/^d:/, '')}"${facts[k] ? `, ${facts[k]}` : ''}, with its preposition (today "${word}", ${lozengePx(word)} px). It follows a short on the lozenge's line ("a takedown seen ___ · 4:44") and ends the line's sentence ("{who} saw {about} taken down ___."), so it reads in both.${KEEP_PLACE[k] ? ' A host test reads it word for word.' : ''}` }));
-  return [
-    brief('why/witnessed', 'The lozenge\'s line: why the Alert rose when someone saw, found or missed something', causes('alert', ['seen', 'carry', 'dead', 'down', 'woken', 'noise', 'mark', 'missing', 'cut', 'confirmed'])),
-    brief('why/reported', 'The lozenge\'s line: why the Alert rose on a report, a tape, a car or an entry', causes('alert', ['approach', 'staff', 'let-go', 'recorded', 'car', 'entry', 'sighting', 'loiter'])),
-    brief('why/gunfire', 'The lozenge\'s line: why the Alert rose and the police came, on shots and guns', [...causes('alert', ['gunfire', 'violence', 'drawn', 'drawn-people', 'warned', 'fought']),
-      ...causes('police', ['heard', 'witness', 'shot-at', 'patrol', 'rivals', 'gang', 'drawn', 'attack'])]),
-    brief('why/police', 'The lozenge\'s line: why the police came', causes('police', ['post', 'body', 'more', 'cordon', 'loud', 'split'])),
+  const all: ShortBrief[] = [
+    brief('why/witnessed', 'The lozenge\'s line: why the Alert rose when someone saw, found or missed something', [['alert', ['seen', 'carry', 'dead', 'down', 'woken', 'noise', 'mark', 'missing', 'cut', 'confirmed']]]),
+    brief('why/reported', 'The lozenge\'s line: why the Alert rose on a report, a tape, a car or an entry', [['alert', ['approach', 'staff', 'let-go', 'recorded', 'car', 'entry', 'sighting', 'loiter']]]),
+    brief('why/gunfire', 'The lozenge\'s line: why the Alert rose and the police came, on shots and guns', [['alert', ['gunfire', 'violence', 'drawn', 'drawn-people', 'warned', 'fought']],
+      ['police', ['heard', 'witness', 'shot-at', 'patrol', 'rivals', 'gang', 'drawn', 'attack']]]),
+    brief('why/police', 'The lozenge\'s line: why the police came', [['police', ['post', 'body', 'more', 'cordon', 'loud', 'split']]]),
     old('why/on-the-way'),
     { ...words18, title: 'The why block\'s glossary: reporters who are no person, report points', items: words18.items.filter(i => !i.key.startsWith('places.')) },
     { id: 'why/places', kind: 'why', title: 'The why block\'s places: {where} on the lozenge\'s line and in the line\'s sentence', items: places,
       context: `The why block's places (why.places): the host fills {where} with the nearest named place within 13 m of where it happened (by the site's place id), else "nearby". Guide /19 (brief 101): on the news lozenge a place follows the cause's short on one line, "{short} {where} · m:ss", in a box ${LOZENGE.box} px wide, so every short shares the box with the widest place; each place has at most ${place} px (about ${aboutChars(place)} characters; today "by the control cabinet" takes ${lozengePx('by the control cabinet')}).${v >= 20 ? ' The room is the width of "at the service drive", so the HUD\'s stand names keep their words: "the square\'s bay", "the service drive".' : ''} A place also ends the line's sentence on hover and in the Journal. Two ids may share words where they are one place to the player (both sides of the café are "beside the café").` },
   ];
+  return all.filter(b => b.items.length); // /22: a family left with no writer's items (every cause by hand) is none
 }
 
 /** Guide /19's why rubric: /9's, with the lozenge's box in SHORT, a short's job at a glance in USEFUL, and the AI-sounding words in PLAIN. */

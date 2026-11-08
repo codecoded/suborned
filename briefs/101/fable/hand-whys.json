@@ -1,0 +1,73 @@
+{
+ "schema": "suborned.hand-barks/1",
+ "status": "In text.json as Fable's hand edits: each cause carries `hand` (why.schema.ts WHY_HAND), so no run of the style loop replaces it (guide /22). Scored once per family by Motive on Claude Opus 5.5 with Sky's approval, as brief 102's hand rounds were: the family as it plays, these shorts in place of today's (bun tools/style-agent/cli.ts judge FAMILY --hand briefs/101/fable/hand-whys.json; runs/style-agent/short/2026-11-08T19-24-15.250Z-why-witnessed, score 5, 4 findings, and 2026-11-08T19-24-19.150Z-why-gunfire, score 7, 2 findings, none of them on a line this round left alone). The judge faulted all five and would have put today's back; the brief is that today's five are weak, so each was rewritten from what its finding found wrong (`judged` keeps the line Opus read and what it said), and has not been scored again.",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Brief 101's lozenge round (Aster, 2026-11-09): the five shorts that round left weakest, flagged in briefs/101/fable/lozenge.md, rewritten by hand to brief 102's bar: plain everyday words, a subject where the line needs one, no AI-sounding words, true every time the cause rises, and within the news lozenge's 296 px box at the widest fills, the widest place (\"at the service drive\") and the widest clock (\" · 4:44\"). Each was briefed from the engine first: the gun warning comes only from the guard or an officer (GameIntent.TodayWarns; HostWhy.Names: \"the guard\", \"an officer\"); a confirmed killing raises the Alert only when the police check a body someone had reported as knocked out, or a post they come to (GameResponse.Confirm, after a passer-by's report of a body as down: GameTakedown.KindOf); a woken report is a victim's own after they come round, and the Popovic variant his own report once a seen Take is let go (GameCancel).",
+ "edits": [
+  {
+   "family": "why/gunfire",
+   "key": "alert.warned",
+   "before": "told to drop the gun",
+   "after": "{who} said to drop it",
+   "kind": "NAMES",
+   "why": "It had no subject, so at a glance it read as an order to the player. Now it says who gave the warning, by the name the player knows them by: the guard, or an officer. The words are the cause's own, its title's and its line's (\"Told to drop it\", \"{who} told {agent} to drop it.\"). The agent's role doesn't fit with a place (\"the Enforcer told to holster\" 153 px of 142.9). 292.4 px of 296 at its widest, \"the guard said to drop it at the service drive · 4:44\".",
+   "judged": {
+    "line": "an agent told to holster",
+    "rule": "VOICE, NAMES",
+    "finding": "The rewrite breaks the match with the watcher's words in the line (\"told {agent} to drop it\"), and \"an agent\" is a vague stand-in that names nobody by role. Fix: put back \"told to drop the gun\"."
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.confirmed",
+   "before": "police say a killing",
+   "after": "police call it a killing",
+   "kind": "VOICE",
+   "why": "\"Police say a killing\" was awkward. This cause rises only when the police check a body and find the person was killed, not knocked out, so it is what they call it, in the glossary's word, the cause's own line's (\"confirmed a killing\"). 270.9 px.",
+   "judged": {
+    "line": "police call it murder",
+    "rule": "VOICE",
+    "finding": "The glossary and this cause's own line say \"killing\". \"Murder\" is a new word for the same thing and has a crime-drama tone. Fix: keep \"police say a killing\"."
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.woken",
+   "before": "a victim woke, spoke up",
+   "after": "someone woke and told",
+   "kind": "TRUE",
+   "why": "Someone the cell put down came round and told: a guard on his radio, anyone else on foot to a report point. One plain clause in place of two clipped verbs; \"woke\" is the cause's own title's word (\"Woke and reported it\"). The line's \"came round\" doesn't fit with \"and told\" (\"someone came round, told\" 153.3 px of 142.9). 289.5 px.",
+   "judged": {
+    "line": "a victim woke and talked",
+    "rule": "TRUE",
+    "finding": "\"Talked\" points to the Talker rule, where a turned person gives the cell up under questioning, which isn't this cause. \"Woke\" drifts from the line's \"came round\". \"Victim\" is a police-log word. Fix: keep \"a victim woke, spoke up\", or \"came round and spoke up\"."
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.woken.variants.vale",
+   "before": "Popovic spoke up",
+   "after": "Popovic told when let go",
+   "kind": "VOICE",
+   "why": "\"Popovic spoke up\" leaned on the line (\"reported being taken after he was let go\"). Now the short has both, he was let go and he told, in one clause with no commas, as the base reads. 295.3 px.",
+   "judged": {
+    "line": "Popovic, let go, talked",
+    "rule": "VOICE",
+    "finding": "The doubled commas make it slow to read at a glance, and \"talked\" can be confused with Talker. Fix: keep \"Popovic spoke up\"."
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.down",
+   "before": "found knocked out",
+   "after": "knocked-out body found",
+   "kind": "VOICE",
+   "why": "It had no subject. Now it names what was found in the game's own words, \"knocked out\" and \"a body\" (Carry: \"Lift a downed agent or a body\"; \"a body seen carried\"), and it reads as \"dead body found\" does, apart by the one word that matters. \"Someone found knocked out\" is 162.7 px of 142.9. 291.8 px.",
+   "judged": {
+    "line": "a knockout victim found",
+    "rule": "VOICE",
+    "finding": "The rewrite swaps the glossary's \"knocked out\" for \"knockout\", and \"victim\" is a police-log word. Fix: keep \"found knocked out\"."
+   }
+  }
+ ]
+}

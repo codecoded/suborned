@@ -12,7 +12,8 @@ import { shortPrompt } from './short-prompts';
 import { sameRubric, SHORT_NOW, type ShortBrief, type ShortSet } from './short-types';
 import { room } from './short-whys19';
 
-// Guides /19 to /21 (brief 101, Latch's r4): the news lozenge's line held to its box. Labelled test data only: no model is called.
+// Guides /19 to /21 (brief 101, Latch's r4): the news lozenge's line held to its box. /22 changes only which causes a writer run has (hand-whys.test.ts), so these
+// read the families at /21, every cause an item. Labelled test data only: no model is called.
 const V = 21, PLACE = placeRoom(V), text = JSON.parse(readFileSync(join(root, TEXT_FILE), 'utf8')), guide = loadShortGuide(root, V), briefs = loadShortBriefs(root, V);
 const family = (id: string) => briefs.find(b => b.id === id)!;
 const CAUSES = ['why/witnessed', 'why/reported', 'why/gunfire', 'why/police'];
@@ -62,7 +63,7 @@ describe('guides /19 to /21: the news lozenge\'s line (brief 101)', () => {
       expect(i.tells, i.key).toContain('stays as it is');
     }
     expect(room('loiter', V)).toBeLessThan(room('cut', V)); expect(NO_PLACE.has('cut')).toBe(true); // a cause with no place has the place's room too
-    expect(SHORT_NOW).toBe(V); expect(room('loiter', 19)).toBe(146.7); expect(room('loiter', 20)).toBe(142.9); expect(room('loiter', 21)).toBe(142.9); // /19's runs rebuild with /19's room
+    expect(SHORT_NOW).toBeGreaterThanOrEqual(V); expect(room('loiter', 19)).toBe(146.7); expect(room('loiter', 20)).toBe(142.9); expect(room('loiter', 21)).toBe(142.9); // /19's runs rebuild with /19's room
     expect(sameRubric(loadShortGuide(root, 20), guide)).toBe(true); // /21 changes the places' facts only, so a /20 run continues under it
     expect(family('why/places').items.find(i => i.key === 'places.cabinet')!.tells).toContain('"the cabinet" on the label of an act there');
     expect(placeRoom(20)).toBe(lozengePx('at the service drive')); expect(lozengePx('at the square\'s bay')).toBeLessThanOrEqual(placeRoom(20)); // the HUD's stand names fit from /20

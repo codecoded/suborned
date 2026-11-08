@@ -91,9 +91,10 @@ export async function liveShort(options: Map<string, string>, briefs: ShortBrief
   process.exitCode = results.every(r => r.status === 'ACCEPTED') ? 0 : results.some(r => r.status === 'ERROR') ? 1 : 2;
 }
 
-/** Brief 102 (guide /17): a family's failing lines rewritten by hand, each edit one of today's lines (`before`) and its new words (`after`), with why. */
+/** Brief 102 (guide /17): a family's failing lines rewritten by hand, each edit one of today's lines (`before`) and its new words (`after`), with why.
+ *  Brief 101 (guide /22): a why family's shorts too (briefs/101/fable/hand-whys.json), in the same file shape. */
 export const HandEdits = z.object({ schema: z.literal('suborned.hand-barks/1'), status: z.string().min(1), by: z.string().min(1), why: z.string().min(1),
-  edits: z.array(z.object({ family: z.string().regex(/^bark\/[a-z0-9-]+$/), key: z.string().min(1), before: z.string().min(1), after: z.string().min(1), kind: z.string().min(1), why: z.string().min(1),
+  edits: z.array(z.object({ family: z.string().regex(/^(bark|why)\/[a-z0-9-]+$/), key: z.string().min(1), before: z.string().min(1), after: z.string().min(1), kind: z.string().min(1), why: z.string().min(1),
     /** A line the judge read and found fault with, and what it said, when `after` was rewritten from that finding. */
     judged: z.object({ line: z.string().min(1), rule: z.string().min(1), finding: z.string().min(1) }).strict().optional() }).strict()).min(1) }).strict();
 export type HandEdits = z.infer<typeof HandEdits>;
