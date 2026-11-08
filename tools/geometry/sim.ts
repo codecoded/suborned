@@ -7,7 +7,8 @@ import { civic as civicOf, type Civic } from '../plan/civic';
 import { inPoly, type V } from '../plan/geom';
 import { derive, type Plan } from '../plan/plan';
 import { blockersOf } from '../plan/walk';
-import { bodyOf, Solids } from '../plan/walk-solids';
+import { Solids } from '../plan/walk-solids';
+import { walkClear } from '../sim/walkfine';
 import { ROOT } from './pieces';
 
 const json = (p: string) => JSON.parse(readFileSync(resolve(ROOT, p), 'utf8'));
@@ -52,7 +53,7 @@ export function loadSim(world: World): Sim {
 
   // the blockers as the grid is made (tools/plan/walk-grid.ts blockedAt), with the reason
   const { polys, rounds } = blockersOf(plan, d, civ);
-  const body = bodyOf(plan), sol = new Solids(civ.solids, body);
+  const body = walkClear(), sol = new Solids(civ.solids, body); // brief 098's walk law (engine 0.49.0): the engine's clearance from a solid is the rulebook's body (radius + margin), not the plan's design r (0.65, Datum's layout widths)
   const ids: string[] = civ.solidIds ?? [];
   const solids = civ.solids!.map((poly, k) => ({ id: ids[k] ?? `solid-${k}`, poly: poly.map(p => frame.toBlock(p)) }));
   const boxed = polys.map(b => ({ b, x0: Math.min(...b.map(v => v[0])), x1: Math.max(...b.map(v => v[0])), y0: Math.min(...b.map(v => v[1])), y1: Math.max(...b.map(v => v[1])) }));
