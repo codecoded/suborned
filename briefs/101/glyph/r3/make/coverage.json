@@ -1,0 +1,213 @@
+{
+ "method": "HUD layer alone, alpha >= 24 at 1920 x 1080 (tools/hud-budget); old: the capture .hud.png inside the piece box (+4 px); new: the piece drawn alone",
+ "frames": {
+  "quiet": {
+   "build": "0.2.286",
+   "moment": "route G, 3:28.6: a guard radios in the knocked-out guard; the square camera on the Tech",
+   "before_pct": 3.86,
+   "after_pct": 3.68
+  },
+  "window": {
+   "build": "0.2.286",
+   "moment": "2:59: the call lands, the guard leaves his door; the guard's away window runs",
+   "before_pct": 4.2,
+   "after_pct": 3.74
+  },
+  "card": {
+   "build": "0.2.286",
+   "moment": "4:27: Inez's card docked over the news (r123's proof)",
+   "before_pct": 7.33,
+   "after_pct": 3.41
+  },
+  "conv": {
+   "build": "0.2.286",
+   "moment": "Inez's card after the conversation, over her (r085's proof)",
+   "before_pct": 6.24,
+   "after_pct": 4.98
+  },
+  "ring": {
+   "build": "0.2.287",
+   "moment": "the act ring on Inez (r101 proof)",
+   "before_pct": 4.05,
+   "after_pct": 3.84
+  }
+ },
+ "pieces": [
+  {
+   "frame": "quiet",
+   "piece": "attention callout",
+   "old_px": 5094,
+   "new_px": 3827,
+   "old_pct": 0.246,
+   "new_pct": 0.185
+  },
+  {
+   "frame": "quiet",
+   "piece": "pop: Camera on",
+   "old_px": 3294,
+   "new_px": 1489,
+   "old_pct": 0.159,
+   "new_pct": 0.072
+  },
+  {
+   "frame": "quiet",
+   "piece": "attention clock",
+   "old_px": 1774,
+   "new_px": 1356,
+   "old_pct": 0.086,
+   "new_pct": 0.065
+  },
+  {
+   "frame": "quiet",
+   "piece": "door: camera turn",
+   "old_px": 782,
+   "new_px": 513,
+   "old_pct": 0.038,
+   "new_pct": 0.025
+  },
+  {
+   "frame": "quiet",
+   "piece": "door: body",
+   "old_px": 586,
+   "new_px": 644,
+   "old_pct": 0.028,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "quiet",
+   "piece": "door: watcher",
+   "old_px": 1217,
+   "new_px": 644,
+   "old_pct": 0.059,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "quiet",
+   "piece": "door: next step",
+   "old_px": 1354,
+   "new_px": 1221,
+   "old_pct": 0.065,
+   "new_pct": 0.059
+  },
+  {
+   "frame": "window",
+   "piece": "done chip",
+   "old_px": 11063,
+   "new_px": 2449,
+   "old_pct": 0.534,
+   "new_pct": 0.118
+  },
+  {
+   "frame": "window",
+   "piece": "window marker",
+   "old_px": 2218,
+   "new_px": 1390,
+   "old_pct": 0.107,
+   "new_pct": 0.067
+  },
+  {
+   "frame": "window",
+   "piece": "door marker",
+   "old_px": 1062,
+   "new_px": 644,
+   "old_pct": 0.051,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "window",
+   "piece": "hint disc",
+   "old_px": 341,
+   "new_px": 644,
+   "old_pct": 0.016,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "card",
+   "piece": "news lozenge (40-char why)",
+   "old_px": 20852,
+   "new_px": 18156,
+   "old_pct": 1.006,
+   "new_pct": 0.876
+  },
+  {
+   "frame": "card",
+   "piece": "Inez's new dot (top right)",
+   "old_px": 0,
+   "new_px": 114,
+   "old_pct": 0.0,
+   "new_pct": 0.005
+  },
+  {
+   "frame": "card",
+   "piece": "car marker",
+   "old_px": 1227,
+   "new_px": 644,
+   "old_pct": 0.059,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "card",
+   "piece": "hint disc",
+   "old_px": 341,
+   "new_px": 644,
+   "old_pct": 0.016,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "card",
+   "piece": "docked card (removed)",
+   "old_px": 78642,
+   "new_px": 0,
+   "old_pct": 3.793,
+   "new_pct": 0.0
+  },
+  {
+   "frame": "conv",
+   "piece": "person card (on Inez)",
+   "old_px": 78971,
+   "new_px": 51678,
+   "old_pct": 3.808,
+   "new_pct": 2.492
+  },
+  {
+   "frame": "conv",
+   "piece": "hint disc",
+   "old_px": 341,
+   "new_px": 644,
+   "old_pct": 0.016,
+   "new_pct": 0.031
+  },
+  {
+   "frame": "ring",
+   "piece": "ring: Watch plate and name",
+   "old_px": 2389,
+   "new_px": 1506,
+   "old_pct": 0.115,
+   "new_pct": 0.073
+  },
+  {
+   "frame": "ring",
+   "piece": "ring: Ask plate",
+   "old_px": 3986,
+   "new_px": 2018,
+   "old_pct": 0.192,
+   "new_pct": 0.097
+  },
+  {
+   "frame": "ring",
+   "piece": "ring: Help plate",
+   "old_px": 4226,
+   "new_px": 2177,
+   "old_pct": 0.204,
+   "new_pct": 0.105
+  },
+  {
+   "frame": "ring",
+   "piece": "ring: cream rim (for chrome)",
+   "old_px": 0,
+   "new_px": 2890,
+   "old_pct": 0.0,
+   "new_pct": 0.139
+  }
+ ]
+}

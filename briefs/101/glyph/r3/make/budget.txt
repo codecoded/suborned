@@ -1,0 +1,6 @@
+PASS  card.png                           rest   HUD   3.4% of the screen (limit 15%, footprint 6%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  conv.png                           rest   HUD   5.0% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  quiet.png                          rest   HUD   3.7% of the screen (limit 15%, footprint 8%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  ring.png                           active HUD   3.8% of the screen (limit 22%, footprint 9%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  window.png                         rest   HUD   3.7% of the screen (limit 15%, footprint 8%)  running text 0 lines, 0 blocks; speech 2, beats 0  [hud mask]
+5/5 within budget

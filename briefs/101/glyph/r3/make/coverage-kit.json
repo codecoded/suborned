@@ -1,0 +1,191 @@
+[
+ {
+  "n": 0,
+  "family": "Pops: the icon and its words on the street",
+  "piece": "No such order",
+  "capture": "burning",
+  "build": "0.2.286",
+  "old_px": 4169,
+  "new_px": 1892
+ },
+ {
+  "n": 1,
+  "family": "Pops: the icon and its words on the street",
+  "piece": "Click again to stop",
+  "capture": "busyprompt",
+  "build": "0.2.286",
+  "old_px": 4672,
+  "new_px": 2317
+ },
+ {
+  "n": 2,
+  "family": "Pops: the icon and its words on the street",
+  "piece": "Take control: T (a key in the words: Fable)",
+  "capture": "backplan",
+  "build": "0.2.286",
+  "old_px": 3970,
+  "new_px": 1978
+ },
+ {
+  "n": 3,
+  "family": "Pops: the icon and its words on the street",
+  "piece": "a shut way, no words",
+  "capture": "shutpop",
+  "build": "0.2.286",
+  "old_px": 1634,
+  "new_px": 314
+ },
+ {
+  "n": 4,
+  "family": "Pops: the icon and its words on the street",
+  "piece": "Report stopped (on the reporter, illustrative)",
+  "capture": "quiet",
+  "build": "0.2.286",
+  "old_px": 991,
+  "new_px": 2338
+ },
+ {
+  "n": 5,
+  "family": "Window markers: a ring that drains, the time beside it",
+  "piece": "55 s",
+  "capture": "rest",
+  "build": "0.2.286",
+  "old_px": 1789,
+  "new_px": 1268
+ },
+ {
+  "n": 6,
+  "family": "Window markers: a ring that drains, the time beside it",
+  "piece": "the last 10 s (illustrative)",
+  "capture": "rest",
+  "build": "0.2.286",
+  "old_px": null,
+  "new_px": 1012
+ },
+ {
+  "n": 7,
+  "family": "Window markers: a ring that drains, the time beside it",
+  "piece": "a loop the Tech holds (illustrative)",
+  "capture": "rest",
+  "build": "0.2.286",
+  "old_px": null,
+  "new_px": 1061
+ },
+ {
+  "n": 8,
+  "family": "Window markers: a ring that drains, the time beside it",
+  "piece": "1:45",
+  "capture": "office",
+  "build": "0.2.286",
+  "old_px": 2218,
+  "new_px": 1315
+ },
+ {
+  "n": 9,
+  "family": "Attention clocks: a ring that fills, the stage beside it",
+  "piece": "wary",
+  "capture": "burning",
+  "build": "0.2.286",
+  "old_px": 1771,
+  "new_px": 1017
+ },
+ {
+  "n": 10,
+  "family": "Attention clocks: a ring that fills, the stage beside it",
+  "piece": "reported",
+  "capture": "round",
+  "build": "0.2.286",
+  "old_px": 2256,
+  "new_px": 1516
+ },
+ {
+  "n": 11,
+  "family": "Done chips: the face and its ticks, the facts as labels, the ways as capsules",
+  "piece": "Uneasy \u203a Listen, Pay",
+  "capture": "walkin",
+  "build": "0.2.286",
+  "old_px": 19754,
+  "new_px": 5465
+ },
+ {
+  "n": 12,
+  "family": "Edge chips: a round tab and the ink chevron, as the edge faces",
+  "piece": "reroute (off the top)",
+  "capture": "aim",
+  "build": "0.2.286",
+  "old_px": 1223,
+  "new_px": 752
+ },
+ {
+  "n": 13,
+  "family": "Edge chips: a round tab and the ink chevron, as the edge faces",
+  "piece": "the rival car (off the right)",
+  "capture": "square",
+  "build": "0.2.286",
+  "old_px": 895,
+  "new_px": 752
+ },
+ {
+  "n": 14,
+  "family": "Edge chips: a round tab and the ink chevron, as the edge faces",
+  "piece": "the lock (off the top)",
+  "capture": "reticle",
+  "build": "0.2.286",
+  "old_px": 895,
+  "new_px": 662
+ },
+ {
+  "n": 15,
+  "family": "Plan ghosts, stash plates and the hint line: street labels",
+  "piece": "a queued walk",
+  "capture": "queued",
+  "build": "0.2.287",
+  "old_px": 2284,
+  "new_px": 1017
+ },
+ {
+  "n": 16,
+  "family": "Plan ghosts, stash plates and the hint line: street labels",
+  "piece": "a queued walk",
+  "capture": "queued",
+  "build": "0.2.287",
+  "old_px": 2284,
+  "new_px": 1017
+ },
+ {
+  "n": 17,
+  "family": "Plan ghosts, stash plates and the hint line: street labels",
+  "piece": "stash: Dumpster, Service door",
+  "capture": "cones",
+  "build": "0.2.286",
+  "old_px": 10871,
+  "new_px": 3297
+ },
+ {
+  "n": 18,
+  "family": "Plan ghosts, stash plates and the hint line: street labels",
+  "piece": "the hint line",
+  "capture": "cones",
+  "build": "0.2.286",
+  "old_px": 7434,
+  "new_px": 3542
+ },
+ {
+  "n": 19,
+  "family": "Faces: the built cream ring for every chrome one",
+  "piece": "the shooters' faces",
+  "capture": "busyaim",
+  "build": "0.2.286",
+  "old_px": 1360,
+  "new_px": 1201
+ },
+ {
+  "n": 20,
+  "family": "Faces: the built cream ring for every chrome one",
+  "piece": "a pip over a person (the driver)",
+  "capture": "aim",
+  "build": "0.2.286",
+  "old_px": 421,
+  "new_px": 476
+ }
+]
