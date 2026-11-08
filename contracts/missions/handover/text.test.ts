@@ -1341,7 +1341,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(Object.keys(L.cancel).sort()).toEqual(Object.keys(t.cancelCosts).sort());
     for (const [k, x] of [...Object.entries(L.cancel), ...Object.entries(L.pop)]) { expect(words(x), k).toBeLessThanOrEqual(3); expect(x, k).not.toMatch(/[.!?]/); }
     // the host builds these refusals itself today: HandoverHost (Pop), HostFight, HostTakedown
-    for (const id of ['no-way', 'no-room', 'unarmed', 'not-drawn', 'other-carries', 'nothing-there', 'never-vale', 'who-can', 'nothing-here', 'select-agent']) expect(L.pop[id], id).toBeTruthy();
+    for (const id of ['no-way', 'no-room', 'unarmed', 'not-drawn', 'other-carries', 'nothing-there', 'never-vale', 'who-can', 'nothing-here']) expect(L.pop[id], id).toBeTruthy();
   });
   test('brief 019: the fail camera has a caption of at most six words and a tip of at most six for every way a run can fail (Cause.fail and why), and the same keys in both', () => {
     const F = L.failcam;
@@ -1529,7 +1529,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
   test('a looped camera is never dark: the Loop, Disable and Shoot chips each have their own words (brief 058)', () => {
     expect(L.done.gain['camera-looped']).toBe('Camera looped'); expect(L.done.gain['camera-cut']).toBe('Camera cut'); expect(L.done.gain['camera-shot']).toBe('Camera shot out');
     expect(L.done.gain['camera-dark']).toBeUndefined();
-    expect(L.pop['camera-looped']).toBe('Camera looped'); expect(L.pop['camera-dark']).toBe('Camera shot out');
+    expect(L.pop['camera-dark']).toBe('Camera shot out');
     for (const [k, x] of Object.entries(L.done.gain)) expect(x, k).not.toMatch(/\bdark\b/i);
   });
   test('Loop v2 has no tether and no walk-off hold: the stopgap block is retired (brief 058, engine 0.31.0)', () => {

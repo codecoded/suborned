@@ -20,9 +20,9 @@ import { sameRubric, SHORT_NOW, type ShortBrief, type ShortEvaluation12, type Sh
 import type { Authorization } from './types';
 
 // Guides /17 and /18 (brief 102): a family's failing lines written by hand, scored once by the judge with no writer call, kept out of every later writer run; from /18 a hand
-// run scores its family as it plays, its hand rows included. Three rounds of hand edits are on file, the second and third partly rewriting the first (the third, 2026-11-09: the
-// guard's no-visit lines, true wherever Inez stands). Labelled test data only: no model is called.
-const HANDS = ['briefs/102/fable/hand-barks.json', 'briefs/102/fable/hand-barks-2.json', 'briefs/102/fable/hand-barks-3.json'], MODEL = 'claude-opus-5-5', text = JSON.parse(readFileSync(join(root, TEXT_FILE), 'utf8'));
+// run scores its family as it plays, its hand rows included. Four rounds of hand edits are on file, each later one partly rewriting an earlier one (2026-11-09: the third,
+// the guard's no-visit lines, true wherever Inez stands; the fourth, Inez's busy lines, true wherever he is). Labelled test data only: no model is called.
+const HANDS = ['briefs/102/fable/hand-barks.json', 'briefs/102/fable/hand-barks-2.json', 'briefs/102/fable/hand-barks-3.json', 'briefs/102/fable/hand-barks-4.json'], MODEL = 'claude-opus-5-5', text = JSON.parse(readFileSync(join(root, TEXT_FILE), 'utf8'));
 const rounds = HANDS.map(f => HandEdits.parse(JSON.parse(readFileSync(join(root, f), 'utf8'))).edits), edits = rounds.flat();
 /** Where a round's line ended up: its words, or a later round's rewrite of them. */
 const final = (round: number, key: string, line: string) => rounds.slice(round + 1).reduce((l, es) => es.find(e => e.key === key && e.before === l)?.after ?? l, line);
