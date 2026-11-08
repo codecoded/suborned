@@ -1,0 +1,5 @@
+PASS  back.png                           active HUD   2.6% of the screen (limit 22%, footprint 5%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  control.png                        rest   HUD   2.6% of the screen (limit 15%, footprint 5%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  hover.png                          active HUD   3.8% of the screen (limit 22%, footprint 8%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+PASS  rest.png                           rest   HUD   3.7% of the screen (limit 15%, footprint 8%)  running text 0 lines, 0 blocks; speech 0, beats 0  [hud mask]
+4/4 within budget

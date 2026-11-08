@@ -1,0 +1,166 @@
+{
+ "method": "HUD layer alone, alpha >= 24 at 1920 x 1080 (tools/hud-budget); before: the capture .hud.png; after: what stays of it plus the new pieces",
+ "frames": {
+  "rest": {
+   "build": "0.2.288",
+   "moment": "route G, 3:28.6, the Scout selected (t101-quiet, captured at 2x)",
+   "before_pct": 3.7,
+   "after_pct": 3.75,
+   "new": [
+    [
+     "take control tab",
+     [
+      100,
+      37.0,
+      30,
+      30
+     ]
+    ]
+   ]
+  },
+  "hover": {
+   "build": "0.2.288",
+   "moment": "route G, 3:28.6, the Scout selected (t101-quiet, captured at 2x)",
+   "before_pct": 3.7,
+   "after_pct": 3.82,
+   "new": [
+    [
+     "take control tab",
+     [
+      100,
+      37.0,
+      30,
+      30
+     ]
+    ],
+    [
+     "take control word",
+     [
+      135,
+      40,
+      116.5,
+      24
+     ]
+    ]
+   ]
+  },
+  "control": {
+   "build": "0.2.289",
+   "moment": "in third person on the Scout, walking the plaza to the Office, 0:01 (the hold proof)",
+   "before_pct": 2.44,
+   "after_pct": 2.58,
+   "new": [
+    [
+     "back to map capsule",
+     [
+      100,
+      37.0,
+      124.2015625,
+      30
+     ]
+    ],
+    [
+     "sight eye over her",
+     [
+      948,
+      588,
+      24,
+      24
+     ]
+    ]
+   ],
+   "lifted": {
+    "Squad slot word \"Back to map \u00b7 T\"": [
+     74,
+     370,
+     186,
+     402
+    ],
+    "selection chevron over her head": [
+     944,
+     588,
+     978,
+     616
+    ]
+   }
+  },
+  "back": {
+   "build": "0.2.289",
+   "moment": "in third person on the Scout, walking the plaza to the Office, 0:01 (the hold proof)",
+   "before_pct": 2.44,
+   "after_pct": 2.61,
+   "new": [
+    [
+     "back to map capsule",
+     [
+      100,
+      37.0,
+      177.7015625,
+      30
+     ]
+    ],
+    [
+     "sight eye over her",
+     [
+      948,
+      588,
+      24,
+      24
+     ]
+    ]
+   ],
+   "lifted": {
+    "Squad slot word \"Back to map \u00b7 T\"": [
+     74,
+     370,
+     186,
+     402
+    ],
+    "selection chevron over her head": [
+     944,
+     588,
+     978,
+     616
+    ]
+   }
+  }
+ },
+ "pieces": {
+  "rest": [
+   [
+    "take control tab",
+    0.04
+   ]
+  ],
+  "hover": [
+   [
+    "take control tab",
+    0.042
+   ],
+   [
+    "take control word",
+    0.076
+   ]
+  ],
+  "control": [
+   [
+    "back to map capsule",
+    0.194
+   ],
+   [
+    "sight eye over her",
+    0.026
+   ]
+  ],
+  "back": [
+   [
+    "back to map capsule",
+    0.224
+   ],
+   [
+    "sight eye over her",
+    0.026
+   ]
+  ]
+ }
+}
