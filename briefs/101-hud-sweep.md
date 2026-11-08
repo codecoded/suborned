@@ -107,3 +107,10 @@ Fable writes the new labels ("Goes loud") and retires the keys brief 101's remov
 
   Then a real capture for Sky, then the roster, the scope and the street layer. Latch and Fable were redirected mid-round.
 
+## Sky refines the pick: a mix (2026-11-08)
+"I think street labels top right but tokens bottom right perhaps".
+- **Top right, Street labels' style:** the clock and the seal as outlined ink labels (`S-*.png`).
+- **Bottom right, Corner tokens:** the news as an enamel lozenge with its badge roundel, and the Book as a roundel (`T-*.png`).
+
+The "perhaps" leaves it to the real capture: Latch shoots rest, the seal with police, and the busiest moment beside both mocks' corners, with coverage.
+
