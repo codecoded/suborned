@@ -9,7 +9,9 @@ import { civic, toPlanFn } from '../plan/civic';
 import { derive } from '../plan/plan';
 import { walkGrid, WINDOW } from '../plan/walk-grid';
 import { generated } from '../plan/world-ctx';
-import { collideDigest, drawnSolids, floorRows, HEAD, hull, pavementOf, simGrid, solidDigest, STEP } from './solids';
+import { collideDigest, distPoly, drawnSolids, floorRows, HEAD, hull, pavementOf, simGrid, solidDigest, STEP } from './solids';
+import { blockersOf } from '../plan/walk';
+import { toBlockFn } from '../plan/walk-grid';
 import { buildSite, optionsOfSite, sourceOfSite } from './site';
 import { inPoly, type V } from '../plan/geom';
 
@@ -22,12 +24,25 @@ const site = read('sim/data/handover.site.json');
 const at = (x: number, y: number) => { const [i, j] = G.cellOf([x, y]); return { i, j, k: i * G.ny + j }; };
 
 describe('the walk grid with the drawn solids', () => {
-  test('holds every cell the block-only grid blocks, and more', () => {
-    let lost = 0, added = 0;
-    for (let i = 0; i < G.nx; i++) for (let j = 0; j < G.ny; j++) { if (B.rows[i]![j] === '#' && G.rows[i]![j] === '.') lost++; if (B.rows[i]![j] === '.' && G.rows[i]![j] === '#') added++; }
-    expect(lost).toBe(0);
-    expect(added).toBe(G.added.size);
-    expect(added).toBeGreaterThan(500);
+  // engine 0.49.0 (brief 098, what is walkable is what you see): the engine's grid keeps the walk clearance (the rulebook's bodies.radius + margin) from
+  // every solid, not the plan's design r (B, tools/plan/walk-grid.ts, holds Datum's 0.65 m for the plan's own rules): it never walks where the plan's
+  // blockers stand, keeps that clearance from the block's ground solids, and the drawn solids still block cells of their own
+  test('blocks every cell inside a plan blocker, keeps the walk clearance from the block\'s solids, and the drawn solids block more', () => {
+    const { polys, rounds } = blockersOf(plan, d, civ), toBlock = toBlockFn(plan.civic);
+    const bp = polys.map((p: V[]) => p.map(toBlock)), br = rounds.map((l: { c: V; r: number }) => ({ c: toBlock(l.c), r: l.r }));
+    const solids = (civ.solids ?? []).map((p: V[]) => p.map(toBlock));
+    let inBlocker = 0, tooNear = 0, freer = 0;
+    for (let i = 0; i < G.nx; i++) for (let j = 0; j < G.ny; j++) {
+      if (G.rows[i]![j] !== '.') continue;
+      const f = G.fine.cell, per = Math.round(G.cell / f), c: V = [G.win.x0 + (i * per + (per >> 1) + 0.5) * f, G.win.y0 + (j * per + (per >> 1) + 0.5) * f]; // the raster cell the 50 cm cell's centre falls in: what the rows read
+      if (bp.some((p: V[]) => inPoly(c, p)) || br.some((l: { c: V; r: number }) => Math.hypot(c[0] - l.c[0], c[1] - l.c[1]) < l.r)) inBlocker++;
+      if (solids.some((p: V[]) => distPoly(c, p) < G.clear - 1e-6)) tooNear++;
+      if (B.rows[i]![j] === '#') freer++;
+    }
+    expect(inBlocker).toBe(0);
+    expect(tooNear).toBe(0);
+    expect(freer).toBeGreaterThan(100); // where the plan's 0.65 m walled a gap the body fits (the fountain's planters among them)
+    expect(G.added.size).toBeGreaterThan(500);
   });
   test('every kit piece the window places has declared volumes (kit.collide.json), so nothing drawn is walked through for want of one', () => {
     expect(G.drawn.unmeasured).toEqual([]);

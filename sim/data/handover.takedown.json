@@ -184,7 +184,7 @@
    "id": "street/records-square/civic-robot-dock-z1",
    "kind": "dock",
    "at": [-1850,-1750],
-   "stand": [-1825,-1625],
+   "stand": [-1875,-1725],
    "item": "street/records-square/civic-robot-dock-z1"
   },
   {
@@ -205,28 +205,28 @@
    "id": "street/civic/police-post-0",
    "kind": "post",
    "at": [3000,-2200],
-   "stand": [3025,-2125],
+   "stand": [3075,-2125],
    "item": "street/civic/police-post-0"
   },
   {
    "id": "street/civic/police-post-1",
    "kind": "post",
    "at": [-2500,-4200],
-   "stand": [-2475,-4125],
+   "stand": [-2425,-4125],
    "item": "street/civic/police-post-1"
   },
   {
    "id": "street/civic/police-post-2",
    "kind": "post",
    "at": [7900,-1000],
-   "stand": [7925,-925],
+   "stand": [7975,-925],
    "item": "street/civic/police-post-2"
   },
   {
    "id": "street/civic/police-post-3",
    "kind": "post",
    "at": [3000,-4400],
-   "stand": [3025,-4325],
+   "stand": [3075,-4325],
    "item": "street/civic/police-post-3"
   },
   {
@@ -240,21 +240,21 @@
    "id": "street/civic/police-post-5",
    "kind": "post",
    "at": [1400,500],
-   "stand": [1475,525],
+   "stand": [1475,575],
    "item": "street/civic/police-post-5"
   },
   {
    "id": "street/civic/police-post-6",
    "kind": "post",
    "at": [-1000,500],
-   "stand": [-925,525],
+   "stand": [-925,575],
    "item": "street/civic/police-post-6"
   },
   {
    "id": "street/civic/police-post-7",
    "kind": "post",
    "at": [9300,-1400],
-   "stand": [9325,-1325],
+   "stand": [9375,-1325],
    "item": "street/civic/police-post-7"
   }
  ],

@@ -35,7 +35,7 @@ namespace Suborned.Sim
         {
             if (!G.Within(op.Pos, at, reach)) return false;
             if (listenArriving) return true;
-            if (op.Act != null && op.Act.Do == "listen") return SpotOf(op) is not ListenSpot sp || (sp.Chair.Length > 0 ? op.Pos == sp.At : G.Within(op.Pos, sp.At, R.ListenAtSpotCm)); // engine 0.49.0: a chair is sat in, not stood by
+            if (op.Act != null && op.Act.Do == "listen") return SpotOf(op) is not ListenSpot sp || (sp.Chair.Length > 0 ? op.Pos == sp.At : G.Within(op.Pos, sp.At, R.ListenAtSpotCm) && (op.Pos == sp.At || !WatchedAt(op.Pos))); // engine 0.49.0: a chair is sat in, not stood by; short of a spot on the ground, only out of every cone (the spot was chosen out of them, not the ground round it)
             if (G.Within(op.Pos, at, R.ListenNearStillCm)) return false;
             return SeatOf(op) != null || (BesideSolid(op.Pos) && !S.Grid.Cuts(op.Pos, R.BodyMinCm, R.ListenPassCm)); // engine 0.49.0: seated, or by a wall and out of the way
         }
