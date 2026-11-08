@@ -11,6 +11,7 @@ import { SHORT_RUNS, verifyShort } from './short-evidence';
 import { loadShortGuide } from './short-guide';
 import { runShort } from './short-loop';
 import { shortGuideVersion, type ShortBrief, type ShortResult } from './short-types';
+import { BARKS_12_APPLY } from './short-voice';
 
 const esc = (v: unknown) => String(v).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const tokens = (r: ShortResult) => r.calls.reduce((n, c) => n + (c.tokens ?? 0), 0);
@@ -41,10 +42,12 @@ export async function savedShortRuns(): Promise<{ run: ShortResult; path: string
 }
 /** Guide /4's rubric is the one the lines are written to (/5 adds a check); a run under /1–/3 stays on record, superseded. */
 const CURRENT_RULES = 4;
+/** A /12 bark run waits on Sky's yes to the sample (brief 099 voices): until then its family keeps the lines of its last run before /12. */
+export const waitsForSky = (r: ShortResult) => r.brief.kind === 'bark' && shortGuideVersion(r.guide) >= 12 && !BARKS_12_APPLY;
 /** The run a family's lines come from: its latest accepted live run under the current rubric. `skip` leaves families out (today's lines stay). */
 export async function acceptedByFamily(skip = new Set<string>()): Promise<Map<string, { run: ShortResult; path: string }>> {
   const best = new Map<string, { run: ShortResult; path: string }>();
-  for (const x of await savedShortRuns()) if (x.run.mode === 'live' && x.run.status === 'ACCEPTED' && shortGuideVersion(x.run.guide) >= CURRENT_RULES && !skip.has(x.run.brief.id)) best.set(x.run.brief.id, x);
+  for (const x of await savedShortRuns()) if (x.run.mode === 'live' && x.run.status === 'ACCEPTED' && shortGuideVersion(x.run.guide) >= CURRENT_RULES && !skip.has(x.run.brief.id) && !waitsForSky(x.run)) best.set(x.run.brief.id, x);
   return best;
 }
 

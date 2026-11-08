@@ -36,8 +36,10 @@ Since 2026-11-07 (Sky, asked whether the loop covers more than the Inez conversa
 
 Motive's rubric for each kind (`short-guide.ts`): USEFUL (tells the player something they can use; the cut opening barks are the failing example), TRUE (to what the engine did), PLAIN (everyday words, never a report's tone), SHORT (the kind's limit), NAMES (people as the player knows them), VOICE (the speaker's, or the book's). Guide /2: Motive also sees its own last findings, and the reviser changes only the lines they name. Guide /9 (`short-types.ts` lists every version): a police title names who or what is coming (Police coming, More police, Robots coming, Lockdown) and the cause goes in its short; the meter's head keeps its level; the why words brief 100's HUD tests read are held word for word or by pattern (`HostLogic.Why100.cs`); a debrief item's today is what the page shows now, kept where it holds; and `debrief/folds` writes the keys Latch's page reads that had no item.
 
+**Guide /12** (brief 099 voices; Sky 2026-11-08, playing: "a lot of poor wording stil throughout. Especially agents talk to player"). The /4–/11 bark rubric rewarded plain, short and true, so status codes passed at 10/10 ("Holstered.", "Here. Watching."). From /12 a bark family is scored by WORTH (the line tells the player something new or lands the character, else silence), VOICE (the speaker and nobody else), NATURAL (a person talking), VARIANTS (different takes), MECHANICS (no seconds, counts or rule words: Sky's rule on numbers in play), TRUE, NAMES and SHORT. Motive scores every rule on its own (`scores`), and only a 10 on every rule is accepted. The prompt carries Fable's voice sheet and the calibration (today's flat lines failing, a gold set passing) from `briefs/099/fable/voices/sheet.json`. Only the agent rows the host speaks under Fable's frequency (the sheet's `speech`: on a decision, not a click) are written; the rest are silent with their reason (`short-voice.ts`), and the read rows have been silent since brief 044. The why block, the page and the labels read as at /11, and the labels keep Sky's own words (`SKY_PICKS`: "Turn driver by", which `apply` also holds against any run). **No /12 bark run applies until Sky says yes to the sample** (`BARKS_12_APPLY`); the sheet goes into `tone.voices` and the tiers to the host in step 2.
+
 ```sh
-bun tools/style-agent/cli.ts shorts              # the 43 families: items and lines each
+bun tools/style-agent/cli.ts shorts              # the families: items and lines each
 bun run style:run bark/end $LIVE                 # one family
 bun run style:chain --short $LIVE [--kind bark]  # every family not yet accepted
 bun run style:replay runs/style-agent/short/<run>   # the same replay and verify as a conversation
@@ -51,9 +53,9 @@ Runs are in `runs/style-agent/short/<time>-<family>/`; they share the sources st
 ## Files
 
 `guide.ts` the style guide · `briefs.ts` the conversation briefs · `core.ts` the loop's engine (limits, calls, acceptance) · `loop.ts` the conversation loop · `prompts.ts` · `checks.ts` code checks · `live.ts` crew cards through the Codex CLI · `evidence.ts` archive and checking · `report.ts` · `cli.ts`.
-Short lines: `short-types.ts` · `short-guide.ts` the rubric · `short-barks.ts`, `short-whys.ts`, `short-debrief.ts`, `short-labels.ts` the families · `short-briefs.ts` · `short-checks.ts` · `short-prompts.ts` · `short-loop.ts` · `short-evidence.ts` · `short-cli.ts` · `short-apply.ts` · `short.test.ts`.
+Short lines: `short-types.ts` · `short-guide.ts` the rubric · `short-voice.ts` guide /12's rubric, frequency and calibration · `short-barks.ts`, `short-whys.ts`, `short-debrief.ts`, `short-labels.ts` the families · `short-briefs.ts` · `short-checks.ts` · `short-prompts.ts` · `short-loop.ts` · `short-evidence.ts` · `short-cli.ts` · `short-apply.ts` · `short.test.ts` (/1–/11) · `voice.test.ts` (/12).
 
 ## Known
 
 - The conversations it wrote for Assignment 6 reveal what they should but read flat (Sky, 2026-10-23); the guide is stronger on rules than on life. Fix the writing before the game takes them.
-- Both roles run on `gpt-6.1-sol`; the GDD names Opus 5.5 for Motive.
+- Both roles run on `gpt-6.1-sol`; the GDD names Opus 5.5 for Motive. The model that wrote the flat lines also passed them; brief 099 voices proposes Motive on Opus 5.5 (a Claude adapter for this loop) and a writer A/B with `gpt-6-astra`.

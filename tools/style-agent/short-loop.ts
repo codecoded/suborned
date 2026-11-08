@@ -1,7 +1,8 @@
+import type { z } from 'zod';
 import { runRounds, validateLimits } from './core';
 import { checkShort } from './short-checks';
 import { shortPrompt } from './short-prompts';
-import { SHORT_RUN, ShortEvaluation, shortGuideVersion, shortSetSchema, type ShortBrief, type ShortGuide, type ShortIssue, type ShortResult, type ShortRound, type ShortSet } from './short-types';
+import { evaluationFor, SHORT_RUN, ShortEvaluation12, shortGuideVersion, shortSetSchema, type AnyEvaluation, type ShortBrief, type ShortGuide, type ShortIssue, type ShortResult, type ShortRound, type ShortSet } from './short-types';
 import type { Authorization, Evidence, Invoke, Limits } from './types';
 
 /** All the lines of a family, for the evaluator's quotes. */
@@ -19,10 +20,13 @@ export async function runShort(o: {
   const now = o.now ?? Date.now, started = now();
   const result: ShortResult = { schema: SHORT_RUN, mode: o.mode, status: 'INCOMPLETE', stopReason: 'Not finished', brief: o.brief, guide: o.guide,
     limits: { ...o.limits }, rounds: [], calls: [], startedAt: started, finishedAt: null, evidence: o.evidence ?? null, authorization: o.authorization ?? null };
-  await runRounds<ShortSet, ShortEvaluation, ShortIssue, ShortRound>({ result, limits: o.limits, invoke: o.invoke, now, started,
+  const evaluationSchema = evaluationFor(o.guide, o.brief.kind), perRule = evaluationSchema === ShortEvaluation12;
+  await runRounds<ShortSet, AnyEvaluation, ShortIssue, ShortRound>({ result, limits: o.limits, invoke: o.invoke, now, started,
     save: () => o.checkpoint?.(result) ?? Promise.resolve(),
     prompt: (stage, candidate, feedback) => shortPrompt(stage, o.guide, o.brief, candidate, feedback),
-    draftSchema: shortSetSchema(o.brief), evaluationSchema: ShortEvaluation,
+    draftSchema: shortSetSchema(o.brief), evaluationSchema: evaluationSchema as z.ZodType<AnyEvaluation>,
+    // guide /12's barks: each rule is scored on its own, and only a 10 on every one is accepted
+    ...(perRule ? { accepts: (e: AnyEvaluation) => e.score === 10 && 'scores' in e && Object.values(e.scores).every(x => x === 10) } : {}),
     check: draft => checkShort(o.brief, draft, o.guide, o.base ?? {}), text: setText,
     quoteError: 'The evaluator quoted words that are not in the lines',
     round: (set, evaluation, hardIssues) => ({ set, evaluation, hardIssues }), history: shortGuideVersion(o.guide) >= 2 });

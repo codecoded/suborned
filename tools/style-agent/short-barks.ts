@@ -1,5 +1,6 @@
 import { gddPair, pick, type Read } from './guide';
-import type { Field, Pattern, ShortBrief, ShortGuideVersion, ShortItem } from './short-types';
+import { VoiceSheet, type Field, type Pattern, type ShortBrief, type ShortGuideVersion, type ShortItem } from './short-types';
+import { speech12, VOICE_SHEET } from './short-voice';
 
 /** The bark table (text.json `dialogue`) as families, one run each: what each bark must tell the player, from the event's own trigger,
  *  the verb's plain line (`actions.*.does`), what a Watch or a Listen teaches (`targets`) and the GDD's temperaments (§04). */
@@ -41,8 +42,13 @@ const ACKS_4: [string, string, string[]][] = [
   ['car', 'Acknowledgements: board, go, drive, withdraw, end, the range\'s spawn', ['board', 'go', 'drive-car', 'withdraw', 'end', 'spawn']], ['feet', 'Acknowledgements: walk, run, cancel', ['move', 'run', 'cancel']],
   ['bodies', 'Acknowledgements: carry, put down, hide, tie up', ['carry', 'drop', 'stash', 'restrain']],
 ];
+/** Guide /12: the acknowledgements that still speak under Fable's frequency (walks, runs, the car, fire and put down are silent), in three families. */
+const ACKS_12: [string, string, string[]][] = [
+  ['acts', 'Acknowledgements: watch, listen, the approaches, the call, the Tech\'s and the Enforcer\'s jobs, the end', [...ACKS_4[0]![2], 'end']],
+  ['fight', 'Acknowledgements: draw, and everyone fire', ['draw', 'panic']], ['bodies', 'Acknowledgements: carry, hide, tie up', ['carry', 'stash', 'restrain']],
+];
 const familiesFor = (v: ShortGuideVersion) => v < 4 ? BARK_FAMILIES : [
-  ...ACKS_4.map(([id, title, verbs]) => ({ id: `bark/ack-${id}`, title, pick: (r: Row) => r.event === 'ack' && verbs.includes(r.verb!) })),
+  ...(v >= 12 ? ACKS_12 : ACKS_4).map(([id, title, verbs]) => ({ id: `bark/ack-${id}`, title, pick: (r: Row) => r.event === 'ack' && verbs.includes(r.verb!) })),
   ...BARK_FAMILIES.filter(f => !f.id.startsWith('bark/ack-')).flatMap(f => v >= 6 && f.id === 'bark/witnesses' ? WITNESSES_6 : [f]),
 ];
 /** Guide /6: the witnesses in two families, passers-by and the cast. */
@@ -81,6 +87,13 @@ const DONE: Record<string, string> = {
   'turn/suspicious': 'They are reporting the approach: a report is on its way, and the Alert can rise.', 'turn/small-offer': 'Too little: a Help before the Listen knows too little of their need and is refused. Listen first, then offer.',
   takedown: 'The person is down.', 'takedown/knockout': 'Knocked out: they will wake, and may report it unless tied or hidden.', 'takedown/kill': 'Dead: a body now, and a found killing raises the Alert.',
   stash: 'The body is hidden in a bin or behind the service door: out of sight, though a bin round or a search may find it.', restrain: 'Tied: when they wake they can\'t call out or report.',
+};
+/** Guide /12: the landings' facts where /4–/11 had them wrong or read out a time. enter.out plays as the Enforcer comes back out with Popovic, not while he looks for him. */
+const DONE_12: Record<string, string> = {
+  enter: 'The Enforcer has come back out of the Office with Popovic (inside was off-screen). Popovic\'s own first words follow at once (he blusters, bargains or begs, by his temperament), so the line can lead into them.',
+  loop: 'The camera is looped: the desk sees an old picture until the loop runs out (the HUD shows how long). The Tech is free to go.',
+  disable: 'The camera is cut for good. At its next scan the desk sees the dead screen and sends someone if anyone is free; that counts as a report.',
+  mislead: 'One of the rival crew believed the story and walks off for a while. He comes back later, and he knows the Scout\'s face.',
 };
 const OUTCOME: Record<string, string> = {
   turned: 'Yes: turned. They will do their part when the cell calls.', refused: 'No, and they remember the asking: a later offer costs more.',
@@ -153,6 +166,10 @@ const NAMED = new Set(['rivals-arrive/rivals', 'drawn-seen/guard', 'run-seen/gua
 const CATALOGUE = ['reply', 'confirm', 'questioned', 'saw-gunfire', 'gunfire'];
 function stays(r: Row, v: ShortGuideVersion): string | null {
   if (v >= 3 && (PINNED_ROWS.has(`${r.event}/${r.speaker}`) || PINNED_ROWS.has(keyOf(r)))) return 'text.test.ts needs this event\'s line from this speaker.';
+  // guide /12: the approach scenes play the Fixer's opener and closer; any other order's beat may go silent (a silent row, step 2), since the host's stock line goes too
+  if (v >= 12 && r.speaker === 'fixer' && ((r.event === 'arrive' && ['ask', 'pay', 'help', 'pressure'].includes(r.verb!)) || (r.event === 'done' && r.verb === 'turn')))
+    return 'The approach scenes play it (text.json scenes, brief 085).';
+  if (v >= 12 && ['ack', 'arrive', 'done'].includes(r.event)) return null;
   if (['ack', 'arrive', 'done'].includes(r.event)) return 'Every order has this beat for each agent who can give it (text.test.ts); without a line the host speaks a stock "On it."';
   if (['reply', 'read', 'confirm', 'taken'].includes(r.event)) return 'The rulebook can produce it, and the host, the scenes and the checks read it (text.test.ts).';
   if (CATALOGUE.includes(r.event) && PEOPLE.includes(r.speaker)) return 'The dialogue generator holds the city\'s voices to these lines (tools/dialogue fixture).';
@@ -210,12 +227,16 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
     const ev = text.events[r.event], who = WHO[r.speaker] ?? r.speaker, subject = r.event === 'read' ? WHO[r.about ?? ''] ?? 'the person' : who;
     const temp = r.temperament ? ` ${subject[0]!.toUpperCase() + subject.slice(1)} is ${v >= 6 && r.event === 'read' && r.about === 'councillor' ? popovic(r.temperament) : temperament(r.temperament)}.` : '';
     switch (r.event) {
-      case 'ack': return v >= 4
+      case 'ack': if (v >= 12) return `Say what only ${who} would say as they take this order, now: how they take the job, a feeling or a detail the card can't give; never the order read back. Facts, on the order's card already and not to be read out: "${text.actions[r.verb!]?.does ?? ''}" ${ORDER[`${r.verb}/${r.outcome}`] ?? ORDER[r.verb!] ?? ''}`.trim();
+        return v >= 4
         ? `Say: ${who} has the order and is on it, the act itself (${text.actions[r.verb!]?.label ?? r.verb}${r.outcome ? `, ${r.outcome}` : ''}) as ${who} would put it${ACK_SAY[r.verb!] ? `; worth adding where it fits: ${ACK_SAY[r.verb!]}` : ''}. Facts, on the order's card already and not to be read out: "${text.actions[r.verb!]?.does ?? ''}" ${ORDER[`${r.verb}/${r.outcome}`] ?? ORDER[r.verb!] ?? ''}`.trim()
         : `${who} has just been given this order and starts it now, walking over first if it is out of reach. ${verbLine(r.verb!)} ${ORDER[`${r.verb}/${r.outcome}`] ?? ORDER[r.verb!] ?? ''}`.trim();
-      case 'arrive': if (v >= 4) return `Say: ${who} is in reach and the act begins now${['ask', 'pay', 'help', 'pressure'].includes(r.verb!) ? ': the Fixer\'s first words to the person, face to face, the opening before the offer' : r.outcome === 'struggle' ? ': the person saw the Enforcer coming and fights back, a noisy struggle' : ''}. Facts, not to be read out: "${text.actions[r.verb!]?.does ?? ''}"`;
+      case 'arrive': if (v >= 12) return r.outcome === 'struggle' ? `Say: the person saw ${who} coming and fights back, a noisy struggle that people near may hear; his words as it starts. Facts, not to be read out: "${text.actions[r.verb!]?.does ?? ''}"`
+          : `Say: ${who}'s first words to the person, face to face, opening the approach before the offer; the scene that follows plays the rest. Facts, not to be read out: "${text.actions[r.verb!]?.does ?? ''}"`;
+        if (v >= 4) return `Say: ${who} is in reach and the act begins now${['ask', 'pay', 'help', 'pressure'].includes(r.verb!) ? ': the Fixer\'s first words to the person, face to face, the opening before the offer' : r.outcome === 'struggle' ? ': the person saw the Enforcer coming and fights back, a noisy struggle' : ''}. Facts, not to be read out: "${text.actions[r.verb!]?.does ?? ''}"`;
         return `${who} is in reach and the act begins now. ${verbLine(r.verb!)} ${['ask', 'pay', 'help', 'pressure'].includes(r.verb!) ? 'These are the Fixer\'s first words to the person, face to face: the opening, before the offer.' : r.outcome === 'struggle' ? 'The person saw the Enforcer coming and fights back: a noisy struggle.' : ''}`.trim();
-      case 'done': return `${who}'s act has landed. ${DONE[`${r.verb}/${r.outcome}`] ?? DONE[r.verb!] ?? ''} ${r.verb !== 'turn' ? '' : v >= 5
+      case 'done': if (v >= 12 && r.verb !== 'turn') return `Say: ${who}'s act has landed; what it means now, as ${who} would put it. Facts, not to be read out: ${DONE_12[`${r.verb}/${r.outcome}`] ?? DONE_12[r.verb!] ?? DONE[`${r.verb}/${r.outcome}`] ?? DONE[r.verb!] ?? ''}`.trim();
+        return `${who}'s act has landed. ${DONE[`${r.verb}/${r.outcome}`] ?? DONE[r.verb!] ?? ''} ${r.verb !== 'turn' ? '' : v >= 5
         ? 'Said to the person\'s face after their reply, closing the approach (brief 085), then kept in the Journal: the Fixer\'s own short last word, first person or plain; no he or she.'
         : 'The Fixer\'s own terse report-back to the cell, first person or plain report, after the person\'s reply; no he or she.'}`.trim();
       case 'read': {
@@ -241,18 +262,22 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
     : r.event === 'questioned' ? 'Not played yet: a debrief hook for when investigators run.' : ['win', 'fail', 'withdraw', 'cliffhanger'].includes(r.event) ? 'A bubble at the speaker as the game ends, then the Journal.'
       : 'A speech bubble at the speaker in play (3 s), then the Journal.';
   const told = (r: Row) => { const s = tells(r); return s[0]!.toUpperCase() + s.slice(1); };
-  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending);
-  return familiesFor(v).map(f => {
+  // guide /12: only the rows the host speaks under Fable's frequency are written; the silent ones keep their reason (short-voice.ts) for step 2's silent rows
+  const speech = v >= 12 ? speech12(text, VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))).speech) : null;
+  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never));
+  return familiesFor(v).filter(f => !speech || rows.some(f.pick)).map(f => {
     const mine = rows.filter(f.pick);
     const items: ShortItem[] = mine.map(r => {
       const keep = r.event === 'done' && r.verb === 'turn' && r.outcome === 'refused' ? [r.lines[0]!]
         : v >= 3 && r.event === 'driver-tail' ? r.lines.filter(l => /tailed us all week/.test(l)).slice(0, 1) : []; // /3: text.test.ts wants one line that says it
       const field: Field = { id: 'lines', form: 'speech', words: 12, chars: 80, count: r.lines.length, fills: [], patterns: patterns(r, v), keep };
-      const item: ShortItem = { key: keyOf(r), where: where(r), tells: told(r), speaker: `${r.speaker}: ${voices[r.speaker] ?? SPEAKS[r.speaker] ?? r.speaker}`, fields: [field], current: { lines: r.lines }, stays: stays(r, v) };
+      const item: ShortItem = { key: keyOf(r), where: speech?.when(r as never) ?? where(r), tells: told(r), speaker: `${r.speaker}: ${voices[r.speaker] ?? SPEAKS[r.speaker] ?? r.speaker}`, fields: [field], current: { lines: r.lines }, stays: stays(r, v) };
       return item;
     });
     if (!items.length) throw new Error(`${f.id} has no barks: update the families`);
-    return { id: f.id, kind: 'bark' as const, title: f.title, context: v >= 4
+    return { id: f.id, kind: 'bark' as const, title: f.title, context: v >= 12
+      ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about) that the host speaks, and its \`where\` says when and how often. Write its variants, each a different take on the moment in its speaker's voice. Keep a line of today's only where it already earns its place in that voice; rewrite every line that reads the click back, narrates what the screen shows, talks mechanics, or could come from any of the four.`
+      : v >= 4
       ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about); write its variants, each a different way to say the same thing. Keep a line of today's that already does its job in its speaker's voice; rewrite only lines that are filler, untrue, off-voice, too long or repeated.`
       : `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about); write its variants, each a different way to say the same fact. Today's lines are there to beat, not to keep.`, items };
   });

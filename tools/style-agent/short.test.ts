@@ -21,7 +21,8 @@ import type { ShortBrief, ShortEvaluation, ShortResult, ShortSet } from './short
 import type { Invoke, Request } from './types';
 
 // Labelled test data only: no model is called, and nothing here is presented as a generated line.
-const guide = loadShortGuide(root), briefs = loadShortBriefs(root), text = JSON.parse(readFileSync(join(root, TEXT_FILE), 'utf8'));
+// These tests hold the /1–/11 rubric and families (every saved run is on one of them); guide /12's (brief 099 voices) are in voice.test.ts.
+const V = 11, guide = loadShortGuide(root, V), briefs = loadShortBriefs(root, V), text = JSON.parse(readFileSync(join(root, TEXT_FILE), 'utf8'));
 const store = mkdtempSync(join(tmpdir(), 'suborned-short-store-')), evidence = archiveEvidence(root, guide, store);
 const family = (id: string) => briefs.find(b => b.id === id)!;
 /** A family's set as today's words: the code checks' passing case. */

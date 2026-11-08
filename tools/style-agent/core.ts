@@ -29,6 +29,8 @@ export async function runRounds<C, E extends Scored, H, R>(o: {
   round: (candidate: C, evaluation: E, hardIssues: H[]) => R;
   /** The evaluator also sees its own last score and findings, so it holds the writer to them and doesn't mark down a fix it asked for. */
   history?: boolean;
+  /** When a score accepts, if not a plain 10 (guide /12's barks: a 10 on every rule); findings and code checks must still be empty. */
+  accepts?: (evaluation: E) => boolean;
 }): Promise<void> {
   const { result, limits, now, started, save } = o;
   const ask = async <T>(stage: Stage, schema: z.ZodType<T>, candidate: C | null, feedback: { evaluation: E; hardIssues: H[] } | null): Promise<T> => {
@@ -59,7 +61,7 @@ export async function runRounds<C, E extends Scored, H, R>(o: {
       const text = o.text(draft);
       if (evaluation.findings.some(f => f.quote && !text.includes(f.quote))) throw new Error(o.quoteError);
       result.rounds.push(o.round(draft, evaluation, hardIssues)); await save();
-      if (evaluation.score === 10 && !evaluation.findings.length && !hardIssues.length) {
+      if ((o.accepts ? o.accepts(evaluation) : evaluation.score === 10) && !evaluation.findings.length && !hardIssues.length) {
         result.status = 'ACCEPTED'; result.stopReason = 'Scored 10/10 with no findings, and the code checks pass'; break;
       }
       if (revision === limits.maxRevisions) { result.stopReason = 'Revision limit reached before a 10/10'; break; }

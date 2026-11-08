@@ -9,6 +9,9 @@ import type { Field, Fill, Form, Pattern, ShortBrief, ShortGuideVersion, ShortIt
 const field = (id: string, form: Form, words: number, chars: number, fills: Fill[] = [], patterns: Pattern[] = []): Field => ({ id, form, words, chars, count: 1, fills, keep: [], patterns });
 const fill = (id: string, means: string, widest: string): Fill => ({ id, means, widest });
 const STAYS = 'The HUD draws it (brief 101): Latch reads it by this key.';
+/** Sky's own words, which no run replaces (an item's key, its field): "Turn driver by" over the loop's "Driver cutoff" (Sky 2026-11-08, 0184fef4). From /12 the brief keeps
+ *  them word for word, and `apply` writes them whatever a run of any version says. */
+export const SKY_PICKS: Record<string, Record<string, string>> = { 'briefing.timeline.5:20': { short: 'Turn driver by' } };
 
 const STREET = 'The street layer, by the target (Glyph\'s S-aim and T-aim mocks): when the next shot would turn a quiet run loud, a small orange pill with this label heads a row, then the Alert lamps (to 2), the police badge (police come), the seal\'s lock (the district seals) and the Trail icon with its +n. In the final fight a shot costs nothing new, so there is no row.';
 const CORNER = 'The top right, in ink under the clock and the row of Alert lamps, Trail and money (Glyph\'s S mocks): the next key event the cell knows, as an icon, this word, then the event\'s time on the mission clock ("Chime 5:10" while the clock reads 3:28). An event the cell doesn\'t know yet shows "?"; hovered, the corner shows "Next · " and the long form. The time after the word is a clock time, not a countdown: the corner\'s one countdown, the seal\'s, is a bare orange number by a lock. The same word names the mark beside its time on the book\'s start-page clock and in the debrief\'s Time fold, so it also reads as an event in a list of times.';
@@ -55,7 +58,7 @@ export function labelBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
     item('less.street.loud', AT.street, 'Firing ends the quiet run: once the shot is fired, the Alert goes to 2, the police are called, the district seals and the shot adds Trail. The icons after the label show each, so the label names the change itself. On Alt, any Fire\'s outcome is the same thing in the same words (less.alt.outcome.loud, today "Goes loud"): one glossary, so this label is written there too. A shot shows no hit chance and no time to down (Sky\'s rule).',
       [field('label', 'title', 2, 12)], { label: text.less.street.loud }),
     ...timeline.map(m => item(`briefing.timeline.${m.at}`, AT.corner, `At ${m.at} on the mission clock: ${m.label}. ${m.known ? 'The briefing tells the cell, so the corner names it once it is the next mark.' : 'Not on the briefing: once it is the next mark, the corner shows "?" until the cell learns it.'}`,
-      [field('short', 'title', 3, 14)], { short: m.short })),
+      [{ ...field('short', 'title', 3, 14), keep: v >= 12 && SKY_PICKS[`briefing.timeline.${m.at}`]?.short ? [SKY_PICKS[`briefing.timeline.${m.at}`]!.short!] : [] }], { short: m.short })),
     ...CARDS.map(([k, tells, t, l, held, also]) => item(`book.feed.cards.${k}`, AT.lozenge, v >= 11 && also ? tells + also : tells, l ? [TITLE(t), LINE(v, l, held)] : [TITLE(t)], { title: cards[k]!.title, line: l ? cards[k]!.line : undefined })),
     item('book.feed.of', AT.lozenge, 'Under the lozenge, before a "›" the game draws: this card\'s place in the queue and how many wait; the host always shows the first, so {i} is 1.', [field('label', 'label', 3, 8, [fill('i', 'this card\'s place in the queue', '1'), fill('n', 'how many cards wait, this one included', '12')])], { label: text.book.feed.of }),
   ];
@@ -102,7 +105,7 @@ export function stringSpans(raw: string): Map<string, [number, number]> {
 export function writeLabels(raw: string, sets: { id: string; items: ShortSet['items'] }[]): { raw: string; changed: string[] } {
   const spans = stringSpans(raw), text = JSON.parse(raw), edits: { at: [number, number]; to: string; path: string }[] = [];
   for (const { id, items } of sets) for (const x of items) for (const f of x.fields) {
-    const line = f.lines[0];
+    const line = SKY_PICKS[x.key]?.[f.id] ?? f.lines[0]; // Sky's own words win over any run's
     if (!line) continue;
     for (const p of labelPaths(x.key, f.id, text)) {
       const at = spans.get(p.join('\u0001'));

@@ -9,8 +9,13 @@ export type ShortKind = (typeof SHORT_KINDS)[number];
 export type ShortKindRules = { use: string; rules: ShortRule[] };
 /** The rubric's rules: the brief's five (plain, true, short, useful, named as known) and the voice of who says it. */
 export const SHORT_RULES = ['USEFUL', 'TRUE', 'PLAIN', 'SHORT', 'NAMES', 'VOICE'] as const;
+/** The /1–/11 evaluation's rules: kept as they were, so a saved run's recorded schema still hashes the same. */
 export const ShortRuleId = z.enum(SHORT_RULES);
-export type ShortRuleId = z.infer<typeof ShortRuleId>;
+/** Guide /12's bark rules (brief 099 voices): WORTH and VOICE lead, natural speech, real variants and no mechanics talk follow, and each is scored on its own. */
+export const BARK_RULES_12 = ['WORTH', 'VOICE', 'NATURAL', 'VARIANTS', 'MECHANICS', 'TRUE', 'NAMES', 'SHORT'] as const;
+/** Every rule a guide of any version can hold or a code check can raise. */
+export const AnyRuleId = z.enum([...SHORT_RULES, 'WORTH', 'NATURAL', 'VARIANTS', 'MECHANICS']);
+export type ShortRuleId = z.infer<typeof AnyRuleId>;
 /** /1 the first live run's protocol; /2 (2026-11-07, after it): the evaluator sees its own last findings, the reviser changes only the lines they name;
  *  /3: the barks also carry the words text.test.ts pins on them (Orbit Walk, "outside", no Alert, no "reported"…). A run replays with its version. */
 /** /4 (after the first chain read like tooltips: "I'll make the camera repeat pictures for two minutes."): a bark says what its item says, in voice; an order's price is on
@@ -31,10 +36,15 @@ export type ShortRuleId = z.infer<typeof ShortRuleId>;
 /** /11 (host logic on the /10 words, 2026-11-08: the hurt-carry line lost the health left and the vale-out line the time the police close in, both read by brief 096's
  *  tests): a fill is how the game draws a number, so a count, the health left or a key event's time comes in through it; the lines a host test reads are held by pattern;
  *  the lozenge's line slot is 32 (Latch's lozenge clips a line at 300 px). */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11' } as const;
+/** /12 (brief 099 voices; Sky 2026-11-08, playing: "a lot of poor wording stil throughout. Especially agents talk to player"): the /4–/11 bark rubric rewarded plain,
+ *  short and true and passed status codes at 10/10. A bark is now scored WORTH and VOICE first, then NATURAL, VARIANTS, MECHANICS, TRUE, NAMES and SHORT, each rule
+ *  on its own (`scores`), and only a 10 on every rule is accepted. Fable's voice sheet and calibration (today's flat lines failing, a gold set passing) come from
+ *  briefs/099/fable/voices/sheet.json, staged there until Sky's yes; only the rows the host plays under Fable's frequency (the sheet's `speech`) are written, the rest
+ *  silent with their reason. The why block, the debrief page and the labels read as at /11, and the labels keep Sky's own words. No /12 bark run applies before Sky's yes. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 11;
+export const SHORT_NOW: ShortGuideVersion = 12;
 export const shortGuideVersion = (g: Pick<ShortGuide, 'schema'>): ShortGuideVersion => (Number(Object.entries(SHORT_GUIDES).find(([, v]) => v === g.schema)?.[0] ?? 4)) as ShortGuideVersion;
 export const SHORT_RUN = 'suborned.style-short-run/1';
 
@@ -56,7 +66,26 @@ export type ShortGuide = {
   schema: (typeof SHORT_GUIDES)[ShortGuideVersion]; game: 'The Suborned'; gdd: string; sources: Source[];
   kinds: Record<Exclude<ShortKind, 'label'>, ShortKindRules> & { label?: ShortKindRules };
   voices: Record<string, string>; avoid: string[]; profanity: string[]; named: string[]; cell: string[];
+  /** /12: the cell's voice sheet and the calibration the rubric is held to. */
+  sheet?: GuideSheet;
 };
+
+/** Fable's voice sheet (guide /12's source): each agent's voice, the calibration lines, and the speech tiers the families are cut by. */
+const Voice = z.object({ short: z.array(z.string().min(1)).length(3), traits: z.string().min(1), habits: z.string().min(1), commander: z.string().min(1), cares: z.string().min(1),
+  never: z.array(z.string().min(1)).min(2) }).strict();
+const Calibrated = z.object({ key: z.string().min(1), line: z.string().min(1), why: z.string().min(1) }).strict();
+const Keys = z.array(z.string().regex(/^[a-z-]+(\/[a-z-]+)?$/));
+export const VoiceSheet = z.object({
+  schema: z.literal('suborned.voice-sheet/1'), status: z.string().min(1), why: z.string().min(1),
+  voices: z.object({ scout: Voice, fixer: Voice, tech: Voice, enforcer: Voice }).strict(),
+  fail: z.array(Calibrated).min(8), pass: z.array(Calibrated).min(8),
+  speech: z.object({ rule: z.string().min(1), keys: z.string().min(1), ack: z.object({ always: Keys, first: Keys, never: Keys }).strict(), arrive: Keys, done: Keys,
+    events: z.object({ agents: z.number().int().min(1), end: z.number().int().min(1) }).strict() }).strict(),
+}).strict();
+export type VoiceSheet = z.infer<typeof VoiceSheet>;
+/** What a /12 guide carries of the sheet: the voices and the calibration (the speech tiers shape the families, not the rubric). */
+export const GuideSheet = VoiceSheet.pick({ voices: true, fail: true, pass: true });
+export type GuideSheet = z.infer<typeof GuideSheet>;
 
 /** What Fable returns: every item of the family once, each field with its lines, or the item cut with its reason. */
 export const ShortSet = z.object({ items: z.array(z.object({
@@ -83,8 +112,27 @@ export const ShortEvaluation = z.object({
   }).strict()).max(24),
 }).strict();
 export type ShortEvaluation = z.infer<typeof ShortEvaluation>;
+const Score = z.number().int().min(1).max(10);
+/** Guide /12's evaluation of a bark family: every rule scored on its own, so a true, short, plain family that says nothing or sounds like anyone can't pass on the rest. */
+export const ShortEvaluation12 = z.object({
+  scores: z.object({ WORTH: Score, VOICE: Score, NATURAL: Score, VARIANTS: Score, MECHANICS: Score, TRUE: Score, NAMES: Score, SHORT: Score }).strict()
+    .describe('Each rule of the rubric scored on its own, 1–10.'),
+  score: Score.describe('The lowest of the rule scores.'),
+  reason: z.string().min(1).max(3000),
+  findings: z.array(z.object({
+    rule: z.enum(BARK_RULES_12),
+    key: z.string().max(80).describe('The item key the finding is about; empty only for something about the whole family.'),
+    quote: z.string().max(400).describe('An exact excerpt of one line; empty only for something missing or for a cut.'),
+    reason: z.string().min(1).max(1200),
+    fix: z.string().min(1).max(1200),
+  }).strict()).max(24),
+}).strict();
+export type ShortEvaluation12 = z.infer<typeof ShortEvaluation12>;
+export type AnyEvaluation = ShortEvaluation | ShortEvaluation12;
+/** The evaluation a family is scored in: /12's for a bark family from guide /12, else the /1–/11 one (its recorded schema hash unchanged). */
+export const evaluationFor = (g: Pick<ShortGuide, 'schema'>, kind: ShortKind) => shortGuideVersion(g) >= 12 && kind === 'bark' ? ShortEvaluation12 : ShortEvaluation;
 export type ShortIssue = { rule: ShortRuleId; reason: string };
-export type ShortRound = { set: ShortSet; evaluation: ShortEvaluation; hardIssues: ShortIssue[] };
+export type ShortRound = { set: ShortSet; evaluation: AnyEvaluation; hardIssues: ShortIssue[] };
 export type ShortResult = {
   schema: typeof SHORT_RUN; mode: 'live' | 'test-fixture';
   status: 'ACCEPTED' | 'INCOMPLETE' | 'ERROR'; stopReason: string;
@@ -106,13 +154,14 @@ export const ShortBriefSchema = z.object({
     current: z.record(z.string(), z.array(z.string())), stays: z.string().nullable(),
   }).strict()).min(1).max(60),
 }).strict();
-const RuleSchema = z.object({ id: ShortRuleId, kind: z.string(), instruction: z.string(), sources: z.array(z.string()) }).strict();
+const RuleSchema = z.object({ id: AnyRuleId, kind: z.string(), instruction: z.string(), sources: z.array(z.string()) }).strict();
 const KindSchema = z.object({ use: z.string(), rules: z.array(RuleSchema).min(5) }).strict();
 export const ShortGuideSchema = z.object({
-  schema: z.enum([SHORT_GUIDES[1], SHORT_GUIDES[2], SHORT_GUIDES[3], SHORT_GUIDES[4], SHORT_GUIDES[5], SHORT_GUIDES[6], SHORT_GUIDES[7], SHORT_GUIDES[8], SHORT_GUIDES[9], SHORT_GUIDES[10], SHORT_GUIDES[11]]), game: z.literal('The Suborned'), gdd: z.string(),
+  schema: z.enum(Object.values(SHORT_GUIDES) as [string, ...string[]]), game: z.literal('The Suborned'), gdd: z.string(),
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
   kinds: z.object({ bark: KindSchema, why: KindSchema, debrief: KindSchema, label: KindSchema.optional() }).strict(),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()), named: z.array(z.string()), cell: z.array(z.string()),
+  sheet: GuideSheet.optional(),
 }).strict();
 export const ShortResultSchema = z.object({
   schema: z.literal(SHORT_RUN), mode: z.enum(['live', 'test-fixture']),
@@ -125,8 +174,8 @@ export const ShortResultSchema = z.object({
   authorization: z.object({ provider: z.literal('codex'), model: z.string().min(1), approvedBy: z.string().trim().min(1) }).strict().nullable(),
   brief: ShortBriefSchema, guide: ShortGuideSchema,
   limits: z.object({ maxCalls: z.number(), maxTokens: z.number(), maxRevisions: z.number(), maxMs: z.number() }).strict(),
-  rounds: z.array(z.object({ set: ShortSet, evaluation: ShortEvaluation,
-    hardIssues: z.array(z.object({ rule: ShortRuleId, reason: z.string() }).strict()) }).strict()).max(4),
+  rounds: z.array(z.object({ set: ShortSet, evaluation: z.union([ShortEvaluation, ShortEvaluation12]),
+    hardIssues: z.array(z.object({ rule: AnyRuleId, reason: z.string() }).strict()) }).strict()).max(4),
   calls: z.array(z.object({
     stage: z.enum(['generate', 'evaluate', 'refine']), role: z.enum(['dialogue-designer', 'systems-designer']), prompt: z.string(),
     startedAt: Time, finishedAt: Time.nullable(), timeoutMs: z.number().int().positive().max(180000), schemaSha256: Sha,

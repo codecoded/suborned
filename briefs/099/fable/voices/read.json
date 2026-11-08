@@ -1,0 +1,1096 @@
+{
+ "schema": "suborned.voice-read/1",
+ "by": "Fable (Claude Opus 5.5), read in session against guide /12 and its calibration; not a recorded model call",
+ "date": "2026-11-08",
+ "what": "Two families gpt-6.1-sol wrote and passed at 10/10, read line by line against the /12 bar. P passes; F fails, with the rules it breaks. Today's text.json has exactly these runs' lines.",
+ "runs": {
+  "bark/ack-acts": "runs/style-agent/short/2026-11-07T11-13-14.916Z-bark-ack-acts (guide /4: 7 then 10)",
+  "bark/done": "runs/style-agent/short/2026-11-07T12-11-25.184Z-bark-done (guide /5: 7, 9, 10)"
+ },
+ "families": {
+  "bark/ack-acts": [
+   {
+    "key": "ack/watch/scout",
+    "lines": [
+     {
+      "line": "On it, I'm watching.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Right, I'll watch them.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VOICE"
+      ]
+     },
+     {
+      "line": "Got it. Eyes on them.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/listen/scout",
+    "lines": [
+     {
+      "line": "Right, let me get close and listen.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VOICE"
+      ]
+     },
+     {
+      "line": "Getting close enough to listen.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Listening now. Leave it to me.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/mislead/scout",
+    "lines": [
+     {
+      "line": "On it. I'll send him somewhere else.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Right, I'll send him off for a while.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VOICE"
+      ]
+     },
+     {
+      "line": "I'll give him somewhere better to be.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "ack/ask/fixer",
+    "lines": [
+     {
+      "line": "I'll ask for a little help.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Let me ask nicely.",
+      "ok": true
+     },
+     {
+      "line": "I'll ask if they'll help us.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/pay/fixer",
+    "lines": [
+     {
+      "line": "Let's offer them something for their trouble.",
+      "ok": true
+     },
+     {
+      "line": "Let's offer cash for the favour.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Let the money do the talking.",
+      "ok": false,
+      "rules": [
+       "VOICE"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/help/fixer",
+    "lines": [
+     {
+      "line": "Their trouble becomes ours.",
+      "ok": true
+     },
+     {
+      "line": "Let's help them with their trouble.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "I'll see what we can put right.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "ack/pressure/fixer",
+    "lines": [
+     {
+      "line": "A gentle squeeze, then.",
+      "ok": true
+     },
+     {
+      "line": "I'll lean on them a little.",
+      "ok": true
+     },
+     {
+      "line": "Let's remind them of their trouble.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "ack/call/fixer",
+    "lines": [
+     {
+      "line": "Let's give Inez a call.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I'll call Inez for us.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Leave it with me. I'll call Inez.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/watch/fixer",
+    "lines": [
+     {
+      "line": "Let me watch them for us.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "You can leave the watching with me.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "Leave the watching to me.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/watch/enforcer",
+    "lines": [
+     {
+      "line": "Looking.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "I'll look.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Keeping watch.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/watch/tech",
+    "lines": [
+     {
+      "line": "I'll watch their timing.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I'll watch the routine.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "I'll check where they go.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/loop/tech",
+    "lines": [
+     {
+      "line": "Setting up the camera loop.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Looping the feed.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "I'll put the camera picture on repeat.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/reroute/tech",
+    "lines": [
+     {
+      "line": "New orders for the patrol.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I'll change the patrol's orders.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Rerouting the patrol.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/enter/enforcer",
+    "lines": [
+     {
+      "line": "Going in.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I'll go inside.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Right. Inside.",
+      "ok": false,
+      "rules": [
+       "NATURAL",
+       "VOICE"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/take/enforcer",
+    "lines": [
+     {
+      "line": "I'll take Popovic.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Taking him.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Going to get him.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/takedown/enforcer",
+    "lines": [
+     {
+      "line": "Taking them down.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I'll take them down.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "Going to drop them.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/takedown/enforcer/knockout",
+    "lines": [
+     {
+      "line": "I'll knock them out.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Knocking them out.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "Taking them down alive.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "ack/takedown/enforcer/kill",
+    "lines": [
+     {
+      "line": "I'll kill them.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VOICE"
+      ]
+     },
+     {
+      "line": "Going in to kill.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I'll finish them.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ],
+    "note": "Never plays today: the takedown's way isn't passed, so 'Taking them down.' speaks."
+   },
+   {
+    "key": "ack/disable/tech",
+    "lines": [
+     {
+      "line": "I'll cut the camera's line.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Snipping the camera's wire.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Disconnecting the camera.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     }
+    ]
+   }
+  ],
+  "bark/done": [
+   {
+    "key": "done/mislead/scout",
+    "lines": [
+     {
+      "line": "He bought it. He's walking off.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "He believed me. Off he goes.",
+      "ok": false,
+      "rules": [
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "He's gone, for now. He'll be back.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "done/loop/tech",
+    "lines": [
+     {
+      "line": "Looped. I'm free to go.",
+      "ok": true
+     },
+     {
+      "line": "Old picture repeating. I can leave it running.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "The desk gets two minutes of old pictures.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/reroute/tech",
+    "lines": [
+     {
+      "line": "Patrol's off its sweep. Not for long.",
+      "ok": true
+     },
+     {
+      "line": "Rerouted. It will be back.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Patrol's following the false orders. Until they run out.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/disable/tech",
+    "lines": [
+     {
+      "line": "Cut. That camera's finished.",
+      "ok": true
+     },
+     {
+      "line": "Line's dead. They'll notice.",
+      "ok": true
+     },
+     {
+      "line": "Gone for good. Expect company.",
+      "ok": false,
+      "rules": [
+       "TRUE"
+      ]
+     }
+    ],
+    "note": "'Expect company' is false when nobody is free to send (camera-reported/nobody-sent)."
+   },
+   {
+    "key": "done/enter/enforcer",
+    "lines": [
+     {
+      "line": "Inside. Looking for him.",
+      "ok": false,
+      "rules": [
+       "TRUE",
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "In. Looking for Popovic.",
+      "ok": false,
+      "rules": [
+       "TRUE",
+       "VARIANTS"
+      ]
+     },
+     {
+      "line": "Inside. Finding Popovic.",
+      "ok": false,
+      "rules": [
+       "TRUE",
+       "VARIANTS"
+      ]
+     }
+    ],
+    "note": "It plays on enter.out, as he comes back out with Popovic: 'looking for him' is false then."
+   },
+   {
+    "key": "done/take/enforcer",
+    "lines": [
+     {
+      "line": "Got him. To the car.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "He's with me.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Popovic. We're walking.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/turn/fixer/turned",
+    "lines": [
+     {
+      "line": "Good. We understand each other.",
+      "ok": true
+     },
+     {
+      "line": "Good. That's settled.",
+      "ok": true
+     },
+     {
+      "line": "Done. You're with us now.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "done/turn/fixer/refused",
+    "lines": [
+     {
+      "line": "You said no. You'll remember me.",
+      "ok": true
+     },
+     {
+      "line": "All right. Next time, we'll have to offer more.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "No, then. You'll want more next time.",
+      "ok": false,
+      "rules": [
+       "MECHANICS",
+       "VARIANTS"
+      ]
+     }
+    ],
+    "note": "Lines 2 and 3 read the price rule to the person's face."
+   },
+   {
+    "key": "done/turn/fixer/not-yet",
+    "lines": [
+     {
+      "line": "Not yet, then. I'll come back.",
+      "ok": true
+     },
+     {
+      "line": "Let me help once more. Then we'll talk.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "I'll come back. You still need another hand.",
+      "ok": false,
+      "rules": [
+       "VARIANTS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/turn/fixer/kept",
+    "lines": [
+     {
+      "line": "Good. We've taken care of what you needed.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "There. One less worry.",
+      "ok": true
+     },
+     {
+      "line": "That's off your back now.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "done/turn/fixer/suspicious",
+    "lines": [
+     {
+      "line": "You're reporting us, then. I understand.",
+      "ok": false,
+      "rules": [
+       "VARIANTS",
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "So you're reporting our talk. We'll leave it there.",
+      "ok": false,
+      "rules": [
+       "VARIANTS",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "All right. I hear you're reporting this.",
+      "ok": false,
+      "rules": [
+       "VARIANTS",
+       "NATURAL"
+      ]
+     }
+    ],
+    "note": "Three rewordings of 'you're reporting us'."
+   },
+   {
+    "key": "done/turn/fixer/small-offer",
+    "lines": [
+     {
+      "line": "Too little, then. Let me listen first.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "Fair enough. I'll learn what it takes.",
+      "ok": true
+     },
+     {
+      "line": "Not enough. I should have known more first.",
+      "ok": true
+     }
+    ]
+   },
+   {
+    "key": "done/takedown/enforcer",
+    "lines": [
+     {
+      "line": "Down.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "That's one down.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Off their feet.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/takedown/enforcer/knockout",
+    "lines": [
+     {
+      "line": "Out.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Asleep. For a while.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Down. Breathing.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/takedown/enforcer/kill",
+    "lines": [
+     {
+      "line": "Dead.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Not breathing.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Won't wake.",
+      "ok": true
+     }
+    ],
+    "note": "Never plays today: the takedown's way isn't passed, so the plain row speaks for a kill too."
+   },
+   {
+    "key": "done/stash/enforcer",
+    "lines": [
+     {
+      "line": "Hidden.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Body's out of sight.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "Tucked away.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/stash/scout",
+    "lines": [
+     {
+      "line": "There, I've hidden them. Nothing's showing.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I've hidden them. A search could still find them.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "I've got them out of sight.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ],
+    "note": "Never plays today: the host has no line path for stash.* (HostActivity.SayLanded); nor do the other hide and tie rows."
+   },
+   {
+    "key": "done/stash/fixer",
+    "lines": [
+     {
+      "line": "Out of sight. Thank goodness.",
+      "ok": true
+     },
+     {
+      "line": "I've hidden the body. We can move on.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "There. We've kept that out of sight.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/stash/tech",
+    "lines": [
+     {
+      "line": "Body stowed. A search could find it.",
+      "ok": false,
+      "rules": [
+       "MECHANICS",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Hidden. Don't open that.",
+      "ok": true
+     },
+     {
+      "line": "Out of view. A search could uncover it.",
+      "ok": false,
+      "rules": [
+       "MECHANICS",
+       "VARIANTS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/restrain/enforcer",
+    "lines": [
+     {
+      "line": "Tied.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Bound. Can't report.",
+      "ok": false,
+      "rules": [
+       "MECHANICS",
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Bound. No calling out.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/restrain/scout",
+    "lines": [
+     {
+      "line": "Tied up. They can't call out.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "I've tied them. They can't report us.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     },
+     {
+      "line": "I've got them tied. No calling out when they wake.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/restrain/fixer",
+    "lines": [
+     {
+      "line": "Tied. I'm sorry.",
+      "ok": true
+     },
+     {
+      "line": "I've tied them. They can't call for help.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "There. We won't get a report from this one.",
+      "ok": false,
+      "rules": [
+       "MECHANICS"
+      ]
+     }
+    ]
+   },
+   {
+    "key": "done/restrain/tech",
+    "lines": [
+     {
+      "line": "Tied off.",
+      "ok": false,
+      "rules": [
+       "NATURAL"
+      ]
+     },
+     {
+      "line": "Knots done. They can't call out when they wake.",
+      "ok": false,
+      "rules": [
+       "WORTH"
+      ]
+     },
+     {
+      "line": "That'll hold. They can't call out.",
+      "ok": false,
+      "rules": [
+       "WORTH",
+       "VARIANTS"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "totals": {
+  "lines": 126,
+  "pass": 26,
+  "fail": 100,
+  "byRule": {
+   "WORTH": 66,
+   "NATURAL": 31,
+   "VARIANTS": 18,
+   "MECHANICS": 13,
+   "VOICE": 6,
+   "TRUE": 4
+  },
+  "bark/ack-acts": {
+   "lines": 57,
+   "passes": 8
+  },
+  "bark/done": {
+   "lines": 69,
+   "passes": 18
+  }
+ }
+}

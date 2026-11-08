@@ -19,8 +19,11 @@ export const shortWords = (s: string) => s.replace(/\{[a-z-]+\}/g, 'x').split(' 
 const widest = (s: string, f: Field) => s.replace(/\{([a-z-]+)\}/g, (m, k: string) => f.fills.find(x => x.id === k)?.widest ?? m);
 const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N} ]/gu, '').replace(/\s+/g, ' ').trim();
 
+/** Guide /12's bark rules for what the code finds: a missing or wrongly cut item is WORTH's, the word filter NATURAL's, a repeat VARIANTS'. */
+const AS_12: Partial<Record<ShortIssue['rule'], ShortIssue['rule']>> = { USEFUL: 'WORTH', PLAIN: 'NATURAL' };
 export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, base: { why?: unknown; dialogue?: unknown } = {}): ShortIssue[] {
-  const bad: ShortIssue[] = [], flag = (rule: ShortIssue['rule'], reason: string) => bad.push({ rule, reason });
+  const v12 = brief.kind === 'bark' && shortGuideVersion(guide) >= 12, repeat = v12 ? 'VARIANTS' as const : 'SHORT' as const;
+  const bad: ShortIssue[] = [], flag = (rule: ShortIssue['rule'], reason: string) => bad.push({ rule: v12 ? AS_12[rule] ?? rule : rule, reason });
   const items = new Map(brief.items.map(i => [i.key, i]));
   const seen = new Map<string, string>();
   // guide /5: the other rows of the table, as the text the run read has them (a line is never in two rows: text.test.ts)
@@ -66,14 +69,16 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
           if (i > 0 && w && /^\p{Lu}/u.test(w) && !/[.!?:·]$/.test(toks[i - 1]!) && !CAPS.has(w)) flag('NAMES', `${at}: "${w}" mid-sentence; only the game's names are capitalised.`);
         });
         if (brief.kind === 'bark' && it.speaker && !/^(scout|fixer|tech|enforcer):/.test(it.speaker) && /\d/.test(l)) flag('TRUE', `${at}: no digits in a person's mouth (people never quote the clock or the cell's numbers).`);
+        // guide /12: nor in the cell's (Sky's rule on numbers in play: the game draws a key event's time, and no act's)
+        if (v12 && /^(scout|fixer|tech|enforcer):/.test(it.speaker ?? '') && /\d/.test(l)) flag('MECHANICS', `${at}: no digits in a line: the game draws its own numbers, and only a key event's (Sky's rule on numbers in play).`);
         if ((brief.kind === 'debrief' || brief.kind === 'label') && /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|\btick\b|operative|engine|ledger/i.test(l)) flag('PLAIN', `${at}: an engine word; the ${brief.kind === 'label' ? 'HUD' : 'page'} uses the player's words (text.test.ts).`);
         // guide /10: Sky's rule on numbers in play: a label carries no number of its own (the game draws a key event's time beside it; never an act's time or a chance)
         if (brief.kind === 'label' && /\d|%/.test(l.replace(/\{[^}]*\}/g, ''))) flag('SHORT', `${at}: a label carries no number of its own: the game draws a key event's time beside it, and never an act's time or a chance (Sky 2026-11-08).`);
         for (const p of f.patterns) if (new RegExp(p.re, p.flags).test(l) !== p.must) flag('TRUE', `${at}: ${p.must ? 'needs' : 'must not have'} /${p.re}/: ${p.why}.`);
         if (f.form === 'speech') {
           const k = norm(l), other = seen.get(k);
-          if (other && other !== x.key) flag('SHORT', `${at}: the same line as ${other}; every bark says its own words.`);
-          else if (other === x.key) flag('SHORT', `${at}: repeats another variant of this item.`);
+          if (other && other !== x.key) flag(repeat, `${at}: the same line as ${other}; every bark says its own words.`);
+          else if (other === x.key) flag(repeat, `${at}: repeats another variant of this item.`);
           seen.set(k, x.key);
         }
       });

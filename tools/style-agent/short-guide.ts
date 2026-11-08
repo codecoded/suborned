@@ -1,5 +1,6 @@
 import { block, gddNames, gddNamesFromFiles, gddPair, hash, lineOf, pick, readerFor, readerFromFiles, TEXT_FILE, TEXT_SCHEMA, type Read, type Sha } from './guide';
-import { SHORT_GUIDES, SHORT_NOW, type ShortGuide, type ShortGuideVersion, type ShortKindRules, type ShortRule } from './short-types';
+import { SHORT_GUIDES, SHORT_NOW, VoiceSheet, type ShortGuide, type ShortGuideVersion, type ShortKindRules, type ShortRule } from './short-types';
+import { BARK_12, VOICE_SHEET } from './short-voice';
 import type { Source } from './types';
 
 /** The short lines' sources. The briefs read only these, so a saved run rebuilds from its archive. */
@@ -47,6 +48,9 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
     add('hud-words', HUD_NOTES, 'the street layer, the corners, words for Fable', ['- Labels are bold Jost', '- The corners are bare type', '- The news is a lozenge by the Book', '- **New:** one label', '- **Already the game\'s:**']
       .map(p => lineOf(notes, p, `Glyph's round 2 ${p}`)).join('\n'));
   }
+  // guide /12 (brief 099 voices): Fable's voice sheet and calibration, after the /10 sources so a /10–/11 guide rebuilds with exactly the sources it ran with
+  const sheet = version >= 12 ? VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))) : null;
+  if (sheet) add('sheet', VOICE_SHEET, 'voices, calibration (fail, pass), speech', [sheet.status, sheet.why, ...Object.entries(sheet.voices).map(([k, v]) => `${k}: ${v.short.join(' ')}`)].join('\n'));
 
   const words = Number(pick(schema, /export const MAX_WORDS = (\d+);/, 'MAX_WORDS')[0]), chars = Number(pick(schema, /export const MAX_LINE = (\d+);/, 'MAX_LINE')[0]);
   const lim = (kind: string) => pick(why, new RegExp(`${kind}: \\{ chars: (\\d+), words: (\\d+)`), `why LIMITS.${kind}`).map(Number);
@@ -55,7 +59,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
   const rule = (id: ShortRule['id'], kind: string, sources: string[], instruction: string): ShortRule => ({ id, kind, instruction, sources }), v4 = version >= 4;
   const named = (text.names.named as string[]).join(' and ');
   const kinds: ShortGuide['kinds'] = {
-    bark: { use: `A bark is a speech bubble at the speaker, in play: at most two at once, 3 s each, and every one also lands in the book's Journal. The play HUD shows no other sentences (§10), so a bark is often the only word the player gets about a moment.`, rules: v4 ? BARK_4(words, chars, named, cell, text.tone.world) : [
+    bark: { use: `A bark is a speech bubble at the speaker, in play: at most two at once, 3 s each, and every one also lands in the book's Journal. The play HUD shows no other sentences (§10), so a bark is often the only word the player gets about a moment.${sheet ? USE_12 : ''}`, rules: sheet ? BARK_12(words, chars, named, cell, text.tone.world, OPENING) : v4 ? BARK_4(words, chars, named, cell, text.tone.world) : [
       rule('USEFUL', 'tells the player something they can use', ['opening', 'fable', 'lines'], 'A bark exists to tell the player something they can use now: that an order was taken and what it will do, what just happened, what a person is about to do (call it in, run, fight), what changed and what it opens or costs. Every line carries a fact from its item\'s `tells`. A line that says only that someone is ready, waiting, worried or in a mood is filler and fails. The four opening barks Sky cut ("what is this stupid words at the start of every game?") are the failing example: "The square looks perfectly ordinary. That\'s what worries me.", "Friends first, force last. Remember.", "Waiting. Always waiting.", "Tell me when." Where even the best line would be filler and the item may be cut, cut it and give the reason in one sentence.'),
       rule('TRUE', 'true to what the engine did', ['fable', 'motive', 'world'], 'Say only what the item\'s `tells` and `where` give: no invented facts, numbers, times, places, people, motives or outcomes, and no promise the act may not keep. People say only what they could know: a passer-by never knows the cell, its plan or its roles; the cell never states what it has not watched or heard. Every variant of an item is true whenever that item plays.'),
       rule('PLAIN', 'plain everyday words', ['world', 'voices', 'plain'], `Plain, everyday spoken words of this world: ${text.tone.world} No report or form tone, no design jargon in anyone's mouth (target, hostile, objective, Alert level, Trail, approach), no stage directions.`),
@@ -84,7 +88,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
     ...(version >= 10 ? { label: LABEL_10(named, version) } : {}),
   };
   return { schema: SHORT_GUIDES[version], game: 'The Suborned', gdd: pair.agent.version, sources, kinds, voices: text.tone.voices, avoid: text.tone.avoid, profanity: text.tone.profanity,
-    named: text.names.named, cell };
+    named: text.names.named, cell, ...(sheet ? { sheet: { voices: sheet.voices, fail: sheet.fail, pass: sheet.pass } } : {}) };
 }
 
 export const loadShortGuide = (base: string, version: ShortGuideVersion = SHORT_NOW) => buildShortGuide(readerFor(base), gddNames(base), undefined, version);
@@ -110,6 +114,8 @@ const LABEL_10 = (named: string, version: ShortGuideVersion): ShortKindRules => 
 });
 /** Guide /11 (host logic on the /10 words): a key event's time and the health left are the game's numbers, drawn through a fill; /10 read as "no number at all". */
 const SHORT_11 = 'a time belongs only to a key event (the clock, the seal, police arriving or closing in, the rivals, the handover, a report about to land, a loop running out). The game draws every number: a label types no digit of its own, and a count, the health left or a key event\'s time comes in through a fill the item lists ({n}, {police}), which the line keeps wherever the item\'s facts or rules say so.';
+/** Guide /12: the speech a bark family is written for is Fable's frequency (the voice sheet's `speech`), not one line per click. */
+const USE_12 = ' The cell speaks on a decision, not a click (Fable\'s frequency, for the host once Sky says yes): an order that commits the plan speaks every time, the rest the first time each agent takes them in a game, and clicks the screen already confirms not at all. Each item\'s `where` says when its line is heard.';
 const OPENING = 'The four opening barks Sky cut ("what is this stupid words at the start of every game?") are the failing example: "The square looks perfectly ordinary. That\'s what worries me.", "Friends first, force last. Remember.", "Waiting. Always waiting.", "Tell me when."';
 /** Guide /4's bark rules: what to say, in voice; never the order's price read back (GDD §02: every order shows its price before you commit). */
 const BARK_4 = (words: number, chars: number, named: string, cell: string[], world: string): ShortRule[] => [

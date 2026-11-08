@@ -1,0 +1,135 @@
+{
+ "schema": "suborned.voice-sheet/1",
+ "status": "Fable's draft for Sky (brief 099 voices, 2026-11-08). Guide /12 reads it. Nothing goes into text.json (tone.voices, the speech tiers) until Sky says yes.",
+ "why": "Sky, 2026-11-08, playing: “I've noticed we have a lot of poor wording stil throughout. Especially agents talk to player”",
+ "voices": {
+  "scout": {
+   "short": [
+    "Quick, bright and talkative: the first to see it, and glad to say so.",
+    "Leads with the detail she caught, in a couple of quick sentences.",
+    "A little cheeky with you when it's going well; dead plain when it isn't."
+   ],
+   "traits": "Young, quick and talkative. Sharp-eyed and proud of it, restless when she has to wait. Warm with the cell, and a little cheeky with you and with the Enforcer. She is never wrong about what she saw, so she never hedges.",
+   "habits": "Leads with what she noticed, a concrete detail: who, which way, what they did. Two quick sentences rather than one long one. Now and then a quick question to you (“See him?”). Contractions always. Delighted understatement when it goes right; short and plain when it doesn't.",
+   "commander": "Informal and quick: “you”, never “sir”. She tells you what she saw and trusts you with what it means.",
+   "cares": "Seeing it first and getting it right; the cell's backs, the Enforcer's most of all.",
+   "never": [
+    "“Eyes on.”, “Copy.”, “In position.”: report codes",
+    "Anything she hasn't seen or heard herself",
+    "A joke you have to decode",
+    "The plan spelled out for you"
+   ]
+  },
+  "fixer": {
+   "short": [
+    "Warm and unhurried, even when it's going wrong: the calm the cell steadies on.",
+    "Says “we” and means it; courteous to everyone, the people she turns included.",
+    "Steel under the kindness: she names the cost plainly, and keeps her word."
+   ],
+   "traits": "Calm, kind and persuasive, and morally serious. Protective of the cell and of the people they use. Never rushes. She apologises to the people she has to hurt, and means it; grief and anger come out quiet.",
+   "habits": "“We” and “us”. Whole, unhurried sentences. A soft “All right.” or “Easy now.” before hard news, or to settle the cell. Courtesy to strangers (“Excuse me. A moment?”). Understatement under fire.",
+   "commander": "A trusted partner: reassuring and honest. She tells you what a thing costs in people, then does it.",
+   "cares": "People: nobody hurt who needn't be. The cell's nerve. Her word, and what she owes the people they have turned.",
+   "never": [
+    "A threat she wouldn't keep",
+    "Contempt for the people they turn",
+    "Jargon: “asset”, “target”, “leverage”, “proceeding”",
+    "Panic, or gloating"
+   ]
+  },
+  "tech": {
+   "short": [
+    "Calm, patient and dry: nothing in this city's machinery surprises him.",
+    "Fond of its clockwork the way you're fond of an old dog: sure of it, unimpressed.",
+    "Exact about what's wired to what, never a number; one dry aside, then back to work."
+   ],
+   "traits": "Unflappable, precise and proud of tidy work. Privately amused by the city's clockwork and closed-circuit gear, which he finds charmingly old. Squeamish about bodies: not his trade. Polite.",
+   "habits": "Dry understatement. Talks about machines as simple, trusting creatures (“It'll believe any order on the right card.”). Workshop words: line, panel, tape, wire. Says what is tied to what, never how long. One dry aside at most, then back to work.",
+   "commander": "Courteous and collegial; he explains only when you ask.",
+   "cares": "Clean work that leaves no trace; machines doing as they're told; keeping his hands clean.",
+   "never": [
+    "“Hacking”, “system”, “network”, “online”: words this world never had",
+    "“Logging.”, “Confirmed.”: a machine's report, not a man's",
+    "A time or a count (“two minutes”)",
+    "Technical babble"
+   ]
+  },
+  "enforcer": {
+   "short": [
+    "Big, older and calm: says as little as he can, and makes it count.",
+    "Few words, but a man talking, never a radio: dry, a bit tired.",
+    "Gallows humour when it's grim; he weighs a kill before he does it."
+   ],
+   "traits": "A veteran: steady, unhurried, unsentimental but decent. Does the violent work so the others needn't. Hates waste, a death that didn't need to happen. Protective of the Scout.",
+   "habits": "Few words, but whole thoughts: he drops a subject the way a tired man does (“Seen worse.”), never a code. Dry understatement; a mild oath at worst. Rarely asks, never explains.",
+   "commander": "Laconic trust: “Your call.” “If you're sure.” He does it, and he'd like you to know what it was.",
+   "cares": "Getting everyone home; doing it once and properly; not killing anyone who needn't die.",
+   "never": [
+    "“Holstered.”, “In place.”, “Noted. Done.”, “Here. Watching.”: a status code is not a man talking",
+    "Bravado (“Let's do this.”)",
+    "A speech",
+    "Jargon: “hostile”, “engage”, “neutralise”"
+   ]
+  }
+ },
+ "fail": [
+  { "key": "ack/holster/enforcer", "line": "Holstered.", "why": "WORTH: his portrait already shows the gun put away. NATURAL: a status code, not a man talking." },
+  { "key": "arrive/watch/tech", "line": "Clear view. Logging.", "why": "WORTH: the ring starting says it. NATURAL: telegraphese, and “Logging” is a machine's word." },
+  { "key": "arrive/watch/enforcer", "line": "Here. Watching.", "why": "WORTH: says what the player can see. NATURAL: a code." },
+  { "key": "read/watch/enforcer", "line": "Noted. Done.", "why": "WORTH: the chip shows what was learned. VOICE: a form being stamped, not him." },
+  { "key": "done/enter/enforcer", "line": "In. Looking for Popovic.", "why": "VARIANTS: one fragment reworded three ways (“Inside. Looking for him.”, “Inside. Finding Popovic.”). TRUE: it plays as he comes back out with Popovic." },
+  { "key": "arrive/take/enforcer", "line": "Beside the car.", "why": "WORTH: narrates what is on screen." },
+  { "key": "done/stash/tech", "line": "Body stowed. A search could find it.", "why": "MECHANICS: the rule talking (“a search”). NATURAL: a log entry." },
+  { "key": "ack/watch/scout", "line": "On it, I'm watching.", "why": "WORTH: the click read back." },
+  { "key": "ack/watch/fixer", "line": "Leave the watching to me.", "why": "WORTH: the click read back. VARIANTS: the twin of “You can leave the watching with me.”" },
+  { "key": "ack/loop/tech", "line": "Looping the feed.", "why": "WORTH: a status report of the click." },
+  { "key": "ack/take/enforcer", "line": "Taking him.", "why": "WORTH: the order read back." },
+  { "key": "done/loop/tech", "line": "The desk gets two minutes of old pictures.", "why": "MECHANICS: the loop's time is the HUD's to draw. WORTH: the card read back." },
+  { "key": "read/watch/tech/sight/patrol", "line": "Cone mapped. The turns need more time.", "why": "MECHANICS: “cone” and its timing are the game's words. NATURAL: a report." },
+  { "key": "vale-exits/scout", "line": "Popovic's out. He's walking to his car.", "why": "TRUE: “out” is the win's word (he is out once a car of ours has left with him)." },
+  { "key": "loop-ends/tech", "line": "The tape's run out.", "why": "TRUE: a loop also ends when a Disable cuts it." },
+  { "key": "ack/run/scout", "line": "I'm running. People may notice.", "why": "WORTH, MECHANICS: the order card's warning read back." },
+  { "key": "done/restrain/scout", "line": "I've tied them. They can't report us.", "why": "MECHANICS: “report” as a rule. WORTH: the card said so." },
+  { "key": "win/enforcer", "line": "Popovic's away. Job done.", "why": "VOICE: any of the four could say it." },
+  { "key": "ack/move/enforcer", "line": "Taking a walk.", "why": "WORTH: the click narrated." },
+  { "key": "rivals-for-car/scout", "line": "Rivals walking up. Draw on them outside.", "why": "WORTH: the card's fix read out (the lozenge carries it). NATURAL: clipped." }
+ ],
+ "pass": [
+  { "key": "ack/watch/scout", "line": "Leave them to me. Everybody has a habit.", "why": "Heard once a game: it lands her, glad of her trade, and promises only what a Watch gives." },
+  { "key": "done/mislead/scout", "line": "He bought it. He'll be back, and he knows my face.", "why": "Pleased, then plain; tells what the card can't: he'll know her." },
+  { "key": "vale-exits/scout", "line": "There he is. He's left the Office, heading for his car.", "why": "She sees it first; the glossary's words (he leaves the Office; “out” is the win)." },
+  { "key": "rivals-for-car/scout", "line": "They're walking up on our car. Nobody's outside with a gun.", "why": "What's wrong, as she sees it; the card keeps the fix." },
+  { "key": "blocker/scout", "line": "One of them's making for the road to block our car.", "why": "News the player can act on, in her quick concrete way." },
+  { "key": "win/scout", "line": "We did it! He's in the car and we're away!", "why": "A cheer: the one place she shouts for joy." },
+  { "key": "ack/call/fixer", "line": "I'll ring Inez. She knows what to do.", "why": "Calm trust in someone they turned; the click isn't read back." },
+  { "key": "arrive/help/fixer", "line": "You look like you're carrying too much. May I help?", "why": "The approach scene's first words: her courtesy, and the need she means to meet." },
+  { "key": "ack/restrain/fixer", "line": "Forgive the rope.", "why": "Three words that are all her: she apologises to the people she has to hurt." },
+  { "key": "response-sent/fixer", "line": "Someone's called it in. Easy now, and keep moving.", "why": "Bad news, and the cell steadied on it; no time read out." },
+  { "key": "fail/fixer/vale-dead", "line": "He's dead. We needed him breathing.", "why": "Sky's bar: the fact, then what it cost, quietly." },
+  { "key": "win/fixer", "line": "We have him. Everybody breathe.", "why": "“We”, and the cell let go of its breath." },
+  { "key": "ack/loop/tech", "line": "I'll give the desk an old picture to watch.", "why": "The trick, not the click, said drily." },
+  { "key": "done/loop/tech", "line": "Looped. The desk is watching an old tape. I'm free.", "why": "Tells the player he is free to go, and the desk is fooled; no time." },
+  { "key": "done/reroute/tech", "line": "It took the false orders. It'll be back when they run out.", "why": "When the patrol returns, without a number." },
+  { "key": "done/disable/tech", "line": "Sorry, old thing. That's you finished.", "why": "Dry fondness for a machine he has just killed; the desk's report has its own card." },
+  { "key": "ack/stash/tech", "line": "In the bin, then. Charming.", "why": "Not his trade, and he says so drily." },
+  { "key": "loop-ends/tech", "line": "That's the end of our old picture.", "why": "True for a loop run out and a loop cut alike." },
+  { "key": "ack/takedown/enforcer/kill", "line": "If you're sure.", "why": "Three words with the weight of it: your call, and he'll carry it." },
+  { "key": "ack/takedown/enforcer/knockout", "line": "Quiet one. They'll wake with a sore head.", "why": "Gallows humour, and the fact the player needs: they will wake." },
+  { "key": "done/enter/enforcer", "line": "Got him. He'll talk the whole way.", "why": "True when it plays (back out with Popovic), and it sets up Popovic's own line." },
+  { "key": "done/take/enforcer", "line": "He's mine. No running with this one, so we walk.", "why": "The pace the player must keep, said as he'd say it." },
+  { "key": "enforcer-warning/enforcer", "line": "That one hurt. Get me behind something.", "why": "Badly hurt, said the way he'd say it: understatement and a plain ask, not “Badly hit. Need cover.”" },
+  { "key": "going-loud/enforcer", "line": "Loud, then.", "why": "Two words, and a man's: he accepts it and gets on." }
+ ],
+ "speech": {
+  "rule": "Speak on a decision, not a click. A line plays when an order commits the plan, the first time an agent takes an order in a game, or when an act lands out of sight; everything else the screen already says. No stock line: an order with no line is silence. Latch wires it after Sky's yes; until then the host speaks every order, as today.",
+  "keys": "A key is a verb, or verb/outcome for one row. A verb covers its rows with any outcome, except a row whose own verb/outcome key is listed.",
+  "ack": {
+   "always": ["call", "enter", "take", "takedown/knockout", "takedown/kill", "end", "panic"],
+   "first": ["watch", "listen", "mislead", "ask", "pay", "help", "pressure", "loop", "disable", "reroute", "draw", "carry", "stash", "restrain"],
+   "never": ["move", "run", "cancel", "holster", "cease", "stance", "board", "drive-car", "drop", "fire", "volley", "field", "spawn", "go", "withdraw", "takedown"]
+  },
+  "arrive": ["ask", "pay", "help", "pressure", "takedown/struggle"],
+  "done": ["mislead", "loop", "disable", "reroute", "enter", "take", "turn", "takedown/kill"],
+  "events": { "agents": 1, "end": 2 }
+ }
+}
