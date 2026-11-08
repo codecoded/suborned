@@ -261,7 +261,7 @@
    {
     "at": "5:20",
     "label": "Last chance to turn the driver",
-    "short": "Driver cutoff",
+    "short": "Turn driver by",
     "known": true
    },
    {
