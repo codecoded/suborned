@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "The loud reference, board and go (GDD v0.26.0 §07 loud; Keel N10; brief 018 §5): loop the camera and reroute the patrol, shoot the guard just after his 2:30 mark (gunfire: Alert 2, the shots traced), enter (68 s at Alert 2), and take Vale out by the service door. The gunfire draws the rival car to the Office front (16 s), four of them on foot; when the final fight opens (police from the north street, the seal clock running) the Scout, Fixer and Tech down the response unit (security-2 then security-1, the blocker), then the Scout and Fixer flank across the square and drop rival-1, rival-2 and rival-3 in turn (traced: they are not the final fight's hostiles), until the crew breaks (§06: more than half down; Motive M059-B5, S11's shape: break the drawn crew before Vale is walked into it). Only then does the Enforcer walk Vale to the car; the three board after him and the car leaves with officers 1 and 2 still at their stands: one of them sees it go (+1 T, the car hunted).",
+ "note": "The loud reference, board and go (GDD v0.26.0 §07 loud; Keel N10; brief 018 §5): loop the camera and reroute the patrol, shoot the guard just after his 2:30 mark (gunfire: Alert 2, the shots traced), enter (68 s at Alert 2), and take Vale out by the service door. The gunfire draws the rival car to the Office front (16 s), four of them on foot; when the final fight opens (police from the north street, the seal clock running) the Scout, Fixer and Tech down the response unit (security-2 then security-1, the blocker), then the Scout and Fixer flank across the square and drop rival-1, rival-2 and rival-3 in turn (traced: they are not the final fight's hostiles), until the crew breaks (§06: more than half down; Motive M059-B5, S11's shape: break the drawn crew before Vale is walked into it). Only then does the Enforcer walk Vale to the car; the three board after him and the car leaves with officers 1 and 2 still at their stands: one of them sees it go (+1 T, the car hunted). Brief 098 (Waymark): the Tech regroups at the car (cv-003) when the crew breaks, with the Scout and the Fixer, so the cell boards before the seal.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -308,6 +308,17 @@
    ],
    "when": "rivals.retreat",
    "why": "brief 027: to the getaway car's east end (cover point cv-006), the car between him and the café wall's police stands"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "when": "rivals.retreat",
+   "label": "tech-regroup",
+   "why": "brief 098 (Waymark): the crew driven off, the Tech regroups at the car with the Scout and the Fixer while the Enforcer walks Vale in, so all board the moment he is in: the seal clock is on the HUD. His locks on the response unit walk him into their reach, 17 m out on the square (engine 0.48.0), and sent to the car only once Vale was in (board.in, 5:10.6) he reached it after the seal (5:17.2): brief 096's block keeps our car boxed until the beaten crew has walked back and driven off (car.unboxed 5:03.2), so the Enforcer walks Vale in from the service lane at the break (rivals.retreat) and boards with 7 s left"
   },
   {
    "op": "enforcer",
