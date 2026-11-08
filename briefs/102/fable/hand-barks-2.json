@@ -1,0 +1,399 @@
+{
+ "schema": "suborned.hand-barks/1",
+ "status": "In text.json as Fable's hand edits: each row carries `hand`, so no run of the style loop replaces it (guide /17). Scored once per family by Motive on Claude Opus 5.5 with Sky's approval, at guide /18, the family as it plays with last round's hand rows as items (bun tools/style-agent/cli.ts judge FAMILY --hand briefs/102/fable/hand-barks-2.json; runs/style-agent/short/2026-11-08T16-42-41.031Z-bark-witnesses-crowd, score 5, 7 findings, and 2026-11-08T16-42-42.986Z-bark-summons, score 6, 10 findings). Every line with a finding was rewritten from it (`judged` keeps the line Opus read and what it said; where its fix would have been untrue, the why says so), and has not been scored again; the rest stand as judged.",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Brief 102's second hand round (Aster, 2026-11-08): of the judge's 26 findings on bark/witnesses-crowd and bark/summons, 21 were on lines Fable wasn't asked to touch last round, and they break the same bar: nobody explains the game, a person talks for their own reasons, no AI-sounding words, true every time the row plays. Each line was briefed from the sim and the host first: the guard's radio report plays only when one of the cell has stood about or run in his sight too long (never a body), and the summons' refusals say what the engine checks (sim GameOrders.cs SummonRefusal).",
+ "edits": [
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "report-begins/guard/radio",
+   "before": "Post to desk. I've an incident to report.",
+   "after": "Desk, it's the door. Somebody's up to something.",
+   "kind": "MECHANICS",
+   "why": "\"Incident\" and \"report\" are the game's words, and the four radio calls were one fragment reshuffled. The report is about one of the cell in his sight, never a body, so the judge's \"Somebody's down out front\" would be untrue. Now his suspicion, true of someone standing about or running."
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "report-begins/guard/radio",
+   "before": "Desk, come in. Incident to report.",
+   "after": "Door to desk. Don't like the look of this character.",
+   "kind": "VARIANTS",
+   "why": "A reshuffle of the same call. Now his own judgement of the person, in a guard's words."
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "report-begins/guard/radio",
+   "before": "This is the post. Reporting an incident.",
+   "after": "I've had my eye on someone, desk.",
+   "kind": "NATURAL",
+   "why": "\"Reporting an incident\" is a form's words. Now what he has been doing, true of someone standing about or running; the judge's \"hanging about my door\" would be untrue of a runner.",
+   "judged": {
+    "line": "For the book, desk. Keeping an eye on one out here.",
+    "rule": "NATURAL",
+    "finding": "\"For the book\" half-says that a report is being made, and \"one out here\" is clumsy to say aloud."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "report-begins/guard/radio",
+   "before": "Desk, come in. I have something to report.",
+   "after": "Shifty sort out here, desk. Thought you should know.",
+   "kind": "VARIANTS",
+   "why": "It opened like the second call and said nothing. Now his read of the person, true whether they stand about or run, the call sign last.",
+   "judged": {
+    "line": "Can't work out what they're doing, desk.",
+    "rule": "TRUE",
+    "finding": "Weak when the person runs: then he can see exactly what they are doing. Every variant must hold for both."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/guard/radio",
+   "before": "Calling the desk about this.",
+   "after": "Let's have some order here.",
+   "kind": "WORTH",
+   "why": "It labelled the act the HUD shows. Now the guard taking charge, in a city that fears disorder; true of a body found, a takedown seen and a carry alike.",
+   "judged": {
+    "line": "And on my shift, too.",
+    "rule": "VOICE",
+    "finding": "A grumble any worker could make; it doesn't sound like him taking charge of a scene."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/crowd/avoid",
+   "before": "Eyes down. Just walk past.",
+   "after": "I'm late as it is.",
+   "kind": "VARIANTS",
+   "why": "A synonym of \"Don't look. Keep walking.\" Now the frightened passer-by's excuse to themselves as they hurry past a body (in the engine only a fearful person who finds one avoids it)."
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/crowd/quiet",
+   "before": "Not my trouble. Not today.",
+   "after": "Somebody else will see to it.",
+   "kind": "VARIANTS",
+   "why": "A synonym of \"I'm keeping out of this.\", and \"not today\" hints at other days. Now a third take: leaving it to others."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/waitress/gives",
+   "before": "Yes, dear, I'd know that face. I'll tell you what happened.",
+   "after": "Came round my café asking favours, sweet as you like.",
+   "kind": "NATURAL",
+   "why": "\"I'd know that face\" is the memory rule Sky named, and \"I'll tell you what happened\" narrates. Now she does the telling: the Fixer came to her, courteous as ever, and wanted something, true of every approach."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/waitress/lies",
+   "before": "I saw nobody, officer. A quiet day.",
+   "after": "Strangers? Only my regulars, same as ever.",
+   "kind": "VOICE",
+   "why": "It could come from anyone. Now the lie is hers: her café and her customers."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/waitress/lies",
+   "before": "Strangers? I pour coffee. I notice nothing.",
+   "after": "Somebody asked which tram to take. That's all, officer.",
+   "kind": "VOICE",
+   "why": "\"I notice nothing\" was the driver's line too. Now a different lie: the stranger who spoke to her made innocent."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/waitress/nothing",
+   "before": "I don't remember anything, officer.",
+   "after": "I was run off my feet. I barely looked up.",
+   "kind": "NATURAL",
+   "why": "\"Remember\" is the game's word. Now a real answer that is no use to anyone."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/waitress/nothing",
+   "before": "Sorry, officer. I've nothing useful to tell you.",
+   "after": "Sorry, officer. Whatever it was, it was behind my back.",
+   "kind": "NATURAL",
+   "why": "It graded her own statement as the game would. Now she says why she saw nothing."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/driver/gives",
+   "before": "That face? I know it. Here's what happened.",
+   "after": "Them. Tried it on with me at the car.",
+   "kind": "VARIANTS",
+   "why": "The face rule, and a narration. Now he points them out and says only that they came to him at the car with something crooked, true of any approach.",
+   "judged": {
+    "line": "That's who wanted the Councillor driven round the back.",
+    "rule": "TRUE",
+    "finding": "It makes up what the Fixer asked for: the approach could be a Pay, a Help or a Pressure, and none is said to ask him to drive round the back."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/driver/gives",
+   "before": "I'd know them. I'll tell it straight: here's what they did.",
+   "after": "Saw them plain from the driver's seat, officer.",
+   "kind": "VARIANTS",
+   "why": "A reshuffle of the first, with the same face rule. Now how he knows them, from his own seat.",
+   "judged": {
+    "line": "Them, officer. I hope you lock them up.",
+    "rule": "VOICE",
+    "finding": "Any witness could say it; nothing in it is gruff, practical or about cars."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/driver/lies",
+   "before": "I moved the car because it was blocked.",
+   "after": "Didn't speak to a soul all shift, officer.",
+   "kind": "TRUE",
+   "why": "It invented a move most runs never make. Now a flat denial, a lie in every run where he covers for the cell: the Fixer spoke to him to turn him."
+  },
+  {
+   "family": "bark/summons",
+   "key": "questioned/driver/nothing",
+   "before": "I only drive. I notice nothing.",
+   "after": "I keep my head down and the engine warm.",
+   "kind": "VOICE",
+   "why": "\"I notice nothing\" was Inez's line too. Now his habit of minding his own business, with his trade in it; the judge's \"bonnet up half the morning\" would invent a morning's work.",
+   "judged": {
+    "line": "I sit in the car and wait. That's the job.",
+    "rule": "VARIANTS",
+    "finding": "The same thought as \"I watch the road.\": busy with his job, saw nothing."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-busy",
+   "before": "He's tied up just now. Try me again.",
+   "after": "You've picked your moment, dear. He can't.",
+   "kind": "NATURAL",
+   "why": "\"Try me again\" tells the player what to do. Now her wry patter, true whether he is down, just come round, in a fight or already away on her last call (the judge's \"Ring me back\" would tell the player what to do again).",
+   "judged": {
+    "line": "I can't get him for you just now.",
+    "rule": "WORTH",
+    "finding": "Flat, like its sister line: neither shows who Inez is."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-busy",
+   "before": "He can't leave the door, I'm afraid.",
+   "after": "You'll not get him now for love nor money.",
+   "kind": "VOICE",
+   "why": "It echoed the guard, \"I'm afraid\" was her tic, and a busy guard is rarely at his door. Now café patter, money in it, true in every case (the judge's \"up to his ears\" isn't, when he is down).",
+   "judged": {
+    "line": "He's not free, dear.",
+    "rule": "WORTH",
+    "finding": "It only repeats what the HUD shows."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-busy",
+   "before": "I can't leave the door right now.",
+   "after": "Can't oblige, I'm afraid.",
+   "kind": "TRUE",
+   "why": "Not one of the first findings: found untrue while briefing the row from the engine (a busy guard is walking back after coming round, fighting, or already away on her last call). Now officialese, true of each; the judge's \"Rules are rules\" would say the same as \"I'm on duty\". (When he is down he says nothing: the host should leave his line off.)",
+   "judged": {
+    "line": "It can't be helped.",
+    "rule": "VOICE",
+    "finding": "A stock phrase any speaker could say, with nothing of his officialese."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-came-once",
+   "before": "Not again this shift, Inez.",
+   "after": "Had my break already. That's me done.",
+   "kind": "NATURAL",
+   "why": "It recited the once-a-shift rule, close to Sky's own line. Now his visit as he calls it, his break (as he says leaving the café: \"Break's over.\"), with no rule in it; the judge's \"all the sergeant will wear\" invents a sergeant.",
+   "judged": {
+    "line": "Don't push your luck.",
+    "rule": "VOICE",
+    "finding": "A generic brush-off, with no door, no shift and no officialese."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-alert",
+   "before": "There's an alarm, I'm afraid. He won't leave his post.",
+   "after": "He's like a statue over there, love.",
+   "kind": "WORTH",
+   "why": "It read the HUD back. Now what she sees across the square: he is at his door, and won't move."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-alert",
+   "before": "The alarm's up. I'm staying at my post.",
+   "after": "Orders. I'm staying put.",
+   "kind": "VOICE",
+   "why": "It labelled the event. Now officialese: in a search the staff stay at their posts, and to him that is an order."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-alert",
+   "before": "Not with an alarm up, Inez.",
+   "after": "Leave now? They'd have my job.",
+   "kind": "VOICE",
+   "why": "It repeated Inez's phrase. Now his own reason, fear for his job."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-saw-violence",
+   "before": "I saw the violence, Inez. I'm not coming.",
+   "after": "I'm not setting foot out there.",
+   "kind": "NATURAL",
+   "why": "Nobody says \"the violence\": it is the game's category. Now fear, true of a shot, a blow or a drawn gun alike."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-saw-violence",
+   "before": "He saw that violence. He's not coming.",
+   "after": "He's badly shaken. Leave him be.",
+   "kind": "NATURAL",
+   "why": "The same category word, and a synonym of her first line. Now she protects him."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-too-far",
+   "before": "He's too far to come quickly.",
+   "after": "I'm nowhere near his door today.",
+   "kind": "WORTH",
+   "why": "It labelled the refusal. He is at his door and her post is a long walk away; now she says so from her side."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-too-far",
+   "before": "Too far from my post. I can't.",
+   "after": "All that way? Have a heart.",
+   "kind": "WORTH",
+   "why": "Telegraphese that labelled the reason. Now his protest to her."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-off-street",
+   "before": "I'm not out front. Ask later.",
+   "after": "I'm inside. I can't just walk out.",
+   "kind": "NATURAL",
+   "why": "\"Ask later\" tells the player what to do. Now a real answer from a man off the street."
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-off-street",
+   "before": "Not out there at the moment.",
+   "after": "I'm the wrong side of the wall.",
+   "kind": "NATURAL",
+   "why": "A clipped fragment. Now where he is and nothing more, beside \"I'm inside. I can't just walk out.\"",
+   "judged": {
+    "line": "They want me in here. Sorry.",
+    "rule": "TRUE",
+    "finding": "It invents a reason: nobody is said to have ordered him anywhere."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-off-street",
+   "before": "He's not out front. I can't reach him, I'm afraid.",
+   "after": "His door's empty, dear. Not like him at all.",
+   "kind": "VOICE",
+   "why": "The judge's tic: \"I'm afraid\" in five of her lines. Now what she sees and what she makes of it; the judge's \"all this while\" would invent how long.",
+   "judged": {
+    "line": "I've looked for him. He's not out front.",
+    "rule": "VARIANTS",
+    "finding": "The same thought as \"He isn't about. Not on the street.\", reworded."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-no-visit",
+   "before": "There's nobody I can send for.",
+   "after": "Me? And who'd mind the café?",
+   "kind": "MECHANICS",
+   "why": "\"Send for\" is the call rule's wording. Now, as the judge read the card, her own stance after the guard's line: she has no post to leave, and nobody moves. (Where her own tie had no post, she would be answering the Fixer, and this would need its own line.)",
+   "judged": {
+    "line": "Who would I ring for you, love? There's nobody.",
+    "rule": "TRUE",
+    "finding": "In the Handover she isn't on this call and only follows the guard's line, so a line answering the Fixer's call to her is false; write her reaction to his line."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-no-visit",
+   "before": "I'm afraid there's nobody I can call over.",
+   "after": "I can't leave, dear. I need every tip I get.",
+   "kind": "VARIANTS",
+   "why": "A synonym of the first, with \"I'm afraid\" and \"call over\". Now her reason in her own life, money (her need is the lender), true wherever she stands.",
+   "judged": {
+    "line": "I'd help if I could, dear. Truly.",
+    "rule": "TRUE",
+    "finding": "\"I'd help if I could, dear. Truly.\" is vague filler, and like its sister line answers a call she isn't on."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/guard/radio",
+   "before": "Good grief. What's gone on here?",
+   "after": "Right. Nobody's to touch a thing.",
+   "kind": "VOICE",
+   "why": "Last round's line, scored for the first time. Now his first order at a scene, true whatever he found.",
+   "judged": {
+    "line": "Good grief. What's gone on here?",
+    "rule": "VOICE",
+    "finding": "A startled passer-by's exclamation, not the guard's clipped voice; the crowd could say it unchanged."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/guard/radio",
+   "before": "That's a coward's work, that is.",
+   "after": "Stand clear, please. This is security business.",
+   "kind": "VOICE",
+   "why": "Last round's line, scored for the first time. Now officialese: the scene is his.",
+   "judged": {
+    "line": "That's a coward's work, that is.",
+    "rule": "VOICE",
+    "finding": "The folksy \"that is\" tag belongs to a bystander; any passer-by could say it."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/crowd/report",
+   "before": "This can't wait.",
+   "after": "Who would do such a thing?",
+   "kind": "WORTH",
+   "why": "Last round's line, scored for the first time. Now the outrage that sends a decent passer-by for the police, true of a takedown seen, a carry or a body found.",
+   "judged": {
+    "line": "This can't wait.",
+    "rule": "WORTH",
+    "finding": "Empty: it could follow any event and says nothing about who this person is or how they take it."
+   }
+  },
+  {
+   "family": "bark/witnesses-crowd",
+   "key": "witness-reacts/crowd/quiet",
+   "before": "I'm keeping out of this.",
+   "after": "None of my business, is it?",
+   "kind": "VARIANTS",
+   "why": "Now a passer-by talking themselves out of it, beside \"Somebody else will see to it.\" and \"I've a family to think of.\"",
+   "judged": {
+    "line": "I'm keeping out of this.",
+    "rule": "VARIANTS",
+    "finding": "Very close to the avoid row's \"Don't look. Keep walking.\"; across the family the two rows blur."
+   }
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/waitress/summon-saw-violence",
+   "before": "He saw what happened. He won't come now.",
+   "after": "He's seen what your lot do, love.",
+   "kind": "VARIANTS",
+   "why": "Now Inez, turned, holding it against the Fixer: true of a shot, a blow or a drawn gun.",
+   "judged": {
+    "line": "He saw what happened. He won't come now.",
+    "rule": "VARIANTS",
+    "finding": "\"He won't come\" repeats Sky's own came-once line (\"He won't come again.\"), so it reads as one line said twice."
+   }
+  }
+ ]
+}

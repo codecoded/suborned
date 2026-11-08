@@ -12,7 +12,7 @@ import { applyShort } from './short-apply';
 import { loadShortBriefs } from './short-briefs';
 import { acceptedByFamily, continuable, judgeHand, listShort, liveShort, replayShort } from './short-cli';
 import { verifyShort } from './short-evidence';
-import { SHORT_RUN } from './short-types';
+import { SHORT_NOW, SHORT_RUN } from './short-types';
 import type { Brief, Result } from './types';
 
 const COURSE = 'out/style-agent';
@@ -188,7 +188,7 @@ async function main() {
     return live(options, [{ brief: byId(demo.brief), steer: demo.steer, tag: tag(byId(demo.brief), `-demo-${demo.id}`) }]);
   }
   if (command === 'judge') {
-    const { options, positional } = parse(args, ['--hand', '--approved-by', '--judge-model']), family = loadShortBriefs(root).find(b => b.id === positional[0]);
+    const { options, positional } = parse(args, ['--hand', '--approved-by', '--judge-model']), family = loadShortBriefs(root, SHORT_NOW, true).find(b => b.id === positional[0]); // guide /18: the family as it plays
     if (positional.length !== 1 || !family || !options.has('--hand')) throw new Error(`judge needs one family and --hand FILE; see: bun tools/style-agent/cli.ts shorts`);
     return judgeHand(options, family, options.get('--hand')!);
   }

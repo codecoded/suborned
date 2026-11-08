@@ -2,6 +2,7 @@ import { gddPair, pick, type Read } from './guide';
 import { VoiceSheet, type Field, type Pattern, type ShortBrief, type ShortGuideVersion, type ShortItem } from './short-types';
 import { FAMILIES_13, GONE_13, REACTS_13, reply13, scene13, WORLD_13 } from './short-natural';
 import { ANSWER_14, family14, MISLEAD_14, scene14 } from './short-natural14';
+import { GUARD_BUSY_18, RADIO_18, SUMMON_18 } from './short-hand18';
 import { speech12, VOICE_SHEET } from './short-voice';
 
 /** The bark table (text.json `dialogue`) as families, one run each: what each bark must tell the player, from the event's own trigger,
@@ -223,7 +224,8 @@ const PINNED_ROWS = new Set(['rivals-coming/scout', 'rivals-for-car/rivals', 'ri
   'camera-reported/scout', 'fail/scout/cell-down']);
 const keyOf = (r: Row) => [r.event, r.verb, r.speaker, r.outcome, r.temperament, r.about].filter(Boolean).join('/');
 
-export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuideVersion): ShortBrief[] {
+/** `hand`: the families of a hand run (guide /18), whose hand rows are items again, so the judge reads the family as it plays. */
+export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuideVersion, hand = false): ShortBrief[] {
   const gdd = read(gddPair(names).agent.path), voices = text.tone.voices as Record<string, string>;
   const temperament = (t: string) => {
     const name = t[0]!.toUpperCase() + t.slice(1);
@@ -266,10 +268,11 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
       case 'confirm': return `The Fixer telephones Inez, turned: she says yes, she will call the guard over now.${temp} Voiced aloud.`;
       case 'taken': return `The Enforcer has hold of Popovic (${r.verb === 'enter' ? 'inside the Office' : 'at his car'}): his first words.${temp}`;
       case 'summon-refused': if (v >= 17 && r.outcome === 'summon-no-visit') return NO_VISIT_17[r.speaker] ?? NO_VISIT_17.guard!; // guide /17: as the engine plays it
-        return `The Fixer's call can't work now: ${SUMMON[r.outcome!]}. ${r.speaker === 'waitress' ? 'Inez tells the Fixer on the telephone.' : 'The guard answers Inez, near enough to hear.'} Nothing is spent.`;
+        return `The Fixer's call can't work now: ${(v >= 18 ? SUMMON_18[r.outcome!] : undefined) ?? SUMMON[r.outcome!]}. ${r.speaker === 'waitress' ? 'Inez tells the Fixer on the telephone.' : 'The guard answers Inez, near enough to hear.'}${v >= 18 && r.speaker === 'guard' && r.outcome === 'summon-busy' ? ` ${GUARD_BUSY_18}` : ''} Nothing is spent.`; // guide /18: as the engine checks it
       case 'questioned': return `Later, an investigator questions ${who}: ${r.outcome === 'gives' ? 'they give the Fixer up, a face and what happened' : r.outcome === 'lies' ? 'they cover for the cell with a lie' : 'they know nothing useful'}. Not played in the Handover yet (investigators come later); a debrief hook.`;
       case 'fail': return `The attempt has failed: ${fail(r.outcome!)} The line plays for each of these, so every variant must be true whichever it was. ${SPEAKS[r.speaker] ?? ''} Spoken as it ends, before the end card.`;
       default: {
+        if (v >= 18 && r.event === 'report-begins' && r.speaker === 'guard') return RADIO_18; // guide /18: the host plays it only for his report of one of the cell
         const o = r.outcome ? (v >= 13 && r.event === 'witness-reacts' ? REACTS_13[r.outcome] : undefined) ?? BY_OUTCOME[r.event]?.[r.outcome] ?? r.outcome : BY_OUTCOME[r.event]?.[''] ?? null;
         const base = (v >= 13 ? WORLD_13[r.event] : undefined) ?? (v >= 8 ? WORLD_8[r.event] : undefined) ?? WORLD[r.event] ?? ev?.trigger ?? r.event;
         const about = r.event === 'person-missed' ? (r.about === 'driver' ? ` ${BY_OUTCOME['person-missed']![r.temperament!] ?? 'Popovic'} at his car finds his driver gone.` : '') : '';
@@ -286,9 +289,11 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
   const speech = v === 12 ? speech12(text, VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))).speech) : null;
   // guide /14 (brief 102's sweep): a row of Sky's own words (`sky`) is not an item; its family's context gives it, so nobody repeats it
   // guide /17 (brief 102): a row of Fable's hand edits (`hand`) is not an item either; its family's context gives it as it gives Sky's
-  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent) && !(v >= 14 && r.sky) && !(v >= 17 && r.hand));
+  // guide /18: except in a hand run, which scores the family as it plays, hand rows and all
+  const outOfLoop = (r: Row) => v >= 17 && !!r.hand && !(v >= 18 && hand);
+  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent) && !(v >= 14 && r.sky) && !outOfLoop(r));
   const skys = (f: { pick: (r: Row) => boolean }) => v >= 14 ? (text.dialogue as Row[]).filter(r => r.sky && !r.silent && f.pick(r)) : [];
-  const hands = (f: { pick: (r: Row) => boolean }) => v >= 17 ? (text.dialogue as Row[]).filter(r => r.hand && !r.sky && !r.silent && f.pick(r)) : [];
+  const hands = (f: { pick: (r: Row) => boolean }) => (text.dialogue as Row[]).filter(r => outOfLoop(r) && !r.sky && !r.silent && f.pick(r));
   const said = (xs: Row[]) => xs.map(r => `${keyOf(r)}: ${r.lines.map(l => JSON.stringify(l)).join(' / ')}`).join('; ');
   const skyWords = (f: { pick: (r: Row) => boolean }) => (skys(f).length ? ` Sky's own words, already in the game and not items here: never rewrite them, and never say them in another row: ${said(skys(f))}.` : '')
     + (hands(f).length ? ` Rows Fable wrote by hand to the same bar (brief 102), already in the game and not items here: never rewrite them, and never say them in another row: ${said(hands(f))}.` : '');

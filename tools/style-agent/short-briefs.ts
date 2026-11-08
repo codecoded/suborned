@@ -7,10 +7,10 @@ import { whyBriefs } from './short-whys';
 import { SHORT_NOW, type ShortBrief, type ShortGuideVersion } from './short-types';
 
 /** Every short-line family, a run each: the barks, the why block, the debrief page, and from guide /10 the HUD's labels. Read only from the guide's sources. */
-/** `version` is the guide's: a run's families are rebuilt as they were for it. */
-export function buildShortBriefs(read: Read, names: string[], version: ShortGuideVersion = SHORT_NOW): ShortBrief[] {
+/** `version` is the guide's: a run's families are rebuilt as they were for it. `hand`: a hand run's families (guide /18: its hand rows are items). */
+export function buildShortBriefs(read: Read, names: string[], version: ShortGuideVersion = SHORT_NOW, hand = false): ShortBrief[] {
   const text = JSON.parse(read(TEXT_FILE));
-  const all = [...barkBriefs(read, names, text, version), ...whyBriefs(text, version), ...debriefBriefs(read, text, read(RULEBOOK), version), ...(version >= 10 ? labelBriefs(text, version) : [])];
+  const all = [...barkBriefs(read, names, text, version, hand), ...whyBriefs(text, version), ...debriefBriefs(read, text, read(RULEBOOK), version), ...(version >= 10 ? labelBriefs(text, version) : [])];
   const ids = new Set<string>();
   for (const b of all) {
     if (ids.has(b.id)) throw new Error(`Two families share the id ${b.id}`);
@@ -20,6 +20,6 @@ export function buildShortBriefs(read: Read, names: string[], version: ShortGuid
   }
   return all;
 }
-export const loadShortBriefs = (base: string, version: ShortGuideVersion = SHORT_NOW) => buildShortBriefs(readerFor(base), gddNames(base), version);
-export const shortBriefsFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: ShortGuideVersion = SHORT_NOW) =>
-  buildShortBriefs(readerFromFiles(files), gddNamesFromFiles(shas), version);
+export const loadShortBriefs = (base: string, version: ShortGuideVersion = SHORT_NOW, hand = false) => buildShortBriefs(readerFor(base), gddNames(base), version, hand);
+export const shortBriefsFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: ShortGuideVersion = SHORT_NOW, hand = false) =>
+  buildShortBriefs(readerFromFiles(files), gddNamesFromFiles(shas), version, hand);

@@ -63,10 +63,14 @@ export type ShortRuleId = z.infer<typeof AnyRuleId>;
  *  marked `hand` in text.json (Fable's hand edits, briefs/102/fable/hand-barks.json) are not items, as Sky's rows; the family's context gives them and `apply` never replaces
  *  them; and the summons' no-visit rows are told as the engine plays them (only a call on the turned guard gets that code: Inez, his tie, has no post to leave, so his answer
  *  goes to the Fixer, and the host shows Inez's line after his). A run may also score a hand-written draft once (`hand`: no writer call). The rubric reads as at /16. */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16', 17: 'suborned.style-short-guide/17' } as const;
+/** /18 (brief 102, Fable 2026-11-08: the judge's other 21 findings on the two hand-written families were on rows already marked `hand`, which /17 leaves out of the items):
+ *  a hand run scores its family as it plays, so the family's hand rows are items again in a hand run (a writer run keeps them out, as at /17); and the rows written this
+ *  round are told as the engine plays them (short-hand18.ts): the guard's radio report is about one of the cell in his sight, and the summons' busy, too-far, alert and
+ *  saw-violence refusals say what the engine checks. The rubric reads as at /17. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16', 17: 'suborned.style-short-guide/17', 18: 'suborned.style-short-guide/18' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 17;
+export const SHORT_NOW: ShortGuideVersion = 18;
 /** Two guides with the same rubric, sources and families, the later on a newer protocol (from /15 a run may continue a /14 run's last round). */
 export const sameRubric = (earlier: ShortGuide, later: ShortGuide) => shortGuideVersion(earlier) <= shortGuideVersion(later) && shortGuideVersion(earlier) >= 14
   && isDeepStrictEqual(JSON.parse(JSON.stringify({ ...earlier, schema: later.schema })), JSON.parse(JSON.stringify(later)));

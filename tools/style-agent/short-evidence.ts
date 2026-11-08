@@ -24,7 +24,7 @@ export async function verifyShort(input: unknown, base: string, store = resolve(
     const guide = shortGuideFromFiles(files, shas, shortGuideVersion(r.guide)); // a run replays with the protocol it ran with
     requireThat(equal(Object.keys(shas).sort(), [...new Set([...guide.sources.map(s => s.file), ...roleFiles(r.authorization)])].sort()), 'Unexpected or missing sources');
     requireThat(equal(guide, r.guide), 'The recorded rubric differs from its sources');
-    const brief = shortBriefsFromFiles(files, shas, shortGuideVersion(r.guide)).find(b => b.id === r.brief.id);
+    const brief = shortBriefsFromFiles(files, shas, shortGuideVersion(r.guide), !!r.hand).find(b => b.id === r.brief.id); // guide /18: a hand run's family has its hand rows
     requireThat(brief && equal(brief, r.brief), 'The recorded family differs from its sources');
     let previous = r.startedAt;
     for (const call of r.calls) {

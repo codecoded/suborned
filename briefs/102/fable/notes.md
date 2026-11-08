@@ -307,3 +307,31 @@ Aster, taking the option I offered: write the 13 failing lines of `bark/witnesse
   - `tools/levels/dialogue/drift.json`;
   - `briefs/102/fable/sweep.html` (the new section, and a line in "For your read") and these notes.
 - **Scratch:** `out/scratch/fable/102c/` (check-hand, apply-hand, sheet, verify-all, the judge logs).
+
+
+## By hand, a second round: the judge's other 21 findings (Fable, 2026-11-08)
+
+Aster: the judge's 26 findings on `bark/witnesses-crowd` and `bark/summons` included 21 on lines I wasn't asked to touch (the guard's four "incident to report" calls, "I'd know that face", "Try me again.", "Ask later.", "the violence"…). Fixed the same way: by hand, scored once per family with Sky's approval, rewritten from the findings, applied as `hand` rows.
+
+**The lines and the judge's read:** `briefs/102/fable/hand-barks-2.json` (37 edits: before, after, why; `judged` where Opus found fault) and the sheet's section "By hand, a second round" in `briefs/102/fable/sweep.html`.
+- **Briefed from the engine first.** The guard's radio call to the desk (`report-begins/guard/radio`) plays only for his attention report on one of the cell standing about or running in his sight (HostActivity.cs, GameAttention.cs), never a body, so the judge's "Somebody's down out front" would be untrue. A busy guard (`summon-busy`) is down, held after coming round, in a fight, or already away on her last call (GameOrders.cs SummonRefusal), so "I can't leave the door right now." was untrue most times it played: rewritten too (the one line beyond the 21).
+- **Guide /18** (`tools/style-agent/short-hand18.ts`, `short-barks.ts`, `short-briefs.ts`, `short-evidence.ts`, `cli.ts`, `short-types.ts`): six of the faulty lines sat in rows already marked `hand`, which /17 leaves out of a family's items. A hand run now scores its family as it plays, hand rows included; writer runs keep them out. The rows above are told as the engine plays them. Older runs rebuild as they ran.
+- **Opus scored each family once** (Motive, Claude Opus 5.5, subscription): `runs/style-agent/short/2026-11-08T16-42-41.031Z-bark-witnesses-crowd` (**5**, up from 4; 7 findings, 18,258 tokens) and `…T16-42-42.986Z-bark-summons` (**6**, up from 3; 10 findings, 24,766 tokens). 18 of my 32 new lines drew no finding; 14 did, and 5 more on last round's or untouched lines (three of last round's guard lines, "This can't wait.", and two old lines). All 19 rewritten from the findings, not scored again. Where the judge's own fix was untrue (a man down by the door, "hanging about" for a runner, "Ring me back", a sergeant, the bonnet up all morning), the why says so.
+
+**Still for the host (Latch):**
+- `summon-refused/guard/summon-busy`: when the guard is down the host still plays his line; leave it off then.
+- `summon-refused/waitress/summon-no-visit`: written now as the judge read the card, Inez's own reply after the guard's line ("Me? And who'd mind the café?"). If the host drops her line from that card, as suggested last round, the row needs briefing again.
+- `summon-refused/guard/summon-off-street` and `…/summon-too-far`: the earshot split, unchanged. Off the street never happens in the Handover (the guard's pose is null only when he is down; Inez always has her post).
+
+### Checks
+- **Export** (`bun run guard bun tools/sim/unity.ts --tree`): ok. Headless 472/472 and range 99/99 with identical replay; text.json f761ea2febc9 parses.
+- **`bun run hostlogic`:** 180 pass, 0 fail.
+- **`bun test tools/style-agent contracts/missions/handover tools/dialogue`:** 357/357 (`hand.test.ts` now 7: two rounds, /18's hand families and tells).
+- **`bun run typecheck`:** clean.
+- **Every saved style-agent run rebuilds exactly, without a model:** 24 conversations and 141 short runs, the two /18 hand runs among them (`out/scratch/fable/102d/verify-all.ts`).
+- `bun test tools/drift-auto tools/names tools/levels/dialogue`: 45/46, the same drift-auto failure as before (skyline r011, people r012–r016); the dialogue objective did not move.
+
+### Files
+- **New:** `briefs/102/fable/hand-barks-2.json`, `tools/style-agent/short-hand18.ts`, the 2 runs in `runs/style-agent/short/`.
+- **Changed:** `contracts/missions/handover/text.json` (23 rows, each marked `hand`; no key moved); `tools/style-agent`: `short-types.ts`, `short-barks.ts`, `short-briefs.ts`, `short-evidence.ts`, `cli.ts`, `hand.test.ts`, `README.md`; `briefs/102/fable/sweep.html` (the new section, a line in "For your read") and these notes.
+- **Scratch:** `out/scratch/fable/102d/` (check-hand, apply-hand, sheet, verify-all, peek18, the judge, test and export logs).
