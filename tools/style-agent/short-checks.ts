@@ -58,7 +58,7 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
         if (f.form === 'line' && (l.match(/[.!?](\s|$)/g)?.length ?? 0) > 2) flag('SHORT', `${at}: one sentence, two at most.`);
         for (const term of [...guide.avoid, ...guide.profanity])
           if (new RegExp(`(?<![\\p{L}\\p{N}_])${esc(term)}(?![\\p{L}\\p{N}_])`, 'iu').test(l)) flag(guide.profanity.includes(term) ? 'VOICE' : 'PLAIN', `${at}: "${term}" is on the mission's word filter.`);
-        for (const name of guide.cell) if (new RegExp(`\\b${name}\\b`).test(l)) flag('NAMES', `${at}: "${name}" is a cell name; ${brief.kind === 'debrief' ? 'the page names an agent with {op}' : 'nobody says it'}.`);
+        for (const name of guide.cell) if (new RegExp(`\\b${name}\\b`).test(l)) flag('NAMES', `${at}: "${name}" is a cell name; ${brief.kind === 'debrief' ? 'the page names an agent with {op}' : brief.kind === 'label' ? 'a label names an agent with {agent}' : 'nobody says it'}.`);
         if (/halcyon/i.test(l)) flag('NAMES', `${at}: Halcyon waits on Sky.`);
         const toks = l.replace(/\{[^}]*\}/g, 'x').split(/\s+/);
         toks.forEach((tok, i) => {
@@ -66,7 +66,9 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
           if (i > 0 && w && /^\p{Lu}/u.test(w) && !/[.!?:·]$/.test(toks[i - 1]!) && !CAPS.has(w)) flag('NAMES', `${at}: "${w}" mid-sentence; only the game's names are capitalised.`);
         });
         if (brief.kind === 'bark' && it.speaker && !/^(scout|fixer|tech|enforcer):/.test(it.speaker) && /\d/.test(l)) flag('TRUE', `${at}: no digits in a person's mouth (people never quote the clock or the cell's numbers).`);
-        if (brief.kind === 'debrief' && /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|\btick\b|operative|engine|ledger/i.test(l)) flag('PLAIN', `${at}: an engine word; the page uses the player's words (text.test.ts).`);
+        if ((brief.kind === 'debrief' || brief.kind === 'label') && /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|\btick\b|operative|engine|ledger/i.test(l)) flag('PLAIN', `${at}: an engine word; the ${brief.kind === 'label' ? 'HUD' : 'page'} uses the player's words (text.test.ts).`);
+        // guide /10: Sky's rule on numbers in play: a label carries no number of its own (the game draws a key event's time beside it; never an act's time or a chance)
+        if (brief.kind === 'label' && /\d|%/.test(l.replace(/\{[^}]*\}/g, ''))) flag('SHORT', `${at}: a label carries no number of its own: the game draws a key event's time beside it, and never an act's time or a chance (Sky 2026-11-08).`);
         for (const p of f.patterns) if (new RegExp(p.re, p.flags).test(l) !== p.must) flag('TRUE', `${at}: ${p.must ? 'needs' : 'must not have'} /${p.re}/: ${p.why}.`);
         if (f.form === 'speech') {
           const k = norm(l), other = seen.get(k);

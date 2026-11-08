@@ -8,10 +8,11 @@ import { barkKey } from './short-barks';
 import { loadShortBriefs } from './short-briefs';
 import { mergeWhy } from './short-checks';
 import { acceptedByFamily } from './short-cli';
+import { writeLabels } from './short-labels';
 import type { ShortResult, ShortSet } from './short-types';
 
 /** Writes each family's accepted lines into text.json, keeping the file's own layout: a bark row, a why cause or a why word is one line in the
- *  file, so each is replaced where it stands; the debrief page goes in as `debrief.page`. Only lines from a verified, accepted live run go in. */
+ *  file, so each is replaced where it stands; the debrief page goes in as `debrief.page`; a HUD label replaces its string where it stands. Only lines from a verified, accepted live run go in. */
 type Row = { event: string; speaker: string; lines: string[]; [k: string]: unknown };
 const once = (raw: string, from: string, to: string, what: string) => {
   const n = raw.split(from).length - 1;
@@ -86,6 +87,12 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
     const rule = text.debrief.rule as string;
     if (!rule.includes(PAGE_RULE)) raw = once(raw, `"rule": ${JSON.stringify(rule)}`, `"rule": ${JSON.stringify(`${rule} ${PAGE_RULE}`)}`, 'debrief.rule');
     log.push(`debrief.page (${Object.keys(page).length} sections), and its rule at the end of debrief.rule`);
+  }
+  // guide /10: the HUD's labels, each where it stands (a timeline mark's word, a lozenge card's title or line, the shot row's label and the Alt outcome it shares)
+  const labels = [...best.values()].filter(x => x.run.brief.kind === 'label');
+  if (labels.length) {
+    const w = writeLabels(raw, labels.map(({ run }) => ({ id: run.brief.id, items: restored(run) })));
+    raw = w.raw; log.push(...w.changed, ...labels.map(({ path }) => `  ← ${relative(root, path)}`));
   }
   // a cut speaker leaves its event
   for (const c of cuts) {

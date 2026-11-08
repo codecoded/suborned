@@ -86,8 +86,9 @@ export const MAX_WORDS = 12; // in play, as bubbles (scenes.items, dialogue, eve
 export const SHORT_MAX = 24;
 export const BEAT_MAX = 24;
 /** brief 014: the price line's fields, in the order the line shows them (canonical). `learns` = the icons of what a Watch or Listen teaches;
- *  `pace` = a carry's walking pace; `mark` = the outcome mark (works, refuse, half, unknown). */
-export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'door', 'alert', 'lasts', 'eye', 'learns', 'pace', 'mark'] as const;
+ *  `pace` = a carry's walking pace; `mark` = the outcome mark (works, refuse, half, unknown). No `time`: brief 101 (Sky 2026-11-08) took the
+ *  walk and the act's seconds out of every price; a window the act opens keeps its time (`door`, `lasts`, the desk's report in `alert`). */
+export const PRICE_FIELDS = ['name', 'usd', 'trail', 'door', 'alert', 'lasts', 'eye', 'learns', 'pace', 'mark'] as const;
 
 const clock = z.string().regex(/^\d{1,2}:[0-5]\d$/);
 const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
@@ -296,14 +297,10 @@ export const Less = z.strictObject({
     rule: z.string().min(1),
     line: z.strictObject({ 'no-driver': Line, 'car-held': Line, 'on-foot': Line, 'no-go': Line }).describe('brief 080 (engine 0.37.0): the fail card\'s sub-line for closed-in, by FailCause.Why; {by} as less.failcam.by'),
   }),
-  odds: z.strictObject({
+  street: z.strictObject({
     rule: z.string().min(1),
-    chip: Short(32).describe('brief 080: the fire preview\'s chip: {pct} the hit chance, {s} rough seconds to down'),
-    chipBare: Short(12).describe('the chip with no estimate of the time to down: {pct}'),
-    sum: Line.describe('Alt: the sum behind the chance: {pct} {aim} {range} {cover} {move}, the last three signed'),
-    limits: Line.describe('Alt: the limits of a chance (rulebook sheet-min, sheet-max)'),
-    streak: z.strictObject({ head: Short(40), hits: Line, misses: Line }).describe('the streak note, said openly (Sky on design.html, decision 2); rulebook sheet-streak-hits, -misses, -floor'),
-  }),
+    loud: Short(12).describe('the label that heads the first shot\'s row (then the Alert lamps, the police badge, the seal\'s lock, the Trail): the shot turns a quiet run loud; the same words as less.alt.outcome.loud'),
+  }).describe('brief 101 (Sky 2026-11-08, the HUD sweep\'s mix): the street layer\'s and the corners\' labels that no other block has; the fire preview\'s odds (brief 080\'s `less.odds`) are gone: no hit chance and no time to down in play'),
   takedown: z.strictObject({
     rule: z.string().min(1),
     coming: Line.describe('brief 080 (TakedownQuote.Coming): the card\'s row for who will arrive and notice before the act ends: {list} of `item`s'),
@@ -349,7 +346,7 @@ export const Less = z.strictObject({
     cancel: z.strictObject({
       tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36), again: Short(24), againKey: Short(24), cantStop: Short(24), already: Short(24),
       cost: z.record(code, Short(16)).describe('the cost word by the engine\'s cancel cost; a cancel cost with no entry is free'),
-    }).describe('brief 043: the warning before a cancelling order and the pop after it; {verb} the ring label, {cost} one of cost, {s} seconds spent'),
+    }).describe('brief 043: the warning before a cancelling order and the pop after it; {verb} the ring label, {cost} one of cost (brief 101: never the seconds an act had run)'),
     fire: z.record(code, Short(12)).describe('engine 0.26.0 (Game.FireQuery): the portrait plate\'s two words when a squad fire order skips this agent, by the refusal code; no punctuation, a name may keep its capital (has Vale)'),
     run: z.strictObject({ noticed: Line, unknown: Line }).describe('engine 0.34.0 (brief 067, Motive M067-B2): the Alt chip of a run on the ground, which says who would notice it and no longer an Alert (a run is noticed, never an Alert on its own): `noticed` follows "run 6 s · " with {who} the watchers as the host names them ("the guard, a guard"), `unknown` stands for a watcher the Scout has not learned (the "?" of rulebook sight.unknown). The host reads less.done.run.noticed (RunNoticedWords)'),
     board: z.record(code, Short(12)).describe('brief 067 (Glyph C4): the same chip for a squad Board that skips this agent, by the refusal code a Board can meet (the host\'s BoardLock and the engine\'s Board); an agent already in the car is skipped silently, so `in-car` has no entry'),

@@ -32,11 +32,12 @@ Since 2026-11-07 (Sky, asked whether the loop covers more than the Inez conversa
 - **bark**: one row of `text.json` `dialogue` per item: the event, the speaker and their voice, and what the line must tell the player (the event's trigger, the verb's own line, what a Watch or Listen taught, the GDD's temperaments). A bark the loop finds says nothing useful may be cut, unless a test, the host or the generator needs it (the item says why).
 - **why**: a cause of the `why` block with its fills: title, short, line, plate; held to `why.schema.ts` at the widest fills.
 - **debrief**: the debrief page's words (brief 099, concept A), Glyph's stand-ins by key with the data each one shows; written to `debrief.page`.
+- **label** (guide /10, brief 101): the words the new HUD draws in play at a glance, one family, `label/hud`: the first shot's row (`less.street.loud`, also written to the Alt outcome `less.alt.outcome.loud`), the next key event's word in the top right (`briefing.timeline[].short`), and the news lozenge's cards in the bottom right (`book.feed.cards.*` titles and lines, `book.feed.of`). Each item's today is what the HUD shows now; the rubric adds Sky's rule on numbers in play (no act's time, no chance; a label types no digit of its own, and a count, the health left or a key event's time comes in through a fill). From /11 the lines a host test reads are held by pattern (the hurt cards' live health, the vale-out card's police time): the /10 run dropped them, and only `bun run hostlogic` caught it. `apply` replaces each string where it stands.
 
 Motive's rubric for each kind (`short-guide.ts`): USEFUL (tells the player something they can use; the cut opening barks are the failing example), TRUE (to what the engine did), PLAIN (everyday words, never a report's tone), SHORT (the kind's limit), NAMES (people as the player knows them), VOICE (the speaker's, or the book's). Guide /2: Motive also sees its own last findings, and the reviser changes only the lines they name. Guide /9 (`short-types.ts` lists every version): a police title names who or what is coming (Police coming, More police, Robots coming, Lockdown) and the cause goes in its short; the meter's head keeps its level; the why words brief 100's HUD tests read are held word for word or by pattern (`HostLogic.Why100.cs`); a debrief item's today is what the page shows now, kept where it holds; and `debrief/folds` writes the keys Latch's page reads that had no item.
 
 ```sh
-bun tools/style-agent/cli.ts shorts              # the 42 families: items and lines each
+bun tools/style-agent/cli.ts shorts              # the 43 families: items and lines each
 bun run style:run bark/end $LIVE                 # one family
 bun run style:chain --short $LIVE [--kind bark]  # every family not yet accepted
 bun run style:replay runs/style-agent/short/<run>   # the same replay and verify as a conversation
@@ -50,7 +51,7 @@ Runs are in `runs/style-agent/short/<time>-<family>/`; they share the sources st
 ## Files
 
 `guide.ts` the style guide · `briefs.ts` the conversation briefs · `core.ts` the loop's engine (limits, calls, acceptance) · `loop.ts` the conversation loop · `prompts.ts` · `checks.ts` code checks · `live.ts` crew cards through the Codex CLI · `evidence.ts` archive and checking · `report.ts` · `cli.ts`.
-Short lines: `short-types.ts` · `short-guide.ts` the rubric · `short-barks.ts`, `short-whys.ts`, `short-debrief.ts` the families · `short-briefs.ts` · `short-checks.ts` · `short-prompts.ts` · `short-loop.ts` · `short-evidence.ts` · `short-cli.ts` · `short-apply.ts` · `short.test.ts`.
+Short lines: `short-types.ts` · `short-guide.ts` the rubric · `short-barks.ts`, `short-whys.ts`, `short-debrief.ts`, `short-labels.ts` the families · `short-briefs.ts` · `short-checks.ts` · `short-prompts.ts` · `short-loop.ts` · `short-evidence.ts` · `short-cli.ts` · `short-apply.ts` · `short.test.ts`.
 
 ## Known
 

@@ -1,5 +1,5 @@
 import { block, gddNames, gddNamesFromFiles, gddPair, hash, lineOf, pick, readerFor, readerFromFiles, TEXT_FILE, TEXT_SCHEMA, type Read, type Sha } from './guide';
-import { SHORT_GUIDES, SHORT_NOW, type ShortGuide, type ShortGuideVersion, type ShortKind, type ShortRule } from './short-types';
+import { SHORT_GUIDES, SHORT_NOW, type ShortGuide, type ShortGuideVersion, type ShortKindRules, type ShortRule } from './short-types';
 import type { Source } from './types';
 
 /** The short lines' sources. The briefs read only these, so a saved run rebuilds from its archive. */
@@ -8,6 +8,9 @@ export const DEBRIEF_BRIEF = 'briefs/099-debrief.md';
 export const DEBRIEF_WORDS = 'briefs/099/glyph/words.md';
 export const DEBRIEF_NOTES = 'briefs/099/glyph/notes.md';
 export const RULEBOOK = 'contracts/rules/rulebook.json';
+/** Guide /10's sources for the HUD's labels: Sky's rule on numbers in play (brief 101) and Glyph's round 2 (the street layer, the corners, the words it asks for). */
+export const HUD_BRIEF = 'briefs/101-hud-sweep.md';
+export const HUD_NOTES = 'briefs/101/glyph/r2/notes.md';
 
 /** The rubric Motive scores a short line by, one block of rules per kind: plain everyday words, true to what the engine did, within the
  *  kind's limit, useful to the player, people named as the player knows them, and the speaker's voice. Built only from the approved GDD,
@@ -37,6 +40,13 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
   add('page', DEBRIEF_NOTES, 'Where each number comes from', lineOf(read(DEBRIEF_NOTES), '**A · The front page.**', 'concept A'));
   add('rules', RULEBOOK, 'gunfire-trail, hit-trail, down-trail', read(RULEBOOK).split('\n').filter(l => /"(gunfire|hit|down)-trail": \{/.test(l)).map(l => l.trim().slice(0, 160)).join('\n'));
   add('human-gdd', pair.human.path, 'authoritative human GDD', `Human GDD v${pair.human.version}; it wins on conflict with the agent copy.`);
+  if (version >= 10) { // after the /9 sources, so a /1–/9 guide rebuilds with exactly the sources it ran with
+    const hud = read(HUD_BRIEF), notes = read(HUD_NOTES);
+    add('hud', HUD_BRIEF, 'Sky\'s rule on numbers in play (2026-11-08)', ['- **No hit chance anywhere in play:**', '- **No action durations in play:**', '- **Time stays only for key events in the world:**', '- **An order\'s price**']
+      .map(p => lineOf(hud, p, `brief 101 ${p}`)).join('\n'));
+    add('hud-words', HUD_NOTES, 'the street layer, the corners, words for Fable', ['- Labels are bold Jost', '- The corners are bare type', '- The news is a lozenge by the Book', '- **New:** one label', '- **Already the game\'s:**']
+      .map(p => lineOf(notes, p, `Glyph's round 2 ${p}`)).join('\n'));
+  }
 
   const words = Number(pick(schema, /export const MAX_WORDS = (\d+);/, 'MAX_WORDS')[0]), chars = Number(pick(schema, /export const MAX_LINE = (\d+);/, 'MAX_LINE')[0]);
   const lim = (kind: string) => pick(why, new RegExp(`${kind}: \\{ chars: (\\d+), words: (\\d+)`), `why LIMITS.${kind}`).map(Number);
@@ -44,7 +54,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
   const cell: string[] = Object.values(text.book.cell.name as Record<string, string>);
   const rule = (id: ShortRule['id'], kind: string, sources: string[], instruction: string): ShortRule => ({ id, kind, instruction, sources }), v4 = version >= 4;
   const named = (text.names.named as string[]).join(' and ');
-  const kinds: Record<ShortKind, { use: string; rules: ShortRule[] }> = {
+  const kinds: ShortGuide['kinds'] = {
     bark: { use: `A bark is a speech bubble at the speaker, in play: at most two at once, 3 s each, and every one also lands in the book's Journal. The play HUD shows no other sentences (§10), so a bark is often the only word the player gets about a moment.`, rules: v4 ? BARK_4(words, chars, named, cell, text.tone.world) : [
       rule('USEFUL', 'tells the player something they can use', ['opening', 'fable', 'lines'], 'A bark exists to tell the player something they can use now: that an order was taken and what it will do, what just happened, what a person is about to do (call it in, run, fight), what changed and what it opens or costs. Every line carries a fact from its item\'s `tells`. A line that says only that someone is ready, waiting, worried or in a mood is filler and fails. The four opening barks Sky cut ("what is this stupid words at the start of every game?") are the failing example: "The square looks perfectly ordinary. That\'s what worries me.", "Friends first, force last. Remember.", "Waiting. Always waiting.", "Tell me when." Where even the best line would be filler and the item may be cut, cut it and give the reason in one sentence.'),
       rule('TRUE', 'true to what the engine did', ['fable', 'motive', 'world'], 'Say only what the item\'s `tells` and `where` give: no invented facts, numbers, times, places, people, motives or outcomes, and no promise the act may not keep. People say only what they could know: a passer-by never knows the cell, its plan or its roles; the cell never states what it has not watched or heard. Every variant of an item is true whenever that item plays.'),
@@ -71,6 +81,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
         : `The page shows the cell's faces, so an agent is {op}: the name the book's cell page gives them (${cell.join(', ')}). ${named} by name; everyone else by role: the guard, the driver, the patrol, the police, their lookout.`),
       rule('VOICE', 'the book\'s voice', ['fable', 'words'], `The book's voice: plain, warm, never cute, no exclamation marks. The same word for the same thing as the start page, the end card and the glossary: turned, down, the getaway car, Popovic's car, Mislead (never false tip).${version >= 9 ? TODAY_9 : ''}`),
     ] },
+    ...(version >= 10 ? { label: LABEL_10(named, version) } : {}),
   };
   return { schema: SHORT_GUIDES[version], game: 'The Suborned', gdd: pair.agent.version, sources, kinds, voices: text.tone.voices, avoid: text.tone.avoid, profanity: text.tone.profanity,
     named: text.names.named, cell };
@@ -85,6 +96,20 @@ export const shortGuideFromFiles = (files: Record<string, string>, shas: Record<
 const POLICE_9 = ' A police card shows its title over its short: the title says who or what is coming (Police coming, More police, Robots coming, Lockdown) and the short says why. A title that names the cause repeats its short ("Shots heard · shots were heard") and no longer says anyone is coming. The Alert meter\'s head names the level its list explains.';
 /** Guide /9: the page's words are what the player has seen; a rerun changes one only to make it truer, plainer or shorter. */
 const TODAY_9 = ' An item\'s `today` is what the page shows now: keep it word for word where it already holds every rule, so the page the player knows does not change for nothing.';
+/** Guide /10 (brief 101, Sky 2026-11-08): the HUD's labels in play, read at a glance, held to Sky's rule on numbers in play. */
+const LABEL_10 = (named: string, version: ShortGuideVersion): ShortKindRules => ({
+  use: 'A label is a word or two the HUD draws in play, read at a glance while the clock runs (brief 101, the HUD Sky picked on 2026-11-08: ink labels in the top right, the news lozenge by the Book roundel in the bottom right, and the street layer drawn on people and places), beside an icon, a number, a face or a clock time. The play HUD has no sentences but speech (§10), so a label is often the only word on the thing.',
+  rules: [
+    { id: 'USEFUL', kind: 'names what the player can act on there', sources: ['hud', 'hud-words', 'lines'], instruction: 'A label names what the player can act on at that spot, in a word or two: what comes next on the clock, what a news card is about and where, what a shot will do to the street. It never only repeats the icon beside it or the number after it, and it never decorates: on a lean HUD a word the player can\'t use is clutter.' },
+    { id: 'TRUE', kind: 'true wherever it shows', sources: ['hud', 'motive', 'fable'], instruction: 'True whenever it shows and for every value its fills take: say only what the item\'s `tells` and `where` give, and never promise what the game may not do. A label right before a clock time names the event at that time ("Chime 5:10"); words that read as a countdown before a clock time ("in", "until") tell the player the wrong time, because the HUD\'s countdowns are bare orange numbers with no word.' },
+    { id: 'PLAIN', kind: 'plain everyday words', sources: ['words', 'plain', 'world'], instruction: 'The player\'s everyday words from the glossary, one name per thing (turned, down, the getaway car, Popovic\'s car, boxed in, blocked, Mislead), never design or engine words (hostile, target, objective, operative, ledger, tick, state).' },
+    { id: 'SHORT', kind: 'within the slot, and no act\'s time', sources: ['hud', 'fable', 'lines'], instruction: `Within the slot the item\'s field gives, in words and characters at the widest fills, each fill counted as one word: a fragment, no full stop, no exclamation mark; a title starts with a capital, and a line under a title starts lower case unless it starts with a name or a verb the game capitalises. Sky\'s rule on numbers in play: no label says how long an act or a walk takes, nor a chance; ${version >= 11 ? SHORT_11 : 'a time belongs only to a key event (the clock, the seal, police arriving, the rivals, the handover, a report about to land, a loop running out), and the game draws that time itself beside the label, so a label carries no number of its own.'}` },
+    { id: 'NAMES', kind: 'people named as the player knows them', sources: ['words', 'voices', 'lines'], instruction: `${named} by name; an agent of the cell by the {agent} fill where the item has one (the name the book's cell page gives them, beside their face), else by role as the HUD says it (the Enforcer); everyone else by role: the guard, the driver, the patrol, the police, the rivals, their lookout. A place by the name the city gives it.` },
+    { id: 'VOICE', kind: 'the book\'s voice, one glossary', sources: ['fable', 'words', 'hud-words'], instruction: 'The book\'s voice: plain, warm, never cute, no blame. One glossary: the same word for the same thing on the HUD, in the Journal\'s cards and in the debrief, as the item\'s `tells` give them. An item\'s `today` is what the HUD shows now: keep it word for word where it already holds every rule, so the HUD the player knows doesn\'t change for nothing.' },
+  ],
+});
+/** Guide /11 (host logic on the /10 words): a key event's time and the health left are the game's numbers, drawn through a fill; /10 read as "no number at all". */
+const SHORT_11 = 'a time belongs only to a key event (the clock, the seal, police arriving or closing in, the rivals, the handover, a report about to land, a loop running out). The game draws every number: a label types no digit of its own, and a count, the health left or a key event\'s time comes in through a fill the item lists ({n}, {police}), which the line keeps wherever the item\'s facts or rules say so.';
 const OPENING = 'The four opening barks Sky cut ("what is this stupid words at the start of every game?") are the failing example: "The square looks perfectly ordinary. That\'s what worries me.", "Friends first, force last. Remember.", "Waiting. Always waiting.", "Tell me when."';
 /** Guide /4's bark rules: what to say, in voice; never the order's price read back (GDD §02: every order shows its price before you commit). */
 const BARK_4 = (words: number, chars: number, named: string, cell: string[], world: string): ShortRule[] => [

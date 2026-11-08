@@ -243,7 +243,7 @@
    {
     "at": "2:35",
     "label": "A rival car turns in",
-    "short": "Rivals in",
+    "short": "Rivals arrive",
     "known": false
    },
    {
@@ -261,7 +261,7 @@
    {
     "at": "5:20",
     "label": "Last chance to turn the driver",
-    "short": "Last chance",
+    "short": "Driver cutoff",
     "known": true
    },
    {
@@ -1775,11 +1775,7 @@
    "less.mood": "beat",
    "less.sealed": "debrief",
    "less.closedIn": "debrief",
-   "less.odds.chip": "label",
-   "less.odds.chipBare": "label",
-   "less.odds.sum": "alt",
-   "less.odds.limits": "alt",
-   "less.odds.streak": "alt",
+   "less.street": "label",
    "less.takedown": "label",
    "less.alt.mood": "alt",
    "less.failcam": "beat",
@@ -1796,11 +1792,10 @@
    "scenes.conversations.items.opens": "label"
   },
   "price": {
-   "rule": "One line per way: the verb, then only the fields that are not zero, always in `order`; an unknown number is \"?\". Money is compact ($90k, $1.5k, a range $40k–60k; under $1,000 as it is): the rows have fixed columns; the status pill and the debrief keep whole dollars. Locked rows show the same line dimmed. Alt shows every field including the zeros, the walk split from the act, and the rows a card carries today (`actions.*.does`, found, never found, wakes, seen by).",
+   "rule": "One line per way: the verb, then only the fields that are not zero, always in `order`; an unknown number is \"?\". Money is compact ($90k, $1.5k, a range $40k–60k; under $1,000 as it is): the rows have fixed columns; the status pill and the debrief keep whole dollars. Locked rows show the same line dimmed. Alt shows every field including the zeros, and the rows a card carries today (`actions.*.does`, found, never found, wakes, seen by). No time and no chance (brief 101, Sky 2026-11-08: \"Don't look at how long something takes because I don't have a choice with the action so it's irrelevant as a player. Only thing that feels time is important are the key events that happen\"): a price is money, Trail, Alert risk and what the street will do, and never says how long the walk or the act takes, on the line or on Alt, nor a hit chance. A time stays only where the act opens a window in the world that the player plays to: the door a pressed call clears (`door`), a loop's run (`lasts`), the desk's report after a Disable (in `alert`).",
    "order": [
     "name",
     "usd",
-    "time",
     "trail",
     "door",
     "alert",
@@ -1818,10 +1813,6 @@
     "usd": {
      "shows": "the cash the order spends, compact: $90k, $1.5k, under $1,000 as it is, or a range ($40k–60k) when the worst case is dearer; the status pill and the debrief keep whole dollars",
      "hiddenWhen": "the order is free"
-    },
-    "time": {
-     "shows": "n s, the walk plus the act (Alt splits them)",
-     "hiddenWhen": "the order lands at once (Call, Vale into the car)"
     },
     "trail": {
      "shows": "+n Trail the order traces",
@@ -1860,23 +1851,19 @@
    "verbs": {
     "watch": [
      "name",
-     "time",
      "learns"
     ],
     "listen": [
      "name",
-     "time",
      "learns"
     ],
     "mislead": [
      "name",
-     "time",
      "trail"
     ],
     "ask": [
      "name",
      "usd",
-     "time",
      "trail",
      "alert",
      "eye",
@@ -1885,7 +1872,6 @@
     "pay": [
      "name",
      "usd",
-     "time",
      "trail",
      "alert",
      "eye",
@@ -1894,7 +1880,6 @@
     "help": [
      "name",
      "usd",
-     "time",
      "trail",
      "alert",
      "eye",
@@ -1903,7 +1888,6 @@
     "pressure": [
      "name",
      "usd",
-     "time",
      "trail",
      "door",
      "alert",
@@ -1918,38 +1902,32 @@
     ],
     "loop": [
      "name",
-     "time",
      "trail",
      "lasts"
     ],
-    "disable": ["name", "time", "trail", "alert"],
+    "disable": ["name", "trail", "alert"],
     "reroute": [
      "name",
-     "time",
      "trail"
     ],
     "enter": [
      "name",
-     "time",
      "eye",
      "mark"
     ],
     "take": [
      "name",
-     "time",
      "trail"
     ],
     "board": [
-     "name",
-     "time"
+     "name"
     ],
     "go": [
      "name",
      "trail"
     ],
     "drive-car": [
-     "name",
-     "time"
+     "name"
     ],
     "spawn": [
      "name"
@@ -1969,15 +1947,13 @@
      "name"
     ],
     "talk-down": [
-     "name",
-     "time"
+     "name"
     ],
     "steam": [
      "name"
     ],
     "covering-fire": [
-     "name",
-     "time"
+     "name"
     ],
     "cease": [
      "name"
@@ -1996,36 +1972,29 @@
     ],
     "carry": [
      "name",
-     "time",
      "pace"
     ],
     "takedown": [
      "name",
-     "time",
      "trail",
      "alert",
      "eye"
     ],
     "drop": [
-     "name",
-     "time"
+     "name"
     ],
     "stash": [
-     "name",
-     "time"
+     "name"
     ],
     "restrain": [
-     "name",
-     "time"
+     "name"
     ],
     "move": [
      "name",
-     "time",
      "eye"
     ],
     "run": [
      "name",
-     "time",
      "eye"
     ],
     "cancel": [
@@ -2039,20 +2008,20 @@
     ]
    },
    "examples": {
-    "knockout": "Knock out · 7 s · +4 · ▲1 · 👁 none",
-    "kill": "Kill · 4 s · +8 · ▲2 · 👁 none",
-    "ask": "Ask · 20 s · +1 · ✗",
-    "pay": "Pay · $90k · 35 s · +2 · ✓",
-    "help": "Help · $40k · 35 s · +1 · ½",
-    "pressure": "Pressure · 25 s · +3 · ✓",
-    "pressure-inez": "Pressure · 25 s · +3 · Door 1:40 · ✓",
+    "knockout": "Knock out · +4 · ▲1 · 👁 none",
+    "kill": "Kill · +8 · ▲2 · 👁 none",
+    "ask": "Ask · +1 · ✗",
+    "pay": "Pay · $90k · +2 · ✓",
+    "help": "Help · $40k · +1 · ½",
+    "pressure": "Pressure · +3 · ✓",
+    "pressure-inez": "Pressure · +3 · Door 1:40 · ✓",
     "fire": "Fire · +2/hit · ▲≥2",
     "fire-camera": "Fire · +2 · ▲≥2",
-    "loop": "Loop · 20 s · +1 · 2:00",
-    "disable": "Disable · 10 s · +2 · ▲1 in 14 s",
-    "board": "Board · 4 s",
+    "loop": "Loop · +1 · 2:00",
+    "disable": "Disable · +2 · ▲1 in 14 s",
+    "board": "Board",
     "go": "Go · +1",
-    "drive-car": "Drive · 28 s"
+    "drive-car": "Drive"
    }
   },
   "feed": {
@@ -2226,17 +2195,9 @@
     "no-go": "Popovic was aboard and the car was free, but nobody pressed Go in time."
    }
   },
-  "odds": {
-   "rule": "Brief 080 (Sky: real hit chances a player can read; design.html sections 3, 4): the fire preview. The chip reads FirePreview's Acc as a percent and the host's seconds to down; `chipBare` when there is no estimate. Alt shows `sum` from FirePreview.Sum (range, cover and move signed), `limits` under it, then the streak note: it leans the player's way on purpose, and the game says so (decision 2). Their numbers are the rulebook's.",
-   "chip": "{pct} % · down in about {s} s",
-   "chipBare": "{pct} %",
-   "sum": "{pct} % to hit: aim {aim}, range {range}, cover {cover}, movement {move}.",
-   "limits": "Never under 5 % or over 95 %.",
-   "streak": {
-    "head": "Streaks lean your way, on purpose",
-    "hits": "After 3 hits in a row on one agent, that shooter's next shot misses.",
-    "misses": "After 3 misses in a row on one target, the next hits, at odds of 20 % or more."
-   }
+  "street": {
+   "rule": "Brief 101 (Sky 2026-11-08 picked a mix of Glyph's round 2: the top right in Street labels' style, the clock and the seal as ink labels; the bottom right Corner tokens' news lozenge and Book roundel; everything else drawn on people and places in the street). The words that layer draws that nothing else in this file has. A label is a word or two read at a glance: never how long an act takes, never a chance (Sky's rule on numbers in play). The corners' other words are the file's own: the next key event is briefing.timeline's `short` before its clock; the lozenge is book.feed (a card's title over its line and the clock it came at, `of` under it), a police card's arrival time alone on its ticket; the shot's verb is actions.fire.label. `loud` heads the first shot's row, before the Alert lamps, the police badge, the seal's lock and the Trail: the same words as less.alt.outcome.loud, the outcome on Alt.",
+   "loud": "Goes loud"
   },
   "takedown": {
    "rule": "Brief 080 (TakedownQuote.Coming): someone not in range now who will arrive and notice before the act ends. `coming` is the card's Before row, {list} the `item`s joined by '; ': {who} is the name the card already gives a person, {s} seconds, {verb} what they would do ('?' until known). `short` is the same for one person at rest.",
@@ -2423,7 +2384,7 @@
    }
   },
   "done": {
-   "rule": "Brief 043 (the done moment; Sky 2026-10-22: it is not clear when a task has completed and what it gained). Labels and numbers, never sentences. The plate is the portrait plate's word for 2.2 s after a landing or a cancel, keyed by the engine's outcome (the last part of turn.<approach>.<outcome>) or `done`; kept reads as turned. The gain chip shows one icon-plus-word line per fact, at most three, and the facts a Watch or Listen teaches are Intel's own fragments (less.intel: the need's record label, the temperament, Loves {name}) so the chip and the Intel panel never disagree; only the words in `gain` are new. Brief 058 (Sky, 2026-10-25): a looped camera shows the desk a clean picture, so a loop is never \"dark\": `camera-looped` is the Loop chip (the 2:00 countdown rides the window marker), `camera-cut` the Disable chip, `camera-shot` the chip of a camera shot out, `parked` the chip of a car Drive that has arrived and `timetable` the chip of a Watch on the rival crew (brief 059: the street draws the three facts it teaches, the next move, the spring ring and the follow line, so the chip names them as one; a bare noun on the thing, as `rounds` is on the patrol). A window marker is an icon with a count or the doer's face; `close` is the pop on the thing when the window ends, by the marker's kind. Unlock-row pills are the verbs' own ring labels (actions.ring-*), shut ones struck through, so they carry no words here. Cancel: the tag before is `tag` or `tagCost`, the pop after `pop` or `popCost`, {verb} the ring label of the order dropped, {cost} one of `cost` by the engine's cancel cost (lost, aborted, released, staff-report, vale-reports, ends; the rest are free and show no cost; `drives-on` is no cancel at all, engine 0.33.1: a Drive under way is refused `car-driving`, so Cancel is hidden for the driver and the riders and no tag or pop shows), {s} the seconds spent. Walking in: the plate shows `walk.plate` with {who} from `walk.who`; the pill and Alt show `walk.line` with {target} from names.targets and {verb} the ring label. The old 'serving a table, back in {s} s' refusal is retired (engine 0.23: the agent walks up to the server at the table). Focus (engine 0.35 one input, the sticky focus, GDD section 10): the plate under a focus that waits, two lowercase words by the engine's FocusOf state (aiming, walking-in, no-line, out-of-reach; firing shows no plate); no-line and out-of-reach say what the fire refusals say.",
+   "rule": "Brief 043 (the done moment; Sky 2026-10-22: it is not clear when a task has completed and what it gained). Labels and numbers, never sentences. The plate is the portrait plate's word for 2.2 s after a landing or a cancel, keyed by the engine's outcome (the last part of turn.<approach>.<outcome>) or `done`; kept reads as turned. The gain chip shows one icon-plus-word line per fact, at most three, and the facts a Watch or Listen teaches are Intel's own fragments (less.intel: the need's record label, the temperament, Loves {name}) so the chip and the Intel panel never disagree; only the words in `gain` are new. Brief 058 (Sky, 2026-10-25): a looped camera shows the desk a clean picture, so a loop is never \"dark\": `camera-looped` is the Loop chip (the 2:00 countdown rides the window marker), `camera-cut` the Disable chip, `camera-shot` the chip of a camera shot out, `parked` the chip of a car Drive that has arrived and `timetable` the chip of a Watch on the rival crew (brief 059: the street draws the three facts it teaches, the next move, the spring ring and the follow line, so the chip names them as one; a bare noun on the thing, as `rounds` is on the patrol). A window marker is an icon with a count or the doer's face; `close` is the pop on the thing when the window ends, by the marker's kind. Unlock-row pills are the verbs' own ring labels (actions.ring-*), shut ones struck through, so they carry no words here. Cancel: the tag before is `tag` or `tagCost`, the pop after `pop` or `popCost`, {verb} the ring label of the order dropped, {cost} one of `cost` by the engine's cancel cost (aborted, released, staff-report, vale-reports, ends; the rest are free and show no cost, and so is `lost` since brief 101: its word was the seconds the act had run, and no act's time shows in play, Sky 2026-11-08; `drives-on` is no cancel at all, engine 0.33.1: a Drive under way is refused `car-driving`, so Cancel is hidden for the driver and the riders and no tag or pop shows). Walking in: the plate shows `walk.plate` with {who} from `walk.who`; the pill and Alt show `walk.line` with {target} from names.targets and {verb} the ring label. The old 'serving a table, back in {s} s' refusal is retired (engine 0.23: the agent walks up to the server at the table). Focus (engine 0.35 one input, the sticky focus, GDD section 10): the plate under a focus that waits, two lowercase words by the engine's FocusOf state (aiming, walking-in, no-line, out-of-reach; firing shows no plate); no-line and out-of-reach say what the fire refusals say.",
    "plate": {"done": "done", "turned": "turned", "kept": "turned", "not-yet": "not yet", "refused": "refused", "small-offer": "refused", "suspicious": "reported", "cancelled": "cancelled", "waiting": "waiting"},
    "gain": {
     "rounds": "Rounds", "cone": "Cone", "nothing-new": "Nothing new",
@@ -2444,7 +2405,7 @@
     "againKey": "Press again to stop",
     "cantStop": "Can't stop now",
     "already": "Already doing it",
-    "cost": {"lost": "{s} s lost", "aborted": "They remember", "released": "They report", "staff-report": "Staff report", "vale-reports": "Popovic reports", "ends": "Loop ends"}
+    "cost": {"aborted": "They remember", "released": "They report", "staff-report": "Staff report", "vale-reports": "Popovic reports", "ends": "Loop ends"}
    },
    "fire": {
     "mission-over": "mission over", "agent-down": "down", "enforcer-inside": "inside", "agent-busy": "busy", "in-car": "in car",
@@ -3368,16 +3329,16 @@
       "title": "{agent} is down"
      },
      "hurt-carry": {
-      "title": "Enforcer badly hurt",
-      "line": "{n} health, carrying Popovic: cover him"
+      "title": "{agent} badly hurt",
+      "line": "{n} health; cover him and Popovic"
      },
      "hurt": {
-      "title": "Enforcer badly hurt",
-      "line": "{n} health left: get him into cover"
+      "title": "{agent} badly hurt",
+      "line": "{n} health: get him to cover"
      },
      "for-car": {
-      "title": "Rivals going for our car",
-      "line": "{n} rivals",
+      "title": "Rivals nearing our car",
+      "line": "{n} coming for Popovic",
       "fixes": [
        {
         "icon": "run",
@@ -3402,7 +3363,7 @@
      },
      "rival-car": {
       "title": "Rival car coming",
-      "line": "east road"
+      "line": "off Orbit Walk"
      },
      "turned": {
       "title": "{who} turned"
@@ -3415,20 +3376,20 @@
      },
      "vale-out": {
       "title": "Popovic is out",
-      "line": "get the rest clear by {police}"
+      "line": "the rest get clear by {police}"
      },
      "lent": {
       "title": "Popovic's car is ours",
-      "line": "Go once the way out is clear"
+      "line": "Go when the way is clear"
      },
      "lookout": {
       "title": "Rival lookout posted",
-      "line": "follows Popovic's car if it goes",
+      "line": "follows Popovic's car out",
       "fixes": [{"icon": "mislead", "word": "Mislead", "agent": "scout"}, {"icon": "pay", "word": "Pay", "agent": "fixer"}, {"icon": "takedown", "word": "Take", "agent": "enforcer"}]
      },
      "boxed": {
       "title": "Our car boxed in",
-      "line": "their car is across our way out"
+      "line": "their car across our way"
      }
     }
    },

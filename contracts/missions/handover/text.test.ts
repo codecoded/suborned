@@ -94,7 +94,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     for (const k of ['likely', 'hurt'] as const) push(`less.mood.${k}`, L.mood[k], false, 10);
     for (const [k, x] of Object.entries(L.sealed.line)) push(`less.sealed.line.${k}`, x);
     for (const [k, x] of Object.entries(L.closedIn.line)) push(`less.closedIn.line.${k}`, x);
-    push('less.odds.chip', L.odds.chip.replace('{pct}', '95').replace('{s}', '120'), false, 32); push('less.odds.chipBare', L.odds.chipBare.replace('{pct}', '95'), false, 12); push('less.odds.sum', L.odds.sum.replace('{pct}', '95').replace('{aim}', '75').replace('{range}', '+30').replace('{cover}', '-45').replace('{move}', '-55')); push('less.odds.limits', L.odds.limits); push('less.odds.streak.head', L.odds.streak.head, false, 40); push('less.odds.streak.hits', L.odds.streak.hits); push('less.odds.streak.misses', L.odds.streak.misses);
+    push('less.street.loud', L.street.loud, false, 12); // brief 101: less.odds (the fire chip, its sum, limits and streak note) left play with Sky's rule on numbers
     push('less.takedown.coming', L.takedown.coming); push('less.takedown.item', L.takedown.item.replace('{s}', '12').replace('{verb}', 'report'), false, 36); push('less.takedown.short', L.takedown.short.replace('{s}', '12'), false, 24);
     for (const [k, x] of Object.entries(L.sealed.tip)) push(`less.sealed.tip.${k}`, x, false, 36);
     for (const [k, x] of Object.entries(L.sealed.story)) push(`less.sealed.story.${k}`, x);
@@ -232,7 +232,9 @@ describe('brief 043: the done moment\'s words', () => {
     expect(fill(D.cancel.tag, '')).toBe('Cancels Pressure'); expect(fill(D.cancel.pop, '')).toBe('Pressure cancelled');
     for (const [k, c] of Object.entries(D.cancel.cost)) { expect(Object.keys(t.cancelCosts), k).toContain(k); expect(fill(D.cancel.tagCost, fill(c, '')).length, k).toBeLessThanOrEqual(36); expect(fill(D.cancel.popCost, fill(c, '')).length, k).toBeLessThanOrEqual(36); }
     expect(wide).toBeLessThanOrEqual(16);
-    expect(fill(D.cancel.tagCost, fill(D.cancel.cost.lost!, ''))).toBe('Cancels Pressure · 120 s lost');
+    expect(fill(D.cancel.tagCost, fill(D.cancel.cost.aborted!, ''))).toBe('Cancels Pressure · They remember');
+    // brief 101 (Sky 2026-11-08): no act's time in play, so a cancel never says the seconds it had run; `lost` has no word and shows no cost
+    expect(D.cancel.cost.lost).toBeUndefined(); for (const [k, c] of Object.entries(D.cancel.cost)) expect(c, k).not.toMatch(/\{s\}|\d+ s\b/);
   });
   test('the walk-in plate names every cast target and the line reads with the ring label', () => {
     for (const k of Object.keys(t.names.targets)) if (!/^(door|security|hostile|stash-|stand-)/.test(k)) expect(D.walk.who[k], k).toBeTruthy(); // a stand is driven to from inside the car: no walk-in plate
@@ -1300,7 +1302,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
       expect(new Set(fs).size, v).toBe(fs.length);
     }
     for (const v of ['ask', 'pay', 'help', 'pressure']) expect(L.price.verbs[v as (typeof VERBS)[number]]!.filter((f) => f !== 'door') as string[]).toEqual(L.price.verbs.pay);
-    // every field a verb's card prices is on its line: the engine's price is ($, time, Trail, Alert risk); an order that traces, spends or risks shows it
+    // every field a verb's card prices is on its line: a price is $, Trail and Alert risk (brief 101: no time); an order that traces, spends or risks shows it
     for (const v of ['pay', 'help', 'ask', 'pressure', 'takedown', 'fire']) { expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('trail'); expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('alert'); }
     for (const v of ['pay', 'help']) expect(L.price.verbs[v as (typeof VERBS)[number]]).toContain('usd');
     expect(L.price.verbs.takedown).toContain('eye');
@@ -1310,7 +1312,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const a of Object.values(t.actions)) { labels.add(a.label); for (const w of Object.values(a.ways ?? {})) labels.add(w.label); }
     // compact money (brief 014): $90k, $1.5k, under $1,000 as it is, a range $40k–60k; whole dollars are for the status pill and the debrief
     const COMPACT = /^\$(\d{1,3}|\d{1,3}(\.\d)?k)(–\d{1,3}(\.\d)?k?)?$/;
-    const kind = (f: string) => /^\$/.test(f) ? 'usd' : /^\d+ s$/.test(f) ? 'time' : /^\+\d+(\/hit)?$/.test(f) ? 'trail' : /^▲/.test(f) ? 'alert' : /^Door \d+:\d\d$/.test(f) ? 'door' : /^\d+:\d\d$/.test(f) ? 'lasts' : /^👁/u.test(f) ? 'eye' : /^[✓✗½?]$/u.test(f) ? 'mark' : 'unknown';
+    const kind = (f: string) => /^\$/.test(f) ? 'usd' : /^\+\d+(\/hit)?$/.test(f) ? 'trail' : /^▲/.test(f) ? 'alert' : /^Door \d+:\d\d$/.test(f) ? 'door' : /^\d+:\d\d$/.test(f) ? 'lasts' : /^👁/u.test(f) ? 'eye' : /^[✓✗½?]$/u.test(f) ? 'mark' : 'unknown';
     expect(Object.keys(L.price.examples).sort()).toEqual(['ask', 'board', 'disable', 'drive-car', 'fire', 'fire-camera', 'go', 'help', 'kill', 'knockout', 'loop', 'pay', 'pressure', 'pressure-inez']); // loop and disable: brief 058; fire-camera: a camera's shot is priced once, never per hit
     for (const [k, ex] of Object.entries(L.price.examples)) {
       const parts = ex.split(' · ');
@@ -1324,9 +1326,9 @@ describe('brief 014: the short forms, the price line, the beats', () => {
       expect(parts.some((p) => /^\$0$|^\+0$|^0 s$/.test(p)), `${ex} shows a zero`).toBe(false);
       expect(ex.length, ex).toBeLessThanOrEqual(40);
     }
-    expect(L.price.examples.knockout).toBe('Knock out · 7 s · +4 · ▲1 · 👁 none');
-    expect(L.price.examples.pay).toBe('Pay · $90k · 35 s · +2 · ✓');
-    expect(L.price.examples.help).toBe('Help · $40k · 35 s · +1 · ½');
+    expect(L.price.examples.knockout).toBe('Knock out · +4 · ▲1 · 👁 none'); // brief 101: no act's seconds (a bare "7 s" is no field now, so it fails above)
+    expect(L.price.examples.pay).toBe('Pay · $90k · +2 · ✓');
+    expect(L.price.examples.help).toBe('Help · $40k · +1 · ½');
     expect(L.price.fields.usd.shows).toContain('$90k');
     expect(L.price.fields.usd.shows).toContain('$40k–60k');
   });
@@ -1372,7 +1374,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('the timeline marks have a word for Alt', () => {
     // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) is a mark; brief 096 (engine 0.41.0): its block (2:53) replaces the drop (2:46) and the park (3:10)
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Boxed in', 'Chime', 'Last chance', 'Popovic exits', 'Popovic at car', 'Close']); // brief 096: "Popovic is out" is the lend's win (vale.out), so his walk out of the Office exits
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals arrive', 'Boxed in', 'Chime', 'Driver cutoff', 'Popovic exits', 'Popovic at car', 'Close']); // brief 096: "Popovic is out" is the lend's win (vale.out), so his walk out of the Office exits; brief 101 (label/hud, Motive 10/10): the top right reads "Rivals arrive 2:35", never "Rivals in" before a clock time, and the 5:20 mark says whose chance ends
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
@@ -1546,7 +1548,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
   test('Disable is a whole verb: action, ring word, exchange, activity, price line, refusals, cards, an event and the Tech\'s lines (engine 0.31.0)', () => {
     expect(t.actions.disable!.by).toEqual(['tech']); expect(t.actions['ring-disable']!.label.length).toBeLessThanOrEqual(8);
     expect(t.exchange.disable).toEqual(['ack', 'arrive', 'done']);
-    expect(L.price.verbs.disable).toEqual(['name', 'time', 'trail', 'alert']); expect(L.price.examples.disable).toBe('Disable · 10 s · +2 · ▲1 in 14 s'); expect(L.price.examples.loop).toBe('Loop · 20 s · +1 · 2:00'); expect(L.price.verbs.loop).toEqual(['name', 'time', 'trail', 'lasts']);
+    expect(L.price.verbs.disable).toEqual(['name', 'trail', 'alert']); expect(L.price.examples.disable).toBe('Disable · +2 · ▲1 in 14 s'); expect(L.price.examples.loop).toBe('Loop · +1 · 2:00'); expect(L.price.verbs.loop).toEqual(['name', 'trail', 'lasts']); // brief 101: the desk's report and the loop's run are world windows, so they keep their time
     expect(t.locks['camera-dead']!.verbs).toEqual(['loop', 'disable']); expect(t.locks['disable-wrong-target']!.verbs).toEqual(['disable']);
     expect(t.locks['loop-holds']!.line).toContain('{tick}'); expect(t.locks['loop-holds']!.short).toContain('{tick}');
     expect(t.cards.items['camera.cut']!.fate).toBe('icon'); expect(t.cards.items['camera.cut-reported']!.title).toBe('The desk sees a dead camera');
@@ -1586,7 +1588,7 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
     expect(t.exchange['drive-car']).toEqual(['ack']);
     for (const ag of AGENTS) expect(lookup(t, { event: 'ack', verb: 'drive-car', speaker: ag }), ag).toBeTruthy();
     expect(t.activity.acting['drive-car']).toBe('Driving the car'); expect(t.activity.acting.ride).toBeTruthy(); // the driver's busy order is drive-car, everyone else's is ride
-    expect(L.price.verbs['drive-car']).toEqual(['name', 'time']); expect(L.price.examples['drive-car']).toBe('Drive · 28 s'); // $0, 0 Trail, no Alert: nothing but the seconds
+    expect(L.price.verbs['drive-car']).toEqual(['name']); expect(L.price.examples['drive-car']).toBe('Drive'); // $0, 0 Trail, no Alert, and since brief 101 no seconds: nothing to price
     // each refusal says the fix in a few words (Glyph's draft, Fable 2026-10-26)
     const shorts = Object.fromEntries(['drive-held', 'drive-no-driver', 'drive-busy', 'drive-here', 'drive-fight', 'unknown-stand'].map((c) => [c, t.locks[c]!.short]));
     expect(shorts).toEqual({ 'drive-held': 'Blocked · down {holders}', 'drive-no-driver': 'Board first', 'drive-busy': 'Car busy', 'drive-here': 'Already here', 'drive-fight': 'Fight or Go', 'unknown-stand': 'Not a stand' });
@@ -1880,8 +1882,8 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     expect(t.tone.voices.patrol).toMatch(/Running is noted/);
     expect(t.dialogue.filter((e) => e.event === 'run-seen').flatMap((e) => e.lines).join(' ')).not.toMatch(/reported/);
     expect(t.silentLogs['attention.noticed']).toMatch(/runner/);
-    // the price line of a run keeps name, time and eye: no Alert field
-    expect(L.price.verbs.run).toEqual(['name', 'time', 'eye']); expect(L.price.verbs.move).toEqual(['name', 'time', 'eye']);
+    // the price line of a run keeps name and eye: no Alert field (and since brief 101 no time)
+    expect(L.price.verbs.run).toEqual(['name', 'eye']); expect(L.price.verbs.move).toEqual(['name', 'eye']);
   });
   test('the Alt chip of a run says who would notice it, in the words of the rule (a run is noticed, never an Alert), and the host reads that key', () => {
     expect(L.done.run).toEqual({ noticed: 'noticed by {who}', unknown: 'noticed by: ?' });
@@ -1932,18 +1934,16 @@ describe('engine 0.35.1: the four moves parked, the fight-on line silent', () =>
 });
 
 describe('brief 080: the seeded game\'s words', () => {
-  const v = (json('contracts/rules/rulebook.json') as { values: Record<string, { v: number }> }).values;
   const L = t.less;
-  test('the streak note and the limits say the rulebook\'s numbers, and say the lean aloud', () => {
-    expect(L.odds.limits).toContain(`${v['sheet-min']!.v} %`); expect(L.odds.limits).toContain(`${v['sheet-max']!.v} %`);
-    expect(L.odds.streak.hits).toContain(`After ${v['sheet-streak-hits']!.v} hits`);
-    expect(L.odds.streak.misses).toContain(`After ${v['sheet-streak-misses']!.v} misses`); expect(L.odds.streak.misses).toContain(`${v['sheet-streak-floor']!.v} %`);
-    expect(L.odds.streak.head).toMatch(/your way/);
-  });
-  test('the fire chip and the sum fit once filled, and name all four parts', () => {
-    expect(L.odds.chip.replace('{pct}', '40').replace('{s}', '30')).toBe('40 % · down in about 30 s');
-    const sum = L.odds.sum.replace('{pct}', '95').replace('{aim}', '75').replace('{range}', '+30').replace('{cover}', '-45').replace('{move}', '-55');
-    expect(sum.length).toBeLessThanOrEqual(MAX_LINE); for (const w of ['aim', 'range', 'cover', 'movement']) expect(sum).toContain(w);
+  test('brief 101 (Sky 2026-11-08): no hit chance and no act\'s time in play; a window the act opens keeps its time', () => {
+    expect((L as Record<string, unknown>).odds).toBeUndefined(); // the fire chip, its sum, limits and streak note: the hit rate stays in the debrief's numbers
+    expect(JSON.stringify(L.fates)).not.toMatch(/less\.odds/);
+    expect(PRICE_FIELDS as readonly string[]).not.toContain('time'); expect(L.price.order as string[]).not.toContain('time');
+    for (const [v, fs] of Object.entries(L.price.verbs)) expect(fs as string[], v).not.toContain('time');
+    expect(L.price.rule).not.toMatch(/walk split|Alt splits/); expect(L.price.rule).toMatch(/No time and no chance/);
+    for (const [k, ex] of Object.entries(L.price.examples)) expect(ex.replace(/▲\d+ in \d+ s/, ''), k).not.toMatch(/\d+ s\b|%/); // the desk's report after a Disable is a key event
+    expect(L.price.examples['pressure-inez']).toContain('Door 1:40'); expect(L.price.examples.loop).toContain('2:00'); // the door a call clears, a loop's run
+    expect(L.street.loud).toBe(L.alt.outcome.loud); // one glossary: the shot row's label is the outcome Alt names
   });
   test('the takedown card\'s Coming row names who and when', () => {
     const line = L.takedown.coming.replace('{list}', L.takedown.item.replace('{who}', 'a passer-by').replace('{s}', '12').replace('{verb}', 'report'));

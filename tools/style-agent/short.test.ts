@@ -45,8 +45,8 @@ const run = (invoke: Invoke, extra: Partial<Parameters<typeof runShort>[0]> = {}
   runShort({ guide, brief: end, invoke, limits: { ...defaults }, mode: 'test-fixture', evidence, base: { why: text.why }, now: () => clock++, ...extra });
 
 describe('the short-line rubric comes from the game', () => {
-  test('three kinds, each with the brief\'s six rules, every rule tied to fingerprinted sources', () => {
-    expect(Object.keys(guide.kinds)).toEqual(['bark', 'why', 'debrief']);
+  test('four kinds (three before guide /10), each with the brief\'s six rules, every rule tied to fingerprinted sources', () => {
+    expect(Object.keys(guide.kinds)).toEqual(['bark', 'why', 'debrief', 'label']); expect(Object.keys(loadShortGuide(root, 9).kinds)).toEqual(['bark', 'why', 'debrief']);
     for (const k of Object.values(guide.kinds)) {
       expect(k.rules.map(r => r.id)).toEqual(['USEFUL', 'TRUE', 'PLAIN', 'SHORT', 'NAMES', 'VOICE']);
       for (const r of k.rules) for (const id of r.sources) expect(guide.sources.some(s => s.id === id), `${r.id} ${id}`).toBe(true);
@@ -63,6 +63,11 @@ describe('the short-line rubric comes from the game', () => {
     expect(rule('bark', 'USEFUL')).toContain('a line that reads it back is a tooltip, not speech, and fails');
     expect(loadShortGuide(root, 2).kinds.bark.rules.find(r => r.id === 'VOICE')!.instruction).not.toContain('another speaker'); // a /2 run replays with its own rules
     expect(guide.cell).toEqual(['Larthi', 'Hasti', 'Sethre', 'Arruns']);
+    // guide /10 (brief 101): the HUD's labels, from Sky's rule on numbers in play and Glyph's round 2; a /9 guide rebuilds with the sources it ran with
+    expect(guide.kinds.label!.rules.find(r => r.id === 'SHORT')!.instruction).toContain('no label says how long an act or a walk takes, nor a chance');
+    expect(guide.kinds.label!.rules.find(r => r.id === 'TRUE')!.instruction).toContain('the HUD\'s countdowns are bare orange numbers');
+    expect(guide.sources.find(s => s.id === 'hud')!.excerpt).toContain('No action durations in play'); expect(guide.sources.find(s => s.id === 'hud-words')!.excerpt).toContain('Goes loud');
+    expect(loadShortGuide(root, 9).sources.some(s => s.id.startsWith('hud'))).toBe(false);
   });
 });
 
@@ -143,6 +148,28 @@ describe('the families: every short line in the game, a family per run', () => {
     expect(old.some(b => b.id === 'debrief/folds')).toBe(false); // a /4–/8 run rebuilds with the families it ran with
     expect(old.flatMap(b => b.items).find(i => i.key === 'reasons.cash.help')!.fields[0]!.fills).toEqual([]);
   });
+  test('guide /10: the HUD\'s labels (brief 101): the first shot\'s row, every timeline mark, the lozenge\'s cards, today\'s words, and no number of a label\'s own', () => {
+    const b = family('label/hud'), keys = b.items.map(i => i.key), ok = today(b), bad = (s: ShortSet) => checkShort(b, s, guide).map(i => i.reason).join('\n');
+    expect(keys[0]).toBe('less.street.loud'); expect(b.items[0]!.current.label).toEqual([text.less.street.loud]);
+    expect(keys.filter(k => k.startsWith('briefing.timeline.'))).toEqual(text.briefing.timeline.map((m: { at: string }) => `briefing.timeline.${m.at}`));
+    for (const k of Object.keys(text.book.feed.cards)) expect(keys.includes(`book.feed.cards.${k}`), k).toBe(!['police', 'seal'].includes(k)); // the police title is the why block's (and its {s} keys the ticket); the seal is never a card
+    expect(b.items.find(i => i.key === 'book.feed.cards.boxed')!.current).toEqual({ title: [text.book.feed.cards.boxed.title], line: [text.book.feed.cards.boxed.line] }); // today is the file's
+    expect(b.items.find(i => i.key === 'book.feed.cards.seen')!.fields.map(f => f.id)).toEqual(['title']); // the host clears its line
+    expect(b.items.every(i => i.stays)).toBe(true); expect(keys).toContain('book.feed.of');
+    expect(bad(edit(ok, 'briefing.timeline.5:10', ['Chime in 12 s'], 'short'))).toMatch(/briefing\.timeline\.5:10\.short: a label carries no number of its own/);
+    expect(bad(edit(ok, 'less.street.loud', ['75 %'], 'label'))).toMatch(/less\.street\.loud\.label: a label carries no number of its own/);
+    expect(bad(edit(ok, 'book.feed.cards.down', ['Arruns is down'], 'title'))).toMatch(/a label names an agent with \{agent\}/);
+    expect(bad(edit(ok, 'book.feed.cards.for-car', ['Rivals going for our car'], 'title'))).toMatch(/book\.feed\.cards\.for-car\.title: 5 words; this slot holds 4/); // GDD §10: a card's title is four words or fewer (the title before the run)
+    // guide /11 (host logic on the /10 words): the lines brief 096's host tests read are held; the line slot is 32
+    const line = (k: string) => b.items.find(i => i.key === k)!.fields.find(f => f.id === 'line')!;
+    expect(line('book.feed.cards.hurt-carry').patterns.map(p => p.re)).toEqual(['\\{n\\} health', 'Popovic']); expect(line('book.feed.cards.vale-out').patterns.map(p => p.re)).toEqual(['\\{police\\}']);
+    expect(line('book.feed.cards.boxed').chars).toBe(32);
+    expect(bad(edit(ok, 'book.feed.cards.vale-out', ['the rest get clear'], 'line'))).toMatch(/vale-out\.line: needs \/\\\{police\\\}\//);
+    expect(bad(edit(ok, 'book.feed.cards.hurt-carry', ['carrying Popovic: cover him'], 'line'))).toMatch(/hurt-carry\.line: needs /);
+    const at10 = loadShortBriefs(root, 10).find(x => x.id === 'label/hud')!; // a /10 run rebuilds as it ran: no held lines, a slot of 28
+    expect(at10.items.every(i => i.fields.every(f => !f.patterns.length))).toBe(true); expect(at10.items.find(i => i.key === 'book.feed.cards.boxed')!.fields[1]!.chars).toBe(28);
+    expect(loadShortBriefs(root, 9).some(x => x.kind === 'label')).toBe(false); // a /4–/9 run rebuilds with the families it ran with
+  });
   test('guide /9: a police title names who or what is coming, the meter keeps its level, and the words brief 100\'s HUD tests read are held', () => {
     const items = briefs.filter(b => b.kind === 'why').flatMap(b => b.items), field = (k: string, id: string) => items.find(i => i.key === k)!.fields.find(f => f.id === id)!;
     const titles = items.filter(i => /^police\.[a-z-]+$/.test(i.key)).map(i => i.fields.find(f => f.id === 'title')!);
@@ -169,7 +196,7 @@ describe('the families: every short line in the game, a family per run', () => {
 
 describe('code checks', () => {
   test('today\'s barks and why lines pass; a passing count of words', () => {
-    for (const b of briefs.filter(x => x.kind !== 'debrief')) expect(issues(b, today(b)), b.id).toBe('');
+    for (const b of briefs.filter(x => x.kind === 'bark' || x.kind === 'why')) expect(issues(b, today(b)), b.id).toBe(''); // the page's and the labels' today are briefed to change (their own tests)
     expect(shortWords('Going to {to} · {s} s')).toBe(3);
   });
   test('length, fills, shape, the filter, names, digits, repeats, cuts, missing items, pinned lines and patterns', () => {
@@ -224,7 +251,7 @@ describe('the loop on a family: generate → score → revise → score again (f
   });
   test('the first live run\'s protocol (guide /1) still builds as it ran: no history for the evaluator, the old reviser', async () => {
     const old = loadShortGuide(root, 1), f = fixture([filler, rejected, better, accept]);
-    const r = await run(f.invoke, { guide: old, brief: loadShortBriefs(root, 1).find(b => b.id === 'bark/end')! });
+    const r = await run(f.invoke, { guide: old, brief: loadShortBriefs(root, 1).find(b => b.id === 'bark/end')!, evidence: archiveEvidence(root, old, store) }); // a guide archives its own sources (/10 adds brief 101's two)
     expect([old.schema, r.status]).toEqual(['suborned.style-short-guide/1', 'ACCEPTED']);
     expect(f.requests[3]!.prompt).not.toContain('Your last score and findings');
     expect(f.requests[2]!.prompt).toContain('Keep what already works.');
@@ -289,6 +316,21 @@ describe('the apply step', () => {
     const changed = after.split('\n').filter((l, i) => l !== before.split('\n')[i]);
     expect(changed).toHaveLength(1); expect(changed[0]).toContain('"event":"win","speaker":"fixer"');
     await applyShort(false, { runs: new Map([[r.brief.id, { run: r, path: dir }]]), file, restore: new Set([r.brief.id]) }); // a review can undo one family
+    expect(readFileSync(file, 'utf8')).toBe(before);
+  });
+  test('guide /10: a label family\'s words replace their strings where they stand, the shot row\'s label also as the Alt outcome; restore gives the file back', async () => {
+    const b = family('label/hud'), words = edit(edit(edit(today(b), 'less.street.loud', ['Turns loud'], 'label'), 'briefing.timeline.2:35', ['Rival car'], 'short'), 'book.feed.cards.boxed', ['their car blocks ours'], 'line');
+    const fake = { brief: b, rounds: [{ set: words, evaluation: accept, hardIssues: [] }] } as unknown as ShortResult; // apply reads the family and its last round
+    const dir = mkdtempSync(join(tmpdir(), 'suborned-short-labels-')), file = join(dir, 'text.json');
+    copyFileSync(join(root, TEXT_FILE), file);
+    const before = readFileSync(file, 'utf8');
+    await applyShort(false, { runs: new Map([[b.id, { run: fake, path: dir }]]), file });
+    const after = readFileSync(file, 'utf8'), t = TextFile.parse(JSON.parse(after));
+    expect(t.less.street.loud).toBe('Turns loud'); expect(t.less.alt.outcome.loud).toBe('Turns loud');
+    expect(t.briefing.timeline.find(m => m.at === '2:35')!.short).toBe('Rival car'); expect(t.book.feed!.cards.boxed!.line).toBe('their car blocks ours');
+    const changed = after.split('\n').filter((l, i) => l !== before.split('\n')[i]);
+    expect(changed).toHaveLength(4); // each string where it stood; nothing else moved
+    await applyShort(false, { runs: new Map([[b.id, { run: fake, path: dir }]]), file, restore: new Set([b.id]) });
     expect(readFileSync(file, 'utf8')).toBe(before);
   });
 });

@@ -3,8 +3,10 @@ import type { Authorization, Call, Evidence, Limits, Source } from './types';
 
 /** Short lines (Sky 2026-11-07, asked whether the loop covers more than the Inez conversations: "sure", so nothing ships unscored): the barks, the why block and the debrief page, written by
  *  Fable and scored by Motive in the same loop as the conversations, a family per run. */
-export const SHORT_KINDS = ['bark', 'why', 'debrief'] as const;
+export const SHORT_KINDS = ['bark', 'why', 'debrief', 'label'] as const;
 export type ShortKind = (typeof SHORT_KINDS)[number];
+/** A kind's rubric: where its words show, and the six rules. `label` exists from guide /10 on, so a /1–/9 guide has only the first three. */
+export type ShortKindRules = { use: string; rules: ShortRule[] };
 /** The rubric's rules: the brief's five (plain, true, short, useful, named as known) and the voice of who says it. */
 export const SHORT_RULES = ['USEFUL', 'TRUE', 'PLAIN', 'SHORT', 'NAMES', 'VOICE'] as const;
 export const ShortRuleId = z.enum(SHORT_RULES);
@@ -23,10 +25,16 @@ export type ShortRuleId = z.infer<typeof ShortRuleId>;
  *  who or what is coming (Police coming, More police, Robots coming, Lockdown) and the cause goes in the short; the meter's head keeps its level; the words those tests read
  *  are held (HostLogic.Why100.cs). The debrief page: the 13 keys Latch's page reads that had no item (the four other folds, the withdrawal's head and beat, a killing's
  *  note, the list's joiner), Spent's help and pay name who ({who}), its both and none told true, and an item's today is what the page shows now, kept where it holds. */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9' } as const;
+/** /10 (brief 101, Sky 2026-11-08: the HUD sweep's mix, the top right in Street labels' style, the bottom right Corner tokens' news lozenge): a fourth kind, `label`,
+ *  the words the new HUD draws in play at a glance (the first shot's row, the next key event, the lozenge's cards), held to Sky's rule on numbers in play; a word the
+ *  file already has is briefed with today's words and kept where it holds. The other kinds read as at /9. */
+/** /11 (host logic on the /10 words, 2026-11-08: the hurt-carry line lost the health left and the vale-out line the time the police close in, both read by brief 096's
+ *  tests): a fill is how the game draws a number, so a count, the health left or a key event's time comes in through it; the lines a host test reads are held by pattern;
+ *  the lozenge's line slot is 32 (Latch's lozenge clips a line at 300 px). */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 9;
+export const SHORT_NOW: ShortGuideVersion = 11;
 export const shortGuideVersion = (g: Pick<ShortGuide, 'schema'>): ShortGuideVersion => (Number(Object.entries(SHORT_GUIDES).find(([, v]) => v === g.schema)?.[0] ?? 4)) as ShortGuideVersion;
 export const SHORT_RUN = 'suborned.style-short-run/1';
 
@@ -46,7 +54,7 @@ export type ShortBrief = { id: string; kind: ShortKind; title: string; context: 
 export type ShortRule = { id: ShortRuleId; kind: string; instruction: string; sources: string[] };
 export type ShortGuide = {
   schema: (typeof SHORT_GUIDES)[ShortGuideVersion]; game: 'The Suborned'; gdd: string; sources: Source[];
-  kinds: Record<ShortKind, { use: string; rules: ShortRule[] }>;
+  kinds: Record<Exclude<ShortKind, 'label'>, ShortKindRules> & { label?: ShortKindRules };
   voices: Record<string, string>; avoid: string[]; profanity: string[]; named: string[]; cell: string[];
 };
 
@@ -89,7 +97,7 @@ const Sha = z.string().regex(/^[a-f0-9]{64}$/);
 const Time = z.number().int().nonnegative();
 const FillSchema = z.object({ id: z.string(), means: z.string(), widest: z.string() }).strict();
 export const ShortBriefSchema = z.object({
-  id: z.string().regex(/^(bark|why|debrief)\/[a-z0-9-]+$/), kind: z.enum(SHORT_KINDS), title: z.string().min(1), context: z.string().min(1),
+  id: z.string().regex(/^(bark|why|debrief|label)\/[a-z0-9-]+$/), kind: z.enum(SHORT_KINDS), title: z.string().min(1), context: z.string().min(1),
   items: z.array(z.object({
     key: z.string().min(1), where: z.string().min(1), tells: z.string().min(1), speaker: z.string().nullable(),
     fields: z.array(z.object({ id: z.string().min(1), form: z.enum(FORMS), words: z.number().int().positive(), chars: z.number().int().positive(),
@@ -101,9 +109,9 @@ export const ShortBriefSchema = z.object({
 const RuleSchema = z.object({ id: ShortRuleId, kind: z.string(), instruction: z.string(), sources: z.array(z.string()) }).strict();
 const KindSchema = z.object({ use: z.string(), rules: z.array(RuleSchema).min(5) }).strict();
 export const ShortGuideSchema = z.object({
-  schema: z.enum([SHORT_GUIDES[1], SHORT_GUIDES[2], SHORT_GUIDES[3], SHORT_GUIDES[4], SHORT_GUIDES[5], SHORT_GUIDES[6], SHORT_GUIDES[7], SHORT_GUIDES[8], SHORT_GUIDES[9]]), game: z.literal('The Suborned'), gdd: z.string(),
+  schema: z.enum([SHORT_GUIDES[1], SHORT_GUIDES[2], SHORT_GUIDES[3], SHORT_GUIDES[4], SHORT_GUIDES[5], SHORT_GUIDES[6], SHORT_GUIDES[7], SHORT_GUIDES[8], SHORT_GUIDES[9], SHORT_GUIDES[10], SHORT_GUIDES[11]]), game: z.literal('The Suborned'), gdd: z.string(),
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
-  kinds: z.object({ bark: KindSchema, why: KindSchema, debrief: KindSchema }).strict(),
+  kinds: z.object({ bark: KindSchema, why: KindSchema, debrief: KindSchema, label: KindSchema.optional() }).strict(),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()), named: z.array(z.string()), cell: z.array(z.string()),
 }).strict();
 export const ShortResultSchema = z.object({

@@ -24,15 +24,15 @@ Offline (no model, no login):
   bun run style:replay RUN            play a saved run step by step (tone | lore | length | a brief id | a run folder)
   bun run style:verify RUN            rebuild a saved run from its archived sources and check it (a run folder or file)
   bun run style:report                check every saved run and write ${COURSE}/index.html and the proposals
-  bun tools/style-agent/cli.ts shorts the short-line families: barks, the why block, the debrief page
+  bun tools/style-agent/cli.ts shorts the short-line families: barks, the why block, the debrief page, the HUD's labels
   bun tools/style-agent/cli.ts apply  write every family's accepted lines into text.json (--dry to only show them; --skip a,b leaves those families out; --restore a,b puts their lines back as their runs found them)
 
 Live (Codex subscription; needs SUBORNED_LIVE=1 and a recorded approval):
   bun run style:demo tone|lore|length LIVE
   bun run style:run BRIEF_ID LIVE
   bun run style:chain LIVE [--concurrency N] [--again]
-  bun run style:run FAMILY LIVE       one short-line family (bark/…, why/…, debrief/…; see shorts)
-  bun run style:chain --short LIVE [--kind bark|why|debrief] [--only a,b] [--concurrency N] [--again]
+  bun run style:run FAMILY LIVE       one short-line family (bark/…, why/…, debrief/…, label/…; see shorts)
+  bun run style:chain --short LIVE [--kind bark|why|debrief|label] [--only a,b] [--concurrency N] [--again]
   LIVE = --model MODEL --approved-by NAME --max-calls N --max-tokens N [--max-revisions N]
 
 Runs are saved in ${RUNS}/<time>-<brief>/; nothing in the game is changed.`;
@@ -184,7 +184,7 @@ async function main() {
     if (!demo || positional.length !== 1) throw new Error(`demo needs one of ${DEMOS.map(d => d.id).join(', ')}`);
     return live(options, [{ brief: byId(demo.brief), steer: demo.steer, tag: tag(byId(demo.brief), `-demo-${demo.id}`) }]);
   }
-  if (command === 'run' && /^(bark|why|debrief)\//.test(args.find(a => !a.startsWith('--') && /\//.test(a)) ?? '')) {
+  if (command === 'run' && /^(bark|why|debrief|label)\//.test(args.find(a => !a.startsWith('--') && /\//.test(a)) ?? '')) {
     const { options, positional } = parse(args, LIVE), family = loadShortBriefs(root).find(b => b.id === positional[0]);
     if (positional.length !== 1 || !family) throw new Error(`No family ${positional[0]}; see: bun tools/style-agent/cli.ts shorts`);
     return liveShort(options, [family]);

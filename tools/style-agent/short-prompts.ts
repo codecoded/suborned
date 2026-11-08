@@ -20,6 +20,7 @@ const itemView = (i: ShortItem) => {
 export function shortPrompt(stage: Stage, guide: ShortGuide, brief: ShortBrief, candidate: ShortSet | null,
   feedback: { evaluation: ShortEvaluation; hardIssues: ShortIssue[] } | null): string {
   const kind = guide.kinds[brief.kind];
+  if (!kind) throw new Error(`${brief.id}: guide ${guide.schema} has no ${brief.kind} kind (labels start at guide /10)`);
   const task = stage === 'generate'
     ? 'Write every item of this family for The Suborned\'s Handover, following the rubric and each item\'s facts. Return each item once: its key, cut false, an empty reason, and each field it asks for with exactly that many variants. An item may be cut only where it says mayCut true, and only when even its best line would tell the player nothing they can use: then return cut true, the reason in one sentence, and no fields.'
     : stage === 'evaluate'
