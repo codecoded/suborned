@@ -142,3 +142,10 @@ Sky: "yes" to Glyph's round 3 (`briefs/101/glyph/r3/`).
   Plus the lozenge's hover showing the card's full line. Then one build.
 - **Splice:** the budget's `next` kind (a name of at most 3 words and 16 characters, one m:ss).
 - **Fable:** the "Take control: T" pop names the click, not a key.
+
+## Round 3 built (0.2.290), and taking control (2026-11-09)
+- **Built:** Latch's 0.2.290 holds every round 3 piece. Coverage is within 0.1 % of Glyph's frames: quiet 3.71 %, the away window 3.76 %, Inez's slip 4.97 %, the act ring 3.86 %. Report: `briefs/101/latch/r5.html`.
+- **Splice:** the budget sums two stacked speech bubbles into one line (r123-fight-ground). It should count each bubble.
+- **The "Take control: T" pop** is gone, and no click takes control. Glyph's mock is at `briefs/101/glyph/tc/` (a round tab beside the selected agent's face, "Back to map" in the same slot while in control, and the GDD's eye over the driven agent).
+- **Sky, on Esc as a way back to the map:** "esc is always pause menu". Esc never leaves the ground view; the button and T do.
+- **Open with Sky:** a button and the eye, the button alone, or lab-only (T switched off for players).
