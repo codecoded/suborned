@@ -49,6 +49,7 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
     if (run.brief.kind !== 'bark') continue;
     for (const x of restored(run)) {
       const row = (text.dialogue as Row[]).find(r => barkKey(r as never) === x.key);
+      if (!row && x.cut) continue; // a cut an earlier apply made (brief 102's sweep): the row is already gone
       if (!row) throw new Error(`${id}: no row ${x.key} in text.json`);
       if (owner.get(x.key) !== id) continue; // a newer family's run writes it
       if (row.sky || row.hand) { held.push(x.key); continue; } // Sky's own words win over any run (brief 102), as "Turn driver by", and so do Fable's hand edits (guide /17)

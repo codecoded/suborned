@@ -3,6 +3,8 @@ import { shortGuideVersion, type Field, type Form, type ShortBrief, type ShortGu
 import { barkKey } from './short-barks';
 import { FORETELLS } from './short-natural';
 import { aiWords } from './short-natural14';
+import { lozengePx } from './short-lozenge';
+import { aboutChars } from './short-whys19';
 
 /** The checks code can make for certain on a short-line family (Keel's side of the review); meaning, truth and voice are Motive's. */
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -26,7 +28,8 @@ const AS_12: Partial<Record<ShortIssue['rule'], ShortIssue['rule']>> = { USEFUL:
 export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, base: { why?: unknown; dialogue?: unknown } = {}): ShortIssue[] {
   const v12 = brief.kind === 'bark' && shortGuideVersion(guide) >= 12, repeat = v12 ? 'VARIANTS' as const : 'SHORT' as const;
   const bad: ShortIssue[] = [], flag = (rule: ShortIssue['rule'], reason: string) => bad.push({ rule: v12 ? AS_12[rule] ?? rule : rule, reason });
-  const items = new Map(brief.items.map(i => [i.key, i])), ai = brief.kind === 'bark' && guide.ai ? aiWords(guide.ai) : null;
+  const v19 = brief.kind === 'why' && shortGuideVersion(guide) >= 19; // guide /19 (brief 101): the lozenge's box, and the AI-sounding words in a why
+  const items = new Map(brief.items.map(i => [i.key, i])), ai = (brief.kind === 'bark' || v19) && guide.ai ? aiWords(guide.ai) : null;
   const seen = new Map<string, string>();
   // guide /5: the other rows of the table, as the text the run read has them (a line is never in two rows: text.test.ts)
   if (brief.kind === 'bark' && shortGuideVersion(guide) >= 5 && Array.isArray(base.dialogue))
@@ -57,6 +60,7 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
         if (words > f.words) flag('SHORT', `${at}: ${words} words; this slot holds ${f.words}.`);
         if (wide.length > f.chars) flag('SHORT', `${at}: ${wide.length} characters at its widest ("${wide}"); this slot holds ${f.chars}.`);
         if (f.form === 'short' && l.length > 40) flag('SHORT', `${at}: ${l.length} characters as written; a short holds 40.`);
+        if (f.lozenge !== undefined && lozengePx(wide) > f.lozenge) flag('SHORT', `${at}: ${lozengePx(wide)} px at its widest ("${wide}"); the news lozenge's line has ${f.lozenge} px for it, about ${aboutChars(f.lozenge)} characters${f.form === 'short' ? ', with the place and the clock after it' : ''} (brief 101).`);
         const [shape, what] = SHAPE[f.form];
         if (!shape.test(l) || l !== l.trim() || /\s{2}/.test(l)) flag('SHORT', `${at}: ${what}, with no stray spaces.`);
         if (/[\r\n<>*_]|^\(|\)$/.test(l)) flag('SHORT', `${at}: one plain line: no markup, no stage directions.`);
@@ -77,7 +81,8 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
         if (told) flag('NATURAL', `${at}: "${told[0]}" explains the game (brief 102): say what this person would say now; the world and the HUD show what follows.`);
         // guide /14: Sky's AI-sounding words ("that noted is AI sounding"), whoever says them
         const machine = ai ? l.match(ai) : null;
-        if (machine) flag('NATURAL', `${at}: "${machine[0]}" is an AI-sounding word (Sky 2026-11-08: "that noted is AI sounding"); no person, policeman or clockwork patrol in this world says it.`);
+        if (machine && !v19) flag('NATURAL', `${at}: "${machine[0]}" is an AI-sounding word (Sky 2026-11-08: "that noted is AI sounding"); no person, policeman or clockwork patrol in this world says it.`);
+        if (machine && v19) flag('PLAIN', `${at}: "${machine[0]}" is an AI-sounding word (Sky 2026-11-08: "that noted is AI sounding"); the book never uses it.`);
         // guide /12: nor in the cell's (Sky's rule on numbers in play: the game draws a key event's time, and no act's)
         if (v12 && /^(scout|fixer|tech|enforcer):/.test(it.speaker ?? '') && /\d/.test(l)) flag('MECHANICS', `${at}: no digits in a line: the game draws its own numbers, and only a key event's (Sky's rule on numbers in play).`);
         if ((brief.kind === 'debrief' || brief.kind === 'label') && /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|\btick\b|operative|engine|ledger/i.test(l)) flag('PLAIN', `${at}: an engine word; the ${brief.kind === 'label' ? 'HUD' : 'page'} uses the player's words (text.test.ts).`);

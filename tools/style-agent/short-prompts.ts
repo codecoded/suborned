@@ -3,11 +3,13 @@ import { shortGuideVersion, type AnyEvaluation, type Field, type ShortBrief, typ
 import { calibration13, TASKS_13 } from './short-natural';
 import { calibration14, TASKS_14, TASKS_15 } from './short-natural14';
 import { calibration12, TASKS_12, voices12 } from './short-voice';
+import { aboutChars } from './short-whys19';
 
 /** A field as the writer and the evaluator see it: its limits, its fills (or none), what a test pins. */
 const fieldView = (f: Field, withFills: boolean) => ({
   field: f.id, form: f.form, variants: f.count, maxWords: f.words, maxChars: f.chars,
   ...(withFills ? { fills: f.fills.length ? Object.fromEntries(f.fills.map(x => [`{${x.id}}`, `${x.means} (widest: ${x.widest})`])) : 'none: write no {braces}' } : {}),
+  ...(f.lozenge !== undefined ? { lozenge: `at most ${f.lozenge} px on the news lozenge's line${f.fills.length ? ' with every fill at its widest' : ''}, about ${aboutChars(f.lozenge)} characters (${f.form === 'short' ? 'the place and the clock are already taken off' : 'a place\'s room, after the short and before the clock'})` } : {}), // guide /19
   ...(f.keep.length ? { keepWordForWord: f.keep } : {}),
   ...(f.patterns.length ? { rules: f.patterns.map(p => `${p.must ? 'every line must match' : 'no line may match'} /${p.re}/${p.flags}: ${p.why}`) } : {}),
 });

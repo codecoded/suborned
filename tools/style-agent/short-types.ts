@@ -67,10 +67,21 @@ export type ShortRuleId = z.infer<typeof AnyRuleId>;
  *  a hand run scores its family as it plays, so the family's hand rows are items again in a hand run (a writer run keeps them out, as at /17); and the rows written this
  *  round are told as the engine plays them (short-hand18.ts): the guard's radio report is about one of the cell in his sight, and the summons' busy, too-far, alert and
  *  saw-violence refusals say what the engine checks. The rubric reads as at /17. */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16', 17: 'suborned.style-short-guide/17', 18: 'suborned.style-short-guide/18' } as const;
+/** /19 (brief 101, Latch's r4, 2026-11-09: the news lozenge drew the sweep's loiter why at 430 px in its 296 px box, "the square's mast camera saw the Fixer stay too
+ *  long beside the café · 2:46", with an ellipsis): SHORT for every why the lozenge shows is the box. The lozenge reads "{short} {where} · m:ss" on one line of Jost
+ *  Medium at 13 px, measured as the HUD draws it (short-lozenge.ts) at the widest each fill takes in the glossary; a place has 105 px of it. The four cause families write
+ *  only the short (the title and the line, on hover and in the Journal, stay as they are and are the item's facts); the places are a family of their own, `why/places`;
+ *  AI-sounding words fail a why as they fail a bark. The rest reads as at /18. */
+/** /20 (brief 101, the /19 places run): /19 with a place's room at 108.8 px, the width of "at the service drive". The HUD's own stand names, "the square's bay" and "the
+ *  service drive", don't fit 105 px with any preposition, and the judge rightly wouldn't rename them (one glossary), so a place keeps the HUD's name and a short with a
+ *  place has 142.9 px. The rest reads as at /19, and /19's runs rebuild with /19's room. */
+/** /21 (brief 101, the /20 places run: 9 for four rounds on "by the cabinet", since the hover says "the control cabinet" and the facts never said the HUD has a short name):
+ *  the cabinet's facts say the HUD gives it two names, the hover's and the act's ("at the cabinet", HostActivity.ActPlaceName). Only `why/places` changes; the rubric reads
+ *  as at /20, so a /20 run continues under /21. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16', 17: 'suborned.style-short-guide/17', 18: 'suborned.style-short-guide/18', 19: 'suborned.style-short-guide/19', 20: 'suborned.style-short-guide/20', 21: 'suborned.style-short-guide/21' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 18;
+export const SHORT_NOW: ShortGuideVersion = 21;
 /** Two guides with the same rubric, sources and families, the later on a newer protocol (from /15 a run may continue a /14 run's last round). */
 export const sameRubric = (earlier: ShortGuide, later: ShortGuide) => shortGuideVersion(earlier) <= shortGuideVersion(later) && shortGuideVersion(earlier) >= 14
   && isDeepStrictEqual(JSON.parse(JSON.stringify({ ...earlier, schema: later.schema })), JSON.parse(JSON.stringify(later)));
@@ -85,7 +96,9 @@ export type Fill = { id: string; means: string; widest: string };
 export type Pattern = { re: string; flags: string; must: boolean; why: string };
 /** One thing to write for an item: `count` variants (a bark keeps today's count), each at most `words` and `chars` at its widest fills;
  *  `keep` lines a test pins word for word, which stay among the variants. */
-export type Field = { id: string; form: Form; words: number; chars: number; count: number; fills: Fill[]; keep: string[]; patterns: Pattern[] };
+export type Field = { id: string; form: Form; words: number; chars: number; count: number; fills: Fill[]; keep: string[]; patterns: Pattern[];
+  /** Guide /19 (brief 101): the px the line may take on the news lozenge at its widest fills, the place and the clock already taken off (short-lozenge.ts). */
+  lozenge?: number };
 /** One key of text.json to write. `tells` is what the line must tell the player and what the engine did: the evaluator's truth.
  *  `stays` says why the item may not be cut (the host or a check needs it); null = a bark the loop may cut, with its reason. */
 export type ShortItem = { key: string; where: string; tells: string; speaker: string | null; fields: Field[]; current: Record<string, string[]>; stays: string | null };
@@ -189,7 +202,7 @@ export const ShortBriefSchema = z.object({
     key: z.string().min(1), where: z.string().min(1), tells: z.string().min(1), speaker: z.string().nullable(),
     fields: z.array(z.object({ id: z.string().min(1), form: z.enum(FORMS), words: z.number().int().positive(), chars: z.number().int().positive(),
       count: z.number().int().min(1).max(4), fills: z.array(FillSchema), keep: z.array(z.string()),
-      patterns: z.array(z.object({ re: z.string(), flags: z.string(), must: z.boolean(), why: z.string() }).strict()) }).strict()).min(1),
+      patterns: z.array(z.object({ re: z.string(), flags: z.string(), must: z.boolean(), why: z.string() }).strict()), lozenge: z.number().positive().optional() }).strict()).min(1),
     current: z.record(z.string(), z.array(z.string())), stays: z.string().nullable(),
   }).strict()).min(1).max(60),
 }).strict();

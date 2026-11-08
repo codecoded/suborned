@@ -195,9 +195,11 @@ describe('the families: every short line in the game, a family per run', () => {
   });
 });
 
+const WHY_19 = ['why/witnessed', 'why/reported', 'why/gunfire', 'why/police', 'why/words'];
 describe('code checks', () => {
   test('today\'s barks and why lines pass; a passing count of words', () => {
-    for (const b of briefs.filter(x => x.kind === 'bark' || x.kind === 'why')) expect(issues(b, today(b)), b.id).toBe(''); // the page's and the labels' today are briefed to change (their own tests)
+    for (const b of briefs.filter(x => x.kind === 'bark' || x.kind === 'why' && !WHY_19.includes(x.id))) expect(issues(b, today(b)), b.id).toBe(''); // the page's and the labels' today are briefed to change (their own tests)
+    // guide /19 (brief 101) rewrote the cause families' shorts to fit the news lozenge and released /9's pins on them (the line keeps who and whom): today's why lines pass the current guide's checks (lozenge.test.ts)
     expect(shortWords('Going to {to} · {s} s')).toBe(3);
   });
   test('length, fills, shape, the filter, names, digits, repeats, cuts, missing items, pinned lines and patterns', () => {

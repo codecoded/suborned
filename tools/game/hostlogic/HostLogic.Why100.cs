@@ -112,8 +112,9 @@ public class Why100
             foreach (var r in rows) if (r.Short.Length == 0 && PlayText.WhyKeyOf(r.Cause) != null) bad.Add($"{f}: {r.Cause} has a key and no short ({r.Key})");
             rises += rows.Count; calls += h.WhyRows.Count(r => r.What == "police"); marked += seenOnWay;
             // an order's own consequences are logged as it is given (the failed takedown's call, read a tick later): keyed at their own tick
-            if (f.EndsWith("careless-enforcer-watches-guard.json") && !h.WhyRows.Any(r => r.What == "police" && r.Key == "attack" && r.Short == "the guard called in an attack")) bad.Add($"{f}: the guard's call is not keyed attack");
-            if (f.EndsWith("fail-enforcer-down.json") && !h.WhyRows.Any(r => r.What == "seal" && r.Short == "the guard saw the Enforcer's gun")) bad.Add($"{f}: the seal's cause is not the drawn gun");
+            // brief 101 (Fable, guide /19): the shorts fit the news lozenge, so who and whom are the line's ("The guard fought the Enforcer off and called the police.")
+            if (f.EndsWith("careless-enforcer-watches-guard.json") && !h.WhyRows.Any(r => r.What == "police" && r.Key == "attack" && r.Short == "the guard fought back")) bad.Add($"{f}: the guard's call is not keyed attack");
+            if (f.EndsWith("fail-enforcer-down.json") && !h.WhyRows.Any(r => r.What == "seal" && r.Short == "the Enforcer's gun seen")) bad.Add($"{f}: the seal's cause is not the drawn gun");
             all.Add($"{f}:\n{Dump(h)}");
         }
         all.Add($"{files.Count} runs, {rises} rises, {calls} calls, {marked} mark-ticks"); Keep("routes", string.Join("\n", all));
@@ -152,7 +153,8 @@ public class Why100OnWay
         Why100.Keep("route-g-radio", $"radio marked from tick {from} ({HandoverHost.MissionClock(from)}), seconds {string.Join(",", secs.Distinct())}; rise at {h.WhyRows.FirstOrDefault(r => r.What == "alert")?.Tick}");
         Assert.That(secs, Is.Not.Empty, "the shift guard's radio is marked"); Assert.That(secs, Is.Ordered.Descending); Assert.That(secs[0], Is.InRange(4, 6)); Assert.That(secs[^1], Is.InRange(0, 1));
         Assert.That(plate, Does.StartWith("Radioing it in · "));
-        var rise = h.WhyRows.First(r => r.What == "alert"); Assert.That(rise.Key, Is.EqualTo("down")); Assert.That(rise.ShortWhere, Does.StartWith("another guard ").And.EndsWith(" at the Office door"), "by.another: a guard reporting the guard"); Assert.That(rise.ShortWhere, Does.Contain(" the guard ")); // the fills, not Fable's verb (the style loop may reword it)
+        var rise = h.WhyRows.First(r => r.What == "alert"); Assert.That(rise.Key, Is.EqualTo("down")); Assert.That(rise.ShortWhere, Does.EndWith(" at the Office door"), "the place after the short");
+        Assert.That(rise.Line, Does.StartWith("Another guard ").And.EndsWith(" at the Office door."), "by.another: a guard reporting the guard"); Assert.That(rise.Line, Does.Contain(" the guard ")); // the fills, not Fable's verb; brief 101 (guide /19): who and whom are the line's, the short fits the lozenge
         Assert.That(h.StoppedReports, Is.Zero);
     }
 

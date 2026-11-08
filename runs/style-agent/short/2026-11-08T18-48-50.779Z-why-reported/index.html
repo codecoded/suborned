@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>why/reported</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:1180px;margin:0 auto;padding:32px;color:#17302f;background:#f7f4ec}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #cbc6c3;padding:6px;text-align:left;vertical-align:top}th{background:#d9ebe5}code{font-size:12px}</style>
+<h1>why/reported: The lozenge's line: why the Alert rose on a report, a tape, a car or an entry</h1><p><b>ACCEPTED</b> · Scored 10/10 with no findings, and the code checks pass · live · gpt-6.1-sol, judged by claude-opus-5-5 · 2 calls · 33673 tokens</p><h2>First draft · SCORE 10/10</h2><p><b>REASON:</b> Last round's code check failed and my reasoning was wrong. I said &quot;getaway car parked wrong&quot; fit, but the code measured it at 152.3 px against its 146.7 px. The writer now has &quot;getaway car out of place&quot;. It is the same 24 characters, but &quot;out of place&quot; uses narrow letters (t, f, l) where &quot;parked wrong&quot; uses wide ones (w, k, d, r). At Jost Medium 13 px I estimate that saves about 12 px, so the short comes to about 140 px and fits. This is an estimate: the code check has to confirm it.
+
+The new words are still true. The car is standing where cars don't stand, the line one hover away says &quot;parked&quot; in full, and it keeps the glossary's &quot;getaway car&quot;. &quot;Out of place at the official door&quot; reads naturally with the place after it.
+
+Checked afresh:
+- **alert.staff and alert.let-go:** both keep today's words word for word. They fit their 255.6 px and hold every rule.
+- **alert.recorded and its pressure variant:** &quot;payment caught on tape&quot; and &quot;threats caught on tape&quot; each name one cause, read apart from each other, and sit well inside the width. They are plain, with no fill.
+- **alert.approach:** &quot;the Fixer's offer reported&quot; is true whoever the reporter is, and it fits.
+- **alert.entry:** &quot;the Enforcer was seen&quot; is the fix I asked for. With the Office door after it, it reads as being seen going in. A wording that says &quot;going in&quot; (&quot;the Enforcer seen going in&quot;) would run past 146.7 px, so this is the best fit.
+- **alert.sighting and alert.loiter:** &quot;agent reported on sight&quot; and &quot;an agent stayed too long&quot; keep Menace and loitering reading apart. A fuller &quot;an agent reported on sight&quot; would probably go over the width, so the dropped article is the right trade.
+- **Across the draft:**
+  - No engine words, AI-sounding words or banned words.
+  - No full stops, and every short starts lower case.
+  - No braces where an item has no fills.
+  - No cuts, and none are allowed.
+
+I would ship every line as it is, provided the code confirms alert.car's width.</p>
+    <ul></ul>
+    <table><tr><th>key</th><th>today</th><th>this round</th></tr><tr><td><code>alert.approach</code></td><td>{who} reported the Fixer's offer</td><td>the Fixer's offer reported</td></tr><tr><td><code>alert.staff</code></td><td>the Enforcer left without Popovic</td><td>the Enforcer left without Popovic</td></tr><tr><td><code>alert.let-go</code></td><td>Popovic reported being let go</td><td>Popovic reported being let go</td></tr><tr><td><code>alert.recorded</code></td><td>{who}: desk saw payment to {about}</td><td>payment caught on tape</td></tr><tr><td><code>alert.recorded.variants.pressure</code></td><td>{who}: desk saw threats against {about}</td><td>threats caught on tape</td></tr><tr><td><code>alert.car</code></td><td>{who} reported the car's unusual parking</td><td>getaway car out of place</td></tr><tr><td><code>alert.entry</code></td><td>the patrol saw the Enforcer enter</td><td>the Enforcer was seen</td></tr><tr><td><code>alert.sighting</code></td><td>{who} reported {agent} on sight</td><td>agent reported on sight</td></tr><tr><td><code>alert.loiter</code></td><td>{who} saw {agent} stay too long</td><td>an agent stayed too long</td></tr></table>
+<p><small>run.json.zst holds every prompt, transcript (Codex, and Claude for a Claude judge), score and revision: <code>bun run style:replay</code>, <code>bun run style:verify</code>.</small></p></html>

@@ -1,8 +1,9 @@
 import type { Field, Fill, Form, Pattern, ShortBrief, ShortGuideVersion, ShortItem } from './short-types';
+import { whyBriefs19 } from './short-whys19';
 
 /** The why block (text.json `why`, brief 100) as families: every Alert cause and police call with its variants, the report on its way,
  *  the meter and the glossary words, each with the engine's facts from briefs/100/fable/words.md (Fable's notes on the ledger and the log). */
-const FILL: Record<string, string> = {
+export const FILL: Record<string, string> = {
   who: 'the reporter or witness: a cast person by name or role (Inez, Popovic, the guard, the driver), a passer-by by job (a clerk, a local), a camera by its place, the patrol, the desk, an officer',
   about: 'who or what it is about: the body, the subject of a Pay, the cut camera', agent: 'the agent, by role (the Scout, the Fixer, the Tech, the Enforcer)',
   where: 'the nearest named place within 13 m with its preposition ("at the Office door"), else "nearby"', to: 'the report point: the café phone, the Office door, the official door, the call box, a phone',
@@ -12,7 +13,7 @@ const WIDE: Record<string, string> = { who: 'the entrance camera', about: 'a kio
 const WIDE_BY: Record<string, Partial<Record<string, string>>> = { recorded: { about: 'the driver' }, cut: { about: 'the entrance camera' } };
 const PERSON = 'a person by name, role or job (Inez, the guard, a clerk)', WATCHER = 'a person by name, role or job, a guard, an officer, the patrol, or a camera by its place';
 /** Guide /5: what each fill names for this cause (the /4 meanings were the same for every cause, so a line could read "the entrance camera walks to the call box"). [means, widest] */
-const FILL_BY: Record<string, Record<string, [string, string]>> = {
+export const FILL_BY: Record<string, Record<string, [string, string]>> = {
   seen: { who: [`who saw it: ${WATCHER}`, 'the entrance camera'], about: [`the person taken down: ${PERSON}`, 'a kiosk attendant'] },
   carry: { who: [`who saw it: ${WATCHER}`, 'the entrance camera'], about: [`the person carried, a body: ${PERSON}`, 'a kiosk attendant'] },
   dead: { who: ['who found the body: a person, the patrol, the bin round, or a camera by its place', 'the entrance camera'], about: [`the dead person: ${PERSON}`, 'a kiosk attendant'] },
@@ -43,7 +44,7 @@ const fills = (key: string, ids: string[]): Fill[] => ids.map(id => {
   return { id, means: by?.[0] ?? FILL[id]!, widest: by?.[1] ?? WIDE_BY[key]?.[id] ?? WIDE[id]! };
 });
 /** The engine's facts per cause: its ledger cause and log, the Alert it sets, and the fills the host has for it. */
-const ALERT: Record<string, [string, string[]]> = {
+export const ALERT: Record<string, [string, string[]]> = {
   seen: ['A watcher saw a takedown and the report landed (report:seen; Alert 3). vale: the act was the Take of Popovic.', ['who', 'about', 'where']],
   carry: ['A watcher saw a body carried and the report landed (report:carry; Alert 2). vale: Popovic led off on foot by the Enforcer (the Take\'s escort).', ['who', 'about', 'where']],
   dead: ['Someone found a body, a killing, and reported it (report:dead; Alert 2): a camera, the patrol or the bin round can find it too.', ['who', 'about', 'where']],
@@ -70,7 +71,7 @@ const ALERT: Record<string, [string, string[]]> = {
   sighting: ['The district fears the cell (Menace), so a watcher who sees an agent reports them on sight (no log line).', ['who', 'agent']],
   start: ['The job began with the Alert already above 0 (the start state).', []],
 };
-const POLICE: Record<string, [string, string[]]> = {
+export const POLICE: Record<string, [string, string[]]> = {
   heard: ['Shots were heard in the district (security.called): the police are coming.', ['where']], witness: ['A person or a watcher saw the shooting and called the police.', ['who']],
   'shot-at': ['A civilian, Inez, the driver or Popovic was shot at, and people called the police.', ['about']], patrol: ['The patrol was shot at and called it in.', ['where']],
   rivals: ['Someone reported the gunfight with the rival crew.', ['where']], gang: ['A shooting nobody saw the shooter of (security.gang): police come, but the district does not seal yet.', []],
@@ -135,7 +136,7 @@ const SHOWN_7 = 'plate: over the reporter while the report is on its way; a plat
 type W = { title?: string; short?: string; line?: string; plate?: string; variants?: Record<string, W> };
 
 /** Guide /6: a fact the /5 families had wrong (told and learned: before a Watch the cell doesn't know a post has a check-in at all). */
-const ALERT_6: Record<string, [string, string[]]> = {
+export const ALERT_6: Record<string, [string, string[]]> = {
   mark: ['A downed staff member missed their check-in mark and the post was reported empty (post.missed; Alert 1). unknown: the cell has not watched their routine, so it doesn\'t know the post has a check-in at all: that variant says only that the person was missed from the post, never "check-in" and never the time.', ['about', 'clock']],
 };
 function causeItems(group: 'alert' | 'police', block: Record<string, W>, facts: Record<string, [string, string[]]>, keys: string[]): ShortItem[] {
@@ -154,6 +155,7 @@ const plain = (key: string, form: Form, text: string, tells: string, ids: string
   fields: [held(key, kept(field(form, form, key, ids), text))], current: { [form]: [text] }, stays: 'The host reads it (why.schema.ts).' });
 
 export function whyBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
+  if (v >= 19) return whyBriefs19(text, whyBriefs(text, 18), { FILL, FILL_BY, ALERT: { ...ALERT, ...ALERT_6 }, POLICE }, v); // guide /19 (brief 101): the lozenge's shorts and the places
   V = v;
   const w = text.why, A = w.alert as Record<string, W>, P = w.police as Record<string, W>;
   const brief = (id: string, title: string, context: string, items: ShortItem[]): ShortBrief => ({ id, kind: 'why', title, context, items });

@@ -3,6 +3,7 @@ import { SHORT_GUIDES, SHORT_NOW, VoiceSheet, type ShortGuide, type ShortGuideVe
 import { BARK_13, NATURAL_BAR, NATURAL_BRIEF, naturalWords, readNatural, USE_13 } from './short-natural';
 import { BARK_12, VOICE_SHEET } from './short-voice';
 import { AI_WORDS_FILE, BARK_14, natural14, readAiWords } from './short-natural14';
+import { WHY_19 } from './short-whys19';
 import type { Source } from './types';
 
 /** The short lines' sources. The briefs read only these, so a saved run rebuilds from its archive. */
@@ -62,6 +63,8 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
   // guide /14 (brief 102's sweep): the AI-sounding words and Sky's four, after the /13 sources so a /13 guide rebuilds with exactly the sources it ran with
   const ai = version >= 14 ? readAiWords(read) : null, bar = natural && ai ? natural14(natural, ai) : natural;
   if (ai) add('ai-words', AI_WORDS_FILE, 'words, kind, rejected, fail', [ai.status, ai.why, `words: ${ai.words.join(', ')}; their kind: ${ai.kind.join(', ')}`, ...ai.rejected.map(x => `rejected: ${x.line}`)].join('\n'));
+  // guide /19 (brief 101, Latch's r4): the news lozenge's line, after the /14 sources so an /18 guide rebuilds with exactly the sources it ran with
+  if (version >= 19) add('lozenge', HUD_BRIEF, 'what\'s left before one build (2026-11-09)', lineOf(read(HUD_BRIEF), '  - the news lozenge\'s why lines', 'brief 101 the lozenge\'s why lines'));
 
   const words = Number(pick(schema, /export const MAX_WORDS = (\d+);/, 'MAX_WORDS')[0]), chars = Number(pick(schema, /export const MAX_LINE = (\d+);/, 'MAX_LINE')[0]);
   const lim = (kind: string) => pick(why, new RegExp(`${kind}: \\{ chars: (\\d+), words: (\\d+)`), `why LIMITS.${kind}`).map(Number);
@@ -78,7 +81,7 @@ export function buildShortGuide(read: Read, names: string[], sha: Sha = file => 
       rule('NAMES', 'people named as the player knows them', ['words', 'voices', 'text-shape'], `Only ${named} are named; everyone else by role as the player knows them: the guard, the driver, the patrol, the police, the desk, a camera by where it is. The cell call each other by role (the Scout, the Fixer, the Tech, the Enforcer); nobody outside the cell knows the cell's roles or names, and nobody says ${cell.join(', ')}. The driver calls Popovic "the Councillor".`),
       rule('VOICE', 'the speaker\'s own voice', ['voices', 'fable'], 'Each speaker keeps their voice from the voice sheet below, and the temperament the item names: the Scout quick and chatty to her own cell, the Fixer warm with steel under it, the Tech calm, practical and dry, the Enforcer one to four words; people short and human, the patrol\'s fixed polite phrases, the police crisp. Never cute. Only a shout may end in an exclamation mark.'),
     ] },
-    why: { use: 'The why block (brief 100) says why the Alert rose, why the police came, and that a report is on its way: a title (the card and the Journal row), a short (the crucial card\'s dim line, with {where} after it, and the Alert meter\'s row), a line (one sentence: the Journal, Alt, the meter\'s hover, the debrief\'s timeline) and a plate (over a reporter while the report is on its way, before its seconds).', rules: [
+    why: version >= 19 ? WHY_19({ tw, tc, sw, lw, lc, pw, pc }, POLICE_9, version) : { use: 'The why block (brief 100) says why the Alert rose, why the police came, and that a report is on its way: a title (the card and the Journal row), a short (the crucial card\'s dim line, with {where} after it, and the Alert meter\'s row), a line (one sentence: the Journal, Alt, the meter\'s hover, the debrief\'s timeline) and a plate (over a reporter while the report is on its way, before its seconds).', rules: [
       rule('USEFUL', 'tells the player the cause', ['fable', 'lines'], `Each text tells the player the real cause, who saw or did what, so they can deal with it now (a report that can still be stopped) or next time. No filler, no moralising, nothing that only restates the Alert number or says "something happened".${version >= 9 ? POLICE_9 : ''}`),
       rule('TRUE', 'true to what the engine did', ['motive', 'fable'], 'True to the engine\'s cause as the item\'s `tells` give it: who saw what, how the report travels, what it set off. A fill stands for whatever the engine names, so the text must read true for every value the item lists; never add a reporter, place, time or effect the cause does not carry.'),
       rule('PLAIN', 'plain everyday words', ['plain', 'world', 'words'], 'Plain everyday words, never a report\'s or a police log\'s tone ("a clerk spotted the guard lying at the Office door", never "incident reported at post"). No engine words: ledger, cause, tick, incident, state, unit count.'),

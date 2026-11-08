@@ -57,11 +57,11 @@ async function handRun(brief: ShortBrief): Promise<ShortResult> {
 const family = (id: string, hand = true) => loadShortBriefs(root, SHORT_NOW, hand).find(b => b.id === id)!;
 
 describe('guides /17 and /18: lines written by hand (brief 102)', () => {
-  test('/18 is the current protocol and reads as /17 in its rubric, and /17 as /16, so their runs and /14–/16 runs share it', () => {
-    const g16 = loadShortGuide(root, 16), g17 = loadShortGuide(root, 17);
-    expect(SHORT_NOW).toBe(18);
-    expect({ ...g16, schema: g17.schema }).toEqual(g17); expect({ ...g17, schema: guide.schema }).toEqual(guide);
-    expect(sameRubric(g16, g17)).toBe(true); expect(sameRubric(g17, guide)).toBe(true);
+  test('/18 reads as /17 in its rubric, and /17 as /16, so their runs and /14–/16 runs share it (/19 changes the why kind only: lozenge.test.ts)', () => {
+    const g16 = loadShortGuide(root, 16), g17 = loadShortGuide(root, 17), g18 = loadShortGuide(root, 18);
+    expect(SHORT_NOW).toBeGreaterThanOrEqual(18);
+    expect({ ...g16, schema: g17.schema }).toEqual(g17); expect({ ...g17, schema: g18.schema }).toEqual(g18);
+    expect(sameRubric(g16, g17)).toBe(true); expect(sameRubric(g17, g18)).toBe(true);
   });
   test('a hand set is today\'s family with each edit in place of the line it names, and an edit of a line that isn\'t there is refused', () => {
     const brief = briefsFrom(before()).find(b => b.id === 'bark/summons')!, set = handSet(brief, rounds[0]!);
