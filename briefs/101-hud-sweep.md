@@ -68,3 +68,13 @@ Sky was shown the three directions (A the page's edge, B enamel signs, C in the 
    - A mix of the two is welcome.
 
    Each is shown at the same four moments plus the busiest, with a coverage table that includes today's HUD.
+
+## Sky's rule on numbers in play (2026-11-08)
+Sky, after round 1: "I agree" (no hit chance in play). Then: "Playing the game the complex strategy element is just little bit." and "Don't look at how long something takes because I don't have a choice with the action so it's irrelevant as a player. Only thing that feels time is important are the key events that happen".
+- **No hit chance anywhere in play:** not the price's odds line, not the Alt breakdown, not the odds chip. The hit rate stays in the debrief's numbers.
+- **No action durations in play:** seconds to down ("down in about 4 s", "45 s"), walk times ("Walk · 12 s"), an act's length, a price's time.
+- **Time stays only for key events in the world:** the clock, the seal's countdown, police arriving, the rivals, the handover, a report about to land, a loop running out.
+- **An order's price** shows money, Trail, Alert risk and what the street will do (it goes loud), and no longer the time. The GDD's "full price" rule changes at v0.40.0.
+
+Latch removes these from today's HUD now. Glyph's round 2 mocks the new HUD by the same rule.
+

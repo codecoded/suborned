@@ -135,6 +135,7 @@ These are rules Sky already approved that the GDD text still lags, gathered as t
   - agent §10 says 10 words, while §14 and the human GDD say 12;
   - conversation lines now run to 25 words (Sky: "Full sentences");
   - the HUD budget's 12-word cap (Splice) predates that.
+- **§01 and §10, an order's full price:** money, Trail, Alert risk and what the street will do, no longer time. There's no hit chance in play, and time is shown only for key events (Sky 2026-11-08, brief 101).
 - **L9 Bodies and its give and take** (Sky's calls above), as a law with its settings: radius 30 cm, space 80 and 70 cm, crews 2.5 m, a squeeze at 40 cm and 0.5 m/s, 5 s before changing plans.
 
 ## Done-check
