@@ -60,11 +60,12 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>Her walk: from just inside the door, by the walk grid, to a person's arm's length from them on the door's side.</summary>
+        /// <summary>Her walk: from just inside the door, by the walk grid, to a person's arm's length from them on the door's side. She comes out and goes back in where the
+        /// street's people do (DoorOut): beside Inez, not through her.</summary>
         bool ListenPartnerOut(Game g, string role, (string name, string from) to)
         {
             int i = g.Walkers.FindIndex(w => w.P.Name == to.name); if (i < 0 || i >= crowdKeys.Length || !things.TryGetValue(crowdKeys[i], out var x) || !things.TryGetValue(role, out var them) || !them.shown) return false;
-            Pt door; try { door = g.S.At("d:" + to.from); } catch (System.Exception) { return false; }
+            Pt door; try { door = DoorOut(g, g.S.At("d:" + to.from)); } catch (System.Exception) { return false; }
             var dw = frame.World(door); var cf = g.S.CafeFacing; var inward = frame.World(new Pt(door.X + cf.X, door.Y + cf.Y)) - dw; inward.y = 0f; inward.Normalize();
             float edge = 0.2f; while (edge < 3f && g.Walk.Free(frame.Engine(dw + inward * edge))) edge += 0.1f;
             // beside her along the front and a little toward the door, rather than straight in line with it: a lens out on the street then has them both in profile
@@ -76,6 +77,14 @@ namespace Suborned.Play
             for (int k = 1; k < p.Path.Count - 1; k++) { var o = p.Path[k] - tp; o.y = 0f; if (o.magnitude < ListenPartnerGapM) p.Path[k] = new Vector3(tp.x, p.Path[k].y, tp.z) + (o.sqrMagnitude > 0.01f ? o.normalized : along) * ListenPartnerGapM; } // round her, never through her
             for (int k = 1; k < p.Path.Count; k++) p.Len += Vector3.Distance(p.Path[k - 1], p.Path[k]);
             listenP = p; return true;
+        }
+        /// <summary>Engine 0.48.0 (CastStands, brief 098): where people go in and come out at the door at `door`. A door a cast member holds is gone into beside the holder
+        /// (the people file's door at that point in Crowd.DoorIn: the café's 81 cm from Inez); any other door at its own point.</summary>
+        static Pt DoorOut(Game g, Pt door)
+        {
+            var c = g.People2; if (c == null) return door;
+            foreach (var kv in c.DoorIn) if (c.Places.TryGetValue(kv.Key, out var at) && G.Within(at, door, 50)) return kv.Value;
+            return door;
         }
         static Vector3 PathAt(Partner p, float at)
         {

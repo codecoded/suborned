@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace Suborned.Play
 {
     /// <summary>Brief 099: the book's page measured as it is drawn, for the debrief's captures (DebriefShots): a manifest of every word and picture on it in screen pixels (the
-    /// format tools/hud-budget reads; state `page`, the reading surface outside play), and the page's own layout audit: no two words over each other, every word on the
+    /// format tools/hud-budget reads; state `book`, the book's own checks: its grid, its word cap; brief 098, Splice), and the page's own layout audit: no two words over each other, every word on the
     /// screen and clear of the fold's veil unless the fold keeps it. The HUD capture writes no manifest while the book is up (brief 096); this is the book's. Reads only.</summary>
     public sealed partial class HudToolkit
     {
@@ -41,7 +41,7 @@ namespace Suborned.Play
         }
 
         /// <summary>The page's manifest (tools/hud-budget's format), every word and picture on it.</summary>
-        public static string BookManifest(string state = "page")
+        public static string BookManifest(string state = "book")
         {
             var sb = new StringBuilder("{\n \"state\": \"" + state + "\",\n \"elements\": [\n"); var ps = BookPieces(false);
             string N(float v) => Mathf.RoundToInt(v).ToString(CultureInfo.InvariantCulture);

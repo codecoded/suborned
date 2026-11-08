@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "6435fd47c875732b1dd003924f8eb3e7e39cec7a32c1cd2a74eff2798dfbe6e9",
+    "sha256": "f810fb19d6381fe8c44a58e3e412d9f0488e178eb8eb27b7ca12ac49c3b6dbef",
     "stale": false
   },
   "window": {
@@ -15,8 +15,8 @@
     "cell": 0.25
   },
   "ground": {
-    "walkCells": 43350,
-    "walkableCells": 43350,
+    "walkCells": 43351,
+    "walkableCells": 43351,
     "sunk": 685,
     "floating": 44,
     "bands": {
@@ -33,15 +33,15 @@
     }
   },
   "walk": {
-    "freeCells": 43350,
+    "freeCells": 43351,
     "throughSolid": 0,
-    "lowCeiling": 2,
+    "lowCeiling": 0,
     "brush": 0,
     "invisibleWall": 118
   },
   "sight": {
     "drawnAtEye": 485,
-    "drawnAtChest": 721,
+    "drawnAtChest": 722,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -73,17 +73,17 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 424,
+    "measured": 413,
     "offPivotOrSize": 21,
     "placedHere": [
-      "ShrubMound_TB: size 0.24 m off the catalogue",
-      "BikeRack_Play: size 0.32 m off the catalogue"
+      "BikeRack_Play: size 0.32 m off the catalogue",
+      "ShrubMound_TB: size 0.24 m off the catalogue"
     ]
   },
   "rules": [
     {
       "id": "G-1a",
-      "count": 1,
+      "count": 2,
       "unit": "people",
       "example": "cast:guard at 64.0,-41.3: host 0.18 m, drawn 0.93 m"
     },
@@ -95,9 +95,9 @@
     },
     {
       "id": "G-1d",
-      "count": 0,
+      "count": 4,
       "unit": "stretches",
-      "example": "none"
+      "example": "Inez Nikolaou (p-cafe-14) to cafe-table-0: 0.5 m brush on PottedPalm_Small (+0 m) from -9.08,-29.92 to -8.92,-30.08"
     },
     {
       "id": "G-1c",
@@ -119,9 +119,9 @@
     },
     {
       "id": "G-2c",
-      "count": 2,
+      "count": 0,
       "unit": "cells",
-      "example": "civic/cafe-palm-1: 2 cells"
+      "example": "none"
     },
     {
       "id": "G-3a",
@@ -139,11 +139,11 @@
       "id": "K-1",
       "count": 2,
       "unit": "pieces",
-      "example": "ShrubMound_TB: size 0.24 m off the catalogue"
+      "example": "BikeRack_Play: size 0.32 m off the catalogue"
     }
   ],
   "ifHostReadsWalkFile": {
-    "G-1a": 0,
+    "G-1a": 1,
     "G-1b": 0,
     "G-1c": 0
   }

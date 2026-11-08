@@ -14,7 +14,7 @@ namespace Suborned.Play
     /// <summary>Brief 099, `-debriefShots &lt;dir&gt; -capture-size 1920x1080`: the debrief page in the real player beside Glyph's concept (briefs/099/glyph/A-front-*.png): the quiet
     /// win (route A), the lookout's fail at 5:53 (its Time fold too, which opens over the numbers), the loud win with Trail opened, the two deepest fail pages (where the run gives
     /// way), a withdrawal, and the start page after Try again (its kicker beside the debrief's). Each script is played through the host's own
-    /// order paths to its end; the fail camera plays as in the game; the page opens as the game opens it. For each picture: the page's manifest (tools/hud-budget, state page),
+    /// order paths to its end; the fail camera plays as in the game; the page opens as the game opens it. For each picture: the page's manifest (tools/hud-budget, state book),
     /// its layout audit (the HUD's own and the page's), its words (pages.txt); and, once a run's page has been opened and every fold toggled, its saved session replayed to the
     /// same hash. Its own flag; no proof section runs it. Reads only.</summary>
     public sealed class DebriefShots : MonoBehaviour
