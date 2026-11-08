@@ -32,3 +32,12 @@ Owner: main session (as Aster), opened 2026-11-08 on `work/098-living-playbook`.
 - In a played game, the agents speak only in scenes with people.
 - No line anywhere explains a rule or a consequence.
 - Sky reads the sample and says yes.
+
+## Sky on Fable's sample (2026-11-08)
+1. "yes - rewrites are much better": the test and the 22 rewrites (`briefs/102/fable/index.html`) are approved. The sweep runs to the same bar.
+2. "we can try - sure": Opus 5.5 judges the sweep, gpt-6.1-sol writes. Fable builds the loop's Claude caller first, so its calls are recorded and replay.
+3. "not into those e.g. 'Citizen. Walking is encouraged. Running is noted.' - that noted is AI sounding". None of the four "kept on purpose" lines stays as it is; they go into the sweep. **AI-sounding words fail too:** "noted", "understood", "proceeding", "acknowledged", "affirmative", "rest assured" and their kind, which no person in the street says.
+
+**Defaults Aster took, which Sky can overturn:**
+- The rivals following our car out on route B get a news card. The line doesn't come back.
+- The Mislead is a scene with a person, so the Scout's tip to the rival comes back as a natural line written to the bar.
