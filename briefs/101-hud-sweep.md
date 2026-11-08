@@ -52,3 +52,19 @@ In play, the HUD reads as part of the same designed game as the book. It is a re
 
 ## Next owner
 Glyph (the sweep and directions), then Sky. Latch builds the picked direction, piece by piece.
+
+## Sky on round 1 (2026-11-08)
+Sky was shown the three directions (A the page's edge, B enamel signs, C in the street) at rest, quiet, loud and aiming:
+- "A just covers too much of the screen. And that's not even a busy example you're showing"
+- "Why is their stats about 75% etc showing when firing?"
+
+**Round 2 (Glyph), mock only:**
+1. **Lean first.** Cover less than today's HUD at rest (4.8 %), and stay low at the busiest moment. Measure the way `tools/hud-budget` reads a capture.
+2. **Mock the busiest real moment, not a calm one.** For example: the final fight with the seal running, police coming, a reporter on the way, agents firing under orders, a bubble or two, and the player aiming. Use real captures, and ask Aster for any that are missing.
+3. **No percentages and no stopwatches on a shot.** A shot shows what the street will do about it (it goes loud: Alert, police), never the hit chance as a number. That's brief 098: the order card reads the scene, it is never a stopwatch. A non-numeric cue may hint at a long shot, if one is needed at all. The hit rate stays in the debrief's numbers.
+4. **Two directions at most, both lean.**
+   - C refined: in the street, made readable over any ground.
+   - A minimal one: B's small enamel tokens only where something must sit in a corner, such as the clock and the seal.
+   - A mix of the two is welcome.
+
+   Each is shown at the same four moments plus the busiest, with a coverage table that includes today's HUD.
