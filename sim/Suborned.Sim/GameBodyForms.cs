@@ -61,7 +61,7 @@ namespace Suborned.Sim
             GiveStart(i); // GameBodyGive.cs: making room or a squeeze ends once the other has passed
             Pt cur = b.Raw + b.Lay, from = b.Prev, goal, gface = b.LayFace; bool form = false; byte why; // cur: holding its lay; from: where it stood; why: the goal and the move (BodyTrace reads them)
             bool behind = !b.AltOn && b.Path != null && !b.Fresh && G.D2(b.Raw, from) > (long)FollowCm * FollowCm; // fallen behind its own place: it follows its own walk, not a line through walls
-            if (!b.Fresh && from != b.Raw && (!OffCars(from) || (!S.Grid.Free(from) && !b.SitIn))) b.Fix = FixOff; // a car came to stand where it stood, or its own place left it on ground no body stands on (a door point in a facade): it walks off it (BodyGround); engine 0.49.0: not an operative stepping into his seat across the chair's ground
+            if (!b.Fresh && from != b.Raw && (!OffCars(from) || (!S.Grid.Free(from) && !b.SitIn && !(G.Within(from, b.Own, StepInCm) && !S.Grid.Free(b.Own))))) b.Fix = FixOff; // a car came to stand where it stood, or its own place left it on ground no body stands on (a door point in a facade): it walks off it (BodyGround); engine 0.49.0: not one stepping into its own place off the walk's ground across the last of it (BodyGround's step in: a customer held behind his walk into a café chair stepped back out of the table's clearance every third tick, drive-round #1 at people=32), nor an operative into his Listen's seat
             bool onCar = b.Fix == FixOff;
             b.Aim = behind ? FollowAim(in b, from) : b.Own;
             if (!b.Fresh && b.Det == null && Tick >= b.DetEnd && !G.Within(from, b.Aim, CatchCm) && !S.Grid.LineFree(from, b.Aim)) PlanCatch(i, from, b.Aim); // walled off from where it makes for (a routine leg through a building, its own place jumped behind a wall): it walks back by the walk grid (GameBodyDetours.cs)
@@ -201,7 +201,11 @@ namespace Suborned.Sim
         static Pt Scale(Pt v, int len) { long l = G.Isqrt(G.D2(v, default)); return l == 0 ? new Pt(len, 0) : new Pt((int)(v.X * (long)len / l), (int)(v.Y * (long)len / l)); }
 
         /// <summary>At a stop another holds: a queue behind it (bodies.queue a step, facing the way the stop faces), then an arc beside and behind it;
-        /// a guard whose post another guard holds, the nearest free crew spot round it (bodies.crew, facing that spot's sector), then twice as far.</summary>
+        /// a guard whose post another guard holds, the nearest free crew spot round it (bodies.crew, facing that spot's sector), then twice as far.
+        /// Engine 0.49.0: a queue's spot is on the walk's free ground. Only a body's own way crosses the last of the solid ground into a place off it
+        /// (BodyGround's step in), so one waiting for a chair never waits inside a table's clearance (drive-round #1 at people=32: x-person-0008
+        /// waited 72 cm off cafe-table-3's seat, off the walk's ground, which held it there, and the man who had stood up from that seat could not
+        /// pass it in the 83 cm gap between the table and the terrace's plinth for 179 s).</summary>
         bool FormGoal(int i, out Pt goal, out Pt face)
         {
             ref var b = ref bds[i]; goal = default; face = default;
@@ -210,9 +214,10 @@ namespace Suborned.Sim
             bool crew = b.Form == FmCrew && b.Mate; // a guard at a post another holds: a crew spot (BodyPosts)
             if (!crew) // anyone else at its place: a step aside (a queue behind a stop, else beside it), at a queue's step
             {
+                bool queueFits(Pt c) => S.Grid.Free(c) && OffCars(c) && Fits(i, c, true);
                 var back = Scale(new Pt(-f.X, -f.Y), R.BodyQueueCm + RoundCm);
-                for (int k = 1; k <= 5; k++) { var c = b.Raw + new Pt(back.X * k, back.Y * k); if (Fits(i, c, true)) { goal = c; return true; } }
-                foreach (var a in QueueArc) { var c = b.Raw + Scale(Rot(f, a), R.BodyQueueCm + RoundCm); if (Fits(i, c, true)) { goal = c; return true; } }
+                for (int k = 1; k <= 5; k++) { var c = b.Raw + new Pt(back.X * k, back.Y * k); if (queueFits(c)) { goal = c; return true; } }
+                foreach (var a in QueueArc) { var c = b.Raw + Scale(Rot(f, a), R.BodyQueueCm + RoundCm); if (queueFits(c)) { goal = c; return true; } }
                 return false;
             }
             long post = PostKey(b.Raw); slotsHeld.TryGetValue(post, out var held);

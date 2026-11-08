@@ -44,8 +44,10 @@ public class BodiesGiveTests
         "crowd" => g.BodyKeepsPlace(u.Id) ? 2 : 0, // a staff guard of the city
         _ => 0,
     };
-    /// <summary>Making room for `forId` is the law's: a person of the city for anyone, one armed for one of its own side (never an enemy).</summary>
-    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (u.Kind == "cell" && g.BodyIdle(u.Id)) || (Side(g, u) != 0 && up.Find(x => x.Id == forId) is var a && (a.Id == null || Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
+    /// <summary>Making room for `forId` is the law's: a person of the city for anyone, one armed for one of its own side (never an enemy); engine
+    /// 0.49.0 (GameBodyGive.ClearsFor), anyone not fixed or laden for a tenet walking (Vale led to the car, a customer stepping into a chair), which
+    /// walks on whoever stays.</summary>
+    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (u.Kind == "cell" && g.BodyIdle(u.Id)) || (up.Find(x => x.Id == forId) is var a && (a.Id == null ? Side(g, u) != 0 : a.Tenet || Side(g, u) != 0 && Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
 
     [Theory]
     [InlineData("unset")] [InlineData("people=64")] [InlineData("guards=64")] [InlineData("guards=64,people=64")] [InlineData("cars=8")]
@@ -88,9 +90,12 @@ public class BodiesGiveTests
     [Fact]
     public void TwoPeopleOfTheCityFaceToFaceSqueezePastTurnedSideways()
     {
+        // engine 0.49.0: on the walk law (every visible gap open) and with nobody waiting inside a table's clearance, two face to face with no room
+        // come up less often (2 pairs on the six runs this test played before), so the law is looked for on more runs (the same six, a third seed, route A at people=128)
+        // and the bar is the same: more than five pairs, each holding every promise
         int squeezes = 0, ticks = 0; var bad = new List<string>(); var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("route-b", "guards=64,people=64") })
-            foreach (var seed in new[] { 1, 2 })
+        foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("route-b", "guards=64,people=64"), ("route-a", "people=128") })
+            foreach (var seed in new[] { 1, 2, 3 })
                 Play(route, seed, counts, g =>
                 {
                     var up = BodyCheck.Of(g);
