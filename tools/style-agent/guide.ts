@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { selectLatestGdd } from '../rag/gdd-sources';
-import { GUIDE_VERSIONS, type Guide, type GuideVersion, type Source } from './types';
+import { NATURAL_BRIEF, naturalWords, whatFails } from './short-natural';
+import { GUIDE_NOW, GUIDE_VERSIONS, type Guide, type GuideVersion, type Source } from './types';
 
 export const TEXT_FILE = 'contracts/missions/handover/text.json';
 export const TEXT_SCHEMA = 'contracts/missions/handover/text.schema.ts';
@@ -46,10 +47,10 @@ export const block = (gdd: string, heading: string) => {
   return m[0];
 };
 
-/** The style guide, built only from the approved GDD, the Handover's voices and text contract, and Sky's recorded decisions (brief 054; /3: brief 096).
- *  version 2 is the bubble guide the brief-054 runs used, kept so they replay; 3 is the cutaway guide every new run uses. */
-export function buildGuide(read: Read, names: string[], sha: Sha = file => hash(read(file)), version: GuideVersion = 3): Guide {
-  const v3 = version === 3;
+/** The style guide, built only from the approved GDD, the Handover's voices and text contract, and Sky's recorded decisions (brief 054; /3: brief 096; /4: brief 102).
+ *  version 2 is the bubble guide the brief-054 runs used, kept so they replay; 3 the cutaway guide; 4 the cutaway guide with nobody explaining the game, which new runs use. */
+export function buildGuide(read: Read, names: string[], sha: Sha = file => hash(read(file)), version: GuideVersion = GUIDE_NOW): Guide {
+  const v3 = version >= 3, v4 = version >= 4;
   const pair = gddPair(names), gdd = read(pair.agent.path), text = JSON.parse(read(TEXT_FILE)), schema = read(TEXT_SCHEMA);
   const sources: Source[] = [];
   const add = (id: string, file: string, locator: string, excerpt: string) => sources.push({ id, file, locator, sha256: sha(file), excerpt });
@@ -79,6 +80,8 @@ export function buildGuide(read: Read, names: string[], sha: Sha = file => hash(
     const brief = read(FULL_SENTENCES_FILE);
     add('full-sentences', FULL_SENTENCES_FILE, 'Sky, 2026-11-05', [lineOf(brief, '"I noticed our dialogue', 'brief 096 Sky\'s note'), lineOf(brief, 'So, for cutaway conversations', 'brief 096 the rules')].join('\n'));
   }
+  const words102 = v4 ? read(NATURAL_BRIEF) : ''; // guide /4 (brief 102): after the /3 sources, so a /3 guide rebuilds with exactly the sources it ran with
+  if (v4) add('natural-words', NATURAL_BRIEF, 'Sky 2026-11-08, decisions 1 and 2', naturalWords(words102));
   // The human GDD wins on conflict. Fingerprint it; its 2 MB of markup never enters a prompt.
   add('human-gdd', pair.human.path, 'authoritative human GDD', `Human GDD v${pair.human.version}; it wins on conflict with the agent copy.`);
 
@@ -112,12 +115,16 @@ export function buildGuide(read: Read, names: string[], sha: Sha = file => hash(
       : { id: 'FORM', kind: 'length and shape', sources: ['lines', 'text-shape', 'decision', 'fable'], instruction:
         `A conversation is a run of speech bubbles, one speaker each, ${bubbleSeconds} s per bubble, and it fills the act's own seconds: the brief gives the line range (at most seconds ÷ ${bubbleSeconds}). ` +
         `Each line at most ${maxWords} words and ${maxChars} characters, one plain line, no stage directions, no narration, no markup. Exchanges, not monologues: people answer each other. Only the brief's cast speaks, each in their part. British spelling, as in the GDD and the mission text.` },
-      ...(v3 ? [{ id: 'NATURAL' as const, kind: 'said aloud', sources: ['full-sentences', 'fable'], instruction:
-        'Read every line aloud. Whole sentences; one question at a time; no line stacks three thoughts; nothing a real person in that spot wouldn\'t say aloud; nobody tells the player what they can do next (the cards after the cut do). Score down any line that fails.' }] : []),
+      ...(v3 ? [{ id: 'NATURAL' as const, kind: 'said aloud', sources: v4 ? ['full-sentences', 'fable', 'natural-words'] : ['full-sentences', 'fable'], instruction:
+        'Read every line aloud. Whole sentences; one question at a time; no line stacks three thoughts; nothing a real person in that spot wouldn\'t say aloud; nobody tells the player what they can do next (the cards after the cut do). Score down any line that fails.' + (v4 ? NATURAL_4(words102) : '') }] : []),
     ],
   };
 }
 
-export const loadGuide = (base: string, version: GuideVersion = 3) => buildGuide(readerFor(base), gddNames(base), undefined, version);
-export const guideFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: GuideVersion = 3) =>
+export const loadGuide = (base: string, version: GuideVersion = GUIDE_NOW) => buildGuide(readerFor(base), gddNames(base), undefined, version);
+export const guideFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: GuideVersion = GUIDE_NOW) =>
   buildGuide(readerFromFiles(files), gddNamesFromFiles(shas), file => shas[file] ?? hash(readerFromFiles(files)(file)), version);
+
+/** Guide /4 (brief 102, Sky 2026-11-08): NATURAL also holds the no-mechanics rule, in the brief's words; a person says what they would say, and the game shows what follows. */
+const NATURAL_4 = (brief: string) => ' And nobody explains the game (brief 102, Sky 2026-11-08: "that\'s exactly the kind of scripting that bugs me. \'I will remember you.\' lines etc - so unnatural"): no line tells the player a rule or a consequence, such as that someone will remember a face or never forget, will be back, will report it or write it down, will warn the cell later, or what a later offer would cost. ' +
+  `What fails, in the brief's words: ${whatFails(brief)} People say what a person in that moment would say, for their own reasons, to whoever is there; the world and the HUD show what follows. A person may still say what they mean to do now, in their own words ("Say when."). The standard is the lines Sky kept: "You paid my debt? I'm yours. Say when." and "Civic Police! Drop your weapons!"`;

@@ -1,0 +1,40 @@
+{
+  "schema": "suborned.natural-bar/1",
+  "status": "Staged for guide /13 (brief 102, Fable 2026-11-08). No /13 run applies before Sky's yes to briefs/102/fable/index.html.",
+  "why": "Sky 2026-11-08, on \"He bought it. He'll be back, and he knows my face.\": \"that's exactly the kind of scripting that bugs me. 'I will remember you.' lines etc - so unnatural\". A line that tells the player a rule or a consequence fails, whoever says it. The game shows what follows through the world and the HUD.",
+  "kept": [
+    { "key": "reply/help/waitress/turned/idealist", "line": "You paid my debt? I'm yours. Say when.", "why": "Sky kept it. Her yes in her own words: the turn and the call are in it, and nobody explains them." },
+    { "key": "fight-loud/security", "line": "Civic Police! Drop your weapons!", "why": "Sky kept it. It is what police shout, so it tells the player who has arrived without explaining anything." }
+  ],
+  "fail": [
+    { "key": "sky", "line": "He bought it. He'll be back, and he knows my face.", "why": "Sky's example: the Mislead's rule (he comes back, and he knows the Scout) put in the Scout's mouth." },
+    { "key": "done/turn/fixer/refused", "line": "You said no. You'll remember me.", "why": "Sky's example: nobody tells a stranger they'll remember them. It is the refusal's rule read out to her face." },
+    { "key": "sky", "line": "I will remember you.", "why": "Sky's example: remembering is the game's job, never a line." },
+    { "key": "done/stash/tech", "line": "Body stowed. A search could find it.", "why": "Brief 102's example: the hiding place's rule, said like a tooltip." },
+    { "key": "done/disable/tech", "line": "Line's dead. They'll notice.", "why": "Brief 102's example: the desk's next scan, foretold." },
+    { "key": "sky", "line": "They'll wake with a sore head.", "why": "Brief 102's example: the knockout's rule, foretold." },
+    { "key": "reply/help/waitress/kept/mercenary", "line": "Still good for it. I'll remember.", "why": "Sky's \"I will remember you\" family, in Inez's mouth." },
+    { "key": "reply/help/guard/kept/loyal", "line": "You've put it right again. I won't forget it.", "why": "\"I won't forget\" is the same family: the game remembers, and he needn't say so." },
+    { "key": "saw-gunfire/crowd", "line": "I'll remember that face.", "why": "Tells the player the witness can name the shooter later; a frightened passer-by says what they see now." },
+    { "key": "reply/ask/guard/refused/mercenary", "line": "No free favours. Next time, my fee goes up.", "why": "The refusal's rule (a later offer costs more) recited by the guard." },
+    { "key": "reply/help/guard/not-yet/loyal", "line": "Help me once more. Then I'll return the favour.", "why": "The not-yet rule (one more Help turns him), read out to the Fixer." },
+    { "key": "reply/help/waitress/suspicious/loyal", "line": "Even a favour gets reported, I'm afraid.", "why": "States the rule that a loyal person reports any approach." },
+    { "key": "reply/pay/driver/suspicious/loyal", "line": "Keep that. This goes in my log.", "why": "The report announced. The HUD already shows it on its way." },
+    { "key": "done/turn/fixer/suspicious", "line": "You're reporting us, then. I understand.", "why": "The outcome read back to the person's face." },
+    { "key": "done/turn/fixer/small-offer", "line": "Too little, then. Let me listen first.", "why": "Tells the player what to do next (Listen first), said to her face." },
+    { "key": "reply/pay/guard/turned/mercenary", "line": "That's good money. Call when you want the favour.", "why": "Teaches a Call, and the guard has none." },
+    { "key": "witness-reacts/crowd/check", "line": "I'll look first, then tell the police.", "why": "The witness's choice narrated as a plan; nobody says their next two steps aloud." },
+    { "key": "summon-refused/waitress/summon-came-once", "line": "Sorry, one visit a shift. He's had his.", "why": "The call's rule recited as if it were café policy." },
+    { "key": "fight-guard/guard", "line": "Rivals! I'll cover you!", "why": "The guard has never seen the cell, and nobody outside it knows the other crew as rivals." }
+  ],
+  "pass": [
+    { "key": "reply/help/driver/small-offer", "line": "No, thanks. I don't take money I can't explain.", "why": "His reason, in his words. The offer was too small, and no rule is said." },
+    { "key": "reply/pressure/driver/suspicious/loyal", "line": "Say that again for the officer.", "why": "A threat he would really make. The report shows on the HUD." },
+    { "key": "taken/take/councillor/loyal", "line": "Take your hands off a Councillor.", "why": "His temperament in one breath, said to the man holding him." },
+    { "key": "gunfire/crowd", "line": "Somebody call the police!", "why": "What a person shouts. The report that follows is the game's." },
+    { "key": "witness-reacts/crowd/avoid", "line": "I didn't see a thing.", "why": "A denial people make. There is no rule in it." },
+    { "key": "driver-tail/driver", "line": "That car's tailed us all week.", "why": "News in his own words, from what he has seen." },
+    { "key": "victim-wakes/guard", "line": "My head. Who was that?", "why": "The waking is shown by the person, not foretold by someone else." },
+    { "key": "questioned/waitress/gives", "line": "I remember them, officer. Here, let me tell you what happened.", "why": "When an investigator asks, remembering is the answer itself. It is the moment, not a rule foretold." }
+  ]
+}

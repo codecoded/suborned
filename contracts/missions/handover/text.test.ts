@@ -1110,7 +1110,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const bad: string[] = [];
     for (const d of rows) for (const l of d.lines) { if (GENDER.test(l)) bad.push(`gendered: ${l}`); if (NARRATION.test(l)) bad.push(`narration: ${l}`); }
     expect(bad).toEqual([]);
-    expect(rows.find((d) => d.outcome === 'refused')!.lines[0]).toBe("You said no. You'll remember me."); // brief 085: read after her reply, to her face
+    // brief 102 (Sky 2026-11-08, on "I will remember you" lines: "so unnatural"): the pin on "You said no. You'll remember me." is gone; the line waits on the sweep
   });
   test('H12 teaches the run toggle: it names the key the game binds (G), the one place a key is taught', () => {
     const h = t.hints.items.H12!;

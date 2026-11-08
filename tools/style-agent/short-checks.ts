@@ -1,6 +1,7 @@
 import { Why, whyProblems } from '../../contracts/missions/handover/why.schema.ts';
 import { shortGuideVersion, type Field, type Form, type ShortBrief, type ShortGuide, type ShortIssue, type ShortSet } from './short-types';
 import { barkKey } from './short-barks';
+import { FORETELLS } from './short-natural';
 
 /** The checks code can make for certain on a short-line family (Keel's side of the review); meaning, truth and voice are Motive's. */
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -69,6 +70,9 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
           if (i > 0 && w && /^\p{Lu}/u.test(w) && !/[.!?:·]$/.test(toks[i - 1]!) && !CAPS.has(w)) flag('NAMES', `${at}: "${w}" mid-sentence; only the game's names are capitalised.`);
         });
         if (brief.kind === 'bark' && it.speaker && !/^(scout|fixer|tech|enforcer):/.test(it.speaker) && /\d/.test(l)) flag('TRUE', `${at}: no digits in a person's mouth (people never quote the clock or the cell's numbers).`);
+        // guide /13 (brief 102): the family Sky named ("'I will remember you.' lines etc - so unnatural"), whoever says it; a questioned row answers an investigator
+        const told = v12 && shortGuideVersion(guide) >= 13 && !x.key.startsWith('questioned/') ? l.match(FORETELLS) : null;
+        if (told) flag('NATURAL', `${at}: "${told[0]}" explains the game (brief 102): say what this person would say now; the world and the HUD show what follows.`);
         // guide /12: nor in the cell's (Sky's rule on numbers in play: the game draws a key event's time, and no act's)
         if (v12 && /^(scout|fixer|tech|enforcer):/.test(it.speaker ?? '') && /\d/.test(l)) flag('MECHANICS', `${at}: no digits in a line: the game draws its own numbers, and only a key event's (Sky's rule on numbers in play).`);
         if ((brief.kind === 'debrief' || brief.kind === 'label') && /[a-z]+-[a-z]+-[a-z]+|\bhash\b|replay|\btick\b|operative|engine|ledger/i.test(l)) flag('PLAIN', `${at}: an engine word; the ${brief.kind === 'label' ? 'HUD' : 'page'} uses the player's words (text.test.ts).`);

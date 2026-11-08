@@ -42,7 +42,7 @@ export async function savedShortRuns(): Promise<{ run: ShortResult; path: string
 }
 /** Guide /4's rubric is the one the lines are written to (/5 adds a check); a run under /1–/3 stays on record, superseded. */
 const CURRENT_RULES = 4;
-/** A /12 bark run waits on Sky's yes to the sample (brief 099 voices): until then its family keeps the lines of its last run before /12. */
+/** A /12 or later bark run waits on Sky's yes (brief 099 voices; at /13, brief 102's sample, briefs/102/fable/index.html): until then its family keeps the lines of its last run before /12. */
 export const waitsForSky = (r: ShortResult) => r.brief.kind === 'bark' && shortGuideVersion(r.guide) >= 12 && !BARKS_12_APPLY;
 /** The run a family's lines come from: its latest accepted live run under the current rubric. `skip` leaves families out (today's lines stay). */
 export async function acceptedByFamily(skip = new Set<string>()): Promise<Map<string, { run: ShortResult; path: string }>> {

@@ -1,0 +1,999 @@
+{
+ "schema": "suborned.natural-offenders/1",
+ "read": "Fable, 2026-11-08, every line still in play after brief 102 silenced the agents (people's rows, the Fixer's and the Enforcer's scene rows, scenes.items, scenes.conversations); checked against text.json by out/scratch/fable/102/offenders.ts",
+ "kinds": {
+  "remember": "promises to remember, know a face, not forget or note it",
+  "rule": "recites a rule of the game",
+  "report": "announces the report the HUD already shows",
+  "next": "tells the player what to do next",
+  "call": "offers to come when called, and has no Call",
+  "plan": "narrates a reaction as a plan or a procedure",
+  "knows": "says what the speaker couldn't know",
+  "forecast": "announces a later feature"
+ },
+ "totals": {
+  "lines": 133,
+  "fails": 92,
+  "close": 41,
+  "rows": 76,
+  "byArea": {
+   "row": {
+    "fails": 89,
+    "close": 34
+   },
+   "scene": {
+    "fails": 1,
+    "close": 6
+   },
+   "conversation": {
+    "fails": 2,
+    "close": 1
+   }
+  },
+  "byKind": {
+   "remember": 16,
+   "rule": 34,
+   "report": 36,
+   "next": 10,
+   "call": 6,
+   "plan": 25,
+   "knows": 4,
+   "forecast": 2
+  }
+ },
+ "lines": [
+  {
+   "where": "reply/ask/waitress/refused/idealist",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Come back when you've earned a yes."
+  },
+  {
+   "where": "reply/ask/waitress/refused/idealist",
+   "area": "row",
+   "kind": "next",
+   "verdict": "close",
+   "line": "A favour? From strangers? Not yet."
+  },
+  {
+   "where": "reply/ask/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Not here. I'll be telling someone."
+  },
+  {
+   "where": "reply/ask/waitress/refused/mercenary",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Favours cost. Ask again with money."
+  },
+  {
+   "where": "reply/ask/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "That isn't allowed. I'll have to say."
+  },
+  {
+   "where": "reply/ask/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'll be reporting this, I'm afraid."
+  },
+  {
+   "where": "reply/pay/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "A bribe? I'll tell someone. I will."
+  },
+  {
+   "where": "reply/pay/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Take your envelope elsewhere. I'm telling."
+  },
+  {
+   "where": "reply/pay/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'm obliged to report this. Whatever it was."
+  },
+  {
+   "where": "reply/pay/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "That goes in my log. All of it."
+  },
+  {
+   "where": "reply/help/waitress/kept/idealist",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "That's twice. I won't forget it."
+  },
+  {
+   "where": "reply/help/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Even your kindness is a threat. I'll talk."
+  },
+  {
+   "where": "reply/help/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Charity from you? I'll be telling someone."
+  },
+  {
+   "where": "reply/help/waitress/kept/mercenary",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "Still good for it. I'll remember."
+  },
+  {
+   "where": "reply/help/waitress/kept/fearful",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "Thank you. I won't forget this."
+  },
+  {
+   "where": "reply/help/waitress/not-yet/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "A good start. I'll consider it."
+  },
+  {
+   "where": "reply/help/waitress/kept/loyal",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "Steady of you. I notice."
+  },
+  {
+   "where": "reply/help/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Even a favour gets reported, I'm afraid."
+  },
+  {
+   "where": "reply/help/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Kind or not, I have to write it down."
+  },
+  {
+   "where": "reply/pressure/waitress/turned/idealist",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "That's cruel. I'll do it. Once."
+  },
+  {
+   "where": "reply/pressure/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "You'll be reported, you and your threats."
+  },
+  {
+   "where": "reply/pressure/waitress/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "close",
+   "line": "Threats? I'll tell everyone I know."
+  },
+  {
+   "where": "reply/pressure/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "A threat? That goes in the book."
+  },
+  {
+   "where": "reply/pressure/waitress/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "close",
+   "line": "I'll tell the owner exactly what you said."
+  },
+  {
+   "where": "reply/ask/driver/refused/idealist",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Ask me why first. Then ask again."
+  },
+  {
+   "where": "reply/ask/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Don't ask that here. People report."
+  },
+  {
+   "where": "reply/ask/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "close",
+   "line": "Careful. I could tell the Office."
+  },
+  {
+   "where": "reply/ask/driver/refused/mercenary",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Nothing for nothing. Bring cash next time."
+  },
+  {
+   "where": "reply/ask/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I drive the Councillor. Nothing else. Noted."
+  },
+  {
+   "where": "reply/ask/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Move along, friend. This goes in my log."
+  },
+  {
+   "where": "reply/pay/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Put it away, or I report you."
+  },
+  {
+   "where": "reply/pay/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "close",
+   "line": "A bribe? I'll tell the Office."
+  },
+  {
+   "where": "reply/pay/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "I report bribes. Even polite ones."
+  },
+  {
+   "where": "reply/pay/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Keep that. This goes in my log."
+  },
+  {
+   "where": "reply/help/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Don't help me. I'll have to report it."
+  },
+  {
+   "where": "reply/help/driver/kept/mercenary",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "You pay well. I remember that."
+  },
+  {
+   "where": "reply/help/driver/not-yet/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "A little more, and I'm yours."
+  },
+  {
+   "where": "reply/help/driver/kept/loyal",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "Reliable of you. I'll note that."
+  },
+  {
+   "where": "reply/help/driver/kept/loyal",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "A steady friend. I won't forget."
+  },
+  {
+   "where": "reply/help/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Help from strangers? I'll write it down."
+  },
+  {
+   "where": "reply/help/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Favours get reported. I'm sorry."
+  },
+  {
+   "where": "reply/pressure/driver/turned/idealist",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "I hate this. I'll do it once."
+  },
+  {
+   "where": "reply/pressure/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'll see you reported for this."
+  },
+  {
+   "where": "reply/pressure/driver/suspicious/idealist",
+   "area": "row",
+   "kind": "report",
+   "verdict": "close",
+   "line": "Threats? The Office will hear of it."
+  },
+  {
+   "where": "reply/pressure/driver/turned/mercenary",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Threats don't raise my price. Fine."
+  },
+  {
+   "where": "reply/pressure/driver/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Threatening an official's driver? Reported."
+  },
+  {
+   "where": "reply/ask/guard/refused/mercenary",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "No free favours. Next time, my fee goes up."
+  },
+  {
+   "where": "reply/ask/guard/refused/mercenary",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "No. My next favour costs extra now you've asked."
+  },
+  {
+   "where": "reply/ask/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'm reporting your request to the Office."
+  },
+  {
+   "where": "reply/ask/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "The Office will hear about what you've asked of me."
+  },
+  {
+   "where": "reply/pay/guard/turned/mercenary",
+   "area": "row",
+   "kind": "call",
+   "verdict": "fails",
+   "line": "That's good money. Call when you want the favour."
+  },
+  {
+   "where": "reply/pay/guard/turned/mercenary",
+   "area": "row",
+   "kind": "call",
+   "verdict": "fails",
+   "line": "For that bonus, I'll oblige when you call."
+  },
+  {
+   "where": "reply/pay/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "That's a report I owe the Office."
+  },
+  {
+   "where": "reply/pay/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'm reporting this bribe to the Office."
+  },
+  {
+   "where": "reply/help/guard/turned/mercenary",
+   "area": "row",
+   "kind": "call",
+   "verdict": "fails",
+   "line": "You've earned an off the clock favour. Just call."
+  },
+  {
+   "where": "reply/help/guard/turned/mercenary",
+   "area": "row",
+   "kind": "call",
+   "verdict": "close",
+   "line": "Consider that my bonus. I'll oblige when asked."
+  },
+  {
+   "where": "reply/help/guard/not-yet/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Help me once more. Then I'll return the favour."
+  },
+  {
+   "where": "reply/help/guard/not-yet/loyal",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "One more kindness, and I'll make an exception for you."
+  },
+  {
+   "where": "reply/help/guard/turned/loyal",
+   "area": "row",
+   "kind": "call",
+   "verdict": "fails",
+   "line": "I'll make an exception for you. Call when needed."
+  },
+  {
+   "where": "reply/help/guard/kept/loyal",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "You've put it right again. I won't forget it."
+  },
+  {
+   "where": "reply/help/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "The Office will hear about this offer of help."
+  },
+  {
+   "where": "reply/help/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'm reporting your offer. The Office must be informed."
+  },
+  {
+   "where": "reply/help/guard/small-offer",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Not enough. Find out what I owe before offering."
+  },
+  {
+   "where": "reply/pressure/guard/turned/mercenary",
+   "area": "row",
+   "kind": "call",
+   "verdict": "fails",
+   "line": "I'll oblige when you call. Without a bonus, apparently."
+  },
+  {
+   "where": "reply/pressure/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "I'm reporting that threat to the Office."
+  },
+  {
+   "where": "reply/pressure/guard/suspicious/loyal",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "Threatening the door guard. I'll inform the Office."
+  },
+  {
+   "where": "summon-refused/waitress/summon-came-once",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Sorry, one visit a shift. He's had his."
+  },
+  {
+   "where": "summon-refused/guard/summon-came-once",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "I came once. The door can't spare me twice."
+  },
+  {
+   "where": "summon-refused/waitress/summon-too-far",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "He's too far from his post, I'm afraid. No quick visit."
+  },
+  {
+   "where": "summon-refused/guard/summon-too-far",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "I'm too far from the door for a quick visit, Inez."
+  },
+  {
+   "where": "summon-refused/guard/summon-no-visit",
+   "area": "row",
+   "kind": "knows",
+   "verdict": "fails",
+   "line": "Nobody available to call over, Inez."
+  },
+  {
+   "where": "summon-refused/guard/summon-no-visit",
+   "area": "row",
+   "kind": "knows",
+   "verdict": "fails",
+   "line": "No one available, Inez. Nobody you can send for."
+  },
+  {
+   "where": "saw-gunfire/crowd",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "I'll remember that face."
+  },
+  {
+   "where": "saw-gunfire/crowd",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "close",
+   "line": "I saw who fired."
+  },
+  {
+   "where": "saw-gunfire/crowd",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "close",
+   "line": "I saw it all. Every bit."
+  },
+  {
+   "where": "saw-gunfire/waitress",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "close",
+   "line": "I saw it. I saw everything."
+  },
+  {
+   "where": "saw-gunfire/waitress",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "close",
+   "line": "Those people fired. I saw."
+  },
+  {
+   "where": "saw-gunfire/guard",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "I saw the shooter. I'll know him."
+  },
+  {
+   "where": "saw-gunfire/guard",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "I saw who fired. Noted."
+  },
+  {
+   "where": "witness-reacts/crowd/report",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "I'll go and report this."
+  },
+  {
+   "where": "witness-reacts/crowd/report",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'm going to tell the police."
+  },
+  {
+   "where": "witness-reacts/crowd/flee",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "No. I can't tell anyone."
+  },
+  {
+   "where": "witness-reacts/crowd/flee",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "Tell someone? No. I can't."
+  },
+  {
+   "where": "witness-reacts/crowd/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "I'll look first, then tell the police."
+  },
+  {
+   "where": "witness-reacts/crowd/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "Let me check before I report it."
+  },
+  {
+   "where": "witness-reacts/crowd/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "I'd better look before I call the police."
+  },
+  {
+   "where": "witness-reacts/crowd/quiet",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I won't say anything."
+  },
+  {
+   "where": "witness-reacts/waitress/report/loyal",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "Sorry, dear. I won't keep this from the police."
+  },
+  {
+   "where": "witness-reacts/waitress/check/idealist",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "You poor thing. I'll look, then fetch the police."
+  },
+  {
+   "where": "witness-reacts/waitress/check/idealist",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "Let me see, dear. Then I'll tell the police."
+  },
+  {
+   "where": "witness-reacts/waitress/report",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'll tell the police. All of it."
+  },
+  {
+   "where": "witness-reacts/waitress/avoid",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'll pass by, thank you. Won't say a word."
+  },
+  {
+   "where": "witness-reacts/waitress/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "Let me see, please. Then I'll fetch the police."
+  },
+  {
+   "where": "witness-reacts/waitress/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "One moment, dear. I'll look, then get the police."
+  },
+  {
+   "where": "witness-reacts/waitress/quiet",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "You won't hear a peep from me, dear."
+  },
+  {
+   "where": "witness-reacts/driver/report",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'm reporting this. Right now."
+  },
+  {
+   "where": "witness-reacts/driver/avoid",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'll pass. Let someone else tell it."
+  },
+  {
+   "where": "witness-reacts/driver/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "I'll check it myself. Then get the police."
+  },
+  {
+   "where": "witness-reacts/driver/check",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "Best look before I go reporting it."
+  },
+  {
+   "where": "witness-reacts/guard/radio",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'll radio this in."
+  },
+  {
+   "where": "witness-reacts/guard/radio",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I'll inform the desk."
+  },
+  {
+   "where": "report-begins/crowd/phone",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "I'm going to find a telephone and call the police."
+  },
+  {
+   "where": "report-begins/crowd/phone",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "close",
+   "line": "I need a phone to tell the police."
+  },
+  {
+   "where": "report-begins/crowd/phone",
+   "area": "row",
+   "kind": "plan",
+   "verdict": "fails",
+   "line": "I'll get to a telephone and report this."
+  },
+  {
+   "where": "person-missed/guard",
+   "area": "row",
+   "kind": "report",
+   "verdict": "close",
+   "line": "Nobody at the post? Report it."
+  },
+  {
+   "where": "fight-warned/waitress",
+   "area": "row",
+   "kind": "knows",
+   "verdict": "fails",
+   "line": "Rivals! By the car! Look out!"
+  },
+  {
+   "where": "fight-guard/guard",
+   "area": "row",
+   "kind": "knows",
+   "verdict": "fails",
+   "line": "Rivals! I'll cover you!"
+  },
+  {
+   "where": "rivals-for-car/rivals",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "No guns outside. Take the car."
+  },
+  {
+   "where": "rivals-back-to-cover/rivals",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "A gun's out. Back to cover."
+  },
+  {
+   "where": "ai-advance/rivals",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Too far away. Move closer."
+  },
+  {
+   "where": "ai-advance/rivals",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Can't hit from here. Move up."
+  },
+  {
+   "where": "done/turn/fixer/refused",
+   "area": "row",
+   "kind": "remember",
+   "verdict": "fails",
+   "line": "You said no. You'll remember me."
+  },
+  {
+   "where": "done/turn/fixer/refused",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "All right. Next time, we'll have to offer more."
+  },
+  {
+   "where": "done/turn/fixer/refused",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "No, then. You'll want more next time."
+  },
+  {
+   "where": "done/turn/fixer/not-yet",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Let me help once more. Then we'll talk."
+  },
+  {
+   "where": "done/turn/fixer/not-yet",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "I'll come back. You still need another hand."
+  },
+  {
+   "where": "done/turn/fixer/not-yet",
+   "area": "row",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Not yet, then. I'll come back."
+  },
+  {
+   "where": "done/turn/fixer/suspicious",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "You're reporting us, then. I understand."
+  },
+  {
+   "where": "done/turn/fixer/suspicious",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "So you're reporting our talk. We'll leave it there."
+  },
+  {
+   "where": "done/turn/fixer/suspicious",
+   "area": "row",
+   "kind": "report",
+   "verdict": "fails",
+   "line": "All right. I hear you're reporting this."
+  },
+  {
+   "where": "done/turn/fixer/small-offer",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Too little, then. Let me listen first."
+  },
+  {
+   "where": "done/turn/fixer/small-offer",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Fair enough. I'll learn what it takes."
+  },
+  {
+   "where": "done/turn/fixer/small-offer",
+   "area": "row",
+   "kind": "next",
+   "verdict": "fails",
+   "line": "Not enough. I should have known more first."
+  },
+  {
+   "where": "scene:17",
+   "area": "scene",
+   "kind": "rule",
+   "verdict": "fails",
+   "line": "Could you do me a small favour? I can't pay."
+  },
+  {
+   "where": "scene:73",
+   "area": "scene",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "A small favour, officer. Free of charge."
+  },
+  {
+   "where": "scene:45",
+   "area": "scene",
+   "kind": "next",
+   "verdict": "close",
+   "line": "Yes? Ask me straight and I'll listen."
+  },
+  {
+   "where": "scene:2",
+   "area": "scene",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "The patrol keeps to the yard. Nothing here for minutes."
+  },
+  {
+   "where": "scene:91",
+   "area": "scene",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Mind the patrol, if you go round the back."
+  },
+  {
+   "where": "scene:91",
+   "area": "scene",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "I know. It sweeps the yard."
+  },
+  {
+   "where": "scene:92",
+   "area": "scene",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Quiet on the door. The patrol is out in the yard."
+  },
+  {
+   "where": "conv:help-inez-2",
+   "area": "conversation",
+   "kind": "forecast",
+   "verdict": "fails",
+   "line": "Then I'm with you. I watch that square all day, and if trouble's coming for you, I'll find a way to warn you."
+  },
+  {
+   "where": "conv:help-inez-2-known",
+   "area": "conversation",
+   "kind": "forecast",
+   "verdict": "fails",
+   "line": "Then I'm with you. I watch that square all day, and if trouble's coming for you, I'll find a way to warn you."
+  },
+  {
+   "where": "conv:call-inez-pressure",
+   "area": "conversation",
+   "kind": "rule",
+   "verdict": "close",
+   "line": "Then my door's standing empty. Stay here, Inez."
+  }
+ ],
+ "kept": [
+  {
+   "where": "run-seen/patrol",
+   "line": "Citizen. Walking is encouraged. Running is noted.",
+   "why": "The clockwork patrol's fixed polite phrase is the city's own regulation, in the voice sheet's words: the city talking, not a character explaining the game."
+  },
+  {
+   "where": "conv:pay-driver",
+   "line": "The east yard. I'll give you a couple of minutes there, and then I drive on.",
+   "why": "A person setting his own terms, to the Fixer, is what a nervous driver says. The window is his."
+  },
+  {
+   "where": "questioned/waitress/gives",
+   "line": "I remember them, officer. Here, let me tell you what happened.",
+   "why": "Questioned by an investigator, remembering is the answer itself. Not played yet."
+  },
+  {
+   "where": "alarm/security",
+   "line": "Response unit moving. Cordon forming.",
+   "why": "Police radio: their trade, said to each other."
+  }
+ ]
+}

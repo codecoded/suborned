@@ -1,5 +1,6 @@
 import { questionCount, sentenceCount } from '../../contracts/missions/handover/conversations.schema.ts';
-import type { Brief, Conversation, Guide, HardIssue } from './types';
+import { FORETELLS } from './short-natural';
+import { guideVersion, type Brief, type Conversation, type Guide, type HardIssue } from './types';
 
 const regexEscape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 export const wordCount = (text: string) => text.trim().split(/\s+/).filter(t => /[\p{L}\p{N}]/u.test(t)).length;
@@ -19,6 +20,8 @@ export function checkConversation(brief: Brief, c: Conversation, guide: Guide): 
     if (l.line.length > most.maxChars) flag('FORM', `Line ${n}: ${l.line.length} characters; ${holder} holds ${most.maxChars}.`);
     if (cut && sentenceCount(l.line) > cut.maxSentences) flag('NATURAL', `Line ${n}: ${sentenceCount(l.line)} sentences; one or two full sentences a line.`);
     if (cut && questionCount(l.line) > 1) flag('NATURAL', `Line ${n}: ${questionCount(l.line)} questions; one thing at a time.`);
+    const told = guideVersion(guide) >= 4 ? l.line.match(FORETELLS) : null; // guide /4 (brief 102): the family Sky named, in a conversation too
+    if (told) flag('NATURAL', `Line ${n}: "${told[0]}" explains the game (brief 102); say what this person would say now.`);
     if (/[\r\n<>{}*_]|^\(|\)$/.test(l.line)) flag('FORM', `Line ${n}: one plain spoken line, no stage directions or markup.`);
     if (i > 0 && c.lines[i - 1]!.speaker === l.speaker && i > 1 && c.lines[i - 2]!.speaker === l.speaker)
       flag('FORM', `Lines ${n - 2}–${n}: ${l.speaker} speaks three bubbles running; people answer each other.`);

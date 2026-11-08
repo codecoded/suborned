@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GuideNatural } from './short-natural';
 import type { Authorization, Call, Evidence, Limits, Source } from './types';
 
 /** Short lines (Sky 2026-11-07, asked whether the loop covers more than the Inez conversations: "sure", so nothing ships unscored): the barks, the why block and the debrief page, written by
@@ -41,10 +42,16 @@ export type ShortRuleId = z.infer<typeof AnyRuleId>;
  *  on its own (`scores`), and only a 10 on every rule is accepted. Fable's voice sheet and calibration (today's flat lines failing, a gold set passing) come from
  *  briefs/099/fable/voices/sheet.json, staged there until Sky's yes; only the rows the host plays under Fable's frequency (the sheet's `speech`) are written, the rest
  *  silent with their reason. The why block, the debrief page and the labels read as at /11, and the labels keep Sky's own words. No /12 bark run applies before Sky's yes. */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12' } as const;
+/** /13 (brief 102, Sky 2026-11-08: "Maybe even drop them? They will feel repetitive"; on "He bought it. He'll be back, and he knows my face.": "that's exactly the kind of
+ *  scripting that bugs me. 'I will remember you.' lines etc - so unnatural"): the agents go quiet in play, so their acknowledgements, arrivals, landings and reads leave the
+ *  loop, and a bark is the world's people or the cell in a scene with a person (text.schema.ts SCENE_ROWS); every other agent row is `silent` in text.json. NATURAL and TRUE
+ *  hold the no-mechanics rule (no line tells the player a rule or a consequence, whoever says it), with brief 102's failing examples, Sky's two kept lines and a calibration
+ *  from briefs/102/fable/natural.json; a reply's facts are split from what the person says; a code check holds the family Sky named (remember, a face, a search, notice).
+ *  The why block, the debrief page and the labels read as at /12. No /13 bark run applies before Sky's yes. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 12;
+export const SHORT_NOW: ShortGuideVersion = 13;
 export const shortGuideVersion = (g: Pick<ShortGuide, 'schema'>): ShortGuideVersion => (Number(Object.entries(SHORT_GUIDES).find(([, v]) => v === g.schema)?.[0] ?? 4)) as ShortGuideVersion;
 export const SHORT_RUN = 'suborned.style-short-run/1';
 
@@ -68,6 +75,8 @@ export type ShortGuide = {
   voices: Record<string, string>; avoid: string[]; profanity: string[]; named: string[]; cell: string[];
   /** /12: the cell's voice sheet and the calibration the rubric is held to. */
   sheet?: GuideSheet;
+  /** /13: Sky's kept lines and the no-mechanics calibration (briefs/102/fable/natural.json). */
+  natural?: GuideNatural;
 };
 
 /** Fable's voice sheet (guide /12's source): each agent's voice, the calibration lines, and the speech tiers the families are cut by. */
@@ -161,7 +170,7 @@ export const ShortGuideSchema = z.object({
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
   kinds: z.object({ bark: KindSchema, why: KindSchema, debrief: KindSchema, label: KindSchema.optional() }).strict(),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()), named: z.array(z.string()), cell: z.array(z.string()),
-  sheet: GuideSheet.optional(),
+  sheet: GuideSheet.optional(), natural: GuideNatural.optional(),
 }).strict();
 export const ShortResultSchema = z.object({
   schema: z.literal(SHORT_RUN), mode: z.enum(['live', 'test-fixture']),

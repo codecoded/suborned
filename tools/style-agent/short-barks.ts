@@ -1,10 +1,11 @@
 import { gddPair, pick, type Read } from './guide';
 import { VoiceSheet, type Field, type Pattern, type ShortBrief, type ShortGuideVersion, type ShortItem } from './short-types';
+import { FAMILIES_13, GONE_13, REACTS_13, reply13, scene13, WORLD_13 } from './short-natural';
 import { speech12, VOICE_SHEET } from './short-voice';
 
 /** The bark table (text.json `dialogue`) as families, one run each: what each bark must tell the player, from the event's own trigger,
  *  the verb's plain line (`actions.*.does`), what a Watch or a Listen teaches (`targets`) and the GDD's temperaments (§04). */
-type Row = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string; pending?: string; parked?: string; lines: string[] };
+type Row = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string; pending?: string; parked?: string; silent?: string; lines: string[] };
 const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'];
 const MACHINES = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'patrol', 'rivals'];
 const any = (...events: string[]) => (r: Row) => events.includes(r.event);
@@ -47,7 +48,9 @@ const ACKS_12: [string, string, string[]][] = [
   ['acts', 'Acknowledgements: watch, listen, the approaches, the call, the Tech\'s and the Enforcer\'s jobs, the end', [...ACKS_4[0]![2], 'end']],
   ['fight', 'Acknowledgements: draw, and everyone fire', ['draw', 'panic']], ['bodies', 'Acknowledgements: carry, hide, tie up', ['carry', 'stash', 'restrain']],
 ];
-const familiesFor = (v: ShortGuideVersion) => v < 4 ? BARK_FAMILIES : [
+const familiesFor = (v: ShortGuideVersion) => v < 4 ? BARK_FAMILIES : v >= 13 ? [ // guide /13 (brief 102): the agents' families go; the cell's scene lines have their own
+  ...FAMILIES_13, ...BARK_FAMILIES.filter(f => !GONE_13.test(f.id)).flatMap(f => f.id === 'bark/witnesses' ? WITNESSES_6 : [f]),
+] : [
   ...(v >= 12 ? ACKS_12 : ACKS_4).map(([id, title, verbs]) => ({ id: `bark/ack-${id}`, title, pick: (r: Row) => r.event === 'ack' && verbs.includes(r.verb!) })),
   ...BARK_FAMILIES.filter(f => !f.id.startsWith('bark/ack-')).flatMap(f => v >= 6 && f.id === 'bark/witnesses' ? WITNESSES_6 : [f]),
 ];
@@ -169,6 +172,7 @@ function stays(r: Row, v: ShortGuideVersion): string | null {
   // guide /12: the approach scenes play the Fixer's opener and closer; any other order's beat may go silent (a silent row, step 2), since the host's stock line goes too
   if (v >= 12 && r.speaker === 'fixer' && ((r.event === 'arrive' && ['ask', 'pay', 'help', 'pressure'].includes(r.verb!)) || (r.event === 'done' && r.verb === 'turn')))
     return 'The approach scenes play it (text.json scenes, brief 085).';
+  if (v >= 13 && scene13(r, '')) return 'A scene with a person plays it (brief 102: the cell speak only there).';
   if (v >= 12 && ['ack', 'arrive', 'done'].includes(r.event)) return null;
   if (['ack', 'arrive', 'done'].includes(r.event)) return 'Every order has this beat for each agent who can give it (text.test.ts); without a line the host speaks a stock "On it."';
   if (['reply', 'read', 'confirm', 'taken'].includes(r.event)) return 'The rulebook can produce it, and the host, the scenes and the checks read it (text.test.ts).';
@@ -226,6 +230,8 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
   const tells = (r: Row): string => {
     const ev = text.events[r.event], who = WHO[r.speaker] ?? r.speaker, subject = r.event === 'read' ? WHO[r.about ?? ''] ?? 'the person' : who;
     const temp = r.temperament ? ` ${subject[0]!.toUpperCase() + subject.slice(1)} is ${v >= 6 && r.event === 'read' && r.about === 'councillor' ? popovic(r.temperament) : temperament(r.temperament)}.` : '';
+    const sc = v >= 13 ? scene13(r, text.actions[r.verb!]?.does ?? '') : null; // guide /13: the cell's scene lines, said to the person
+    if (sc) return sc.tells;
     switch (r.event) {
       case 'ack': if (v >= 12) return `Say what only ${who} would say as they take this order, now: how they take the job, a feeling or a detail the card can't give; never the order read back. Facts, on the order's card already and not to be read out: "${text.actions[r.verb!]?.does ?? ''}" ${ORDER[`${r.verb}/${r.outcome}`] ?? ORDER[r.verb!] ?? ''}`.trim();
         return v >= 4
@@ -244,38 +250,42 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
           : r.outcome === 'routine' ? `Watch taught its rounds: ${t?.routine}` : `Watch taught: ${t?.watched ?? 'their routine, where and when they go, and their mood'}`;
         return `${who} says what the cell just learned. ${learned}${r.about === 'waitress' && r.verb === 'listen' ? ' Inez owes a lender, and is secretly seeing the door guard.' : ''}${r.outcome === 'sight' ? ' Its rounds need more watching.' : ''}${temp}`;
       }
-      case 'reply': return `${who} answers the Fixer's ${r.verb}. ${verbLine(r.verb!)} The answer: ${OUTCOME[r.outcome!]}${temp} Plays as their bubble, and as their answer in the approach scene after the Fixer's offer.`;
+      case 'reply': if (v >= 13) return reply13(who, text.actions[r.verb!]?.label ?? r.verb!, r.outcome!, r.speaker, temp, verbLine(r.verb!));
+        return `${who} answers the Fixer's ${r.verb}. ${verbLine(r.verb!)} The answer: ${OUTCOME[r.outcome!]}${temp} Plays as their bubble, and as their answer in the approach scene after the Fixer's offer.`;
       case 'confirm': return `The Fixer telephones Inez, turned: she says yes, she will call the guard over now.${temp} Voiced aloud.`;
       case 'taken': return `The Enforcer has hold of Popovic (${r.verb === 'enter' ? 'inside the Office' : 'at his car'}): his first words.${temp}`;
       case 'summon-refused': return `The Fixer's call can't work now: ${SUMMON[r.outcome!]}. ${r.speaker === 'waitress' ? 'Inez tells the Fixer on the telephone.' : 'The guard answers Inez, near enough to hear.'} Nothing is spent.`;
       case 'questioned': return `Later, an investigator questions ${who}: ${r.outcome === 'gives' ? 'they give the Fixer up, a face and what happened' : r.outcome === 'lies' ? 'they cover for the cell with a lie' : 'they know nothing useful'}. Not played in the Handover yet (investigators come later); a debrief hook.`;
       case 'fail': return `The attempt has failed: ${fail(r.outcome!)} The line plays for each of these, so every variant must be true whichever it was. ${SPEAKS[r.speaker] ?? ''} Spoken as it ends, before the end card.`;
       default: {
-        const o = r.outcome ? BY_OUTCOME[r.event]?.[r.outcome] ?? r.outcome : BY_OUTCOME[r.event]?.[''] ?? null;
-        const base = (v >= 8 ? WORLD_8[r.event] : undefined) ?? WORLD[r.event] ?? ev?.trigger ?? r.event;
+        const o = r.outcome ? (v >= 13 && r.event === 'witness-reacts' ? REACTS_13[r.outcome] : undefined) ?? BY_OUTCOME[r.event]?.[r.outcome] ?? r.outcome : BY_OUTCOME[r.event]?.[''] ?? null;
+        const base = (v >= 13 ? WORLD_13[r.event] : undefined) ?? (v >= 8 ? WORLD_8[r.event] : undefined) ?? WORLD[r.event] ?? ev?.trigger ?? r.event;
         const about = r.event === 'person-missed' ? (r.about === 'driver' ? ` ${BY_OUTCOME['person-missed']![r.temperament!] ?? 'Popovic'} at his car finds his driver gone.` : '') : '';
         return `${base}${o ? ` This one: ${o}.` : ''}${about} ${SPEAKS[r.speaker] ?? ''}${r.event !== 'person-missed' ? temp : ''}`.trim();
       }
     }
   };
-  const where = (r: Row) => r.event === 'arrive' ? 'The Journal only: the moment itself plays in the scene.'
+  const where = (r: Row) => (v >= 13 ? scene13(r, '')?.where : undefined) ?? (r.event === 'arrive' ? 'The Journal only: the moment itself plays in the scene.'
     : r.event === 'questioned' ? 'Not played yet: a debrief hook for when investigators run.' : ['win', 'fail', 'withdraw', 'cliffhanger'].includes(r.event) ? 'A bubble at the speaker as the game ends, then the Journal.'
-      : 'A speech bubble at the speaker in play (3 s), then the Journal.';
+      : 'A speech bubble at the speaker in play (3 s), then the Journal.');
   const told = (r: Row) => { const s = tells(r); return s[0]!.toUpperCase() + s.slice(1); };
   // guide /12: only the rows the host speaks under Fable's frequency are written; the silent ones keep their reason (short-voice.ts) for step 2's silent rows
-  const speech = v >= 12 ? speech12(text, VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))).speech) : null;
-  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never));
-  return familiesFor(v).filter(f => !speech || rows.some(f.pick)).map(f => {
+  // guide /13 (brief 102): the agents are quiet in play, so a row marked `silent` in text.json is not written (its reason is there)
+  const speech = v === 12 ? speech12(text, VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))).speech) : null;
+  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent));
+  return familiesFor(v).filter(f => (!speech && v < 13) || rows.some(f.pick)).map(f => {
     const mine = rows.filter(f.pick);
     const items: ShortItem[] = mine.map(r => {
-      const keep = r.event === 'done' && r.verb === 'turn' && r.outcome === 'refused' ? [r.lines[0]!]
+      const keep = v < 13 && r.event === 'done' && r.verb === 'turn' && r.outcome === 'refused' ? [r.lines[0]!] // /13: brief 102 took text.test.ts's pin on it
         : v >= 3 && r.event === 'driver-tail' ? r.lines.filter(l => /tailed us all week/.test(l)).slice(0, 1) : []; // /3: text.test.ts wants one line that says it
       const field: Field = { id: 'lines', form: 'speech', words: 12, chars: 80, count: r.lines.length, fills: [], patterns: patterns(r, v), keep };
       const item: ShortItem = { key: keyOf(r), where: speech?.when(r as never) ?? where(r), tells: told(r), speaker: `${r.speaker}: ${voices[r.speaker] ?? SPEAKS[r.speaker] ?? r.speaker}`, fields: [field], current: { lines: r.lines }, stays: stays(r, v) };
       return item;
     });
     if (!items.length) throw new Error(`${f.id} has no barks: update the families`);
-    return { id: f.id, kind: 'bark' as const, title: f.title, context: v >= 12
+    return { id: f.id, kind: 'bark' as const, title: f.title, context: v >= 13
+      ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about) that the host speaks, and its \`where\` says when and how often. Write its variants, each a different take on the moment in its speaker's voice. Keep a line of today's only where it already holds the bar; rewrite every line that explains the game (a rule, or what follows), reads the HUD back, or could come from anyone.`
+      : v >= 12
       ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about) that the host speaks, and its \`where\` says when and how often. Write its variants, each a different take on the moment in its speaker's voice. Keep a line of today's only where it already earns its place in that voice; rewrite every line that reads the click back, narrates what the screen shows, talks mechanics, or could come from any of the four.`
       : v >= 4
       ? `${f.title}. Each item is one bark row of the mission's table (event / verb / speaker / outcome / temperament / about); write its variants, each a different way to say the same thing. Keep a line of today's that already does its job in its speaker's voice; rewrite only lines that are filler, untrue, off-voice, too long or repeated.`

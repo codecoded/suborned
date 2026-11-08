@@ -1,13 +1,16 @@
 import { z } from 'zod';
 
 /** The style guide's constraint types. Each rule cites the game sources it is drawn from. Guide /2 (brief 054) has the first four; /3 (brief 096, cutaway
- *  conversations in full sentences) adds NATURAL. A saved run keeps its guide's version, so it replays with the rules and evaluation schema it ran with. */
+ *  conversations in full sentences) adds NATURAL; /4 (brief 102, Sky 2026-11-08) holds NATURAL to the no-mechanics rule: nobody explains the game.
+ *  A saved run keeps its guide's version, so it replays with the rules and evaluation schema it ran with. */
 const RULES_V2 = ['REVEAL', 'VOICE', 'WORLD', 'FORM'] as const;
 export const RuleId = z.enum([...RULES_V2, 'NATURAL']);
 export type RuleId = z.infer<typeof RuleId>;
-export const GUIDE_VERSIONS = { 2: 'suborned.style-guide/2', 3: 'suborned.style-guide/3' } as const;
+export const GUIDE_VERSIONS = { 2: 'suborned.style-guide/2', 3: 'suborned.style-guide/3', 4: 'suborned.style-guide/4' } as const;
 export type GuideVersion = keyof typeof GUIDE_VERSIONS;
-export const guideVersion = (g: Pick<Guide, 'schema'>): GuideVersion => g.schema === GUIDE_VERSIONS[2] ? 2 : 3;
+export const guideVersion = (g: Pick<Guide, 'schema'>): GuideVersion => g.schema === GUIDE_VERSIONS[2] ? 2 : g.schema === GUIDE_VERSIONS[4] ? 4 : 3;
+/** The version new conversation runs use; a saved run replays with its own. */
+export const GUIDE_NOW: GuideVersion = 4;
 /** Crew cards (generated from GDD §14). Fable writes and refines; Motive reviews Fable's lines ("Motive reviews", §14 Fable). */
 export const Role = z.enum(['dialogue-designer', 'systems-designer']);
 export type Role = z.infer<typeof Role>;
@@ -88,7 +91,7 @@ export const BriefSchema = z.object({
   leadsTo: z.string(), result: z.string().nullable(), current: z.array(Line),
 }).strict();
 export const GuideSchema = z.object({
-  schema: z.enum([GUIDE_VERSIONS[2], GUIDE_VERSIONS[3]]), game: z.literal('The Suborned'), gdd: z.string(),
+  schema: z.enum([GUIDE_VERSIONS[2], GUIDE_VERSIONS[3], GUIDE_VERSIONS[4]]), game: z.literal('The Suborned'), gdd: z.string(),
   sources: z.array(z.object({ id: z.string(), file: z.string(), locator: z.string(), sha256: Sha, excerpt: z.string() }).strict()).min(1),
   rules: z.array(z.object({ id: RuleId, kind: z.string(), instruction: z.string(), sources: z.array(z.string()) }).strict()).min(3),
   voices: z.record(z.string(), z.string()), avoid: z.array(z.string()), profanity: z.array(z.string()),

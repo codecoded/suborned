@@ -1,5 +1,5 @@
 import { buildGuide, gddNames, gddNamesFromFiles, gddPair, hash, pick, readerFor, readerFromFiles, TEXT_FILE, type Read, type Sha } from './guide';
-import type { Brief, GuideVersion, Line } from './types';
+import { GUIDE_NOW, type Brief, type GuideVersion, type Line } from './types';
 
 /** The Inez chain (brief 054): one existing Handover scene per conversation. Scene numbers index text.json scenes.items. */
 const CHAIN: { scene: number; verb: string; temperament: string | null; outcome?: string }[] = [
@@ -13,11 +13,11 @@ const CHAIN: { scene: number; verb: string; temperament: string | null; outcome?
 ];
 const PLAN = 'anything about the cell\'s plan: Vale, the Office door, the Take or the getaway';
 
-export function buildBriefs(read: Read, names: string[], sha?: Sha, version: GuideVersion = 3): Brief[] {
+export function buildBriefs(read: Read, names: string[], sha?: Sha, version: GuideVersion = GUIDE_NOW): Brief[] {
   const guide = buildGuide(read, names, sha, version), gdd = read(gddPair(names).agent.path), text = JSON.parse(read(TEXT_FILE));
   // Act seconds come from the GDD (§04 approaches, §07 route A). Guide /2: each bubble takes guide.bubble.seconds (§10), so the act's seconds size the scene.
   // Guide /3 (brief 096): the cutaway holds the clock, so every conversation is 10 lines up to the cutaway's limit; the seconds stay as context only.
-  const v3 = version === 3, she = v3 ? 'she' : 'he'; // the Fixer is a woman (Sky, 2026-11-05); a /2 brief keeps the words its runs were given
+  const v3 = version >= 3, she = v3 ? 'she' : 'he'; // the Fixer is a woman (Sky, 2026-11-05); a /2 brief keeps the words its runs were given
   const [watch] = pick(gdd, /(?:routine known \(Watch |a Watch first, where one is offered \()(\d+) s/, 'the Watch time (§04)').map(Number);
   const [listen, help] = pick(gdd, /\| Help \(clear debt\) \| need known \(Listen (\d+) s\) \| [\d,]+(?: \([^|]+\))? \| (\d+) s/, 'the Listen and Help times (§04)').map(Number);
   const [pressure] = pick(gdd, /\| Pressure \| need known \| \d+ \| (\d+) s/, 'the Pressure time (§04)').map(Number);
@@ -69,7 +69,8 @@ export function buildBriefs(read: Read, names: string[], sha?: Sha, version: Gui
       leadsTo: 'Inez is turned: the Fixer can now Call her to pull the guard off the door.' };
     if (verb === 'pressure') return { ...base, kind: 'approach', cast: ['fixer', 'waitress'], parts: [{ with: 'fixer', reveals: [], lines }],
       reveals: [`the Fixer lets her know ${she} knows about her and the door guard, and what the Office would make of it`, ...shows,
-        scene.outcome === 'turned' ? 'she gives in, frightened and resentful, and will do as she is asked when called' : 'she refuses and makes plain she will report the approach to the Office'],
+        scene.outcome === 'turned' ? 'she gives in, frightened and resentful, and will do as she is asked when called'
+          : version >= 4 ? 'she refuses, alarmed and cold, and ends the talk; she never says what she will do about it (her report shows on the HUD, brief 102)' : 'she refuses and makes plain she will report the approach to the Office'],
       withholds: [PLAN],
       leadsTo: scene.outcome === 'turned' ? 'Inez is turned, under threat: the Fixer can now Call her to pull the guard off the door, but she resents it.'
         : 'Her report raises Alert when it lands; the front door gets harder, and the guard or the pickup are left.' };
@@ -81,8 +82,8 @@ export function buildBriefs(read: Read, names: string[], sha?: Sha, version: Gui
   });
 }
 
-export const loadBriefs = (base: string, version: GuideVersion = 3) => buildBriefs(readerFor(base), gddNames(base), undefined, version);
-export const briefsFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: GuideVersion = 3) =>
+export const loadBriefs = (base: string, version: GuideVersion = GUIDE_NOW) => buildBriefs(readerFor(base), gddNames(base), undefined, version);
+export const briefsFromFiles = (files: Record<string, string>, shas: Record<string, string>, version: GuideVersion = GUIDE_NOW) =>
   buildBriefs(readerFromFiles(files), gddNamesFromFiles(shas), file => shas[file] ?? hash(readerFromFiles(files)(file)), version);
 
 /** Today's scene as the player sees it, with `ref` beats looked up in the dialogue table. For the report only: briefs keep what the writer was shown. */
