@@ -1,0 +1,43 @@
+/* Brief 101 (Sky 2026-11-08: "street labels top right but tokens bottom right"): the HUD's street kit, beside kit.uss (generated; never edited).
+   Every colour is the book's (HudToolkit.Book: BkPaper, BkInk, BkOrange, BkDeep, BkBody, BkTurq, BkSoft) or already kit.uss's (--feed-where, --ink-deep):
+   nothing new. Street labels: bold Jost in the book's ink on a solid cream keyline (HudToolkit.Street draws the keyline as key copies under the type,
+   since UI Toolkit's own outline straddles the glyph's edge and would thin the ink); urgent figures orange on an ink keyline. Enamel (the bottom right
+   only): the book's deep teal or orange, a cream inline, a crisp shadow, no chrome or screws (Glyph's round 2, briefs/101/glyph/r2). */
+:root {
+    --book-page: #f9f7ee;
+    --book-ink: #17302f;
+    --book-orange: #e8622c;
+    --book-deep: #1f6c67;
+    --book-body: #0c3434;
+    --book-turq: #60e0ea;
+    --book-soft: #4e625f;
+    --street-shadow: rgba(11, 22, 21, 0.27);
+    --enamel-shadow: rgba(11, 22, 21, 0.33);
+    --enamel-line: #c8e0da;
+}
+.k-type { margin: 0; padding: 0; white-space: nowrap; -unity-text-align: middle-left; -unity-font-style: normal; }
+.k-bold { -unity-font: url("fonts/Jost-Bold.ttf"); }
+.k-semi { -unity-font: url("fonts/Jost-SemiBold.ttf"); }
+.k-medium { -unity-font: url("fonts/Jost-Medium.ttf"); }
+.k-ink { color: var(--book-ink); }
+.k-hot { color: var(--book-orange); }
+.k-page { color: var(--book-page); }
+.k-line { color: var(--enamel-line); }
+.k-key { color: var(--book-page); }
+.k-key-ink { color: var(--book-ink); }
+.k-shadow { color: var(--street-shadow); }
+.ki-ink { -unity-background-image-tint-color: var(--book-ink); }
+.ki-hot { -unity-background-image-tint-color: var(--book-orange); }
+.ki-deep { -unity-background-image-tint-color: var(--book-deep); }
+.ki-page { -unity-background-image-tint-color: var(--book-page); }
+.ki-key { -unity-background-image-tint-color: var(--book-page); }
+.ki-key-ink { -unity-background-image-tint-color: var(--book-ink); }
+.e-deep { background-color: var(--book-deep); }
+.e-orange { background-color: var(--book-orange); }
+.e-body { background-color: var(--book-body); }
+.e-page { background-color: var(--book-page); }
+.e-turq { background-color: var(--book-turq); }
+.e-ink { background-color: var(--book-ink); }
+.e-shadow { background-color: var(--enamel-shadow); }
+.e-inline { border-color: var(--book-page); }
+.e-inline-hot { border-color: var(--book-turq); }

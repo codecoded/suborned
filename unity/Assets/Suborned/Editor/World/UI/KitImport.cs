@@ -18,7 +18,7 @@ namespace Suborned.World.UI
     ///  · layout.json and sprites.json as they are (the view reads rects and windows from them);
     ///  · kit.uss, generated from layout.json: the 34 colours as variables, the 62 type styles as .t-&lt;name&gt; classes (font cut, size, colour,
     ///    letter spacing), each sprite as .s-&lt;name&gt; (background and slices), the button states (:hover, :active) and the scene kinds;
-    ///  · HudTheme.tss (imports kit.uss) and HudPanel.asset: scale with screen size from 1920 x 1080, match height (the kit's reference).
+    ///  · HudTheme.tss (imports kit.uss and brief 101's hand-written street.uss beside it) and HudPanel.asset: scale with screen size from 1920 x 1080, match height (the kit's reference).
     /// Idempotent: files are copied only when their bytes differ.</summary>
     public static class KitImport
     {
@@ -66,7 +66,7 @@ namespace Suborned.World.UI
             var sprites = JNode.Parse(File.ReadAllText(Path.Combine(KitDir, "sprites.json")), "sprites.json");
             var uss = Uss(layout, sprites, pngs);
             WriteIfChanged(Path.Combine(full, "kit.uss"), uss);
-            WriteIfChanged(Path.Combine(full, "HudTheme.tss"), "@import url(\"kit.uss\");\n");
+            WriteIfChanged(Path.Combine(full, "HudTheme.tss"), "@import url(\"kit.uss\");\n@import url(\"street.uss\");\n"); // brief 101: street.uss (hand-written beside the generated kit.uss: the book's colours, the street labels, the enamel) rides in the theme too
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
             // sprites: @2x nine-slice insets as the sprite borders (left, bottom, right, top)

@@ -1,0 +1,19 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 101, Sky's mix (2026-11-08: 'street labels top right but tokens bottom right'): the real captures beside Glyph's round 2 mocks. The same moments as the mocks: rest and quiet on route G's radio run (the Office front at yaw 210, brief 100's why-quiet-radio), loud at 2:34.5 on the pinned loud run seed 3 (the seal and Police coming, brief 100's why-loud-police), the busiest at 3:47.5 (the batch's fight-loud-body: the final fight, the Scout selected) and the first aim (the batch's fight-loud-checkpoint). The 2x rows are the same frames at 3840 x 2160 (panel scale 2) for Glyph's crop check; seal-hover rests the pointer on the seal's count.",
+  "defaults": {
+    "hud": true
+  },
+  "shots": [
+    { "name": "t101-rest-a", "script": "briefs/100/latch/route-g-radio.json", "tick": 1200, "focus": "camera/entrance", "yaw": 2, "note": "2:00 on route G: at rest, before any card (a candidate)" },
+    { "name": "t101-rest-b", "script": "briefs/100/latch/route-g-radio.json", "tick": 1450, "focus": "camera/entrance", "yaw": 2, "note": "2:25 on route G: at rest (a candidate)" },
+    { "name": "t101-quiet", "script": "briefs/100/latch/route-g-radio.json", "tick": 2086, "focus": "camera/entrance", "yaw": 2, "note": "3:28.6: a shift guard radios the knocked-out guard in (4 s), our car boxed in" },
+    { "name": "t101-loud", "script": "tools/game/pins/loud.seed3.json", "tick": 1545, "focus": "camera/entrance", "yaw": 2, "note": "2:34.5: the first shot raised Alert 2: the seal runs (3:07) and Police coming, here in 0:42" },
+    { "name": "t101-loud-seal-hover", "script": "tools/game/pins/loud.seed3.json", "tick": 1545, "focus": "camera/entrance", "yaw": 2, "pointer": [0.952, 0.081], "state": "active", "note": "the same moment, the pointer resting on the seal: its cause before the lock" },
+    { "name": "t101-busy", "script": "tools/game/pins/loud.seed3.json", "tick": 2275, "focus": "car/getaway", "yaw": 0, "select": "scout", "note": "3:47.5, the busiest moment: the final fight, the seal at 1:54, Police coming (1 of 5), two bubbles, our car held" },
+    { "name": "t101-loud-2x", "script": "tools/game/pins/loud.seed3.json", "tick": 1545, "focus": "camera/entrance", "yaw": 2, "size": [3840, 2160], "note": "the loud moment at 2x: Glyph's crop check" },
+    { "name": "t101-busy-2x", "script": "tools/game/pins/loud.seed3.json", "tick": 2275, "focus": "car/getaway", "yaw": 0, "select": "scout", "size": [3840, 2160], "note": "the busiest moment at 2x: Glyph's crop check" },
+    { "name": "t101-rest-2x", "script": "briefs/100/latch/route-g-radio.json", "tick": 1450, "focus": "camera/entrance", "yaw": 2, "size": [3840, 2160], "note": "at rest at 2x: Glyph's crop check" },
+    { "name": "t101-aim", "checkpoint": "cp-loud", "preset": "today", "tick": 0, "select": "enforcer", "focus": "op/enforcer", "note": "the first shot's checkpoint (the batch's fight-loud-checkpoint)" }
+  ]
+}

@@ -51,11 +51,11 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- pieces
 
-        VisualElement nextUnknown, nextTip; Label nextTipText;
+        VisualElement nextUnknown, nextTip;
         readonly List<VisualElement> peopleDiscs = new(); VisualElement historyKey2;
-        VisualElement keys, keyIntel, pauseIcon, goal, goalCameo, goalGlyph, goalWords, sheet, sheetHead, sheetCameo, sheetBadge, sheetRows, sheetTip, chip2, chipLead, chipFields, respIcons, loudIcons, loudLost;
+        VisualElement keys, pauseIcon, goal, goalCameo, goalGlyph, goalWords, sheet, sheetHead, sheetCameo, sheetBadge, sheetRows, sheetTip, chip2, chipLead, chipFields, loudIcons, loudLost;
         Label endCash, endTrail, endStand; Paint endStandArrow; int endStandDir;
-        Label keyIntelN, sheetName, sheetNote, sheetTipText, respOff, respBot, respCome, chipRefused, endTally, briefGoal;
+        Label sheetName, sheetNote, sheetTipText, chipRefused, endTally, briefGoal;
         Paint world; // the street's painted marks (rings, wedges, dotted lines, arrows), behind the HUD's plates
         readonly List<(VisualElement root, VisualElement icon, Label text, VisualElement bar, VisualElement fill, VisualElement x)> busy = new();
         readonly List<(VisualElement root, Label text, VisualElement tail)> bubbleEls = new();
@@ -67,7 +67,6 @@ namespace Suborned.Play
         readonly List<VisualElement> edgeEls = new();
         readonly List<VisualElement> briefPortraits = new(); VisualElement briefPeople, briefFacts, briefAltBox;
         string goalKey = "", chipKey = "";
-        float cashChanged = -100f, trailChanged = -100f; string lastCash = "", lastTrail = "";
         int hoverRow = -1; bool lessBuilt;
         /// <summary>Elements for the manifest of a capture: (element, kind).</summary>
         readonly List<(VisualElement e, string kind, Func<string> text)> manifest = new();
@@ -83,24 +82,7 @@ namespace Suborned.Play
             // the roster at 0.8 (Glyph §1): the kit column scaled from its top left
             column.style.transformOrigin = new TransformOrigin(0, 0, 0); column.style.scale = new Scale(new Vector2(RosterScale, RosterScale));
             manifest.Add((column, "image", () => "roster portraits"));
-            // the pill: a pause glyph instead of the PAUSED word
-            pauseIcon = E(pill, null, w: 15, h: 15); pauseIcon.style.marginLeft = 11; pauseIcon.style.flexShrink = 0; Icon(pauseIcon, "pause", Cream);
-            // the next mark (Sky: "?3:10" had no space and no meaning): the next-event glyph, then "?" as a glyph while the cell can't know what it is, then its time; hover names it
-            nextUnknown = E(null, null, w: 15, h: 15); Icon(nextUnknown, "p_unknown", Cream); nextUnknown.style.marginLeft = 9; nextUnknown.style.flexShrink = 0; pill.Insert(pill.IndexOf(nextLabel), nextUnknown);
-            nextTip = E(root, "s-plate_dark"); nextTip.style.position = Position.Absolute; nextTip.style.height = 24; nextTip.style.paddingLeft = 9; nextTip.style.paddingRight = 9; nextTip.style.justifyContent = Justify.Center; nextTipText = L(nextTip, "verb-name"); Show(nextTip, false);
-            // the people plate under the pill (Sky: "2/4 … not sure what that refers to"): the mission's four key people as small discs, their
-            // role glyphs (the pips' and the scope's), filled once the cell knows them, a quiet socket until then; a known one finds them, the
-            // plate's rim opens Intel
-            keys = E(root, "s-plate_dark", pick: true); keys.style.position = Position.Absolute; keys.style.right = 14; keys.style.top = 14 + 44 + 8; keys.style.height = ChipH; keys.style.flexDirection = FlexDirection.Row; keys.style.alignItems = Align.Center; keys.style.paddingLeft = ChipPad; keys.style.paddingRight = ChipPad;
-            keys.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.IntelOpen = !host.IntelOpen; e.StopPropagation(); } });
-            keyIntel = keys; keyIntelN = L(null, "verb-name");
-            string[] people = { "waitress", "guard", "driver", "councillor" };
-            for (int i = 0; i < 4; i++)
-            {
-                int k = i; var d = E(keys, null, w: Glyph, h: Glyph, pick: true); d.style.marginLeft = i == 0 ? 0 : 5; Bg(d, CastBadge(people[i])); peopleDiscs.Add(d);
-                d.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (KnownPerson(people[k])) FindPerson(people[k]); else host.IntelOpen = !host.IntelOpen; e.StopPropagation(); } });
-            }
-            manifest.Add((keys, "image", () => "known people"));
+            // brief 101: the pause button, the next mark and the key people are the clock's (HudToolkit.Clock)
             BuildBookKey(); historyKey2 = bookKey; // brief 096: the Book key takes the notes key's place (HudToolkit.BookKey); the history is the book's Journal
             // busy chips beside the portraits
             for (int i = 0; i < 4; i++)
@@ -155,13 +137,7 @@ namespace Suborned.Play
             chip2 = E(root, "s-chip_price", 0, 0, float.NaN, 40); chip2.style.flexDirection = FlexDirection.Row; chip2.style.alignItems = Align.Center; chip2.style.paddingLeft = 18; chip2.style.paddingRight = 18; chip2.style.paddingBottom = 9;
             chipLead = E(chip2, null, w: 18, h: 18); chipFields = E(chip2); chipFields.style.flexDirection = FlexDirection.Row; chipFields.style.alignItems = Align.Center;
             chipRefused = L(chip2, "chip-value"); chipRefused.style.marginLeft = 8;
-            // the response pill as icons and numbers
-            respIcons = E(respPill); respIcons.style.flexDirection = FlexDirection.Row; respIcons.style.alignItems = Align.Center;
-            // Sky: the shields and the "IIII" didn't read. The pill shows only while units are on their way: Glyph's arrive glyph, how many, how soon
-            if (respPill.childCount > 0) Show(respPill[0], false);
-            var ar = E(respIcons, null, w: Glyph, h: Glyph); Icon(ar, "arrive", Cream); respCome = L(respIcons, "verb-name"); respCome.style.marginLeft = 6; respCome.style.fontSize = 13;
-            var un = E(respIcons, null, w: 14, h: 14); Icon(un, "units", Cream); un.style.marginLeft = 6; un.SendToBack(); respIcons.Remove(un); respIcons.Insert(1, un); // Glyph 016 r2: what the number counts (units coming)
-            var tm = E(respIcons, null, w: 14, h: 14); Icon(tm, "p_time", Cream); tm.style.marginLeft = 12; respOff = L(respIcons, "verb-name"); respOff.style.marginLeft = 5; respOff.style.fontSize = 13; respBot = respOff;
+            // brief 101: the units on their way are the clock's street row (HudToolkit.Clock); the old response pill stays hidden
             // the going-loud card's icon row and the allies it loses (crossed)
             loudIcons = E(loud); loudIcons.style.flexDirection = FlexDirection.Row; loudIcons.style.flexWrap = Wrap.Wrap; loudIcons.style.alignItems = Align.Center; loudIcons.style.marginTop = 8;
             loudLost = E(loud); loudLost.style.flexDirection = FlexDirection.Row; loudLost.style.marginTop = 8;
@@ -297,28 +273,14 @@ namespace Suborned.Play
                 bool show = alt || shortCost.Length > 0; Show(sheetTip, show && !m.PanelOpen);
                 if (show && !m.PanelOpen) { Text(sheetTipText, alt ? m.Slots[tipFor].CancelBody : shortCost); var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse); sheetTip.style.left = p.x + 14; sheetTip.style.top = p.y + 12; sheetTip.style.width = alt ? 300 : StyleKeyword.Auto; }
             }
-            // the pill: clock, pause glyph (or speed), next mark as icon and time ("?" when unknown; its word on Alt), $ and Trail dimming
-            Keys096Frame(m.Ended); pauseIcon.style.opacity = host.Frozen && !PlateOn ? 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f)) : 1f; /* brief 030: the pause glyph pulses while frozen */ Text(state, host.Speed > 1 ? $"x{host.Speed}" : ""); Show(state, host.Speed > 1);
-            {
-                bool unknown = m.NextLabel == "?"; string shortLabel = "";
-                if (host.Text != null && host.Text.TimelineShort.TryGetValue(m.NextTime, out var sl)) shortLabel = sl;
-                Show(nextUnknown, unknown); Show(nextLabel, alt && !unknown); Text(nextLabel, shortLabel.Length > 0 ? shortLabel : m.NextLabel); nextLabel.style.marginLeft = 9; nextLabel.style.marginRight = 0; nextTime.style.marginLeft = 9; // told and learned: unknown stays "?" on Alt too
-                bool tipOn = pillHover && !m.Ended; Show(nextTip, tipOn);
-                if (tipOn) { Text(nextTipText, unknown ? "Next · ?" : $"Next · {(shortLabel.Length > 0 ? shortLabel : m.NextLabel)}"); nextTip.style.right = 14; nextTip.style.top = 14 + 44 + 8 + 36 + 8; }
-                if (m.Cash != lastCash) { lastCash = m.Cash; cashChanged = Time.unscaledTime; }
-                if (m.Trail != lastTrail) { lastTrail = m.Trail; trailChanged = Time.unscaledTime; }
-                bool lit = alt || pillHover; cash.style.opacity = lit || Time.unscaledTime - cashChanged < 4f ? 1f : 0.55f; trail.style.opacity = lit || Time.unscaledTime - trailChanged < 4f ? 1f : 0.55f;
-            }
-            Show(keys, !ended && !m.BriefingOpen); BookKeyFrame(!ended && !m.BriefingOpen);
-            { string[] people = { "waitress", "guard", "driver", "councillor" }; for (int i = 0; i < 4; i++) { bool kn = KnownPerson(people[i]); peopleDiscs[i].style.opacity = kn ? 1f : 0.28f; peopleDiscs[i].style.unityBackgroundImageTintColor = kn ? Color.white : new Color(0.55f, 0.6f, 0.6f); } }
-            intel.style.top = 14 + 44 + 8 + 36 + 8;
+            ClockFrame(); // brief 101: the clock as street labels (HudToolkit.Clock): the pause button, the time, the lamps, Trail, money, the next key event, the faces
+            BookKeyFrame(!ended && !m.BriefingOpen);
+            intel.style.top = ClockBottom() + 8;
             // Intel rows: the sentence column is Alt only
             if (m.IntelOpen) for (int i = 0; i < 4; i++) { var u = intelRows[i]; Show(u.Next, alt); Show(u.Secret, alt && m.Intel[i].Secret.Length > 0); }
-            // the response pill: icons and counts; its rows on R or a click (a drawer)
-            bool coming = host.RespComing > 0 && !ended; Show(respPill, coming);
-            if (coming) { Text(respCome, host.RespComing.ToString()); Text(respOff, host.RespSoonestS >= 0 ? $"{host.RespSoonestS} s" : "?"); respPill.style.width = StyleKeyword.Auto; respPill.style.height = ChipH; respPill.style.paddingLeft = ChipPad; respPill.style.paddingRight = ChipPad; /* Glyph round 2: the arrow clear of the plate's rounded cap */ respPill.RemoveFromClassList("s-panel_strip"); respPill.AddToClassList("s-plate_dark"); }
-            Show(respList, host.RespAny && m.ResponseOpen); /* a drawer (the pill or R), never on Alt: its four rows are a table, and Alt is fragments (the budget's block rule) */
-            if (coming) respPill.style.top = m.IntelOpen ? intel.resolvedStyle.top + (float.IsNaN(intel.resolvedStyle.height) ? 0 : intel.resolvedStyle.height) + 8 : 14 + 44 + 8 + 36 + 8;
+            // the response's drawer (a click on the clock's police row, or R; never on Alt: its four rows are a table, and Alt is fragments, the budget's block rule)
+            Show(respPill, false); bool drawer = host.RespAny && m.ResponseOpen; Show(respList, drawer); // brief 101: the units coming are the clock's street row (HudToolkit.Clock)
+            if (drawer) respList.style.top = m.IntelOpen ? intel.resolvedStyle.top + (float.IsNaN(intel.resolvedStyle.height) ? 0 : intel.resolvedStyle.height) + 8 : ClockBottom() + 8;
             // the history drawer over the beats' place
             history.style.bottom = 14 + 36 + 8; // opens above its key
             GoalLine(W);

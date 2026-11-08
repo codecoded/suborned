@@ -245,7 +245,7 @@ namespace Suborned.Play
         readonly List<VisualElement> filterChips = new(); bool endDetailOpen; Label intelCount; readonly IntelUi[] intelRows = new IntelUi[4];
         // collapsible panels (Glyph #8, collapse-states.jpg): the hint folds to a "?" chip after 6 s, the objective after 20 s; a click pins either
         // open, remembered per panel (PlayerPrefs, as Intel and the strips are)
-        VisualElement hintChip; Label hintChipKey; string hintSeen; float hintAt, objUntil; bool hintHover, pillHover, objHover, briefWas = true;
+        VisualElement hintChip; Label hintChipKey; string hintSeen; float hintAt, objUntil; bool hintHover, objHover, briefWas = true;
         const float HintOpenS = 6f, ObjectiveS = 20f;
         const string HintPinPref = "Suborned.Hud.HintPinned", ObjPinPref = "Suborned.Hud.ObjectivePinned";
         bool? hintPinned, objPinned;
@@ -255,24 +255,7 @@ namespace Suborned.Play
 
         void Build()
         {
-            // the status pill (status_pill): top right 14, 12; height 44; padding from the content rect
-            pill = E(root, "s-pill_status", pick: true); pill.style.position = Position.Absolute; pill.style.right = 14; pill.style.top = 14; pill.style.height = 44;
-            pill.style.flexDirection = FlexDirection.Row; pill.style.alignItems = Align.Center; pill.style.paddingLeft = 24; pill.style.paddingRight = 24; // clear of the pill's end caps, the same each side
-            var clockBox = new VisualElement { pickingMode = PickingMode.Ignore }; pill.Add(clockBox); clock = L(clockBox, "clock"); /* brief 085: the bar was the label's child, and a label with a child stops measuring its text (0 wide: the next icon sat on the clock) */ closeBar = new VisualElement { pickingMode = PickingMode.Ignore }; closeBar.style.position = Position.Absolute; closeBar.style.left = 0; closeBar.style.bottom = -3; closeBar.style.height = 2.5f; closeBar.style.backgroundColor = Amber; closeBar.style.display = DisplayStyle.None; clockBox.Add(closeBar); Sep(pill);
-            Icon(E(pill, null, w: 17, h: 17), "nextevent", TurqLight); nextLabel = L(pill, "pill-label"); nextTime = L(pill, "pill-value"); Sep(pill);
-            Icon(E(pill, null, w: 17, h: 17), "p_cash", Cream); cash = L(pill, "pill-value"); Sep(pill);
-            Icon(E(pill, null, w: 17, h: 17), "p_trail", Cream); trail = L(pill, "pill-value"); Sep(pill);
-            for (int i = 0; i < 3; i++) // alert lamps: 12.4 px, pitch 17; off #0a1c1e with a #78968f ring; on a cream core
-            {
-                var l = E(pill, null, w: 12.4f, h: 12.4f); l.style.marginRight = 4.6f; Round(l, 6.2f);
-                l.style.borderTopWidth = l.style.borderBottomWidth = l.style.borderLeftWidth = l.style.borderRightWidth = 1.4f;
-                l.style.borderTopColor = l.style.borderBottomColor = l.style.borderLeftColor = l.style.borderRightColor = new Color(0.47f, 0.588f, 0.561f);
-                lamps[i] = l;
-            }
-            state = L(pill, "pill-value"); state.style.marginLeft = 8;
-            foreach (var c in pill.Children()) c.style.flexShrink = 0;
-            nextLabel.style.marginLeft = 6; nextTime.style.marginRight = 2; cash.style.marginLeft = 5; trail.style.marginLeft = 5;
-            pill.RegisterCallback<PointerEnterEvent>(_ => pillHover = true); pill.RegisterCallback<PointerLeaveEvent>(_ => pillHover = false); // hover the pill: the objective
+            BuildClock(); // brief 101: the clock as street labels, top right (HudToolkit.Clock); it retires the status pill
             // the objective line (objective_line): under the pill, right 14, top 62, height 34
             objective = E(root, "s-panel_strip", pick: true); objective.style.position = Position.Absolute; objective.style.right = 14; objective.style.top = 62; objective.style.height = 34;
             objective.style.flexDirection = FlexDirection.Row; objective.style.alignItems = Align.Center; objective.style.paddingLeft = 40; objective.style.paddingRight = 26;
@@ -991,7 +974,6 @@ namespace Suborned.Play
             "city" => new Color(0.651f, 0.714f, 0.667f), "warning" => new Color(0.431f, 0.478f, 0.486f), _ => new Color(0.329f, 0.376f, 0.38f),
         };
 
-        void Sep(VisualElement parent) { var s = E(parent, null, w: 1, h: 18); s.style.backgroundColor = new Color(0.824f, 0.902f, 0.886f, 0.35f); s.style.marginLeft = 14; s.style.marginRight = 14; }
         static void Round(VisualElement e, float r) { e.style.borderTopLeftRadius = e.style.borderTopRightRadius = e.style.borderBottomLeftRadius = e.style.borderBottomRightRadius = r; }
         static void Border(VisualElement e, float w, Color c) { e.style.borderTopWidth = e.style.borderBottomWidth = e.style.borderLeftWidth = e.style.borderRightWidth = w; e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c; }
 
@@ -1053,14 +1035,11 @@ namespace Suborned.Play
             m.Frame(host);
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
-            // the pill
-            Text(clock, Stress ? "7:30" : m.Clock); CloseUnderline(); Text(nextLabel, m.NextLabel + " · "); Text(nextTime, Stress ? "7:30" : m.NextTime); Text(cash, m.Cash); Text(trail, Stress ? "12" : m.Trail.Replace("T ", ""));
-            for (int i = 0; i < 3; i++) lamps[i].style.backgroundColor = i < m.Alert ? new Color(1f, 0.988f, 0.94f) : new Color(0.039f, 0.11f, 0.118f);
-            Text(state, m.State.Contains("PAUSE") ? "PAUSED" : m.State);
+            // the objective (the clock's words: HudToolkit.Clock, in the less-reading pass)
             Text(objText, m.Objective); Text(objTail, m.ObjectiveTail.Replace(' ', '\u00A0')); // UI Toolkit trims a label's leading spaces: "car· closes"
             // the objective never changes in a mission: up for 20 s after the briefing closes (B brings it back), or while the pill is hovered, or pinned
             if (briefWas && !m.BriefingOpen) objUntil = Time.unscaledTime + ObjectiveS; briefWas = m.BriefingOpen;
-            bool objOn = m.BriefingOpen && !BriefOnStreet || !m.BriefingOpen && (ObjPinned || pillHover || objHover || Time.unscaledTime < objUntil); /* brief 062 B: the goal line comes up with play, not over the briefing */
+            bool objOn = m.BriefingOpen && !BriefOnStreet || !m.BriefingOpen && (ObjPinned || objHover || Time.unscaledTime < objUntil); /* brief 062 B: the goal line comes up with play, not over the briefing */
             Show(objective, objOn); intel.style.top = objOn ? 108 : 62;
             // Intel: the strip, and when open a row for each person the cell knows something of (a secret and a lover tie only once known)
             Text(intelCount, $"{m.IntelKnown} people known"); Icon(intelChevron, m.IntelOpen ? "chev_up" : "chev_down", Cream);

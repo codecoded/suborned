@@ -129,9 +129,21 @@ namespace Suborned.Play
         }
 
         /// <summary>The card's dim line now: its place or what (live for a count or a countdown), then the clock it came at.</summary>
-        public string CrucialLine(CrucialCard c)
+        public string CrucialLine(CrucialCard c) => CrucialLineOf(c, c.Line);
+
+        /// <summary>Brief 101 (the lozenge): the line without its live countdown ("here in {s}"), which the lozenge shows apart on its ticket (CrucialKeyS).</summary>
+        public string CrucialLineApart(CrucialCard c)
         {
-            string line = c.Line;
+            if (c.Line.IndexOf("{s}", StringComparison.Ordinal) < 0) return CrucialLine(c);
+            var keep = new List<string>(); foreach (var seg in c.Line.Split(new[] { " · " }, StringSplitOptions.None)) if (seg.IndexOf("{s}", StringComparison.Ordinal) < 0) keep.Add(seg);
+            return CrucialLineOf(c, string.Join(" · ", keep));
+        }
+
+        /// <summary>Brief 101: the key time the card waits on, in seconds (police arriving: the soonest unit), -1 when it has none or it is not known.</summary>
+        public int CrucialKeyS(CrucialCard c) => c.Line.IndexOf("{s}", StringComparison.Ordinal) >= 0 && RespSoonestS >= 0 ? RespSoonestS : -1;
+
+        string CrucialLineOf(CrucialCard c, string line)
+        {
             if (line.Length > 0)
             {
                 line = line.Replace("{n}", (c.Kind == "for-car" ? Math.Max(1, Game.RivalsForCar.Count) : c.Kind is "hurt" or "hurt-carry" ? Game.Ops[(int)OpId.Enforcer].Gun.Health : c.Value).ToString()).Replace("{vale}", ValeWord)

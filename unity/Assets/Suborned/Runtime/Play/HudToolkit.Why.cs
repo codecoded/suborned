@@ -4,8 +4,8 @@ using UnityEngine.UIElements;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 100, part 3, the meter remembers (Fable's `why.meter`; the layout is Glyph's to settle): the pill's three Alert lamps take a hit box (they are 12 px:
-    /// the box runs the pill's height and 6 px either side); a hover shows the list and a click pins it (a click again, or on its head, folds it). The list hangs
+    /// <summary>Brief 100, part 3, the meter remembers (Fable's `why.meter`; the layout is Glyph's to settle): the clock's three Alert lamps take a hit box (brief 101: the lamps and their
+    /// icon, the row's height); a hover shows the list and a click pins it (a click again, or on its head, folds it). The list hangs
     /// under the pill as the response drawer does (the kit's panel_dark, 318 wide): its head ("Why it's Alert 2", or "Nobody has raised the alarm"), then the rises
     /// and calls newest first, each `when` (dim) over `what` (cream). A click on a row pans to where it happened; the hovered row's sentence (its line, `again`
     /// and what the Alert set off) shows under the rows. Clickable, never key-only. The host words it all (HostWhy); this only draws.</summary>
@@ -23,10 +23,10 @@ namespace Suborned.Play
 
         void BuildWhy()
         {
-            whyHit = E(pill, null, pick: true); whyHit.name = "why-lamps"; whyHit.style.position = Position.Absolute; whyHit.style.top = 0; whyHit.style.height = 44;
+            whyHit = E(clockLamps, null, pick: true); whyHit.name = "why-lamps"; whyHit.style.position = Position.Absolute; whyHit.style.left = 0; whyHit.style.right = 0; whyHit.style.top = 0; whyHit.style.bottom = 0; // brief 101: over the clock's lamps and their icon
             whyHit.RegisterCallback<PointerEnterEvent>(_ => whyHover = true); whyHit.RegisterCallback<PointerLeaveEvent>(_ => whyHover = false);
             whyHit.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { whyPinned = !whyPinned; e.StopPropagation(); } });
-            whyList = E(root, "s-panel_dark", pick: true); whyList.name = "why-list"; whyList.style.position = Position.Absolute; whyList.style.right = 14; whyList.style.top = 14 + 44 + 8; whyList.style.width = 318;
+            whyList = E(root, "s-panel_dark", pick: true); whyList.name = "why-list"; whyList.style.position = Position.Absolute; whyList.style.right = 14; whyList.style.width = 318; // its top: under the clock (WhyFrame)
             whyList.style.paddingTop = 12; whyList.style.paddingBottom = 12; whyList.style.paddingLeft = 22; whyList.style.paddingRight = 18;
             whyList.RegisterCallback<PointerEnterEvent>(_ => whyListHover = true); whyList.RegisterCallback<PointerLeaveEvent>(_ => { whyListHover = false; whyHoverRow = -1; });
             whyHead = Words(whyList, 15f); whyHead.style.marginBottom = 6;
@@ -49,10 +49,9 @@ namespace Suborned.Play
         {
             if (whyHit == null) return;
             bool can = on && host.Text != null && host.Text.HasWhy; Show(whyHit, can);
-            if (can) { var a = lamps[0].layout; var b = lamps[2].layout; if (!float.IsNaN(a.x) && b.width > 0) { whyHit.style.left = a.x - 6; whyHit.style.width = b.xMax - a.x + 12; } }
             bool open = can && (whyPinned || whyHover || whyListHover); Show(whyList, open);
             if (!open) { WhyMeterShown = ""; if (!can) whyPinned = false; return; }
-            whyList.BringToFront();
+            whyList.BringToFront(); whyList.style.top = ClockBottom() + 8f;
             Text(whyHead, host.WhyMeterHead());
             whyShown.Clear(); whyShown.AddRange(host.WhyMeterRows(WhyMax));
             var shown = new List<string> { whyHead.text };

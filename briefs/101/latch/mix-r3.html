@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>101 · Sky's mix in a real build: street labels top right, tokens bottom right (Latch, 0.2.280)</title>
+<style>
+body{font:15px/1.45 -apple-system,system-ui,sans-serif;margin:0;padding:24px;max-width:1180px;color:#17302f;background:#f7f4ec}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px;border-bottom:1px solid #d2e6e2;padding-bottom:4px}
+p.sub{color:#4a6461;margin:0 0 16px}table{border-collapse:collapse;width:100%;font-size:13.5px}
+td,th{border-bottom:1px solid #d2e6e2;padding:5px 6px;text-align:left;vertical-align:top}th{background:#e8f1ee}td.n,th.n{text-align:right}
+.ok{color:#1d6b5a}.flag{color:#8a6a1d}.bad{color:#8a2b20}code{font-size:12.5px;background:#e8f1ee;padding:0 3px;border-radius:3px}
+figure{margin:0 0 18px}figure img{width:100%;border:1px solid #d2e6e2}figcaption{font-size:12.5px;color:#4a6461}
+</style></head><body>
+<h1>Brief 101 · Sky's mix in a real build</h1>
+<p class="sub">Latch, 2026-11-08 · build <b>0.2.280</b> (<code>out/build/play/The Suborned.app</code>, the old town, draw check ok) · Sky: "I think street labels top right but tokens bottom right perhaps". The capture decides, so each moment below shows the real frame, then its two corners beside both of Glyph's round 2 mocks (<code>briefs/101/glyph/r2/S-*.png</code>, <code>T-*.png</code>). Pictures: <code>briefs/101/latch/r3/</code> (git-ignored).</p>
+
+<h2>The captures beside the mocks</h2>
+<figure><img src="r3/mix-loud.png"><figcaption>The seal with police coming: loud run seed 3 at 2:34.5 (brief 100's why-loud-police moment). The mock's "0:42" ticket is not on the real card: at 2:34 no unit is on its way yet (the host says "here in ?", as today's card did); the ticket shows from 2:50, "0:06".</figcaption></figure>
+<figure><img src="r3/mix-busy.png"><figcaption>The busiest moment: the final fight at 3:47.5 (the batch's fight-loud-body: the Scout selected, our car held, two bubbles, Police coming 1 of 5). The top right sits on the fountain, the hardest ground in the zone.</figcaption></figure>
+<figure><img src="r3/mix-rest.png"><figcaption>At rest: route G at 2:25 (the mocks' rest is the 3:28 frame with nothing on).</figcaption></figure>
+<figure><img src="r3/mix-quiet.png"><figcaption>Quiet: route G at 3:28.6, our car boxed in.</figcaption></figure>
+<figure><img src="r3/crops-2x.png" style="max-width:520px"><figcaption>Glyph's crop check: each restyled piece cut from the 3840 x 2160 captures (panel scale 2).</figcaption></figure>
+
+<h2>Room on screen</h2>
+<p>Measured as <code>tools/hud-budget</code> reads a capture: the HUD layer alone, alpha ≥ 24 at 1920 x 1080, so keylines and shadows count (<code>briefs/101/latch/make/corners.py</code> → <code>coverage-r3.json</code>). The corners are the clock group (today: the status pill, the people plate and the seal card) and the news with the Book (today: the crucial card and the Book key). Today's corners come from build 0.2.263/0.2.268 captures of the same moments; the mocks' from Glyph's HUD layers.</p>
+<table><tr><th>moment</th><th class="n">corners today</th><th class="n">corners now</th><th class="n">mocks' mix (S top + T bottom)</th><th class="n">whole frame now</th><th class="n">whole frame: today · S · T (Glyph)</th></tr>
+<tr><td>at rest</td><td class="n">1.31 %</td><td class="n"><b>0.66 %</b></td><td class="n">0.72 %</td><td class="n">4.6 %</td><td class="n">4.6 · 2.5 · 3.0 %</td></tr>
+<tr><td>quiet</td><td class="n">2.68 %</td><td class="n"><b>1.37 %</b></td><td class="n">1.50 %</td><td class="n">5.5 %</td><td class="n">6.6 · 3.2 · 4.1 %</td></tr>
+<tr><td>the seal, police coming</td><td class="n">4.83 %</td><td class="n"><b>1.62 %</b></td><td class="n">1.68 %</td><td class="n">5.5 %</td><td class="n">8.8 · 3.5 · 4.5 %</td></tr>
+<tr><td>the busiest moment</td><td class="n">4.78 %</td><td class="n"><b>1.62 %</b></td><td class="n">1.43 %</td><td class="n">5.5 %</td><td class="n">10.0 · 4.1 · 5.1 %</td></tr></table>
+<p>The corners are at the mocks' size (a third of today's at the seal). The whole frame is still above the mocks because the rest of the HUD is today's: at rest the roster takes 1.9 % and the scope 1.4 % (steps 4 and 5). The busiest frame's real card line is longer than the mock's ("shots heard at the Office door · 2:33").</p>
+
+<h2>What's built (steps 1 to 3)</h2>
+<ul>
+<li><b>The kit</b> (<code>HudToolkit.Street.cs</code>, <code>Kit/street.uss</code>, which <code>HudTheme.tss</code> now imports): the book's colours as variables; street labels in the book's ink on a 2.6 px cream keyline with a faint drop (urgent figures orange on a 2.2 px ink keyline); keyed kit icons; the enamel roundel and lozenge for the bottom right only. UI Toolkit's own text outline straddles the glyph's edge and would thin the ink, so the keyline is eight key copies under the type, laid over the type's own box.</li>
+<li><b>Top right, street labels</b> (<code>HudToolkit.Clock.cs</code>): the pause button and the time; the seal's orange lock and count under it; the Alert lamps, Trail and money; the next key event (its icon, word and time; "?" while unknown); the units on their way (how many, how soon, orange) when there are any; the key people's faces. It retires the status pill, the people plate and the old response pill.</li>
+<li><b>The seal</b> (<code>HudToolkit.Seal.cs</code>): the lock and count, then the job in marks, never a sentence (Popovic's face, four dots, our car; the car and Go once he is aboard; the car and a lock while it is held). Hovered, its cause shows before the lock. It pops once when set and beats once a second in its last 30 s. After Popovic is out it is the police countdown with the faces of those still out and an End button. It retires the 420 x 104 card.</li>
+<li><b>Bottom right, tokens</b> (<code>HudToolkit.Crucial.cs</code>, <code>HudToolkit.BookKey.cs</code>): the news as a deep teal lozenge, its badge on an orange roundel over its end, title, the why on one line, "1 of n ›"; a cream ticket for a key time (police arriving); the lookout's fix chips above it; the Book as a roundel with the unread dot.</li>
+<li>Every part keeps its click: pause, the lamps (the why list), the faces, the units row (the response drawer), End, the card, its line, its chips and the Book. The click-through proof clicked all 23 pieces.</li>
+</ul>
+
+<h2>Not done, and why</h2>
+<ul>
+<li class="flag"><b>The locked way's long reason on the 0.6 s rest</b> (Glyph's ask): built, then taken back. The long reason is an 11-word sentence ("You've already watched the entrance camera. There's nothing more to learn."). On a rest it showed whenever the pointer stayed on anything already watched: in 13 of the proof's 61 pictures, most of them plain play, and the budget rejected it there (an Alt line is at most 6 words, a fragment). It stays on Alt. Its short reason is already on the lock pill ("Listen to the guard · Already heard"), and a click on the way says why. To put the long reason on the rest, Fable's lock lines need to be 6 words or fewer.</li>
+<li class="flag"><b>The next key event's words and the budget:</b> the marker cap is 2 words, so a two-word name plus its time fails it ("Popovic exits 5:30"; 2 of 61 proof pictures; "Turn driver by 5:20" is 4). The names are Sky's and Fable's, and the S mock shows them, so they stay. For Glyph and Splice: a cap for the next-event mark (a short name and its time).</li>
+<li>The T mock's orange cause icon before the card's line isn't drawn: nothing maps a why to an icon yet (Glyph or Fable).</li>
+</ul>
+
+<h2>Checks</h2>
+<ul>
+<li class="ok">Build 0.2.280 with <code>bun tools/game/cli.ts --no-open</code>: built, draw check ok. The batch's delta wanted the world rebuild (<code>tools/geometry/sim.ts</code> changed at 6ce74dfa, not this round) and a full 11-minute proof (<code>HudToolkit.cs</code> sits in the map's broad row), so the touched sections ran on the player with <code>-proofOnly</code> instead. Those runs don't write the batch's ledger, so the next batch runs these sections itself.</li>
+<li class="ok">Compile (dotnet, no Editor) clean; Unity's build log has no warning from these files. Host logic 173/173 on Fable's committed words (two cases failed while <code>text.json</code> was mid-edit and passed once it was committed). Typecheck clean.</li>
+<li class="ok">HUD budget on the ten captures here: 10/10 within budget.</li>
+<li>Proof sections on 0.2.280: <span class="ok">r29 ok</span> (the seal: "District seals in 2:15", visible in both views, its cause, the sealed end), <span class="ok">r101 ok</span> (the seal and police: "District seals in 1:53", the card "Police coming · shots heard at the Office door · 2:33 · 1 of 5"), <span class="ok">hudClick ok</span> (23 of 23 pieces clicked, none heard by the street), <span class="ok">r059 ok</span>, <span class="ok">r067 ok</span>, <span class="bad">r123 failed</span>: its "fight safe" wants a shooter in 240 frames at 4:27, and by then three of the four rivals are down. That is fight staging, not the HUD; r123 last passed on 0.2.267 and had not run since (for Keel and Pulse).</li>
+<li>Budget on the proof's 61 pictures: 57 pass (35 on the first build of this round). The four left: two next-event names over the marker cap ("Driver cutoff 5:20", "Popovic exits 5:30", above); a speech bubble wrapping to 3 rows (r067-who-can) and the hold pill "Fire · Alert ≥2" wrapping (r101-two-firing). Neither of those two pieces changed this round, and both passed on the run before.</li>
+</ul>
+
+<h2>Next (after Sky sees this)</h2>
+<p>Step 4 the roster (faces in rings, no tray), step 5 the scope (a round instrument), step 6 the street layer (keyline labels, the shot's ring and Goes-loud row, the report's draining ring, the car's marks, the bubbles with faces). Then the GDD's §15 HUD kit, once Sky has picked from these captures.</p>
+</body></html>

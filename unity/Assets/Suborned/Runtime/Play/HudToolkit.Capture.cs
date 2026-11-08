@@ -104,13 +104,7 @@ namespace Suborned.Play
                 sb.Append(first ? "\n" : ",\n"); first = false;
                 sb.Append("  {\"kind\": \"chip\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k)).Append(", \"facts\": ").Append(Arr(c.Facts)).Append(", \"verbs\": ").Append(Arr(c.Verbs)).Append('}');
             }
-            // Glyph budget §5: the clock bar (the status pill top right), its rect only: its figures are read off the picture (the next mark's label is a word, see the report)
-            if (pill != null && Visible(pill) && pill.worldBound.width >= 1) { var pb = pill.worldBound; sb.Append(first ? "\n" : ",\n").Append("  {\"kind\": \"bar\", \"x\": ").Append(R(pb.x * k)).Append(", \"y\": ").Append(R(pb.y * k)).Append(", \"w\": ").Append(R(pb.width * k)).Append(", \"h\": ").Append(R(pb.height * k)).Append('}'); first = false; }
-            // the pill's Alert lamps and pause glyph: icons by construction (the checker reads the lamp rings and the pause bars as strokes)
-            var group = new[] { lamps[0], lamps[1], lamps[2], pauseIcon };
-            Rect u = default; bool any = false; foreach (var e in group) if (e != null && Visible(e)) { var b = e.worldBound; u = any ? Rect.MinMaxRect(Mathf.Min(u.xMin, b.xMin), Mathf.Min(u.yMin, b.yMin), Mathf.Max(u.xMax, b.xMax), Mathf.Max(u.yMax, b.yMax)) : b; any = true; }
-            if (any) { var pb = pill.worldBound; u = Rect.MinMaxRect(u.xMin, pb.yMin, pb.xMax, pb.yMax); } // to the pill's right end: its rim and screws are art too
-            if (any) sb.Append(first ? "\n" : ",\n").Append("  {\"kind\": \"image\", \"x\": ").Append(R((u.x - 2) * k)).Append(", \"y\": ").Append(R((u.y - 2) * k)).Append(", \"w\": ").Append(R((u.width + 4) * k)).Append(", \"h\": ").Append(R((u.height + 4) * k)).Append(", \"text\": \"alert lamps, pause, the pill's end\"}");
+            // brief 101: the clock bar is gone (the status pill): the clock is street labels, its time a marker and its icons and lamps art, each in the manifest (HudToolkit.Clock)
             sb.Append("\n ]\n}\n"); return sb.ToString();
         }
 
@@ -118,7 +112,7 @@ namespace Suborned.Play
         string Parts(int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
-            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoLine), ("scene-skip", convoSkip) };
+            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("clock", pill), ("keys", keys), ("seal", sealEl), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoLine), ("scene-skip", convoSkip) };
             for (int i = 0; i < 4; i++) list.Add(($"portrait-{i + 1}", colWins[i]?.Clip));
             for (int i = 0; i < 4; i++) { list.Add(($"roster-weapon-{i + 1}", colWins[i]?.Arm)); list.Add(($"roster-status-{i + 1}", colWins[i]?.Status)); list.Add(($"roster-dots-{i + 1}", colWins[i]?.Dots)); } // brief 046: the row under each portrait
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));

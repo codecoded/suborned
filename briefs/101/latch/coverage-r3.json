@@ -1,0 +1,121 @@
+{
+ "method": "Glyph's two round 2 mocks, measured the way tools/hud-budget reads a capture (the HUD layer alone, alpha >= 24, at 1920 x 1080: keylines and shadows count).",
+ "moments": {
+  "rest": "t101-rest-b",
+  "quiet": "t101-quiet",
+  "loud": "t101-loud",
+  "busy": "t101-busy"
+ },
+ "today": {
+  "rest": "out/batch/shots/office-front-yaw210",
+  "quiet": "briefs/100/latch/shots/why-quiet-radio",
+  "loud": "briefs/100/latch/shots/why-loud-police",
+  "busy": "out/scratch/glyph/101r2/src/fight-loud-body"
+ },
+ "rows": {
+  "rest": {
+   "today": {
+    "frame": 6.53,
+    "top": 1.15,
+    "bottom": 0.16
+   },
+   "now": {
+    "frame": 4.64,
+    "top": 0.52,
+    "bottom": 0.14
+   },
+   "street": {
+    "frame": 2.46,
+    "top": 0.58,
+    "bottom": 0.15
+   },
+   "tokens": {
+    "frame": 2.98,
+    "top": 0.93,
+    "bottom": 0.14
+   },
+   "mix": {
+    "top": 0.58,
+    "bottom": 0.14
+   }
+  },
+  "quiet": {
+   "today": {
+    "frame": 6.63,
+    "top": 1.12,
+    "bottom": 1.56
+   },
+   "now": {
+    "frame": 5.48,
+    "top": 0.53,
+    "bottom": 0.84
+   },
+   "street": {
+    "frame": 3.16,
+    "top": 0.58,
+    "bottom": 0.52
+   },
+   "tokens": {
+    "frame": 4.1,
+    "top": 0.93,
+    "bottom": 0.92
+   },
+   "mix": {
+    "top": 0.58,
+    "bottom": 0.92
+   }
+  },
+  "loud": {
+   "today": {
+    "frame": 8.84,
+    "top": 3.14,
+    "bottom": 1.69
+   },
+   "now": {
+    "frame": 5.51,
+    "top": 0.7,
+    "bottom": 0.92
+   },
+   "street": {
+    "frame": 3.52,
+    "top": 0.74,
+    "bottom": 0.15
+   },
+   "tokens": {
+    "frame": 4.48,
+    "top": 1.2,
+    "bottom": 0.94
+   },
+   "mix": {
+    "top": 0.74,
+    "bottom": 0.94
+   }
+  },
+  "busy": {
+   "today": {
+    "frame": 8.69,
+    "top": 3.09,
+    "bottom": 1.69
+   },
+   "now": {
+    "frame": 5.54,
+    "top": 0.7,
+    "bottom": 0.92
+   },
+   "street": {
+    "frame": 4.14,
+    "top": 0.7,
+    "bottom": 0.46
+   },
+   "tokens": {
+    "frame": 5.07,
+    "top": 1.18,
+    "bottom": 0.73
+   },
+   "mix": {
+    "top": 0.7,
+    "bottom": 0.73
+   }
+  }
+ }
+}
