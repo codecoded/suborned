@@ -1,0 +1,40 @@
+{
+ "method": "share of the 1920x1080 screen where the HUD layer alone has alpha >= 24 (tools/hud-budget HUD_ALPHA, its hud mask); keylines, shadows and the mocks' ground rings count",
+ "today": {
+  "source": "build 0.2.268 captures (out/scratch/glyph/101r2/src, SHA256.txt); aim and busy with the pieces they lack laid on from other captures' HUD layers (r2_today.py)"
+ },
+ "moments": {
+  "rest": "roster, clock, scope, Book",
+  "quiet": "3:28, a guard radioing it in (4 s) and Our car boxed in (route-g-radio)",
+  "loud": "2:34, the seal (3:07) and Police coming, here in 0:42 (loud.seed3)",
+  "aim": "2:31, the first shot: the Enforcer on the guard at 5 m (loud.seed3)",
+  "busy": "3:47.5, the final fight: the seal at 1:54, Police coming 1 of 5, two bubbles, the car held by its blocker, Fixer and Tech firing on him, the player's hold on him, a report about to land (from 4:54), Popovic off screen"
+ },
+ "rows": {
+  "rest": {
+   "today": 4.56,
+   "street": 2.46,
+   "tokens": 2.98
+  },
+  "quiet": {
+   "today": 6.63,
+   "street": 3.16,
+   "tokens": 4.1
+  },
+  "loud": {
+   "today": 8.84,
+   "street": 3.52,
+   "tokens": 4.48
+  },
+  "aim": {
+   "today": 5.96,
+   "street": 2.94,
+   "tokens": 3.49
+  },
+  "busy": {
+   "today": 10.01,
+   "street": 4.14,
+   "tokens": 5.07
+  }
+ }
+}
