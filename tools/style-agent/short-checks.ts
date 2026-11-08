@@ -5,6 +5,7 @@ import { FORETELLS } from './short-natural';
 import { aiWords } from './short-natural14';
 import { lozengePx } from './short-lozenge';
 import { aboutChars } from './short-whys19';
+import { CARD_KEY, CARD_NAMES } from './short-slip23';
 
 /** The checks code can make for certain on a short-line family (Keel's side of the review); meaning, truth and voice are Motive's. */
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -70,10 +71,10 @@ export function checkShort(brief: ShortBrief, set: ShortSet, guide: ShortGuide, 
           if (new RegExp(`(?<![\\p{L}\\p{N}_])${esc(term)}(?![\\p{L}\\p{N}_])`, 'iu').test(l)) flag(guide.profanity.includes(term) ? 'VOICE' : 'PLAIN', `${at}: "${term}" is on the mission's word filter.`);
         for (const name of guide.cell) if (new RegExp(`\\b${name}\\b`).test(l)) flag('NAMES', `${at}: "${name}" is a cell name; ${brief.kind === 'debrief' ? 'the page names an agent with {op}' : brief.kind === 'label' ? 'a label names an agent with {agent}' : 'nobody says it'}.`);
         if (/halcyon/i.test(l)) flag('NAMES', `${at}: Halcyon waits on Sky.`);
-        const toks = l.replace(/\{[^}]*\}/g, 'x').split(/\s+/);
+        const toks = l.replace(/\{[^}]*\}/g, 'x').split(/\s+/), cards = shortGuideVersion(guide) >= 23 && CARD_KEY.test(x.key); // guide /23: a card row says the scene's names
         toks.forEach((tok, i) => {
           const w = tok.replace(/^[^\p{L}]+|[^\p{L}]+$/gu, '').replace(/'(s|m|ve|ll|d|re)$/, '');
-          if (i > 0 && w && /^\p{Lu}/u.test(w) && !/[.!?:·]$/.test(toks[i - 1]!) && !CAPS.has(w)) flag('NAMES', `${at}: "${w}" mid-sentence; only the game's names are capitalised.`);
+          if (i > 0 && w && /^\p{Lu}/u.test(w) && !/[.!?:·]$/.test(toks[i - 1]!) && !CAPS.has(w) && !(cards && CARD_NAMES.has(w))) flag('NAMES', `${at}: "${w}" mid-sentence; only the game's names are capitalised.`);
         });
         if (brief.kind === 'bark' && it.speaker && !/^(scout|fixer|tech|enforcer):/.test(it.speaker) && /\d/.test(l)) flag('TRUE', `${at}: no digits in a person's mouth (people never quote the clock or the cell's numbers).`);
         // guide /13 (brief 102): the family Sky named ("'I will remember you.' lines etc - so unnatural"), whoever says it; a questioned row answers an investigator

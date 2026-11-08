@@ -10,7 +10,7 @@ import { SHORT_NOW, type ShortBrief, type ShortGuideVersion } from './short-type
 /** `version` is the guide's: a run's families are rebuilt as they were for it. `hand`: a hand run's families (guide /18: its hand rows are items). */
 export function buildShortBriefs(read: Read, names: string[], version: ShortGuideVersion = SHORT_NOW, hand = false): ShortBrief[] {
   const text = JSON.parse(read(TEXT_FILE));
-  const all = [...barkBriefs(read, names, text, version, hand), ...whyBriefs(text, version, hand), ...debriefBriefs(read, text, read(RULEBOOK), version), ...(version >= 10 ? labelBriefs(text, version) : [])];
+  const all = [...barkBriefs(read, names, text, version, hand), ...whyBriefs(text, version, hand), ...debriefBriefs(read, text, read(RULEBOOK), version), ...(version >= 10 ? labelBriefs(text, version, hand) : [])];
   const ids = new Set<string>();
   for (const b of all) {
     if (ids.has(b.id)) throw new Error(`Two families share the id ${b.id}`);

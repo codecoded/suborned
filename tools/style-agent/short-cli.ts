@@ -92,18 +92,26 @@ export async function liveShort(options: Map<string, string>, briefs: ShortBrief
 }
 
 /** Brief 102 (guide /17): a family's failing lines rewritten by hand, each edit one of today's lines (`before`) and its new words (`after`), with why.
- *  Brief 101 (guide /22): a why family's shorts too (briefs/101/fable/hand-whys.json), in the same file shape. */
+ *  Brief 101 (guide /22): a why family's shorts too (briefs/101/fable/hand-whys.json), in the same file shape. Guide /23 (briefs/101/fable/hand-whys-2.json): a why
+ *  cause's title and line, a label family's line (`field` says which, a short where it is left out), and a cut (`cut`, no `after`: the item goes, `why` its reason, at most
+ *  400 characters as a run's cut reason). */
 export const HandEdits = z.object({ schema: z.literal('suborned.hand-barks/1'), status: z.string().min(1), by: z.string().min(1), why: z.string().min(1),
-  edits: z.array(z.object({ family: z.string().regex(/^(bark|why)\/[a-z0-9-]+$/), key: z.string().min(1), before: z.string().min(1), after: z.string().min(1), kind: z.string().min(1), why: z.string().min(1),
+  edits: z.array(z.object({ family: z.string().regex(/^(bark|why|label)\/[a-z0-9-]+$/), key: z.string().min(1), field: z.enum(['title', 'short', 'line', 'plate', 'label']).optional(), before: z.string().min(1), after: z.string().min(1).optional(), cut: z.literal(true).optional(),
+    kind: z.string().min(1), why: z.string().min(1),
     /** A line the judge read and found fault with, and what it said, when `after` was rewritten from that finding. */
-    judged: z.object({ line: z.string().min(1), rule: z.string().min(1), finding: z.string().min(1) }).strict().optional() }).strict()).min(1) }).strict();
+    judged: z.object({ line: z.string().min(1), rule: z.string().min(1), finding: z.string().min(1) }).strict().optional() }).strict()
+    .refine(e => (e.after === undefined) === !!e.cut && (!e.cut || e.why.length <= 400), 'an edit has new words (`after`) or is a cut (`cut`, its why at most 400 characters), not both')).min(1) }).strict();
 export type HandEdits = z.infer<typeof HandEdits>;
 /** The family as it stands today with the hand edits in: every item kept, each of today's lines replaced where an edit names it. */
 export function handSet(brief: ShortBrief, edits: HandEdits['edits']): ShortSet {
   const mine = edits.filter(e => e.family === brief.id);
   if (!mine.length) throw new Error(`${brief.id}: no hand edits`);
   for (const e of mine) if (!brief.items.some(i => i.key === e.key && Object.values(i.current).flat().includes(e.before))) throw new Error(`${e.key}: "${e.before}" is not one of today's lines in ${brief.id}`);
-  return { items: brief.items.map(i => ({ key: i.key, cut: false, reason: '', fields: i.fields.map(f => ({ id: f.id, lines: (i.current[f.id] ?? []).map(l => mine.find(e => e.key === i.key && e.before === l)?.after ?? l) })) })) };
+  return { items: brief.items.map(i => {
+    const cut = mine.find(e => e.key === i.key && e.cut); // guide /23: an item cut by hand says no line, its reason the edit's why
+    if (cut) { if (i.stays) throw new Error(`${i.key}: may not be cut (${i.stays})`); return { key: i.key, cut: true, reason: cut.why, fields: i.fields.map(f => ({ id: f.id, lines: [] })) }; }
+    return { key: i.key, cut: false, reason: '', fields: i.fields.map(f => ({ id: f.id, lines: (i.current[f.id] ?? []).map(l => mine.find(e => e.key === i.key && e.before === l)?.after ?? l) })) };
+  }) };
 }
 /** `judge FAMILY --hand FILE`: Motive scores the hand-written family once on Claude (no writer call, no revision), recorded and replayable like any run. */
 export async function judgeHand(options: Map<string, string>, brief: ShortBrief, file: string) {

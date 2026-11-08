@@ -26,12 +26,13 @@ const str = z.string().min(1).regex(/^[^\n<>!]+$/, 'one line, no markup, no excl
 const key = z.string().regex(/^[a-z][a-z0-9-]*$/);
 const Words = z.strictObject({ title: str.optional(), short: str.optional(), line: str.optional() });
 /** Brief 101 (Fable, 2026-11-09): a cause whose words Fable wrote by hand to brief 102's bar (briefs/101/fable/hand-whys.json), as a hand row of the dialogue:
- *  no run of the style loop replaces them (guide /22). The host reads only title, short, line and variants. */
+ *  no run of the style loop replaces them (guide /22). The host reads only title, short, line and variants. From guide /23 a way of `onWay` may carry it too
+ *  (briefs/101/fable/hand-whys-2.json); the host reads only its plate and line. */
 export const WHY_HAND = 'Fable\'s hand edit, ';
 const Cause = z.strictObject({ title: str, short: str, line: str, variants: z.record(key, Words).optional(), pick: z.string().min(1).optional(),
   hand: z.string().startsWith(WHY_HAND).optional() })
   .refine((c) => (c.variants === undefined) === (c.pick === undefined), 'variants go with a `pick` that says how the host chooses');
-const Way = z.strictObject({ plate: str, line: str });
+const Way = z.strictObject({ plate: str, line: str, hand: z.string().startsWith(WHY_HAND).optional() });
 
 export const Why = z.strictObject({
   rule: z.string().min(1),

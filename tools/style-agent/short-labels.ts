@@ -1,4 +1,5 @@
 import type { Field, Fill, Form, Pattern, ShortBrief, ShortGuideVersion, ShortItem, ShortSet } from './short-types';
+import { CARD_KEY, slipBriefs23 } from './short-slip23';
 
 /** Guide /10 (brief 101, Sky 2026-11-08, the HUD sweep's mix): the words the new HUD draws, one family. The top right takes Street labels' style (the clock and the
  *  seal as ink labels, the next key event's word before its clock time); the bottom right takes Corner tokens' news lozenge and Book roundel (a card's title over
@@ -28,7 +29,8 @@ const HEALTH = HELD('\\{n\\} health', 'the health left shows live as "{n} health
 
 type Card = [kind: string, tells: string, title: Fill[], line: Fill[] | null, held?: Pattern[], also?: string];
 
-export function labelBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
+/** `hand`: a hand run's families (from guide /23 two more, which no writer run has: Inez's slip and the take-control pop, short-slip23.ts). */
+export function labelBriefs(text: any, v: ShortGuideVersion, hand = false): ShortBrief[] {
   const cards = text.book.feed.cards as Record<string, { title: string; line?: string }>, timeline = text.briefing.timeline as { at: string; label: string; short: string; known: boolean }[];
   const cell = Object.values(text.book.cell.name as Record<string, string>).sort((a, b) => b.length - a.length)[0]!;
   const agent = fill('agent', 'an agent of the cell, by the name the book\'s cell page gives them, beside their face', cell);
@@ -69,8 +71,9 @@ export function labelBriefs(text: any, v: ShortGuideVersion): ShortBrief[] {
   if (v >= 14 && !follow?.line) throw new Error('book.feed.cards.rivals-follow: guide /14 briefs it with a title and a line');
   const news: ShortBrief[] = v >= 14 ? [{ id: 'label/rivals-follow', kind: 'label', title: 'The news card for the rivals following our car out (brief 102)', context: `The HUD Sky picked on 2026-11-08 (brief 101) has a news lozenge in the bottom right. ${LOZENGE} The cards the lozenge already has, for the voice and the form: ${['for-car', 'lookout', 'boxed', 'rival-car'].map(k => `${cards[k]!.title} · ${cards[k]!.line}`).join('; ')}.`,
     items: [item('book.feed.cards.rivals-follow', AT.lozenge, FOLLOW_14, [TITLE(), LINE(v)], { title: follow!.title, line: follow!.line })] }] : [];
+  const slip = v >= 23 && hand ? slipBriefs23(text) : [];
   return [{ id: 'label/hud', kind: 'label', title: 'The HUD\'s labels (brief 101): the first shot\'s row, the next key event, the news lozenge', items,
-    context: `Sky picked the HUD on 2026-11-08 as a mix of Glyph's round 2 (brief 101): the top right in Street labels' style, bare ink type with a cream keyline (the clock, the seal's lock and orange count, the Alert lamps, Trail and money, the next key event, the key people's faces); the bottom right Corner tokens' news lozenge and Book roundel; everything else drawn on people and places in the street. It covers half of today's HUD or less. The first shot's row is new; the next key event's words and the lozenge's cards are the file's today, moving to a new place. The three places each item's where names: the first shot's row: ${STREET} The next key event: ${CORNER} The news lozenge: ${LOZENGE}` }, ...news];
+    context: `Sky picked the HUD on 2026-11-08 as a mix of Glyph's round 2 (brief 101): the top right in Street labels' style, bare ink type with a cream keyline (the clock, the seal's lock and orange count, the Alert lamps, Trail and money, the next key event, the key people's faces); the bottom right Corner tokens' news lozenge and Book roundel; everything else drawn on people and places in the street. It covers half of today's HUD or less. The first shot's row is new; the next key event's words and the lozenge's cards are the file's today, moving to a new place. The three places each item's where names: the first shot's row: ${STREET} The next key event: ${CORNER} The news lozenge: ${LOZENGE}` }, ...news, ...slip];
 }
 /** Guide /14: what the card for the posted three going after our car tells. */
 const FOLLOW_14 = 'Our getaway car has driven off with Popovic (route B, Popovic\'s own car round the back) and the rival crew\'s posted three, the men at their posts round our car, leave their posts and run after it (log rivals.follow-car). The Scout no longer says so (brief 102: the agents are quiet in play), so this card is the player\'s only word of it. The rivals\' badge sits on the roundel, and a click pans to our car. The title says what is happening, in the lozenge\'s words (our car, the rivals); the line says who, the three from their posts, in words: a label types no digit. The Journal\'s card for the same log says "The posted three follow" and "They have left their posts and are going after our car."';
@@ -79,6 +82,8 @@ const FOLLOW_14 = 'Our getaway car has driven off with Popovic (route B, Popovic
  *  the Alt outcome of a Fire (one glossary); a timeline mark is found by its clock. */
 export function labelPaths(key: string, id: string, text: any): (string | number)[][] {
   if (key === 'less.street.loud') return [['less', 'street', 'loud'], ['less', 'alt', 'outcome', 'loud']];
+  const card = key.match(CARD_KEY); // guide /23: a card row by its conversation's id
+  if (card) { const at = (text.scenes.conversations.items as { id: string }[]).findIndex(x => x.id === card[1]); if (at < 0) throw new Error(`${key}: no conversation ${card[1]}`); return [['scenes', 'conversations', 'items', at, card[2]!, Number(card[3])]]; }
   const mark = key.match(/^briefing\.timeline\.(\d+:\d\d)$/);
   if (mark) { const at = (text.briefing.timeline as { at: string }[]).findIndex(x => x.at === mark[1]); if (at < 0) throw new Error(`${key}: no timeline mark at ${mark[1]}`); return [['briefing', 'timeline', at, id]]; }
   return [id === 'label' ? key.split('.') : [...key.split('.'), id]];

@@ -1,0 +1,362 @@
+{
+ "schema": "suborned.hand-barks/1",
+ "status": "In text.json as Fable's hand edits: each cause and way carries `hand` (why.schema.ts WHY_HAND), so no run of the style loop replaces it (guides /22, /23). Scored once per family by Motive on Claude Opus 5.5 with Sky's approval, the family as it plays with Fable's draft in place, titles and lines included for the first time since guide /19 (bun tools/style-agent/cli.ts judge FAMILY --hand briefs/101/fable/hand-whys-2.json; runs/style-agent/short/2026-11-08T20-08-31.473Z-why-witnessed 6, 2026-11-08T20-08-33.427Z-why-gunfire 7, 2026-11-08T20-08-35.446Z-why-police 8, 2026-11-08T20-08-37.447Z-why-on-the-way 5, 2026-11-08T20-08-39.458Z-label-inez-slip 6, 2026-11-08T20-08-41.491Z-label-take-control 8). Each line the judge faulted was rewritten from its finding (`judged` keeps what Opus read and said), Fable's own drafts and lines Fable hadn't touched alike, and none was scored again. Kept, against the draft: Inez's slip rows, Sky's agreed words (the judge read \"Secret: she's seeing Arthur, the guard.\" as needless: her name heads the slip, \"door\" says which guard and where Pressure leads, and Sky saw the row on Glyph's board without its word). Declined, with reasons in briefs/101/fable/lines.md: the last round's hand shorts (down, woken, woken's vale), three shorts outside this pass (noise, gunfire, rivals), two plates (nofix, camera) and the slip's full stops. The take-control cut is not in text.json: the host still pops it, and a pop with no word prints its key.",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Brief 101 (Aster, 2026-11-09), from Fable's lozenge notes (briefs/101/fable/lozenge.md, open items): `alert.warned`'s line ended on a rule of the game (\"Holster, or it's called in.\"), which brief 102's bar forbids (no line explains a mechanic), and `alert.confirmed`'s title and line said \"confirmed\", one of the AI-sounding words on Sky's list (briefs/102/fable/ai-words.json). Then the whole why block swept for any other title or line that states a rule or uses such a word: three more lines state a rule (`police.gang`, `police.cordon`, `onWay.ways.checkin`), and no other AI-sounding word is in it. Each line was briefed from the engine first: the gun warning is given only by the guard or an officer (GameIntent.TodayWarns); a killing is confirmed by security's own eyes, a robot sent to look, the patrol, an officer or the guard, after a first report that said less (GameResponse.Confirm, FoundBySecurity, Verify), so \"police\" was not always true; a gang shooting brings the police with no seal (GameGangShooting); the lockdown's doors lock only where the dial locks them, and there police go to the exits (GameResponse.Cordon). Aster's two additions from Glyph's round 3: the \"Take control: T\" pop names a key and there is no click to name (from the map only T takes control), so it goes; on Inez's slip, Debt and Secret become icons and every row reads right as written.",
+ "edits": [
+  {
+   "family": "why/witnessed",
+   "key": "alert.confirmed",
+   "field": "title",
+   "before": "Killing confirmed",
+   "after": "It was a killing",
+   "kind": "PLAIN",
+   "why": "\"Confirmed\" is on Sky's list of AI-sounding words. The title names nobody: who looked can be a robot sent to look, the patrol, an officer or the guard, and the host doesn't say which. Past tense, as the other titles.",
+   "judged": {
+    "line": "Security finds a killing",
+    "rule": "NAMES",
+    "finding": "\"Security\" isn't who anyone in the street says looked, and the title is in the present while every other title is a past event. Fix: name nobody, a past event."
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.confirmed",
+   "field": "short",
+   "before": "police call it a killing",
+   "after": "the body was a killing",
+   "kind": "TRUE",
+   "why": "\"Police\" (the last round's hand short) wasn't always true: a robot or the guard can be the one who looks. The short names nobody, as the host can't, and reads apart from \"dead body found\" at a glance. 277.4 px of 296 at its widest.",
+   "judged": {
+    "line": "security calls it a killing",
+    "rule": "NAMES",
+    "finding": "\"Security\" isn't a street word, \"calls it\" sounds like an opinion rather than something found, and it nearly fills the box. Fix: \"the body was a killing\"."
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.confirmed",
+   "field": "line",
+   "before": "The police checked {about} and confirmed a killing.",
+   "after": "On a closer look, {about} had been killed.",
+   "kind": "PLAIN",
+   "why": "No \"confirmed\", and true whoever looked and whatever the first report said (knocked out, an empty post, someone missing): the person had been killed.",
+   "judged": {
+    "line": "Security checked on {about} and found it was a killing.",
+    "rule": "PLAIN",
+    "finding": "\"Security\" again, \"it\" refers to nothing, and it doesn't say what changed: the person was killed, not knocked out or just missing. Fix: \"On a closer look, {about} had been killed.\""
+   }
+  },
+  {
+   "family": "why/witnessed",
+   "key": "alert.carry.variants.vale",
+   "field": "title",
+   "before": "Popovic's escort seen",
+   "after": "Popovic seen led away",
+   "kind": "PLAIN",
+   "why": "\"Escort\" is the engine's word, and it reads as Popovic's own bodyguard. The title now says what was seen, as the short does.",
+   "judged": {
+    "line": "Popovic's escort seen",
+    "rule": "PLAIN",
+    "finding": "\"Escort\" is the engine's word for the Take's escort, and it reads as Popovic's own bodyguard rather than the Enforcer leading him away. Fix: \"Popovic seen led away\"."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "alert.warned",
+   "field": "line",
+   "before": "{who} told {agent} to drop it. Holster, or it's called in.",
+   "after": "{who} told {agent} to drop the gun.",
+   "kind": "PLAIN",
+   "why": "\"Holster, or it's called in.\" read out a rule of the game. The line says what happened: the guard or an officer told an agent to drop the gun, in the warning's own words (the title's and the short's; the engine calls it the drop-it warning). \"The gun\" keeps it from reading as dropping someone carried.",
+   "judged": {
+    "line": "{who} told {agent} to put the gun away.",
+    "rule": "VOICE",
+    "finding": "The title and the short say \"drop it\" and the line says \"put the gun away\": one warning worded two ways. Fix: one phrase in all three."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "alert.drawn",
+   "field": "title",
+   "before": "Weapon seen",
+   "after": "Gun seen",
+   "kind": "USEFUL",
+   "why": "Two causes the player tells apart (a watcher's gun seen, Alert 2; people's, Alert 1) both read \"Weapon seen\" on the Journal row, and the rest of the block says \"gun\".",
+   "judged": {
+    "line": "Weapon seen",
+    "rule": "USEFUL",
+    "finding": "alert.drawn-people has the same title, so two causes the player must tell apart look the same in the Journal, and \"weapon\" breaks with \"gun\". Fix: \"Gun seen\"."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "alert.drawn-people",
+   "field": "title",
+   "before": "Weapon seen",
+   "after": "People saw a gun",
+   "kind": "VOICE",
+   "why": "Its own title, apart from the watcher's, in the block's word, \"gun\".",
+   "judged": {
+    "line": "Weapon seen",
+    "rule": "VOICE",
+    "finding": "The same title as alert.drawn's, and \"weapon\" where the family says \"gun\". Fix: \"People saw a gun\"."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "alert.fought",
+   "field": "line",
+   "before": "{about} saw the Enforcer coming, drew and called it in.",
+   "after": "{about} saw the Enforcer coming, drew a gun and called it in.",
+   "kind": "PLAIN",
+   "why": "\"Drew\" on its own read like shorthand.",
+   "judged": {
+    "line": "{about} saw the Enforcer coming, drew and called it in.",
+    "rule": "PLAIN",
+    "finding": "\"Drew\" on its own is unclear and reads like shorthand. Fix: \"drew a gun\"."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "police.witness",
+   "field": "line",
+   "before": "{who} saw the shooting and called the police.",
+   "after": "{who} saw the shooting, and the police were called.",
+   "kind": "TRUE",
+   "why": "{who} can be a camera by its place, and a camera calls nobody: someone watching it does. True for a person or a camera now.",
+   "judged": {
+    "line": "{who} saw the shooting and called the police.",
+    "rule": "TRUE",
+    "finding": "\"The entrance camera saw the shooting and called the police\" is false: cameras are closed-circuit and watched by people. Fix: \"…, and the police were called.\""
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "police.shot-at",
+   "field": "line",
+   "before": "{about} was shot at, and people called the police.",
+   "after": "{about} was fired on, and people called the police.",
+   "kind": "VOICE",
+   "why": "\"Fired on\", as its short and the Alert cause say: one phrase for one act.",
+   "judged": {
+    "line": "{about} was shot at, and people called the police.",
+    "rule": "VOICE",
+    "finding": "The short above it says \"someone was fired on\", and alert.violence's shot variant \"was fired on\". Fix: \"was fired on\"."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "police.patrol",
+   "field": "line",
+   "before": "The patrol was shot at {where} and called it in.",
+   "after": "The patrol was fired on {where} and called it in.",
+   "kind": "VOICE",
+   "why": "\"Fired on\", as its own short says.",
+   "judged": {
+    "line": "The patrol was shot at {where} and called it in.",
+    "rule": "VOICE",
+    "finding": "Its own short reads \"the patrol was fired on\", so the hover line words the same act another way. Fix: \"was fired on\"."
+   }
+  },
+  {
+   "family": "why/gunfire",
+   "key": "police.gang",
+   "field": "line",
+   "before": "Nobody saw who fired. Police come, but don't seal the district yet.",
+   "after": "Nobody saw who fired, but the shots brought the police.",
+   "kind": "PLAIN",
+   "why": "\"Police come, but don't seal the district yet\" read out a rule and foretold it (\"yet\"). The line says why the police came, the shots, and the one fact that sets this call apart, that nobody saw who fired; the HUD shows the seal when it starts. The judge had no finding on it."
+  },
+  {
+   "family": "why/gunfire",
+   "key": "police.drawn",
+   "field": "line",
+   "before": "{who} saw {agent} with a gun out and called the police.",
+   "after": "{who} saw {agent} with a gun out, and the police were called.",
+   "kind": "TRUE",
+   "why": "{who} can be a camera, which calls nobody. 80 characters at its widest.",
+   "judged": {
+    "line": "{who} saw {agent} with a gun out and called the police.",
+    "rule": "TRUE",
+    "finding": "{who} can be a camera, and a camera can't call the police. Fix: \"…, and the police were called.\""
+   }
+  },
+  {
+   "family": "why/police",
+   "key": "police.post.variants.unknown",
+   "field": "line",
+   "before": "The guard was missed at his post, so the police are coming.",
+   "after": "Nobody heard from the guard, so police come to his post.",
+   "kind": "PLAIN",
+   "why": "\"Was missed\" reads two ways, and the line didn't say where police go. Not the judge's \"wasn't at his post\": he may be lying at it. \"Nobody heard from the guard\" is true either way and never says check-in, which the cell doesn't know of yet.",
+   "judged": {
+    "line": "The guard was missed at his post, so the police are coming.",
+    "rule": "PLAIN",
+    "finding": "\"Was missed\" can read as \"someone missed him\" or \"he didn't do something\", it drops where police go, and \"the police are coming\" breaks the family's \"police come\". Fix: \"The guard wasn't at his post, so police come to check on it.\""
+   }
+  },
+  {
+   "family": "why/police",
+   "key": "police.cordon",
+   "field": "line",
+   "before": "At Alert 3 the doors lock and police close the district's exits.",
+   "after": "The district is in lockdown: the doors lock and police close its exits.",
+   "kind": "PLAIN",
+   "why": "\"At Alert 3 the doors lock\" was a law of the game. The line says what is happening: the lockdown, the doors and the exits, in its short's tense (the row shows only when the doors lock, and wherever they lock the dial sends police to the exits).",
+   "judged": {
+    "line": "The Alert reached 3, so the doors locked and police are closing the exits.",
+    "rule": "PLAIN",
+    "finding": "It still leans on the Alert number, a rule rather than what happened in the street; it drops \"the district's\" and doesn't match its short's tense. Fix: \"The district is in lockdown: the doors lock and police close its exits.\""
+   }
+  },
+  {
+   "family": "why/police",
+   "key": "police.split",
+   "field": "line",
+   "before": "Popovic is gone, so police close in on whoever is left.",
+   "after": "Popovic is gone, so police close in on the agents still here.",
+   "kind": "NAMES",
+   "why": "\"Whoever is left\" could be anyone in the street; it is the cell's agents still on the block.",
+   "judged": {
+    "line": "Popovic is gone, so police close in on whoever is left.",
+    "rule": "NAMES",
+    "finding": "\"Whoever is left\" could mean anyone in the street, so the player can't tell it means their own agents. Fix: \"the agents still here\"."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.radio",
+   "field": "line",
+   "before": "{who} is radioing it in. It lands in {s} s.",
+   "after": "{who} is radioing it in, and it lands in {s} s.",
+   "kind": "SHORT",
+   "why": "A line is one sentence, and this was two.",
+   "judged": {
+    "line": "{who} is radioing it in. It lands in {s} s.",
+    "rule": "SHORT",
+    "finding": "A line is one sentence; this one is two, so keeping today's words doesn't apply."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.walk",
+   "field": "line",
+   "before": "{who} walks to {to} to report it. It lands in {s} s.",
+   "after": "{who} walks to {to} and reports it in {s} s.",
+   "kind": "SHORT",
+   "why": "A line is one sentence, and this was two. The judge's \"…, landing in {s} s\" left \"landing\" on the walker, and \", and it lands\" went over 80 characters at the widest fills, so: \"and reports it in {s} s\".",
+   "judged": {
+    "line": "{who} walks to {to} to report it. It lands in {s} s.",
+    "rule": "SHORT",
+    "finding": "A line is one sentence; this one is two, so keeping today's words doesn't apply."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.run",
+   "field": "line",
+   "before": "{who} runs to {to} to report it. It lands in {s} s.",
+   "after": "{who} runs to {to} and reports it in {s} s.",
+   "kind": "SHORT",
+   "why": "A line is one sentence, and this was two. The judge's \"…, landing in {s} s\" left \"landing\" on the walker, and \", and it lands\" went over 80 characters at the widest fills, so: \"and reports it in {s} s\".",
+   "judged": {
+    "line": "{who} runs to {to} to report it. It lands in {s} s.",
+    "rule": "SHORT",
+    "finding": "A line is one sentence; this one is two, so keeping today's words doesn't apply."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.camera",
+   "field": "line",
+   "before": "{who} has it on tape. The desk sees it in {s} s.",
+   "after": "{who} has it on tape, and the desk sees it in {s} s.",
+   "kind": "SHORT",
+   "why": "A line is one sentence, and this was two.",
+   "judged": {
+    "line": "{who} has it on tape. The desk sees it in {s} s.",
+    "rule": "SHORT",
+    "finding": "A line is one sentence; this one is two, so keeping today's words doesn't apply."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.robot",
+   "field": "line",
+   "before": "{who} is ringing the desk. It lands in {s} s.",
+   "after": "{who} is ringing the desk, and it lands in {s} s.",
+   "kind": "SHORT",
+   "why": "A line is one sentence, and this was two.",
+   "judged": {
+    "line": "{who} is ringing the desk. It lands in {s} s.",
+    "rule": "SHORT",
+    "finding": "A line is one sentence; this one is two, so keeping today's words doesn't apply."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.screen",
+   "field": "line",
+   "before": "The desk sees {about} is dead in {s} s.",
+   "after": "{about} is dead, and the desk sees it in {s} s.",
+   "kind": "PLAIN",
+   "why": "With the camera's place in it, it read as if the camera goes dead in {s} s; it is already dead, and the desk sees it then.",
+   "judged": {
+    "line": "The desk sees {about} is dead in {s} s.",
+    "rule": "PLAIN",
+    "finding": "It reads as if the camera goes dead in 99 s; the camera is already cut, and the desk sees the blank screen at its next scan. Fix: \"The desk will see the dead screen from {about} in {s} s.\""
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.look",
+   "field": "plate",
+   "before": "Going to look",
+   "after": "Going to look at the body",
+   "kind": "USEFUL",
+   "why": "It didn't say at what. The person goes to look at the body (the one taken down, as the game calls anyone down).",
+   "judged": {
+    "line": "Going to look",
+    "rule": "USEFUL",
+    "finding": "It doesn't say what they are going to look at; the body is what the player needs to know. Fix: \"Going to look at the body\"."
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.look",
+   "field": "line",
+   "before": "{who} is going to look first, then report it.",
+   "after": "{who} is going to look at the body, then report it.",
+   "kind": "USEFUL",
+   "why": "\"Look first\" at what: the body.",
+   "judged": {
+    "line": "{who} is going to look first, then report it.",
+    "rule": "USEFUL",
+    "finding": "\"Look first\" at what? It leaves out the body, the whole cause. Fix: \"…look at the body, then report it.\""
+   }
+  },
+  {
+   "family": "why/on-the-way",
+   "key": "onWay.ways.checkin",
+   "field": "line",
+   "before": "{about} is due to check in. When they don't, the desk knows.",
+   "after": "The desk misses {about}'s check-in in {s} s.",
+   "kind": "PLAIN",
+   "why": "\"When they don't, the desk knows\" told the rule. The line says what happens at that time, as the other ways do (\"it lands in {s} s\"). The host makes no check-in mark today, so it never shows yet.",
+   "judged": {
+    "line": "{about} is down, with a check-in due in {s} s.",
+    "rule": "TRUE",
+    "finding": "It drops the one useful fact, that the desk learns of it. Fix: \"The desk misses {about}'s check-in in {s} s.\""
+   }
+  },
+  {
+   "family": "label/take-control",
+   "key": "less.pop.take-control",
+   "field": "label",
+   "before": "Take control: T",
+   "cut": true,
+   "kind": "USEFUL",
+   "why": "It names a key, against Sky's rule, and no click takes control to name instead: from the map only T does (the ground view, GDD §10 [lab]). It shows just after the player let go, or as the view takes the agent back by itself. Waits on Aster (round 3 asked for the click) and on Latch dropping it in HostDrive.DriveExit; a pop with no word prints its key."
+  }
+ ]
+}

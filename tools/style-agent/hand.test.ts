@@ -67,7 +67,7 @@ describe('guides /17 and /18: lines written by hand (brief 102)', () => {
     const brief = briefsFrom(before()).find(b => b.id === 'bark/summons')!, set = handSet(brief, rounds[0]!);
     expect(set.items.map(i => i.key)).toEqual(brief.items.map(i => i.key));
     const no = set.items.find(i => i.key === 'summon-refused/guard/summon-no-visit')!.fields[0]!.lines;
-    expect(no).toEqual(rounds[0]!.filter(e => e.key === 'summon-refused/guard/summon-no-visit').map(e => e.after));
+    expect(no).toEqual(rounds[0]!.filter(e => e.key === 'summon-refused/guard/summon-no-visit').map(e => e.after!));
     expect(set.items.find(i => i.key === 'summon-refused/guard/summon-came-once')!.fields[0]!.lines[1]).toBe('Not again this shift, Inez.'); // a line nobody edited stays
     expect(() => handSet(brief, [{ ...rounds[0]!.find(e => e.family === 'bark/summons')!, before: 'Not a line of today.' }])).toThrow('is not one of today\'s lines');
   });
@@ -124,7 +124,7 @@ describe('guides /17 and /18: lines written by hand (brief 102)', () => {
       for (const e of es) {
         const row = (text.dialogue as { lines: string[]; hand?: string }[]).find(r => barkKey(r as never) === e.key)!;
         expect(row.hand?.startsWith(HAND_WORDS), e.key).toBe(true);
-        expect(row.lines).toContain(final(n, e.key, e.after)); expect(row.lines).not.toContain(e.before);
+        expect(row.lines).toContain(final(n, e.key, e.after!)); expect(row.lines).not.toContain(e.before);
       }
     });
     // an accepted run that rewrites every hand row: apply holds them all, and writes the same row once its mark is gone
@@ -133,7 +133,7 @@ describe('guides /17 and /18: lines written by hand (brief 102)', () => {
       rounds: [{ set: { items: keys.map(key => ({ key, cut: false, reason: '', fields: [{ id: 'lines', lines: [1, 2, 3, 4].slice(0, (text.dialogue as never[]).find(r => barkKey(r) === key)!['lines' as never]['length']).map(n => `${key} line ${n}.`) }] })) } }] } as unknown as ShortResult;
     const apply = async (t: string) => { const file = join(dir, 'text.json'); writeFileSync(file, t); await applyShort(false, { runs: new Map([[run.brief.id, { run, path: root }]]), file }); return JSON.parse(readFileSync(file, 'utf8')); };
     const held = await apply(raw);
-    rounds.forEach((es, n) => { for (const e of es) expect(held.dialogue.find((x: never) => barkKey(x) === e.key).lines, e.key).toContain(final(n, e.key, e.after)); });
+    rounds.forEach((es, n) => { for (const e of es) expect(held.dialogue.find((x: never) => barkKey(x) === e.key).lines, e.key).toContain(final(n, e.key, e.after!)); });
     // a dialogue row is one line of the file, `{"event":…}` (from guide /22 a why cause carries `hand` too: hand-whys.test.ts)
     const one = keys[0]!, unmarked = raw.split('\n').map(l => l.includes(`"hand":`) && l.trimStart().startsWith('{"event":') && barkKey(JSON.parse(l.trim().replace(/,$/, ''))) === one ? l.replace(/,"hand":"[^"]*"/, '') : l).join('\n');
     expect((await apply(unmarked)).dialogue.find((x: never) => barkKey(x) === one).lines[0]).toBe(`${one} line 1.`);
