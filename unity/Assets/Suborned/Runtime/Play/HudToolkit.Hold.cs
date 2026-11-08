@@ -85,7 +85,7 @@ namespace Suborned.Play
         void HoldPillFrame()
         {
             var h = host; var cam = h.View; bool modal = m.Ended || h.Modal != ModalGate.Modal.None || h.Ring != null || h.Panel != null || h.Loud != null || cam == null;
-            Target t = null; string anchorId = "", text = "", icon = ""; pillPredNow = ""; pillAfterNow = false; bool harm = false, seen = false; float fill = -1f; var faces = new List<int>(); string state = "";
+            Target t = null; string anchorId = "", text = "", icon = ""; pillPredNow = ""; pillAfterNow = false; pillFire = null; /* brief 101 step 6: a shot's offer lays out its "Goes loud" row */ bool harm = false, seen = false; float fill = -1f; var faces = new List<int>(); string state = "";
             if (!modal)
             {
                 var ch = h.Charge;
@@ -93,7 +93,7 @@ namespace Suborned.Play
                 {
                     // Fable's wording row 3-6 (decision 1: the price stays while you hold): one line, its first word swaps: "Hold · …" filling, "Let go · …" full
                     t = ch.T; fill = ch.Progress; state = ch.Ready ? "ready" : "charge"; string head = ch.Ready ? "Let go · " : ch.Fire ? "Right hold · " : "Hold · ";
-                    if (ch.Fire) { var fo = t != null ? h.FireOfferFor(t) : null; text = head + (fo != null ? PillLine(h, fo) : $"Fire at {(t?.Label ?? "")}"); harm = true; icon = "fire"; faces.AddRange(h.FireShooters(t)); } // item 8: the price on the charge too (Trail a hit, Alert)
+                    if (ch.Fire) { var fo = t != null ? h.FireOfferFor(t) : null; text = head + (fo != null ? PillLine(h, fo) : $"Fire at {(t?.Label ?? "")}"); harm = true; icon = "fire"; faces.AddRange(h.FireShooters(t)); pillFire = fo; } // item 8: the price on the charge too (Trail a hit, Alert)
                     else { var r = ch.Plan.Row(ch.Way); var pi = ch.PillI ?? r.I; var o = pi.Order; text = head + PillLine(h, pi); pillPredNow = pi.PredMark; harm = Harmful(o); icon = pi.Lead.Length > 0 ? pi.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""); faces.AddRange(ch.Doers ?? h.DoersOf(ch.Plan, ch.Way)); } // brief 067 C2: a group Board's own pill (the slowest time)
                 }
                 else
@@ -111,7 +111,7 @@ namespace Suborned.Play
                     else if (on != null && h.HoverIntent is { Actionable: true } hi && on.Kind != "op")
                     {
                         state = "offer"; t = on; harm = Harmful(hi.Order); icon = hi.Order.Do == "fire" ? "fire" : hi.Lead.Length > 0 ? hi.Lead : HudModel.AtlasIcon(hi.Order.Do, hi.Order.Approach, "");
-                        text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); if (!h.HoverFire) pillPredNow = hi.PredMark; faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
+                        text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); if (h.HoverFire) pillFire = hi; if (!h.HoverFire) pillPredNow = hi.PredMark; faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
                         pillAfterNow = hi.Order.Do == "drive-car" && hi.Outcome == $"after {host.ValeWord}'s car"; // Glyph 2026-10-26 §3: the yard before Vale's car parks: the caution plate
                     }
                     else if (on != null && h.HoverIntent is { Locked: true } lk && on.Kind != "op")
@@ -132,7 +132,7 @@ namespace Suborned.Play
             // that element, so the order reads pill, marker or disc, camera head (it covered "1:59", the desk's "14" and the disc)
             if (show) { string camKey = t?.Kind == "camera" ? "camera/" + t.Key : anchorId.StartsWith("camera/") ? anchorId : anchorId.StartsWith("camera:") ? "camera/" + anchorId[7..] : null; if (camKey != null) q.y = Mathf.Min(q.y, CameraMarkTop(camKey) - 6f); }
             if (show) q.y = Mathf.Min(q.y, ReticleTop(anchorId.Length > 0 ? anchorId : h.FireIdFor(t)) - 6f); // brief 067 D (Glyph): the pill's tail 6 px above a lock reticle
-            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); pillWas = ("", null); pillQWas = null; return; }
+            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { Show(loudRow, false); CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); pillWas = ("", null); pillQWas = null; return; }
             PillLook(text, icon, harm, faces, seen, fill, state);
             // Glyph 067 E3: a lock that lapses under the cursor turns the locked pill into the offer with a 0.15 s cross-fade (the new pill comes
             // up from the locked one's dimness); F9: a step through the stack (the wheel, Z, Tab) glides the pill's tail to the next thing in 0.12 s
@@ -162,7 +162,7 @@ namespace Suborned.Play
         const float GhostH = 38f, ClockH = 28f;
         /// <summary>The proof reads it: where the Squad / Back to map button is on screen (pixels, origin bottom left), null when hidden.</summary>
         public static Vector2? SquadBtnScreen { get { var b = live?.squadBtn; if (b == null || b.resolvedStyle.display == DisplayStyle.None) return null; var c = b.worldBound.center; var sz = b.panel.visualTree.layout.size; return new Vector2(c.x / sz.x * Screen.width, Screen.height - c.y / sz.y * Screen.height); } }
-        Label squadWord; VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new(); readonly List<Vector2[]> clockArcAt = new();
+        KeyText squadK; VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new(); readonly List<Vector2[]> clockArcAt = new();
         VisualElement dragGhost; readonly List<VisualElement> dragFaces = new();
 
         /// <summary>A ring on the ground (brief 046: drawn in the world, depth-tested, so legs and props in front hide it; HudToolkit.Ground).</summary>
@@ -178,14 +178,13 @@ namespace Suborned.Play
             // the Squad button under the roster column
             if (squadBtn == null)
             {
-                squadBtn = E(root, "s-plate_dark", ColX, ColY + ColH * RosterScale + 8, 86, 30, pick: true); squadBtn.style.alignItems = Align.Center; squadBtn.style.justifyContent = Justify.Center;
-                var sl = L(squadBtn, "verb-name"); sl.text = "Squad"; sl.style.fontSize = 12; sl.style.unityTextAlign = TextAnchor.MiddleCenter;
-                squadWord = sl;
-                squadBtn.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (host.Following) host.BackToMap(); else host.SelectAll(); e.StopPropagation(); } }); // brief 083: in third person this slot is the way back
+                squadBtn = Tab(root, SquadD, "units", out _); squadBtn.style.position = Position.Absolute; squadBtn.style.left = SquadX; squadBtn.style.top = SquadY; // brief 101 step 4: the street tab under the faces (the mock's)
+                squadK = KText(root, 14f, "k-semi"); squadK.Root.style.position = Position.Absolute; squadK.Root.style.left = SquadX + SquadD + 8f; squadK.Root.style.top = SquadY + SquadD / 2f - 11f; squadK.Root.pickingMode = PickingMode.Position; manifest.Add((squadK.Root, "image", () => "squad button word")); // the button's own word (it was inside the old plate): art, as the button
+                foreach (var sb in new[] { squadBtn, squadK.Root }) sb.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { if (host.Following) host.BackToMap(); else host.SelectAll(); e.StopPropagation(); } }); // brief 083: in third person this slot is the way back (the tab and its word)
                 manifest.Add((squadBtn, "image", () => "squad button"));
             }
             Show(squadBtn, on && m.Dock == RosterDock.Left && !h.FollowExiting);
-            { string sw = h.Following ? $"{h.BackToMapWord} · {h.controls.Label(PlayAction.FollowView)}" : "Squad"; if (squadWord.text != sw) { squadWord.text = sw; squadBtn.style.width = h.Following ? 132 : 86; } } // brief 083
+            { bool back = h.Following && squadBtn.style.display != DisplayStyle.None; Show(squadK.Root, back); squadK.Set(back ? $"{h.BackToMapWord} · {h.controls.Label(PlayAction.FollowView)}" : ""); } // brief 083: third person names the way back beside the tab
             int gu = 0, cu = 0;
             if (on && !h.Following && h.View)
             {
@@ -270,13 +269,13 @@ namespace Suborned.Play
             var h = host;
             if (freeBtn == null)
             {
-                freeBtn = E(root, "s-plate_dark", ColX + 92, ColY + ColH * RosterScale + 5, 38, 36, pick: true); // the glyph 4 px clear of plate_dark's rim (10.2 px in)
+                freeBtn = E(root, "s-plate_dark", SquadX + SquadD + 8f, SquadY, 38, 36, pick: true); // the glyph 4 px clear of plate_dark's rim (10.2 px in); beside the Squad tab
                 freeIcon = E(freeBtn, null, 12.5f, 11.5f, 13, 13); // placed: 4 px clear of the rim (10.2 px in)
 
                 freeBtn.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ToggleFree(); e.StopPropagation(); } });
                 manifest.Add((freeBtn, "image", () => "weapons free toggle"));
                 // the word on its own plate_dark (review 9: bare cream text read 1.3:1 on the pale ground)
-                freePlate = PlateDark(root, 30f, 0.3f); freePlate.style.position = Position.Absolute; freePlate.style.left = ColX + 136; freePlate.style.top = ColY + ColH * RosterScale + 8; freePlate.style.paddingLeft = 13; freePlate.style.paddingRight = 13;
+                freePlate = PlateDark(root, 30f, 0.3f); freePlate.style.position = Position.Absolute; freePlate.style.left = SquadX + SquadD + 52f; freePlate.style.top = SquadY + 3f; freePlate.style.paddingLeft = 13; freePlate.style.paddingRight = 13;
                 freeWord = Words(freePlate, 13f); freeWord.style.marginBottom = 1;
                 manifest.Add((freePlate, "line", () => freeWord.text));
             }
@@ -332,7 +331,7 @@ namespace Suborned.Play
             var g = host.Game; IReadOnlyCollection<string> known = null; if (g != null && on && !m.Ended) try { known = g.KnownFaces; } catch (System.Exception) { known = null; }
             for (int k = 0; k < 4; k++)
             {
-                bool show = known != null && System.Linq.Enumerable.Contains(known, Op.Name((OpId)k)) && PortraitScreen(k) is Vector2 && !(colWins[k]?.Under == true && m.Dock == RosterDock.Left); // the tall column: the status slot's sawyou
+                bool show = known != null && System.Linq.Enumerable.Contains(known, Op.Name((OpId)k)) && PortraitScreen(k) is Vector2 && !(colWins[k]?.Street == true && m.Dock == RosterDock.Left); // the faces carry their own badge (FacesFrame)
                 if (knownEls[k] == null) { if (!show) continue; knownEls[k] = E(root, null, 0, 0, 20, 20); Round(knownEls[k], 10); knownEls[k].style.backgroundColor = Ink; Border(knownEls[k], 1.5f, Cream); var ic = E(knownEls[k], null, 2, 2, 16, 16); ic.name = "g"; manifest.Add((knownEls[k], "image", () => "face known badge")); }
                 Show(knownEls[k], show); if (!show) continue;
                 var ps = PortraitScreen(k).Value; var pp = RuntimePanelUtils.ScreenToPanel(root.panel, new Vector2(ps.x, Screen.height - ps.y));

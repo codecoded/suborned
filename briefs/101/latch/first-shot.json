@@ -1,0 +1,54 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Brief 101 steps 4-6, the first shot's aim for a capture: the pinned loud run on seed 3 (tools/game/pins/loud.seed3.json) up to 2:29, then the Enforcer draws (2:29) instead of firing at 2:31; the shot at 2:30 hovers the guard with the Enforcer selected, so the pill is the fire offer a right hold would give and its row is what the street will do (Goes loud).",
+ "start": {
+  "seed": 3
+ },
+ "orders": [
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "run": true
+  },
+  {
+   "tick": 600,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 800,
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol"
+  },
+  {
+   "tick": 1250,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ]
+  },
+  {
+   "tick": 1490,
+   "op": "enforcer",
+   "do": "draw"
+  }
+ ],
+ "until": 1530
+}

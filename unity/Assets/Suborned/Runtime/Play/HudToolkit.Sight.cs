@@ -6,14 +6,14 @@ using UnityEngine.UIElements;
 namespace Suborned.Play
 {
     /// <summary>The cones round (Sky 2026-11-07, playing: "every rival having a cone - dominates the game"; never key-only):
-    ///  · the eye button on the scope's top rim, between the turn buttons (the kit's disc_dark_24 and eye_open, as they are): a click latches what Alt
+    ///  · the eye button on the scope's top rim, between the turn buttons (brief 101 step 5: the street tab, eye_open): a click latches what Alt
     ///    shows of the cones, every learned one in the merged look (HandoverHost.ConesAll); lit turquoise-light with a 1.5 px ring while on;
     ///  · a crew counts once: beside a selected agent two or more learned watchers see now (HandoverHost.SeenBy), a small plate as the window
     ///    kill plate's and the unlock pills' (kit plate_dark, 30 px at slice 0.3, a 14 px glyph): the takedown's "he sees you" eye (eye_open, red) and the count in cream, left of the head, clear of the
     ///    act disc and its seconds on the right. Each watcher keeps its own head cue (the attention cues, the "?"). Sourced colours only; Glyph may restyle.</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement conesBtn, conesIcon; bool? conesLit; static readonly int[] seenDrawn = new int[4];
+        VisualElement conesBtn, conesIcon, conesRing; bool? conesLit; static readonly int[] seenDrawn = new int[4];
         readonly List<(VisualElement root, VisualElement glyph, Label count)> seenMarks = new();
         /// <summary>The proof reads them: whether the eye button is latched, and the counts drawn this frame ("fixer:3").</summary>
         public static bool ConesLatched => live?.host != null && live.host.ConesAll;
@@ -23,9 +23,8 @@ namespace Suborned.Play
 
         void BuildConesButton()
         {
-            var b = E(scope, "s-disc_dark_24", ScopeW / 2f - 15f, -12f, 30f, 30f, pick: true); b.name = "cones-button"; Round(b, 15f);
-            conesIcon = E(b, null, 7f, 7f, 16f, 16f); Icon(conesIcon, "eye_open", Cream);
-            b.RegisterCallback<PointerEnterEvent>(_ => b.style.unityBackgroundImageTintColor = new Color(0.75f, 1f, 1f)); b.RegisterCallback<PointerLeaveEvent>(_ => b.style.unityBackgroundImageTintColor = Color.white);
+            var b = Tab(scope, ScopeTab, "eye_open", out conesIcon); b.name = "cones-button"; Pin(b, ScopeTabAt(ScopeTabAngles[1], ScopeTab)); conesRing = b.Q(className: "e-body");
+            b.RegisterCallback<PointerLeaveEvent>(_ => { if (host.ConesAll) RingColour(conesRing, TurqLight); }); // the hover's ring goes back to the latch's
             b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.ConesAllToggle(); e.StopPropagation(); } });
             conesBtn = b; manifest.Add((b, "image", () => "cones button"));
         }
@@ -33,7 +32,7 @@ namespace Suborned.Play
         /// <summary>Per frame with the pill (between the street marks' reset and their end): the button's state and the seen counts.</summary>
         void SightFrame(bool ended)
         {
-            if (conesBtn != null && conesLit != host.ConesAll) { bool on = host.ConesAll; conesLit = on; Icon(conesIcon, "eye_open", on ? TurqLight : Cream); Border(conesBtn, on ? 1.5f : 0f, TurqLight); }
+            if (conesBtn != null && conesLit != host.ConesAll) { bool on = host.ConesAll; conesLit = on; Icon(conesIcon, "eye_open", on ? TurqLight : Cream); RingColour(conesRing, on ? TurqLight : null); } // latched: the eye and its ring turquoise
             int used = 0; System.Array.Clear(seenDrawn, 0, 4);
             var g = host.Game;
             if (g != null && !ended && !host.Following && marks != null)

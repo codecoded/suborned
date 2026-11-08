@@ -45,7 +45,7 @@ namespace Suborned.Play
                 float t = (now - w.FadeAt) / FadeS; w.Next.style.opacity = Mathf.Clamp01(t);
                 if (t >= 1f) { Bg(w.Portrait, w.Face); Show(w.Next, false); }
             }
-            var tint = any && !s.Selected ? new Color(0.62f, 0.62f, 0.62f) : Color.white; // the others dim while one is selected (the kit's dim look)
+            var tint = any && !s.Selected && !w.Street ? new Color(0.62f, 0.62f, 0.62f) : Color.white; // the others dim while one is selected (the kit's dim look); the street faces don't (the mock: the turquoise ring says it)
             w.Portrait.style.unityBackgroundImageTintColor = tint; w.Next.style.unityBackgroundImageTintColor = tint;
             // hurt: the face shakes 2 px once on the hit
             float ht = now - host.HitAt(i); float dx = ht >= 0f && ht < 0.3f && face is Face.Hurt or Face.BadlyHurt or Face.UnderFire ? 2f * Mathf.Sin(ht * 60f) * (1f - ht / 0.3f) : 0f;
@@ -53,9 +53,9 @@ namespace Suborned.Play
             // the cue layer: redrawn while its state moves
             if (w.CueFace != face) { w.CueFace = face; w.CueSince = host.FaceSince(i); }
             Show(w.Cue, !m.Ended || face == Face.Downed); w.Cue.MarkDirtyRepaint();
-            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended && !w.Under; Show(w.Eye, eye); /* the tall column: the status slot's cone */ if (eye) w.Eye.MarkDirtyRepaint();
+            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended; Show(w.Eye, eye); if (eye) w.Eye.MarkDirtyRepaint();
             // brief 030 (no plate): the armed verb's glyph on the selected portrait
-            int pk = host.Picked; bool armed = !PlateOn && pk >= 0 && pk < 5 && i == m.Agent && s.Selected && m.VerbHas[pk] && !m.Ended && !w.Under; // the tall column: the status slot
+            int pk = host.Picked; bool armed = !PlateOn && pk >= 0 && pk < 5 && i == m.Agent && s.Selected && m.VerbHas[pk] && !m.Ended && !w.Street; // the faces: the act disc (FacesFrame)
             Show(w.Glyph, armed);
             if (armed) { Icon(w.Glyph.Q("g"), ArmedIcon(), Cream); w.Glyph.style.opacity = host.PlateKeysDim ? 0.4f : 1f; }
             // the stance inside the drawn mark when it is not the default (return)

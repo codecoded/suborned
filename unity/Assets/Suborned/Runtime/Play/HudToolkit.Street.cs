@@ -43,7 +43,7 @@ namespace Suborned.Play
             /// <summary>The fill and key classes (k-ink on k-key, k-hot on k-key-ink): an urgent figure turns orange on an ink keyline.</summary>
             public void Look(string fill, string key)
             {
-                foreach (var f in new[] { "k-ink", "k-hot", "k-page" }) Class(Face, f, f == fill);
+                foreach (var f in new[] { "k-ink", "k-hot", "k-page", "k-soft", "k-deep" }) Class(Face, f, f == fill);
                 for (int i = 0; i < Copies.Length; i++) if (!Copies[i].ClassListContains("k-shadow")) { Class(Copies[i], "k-key", key == "k-key"); Class(Copies[i], "k-key-ink", key == "k-key-ink"); }
             }
         }

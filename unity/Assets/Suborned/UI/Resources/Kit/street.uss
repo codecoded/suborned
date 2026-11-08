@@ -23,6 +23,8 @@
 .k-hot { color: var(--book-orange); }
 .k-page { color: var(--book-page); }
 .k-line { color: var(--enamel-line); }
+.k-soft { color: var(--book-soft); }
+.k-deep { color: var(--book-deep); }
 .k-key { color: var(--book-page); }
 .k-key-ink { color: var(--book-ink); }
 .k-shadow { color: var(--street-shadow); }

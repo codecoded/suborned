@@ -84,7 +84,7 @@ describe('the host rows', () => {
     expect(hostGaps({ ...narrow, setup: undefined }, src)).toContain('rings reads SetPaused, held in HandoverHost.cs: its row lacks rings');
   });
   test('the typical changes stay deltas: a host file, the words, a capture tool; a scene builder does not', () => {
-    expect(whatIf(m, [PLAY + 'HostHold.cs']).only).toEqual(['dblClick', 'holdActs', 'r083', 'holdRange']);
+    expect(whatIf(m, [PLAY + 'HostHold.cs']).only).toEqual(['dblClick', 'holdActs', 'r083', 'r101', 'holdRange']); // brief 101 step 6: r101's first shot holds the charge (HostHold.ChargeScale)
     expect(whatIf(m, ['contracts/missions/handover/text.json']).only).toEqual(['done', 'r083']);
     expect(classify(m, 'unity/Assets/Suborned/Editor/World/Review/Flyby.cs')?.run).toBe('none');
     expect(classify(m, 'unity/Assets/Suborned/Editor/World/Play/OldTownPlay.cs')?.run).toBe('full');

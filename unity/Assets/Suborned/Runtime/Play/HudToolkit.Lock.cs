@@ -13,12 +13,14 @@ namespace Suborned.Play
     /// 55 %, a dashed cream ring turning 0.25 turn/s: drawing, walking in, out of range, no line), released (fades, 1.0 → 0.8, 0.25 s). A
     /// target off screen: an edge chip (plate_dark 22 × 52, the lock disc and a pointer turned toward it). A re-target: the old reticle releases
     /// and the new one sets (Sky 2026-10-26, "way too crowded": the 0.25 s hand-off line between them is gone; no line in a fight). The same
-    /// target given again: one 0.25 s pulse. View only.</summary>
+    /// target given again: one 0.25 s pulse. View only.
+    /// Brief 101 step 6 (Glyph's S mocks): the disc goes; the reticle is a crosshair laid on the street (cream on an ink keyline, the mock's), and why it waits is a
+    /// street label under it, never a plate.</summary>
     public sealed partial class HudToolkit
     {
         sealed class LockMark
         {
-            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr, WhyPlate; public Label Why; public Paint Ring; public readonly List<int> Shooters = new();
+            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr, WhyPlate; public Label Why; public KeyText WhyK; public Paint Ring; public readonly List<int> Shooters = new();
             /// <summary>Glyph 067 D3: when each shooter joined the lock (a later one's cameo slides into the row in 0.15 s; the set's own don't).</summary>
             public readonly Dictionary<int, float> Joined = new();
             public float Born = -9f, Gone = -1f, Given = -9f, PulseAt = -9f; public bool Locked, Seen; public Vector2 At; public bool OnScreen;
@@ -36,16 +38,16 @@ namespace Suborned.Play
             var r = new LockMark { Id = id };
             r.Root = E(marks, null, 0, 0, ReticleD, ReticleD + 18f); r.Root.pickingMode = PickingMode.Ignore; r.Root.style.overflow = Overflow.Visible;
             r.Ring = P(r.Root, -12, -12, ReticleD + 24, ReticleD + 24, (p, rc) => ReticleRing(r, p, rc));
-            r.Disc = E(r.Root, "s-disc_dark_24", 0, 0, ReticleD, ReticleD); r.Disc.pickingMode = PickingMode.Ignore;
-            r.Cross = E(r.Disc, null, (ReticleD - 16f) / 2f, (ReticleD - 16f) / 2f, 16, 16); Bg(r.Cross, "overlays/crosshair", Cream);
+            r.Disc = E(r.Root, null, 0, 0, ReticleD, ReticleD); r.Disc.pickingMode = PickingMode.Ignore; r.Disc.style.overflow = Overflow.Visible;
+            r.Cross = P(r.Disc, 0, 0, ReticleD, ReticleD, (p, rc) => KeyedCross(p, rc.center, 8.5f)); // brief 101 step 6: the crosshair on the street, no disc
             r.Faces = E(r.Root, null, 0, ReticleD + 1f, float.NaN, 16); r.Faces.style.flexDirection = FlexDirection.Row; r.Faces.pickingMode = PickingMode.Ignore;
             r.Edge = PlateDark(marks, 22f, 0.3f); r.Edge.style.position = Position.Absolute; r.Edge.style.width = 52; r.Edge.style.flexDirection = FlexDirection.Row; r.Edge.style.alignItems = Align.Center; r.Edge.style.paddingLeft = 7;
             var ed = E(r.Edge, "s-disc_dark_24", w: 16, h: 16); ed.style.flexShrink = 0; Bg(E(ed, null, 3, 3, 10, 10), "overlays/crosshair", Cream);
             r.EdgePtr = E(r.Edge, null, w: 14, h: 14); r.EdgePtr.style.marginLeft = 6; r.EdgePtr.style.flexShrink = 0; Icon(r.EdgePtr, "pointer", Cream);
             manifest.Add((r.Root, "image", () => "lock reticle")); manifest.Add((r.Edge, "image", () => "lock edge chip"));
             // engine 0.35 (the sticky focus): why it waits, one or two words on a plate_dark under the disc (GDD §10: "aiming, walking in, no line")
-            r.WhyPlate = PlateDark(r.Root, 22f, 0.3f); r.WhyPlate.style.position = Position.Absolute; r.WhyPlate.style.top = ReticleD + 4f; r.WhyPlate.style.paddingLeft = 9; r.WhyPlate.style.paddingRight = 9; r.WhyPlate.pickingMode = PickingMode.Ignore;
-            r.Why = Words(r.WhyPlate, 12.5f); r.Why.style.whiteSpace = WhiteSpace.NoWrap; Show(r.WhyPlate, false);
+            r.WhyPlate = E(r.Root); r.WhyPlate.style.position = Position.Absolute; r.WhyPlate.style.top = ReticleD + 4f; r.WhyPlate.pickingMode = PickingMode.Ignore; // brief 101 step 6: a street label, no plate
+            r.WhyK = KText(r.WhyPlate, 13f, "k-semi"); r.Why = r.WhyK.Face; Show(r.WhyPlate, false);
             manifest.Add((r.WhyPlate, "marker", () => r.Why.text)); // a world marker on the focus disc (at most two words), shown at rest in a fight: never the lock pill's kind
             return r;
         }
@@ -101,7 +103,7 @@ namespace Suborned.Play
                     // engine 0.35 (one input, Glyph b-final: "no cameos under it"): the focus disc alone, and why it waits under it
                     bool one = h.OneInput; Show(r.Faces, !one);
                     string why = one && !r.Locked && r.Gone < 0f ? h.FocusWhy(r.Id, r.Shooters) : ""; Show(r.WhyPlate, why.Length > 0);
-                    if (why.Length > 0) { bool pips = false; foreach (var f in m.Fighters) if (f.Id == r.Id) pips = true; r.WhyPlate.style.top = ReticleD + RingPast + 4f + (pips ? PipsH + 4f : 0f); Text(r.Why, why); float ww = float.IsNaN(r.WhyPlate.resolvedStyle.width) ? 80f : r.WhyPlate.resolvedStyle.width; r.WhyPlate.style.left = ReticleD / 2f - ww / 2f; }
+                    if (why.Length > 0) { bool pips = false; foreach (var f in m.Fighters) if (f.Id == r.Id) pips = true; r.WhyPlate.style.top = ReticleD + RingPast + 4f + (pips ? PipsH + 4f : 0f); r.WhyK.Set(why); float ww = float.IsNaN(r.WhyPlate.resolvedStyle.width) ? 80f : r.WhyPlate.resolvedStyle.width; r.WhyPlate.style.left = ReticleD / 2f - ww / 2f; }
                     // the shooters' faces under the disc
                     while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = Cameo(r.Faces, 12f, 2f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -4; }
                     for (int i = 0; i < r.Faces.childCount; i++)
@@ -124,6 +126,18 @@ namespace Suborned.Play
             }
             foreach (var id in reticleGone) { var r = reticles[id]; r.Root.RemoveFromHierarchy(); r.Edge.RemoveFromHierarchy(); manifest.RemoveAll(x => x.e == r.Root || x.e == r.Edge || x.e == r.WhyPlate); reticles.Remove(id); } // Glyph N2: a released reticle leaves the manifest too (it listed a reticle the frame did not draw)
             ReticlesShown = string.Join(" ", bits);
+        }
+
+        /// <summary>Brief 101 step 6 (Glyph's S mock, r2_base.crosshair): a crosshair ring and four ticks, the book's page cream on a 2.2 px ink keyline.</summary>
+        static void KeyedCross(Painter2D p, Vector2 c, float r)
+        {
+            p.lineCap = LineCap.Round;
+            for (int pass = 0; pass < 2; pass++)
+            {
+                p.strokeColor = pass == 0 ? BkInk : StPage; p.lineWidth = pass == 0 ? 4.6f : 2.4f;
+                p.BeginPath(); p.Arc(c, r, Deg(0), Deg(360)); p.Stroke();
+                p.BeginPath(); foreach (var d in new[] { Vector2.up, Vector2.down, Vector2.left, Vector2.right }) { p.MoveTo(c + d * (r - 3.5f)); p.LineTo(c + d * (r + 5.5f)); } p.Stroke();
+            }
         }
 
         /// <summary>The top (panel y) of the reticle over `id` now, +inf when none: the verb pill's tail stands 6 px above it.</summary>

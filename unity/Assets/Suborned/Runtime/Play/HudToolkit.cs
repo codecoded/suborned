@@ -201,7 +201,7 @@ namespace Suborned.Play
         const float EndCardW = 400f, EndCardPad = 30f; // the end card at rest (Debrief opens it to 560)
         sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips, Arm, Car, Rim; public Label Num; public readonly List<VisualElement> PipDots = new();
             /* brief 033 (live portraits) and brief 030 (no plate): the cross-fade layer, the photo's clip, the cue and eye layers, the armed verb's glyph, the stance glyph in the sidearm mark */
-            public VisualElement Next, Clip, Glyph, GunIcon, Status, StatusIcon, Dots; public bool Under; public Paint Cue, Eye, StanceIn; public string Face = ""; public float FadeAt = -10f; public int Index; public HandoverHost.Face CueFace; public float CueSince; }
+            public VisualElement Next, Clip, Glyph, GunIcon, Status, StatusIcon, Dots; public bool Street; public Paint Cue, Eye, StanceIn; public string Face = ""; public float FadeAt = -10f; public int Index; public HandoverHost.Face CueFace; public float CueSince; }
         int rosterHover = -1; readonly VisualElement[] leftTips = new VisualElement[4];
         /// <summary>Brief 018 §6.6 (Glyph r1): the left-behind flag's line on hover (the whole portrait) or Alt: "Left behind", then Fable's fate line.</summary>
         void LeftTip(int i, Window w, HudModel.Slot s)
@@ -282,8 +282,7 @@ namespace Suborned.Play
                 r.Secret = L(r.Row, "panel-sub", 118, 42, 180, 16, true);
             }
             // the roster column (roster_column): portraits under the frame, then the frame, the scrim and pips, the number plate, the rings
-            var tall = TallColumn(); columnTall = tall != null; // brief 046: the picked column art, taller for the icons under each portrait (the kit column if it cannot be built)
-            column = E(root, null, ColX, ColY, 109, ColH); BuildRoster(column, "s-roster_column", 109, ColH, Win, colWins);
+            column = E(root, null, ColX, ColY, 109, ColH); BuildFaces(column, colWins); // brief 101 step 4: the street faces, no tray (HudToolkit.Faces); the row (corner and bottom docks) keeps the kit's frame
             row = E(root, null, 14, 0, 398, 92); BuildRoster(row, "s-roster_row", 398, 92, RowWin, rowWins); // roster_row (corner, bottom)
             for (int i = 0; i < 4; i++) strips[i] = new Strip();
             // the slot strips (slot_strip): x = column right + 4, centred on their window; 228 x 92
@@ -459,7 +458,7 @@ namespace Suborned.Play
                 w.Portrait = E(frame, null, r.x, r.y, r.width, r.height, pick: true);
                 w.Portrait.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.PortraitPress(k, e.shiftKey || e.ctrlKey || e.commandKey); e.StopPropagation(); } });
             }
-            var art = E(frame, columnTall && sprite == "s-roster_column" ? null : sprite, 0, 0, w0, h0); if (columnTall && sprite == "s-roster_column") art.style.backgroundImage = new StyleBackground(Background.FromTexture2D(tallTex));
+            E(frame, sprite, 0, 0, w0, h0);
             for (int i = 0; i < 4; i++)
             {
                 var w = into[i]; var r = wins[i];
@@ -469,7 +468,7 @@ namespace Suborned.Play
                 // health pips) is clipped to the same circle; the key badge sits above all of it at one offset from the centre on every portrait.
                 // Selection: Glyph's inner ring (portrait_ring_inner, inside the photo circle: the art has no room outside the bezel), the turquoise
                 // key badge and the others dimmed; busy is the timer chip.
-                Vector2 c0 = sprite == "s-roster_column" && i < ColumnBezels.Length ? BezelAt(i) : new Vector2(r.x + r.width / 2, r.y + r.height / 2);
+                var c0 = new Vector2(r.x + r.width / 2, r.y + r.height / 2);
                 const float rad = BezelR; var clip = E(frame, null, c0.x - rad, c0.y - rad, 2 * rad, 2 * rad); Round(clip, rad); clip.style.overflow = Overflow.Hidden;
                 w.Portrait.RemoveFromHierarchy(); clip.Add(w.Portrait); w.Portrait.style.left = 0; w.Portrait.style.top = 0; w.Portrait.style.width = 2 * rad; w.Portrait.style.height = 2 * rad;
                 w.Clip = clip; w.Index = i; w.Next = E(clip, null, 0, 0, 2 * rad, 2 * rad); Show(w.Next, false); // brief 033: the next face fades in over the last (0.15 s)
@@ -485,23 +484,19 @@ namespace Suborned.Play
                 w.Car = E(frame, null, c0.x + 13, c0.y - 34, 22, 22); Round(w.Car, 11); Border(w.Car, 1.6f, Color.clear); E(w.Car, null, 4, 4, 14, 14).name = "g"; P(w.Car, 3, 3, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; Show(w.Car, false);
                 w.Rim = E(frame, null, c0.x - BezelR - 2, c0.y - BezelR - 2, 2 * BezelR + 4, 2 * BezelR + 4); Round(w.Rim, BezelR + 2); Border(w.Rim, 2f, Cream); Show(w.Rim, false); // the hover rim (brief 018 §6.6: the left-behind flag's line on hover)
                 int kk = i; w.Portrait.RegisterCallback<PointerEnterEvent>(_ => rosterHover = kk); w.Portrait.RegisterCallback<PointerLeaveEvent>(_ => { if (rosterHover == kk) rosterHover = -1; }); // brief 018 §6.6: the in-car badge, or (Go card up) the left-behind flag, in the top right kept for it
-                bool under = columnTall && sprite == "s-roster_column"; // brief 046 (Sky): no number tabs, no key numbers on the tall column
-                if (!under) { var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter; }
+                { var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter; }
                 // brief 033: the cue layer round the photo (Glyph's shapes, one per state, drawn outside the selection ring) and the attention eye
                 // badge top right; brief 030: the armed verb's glyph bottom right on the selected portrait
                 var wc = w; w.Cue = P(frame, c0.x - 60, c0.y - 60, 120, 120, (p, r) => CuePaint(wc, p)); w.Cue.style.overflow = Overflow.Visible;
                 w.Eye = P(frame, c0.x + 14, c0.y - 50, 34, 24, (p, r) => EyePaint(wc, p));
                 w.Glyph = E(frame, null, c0.x + 18, c0.y + 15, 20, 20); Round(w.Glyph, 10); Border(w.Glyph, 1.6f, TurqLight); w.Glyph.style.backgroundColor = new Color(0.086f, 0.4f, 0.369f); E(w.Glyph, null, 3.4f, 3.4f, 13.2f, 13.2f).name = "g"; Show(w.Glyph, false);
-                if (under) BuildUnder(frame, w, i); // the weapon, status and dots slots under the ring; the steel divider
             }
         }
 
-        /// <summary>The roster column's bezel centres (1x kit px, from the art) and the photo's radius: the cream band's outer edge (38.2 to 38.6) plus
-        /// half a pixel into the chrome, so no cream shows at any edge.</summary>
         /// <summary>The order plate (plate_verbs, 9-sliced): its end bolts span x 16 to 26 at 1x, so the first knob's bezel (inset 4 in its 48 px
         /// element) starts at 31; the plate is as wide again on the right, and tall enough for a row of key numbers under the knobs.</summary>
         public const float PlateW = 248, PlateH = 78, KnobX0 = 28.5f, KnobY = 9.5f; // Glyph round 2: the rebuilt plate is drawn 1:1 at 78 px tall (field y 8.5 to 69.5); both bolt gaps ~8 px
-        static readonly Vector2[] ColumnBezels = { new(54.03f, 65.27f), new(54.09f, 159.25f), new(54.00f, 254.65f), new(53.99f, 348.85f) };
+        /// <summary>The row's photo radius: the cream band's outer edge (38.2 to 38.6) plus half a pixel into the chrome, so no cream shows at any edge.</summary>
         const float BezelR = 39f;
 
         void BuildStep3()
@@ -1070,13 +1065,13 @@ namespace Suborned.Play
                     if (dm != null) Show(dm, s.Down);
                 }
                 Show(w.RingSel, s.Selected); Show(w.RingBusy, s.Busy && !s.Selected);
-                bool inCar = s.InCar, left = s.LeftFate.Length > 0; Show(w.Car, (inCar || left) && !w.Under); // the tall column: the status slot says it (UnderFrame)
+                bool inCar = s.InCar, left = s.LeftFate.Length > 0; Show(w.Car, (inCar || left) && !w.Street); // the faces: the act disc says it (FacesFrame)
                 if (inCar) { w.Car.style.backgroundColor = TurqLight; Icon(w.Car.Q("g"), "car", Ink); Border(w.Car, 1.4f, Ink); } // Glyph r1: a solid cyan disc, a dark glyph (unlike the stance ring)
                 bool capF = !inCar && left && s.LeftFate == "captured"; Show(w.Car.Q("cf"), capF); Show(w.Car.Q("g"), !capF);
                 if (left && !inCar) { w.Car.style.backgroundColor = Ink; if (!capF) Icon(w.Car.Q("g"), "s_moving", Cream); Border(w.Car, 1.6f, s.LeftFate == "captured" ? Red : Cream); } // captured: a red lock on a red rim; walks out: footprints on a cream rim
                 bool tipOn = left && (rosterHover == i || host.Peeking); Show(w.Rim, tipOn); LeftTip(i, w, tipOn ? s : null);
-                Show(w.Arm, s.Armed && !s.Down);
-                if (w.Under) UnderFrame(i, w, s);
+                if (!w.Street) Show(w.Arm, s.Armed && !s.Down); // the faces show their sidearm mark themselves (FacesFrame: drawn, selected or hovered)
+                if (w.Street) FacesFrame(i, w, s); // brief 101 step 4: the act disc, the sidearm mark, the known badge, the label, the × (HudToolkit.Faces)
                 else if (s.Armed && w.Arm.childCount > 0) // brief 030 §5: hollow = holstered (a cream rim on the dark disc), filled = drawn (a turquoise disc, an ink glyph); a watcher's warning pulses with its seconds
                 {
                     int warn = host.WarnS(i); bool pulse = warn >= 0 && Mathf.Repeat(Time.unscaledTime, 0.8f) < 0.4f;
@@ -1086,7 +1081,7 @@ namespace Suborned.Play
                     var wl = w.Arm.Q<Label>("warn"); Show(wl, warn >= 0); if (warn >= 0) Text(wl, $"{warn}");
                 }
                 if (w.Num != null) { Text(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; } // selected: the key badge turns turquoise (no ring: see BuildRoster)
-                if (w.Under) UnderPips(w, s.Hp, s.HpMax); else Pips(w, s.Hp, s.HpMax); LivePips(i, w, s); // brief 033: the lost pip flashes, a badly hurt agent's pips pulse
+                if (w.Street) { FacesPips(w, s.Hp, s.HpMax); FacesLivePips(i, w, s); } else { Pips(w, s.Hp, s.HpMax); LivePips(i, w, s); } // brief 033: the lost pip flashes, a badly hurt agent's pips pulse
                 if (st.Root.style.display == DisplayStyle.None) continue;
                 // compact (Glyph #8): a ready or downed agent is one 34 px line, "SCOUT · READY"; ` shows every strip full
                 if (st.Compact != s.Compact)

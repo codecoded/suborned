@@ -97,7 +97,7 @@ namespace Suborned.Play
             foreach (var c in chipEls) if (Shown(c.Root)) popAvoid.Add(BoxOf(c.Root, 180f, 60f));
             var pr0 = PillRect(); if (pr0.width > 0f) popAvoid.Add(Rect.MinMaxRect(pr0.xMin, pr0.yMin - (stackTab != null && Shown(stackTab) ? 10f : 0f), pr0.xMax, pr0.yMax + TailH - 4f));
             if (lockAlt != null && Shown(lockAlt)) popAvoid.Add(BoxOf(lockAlt, 300f, 26f));
-            string lockSaid = PillState == "lock" && vpillLock != null && vpillLock.style.display != DisplayStyle.None ? vpillLock.text : "";
+            string lockSaid = PillState == "lock" && vpillLockK != null && vpillLockK.Root.style.display != DisplayStyle.None ? vpillLockK.Words : "";
             var pops = new List<Rect>();
             foreach (var (pr, _, pt) in popEls)
             {

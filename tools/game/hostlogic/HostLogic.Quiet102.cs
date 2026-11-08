@@ -94,14 +94,17 @@ public class Quiet102
         Assert.That(h.Talk.Exists(t => t.Speaker == "councillor" && Math.Abs(t.Tick - o.Tick) <= 1), "and Popovic's reply");
     }
 
-    /// <summary>Route B's Mislead: her report is a landing (quiet); the rival's answer is his own.</summary>
-    [Test] public void AMisleadKeepsTheRivalsAnswerNotTheScoutsReport()
+    /// <summary>Route B's Mislead is a scene with a person: the Scout's tip to the rival is said (arrive/mislead, Aster's default); her report after it is a landing (quiet);
+    /// the rival's answer is his own. Nothing else of hers is said on route B.</summary>
+    [Test] public void AMisleadKeepsTheTipAndTheRivalsAnswerNotTheScoutsReport()
     {
         var h = Play("route-b").h; var m = h.Game.Log.Find(l => l.Code == "rivals.misled"); Assert.That(m.Code, Is.EqualTo("rivals.misled"), "route B's Mislead lands");
         Assert.That(h.ConvoPicks, Does.Contain("mislead/rival-4"));
         Assert.That(h.CellLines.Exists(l => l.Moment == "done/mislead" && !l.Said), "her report is kept quiet");
+        Assert.That(h.CellLines.Exists(l => l.Moment == "arrive/mislead" && l.Speaker == "scout" && l.Said), "her tip to the rival is said");
         Assert.That(h.Talk.Exists(t => t.Speaker == "rivals" && Math.Abs(t.Tick - m.Tick) <= 1), "the rival answers");
-        Assert.That(h.Talk.Exists(t => t.Speaker == "scout"), Is.False, "the Scout says nothing on route B");
+        var tips = h.CellLines.Where(l => l.Said && l.Moment == "arrive/mislead").Select(l => l.Text).ToHashSet();
+        Assert.That(h.Talk.Where(t => t.Speaker == "scout").Select(t => t.Text), Is.All.Matches<string>(tips.Contains), "the Scout says only her tip on route B");
     }
 
     /// <summary>An order given by a click: no acknowledgement, the stock "On it." included.</summary>

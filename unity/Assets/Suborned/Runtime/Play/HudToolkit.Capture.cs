@@ -194,7 +194,7 @@ namespace Suborned.Play
             FeedAudit(bad);
             EndCardAudit(bad);
             EndButtonAudit(bad);
-            RosterAlign(bad); // brief 046: the lab's ALIGN rules on the tall column
+            FacesAlign(bad); // brief 101 step 4: the street faces' parts at one offset from each face
             return bad;
         }
 

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using Order = Suborned.Sim.Order;
 using OpId = Suborned.Sim.OpId;
 using Pt = Suborned.Sim.Pt;
@@ -22,6 +24,8 @@ namespace Suborned.Play
         static string J(string x) => (x ?? "").Replace("\\", "/").Replace("\"", "'").Replace("\n", " ");
         static IEnumerator Frames(int n) { for (int i = 0; i < n; i++) yield return null; }
         static Vector2 Sp(HandoverHost h, Vector3 w) { var s = h.View.WorldToScreenPoint(w); return new Vector2(s.x, s.y); }
+        /// <summary>The mouse put at a screen point, its right button down or up (as ProofHold presses it).</summary>
+        static void Btn(Vector2 sp, bool right = false) { if (Mouse.current is not Mouse m) return; var st = new MouseState { position = sp }; if (right) st = st.WithButton(MouseButton.Right, true); InputSystem.QueueStateEvent(m, st); }
         static readonly Regex Secs = new(@"\d+(\.\d+)?\s?s\b"), Pct = new(@"\d+\s?%"), Clock = new(@"\d+:\d\d");
         /// <summary>Words with no hit chance and no seconds in them.</summary>
         static bool Bare(string w) => !Pct.IsMatch(w ?? "") && !Secs.IsMatch(w ?? "");
@@ -86,6 +90,27 @@ namespace Suborned.Play
                 Check("queuedWalk", h.Plan.Count >= 1 && h.Plan.All(p => p.Label is "Walk" or "Run"), $"{ghosts} ({n} given)");
             }
             else Check("queuedWalk", false, "no Scout on the street");
+
+            // 2b · brief 101 step 6, the first shot: the route loud-fight on seed 3 up to 2:29 (its first shot is at 2:31), the Enforcer drawn and selected, a right
+            // hold on the guard, slowed (a shot's price shows only while its hold charges: brief 067 E), pictured part way, then let go early so nothing fires. The
+            // row under the pill says what the street will do (Fable's "Goes loud", the Alert it reaches, police, the seal, the Trail): no odds and no seconds
+            {
+                var pin2 = HandoverHost.SeedPin; HandoverHost.SeedPin = 3;
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; g = h.Game; HandoverHost.SeedPin = pin2;
+                PlayTo(h, Route("loud-fight"), 1490); h.Issue(new Order { Tick = g.Tick, Op = "enforcer", Do = "draw" }); h.RunTo(g.Tick + 20); h.Select(OpId.Enforcer, false);
+                string row = "", words = "";
+                if (h.DrawnAt("guard") is Vector3 gw)
+                {
+                    h.LookAt(gw); yield return Frames(3); var gp = gw + Vector3.up; HandoverHost.PointerWorld = gp; var sp = Sp(h, gp); Btn(sp); yield return Frames(3);
+                    HandoverHost.ChargeScale = 10f; Btn(sp, right: true); yield return new WaitForSecondsRealtime(1.0f);
+                    row = HudToolkit.LoudRowShown; words = HudToolkit.PillWords;
+                    while (HudToolkit.ShotBusy) yield return null; log.Add("r101-first-shot: " + HudToolkit.Shoot(Path.Combine(dir, "r101-first-shot"), "active")); yield return null; while (HudToolkit.ShotBusy) yield return null; // unpaused: a pause drops the charge's look (the pill and its row); the hold is slowed, so nothing fires
+                    HandoverHost.PointerWorld = gp + new Vector3(40f, 0f, 40f); Btn(Sp(h, gp) + new Vector2(300f, 300f)); yield return Frames(3); Btn(Sp(h, gp) + new Vector2(300f, 300f)); yield return Frames(3); // away past the hold's 80 px, then up: cancelled, nothing fires
+                    HandoverHost.ChargeScale = 1f; HandoverHost.PointerWorld = null;
+                }
+                bool wordOk = (h.Text?.StreetLoud ?? "").Length == 0 || row.StartsWith(h.Text.StreetLoud + ":");
+                Check("firstShot", row.Length > 0 && wordOk && Bare(row) && Bare(words) && g.Alert < 2, $"row '{row}'; pill '{words}'; Alert {g.Alert}, {g.Orders.Count(o => o.ok && o.order.Op == "enforcer" && o.order.Do == "fire")} fire orders given");
+            }
 
             // 3 · the loud fight (the route loud-fight on seed 3, as the late-fight row pins it: on seed 0 its entry is seen before the fight): the Scout,
             // Fixer and Tech fire on the response unit at 3:44

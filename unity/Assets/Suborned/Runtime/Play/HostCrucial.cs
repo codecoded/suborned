@@ -25,7 +25,7 @@ namespace Suborned.Play
         /// tops it, since from then the police countdown runs; the lookout watching Popovic's car and our car boxed in rank with the rivals for our car; Popovic's car
         /// lent to us with Popovic out of the Office.</summary>
         public static readonly string[] CrucialOrder = { "hurt-carry", "vale-out", "police", "down", "for-car", "alert", "seen", "target-out", "rival-car", "turned", "body" };
-        static string RankAs(string kind) => kind switch { "refused" => "turned", "lookout" or "boxed" => "for-car", "lent" => "target-out", "hurt" => "down", _ => kind };
+        static string RankAs(string kind) => kind switch { "refused" => "turned", "lookout" or "boxed" or "rivals-follow" => "for-car", "lent" => "target-out", "hurt" => "down", _ => kind };
         /// <summary>Cards waiting to be read, the shown one first; and every crucial card this run, oldest first (the Journal marks them).</summary>
         public readonly List<CrucialCard> CrucialQueue = new(), CrucialLog = new();
         public CrucialCard CrucialNow => CrucialQueue.Count > 0 ? CrucialQueue[0] : null;
@@ -108,6 +108,7 @@ namespace Suborned.Play
             else if (code == "enforcer.warning") { var c = Crucial(Game.Vale == ValeAt.WithEnforcer ? "hurt-carry" : "hurt", code, agent: (int)OpId.Enforcer); c.Face = "portraits/cameo_enforcer_hurt"; c.View = "op/enforcer"; }
             else if (code == "vale.exits") { var c = Crucial("target-out", code, "councillor"); c.Face = "badges/npc_councillor"; c.View = "councillor"; }
             else if (code == "rivals.coming") { var c = Crucial("rival-car", code); c.Face = "badges/signal_rival"; c.View = "car/rivals"; }
+            else if (code == "rivals.follow-car" && BookWordsFile.Get().FeedCards.ContainsKey("rivals-follow")) { var c = Crucial("rivals-follow", code); c.Face = "badges/signal_rival"; c.View = "car/getaway"; } // brief 102 (Aster's default; the Scout no longer says it): the posted three go after our car, Fable's book.feed.cards.rivals-follow; no words yet, no card (never the kind as a title)
             else if (code == "report.confirmed") { var c = Crucial("body", code); c.Icon = "body_out"; }
             else if (code.StartsWith("turn.", StringComparison.Ordinal))
             {

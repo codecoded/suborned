@@ -1,0 +1,93 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "Brief 101 steps 4-6 (the roster, the scope, the street layer; Glyph's S mocks): the real captures beside Glyph's round 2 mocks, the same moments as round 3 (shots-r3.json). Rest and quiet on route G's radio run (the Office front at yaw 210), the seal with police at 2:34.5 on the pinned loud run seed 3, the busiest at 3:47.5 (the final fight, the Scout selected) without and with the pointer on the blocker (security-1, the mock's aim), and the first shot's checkpoint with the pointer on the guard (the Goes-loud row). The 2x rows are the same frames at 3840 x 2160 (panel scale 2) for the crop check.",
+  "defaults": {
+    "hud": true
+  },
+  "shots": [
+    {
+      "name": "t101-rest",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 1450,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "2:25 on route G: at rest"
+    },
+    {
+      "name": "t101-quiet",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 2086,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "3:28.6: a shift guard radios the knocked-out guard in (4 s), our car boxed in"
+    },
+    {
+      "name": "t101-loud",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 1545,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "note": "2:34.5: the first shot raised Alert 2: the seal runs (3:07) and Police coming"
+    },
+    {
+      "name": "t101-busy",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2275,
+      "focus": "car/getaway",
+      "yaw": 0,
+      "select": "scout",
+      "note": "3:47.5, the busiest moment: the final fight, the seal at 1:54, Police coming (1 of 5), our car held"
+    },
+    {
+      "name": "t101-busy-aim",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2275,
+      "focus": "car/getaway",
+      "yaw": 0,
+      "select": "scout",
+      "note": "the same moment, the pointer on the blocker (security-1): the mock's aim",
+      "pointer": [
+        0.5625,
+        0.333
+      ]
+    },
+    {
+      "name": "t101-aim",
+      "tick": 1500,
+      "select": "enforcer",
+      "focus": "guard",
+      "hover": "guard",
+      "note": "2:30 on the loud run seed 3 (the first shot's moment, briefs/101/latch/first-shot.json): the Enforcer drawn, the pointer on the guard: the fire offer and its Goes-loud row",
+      "script": "briefs/101/latch/first-shot.json"
+    },
+    {
+      "name": "t101-rest-2x",
+      "script": "briefs/100/latch/route-g-radio.json",
+      "tick": 1450,
+      "focus": "camera/entrance",
+      "yaw": 2,
+      "size": [
+        3840,
+        2160
+      ],
+      "note": "at rest at 2x: the roster and the scope close up"
+    },
+    {
+      "name": "t101-busy-2x",
+      "script": "tools/game/pins/loud.seed3.json",
+      "tick": 2275,
+      "focus": "car/getaway",
+      "yaw": 0,
+      "select": "scout",
+      "size": [
+        3840,
+        2160
+      ],
+      "note": "the busiest moment at 2x: the roster, the scope and the street layer close up",
+      "pointer": [
+        0.5625,
+        0.333
+      ]
+    }
+  ]
+}

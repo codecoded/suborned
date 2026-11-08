@@ -19,6 +19,7 @@ namespace Suborned.Play
         public static readonly HashSet<string> CellSpeaks = new(StringComparer.Ordinal)
         {
             "arrive/ask", "arrive/pay", "arrive/help", "arrive/pressure", // the Fixer's opener to the person (the approach scenes play it; this path, only for a driven Fixer)
+            "arrive/mislead", // the Scout's false tip to the rival: a scene with a person (brief 102, Aster's default; Fable writes the tips to the bar); her report after it stays quiet
             "done/turn",   // the Fixer's answer to the person's reply in an approach, when no scene says it
             "done/take",   // the Enforcer taking Popovic at his car (Popovic's reply, `taken`, is his own)
             "done/enter",  // the Enforcer bringing Popovic out of the Office

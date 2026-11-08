@@ -1,0 +1,53 @@
+{
+ "method": "the HUD layer alone (the capture's .hud.png), alpha >= 24, at 1920 x 1080: keylines and shadows count; ground marks are world meshes and do not",
+ "build": "0.2.286",
+ "before": "round 3 (0.2.280): steps 1-3 built, the old roster, scope and street",
+ "mock": "Glyph round 2, 1 \u00b7 Street labels (briefs/101/glyph/r2/S-*.png)",
+ "rows": {
+  "rest": {
+   "mock": 2.46,
+   "before": 4.64,
+   "now": 3.04,
+   "shot": "t101-rest",
+   "beforeShot": "t101-rest-b",
+   "mockShot": "S-rest",
+   "what": "At rest: route G, 2:25"
+  },
+  "quiet": {
+   "mock": 3.16,
+   "before": 5.48,
+   "now": 3.86,
+   "shot": "t101-quiet",
+   "beforeShot": "t101-quiet",
+   "mockShot": "S-quiet",
+   "what": "Quiet: route G, 3:28.6, a guard radioing it in, our car boxed in"
+  },
+  "loud": {
+   "mock": 3.52,
+   "before": 5.51,
+   "now": 3.63,
+   "shot": "t101-loud",
+   "beforeShot": "t101-loud",
+   "mockShot": "S-loud",
+   "what": "The seal with police: loud run seed 3, 2:34.5"
+  },
+  "aim": {
+   "mock": 2.94,
+   "before": 4.1,
+   "now": 2.99,
+   "shot": "r101-first-shot",
+   "beforeShot": "t101-aim",
+   "mockShot": "S-aim",
+   "what": "The first shot: the Enforcer drawn, a right hold on the guard (the r101 proof's picture)"
+  },
+  "busy": {
+   "mock": 4.14,
+   "before": 5.54,
+   "now": 4.15,
+   "shot": "t101-busy-aim",
+   "beforeShot": "t101-busy",
+   "mockShot": "S-busy",
+   "what": "The busiest moment: the final fight, 3:47.5, the pointer on the blocker"
+  }
+ }
+}

@@ -27,12 +27,15 @@ namespace Suborned.Play
         public string DoorField = "Door {clock}";
         /// <summary>scenes.conversations.ui: the word beside the actions a conversation opens, and what shows for a voice with no figure.</summary>
         public string ConvNew = "New"; public readonly Dictionary<string, string> ConvVoices = new();
+        /// <summary>Brief 101 step 6 (Fable's less.street.loud, "Goes loud"): the word the first shot's row leads with; "" when the text has none (never the host's own).</summary>
+        public string StreetLoud = "";
 
         void LoadConversations(JNode n)
         {
             var sc = n.Opt("scenes");
             if (sc?.Opt("clip") is JNode cl) { ClipService = S(cl, "service") ?? ClipService; ClipPublic = S(cl, "public") ?? ClipPublic; ClipBoth = S(cl, "both") ?? ClipBoth; }
             if (n.Opt("less")?.Opt("price")?.Opt("fields")?.Opt("door") is JNode df) DoorField = S(df, "text") ?? DoorField;
+            StreetLoud = n.Opt("less")?.Opt("street") is JNode stl ? S(stl, "loud") ?? "" : "";
             if (sc?.Opt("conversations") is not JNode cv) return;
             if (cv.Opt("names") is JNode nm) foreach (var kv in nm.Entries) ConvNames[kv.Key] = kv.Value.Str();
             if (cv.Opt("ui") is JNode ui) { ConvNew = S(ui, "new") ?? ConvNew; if (ui.Opt("voice") is JNode vo) foreach (var kv in vo.Entries) ConvVoices[kv.Key] = kv.Value.Str(); }

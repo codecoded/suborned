@@ -100,6 +100,7 @@ namespace Suborned.Play
             switch (verb)
             {
                 case "mislead":
+                    if (Peek("arrive", "mislead", agent) is string tip && !CellQuiet(agent, "arrive/mislead", tip)) c.Lines.Add((agent, tip)); // brief 102 (Aster's default): a scene with a person: her tip to him opens it (an arrival line alone is history, never a bubble)
                     if (Peek("done", "mislead", agent) is string dn && !CellQuiet(agent, "done/mislead", dn)) c.Lines.Add((agent, dn)); // brief 102: her report is a landing, quiet in play; the rival's answer is his own
                     if (Peek("rivals-misled", null, "rivals") is string rm) c.Lines.Add(("rivals", rm));
                     break;

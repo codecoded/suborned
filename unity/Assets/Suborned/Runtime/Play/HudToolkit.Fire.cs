@@ -115,7 +115,7 @@ namespace Suborned.Play
                     var w = set[i]; if (w?.Arm == null) continue;
                     if (w.Arm.Q<Paint>("firemark") is not Paint fm)
                     {
-                        int k = i; var wk = w; fm = P(w.Arm, -8, -8, 36, 36, (p, r) => FireMarkPaint(p, r, k, wk.Under)); fm.name = "firemark"; if (w.Under) { fm.style.left = -8; fm.style.top = -8; fm.style.width = w.Arm.style.width.value.value + 16; fm.style.height = w.Arm.style.height.value.value + 16; }
+                        int k = i; var wk = w; fm = P(w.Arm, -8, -8, 36, 36, (p, r) => FireMarkPaint(p, r, k, wk.Street)); fm.name = "firemark"; if (w.Street) { fm.style.left = -8; fm.style.top = -8; fm.style.width = w.Arm.style.width.value.value + 16; fm.style.height = w.Arm.style.height.value.value + 16; }
                     }
                     var fs = host.FireNow[i]; bool on = live && fs.Firing; Show(fm, on); if (on) fm.MarkDirtyRepaint();
                 }
