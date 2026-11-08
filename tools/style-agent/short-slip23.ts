@@ -3,7 +3,8 @@ import type { Field, ShortBrief, ShortItem } from './short-types';
 /** Guide /23 (brief 101, Glyph's round 3, Sky's yes on 2026-11-09; Aster's two questions for Fable): two families for a hand run only, since no run of the loop writes
  *  these words. Inez's card after the Listen becomes a slip on her: each learned row's label word (Debt, Secret) is drawn as its kit icon and the rest of the row shows
  *  as written; each way it opened is a capsule you click, its act's word (Help, Pressure) then the rest of the row. And the pop over an agent when control of them ends,
- *  which names a key ("Take control: T") against Sky's rule that nothing is key-only. */
+ *  which names a key ("Take control: T") against Sky's rule that nothing is key-only. That family is retired (Fable, 2026-11-09): Latch dropped the pop in 0.2.290 and
+ *  its word left text.json, so the family is built only from a text that still has the word, which is its one run's archive. */
 const label = (words: number, chars: number, form: Field['form'] = 'label'): Field => ({ id: 'label', form, words, chars, count: 1, fills: [], keep: [], patterns: [] });
 /** The names a card row may say mid-sentence: the scenes' own (text.json scenes.conversations.names; hand-whys-2.test.ts holds them equal), which the code checks'
  *  list of the game's names doesn't carry (it is the barks' and the HUD's: only Inez and Popovic are named there). */
@@ -26,11 +27,12 @@ export function slipBriefs23(text: any): ShortBrief[] {
   if (!conv || conv.learned.length !== 2 || conv.opens.length !== 2) throw new Error('scenes.conversations listen-inez: not the card guide /23 briefs (two learned rows, two ways)');
   const rows = ROWS.map(([part, i, where, tells]): ShortItem => ({ key: `scenes.conversations.listen-inez.${part}.${i}`, where, tells, speaker: null, fields: [label(6, 44, 'line')], // a card row is a sentence or two, a capital and a full stop (CardLine: 6 words, 44 characters)
     current: { label: [conv[part][i]!] }, stays: 'The slip draws it (Glyph\'s round 3); Sky agreed the card\'s words (briefs/085/fable/approved.json).' }));
+  const pop = text.less.pop['take-control'] as string | undefined; // retired: no word, no family (its run rebuilds from its archive, which has it)
   return [
     { id: 'label/inez-slip', kind: 'label', title: 'Inez\'s card after the Listen, as a slip on her (Glyph\'s round 3)', items: rows,
       context: 'Inez\'s card after the Listen (brief 085\'s look C; Sky agreed its words on 2026-11-01). Glyph\'s round 3 (brief 101, Sky\'s yes 2026-11-09) puts it on her as a slip of the book\'s cream page on a fine stem to her head, in 15 px type, her face at its corner and her name over the rows; it shows for its read time, and off screen it waits for her. Each learned row\'s label word, the part before its colon, becomes its kit icon (Debt, Secret), and the rest of the row follows as written. Each way it opened is a capsule you click, its act\'s word (Help, Pressure) then the rest of its row, after "New". The label word stays in the text: today\'s card, the book and the Journal show it as a word, and the host draws the icon from it. A row is at most 6 words and 44 characters, the label word and all (conversations.schema.ts CardLine).' },
-    { id: 'label/take-control', kind: 'label', title: 'The pop when control of an agent ends', items: [{ key: 'less.pop.take-control', where: 'a pop: an icon and at most three words over the agent, for 2 s', tells: POP,
-      speaker: null, fields: [label(3, 24)], current: { label: [text.less.pop['take-control'] as string] }, stays: null }],
-      context: 'The pops (less.pop): an icon and at most three words, for 2 s, over what they are about. Brief 101\'s round 3, which Sky said yes to on 2026-11-09, asks Fable for this one: the "Take control: T" pop names the click, not a key. A pop the host has no word for prints its key, so a pop that goes is the host\'s to drop.' },
+    ...(pop === undefined ? [] : [{ id: 'label/take-control', kind: 'label' as const, title: 'The pop when control of an agent ends', items: [{ key: 'less.pop.take-control', where: 'a pop: an icon and at most three words over the agent, for 2 s', tells: POP,
+      speaker: null, fields: [label(3, 24)], current: { label: [pop] }, stays: null }],
+      context: 'The pops (less.pop): an icon and at most three words, for 2 s, over what they are about. Brief 101\'s round 3, which Sky said yes to on 2026-11-09, asks Fable for this one: the "Take control: T" pop names the click, not a key. A pop the host has no word for prints its key, so a pop that goes is the host\'s to drop.' }]),
   ];
 }

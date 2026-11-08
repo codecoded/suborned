@@ -147,3 +147,12 @@ For Latch, the label is the part before ": " (Debt, Secret; Help, Pressure). It 
 - **`apply`** with Aster's restore list, run for real on a copy: `text.json` byte for byte. The why units it holds are the four causes from round 1 and the eight hand ways.
 - **A side effect to know:** a marked cause is left out of writer runs whole, so the shorts of the 14 causes marked this round are frozen too. A later lozenge round writes them by hand, or clears a mark first.
 - **Scratch:** `out/scratch/fable/why-lines/` (the edits, the checks, the logs).
+
+## 2026-11-09, after 0.2.290: the dead pops cut, the guard's no-visit lines
+
+- **Cut from `text.json`:** `less.pop.take-control` ("Take control: T"), now that Latch has dropped its `PopKey` (0.2.290, 53a24e5b3). Also `less.pop.let-go` ("Map view: T"), which nothing had popped since brief 083 (50cfe9fa8). Sky's take-control button uses `actions.drive.label` "Take control" and `actions.drive.ways.release` "Back to map", which stay as they are.
+- **The `label/take-control` family is retired:** `short-slip23.ts` builds it only from a text that still has the word, so its one run (`2026-11-08T20-08-41.491Z-label-take-control`) still rebuilds from its archive. `hand-whys-2.json` says the cut landed. `hand-whys-2.test.ts` now checks the word is gone and that no file in `Runtime/Play` pops either key, since a pop with no word prints its key.
+- **The guard's no-visit lines**, now true wherever Inez stands (the record and every case are in `briefs/102/fable/hand-barks-3.json`):
+  - "Fetch Inez? What good would that do you?" → "Inez? What good would that do you?"
+  - "Inez has her tables, and I have my door." → "Inez can't get away. Not on a working day."
+- **For Keel (the rules, not changed):** the turned guard's Call can never be taken in the Handover, yet the panel and the Fixer's click still offer it. `SummonRefusal` reads his tie before anything else, so it answers no-visit wherever Inez is, even beside him, and also with an alarm up or after he saw the cell's violence.

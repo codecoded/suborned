@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { WHY_HAND } from '../../contracts/missions/handover/why.schema.ts';
@@ -22,13 +22,14 @@ const at = (t: { why: Record<string, unknown> }, key: string, field: string) => 
 const unit = (t: any, key: string) => { const p = key.split('.'); return p[0] === 'onWay' ? t.why.onWay.ways[p[2]!] : t.why[p[0]!][p[1]!]; };
 /** The causes round 1 marked (briefs/101/fable/hand-whys.json): before this round they were marked already. */
 const ROUND1 = new Set(['alert.down', 'alert.woken', 'alert.confirmed', 'alert.warned']);
-/** text.json as it stood before this round: each line back at its field, and the marks this round added gone. */
+/** text.json as it stood before this round: each line back at its field, the marks this round added gone, and the take-control pop's word back (cut 2026-11-09). */
 const before = () => {
   const t = structuredClone(text);
   for (const e of [...why].reverse()) {
     const p = whyPath(e.key, e.field!, t.why); let o = t.why; for (const s of p.slice(0, -1)) o = o[s]; o[p.at(-1)!] = e.before;
     if (!ROUND1.has(e.key.split('.').slice(0, 2).join('.'))) delete unit(t, e.key).hand;
   }
+  t.less.pop['take-control'] ??= cut.before;
   return t;
 };
 const briefsFrom = (t: unknown, version: 22 | 23, hand: boolean) => { const read = readerFor(root); return buildShortBriefs(f => f === TEXT_FILE ? JSON.stringify(t) : read(f), gddNames(root), version, hand); };
@@ -54,9 +55,10 @@ describe('guide /23: the why block\'s titles and lines by hand (brief 101)', () 
     for (const b of loadShortBriefs(root, 23).filter(x => x.kind === 'why' && !['why/on-the-way', 'why/words', 'why/places'].includes(x.id)))
       for (const i of b.items) expect(i.fields.map(f => f.id), i.key).toEqual(['short']); // a writer run writes the shorts only, as at /19
   });
-  test('the two hand families from Glyph\'s round 3 are in a /23 hand run only', () => {
+  test('the two hand families from Glyph\'s round 3 are in a /23 hand run only; the take-control pop\'s, retired with its word, only from a text that has it', () => {
     const has = (bs: { id: string }[]) => ['label/inez-slip', 'label/take-control'].map(id => bs.some(b => b.id === id));
-    expect(has(loadShortBriefs(root, 23, true))).toEqual([true, true]);
+    expect(has(briefsFrom(before(), 23, true))).toEqual([true, true]); // the text its run read: its archive rebuilds it
+    expect(has(loadShortBriefs(root, 23, true))).toEqual([true, false]);
     expect(has(loadShortBriefs(root, 23))).toEqual([false, false]);
     expect(has(loadShortBriefs(root, 22, true))).toEqual([false, false]);
   });
@@ -94,12 +96,16 @@ describe('guide /23: the why block\'s titles and lines by hand (brief 101)', () 
     const written = await apply(unmarked);
     expect(at(written, 'onWay.ways.checkin', 'line')).toBe('A test line.'); expect(at(written, 'police.gang', 'line')).toBe(at(text, 'police.gang', 'line'));
   });
-  test('the take-control pop: cut by hand, and its word stays while the host still pops it (a pop with no word prints its key)', () => {
+  test('the take-control pop: cut by hand, its word gone once the host stopped popping it (0.2.290), with the let-go pop\'s, which nothing popped', () => {
     expect([cut.key, cut.family, cut.after]).toEqual(['less.pop.take-control', 'label/take-control', undefined]);
-    const set = handSet(loadShortBriefs(root, 23, true).find(b => b.id === 'label/take-control')!, [cut]);
+    const set = handSet(briefsFrom(before(), 23, true).find(b => b.id === 'label/take-control')!, [cut]);
     expect(set.items).toEqual([{ key: 'less.pop.take-control', cut: true, reason: cut.why, fields: [{ id: 'label', lines: [] }] }]);
-    const pops = readFileSync(join(root, 'unity/Assets/Suborned/Runtime/Play/HostDrive.cs'), 'utf8').includes('PopKey("take-control"');
-    if (pops) expect(text.less.pop['take-control'], 'the host still pops it: its word stays until Latch drops PopKey("take-control"), then Fable removes it').toBeTruthy();
+    expect([text.less.pop['take-control'], text.less.pop['let-go']]).toEqual([undefined, undefined]);
+    const play = join(root, 'unity/Assets/Suborned/Runtime/Play'); // a pop with no word prints its key, so a host that pops either again needs its word back
+    const pops = (existsSync(play) ? readdirSync(play) : []).filter(f => f.endsWith('.cs')).flatMap(f => {
+      const src = readFileSync(join(play, f), 'utf8'); return ['take-control', 'let-go'].filter(k => src.includes(`PopKey("${k}"`)).map(k => `${f} pops ${k}`);
+    });
+    expect(pops).toEqual([]);
   });
   test('Inez\'s slip: each row\'s label word is the part before its colon, which the slip draws as its icon or its capsule', () => {
     const c = (text.scenes.conversations.items as { id: string; learned: string[]; opens: string[] }[]).find(x => x.id === 'listen-inez')!;

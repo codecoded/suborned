@@ -29,7 +29,8 @@ const HEALTH = HELD('\\{n\\} health', 'the health left shows live as "{n} health
 
 type Card = [kind: string, tells: string, title: Fill[], line: Fill[] | null, held?: Pattern[], also?: string];
 
-/** `hand`: a hand run's families (from guide /23 two more, which no writer run has: Inez's slip and the take-control pop, short-slip23.ts). */
+/** `hand`: a hand run's families (from guide /23 two more, which no writer run has: Inez's slip and the take-control pop, short-slip23.ts; the pop's family is retired
+ *  with its word, so only its run's archive builds it). */
 export function labelBriefs(text: any, v: ShortGuideVersion, hand = false): ShortBrief[] {
   const cards = text.book.feed.cards as Record<string, { title: string; line?: string }>, timeline = text.briefing.timeline as { at: string; label: string; short: string; known: boolean }[];
   const cell = Object.values(text.book.cell.name as Record<string, string>).sort((a, b) => b.length - a.length)[0]!;

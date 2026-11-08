@@ -1,0 +1,24 @@
+{
+ "schema": "suborned.hand-barks/1",
+ "status": "In text.json as Fable's hand edits: the row carries `hand`, its mark naming both rounds, so no run of the style loop replaces it (guide /17). Not scored. A judge run needs Sky's approval, and the family's no-visit tells (short-barks.ts NO_VISIT_17) don't say where Inez can stand, so a judge couldn't check what this round fixes. Instead, each line was read in every case below, before each of Inez's two replies.",
+ "by": "Fable (dialogue designer), by hand",
+ "why": "Aster, 2026-11-09 (brief 101's round, to brief 102's bar): the guard's no-visit lines play when Inez stands right beside him, and \"Fetch Inez?\" makes no sense there. When they play: the Fixer's Call on the turned guard is refused summon-no-visit whenever he is on his feet, because the engine reads his tie first (sim GameOrders.cs SummonRefusal; rulebook summon: a visit is modelled only for a lover with a post, so Inez's is refused). The panel and the Fixer's click on a turned contact offer that Call (HandoverHost.cs). So his line plays at his door with Inez out of earshot at the café, and beside her at the café on her own call, where she hears him and replies (HostFeed.cs TieHears: both on the street, within 13 m). It also plays on his walk there or back, after he comes round, with an alarm up, whatever he saw, and with Inez on her round, held or down. A line must hold in all of them: no word on where either of them stands, and nothing that needs her to be fine. The host picks his line and hers apart (PlayText.Pick), so each of his lines must also lead into each of hers.",
+ "edits": [
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-no-visit",
+   "before": "Fetch Inez? What good would that do you?",
+   "after": "Inez? What good would that do you?",
+   "kind": "TRUE",
+   "why": "\"Fetch\" puts her somewhere else, and she can be beside him. The rest is true in every case: the call asks for her, and bringing her over would do the Fixer no good, which is the call's real outcome in his words. It also leads into her replies: \"Me? And who'd mind the café?\", \"I can't leave, dear. I need every tip I get.\""
+  },
+  {
+   "family": "bark/summons",
+   "key": "summon-refused/guard/summon-no-visit",
+   "before": "Inez has her tables, and I have my door.",
+   "after": "Inez can't get away. Not on a working day.",
+   "kind": "TRUE",
+   "why": "\"I have my door\" is false whenever he's away from it: beside her at the café on her call, on the walk there or back, or after he comes round. \"Her tables\" is false when she's held or down. The real reason, in his words: she can't leave her work. That holds wherever either of them stands, and gives nothing of the two of them away to a cell that turned him by Help. Before her \"I can't leave, dear\" she agrees and adds her own reason."
+  }
+ ]
+}
