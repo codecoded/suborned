@@ -5,7 +5,7 @@ import { describe, expect, test } from 'bun:test';
 import { selectCover } from '../cover/select';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { buildProvisional, buildSite, optionsOfSite, PROVISIONAL_FILE, SITE_FILE, sourceOfSite } from './site';
+import { buildProvisional, buildSite, GAPS_FILE, optionsOfSite, PROVISIONAL_FILE, SITE_FILE, sourceOfSite } from './site';
 import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 
@@ -29,7 +29,9 @@ describe('sim/data/handover.site.json', () => {
   const src = sourceOfSite();
   const present = existsSync(join(root, src.people));
   test.skipIf(!present)(`is what tools/sim/site.ts makes from the plan, the civic block, mission.json and ${src.people} today (bun run sim:site)`, () => {
-    expect(readFileSync(join(root, SITE_FILE), 'utf8')).toBe(buildSite(src, optionsOfSite()).json);
+    const built = buildSite(src, optionsOfSite());
+    expect(readFileSync(join(root, SITE_FILE), 'utf8')).toBe(built.json);
+    expect(readFileSync(join(root, GAPS_FILE), 'utf8')).toBe(built.gaps); // engine 0.49.0: the zone-wide gap check's list, from the same grid
   });
   test.skipIf(!present)('sim/data/handover.people.json comes from the same people file', () => {
     expect(readFileSync(join(root, PEOPLE_OUT), 'utf8')).toBe(buildPeople(src));

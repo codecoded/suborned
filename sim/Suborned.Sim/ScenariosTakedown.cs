@@ -273,7 +273,7 @@ namespace Suborned.Sim
                 r.Body(Enf, "restrain", "guard"); r.Done(Enf);
                 r.Is(b.Restrained, "tied");
                 r.Body(Enf, "carry", "guard"); r.Done(Enf);
-                r.To(r.SendTo(Enf, ServiceDoor));
+                r.To(r.SendTo(Enf, ServiceDoor)); r.Until(() => r.Op(Enf).Walk == null, T(30)); // engine 0.49.0: there when he is (carrying, his walk waits for his body), not when the walk's clock says
                 r.Body(Enf, "stash", ServiceDoorId);
                 r.Eq(r.Op(Enf).BusyEnd - g.Tick, T(g.R.StashDoorS), "a service door: 10 s");
                 r.Done(Enf);

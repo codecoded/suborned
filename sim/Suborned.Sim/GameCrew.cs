@@ -330,7 +330,7 @@ namespace Suborned.Sim
             {
                 bool toSpot = m.Goal == "spot" && m.SpotStand == st.Id;
                 h.Present = true;
-                if (toSpot) { h.Run = m.Walk; h.RunStart = m.WalkStart; h.Speed = m.Speed; h.At = h.Home = m.Walk!.End; }
+                if (toSpot) { h.Speed = m.Speed; h.At = where; h.Home = m.Walk!.End; MoveToFight(h, h.Home); } // engine 0.50.0 (L9): he walks on to his spot from where he stands (keeping the crew's walk dropped his body's lay: route-a-pressure #2 at people=64, rival-2 80 cm at 3:19.7)
                 else { h.At = where; h.Home = spot; MoveToFight(h, spot); }
             }
             else // posted (a spot, the lookout's post, a misled watch, the target's car, the front) or talking: he lurks where he stands, or walks to his spot
@@ -357,7 +357,7 @@ namespace Suborned.Sim
             var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
             var free = ClearStop(h.Id, b); if (free != b) { if (h.Home == to) h.Home = free; b = free; } // engine 0.36.0 (fight.spacing): his stand or spot is taken: the free place beside it is his stand now
             var route = RouteRoundHold(a, b) ?? Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
-            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; h.Why = "post"; h.Closing = false; if (h.Run.Length == 0) h.Run = null;
+            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; h.Why = "post"; h.Closing = false; CommitEnd(h.Gun); if (h.Run.Length == 0) h.Run = null; // engine 0.50.0: a walk to his post spends a commitment
         }
         /// <summary>F6: a rider steps out at the fight's stand (or a member still on foot when the fight takes him): his body joins the fight, walking
         /// to his spot. False when there is no fight for him.</summary>

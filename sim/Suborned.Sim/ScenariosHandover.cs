@@ -318,7 +318,7 @@ namespace Suborned.Sim
                 r.Is(d.Route.Contains("waitress-pulls-guard-away") && d.Route.Contains("entrance-camera-looped"), "the route summary: Inez pulls the guard away, the camera is looped");
             }, NoCrew());
 
-            Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; the cell downs the response unit, then breaks the rival crew before Vale comes out (engine 0.34.0); success. The Enforcer hit, Raised.", r =>
+            Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; the cell downs the response unit, then breaks the rival crew before Vale comes out (engine 0.34.0); success. Engine 0.49.0: the unit is down before the car goes (its second officer falls as the cell covers Vale's walk), and the rival car across the way out is blown up before the Go. The Enforcer hit, Raised.", r =>
             {
                 var g = r.G;
                 // brief 031: the Enforcer no longer waits at the Office approach while the Tech works (the guard, the entrance camera and the
@@ -343,8 +343,7 @@ namespace Suborned.Sim
                 // before Vale comes out; alone, the Enforcer walks into two officers and goes down. The cell covers the exit.
                 // posts beside the Office approach, which the unit crosses on its way to the service lane: they meet it before Vale comes out
                 r.To(Max(r.SendTo(Scout, S11Post), r.SendTo(Fixer, S11Post + new Pt(-250, 0)), r.SendTo(Tech, S11Post + new Pt(0, -250))));
-                r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Scout, Fixer, Tech);
-                r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
+                r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Scout, Fixer, Tech); // engine 0.49.0: on today's walks the second officer goes down a few seconds after Vale comes out, as the cell covers his walk to the car (checked below)
                 // engine 0.34.0 (M067-B1, brief 067 K): the rivals drawn by the guard fight stand on Rocket Lane by the Office front from 2:41.5; at
                 // the cell's 1.8 m/s the three were at their posts 17 s before Vale came out with nothing to do, and the four pressing the
                 // Enforcer as he walked Vale to the car downed him by one hit (3:33.5; 0.33.1 left him at 1 health). They go at the rivals once the
@@ -356,6 +355,7 @@ namespace Suborned.Sim
                 int bay = r.SendTo(Enf, g.Walk.NearestFree(r.Stand("d:Getaway bay") + new Pt(0, -160)) ?? r.Stand("d:Getaway bay")); // engine 0.33.1 (car.footprint): to its road-side door (0.33.0 walked him into the car's middle; at the kerb-side door the pressing three down him first)
                 r.Engage(r.CityGunmen, () => g.Tick >= bay, (bay - g.Tick) / Game.Hz + 1, new[] { Scout, Fixer, Tech }, false);
                 r.To(Math.Max(bay, g.Tick));
+                r.Is(g.SecurityDown, "the cell downs the response unit before the car goes"); if (g.GetawayBoxers().Contains("car:rivals")) r.Engage(() => g.GetawayBoxers().Contains("car:rivals") ? new List<string> { "car:rivals" } : new List<string>(), () => !g.GetawayBoxers().Contains("car:rivals"), 60, new[] { Scout, Fixer, Tech }, false); // engine 0.49.0: the rival car across our way out (brief 096, car.box: it boxes our car in on arrival) is blown up before the Go, as a player clears it (the plans' blow-a); on 0.48.0's walks the fight ended after its box had gone
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "the loud front wins");
                 r.Is(g.EnforcerHealth < g.R.HealthEnforcer, "the Enforcer was hit");

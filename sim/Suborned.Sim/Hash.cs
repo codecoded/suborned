@@ -40,6 +40,7 @@ namespace Suborned.Sim
             if (g.Trig || g.TrigTap || g.TrigForce || g.TrigT.Length > 0) h.S("trig").Z(g.Trig).Z(g.TrigTap).Z(g.TrigForce).S(g.TrigT); // tuning.md §11 (engine 0.17.0): only a trigger used adds bytes
             if (g.FollowBy.Length > 0) h.S("follow").S(g.FollowBy); // likewise a follower
             if (g.StandDown >= 0) h.S("standdown").I(g.StandDown); // tuning.md §14 (engine 0.19.0): only a stand-down adds bytes
+            if (g.Commit.Length > 0) h.S("commit").S(g.Commit).P(g.CommitAt).S(g.CommitCover); // engine 0.50.0 (fight.cover): only a fighter committed to a move out of a line adds bytes
             if (g.LockAsk.Length > 0) h.S("lockask").S(g.LockAskBy).S(g.LockAsk).Z(g.LockAskForce); // engine 0.18.0: a press waiting on a lock whose target may fall this tick
             for (int k = 0; k < 4; k++) // tuning.md §12.2: an operative's last shot on this one, only while live (within lineLapse) and not already ShotBy/ShotByTick
             {
@@ -84,7 +85,8 @@ namespace Suborned.Sim
                 if (op.Driven) h.S("drive").Z(op.DriveTo.HasValue).P(op.DriveTo ?? default).Z(op.DriveRun).Z(op.DriveSpan).Z(op.Running).Z(op.DriveMoved).I(op.Face).I(op.DriveBudget).I(op.DrivePush).Z(op.DriveResume.HasValue).P(op.DriveResume ?? default).Z(op.DriveResumeRun); // brief 025: only a driven operative adds bytes
                 if (op.RanLast != Game.RunsNow(op)) h.S("ran").Z(op.RanLast); // tuning.md §10.2 settle: only a run ended since the last fight tick adds bytes
                 if (op.CloseSpent) h.S("spent"); // engine 0.15.0 (tuning.md §8.2 rule 4): only a spent walk-in adds bytes
-                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); /* engine 0.23.0: only a person act walking in adds bytes */ if (op.Spot != null && (ReferenceEquals(op.Spot.For, op.Act) || ReferenceEquals(op.Spot.For, op.Busy))) h.S("spot").P(op.Spot.At).S(op.Spot.Chair).I(op.Spot.Chose); // engine 0.39.0
+                if (op.PlacedAt.HasValue) h.S("placed").P(op.PlacedAt.Value); // engine 0.49.0: where the player put him
+                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); /* engine 0.23.0: only a person act walking in adds bytes */ if (op.Spot != null && (ReferenceEquals(op.Spot.For, op.Act) || ReferenceEquals(op.Spot.For, op.Busy))) h.S("spot").P(op.Spot.At).S(op.Spot.Chair).I(op.Spot.Chose).P(op.Spot.Stand).I(op.Spot.Until); // engine 0.39.0; 0.49.0: its free ground and until when it stands
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
                 Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }

@@ -1,7 +1,8 @@
 """Brief 097 final pass (Vela): ShrubMound's testbed planting. The street kind `planter-bed:shrub` (capstone-rules.ts `shrub`) draws a 0.95 x 0.99 m cushion; this
 cuts that patch from the testbed's own bed planting (CivicBedPlanting_office-west in the 077 root: the 077 leaf, petal and soil cards, vertex colour as albedo), sets it
 on the ground at the old piece's height, and adds it to the extra root as a rebuild of ShrubMound (it joins the catalogue as ShrubMound_TB). Every LOD level is cut
-the same way from the bed's own level. Collision: ShrubMound's volumes before brief 097 (collide097.json), so the walk and sight inputs stay as they were.
+the same way from the bed's own level. Collision: measured as built since engine 0.49.0 (brief 098; collide097.PINNED off); was ShrubMound's volumes before
+brief 097 (collide097.json), so the walk and sight inputs stayed as they were.
 
 /Applications/Blender.app/Contents/MacOS/Blender -b -t 1 -P tools/decokit/shrub097_extra.py -- [--root out/decokit-097-extra]
   run after vertex_ao_extra.py (which rewrites the root's manifest from out/decokit-077). Idempotent: the row is replaced, never duplicated."""
@@ -22,6 +23,7 @@ ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 ROOT = REPO / (ARGS[ARGS.index("--root") + 1] if "--root" in ARGS else "out/decokit-097-extra")
 BED, NAME = "CivicBedPlanting_office-west", "ShrubMound"
 SIZE = json.loads((HERE / "collide097.json").read_text())["pieces"]["ShrubMound_TB"]   # size [x, h, z] and volumes of the old ShrubMound
+from collide097 import PINNED  # noqa: E402  (engine 0.49.0, brief 098: off: the collide tool measures the piece as built; its size still sets the patch)
 HW, HD, H = SIZE["size"][0] / 2, SIZE["size"][2] / 2, SIZE["size"][1]
 
 
@@ -70,8 +72,8 @@ def main():
         print(f"[DK-SHRUB] level {k}: {tris} tris -> {rel}")
     row = dict(name=NAME, category="Plaza", source="generated", status="candidate", fbx=files[0]["file"], tris=files[0]["tris"], size=SIZE["size"],
                bounds=[-HW, HW, -HD, HD], materials=sorted({m for f in files for o in f["objects"] for m in o["materials"]}), files=files, lods=lods,
-               lod0_level=bed["lods"][0].get("level", "close"), lodSize=bed.get("lodSize", 4), lodRule=bed.get("lodRule"), collide=SIZE["volumes"],
-               collide_note="declared: ShrubMound's volumes before brief 097 (tools/decokit/collide097.json), so the engine's walk and sight inputs do not move",
+               lod0_level=bed["lods"][0].get("level", "close"), lodSize=bed.get("lodSize", 4), lodRule=bed.get("lodRule"),
+               **({"collide": SIZE["volumes"], "collide_note": "declared: ShrubMound's volumes before brief 097 (tools/decokit/collide097.json), so the engine's walk and sight inputs do not move"} if PINNED else {}),  # engine 0.49.0: measured as built (collide097.PINNED off)
                replaces={"id": "ShrubMound"},
                provenance=dict(brief="097 final pass", generator="tools/decokit/shrub097_extra.py", cut_from=BED,
                                sha256=hashlib.sha256((HERE / "shrub097_extra.py").read_bytes()).hexdigest()))

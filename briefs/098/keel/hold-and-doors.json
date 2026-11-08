@@ -1,0 +1,1896 @@
+{
+ "schema": "suborned.evidence/1",
+ "brief": "098, Aster's ruling on engine 0.49.0 (2026-11-08): fighters hold cover; a door's guard stands to one side of the door: engine 0.50.0 (Keel)",
+ "engines": {
+  "0.48.0": "suborned.sim/0.48.0 at 8f4b9ded, its own data root (as in walk-law.json)",
+  "0.49.0": "suborned.sim/0.49.0 at a8ebe565, from git archive with its own data",
+  "0.50.0": "this branch's head, data unchanged (the door posts and the fight law are worked out at load and in play)"
+ },
+ "coverCycles": {
+  "how": "dial sweep's cover tally (sim/cli/CoverCycles.cs, the same file built into each engine's CLI): per fighter the ai.cover lines in order; a return is a take of a point he took before with another between (he went back to cover he had left)",
+  "totals": {
+   "0.48.0": {
+    "takes": 4341,
+    "returns": 841,
+    "runsWithReturn": 319,
+    "runsWithAFighter3Returns": 101,
+    "runsWithAFighter6Takes": 99,
+    "advances": 2450
+   },
+   "0.49.0": {
+    "takes": 5173,
+    "returns": 1810,
+    "runsWithReturn": 393,
+    "runsWithAFighter3Returns": 211,
+    "runsWithAFighter6Takes": 171,
+    "advances": 2785
+   },
+   "0.50.0": {
+    "takes": 2295,
+    "returns": 118,
+    "runsWithReturn": 91,
+    "runsWithAFighter3Returns": 7,
+    "runsWithAFighter6Takes": 9,
+    "advances": 1359
+   }
+  },
+  "quietG50Seeds": {
+   "0.48.0": "37/50 (74 %): returns 10 in 5 runs, a fighter with 6+ covers in 2",
+   "0.49.0": "14/50 (28 %): returns 321 in 50 runs, a fighter with 3+ returns in 38, 6+ covers in 36",
+   "0.50.0": "48/50 (96 %): returns 3 in 3 runs, most 1 by one fighter; fails {\"rivals-reach-vale\": 2}"
+  },
+  "quietGSeed1": {
+   "0.49.0": "rival-1 cv-035 -> cv-036 six times 5:17-6:34 (engage at 15.1 m, stepped 5.6 m back to cv-035 out of his reach, turned to cv-036 on the walk, advanced again); closed-in",
+   "0.50.0": "rival-1 fights the Tech at 14 m from where he stands and drops at 5:35.4; the fight 5:17.5-5:45.6; success"
+  }
+ },
+ "bands": {
+  "how": "suborned-sim dial sweep --seeds 20 --settings unset;people=32;people=64;guards=32;guards=64;cars=8;x4 (15 adaptive plans x 20 seeds, 2,100 runs an engine, the same plans and seeds); never tuned to win",
+  "rows": [
+   {
+    "setting": "unset",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 124,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 81,
+      "entry-seen-camera": 40,
+      "closed-in": 27,
+      "enforcer-down": 12,
+      "sealed": 11,
+      "vale-leaves": 4,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 13,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 10,
+      "veteran-drive": 1
+     },
+     "cover": {
+      "takes": 680,
+      "returns": 127,
+      "runsWithReturn": 49,
+      "runsWithAFighter3Returns": 18,
+      "runsWithAFighter6Takes": 17,
+      "advances": 382,
+      "mostReturnsByOne": 15,
+      "mostReturnsBy": "officer-1 (veteran #12)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 118,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 86,
+      "entry-seen-camera": 40,
+      "closed-in": 28,
+      "sealed": 13,
+      "enforcer-down": 10,
+      "vale-leaves": 4,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 5,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 10,
+      "veteran-drive": 2
+     },
+     "cover": {
+      "takes": 894,
+      "returns": 345,
+      "runsWithReturn": 69,
+      "runsWithAFighter3Returns": 39,
+      "runsWithAFighter6Takes": 31,
+      "advances": 462,
+      "mostReturnsByOne": 19,
+      "mostReturnsBy": "officer-1 (veteran #3)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 130,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 80,
+      "entry-seen-camera": 40,
+      "closed-in": 22,
+      "sealed": 13,
+      "enforcer-down": 10,
+      "vale-leaves": 4,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 18,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 10,
+      "veteran-drive": 2
+     },
+     "cover": {
+      "takes": 358,
+      "returns": 18,
+      "runsWithReturn": 14,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 2,
+      "advances": 221,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   },
+   {
+    "setting": "people=32",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 118,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 81,
+      "sealed": 30,
+      "entry-seen-camera": 29,
+      "closed-in": 22,
+      "enforcer-down": 19,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 10,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 14,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 6,
+      "veteran-drive": 1
+     },
+     "cover": {
+      "takes": 679,
+      "returns": 123,
+      "runsWithReturn": 45,
+      "runsWithAFighter3Returns": 16,
+      "runsWithAFighter6Takes": 15,
+      "advances": 386,
+      "mostReturnsByOne": 15,
+      "mostReturnsBy": "officer-1 (veteran #12)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 103,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 90,
+      "entry-seen-camera": 30,
+      "sealed": 29,
+      "closed-in": 27,
+      "enforcer-down": 19,
+      "cell-down": 1,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 12,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 3,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 1,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 831,
+      "returns": 299,
+      "runsWithReturn": 64,
+      "runsWithAFighter3Returns": 36,
+      "runsWithAFighter6Takes": 29,
+      "advances": 459,
+      "mostReturnsByOne": 13,
+      "mostReturnsBy": "officer-1 (veteran #1)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 116,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 85,
+      "entry-seen-camera": 30,
+      "sealed": 29,
+      "closed-in": 19,
+      "enforcer-down": 19,
+      "cell-down": 1,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 12,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 16,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 2,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 364,
+      "returns": 18,
+      "runsWithReturn": 14,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 1,
+      "advances": 218,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   },
+   {
+    "setting": "people=64",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 110,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 103,
+      "enforcer-down": 25,
+      "sealed": 22,
+      "entry-seen-camera": 21,
+      "closed-in": 18,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 10,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 11,
+      "thin-quiet": 18,
+      "unprepared-loud": 0,
+      "veteran": 3,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 634,
+      "returns": 97,
+      "runsWithReturn": 43,
+      "runsWithAFighter3Returns": 10,
+      "runsWithAFighter6Takes": 12,
+      "advances": 359,
+      "mostReturnsByOne": 5,
+      "mostReturnsBy": "rival-4 (quiet-a #3)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 100,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 108,
+      "enforcer-down": 26,
+      "sealed": 25,
+      "closed-in": 21,
+      "entry-seen-camera": 19,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 11,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 3,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 688,
+      "returns": 195,
+      "runsWithReturn": 52,
+      "runsWithAFighter3Returns": 28,
+      "runsWithAFighter6Takes": 23,
+      "advances": 372,
+      "mostReturnsByOne": 10,
+      "mostReturnsBy": "rival-1 (thin-quiet #17)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 104,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 107,
+      "enforcer-down": 26,
+      "sealed": 25,
+      "entry-seen-camera": 19,
+      "closed-in": 18,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 11,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 8,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 363,
+      "returns": 18,
+      "runsWithReturn": 14,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 1,
+      "advances": 182,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   },
+   {
+    "setting": "guards=32",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 110,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 99,
+      "entry-seen-camera": 38,
+      "closed-in": 23,
+      "vale-leaves": 15,
+      "enforcer-down": 7,
+      "sealed": 7,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 2,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 5,
+      "veteran-drive": 2
+     },
+     "cover": {
+      "takes": 594,
+      "returns": 126,
+      "runsWithReturn": 48,
+      "runsWithAFighter3Returns": 15,
+      "runsWithAFighter6Takes": 13,
+      "advances": 328,
+      "mostReturnsByOne": 12,
+      "mostReturnsBy": "rival-4 (thin-quiet #10)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 110,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 97,
+      "entry-seen-camera": 40,
+      "closed-in": 23,
+      "sealed": 11,
+      "vale-leaves": 11,
+      "enforcer-down": 6,
+      "cell-down": 2
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 3,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 4,
+      "veteran-drive": 2
+     },
+     "cover": {
+      "takes": 716,
+      "returns": 259,
+      "runsWithReturn": 53,
+      "runsWithAFighter3Returns": 27,
+      "runsWithAFighter6Takes": 21,
+      "advances": 380,
+      "mostReturnsByOne": 19,
+      "mostReturnsBy": "officer-1 (veteran #3)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 112,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 95,
+      "entry-seen-camera": 40,
+      "closed-in": 20,
+      "vale-leaves": 18,
+      "sealed": 11,
+      "enforcer-down": 3,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 4,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 5,
+      "veteran-drive": 3
+     },
+     "cover": {
+      "takes": 288,
+      "returns": 16,
+      "runsWithReturn": 13,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 1,
+      "advances": 172,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   },
+   {
+    "setting": "guards=64",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 99,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 117,
+      "entry-seen-camera": 39,
+      "vale-leaves": 20,
+      "closed-in": 18,
+      "sealed": 7
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 11,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 505,
+      "returns": 113,
+      "runsWithReturn": 42,
+      "runsWithAFighter3Returns": 11,
+      "runsWithAFighter6Takes": 11,
+      "advances": 286,
+      "mostReturnsByOne": 15,
+      "mostReturnsBy": "security-2 (prepared-loud-lend #9)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 102,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 115,
+      "entry-seen-camera": 40,
+      "vale-leaves": 21,
+      "closed-in": 18,
+      "sealed": 4
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 15,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 1,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 574,
+      "returns": 197,
+      "runsWithReturn": 43,
+      "runsWithAFighter3Returns": 21,
+      "runsWithAFighter6Takes": 16,
+      "advances": 321,
+      "mostReturnsByOne": 11,
+      "mostReturnsBy": "rival-4 (quiet-a #8)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 100,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 114,
+      "entry-seen-camera": 40,
+      "vale-leaves": 20,
+      "closed-in": 19,
+      "sealed": 5,
+      "enforcer-down": 2
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 15,
+      "prepared-loud-lend": 3,
+      "quiet-a": 18,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 269,
+      "returns": 19,
+      "runsWithReturn": 13,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 1,
+      "advances": 168,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   },
+   {
+    "setting": "cars=8",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 120,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 77,
+      "entry-seen-camera": 40,
+      "closed-in": 32,
+      "enforcer-down": 12,
+      "sealed": 12,
+      "vale-leaves": 6,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 2,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 13,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 9,
+      "veteran-drive": 1
+     },
+     "cover": {
+      "takes": 745,
+      "returns": 153,
+      "runsWithReturn": 54,
+      "runsWithAFighter3Returns": 20,
+      "runsWithAFighter6Takes": 20,
+      "advances": 424,
+      "mostReturnsByOne": 11,
+      "mostReturnsBy": "officer-2 (veteran #12)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 114,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 83,
+      "entry-seen-camera": 40,
+      "closed-in": 30,
+      "sealed": 12,
+      "enforcer-down": 10,
+      "vale-leaves": 10,
+      "none": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 2,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 19,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 18,
+      "quiet-g": 7,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 11,
+      "veteran-drive": 1
+     },
+     "cover": {
+      "takes": 917,
+      "returns": 341,
+      "runsWithReturn": 71,
+      "runsWithAFighter3Returns": 41,
+      "runsWithAFighter6Takes": 34,
+      "advances": 475,
+      "mostReturnsByOne": 11,
+      "mostReturnsBy": "rival-2 (quiet-g #14)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 124,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 75,
+      "entry-seen-camera": 40,
+      "closed-in": 28,
+      "sealed": 12,
+      "enforcer-down": 10,
+      "vale-leaves": 10,
+      "none": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 2,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 19,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 18,
+      "quiet-g": 18,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 11,
+      "veteran-drive": 1
+     },
+     "cover": {
+      "takes": 376,
+      "returns": 14,
+      "runsWithReturn": 12,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 2,
+      "advances": 232,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   },
+   {
+    "setting": "x4",
+    "0.48.0": {
+     "runs": 300,
+     "wins": 96,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 118,
+      "entry-seen-camera": 21,
+      "vale-leaves": 20,
+      "closed-in": 18,
+      "sealed": 17,
+      "enforcer-down": 10
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 9,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 504,
+      "returns": 102,
+      "runsWithReturn": 38,
+      "runsWithAFighter3Returns": 11,
+      "runsWithAFighter6Takes": 11,
+      "advances": 285,
+      "mostReturnsByOne": 9,
+      "mostReturnsBy": "rival-4 (quiet-a #3)"
+     }
+    },
+    "0.49.0": {
+     "runs": 300,
+     "wins": 96,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 118,
+      "entry-seen-camera": 22,
+      "sealed": 20,
+      "vale-leaves": 20,
+      "closed-in": 18,
+      "enforcer-down": 6
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 10,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 553,
+      "returns": 174,
+      "runsWithReturn": 41,
+      "runsWithAFighter3Returns": 19,
+      "runsWithAFighter6Takes": 17,
+      "advances": 316,
+      "mostReturnsByOne": 16,
+      "mostReturnsBy": "rival-4 (quiet-a #8)"
+     }
+    },
+    "0.50.0": {
+     "runs": 300,
+     "wins": 92,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 118,
+      "entry-seen-camera": 21,
+      "vale-leaves": 20,
+      "closed-in": 19,
+      "sealed": 19,
+      "enforcer-down": 11
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 8,
+      "prepared-loud-lend": 3,
+      "quiet-a": 18,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     },
+     "cover": {
+      "takes": 277,
+      "returns": 15,
+      "runsWithReturn": 11,
+      "runsWithAFighter3Returns": 1,
+      "runsWithAFighter6Takes": 1,
+      "advances": 166,
+      "mostReturnsByOne": 3,
+      "mostReturnsBy": "rival-2 (quiet-b #10)"
+     }
+    }
+   }
+  ]
+ },
+ "holdsByPlace": {
+  "how": "Vantage's regions probe (briefs/098/vantage/regions-probe.cs in a scratch copy of sim/cli, the same file built against each engine): 15 adaptive plans x 10 seeds a setting. A held spell is binned where the body stood when it ended; the city on a seed plays the same under every plan, so a spell shows once per plan: distinct counts each spell once (who, where, when it ended, seed) across plans (out/scratch/keel/m050/distinct.py). 0.48.0's per-plan counts are walk-law.json's",
+  "0.49.0": [
+   {
+    "setting": "unset",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 4.7,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 2.0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 4.8,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 0.7,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 1,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 1,
+    "perPlan10sOrMore": 0,
+    "maxS": 5.7,
+    "longest": [
+     "5.7 s patrol at (7607,-2949) to 2:04.4 (seed 1)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 4.9,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 7,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 7,
+    "perPlan10sOrMore": 0,
+    "maxS": 7.9,
+    "longest": [
+     "7.9 s p-records-office-68 at (6108,-4340) to 7:12.0 (seed 8)",
+     "7.3 s x-person-0231 at (6208,-4259) to 1:43.7 (seed 8)",
+     "6.8 s p-records-office-57 at (6088,-4337) to 7:14.2 (seed 9)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 1.0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 2,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 2,
+    "perPlan10sOrMore": 0,
+    "maxS": 6.4,
+    "longest": [
+     "6.4 s x-guard-001 at (7743,-3196) to 5:01.9 (seed 7)",
+     "6.2 s x-guard-030 at (7747,-3111) to 5:01.8 (seed 7)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 1,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 1,
+    "perPlan10sOrMore": 0,
+    "maxS": 5.7,
+    "longest": [
+     "5.7 s x-guard-042 at (-1061,-3892) to 3:57.0 (seed 7)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 6,
+    "distinct10sOrMore": 3,
+    "perPlan5sOrMore": 12,
+    "perPlan10sOrMore": 3,
+    "maxS": 21.3,
+    "longest": [
+     "21.3 s x-guard-021 at (6239,-4425) to 7:36.2 (seed 1)",
+     "11.6 s p-records-office-52 at (6125,-4423) to 7:36.0 (seed 1)",
+     "10.1 s rival-4 at (6145,-4449) to 7:23.1 (seed 3)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 0.4,
+    "longest": []
+   },
+   {
+    "setting": "x4",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 36,
+    "distinct10sOrMore": 13,
+    "perPlan5sOrMore": 61,
+    "perPlan10sOrMore": 16,
+    "maxS": 32.6,
+    "longest": [
+     "32.6 s p-records-office-39 at (7621,-2872) to 7:54.0 (seed 2)",
+     "20.2 s p-records-office-46 at (7733,-2766) to 7:04.8 (seed 2)",
+     "17.7 s p-records-office-61 at (7674,-2800) to 7:04.7 (seed 2)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 2,
+    "distinct10sOrMore": 1,
+    "perPlan5sOrMore": 2,
+    "perPlan10sOrMore": 1,
+    "maxS": 16.4,
+    "longest": [
+     "16.4 s x-guard-008 at (-801,-2793) to 1:32.5 (seed 6)",
+     "6.9 s x-guard-032 at (-737,-2911) to 2:18.8 (seed 1)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 32,
+    "distinct10sOrMore": 4,
+    "perPlan5sOrMore": 75,
+    "perPlan10sOrMore": 11,
+    "maxS": 15.1,
+    "longest": [
+     "15.1 s rival-4 at (6690,-4480) to 6:44.1 (seed 8)",
+     "14.7 s x-person-0057 at (6168,-4552) to the end (seed 1)",
+     "12.7 s p-records-office-57 at (6084,-4420) to 7:28.7 (seed 3)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 1.1,
+    "longest": []
+   }
+  ],
+  "0.50.0": [
+   {
+    "setting": "unset",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 2.1,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 2.0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 2,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 2,
+    "perPlan10sOrMore": 0,
+    "maxS": 5.9,
+    "longest": [
+     "5.9 s p-records-office-68 at (6211,-4395) to 7:11.4 (seed 6)",
+     "5.5 s p-records-office-57 at (6109,-4371) to 7:05.0 (seed 1)"
+    ]
+   },
+   {
+    "setting": "unset",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 0.7,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 1,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 1,
+    "perPlan10sOrMore": 0,
+    "maxS": 5.7,
+    "longest": [
+     "5.7 s patrol at (7607,-2949) to 2:04.4 (seed 1)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 1,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 1,
+    "perPlan10sOrMore": 0,
+    "maxS": 6.0,
+    "longest": [
+     "6.0 s x-person-0231 at (-732,-2988) to 5:47.8 (seed 8)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 10,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 10,
+    "perPlan10sOrMore": 0,
+    "maxS": 7.3,
+    "longest": [
+     "7.3 s x-person-0231 at (6208,-4259) to 1:43.7 (seed 8)",
+     "6.8 s rival-4 at (6256,-4383) to 7:19.2 (seed 3)",
+     "6.4 s p-records-office-57 at (6195,-4414) to 7:07.1 (seed 6)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 1.0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 5,
+    "distinct10sOrMore": 1,
+    "perPlan5sOrMore": 17,
+    "perPlan10sOrMore": 1,
+    "maxS": 13.7,
+    "longest": [
+     "13.7 s x-guard-048 at (7641,-3089) to 4:21.6 (seed 9)",
+     "8.2 s scout at (7648,-3280) to 1:56.2 (seed 10)",
+     "6.5 s p-records-office-62 at (7627,-3327) to 7:04.3 (seed 3)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 2.0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 3,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 3,
+    "perPlan10sOrMore": 0,
+    "maxS": 7.6,
+    "longest": [
+     "7.6 s p-records-office-56 at (6099,-4478) to 7:14.2 (seed 1)",
+     "7.0 s rival-4 at (6144,-4430) to 7:22.9 (seed 10)",
+     "5.8 s rival-4 at (6194,-4423) to 7:15.8 (seed 4)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 0.4,
+    "longest": []
+   },
+   {
+    "setting": "x4",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "distinct5sOrMore": 33,
+    "distinct10sOrMore": 5,
+    "perPlan5sOrMore": 47,
+    "perPlan10sOrMore": 5,
+    "maxS": 26.9,
+    "longest": [
+     "26.9 s x-person-0150 at (7643,-2808) to 6:55.6 (seed 2)",
+     "24.9 s p-records-office-67 at (7647,-2605) to 7:42.1 (seed 2)",
+     "15.8 s p-records-office-39 at (7605,-2828) to the end (seed 2)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "distinct5sOrMore": 2,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 2,
+    "perPlan10sOrMore": 0,
+    "maxS": 8.6,
+    "longest": [
+     "8.6 s x-person-0187 at (-862,-3078) to 4:11.0 (seed 3)",
+     "8.3 s x-person-0187 at (-889,-3044) to 4:08.8 (seed 3)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "distinct5sOrMore": 7,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 7,
+    "perPlan10sOrMore": 0,
+    "maxS": 8.6,
+    "longest": [
+     "8.6 s x-guard-030 at (6163,-4491) to 8:00.9 (seed 9)",
+     "8.3 s rival-4 at (6060,-4541) to 7:16.1 (seed 8)",
+     "7.1 s x-guard-004 at (6185,-4423) to 7:09.5 (seed 5)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "distinct5sOrMore": 0,
+    "distinct10sOrMore": 0,
+    "perPlan5sOrMore": 0,
+    "perPlan10sOrMore": 0,
+    "maxS": 1.0,
+    "longest": []
+   }
+  ]
+ },
+ "bodies": {
+  "how": "suborned-sim dial bodies: every adaptive plan x 3 seeds x 7 settings (315 runs), every tick read by the independent check (BodyCheck); and every route script x 3 seeds at people=64, guards=64 people=64, x4 (129 runs a setting; its 3 errors a setting are routes.json, the manifest, which is no script)",
+  "0.49.0": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 25,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 74,
+    "changedPlans": 0
+   },
+   {
+    "setting": "people=32",
+    "runs": 45,
+    "wins": 19,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 74,
+    "changedPlans": 0
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 17,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 1,
+    "heldMaxS10": 626,
+    "changedPlans": 11
+   },
+   {
+    "setting": "guards=32",
+    "runs": 45,
+    "wins": 23,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 74,
+    "changedPlans": 0
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 18,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 3,
+    "heldMaxS10": 213,
+    "changedPlans": 0
+   },
+   {
+    "setting": "cars=8",
+    "runs": 45,
+    "wins": 23,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 79,
+    "changedPlans": 3
+   },
+   {
+    "setting": "x4",
+    "runs": 45,
+    "wins": 17,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 20,
+    "heldMaxS10": 326,
+    "changedPlans": 3
+   }
+  ],
+  "0.50.0": [
+   {
+    "setting": "unset",
+    "runs": 45,
+    "wins": 25,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 74,
+    "changedPlans": 0
+   },
+   {
+    "setting": "people=32",
+    "runs": 45,
+    "wins": 20,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 74,
+    "changedPlans": 1
+   },
+   {
+    "setting": "people=64",
+    "runs": 45,
+    "wins": 18,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 1,
+    "heldMaxS10": 626,
+    "changedPlans": 9
+   },
+   {
+    "setting": "guards=32",
+    "runs": 45,
+    "wins": 22,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 1,
+    "heldMaxS10": 145,
+    "changedPlans": 0
+   },
+   {
+    "setting": "guards=64",
+    "runs": 45,
+    "wins": 17,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 84,
+    "changedPlans": 6
+   },
+   {
+    "setting": "cars=8",
+    "runs": 45,
+    "wins": 23,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 0,
+    "heldMaxS10": 79,
+    "changedPlans": 3
+   },
+   {
+    "setting": "x4",
+    "runs": 45,
+    "wins": 15,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 0,
+    "held10sOrMore": 4,
+    "heldMaxS10": 269,
+    "changedPlans": 16
+   }
+  ],
+  "routes0.49.0": [
+   {
+    "setting": "people=64",
+    "runs": 129,
+    "wins": 20,
+    "jumps": 2,
+    "insideTwoRadii": 2,
+    "tenetPairs": 27,
+    "lawOverlaps": 29,
+    "errors": 3,
+    "held10sOrMore": 19,
+    "heldMaxS10": 661,
+    "changedPlans": 9
+   },
+   {
+    "setting": "guards=64,people=64",
+    "runs": 129,
+    "wins": 13,
+    "jumps": 2,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 3,
+    "held10sOrMore": 11,
+    "heldMaxS10": 220,
+    "changedPlans": 22
+   },
+   {
+    "setting": "x4",
+    "runs": 129,
+    "wins": 13,
+    "jumps": 2,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 3,
+    "held10sOrMore": 11,
+    "heldMaxS10": 220,
+    "changedPlans": 22
+   }
+  ],
+  "routes0.50.0": [
+   {
+    "setting": "people=64",
+    "runs": 129,
+    "wins": 22,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 27,
+    "lawOverlaps": 27,
+    "errors": 3,
+    "held10sOrMore": 19,
+    "heldMaxS10": 661,
+    "changedPlans": 10
+   },
+   {
+    "setting": "guards=64,people=64",
+    "runs": 129,
+    "wins": 11,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 3,
+    "held10sOrMore": 26,
+    "heldMaxS10": 524,
+    "changedPlans": 38
+   },
+   {
+    "setting": "x4",
+    "runs": 129,
+    "wins": 11,
+    "jumps": 0,
+    "insideTwoRadii": 0,
+    "tenetPairs": 0,
+    "lawOverlaps": 0,
+    "errors": 3,
+    "held10sOrMore": 26,
+    "heldMaxS10": 524,
+    "changedPlans": 38
+   }
+  ]
+ },
+ "tickCost": {
+  "how": "suborned-sim dial perf, 10 runs a setting, one thread, this Mac, three rounds alternating engines, the best of the three; route A played 0:00 to 4:10 (until 2500); loud-fight the same script on both",
+  "rows": [
+   {
+    "script": "route-a-410",
+    "setting": "unset",
+    "0.49.0": {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 3.9,
+     "msPerTick": 0.0155,
+     "p99TickMs": 0.058
+    },
+    "0.50.0": {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 4.3,
+     "msPerTick": 0.0153,
+     "p99TickMs": 0.053
+    }
+   },
+   {
+    "script": "route-a-410",
+    "setting": "x4",
+    "0.49.0": {
+     "setting": "x4",
+     "walkers": 434,
+     "startMs": 8.5,
+     "msPerTick": 0.0783,
+     "p99TickMs": 0.174
+    },
+    "0.50.0": {
+     "setting": "x4",
+     "walkers": 434,
+     "startMs": 8.9,
+     "msPerTick": 0.0826,
+     "p99TickMs": 0.216
+    }
+   },
+   {
+    "script": "route-a-410",
+    "setting": "people=64",
+    "0.49.0": {
+     "setting": "people=64",
+     "walkers": 386,
+     "startMs": 6.8,
+     "msPerTick": 0.0455,
+     "p99TickMs": 0.135
+    },
+    "0.50.0": {
+     "setting": "people=64",
+     "walkers": 386,
+     "startMs": 7.2,
+     "msPerTick": 0.0456,
+     "p99TickMs": 0.131
+    }
+   },
+   {
+    "script": "route-a-410",
+    "setting": "guards=64",
+    "0.49.0": {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 4.3,
+     "msPerTick": 0.0473,
+     "p99TickMs": 0.097
+    },
+    "0.50.0": {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 4.3,
+     "msPerTick": 0.048,
+     "p99TickMs": 0.116
+    }
+   },
+   {
+    "script": "loud-fight",
+    "setting": "unset",
+    "0.49.0": {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 4.2,
+     "msPerTick": 0.0109,
+     "p99TickMs": 0.034
+    },
+    "0.50.0": {
+     "setting": "unset",
+     "walkers": 126,
+     "startMs": 3.7,
+     "msPerTick": 0.011,
+     "p99TickMs": 0.034
+    }
+   },
+   {
+    "script": "loud-fight",
+    "setting": "x4",
+    "0.49.0": {
+     "setting": "x4",
+     "walkers": 434,
+     "startMs": 8.7,
+     "msPerTick": 0.0907,
+     "p99TickMs": 0.231
+    },
+    "0.50.0": {
+     "setting": "x4",
+     "walkers": 434,
+     "startMs": 8.9,
+     "msPerTick": 0.0962,
+     "p99TickMs": 0.237
+    }
+   },
+   {
+    "script": "loud-fight",
+    "setting": "people=64",
+    "0.49.0": {
+     "setting": "people=64",
+     "walkers": 386,
+     "startMs": 7.2,
+     "msPerTick": 0.0499,
+     "p99TickMs": 0.159
+    },
+    "0.50.0": {
+     "setting": "people=64",
+     "walkers": 386,
+     "startMs": 7.4,
+     "msPerTick": 0.0497,
+     "p99TickMs": 0.161
+    }
+   },
+   {
+    "script": "loud-fight",
+    "setting": "guards=64",
+    "0.49.0": {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 4.2,
+     "msPerTick": 0.0477,
+     "p99TickMs": 0.083
+    },
+    "0.50.0": {
+     "setting": "guards=64",
+     "walkers": 174,
+     "startMs": 4.2,
+     "msPerTick": 0.0511,
+     "p99TickMs": 0.08
+    }
+   }
+  ]
+ },
+ "gaps": "161/161 gaps crossed both ways (nodes 46115, edges 357152), widest walled 0 cm",
+ "tickCostSplit": "loud-fight, x4 and guards=64, three rounds each, ms a tick: 0.49.0 0.096-0.098 and 0.049-0.050; 0.50.0 0.099-0.102 and 0.052-0.053; 0.50.0 with the doorway checks off (scratch build, out/scratch/keel/e050y) 0.115 and 0.066; 0.50.0 without the off-doorway fallback (e050x) 0.099-0.101 and 0.052-0.053. The doorway rule saves work; the rest is guards working round posts beside the doors",
+ "record": {
+  "id": "c062",
+  "verdict": "HOLDS",
+  "red": [
+   "R-7",
+   "B-2 thin-quiet",
+   "B-8 quiet-g",
+   "B-9 quiet-b",
+   "B-11 drive-early",
+   "B-11 drive-round",
+   "B-11 quiet-a",
+   "B-11 quiet-b-lookout-ignored",
+   "B-11 quiet-b-taped",
+   "B-11 quiet-g",
+   "B-11 thin-quiet",
+   "B-14",
+   "B-16 drive-early",
+   "L96 A",
+   "L96 B-all"
+  ],
+  "c061red": [
+   "MC-0",
+   "MC-5",
+   "MC-8",
+   "R-7",
+   "B-1 quiet-g",
+   "B-2 thin-quiet",
+   "B-7 quiet-g",
+   "B-7 thin-quiet",
+   "B-8 quiet-a",
+   "B-8 quiet-g",
+   "B-9 quiet-b",
+   "B-9 quiet-g",
+   "B-11 drive-early",
+   "B-11 drive-round",
+   "B-11 quiet-b-lookout-ignored",
+   "B-11 quiet-b-taped",
+   "B-13",
+   "B-14",
+   "B-16 drive-early",
+   "L96 A",
+   "L96 B-all",
+   "L96 G"
+  ],
+  "newRed": [
+   "B-11 quiet-a",
+   "B-11 quiet-g",
+   "B-11 thin-quiet"
+  ],
+  "nowGreen": [
+   "MC-0",
+   "MC-5",
+   "MC-8",
+   "B-1 quiet-g",
+   "B-7 quiet-g",
+   "B-7 thin-quiet",
+   "B-8 quiet-a",
+   "B-9 quiet-g",
+   "B-13",
+   "L96 G"
+  ],
+  "references": {
+   "route-a": "success",
+   "route-b": "success",
+   "route-g": "success",
+   "loud": "success"
+  },
+  "values": {
+   "MC-0": "23/23",
+   "MC-5": "route A 2:35 early, route B 1:24 early, route G 1:15 early",
+   "MC-8": "route-g 6:05.1, 6 s of takedown",
+   "R-7": "11/12",
+   "B-1 quiet-g": "97%",
+   "B-7 quiet-a": "median 12 s, p95 30 s",
+   "B-7 quiet-g": "median 17 s, p95 44 s",
+   "B-7 thin-quiet": "median 13 s, p95 24 s",
+   "B-9 quiet-b": "1.09",
+   "B-11 quiet-a": "10-16 s",
+   "B-11 quiet-g": "15-22 s",
+   "B-11 thin-quiet": "12-16 s",
+   "B-13": "106/109 loud wins \u2265 21 T (3 \u00d7 quiet's dearest median 7 T); loud median 33 T",
+   "L96 B-all": "32.5 % of wins, 1.5 captured per win",
+   "L96 G": "97%"
+  }
+ },
+ "doorPosts": {
+  "0.49.0": {
+   "cafe-entrance": [
+    -775,
+    -2865
+   ],
+   "office-entrance": [
+    6425,
+    -4325
+   ],
+   "official-entrance": [
+    7675,
+    -2975
+   ]
+  },
+  "0.50.0": {
+   "cafe-entrance": [
+    -903,
+    -3072
+   ],
+   "office-entrance": [
+    6510,
+    -4285
+   ],
+   "official-entrance": [
+    7695,
+    -2736
+   ]
+  },
+  "how": "Population.SitePoints via DoorWays.Beside: the nearest point to the door on its open side, a body's radius outside every door's way (300 cm out, 80 cm either side of the door's line), with a passage (two personal spaces, 160 cm) from the door's own people"
+ }
+}

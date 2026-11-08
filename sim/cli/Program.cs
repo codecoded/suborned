@@ -71,6 +71,7 @@ static class Program
                 case "dial": return DialCli.Run(inputs, root, args); // brief 098 step 0: the dial: census, sweep, perf (Dial.cs)
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "dump": return DumpCli.Run(inputs, root, args); // brief 081: read-only, exits 1 if the reads moved a checkpoint
+                case "gaps": return GapsCli.Run(inputs, root, args); // brief 098 (engine 0.49.0): the zone-wide gap check (WalkGaps.cs)
                 case "probe": Probe.Run(inputs); return 0;
                 case "ground": Probe.Ground(inputs); return 0; // brief 096 (engine 0.40.0): the ways out, private ground and kerbside stops
                 case "cars": Probe.Cars(inputs); return 0; // engine 0.33.1 (car.footprint): the cars standing at the start, what lies on their ground, which routine legs cross it

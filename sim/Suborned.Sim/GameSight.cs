@@ -410,7 +410,7 @@ namespace Suborned.Sim
             long cx = 0, cy = 0; foreach (var q in oc.Poly) { cx += q.X; cy += q.Y; } var c = new Pt((int)(cx / oc.Poly.Length), (int)(cy / oc.Poly.Length));
             long dx = c.X - from.X, dy = c.Y - from.Y, len = Math.Max(1, G.Isqrt(dx * dx + dy * dy));
             var behind = new Pt(c.X + (int)(dx * 60 / len), c.Y + (int)(dy * 60 / len));
-            int f = Math.Max(oc.Z, FloorAt(behind));
+            int f = FloorAt(behind); // engine 0.49.0: the floor a target stands on there (was the higher of it and the solid's base: the police post, measured as built, stands 12 cm up on its plinth, so the fan put heads 12 cm high and ended its shadow short)
             return (f + eye, f + R.MountChestCm);
         }
         /// <summary>Brief 055 §7: from an eye at z, this solid hides every head and chest behind it (it rises over the eye and the head, and its base

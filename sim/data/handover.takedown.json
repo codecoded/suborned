@@ -119,28 +119,28 @@
    "id": "street/orbit-gardens/e2/phone-booth-z57",
    "kind": "call-box",
    "at": [9315,400],
-   "stand": [9175,425],
+   "stand": [9425,425],
    "item": "street/orbit-gardens/e2/phone-booth-z57"
   },
   {
    "id": "street/rocket-west/e1/phone-booth-z97",
    "kind": "call-box",
    "at": [11100,-6300],
-   "stand": [11175,-6175],
+   "stand": [11175,-6225],
    "item": "street/rocket-west/e1/phone-booth-z97"
   },
   {
    "id": "street/civic/call-box-0",
    "kind": "call-box",
    "at": [2400,-885],
-   "stand": [2425,-1025],
+   "stand": [2425,-775],
    "item": "street/civic/call-box-0"
   },
   {
    "id": "street/civic/call-box-1",
    "kind": "call-box",
    "at": [-2500,-2600],
-   "stand": [-2425,-2475],
+   "stand": [-2475,-2475],
    "item": "street/civic/call-box-1"
   },
   {
@@ -154,7 +154,7 @@
    "id": "street/civic/call-box-3",
    "kind": "call-box",
    "at": [-2000,-885],
-   "stand": [-1975,-1025],
+   "stand": [-1975,-775],
    "item": "street/civic/call-box-3"
   },
   {
@@ -175,7 +175,7 @@
    "id": "street/civic/call-box-6",
    "kind": "call-box",
    "at": [7915,-200],
-   "stand": [7775,-175],
+   "stand": [8025,-175],
    "item": "street/civic/call-box-6"
   }
  ],
@@ -184,7 +184,7 @@
    "id": "street/records-square/civic-robot-dock-z1",
    "kind": "dock",
    "at": [-1850,-1750],
-   "stand": [-1725,-1725],
+   "stand": [-1875,-1725],
    "item": "street/records-square/civic-robot-dock-z1"
   },
   {
@@ -205,56 +205,56 @@
    "id": "street/civic/police-post-0",
    "kind": "post",
    "at": [3000,-2200],
-   "stand": [3025,-2075],
+   "stand": [3075,-2125],
    "item": "street/civic/police-post-0"
   },
   {
    "id": "street/civic/police-post-1",
    "kind": "post",
    "at": [-2500,-4200],
-   "stand": [-2475,-4075],
+   "stand": [-2425,-4125],
    "item": "street/civic/police-post-1"
   },
   {
    "id": "street/civic/police-post-2",
    "kind": "post",
    "at": [7900,-1000],
-   "stand": [7925,-875],
+   "stand": [7975,-925],
    "item": "street/civic/police-post-2"
   },
   {
    "id": "street/civic/police-post-3",
    "kind": "post",
    "at": [3000,-4400],
-   "stand": [3025,-4275],
+   "stand": [3075,-4325],
    "item": "street/civic/police-post-3"
   },
   {
    "id": "street/civic/police-post-4",
    "kind": "post",
    "at": [10800,-4900],
-   "stand": [10825,-4775],
+   "stand": [10875,-4825],
    "item": "street/civic/police-post-4"
   },
   {
    "id": "street/civic/police-post-5",
    "kind": "post",
    "at": [1400,500],
-   "stand": [1425,625],
+   "stand": [1475,575],
    "item": "street/civic/police-post-5"
   },
   {
    "id": "street/civic/police-post-6",
    "kind": "post",
    "at": [-1000,500],
-   "stand": [-975,625],
+   "stand": [-925,575],
    "item": "street/civic/police-post-6"
   },
   {
    "id": "street/civic/police-post-7",
    "kind": "post",
    "at": [9300,-1400],
-   "stand": [9325,-1275],
+   "stand": [9375,-1325],
    "item": "street/civic/police-post-7"
   }
  ],

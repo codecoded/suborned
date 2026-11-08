@@ -46,10 +46,9 @@
     "points": ["door", "post", "call-box"],
     "size": 3,
     "pauseS": [20, 40],
-    "doorOutCm": 200,
     "shiftBeforeS": 600,
     "shiftAfterS": 600,
-    "src": "brief 098 step 0: an added guard is on shift, on a beat between post points the engine finds in the site: its staffed doors (a point doorOutCm out of the door, so the door's own post stays its holder's), its police posts (the takedown file's street posts) and its call boxes (which stand at the corners, R-REPORT); GDD §05 every staff post checks in by voice every 90 s from the start of its shift (rulebook check-in-period-s)",
+    "src": "brief 098 step 0: an added guard is on shift, on a beat between post points the engine finds in the site: its staffed doors (a post beside the door, off its way: engine 0.50.0, rulebook bodies.door, Aster's ruling on 0.49.0, \"A door's guard stands to one side of the door\"; so the door's own post stays its holder's and people pass between), its police posts (the takedown file's street posts) and its call boxes (which stand at the corners, R-REPORT); GDD §05 every staff post checks in by voice every 90 s from the start of its shift (rulebook check-in-period-s)",
     "proposed": true,
     "reason": "a beat is size points: the guard's first post point (spread over the points in a seeded order, one guard to a point before any shares) and the size - 1 nearest to it, walked in a loop at the city's walk (crowd.walk), pausing pauseS at each, facing out of the door or to the kerb. His shift runs from shiftBeforeS before 0:00 to shiftAfterS after the close, at a seeded phase; his marks run every check-in period from it. The site carries no gates yet (the plan's gates are not in the sim site), so a beat finds none. Pulse to tune."
   },

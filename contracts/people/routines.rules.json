@@ -54,7 +54,7 @@
       "anchorCm": 150,
       "stepCm": 10,
       "tries": 8,
-      "src": "Sky 2026-10-24 (\"Inez seems to be walking on an invisible ledge\"); brief 055 rule G-1d (tools/geometry); the plan's standards.walking.body.r (65 cm) for the body; tools/sim/solids.ts for the solids",
+      "src": "Sky 2026-10-24 (\"Inez seems to be walking on an invisible ledge\"); brief 055 rule G-1d (tools/geometry); the rulebook's walk clearance for the body (bodies.radius + bodies.margin, 35 cm; engine 0.49.0, brief 098: was the plan's standards.walking.body.r, 65 cm, which stays the plan's); tools/sim/solids.ts for the solids",
       "proposed": true,
       "reason": "a round leg keeps a body's width and marginCm from every drawn solid that is not a building's face, and faceCm from a face (a wall, a plinth, the curved front): the site grid blocks by cell centre and a string-pulled leg cuts the corners of its blocked cells, so a leg came within 2 to 20 cm of a wall and 3 cm inside a chair's clearance. The baker measures each leg against the drawn solids and, when one comes short, routes again on the grid with every cell stepCm further blocked, up to `tries` times; the first anchorCm of a leg (her post, on the door's own face) is not measured. A leg that never comes clear is kept as the grid made it and counted in the summary."
     },

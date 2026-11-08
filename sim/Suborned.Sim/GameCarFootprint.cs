@@ -211,7 +211,7 @@ namespace Suborned.Sim
                 if (!h.Present || h.Down || h.Gun.St == "gone" || h.Gun.St == "break") continue;
                 var at = h.Pos(Tick);
                 if (h.Run != null && Tick >= h.RunStart && h.Moving(Tick)) { if (Crosses(h.Run, (long)(Tick - h.RunStart) * h.Speed) && Round(at, h.Run.End) is Pt[] r) { h.Run = new Path(r); h.RunStart = Tick; } }
-                else if (h.Run == null && w.CarCovers(at) && w.NearestFree(at) is Pt f) { h.Run = new Path(new[] { at, f }); h.RunStart = Tick; h.At = f; if (h.Home == at) h.Home = f; }
+                else if (h.Run == null && w.CarCovers(at) && w.NearestFree(at) is Pt f) { h.Run = new Path(new[] { at, f }); h.RunStart = Tick; h.At = f; if (h.Home == at) h.Home = f; CommitEnd(h.Gun); } // engine 0.50.0: stepping off a car's ground spends a commitment
             }
             foreach (var m in Crew)
             {

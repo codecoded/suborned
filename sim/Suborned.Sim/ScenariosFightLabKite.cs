@@ -34,7 +34,15 @@ namespace Suborned.Sim
         }
         /// <summary>A free point `lo`..`hi` cm from `a` with a line to it, and beyond `away` cm of every point in `far`.</summary>
         static Pt? KiteSpot(Game g, Pt a, int lo, int hi, int away, params Pt[] far) =>
-            g.S.Grid.Nearest(a, q => G.D2(q, a) >= (long)lo * lo && G.D2(q, a) <= (long)hi * hi && g.S.Sight(q, a, g.R.Eye) && far.All(f => G.D2(q, f) > (long)away * away), hi + 500);
+            g.S.Grid.Nearest(a, q => G.D2(q, a) >= (long)lo * lo && G.D2(q, a) <= (long)hi * hi && LineOf(g, q, a) && far.All(f => G.D2(q, f) > (long)away * away), hi + 500);
+        /// <summary>Engine 0.49.0: the line a fire order looks along (Game.Sees): an eye above the shooter's own floor to the target's head or chest above
+        /// its own (perception.mount), so a spot the case picks is one the shooter fires from without walking in for a line (the Office landing stands 75 cm up).</summary>
+        static bool LineOf(Game g, Pt q, Pt a)
+        {
+            if (!g.R.MountOn) return g.S.Sight(q, a, g.R.Eye);
+            int fq = g.S.Grid.FloorAt(q) + g.R.Eye, fa = g.S.Grid.FloorAt(a);
+            return g.S.Sight3(q, fq, a, fa + g.R.Eye) || g.S.Sight3(q, fq, a, fa + g.R.MountChestCm);
+        }
 
         static void FightLabKite()
         {

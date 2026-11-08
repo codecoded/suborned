@@ -42,11 +42,12 @@ namespace Suborned.Sim
             if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End;
             if (h.Run.Length == 0) { h.Run = null; }
+            if (h.At != h.Gun.CommitAt) CommitEnd(h.Gun); // engine 0.50.0 (fight.cover): a walk elsewhere spends a commitment (the step out of a line commits again after it)
         }
         /// <summary>The body stops where it is; on another's claim (fight.spacing), it takes the step clear of it.</summary>
         void Stop(Hostile h)
         {
-            h.At = h.Pos(Tick); h.Run = null; h.Closing = false;
+            h.At = h.Pos(Tick); h.Run = null; h.Closing = false; if (h.At != h.Gun.CommitAt) CommitEnd(h.Gun); // engine 0.50.0: a stop short of it spends a commitment
             var q = ClearStop(h.Id, h.At); if (q == h.At) return;
             var route = Walk.Route(Walk.NearestFree(h.At) ?? h.At, q); if (route == null || route.Length < 2) return;
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; if (h.Run.Length == 0) h.Run = null;
@@ -180,7 +181,7 @@ namespace Suborned.Sim
         void FightBody(Hostile h)
         {
             var g = h.Gun;
-            if (g.Down) { ReleaseCover(g); h.Closing = false; return; }
+            if (g.Down) { ReleaseCover(g); CommitEnd(g); h.Closing = false; return; }
             if (!h.Present || g.St == "gone") return;
             if (ForCarBody(h)) return; // engine 0.34.0 (Motive M067-K3 a): going for the unguarded car, firing as he walks
             var pos = h.Pos(Tick); var w = g.W!;
@@ -202,6 +203,7 @@ namespace Suborned.Sim
                     else if (!moving) { g.St = "hold"; h.Closing = false; } // engine 0.34.1: the advance on an operative has ended
                     break;
                 case "engage":
+                    if (foes.Count == 0 && moving && g.Commit.Length > 0 && h.Run!.End == g.CommitAt) { g.NoFoeSince = -1; break; } // engine 0.50.0 (fight.cover): on the walk of a move out of a line his target out of reach is no reason yet: he goes where he moved
                     if (foes.Count == 0)
                     {
                         if (g.NoFoeSince < 0) g.NoFoeSince = Tick;
@@ -231,20 +233,20 @@ namespace Suborned.Sim
             if (moving && Lab && !LabFireMoving) return; // tuning.md §8.3 (Sky 2026-10-21, engine 0.15.0): a hostile fires as it walks in both presets (the lab's hostilesFireMoving switch can still turn it off there)
             string t = ChooseTarget(h.Id, g, pos, foes);
             var at = PosOf(t)!.Value;
-            // cover (Pulse §2.3): leave a point unprotected for cover.leave; a rival steps to a point that shields it, once each cover.stepGap
+            // cover (Pulse §2.3): leave a point unprotected for cover.leave; a rival steps to a point that shields it, once each cover.stepGap; engine 0.50.0, fighters hold cover (GameCoverHold.cs)
             bool prot = Protected(pos, at);
             if (g.Cover.Length > 0)
             {
                 var c = CoverById(g.Cover);
                 if (c == null || !c.Present(Tick / Hz)) ReleaseCover(g);
-                else if (prot) g.UnprotSince = -1;
+                else if (prot || OnWayTo(h, c)) g.UnprotSince = -1; // engine 0.50.0 (fight.cover): walking to it is not standing unshielded at it
                 else if (g.UnprotSince < 0) g.UnprotSince = Tick;
                 else if (Tick - g.UnprotSince >= T(R.CoverLeaveS)) ReleaseCover(g);
             }
-            if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
+            if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS) && !CommitHolds(h, at)) // engine 0.50.0 (fight.cover): not while committed to a place that shields him from his target
             {
-                var c = SelectCoverOut(pos, Car, at, R.SeekRivalCm); // engine 0.34.0 (Motive M067-SQ1): never a cover point in the hold or the lane
-                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At, true); h.Why = "answer"; if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
+                var c = FightFromCover(pos, at, w.EffCm); // engine 0.50.0: cover he can fight his target from (in reach, the line to him); 0.34.0 (Motive M067-SQ1): never a cover point in the hold or the lane
+                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At, true); h.Why = "answer"; CommitTo(h, t, c.At, c); if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
             }
             AimAt(g, t, false);
             if (Tick >= g.NextShot) Shoot(h.Id, g, pos, t, at, Dist(pos, at), h.Moving(Tick) ? Gait.Walk : Gait.Stand, false);
@@ -266,8 +268,8 @@ namespace Suborned.Sim
             if (IsHolder(h)) { if (h.Blocker) { MoveTo(h, h.Home); h.Why = "blocker"; } else MoveToFight(h, h.Home); return; } // engine 0.34.0 (Motive M067-SQ1): back to its stand round the car's hold (the blocker's lane is the road)
             Pt foe = !Enforcer.Inside && !Enforcer.Down && !Enforcer.InLent ? Enforcer.Pos : Car; // engine 0.42.0: at the wheel of the lent car (or gone in it) he is no foe to walk on
             var c = SelectCover(pos, Car, foe, R.SeekRivalCm); h.Why = "advance";
-            if (c != null) { TakeCover(g, c); MoveTo(h, c.At); return; }
-            MoveTo(h, StopPoint(pos, Car, g.W!.EffCm));
+            if (c != null) { TakeCover(g, c); MoveTo(h, c.At); } else MoveTo(h, StopPoint(pos, Car, g.W!.EffCm));
+            h.Closing = h.Run != null; // engine 0.50.0 (fight.cover): an advance is never turned back on its walk by a step out of a line (KiteTick), as one on an operative (0.34.1)
         }
 
         /// <summary>The guard as the cell's ally (Pulse §3.4): he runs to his post (or the cover the data give within ai.seek.ally of it) and

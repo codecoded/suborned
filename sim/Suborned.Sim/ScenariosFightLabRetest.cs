@@ -77,7 +77,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "ai.kite" && l.Text.Contains("comes for the car")), "the line says so");
             }, LabStart(s => s.Security = 1));
 
-            Add("N161", "—", "Brief 027 retest (Motive tuning.md §7.2 rule 3): N10's loud route under the lab, fought out to the car by the matrix player. No police body of the final fight ever chases: none spends chase budget and none logs a chase answer after the fight starts; each one fired on from beyond its reach that moves takes a cover point shielding it from the shooter, no farther from the car than its stand, or, with no such point, closes to its ring of the shooter (Suture retest2.md N1).", r =>
+            Add("N161", "—", "Brief 027 retest (Motive tuning.md §7.2 rule 3): N10's loud route under the lab, fought out to the car by the matrix player. No police body of the final fight ever chases: none spends chase budget and none logs a chase answer after the fight starts; each one fired on from beyond its reach that moves takes a cover point shielding it from the shooter, no farther from the car than its stand, or, with no such point, closes to its ring of the shooter (Suture retest2.md N1). Engine 0.49.0: its stand when it answers (the rule's, FightCover), read from its note: one that closed to a ring has a new stand.", r =>
             {
                 var g = r.G; LoudToCar(r);
                 if (!r.Until(() => g.Hostiles.Count > 0, T(5))) { r.Is(false, "the officers come"); return; }
@@ -94,7 +94,8 @@ namespace Suborned.Sim
                     string id = l.Text.Substring(0, l.Text.IndexOf(' ')); int at = l.Text.IndexOf("takes cover at ", StringComparison.Ordinal); string cid = l.Text.Substring(at + 15, l.Text.IndexOf(' ', at + 15) - at - 15);
                     var cv = g.CoverNow().FirstOrDefault(c => c.Id == cid) ?? g.S.Cover.FirstOrDefault(c => c.Id == cid); if (cv == null) { r.Is(false, $"{id} takes a cover point the site or a car holds ({cid})"); continue; } var h = police.FirstOrDefault(x => x.Id == id); if (h == null) continue; // a rival's answer: the rule is the police bodies'
                     int k = int.Parse(id.Substring(id.IndexOf('-') + 1)) - 1; var stand = id.StartsWith("officer-", StringComparison.Ordinal) && k < g.S.FightPolice.Length ? g.S.Stand(g.S.FightPolice[k]) : (Pt?)null;
-                    if (stand.HasValue && k >= g.Labr!.PoliceContest) r.Is(G.Dist(cv.At, car) <= G.Dist(stand.Value, car), $"{id} takes {cid}, {G.Dist(cv.At, car) / 100} m from the car (its stand {G.Dist(stand.Value, car) / 100} m)");
+                    int sk = l.Text.IndexOf("its stand ", StringComparison.Ordinal), now = sk > 0 ? int.Parse(l.Text.Substring(sk + 10, l.Text.IndexOf(' ', sk + 10) - sk - 10), System.Globalization.CultureInfo.InvariantCulture) : int.MaxValue; // engine 0.49.0: its stand when it answered (it may have closed to a ring since the site stood it)
+                    if (stand.HasValue && k >= g.Labr!.PoliceContest) r.Is(G.Dist(cv.At, car) <= now, $"{id} takes {cid}, {G.Dist(cv.At, car) / 100} m from the car (its stand then {now / 100} m; the site's {G.Dist(stand.Value, car) / 100} m)");
                     else if (stand.HasValue) r.Is(cv.Q >= g.R.CoverQPartial, $"{id}, the contest officer, answers as any police body (tuning.md §7.11.1, no longer held to the car): it takes {cid}, real cover ({G.Dist(cv.At, car) / 100} m from the car)");
                     else r.Is(G.Dist(cv.At, car) <= G.Dist(h.Home, car) + g.R.SeekPoliceCm, $"{id} takes {cid} on its way ({G.Dist(cv.At, car) / 100} m from the car)");
                 }
@@ -106,7 +107,7 @@ namespace Suborned.Sim
                 r.Is(answers.Count > 0, $"{answers.Count} police bodies fired on from beyond their reach answered: {cover.Count} took cover, {answers.Count - cover.Count} closed in (no cover outside the hold)");
             }, LabStart(s => s.Security = 1));
 
-            Add("N162", "—", "Brief 027 retest R3 (Pulse retest-fixes.md §4): a brief-013 police unit holding at its scene, shot by the Fixer from beyond its ring with a clear line, moves within 1.0 s (or fires on him), and the shot alarms the other unit of its dispatch.", r =>
+            Add("N162", "—", "Brief 027 retest R3 (Pulse retest-fixes.md §4): a brief-013 police unit holding at its scene, shot by the Fixer from beyond its ring with a clear line, moves within 1.0 s (or fires on him), and the shot alarms the other unit of its dispatch. Engine 0.49.0: the spot is picked by the line a fire order looks along (floors and all), and a unit in its max ring with a line answers by fire, taking him as its target at once; only one that cannot answer moves.", r =>
             {
                 var g = r.G; var st = KiteStage(r);
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
@@ -123,9 +124,12 @@ namespace Suborned.Sim
                 r.Fire(Fixer, u.Id);
                 if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "fixer" && s.target == u.Id), T(5)), "the Fixer's shot goes")) return;
                 int t0 = r.Shots().First(s => s.by == "fixer" && s.target == u.Id).tick;
-                r.To(t0 + T(1));
+                var shotFrom = r.Op(Fixer).Pos; r.To(t0 + T(1));
                 bool moved = g.UnitPose(u)?.pos != at1, fired = r.Shots().Any(s => s.by == u.Id && s.tick >= t0);
-                r.Is(moved || fired, $"{u.Id} answers within 1.0 s ({(moved ? "it moves" : fired ? "it fires" : "nothing")})");
+                bool inRing = G.Within(shotFrom, g.UnitPose(u)!.Value.pos, u.Gun.W!.MaxCm), aims = g.Log.Exists(l => l.Tick >= t0 && l.Tick <= t0 + T(1) && l.Code == "ai.why" && l.Text.StartsWith(u.Id + " takes the fixer as its target", StringComparison.Ordinal));
+                // engine 0.49.0: the Fixer's fire walks him into his own range for its first shot (the spot beyond the unit's ring is beyond his own too), so a unit
+                // in its max ring with a line to him answers by fire (§7.10 rule 1: it takes him as its target at once and fires once aimed), and only one that can't moves
+                r.Is(moved || fired || (inRing && aims), $"{u.Id} answers within 1.0 s ({(moved ? "it moves" : fired ? "it fires" : inRing && aims ? $"in its max ring at {G.Dist(shotFrom, at1) / 100} m with a line: it takes him as its target and stands to fire" : "nothing")})");
                 var mate = g.Units.FirstOrDefault(x => x != u && !x.Legacy && !x.Patrol && !x.Robot && x.Act == u.Act && !x.Gun.Down);
                 if (mate != null) r.Is(mate.Gun.KiteAt >= 0 || mate.Gun.KiteLast >= 0, $"{mate.Id}, of the same dispatch, is alarmed too");
             }, LabStart(s => s.Security = 2));

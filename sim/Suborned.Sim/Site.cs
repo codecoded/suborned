@@ -247,7 +247,7 @@ namespace Suborned.Sim
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             Mission = r["mission"].Str();
             if (Mission != "handover" && Mission != "range") throw new FormatException("only the Handover plays (brief 011), and the fight range (brief 029)");
-            r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "floor", "collide", "drawn", "src");
+            r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "fine", "floor", "collide", "drawn", "src"); // engine 0.49.0: fine, the walk raster (GridFine.cs)
             Grid = new Grid(r["grid"]);
             // brief 023 (engine 0.8.2, rulebook car.drive): where a car may be, on the walk grid's window and cells. Required: no car moves without it
             var dg = r.Opt("drive") ?? throw new FormatException("site drive is missing: engine 0.8.2 routes every moving car on the drive grid (rulebook car.drive, tools/sim/drive.ts)");

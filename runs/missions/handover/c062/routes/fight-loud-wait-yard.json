@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "MC-13 (brief 059, Motive M059-5.3), the service drive's loud-wait twin, recomposed on engine 0.43.0 (Keel for Waymark, brief 096: since 0.41.0 it lost to the lookout, which is not what it tests): the drive-round's opening (our car on the service drive by 2:45, before the rival car turns in, so the rival car blocks the drive's mouth: L10), the Fixer's Pay on the driver (taped: a loud twin), the lookout misled; the Fixer shoots the pickup camera out as Popovic's car stops at the kerb (gunfire: Alert 2, the loud fight), and the Scout and the Fixer get into our car on the drive. The Enforcer takes Popovic from the back seat at the kerb and the Take ends with him at its wheel (the lend); its Go is refused: the rival car boxes it (the box is the final fight's gate, Motive K3). Nobody of the cell fights, so it never leaves, and the player withdraws (the free abort): the Withdraw keeps the twin to what MC-13 reads, the refusal.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"fixer","do":"move","to":[7950,-3850]},
+  {"tick":480,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":530,"op":"scout","do":"listen","target":"driver"},
+  {"tick":530,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":620,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":900,"op":"tech","do":"move","to":"d:Getaway bay","run":true},
+  {"tick":922,"op":"tech","do":"board","target":"car"},
+  {"tick":1350,"op":"tech","do":"drive-car","target":"service-drive"},
+  {"tick":1634,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":1759,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":2200,"op":"scout","do":"move","to":[9100,-2700]},
+  {"tick":2700,"op":"scout","do":"mislead","target":"rival-4"},
+  {"tick":3200,"op":"scout","do":"move","to":"service-drive"},
+  {"tick":3200,"op":"fixer","do":"move","to":[7300,-1100]},
+  {"tick":3209,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":3300,"op":"enforcer","do":"move","to":[7900,-1990]},
+  {"tick":3332,"op":"scout","do":"board","target":"car"},
+  {"tick":3562,"op":"fixer","do":"fire","target":"camera:pickup"},
+  {"tick":3562,"op":"fixer","do":"move","to":"service-drive"},
+  {"tick":3590,"op":"fixer","do":"board","target":"car"},
+  {"tick":3773,"op":"enforcer","do":"take"},
+  {"tick":4153,"op":"cell","do":"go","target":"car:official"},
+  {"tick":4154,"do":"withdraw"}
+ ],
+ "until": 4900
+}

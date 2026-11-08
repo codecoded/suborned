@@ -308,7 +308,11 @@ namespace Suborned.Sim
                 });
                 AddRange("F8-O10" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.3: a hostile walking in a fight fires at the walk's chance (today too): rivals stepping to cover", r =>
                 {
-                    var g = r.G; r.Do("cell", "panic"); Spawned(r, "rivals", "eff", 3);
+                    // engine 0.50.0 (fight.cover): a rival steps only to cover he can fight his target from (in his reach, with the line). The open
+                    // range has none at the effective ring (its low walls' arcs miss the cell, and a car's cover stands only with a car), so they
+                    // stood and fought; with a car on the first slot and the rivals near the cell, the car shields them 4 m back within reach, and
+                    // the step to it is the walk this rule reads.
+                    var g = r.G; r.Do("cell", "panic"); r.Is(g.Issue(new Order { Tick = g.Tick, Do = "spawn", Target = "car", To = "car:1", Count = 1 }).ok, "a car on the first slot"); Spawned(r, "rivals", "near", 3);
                     int moving = 0, bad = 0; string ex = "";
                     for (int k = 0; k < Game.T(40) && moving < 3; k++)
                     {

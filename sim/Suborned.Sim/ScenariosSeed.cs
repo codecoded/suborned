@@ -146,10 +146,10 @@ namespace Suborned.Sim
                 r.To(T(331)); r.Eq(g.Vale, ValeAt.Leaving, "at 5:31 Vale is walking to his car");
                 r.To(T(353) + 1); r.Is(g.Over && g.FailCode == "vale-leaves", $"by 5:53 he is driven away, no plan made ({g.FailCode})");
             });
-            Add("CLOSE-VERDICT", "080", "The close is a verdict (fight.close): Vale in the Enforcer's hands, the warning a minute before, closed-in at the close, naming why; the warning once.", r =>
+            Add("CLOSE-VERDICT", "080", "The close is a verdict (fight.close): Vale in the Enforcer's hands, the warning a minute before, closed-in at the close, naming why; the warning once. Engine 0.49.0: the city's people left out (Crowd off): on today's walks a guard on her way home passes the Enforcer holding Vale at 7:05 and radios it, and the response shoots him before the close, which is the city's answer, not the close's.", r =>
             {
                 r.Wait(1); var g = r.G; r.Eq(g.R.CloseWarnS, 60, "the warning a minute before");
-                var s = new Start { FinalFight = false, Security = 0 }; s.Turned.Add("driver"); s.CrewGone.AddRange(new[] { "rival-1", "rival-2", "rival-3", "rival-4", "rival-5" }); var h = Engine.New(r.Inputs!, s);
+                var s = new Start { FinalFight = false, Security = 0, Crowd = false }; s.Turned.Add("driver"); s.CrewGone.AddRange(new[] { "rival-1", "rival-2", "rival-3", "rival-4", "rival-5" }); var h = Engine.New(r.Inputs!, s);
                 h.Vale = ValeAt.WithEnforcer; h.RunTo(T(h.ClockOver) - T(60) - 1); r.Eq(h.CloseWarnedAt, -1, "not yet");
                 h.Step(); r.Eq(h.CloseWarnedAt, T(h.ClockOver) - T(60), "at 6:30 Vale's absence is noticed"); r.Is(h.Log.Exists(l => l.Code == "close.warning"), "the HUD's line");
                 h.RunTo(T(h.ClockOver)); r.Eq((h.Result, h.FailCode, h.Cause?.Why), (Outcome.Failure, "closed-in", "on-foot"), "closed in, Vale on foot"); r.Is(h.Cause != null && h.Cause.Culprits.Count > 0, "and it names who");

@@ -10,7 +10,6 @@ import { join } from 'node:path';
 import { derive } from '../plan/plan';
 import { civic } from '../plan/civic';
 import { CELL, WINDOW } from '../plan/walk-grid';
-import { bodyOf } from '../plan/walk-solids';
 import { inPoly, segDist, segHit, type V } from '../plan/geom';
 import { simGrid, HEAD, STEP, COLLIDE_FILE, type Solid } from '../sim/solids';
 import { Grid, type Pt } from './walk';
@@ -18,7 +17,7 @@ import { Grid, type Pt } from './walk';
 const root = join(import.meta.dir, '..', '..');
 const FLUSH = 0.05; // a stand top within this of the floor is that floor (tools/sim/solids.ts)
 
-/** The body radius the walk grid keeps from a solid that is not a building's face (the plan's standards.walking.body.r), in cm. */
+/** The body clearance the walk grid keeps from a solid (engine 0.49.0: the rulebook's bodies.radius + margin; was the plan's standards.walking.body.r), in cm. */
 export type Ground = { bodyCm: number; solids: Solid[]; floorAt(q: V): number; sha: string };
 
 export function loadGround(): Ground {
@@ -26,7 +25,7 @@ export function loadGround(): Ground {
   const plan = JSON.parse(read('contracts/world/harbour-district.plan.json')), block = JSON.parse(read(plan.civic.block));
   const d = derive(plan), civ = civic(plan.civic, block), G = simGrid(plan, d, civ, 1.6, WINDOW, CELL, true);
   const floorAt = (q: V) => { const i = Math.floor((q[0] - G.win.x0) / G.cell), j = Math.floor((q[1] - G.win.y0) / G.cell); return G.floor[i * G.ny + j] ?? 0; };
-  return { bodyCm: Math.round(bodyOf(plan) * 100), solids: G.drawn.solids, floorAt, sha: new Bun.CryptoHasher('sha256').update(read(COLLIDE_FILE)).digest('hex') };
+  return { bodyCm: Math.round(G.clear * 100), solids: G.drawn.solids, floorAt, sha: new Bun.CryptoHasher('sha256').update(read(COLLIDE_FILE)).digest('hex') }; // engine 0.49.0 (brief 098, Keel): the walk's clearance (the rulebook's bodies.radius + margin), one value everywhere; was the plan's design r (65 cm), which stays the plan's
 }
 
 /** Distance (m) from the segment a-b to the solid; zero when they touch or the segment is inside. */
@@ -128,6 +127,6 @@ export class Clear {
     // the ends of the leg stand where they stand: the cell of each stays free if it was
     const orig = new Grid(grid);
     for (const p of keep) if (orig.isFree(p)) rows[orig.ci(p[0])]![orig.cj(p[1])] = '.';
-    return new Grid({ ...grid, rows: rows.map((r) => r.join('')) });
+    return new Grid({ ...grid, rows: rows.map((r) => r.join('')), fine: undefined }); // engine 0.49.0 (Keel): routed on these inflated cells, not the site's walk raster (the grid's own walk keeps only the body's clearance)
   }
 }

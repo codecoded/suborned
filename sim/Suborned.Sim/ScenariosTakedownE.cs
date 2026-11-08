@@ -110,7 +110,7 @@ namespace Suborned.Sim
                 }
             }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
-            Add("N84", "—", "A cancelled Enter comes out by a door no unit holds (Aster 2026-10-16, brief 013 E3; rulebook response: no exit through a held door). Waymark's orders (2026-10-19, the west-face door): the guard knocked out unseen at his post at 4:25.0 (brief 055; was 4:00.1, before guard 74 walked the forecourt) and left; guard 73 finds him and radios it (5:01.1, landing 5:06.1: the door planting cuts her first look, brief 055 §7); the Enforcer goes in at the landing, before the scene unit arrives. The unit holds the public door from 5:12.1. The player cancels the Enter: the Enforcer comes out at the service lane, not through the held public door.", r =>
+            Add("N84", "—", "A cancelled Enter comes out by a door no unit holds (Aster 2026-10-16, brief 013 E3; rulebook response: no exit through a held door). Waymark's orders (2026-10-19, the west-face door): the guard knocked out unseen at his post at 4:25.0 (brief 055; was 4:00.1, before guard 74 walked the forecourt) and left; guard 73 finds him and radios it (5:01.1, landing 5:06.1: the door planting cuts her first look, brief 055 §7); the Enforcer goes in at the landing, before the scene unit arrives. The unit holds the public door from 5:12.1. The player cancels the Enter: the Enforcer comes out at the service lane, not through the held public door. Engine 0.49.0: by its rule, not its clock: whoever of the staff finds him radios it, the Enter at the landing, the cancel once the unit holds the door.", r =>
             {
                 var g = r.G;
                 Orders(r, Mv(0, Tech, "cabinet", run: true), MvTo(0, Enf, BesideDoor), Act(166, Tech, "loop", "entrance"), Act(1300, Tech, "loop", "entrance"), Act(1900, Tech, "reroute", "patrol"), Act(2450, Tech, "loop", "entrance") /* Loop v2 (engine 0.31.0, brief 058): re-spliced twice (+2 T), blind without a break from 0:36 to 6:25 as the held loop was */,
@@ -119,13 +119,15 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio"), T(200)), $"a passer-by finds him and radios it ({Report.Clock(g.Tick)})");
                 var rep = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio");
                 if (rep == null) return; // the check above has failed: a clear failure, not a LINQ throw (the suite's whole-scenario tests read every run)
-                r.Eq((rep.P!.Id, Report.Clock(rep.LandAt)), ("p-records-office-73", "5:03.6"), "guard 73 radios it, landing at 5:03.6 (engine 0.28.0, brief 055 §7: the drawn door planting cuts her first look at the landing; was 5:02.1, Waymark 2026-10-19; engine 0.34.0, brief 067 L: she walks to her waiting point beside the door, Pulse's, not onto the door, and looks at the landing 2.5 s sooner: 5:06.1 before)");
+                // engine 0.49.0 (brief 098: walks get shorter on the walk raster; the case by its rule, not a clock): staff radio it, landing the reaction and the post's
+                // call after the find (rulebook witness react, post-call-s), and the Enforcer goes in at the landing
+                int found = g.Log.First(l => l.Code == "report.started" && l.Text.Contains(rep.P!.Id, StringComparison.Ordinal)).Tick;
+                r.Is(g.R.StaffJobs.Contains(rep.P!.Job) && rep.LandAt - found == T(g.R.WitnessReactS) + T(g.R.PostCallS), $"{rep.P!.Id}, on the staff, radios it at {Report.Clock(found)}: it lands {Report.Clock(rep.LandAt)}, the reaction and a post's call later");
                 r.To(rep.LandAt);
                 r.Is(!g.DoorHeld(g.EnterDoor), "the unit is not there yet");
-                Orders(r, Act(3021, Enf, "enter"));
+                Orders(r, Act(g.Tick, Enf, "enter"));
                 r.Is(r.Until(() => g.DoorHeld(g.EnterDoor), T(30)), $"the unit arrives and holds the public door ({Report.Clock(g.Tick)})");
-                r.Is(!g.DoorHeld(g.ExitDoor), "the service door is not held");
-                r.To(Math.Max(g.Tick, 3125)); // Waymark: the cancel at or after 5:12.5
+                r.Is(!g.DoorHeld(g.ExitDoor), "the service door is not held"); // the cancel once the unit holds it
                 r.Is(r.Op(Enf).Inside && g.ActivityOf(OpId.Enforcer).CancelText.Contains("service lane"), "the cancel line says where he would come out");
                 r.Do(Enf, "cancel");
                 r.Is(!r.Op(Enf).Inside && G.Within(r.Op(Enf).Pos, r.Stand(g.S.ValeService), 100), "out at the service lane");

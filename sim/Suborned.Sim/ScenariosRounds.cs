@@ -62,14 +62,16 @@ namespace Suborned.Sim
                 r.Is(g.Inez.KNeed, "the Listen landed: her need is known");
             }, KnowingRoutine());
 
-            Add("N131", "—", "The chain hold (brief 022, rounds.holds and linger): the Scout listens to Inez at 0:20 (her routine known from the briefing); the Fixer's Help is given at the tick the Listen lands. One hold from the Listen's start to the Help's landing plus 3 s: she stands still the whole way, though her round would have taken her out to a table meanwhile; the round clock stopped, so she goes out what was left of it after the hold. Engine 0.48.0: the excursion is her round's next after the hold began, not table 3 at 0:34.", r =>
+            Add("N131", "—", "The chain hold (brief 022, rounds.holds and linger): the Scout listens to Inez at 0:20 (her routine known from the briefing); the Fixer's Help is given at the tick the Listen lands. One hold from the Listen's start to the Help's landing plus 3 s: she stands still the whole way, though her round would have taken her out to a table meanwhile; the round clock stopped, so she goes out what was left of it after the hold. Engine 0.48.0: the excursion is her round's next after the hold began, not table 3 at 0:34. Engine 0.49.0: the Scout listens from a chair, so the hold may find her out on her round, and the Fixer walks in to her: the hold runs to the Help's own landing, and after it she goes on from where her round stood.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "beside-inez"), r.Send(Fixer, "d:Courtyard")));
                 r.To(T(20));
                 var a = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); r.Is(a.ok, $"Listen at 0:20 ({a.why})");
-                r.Is(r.Until(() => r.Op(Scout).Busy != null, T(60)), "the Scout takes a spot and the Listen starts (engine 0.39.0: the hold starts with it, not with the order)"); int from = g.Tick; r.Done(Scout);
+                string held = PhaseOf(g); // where her round stood the tick before the hold
+                r.Is(r.Until(() => { if (r.Op(Scout).Busy != null) return true; held = PhaseOf(g); return false; }, T(60)), "the Scout takes a spot and the Listen starts (engine 0.39.0: the hold starts with it, not with the order)"); int from = g.Tick; r.Done(Scout);
                 a = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "turn", Target = Inez, Approach = "help" }); r.Is(a.ok, $"Help at the Listen's landing ({a.why})");
+                r.Is(r.Until(() => r.Op(Fixer).Busy != null, T(60)), "the Help starts once the Fixer is in reach of her, held where she stands (engine 0.49.0: the Listen from a chair holds her by its table, out of his reach)");
                 int lands = r.Op(Fixer).BusyEnd;
                 var sv = g.S.Rounds!.Servers[g.Inez.Id]; var ex = sv.Exc.FirstOrDefault(x => T(sv.Origin + x.Start) >= from);
                 if (!r.Is(ex != null, "her round has an excursion after the hold begins")) return;
@@ -78,8 +80,10 @@ namespace Suborned.Sim
                 bool still = true; while (g.Tick < lands + T(g.R.RoundsLingerS)) { if (PhaseOf(g) != "held") still = false; g.Step(); }
                 r.Is(still, $"held from {Report.Clock(from)} to {Report.Clock(lands)} + 3 s, through {Report.Clock(due)} when her round was due out");
                 int back = g.Tick;
-                r.Eq(PhaseOf(g), "at post", "the hold over, she stands her post");
-                r.Is(r.Until(() => PhaseOf(g) == "to table", T(30)) && Math.Abs(g.Tick - back - (due - from)) <= 1, $"her round goes on where it stopped: out {(g.Tick - back) / Game.Hz} s later ({(due - from) / Game.Hz} s: her clock stood at {Report.Clock(from)}, her round due out at {Report.Clock(due)})");
+                var order = new[] { "at post", "to table", "serving", "from table" }; int hk = Array.IndexOf(order, held);
+                r.Is(PhaseOf(g) == held || (hk >= 0 && PhaseOf(g) == order[(hk + 1) % order.Length]), $"the hold over, her round goes on from where it stood: {held} when held, {PhaseOf(g)} now (the walk she was on may end the tick it resumes)");
+                if (held == "at post") r.Is(r.Until(() => PhaseOf(g) == "to table", T(30)) && Math.Abs(g.Tick - back - (due - from)) <= 1, $"her round goes on where it stopped: out {(g.Tick - back) / Game.Hz} s later ({(due - from) / Game.Hz} s: her clock stood at {Report.Clock(from)}, her round due out at {Report.Clock(due)})");
+                else r.Is(r.Until(() => PhaseOf(g) != held, T(60)), $"her round goes on where it stopped: on from {held} to {PhaseOf(g)}");
             }, KnowingRoutine());
 
             Add("N132", "—", "The call from mid-walk (brief 022, the summons): Inez turned, the Fixer calls at 0:36, 2 s into her walk to table 3. She turns back and walks to her post; the guard walks the route he always walked to her post and stops 1.2 m short of it, facing her (his walk 1.2 m shorter than to the post); from his arrival they stand together until he turns to go, plus 2 s; then her round resumes at the start of its next rest.", r =>

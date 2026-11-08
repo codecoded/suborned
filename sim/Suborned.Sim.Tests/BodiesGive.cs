@@ -3,7 +3,8 @@
 // law's independent check (BodyCheck), and each promise held whenever it comes up: nobody jumps; a person of the city in the way makes room and
 // steps back; two people of the city face to face squeeze past, turned sideways, two squeeze widths apart; one still stuck changes plans; the
 // tenets are never moved by any of these, and the cell and the armed only make room, for their own side (engine 0.48.0: Aster, brief 098, after
-// a police officer stood 81.6 s behind a response robot).
+// a police officer stood 81.6 s behind a response robot); engine 0.49.0, an idle operative off the place the player put him makes room for anyone
+// (BodiesIdle.cs).
 //   dotnet test sim/Suborned.Sim.Tests -c Release --filter FullyQualifiedName~BodiesGiveTests
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,9 @@ public class BodiesGiveTests
     }
     /// <summary>A person of the city the give and take may move: upright, laid soft and unarmed (not a tenet, not the cell, not the armed).</summary>
     static bool City(Game g, in BodyCheck.Upright u) => !u.Tenet && (u.Kind == "crowd" || u.Kind == "dial-person") && !g.BodyKeepsPlace(u.Id);
+    /// <summary>Engine 0.49.0: a person of the city sat in the chair it took instead (a change of plans to another chair: seated, it is laid as one
+    /// seated is, and the squeeze it came out of ends once the two stand apart): still the city's, not a tenet giving way.</summary>
+    static bool SatInstead(Game g, in BodyCheck.Upright u) => (u.Kind == "crowd" || u.Kind == "dial-person") && g.BodyMove(u.Id) is BodyMoveRead m && m.Replanned && m.AltChair != null && g.BodyIsTenet(u.Id);
     /// <summary>The side an upright body is on, as the law tells them apart (engine 0.48.0, GameBodyGive.SideOf): 1 the cell; 2 security (the
     /// patrol, the city's and the dial's guards, officers, police and robots, the fight's police); 3 the rival crew; 0 none (the city unarmed, the cast).</summary>
     static int Side(Game g, in BodyCheck.Upright u) => u.Kind == "patrol" ? 2 : u.Tenet ? 0 : u.Kind switch // the patrol is security when it asks; a tenet, it never makes room itself
@@ -40,8 +44,10 @@ public class BodiesGiveTests
         "crowd" => g.BodyKeepsPlace(u.Id) ? 2 : 0, // a staff guard of the city
         _ => 0,
     };
-    /// <summary>Making room for `forId` is the law's: a person of the city for anyone, one armed for one of its own side (never an enemy).</summary>
-    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (Side(g, u) != 0 && up.Find(x => x.Id == forId) is var a && (a.Id == null || Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
+    /// <summary>Making room for `forId` is the law's: a person of the city for anyone, one armed for one of its own side (never an enemy); engine
+    /// 0.49.0 (GameBodyGive.ClearsFor), anyone not fixed or laden for a tenet walking (Vale led to the car, a customer stepping into a chair), which
+    /// walks on whoever stays.</summary>
+    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (u.Kind == "cell" && g.BodyIdle(u.Id)) || (up.Find(x => x.Id == forId) is var a && (a.Id == null ? Side(g, u) != 0 : a.Tenet || Side(g, u) != 0 && Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
 
     [Theory]
     [InlineData("unset")] [InlineData("people=64")] [InlineData("guards=64")] [InlineData("guards=64,people=64")] [InlineData("cars=8")]
@@ -63,8 +69,11 @@ public class BodiesGiveTests
     public void ThePersonOfTheCityInTheWayMakesRoomAndStepsBack()
     {
         int orders = 0; var bad = new List<string>(); var since = new Dictionary<string, int>(StringComparer.Ordinal);
+        // engine 0.50.0: with fighters holding cover, loud-fight's street clears differently and fewer stand aside on seed 1 (15), so the law is
+        // looked for on a second seed of the same three runs; the bar is the same: more than twenty asks, each holding every promise
         foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("loud-fight", "people=32") })
-            Play(route, 1, counts, g =>
+            foreach (var seed in new[] { 1, 2 })
+            Play(route, seed, counts, g =>
             {
                 var up = BodyCheck.Of(g); var now = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var u in up)
@@ -84,9 +93,13 @@ public class BodiesGiveTests
     [Fact]
     public void TwoPeopleOfTheCityFaceToFaceSqueezePastTurnedSideways()
     {
+        // engine 0.49.0: on the walk law (every visible gap open) and with nobody waiting inside a table's clearance, two face to face with no room
+        // come up less often (2 pairs on the six runs this test played before), so the law is looked for on more runs (the same six, a third seed, route A at people=128)
+        // and the bar is the same: more than five pairs, each holding every promise. Engine 0.50.0: with a doorway kept clear of posted guards and the
+        // fights changed, those twelve runs show 3 pairs, so the law is looked for on six seeds of the same four runs; the bar is the same
         int squeezes = 0, ticks = 0; var bad = new List<string>(); var seen = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("route-b", "guards=64,people=64") })
-            foreach (var seed in new[] { 1, 2 })
+        foreach (var (route, counts) in new[] { ("careless-takedown-seen-crowd", "people=64"), ("route-a", "people=64"), ("route-b", "guards=64,people=64"), ("route-a", "people=128") })
+            foreach (var seed in new[] { 1, 2, 3, 4, 5, 6 })
                 Play(route, seed, counts, g =>
                 {
                     var up = BodyCheck.Of(g);
@@ -95,7 +108,7 @@ public class BodiesGiveTests
                         var sq = g.BodySqueeze(u.Id); if (!sq.HasValue) continue;
                         var (with, facing) = sq.Value; ticks++;
                         if (seen.Add(string.CompareOrdinal(u.Id, with) < 0 ? $"{route}#{seed}:{u.Id}+{with}" : $"{route}#{seed}:{with}+{u.Id}")) squeezes++; // each pair once
-                        if (!City(g, u)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) squeezes, but it keeps its place");
+                        if (!City(g, u) && !SatInstead(g, u)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) squeezes, but it keeps its place");
                         var back = g.BodySqueeze(with); if (!back.HasValue || back.Value.with != u.Id) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} squeezes past {with}, who does not squeeze past it");
                         if (up.Find(x => x.Id == with) is var o && o.Id != null && G.Dist(o.At, u.At) < 2 * g.R.BodySqueezeCm) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} and {with} {G.Dist(o.At, u.At)} cm apart, inside two squeeze widths");
                         if (facing == default || (g.FacingNow(u.Id) is Pt f && f != facing)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} squeezing faces {g.FacingNow(u.Id)}, not sideways {facing}");
@@ -109,7 +122,10 @@ public class BodiesGiveTests
     public void APersonOfTheCityStillStuckChangesPlans()
     {
         int replans = 0; var bad = new List<string>(); var by = new SortedDictionary<string, int>(StringComparer.Ordinal);
-        foreach (var (route, counts) in new[] { ("loud-fight", "guards=64,people=64"), ("route-b", "guards=64,people=64"), ("careless-takedown-seen-crowd", "people=64") })
+        // engine 0.50.0: with posted guards out of the doorways fewer are stuck at the doors, and the three runs this test played show none, so the
+        // law is looked for where it still comes up on the route scripts (route B at people=64, the body found at guards=64 and people=64: 2 and 7 changes
+        // of plans on 0.50.0); the bar is the same: somebody changes plans, each holding every promise
+        foreach (var (route, counts) in new[] { ("loud-fight", "guards=64,people=64"), ("route-b", "guards=64,people=64"), ("careless-takedown-seen-crowd", "people=64"), ("route-b", "people=64"), ("careless-body-found", "guards=64,people=64") })
             foreach (var seed in new[] { 1, 2, 3 })
             {
                 var was = new HashSet<string>(StringComparer.Ordinal);
@@ -119,7 +135,7 @@ public class BodiesGiveTests
                     foreach (var u in BodyCheck.Of(h))
                     {
                         if (h.BodyMove(u.Id) is not BodyMoveRead m || !m.Replanned) continue; now.Add(u.Id);
-                        if (!City(h, u)) bad.Add($"{route} #{seed} {Report.Clock(h.Tick)}: {u.Id} ({u.Kind}) changed plans, but it keeps its place");
+                        if (!City(h, u) && !SatInstead(h, u)) bad.Add($"{route} #{seed} {Report.Clock(h.Tick)}: {u.Id} ({u.Kind}) changed plans, but it keeps its place");
                         if (m.AltChair != null && h.People.Exists(p => p.Id == u.Id)) bad.Add($"{route} #{seed}: one of the cast took another chair");
                     }
                     was = now;
@@ -141,7 +157,7 @@ public class BodiesGiveTests
                 var up = BodyCheck.Of(g);
                 foreach (var u in up)
                 {
-                    if (City(g, u)) continue; looked++;
+                    if (City(g, u) || SatInstead(g, u)) continue; looked++;
                     if (g.BodyMove(u.Id) is not BodyMoveRead m) continue;
                     if (u.Tenet || m.SqueezeWith != null || m.Replanned) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) {(m.SqueezeWith != null ? "squeezes past " + m.SqueezeWith : m.RoomFor != null ? "made room for " + m.RoomFor : "changed plans")}");
                     else if (m.RoomFor != null) { if (RoomByLaw(g, up, u, m.RoomFor)) own++; else bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) made room for {m.RoomFor}, not one of its own side"); }

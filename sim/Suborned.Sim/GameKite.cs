@@ -117,7 +117,7 @@ namespace Suborned.Sim
             foreach (var h in Hostiles)
             {
                 if (h.Down || !h.Present || h.Gun.St == "break" || h.Gun.St == "gone" || forCar.Contains(h.Id)) continue; // engine 0.34.0 (M067-K3 a): the walk to the car takes no kite step
-                if (h.Closing && h.Gun.St == "advance" && h.Moving(Tick)) continue; // engine 0.34.1 (Aster's ruling within M067-SQ2): nor an advance on an operative, which closes
+                if (h.Closing && h.Gun.St == "advance" && h.Moving(Tick)) continue; // engine 0.34.1 (Aster's ruling within M067-SQ2): nor an advance on an operative, which closes; engine 0.50.0, nor a police body's close (fight.cover)
                 KiteBody(h.Gun, h.Pos(Tick), h, -1);
             }
             if (unitDisp.Count > 0) { var stale = new List<string>(); foreach (var kv in unitDisp) { var su = KiteUnit(kv.Key); if (su == null || su.Gun.Down || !UnitStill(su)) stale.Add(kv.Key); } foreach (var x in stale) unitDisp.Remove(x); } // it walks on (or back): its own route starts where it stood
@@ -179,17 +179,7 @@ namespace Suborned.Sim
                 if (u != null) unitDisp[u.Id] = disp; else secDisp[k] = disp;
                 return;
             }
-            // rivals: out of the shooter's line
-            if (h == null || Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
-            if (h.Blocker) return; // Motive M059-B2 (engine 0.33.0; GDD §06): a rival blocker keeps its lane and answers only from it, as the police blocker does
-            g.StepAt = Tick;
-            var dest = KiteHideOut(g, pos, sp, Car, out var c); // engine 0.34.0 (Motive M067-SQ1): the step out of a line never ends in the car's hold or lane
-            if (!dest.HasValue && !PinHolds(g)) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos && !HoldsCar(sp2)) dest = sp2; } // brief 039: pinned, no advance; retest R4 (Pulse §5): no hide, it advances to its ring of the shooter (SQ1: not into the hold; else it stands)
-            if (!dest.HasValue) return;
-            if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(c != null ? $"out of the line to {c.Id}" : "out of the line")}.");
-            g.KiteLast = Tick;
-            if (c != null) TakeCover(g, c);
-            MoveTo(h, dest.Value, true); h.Why = "answer";
+            if (h != null) KiteRivalStep(g, pos, sp, h, eff); // rivals: out of the shooter's line (GameCoverHold.cs; engine 0.50.0, committed to where he moved)
         }
 
         /// <summary>Motive tuning.md §7.2 rule 3: a final-fight police body (an officer, the joined response unit, a police unit) shot by an operative
@@ -231,13 +221,14 @@ namespace Suborned.Sim
             // third retest (Suture retest3.md N7, his PROBE_REPLAN): a body whose position no longer shields it from where the shooter stands
             // now re-plans kite.react after its last step, not cover.stepGap
             if (Tick - g.StepAt < Kr.KiteReact) return;
+            if (h != null ? CommitHolds(h, sp) : CommitHoldsUnit(u!, sp)) return; // engine 0.50.0 (fight.cover): committed to a place that still shields it from the shooter, it walks on or holds there
             g.StepAt = Tick;
             var best = FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) { KiteFightClose(g, pos, sp, h, u); return; }
-            if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks).");
+            if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks; its stand {G.Dist(h != null ? h.Home : pos, Car)} cm from the car)."); // engine 0.49.0: the stand the rule measured against (FightCover), for the case to read
             g.KiteLast = Tick;
-            if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At, true); h.Why = "answer"; g.St = "advance"; return; }
+            if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At, true); h.Why = "answer"; g.St = "advance"; CommitTo(h, g.KiteBy, best.At, best); return; }
             var path = KitePath(g.Id, pos, best.At, int.MaxValue / 20); if (path == null) return;
-            unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
+            unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) }; CommitUnit(g, g.KiteBy, path.End, best);
         }
 
         /// <summary>Tuning.md §7.10 rule 2's close: the best shielding cover (free, at least partial, present, shielding from the shooter) within
@@ -258,7 +249,7 @@ namespace Suborned.Sim
             var to = best?.At ?? stop; if (to == pos || HoldsCar(to)) return; // SQ1: with no spot outside the hold it stays where it stands
             Note("ai.kite", $"{g.Id} is still fired on by {g.KiteBy} beyond its reach: it closes {(best != null ? $"to cover at {best.Id}" : "to its ring")} ({G.Dist(pos, sp) / 100} m out).");
             g.KiteLast = Tick; g.StepAt = Tick;
-            if (h != null) { if (best != null) { ReleaseCover(g); TakeCover(g, best); } MoveTo(h, to, true); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; } // engine 0.34.0: its stand is where the walk ends (the free cell nearest the point), so it holds there
+            if (h != null) { if (best != null) { ReleaseCover(g); TakeCover(g, best); } MoveTo(h, to, true); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; h.Closing = h.Run != null; return; } // engine 0.50.0 (fight.cover): a close is an advance, never turned back on its walk (KiteTick), as a rival's (0.34.1) // engine 0.34.0: its stand is where the walk ends (the free cell nearest the point), so it holds there
             var path = KitePath(g.Id, pos, to, int.MaxValue / 20); if (path == null) return;
             unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
         }
@@ -274,7 +265,7 @@ namespace Suborned.Sim
             if (h != null)
             {
                 if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");
-                g.KiteLast = Tick; MoveTo(h, to, true); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; // engine 0.34.0: its stand is where the walk ends (the free cell nearest its stop point)
+                g.KiteLast = Tick; MoveTo(h, to, true); h.Why = "answer"; h.Home = h.Run?.End ?? h.At; g.St = "advance"; h.Closing = h.Run != null; return; // engine 0.34.0: its stand is where the walk ends (the free cell nearest its stop point); 0.50.0: a close, never turned back on its walk
             }
             var path = KitePath(g.Id, pos, to, int.MaxValue / 20); if (path == null) return;
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");

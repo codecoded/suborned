@@ -96,6 +96,9 @@ namespace Suborned.Sim
         public int KiteCapTick = -1, KiteHoldAt = -1;
         /// <summary>Tuning.md §7.10 rule 2: when this police body, shielded and shot from beyond its max ring, began holding (or last closed); -1 none.</summary>
         public int KiteCoverAt = -1;
+        /// <summary>Engine 0.50.0 (rulebook fight.cover, GameCoverHold.cs): a move out of a shooter's line commits a fighter to where he moved: the
+        /// shooter ("" none), where the walk ends and the cover point it holds ("" a blind point). Hashed only when set.</summary>
+        public string Commit = "", CommitCover = ""; public Pt CommitAt;
         /// <summary>Tuning.md §11 (engine 0.17.0; Sky on firing, brief 024): the driven agent's trigger, from the logged trigger input. Down
         /// (Trig); its target (TrigT), kept on release with the aim and the count, so a press on the same target fires on cadence with no
         /// aim-new and no reset; a press waiting for its one shot (TrigTap: a buffer of one, never a queue); forced (the host's hold or the ring's Fire). Hashed
@@ -152,6 +155,9 @@ namespace Suborned.Sim
         /// <summary>Brief 098 L9 (GameBodies.cs): where the law laid him relative to his own place, and the walk that lay was taken on (a new walk
         /// starts where he stands, so it carries none).</summary>
         public BodyLay Body; public Path? BodyWalk;
+        /// <summary>Engine 0.49.0 (brief 098): where the player's last move put him (null: none yet). An operative with no order away from it is idle, and
+        /// steps aside for one held behind him as anyone does (GameBodyGive.cs); at it, he holds the place he was put in. Hashed when set.</summary>
+        public Pt? PlacedAt;
         public bool Down => Gun.Down;
         public static string Name(OpId id) => id == OpId.Scout ? "scout" : id == OpId.Fixer ? "fixer" : id == OpId.Tech ? "tech" : "enforcer";
         public static OpId Parse(string s) => s == "scout" ? OpId.Scout : s == "fixer" ? OpId.Fixer : s == "tech" ? OpId.Tech : s == "enforcer" ? OpId.Enforcer : throw new FormatException($"operative '{s}' is unknown (scout, fixer, tech, enforcer)");

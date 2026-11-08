@@ -20,7 +20,7 @@
   {"tick":1610,"op":"fixer","do":"board","target":"car"},
   {"tick":1610,"op":"tech","do":"move","to":"d:Getaway bay"},
   {"tick":1611,"op":"scout","do":"board","target":"car"},
-  {"tick":1813,"op":"tech","do":"board","target":"car"},
+  {"tick":1809,"op":"tech","do":"board","target":"car"},
   {"tick":2290,"op":"enforcer","do":"move","to":"d:Getaway bay"}
  ],
  "until": 4900
