@@ -126,3 +126,19 @@ The "perhaps" leaves it to the real capture: Latch shoots rest, the seal with po
   - three lines the host plays at the wrong moment (Latch).
 
   Then one build.
+
+## Round 3 approved (2026-11-09)
+Sky: "yes" to Glyph's round 3 (`briefs/101/glyph/r3/`).
+- **Build order (Latch):**
+  1. Inez's card as a slip on her.
+  2. The next-event row tagged `next`.
+  3. Timed tabs for window markers and attention clocks.
+  4. Pops.
+  5. Done chips.
+  6. The act ring.
+  7. The callout.
+  8. A sweep of the rest.
+
+  Plus the lozenge's hover showing the card's full line. Then one build.
+- **Splice:** the budget's `next` kind (a name of at most 3 words and 16 characters, one m:ss).
+- **Fable:** the "Take control: T" pop names the click, not a key.
