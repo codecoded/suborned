@@ -204,7 +204,12 @@ describe('the plan', () => {
   test('the table\'s what-if: documents run nothing but the base', () => {
     expect(whatIf(m, ['briefs/078/x.md', 'GDD/a.md', 'tools/game/batch.ts', 'tools/game/x.test.ts'])).toMatchObject({ mode: 'delta', only: [] });
     expect(whatIf(m, [PLAY + 'Proof29.cs']).only).toEqual(['holdActs', 'done', 'r29', 'rings', 'holdRange']);
-    expect(whatIf(m, [PLAY + 'HudToolkit.Scope.cs']).only).toEqual(['r059', 'r067', 'r123', 'hudClick']);
+    expect(whatIf(m, [PLAY + 'HudToolkit.Menu.cs']).only).toEqual(['r059', 'r067', 'r123', 'hudClick']); // a part no proof reads and r083's pictures don't show
+    // brief 101: a part on every play frame (the lens, the clock stack) is in r083's judged picture too (r085-conv-cards), so a change to it runs r083 as well
+    for (const f of ['HudToolkit.Scope.cs', 'HudToolkit.Clock.cs', 'HudToolkit.Faces.cs']) expect(whatIf(m, [PLAY + f]).only).toEqual(['r059', 'r067', 'r123', 'r083', 'hudClick']);
+    // the street kit draws every piece, as the HUD's root does; a new host file no proof reaches runs no section, and says why
+    expect(whatIf(m, [PLAY + 'HudToolkit.Street.cs']).mode).toBe('full'); expect(whatIf(m, [PLAY + 'HudToolkit.Tabs.cs']).mode).toBe('full');
+    expect(whatIf(m, [PLAY + 'HostWays101.cs'])).toMatchObject({ mode: 'delta', only: [] });
   });
 });
 

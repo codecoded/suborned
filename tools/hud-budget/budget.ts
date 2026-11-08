@@ -9,16 +9,18 @@ import type { Image } from './png';
 import { checkPage, type PagePart } from './page';
 import { checkBook, isBook } from './book';
 import { BUBBLE, CARD_MAX as CARDS, conversationLines, speechFault } from './speech';
+import { NEXT_MAX, isNextText, nextFaults } from './next';
+export { NEXT_MAX };
 
 /** `page`: a full-screen page outside play (the briefing page, GDD v0.27.0 §10), judged by its own checks (page.ts), never by coverage or the reading caps. `book`: the book's
  *  pages (the start page, the debrief), on their own checks (book.ts); a `page` manifest with the book's section signs is read as the book.
  *  `briefing`: RETIRED with the street overlay (brief 062 B, gone in v0.27.0); kept only so the archived street-briefing fixtures still judge as they were shot. */
 export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page' | 'book';
 export interface Rect { x: number; y: number; w: number; h: number }
-export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card'; // pin, paper, band: the page's (page.ts); card: a conversation's cards
+export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card'; // pin, paper, band: the page's (page.ts); card: a conversation's cards; next: the next-event row (next.ts)
 /** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
-export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'pill' | 'lock' | 'chip' | 'altline' | 'card';
-export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'pill', 'lock', 'chip', 'altline', 'card'];
+export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'pill' | 'lock' | 'chip' | 'altline' | 'card';
+export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'next', 'pill', 'lock', 'chip', 'altline', 'card'];
 export interface Element extends Rect {
   kind: Kind; text?: string; facts?: string[]; verbs?: string[];
   /** The page's pieces (state `page`, page.ts): its part (read from text and layout when absent), a pin's number or `car`, the rows as wrapped, and an id a child names as its `parent`. */
@@ -30,7 +32,7 @@ export interface Run { x: number; y: number; w: number; h: number; comps: number
 export interface Report {
   width: number; height: number; state: State; mask: 'hud' | 'world' | 'rects';
   coveragePct: number; footprintPct: number; /** null: the state has no coverage limit (`page`) */ limitPct: number | null;
-  runs: Run[]; sentences: Run[]; blocks: Run[][]; speech: Run[]; beats: Run[]; lines: Run[]; pops: Run[]; markers: Run[];
+  runs: Run[]; sentences: Run[]; blocks: Run[][]; speech: Run[]; beats: Run[]; lines: Run[]; pops: Run[]; markers: Run[]; nexts: Run[];
   pills: Run[]; locks: Run[]; chips: Run[]; altlines: Run[]; bars: Run[];
   failures: string[]; warnings: string[]; pass: boolean;
   /** state `page`: the words the page reads (glyph-budget §0), its cap is page.ts PAGE.words */
@@ -56,7 +58,8 @@ export const SENTENCE_WORDS = 3, SENTENCE_COMPS = 14, ALT_WORDS = 5;
 export const SPEECH_MAX = BUBBLE, BEAT_MAX = { lines: 1, words: 6, onScreen: 2 }, LINE_MAX = { lines: 1, words: 6, onScreen: 1 }; // line = the objective or the Next Step hint: one imperative, at most six words, one at a time
 /** A refusal pop (GDD §10 "Refusals: one pop of an icon and ≤ 4 words"): one line, at most four words, never a sentence of running text. The host keeps a pool of three, so three at once is the most a frame can show. [S] */
 export const POP_MAX = { lines: 1, words: 4, onScreen: 3 };
-/** A window marker (the seal clock, GDD §10: "a lock and m:ss under the clock bar"): a clock reading, not a line. At most MARKER_MAX.words words of text; it never counts as a goal or hint line. */
+/** A window marker (the seal clock, GDD §10: "a lock and m:ss under the clock bar"): a clock reading, not a line. At most MARKER_MAX.words words of text; it never counts as a goal or hint line.
+ *  The next-event row is not one: it has its own kind and caps (next.ts NEXT_MAX), and a marker that reads as it is read as it (recognise). */
 export const MARKER_MAX = { words: 2 };
 /** A bare clock reading (m:ss or h:mm:ss). A `line` element whose text is only this is the seal's window marker emitted under the old kind: it is read as a marker, never as a second goal line. */
 export const isClock = (t: string | undefined) => /^\s*\d{1,2}:\d{2}(:\d{2})?\s*$/.test(t ?? '');
@@ -105,8 +108,10 @@ const HEAD = /^(Hold|Let go)$/;
  *  - an order pill: a `·`-separated line headed `Hold` or `Let go`, or ending in a figure ("Hold · Board · 8 s", the walk-in's "to Inez · Listen · 13 s", "Aiming · 1 s");
  *  - a lock pill: any other `·`-separated line, ending in its reason ("Listen to the guard · Already heard"); the goal line and the hints never carry the dot;
  *  - an Alt line: in the `alt` state, a line longer than the goal line's six words or holding a full stop before more text ("Go without Vale calls off the attempt. …").
- *  A clock alone is the seal's marker (as before). Anything else stays a `line`. Its words are never hidden: each recognised piece keeps its text and its caps. */
+ *  A clock alone is the seal's marker (as before). Anything else stays a `line`. Its words are never hidden: each recognised piece keeps its text and its caps.
+ *  A `marker` with letters before a trailing clock is the next-event row, which builds to 0.2.287 write as a marker (HudToolkit.Clock.cs): `next`, held to NEXT_MAX until the host tags it. */
 export function recognise(e: Element, state: State): Element {
+  if (e.kind === 'marker') return isNextText(e.text) ? { ...e, kind: 'next' } : e; // a bare clock, or words with no clock, stay a marker
   if (e.kind !== 'line') return e;
   const t = e.text ?? '';
   if (isClock(t)) return { ...e, kind: 'marker' };
@@ -316,13 +321,13 @@ export function analyse(shot: Image, o: Options): Report {
     const book = o.state === 'book' || isBook(o.manifest?.elements ?? [], w, h), pg = book ? checkBook(shot, mask, o.manifest?.elements ?? []) : checkPage(shot, mask, o.manifest?.elements ?? [], () => paperTexture(shot, mask));
     if (book && o.state === 'page') pg.warnings.unshift('the manifest says `page`; read as the book by its section signs (HudToolkit.BookManifest\'s default; `book` once the host writes it)');
     if (!o.manifest) pg.failures.unshift('a page needs its manifest: every word on it is a manifest element');
-    return { width: w, height: h, state: book ? 'book' : 'page', mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct: null, runs: all, sentences: [], blocks: [], speech: [], beats: [], lines: [], pops: [], markers: [], pills: [], locks: [], chips: [], altlines: [], bars: [], failures: pg.failures, warnings: pg.warnings, pass: pg.failures.length === 0, pageWords: pg.words };
+    return { width: w, height: h, state: book ? 'book' : 'page', mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct: null, runs: all, sentences: [], blocks: [], speech: [], beats: [], lines: [], pops: [], markers: [], nexts: [], pills: [], locks: [], chips: [], altlines: [], bars: [], failures: pg.failures, warnings: pg.warnings, pass: pg.failures.length === 0, pageWords: pg.words };
   }
   const limitPct = LIMIT[o.state], els = (o.manifest?.elements ?? []).map(e => recognise(e, o.state)); // today's pills, Alt line and seal clock arrive as `line`: read by their text shape (recognise)
   const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
   const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
   for (const r of all) { const e = els.find(e => TEXT_KINDS.includes(e.kind) && inside(r, e)); if (e) { r.kind = e.kind as TextKind; } }
-  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker')) for (const r of all) if (inside(r, e)) { r.words = e.kind === 'speech' ? speechWords(e.text) : wordsOf(e.text); owner.set(r, e); } }
+  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker' || e.kind === 'next')) for (const r of all) if (inside(r, e)) { r.words = e.kind === 'speech' ? speechWords(e.text) : wordsOf(e.text); owner.set(r, e); } }
   for (const e of els) { const n = e.kind === 'chip' ? chipWords(e) : (e.kind === 'pill' || e.kind === 'lock' || e.kind === 'altline') && e.text ? glyphWords(e.text) : undefined; if (n !== undefined) for (const r of all) if (r.kind === e.kind && inside(r, e)) { r.words = n; owner.set(r, e); } } // the new kinds count as Glyph counts (glyph-budget §0)
   const art = els.filter(e => e.kind === 'image'), pillRuns = all.filter(r => r.kind === 'pill'), lockRuns = all.filter(r => r.kind === 'lock'), chipRuns = all.filter(r => r.kind === 'chip'), altRuns = all.filter(r => r.kind === 'altline'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line'), popRuns = all.filter(r => r.kind === 'pop'), markerRuns = all.filter(r => r.kind === 'marker');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
@@ -365,6 +370,14 @@ export function analyse(shot: Image, o: Options): Report {
   if (bigMarker) failures.push(`a window marker reads "${bigMarker.text}": a lock and m:ss, at most ${MARKER_MAX.words} words`);
   // the order pill and the lock pill (glyph-budget §1, §2): one slot, one line each, active only
   const pills = els.filter(e => e.kind === 'pill'), locks = els.filter(e => e.kind === 'lock'), sOf = (e: Element) => `"${e.text ?? '(no text)'}"`;
+  // the next-event row (next.ts): its name and its one clock, one line, one on screen
+  const nexts = els.filter(e => e.kind === 'next' && onScreen(e, { w, h })), nextRuns = all.filter(r => r.kind === 'next');
+  if (nexts.length > NEXT_MAX.onScreen) failures.push(`${nexts.length} next-event rows on screen (at most ${NEXT_MAX.onScreen})`);
+  for (const e of nexts) {
+    const rs = nextRuns.filter(r => inside(r, e));
+    if (rs.length && lines(rs) > NEXT_MAX.lines) failures.push(`the next-event row ${sOf(e)} wraps over more than one line`);
+    failures.push(...nextFaults(e.text ?? ''));
+  }
   if (pills.length + locks.length > PILL_SLOT) failures.push(`${pills.length + locks.length} pills on screen (an order pill and a lock pill share one slot: at most ${PILL_SLOT})`);
   for (const e of pills) {
     const rs = pillRuns.filter(r => inside(r, e)), what = `the order pill ${sOf(e)}`;
@@ -433,7 +446,7 @@ export function analyse(shot: Image, o: Options): Report {
     if (rows > BAR_MAX.rows) failures.push(`the clock bar reads as ${rows} rows (one row of figures)`);
     const word = e.text?.split(/\s+/).find(x => /\p{L}{2,}/u.test(x)); if (word) failures.push(`the clock bar carries the word "${word}" (figures and icons only)`);
   }
-  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, pills: pillRuns, locks: lockRuns, chips: chipRuns, altlines: altRuns, bars: barRuns, failures, warnings, pass: failures.length === 0 };
+  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, nexts: nextRuns, pills: pillRuns, locks: lockRuns, chips: chipRuns, altlines: altRuns, bars: barRuns, failures, warnings, pass: failures.length === 0 };
 }
 
 /** The share (%) of the frame outside the HUD layer (and 2 px clear of it) that is textured, not flat: a page's paper reads about 1%, the street 25 to 45% (0.2.130). Sampled every 2 px. */
