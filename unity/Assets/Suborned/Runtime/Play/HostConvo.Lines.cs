@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Suborned.Play
 {
     /// <summary>Brief 085 (Fable's handover-to-latch.md): which lines an act that has landed plays. A conversation (scenes.conversations, found by the engine's outcome, never a count of orders) plays whole,
-    /// its cards after it; an act with none plays today's scenes.items lines whole, Mislead its `done` and `rivals-misled` lines. First time counts by the conversation's id, else the scene's key, else
+    /// its cards after it; an act with none plays today's scenes.items lines whole, Mislead the rival's `rivals-misled` line (brief 102: the Scout's `done` is a landing, quiet in play). First time counts by the conversation's id, else the scene's key, else
     /// verb and target for Mislead. An interrupted act plays no scene. When no scene may play the same lines stay as bubbles. View only: the engine never hears of any of this.</summary>
     public sealed partial class HandoverHost
     {
@@ -92,7 +92,7 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>No conversation: the scene's lines, the same words as today, past the reply. Listen opens on the Scout's arrive and frames the overheard pair when they stand together.</summary>
+        /// <summary>No conversation: the scene's lines, the same words as today, past the reply. Listen frames the overheard pair when they stand together (brief 102: the Scout's arrive, quiet in play, no longer opens it).</summary>
         void ConvoItems(Convo c, FeedCard card, string verb, string agent, bool rival)
         {
             var lines = card?.Lines;
@@ -100,12 +100,12 @@ namespace Suborned.Play
             switch (verb)
             {
                 case "mislead":
-                    if (Peek("done", "mislead", agent) is string dn) c.Lines.Add((agent, dn));
+                    if (Peek("done", "mislead", agent) is string dn && !CellQuiet(agent, "done/mislead", dn)) c.Lines.Add((agent, dn)); // brief 102: her report is a landing, quiet in play; the rival's answer is his own
                     if (Peek("rivals-misled", null, "rivals") is string rm) c.Lines.Add(("rivals", rm));
                     break;
                 case "listen":
                     if (lines == null || lines.Count == 0) break;
-                    if (Peek("arrive", "listen", agent) is string ar) c.Lines.Add((agent, ar));
+                    if (Peek("arrive", "listen", agent) is string ar && !CellQuiet(agent, "arrive/listen", ar)) c.Lines.Add((agent, ar)); // brief 102: the Scout listens; she doesn't announce it
                     foreach (var l in lines) if (l.Text.Length > 0) c.Lines.Add((l.Speaker, l.Text));
                     foreach (var l in lines) if (l.Speaker != c.Target && IsRole(l.Speaker) && ConvoView(l.Speaker) is Transform os && os.gameObject.activeInHierarchy && ConvoView(c.Target) is Transform ts && Vector3.Distance(os.position, ts.position) < 6f) { c.KeyA = l.Speaker; break; }
                     break;

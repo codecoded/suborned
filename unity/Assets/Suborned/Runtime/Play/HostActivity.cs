@@ -211,9 +211,11 @@ namespace Suborned.Play
         public sealed class Said { public int Tick; public float Born; public string Speaker = "", Name = "", Text = ""; public int Agent = -1; public Feedback Kind; }
         public readonly List<Said> Talk = new();
 
-        void Say(string speaker, string text, Feedback kind = Feedback.Info)
+        /// <summary>A line said in the street: the log, the act card or the speaker's own card, a bubble. `moment` is the text's "event/verb" (CellQuiet's key).</summary>
+        void Say(string speaker, string text, Feedback kind = Feedback.Info, string moment = null)
         {
             if (string.IsNullOrEmpty(text) || ConvoQuiet(speaker)) return; // brief 085: what a scene at this landing says, or says better; never the old words in the history
+            if (CellQuiet(speaker, moment, text)) return; // brief 102: the cell is quiet in play, but in scenes with people (HostQuiet)
             int agent = Array.IndexOf(OpKeys, speaker);
             Talk.Add(new Said { Born = Time.unscaledTime, Tick = Game.Tick, Speaker = speaker, Name = Text?.Speaker(speaker) ?? speaker, Text = text, Agent = agent, Kind = kind });
             FeedSay(speaker, text);
@@ -233,14 +235,14 @@ namespace Suborned.Play
             var line = Text.Pick(new PlayText.Query { Event = ev, Verb = verb, Speaker = speaker, Outcome = outcome, Temperament = temperament, About = about });
             if (line == null) return false;
             int k = Array.IndexOf(OpKeys, speaker);
-            Say(speaker, Fill(line, who, 0, 0, k >= 0 ? AgentNames[k] : ""), kind);
+            Say(speaker, Fill(line, who, 0, 0, k >= 0 ? AgentNames[k] : ""), kind, Moment(ev, verb)); // a quiet line still takes its turn (brief 102)
             return true;
         }
 
         /// <summary>A world or end event (the text's `events`): up to `most` of its speakers who have a line say it.</summary>
         readonly Dictionary<string, int> beatAt = new();
 
-        void WorldBeat(PlayText.EventText e, string outcome, string who, Feedback kind, int most)
+        void WorldBeat(PlayText.EventText e, string outcome, string who, Feedback kind, int most, string verb = null)
         {
             if (rangeMode && e.Id != "going-loud") return; // brief 029 (Sky on 0.2.34): the range has no mission, so none of the Handover's story lines (the start's "The square looks ordinary")
             // a city event that repeats (a drawn weapon seen each tick, gunfire) speaks at most once every 15 s
@@ -251,18 +253,18 @@ namespace Suborned.Play
             {
                 if (said >= most) break;
                 string temper = sp is "waitress" or "driver" or "guard" or "councillor" ? Game.PersonByRole(sp).Temperament : null;
-                if (Beat(e.Id, null, sp, outcome, temper, null, who, kind)) said++;
+                if (Beat(e.Id, verb, sp, outcome, temper, null, who, kind)) said++;
             }
         }
 
         static string VerbOf(Order o) => o.Do == "turn" ? o.Approach : o.Do;
 
-        /// <summary>An order given (a click, a panel card): the agent's `ack` beat; given on the spot (no walk first), the `arrive` beat follows.</summary>
+        /// <summary>An order given (a click, a panel card): the agent's `ack` beat; given on the spot (no walk first), the `arrive` beat follows. Both are quiet in play (brief 102, HostQuiet); a call's scene still plays.</summary>
         void SayOrder(OpId by, Order o, ActWalk w)
         {
             string speaker = Op.Name(by), verb = VerbOf(o);
             if (!Beat("ack", verb, speaker, who: Name(o.Target), kind: Feedback.Ok))
-                Say(speaker, w != null ? $"Heading to {(w.Place.Length > 0 ? PlaceName(w.Place) : Name(o.Target))}." : "On it.", Feedback.Ok);
+                Say(speaker, w != null ? $"Heading to {(w.Place.Length > 0 ? PlaceName(w.Place) : Name(o.Target))}." : "On it.", Feedback.Ok, Moment("ack", verb));
             if (w == null) SayArrive(by, o);
             if (o.Do == "call") FeedCall(o.Target);
         }
@@ -357,7 +359,7 @@ namespace Suborned.Play
                 {
                     var id = ex[i];
                     if (id == "done") Beat("done", land.verb, land.op, kind: Feedback.Ok);
-                    else if (Text.Events.TryGetValue(id, out var e) && e.Log.Contains(code)) WorldBeat(e, null, "", Feedback.Info, id == "taken" ? 1 : 2);
+                    else if (Text.Events.TryGetValue(id, out var e) && e.Log.Contains(code)) WorldBeat(e, null, "", Feedback.Info, id == "taken" ? 1 : 2, id == "taken" ? land.verb : null); // brief 102: Popovic's reply is keyed by the act (take, enter); asked with no verb it never played
                 }
                 return;
             }

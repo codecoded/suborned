@@ -22,7 +22,7 @@ namespace Suborned.Play
         public readonly List<StoryBeat> Beats = new();
         readonly Dictionary<string, float> beatLast = new();
 
-        void ResetLess() { Beats.Clear(); beatLast.Clear(); Bubbles.Clear(); ValeKnownTick = 0; ValeSeen = false; valeInit = false; arriveSaying = false; }
+        void ResetLess() { Beats.Clear(); beatLast.Clear(); Bubbles.Clear(); ValeKnownTick = 0; ValeSeen = false; valeInit = false; arriveSaying = false; CellLines.Clear(); }
 
         /// <summary>A beat for a card or scene: dropped when the same line showed within the dedupe window; whether it shows is decided once,
         /// a moment later, when the event's own speech has had its chance to appear as a bubble in view.</summary>
