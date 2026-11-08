@@ -114,3 +114,15 @@ Fable writes the new labels ("Goes loud") and retires the keys brief 101's remov
 
 The "perhaps" leaves it to the real capture: Latch shoots rest, the seal with police, and the busiest moment beside both mocks' corners, with coverage.
 
+
+## Steps 4–6 built (0.2.287), and Sky's word (2026-11-09)
+- **The roster, the scope and the street layer are in.** Coverage matches the mocks: 3.0 % at rest and 4.2 % at the busiest moment, against today's 4.6 % and 10.0 %.
+- **The reporter's ring:** Sky says "Fine" to keeping it cream on ink, not orange. The play grade turns an orange ground mark into the cones' red. The orange stays on the disc and its count.
+- **Left:**
+  - the news lozenge's why lines must fit the box, about 40 characters (Fable);
+  - the next-event label gets its own limit (Glyph and Splice);
+  - Inez's person card beside the lozenge (Glyph);
+  - the pieces still in the old kit, such as window markers, pops and attention clocks (Glyph's mock, then Latch);
+  - three lines the host plays at the wrong moment (Latch).
+
+  Then one build.
