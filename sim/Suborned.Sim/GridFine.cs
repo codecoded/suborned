@@ -43,6 +43,13 @@ namespace Suborned.Sim
             return a;
         }
 
+        /// <summary>The ground a body stands on, cell by cell (engine 0.49.0): the walk raster's cells, or the grid's own without one. StandFree(i, j) is
+        /// Free at that cell's centre; the driven agent slides along these (GameDrive.cs) and the drive's cases find their walls on them.</summary>
+        public int StandCell => ffree != null ? FCell : Cell;
+        public int SI(int x) => FloorDiv(x - X0, StandCell);
+        public int SJ(int y) => FloorDiv(y - Y0, StandCell);
+        public bool StandFree(int i, int j) => ffree != null ? i >= 0 && j >= 0 && i < FNx && j < FNy && ffree[i * FNy + j] : FreeCell(i, j);
+        public Pt StandCentre(int i, int j) => new Pt(X0 + i * StandCell + StandCell / 2, Y0 + j * StandCell + StandCell / 2);
         int FI(int x) => FloorDiv(x - X0, FCell);
         int FJ(int y) => FloorDiv(y - Y0, FCell);
         /// <summary>p stands on a free raster cell.</summary>

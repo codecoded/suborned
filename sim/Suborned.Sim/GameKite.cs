@@ -233,7 +233,7 @@ namespace Suborned.Sim
             if (Tick - g.StepAt < Kr.KiteReact) return;
             g.StepAt = Tick;
             var best = FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) { KiteFightClose(g, pos, sp, h, u); return; }
-            if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks).");
+            if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks; its stand {G.Dist(h != null ? h.Home : pos, Car)} cm from the car)."); // engine 0.49.0: the stand the rule measured against (FightCover), for the case to read
             g.KiteLast = Tick;
             if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At, true); h.Why = "answer"; g.St = "advance"; return; }
             var path = KitePath(g.Id, pos, best.At, int.MaxValue / 20); if (path == null) return;

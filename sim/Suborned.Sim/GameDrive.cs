@@ -117,26 +117,27 @@ namespace Suborned.Sim
         static long Mm(Pt a, Pt b) => G.Isqrt(G.D2(a, b) * 100); // mm between two cm points, floored to the mm
         void Corrected(Op op) { op.DriveHeld++; driveCorrected[(int)op.Id] = Tick; }
 
-        /// <summary>Move along x from p to x, stopping at the last centimetre before the first blocked cell (the cell p stands in is passable).</summary>
+        /// <summary>Move along x from p to x, stopping at the last centimetre before the first blocked cell (the cell p stands in is passable). Engine
+        /// 0.49.0: the cells a body stands on (the walk raster, Grid.StandFree), so a driven agent goes where a walker goes and no further.</summary>
         Pt AxisX(Pt p, int x)
         {
-            var g = S.Grid; int j = g.CJ(p.Y), i0 = g.CI(p.X), i1 = g.CI(x);
+            var g = S.Grid; int c = g.StandCell, j = g.SJ(p.Y), i0 = g.SI(p.X), i1 = g.SI(x);
             if (i1 == i0) return new Pt(x, p.Y);
             int step = i1 > i0 ? 1 : -1;
             for (int i = i0 + step; ; i += step)
             {
-                if (!g.FreeCell(i, j)) return new Pt(step > 0 ? g.X0 + i * g.Cell - 1 : g.X0 + (i + 1) * g.Cell, p.Y);
+                if (!g.StandFree(i, j)) return new Pt(step > 0 ? g.X0 + i * c - 1 : g.X0 + (i + 1) * c, p.Y);
                 if (i == i1) return new Pt(x, p.Y);
             }
         }
         Pt AxisY(Pt p, int y)
         {
-            var g = S.Grid; int i = g.CI(p.X), j0 = g.CJ(p.Y), j1 = g.CJ(y);
+            var g = S.Grid; int c = g.StandCell, i = g.SI(p.X), j0 = g.SJ(p.Y), j1 = g.SJ(y);
             if (j1 == j0) return new Pt(p.X, y);
             int step = j1 > j0 ? 1 : -1;
             for (int j = j0 + step; ; j += step)
             {
-                if (!g.FreeCell(i, j)) return new Pt(p.X, step > 0 ? g.Y0 + j * g.Cell - 1 : g.Y0 + (j + 1) * g.Cell);
+                if (!g.StandFree(i, j)) return new Pt(p.X, step > 0 ? g.Y0 + j * c - 1 : g.Y0 + (j + 1) * c);
                 if (j == j1) return new Pt(p.X, y);
             }
         }

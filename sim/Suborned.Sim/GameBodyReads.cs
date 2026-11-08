@@ -51,6 +51,9 @@ namespace Suborned.Sim
         /// <summary>A test read (never hashed): whether the law laid this body as one the give and take never moves: a tenet, the cell or the armed (the rival crew, guards, officers, police, robots, a
         /// staff guard of the city).</summary>
         public bool BodyKeepsPlace(string id) => bdIx.TryGetValue(id, out var i) && (bds[i].Cls != BcSoft || bds[i].Armed);
+        /// <summary>A test read (never hashed, engine 0.49.0): whether the law laid this body as an idle operative (no order, off the place the player put
+        /// him: OpIdle), who makes room as a person of the city does.</summary>
+        public bool BodyIdle(string id) => bdIx.TryGetValue(id, out var i) && bds[i].Idle;
         /// <summary>A test read (never hashed): whether the law holds this body now (short of its goal, getting nowhere: on its way, not settled).</summary>
         public bool BodyHeld(string id) => bdIx.TryGetValue(id, out var i) && bds[i].StuckN > 0;
         /// <summary>A test read (never hashed): the body as the law laid it this tick: where it stands, its own place, the stop it stands at (a

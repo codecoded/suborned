@@ -36,33 +36,35 @@ namespace Suborned.Sim
         }
         static int Heading(Pt v) => (int)((Math.Atan2(v.Y, v.X) * 180 / Math.PI + 360) % 360); // a scenario's facing only (never read by a rule)
         static bool OnFree(Run r, string op) => r.G.S.Grid.Free(r.Op(op).Pos);
-        /// <summary>The first free cell (ring search from `near`) whose +x neighbour is blocked along three rows, with free ground behind and beside it.</summary>
+        /// <summary>The first free cell a body stands on (ring search from `near`) whose +x neighbour is blocked along a straight run (3.5 m, engine
+        /// 0.49.0: the walk raster's cells, Grid.StandFree; was eight 50 cm cells), with free ground behind and beside it.</summary>
         static Pt? WallEast(Grid gr, Pt near)
         {
-            int ci = gr.CI(near.X), cj = gr.CJ(near.Y);
-            for (int rr = 0; rr < 120; rr++)
+            int ci = gr.SI(near.X), cj = gr.SJ(near.Y), run = 400 / gr.StandCell, lim = 6000 / gr.StandCell;
+            for (int rr = 0; rr < lim; rr++)
                 for (int i = ci - rr; i <= ci + rr; i++) for (int j = cj - rr; j <= cj + rr; j++)
                 {
                     if (Math.Max(Math.Abs(i - ci), Math.Abs(j - cj)) != rr) continue;
                     bool ok = true;
-                    for (int k = -1; k <= 6 && ok; k++) ok = gr.FreeCell(i, j + k) && gr.FreeCell(i - 1, j + k) && !gr.FreeCell(i + 1, j + k);
-                    if (ok) return gr.Centre(i, j);
+                    for (int k = -run / 8; k <= run && ok; k++) ok = gr.StandFree(i, j + k) && gr.StandFree(i - 1, j + k) && !gr.StandFree(i + 1, j + k);
+                    if (ok) return gr.StandCentre(i, j);
                 }
             return null;
         }
         /// <summary>A free cell whose +x and +y neighbours are blocked and whose diagonal +x+y is free: a corner a diagonal step could slip through.</summary>
         /// <summary>The nearest free cell whose two neighbours toward one diagonal are blocked and whose diagonal is free (any of the four
         /// diagonals: brief 055's drawn walk left the block no south-east one), with the cells behind it free; sx, sy the diagonal's steps.</summary>
+        /// Engine 0.49.0: on the cells a body stands on (the walk raster: one such corner on the block today, by the Office).
         static (Pt at, Pt beyond, int sx, int sy)? Corner(Grid gr, Pt near)
         {
-            int ci = gr.CI(near.X), cj = gr.CJ(near.Y);
-            for (int rr = 0; rr < Math.Max(gr.Nx, gr.Ny); rr++)
+            int ci = gr.SI(near.X), cj = gr.SJ(near.Y), nx = gr.HasFine ? gr.FNx : gr.Nx, ny = gr.HasFine ? gr.FNy : gr.Ny;
+            for (int rr = 0; rr < Math.Max(nx, ny); rr++)
                 for (int i = ci - rr; i <= ci + rr; i++) for (int j = cj - rr; j <= cj + rr; j++)
                 {
                     if (Math.Max(Math.Abs(i - ci), Math.Abs(j - cj)) != rr) continue;
                     foreach (var (sx, sy) in new[] { (1, 1), (1, -1), (-1, 1), (-1, -1) })
-                        if (gr.FreeCell(i, j) && !gr.FreeCell(i + sx, j) && !gr.FreeCell(i, j + sy) && gr.FreeCell(i + sx, j + sy) && gr.FreeCell(i - sx, j) && gr.FreeCell(i, j - sy))
-                            return (gr.Centre(i, j), gr.Centre(i + sx, j + sy), sx, sy);
+                        if (gr.StandFree(i, j) && !gr.StandFree(i + sx, j) && !gr.StandFree(i, j + sy) && gr.StandFree(i + sx, j + sy) && gr.StandFree(i - sx, j) && gr.StandFree(i, j - sy))
+                            return (gr.StandCentre(i, j), gr.StandCentre(i + sx, j + sy), sx, sy);
                 }
             return null;
         }
@@ -106,14 +108,14 @@ namespace Suborned.Sim
                 r.Is(pose.Corrected && pose.Pos == r.Op(Scout).Pos, "the host reads the corrected pose");
             }, DriveStart());
 
-            Add("D04", "—", "A wall: the Scout walked (a click) to the nearest straight wall to her east, then driven diagonally into it (east and along) for 4 s. She never stands on a blocked cell or past the wall's face, and slides along it at the along part of her pace.", r =>
+            Add("D04", "—", "A wall: the Scout walked (a click) to the nearest straight wall to her east, then driven diagonally into it (east and along) for 4 s. She never stands on a blocked cell or past the wall's face, and slides along it at the along part of her pace. Engine 0.49.0: the wall and its face on the walk raster (the cells a body stands on, Grid.StandFree), as she now slides on them.", r =>
             {
                 var g = r.G; var gr = g.S.Grid;
                 var w = WallEast(gr, r.Op(Scout).Pos);
                 r.Is(w.HasValue, "a straight wall near the Scout");
                 if (!w.HasValue) return;
                 r.To(r.SendTo(Scout, w.Value));
-                int face = gr.X0 + (gr.CI(w.Value.X) + 1) * gr.Cell; // the wall's west face (cm)
+                int face = gr.X0 + (gr.SI(w.Value.X) + 1) * gr.StandCell; // the wall's west face (cm): engine 0.49.0, where its clearance meets free ground on the walk raster
                 int y0 = r.Op(Scout).Pos.Y, v = WalkCm(r), worstX = int.MinValue; bool free = true;
                 for (int k = 0; k < T(4); k++)
                 {
@@ -124,19 +126,19 @@ namespace Suborned.Sim
                 r.Is(r.Op(Scout).Pos.Y - y0 >= v / 2 * T(3), $"slides along it: {r.Op(Scout).Pos.Y - y0} cm");
             }, DriveStart());
 
-            Add("D05", "—", "A corner: a free cell whose two neighbours toward a diagonal are blocked and whose diagonal is free (any diagonal: brief 055). Driven straight at the diagonal for 2 s, the Scout never passes between the two blocked cells: she stays in her cell or slides out by a free side, never into the diagonal by the corner.", r =>
+            Add("D05", "—", "A corner: a free cell whose two neighbours toward a diagonal are blocked and whose diagonal is free (any diagonal: brief 055; engine 0.49.0: on the walk raster, where the driven agent slides). Driven straight at the diagonal for 2 s, the Scout never passes between the two blocked cells: she stays in her cell or slides out by a free side, never into the diagonal by the corner.", r =>
             {
                 var g = r.G; var gr = g.S.Grid;
                 var c = Corner(gr, r.Op(Scout).Pos);
                 r.Is(c.HasValue, "such a corner on the block");
                 if (!c.HasValue) return;
                 r.To(r.SendTo(Scout, c.Value.at));
-                int ci = gr.CI(c.Value.at.X), cj = gr.CJ(c.Value.at.Y); bool through = false, free = true;
+                int ci = gr.SI(c.Value.at.X), cj = gr.SJ(c.Value.at.Y); bool through = false, free = true;
                 for (int k = 0; k < T(2); k++)
                 {
                     Sample(r, Scout, c.Value.beyond); g.Step();
                     var p = r.Op(Scout).Pos; free &= gr.Free(p);
-                    if (gr.CI(p.X) == ci + c.Value.sx && gr.CJ(p.Y) == cj + c.Value.sy) through = true;
+                    if (gr.SI(p.X) == ci + c.Value.sx && gr.SJ(p.Y) == cj + c.Value.sy) through = true;
                 }
                 r.Is(free && !through, "never through the corner");
             }, DriveStart());

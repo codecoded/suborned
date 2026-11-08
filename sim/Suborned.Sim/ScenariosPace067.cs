@@ -138,12 +138,12 @@ namespace Suborned.Sim
             });
 
             // Motive's run-camera script (briefs/067/motive/plans/run-camera.script.json): the Scout runs 16 legs of 10 m across the entrance camera's view
-            Add("PACE-RUN-NOTICED", "067", "Motive's RUN-NOTICED, M067-B2 (attention.run, engine 0.34.0): the Scout runs back and forth across the entrance camera's view. At the run's first tick in its sight the camera notices her (its clock jumps to the notice mark), the sighting is logged (run.seen) and Alert stays 0; each tick of run in sight counts as standing still, so at Heat 0 it is wary 11.9 s later and reports her 36.9 s later; the report lands at its watcher's next scan as a loiterer's: Alert 1.", r =>
+            Add("PACE-RUN-NOTICED", "067", "Motive's RUN-NOTICED, M067-B2 (attention.run, engine 0.34.0): the Scout runs back and forth across the entrance camera's view. At the run's first tick in its sight the camera notices her (its clock jumps to the notice mark), the sighting is logged (run.seen) and Alert stays 0; each tick of run in sight counts as standing still, so at Heat 0 it is wary 11.9 s later and reports her 36.9 s later; the report lands at its watcher's next scan as a loiterer's: Alert 1. Engine 0.49.0: she walks to the leg's start, so the first sighting is the legs' run.", r =>
             {
                 var g = r.G; var a = new Pt(6000, -4500);
                 var bq = CameraLeg(r, a); if (!r.Is(bq.HasValue, $"a run leg the entrance camera sees end to end from {a}")) return; var b = bq!.Value;
                 int legs = 0;
-                r.To(r.SendTo(Scout, a, run: true));
+                r.To(r.SendTo(Scout, a)); // engine 0.49.0: she walks to the leg's start (a run there now ends in the camera's view, and its sighting is not the legs')
                 for (int k = 0; k < 30 && !g.Over && LogTick(g, "attention.reporting") < 0; k++) { r.To(r.SendTo(Scout, k % 2 == 0 ? b : a, run: true)); legs++; }
                 r.Is(legs >= 8 && !g.Log.Exists(l => l.Code == "order.rejected"), $"she ran {legs} legs between {a} and {b}, every one taken, until the report");
                 r.To(r.SendTo(Scout, new Pt(4600, -5600)));

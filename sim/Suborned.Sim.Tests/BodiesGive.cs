@@ -3,7 +3,8 @@
 // law's independent check (BodyCheck), and each promise held whenever it comes up: nobody jumps; a person of the city in the way makes room and
 // steps back; two people of the city face to face squeeze past, turned sideways, two squeeze widths apart; one still stuck changes plans; the
 // tenets are never moved by any of these, and the cell and the armed only make room, for their own side (engine 0.48.0: Aster, brief 098, after
-// a police officer stood 81.6 s behind a response robot).
+// a police officer stood 81.6 s behind a response robot); engine 0.49.0, an idle operative off the place the player put him makes room for anyone
+// (BodiesIdle.cs).
 //   dotnet test sim/Suborned.Sim.Tests -c Release --filter FullyQualifiedName~BodiesGiveTests
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ public class BodiesGiveTests
         _ => 0,
     };
     /// <summary>Making room for `forId` is the law's: a person of the city for anyone, one armed for one of its own side (never an enemy).</summary>
-    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (Side(g, u) != 0 && up.Find(x => x.Id == forId) is var a && (a.Id == null || Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
+    static bool RoomByLaw(Game g, List<BodyCheck.Upright> up, in BodyCheck.Upright u, string forId) => City(g, u) || (u.Kind == "cell" && g.BodyIdle(u.Id)) || (Side(g, u) != 0 && up.Find(x => x.Id == forId) is var a && (a.Id == null || Side(g, a) == Side(g, u))); // one who has just left the street: the room ends on the next tick (GiveStart)
 
     [Theory]
     [InlineData("unset")] [InlineData("people=64")] [InlineData("guards=64")] [InlineData("guards=64,people=64")] [InlineData("cars=8")]

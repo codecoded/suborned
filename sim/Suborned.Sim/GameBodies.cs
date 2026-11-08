@@ -150,7 +150,7 @@ namespace Suborned.Sim
             for (int i = 0; i < 4; i++)
             {
                 var op = Ops[i]; if (op.Inside || op.InCar || op.CarriedBy.HasValue || op.Down || op.LeftMap) continue;
-                var seat = SeatOf(op); if (seat != null) { seatHeld[seat] = Sim.Op.Name(op.Id); seatSeen.Add(seat); } // engine 0.49.0: an operative in a café chair holds it, as a customer does
+                var seat = SeatOf(op) ?? SittingInto(op); if (seat != null) { seatHeld[seat] = Sim.Op.Name(op.Id); seatSeen.Add(seat); } // engine 0.49.0: an operative in a café chair, or taking his last step into it, holds it, as a customer does
                 bool walkSame = op.Walk != null && ReferenceEquals(op.BodyWalk, op.Walk), fixedOp = op.Busy != null || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || seat != null;
                 var raw = fixedOp ? op.Pos : op.Walk != null ? op.Walk.At(op.WalkMm) : op.Body.Live(Tick) && op.Pos == op.Body.Raw + op.Body.Lay ? op.Body.Raw : op.Pos; // at work or leading Vale he stands where he stands
                 bool anew = fixedOp || (op.Walk != null ? !walkSame : raw == op.Pos); // a new walk or a set place starts where he stands

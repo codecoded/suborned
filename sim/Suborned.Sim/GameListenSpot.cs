@@ -35,13 +35,13 @@ namespace Suborned.Sim
         {
             if (!G.Within(op.Pos, at, reach)) return false;
             if (listenArriving) return true;
-            if (op.Act != null && op.Act.Do == "listen") return SpotOf(op) is not ListenSpot sp || G.Within(op.Pos, sp.At, R.ListenAtSpotCm);
+            if (op.Act != null && op.Act.Do == "listen") return SpotOf(op) is not ListenSpot sp || (sp.Chair.Length > 0 ? op.Pos == sp.At : G.Within(op.Pos, sp.At, R.ListenAtSpotCm)); // engine 0.49.0: a chair is sat in, not stood by
             if (G.Within(op.Pos, at, R.ListenNearStillCm)) return false;
             return SeatOf(op) != null || (BesideSolid(op.Pos) && !S.Grid.Cuts(op.Pos, R.BodyMinCm, R.ListenPassCm)); // engine 0.49.0: seated, or by a wall and out of the way
         }
 
         /// <summary>Is the agent waiting at a Listen's spot for the person to come: the attention clock holds on it.</summary>
-        bool ListenWaiting(Op op) => op.Act != null && op.Act.Do == "listen" && op.Walk == null && SpotOf(op) is ListenSpot sp && G.Within(op.Pos, sp.At, R.ListenAtSpotCm);
+        bool ListenWaiting(Op op) => op.Act != null && op.Act.Do == "listen" && op.Walk == null && SpotOf(op) is ListenSpot sp && (sp.Chair.Length > 0 ? op.Pos == sp.At : G.Within(op.Pos, sp.At, R.ListenAtSpotCm));
 
         /// <summary>The walk in for a Listen: to its spot, held there up to cell.listen.hold from the choice, then chosen afresh; no spot to be had, the old walk in.</summary>
         Path? ListenWalk(Op op, Person p, Order o)
@@ -50,7 +50,7 @@ namespace Suborned.Sim
             if (op.Spot != null && ReferenceEquals(op.Spot.For, o))
             {
                 var have = op.Spot;
-                if (!G.Within(op.Pos, have.At, R.ListenAtSpotCm)) { if (SpotRoute(op.Pos, have.At, have.Stand) is Path r0) return r0; }
+                if (have.Chair.Length > 0 ? op.Pos != have.At : !G.Within(op.Pos, have.At, R.ListenAtSpotCm)) { if (SpotRoute(op.Pos, have.At, have.Stand) is Path r0) return r0; }
                 else if (Tick < have.Until) return new Path(new[] { op.Pos, op.Pos });
             }
             op.Spot = null;
@@ -66,6 +66,7 @@ namespace Suborned.Sim
         {
             if (from == at) return new Path(new[] { from, from });
             if (at == stand) return Walk.Route(from, at) is Pt[] r ? new Path(r) : null;
+            if (!Walk.Free(from) && G.Within(from, at, StepInCm)) return new Path(new[] { from, at }); // on its last step in already (re-aimed there): straight on into the seat
             var w = from == stand ? new[] { from } : Walk.Route(from, stand); if (w == null) return null;
             var l = new Pt[w.Length + 1]; Array.Copy(w, l, w.Length); l[w.Length] = at; return new Path(l);
         }
@@ -139,7 +140,7 @@ namespace Suborned.Sim
 
         /// <summary>By a wall (engine 0.49.0, cell.listen.wall): a solid within `wall` of where its body keeps clear of one, any of eight ways. Was (0.39.0 to
         /// 0.48.0): a blocked 50 cm cell next to it.</summary>
-        internal bool BesideSolid(Pt q)
+        public bool BesideSolid(Pt q)
         {
             int c = R.ListenWallCm, k = c * 707 / 1000;
             return !S.Grid.Free(q + new Pt(c, 0)) || !S.Grid.Free(q - new Pt(c, 0)) || !S.Grid.Free(q + new Pt(0, c)) || !S.Grid.Free(q - new Pt(0, c))
@@ -154,6 +155,9 @@ namespace Suborned.Sim
             return seatAt.TryGetValue(op.Pos, out var name) ? name : null;
         }
         Dictionary<Pt, string>? seatAt;
+        /// <summary>The chair an operative is taking his last step into (his Listen's seat, his walk's end within StepInCm): the law lays him as one seated,
+        /// a body it never moves, so he walks his own walk in across the chair's ground (as a café customer does), never stepped back off it.</summary>
+        string? SittingInto(Op op) => op.Walk != null && SpotOf(op) is ListenSpot sp && sp.Chair.Length > 0 && op.Walk.End == sp.At && G.Within(op.Pos, sp.At, StepInCm) ? sp.Chair : null;
         /// <summary>Host read (never hashed): the chair an operative sits in now and the way it faces (the chair's own), or null. Latch draws it seated.</summary>
         public (string chair, Pt face)? SeatedAt(string agent) { var op = OpOf(Sim.Op.Parse(agent)); return SeatOf(op) is string c ? (c, StopFace(c) ?? default) : ((string, Pt)?)null; }
         internal bool WatchedAt(Pt q)
