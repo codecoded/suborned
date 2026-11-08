@@ -34,9 +34,9 @@
    "family": "why/witnessed",
    "key": "alert.woken",
    "before": "a victim woke, spoke up",
-   "after": "someone woke and told",
+   "after": "someone came round",
    "kind": "TRUE",
-   "why": "Someone the cell put down came round and told: a guard on his radio, anyone else on foot to a report point. One plain clause in place of two clipped verbs; \"woke\" is the cause's own title's word (\"Woke and reported it\"). The line's \"came round\" doesn't fit with \"and told\" (\"someone came round, told\" 153.3 px of 142.9). 289.5 px.",
+   "why": "Someone the cell put down came round and told: a guard on his radio, anyone else on foot to a report point. One plain clause in place of two clipped verbs; \"woke\" is the cause's own title's word (\"Woke and reported it\"). The line's \"came round\" doesn't fit with \"and told\" (\"someone came round, told\" 153.3 px of 142.9). 289.5 px. Aster, 2026-11-09: the judge's preference in Fable's /23 pass (briefs/101/fable/lines.md), taken: plainer, and the line's own \"came round\".",
    "judged": {
     "line": "a victim woke and talked",
     "rule": "TRUE",
@@ -47,9 +47,9 @@
    "family": "why/witnessed",
    "key": "alert.woken.variants.vale",
    "before": "Popovic spoke up",
-   "after": "Popovic told when let go",
+   "after": "Popovic reported it",
    "kind": "VOICE",
-   "why": "\"Popovic spoke up\" leaned on the line (\"reported being taken after he was let go\"). Now the short has both, he was let go and he told, in one clause with no commas, as the base reads. 295.3 px.",
+   "why": "\"Popovic spoke up\" leaned on the line (\"reported being taken after he was let go\"). Now the short has both, he was let go and he told, in one clause with no commas, as the base reads. 295.3 px. Aster, 2026-11-09: the judge's preference in Fable's /23 pass, taken: one clause, no commas, no Talker echo.",
    "judged": {
     "line": "Popovic, let go, talked",
     "rule": "VOICE",
