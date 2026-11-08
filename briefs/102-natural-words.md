@@ -41,3 +41,10 @@ Owner: main session (as Aster), opened 2026-11-08 on `work/098-living-playbook`.
 **Defaults Aster took, which Sky can overturn:**
 - The rivals following our car out on route B get a news card. The line doesn't come back.
 - The Mislead is a scene with a person, so the Scout's tip to the rival comes back as a natural line written to the bar.
+
+## The guard's Call (2026-11-09)
+- **Fable's round** (cca05b263): the guard's refused-summons lines were made true wherever Inez stands, and the two dead take-control pop words cut.
+- **Keel's proposal** (`briefs/102/keel/call-offer.md`): the turned guard's Call can never succeed, yet it is offered, and its words give away the lover.
+- **Aster takes (b)**, which applies the GDD's own rule for a way that would do nothing ("absent, not greyed"): a Call is offered only where it has a use, read from the engine so the offer and the refusal can't drift.
+- **Order:** Motive confirms the law's wording first. Keel's engine change follows once Latch's build is out (one heavy agent at a time). Latch swaps the host's test in the next round.
+- **Open for Sky:** what turning the guard should buy. Today it buys almost nothing: no call, the door still shut to the cell, and he still radios what he sees. Motive drafts the options.
