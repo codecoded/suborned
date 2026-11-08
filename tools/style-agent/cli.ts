@@ -10,7 +10,7 @@ import { corrected, defaults, runLoop, validateLimits } from './loop';
 import { DEMOS, runHtml, submissionHtml, WHO } from './report';
 import { applyShort } from './short-apply';
 import { loadShortBriefs } from './short-briefs';
-import { acceptedByFamily, continuable, listShort, liveShort, replayShort } from './short-cli';
+import { acceptedByFamily, continuable, judgeHand, listShort, liveShort, replayShort } from './short-cli';
 import { verifyShort } from './short-evidence';
 import { SHORT_RUN } from './short-types';
 import type { Brief, Result } from './types';
@@ -36,6 +36,8 @@ Live (Codex subscription; needs SUBORNED_LIVE=1 and a recorded approval):
   --continue: each family picks up its latest run that ran out of revisions on this rubric, from that run's last round (brief 102)
   LIVE = --model MODEL --approved-by NAME --max-calls N --max-tokens N [--max-revisions N] [--judge-model CLAUDE_MODEL]
   --judge-model: Motive's evaluations on Claude through the claude CLI (brief 102: claude-opus-5-5); Fable still writes on --model
+  bun tools/style-agent/cli.ts judge FAMILY --hand FILE --approved-by NAME --judge-model CLAUDE_MODEL
+                                      Motive scores a family's hand edits once on Claude, no writer call (brief 102, guide /17)
 
 Runs are saved in ${RUNS}/<time>-<brief>/; nothing in the game is changed.`;
 
@@ -184,6 +186,11 @@ async function main() {
     const { options, positional } = parse(args, LIVE), demo = DEMOS.find(d => d.id === positional[0]);
     if (!demo || positional.length !== 1) throw new Error(`demo needs one of ${DEMOS.map(d => d.id).join(', ')}`);
     return live(options, [{ brief: byId(demo.brief), steer: demo.steer, tag: tag(byId(demo.brief), `-demo-${demo.id}`) }]);
+  }
+  if (command === 'judge') {
+    const { options, positional } = parse(args, ['--hand', '--approved-by', '--judge-model']), family = loadShortBriefs(root).find(b => b.id === positional[0]);
+    if (positional.length !== 1 || !family || !options.has('--hand')) throw new Error(`judge needs one family and --hand FILE; see: bun tools/style-agent/cli.ts shorts`);
+    return judgeHand(options, family, options.get('--hand')!);
   }
   if (command === 'run' && /^(bark|why|debrief|label)\//.test(args.find(a => !a.startsWith('--') && /\//.test(a)) ?? '')) {
     const { options, positional } = parse(args, LIVE), family = loadShortBriefs(root).find(b => b.id === positional[0]);

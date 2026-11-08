@@ -6,7 +6,7 @@ import { speech12, VOICE_SHEET } from './short-voice';
 
 /** The bark table (text.json `dialogue`) as families, one run each: what each bark must tell the player, from the event's own trigger,
  *  the verb's plain line (`actions.*.does`), what a Watch or a Listen teaches (`targets`) and the GDD's temperaments (§04). */
-type Row = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string; pending?: string; parked?: string; silent?: string; sky?: string; lines: string[] };
+type Row = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string; pending?: string; parked?: string; silent?: string; sky?: string; hand?: string; lines: string[] };
 const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'];
 const MACHINES = ['camera-entrance', 'camera-pickup', 'camera-mast-z0', 'patrol', 'rivals'];
 const any = (...events: string[]) => (r: Row) => events.includes(r.event);
@@ -108,6 +108,12 @@ const SUMMON: Record<string, string> = {
   'summon-busy': 'he can\'t leave the door just now', 'summon-came-once': 'he has come once already this shift, and won\'t again', 'summon-alert': 'an alarm is up, so he stays at his post',
   'summon-saw-violence': 'he saw the cell\'s violence, so he won\'t come', 'summon-too-far': 'he is too far from his post to come quickly', 'summon-off-street': 'he isn\'t out front where she can reach him',
   'summon-no-visit': 'there is nobody at a post she can send for',
+};
+/** Guide /17: the no-visit refusal as the engine gives it. Only a call on a contact whose tie has no post to leave gets it, and in the Handover's cast that is a call on the
+ *  turned guard (sim GameOrders.cs SummonRefusal: his tie is Inez); the host's card shows his answer, then Inez's line as the tie's end (HostFeed.cs FeedSummonRefused). */
+const NO_VISIT_17: Record<string, string> = {
+  guard: 'The Fixer has called the guard, turned. A call has a contact send for their tie, and his is Inez, who has no post to leave, so this call moves nobody. The guard answers the Fixer. Nothing is spent.',
+  waitress: 'Inez\'s line after the guard\'s on the same card. In the Handover it plays only when the Fixer calls the turned guard: his tie is Inez, who has no post to leave, so the call moves nobody; she is not on that call. (In a cast where her own tie had no post, she would tell the Fixer on the telephone that there is nobody she can send for.) Nothing is spent.',
 };
 const WORLD: Record<string, string> = {
   chime: '5:10, the handover chime: the shift ends and the Office staff come out. Popovic comes out at about 5:30 and walks to his car.',
@@ -259,7 +265,8 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
         return `${who} answers the Fixer's ${r.verb}. ${verbLine(r.verb!)} The answer: ${OUTCOME[r.outcome!]}${temp} Plays as their bubble, and as their answer in the approach scene after the Fixer's offer.`;
       case 'confirm': return `The Fixer telephones Inez, turned: she says yes, she will call the guard over now.${temp} Voiced aloud.`;
       case 'taken': return `The Enforcer has hold of Popovic (${r.verb === 'enter' ? 'inside the Office' : 'at his car'}): his first words.${temp}`;
-      case 'summon-refused': return `The Fixer's call can't work now: ${SUMMON[r.outcome!]}. ${r.speaker === 'waitress' ? 'Inez tells the Fixer on the telephone.' : 'The guard answers Inez, near enough to hear.'} Nothing is spent.`;
+      case 'summon-refused': if (v >= 17 && r.outcome === 'summon-no-visit') return NO_VISIT_17[r.speaker] ?? NO_VISIT_17.guard!; // guide /17: as the engine plays it
+        return `The Fixer's call can't work now: ${SUMMON[r.outcome!]}. ${r.speaker === 'waitress' ? 'Inez tells the Fixer on the telephone.' : 'The guard answers Inez, near enough to hear.'} Nothing is spent.`;
       case 'questioned': return `Later, an investigator questions ${who}: ${r.outcome === 'gives' ? 'they give the Fixer up, a face and what happened' : r.outcome === 'lies' ? 'they cover for the cell with a lie' : 'they know nothing useful'}. Not played in the Handover yet (investigators come later); a debrief hook.`;
       case 'fail': return `The attempt has failed: ${fail(r.outcome!)} The line plays for each of these, so every variant must be true whichever it was. ${SPEAKS[r.speaker] ?? ''} Spoken as it ends, before the end card.`;
       default: {
@@ -278,9 +285,13 @@ export function barkBriefs(read: Read, names: string[], text: any, v: ShortGuide
   // guide /13 (brief 102): the agents are quiet in play, so a row marked `silent` in text.json is not written (its reason is there)
   const speech = v === 12 ? speech12(text, VoiceSheet.parse(JSON.parse(read(VOICE_SHEET))).speech) : null;
   // guide /14 (brief 102's sweep): a row of Sky's own words (`sky`) is not an item; its family's context gives it, so nobody repeats it
-  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent) && !(v >= 14 && r.sky));
+  // guide /17 (brief 102): a row of Fable's hand edits (`hand`) is not an item either; its family's context gives it as it gives Sky's
+  const rows: Row[] = (text.dialogue as Row[]).filter(r => !r.parked && !r.pending && !speech?.silent(r as never) && !(v >= 13 && r.silent) && !(v >= 14 && r.sky) && !(v >= 17 && r.hand));
   const skys = (f: { pick: (r: Row) => boolean }) => v >= 14 ? (text.dialogue as Row[]).filter(r => r.sky && !r.silent && f.pick(r)) : [];
-  const skyWords = (f: { pick: (r: Row) => boolean }) => skys(f).length ? ` Sky's own words, already in the game and not items here: never rewrite them, and never say them in another row: ${skys(f).map(r => `${keyOf(r)}: ${r.lines.map(l => JSON.stringify(l)).join(' / ')}`).join('; ')}.` : '';
+  const hands = (f: { pick: (r: Row) => boolean }) => v >= 17 ? (text.dialogue as Row[]).filter(r => r.hand && !r.sky && !r.silent && f.pick(r)) : [];
+  const said = (xs: Row[]) => xs.map(r => `${keyOf(r)}: ${r.lines.map(l => JSON.stringify(l)).join(' / ')}`).join('; ');
+  const skyWords = (f: { pick: (r: Row) => boolean }) => (skys(f).length ? ` Sky's own words, already in the game and not items here: never rewrite them, and never say them in another row: ${said(skys(f))}.` : '')
+    + (hands(f).length ? ` Rows Fable wrote by hand to the same bar (brief 102), already in the game and not items here: never rewrite them, and never say them in another row: ${said(hands(f))}.` : '');
   return familiesFor(v).filter(f => (!speech && v < 13) || rows.some(f.pick)).map(f => {
     const mine = rows.filter(f.pick);
     const items: ShortItem[] = mine.map(r => {

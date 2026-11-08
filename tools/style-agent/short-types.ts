@@ -59,10 +59,14 @@ export type ShortRuleId = z.infer<typeof AnyRuleId>;
  *  nothing to revise). The rubric and the families read as at /14, so a /15 run may continue a /14 run of the same family (`sameRubric`). */
 /** /16 (brief 102's sweep): /15, and a cut item's field with no lines counts as no lines (the writer cut alarm/watcher as `fields: [{ lines: [] }]` four rounds running and
  *  the check "a cut item has no lines" blocked a 10 every time). A /16 run may continue a /14 or /15 run of the same family. */
-export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16' } as const;
+/** /17 (brief 102's sweep, Fable 2026-11-08: bark/witnesses-crowd and bark/summons didn't reach 10 in six passes each, so Fable wrote their 13 failing lines by hand): rows
+ *  marked `hand` in text.json (Fable's hand edits, briefs/102/fable/hand-barks.json) are not items, as Sky's rows; the family's context gives them and `apply` never replaces
+ *  them; and the summons' no-visit rows are told as the engine plays them (only a call on the turned guard gets that code: Inez, his tie, has no post to leave, so his answer
+ *  goes to the Fixer, and the host shows Inez's line after his). A run may also score a hand-written draft once (`hand`: no writer call). The rubric reads as at /16. */
+export const SHORT_GUIDES = { 1: 'suborned.style-short-guide/1', 2: 'suborned.style-short-guide/2', 3: 'suborned.style-short-guide/3', 4: 'suborned.style-short-guide/4', 5: 'suborned.style-short-guide/5', 6: 'suborned.style-short-guide/6', 7: 'suborned.style-short-guide/7', 8: 'suborned.style-short-guide/8', 9: 'suborned.style-short-guide/9', 10: 'suborned.style-short-guide/10', 11: 'suborned.style-short-guide/11', 12: 'suborned.style-short-guide/12', 13: 'suborned.style-short-guide/13', 14: 'suborned.style-short-guide/14', 15: 'suborned.style-short-guide/15', 16: 'suborned.style-short-guide/16', 17: 'suborned.style-short-guide/17' } as const;
 export type ShortGuideVersion = keyof typeof SHORT_GUIDES;
 /** The version new runs use; a saved run replays with its own. */
-export const SHORT_NOW: ShortGuideVersion = 16;
+export const SHORT_NOW: ShortGuideVersion = 17;
 /** Two guides with the same rubric, sources and families, the later on a newer protocol (from /15 a run may continue a /14 run's last round). */
 export const sameRubric = (earlier: ShortGuide, later: ShortGuide) => shortGuideVersion(earlier) <= shortGuideVersion(later) && shortGuideVersion(earlier) >= 14
   && isDeepStrictEqual(JSON.parse(JSON.stringify({ ...earlier, schema: later.schema })), JSON.parse(JSON.stringify(later)));
@@ -160,6 +164,8 @@ export type ShortIssue = { rule: ShortRuleId; reason: string };
 export type ShortRound = { set: ShortSet; evaluation: AnyEvaluation; hardIssues: ShortIssue[] };
 /** A run that continues an earlier run's last round (brief 102: Opus judging, three revisions often end on an 8 or a 9): the earlier run by its folder, and that round. */
 export type ShortContinue = ShortRound & { run: string };
+/** A draft written by hand (brief 102, guide /17): who wrote it and why, and the set itself, which the run scores as its first round with no writer call. */
+export type ShortHand = { by: string; why: string; set: ShortSet };
 export type ShortResult = {
   schema: typeof SHORT_RUN; mode: 'live' | 'test-fixture';
   status: 'ACCEPTED' | 'INCOMPLETE' | 'ERROR'; stopReason: string;
@@ -167,6 +173,7 @@ export type ShortResult = {
   evidence: Evidence | null; authorization: Authorization | null;
   brief: ShortBrief; guide: ShortGuide; limits: Limits; rounds: ShortRound[]; calls: Call[];
   continues?: ShortContinue;
+  hand?: ShortHand;
 };
 
 const Sha = z.string().regex(/^[a-f0-9]{64}$/);
@@ -206,6 +213,7 @@ export const ShortResultSchema = z.object({
     hardIssues: z.array(z.object({ rule: AnyRuleId, reason: z.string() }).strict()) }).strict()).max(4),
   continues: z.object({ run: z.string().regex(/^[0-9T:.Z-]+-(bark|why|debrief|label)-[a-z0-9-]+$/), set: ShortSet, evaluation: z.union([ShortEvaluation, ShortEvaluation12]),
     hardIssues: z.array(z.object({ rule: AnyRuleId, reason: z.string() }).strict()) }).strict().optional(),
+  hand: z.object({ by: z.string().trim().min(1), why: z.string().trim().min(1), set: ShortSet }).strict().optional(),
   calls: z.array(z.object({
     stage: z.enum(['generate', 'evaluate', 'refine']), role: z.enum(['dialogue-designer', 'systems-designer']), prompt: z.string(),
     startedAt: Time, finishedAt: Time.nullable(), timeoutMs: z.number().int().positive().max(180000), schemaSha256: Sha,

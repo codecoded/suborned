@@ -32,7 +32,7 @@ export async function verifyShort(input: unknown, base: string, store = resolve(
       previous = call.finishedAt;
     }
     requireThat(r.finishedAt >= previous, 'The final time precedes a call');
-    if (r.mode === 'live') verifyProvider(r, files);
+    if (r.mode === 'live') { verifyProvider(r, files); requireThat(!!r.hand === (r.authorization!.provider === 'hand'), 'A hand-written draft and its approval disagree'); }
     else requireThat(r.authorization === null, 'Fixtures cannot carry live approval');
     // a continuation (brief 102) starts from an earlier run's last round: that run, unaccepted and finished, on the same family, rubric and approval, ended on exactly that round
     if (r.continues) {
@@ -42,7 +42,7 @@ export async function verifyShort(input: unknown, base: string, store = resolve(
     }
     const times = [r.startedAt, ...r.calls.flatMap(c => [c.startedAt, c.finishedAt!]), r.finishedAt];
     let t = 0, index = 0;
-    const rebuilt = await runShort({ guide, brief, mode: r.mode, limits: r.limits, evidence: r.evidence, continues: r.continues, base: { why: JSON.parse(files[TEXT_FILE]!).why, dialogue: JSON.parse(files[TEXT_FILE]!).dialogue },
+    const rebuilt = await runShort({ guide, brief, mode: r.mode, limits: r.limits, evidence: r.evidence, continues: r.continues, hand: r.hand, base: { why: JSON.parse(files[TEXT_FILE]!).why, dialogue: JSON.parse(files[TEXT_FILE]!).dialogue },
       authorization: r.authorization ?? undefined, now: () => times[Math.min(t++, times.length - 1)]!,
       invoke: async request => {
         const call = r.calls[index++];

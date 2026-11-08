@@ -62,6 +62,8 @@ export function archivedFiles(evidence: Evidence, store: string): Record<string,
  *  and Claude's for Motive's evaluations when the run had a Claude judge (brief 102). */
 export function verifyProvider(r: { authorization: Authorization | null; calls: Call[]; status: string }, files: Record<string, string>) {
   requireThat(r.authorization, 'Missing live approval');
+  // a hand-written draft (brief 102, short-line guide /17) calls only the judge
+  requireThat(r.authorization.provider !== 'hand' || (r.authorization.judge && r.calls.every(c => c.stage === 'evaluate')), 'A hand-written run calls only its judge');
   for (const call of r.calls) {
     // A call that failed before the adapter ran has no transcript and cannot lead to acceptance.
     if (call.raw === undefined && call.output === undefined && call.error && r.status === 'ERROR') continue;

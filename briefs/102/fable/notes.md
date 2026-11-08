@@ -254,3 +254,56 @@ Latch reads by key, and no key moved but these.
   - `tools/levels/dialogue/drift.json`;
   - `briefs/102/fable/sample.json` (status).
 - **Scratch:** `out/scratch/fable/102b/`: the sheet's generator, the status, token and read scripts, and the logs.
+
+
+## By hand: the 13 lines the loop didn't finish (Fable, 2026-11-08)
+
+Aster, taking the option I offered: write the 13 failing lines of `bark/witnesses-crowd` (7) and `bark/summons` (6) by hand, have Opus score them once through the Claude caller with Sky's approval, and apply them as hand edits that no run replaces.
+
+**The lines and the judge's read:** `briefs/102/fable/hand-barks.json` (before, after, why; `judged` where Opus found fault) and the sheet's section "By hand: the two families the loop didn't finish" in `briefs/102/fable/sweep.html`.
+- Opus (Motive, Claude Opus 5.5, effort medium) scored each family once, as written, no writer call: `runs/style-agent/short/2026-11-08T15-58-54.321Z-bark-witnesses-crowd` (18,791 tokens) and `…T15-58-56.270Z-bark-summons` (25,928 tokens). Subscription, no paid API.
+- The family scores are for every line in the family, today's included: **4** for the witnesses (WORTH 7 · VOICE 6 · NATURAL 6 · VARIANTS 4 · MECHANICS 8 · TRUE 7 · NAMES 10 · SHORT 10) and **3** for the summons (WORTH 5 · VOICE 4 · NATURAL 3 · VARIANTS 4 · MECHANICS 7 · TRUE 3 · NAMES 10 · SHORT 10). Of 26 findings, 5 are on my lines; the other 21 are on lines I didn't touch.
+- **8 of my 13 drew no finding** and stand as judged. Opus named four of them among the best in the family: "That could have been me.", "I want to go home.", "I've been off this door enough today, Inez." and "That's the one, officer. I'm not taking the blame for anybody."
+- **5 drew a finding, and I rewrote them from it.** To keep to "score once", they were not scored again:
+  - the guard's "Never, in all my years on the door." (TRUE: an invented service history) is now "Good grief. What's gone on here?";
+  - "Easy, now. Do it properly, by the book." (VOICE: coaching himself) is now "That's a coward's work, that is.";
+  - the passer-by's "Here? In this city? I won't have it." (VOICE: stagey) is now "This can't wait.";
+  - the guard's no-visit pair "Leave Inez out of this. That's final." / "I said I'd help you. I never said Inez would." (TRUE: an invented motive) is now "Fetch Inez? What good would that do you?" / "Inez has her tables, and I have my door."
+
+**Situations (the witness rows):** every new line is true for all three cases a row plays in: a takedown seen, a body carried, a body found. None needs splitting. The engine narrows two rows (sim `GameTakedown.cs`): crowd `avoid` is only a body found (a fearful person who sees the act flees), and the guard who sees a takedown engages as security, so his `radio` row is a body found, or a takedown when he is the ally in the final fight.
+
+**A brief that was wrong:** `summon-no-visit` is given only when the contact's tie has no post to leave (`GameOrders.cs` SummonRefusal). In the Handover's cast that means a call on the turned guard, whose tie is Inez. So the guard answers the Fixer, and the host's card (`HostFeed.cs` FeedSummonRefused) shows Inez's no-visit line after his. The /4–/16 briefs had the guard "answering Inez". Guide /17 briefs both rows as played.
+
+**Rows that need their situations split (not mine to fix):**
+- `summon-refused/waitress/summon-no-visit`: in the Handover it plays only as the tie's line on the guard's card, and Inez isn't on that call. No line of hers can be true there. Latch could leave the tie's line off that card.
+- `summon-refused/guard/summon-off-street` (and too-far): the event says the guard speaks "if he is within earshot", but the host plays him every time. The new too-far line holds from his door; off-street needs the earshot check (Latch).
+
+**What Opus found in the rest of these families (not changed; on the sheet):** the guard's four radio calls ("incident to report" four ways); "Calling the desk about this." (labels the act); two near-synonym pairs (avoid, quiet); the questioned rows ("I'd know that face", "I don't remember anything", "I notice nothing" in two mouths, the driver's lie about moving the car); "Try me again." and "Ask later." (tell the player what to do); "Not again this shift" (recites the rule); "the violence" (the game's category word); the alarm lines reading the HUD back; Inez's "I'm afraid" in five lines; Inez's no-visit lines ("send for", "call over"). They wait on Sky's word or another round.
+
+### The tooling (guide /17; older runs rebuild as they ran)
+
+- **`hand` on a row** (`speech.schema.ts` `HandWords`, on the Entry's `parked` line of `text.schema.ts`, so it doesn't grow): Fable's hand edits. Like `sky` rows, they are not items from /17, their family's context gives them, and `apply` never replaces them.
+- **`judge FAMILY --hand FILE`** (`short-cli.ts`): today's family with the file's edits in place, scored once by the Claude judge (`maxRevisions 0`, one call). `core.ts` takes a given first draft (`given`). The run records `hand` (who wrote it, why, the set), and its approval says `provider: hand` (`types.ts`). `verifyShort` rebuilds it and refuses a hand run with a writer call, or a hand set that differs from the one judged. `--continue` never picks up a hand run.
+- **The no-visit tells at /17** (`short-barks.ts` `NO_VISIT_17`). The rubric reads as at /16 (`sameRubric`).
+- **Tests:** `hand.test.ts` (5): /17 reads as /16; a hand set; a hand run calls only the judge and rebuilds, five forged edits fail; hand rows are not items and the no-visit tells; text.json carries every edit and `apply` holds a hand row. `natural14.test.ts`'s pin on `SHORT_NOW` is now "at least 16".
+- **The dialogue objective:** the two schema edits moved its code hash. Declared with `bun tools/drift-auto/cli.ts --objective dialogue`, no rule moved, confirmed 3/3 replay as at HEAD b451d108.
+
+### Checks
+
+- **Export** (`bun run guard bun tools/sim/unity.ts --tree`): ok. Headless 472/472 and range 99/99 with identical replay; text.json a0550b48f5c3 parses.
+- **`bun run hostlogic`:** 180 pass, 0 fail.
+- **`bun test tools/style-agent contracts/missions/handover tools/dialogue`:** 355/355.
+- **`bun test tools/drift-auto tools/names tools/levels/dialogue`:** 45/46. The one failure is drift-auto's "nothing changed" for skyline (r011) and people (r012–r016), as before this round (owners Datum/Splice, Pulse). The dialogue objective is clean after the declaration.
+- **`bun run typecheck`:** clean.
+- **Every saved style-agent run rebuilds exactly, without a model:** 24 conversations and 139 short runs, the two hand runs at /17 among them (`out/scratch/fable/102c/verify-all.ts`).
+
+### Files
+
+- **New:** `briefs/102/fable/hand-barks.json`, `tools/style-agent/hand.test.ts`, and the 2 runs in `runs/style-agent/short/`.
+- **Changed:**
+  - `contracts/missions/handover/text.json`: 9 rows, 13 lines, each marked `hand`. No other key moved, so Latch reads them by the same keys.
+  - `contracts/missions/handover/speech.schema.ts` and `text.schema.ts` (the same line count);
+  - `tools/style-agent`: `core.ts`, `short-loop.ts`, `short-types.ts`, `short-evidence.ts`, `evidence.ts`, `types.ts`, `short-barks.ts`, `short-apply.ts`, `short-cli.ts`, `cli.ts`, `README.md`, `natural14.test.ts`;
+  - `tools/levels/dialogue/drift.json`;
+  - `briefs/102/fable/sweep.html` (the new section, and a line in "For your read") and these notes.
+- **Scratch:** `out/scratch/fable/102c/` (check-hand, apply-hand, sheet, verify-all, the judge logs).

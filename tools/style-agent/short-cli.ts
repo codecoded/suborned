@@ -1,16 +1,19 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, relative, resolve } from 'node:path';
+import { z } from 'zod';
 import { root } from '../rag/config';
 import { defaults, validateLimits } from './core';
-import { archiveEvidence, readRun, RUN_FILE, writeRun } from './evidence';
+import { archiveEvidence, readRun, roleFiles, RUN_FILE, writeRun } from './evidence';
 import { TEXT_FILE } from './guide';
 import { liveSetup } from './live';
+import { claudeJudge } from './live-claude';
 import { loadShortBriefs } from './short-briefs';
 import { SHORT_RUNS, verifyShort } from './short-evidence';
 import { loadShortGuide } from './short-guide';
 import { runShort } from './short-loop';
-import { sameRubric, shortGuideVersion, type ShortBrief, type ShortContinue, type ShortResult } from './short-types';
+import { sameRubric, shortGuideVersion, type ShortBrief, type ShortContinue, type ShortResult, type ShortSet } from './short-types';
+import type { Authorization } from './types';
 import { equal } from './evidence';
 import { BARKS_12_APPLY } from './short-voice';
 
@@ -58,7 +61,7 @@ export async function continuable(briefs: ShortBrief[]): Promise<Map<string, Sho
   const guide = loadShortGuide(root), out = new Map<string, ShortContinue>();
   for (const { run, path } of await savedShortRuns()) {
     const b = briefs.find(x => x.id === run.brief.id);
-    if (!b || run.mode !== 'live' || run.status !== 'INCOMPLETE' || !run.rounds.length || !run.stopReason.startsWith('Revision limit') || !(equal(run.guide, guide) || sameRubric(run.guide, guide)) || !equal(run.brief, b)) continue;
+    if (!b || run.hand || run.mode !== 'live' || run.status !== 'INCOMPLETE' || !run.rounds.length || !run.stopReason.startsWith('Revision limit') || !(equal(run.guide, guide) || sameRubric(run.guide, guide)) || !equal(run.brief, b)) continue;
     out.set(b.id, { run: basename(path), ...run.rounds.at(-1)! }); // the latest wins (the runs are in time order)
   }
   return out;
@@ -86,6 +89,37 @@ export async function liveShort(options: Map<string, string>, briefs: ShortBrief
   };
   await Promise.all(Array.from({ length: Math.min(concurrency, briefs.length) }, worker));
   process.exitCode = results.every(r => r.status === 'ACCEPTED') ? 0 : results.some(r => r.status === 'ERROR') ? 1 : 2;
+}
+
+/** Brief 102 (guide /17): a family's failing lines rewritten by hand, each edit one of today's lines (`before`) and its new words (`after`), with why. */
+export const HandEdits = z.object({ schema: z.literal('suborned.hand-barks/1'), status: z.string().min(1), by: z.string().min(1), why: z.string().min(1),
+  edits: z.array(z.object({ family: z.string().regex(/^bark\/[a-z0-9-]+$/), key: z.string().min(1), before: z.string().min(1), after: z.string().min(1), kind: z.string().min(1), why: z.string().min(1),
+    /** A line the judge read and found fault with, and what it said, when `after` was rewritten from that finding. */
+    judged: z.object({ line: z.string().min(1), rule: z.string().min(1), finding: z.string().min(1) }).strict().optional() }).strict()).min(1) }).strict();
+export type HandEdits = z.infer<typeof HandEdits>;
+/** The family as it stands today with the hand edits in: every item kept, each of today's lines replaced where an edit names it. */
+export function handSet(brief: ShortBrief, edits: HandEdits['edits']): ShortSet {
+  const mine = edits.filter(e => e.family === brief.id);
+  if (!mine.length) throw new Error(`${brief.id}: no hand edits`);
+  for (const e of mine) if (!brief.items.some(i => i.key === e.key && Object.values(i.current).flat().includes(e.before))) throw new Error(`${e.key}: "${e.before}" is not one of today's lines in ${brief.id}`);
+  return { items: brief.items.map(i => ({ key: i.key, cut: false, reason: '', fields: i.fields.map(f => ({ id: f.id, lines: (i.current[f.id] ?? []).map(l => mine.find(e => e.key === i.key && e.before === l)?.after ?? l) })) })) };
+}
+/** `judge FAMILY --hand FILE`: Motive scores the hand-written family once on Claude (no writer call, no revision), recorded and replayable like any run. */
+export async function judgeHand(options: Map<string, string>, brief: ShortBrief, file: string) {
+  const approvedBy = options.get('--approved-by') ?? '', model = options.get('--judge-model') ?? '';
+  const probe = Bun.spawnSync([process.env.CLAUDE_BIN ?? 'claude', '--version'], { stdout: 'pipe', stderr: 'pipe' });
+  if (probe.exitCode !== 0) throw new Error('Claude CLI not found: install Claude Code and sign in (claude)');
+  const invoke = claudeJudge(model, approvedBy), authorization: Authorization = { provider: 'hand', model: 'fable', approvedBy, judge: { provider: 'claude', model } };
+  const f = HandEdits.parse(JSON.parse(await Bun.file(resolve(root, file)).text())), hand = { by: f.by, why: f.why, set: handSet(brief, f.edits) };
+  const guide = loadShortGuide(root), evidence = archiveEvidence(root, guide, undefined, roleFiles(authorization)), text = JSON.parse(await Bun.file(resolve(root, TEXT_FILE)).text());
+  const dir = resolve(root, SHORT_RUNS, `${new Date().toISOString().replaceAll(':', '-')}-${brief.id.replaceAll('/', '-')}`);
+  await mkdir(dir, { recursive: true });
+  const checkpoint = async (r: ShortResult) => { writeRun(dir, r); await writeFile(resolve(dir, 'index.html'), shortRunHtml(r)); };
+  const r = await runShort({ guide, brief, invoke, limits: { ...defaults, maxCalls: 1, maxRevisions: 0 }, mode: 'live', checkpoint, evidence, authorization, base: { why: text.why, dialogue: text.dialogue }, hand });
+  const last = r.rounds.at(-1);
+  console.log(JSON.stringify({ family: brief.id, hand: true, status: r.status, stopReason: r.stopReason, score: last?.evaluation.score, scores: last && 'scores' in last.evaluation ? last.evaluation.scores : undefined,
+    findings: last?.evaluation.findings.length, codeChecks: last?.hardIssues.length, tokens: tokens(r), run: relative(root, dir) }));
+  process.exitCode = r.status === 'ACCEPTED' ? 0 : r.status === 'ERROR' ? 1 : 2;
 }
 
 export function listShort() {

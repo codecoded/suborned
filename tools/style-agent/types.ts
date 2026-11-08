@@ -70,10 +70,11 @@ export type Call = {
 export type Round = { conversation: Conversation; evaluation: Evaluation; hardIssues: HardIssue[] };
 /** Sources are stored once under runs/style-agent/sources/<sha256>; a run names them by hash. */
 export type Evidence = { sources: { file: string; sha256: string }[]; tooling: { file: string; sha256: string }[]; toolingSha256: string };
-/** Who wrote and who judged: Fable on Codex; from brief 102 Motive may judge on Claude (`judge`, Sky 2026-11-08: "we can try - sure"). A run without `judge` ran on Codex alone. */
-export type Authorization = { provider: 'codex'; model: string; approvedBy: string; judge?: { provider: 'claude'; model: string } };
+/** Who wrote and who judged: Fable on Codex; from brief 102 Motive may judge on Claude (`judge`, Sky 2026-11-08: "we can try - sure"). A run without `judge` ran on Codex alone.
+ *  `hand` (brief 102, short-line guide /17): the draft was written by hand (`model` names who) and only the judge was called. */
+export type Authorization = { provider: 'codex' | 'hand'; model: string; approvedBy: string; judge?: { provider: 'claude'; model: string } };
 /** The approval as a run records it (conversations and short lines alike). */
-export const AuthorizationSchema = z.object({ provider: z.literal('codex'), model: z.string().min(1), approvedBy: z.string().trim().min(1),
+export const AuthorizationSchema = z.object({ provider: z.enum(['codex', 'hand']), model: z.string().min(1), approvedBy: z.string().trim().min(1),
   judge: z.object({ provider: z.literal('claude'), model: z.string().min(1) }).strict().optional() }).strict();
 export type Result = {
   schema: 'suborned.style-run/2'; mode: 'live' | 'test-fixture';

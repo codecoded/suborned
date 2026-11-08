@@ -172,7 +172,7 @@ describe('guide /15: a score below 10 says what holds it back', () => {
 describe('guide /16: a cut item may return a field with no lines', () => {
   test('/16 reads as /15 but for the cut check; /15 still flags it, so its runs rebuild as they ran', () => {
     const g15 = loadShortGuide(root, 15), g16 = loadShortGuide(root, 16), f = family('bark/alarm');
-    expect(SHORT_NOW).toBe(16); expect({ ...g15, schema: g16.schema }).toEqual(g16); expect(sameRubric(g15, g16)).toBe(true); expect(sameRubric(g14, g16)).toBe(true);
+    expect(SHORT_NOW).toBeGreaterThanOrEqual(16); expect({ ...g15, schema: g16.schema }).toEqual(g16); expect(sameRubric(g15, g16)).toBe(true); expect(sameRubric(g14, g16)).toBe(true);
     const k = f.items[0]!.key, cut = { items: today(f).items.map(i => i.key !== k ? i : { key: i.key, cut: true, reason: 'Filler.', fields: [{ id: 'lines', lines: [] }] }) };
     const said = (g: typeof g15, s = cut) => checkShort(f, s, g, { dialogue: text.dialogue }).map(i => i.reason).filter(r => r.includes('a cut item'));
     expect(said(g15)).toEqual([`${k}: a cut item has no lines.`]); expect(said(g16)).toEqual([]);

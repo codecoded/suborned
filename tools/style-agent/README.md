@@ -48,6 +48,8 @@ Motive's rubric for each kind (`short-guide.ts`): USEFUL (tells the player somet
 
 **The Claude judge** (brief 102; Sky 2026-11-08, on Opus 5.5 judging the sweep: "we can try - sure"). `--judge-model claude-opus-5-5` runs Motive's evaluations on Claude through the subscription's `claude` CLI while Fable writes on Codex (`--model`). Each evaluation is one tool-less call (`live-claude.ts`): Motive's Claude card (`.claude/agents/systems-designer.md`) as the system prompt, structured output the only tool, effort medium, no CLAUDE.md, settings, hooks, MCP servers or side traffic, in an empty folder. The run records the CLI's stream-json transcript and the launch (`audit`: argv, schema, prompt hash), the approval names both models (`authorization.judge`), and the Claude card is archived with the sources, so `style:replay` and `style:verify` rebind every judged call to its transcript, card, schema and model without a model. Tokens count every model the CLI used. Live as for Codex: `SUBORNED_LIVE=1` and `--approved-by`.
 
+**Guide /17** (brief 102's sweep: `bark/witnesses-crowd` and `bark/summons` didn't reach 10 in six passes each, so Fable wrote their 13 failing lines by hand, `briefs/102/fable/hand-barks.json`). Rows marked `hand` in `text.json` (Fable's hand edits) are kept like Sky's: not items, given in their family's context, and `apply` never replaces them. The summons' no-visit rows are briefed as the engine plays them: only a call on the turned guard gets that code (his tie, Inez, has no post to leave), so he answers the Fixer, and the host's card shows Inez's line after his. `judge FAMILY --hand FILE` scores a hand-written family once: today's lines with the file's edits in place, Motive on Claude, no writer call and no revision (`hand` in the run, `provider: hand` in its approval); it replays and verifies like any run. The rubric reads as at /16.
+
 ```sh
 bun tools/style-agent/cli.ts shorts              # the families: items and lines each
 bun run style:run bark/end $LIVE                 # one family (add --judge-model claude-opus-5-5 for Motive on Claude)
@@ -55,6 +57,7 @@ bun run style:chain --short $LIVE [--kind bark]  # every family not yet accepted
 bun run style:chain --short $LIVE --continue --only bark/a,bark/b   # pick up each family's last unfinished run from its last round
 bun run style:replay runs/style-agent/short/<run>   # the same replay and verify as a conversation
 bun tools/style-agent/cli.ts apply [--dry]       # each family's accepted lines into text.json, where they stand
+SUBORNED_LIVE=1 bun tools/style-agent/cli.ts judge bark/summons --hand briefs/102/fable/hand-barks.json --approved-by NAME --judge-model claude-opus-5-5   # score hand edits once
 ```
 
 Runs are in `runs/style-agent/short/<time>-<family>/`; they share the sources store.
@@ -64,7 +67,7 @@ Runs are in `runs/style-agent/short/<time>-<family>/`; they share the sources st
 ## Files
 
 `guide.ts` the style guide · `briefs.ts` the conversation briefs · `core.ts` the loop's engine (limits, calls, acceptance) · `loop.ts` the conversation loop · `prompts.ts` · `checks.ts` code checks · `live.ts` crew cards through the Codex CLI (and the routed judge) · `live-claude.ts` Motive's evaluations through the Claude CLI, and their check · `evidence.ts` archive and checking · `report.ts` · `cli.ts`.
-Short lines: `short-types.ts` · `short-guide.ts` the rubric · `short-voice.ts` guide /12's rubric, frequency and calibration · `short-natural.ts` guide /13's rubric, families and calibration (and the code check the conversations share at /4) · `short-natural14.ts` guide /14's AI-sounding words, the Mislead and its families · `short-barks.ts`, `short-whys.ts`, `short-debrief.ts`, `short-labels.ts` the families · `short-briefs.ts` · `short-checks.ts` · `short-prompts.ts` · `short-loop.ts` · `short-evidence.ts` · `short-cli.ts` · `short-apply.ts` · `short.test.ts` (/1–/11) · `voice.test.ts` (/12) · `natural.test.ts` (/13, and the conversations' /4) · `natural14.test.ts` (/14) · `judge.test.ts` (the Claude judge).
+Short lines: `short-types.ts` · `short-guide.ts` the rubric · `short-voice.ts` guide /12's rubric, frequency and calibration · `short-natural.ts` guide /13's rubric, families and calibration (and the code check the conversations share at /4) · `short-natural14.ts` guide /14's AI-sounding words, the Mislead and its families · `short-barks.ts`, `short-whys.ts`, `short-debrief.ts`, `short-labels.ts` the families · `short-briefs.ts` · `short-checks.ts` · `short-prompts.ts` · `short-loop.ts` · `short-evidence.ts` · `short-cli.ts` (with `judge`, the hand edits' scoring) · `short-apply.ts` · `short.test.ts` (/1–/11) · `voice.test.ts` (/12) · `natural.test.ts` (/13, and the conversations' /4) · `natural14.test.ts` (/14) · `judge.test.ts` (the Claude judge) · `hand.test.ts` (/17).
 
 ## Known
 

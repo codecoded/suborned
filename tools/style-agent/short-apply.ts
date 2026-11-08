@@ -51,7 +51,7 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
       const row = (text.dialogue as Row[]).find(r => barkKey(r as never) === x.key);
       if (!row) throw new Error(`${id}: no row ${x.key} in text.json`);
       if (owner.get(x.key) !== id) continue; // a newer family's run writes it
-      if (row.sky) { held.push(x.key); continue; } // Sky's own words win over any run (brief 102), as "Turn driver by"
+      if (row.sky || row.hand) { held.push(x.key); continue; } // Sky's own words win over any run (brief 102), as "Turn driver by", and so do Fable's hand edits (guide /17)
       if (x.cut) { raw = once(raw, `  ${JSON.stringify(row)},\n`, '', x.key); cuts.push(`${x.key}: ${x.reason}`); continue; }
       const lines = x.fields.find(f => f.id === 'lines')!.lines;
       if (JSON.stringify(lines) !== JSON.stringify(row.lines)) { raw = once(raw, JSON.stringify(row), JSON.stringify({ ...row, lines }), x.key); log.push(`${x.key}`); }
@@ -119,7 +119,7 @@ export async function applyShort(dry: boolean, o: { runs?: Map<string, { run: Sh
   console.log(log.join('\n'));
   if (cuts.length) console.log(`\nCut:\n${cuts.join('\n')}`);
   if (missing.length) console.log(`\nNo accepted run yet: ${missing.join(', ')}`);
-  if (held.length) console.log(`\nSky's words, kept over the runs: ${[...new Set(held)].join(', ')}`);
+  if (held.length) console.log(`\nSky's words and Fable's hand edits, kept over the runs: ${[...new Set(held)].join(', ')}`);
   if (problems.length || dups.length) throw new Error(`Not written: ${[...problems, ...dups.map(d => `repeated line ${d}`)].join('; ')}`);
   if (dry) { console.log('\n(dry run: text.json unchanged)'); return; }
   writeFileSync(file, raw);
