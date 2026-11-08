@@ -1,0 +1,377 @@
+{
+ "schema": "suborned.evidence/1",
+ "brief": "098, the café front on engine 0.48.0, per adaptive plan (Waymark)",
+ "how": "Vantage's regions probe (briefs/098/vantage/regions-probe.cs), box cafe-front -1070,-500,-4100,-1700 (Keel's), each plan alone, seeds 1-10, settings unset, people=64, x4; HEAD's plans; it reproduces Keel's 0.48.0 totals (cast-places.html) exactly",
+ "plans": {
+  "careless": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 6,
+    "held10sOrMore": 1,
+    "longestS": 12.8,
+    "longest": [
+     "12.8 s x-person-0112 at (-800,-2342) to 1:05.9 (careless #3)",
+     "8.9 s x-person-0112 at (-854,-2388) to 1:16.1 (careless #3)",
+     "8.3 s x-person-0112 at (-917,-2422) to 1:33.8 (careless #3)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 6,
+    "held10sOrMore": 3,
+    "longestS": 32.2,
+    "longest": [
+     "32.2 s p-garden-row-east-03 at (-901,-2401) to 1:34.0 (careless #3)",
+     "22.0 s x-person-0094 at (-811,-2397) to the end (careless #1)",
+     "11.5 s p-pylon-row-east-05 at (-942,-2447) to 0:58.2 (careless #3)"
+    ]
+   }
+  },
+  "drive-early": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   },
+   "x4": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   }
+  },
+  "drive-round": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 4.9,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 3,
+    "held10sOrMore": 1,
+    "longestS": 19.1,
+    "longest": [
+     "19.1 s p-records-office-68 at (-609,-3493) to 7:50.6 (drive-round #8)",
+     "5.6 s p-records-office-68 at (-894,-3354) to 7:30.1 (drive-round #3)",
+     "5.3 s x-person-0055 at (-937,-3387) to 6:47.9 (drive-round #10)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 5,
+    "held10sOrMore": 5,
+    "longestS": 23.1,
+    "longest": [
+     "23.1 s p-records-office-68 at (-610,-3492) to 7:50.5 (drive-round #8)",
+     "22.7 s p-records-office-46 at (-894,-3807) to 7:53.3 (drive-round #8)",
+     "16.5 s p-records-office-68 at (-614,-3502) to the end (drive-round #3)"
+    ]
+   }
+  },
+  "prepared-loud-lend": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 1.5,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 20,
+    "held10sOrMore": 4,
+    "longestS": 15.3,
+    "longest": [
+     "15.3 s x-person-0112 at (-992,-3155) to 7:03.9 (prepared-loud-lend #4)",
+     "14.1 s x-person-0068 at (-897,-3151) to 7:02.9 (prepared-loud-lend #4)",
+     "12.0 s p-rocket-west-02 at (-913,-3286) to 7:00.2 (prepared-loud-lend #4)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 8,
+    "held10sOrMore": 2,
+    "longestS": 14.1,
+    "longest": [
+     "14.1 s p-garden-row-east-03 at (-946,-3335) to 7:06.1 (prepared-loud-lend #7)",
+     "10.9 s p-rocket-west-02 at (-988,-3228) to 7:04.5 (prepared-loud-lend #7)",
+     "9.3 s x-person-0105 at (-890,-3168) to 6:56.8 (prepared-loud-lend #9)"
+    ]
+   }
+  },
+  "prepared-loud": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 1.1,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 1,
+    "held10sOrMore": 0,
+    "longestS": 5.1,
+    "longest": [
+     "5.1 s p-cafe-14 at (-864,-2807) to 0:37.2 (prepared-loud #9)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 4.9,
+    "longest": []
+   }
+  },
+  "quiet-a": {
+   "unset": {
+    "held5sOrMore": 3,
+    "held10sOrMore": 2,
+    "longestS": 32.1,
+    "longest": [
+     "32.1 s p-cafe-14 at (-882,-2655) to 2:50.9 (quiet-a #1)",
+     "25.4 s p-cafe-14 at (-799,-2685) to 2:43.6 (quiet-a #3)",
+     "5.2 s p-garden-row-east-03 at (-861,-2671) to 0:53.9 (quiet-a #3)"
+    ]
+   },
+   "people=64": {
+    "held5sOrMore": 21,
+    "held10sOrMore": 9,
+    "longestS": 84.2,
+    "longest": [
+     "84.2 s p-garden-row-east-03 at (-879,-2645) to 2:50.0 (quiet-a #3)",
+     "70.9 s x-person-0058 at (-757,-2681) to 2:43.7 (quiet-a #3)",
+     "38.1 s x-person-0074 at (-770,-2705) to 2:49.1 (quiet-a #3)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 23,
+    "held10sOrMore": 15,
+    "longestS": 117.2,
+    "longest": [
+     "117.2 s x-person-0066 at (-798,-2609) to 2:53.3 (quiet-a #1)",
+     "42.9 s p-cafe-14 at (-718,-2709) to 2:09.0 (quiet-a #3)",
+     "38.9 s p-cafe-14 at (-717,-2651) to 1:20.4 (quiet-a #3)"
+    ]
+   }
+  },
+  "quiet-b-lookout-ignored": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   },
+   "x4": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   }
+  },
+  "quiet-b-taped": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 3.4,
+    "longest": []
+   },
+   "x4": {
+    "held5sOrMore": 1,
+    "held10sOrMore": 0,
+    "longestS": 6.1,
+    "longest": [
+     "6.1 s x-person-0001 at (-774,-2710) to 5:50.6 (quiet-b-taped #7)"
+    ]
+   }
+  },
+  "quiet-b-thinned": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 3,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 31,
+    "held10sOrMore": 14,
+    "longestS": 35.4,
+    "longest": [
+     "35.4 s x-person-0029 at (-942,-3288) to 7:34.3 (quiet-b-thinned #3)",
+     "34.2 s p-garden-row-east-06 at (-901,-3293) to 7:30.8 (quiet-b-thinned #3)",
+     "34.0 s x-person-0006 at (-1000,-3329) to 7:32.8 (quiet-b-thinned #3)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 32,
+    "held10sOrMore": 7,
+    "longestS": 19.5,
+    "longest": [
+     "19.5 s x-person-0007 at (-993,-3152) to 7:19.8 (quiet-b-thinned #3)",
+     "15.7 s x-guard-046 at (-910,-3241) to 7:17.1 (quiet-b-thinned #3)",
+     "13.3 s x-person-0006 at (-919,-3206) to 7:16.1 (quiet-b-thinned #3)"
+    ]
+   }
+  },
+  "quiet-b": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.8,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 17,
+    "held10sOrMore": 6,
+    "longestS": 43.2,
+    "longest": [
+     "43.2 s x-person-0215 at (-999,-2947) to the end (quiet-b #6)",
+     "15.4 s p-pylon-row-east-05 at (-888,-3181) to 7:13.7 (quiet-b #3)",
+     "15.3 s p-rocket-west-02 at (-850,-3249) to 7:10.3 (quiet-b #3)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 16,
+    "held10sOrMore": 2,
+    "longestS": 42.3,
+    "longest": [
+     "42.3 s x-person-0215 at (-1000,-2943) to the end (quiet-b #6)",
+     "15.7 s x-person-0042 at (-799,-3119) to 7:18.1 (quiet-b #3)",
+     "9.2 s x-person-0080 at (-899,-3132) to 7:10.7 (quiet-b #3)"
+    ]
+   }
+  },
+  "quiet-g": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 11,
+    "held10sOrMore": 0,
+    "longestS": 8.1,
+    "longest": [
+     "8.1 s x-person-0095 at (-826,-3146) to 5:42.0 (quiet-g #6)",
+     "7.4 s x-person-0008 at (-830,-3025) to 5:44.5 (quiet-g #6)",
+     "6.6 s p-garden-row-east-03 at (-820,-3225) to 5:44.7 (quiet-g #1)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   }
+  },
+  "thin-quiet": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 1.1,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 14,
+    "held10sOrMore": 8,
+    "longestS": 42.5,
+    "longest": [
+     "42.5 s x-person-0094 at (-882,-2389) to 3:08.8 (thin-quiet #1)",
+     "16.9 s x-person-0222 at (-995,-3211) to 3:26.5 (thin-quiet #7)",
+     "16.5 s x-person-0031 at (-949,-3151) to the end (thin-quiet #7)"
+    ]
+   },
+   "x4": {
+    "held5sOrMore": 42,
+    "held10sOrMore": 17,
+    "longestS": 40.7,
+    "longest": [
+     "40.7 s x-person-0094 at (-856,-2390) to 3:08.6 (thin-quiet #1)",
+     "19.9 s x-guard-026 at (-998,-3152) to 4:05.7 (thin-quiet #10)",
+     "18.9 s p-pylon-row-east-05 at (-795,-3150) to 4:37.3 (thin-quiet #1)"
+    ]
+   }
+  },
+  "unprepared-loud": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2,
+    "longest": []
+   },
+   "x4": {
+    "held5sOrMore": 1,
+    "held10sOrMore": 0,
+    "longestS": 6.4,
+    "longest": [
+     "6.4 s x-guard-010 at (-840,-2865) to 1:10.8 (unprepared-loud #1)"
+    ]
+   }
+  },
+  "veteran-drive": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 1.4,
+    "longest": []
+   },
+   "x4": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   }
+  },
+  "veteran": {
+   "unset": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 0.6,
+    "longest": []
+   },
+   "people=64": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 3,
+    "longest": []
+   },
+   "x4": {
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "longestS": 2.9,
+    "longest": []
+   }
+  }
+ }
+}

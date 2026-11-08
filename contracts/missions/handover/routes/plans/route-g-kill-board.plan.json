@@ -202,9 +202,9 @@
    "op": "enforcer",
    "do": "move",
    "to": "d:Getaway bay",
-   "when": "blocker.out",
+   "when": "car.unboxed",
    "label": "out",
-   "why": "board and go (brief 018 §5): the ambush springs, and the Enforcer walks Vale straight to the car while the three fire; he cannot run or fire"
+   "why": "board and go (brief 018 §5): the ambush springs, and the Enforcer walks Vale straight to the car while the three fire; he cannot run or fire. brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "enforcer",
@@ -223,8 +223,8 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out",
-   "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2)"
+   "when": "car.unboxed",
+   "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2). brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "scout",
@@ -239,7 +239,8 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out"
+   "when": "car.unboxed",
+   "why": "brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "fixer",
@@ -254,7 +255,8 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out"
+   "when": "car.unboxed",
+   "why": "brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "tech",

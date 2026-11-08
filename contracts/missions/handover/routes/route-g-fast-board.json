@@ -1,7 +1,7 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "Route G, fast, board and go (brief 018 §5), the route's primary: as route-g-fast to the ambush (the loop at once, the guard knocked out at about 1:26 with no Reroute, the Enter at once); then the Enforcer walks Vale to the car as it springs while the three lock rival-1, rival-2 and rival-3 in turn, and once the blocker is down they board and the car leaves with the whole cell.",
+ "note": "Route G, fast, board and go (brief 018 §5), the route's primary: as route-g-fast to the ambush (the loop at once, the guard knocked out at about 1:26 with no Reroute, the Enter at once); then the Enforcer walks Vale to the car as it springs while the three lock rival-1, rival-2 and rival-3 in turn, and once the box is gone (car.unboxed: the crew broken and its car gone, brief 096) they board and the car leaves with the whole cell.",
  "start": {},
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
@@ -21,20 +21,20 @@
   {"tick":1605,"op":"tech","do":"draw"},
   {"tick":1605,"op":"enforcer","do":"draw"},
   {"tick":1605,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":1684,"op":"scout","do":"fire","target":"rival-1"},
-  {"tick":1684,"op":"fixer","do":"fire","target":"rival-1"},
-  {"tick":1684,"op":"tech","do":"fire","target":"rival-1"},
   {"tick":1706,"op":"enforcer","do":"board","target":"car"},
-  {"tick":1754,"op":"scout","do":"fire","target":"rival-2"},
-  {"tick":1754,"op":"fixer","do":"fire","target":"rival-2"},
-  {"tick":1754,"op":"tech","do":"fire","target":"rival-2"},
-  {"tick":1754,"op":"scout","do":"move","to":"d:Getaway bay"},
-  {"tick":1754,"op":"fixer","do":"move","to":"d:Getaway bay"},
-  {"tick":1754,"op":"tech","do":"move","to":"d:Getaway bay"},
-  {"tick":1806,"op":"tech","do":"board","target":"car"},
-  {"tick":1809,"op":"scout","do":"board","target":"car"},
-  {"tick":1815,"op":"fixer","do":"board","target":"car"},
-  {"tick":1825,"op":"cell","do":"go"}
+  {"tick":1778,"op":"scout","do":"fire","target":"rival-1"},
+  {"tick":1778,"op":"fixer","do":"fire","target":"rival-1"},
+  {"tick":1778,"op":"tech","do":"fire","target":"rival-1"},
+  {"tick":1798,"op":"scout","do":"fire","target":"rival-2"},
+  {"tick":1798,"op":"fixer","do":"fire","target":"rival-2"},
+  {"tick":1798,"op":"tech","do":"fire","target":"rival-2"},
+  {"tick":1854,"op":"scout","do":"move","to":"d:Getaway bay"},
+  {"tick":1854,"op":"fixer","do":"move","to":"d:Getaway bay"},
+  {"tick":1854,"op":"tech","do":"move","to":"d:Getaway bay"},
+  {"tick":1854,"op":"tech","do":"board","target":"car"},
+  {"tick":1855,"op":"scout","do":"board","target":"car"},
+  {"tick":1855,"op":"fixer","do":"board","target":"car"},
+  {"tick":1865,"op":"cell","do":"go"}
  ],
  "until": 4900
 }

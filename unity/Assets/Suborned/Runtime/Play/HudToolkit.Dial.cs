@@ -8,14 +8,15 @@ using UnityEngine.UIElements;
 namespace Suborned.Play
 {
     /// <summary>Brief 098 step 0, the dial's dev panel on the start page (HostDial; Sky 2026-11-07: "add 3 more guards, take some away, bring in more cars etc - the game
-    /// then just does that"). Bottom left, on the street beside the book's page, only while the start book is up. Per kind (guards, people, and cars since step 1: passing traffic, today 0): −N, −, the number, +, +N
+    /// then just does that"). Bottom left, on the street beside the book's page, only while the start book is up; its plate on the grid's 48 px margin line, so all of it sits
+    /// in the page's body (the book's rule B3, tools/hud-budget/book.ts; at 24 its words stood 4 px into the margin). Per kind (guards, people, and cars since step 1: passing traffic, today 0): −N, −, the number, +, +N
     /// (clicks; no key does any of it; N the kind's big step, HostDial.DialBigStep: people and guards 5, cars 4), the kind's name over what it counts (since step 1b, Sky 2026-11-07
     /// "people counter is for street": "People / on the street", "Guards / in the zone", "Cars / on the roads"), with today's number, the floor (the cast never leave) and the most beside it. Today puts every kind back; Play builds the
     /// street with those numbers and begins (the page's Begin does the same once a number changed). The line under them says what the street behind the page plays.
     /// A dev panel, not final UI: the book's own colours and Jost, for Glyph to style. Named elements ("dial-guards-plus", "dial-people-plus-big", "dial-play") for a scripted click.</summary>
     public sealed partial class HudToolkit
     {
-        const float DlW = 560f, DlX = 24f, DlLineW = 400f, DlRow0 = 74f, DlRowH = 46f;
+        const float DlW = 560f, DlX = 48f, DlLineW = 400f, DlRow0 = 74f, DlRowH = 46f;
         /// <summary>The panel's height for its rows (one a kind the dial builds: 198 px for two, 244 for three), and where the line under them sits.</summary>
         float DlH => DlLineY + 32f; float DlLineY => DlRow0 + DlRowH * Mathf.Max(1, host.DialToday?.Count ?? 0);
         static readonly Color DlRim = Hex(0xcbc6c3);

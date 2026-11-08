@@ -1,0 +1,100 @@
+[
+ {
+  "id": "route-a-board",
+  "state": "replanned",
+  "failed": "waited for blocker.out, which brief 096's block no longer logs (no hostile walks for the road): the three never went to the car",
+  "change": "the three board once the box is gone (car.unboxed); recomposed, it also takes brief 096's one Help",
+  "seed0": "success 4:38.0, T 3, A 0"
+ },
+ {
+  "id": "route-a-pressure-board",
+  "state": "replanned",
+  "failed": "the Enforcer's walk-in and the three's boards waited for blocker.out; once on car.unboxed, the Scout and the Tech fell in the fight (Pressure: no warning, the five fire at once, the three fired at will)",
+  "change": "car.unboxed for the walk-in and the boards; the three lock rival-2 then rival-1 as the ambush springs (focus fire, as route G)",
+  "seed0": "success 5:27.9, T 6, A 0"
+ },
+ {
+  "id": "route-g-board",
+  "state": "replanned",
+  "failed": "the boards waited for blocker.out",
+  "change": "the boards wait for car.unboxed",
+  "seed0": "success 4:55.2, T 5, A 1"
+ },
+ {
+  "id": "route-g-fast-board",
+  "state": "replanned",
+  "failed": "the three waited for blocker.out",
+  "change": "car.unboxed",
+  "seed0": "success 3:06.5, T 5, A 1"
+ },
+ {
+  "id": "route-g-kill-board",
+  "state": "replanned",
+  "failed": "the Enforcer's walk-in and the boards waited for blocker.out",
+  "change": "car.unboxed",
+  "seed0": "success 6:06.1, T 2, A 1"
+ },
+ {
+  "id": "route-g-kill",
+  "state": "replanned",
+  "failed": "held at (20.0, -65.0) until the crew broke, the Enforcer stood in the lookout's way (rival-4 comes to the fight from Apron Road), who advanced to 8 m and shot him down holding Vale, one shot before the crew broke",
+  "change": "route G's ending: the three lock rival-2 then rival-1, the Enforcer walks Vale to the car as the ambush springs and boards, Go once the fight is over",
+  "seed0": "success 5:41.9, T 2, A 1"
+ },
+ {
+  "id": "loud",
+  "state": "replanned",
+  "failed": "its plan no longer composed: on 0.48.0 the cell is sealed in (5:17.2) before the Go, the Tech (walked 17 m out by his locks on the response unit) sent to the car only once Vale was in (5:10.6); HEAD's stale script loses seed 0 to the guard seeing the Enter (2:37.1)",
+  "change": "the Tech regroups at the car (cv-003) when the crew breaks, with the Scout and the Fixer. Seeds 1-50 fall to 18: recomposed, the way in enters at 2:41.0 (the guard falls later on seed 0 than when HEAD's ticks were set), and on 31 seeds rival-1, drawn to the Office's north end, shoots the Enforcer holding Vale at the service lane over 13 m before the crew breaks (a lock on rival-1 tried: out of reach while the flankers walk, no change). Lines and walks: for the walk-law re-check",
+  "seed0": "success 5:11.7, T 26, A 2"
+ },
+ {
+  "id": "loud-left-downed",
+  "state": "replanned",
+  "failed": "as loud",
+  "change": "as loud; the Scout is now captured standing (sealed) on seed 0, hit once and not yet down when the car goes (waiting for her fall would tune the plan to one seed: she is not down before the seal)",
+  "seed0": "success 5:14.7, T 26, A 2, Scout captured (sealed)"
+ },
+ {
+  "id": "loud-left-standing",
+  "state": "replanned",
+  "failed": "as loud",
+  "change": "as loud",
+  "seed0": "success 5:14.7, T 26, A 2, Scout captured fighting"
+ },
+ {
+  "id": "route-b-thin",
+  "state": "rebuilt",
+  "failed": "the false tip on the rival car at 3:10 (retired by brief 096) and the drive round at 5:53 (refused: our car is boxed in from 2:53)",
+  "change": "rebuilt on route B as it is now (the lend), plus its thinning: rival-3 knocked out unseen at his lone post by the café terrace (5:08)",
+  "seed0": "success 7:55.3, T 9, A 1 (route-b's own Alert 1: the pickup camera reports the Fixer by the driver; rival-3 found at 5:58)"
+ },
+ {
+  "id": "route-b-board",
+  "state": "retired",
+  "failed": "the old route B's board and go: the tip on the rival car and our car driven round behind Popovic's, both refused since brief 096",
+  "change": "plan retired: the lend is route B's board and go (route-b); the drive round before the rival car is drive-round.adaptive. Script kept unchanged for its readers (fight lab P-B, PanelGuard, tools/qa); it no longer reaches the Take",
+  "seed0": "failure rivals-reach-vale 5:53.1 (script unchanged)"
+ },
+ {
+  "id": "careless-reporter-not-stopped",
+  "state": "kept",
+  "failed": "the tip and the drive round (retired)",
+  "change": "plan rebuilt on the lend with its one mistake (guard 73 killed, about 4:10); it does not compose: today's city finds him (Alert 2 at 6:43.7) and the lent car is held to the close. City and walks: re-check on the walk law",
+  "seed0": "script unchanged (HEAD's): failure rivals-reach-vale 5:53.1"
+ },
+ {
+  "id": "careless-thin-all",
+  "state": "kept",
+  "failed": "the tip and the drive round (retired)",
+  "change": "plan rebuilt on the lend; it does not compose: rival-1, 2.3 m away, no longer sees rival-2 taken down, so the pair is thinned quietly and the run never turns loud (M059-S1.6). Sight: for Keel and Motive",
+  "seed0": "script unchanged (HEAD's): failure rivals-reach-vale 5:53.1"
+ },
+ {
+  "id": "loud-fight",
+  "state": "kept",
+  "failed": "fight it out after Vale is in: aboard at 5:10.6, 6.6 s before the seal, and three sidearms do not down the two trained officers in time",
+  "change": "not re-planned: opening on the officers as the crew breaks downs both by 5:10.4, but the Tech falls at 4:58.7 and would need a carry written for seed 0's roll. The Enforcer's 39 s carry round the Office is walk geometry: re-check on the walk law",
+  "seed0": "script unchanged (HEAD's): failure entry-seen-guard 2:37.1"
+ }
+]

@@ -1,0 +1,58 @@
+{
+ "schema": "suborned.evidence/1",
+ "brief": "098, quiet-g's approach (Waymark, engine 0.48.0)",
+ "how": "suborned-sim batch <plan> --seeds 200 (seeds 1-200) --digest --no-replay [--counts c]; reported = seeds with attention.reporting; windows = the plan with the rule given 30 s late (bands.ts R-7)",
+ "rows": [
+  {
+   "setting": "unset",
+   "before": "157/200 (78.5 %)",
+   "after": "157/200 (78.5 %)",
+   "repBefore": "0/200",
+   "repAfter": "0/200"
+  },
+  {
+   "setting": "guards=32",
+   "before": "64/200 (32.0 %)",
+   "after": "65/200 (32.5 %)",
+   "repBefore": "121/200",
+   "repAfter": "0/200"
+  },
+  {
+   "setting": "guards=64",
+   "before": "4/200 (2.0 %)",
+   "after": "2/200 (1.0 %)",
+   "repBefore": "195/200",
+   "repAfter": "0/200"
+  },
+  {
+   "setting": "people=64",
+   "before": "99/200 (49.5 %)",
+   "after": "92/200 (46.0 %)",
+   "repBefore": "0/200",
+   "repAfter": "1/200"
+  }
+ ],
+ "windows": [
+  {
+   "rule": "beside-guard",
+   "side": "before",
+   "late30": "85/200 (42.5 %)"
+  },
+  {
+   "rule": "beside-guard",
+   "side": "after",
+   "late30": "85/200 (42.5 %)"
+  },
+  {
+   "rule": "enter",
+   "side": "before",
+   "late30": "153/200 (76.5 %)"
+  },
+  {
+   "rule": "enter",
+   "side": "after",
+   "late30": "153/200 (76.5 %)"
+  }
+ ],
+ "note": "At guards=32 today's plan stands the Enforcer at the door guard's side from 3:55 while dial guards walk their beats to the Office door: one is pinned in the recess behind him (the cell never makes room) and he is reported for loitering on 121 of 200 seeds; after 20 s at his side the door guard grows aware of him, so the knockout's card never clears (seed 2: aware from 4:24). The new approach steps out of the recess when someone is at his elbow or the card has not cleared in 12 s, and walks back in once it is clear: no loiter reports on any setting but 1 of 200 at people=64, and on the quiet street every seed plays as before. The wins at guards=32 do not rise because the door is watched: across 30 seeds the card is clear for 0 of 55 s between 3:56 and 4:50 on 12 seeds, and its longest clear spell is 1-3 s on most of the rest; the clearest stretch is 2:50-3:20 (clear 38-50 % of the time, against 0-9 % for 3:20-3:50), after the 2:30 mark: a plan that strikes after whichever mark clears first is the next step, after Keel's walk law moves the beats."
+}
