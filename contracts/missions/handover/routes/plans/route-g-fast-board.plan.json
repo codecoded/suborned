@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Route G, fast, board and go (brief 018 §5), the route's primary: as route-g-fast to the ambush (the loop at once, the guard knocked out at about 1:26 with no Reroute, the Enter at once); then the Enforcer walks Vale to the car as it springs while the three lock rival-1, rival-2 and rival-3 in turn, and once the blocker is down they board and the car leaves with the whole cell.",
+ "note": "Route G, fast, board and go (brief 018 §5), the route's primary: as route-g-fast to the ambush (the loop at once, the guard knocked out at about 1:26 with no Reroute, the Enter at once); then the Enforcer walks Vale to the car as it springs while the three lock rival-1, rival-2 and rival-3 in turn, and once the box is gone (car.unboxed: the crew broken and its car gone, brief 096) they board and the car leaves with the whole cell.",
  "start": {},
  "until": 4900,
  "steps": [
@@ -243,8 +243,8 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out",
-   "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2)"
+   "when": "car.unboxed",
+   "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2). brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "scout",
@@ -259,7 +259,8 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out"
+   "when": "car.unboxed",
+   "why": "brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "fixer",
@@ -274,7 +275,8 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out"
+   "when": "car.unboxed",
+   "why": "brief 096 (engine 0.41.0): the rival car is the block, so no hostile walks for the road and blocker.out is never logged; the way out clears when the crew breaks and its wheelman drives off, or its car explodes: car.unboxed, the ring's Boxed in clearing (Waymark, brief 098)"
   },
   {
    "op": "tech",

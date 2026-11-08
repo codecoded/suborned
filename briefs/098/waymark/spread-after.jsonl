@@ -1,0 +1,14 @@
+{"script":"route-a-board","seeds":50,"wins":36,"fails":"rivals-reach-valex14","fightMed":48,"fightP25":35,"fightP75":58,"fightP95":60,"hpMed":1,"firstDiffMed":1556,"errors":0}
+{"script":"route-a-pressure-board","seeds":50,"wins":27,"fails":"Withdrawnx11,closed-inx6,rivals-reach-valex6","fightMed":18,"fightP25":14,"fightP75":78,"fightP95":138,"hpMed":10,"firstDiffMed":1576,"errors":0}
+{"script":"route-b-board","seeds":50,"wins":0,"fails":"rivals-reach-valex50","fightMed":0,"fightP25":0,"fightP75":0,"fightP95":0,"hpMed":0,"firstDiffMed":747,"errors":0}
+{"script":"route-b-thin","seeds":50,"wins":50,"fails":"","fightMed":25,"fightP25":17,"fightP75":41,"fightP95":49,"hpMed":7,"firstDiffMed":1576,"errors":0}
+{"script":"route-g-fast-board","seeds":50,"wins":20,"fails":"rivals-reach-valex30","fightMed":7,"fightP25":3,"fightP75":9,"fightP95":13,"hpMed":2,"firstDiffMed":1576,"errors":0}
+{"script":"route-g-kill","seeds":50,"wins":20,"fails":"closed-inx29,rivals-reach-valex1","fightMed":26,"fightP25":17,"fightP75":35,"fightP95":54,"hpMed":9,"firstDiffMed":1570,"errors":0}
+{"script":"route-g-kill-board","seeds":50,"wins":43,"fails":"Withdrawnx6,rivals-reach-valex1","fightMed":26,"fightP25":25,"fightP75":38,"fightP95":39,"hpMed":5,"firstDiffMed":1570,"errors":0}
+{"script":"route-g-board","seeds":50,"wins":33,"fails":"rivals-reach-valex17","fightMed":38,"fightP25":19,"fightP75":57,"fightP95":76,"hpMed":8,"firstDiffMed":1570,"errors":0}
+{"script":"careless-reporter-not-stopped","seeds":50,"wins":0,"fails":"rivals-reach-valex50","fightMed":0,"fightP25":0,"fightP75":0,"fightP95":0,"hpMed":0,"firstDiffMed":747,"errors":0}
+{"script":"loud-fight","seeds":50,"wins":34,"fails":"entry-seen-guardx10,enforcer-downx6","fightMed":122,"fightP25":113,"fightP75":128,"fightP95":155,"hpMed":9,"firstDiffMed":1530,"errors":0}
+{"script":"loud","seeds":50,"wins":18,"fails":"enforcer-downx31,sealedx1","fightMed":116,"fightP25":115,"fightP75":120,"fightP95":138,"hpMed":10,"firstDiffMed":1530,"errors":0}
+{"script":"careless-thin-all","seeds":50,"wins":0,"fails":"rivals-reach-valex50","fightMed":0,"fightP25":0,"fightP75":0,"fightP95":0,"hpMed":0,"firstDiffMed":747,"errors":0}
+{"script":"loud-left-downed","seeds":50,"wins":18,"fails":"enforcer-downx31,sealedx1","fightMed":120,"fightP25":115,"fightP75":148,"fightP95":157,"hpMed":10,"firstDiffMed":1530,"errors":0}
+{"script":"loud-left-standing","seeds":50,"wins":18,"fails":"enforcer-downx31,sealedx1","fightMed":116,"fightP25":115,"fightP75":123,"fightP95":146,"hpMed":10,"firstDiffMed":1530,"errors":0}
