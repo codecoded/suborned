@@ -8,19 +8,19 @@
 import type { Image } from './png';
 import { checkPage, type PagePart } from './page';
 import { checkBook, isBook } from './book';
-import { BUBBLE, CARD_MAX as CARDS, conversationLines, speechFault } from './speech';
+import { BUBBLE, CARD_MAX as CARDS, SLIP_MAX, conversationCards, conversationLines, isConversationCard, speechFault } from './speech';
 import { NEXT_MAX, isNextText, nextFaults } from './next';
-export { NEXT_MAX };
+export { NEXT_MAX, SLIP_MAX };
 
 /** `page`: a full-screen page outside play (the briefing page, GDD v0.27.0 §10), judged by its own checks (page.ts), never by coverage or the reading caps. `book`: the book's
  *  pages (the start page, the debrief), on their own checks (book.ts); a `page` manifest with the book's section signs is read as the book.
  *  `briefing`: RETIRED with the street overlay (brief 062 B, gone in v0.27.0); kept only so the archived street-briefing fixtures still judge as they were shot. */
 export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page' | 'book';
 export interface Rect { x: number; y: number; w: number; h: number }
-export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card'; // pin, paper, band: the page's (page.ts); card: a conversation's cards; next: the next-event row (next.ts)
+export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band' | 'card' | 'slip'; // pin, paper, band: the page's (page.ts); card: a panel (the news lozenge); slip: a person's card on them (speech.ts); next: the next-event row (next.ts)
 /** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
-export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'pill' | 'lock' | 'chip' | 'altline' | 'card';
-export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'next', 'pill', 'lock', 'chip', 'altline', 'card'];
+export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'next' | 'pill' | 'lock' | 'chip' | 'altline' | 'card' | 'slip';
+export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'next', 'pill', 'lock', 'chip', 'altline', 'card', 'slip'];
 export interface Element extends Rect {
   kind: Kind; text?: string; facts?: string[]; verbs?: string[];
   /** The page's pieces (state `page`, page.ts): its part (read from text and layout when absent), a pin's number or `car`, the rows as wrapped, and an id a child names as its `parent`. */
@@ -75,7 +75,8 @@ export const LOCK_MAX = { lines: 1, words: 7, way: 5, reason: 2 };
 export const PILL_SLOT = 1;
 /** The done chip (kind `chip`): the learn chip (face, facts, ›, verb pills). Facts at most 3 rows of at most 2 words; verbs one row of at most 3 one-word pills; at most 9 words a chip; at most 2 chips
  *  on screen; `rest` and `active`, and in `alt` never over a ring (an element whose text names a ring). Its rows are a list, not running text: inside a chip the sentence and block rules give way to these caps. [S] */
-/** A conversation's cards (kind `card`, brief 085, conversations.schema.ts): what the player now knows and can do, as written: at most 4 rows of at most 6 words, one panel on screen. */
+/** A panel (kind `card`): today the news lozenge, the slim feed's one crucial card (GDD §10), one on screen; its words keep the cap the `card` kind had from a conversation's cards
+ *  (brief 085). A person's card on them is a `slip` (speech.ts SLIP_MAX), counted apart: the two are one at a time each, in their own places. */
 export const CARD_MAX = CARDS; // conversations.schema's rows and CARD_WORDS (speech.ts)
 export const CHIP_MAX = { facts: 3, factWords: 2, verbs: 3, verbWords: 1, words: 9, onScreen: 2, states: ['rest', 'active'] as State[] };
 /** A chip the manifest does not spell (`facts`/`verbs`; today's builds name it only in the parts, `gain-chip-N`): the reader counts its rows, at most 4 (3 facts and the verbs). Its words are
@@ -109,9 +110,11 @@ const HEAD = /^(Hold|Let go)$/;
  *  - a lock pill: any other `·`-separated line, ending in its reason ("Listen to the guard · Already heard"); the goal line and the hints never carry the dot;
  *  - an Alt line: in the `alt` state, a line longer than the goal line's six words or holding a full stop before more text ("Go without Vale calls off the attempt. …").
  *  A clock alone is the seal's marker (as before). Anything else stays a `line`. Its words are never hidden: each recognised piece keeps its text and its caps.
- *  A `marker` with letters before a trailing clock is the next-event row, which builds to 0.2.287 write as a marker (HudToolkit.Clock.cs): `next`, held to NEXT_MAX until the host tags it. */
+ *  A `marker` with letters before a trailing clock is the next-event row, which builds to 0.2.287 write as a marker (HudToolkit.Clock.cs): `next`, held to NEXT_MAX until the host tags it.
+ *  A `card` whose words are one of text.json's conversation cards is the person's slip, which builds to 0.2.290 write as a card (HudToolkit.Card.cs): `slip` (SLIP_MAX); the news stays a card. */
 export function recognise(e: Element, state: State): Element {
   if (e.kind === 'marker') return isNextText(e.text) ? { ...e, kind: 'next' } : e; // a bare clock, or words with no clock, stay a marker
+  if (e.kind === 'card') return isConversationCard(e.text, conversationCards()) ? { ...e, kind: 'slip' } : e; // no text.json to read: it stays a card (the stricter count)
   if (e.kind !== 'line') return e;
   const t = e.text ?? '';
   if (isClock(t)) return { ...e, kind: 'marker' };
@@ -346,10 +349,18 @@ export function analyse(shot: Image, o: Options): Report {
   // meeting a busy picture behind it (dark foliage under a bright plate edge breaks into letter-sized strokes), not a second line: it needs a quarter of
   // the strongest row's strokes, and at least three.
   const lines = (rs: Run[]) => rowsOf(rs).length;
-  const named = (b: Run[]) => b.some(r => { const t = owner.get(r)?.text; return !!t && speechWords(t) < wordsOf(t) && !/^\s*[^:]*:\s/.test(t); }) ? 1 : 0; // the conversation bubble sets its speaker's name on a row of its own: a label, not a line of speech
-  const said = conversationLines(); // a conversation's line has the cutaway's caps, a bubble the bubble's (speech.ts, from the text schema)
-  for (const b of speech.length ? stack(speech) : []) { const f = speechFault(b.map(r => owner.get(r)?.text).find(Boolean) ?? '', b.length - named(b), wordsIn(b), said); if (f) failures.push(f); }
-  { const cards = els.filter(e => e.kind === 'card' && e.text && e.w > 0); if (cards.length > CARD_MAX.onScreen) failures.push(`${cards.length} card panels on screen (at most ${CARD_MAX.onScreen})`); if (cards.some(e => wordsOf(e.text!) > CARD_MAX.words)) failures.push(`the cards run over ${CARD_MAX.words} words`); }
+  // Speech, one manifest element at a time: one bubble, one line, its rows the longest stack of its own runs. Two people talking at once are two lines, never one long one (0.2.290's
+  // r123-fight-ground: two street lines one above the other stacked into one 32-word line). Nothing caps the bubbles on screen together: Glyph's rounds 2 and 3 set no such rule.
+  const said = conversationLines(), bubbles = new Map<Element, Run[]>(); // a conversation's line has the cutaway's caps, a bubble the bubble's (speech.ts, from the text schema)
+  for (const r of speech) { const o = owner.get(r), e = o?.kind === 'speech' ? o : els.find(x => x.kind === 'speech' && inside(r, x))!; bubbles.set(e, [...(bubbles.get(e) ?? []), r]); }
+  for (const [e, rs] of bubbles) { // the conversation bubble sets its speaker's name on a row of its own: a label, not a row of speech
+    const t = e.text ?? '', named = t && speechWords(t) < wordsOf(t) && !/^\s*[^:]*:\s/.test(t) ? 1 : 0, rows = Math.max(...stack(rs).map(b => b.length)) - named;
+    const f = speechFault(t, rows, t ? speechWords(t) : rs.reduce((a, r) => a + r.words, 0), said); if (f) failures.push(f);
+  }
+  { const on = (k: Kind) => els.filter(e => e.kind === k && e.text && e.w > 0), cards = on('card'), slips = on('slip'); // the news and a person's slip: one of each at a time, counted apart
+    if (cards.length > CARD_MAX.onScreen) failures.push(`${cards.length} card panels on screen (at most ${CARD_MAX.onScreen})`); if (cards.some(e => wordsOf(e.text!) > CARD_MAX.words)) failures.push(`the cards run over ${CARD_MAX.words} words`);
+    if (slips.length > SLIP_MAX.onScreen) failures.push(`${slips.length} slips on screen (a person's card, on them: at most ${SLIP_MAX.onScreen})`);
+    for (const e of slips) if (wordsOf(e.text!) > SLIP_MAX.words) failures.push(`the slip "${e.text!.trim().slice(0, 40)}…" runs ${wordsOf(e.text!)} words (at most ${SLIP_MAX.words})`); }
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);
     if (beats.some(r => r.words > BEAT_MAX.words)) failures.push(`a story beat is longer than ${BEAT_MAX.words} words`);

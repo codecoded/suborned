@@ -1,0 +1,26 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 1648, "y": 66, "w": 84, "h": 28, "text": "alert lamps"},
+  {"kind": "image", "x": 1744, "y": 70, "w": 20, "h": 20, "text": "trail icon"},
+  {"kind": "image", "x": 1796, "y": 70, "w": 20, "h": 20, "text": "cash icon"},
+  {"kind": "bar", "x": 1648, "y": 66, "w": 252, "h": 28, "text": ""},
+  {"kind": "image", "x": 1815, "y": 99, "w": 18, "h": 18, "text": "next icon"},
+  {"kind": "image", "x": 1839, "y": 100, "w": 16, "h": 16, "text": "next unknown"},
+  {"kind": "next", "x": 1815, "y": 94, "w": 85, "h": 28, "text": "2:35"},
+  {"kind": "image", "x": 1784, "y": 126, "w": 116, "h": 30, "text": "known people"},
+  {"kind": "marker", "x": 1766, "y": 14, "w": 134, "h": 48, "text": "1:08"},
+  {"kind": "image", "x": 1766, "y": 21, "w": 34, "h": 34, "text": "pause button"},
+  {"kind": "marker", "x": 104, "y": 38, "w": 33, "h": 28, "text": "done"},
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 329, "text": "roster portraits"},
+  {"kind": "image", "x": 1844, "y": 1000, "w": 56, "h": 56, "text": "book key"},
+  {"kind": "image", "x": 947, "y": 1033, "w": 26, "h": 26, "text": "hint reopen"},
+  {"kind": "image", "x": 18, "y": 922, "w": 146, "h": 146, "text": "plot scope"},
+  {"kind": "image", "x": 9, "y": 933, "w": 32, "h": 32, "text": "turn button"},
+  {"kind": "image", "x": 141, "y": 933, "w": 32, "h": 32, "text": "turn button"},
+  {"kind": "image", "x": 75, "y": 899, "w": 32, "h": 32, "text": "cones button"},
+  {"kind": "image", "x": 947, "y": 408, "w": 26, "h": 26, "text": "pip waitress"},
+  {"kind": "image", "x": 34, "y": 368, "w": 36, "h": 36, "text": "squad button"},
+  {"kind": "card", "x": 784, "y": 238, "w": 353, "h": 140, "text": "Debt: Bureau loan, and she's behind. Secret: seeing Arthur, the door guard. Help: clear her Bureau loan. Pressure: threaten to expose the affair."}
+ ]
+}

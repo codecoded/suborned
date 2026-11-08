@@ -1,0 +1,28 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 1655, "y": 66, "w": 84, "h": 28, "text": "alert lamps"},
+  {"kind": "image", "x": 1751, "y": 70, "w": 20, "h": 20, "text": "trail icon"},
+  {"kind": "image", "x": 1804, "y": 70, "w": 20, "h": 20, "text": "cash icon"},
+  {"kind": "bar", "x": 1655, "y": 66, "w": 245, "h": 28, "text": ""},
+  {"kind": "image", "x": 1789, "y": 99, "w": 18, "h": 18, "text": "next icon"},
+  {"kind": "next", "x": 1789, "y": 94, "w": 111, "h": 28, "text": "Chime 5:10"},
+  {"kind": "image", "x": 1784, "y": 126, "w": 116, "h": 30, "text": "known people"},
+  {"kind": "marker", "x": 1763, "y": 14, "w": 137, "h": 48, "text": "4:19"},
+  {"kind": "image", "x": 1763, "y": 21, "w": 34, "h": 34, "text": "pause button"},
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 329, "text": "roster portraits"},
+  {"kind": "image", "x": 1844, "y": 1000, "w": 56, "h": 56, "text": "book key"},
+  {"kind": "image", "x": 947, "y": 1033, "w": 26, "h": 26, "text": "hint reopen"},
+  {"kind": "image", "x": 1468, "y": 999, "w": 58, "h": 58, "text": "card badge"},
+  {"kind": "card", "x": 1468, "y": 1003, "w": 362, "h": 64, "text": "Robots coming · an agent stayed too long beside the café · 2:46"},
+  {"kind": "image", "x": 18, "y": 922, "w": 146, "h": 146, "text": "plot scope"},
+  {"kind": "image", "x": 9, "y": 933, "w": 32, "h": 32, "text": "turn button"},
+  {"kind": "image", "x": 141, "y": 933, "w": 32, "h": 32, "text": "turn button"},
+  {"kind": "image", "x": 75, "y": 899, "w": 32, "h": 32, "text": "cones button"},
+  {"kind": "speech", "x": 618, "y": 372, "w": 710, "h": 28, "text": "I can't stop, Milena. Another letter came from the Bureau today, and I'm three payments behind now."},
+  {"kind": "speech", "x": 645, "y": 330, "w": 643, "h": 28, "text": "Inez, have you eaten anything since this morning? You've hardly left that doorway all shift."},
+  {"kind": "image", "x": 78, "y": 375, "w": 99, "h": 21, "text": "squad button word"},
+  {"kind": "image", "x": 34, "y": 368, "w": 36, "h": 36, "text": "squad button"},
+  {"kind": "image", "x": 942, "y": 524, "w": 36, "h": 36, "text": "act mark"}
+ ]
+}
