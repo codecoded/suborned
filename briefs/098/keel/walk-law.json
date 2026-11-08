@@ -1,0 +1,1967 @@
+{
+ "schema": "suborned.evidence/1",
+ "brief": "098, Sky's calls on walking and listening (2026-11-08): engine 0.49.0 (Keel)",
+ "engines": {
+  "before": "suborned.sim/0.48.0 at 8f4b9ded (its own data and cover; missions from this branch), built from its git archive and run from its own data root",
+  "after": "suborned.sim/0.49.0 at this branch's head (data regenerated in order: sim:site, cover, sim:site, seats, rounds, sim:site)"
+ },
+ "gaps": {
+  "how": "sim/data/handover.gaps.json (tools/sim/gaps.ts, written with the site): every gap of 80-300 cm between two of the walk's solids, open (no third solid in it), found on the solids' own geometry; each crossed both ways by the engine's own Route (suborned-sim gaps), passing between the two nearest points, no more than 100 cm longer than the straight line. The same list through each engine's walk",
+  "before": {
+   "engine": "suborned.sim/0.48.0",
+   "gaps": 161,
+   "crossedBothWays": 100,
+   "walled": 61,
+   "walledBy": {
+    "goes round": 47,
+    "no route": 14
+   },
+   "widestWalledCm": 229,
+   "fountainGaps": 16,
+   "fountainWalled": 12,
+   "walledWidthsBy50cm": {
+    "100": 31,
+    "150": 16,
+    "200": 9,
+    "50": 5
+   }
+  },
+  "after": {
+   "engine": "suborned.sim/0.49.0",
+   "gaps": 161,
+   "crossedBothWays": 161,
+   "walled": 0,
+   "walledBy": {},
+   "widestWalledCm": 0,
+   "fountainGaps": 16,
+   "fountainWalled": 0,
+   "walledWidthsBy50cm": {}
+  }
+ },
+ "holdsByPlace": {
+  "how": "Vantage's regions probe (briefs/098/vantage/regions-probe.cs in a scratch copy of sim/cli): 15 adaptive plans x 10 seeds a setting; a held spell is binned where the body stood when it ended. The same city on a seed plays under every plan, so one spell can count once per plan",
+  "before": [
+   {
+    "setting": "unset",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 10.4,
+    "spells": 8102,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 2.4,
+    "squeezePairTicks": 0,
+    "madeRoom": 189,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 15.4,
+    "spells": 14098,
+    "held5sOrMore": 3,
+    "held10sOrMore": 2,
+    "maxS": 32.1,
+    "squeezePairTicks": 0,
+    "madeRoom": 28,
+    "changedPlans": 1,
+    "longest": [
+     "32.1 s p-cafe-14 at (-882,-2655) to 2:50.9 (quiet-a #1)",
+     "25.4 s p-cafe-14 at (-799,-2685) to 2:43.6 (quiet-a #3)",
+     "5.2 s p-garden-row-east-03 at (-861,-2671) to 0:53.9 (quiet-a #3)"
+    ]
+   },
+   {
+    "setting": "unset",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 23.6,
+    "spells": 13948,
+    "held5sOrMore": 2,
+    "held10sOrMore": 1,
+    "maxS": 16.7,
+    "squeezePairTicks": 97,
+    "madeRoom": 151,
+    "changedPlans": 0,
+    "longest": [
+     "16.7 s police-5 at (6456,-4149) to 6:39.2 (quiet-g #9)",
+     "5.3 s p-records-office-57 at (6259,-4376) to 7:13.7 (quiet-b-thinned #4)"
+    ]
+   },
+   {
+    "setting": "unset",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 7.8,
+    "spells": 1178,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.3,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 23.5,
+    "spells": 17270,
+    "held5sOrMore": 7,
+    "held10sOrMore": 0,
+    "maxS": 7.4,
+    "squeezePairTicks": 43,
+    "madeRoom": 199,
+    "changedPlans": 0,
+    "longest": [
+     "7.4 s p-records-office-67 at (7752,-2829) to the end (prepared-loud #4)",
+     "6.6 s officer-1 at (7717,-2964) to 5:14.3 (prepared-loud #6)",
+     "6.1 s x-person-0016 at (7724,-2876) to 5:08.9 (quiet-a #8)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 70.2,
+    "spells": 94446,
+    "held5sOrMore": 124,
+    "held10sOrMore": 43,
+    "maxS": 84.2,
+    "squeezePairTicks": 5487,
+    "madeRoom": 1295,
+    "changedPlans": 12,
+    "longest": [
+     "84.2 s p-garden-row-east-03 at (-879,-2645) to 2:50.0 (quiet-a #3)",
+     "70.9 s x-person-0058 at (-757,-2681) to 2:43.7 (quiet-a #3)",
+     "43.2 s x-person-0215 at (-999,-2947) to the end (quiet-b #6)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 54.3,
+    "spells": 38789,
+    "held5sOrMore": 3,
+    "held10sOrMore": 1,
+    "maxS": 16.0,
+    "squeezePairTicks": 575,
+    "madeRoom": 773,
+    "changedPlans": 0,
+    "longest": [
+     "16.0 s p-records-office-57 at (6239,-4401) to the end (quiet-b-thinned #4)",
+     "6.3 s p-records-office-56 at (6212,-4401) to 7:09.8 (quiet-b-thinned #2)",
+     "6.0 s p-records-office-26 at (6370,-4446) to 7:19.4 (quiet-b #8)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 52.5,
+    "spells": 6924,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 1.1,
+    "squeezePairTicks": 0,
+    "madeRoom": 38,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 20.5,
+    "spells": 73614,
+    "held5sOrMore": 14,
+    "held10sOrMore": 1,
+    "maxS": 10.1,
+    "squeezePairTicks": 77,
+    "madeRoom": 1337,
+    "changedPlans": 0,
+    "longest": [
+     "10.1 s x-guard-027 at (7733,-2786) to 6:31.8 (prepared-loud #7)",
+     "8.3 s patrol at (7772,-2739) to 2:28.2 (quiet-b-taped #5)",
+     "8.2 s p-records-office-61 at (7652,-2672) to 7:54.2 (prepared-loud #5)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 20.6,
+    "spells": 46177,
+    "held5sOrMore": 4,
+    "held10sOrMore": 3,
+    "maxS": 28.4,
+    "squeezePairTicks": 92,
+    "madeRoom": 309,
+    "changedPlans": 2,
+    "longest": [
+     "28.4 s p-cafe-14 at (-859,-2564) to 2:46.1 (quiet-a #1)",
+     "10.9 s p-garden-row-east-03 at (-901,-2435) to 0:52.5 (careless #3)",
+     "10.3 s x-guard-006 at (-891,-2795) to 0:35.5 (quiet-a #3)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 29.8,
+    "spells": 61204,
+    "held5sOrMore": 4,
+    "held10sOrMore": 3,
+    "maxS": 25.9,
+    "squeezePairTicks": 39,
+    "madeRoom": 666,
+    "changedPlans": 0,
+    "longest": [
+     "25.9 s x-guard-024 at (6503,-4111) to 1:53.4 (careless #4)",
+     "19.5 s x-guard-042 at (6529,-4113) to 1:02.9 (careless #4)",
+     "18.3 s x-guard-002 at (6543,-4155) to 1:02.5 (careless #4)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 7.2,
+    "spells": 1087,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 1.3,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "x4",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 34.7,
+    "spells": 98163,
+    "held5sOrMore": 77,
+    "held10sOrMore": 15,
+    "maxS": 20.1,
+    "squeezePairTicks": 382,
+    "madeRoom": 1687,
+    "changedPlans": 1,
+    "longest": [
+     "20.1 s x-person-0006 at (7681,-2838) to the end (prepared-loud #5)",
+     "16.0 s p-records-office-39 at (7672,-2783) to 8:06.6 (prepared-loud #5)",
+     "15.1 s x-person-0193 at (7756,-2762) to 8:03.4 (prepared-loud #5)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 76.1,
+    "spells": 150545,
+    "held5sOrMore": 134,
+    "held10sOrMore": 51,
+    "maxS": 117.2,
+    "squeezePairTicks": 4937,
+    "madeRoom": 2002,
+    "changedPlans": 13,
+    "longest": [
+     "117.2 s x-person-0066 at (-798,-2609) to 2:53.3 (quiet-a #1)",
+     "42.9 s p-cafe-14 at (-718,-2709) to 2:09.0 (quiet-a #3)",
+     "42.3 s x-person-0215 at (-1000,-2943) to the end (quiet-b #6)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "x4",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 62.4,
+    "spells": 102898,
+    "held5sOrMore": 21,
+    "held10sOrMore": 3,
+    "maxS": 20.0,
+    "squeezePairTicks": 1095,
+    "madeRoom": 1928,
+    "changedPlans": 0,
+    "longest": [
+     "20.0 s x-guard-024 at (6518,-4106) to 1:46.9 (careless #4)",
+     "19.5 s x-guard-042 at (6529,-4113) to 1:02.9 (careless #4)",
+     "18.3 s x-guard-002 at (6543,-4155) to 1:02.5 (careless #4)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 53.2,
+    "spells": 7108,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 1.1,
+    "squeezePairTicks": 0,
+    "madeRoom": 39,
+    "changedPlans": 0,
+    "longest": []
+   }
+  ],
+  "after": [
+   {
+    "setting": "unset",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 10.2,
+    "spells": 7671,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 4.7,
+    "squeezePairTicks": 0,
+    "madeRoom": 256,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 15.3,
+    "spells": 7094,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 2.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 24,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 23.9,
+    "spells": 15598,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 4.8,
+    "squeezePairTicks": 94,
+    "madeRoom": 278,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "unset",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 7.3,
+    "spells": 1811,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.7,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 23.2,
+    "spells": 22052,
+    "held5sOrMore": 1,
+    "held10sOrMore": 0,
+    "maxS": 5.7,
+    "squeezePairTicks": 69,
+    "madeRoom": 306,
+    "changedPlans": 1,
+    "longest": [
+     "5.7 s patrol at (7607,-2949) to 2:04.4 (careless #1)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 77.0,
+    "spells": 60964,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 4.9,
+    "squeezePairTicks": 255,
+    "madeRoom": 575,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "people=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 59.1,
+    "spells": 44091,
+    "held5sOrMore": 7,
+    "held10sOrMore": 0,
+    "maxS": 7.9,
+    "squeezePairTicks": 184,
+    "madeRoom": 924,
+    "changedPlans": 3,
+    "longest": [
+     "7.9 s p-records-office-68 at (6108,-4340) to 7:12.0 (prepared-loud-lend #8)",
+     "7.3 s x-person-0231 at (6208,-4259) to 1:43.7 (unprepared-loud #8)",
+     "6.8 s p-records-office-57 at (6088,-4337) to 7:14.2 (quiet-b-thinned #9)"
+    ]
+   },
+   {
+    "setting": "people=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 58.2,
+    "spells": 11619,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 1.0,
+    "squeezePairTicks": 7,
+    "madeRoom": 85,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 20.2,
+    "spells": 113224,
+    "held5sOrMore": 2,
+    "held10sOrMore": 0,
+    "maxS": 6.4,
+    "squeezePairTicks": 0,
+    "madeRoom": 3107,
+    "changedPlans": 0,
+    "longest": [
+     "6.4 s x-guard-001 at (7743,-3196) to 5:01.9 (veteran #7)",
+     "6.2 s x-guard-030 at (7747,-3111) to 5:01.8 (veteran #7)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 22.7,
+    "spells": 50739,
+    "held5sOrMore": 1,
+    "held10sOrMore": 0,
+    "maxS": 5.7,
+    "squeezePairTicks": 0,
+    "madeRoom": 283,
+    "changedPlans": 0,
+    "longest": [
+     "5.7 s x-guard-042 at (-1061,-3892) to 3:57.0 (veteran-drive #7)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "guards=64",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 30.9,
+    "spells": 72655,
+    "held5sOrMore": 12,
+    "held10sOrMore": 3,
+    "maxS": 21.3,
+    "squeezePairTicks": 90,
+    "madeRoom": 1564,
+    "changedPlans": 0,
+    "longest": [
+     "21.3 s x-guard-021 at (6239,-4425) to 7:36.2 (prepared-loud-lend #1)",
+     "11.6 s p-records-office-52 at (6125,-4423) to 7:36.0 (prepared-loud-lend #1)",
+     "10.1 s rival-4 at (6145,-4449) to 7:23.1 (quiet-b #3)"
+    ]
+   },
+   {
+    "setting": "guards=64",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 6.8,
+    "spells": 1637,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.4,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "x4",
+    "region": "office-door",
+    "box": "7550,8050,-3820,-2380",
+    "bodiesARun": 33.9,
+    "spells": 149521,
+    "held5sOrMore": 61,
+    "held10sOrMore": 16,
+    "maxS": 32.6,
+    "squeezePairTicks": 472,
+    "madeRoom": 3698,
+    "changedPlans": 2,
+    "longest": [
+     "32.6 s p-records-office-39 at (7621,-2872) to 7:54.0 (prepared-loud #2)",
+     "20.2 s p-records-office-46 at (7733,-2766) to 7:04.8 (prepared-loud #2)",
+     "17.7 s p-records-office-61 at (7674,-2800) to 7:04.7 (prepared-loud #2)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "cafe-front",
+    "box": "-1070,-500,-4100,-1700",
+    "bodiesARun": 85.1,
+    "spells": 129332,
+    "held5sOrMore": 2,
+    "held10sOrMore": 1,
+    "maxS": 16.4,
+    "squeezePairTicks": 589,
+    "madeRoom": 1202,
+    "changedPlans": 1,
+    "longest": [
+     "16.4 s x-guard-008 at (-801,-2793) to 1:32.5 (careless #6)",
+     "6.9 s x-guard-032 at (-737,-2911) to 2:18.8 (careless #1)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "cafe-alley",
+    "box": "-650,-500,-3700,-3250",
+    "bodiesARun": 0.0,
+    "spells": 0,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 0.0,
+    "squeezePairTicks": 0,
+    "madeRoom": 0,
+    "changedPlans": 0,
+    "longest": []
+   },
+   {
+    "setting": "x4",
+    "region": "office-entrance",
+    "box": "6000,6800,-4800,-3900",
+    "bodiesARun": 67.0,
+    "spells": 134264,
+    "held5sOrMore": 75,
+    "held10sOrMore": 11,
+    "maxS": 15.1,
+    "squeezePairTicks": 836,
+    "madeRoom": 3565,
+    "changedPlans": 0,
+    "longest": [
+     "15.1 s rival-4 at (6690,-4480) to 6:44.1 (quiet-b #8)",
+     "14.7 s x-person-0057 at (6168,-4552) to the end (prepared-loud-lend #1)",
+     "12.7 s p-records-office-57 at (6084,-4420) to 7:28.7 (quiet-b #3)"
+    ]
+   },
+   {
+    "setting": "x4",
+    "region": "fountain",
+    "box": "0,1300,-3700,-2300",
+    "bodiesARun": 58.5,
+    "spells": 11449,
+    "held5sOrMore": 0,
+    "held10sOrMore": 0,
+    "maxS": 1.1,
+    "squeezePairTicks": 0,
+    "madeRoom": 92,
+    "changedPlans": 0,
+    "longest": []
+   }
+  ]
+ },
+ "bodies": {
+  "how": "suborned-sim dial bodies: every adaptive plan x 3 seeds x 7 settings (315 runs), every tick read by the independent check (BodyCheck)",
+  "before": {
+   "engine": "suborned.sim/0.48.0",
+   "settings": [
+    {
+     "setting": "unset",
+     "runs": 45,
+     "wins": 23,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 3,
+     "heldMaxS10": 321,
+     "heldLongest": "p-cafe-14 to 2:50.9 (quiet-a #1)",
+     "squeezePairTicks": 0,
+     "madeRoom": 164,
+     "changedPlans": 1
+    },
+    {
+     "setting": "people=32",
+     "runs": 45,
+     "wins": 22,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 11,
+     "heldMaxS10": 704,
+     "heldLongest": "x-person-0058 to 2:42.9 (quiet-a #3)",
+     "squeezePairTicks": 286,
+     "madeRoom": 356,
+     "changedPlans": 4
+    },
+    {
+     "setting": "people=64",
+     "runs": 45,
+     "wins": 20,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 31,
+     "heldMaxS10": 842,
+     "heldLongest": "p-garden-row-east-03 to 2:50.0 (quiet-a #3)",
+     "squeezePairTicks": 2146,
+     "madeRoom": 1148,
+     "changedPlans": 20
+    },
+    {
+     "setting": "guards=32",
+     "runs": 45,
+     "wins": 21,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 4,
+     "heldMaxS10": 344,
+     "heldLongest": "p-cafe-14 to 2:54.2 (quiet-a #1)",
+     "squeezePairTicks": 0,
+     "madeRoom": 337,
+     "changedPlans": 1
+    },
+    {
+     "setting": "guards=64",
+     "runs": 45,
+     "wins": 18,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 4,
+     "heldMaxS10": 284,
+     "heldLongest": "p-cafe-14 to 2:46.1 (quiet-a #1)",
+     "squeezePairTicks": 276,
+     "madeRoom": 1852,
+     "changedPlans": 2
+    },
+    {
+     "setting": "cars=8",
+     "runs": 45,
+     "wins": 19,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 3,
+     "heldMaxS10": 321,
+     "heldLongest": "p-cafe-14 to 2:50.9 (quiet-a #1)",
+     "squeezePairTicks": 0,
+     "madeRoom": 172,
+     "changedPlans": 4
+    },
+    {
+     "setting": "x4",
+     "runs": 45,
+     "wins": 18,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 32,
+     "heldMaxS10": 1172,
+     "heldLongest": "x-person-0066 to 2:53.3 (quiet-a #1)",
+     "squeezePairTicks": 2174,
+     "madeRoom": 3582,
+     "changedPlans": 21
+    }
+   ],
+   "src": "briefs/098/keel/cast-probe.json after.standard"
+  },
+  "after": {
+   "engine": "suborned.sim/0.49.0",
+   "settings": [
+    {
+     "setting": "unset",
+     "runs": 45,
+     "wins": 25,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 0,
+     "heldMaxS10": 74,
+     "heldLongest": "p-records-office-41 to the end, p-records-office-41 raw (3547,-4575) lay (2298,103) at (5871,-4472) prev (5871,-4472) cls 2 form 0 face (0,0) moving True fresh False pace 26 ground True why detour>wait aim (5743,-4442) detour to (5822,-4423) until 4921 held 3 stuck 74 st 'fleeing' stop - path (6326,-4213)..(-4600,-3200) len 116032 mm 29640 (prepared-loud-lend #1)",
+     "squeezePairTicks": 44,
+     "madeRoom": 276,
+     "changedPlans": 0
+    },
+    {
+     "setting": "people=32",
+     "runs": 45,
+     "wins": 19,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 0,
+     "heldMaxS10": 74,
+     "heldLongest": "p-records-office-41 to the end, p-records-office-41 raw (3547,-4575) lay (2298,103) at (5871,-4472) prev (5871,-4472) cls 2 form 0 face (0,0) moving True fresh False pace 26 ground True why detour>wait aim (5743,-4442) detour to (5822,-4423) until 4921 held 3 stuck 74 st 'fleeing' stop - path (6326,-4213)..(-4600,-3200) len 116032 mm 29640 (prepared-loud-lend #1)",
+     "squeezePairTicks": 223,
+     "madeRoom": 360,
+     "changedPlans": 0
+    },
+    {
+     "setting": "people=64",
+     "runs": 45,
+     "wins": 17,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 1,
+     "heldMaxS10": 626,
+     "heldLongest": "x-person-0263 to 3:27.4 (thin-quiet #2)",
+     "squeezePairTicks": 456,
+     "madeRoom": 925,
+     "changedPlans": 11
+    },
+    {
+     "setting": "guards=32",
+     "runs": 45,
+     "wins": 23,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 0,
+     "heldMaxS10": 74,
+     "heldLongest": "p-records-office-41 to the end, p-records-office-41 raw (3547,-4575) lay (2298,103) at (5871,-4472) prev (5871,-4472) cls 2 form 0 face (0,0) moving True fresh False pace 26 ground True why detour>wait aim (5743,-4442) detour to (5822,-4423) until 4921 held 3 stuck 74 st 'fleeing' stop - path (6326,-4213)..(-4600,-3200) len 116032 mm 29640 (prepared-loud-lend #1)",
+     "squeezePairTicks": 11,
+     "madeRoom": 537,
+     "changedPlans": 0
+    },
+    {
+     "setting": "guards=64",
+     "runs": 45,
+     "wins": 18,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 3,
+     "heldMaxS10": 213,
+     "heldLongest": "x-guard-021 to 7:36.2 (prepared-loud-lend #1)",
+     "squeezePairTicks": 89,
+     "madeRoom": 2861,
+     "changedPlans": 0
+    },
+    {
+     "setting": "cars=8",
+     "runs": 45,
+     "wins": 23,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 0,
+     "heldMaxS10": 79,
+     "heldLongest": "p-records-office-41 to the end, p-records-office-41 raw (3527,-4575) lay (2341,41) at (5894,-4534) prev (5894,-4534) cls 2 form 0 face (0,0) moving True fresh False pace 26 ground True why detour>wait aim (5758,-4439) detour to (5868,-4469) until 4917 held 8 stuck 79 st 'fleeing' stop - path (6325,-4206)..(-4600,-3200) len 116091 mm 29900 (prepared-loud-lend #1)",
+     "squeezePairTicks": 52,
+     "madeRoom": 271,
+     "changedPlans": 3
+    },
+    {
+     "setting": "x4",
+     "runs": 45,
+     "wins": 17,
+     "jumps": 0,
+     "insideTwoRadii": 0,
+     "tenetPairs": 0,
+     "lawOverlaps": 0,
+     "lawTenetTicks": 0,
+     "errors": 0,
+     "held10sOrMore": 20,
+     "heldMaxS10": 326,
+     "heldLongest": "p-records-office-39 to 7:54.0 (prepared-loud #2)",
+     "squeezePairTicks": 493,
+     "madeRoom": 4943,
+     "changedPlans": 3
+    }
+   ]
+  },
+  "chairFix": {
+   "run": "drive-round #1 at people=32",
+   "before": "p-pylon-row-east-01 held 178.9 s: he had stood up from cafe-table-3-seat-0 and x-person-0008, waiting for that seat 72 cm off it inside the table's clearance (off the walk's ground, so held there), stood in the mouth of the 83 cm gap between the table and the terrace's plinth; then p-records-office-61 stepped back out of cafe-table-1's clearance every third tick, 38.4 s to the end",
+   "after": "longest hold 2.9 s, 0 of 10 s or more"
+  }
+ },
+ "bands": {
+  "how": "suborned-sim dial sweep --seeds 20 --settings unset;people=32;people=64;guards=32;guards=64;cars=8;x4 (15 adaptive plans x 20 seeds, 2,100 runs a side, the same plans and seeds); never tuned to win",
+  "before": {
+   "engine": "suborned.sim/0.48.0",
+   "settings": [
+    {
+     "setting": "unset",
+     "runs": 300,
+     "wins": 124,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 81,
+      "entry-seen-camera": 40,
+      "closed-in": 27,
+      "enforcer-down": 12,
+      "sealed": 11,
+      "vale-leaves": 4,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 13,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 10,
+      "veteran-drive": 1
+     }
+    },
+    {
+     "setting": "people=32",
+     "runs": 300,
+     "wins": 118,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 81,
+      "sealed": 30,
+      "entry-seen-camera": 29,
+      "closed-in": 22,
+      "enforcer-down": 19,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 10,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 14,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 6,
+      "veteran-drive": 1
+     }
+    },
+    {
+     "setting": "people=64",
+     "runs": 300,
+     "wins": 110,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 103,
+      "enforcer-down": 25,
+      "sealed": 22,
+      "entry-seen-camera": 21,
+      "closed-in": 18,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 10,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 11,
+      "thin-quiet": 18,
+      "unprepared-loud": 0,
+      "veteran": 3,
+      "veteran-drive": 0
+     }
+    },
+    {
+     "setting": "guards=32",
+     "runs": 300,
+     "wins": 110,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 99,
+      "entry-seen-camera": 38,
+      "closed-in": 23,
+      "vale-leaves": 15,
+      "enforcer-down": 7,
+      "sealed": 7,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 2,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 5,
+      "veteran-drive": 2
+     }
+    },
+    {
+     "setting": "guards=64",
+     "runs": 300,
+     "wins": 99,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 117,
+      "entry-seen-camera": 39,
+      "vale-leaves": 20,
+      "closed-in": 18,
+      "sealed": 7
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 11,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     }
+    },
+    {
+     "setting": "cars=8",
+     "runs": 300,
+     "wins": 120,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 77,
+      "entry-seen-camera": 40,
+      "closed-in": 32,
+      "enforcer-down": 12,
+      "sealed": 12,
+      "vale-leaves": 6,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 2,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 13,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 9,
+      "veteran-drive": 1
+     }
+    },
+    {
+     "setting": "x4",
+     "runs": 300,
+     "wins": 96,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 118,
+      "entry-seen-camera": 21,
+      "vale-leaves": 20,
+      "closed-in": 18,
+      "sealed": 17,
+      "enforcer-down": 10
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 9,
+      "prepared-loud-lend": 4,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     }
+    }
+   ]
+  },
+  "after": {
+   "engine": "suborned.sim/0.49.0",
+   "settings": [
+    {
+     "setting": "unset",
+     "runs": 300,
+     "wins": 118,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 86,
+      "entry-seen-camera": 40,
+      "closed-in": 28,
+      "sealed": 13,
+      "enforcer-down": 10,
+      "vale-leaves": 4,
+      "cell-down": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 5,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 10,
+      "veteran-drive": 2
+     }
+    },
+    {
+     "setting": "people=32",
+     "runs": 300,
+     "wins": 103,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 90,
+      "entry-seen-camera": 30,
+      "sealed": 29,
+      "closed-in": 27,
+      "enforcer-down": 19,
+      "cell-down": 1,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 12,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 3,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 1,
+      "veteran-drive": 0
+     }
+    },
+    {
+     "setting": "people=64",
+     "runs": 300,
+     "wins": 100,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 108,
+      "enforcer-down": 26,
+      "sealed": 25,
+      "closed-in": 21,
+      "entry-seen-camera": 19,
+      "vale-leaves": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 11,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 3,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     }
+    },
+    {
+     "setting": "guards=32",
+     "runs": 300,
+     "wins": 110,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 97,
+      "entry-seen-camera": 40,
+      "closed-in": 23,
+      "sealed": 11,
+      "vale-leaves": 11,
+      "enforcer-down": 6,
+      "cell-down": 2
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 14,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 3,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 4,
+      "veteran-drive": 2
+     }
+    },
+    {
+     "setting": "guards=64",
+     "runs": 300,
+     "wins": 102,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 115,
+      "entry-seen-camera": 40,
+      "vale-leaves": 21,
+      "closed-in": 18,
+      "sealed": 4
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 15,
+      "prepared-loud-lend": 3,
+      "quiet-a": 19,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 1,
+      "veteran-drive": 0
+     }
+    },
+    {
+     "setting": "cars=8",
+     "runs": 300,
+     "wins": 114,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 83,
+      "entry-seen-camera": 40,
+      "closed-in": 30,
+      "sealed": 12,
+      "enforcer-down": 10,
+      "vale-leaves": 10,
+      "none": 1
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 2,
+      "prepared-loud": 13,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 19,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 18,
+      "quiet-g": 7,
+      "thin-quiet": 20,
+      "unprepared-loud": 0,
+      "veteran": 11,
+      "veteran-drive": 1
+     }
+    },
+    {
+     "setting": "x4",
+     "runs": 300,
+     "wins": 96,
+     "errors": 0,
+     "replayDiffers": 0,
+     "fails": {
+      "rivals-reach-vale": 118,
+      "entry-seen-camera": 22,
+      "sealed": 20,
+      "vale-leaves": 20,
+      "closed-in": 18,
+      "enforcer-down": 6
+     },
+     "planWins": {
+      "careless": 0,
+      "drive-early": 0,
+      "drive-round": 4,
+      "prepared-loud": 10,
+      "prepared-loud-lend": 3,
+      "quiet-a": 20,
+      "quiet-b": 20,
+      "quiet-b-lookout-ignored": 0,
+      "quiet-b-taped": 0,
+      "quiet-b-thinned": 20,
+      "quiet-g": 0,
+      "thin-quiet": 19,
+      "unprepared-loud": 0,
+      "veteran": 0,
+      "veteran-drive": 0
+     }
+    }
+   ]
+  }
+ },
+ "quietG": {
+  "record": "c060 78.5 % -> c061 33 % (B-1, L96 G)",
+  "fiftySeeds": {
+   "0.48.0": "37/50 (74 %): rivals-reach-vale 8, closed-in 4, sealed 1",
+   "0.49.0 with 0.48.0's cover file": "31/50 (62 %): rivals-reach-vale 13, closed-in 6",
+   "0.49.0 with the cover regenerated on the new ground": "14/50 (28 %): closed-in 22, rivals-reach-vale 14"
+  },
+  "loop": "a rival advances on the operative he has cause to fire on (SQ2), hides from the Tech at cv-035 (q 800, the café terrace's west wall arc tip, (-575,-3775)), is shot there from beyond his reach and steps out of the line to cv-036 (q 589, 2 m north), has nobody in reach for 1 s and advances again: in seed 1 rival-1 goes cv-035 -> cv-036 six times from 5:17 to 6:34 at 14-15 m (the Tech hits at 250 per mille), the car stays boxed until he falls, and by then nobody aboard can drive (closed-in)",
+  "runsWithARivalTaking6CoversOrMore": {
+   "0.48.0": "2 of 50 (cv-032/cv-037, cv-032/cv-030)",
+   "0.49.0 old cover": "12 of 50 (cv-030/cv-032)",
+   "0.49.0": "36 of 50 (cv-035/cv-036 in 35 of them)"
+  },
+  "newCover": "the cover file regenerated on the 0.49.0 site (Pulse's tools/cover, rules unchanged): 77 -> 83 points. cv-035 stands 44 cm off the terrace's stepped plinth (CafeTerrace_TB, builder-declared, unchanged) and 66 cm off the wall arc: 0.48.0's 65 cm walk margin closed that cell, the 35 cm walk opens it. The same at the east arc (cv-024 q 800, cv-020, cv-016, cv-015), cv-032 by palm 2, and the pavilion supports (cv-078, cv-082). ambush-2 (mission.json) is (-575,-3775): 0.48.0 stood its man at the nearest open cell, (-575,-3625); 0.49.0 stands him on the post itself",
+  "owners": "Pulse (fight motion: the advance, hide and kite loop), Motive (the bands), Aster to rule; not tuned here"
+ },
+ "tickCost": {
+  "how": "suborned-sim dial perf, 10 runs a setting, one thread, this Mac, two rounds alternating engines, the better of the two. routeA: each engine's own route A played 0:00 to 4:10 (until 2500); loudFight: the same script on both (it ends 2:37.1 on both)",
+  "routeA": {
+   "0.48.0": {
+    "unset": {
+     "walkers": 126,
+     "msPerTick": 0.0148,
+     "p99TickMs": 0.047,
+     "startMs": 2.9
+    },
+    "x4": {
+     "walkers": 415,
+     "msPerTick": 0.0876,
+     "p99TickMs": 0.245,
+     "startMs": 6.8
+    },
+    "people=64": {
+     "walkers": 367,
+     "msPerTick": 0.0462,
+     "p99TickMs": 0.172,
+     "startMs": 5.7
+    },
+    "guards=64": {
+     "walkers": 174,
+     "msPerTick": 0.0493,
+     "p99TickMs": 0.118,
+     "startMs": 4.1
+    }
+   },
+   "0.49.0": {
+    "unset": {
+     "walkers": 126,
+     "msPerTick": 0.0156,
+     "p99TickMs": 0.058,
+     "startMs": 3.8
+    },
+    "x4": {
+     "walkers": 434,
+     "msPerTick": 0.0805,
+     "p99TickMs": 0.176,
+     "startMs": 8.4
+    },
+    "people=64": {
+     "walkers": 386,
+     "msPerTick": 0.0472,
+     "p99TickMs": 0.141,
+     "startMs": 7.0
+    },
+    "guards=64": {
+     "walkers": 174,
+     "msPerTick": 0.0471,
+     "p99TickMs": 0.098,
+     "startMs": 4.2
+    }
+   }
+  },
+  "loudFight": {
+   "0.48.0": {
+    "unset": {
+     "walkers": 126,
+     "msPerTick": 0.0108,
+     "p99TickMs": 0.034,
+     "startMs": 2.8
+    },
+    "x4": {
+     "walkers": 415,
+     "msPerTick": 0.0934,
+     "p99TickMs": 0.232,
+     "startMs": 7.1
+    },
+    "people=64": {
+     "walkers": 367,
+     "msPerTick": 0.0503,
+     "p99TickMs": 0.163,
+     "startMs": 6.3
+    },
+    "guards=64": {
+     "walkers": 174,
+     "msPerTick": 0.0503,
+     "p99TickMs": 0.082,
+     "startMs": 4.3
+    }
+   },
+   "0.49.0": {
+    "unset": {
+     "walkers": 126,
+     "msPerTick": 0.011,
+     "p99TickMs": 0.034,
+     "startMs": 3.8
+    },
+    "x4": {
+     "walkers": 434,
+     "msPerTick": 0.0929,
+     "p99TickMs": 0.236,
+     "startMs": 8.5
+    },
+    "people=64": {
+     "walkers": 386,
+     "msPerTick": 0.0514,
+     "p99TickMs": 0.164,
+     "startMs": 7.2
+    },
+    "guards=64": {
+     "walkers": 174,
+     "msPerTick": 0.0479,
+     "p99TickMs": 0.08,
+     "startMs": 4.2
+    }
+   }
+  }
+ },
+ "listens": {
+  "how": "Keel's scratch probe (dial listens): every Listen the 15 adaptive plans give on seeds 1-50; wait = the order to the act; sat = the act started in a café chair",
+  "before": {
+   "careless": {
+    "listens": 48,
+    "sat": 0,
+    "waitP50S": 1.9,
+    "waitP90S": 9.8,
+    "waitMaxS": 21.5
+   },
+   "drive-early": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "drive-round": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "prepared-loud": {
+    "listens": 98,
+    "sat": 0,
+    "waitP50S": 6.1,
+    "waitP90S": 12.6,
+    "waitMaxS": 20.1
+   },
+   "prepared-loud-lend": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "quiet-a": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 3.9,
+    "waitP90S": 6.0,
+    "waitMaxS": 17.2
+   },
+   "quiet-b": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "quiet-b-lookout-ignored": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "quiet-b-taped": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "quiet-b-thinned": {
+    "listens": 99,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 8.3,
+    "waitMaxS": 8.3
+   },
+   "thin-quiet": {
+    "listens": 47,
+    "sat": 0,
+    "waitP50S": 5.8,
+    "waitP90S": 17.2,
+    "waitMaxS": 17.2
+   },
+   "veteran": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "veteran-drive": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 1.6,
+    "waitMaxS": 1.6
+   },
+   "ALL": {
+    "listens": 742,
+    "sat": 0,
+    "waitP50S": 1.6,
+    "waitP90S": 7.9,
+    "waitMaxS": 21.5
+   }
+  },
+  "after": {
+   "careless": {
+    "listens": 50,
+    "sat": 27,
+    "waitP50S": 9.7,
+    "waitP90S": 12.3,
+    "waitMaxS": 27.5
+   },
+   "drive-early": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 2.9,
+    "waitP90S": 2.9,
+    "waitMaxS": 2.9
+   },
+   "drive-round": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 1.8,
+    "waitMaxS": 1.8
+   },
+   "prepared-loud": {
+    "listens": 100,
+    "sat": 37,
+    "waitP50S": 8.6,
+    "waitP90S": 10.0,
+    "waitMaxS": 19.3
+   },
+   "prepared-loud-lend": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 1.8,
+    "waitMaxS": 1.8
+   },
+   "quiet-a": {
+    "listens": 50,
+    "sat": 41,
+    "waitP50S": 9.8,
+    "waitP90S": 10.0,
+    "waitMaxS": 14.0
+   },
+   "quiet-b": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 1.8,
+    "waitMaxS": 1.8
+   },
+   "quiet-b-lookout-ignored": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 1.8,
+    "waitMaxS": 1.8
+   },
+   "quiet-b-taped": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 2.9,
+    "waitP90S": 2.9,
+    "waitMaxS": 2.9
+   },
+   "quiet-b-thinned": {
+    "listens": 99,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 12.4,
+    "waitMaxS": 12.4
+   },
+   "thin-quiet": {
+    "listens": 50,
+    "sat": 26,
+    "waitP50S": 9.7,
+    "waitP90S": 10.0,
+    "waitMaxS": 10.8
+   },
+   "veteran": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 1.8,
+    "waitMaxS": 1.8
+   },
+   "veteran-drive": {
+    "listens": 50,
+    "sat": 0,
+    "waitP50S": 1.8,
+    "waitP90S": 1.8,
+    "waitMaxS": 1.8
+   },
+   "ALL": {
+    "listens": 749,
+    "sat": 131,
+    "waitP50S": 1.8,
+    "waitP90S": 10.0,
+    "waitMaxS": 27.5
+   }
+  }
+ },
+ "record": {
+  "c060": {
+   "red": [
+    "B-11 drive-early",
+    "B-11 drive-round",
+    "B-11 quiet-b-lookout-ignored",
+    "B-11 quiet-b-taped",
+    "B-14",
+    "B-16 drive-early",
+    "B-2 thin-quiet",
+    "B-8 quiet-g",
+    "L96 A",
+    "L96 B-all",
+    "L96 veteran",
+    "R-7"
+   ]
+  },
+  "c061": {
+   "red": [
+    "B-1 quiet-g",
+    "B-11 drive-early",
+    "B-11 drive-round",
+    "B-11 quiet-b-lookout-ignored",
+    "B-11 quiet-b-taped",
+    "B-13",
+    "B-14",
+    "B-16 drive-early",
+    "B-2 thin-quiet",
+    "B-7 quiet-g",
+    "B-7 thin-quiet",
+    "B-8 quiet-a",
+    "B-8 quiet-g",
+    "B-9 quiet-b",
+    "B-9 quiet-g",
+    "L96 A",
+    "L96 B-all",
+    "L96 G",
+    "MC-0",
+    "MC-5",
+    "MC-8",
+    "R-7"
+   ]
+  },
+  "moved": {
+   "MC-0": {
+    "c060": {
+     "ok": true,
+     "value": "23/23"
+    },
+    "c061": {
+     "ok": false,
+     "value": "22/23"
+    }
+   },
+   "MC-5": {
+    "c060": {
+     "ok": true,
+     "value": "route A 2:34 early, route B 1:24 early, route G 1:14 early"
+    },
+    "c061": {
+     "ok": false,
+     "value": "route A 2:35 early, route B 1:24 early"
+    }
+   },
+   "MC-8": {
+    "c060": {
+     "ok": true,
+     "value": "route-g 6:12.3, 6 s of takedown"
+    },
+    "c061": {
+     "ok": false,
+     "value": "none"
+    }
+   },
+   "B-1 quiet-g": {
+    "c060": {
+     "ok": true,
+     "value": "78.5%"
+    },
+    "c061": {
+     "ok": false,
+     "value": "33%"
+    }
+   },
+   "B-7 quiet-g": {
+    "c060": {
+     "ok": true,
+     "value": "median 26 s, p95 80 s"
+    },
+    "c061": {
+     "ok": false,
+     "value": "median 54 s, p95 97 s"
+    }
+   },
+   "B-7 thin-quiet": {
+    "c060": {
+     "ok": true,
+     "value": "median 23 s, p95 56 s"
+    },
+    "c061": {
+     "ok": false,
+     "value": "median 20 s, p95 101 s"
+    }
+   },
+   "B-8 quiet-a": {
+    "c060": {
+     "ok": true,
+     "value": "median 21 s, p95 45 s, worst 68 s"
+    },
+    "c061": {
+     "ok": false,
+     "value": "median 20 s, p95 77 s, worst 174 s"
+    }
+   },
+   "B-9 quiet-b": {
+    "c060": {
+     "ok": true,
+     "value": "0.46"
+    },
+    "c061": {
+     "ok": false,
+     "value": "0.88"
+    }
+   },
+   "B-9 quiet-g": {
+    "c060": {
+     "ok": true,
+     "value": "0.27"
+    },
+    "c061": {
+     "ok": false,
+     "value": "0.67"
+    }
+   },
+   "B-13": {
+    "c060": {
+     "ok": true,
+     "value": "121/121 loud wins ≥ 15 T (3 × quiet's dearest median 5 T); loud median 35 T"
+    },
+    "c061": {
+     "ok": false,
+     "value": "94/109 loud wins ≥ 27 T (3 × quiet's dearest median 9 T); loud median 33 T"
+    }
+   },
+   "L96 G": {
+    "c060": {
+     "ok": true,
+     "value": "78.5%"
+    },
+    "c061": {
+     "ok": false,
+     "value": "33%"
+    }
+   },
+   "L96 veteran": {
+    "c060": {
+     "ok": false,
+     "value": "37.5% out; all out 4 % of wins, 2.76 captured per win"
+    },
+    "c061": {
+     "ok": true,
+     "value": "40% out; all out 0 % of wins, 2.96 captured per win"
+    }
+   }
+  }
+ },
+ "waymark": {
+  "how": "suborned-sim spread --seeds 50: each script's fixed ticks on seeds 1-50; 0.48.0 = Waymark's spread-after.jsonl (his scripts, recomposed on 0.48.0), 0.49.0 = this branch's scripts (18 recomposed on 0.49.0; the 9 that do not compose are Waymark's)",
+  "spread": {
+   "route-a-board": {
+    "0.48.0": "36/50 rivals-reach-valex14",
+    "0.49.0": "27/50 rivals-reach-valex23"
+   },
+   "route-a-pressure-board": {
+    "0.48.0": "27/50 Withdrawnx11,closed-inx6,rivals-reach-valex6",
+    "0.49.0": "8/50 Withdrawnx31,rivals-reach-valex7,closed-inx3,vale-leavesx1"
+   },
+   "route-b-board": {
+    "0.48.0": "0/50 rivals-reach-valex50",
+    "0.49.0": "0/50 rivals-reach-valex50"
+   },
+   "route-b-thin": {
+    "0.48.0": "50/50 ",
+    "0.49.0": "50/50 "
+   },
+   "route-g-fast-board": {
+    "0.48.0": "20/50 rivals-reach-valex30",
+    "0.49.0": "20/50 rivals-reach-valex30"
+   },
+   "route-g-kill": {
+    "0.48.0": "20/50 closed-inx29,rivals-reach-valex1",
+    "0.49.0": "20/50 closed-inx25,cell-downx4,rivals-reach-valex1"
+   },
+   "route-g-kill-board": {
+    "0.48.0": "43/50 Withdrawnx6,rivals-reach-valex1",
+    "0.49.0": "1/50 rivals-reach-valex36,closed-inx12,Withdrawnx1"
+   },
+   "route-g-board": {
+    "0.48.0": "33/50 rivals-reach-valex17",
+    "0.49.0": "32/50 rivals-reach-valex18"
+   },
+   "careless-reporter-not-stopped": {
+    "0.48.0": "0/50 rivals-reach-valex50",
+    "0.49.0": "0/50 rivals-reach-valex50"
+   },
+   "loud-fight": {
+    "0.48.0": "34/50 entry-seen-guardx10,enforcer-downx6",
+    "0.49.0": "15/50 sealedx16,entry-seen-guardx10,enforcer-downx7,cell-downx2"
+   },
+   "loud": {
+    "0.48.0": "18/50 enforcer-downx31,sealedx1",
+    "0.49.0": "0/50 sealedx35,enforcer-downx13,cell-downx2"
+   },
+   "careless-thin-all": {
+    "0.48.0": "0/50 rivals-reach-valex50",
+    "0.49.0": "0/50 rivals-reach-valex50"
+   },
+   "loud-left-downed": {
+    "0.48.0": "18/50 enforcer-downx31,sealedx1",
+    "0.49.0": "0/50 sealedx36,enforcer-downx13,cell-downx1"
+   },
+   "loud-left-standing": {
+    "0.48.0": "18/50 enforcer-downx31,sealedx1",
+    "0.49.0": "0/50 sealedx35,enforcer-downx13,cell-downx2"
+   }
+  },
+  "notComposing": {
+   "loud, loud-fight, loud-left-downed, loud-left-standing": "step 29 (the Scout to the car when the crew breaks) not taken between 4:21.1 and the close",
+   "route-g": "step 25 (cell go) not taken between 3:54.6 and the close",
+   "route-g-kill-board": "step 28 (tech move) not taken between 6:18.1 and the close",
+   "route-b-thin, careless-thin-all": "step 2 (the Enforcer's takedown of rival-3) never clear for 1 s from 5:08: rival-3 now stands on ambush-2 itself, (-575,-3775), 1.5 m south of 0.48.0's (-575,-3625), so the plan's approach point (-700,-3600) is no longer off his back",
+   "careless-reporter-not-stopped": "step 20 (cell go car:official) not taken between 6:25.0 and the close"
+  },
+  "loudOnSeeds": "loud's 0.48.0 script on 0.49.0, seeds 1-50: sealed 35 (the Go at 5:11.7 refused, car:rivals still across the way out after the crew breaks at 5:07.9), enforcer-down 13 (11 by rival-3 at the Office's north end, (7185,-1887), on the Enforcer at (5697,-1880), 14.9 m: the 13 m line Waymark saw, 31 of 50 on 0.48.0), cell-down 2",
+  "carelessThinAll": "M059-S1.6 is not reached on 0.49.0: the plan stops at step 2. rival-1 and rival-2 stand where they did on 0.48.0, (2175,-4425) and (2200,-4200), 2.3 m apart",
+  "veteran": "people=32 6 -> 1, people=64 3 -> 0: the plan's draw waits for nobody within 13 m of the Scout (draw-vet); the crowd walks the new ground by the corner, so seed 6 draws at 3:23.4 instead of 2:32.4 and the rival car is past"
+ }
+}

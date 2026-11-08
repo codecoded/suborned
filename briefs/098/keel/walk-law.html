@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Brief 098: walking and listening, engine 0.49.0 (Keel)</title>
+<style>
+body{font:15px/1.5 -apple-system,system-ui,sans-serif;max-width:1040px;margin:2em auto;padding:0 1em;color:#1d2330;background:#fbfaf6}
+h1{font-size:1.5em;margin-bottom:.2em}h2{font-size:1.15em;margin-top:2em;border-bottom:1px solid #d9d4c7;padding-bottom:.2em}h3{font-size:1em;margin-top:1.4em}
+.s{color:#5b6170}table{border-collapse:collapse;margin:.6em 0;font-size:13.5px}td,th{border:1px solid #d9d4c7;padding:3px 8px;text-align:left;vertical-align:top}th{background:#efece3}
+td.n{text-align:right;font-variant-numeric:tabular-nums}.good{color:#1d6b3a}.bad{color:#9a2b1f}.mid{color:#8a6100}code{background:#efece3;padding:0 3px;border-radius:3px;font-size:12.5px}
+.box{background:#fff;border:1px solid #d9d4c7;border-radius:6px;padding:.6em 1em;margin:.8em 0}
+</style></head><body>
+<h1>Brief 098: Sky's calls on walking and listening, engine 0.49.0</h1>
+<p class="s">Keel, 2026-11-08. Branch <code>t3/walkable-gaps-listening</code> (from <code>work/098-living-playbook</code>, Waymark's re-plans merged at <code>26638650</code>). Evidence: <code>briefs/098/keel/walk-law.json</code>. Before = engine 0.48.0 at <code>8f4b9ded</code> on its own data; after = this branch's head.</p>
+<p class="s">Sky: "Gap between planter and fountain should be walkable, don't be one of those game engines where you can't get past even though visibly it's clear you have a lot of space either side. We can do better" · "Sit them down if they're listening, they're just regular people".</p>
+
+<h2>What a player sees</h2>
+<div class="box">
+<p><b>The fountain.</b> People and agents walk between the atom fountain and its four gardens, both ways. Those gaps are 1.9 to 2.3 m wide. 0.48.0 walled 12 of the 16, and the 2.3 m ones had no route at all. Now all 16 are crossed on a straight line. Across the whole zone, every gap a body fits through is walkable (161 of 161, below).</p>
+<p><b>The café lane.</b> On 0.48.0 the Listen parked the Scout and the Fixer 85 cm apart across the café's only lane, and people stood behind them for up to 117 s. Now the Scout sits, and a Listen with no chair stands by a wall and never across a passage. The café front's longest hold at x4 goes from 117 s to 16 s, at people=64 from 84 s to 5 s, and in the default game from 32 s to 2 s.</p>
+<p><b>The listener sits.</b> Where a café chair comes free in time, the Scout walks to it, steps into the seat as a customer does, and listens seated. In quiet-a that's 41 Listens of 50 (none on 0.48.0), prepared-loud 37 of 100, thin-quiet 26 of 50. Elsewhere there's no chair in reach, and she stands by a wall. Walking to the chair makes the Listen start later: in quiet-a the order-to-act wait is 9.8 s at the median (3.9 s on 0.48.0), at most 14 s.</p>
+<p><b>Idle agents step aside.</b> An operative with no order, standing off the place the player put him, steps aside at a walk for someone stuck behind him, then steps back. He never does it while acting, watching, listening, or standing where the player put him. This is Aster's reading of Sky's words, for Sky to confirm.</p>
+<p><b>What gets harder.</b> The rival crew now find cover where the old margin kept them out. At the tip of the café terrace's west wall, a rival can loop: he advances, hides, steps out of the shooter's line, and advances again. The quiet-g reference wins 33 % (78.5 % in c060). That's for Pulse and Motive, and it isn't tuned here (Bands, below).</p>
+</div>
+
+<h2>The walk law</h2>
+<p>A walker keeps the rulebook's <code>bodies.radius</code> (30 cm) plus <code>bodies.margin</code> (5 cm) from every solid, a building's face included. Both values are read from the rulebook. The margin is one raster cell: the walk is tested on 5 cm samples, so between two samples a body's centre can come up to half a cell nearer a face. Five centimetres keeps its disc off every face with room to spare. Before, the walk kept the plan's design r (65 cm) on 50 cm cells, a face 30 cm, with no corner cutting.</p>
+<p>How it's represented: the site carries a 5 cm walk raster (<code>grid.fine</code>, written by <code>tools/sim/walkfine.ts</code>). The engine keeps the 50 cm cells as route topology (the drive, takedowns and lanes are untouched). A cell's nodes are its pieces of free raster, 46,115 nodes and 357,152 edges for the zone. Neighbours join wherever the true line between them clears. Routes are string-pulled on the raster (<code>GridFine.cs</code>).</p>
+<p>The solids are the pieces as built. The 097 pins are gone and the volumes come from <code>kit.collide.json</code>: 14 builder-declared, 31 measured from their meshes. The plan's design widths and W-rules are untouched (<code>tools/plan</code> has no change this round).</p>
+
+<h2>Zone-wide gap check</h2>
+<p><code>sim/data/handover.gaps.json</code> (<code>tools/sim/gaps.ts</code>) lists every gap of 80 to 300 cm between two of the walk's solids with no third solid in it, found on the solids' own geometry. 80 cm is two clearances plus two raster cells. Each gap must be crossed both ways by the engine's own route, passing between the two solids, at most 1 m longer than the straight line (<code>suborned-sim gaps</code>, test <code>Gaps.cs</code>).</p>
+<table><tr><th></th><th>gaps</th><th>crossed both ways</th><th>walled</th><th>widest walled</th><th>fountain gaps walled</th></tr>
+<tr><td>0.48.0</td><td class="n">161</td><td class="n">100</td><td class="n bad">61 (47 go round, 14 no route)</td><td class="n bad">2.29 m</td><td class="n bad">12 of 16</td></tr>
+<tr><td>0.49.0</td><td class="n">161</td><td class="n good">161</td><td class="n good">0</td><td class="n good">none</td><td class="n good">0 of 16</td></tr></table>
+<p class="s">0.48.0's walled gaps by width: 50-99 cm 5, 100-149 cm 31, 150-199 cm 16, 200-249 cm 9.</p>
+
+<h2>Holds by place</h2>
+<p class="s">Vantage's regions probe: 15 adaptive plans × 10 seeds a setting. A spell is binned where the body stood when it ended. The city on a seed is the same under every plan, so one spell can count once per plan.</p>
+<table><tr><th>place</th><th>setting</th><th>spells 5 s+</th><th>10 s+</th><th>longest</th></tr>
+<tr><td rowspan="4">café front</td><td>unset</td><td class="n">3 → 0</td><td class="n">2 → 0</td><td class="n good">32.1 → 2.0 s</td></tr>
+<tr><td>people=64</td><td class="n">124 → 0</td><td class="n">43 → 0</td><td class="n good">84.2 → 4.9 s</td></tr>
+<tr><td>guards=64</td><td class="n">4 → 1</td><td class="n">3 → 0</td><td class="n good">28.4 → 5.7 s</td></tr>
+<tr><td>x4</td><td class="n">134 → 2</td><td class="n">51 → 1</td><td class="n good">117.2 → 16.4 s</td></tr>
+<tr><td rowspan="4">fountain</td><td>unset</td><td class="n">0 → 0</td><td class="n">0 → 0</td><td class="n">0.3 → 0.7 s</td></tr>
+<tr><td>people=64</td><td class="n">0 → 0</td><td class="n">0 → 0</td><td class="n">1.1 → 1.0 s (52.5 → 58.2 bodies a run pass)</td></tr>
+<tr><td>guards=64</td><td class="n">0 → 0</td><td class="n">0 → 0</td><td class="n">1.3 → 0.4 s</td></tr>
+<tr><td>x4</td><td class="n">0 → 0</td><td class="n">0 → 0</td><td class="n">1.1 → 1.1 s</td></tr>
+<tr><td rowspan="4">Office, official door</td><td>unset</td><td class="n">0 → 0</td><td class="n">0 → 0</td><td class="n">2.4 → 4.7 s</td></tr>
+<tr><td>people=64</td><td class="n">7 → 1</td><td class="n">0 → 0</td><td class="n">7.4 → 5.7 s</td></tr>
+<tr><td>guards=64</td><td class="n">14 → 2</td><td class="n">1 → 0</td><td class="n">10.1 → 6.4 s</td></tr>
+<tr><td>x4</td><td class="n">77 → 61</td><td class="n">15 → 16</td><td class="n mid">20.1 → 32.6 s</td></tr>
+<tr><td rowspan="4">Office, public entrance</td><td>unset</td><td class="n">2 → 0</td><td class="n">1 → 0</td><td class="n good">16.7 → 4.8 s</td></tr>
+<tr><td>people=64</td><td class="n">3 → 7</td><td class="n">1 → 0</td><td class="n">16.0 → 7.9 s</td></tr>
+<tr><td>guards=64</td><td class="n mid">4 → 12</td><td class="n">3 → 3</td><td class="n">25.9 → 21.3 s</td></tr>
+<tr><td>x4</td><td class="n bad">21 → 75</td><td class="n bad">3 → 11</td><td class="n">20.0 → 15.1 s</td></tr></table>
+<p>The Office's public entrance at the dial's top settings is this round's cost. Each door's beat for the dial's guards used to run along the facade into the pilasters, which put crew spots 68 cm apart in the slot. It now stands on the door's open side, 2 m straight out from the public door and 50 cm off the official door. Guards sharing it spread on its 2.5 m crew ring, across the door's approach. People wait behind them for 5 to 15 s. The fix I'd propose next is a law that a door's beat stands to one side of the way out, a step off its line. I haven't landed it, because it means the full re-check again. The x4 official-door 32.6 s is p-records-office-39 at 7:54, during prepared-loud's response (0.48.0's worst there was 20.1 s, in the same plan).</p>
+
+<h3>Bodies probe (every tick read by the independent check)</h3>
+<p class="s"><code>dial bodies</code>: 15 plans × 3 seeds × 7 settings, 315 runs.</p>
+<p class="s">Jumps, pairs, tenet pairs, law overlaps and errors are 0 on both engines; holds are 0.48.0 → 0.49.0.</p>
+<table><tr><th>setting</th><th>jumps</th><th>pairs inside two radii</th><th>tenet pairs</th><th>law overlaps</th><th>errors</th><th>held 10 s+</th><th>longest hold</th></tr>
+<tr><td>unset</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">3 → 0</td><td class="n">32.1 → 7.4 s</td></tr>
+<tr><td>people=32</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">11 → 0</td><td class="n">70.4 → 7.4 s</td></tr>
+<tr><td>people=64</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">31 → 1</td><td class="n">84.2 → 62.6 s</td></tr>
+<tr><td>guards=32</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">4 → 0</td><td class="n">34.4 → 7.4 s</td></tr>
+<tr><td>guards=64</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">4 → 3</td><td class="n">28.4 → 21.3 s</td></tr>
+<tr><td>cars=8</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">3 → 0</td><td class="n">32.1 → 7.9 s</td></tr>
+<tr><td>x4</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">32 → 20</td><td class="n">117.2 → 32.6 s</td></tr></table>
+<p>Late in the round the probe found a 179 s deadlock at people=32 (drive-round #1), in a pocket the new walk opens. A man stood up from a chair at café table 3. The person waiting for that chair stood 72 cm off it, inside the table's clearance. Nothing moved her off ground nobody stands on, so neither could pass in the 83 cm gap between the table and the terrace plinth. Two laws fix it, for everyone. A queue's spot beside a held stop is on the walk's free ground. And only a body's own way crosses the last of the solid ground into a place off it (a seat, a post in a recess). One doing so isn't standing where no body stands. That second rule already held for an operative stepping into his Listen seat, and it now holds for any customer. That run's longest hold is 2.9 s. People=64's remaining 62.6 s is a full café: a customer by table 6 blocked from the last chair by another waiting customer (for Pulse, below).</p>
+
+<h2>Bands</h2>
+<p class="s"><code>dial sweep</code>: 15 adaptive plans × 20 seeds × 7 settings, 2,100 runs a side, the same plans and seeds. No replay differs, no run errs. Nothing here is tuned to win.</p>
+<table><tr><th>setting</th><th>wins 0.48.0 → 0.49.0</th><th>quiet-g</th><th>veteran</th><th>the rest</th></tr>
+<tr><td>unset</td><td class="n">124 → 118 (41.3 → 39.3 %)</td><td class="n bad">13 → 5</td><td class="n">10 → 10</td><td>±1</td></tr>
+<tr><td>people=32</td><td class="n">118 → 103 (39.3 → 34.3 %)</td><td class="n bad">14 → 3</td><td class="n bad">6 → 1</td><td>prepared-loud +2, thin-quiet +1</td></tr>
+<tr><td>people=64</td><td class="n">110 → 100 (36.7 → 33.3 %)</td><td class="n bad">11 → 3</td><td class="n bad">3 → 0</td><td>±1</td></tr>
+<tr><td>guards=32</td><td class="n">110 → 110</td><td class="n">2 → 3</td><td class="n">5 → 4</td><td>±1</td></tr>
+<tr><td>guards=64</td><td class="n">99 → 102</td><td class="n">0 → 0</td><td class="n">0 → 1</td><td>prepared-loud +4</td></tr>
+<tr><td>cars=8</td><td class="n">120 → 114</td><td class="n bad">13 → 7</td><td class="n">9 → 11</td><td>quiet-b-thinned −2</td></tr>
+<tr><td>x4</td><td class="n">96 → 96</td><td class="n">0 → 0</td><td class="n">0 → 0</td><td>±1</td></tr></table>
+<h3>quiet-g: a rival loops at the new cover</h3>
+<p>On 50 seeds, quiet-g wins 74 % on 0.48.0, 62 % on 0.49.0 with 0.48.0's cover file, and 28 % with the cover regenerated on the new ground. The cover generator is Pulse's, with its rules unchanged. It now finds 83 points (77 before). cv-035, a full point (q 800) at the tip of the café terrace's west wall arc, stands 44 cm off the terrace's stepped plinth. The old 65 cm margin closed that cell; the 35 cm walk opens it. The same happens at the east arc, by palm 2, and at the pavilion supports. That's real ground. mission.json's ambush-2 post is that very point: 0.48.0 stood its man at the nearest open cell, 1.5 m north; 0.49.0 stands him on the post.</p>
+<p>Seed 1 shows the loop. Rival-1 advances on the Tech (SQ2), hides at cv-035, is shot from beyond his reach and steps out of the line to cv-036 (2 m north, q 589). Then he has nobody in reach for a second and advances again. He goes round that loop six times, 5:17 to 6:34, at 14 to 15 m (the Tech hits him at 250 ‰). The car stays boxed until he falls, and by then only the downed are aboard (closed-in). A rival who takes cover six or more times shows up in 2 of 50 seeds on 0.48.0, 12 with the old cover file, and 36 on 0.49.0 (cv-035/cv-036 in 35). The 0.34.1 ruling stopped cover-to-cover shuffles on an advance; this is the advance → hide → kite → advance loop it didn't cover. For Pulse (the fight's motion) and Motive (the bands); Aster to rule.</p>
+<h3>veteran in a crowd</h3>
+<p>The plan draws only with nobody within 13 m of the Scout (draw-vet). The crowd now walks the new ground by the corner, so on seed 6 at people=32 the draw comes at 3:23.4 instead of 2:32.4, and the rival car has gone past. For Waymark (the plan's condition) and Motive.</p>
+<h3>The mission record, c061</h3>
+<p>Composed on the final engine: the same 18 scripts, unchanged. 9 don't compose (below). c061 HOLDS with 22 lines red (c060: 12). These went red: MC-0 (22/23), MC-5 and MC-8 (route G doesn't compose), B-1 and L96 G (quiet-g 33 %), B-7 quiet-g (fight median 26 → 54 s) and thin-quiet (p95 56 → 101 s), B-8 quiet-a (whole cell idle, p95 45 → 77 s; the worst, 174 s and 173 s, are two closed-in runs idle until the close; the seated Listen itself adds about 6 s), B-9 quiet-b (0.46 → 0.88 down per win) and quiet-g (0.27 → 0.67), B-13 (quiet's dearest median Trail 5 → 9 T). L96 veteran went green. This round's earlier c061 (unmerged) was recorded again on the final engine, with the same reds and values within a point.</p>
+
+<h2>Tick cost</h2>
+<p class="s"><code>dial perf</code>, 10 runs a setting, one thread, two rounds alternating engines, the better of the two, ms a tick. Route A 0:00 to 4:10 is each engine's own route A; loud-fight is the same script on both.</p>
+<table><tr><th>setting</th><th>route A 0.48.0</th><th>route A 0.49.0</th><th>loud-fight 0.48.0</th><th>loud-fight 0.49.0</th><th>start, 0.48 → 0.49</th></tr>
+<tr><td>unset</td><td class="n">0.0148</td><td class="n">0.0156</td><td class="n">0.0108</td><td class="n">0.0110</td><td class="n">2.9 → 3.8 ms</td></tr>
+<tr><td>x4</td><td class="n">0.0876 (415 walkers)</td><td class="n good">0.0805 (434)</td><td class="n">0.0934</td><td class="n">0.0929</td><td class="n">6.8 → 8.4 ms</td></tr>
+<tr><td>people=64</td><td class="n">0.0462</td><td class="n">0.0472</td><td class="n">0.0503</td><td class="n">0.0514</td><td class="n">5.7 → 7.0 ms</td></tr>
+<tr><td>guards=64</td><td class="n">0.0493</td><td class="n">0.0471</td><td class="n">0.0503</td><td class="n">0.0479</td><td class="n">4.1 → 4.2 ms</td></tr></table>
+<p>x4 stays at about 0.09 ms a tick (0.0805 to 0.0929 ms). The x4 p99 tick on route A goes from 0.245 to 0.176 ms. A game takes about 1 ms longer to start. The fine graph is built once per site, lazily.</p>
+
+<h2>Waymark's re-checks on the walk law</h2>
+<table><tr><th>script</th><th>seeds 1-50, 0.48.0 (Waymark)</th><th>0.49.0</th><th>why, on 0.49.0</th></tr>
+<tr><td>loud, loud-left-downed, loud-left-standing</td><td class="n">18/50</td><td class="n bad">0/50: sealed 35, enforcer-down 13, cell-down 2</td><td>The plans stop at step 29 (the Scout to the car when the crew breaks), never taken from 4:21.1. The 0.48.0 script's Go at 5:11.7 comes while the rival car is still across the way out (the crew breaks at 5:07.9). The 13 m shot is still there in 11 of 50: rival-3 at the Office's north end (7185, −1887) on the Enforcer holding Popovic, 14.9 m away (enforcer-down was 31 of 50 on 0.48.0).</td></tr>
+<tr><td>loud-fight</td><td class="n">34/50</td><td class="n">15/50: sealed 16, entry-seen-guard 10, enforcer-down 7, cell-down 2</td><td>HEAD's script, unchanged; at seed 0 it fails entry-seen-guard 2:37.1 on both engines. Its plan stops at step 29, like loud.</td></tr>
+<tr><td>careless-thin-all, route-b-thin</td><td class="n">0/50, 50/50</td><td class="n">0/50, 50/50</td><td>Both plans stop at step 2, the Enforcer's takedown of rival-3, never clear for 1 s from 5:08. Rival-3 now stands on ambush-2 itself (−575, −3775), 1.5 m south of where 0.48.0 put him, so the plan's approach point (−700, −3600) is no longer off his back. M059-S1.6 (rival-1 seeing the takedown 2.3 m away) isn't reached; rival-1 and rival-2 stand where they did, (2175, −4425) and (2200, −4200).</td></tr>
+<tr><td>careless-reporter-not-stopped</td><td class="n">0/50</td><td class="n">0/50</td><td>The plan stops at step 20 (cell go car:official), never taken from 6:25.0.</td></tr>
+<tr><td>route-g-kill-board</td><td class="n">43/50</td><td class="n bad">1/50</td><td>Stops at step 28 (tech move), never taken from 6:18.1.</td></tr>
+<tr><td>route-g</td><td class="n">(reference)</td><td>does not compose</td><td>Stops at step 25 (cell go), never taken from 3:54.6.</td></tr>
+<tr><td>route-a-board, route-a-pressure-board, route-g-board, route-g-fast-board, route-g-kill</td><td class="n">36, 27, 33, 20, 20</td><td class="n">27, 8, 32, 20, 20</td><td>Recomposed on 0.49.0. route-a-pressure-board: Withdrawn 31.</td></tr></table>
+<p><code>fixtures059 --check</code> already failed at HEAD on Motive's <code>bal-loud-x4</code>, as Waymark said. Waymark's café-lane write-up, <code>briefs/098/waymark/cafe.txt</code>, helped: the Listen no longer picks the nearest spot beside something solid when that spot cuts a passage.</p>
+
+<h2>Scenarios and tests touched</h2>
+<p>Each one was rewritten to its rule, never to a tick. ScenariosTakedownE N84 · ScenariosRounds N131 · ScenariosFightLabRetest N161, N162 · ScenariosFightLabKite (the kite spot's line with floors) · ScenariosSeed CLOSE-VERDICT (crowd off) · ScenariosPace067 PACE-RUN-NOTICED (a walk) · ScenariosHandover S11 (the box cleared before the Go; one line, the file stays at 1,073) · ScenariosTakedown N52 (waits for the carrier's arrival) · ScenariosDrive D04, D05 (the raster) · the Listen started short of its spot only out of every cone (LS-UNSEEN) · DP1 re-recorded. New tests: Gaps.cs (every gap both ways), BodiesIdle.cs (the idle step-aside, the passage test). Updated: Bodies.cs (the settling band to 75 %, with its reason), BodiesGive.cs (the armed clear a walking tenet's way, as ClearsFor already did, and the test had failed at HEAD; the squeeze law looked for on more runs, 11 pairs, with the bar unchanged), solids.test.ts, sim.test.ts, cover.test.ts, rulebook098b.test.ts. Rulebook: <code>body-margin-cm</code> 5, <code>listen-wall-cm</code> 25, <code>listen-pass-cm</code> 180, <code>listen-chair-grace-s</code> 30 (120 made a Scout wait 106 s for a chair).</p>
+
+<h2>What Latch must draw</h2>
+<ul>
+<li><b>Seated listeners.</b> <code>ListenSpotNow</code>'s <code>at</code> is the seat. <code>SeatedAt(name)</code> says she's in a chair, and she starts the act seated. Draw her sitting, as a customer, and standing up when her next order walks her out.</li>
+<li><b>Stepping into a seat.</b> Anyone (the Scout, a customer) takes the last step into a chair across the table's ground, at a walk. It isn't a slide or a jump.</li>
+<li><b>Idle step aside.</b> An operative with no order moves aside at a walk and back (<code>BodyIdle</code>). No snap.</li>
+<li><b>Door beats moved.</b> The dial's guards stand 2 m out from the Office's public door and 50 cm off the official door, on its open side. The beats are no longer in the pilaster slot.</li>
+<li>The walk is finer: people pass close by planters, tables and kerb furniture, 35 cm from the face to their centre. A figure wider than the 30 cm radius will touch faces.</li>
+</ul>
+
+<h2>Handoffs</h2>
+<ul>
+<li><b>Pulse.</b> (1) The fight's advance, hide and kite loop at the café arcs (quiet-g, above). (2) The cover generator's 85 cm standoff and 0.65 m off-face minimum rest on the old 65 cm walk margin; the walk keeps 35 cm now (<code>tools/cover/gen.ts</code>'s comment). (3) <code>tools/people</code>'s walk and scope still use the plan's r. (4) The rounds' clear rule now keeps the walk's clearance (it had moved service points 2.25 m). (5) <code>tools/routines/rounds.test.ts</code> "what the quiet play can reach" fails now. The seated Listen lands about 9 s later, so route A's Help is given at 1:08.3, when Inez has walked on. The engine walks the Fixer to her and the Help starts at 1:14.7, but the static read keeps him at his last move target and waits 29 s. (6) At people=64 the café is full: a customer waits 63 s by table 6 for the last chair.</li>
+<li><b>Waymark.</b> The 9 plans that don't compose (table above). The loud family's Go should wait for the rival car to leave. careless-thin-all and route-b-thin need rival-3 approached on his post. veteran's 13 m draw condition in a crowd. Cover ids were renumbered (77 → 83): mission.json's ambush note cites cv-032 (q 589), which is now cv-036. The car points cv-001 to cv-014 are unchanged.</li>
+<li><b>Motive.</b> The bands (quiet-g, quiet-b's downs per win, B-7, B-13); nothing here is tuned to win.</li>
+<li><b>Vela.</b> BikeRack declares only its 17 cm plinth. Re-export the kit with <code>PINNED</code> off. Re-run ShrubMound's extra root (unpinned, not measured).</li>
+<li><b>Splice and Datum.</b> The plan checker keeps Datum's design r (65 cm) for the plan's own rules (<code>tools/plan/walk-grid.ts</code>, unchanged). The engine now walks the body (35 cm). I'd keep the design widths as design rules, and if Datum wants a layout check on what the game walks, add a passability rule on the body: any gap of 80 cm or more between two solids must be open. <code>tools/sim/gaps.ts</code> already finds them on the solids' own geometry.</li>
+<li><b>Pulse and Vantage.</b> Benches need seat places, or a listener can't sit on one.</li>
+<li><b>Aster.</b> KNOWN_RED (<code>tools/missions/check/check.test.ts</code>) still lists c060's reds. The new ones need owners once you rule on them. Sky to confirm the idle step-aside reading.</li>
+</ul>
+
+<h2>Checks</h2>
+<table><tr><th>check</th><th>result</th></tr>
+<tr><td><code>suborned-sim check</code></td><td class="good">472/472</td></tr>
+<tr><td><code>bun run sim:test</code></td><td class="good">3,298/3,298 (131 s)</td></tr>
+<tr><td><code>suborned-sim hashes</code></td><td class="good">exit 0</td></tr>
+<tr><td><code>suborned-sim gaps</code></td><td class="good">161/161 both ways</td></tr>
+<tr><td>bodies probe, 315 runs</td><td class="good">0 jumps, 0 pairs inside two radii, 0 tenet pairs, 0 law overlaps, 0 errors</td></tr>
+<tr><td>holds by place, bands, tick cost</td><td>above (0.48.0 vs 0.49.0)</td></tr>
+<tr><td>comment lint</td><td class="good">0 hits (1,511 files)</td></tr>
+<tr><td><code>bun run typecheck</code></td><td class="good">clean</td></tr>
+<tr><td><code>bun run plan</code></td><td class="good">exit 0; <code>tools/plan</code> unchanged this round</td></tr>
+<tr><td><code>bun run test</code></td><td class="mid">2,627 pass, 9 fail, 58 skip. Already failing: 5 skyline (Splice, Vantage), 2 drift-auto end to end (Pulse, Splice). New: <code>rounds.test.ts</code> Inez's static read (Pulse), and "the Handover, played headless" (route-g and loud don't compose: Waymark; the new reds: Motive, Pulse, Aster)</td></tr>
+<tr><td>missions:check, c061</td><td class="mid">HOLDS, 22 red (c060 12), above</td></tr>
+<tr><td>500-line rule</td><td class="good">no file grew past or over it; new files under it</td></tr></table>
+<p>Branch <code>t3/walkable-gaps-listening</code>, head: see the commit that adds this report.</p>
+</body></html>
