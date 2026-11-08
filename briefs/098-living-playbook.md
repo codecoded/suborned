@@ -131,10 +131,11 @@ These are rules Sky already approved that the GDD text still lags, gathered as t
 - **§04 approaches table:** since engine 0.45.0, a Mercenary or Idealist for whom Help is the wrong approach pays $50,000 once; only a Loyal person still takes two Helps. Sky 2026-11-05: "As you recommend", Motive's Q1 (b). The decision log has no entry for it yet.
 - **§07 route A:** since 0.44.0, a fearful Inez takes Help once, $40,000, after the Listen. It's no longer two visits at $20,000.
 - **§14 Motive's hold line, and the human GDD's purse sentence:** helping Inez and the Mercenary driver costs $90,000, not $80,000. It still fits the $100,000 purse.
-- **Bubble length:**
-  - agent §10 says 10 words, while §14 and the human GDD say 12;
+- **Bubble length and count** (Glyph 2026-11-09, `briefs/101/glyph/r5-review.md`):
+  - agent §10 says 10 words, while §12, the human GDD and text.schema say 12;
   - conversation lines now run to 25 words (Sky: "Full sentences");
-  - the HUD budget's 12-word cap (Splice) predates that.
+  - "at most two" means two bubbles on screen at once, not two rows;
+  - the §10 text becomes: "Speech bubbles at the speaker: at most two on screen at once, one per speaker (the newest), 3 s, twelve words or fewer. A conversation's street line keeps the cutaway's caps."
 - **§01 and §10, an order's full price:** money, Trail, Alert risk and what the street will do, no longer time. There's no hit chance in play, and time is shown only for key events (Sky 2026-11-08, brief 101).
 - **L9 Bodies and its give and take** (Sky's calls above), as a law with its settings: radius 30 cm, space 80 and 70 cm, crews 2.5 m, a squeeze at 40 cm and 0.5 m/s, 5 s before changing plans.
 - **The walk law and seated listeners** (Sky's calls above): a gap a body visibly fits through is walkable, the solids are the pieces as built, and listeners sit.
