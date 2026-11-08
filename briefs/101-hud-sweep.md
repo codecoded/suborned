@@ -148,4 +148,4 @@ Sky: "yes" to Glyph's round 3 (`briefs/101/glyph/r3/`).
 - **Splice:** the budget sums two stacked speech bubbles into one line (r123-fight-ground). It should count each bubble.
 - **The "Take control: T" pop** is gone, and no click takes control. Glyph's mock is at `briefs/101/glyph/tc/` (a round tab beside the selected agent's face, "Back to map" in the same slot while in control, and the GDD's eye over the driven agent).
 - **Sky, on Esc as a way back to the map:** "esc is always pause menu". Esc never leaves the ground view; the button and T do.
-- **Open with Sky:** a button and the eye, the button alone, or lab-only (T switched off for players).
+- **Sky picked "Button + eye"** over the button alone and lab-only. The ground view becomes part of the game; the GDD catch-up is in brief 098. Latch builds Glyph's pieces 1, 2, 4, 5 and 6 (Esc's piece 3 is dropped). Fable cuts the two dead pop words.

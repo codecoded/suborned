@@ -137,6 +137,18 @@ These are rules Sky already approved that the GDD text still lags, gathered as t
   - the HUD budget's 12-word cap (Splice) predates that.
 - **§01 and §10, an order's full price:** money, Trail, Alert risk and what the street will do, no longer time. There's no hit chance in play, and time is shown only for key events (Sky 2026-11-08, brief 101).
 - **L9 Bodies and its give and take** (Sky's calls above), as a law with its settings: radius 30 cm, space 80 and 70 cm, crews 2.5 m, a squeeze at 40 cm and 0.5 m/s, 5 s before changing plans.
+- **The walk law and seated listeners** (Sky's calls above): a gap a body visibly fits through is walkable, the solids are the pieces as built, and listeners sit.
+- **§10 and §11, the ground view leaves [lab]** (Sky 2026-11-09, brief 101: "Button + eye"):
+  - A round tab beside the selected agent's face takes control, as T does.
+  - In control, the same slot is "Back to map", which T also does.
+  - The eye over the driven agent (§10's "who sees you") ships with it.
+  - Watcher pips, edge markers and the goal beam wait until the Handover is solid.
+  - T14 loses its [lab] mark when it runs.
+- **§10 controls:** Esc is always the pause menu (Sky 2026-11-09: "esc is always pause menu"). It never leaves a view.
+- **§10 and §12, the agents' voices** (Sky 2026-11-08, brief 102):
+  - The cell is quiet in play: no acks, arrivals, landings or warnings.
+  - The agents speak only in scenes with people.
+  - No line explains a rule or a consequence, and AI-sounding words fail.
 
 ## Done-check
 Sky can set the guards, people and cars in the dev panel, press Play and get that world, with no rebuild. The GDD goes to v0.40.0 with laws in place of per-case sums, and the crew is regenerated (`bun run crew`). Traffic runs in play under L8, with the Handover's bands holding across seeds and 60 fps on the Air. The witness rules run on L1–L6.
