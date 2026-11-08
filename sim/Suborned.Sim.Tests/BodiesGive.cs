@@ -32,6 +32,9 @@ public class BodiesGiveTests
     }
     /// <summary>A person of the city the give and take may move: upright, laid soft and unarmed (not a tenet, not the cell, not the armed).</summary>
     static bool City(Game g, in BodyCheck.Upright u) => !u.Tenet && (u.Kind == "crowd" || u.Kind == "dial-person") && !g.BodyKeepsPlace(u.Id);
+    /// <summary>Engine 0.49.0: a person of the city sat in the chair it took instead (a change of plans to another chair: seated, it is laid as one
+    /// seated is, and the squeeze it came out of ends once the two stand apart): still the city's, not a tenet giving way.</summary>
+    static bool SatInstead(Game g, in BodyCheck.Upright u) => (u.Kind == "crowd" || u.Kind == "dial-person") && g.BodyMove(u.Id) is BodyMoveRead m && m.Replanned && m.AltChair != null && g.BodyIsTenet(u.Id);
     /// <summary>The side an upright body is on, as the law tells them apart (engine 0.48.0, GameBodyGive.SideOf): 1 the cell; 2 security (the
     /// patrol, the city's and the dial's guards, officers, police and robots, the fight's police); 3 the rival crew; 0 none (the city unarmed, the cast).</summary>
     static int Side(Game g, in BodyCheck.Upright u) => u.Kind == "patrol" ? 2 : u.Tenet ? 0 : u.Kind switch // the patrol is security when it asks; a tenet, it never makes room itself
@@ -96,7 +99,7 @@ public class BodiesGiveTests
                         var sq = g.BodySqueeze(u.Id); if (!sq.HasValue) continue;
                         var (with, facing) = sq.Value; ticks++;
                         if (seen.Add(string.CompareOrdinal(u.Id, with) < 0 ? $"{route}#{seed}:{u.Id}+{with}" : $"{route}#{seed}:{with}+{u.Id}")) squeezes++; // each pair once
-                        if (!City(g, u)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) squeezes, but it keeps its place");
+                        if (!City(g, u) && !SatInstead(g, u)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) squeezes, but it keeps its place");
                         var back = g.BodySqueeze(with); if (!back.HasValue || back.Value.with != u.Id) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} squeezes past {with}, who does not squeeze past it");
                         if (up.Find(x => x.Id == with) is var o && o.Id != null && G.Dist(o.At, u.At) < 2 * g.R.BodySqueezeCm) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} and {with} {G.Dist(o.At, u.At)} cm apart, inside two squeeze widths");
                         if (facing == default || (g.FacingNow(u.Id) is Pt f && f != facing)) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} squeezing faces {g.FacingNow(u.Id)}, not sideways {facing}");
@@ -120,7 +123,7 @@ public class BodiesGiveTests
                     foreach (var u in BodyCheck.Of(h))
                     {
                         if (h.BodyMove(u.Id) is not BodyMoveRead m || !m.Replanned) continue; now.Add(u.Id);
-                        if (!City(h, u)) bad.Add($"{route} #{seed} {Report.Clock(h.Tick)}: {u.Id} ({u.Kind}) changed plans, but it keeps its place");
+                        if (!City(h, u) && !SatInstead(h, u)) bad.Add($"{route} #{seed} {Report.Clock(h.Tick)}: {u.Id} ({u.Kind}) changed plans, but it keeps its place");
                         if (m.AltChair != null && h.People.Exists(p => p.Id == u.Id)) bad.Add($"{route} #{seed}: one of the cast took another chair");
                     }
                     was = now;
@@ -142,7 +145,7 @@ public class BodiesGiveTests
                 var up = BodyCheck.Of(g);
                 foreach (var u in up)
                 {
-                    if (City(g, u)) continue; looked++;
+                    if (City(g, u) || SatInstead(g, u)) continue; looked++;
                     if (g.BodyMove(u.Id) is not BodyMoveRead m) continue;
                     if (u.Tenet || m.SqueezeWith != null || m.Replanned) bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) {(m.SqueezeWith != null ? "squeezes past " + m.SqueezeWith : m.RoomFor != null ? "made room for " + m.RoomFor : "changed plans")}");
                     else if (m.RoomFor != null) { if (RoomByLaw(g, up, u, m.RoomFor)) own++; else bad.Add($"{route} {Report.Clock(g.Tick)}: {u.Id} ({u.Kind}) made room for {m.RoomFor}, not one of its own side"); }

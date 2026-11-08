@@ -82,7 +82,7 @@ namespace Suborned.Sim
                     for (; e >= 0; e = bhNext[e])
                     {
                         int j = bhBody[e]; if (j == i) continue; ref var o = ref bds[j];
-                        if (o.Placed || !MakesRoomFor(in o, in b) || o.Fresh || o.RoomFor == b.Id || o.SqzId != null) continue; // laid already, or one who keeps its place (the Enforcer's own cell make room for him), or already making room for it (a walking tenet comes first: it replaces making room for another, as Vale a metre beside the Enforcer)
+                        if (o.Placed || !(MakesRoomFor(in o, in b) || (ClearsFor(in o) && (b.Kind != BkOp || b.Path != null))) || o.Fresh || o.RoomFor == b.Id || o.SqzId != null) continue; // laid already, or one who keeps its place (the Enforcer's own cell make room for him), or already making room for it (a walking tenet comes first: it replaces making room for another, as Vale a metre beside the Enforcer)
                         var v = o.At - b.At; long along = ((long)v.X * dir.X + (long)v.Y * dir.Y) / len, across = Math.Abs((long)v.X * dir.Y - (long)v.Y * dir.X) / len;
                         if (along <= 0 || along > AheadCm || across >= R.BodyMinCm + RoomClearCm) continue;
                         if (RoomSpot(j, b.At, dir) is Pt spot) { o.RoomFor = b.Id; o.RoomAt = spot; o.RoomFrom = o.At; o.RoomDir = dir; o.RoomRaw = o.Raw; o.RoomEnd = Tick + RoomTicks; BodySidesteps++; }
@@ -90,6 +90,11 @@ namespace Suborned.Sim
         }
         /// <summary>How far ahead of a tenet walking the city makes room (cm).</summary>
         const int AheadCm = 300;
+        /// <summary>Engine 0.49.0 (x4, quiet-a #1: Vale held by the Enforcer walked onto a dial guard at their hold point, one tick inside two radii): one
+        /// armed, of any side, steps out of a tenet's walk before it comes, since a tenet is never held and would walk into him; being walked into is
+        /// not giving way (the armed still never give way to an enemy in a gap). Not the patrol on its sweep (a tenet itself), never one carrying someone;
+        /// only for a tenet walking on (an operative with a walk ahead: one starting his act on his last step goes no further).</summary>
+        static bool ClearsFor(in Bd o) => o.Cls != BcFixed && !o.Laden && o.Kind != BkPatrol; // a guard of the city or the dial (a walker, armed) as much as an officer
         /// <summary>Who makes room for whom (engine 0.48.0; Aster, brief 098 after Vantage's probe: a police officer stood 81.6 s behind a response
         /// robot in the east gap, both armed): a person of the city for anyone; one armed for one armed of its own side (SideOf), as the city does,
         /// never for an enemy; a tenet (fixed, one of the cast walking, the patrol on its sweep) or one carrying someone never.</summary>
@@ -114,9 +119,23 @@ namespace Suborned.Sim
                     {
                         var c = at + Scale(n, d) + (k == 0 ? default : Scale(dir, k == 1 ? -RoomSlantCm : RoomSlantCm)); // straight off the way, then a little back, then a little on
                         long off = Math.Abs((long)dir.X * (c.Y - from.Y) - (long)dir.Y * (c.X - from.X)) / len; // how far off the held one's way
-                        if (off >= R.BodyMinCm + RoomClearCm && S.Grid.LineFree(at, c) && Fits(j, c, false)) return c;
+                        if (off >= R.BodyMinCm + RoomClearCm && S.Grid.LineFree(at, c) && Fits(j, c, false) && OffTenetWays(j, c)) return c;
                     }
             return null;
+        }
+
+        /// <summary>Engine 0.49.0: a spot to make room at keeps off the way ahead of every tenet walking (the Enforcer and Vale a metre apart: stepping
+        /// aside for one put the Scout in the other's way at the car door, loud-fight #1, and the two walked onto him), as it keeps off the asker's.</summary>
+        bool OffTenetWays(int j, Pt c)
+        {
+            for (int k = 0; k < bdN; k++)
+            {
+                if (k == j) continue; ref var t = ref bds[k]; if (t.Cls != BcFixed || t.Head == default) continue;
+                long len = G.Isqrt(G.D2(t.Head, default)); if (len == 0) continue; var v = c - t.At;
+                long along = ((long)v.X * t.Head.X + (long)v.Y * t.Head.Y) / len, across = Math.Abs((long)v.X * t.Head.Y - (long)v.Y * t.Head.X) / len;
+                if (along > -R.BodyMinCm && along <= AheadCm && across < R.BodyMinCm + RoomClearCm) return false;
+            }
+            return true;
         }
 
         /// <summary>A person of the city on its routine, held bodies.replan with nothing working, changes plans (the file's head). False when it is

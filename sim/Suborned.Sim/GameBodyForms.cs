@@ -61,7 +61,7 @@ namespace Suborned.Sim
             GiveStart(i); // GameBodyGive.cs: making room or a squeeze ends once the other has passed
             Pt cur = b.Raw + b.Lay, from = b.Prev, goal, gface = b.LayFace; bool form = false; byte why; // cur: holding its lay; from: where it stood; why: the goal and the move (BodyTrace reads them)
             bool behind = !b.AltOn && b.Path != null && !b.Fresh && G.D2(b.Raw, from) > (long)FollowCm * FollowCm; // fallen behind its own place: it follows its own walk, not a line through walls
-            if (!b.Fresh && from != b.Raw && (!OffCars(from) || !S.Grid.Free(from))) b.Fix = FixOff; // a car came to stand where it stood, or its own place left it on ground no body stands on (a door point in a facade): it walks off it (BodyGround)
+            if (!b.Fresh && from != b.Raw && (!OffCars(from) || (!S.Grid.Free(from) && !b.SitIn))) b.Fix = FixOff; // a car came to stand where it stood, or its own place left it on ground no body stands on (a door point in a facade): it walks off it (BodyGround); engine 0.49.0: not an operative stepping into his seat across the chair's ground
             bool onCar = b.Fix == FixOff;
             b.Aim = behind ? FollowAim(in b, from) : b.Own;
             if (!b.Fresh && b.Det == null && Tick >= b.DetEnd && !G.Within(from, b.Aim, CatchCm) && !S.Grid.LineFree(from, b.Aim)) PlanCatch(i, from, b.Aim); // walled off from where it makes for (a routine leg through a building, its own place jumped behind a wall): it walks back by the walk grid (GameBodyDetours.cs)

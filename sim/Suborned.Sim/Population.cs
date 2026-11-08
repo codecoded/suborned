@@ -185,6 +185,29 @@ namespace Suborned.Sim
             for (int i = 0; i < g.Nx; i += 4) for (int j = 0; j < g.Ny; j += 4) { if (!g.FreeCell(i, j)) continue; int k = g.PieceOf(g.Centre(i, j)), sz = g.PieceSize(k); if (sz > bestSize) { bestSize = sz; best = k; } }
             MainPiece = best;
             bool main(Pt p) => g.Free(p) && g.PieceOf(p) == MainPiece;
+            // engine 0.49.0: the way out of a door: the sum of the offsets of the free ground within OpenCm of it, sampled every OpenStepCm (null: none free)
+            const int OpenCm = 200, OpenStepCm = 10; // engine 0.49.0: a door's way out, read from the foot ground within OpenCm of it, every OpenStepCm
+            static bool Foot(Site s, Pt p) => s.Grid.Free(p) && !s.Drive.Free(p); // walkable and no car's (a carriageway, a drive, a bay: a car may stand there)
+            static Pt? OpenSide(Site s, Pt at)
+            {
+                long sx = 0, sy = 0;
+                for (int dx = -OpenCm; dx <= OpenCm; dx += OpenStepCm) for (int dy = -OpenCm; dy <= OpenCm; dy += OpenStepCm)
+                        if ((long)dx * dx + (long)dy * dy <= (long)OpenCm * OpenCm && Foot(s, new Pt(at.X + dx, at.Y + dy))) { sx += dx; sy += dy; }
+                long n = G.Isqrt(sx * sx + sy * sy); return n == 0 ? null : new Pt((int)(sx * 100 / n), (int)(sy * 100 / n));
+            }
+            // the foot ground nearest p on the main piece (p itself, else the nearest free cell centre that is no car's, ring by ring within 6 m)
+            static Pt? OnFoot(Site s, Pt p, Func<Pt, bool> main)
+            {
+                if (Foot(s, p) && main(p)) return p;
+                var g = s.Grid; int ci = g.CI(p.X), cj = g.CJ(p.Y);
+                for (int r = 1; r <= 12; r++)
+                {
+                    Pt? best = null; long bd = long.MaxValue;
+                    for (int i = ci - r; i <= ci + r; i++) for (int j = cj - r; j <= cj + r; j++) { if (!g.FreeCell(i, j)) continue; var c = g.Centre(i, j); if (!Foot(s, c) || !main(c)) continue; long d = G.D2(c, p); if (d < bd) { bd = d; best = c; } }
+                    if (best.HasValue) return best;
+                }
+                return null;
+            }
             var raw = new List<(string id, Pt at, Pt face)>();
             if (Array.IndexOf(pop.BeatPoints, "door") >= 0)
                 foreach (var (id, at, kind) in s.Refuges)
@@ -193,9 +216,9 @@ namespace Suborned.Sim
                     var place = id.StartsWith("door:", StringComparison.Ordinal) ? id.Substring(5) : id;
                     Pt? stand = null; foreach (var e in s.Entrances) if (e.id == place && e.stand != e.at) stand = e.stand;
                     if (!stand.HasValue) continue;
-                    var face = stand.Value - at; long len = Math.Max(1, G.Isqrt(G.D2(at, stand.Value)));
+                    var face = OpenSide(s, at) ?? stand.Value - at; long len = Math.Max(1, G.Isqrt(G.D2(face, default))); // engine 0.49.0: out is the open side of the foot ground round the door (the Office's stand is 25 cm along its facade, so stand − door ran along the wall into its pilasters)
                     var p = new Pt(stand.Value.X + (int)(face.X * pop.DoorOutCm / len), stand.Value.Y + (int)(face.Y * pop.DoorOutCm / len));
-                    var q = g.NearestFree(p); if (q.HasValue && main(q.Value)) raw.Add(("beat:" + id, q.Value, face));
+                    var q = OnFoot(s, p, main); if (q.HasValue) raw.Add(("beat:" + id, q.Value, face));
                 }
             if (Array.IndexOf(pop.BeatPoints, "post") >= 0) foreach (var (id, at) in s.Posts) if (!id.StartsWith("door:", StringComparison.Ordinal) && main(at)) raw.Add(("beat:" + id, at, default));
             if (Array.IndexOf(pop.BeatPoints, "call-box") >= 0) foreach (var (id, at) in s.CallBoxes) if (main(at)) raw.Add(("beat:" + id, at, default));

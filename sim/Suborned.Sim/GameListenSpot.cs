@@ -155,8 +155,8 @@ namespace Suborned.Sim
             return seatAt.TryGetValue(op.Pos, out var name) ? name : null;
         }
         Dictionary<Pt, string>? seatAt;
-        /// <summary>The chair an operative is taking his last step into (his Listen's seat, his walk's end within StepInCm): the law lays him as one seated,
-        /// a body it never moves, so he walks his own walk in across the chair's ground (as a café customer does), never stepped back off it.</summary>
+        /// <summary>The chair an operative is taking his last step into (his Listen's seat, his walk's end within StepInCm): he holds it already, and the
+        /// law lets him walk his own walk in across the chair's ground (as a café customer does), never stepping him back off it (GameBodyForms.cs).</summary>
         string? SittingInto(Op op) => op.Walk != null && SpotOf(op) is ListenSpot sp && sp.Chair.Length > 0 && op.Walk.End == sp.At && G.Within(op.Pos, sp.At, StepInCm) ? sp.Chair : null;
         /// <summary>Host read (never hashed): the chair an operative sits in now and the way it faces (the chair's own), or null. Latch draws it seated.</summary>
         public (string chair, Pt face)? SeatedAt(string agent) { var op = OpOf(Sim.Op.Parse(agent)); return SeatOf(op) is string c ? (c, StopFace(c) ?? default) : ((string, Pt)?)null; }
